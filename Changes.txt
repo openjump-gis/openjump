@@ -1,0 +1,11 @@
+Version 1.2.0 Beta (2007-05-10)
+
+  This release includes major bugfixes
+  
+  Fixes:
+  - blabla
+
+
+  New Features:
+  - tofill
+  

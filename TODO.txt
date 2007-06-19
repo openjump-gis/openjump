@@ -1,0 +1,16 @@
+##
+## OpenJUMP TODO
+##
+
+ - bla
+ 	
+ - Javadoc (last but not least!)
+
+---------------------------------------
+
+##
+## Further Ideas for OpenJUMP
+##
+ 
+ - blabla
+
