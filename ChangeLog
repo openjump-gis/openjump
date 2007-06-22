@@ -1,3 +1,12 @@
+2007-22-06  s-l-teichmann <teichmann@intevation.de>
+
+	* src/com/vividsolutions/jump/workbench/ui/renderer/ThreadQueue.java:
+	  Replacement for the old ThreadQueue. The old ThreadQueue executes
+	  each and every Runnable job in a new Thread (which is expensive) and
+	  had a busy wait loop inside. Now worker threads are kept alive for
+	  at least 5 seconds waiting for new incomming jobs. This is done with
+	  wait()/notify().
+
 2007-06-06  s-l-teichmann <teichmann@intevation.de>
 
 	* ChangeLog: Moving around my generated ChangeLog locally eated my last ChangeLog entry. ;-)
@@ -9,10 +18,10 @@
 
 	* src/com/vividsolutions/jump/workbench/ui/renderer/style/BasicStyle.java,
 	  src/com/vividsolutions/jump/workbench/ui/style/BasicStylePanel.java:
-		Applied patches to solve the problem of expensive BasicStyle object
-		construction. A WKTFillPattern was created also which slows down
-		construction by factor 100. Now BasicStyle are constructed without
-		a fill pattern.
+	  Applied patches to solve the problem of expensive BasicStyle object
+	  construction. A WKTFillPattern was created also which slows down
+	  construction by factor 100. Now BasicStyle are constructed without
+	  a fill pattern.
 
 	* src/ChangeLog, src/Changes.txt, src/TODO.txt: removed
 
