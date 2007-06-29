@@ -50,9 +50,9 @@ public class CloneWindowPlugIn extends AbstractPlugIn {
 
         JInternalFrame frame = ((CloneableInternalFrame) context.getActiveInternalFrame()).internalFrameClone();
         context.getWorkbenchFrame().addInternalFrame(frame);
-        //[sstein 23.04.2006] workaround since a white window will appear
-        //         in the original task window if cloned window is closed   
-        frame.setClosable (false);
+        // [mmichaud] now, the user is asked if he really wants to close the window
+        // in the case where other internal windows depends upon this one
+        frame.setClosable (true);
         if (frame instanceof LayerViewPanelProxy) {
             //Need to update image buffer; otherwise, user will just see a white panel.
             //[Jon Aquino]
