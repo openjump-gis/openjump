@@ -199,7 +199,7 @@ public class UnionPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
                     Envelope env2 = ((Geometry)o2).getEnvelopeInternal();
                     double indice1 = env1.getMinX()/cellSize + cellSize*((int)env1.getMinY()/cellSize);
                     double indice2 = env2.getMinX()/cellSize + cellSize*((int)env2.getMinY()/cellSize);
-                    return indice1>indice2?1:indice1<indice2?-1:0;
+                    return indice1>=indice2?1:indice1<indice2?-1:0;
                 }
                 public boolean equals(Object obj) {return this.equals(obj);}
             };
