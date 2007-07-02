@@ -1,10 +1,20 @@
 2007-02-07  Andreas Schmitz <schmitz@lat-lon.de>
-  * src/de/latlon/deejump/plugin/style/layerstyle2sld.xsl,
+    * src/de/latlon/deejump/plugin/style/layerstyle2sld.xsl,
 	  src/de/latlon/deejump/plugin/style/XSLUtility.java:
-    SLD Size element is now next to the Mark element and not underneath it.
-    XSLUtility is now checking for null while constructing background.
+      SLD Size element is now next to the Mark element and not underneath it.
+      XSLUtility is now checking for null while constructing background.
+    
+2007-06-29 mmichaud <michael.michaud@free.fr>
 
-2007-22-06  s-l-teichmann <teichmann@intevation.de>
+    * src/com/vividsolutions/jump/workbench/ui/plugin/CloneWindowPlugIn.java
+      The problem with CloneWindowPlugIn has been fixed on 2007-06-02, but
+      I forgot to set back the closeable property to true. Done.
+      
+    * src/com/vividsolutions/jump/workbench/ui/plugin/analysis/UnionPlugIn.java
+      Fix a bug in the Comparator used to sort geometries and
+      improve union performance.
+
+2007-06-22  s-l-teichmann <teichmann@intevation.de>
 
 	* src/com/vividsolutions/jump/workbench/ui/renderer/ThreadQueue.java:
 	  Replacement for the old ThreadQueue. The old ThreadQueue executes
