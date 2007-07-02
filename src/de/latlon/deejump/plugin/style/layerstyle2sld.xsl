@@ -177,10 +177,10 @@
 												<xsl:value-of select="$defaultFillColor"/>
 											</sld:CssParameter>
 										</sld:Fill>
-										<sld:Size>
-											<xsl:value-of select="@size"/>
-										</sld:Size>
 									</sld:Mark>
+									<sld:Size>
+										<xsl:value-of select="@size" />
+									</sld:Size>
 								</xsl:otherwise>
 							</xsl:choose>
 						</sld:Graphic>
@@ -293,10 +293,11 @@
 												<xsl:value-of select="xslutil:toHexColor(./value/fill/color)"/>
 											</sld:CssParameter>
 										</sld:Fill>
-										<sld:Size>
-											<xsl:value-of select="./value/vertexstyle/@size"/>
-										</sld:Size>
 									</sld:Mark>
+									<sld:Size>
+										<xsl:value-of
+											select="./value/vertexstyle/@size" />
+									</sld:Size>
 								</xsl:otherwise>
 							</xsl:choose>
 						</sld:Graphic>

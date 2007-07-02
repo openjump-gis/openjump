@@ -66,7 +66,10 @@ public class XSLUtility {
 
     public static String toHexColor( Node colorNode ) {
         String value = "#000000";
+        if(colorNode == null) return value;
+        
         try {//FIXME no good to grab 1st child and then node val
+            if(colorNode.getFirstChild() == null) return value;
             String nodeVal = colorNode.getFirstChild().getNodeValue();
             String[] components = nodeVal.split( ", " );
             StringBuffer sb = new StringBuffer( 100 );

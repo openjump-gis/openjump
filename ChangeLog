@@ -1,3 +1,9 @@
+2007-02-07  Andreas Schmitz <schmitz@lat-lon.de>
+  * src/de/latlon/deejump/plugin/style/layerstyle2sld.xsl,
+	  src/de/latlon/deejump/plugin/style/XSLUtility.java:
+    SLD Size element is now next to the Mark element and not underneath it.
+    XSLUtility is now checking for null while constructing background.
+
 2007-22-06  s-l-teichmann <teichmann@intevation.de>
 
 	* src/com/vividsolutions/jump/workbench/ui/renderer/ThreadQueue.java:
