@@ -140,13 +140,13 @@ public class QueryDialog extends BDialog {
    private void initInternal() {
        component.addComponentListener(new ComponentAdapter() {
            public void componentResized(ComponentEvent ev) {
-               if (lastSetSize == null || !lastSetSize.equals(component.getSize())) {
-                   lastSetSize = null;
+               if (lastSize == null || !lastSize.equals(component.getSize())) {
+                   lastSize = null;
                    layoutChildren();
                    QueryDialog.this.dispatchEvent(new WindowResizedEvent(QueryDialog.this));
                }
                else
-                   lastSetSize = null;
+                   lastSize = null;
            }
        });
        ((JDialog) component).setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -579,6 +579,7 @@ public class QueryDialog extends BDialog {
         }
         catch(Exception e) {System.out.println(e);}
         if (operator==Operator.WDIST) {
+            operatorCB.setEditable(true); // added on 2007-07-02 (bug fix)
             String f = operatorCB.getSelectedValue().toString();
             String sub = f.substring(f.lastIndexOf('(')+1, f.lastIndexOf(')'));
             Operator.WDIST.arg = Double.parseDouble(sub);
