@@ -113,7 +113,14 @@ public abstract class FileDataSourceQueryChooser
         File[] files = GUIUtil.selectedFiles(getFileChooserPanel().getChooser());
 
         for (int i = 0; i < files.length; i++) {
-            queries.addAll(toDataSourceQueries(files[i]));
+            //LDB: mod to append standard extension to save file names
+        	String fname = files[i].getAbsolutePath();
+            if (fname.lastIndexOf(".") == -1) {
+            	fname = fname + "." + extensions[0];  //first extension (i.e. shp)
+            }
+        	File file = new File(fname);
+            queries.addAll(toDataSourceQueries(file));
+            //queries.addAll(toDataSourceQueries(files[i]));
         }
 
         return queries;

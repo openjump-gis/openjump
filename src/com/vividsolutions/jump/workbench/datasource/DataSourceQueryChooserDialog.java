@@ -141,17 +141,18 @@ public class DataSourceQueryChooserDialog extends JDialog {
                     okCancelPanel_actionPerformed(e);
                 }
             });
-        this.getContentPane().add(mainPanel, BorderLayout.CENTER);
-        this.getContentPane().add(formatPanel, BorderLayout.NORTH);
+        
+        this.getContentPane().add(mainPanel, BorderLayout.NORTH);
+        this.getContentPane().add(formatPanel, BorderLayout.CENTER);
         this.getContentPane().add(okCancelPanel, BorderLayout.SOUTH);
         formatPanel.add(formatComboBox,
-            new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0,
-                GridBagConstraints.NORTHWEST, GridBagConstraints.NONE,
-                new Insets(4, 4, 4, 4), 0, 0));
+            new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
+                GridBagConstraints.WEST, GridBagConstraints.NONE,
+                new Insets(16, 4, 16, 4), 0, 0));
         formatPanel.add(formatLabel,
-            new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
-                GridBagConstraints.CENTER, GridBagConstraints.NONE,
-                new Insets(4, 4, 4, 4), 0, 0));
+                new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
+                    GridBagConstraints.EAST, GridBagConstraints.NONE,
+                    new Insets(16, 4, 16, 4), 0, 0));
     }
 
     /**
