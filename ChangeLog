@@ -1,3 +1,14 @@
+2007-07-08 mmichaud <michael.michaud@free.fr>
+
+    * Add UnionByAttributePlugIn in the Tool/Analysis menu
+    
+    * Remove several plugins related to loading/saving files and which are
+    no more useful (two plugins in the workbench.ui.plugin package and
+    two other plugins in the datasource package)
+    
+    * Add automatic file extension in the main SaveDatasetAsPlugIn
+    and put the format chooser at the bottom of the dialog (as in SkyJUMP)
+
 2007-07-03 mmichaud <michael.michaud@free.fr>
     * Simple query PlugIn : add some keys in the language property files
     in order to replace gnof, bnof, snof and nnof by an empty string in
