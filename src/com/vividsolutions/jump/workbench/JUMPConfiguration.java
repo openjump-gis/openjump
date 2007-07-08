@@ -142,9 +142,9 @@ public class JUMPConfiguration implements Setup {
 
 
     private LoadDatasetPlugIn loadDatasetPlugIn = new LoadDatasetPlugIn();
-    private LoadDatasetFromFilePlugIn loadDatasetFromFilePlugIn = new LoadDatasetFromFilePlugIn();
+    //private LoadDatasetFromFilePlugIn loadDatasetFromFilePlugIn = new LoadDatasetFromFilePlugIn();
     private SaveDatasetAsPlugIn saveDatasetAsPlugIn = new SaveDatasetAsPlugIn();
-    private SaveDatasetAsFilePlugIn saveDatasetAsFilePlugIn = new SaveDatasetAsFilePlugIn();
+    //private SaveDatasetAsFilePlugIn saveDatasetAsFilePlugIn = new SaveDatasetAsFilePlugIn();
     private SaveImageAsPlugIn saveImageAsPlugIn = new SaveImageAsPlugIn();
 
     private GenerateLogPlugIn generateLogPlugIn = new GenerateLogPlugIn();
@@ -286,10 +286,10 @@ public class JUMPConfiguration implements Setup {
                 loadDatasetPlugIn.getName() + "...", false, LoadDatasetPlugIn.getIcon(),
                 LoadDatasetPlugIn.createEnableCheck(workbenchContext));
         //--
-        featureInstaller.addPopupMenuItem(workbenchContext.getWorkbench()
+        /*featureInstaller.addPopupMenuItem(workbenchContext.getWorkbench()
                 .getFrame().getCategoryPopupMenu(), loadDatasetFromFilePlugIn,
                 loadDatasetFromFilePlugIn.getName() + "...", false, null,
-                LoadDatasetPlugIn.createEnableCheck(workbenchContext));
+                LoadDatasetPlugIn.createEnableCheck(workbenchContext));*/
         featureInstaller.addPopupMenuItem(workbenchContext.getWorkbench()
                 .getFrame().getCategoryPopupMenu(), addDatastoreLayerPlugIn,
                 addDatastoreLayerPlugIn.getName() + "...", false, null,
@@ -412,14 +412,14 @@ public class JUMPConfiguration implements Setup {
 
 
         layerNamePopupMenu.addSeparator(); // ===================
-        featureInstaller.addPopupMenuItem(layerNamePopupMenu,
+        /*featureInstaller.addPopupMenuItem(layerNamePopupMenu,
                 saveDatasetAsFilePlugIn, saveDatasetAsFilePlugIn.getName() + "...",
                 false, null, AbstractSaveDatasetAsPlugIn
-                        .createEnableCheck(workbenchContext));
-        featureInstaller.addPopupMenuItem(layerNamePopupMenu,
+                        .createEnableCheck(workbenchContext));*/
+        /*featureInstaller.addPopupMenuItem(layerNamePopupMenu,
         		saveDatasetAsPlugIn, saveDatasetAsPlugIn.getName() + "...",
                 false, null, AbstractSaveDatasetAsPlugIn
-                        .createEnableCheck(workbenchContext));
+                        .createEnableCheck(workbenchContext));*/
 
         layerNamePopupMenu.addSeparator(); // ===================
         featureInstaller.addPopupMenuItem(layerNamePopupMenu, moveUpPlugIn,
@@ -535,12 +535,12 @@ public class JUMPConfiguration implements Setup {
             final EnableCheckFactory checkFactory,
 		//-- FILE
             FeatureInstaller featureInstaller) throws Exception {
-        featureInstaller.addMainMenuItemWithJava14Fix(loadDatasetFromFilePlugIn, new String[] {MenuNames.FILE},
+        /*featureInstaller.addMainMenuItemWithJava14Fix(loadDatasetFromFilePlugIn, new String[] {MenuNames.FILE},
                 loadDatasetFromFilePlugIn.getName() + "...", false, null, AbstractLoadDatasetPlugIn
                         .createEnableCheck(workbenchContext));
         featureInstaller.addMainMenuItemWithJava14Fix(saveDatasetAsFilePlugIn, new String[] {MenuNames.FILE},
                 saveDatasetAsFilePlugIn.getName() + "...", false, null,
-                AbstractSaveDatasetAsPlugIn.createEnableCheck(workbenchContext));
+                AbstractSaveDatasetAsPlugIn.createEnableCheck(workbenchContext));*/
         featureInstaller.addMainMenuItemWithJava14Fix(loadDatasetPlugIn, new String[] {MenuNames.FILE},
                 loadDatasetPlugIn.getName() + "...", false, LoadDatasetPlugIn.getIcon(), LoadDatasetPlugIn
                         .createEnableCheck(workbenchContext));        
@@ -810,6 +810,7 @@ public class JUMPConfiguration implements Setup {
     private AttributeQueryPlugIn attrQueryPlugIn = new AttributeQueryPlugIn();
 	private SpatialJoinPlugIn spatialJoinPlugIn = new SpatialJoinPlugIn();
     private UnionPlugIn unionPlugIn = new UnionPlugIn();
+    private UnionByAttributePlugIn unionByAttributePlugIn = new UnionByAttributePlugIn();
     private GeometryFunctionPlugIn geometryFunctionPlugIn = new GeometryFunctionPlugIn();
     private OverlayPlugIn overlayPlugIn = new OverlayPlugIn();
     private ConvexHullPlugIn convexHullPI = new ConvexHullPlugIn();
@@ -885,6 +886,20 @@ public class JUMPConfiguration implements Setup {
 			unionPlugIn,
 			MENU_TOOLS_ANALYSIS, //maybe move to analysis join (but currently leave)
 			unionPlugIn.getName() + "...",
+			false,
+			null,
+			new MultiEnableCheck()
+			.add(
+					checkFactory
+					.createWindowWithLayerNamePanelMustBeActiveCheck())
+					.add(
+							checkFactory
+							.createAtLeastNLayersMustExistCheck(1)));
+    featureInstaller
+	.addMainMenuItem(
+			unionByAttributePlugIn,
+			MENU_TOOLS_ANALYSIS, //maybe move to analysis join (but currently leave)
+			unionByAttributePlugIn.getName() + "...",
 			false,
 			null,
 			new MultiEnableCheck()
