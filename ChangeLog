@@ -1,3 +1,7 @@
+2007-07-09 Andreas Schmitz <schmitz@lat-lon.de>
+		* scripts/openjump.sh: Added improved startup script for Unix from Paul
+	  Austin.
+
 2007-07-08 mmichaud <michael.michaud@free.fr>
 
     * Add UnionByAttributePlugIn in the Tool/Analysis menu
