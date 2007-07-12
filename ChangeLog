@@ -1,3 +1,8 @@
+2007-07-11 Paul Austin <paul.austin@revolsys.com>
+  * Added .settings, build, target, .classpath & .project to svi:ignore to
+    prevent accidental checkin of eclipse config and maven/ant generated dirs
+  * Changed InfoModel to remove layers after the listeners are notified
+
 2007-07-09 Andreas Schmitz <schmitz@lat-lon.de>
 		* scripts/openjump.sh: Added improved startup script for Unix from Paul
 	  Austin.

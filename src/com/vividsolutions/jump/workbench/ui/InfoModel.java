@@ -92,13 +92,14 @@ public class InfoModel {
 
     public void remove(Layer layer) {
         LayerTableModel layerTableModel = getTableModel(layer);
-        ((LayerTableModel) layerToTableModelMap.get(layer)).dispose();
-        layerToTableModelMap.remove(layer);
 
         for (Iterator i = listeners.iterator(); i.hasNext();) {
             InfoModelListener listener = (InfoModelListener) i.next();
             listener.layerRemoved(layerTableModel);
         }
+
+        ((LayerTableModel) layerToTableModelMap.get(layer)).dispose();
+        layerToTableModelMap.remove(layer);
     }
 
     public void clear() {
