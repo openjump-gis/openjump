@@ -1,3 +1,10 @@
+2007-07-13 mmichaud <michael.michaud@free.fr>
+
+    * Bug fix in LabelStyle : added trim() to avoid labels to be ex-centered
+    
+    * Bug fix : thick closed lines (and polygons) did not have a nice
+      join_bevel on the first/last point (tip from Larry Becker)
+
 2007-07-11 Paul Austin <paul.austin@revolsys.com>
   * Added .settings, build, target, .classpath & .project to svi:ignore to
     prevent accidental checkin of eclipse config and maven/ant generated dirs
