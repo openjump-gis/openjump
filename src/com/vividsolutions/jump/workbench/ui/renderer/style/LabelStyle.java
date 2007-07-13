@@ -95,7 +95,8 @@ public class LabelStyle implements Style {
     public void paint(Feature f, Graphics2D g, Viewport viewport)
         throws NoninvertibleTransformException {
         Object attribute = getAttributeValue(f);
-        if ((attribute == null) || (attribute.toString().length() == 0)) {
+        // added .trim() 2007-07-13 [mmichaud]
+        if ((attribute == null) || (attribute.toString().trim().length() == 0)) {
             return;
         }
         Geometry viewportIntersection = intersection(f.getGeometry(), viewport);
@@ -107,7 +108,7 @@ public class LabelStyle implements Style {
             viewport.toViewPoint(new Point2D.Double(spec.location.x, spec.location.y));
         paint(
             g,
-            attribute.toString(),
+            attribute.toString().trim(),    // added .trim() 2007-07-13 [mmichaud]
             viewport.getScale(),
             labelCentreInViewSpace,
             angle(f, getAngleAttribute(), spec.angle),
