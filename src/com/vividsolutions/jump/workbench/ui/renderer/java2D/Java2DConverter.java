@@ -164,6 +164,7 @@ public class Java2DConverter {
 		private int numPoints;
 		private Coordinate[] points;
 		private Java2DConverter j2D;
+        private boolean closed;
 		
 		public LineStringPath(LineString linestring, Java2DConverter j2D){
 			super(null, new GeometryFactory());
@@ -175,8 +176,12 @@ public class Java2DConverter {
 			catch (NoninvertibleTransformException ex){	}
 			this.numPoints = points.length; //linestring.getNumPoints();
 			iterate = 0;
+            closed = (numPoints>1) && (points[0].equals2D(points[numPoints-1]));
 		}
 		private int getSegType(){
+            // tip from Larry Becker for a better rendering 2007-07-13 [mmichaud]
+            if (closed && (iterate == numPoints-1))
+				return PathIterator.SEG_CLOSE;
 			return (iterate==0) ? PathIterator.SEG_MOVETO : PathIterator.SEG_LINETO;
 		}
 		public int currentSegment(double[] coords) {

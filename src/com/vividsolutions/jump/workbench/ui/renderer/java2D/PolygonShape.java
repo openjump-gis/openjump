@@ -87,6 +87,9 @@ public class PolygonShape implements Shape {
 			iterate = 0;
 		}
 		private int getSegType(){
+            // Tip from Larry Becker to have nice JOIN_BEVEL 2007-07-13 [mmichaud]
+            if (iterate == numPoints-1)
+				return PathIterator.SEG_CLOSE;
 			return (iterate==0) ? PathIterator.SEG_MOVETO : PathIterator.SEG_LINETO;
 		}
 		public int currentSegment(double[] coords) {
