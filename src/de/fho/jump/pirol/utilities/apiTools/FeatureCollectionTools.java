@@ -135,21 +135,29 @@ public class FeatureCollectionTools extends ToolToMakeYourLifeEasier {
     		
     		for (int attr=0; attr<clonedSchema.getAttributeCount(); attr++){
     			attrType = clonedSchema.getAttributeType(attr);
-    			
-    			if (attrType.equals(AttributeType.DOUBLE)){
-    				newFeat.setAttribute(attr, new Double(((Double)featuresToCopy[i].getAttribute(attr)).doubleValue()) );
-    			} else if (attrType.equals(AttributeType.INTEGER)){
-    				newFeat.setAttribute(attr, new Integer(((Integer)featuresToCopy[i].getAttribute(attr)).intValue()) );
-    			} else if (attrType.equals(AttributeType.STRING)){
-    				newFeat.setAttribute(attr, ((String)featuresToCopy[i].getAttribute(attr)).trim() );
-    			} else if (attrType.equals(AttributeType.GEOMETRY)){
-    				newFeat.setAttribute(attr, ((Geometry)featuresToCopy[i].getAttribute(attr)).clone() );
-    			} else if (attrType.equals(AttributeType.DATE)){
-    				newFeat.setAttribute(attr, ((Date)featuresToCopy[i].getAttribute(attr)).clone() );
-    			} else if (attrType.equals(AttributeType.OBJECT)){
-    				logger.printError("not implemented!");
-    				newFeat.setAttribute(attr, (featuresToCopy[i].getAttribute(attr)) );
-    			}
+    			/**
+			     * FIX for Null Values.
+			     * Added by mweller 24.07.2007
+			     */
+		      if(featuresToCopy[i].getAttribute(attr) != null){
+      			if (attrType.equals(AttributeType.DOUBLE)){
+      				newFeat.setAttribute(attr, new Double(((Double)featuresToCopy[i].getAttribute(attr)).doubleValue()) );
+      			} else if (attrType.equals(AttributeType.INTEGER)){
+      				newFeat.setAttribute(attr, new Integer(((Integer)featuresToCopy[i].getAttribute(attr)).intValue()) );
+      			} else if (attrType.equals(AttributeType.STRING)){
+      				newFeat.setAttribute(attr, ((String)featuresToCopy[i].getAttribute(attr)).trim() );
+      			} else if (attrType.equals(AttributeType.GEOMETRY)){
+      				newFeat.setAttribute(attr, ((Geometry)featuresToCopy[i].getAttribute(attr)).clone() );
+      			} else if (attrType.equals(AttributeType.DATE)){
+      				newFeat.setAttribute(attr, ((Date)featuresToCopy[i].getAttribute(attr)).clone() );
+      			} else if (attrType.equals(AttributeType.OBJECT)){
+      				logger.printError("not implemented!");
+      				newFeat.setAttribute(attr, (featuresToCopy[i].getAttribute(attr)) );
+      			}
+      		}
+      		else{
+      		  newFeat.setAttribute(attr, null );
+          }
     		}
     		
     		newFc.add(newFeat);
