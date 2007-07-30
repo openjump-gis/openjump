@@ -1,3 +1,13 @@
+2007-07-30 sstein <sstein@geo.unizh.ch>
+
+	* added fix by Malte to avoid null-pointer excpetion when making a copy of a 
+	  FeatureCollection containing Features with null values for attributes. 
+	  (see jpp-devel email send by sstein on 24.July.2007) 
+	
+	* replaced jmat_5.0.jar by the cleaned up version jmat_5.0m.jar wich does only
+	  contain the org.jmat packages. Additionally the start-up scripts (.sh, .bat) have 
+	  been updated 
+
 2007-07-13 mmichaud <michael.michaud@free.fr>
 
     * Bug fix in LabelStyle : added trim() to avoid labels to be ex-centered
