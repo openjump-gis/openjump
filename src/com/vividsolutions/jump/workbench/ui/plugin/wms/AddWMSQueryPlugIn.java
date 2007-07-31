@@ -51,7 +51,7 @@ import java.util.List;
 
 
 public class AddWMSQueryPlugIn extends AbstractPlugIn {
-    private String cachedURL = "http://demo.deegree.org:8080/deegree/wms";
+    private String cachedURL = "http://demo.deegree.org/deegree-wms/services";
     private String lastWMSVersion = WMService.WMS_1_1_1;
     public AddWMSQueryPlugIn() {
     }
