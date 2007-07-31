@@ -114,8 +114,6 @@ public class LayerStyle2SLDPlugIn extends AbstractPlugIn {
     
     private static final String UTF_8 = "UTF-8";
 
-    private static final String ISO_8859_1 = "ISO-8859-1";
-    
     private static String GEOM_PROPERTY = I18N.get("deejump.pluging.style.LayerStyle2SLDPlugIn.geomProperty"); 
 
     private static String SCALE_MIN = I18N.get("deejump.pluging.style.LayerStyle2SLDPlugIn.minScale"); 
@@ -291,7 +289,7 @@ public class LayerStyle2SLDPlugIn extends AbstractPlugIn {
         FileInputStream input = new FileInputStream( inputXML );
         
         //FileWriter fw = new FileWriter( outputXML );
-        OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream( outputXML ), ISO_8859_1);
+        OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream( outputXML ), UTF_8);
         
         HashMap map = new HashMap( 10 );
         map.put( WMS_LAYER_NAME, wmsLayerName );
@@ -337,7 +335,7 @@ public class LayerStyle2SLDPlugIn extends AbstractPlugIn {
         StringWriter sw = new StringWriter();
         StreamResult sr = new StreamResult( sw );
         
-        InputStreamReader isr = new InputStreamReader( layerXML, ISO_8859_1);
+        InputStreamReader isr = new InputStreamReader( layerXML, UTF_8);
         StreamSource streamSource = new StreamSource( isr );
 
         //if you don't clear the pars, xalan throws a nasty NPE
@@ -372,7 +370,7 @@ public class LayerStyle2SLDPlugIn extends AbstractPlugIn {
             URL xslUrl = LayerStyle2SLDPlugIn.class.getResource( "layerstyle2sld.xsl" );
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             
-            InputStreamReader isr = new InputStreamReader( xslUrl.openStream(), ISO_8859_1);
+            InputStreamReader isr = new InputStreamReader( xslUrl.openStream(), UTF_8);
             
             StreamSource streamSrc = new StreamSource( isr );
             

@@ -1,3 +1,9 @@
+2007-07-31 Andreas Schmitz <schmitz@lat-lon.de>
+    * src/de/latlon/deejump/plugin/style/LayerStyle2SLDPlugIn.java,
+			src/de/latlon/deejump/plugin/style/layerstyle2sld.xsl:
+			Default output is UTF-8 now instead of ISO-8859-1, fixing encoding problems in
+			resulting XML files.
+
 2007-07-30 sstein <sstein@geo.unizh.ch>
 
 	* added fix by Malte to avoid null-pointer excpetion when making a copy of a 

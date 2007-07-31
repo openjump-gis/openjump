@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<!--?xml version="1.0" encoding="UTF-8"?-->
+<?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:deegreewfs="http://www.deegree.org/wfs" xmlns:java="java" xmlns:xslutil="de.latlon.deejump.plugin.style.XSLUtility" xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" >
+
 	<xsl:param name="defaultFillColor" select="xslutil:toHexColor(/layer/styles/style[1]/fill/color)"/>
 	<xsl:param name="defaultStrokeColor" select="xslutil:toHexColor(/layer/styles/style[1]/line/color)"/>
 	<xsl:param name="defaultStrokeWidth" select="/layer/styles/style[1]/line/@width"/>
@@ -13,9 +13,19 @@
 	<xsl:param name="minScale">0</xsl:param>
 	<xsl:param name="maxScale">999999999999</xsl:param>
 
+	<xsl:output method="XML" encoding="UTF-8"/>
+
 	<xsl:template match="/">
-		<sld:StyledLayerDescriptor version="1.0.0" xmlns="http://www.opengis.net/sld" xmlns:sld="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:wfs="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:app="http://www.deegree.org/app" >
-			<xsl:apply-templates select="./layer"/>
+		<sld:StyledLayerDescriptor version="1.0.0"
+			xmlns="http://www.opengis.net/sld"
+			xmlns:sld="http://www.opengis.net/sld"
+			xmlns:gml="http://www.opengis.net/gml"
+			xmlns:wfs="http://www.opengis.net/wfs"
+			xmlns:ogc="http://www.opengis.net/ogc"
+			xmlns:xlink="http://www.w3.org/1999/xlink"
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xmlns:app="http://www.deegree.org/app">
+			<xsl:apply-templates select="./layer" />
 			<!-- sometimes it is "project" here -->
 		</sld:StyledLayerDescriptor>
 	</xsl:template>
