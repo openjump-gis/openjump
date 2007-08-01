@@ -36,6 +36,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.util.Iterator;
 import java.util.List;
+
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
@@ -48,7 +49,6 @@ import javax.swing.border.Border;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.ui.InputChangedListener;
-import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.TransparencyPanel;
 import com.vividsolutions.wms.WMService;
 
@@ -130,6 +130,13 @@ public class EditWMSQueryPanel extends JPanel {
     */
     private void updateComboBox() {
         String selectedSRS = (String) srsComboBox.getSelectedItem();
+        
+        // this method does get called many times when no SRS are available here
+        // this makes sure that the selected SRS stays selected when available
+        if(mapLayerPanel.commonSRSList().size() == 0) {
+            return;
+        }
+        
         comboBoxModel.removeAllElements();
 
         for (Iterator i = mapLayerPanel.commonSRSList().iterator(); i.hasNext();) {

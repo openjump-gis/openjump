@@ -31,6 +31,11 @@
  */
 package com.vividsolutions.jump.workbench.ui.plugin.wms;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.model.UndoableCommand;
@@ -40,21 +45,14 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
-
 import com.vividsolutions.wms.MapLayer;
 import com.vividsolutions.wms.WMService;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
 
 public class AddWMSQueryPlugIn extends AbstractPlugIn {
+    
     private String cachedURL = "http://demo.deegree.org/deegree-wms/services";
     private String lastWMSVersion = WMService.WMS_1_1_1;
-    public AddWMSQueryPlugIn() {
-    }
 
     private List toLayerNames(List mapLayers) {
         ArrayList names = new ArrayList();
@@ -86,7 +84,10 @@ public class AddWMSQueryPlugIn extends AbstractPlugIn {
             return false;
         }
 
-        final WMSLayer layer = new WMSLayer(context.getLayerManager(),
+        // title of the layer will be the title of the first WMS layer
+        String title = ((MapLayer)((List)d.getData(MapLayerWizardPanel.LAYERS_KEY)).get(0)).getTitle();
+        
+        final WMSLayer layer = new WMSLayer(title,context.getLayerManager(),
                 (WMService) d.getData(URLWizardPanel.SERVICE_KEY),
                 (String) d.getData(SRSWizardPanel.SRS_KEY),
                 toLayerNames((List) d.getData(MapLayerWizardPanel.LAYERS_KEY)),

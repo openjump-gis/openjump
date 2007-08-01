@@ -1,9 +1,15 @@
-<<<<<<< .mine
+2007-08-01 Andreas Schmitz <schmitz@lat-lon.de>
+		* src/com/vividsolutions/jump/workbench/model/WMSLayer.java,
+			src/com/vividsolutions/jump/workbench/ui/plugin/wms/EditWMSQueryPanel.java,
+			src/com/vividsolutions/jump/workbench/ui/plugin/wms/AddWMSQueryPlugIn.java:
+			WMS layers use the title now instead of the WMS layer name.
+			While editing WMS requests, moving layers up/down caused the SRS
+			box to switch back to the first available SRS, this was fixed.
+
 2007-07-31 sstein <sstein@geo.unizh.ch>
 
 	* updated from OpenJUMP 1.2 B to 1.2 C (in language files)
 
-=======
 2007-07-31 Andreas Schmitz <schmitz@lat-lon.de>
 		* src/com/vividsolutions/jump/workbench/ui/plugin/wms/AddWMSQueryPlugIn.java:
 		  Took the liberty and updated the demo.deegree.org URL to a working
@@ -15,7 +21,6 @@
 			Default output is UTF-8 now instead of ISO-8859-1, fixing encoding problems in
 			resulting XML files.
 
->>>>>>> .r906
 2007-07-30 sstein <sstein@geo.unizh.ch>
 
 	* added fix by Malte to avoid null-pointer excpetion when making a copy of a 

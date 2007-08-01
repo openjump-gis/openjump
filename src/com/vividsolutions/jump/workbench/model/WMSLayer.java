@@ -100,9 +100,14 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
 		this(layerManager, initializedService, srs, layerNames, format, initializedService.getVersion());
 	}
 
-	public WMSLayer(LayerManager layerManager, WMService initializedService,
+    public WMSLayer(String title, LayerManager layerManager, WMService initializedService,
+                    String srs, List layerNames, String format) throws IOException {
+        this(title, layerManager, initializedService, srs, layerNames, format, initializedService.getVersion());
+    }
+
+    public WMSLayer(String title, LayerManager layerManager, WMService initializedService,
 			String srs, List layerNames, String format, String version){
-	    super((String) layerNames.get(0), layerManager);
+	    super(title, layerManager);
 		setService(initializedService);
 		setSRS(srs);
 		this.layerNames = new ArrayList(layerNames);
@@ -110,6 +115,11 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
 		init();
 		this.wmsVersion = version;
 	}
+
+    public WMSLayer(LayerManager layerManager, WMService initializedService,
+                    String srs, List layerNames, String format, String version){
+        this((String) layerNames.get(0), layerManager, initializedService, srs, layerNames, format, version);
+    }
 
 	protected void init() {
 		getBlackboard().put(
