@@ -36,10 +36,6 @@ import com.vividsolutions.jump.workbench.ui.OKCancelPanel;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.WindowAdapter;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -47,6 +43,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import javax.swing.*;
+
+import org.openjump.core.CheckOS;
 
 /**
  * Contains the various DataSourceQueryChooser panels, regardless of whether
@@ -188,8 +186,16 @@ public class DataSourceQueryChooserDialog extends JDialog {
                 getCurrentChooser().isInputValid()) {
             setVisible(false);
         }
+        // sstein: added else-if to fix MAC-OSX-bug 
+        else if((okCancelPanel.wasOKPressed()) && (CheckOS.isMacOsx())) {
+        	//--sstein: leave out validation - because it returns always "false" on Mac-OSX ?
+        	//System.out.println("validate input:" + getCurrentChooser().isInputValid());
+        	//System.out.println("i am inside");
+        	okCancelPanel.setOKPressed(true);
+        	setVisible(false);
+        }
     }
-
+    
     public String getSelectedFormat() {
         return formatComboBox.getSelectedItem().toString();
     }
