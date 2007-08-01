@@ -1,3 +1,6 @@
+2007-08-01 sstein <sstein@geo.unizh.ch>
+		* resolved LoadDatasetPlugIn "ok" button problem on MacOSX. The problem was caused by the validation method that always returned false. The workaround does not use validation, but only for MacOSX computers. To the OS a new class was added. 
+
 2007-08-01 Andreas Schmitz <schmitz@lat-lon.de>
 		* src/com/vividsolutions/jump/workbench/model/WMSLayer.java,
 			src/com/vividsolutions/jump/workbench/ui/plugin/wms/EditWMSQueryPanel.java,
