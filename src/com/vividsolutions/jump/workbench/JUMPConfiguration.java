@@ -416,10 +416,10 @@ public class JUMPConfiguration implements Setup {
                 saveDatasetAsFilePlugIn, saveDatasetAsFilePlugIn.getName() + "...",
                 false, null, AbstractSaveDatasetAsPlugIn
                         .createEnableCheck(workbenchContext));*/
-        /*featureInstaller.addPopupMenuItem(layerNamePopupMenu,
+        featureInstaller.addPopupMenuItem(layerNamePopupMenu,
         		saveDatasetAsPlugIn, saveDatasetAsPlugIn.getName() + "...",
                 false, null, AbstractSaveDatasetAsPlugIn
-                        .createEnableCheck(workbenchContext));*/
+                        .createEnableCheck(workbenchContext));
 
         layerNamePopupMenu.addSeparator(); // ===================
         featureInstaller.addPopupMenuItem(layerNamePopupMenu, moveUpPlugIn,
