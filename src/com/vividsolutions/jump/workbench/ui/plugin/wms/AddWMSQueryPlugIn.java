@@ -43,6 +43,7 @@ import com.vividsolutions.jump.workbench.model.WMSLayer;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
 import com.vividsolutions.wms.MapLayer;
@@ -53,6 +54,8 @@ public class AddWMSQueryPlugIn extends AbstractPlugIn {
     
     private String cachedURL = "http://demo.deegree.org/deegree-wms/services";
     private String lastWMSVersion = WMService.WMS_1_1_1;
+    
+    private static final String CACHED_URL = "AddWMSQueryPlugin.CACHED_URL";
 
     private List toLayerNames(List mapLayers) {
         ArrayList names = new ArrayList();
@@ -66,6 +69,9 @@ public class AddWMSQueryPlugIn extends AbstractPlugIn {
 
     public boolean execute(final PlugInContext context)
         throws Exception {
+	String s = (String)PersistentBlackboardPlugIn.get(context.getWorkbenchContext()).get(CACHED_URL);
+	if(s != null) cachedURL = s;
+	
         reportNothingToUndoYet(context);
 
         WizardDialog d = new WizardDialog(context.getWorkbenchFrame(),
@@ -108,6 +114,8 @@ public class AddWMSQueryPlugIn extends AbstractPlugIn {
         cachedURL = (String) d.getData(URLWizardPanel.URL_KEY);
         lastWMSVersion = (String) d.getData( URLWizardPanel.VERSION_KEY );
 
+        PersistentBlackboardPlugIn.get(context.getWorkbenchContext()).put(CACHED_URL, cachedURL);
+        
         return true;
     }
 }

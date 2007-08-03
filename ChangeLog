@@ -1,3 +1,7 @@
+2007-08-03 Andreas Schmitz <schmitz@lat-lon.de>
+		* src/com/vividsolutions/jump/workbench/ui/plugin/wms/AddWMSQueryPlugIn.java:
+			The WMS field remembers the last used server address.
+
 2007-08-01 sstein <sstein@geo.unizh.ch>
 		* resolved LoadDatasetPlugIn "ok" button problem on MacOSX. The problem was caused by the validation method that always returned false. The workaround does not use validation, but only for MacOSX computers. To the OS a new class was added. 
 
