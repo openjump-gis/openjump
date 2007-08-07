@@ -37,6 +37,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.model.UndoableCommand;
 import com.vividsolutions.jump.workbench.model.WMSLayer;
@@ -102,7 +103,8 @@ public class AddWMSQueryPlugIn extends AbstractPlugIn {
                 public void execute() {
                     Collection selectedCategories = context.getLayerNamePanel()
                                                            .getSelectedCategories();
-                    context.getLayerManager().addLayerable(selectedCategories.isEmpty()
+                    LayerManager mgr = context.getLayerManager();
+                    mgr.addLayerable(selectedCategories.isEmpty()
                         ? StandardCategoryNames.WORKING
                         : selectedCategories.iterator().next().toString(), layer);
                 }

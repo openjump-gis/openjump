@@ -1,4 +1,13 @@
 2007-08-03 Andreas Schmitz <schmitz@lat-lon.de>
+		*  src/org/openjump/OpenJumpConfiguration.java,
+	     src/org/openjump/core/ui/plugin/layer/ToggleVisiblityPlugIn.java,
+       src/org/openjump/core/ui/plugin/layer/ChangeLayerableNamePlugIn.java,
+       src/com/vividsolutions/jump/workbench/ui/plugin/wms/AddWMSQueryPlugIn.java:
+			 Added context menu entry on layer list that allows changing the layer name.
+       Changed ToggleVisibilityPlugin to allow changing WMS layer visibility
+			 toggling.
+
+2007-08-03 Andreas Schmitz <schmitz@lat-lon.de>
 		* src/com/vividsolutions/jump/workbench/ui/plugin/wms/AddWMSQueryPlugIn.java:
 			The WMS field remembers the last used server address.
 

@@ -41,11 +41,10 @@ import java.util.Iterator;
 
 import javax.swing.JPopupMenu;
 
-import org.openjump.io.SIDLayer;
-
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
+import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
@@ -54,8 +53,8 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 public class ToggleVisiblityPlugIn extends AbstractPlugIn
 {   
-	final static String toggleVisibility =I18N.get("org.openjump.core.ui.plugin.layer.ToggleVisiblityPlugIn.Toggle-Visibility");
-	final static String errorSeeOutputWindow =I18N.get("org.openjump.core.ui.plugin.layer.ToggleVisiblityPlugIn.Error-See-Output-Window");
+	private final static String toggleVisibility =I18N.get("org.openjump.core.ui.plugin.layer.ToggleVisiblityPlugIn.Toggle-Visibility");
+	private final static String errorSeeOutputWindow =I18N.get("org.openjump.core.ui.plugin.layer.ToggleVisiblityPlugIn.Error-See-Output-Window");
 	
     public void initialize(PlugInContext context) throws Exception
     {
@@ -92,10 +91,10 @@ public class ToggleVisiblityPlugIn extends AbstractPlugIn
                 layer.setVisible(!layer.isVisible());
             }
             
-            Collection sidLayerCollection = (Collection) context.getWorkbenchContext().getLayerNamePanel().selectedNodes(SIDLayer.class);
+            Collection sidLayerCollection = (Collection) context.getWorkbenchContext().getLayerNamePanel().selectedNodes(Layerable.class);
             for (Iterator j = sidLayerCollection.iterator(); j.hasNext();)
             {
-                SIDLayer layer = (SIDLayer) j.next();
+                Layerable layer = (Layerable) j.next();
                 layer.setVisible(!layer.isVisible()); 
             }
             return true;
@@ -115,14 +114,14 @@ public class ToggleVisiblityPlugIn extends AbstractPlugIn
         return new MultiEnableCheck()
            .add(checkFactory.createWindowWithSelectionManagerMustBeActiveCheck())
            .add(checkFactory.createAtLeastNLayersMustBeSelectedCheck(1));
-    } 
+    }
     
     public static MultiEnableCheck createEnableCheck2(WorkbenchContext workbenchContext)
     {
         EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);        
         return new MultiEnableCheck()
            .add(checkFactory.createWindowWithSelectionManagerMustBeActiveCheck())
-           .add(checkFactory.createAtLeastNLayerablesMustBeSelectedCheck(1, SIDLayer.class));
-    }     
+           .add(checkFactory.createAtLeastNLayerablesMustBeSelectedCheck(1, Layerable.class));
+    }
 }
 

@@ -10,7 +10,6 @@
  */
 package org.openjump;
 
-import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 
 import org.openjump.core.ccordsys.srid.EnsureAllLayersHaveSRIDStylePlugIn;
@@ -30,6 +29,7 @@ import org.openjump.core.ui.plugin.edittoolbox.RotateSelectedItemPlugIn;
 import org.openjump.core.ui.plugin.edittoolbox.SelectOneItemPlugIn;
 import org.openjump.core.ui.plugin.file.SaveImageAsSVGPlugIn;
 import org.openjump.core.ui.plugin.layer.AddSIDLayerPlugIn;
+import org.openjump.core.ui.plugin.layer.ChangeLayerableNamePlugIn;
 import org.openjump.core.ui.plugin.layer.ChangeSRIDPlugIn;
 import org.openjump.core.ui.plugin.layer.ToggleVisiblityPlugIn;
 import org.openjump.core.ui.plugin.mousemenu.EditSelectedSidePlugIn;
@@ -54,18 +54,15 @@ import org.openjump.core.ui.plugin.view.ShowFullPathPlugIn;
 import org.openjump.core.ui.plugin.view.ShowScalePlugIn;
 import org.openjump.core.ui.plugin.view.ZoomToScalePlugIn;
 import org.openjump.core.ui.plugin.wms.ZoomToWMSPlugIn;
+import org.openjump.core.ui.style.decoration.ArrowLineStringMiddlepointStyle;
 import org.openjump.sigle.plugin.geoprocessing.layers.SpatialJoinPlugIn;
 import org.openjump.sigle.plugin.geoprocessing.oneLayer.topology.PlanarGraphPlugIn;
 import org.openjump.sigle.plugin.joinTable.JoinTablePlugIn;
 import org.openjump.sigle.plugin.replace.ReplaceValuePlugIn;
 
-import org.openjump.core.ui.style.decoration.ArrowLineStringMiddlepointStyle;
-
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
-import com.vividsolutions.jump.workbench.ui.MenuNames;
-import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.plugin.BeanShellPlugIn;
 
 import de.fho.jump.pirol.plugins.EditAttributeByFormula.EditAttributeByFormulaPlugIn;
@@ -299,7 +296,9 @@ public class OpenJumpConfiguration{
 		JoinTablePlugIn joinTablePlugIn = new JoinTablePlugIn();
 		joinTablePlugIn.initialize(new PlugInContext(workbenchContext, null, null, null, null));
 		
-		
+		ChangeLayerableNamePlugIn changeLayerableNamePlugIn = new ChangeLayerableNamePlugIn();
+		changeLayerableNamePlugIn.initialize(new PlugInContext(workbenchContext, null, null, null, null));
+
 		/***********************
 		 *  EDITing toolbox
 		 **********************/
