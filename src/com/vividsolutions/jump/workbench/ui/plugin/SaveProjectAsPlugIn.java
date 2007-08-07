@@ -56,7 +56,7 @@ public class SaveProjectAsPlugIn extends AbstractSaveProjectPlugIn {
         //        at javax.swing.JFileChooser.setup(JFileChooser.java:345)
         //        at javax.swing.JFileChooser.<init>(JFileChooser.java:320)
         //[Jon Aquino 2004-01-12]
-        fileChooser = GUIUtil.createJFileChooserWithOverwritePrompting();
+        fileChooser = GUIUtil.createJFileChooserWithOverwritePrompting("jmp");
         fileChooser.setDialogTitle(I18N.get("ui.plugin.SaveProjectAsPlugIn.save-project"));
         GUIUtil.removeChoosableFileFilters(fileChooser);
         fileChooser.addChoosableFileFilter(JUMP_PROJECT_FILE_FILTER);

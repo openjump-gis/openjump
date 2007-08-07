@@ -36,6 +36,7 @@ import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.FileUtil;
 import com.vividsolutions.jump.util.StringUtil;
+import com.vividsolutions.jump.workbench.datasource.FileDataSourceQueryChooser;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 import java.awt.*;
@@ -60,10 +61,6 @@ import java.util.List;
 
 import javax.swing.*;
 import javax.swing.event.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.InternalFrameEvent;
-import javax.swing.event.InternalFrameListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.plaf.basic.BasicComboBoxEditor;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -454,9 +451,26 @@ public class GUIUtil {
         return new FileChooserWithOverwritePrompting();
     }
 
+    public static JFileChooser createJFileChooserWithOverwritePrompting(String ext) {
+        return new FileChooserWithOverwritePrompting(ext);
+    }
+
     public static class FileChooserWithOverwritePrompting extends JFileChooser {
 
-        public void approveSelection() {
+	private String ext;
+	
+        /**
+	 * @param ext the default extension for files
+	 */
+	public FileChooserWithOverwritePrompting(String ext) {
+	    this.ext = ext;
+	}
+
+	public FileChooserWithOverwritePrompting() {
+	    // no extension set
+	}
+	
+	public void approveSelection() {
             if (selectedFiles(this).length != 1) {
                 return;
             }
@@ -467,7 +481,9 @@ public class GUIUtil {
                 return;
             }
 
-            if (selectedFile.exists()) {
+            if (selectedFile.exists() ||
+        	    (ext != null && (!selectedFile.toString().endsWith(ext)) &&
+        		    new File(selectedFile.toString() + "." + ext).exists())) {
                 int response = JOptionPane.showConfirmDialog(this, "The file "
                         + selectedFile.getName() + " already exists. Do you "
                         + "want to replace the existing file?", "JUMP",

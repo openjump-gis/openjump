@@ -19,6 +19,7 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.ThreadedPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.renderer.LayerRenderer;
@@ -63,7 +64,7 @@ public class SaveImageAsSVGPlugIn extends AbstractPlugIn implements ThreadedPlug
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {
-		JFileChooser fc = new JFileChooser();
+		JFileChooser fc = GUIUtil.createJFileChooserWithOverwritePrompting("svg");
 		// Show save dialog; this method does not return until the dialog is closed
 		fc.showSaveDialog(context.getWorkbenchFrame());
 		File file = fc.getSelectedFile();
