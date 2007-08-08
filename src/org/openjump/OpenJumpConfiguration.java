@@ -62,6 +62,7 @@ import org.openjump.sigle.plugin.replace.ReplaceValuePlugIn;
 
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.EditTransaction;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.plugin.BeanShellPlugIn;
 
@@ -350,6 +351,12 @@ public class OpenJumpConfiguration{
 		 ***********************/
 		
 		workbenchContext.getWorkbench().getFrame().addChoosableStyleClass(ArrowLineStringMiddlepointStyle.NarrowSolidMiddle.class);
+		
+		/***********************
+		 *  Set Defaults
+		 ***********************/
+		//-- disable drawing of invalid polygons by default (can be changed during work in EditOptionsPanel)
+		workbenchContext.getBlackboard().put(EditTransaction.ROLLING_BACK_INVALID_EDITS_KEY, true);
 		
 		/***********************
 		 *  testing
