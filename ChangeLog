@@ -1,3 +1,9 @@
+2007-08-01 sstein <sstein@geo.unizh.ch>
+		src/org/openjump/OpenJumpConfiguration.java
+		* set EditTransaction.ROLLING_BACK_INVALID_EDITS_KEY = true when starting up 
+		OJUMP (i.e. invalid geometries are not alowed per default, switch can be 
+		done in Edit Options Panel)
+
 2007-08-03 Andreas Schmitz <schmitz@lat-lon.de>
         src/org/openjump/core/ui/plugin/file/SaveImageAsSVGPlugIn.java,
         src/com/vividsolutions/jump/workbench/ui/plugin/SaveProjectAsPlugIn.java,
@@ -22,7 +28,10 @@
         The WMS field remembers the last used server address.
 
 2007-08-01 sstein <sstein@geo.unizh.ch>
-                * resolved LoadDatasetPlugIn "ok" button problem on MacOSX. The problem was caused by the validation method that always returned false. The workaround does not use validation, but only for MacOSX computers. To the OS a new class was added.
+		* resolved LoadDatasetPlugIn "ok" button problem on MacOSX. 
+		The problem was caused by the validation method that always 
+		returned false. The workaround does not use validation, but 
+		only for MacOSX computers. To check the OS a new class was added.
 
 2007-08-01 Andreas Schmitz <schmitz@lat-lon.de>
         * src/com/vividsolutions/jump/workbench/model/WMSLayer.java,
