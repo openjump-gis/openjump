@@ -1,4 +1,8 @@
-2007-08-01 sstein <sstein@geo.unizh.ch>
+2007-08-09 sstein <sstein@geo.unizh.ch>
+		removed openjump-mac.sh file since the new openjump.sh 
+		file works under MAC-OSX as well 
+
+2007-08-08 sstein <sstein@geo.unizh.ch>
 		src/org/openjump/OpenJumpConfiguration.java
 		* set EditTransaction.ROLLING_BACK_INVALID_EDITS_KEY = true when starting up 
 		OJUMP (i.e. invalid geometries are not alowed per default, switch can be 
