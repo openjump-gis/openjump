@@ -42,14 +42,15 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.Map;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 import com.vividsolutions.jump.I18N;
@@ -69,19 +70,20 @@ public class URLWizardPanel extends JPanel implements WizardPanel {
     private Map dataMap;
     private GridBagLayout gridBagLayout1 = new GridBagLayout();
     private JLabel urlLabel = new JLabel();
-    private JTextField urlTextField = new JTextField();
+    private JComboBox urls;
     private JPanel fillerPanel = new JPanel();
 //  [UT]
     public static final String VERSION_KEY = "WMS_VERSION";
     private String wmsVersion = WMService.WMS_1_1_1;
     private boolean lossyPreferred = true;
     
-    public URLWizardPanel(String initialURL, String wmsVersion) {
+    public URLWizardPanel(String[] initialURLs, String wmsVersion) {
         try {
             this.wmsVersion = wmsVersion;
+            urls = new JComboBox(initialURLs);
+            urls.setEditable(true);
+            urls.getEditor().selectAll();
             jbInit();
-            urlTextField.setFont(new JLabel().getFont());
-            urlTextField.setText(initialURL);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -98,13 +100,11 @@ public class URLWizardPanel extends JPanel implements WizardPanel {
     void jbInit() throws Exception {
         urlLabel.setText("URL:");
         this.setLayout(gridBagLayout1);
-        urlTextField.setPreferredSize(new Dimension(300, 21));
-        urlTextField.setText("http://");
-        urlTextField.setCaretPosition(urlTextField.getText().length());
+        urls.setPreferredSize(new Dimension(300, 21));
         urlLabel.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 if (SwingUtilities.isRightMouseButton(e) && e.getClickCount() == 3) {
-                    urlTextField.setText("http://libcwms.gov.bc.ca/wmsconnector/com.esri.wsit.WMSServlet/ogc_layer_service");
+                    urls.setSelectedItem("http://libcwms.gov.bc.ca/wmsconnector/com.esri.wsit.WMSServlet/ogc_layer_service");
                 }
                 super.mouseClicked(e);
             }
@@ -113,7 +113,7 @@ public class URLWizardPanel extends JPanel implements WizardPanel {
             new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE,
                 new Insets(0, 0, 0, 4), 0, 0));
-        this.add(urlTextField,
+        this.add(urls,
             new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
                 new Insets(0, 0, 0, 4), 0, 0));
@@ -167,11 +167,21 @@ public class URLWizardPanel extends JPanel implements WizardPanel {
 
 
     public void exitingToRight() throws IOException, WorkbenchException {
-        dataMap.put(URL_KEY, urlTextField.getText());
+	LinkedList<String> list = new LinkedList<String>();
+	String url = urls.getSelectedIndex() == -1 ? urls.getEditor().getItem().toString() :
+	    urls.getItemAt(urls.getSelectedIndex()).toString();
+		
+	list.add(url);
+	
+	for(int i = 0; i < urls.getItemCount(); ++i)
+	    if(i != urls.getSelectedIndex())
+		list.add(urls.getItemAt(i).toString());
+	
+        dataMap.put(URL_KEY, list.toArray(new String[list.size()]));
 //      [UT]
         //String ver = (String)dataMap.get(VERSION_KEY);
         
-        String url = fixUrlForWMService( urlTextField.getText() );
+        url = fixUrlForWMService(url);
         //[UT] 20.04.2005 
         WMService service = new WMService( url, wmsVersion );
         //WMService service = new WMService( url );
@@ -199,8 +209,7 @@ public class URLWizardPanel extends JPanel implements WizardPanel {
 
     public void enteredFromLeft(Map dataMap) {
         this.dataMap = dataMap;
-        urlTextField.setCaretPosition(0);
-        urlTextField.moveCaretPosition(urlTextField.getText().length());
+        urls.getEditor().selectAll();
     }
 
     public String getTitle() {

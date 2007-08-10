@@ -53,15 +53,19 @@ import com.vividsolutions.wms.WMService;
 
 public class AddWMSQueryPlugIn extends AbstractPlugIn {
     
-    private String cachedURL = "http://demo.deegree.org/deegree-wms/services";
+    private String[] cachedURLs;
     private String lastWMSVersion = WMService.WMS_1_1_1;
     
     private static final String CACHED_URL = "AddWMSQueryPlugin.CACHED_URL";
 
-    private List toLayerNames(List mapLayers) {
-        ArrayList names = new ArrayList();
-        for (Iterator i = mapLayers.iterator(); i.hasNext();) {
-            MapLayer layer = (MapLayer) i.next();
+    public AddWMSQueryPlugIn() {
+	cachedURLs = new String[]{"http://demo.deegree.org/deegree-wms/services"};
+    }
+    
+    private List<String> toLayerNames(List<MapLayer> mapLayers) {
+        ArrayList<String> names = new ArrayList<String>();
+        for (Iterator<MapLayer> i = mapLayers.iterator(); i.hasNext();) {
+            MapLayer layer = i.next();
             names.add(layer.getName());
         }
 
@@ -71,7 +75,7 @@ public class AddWMSQueryPlugIn extends AbstractPlugIn {
     public boolean execute(final PlugInContext context)
         throws Exception {
 	String s = (String)PersistentBlackboardPlugIn.get(context.getWorkbenchContext()).get(CACHED_URL);
-	if(s != null) cachedURL = s;
+	if(s != null) cachedURLs = s.split(",");
 	
         reportNothingToUndoYet(context);
 
@@ -79,7 +83,7 @@ public class AddWMSQueryPlugIn extends AbstractPlugIn {
         		I18N.get("ui.plugin.wms.AddWMSQueryPlugIn.connect-to-web-map-server"), context.getErrorHandler());
 
         d.init(new WizardPanel[] {
-                new URLWizardPanel(cachedURL, lastWMSVersion), new MapLayerWizardPanel(),
+                new URLWizardPanel(cachedURLs, lastWMSVersion), new MapLayerWizardPanel(),
                 new SRSWizardPanel(), new OneSRSWizardPanel()
             });
 
@@ -113,10 +117,15 @@ public class AddWMSQueryPlugIn extends AbstractPlugIn {
                     context.getLayerManager().remove(layer);
                 }
             }, context);
-        cachedURL = (String) d.getData(URLWizardPanel.URL_KEY);
+        cachedURLs = (String[]) d.getData(URLWizardPanel.URL_KEY);
         lastWMSVersion = (String) d.getData( URLWizardPanel.VERSION_KEY );
 
-        PersistentBlackboardPlugIn.get(context.getWorkbenchContext()).put(CACHED_URL, cachedURL);
+        StringBuilder urls = new StringBuilder();
+        for(int i = 0; i < cachedURLs.length; ++i)
+            if(i == cachedURLs.length-1) urls.append(cachedURLs[i]);
+            else urls.append(cachedURLs[i]).append(",");
+        
+        PersistentBlackboardPlugIn.get(context.getWorkbenchContext()).put(CACHED_URL, urls.toString());
         
         return true;
     }
