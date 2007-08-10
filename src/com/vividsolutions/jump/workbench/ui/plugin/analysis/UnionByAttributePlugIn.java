@@ -302,7 +302,7 @@ public class UnionByAttributePlugIn extends AbstractPlugIn implements ThreadedPl
         }
         else if (lineStringsUnion.isEmpty()) {
             if (pointsUnion.isEmpty()) union = polygonsUnion;
-            else union = union = polygonsUnion.union(pointsUnion);
+            else union = polygonsUnion.union(pointsUnion);
         }
         else {
             if (pointsUnion.isEmpty()) union = polygonsUnion.union(lineStringsUnion);
