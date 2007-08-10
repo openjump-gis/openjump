@@ -37,12 +37,17 @@ import com.vividsolutions.jump.I18N;
 
 /**
  * QueryDialog
- * @author Michaël MICHAUD
+ * @author Michael MICHAUD
  * version 0.1.0 (4 Dec 2004)
  * version 0.1.1 (15 Jan 2005)
  * version 0.2 (16 Oct 2005)
+ * version 0.2.1 (10 aug 2007)
  */ 
 public class QueryDialog extends BDialog {
+    
+    public static final int ALL_LAYERS = 0;
+    public static final int SELECTION = 1;
+    public static final int SELECTED_LAYERS = 2;
     
     private PlugInContext context;
     
@@ -68,7 +73,7 @@ public class QueryDialog extends BDialog {
     
     // if mmpatch is used (mmpatch gives more attribute types), mmaptch must
     // be set to true
-    boolean mmpatch = false; 
+    // boolean mmpatch = false; 
     
     // selected features initialized in execute query if "select" option is true
     Collection selection; 
@@ -121,12 +126,12 @@ public class QueryDialog extends BDialog {
     public QueryDialog(PlugInContext context) {
     	component = super.createComponent(context.getWorkbenchFrame(), "", false);
         //component = createComponent(context.getWorkbenchFrame(), "", false);
-        initInternal();
-        BDialog dialog = new BDialog();
+        //initInternal();
+        //BDialog dialog = new BDialog();
         addEventLink(WindowClosingEvent.class, this, "exit");
-        if (AttributeType.allTypes().size()>6) {
-            mmpatch = true;
-        }
+        //if (AttributeType.allTypes().size()>6) {
+        //    mmpatch = true;
+        //}
         this.context = context;
         setTitle(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.query-builder"));
         initUI();
@@ -137,7 +142,7 @@ public class QueryDialog extends BDialog {
    * Copied from BDialog because it is declared as a private method.
    * (the method is called in QueryDialog constructor)
    */
-   private void initInternal() {
+   /*private void initInternal() {
        component.addComponentListener(new ComponentAdapter() {
            public void componentResized(ComponentEvent ev) {
                if (lastSize == null || !lastSize.equals(component.getSize())) {
@@ -150,7 +155,7 @@ public class QueryDialog extends BDialog {
            }
        });
        ((JDialog) component).setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-   }
+   }*/
 
 
    /**
@@ -386,17 +391,17 @@ public class QueryDialog extends BDialog {
         layers.clear();
         attributes.clear();
         // index 0 ==> all the layers
-        if (layerCB.getSelectedIndex()==0) {
+        if (layerCB.getSelectedIndex() == ALL_LAYERS) {
             layers.addAll(context.getLayerManager().getLayers());
         }
         // index 1 ==> all the selected features
-        else if (layerCB.getSelectedIndex()==1) {
+        else if (layerCB.getSelectedIndex() == SELECTION) {
             layers.addAll(context.getLayerViewPanel()
                                  .getSelectionManager()
                                  .getLayersWithSelectedItems());
         }
         // index 2 ==> all the selected layers
-        else if (layerCB.getSelectedIndex()==2) {
+        else if (layerCB.getSelectedIndex() == SELECTED_LAYERS) {
             Layer[] ll = context.getLayerNamePanel().getSelectedLayers();
             layers.addAll(Arrays.asList(ll));
         }
@@ -476,14 +481,14 @@ public class QueryDialog extends BDialog {
         String attType = att.substring(att.lastIndexOf('(')+1,
                                        att.lastIndexOf(')'));
         char newat = 'S';
-        if (mmpatch && attType.equals("BOOLEAN")) newat = 'B';
-        else if (attType.equals("INTEGER")) newat = 'N';
-        else if (mmpatch && attType.equals("LONG")) newat = 'N';
+        //if (mmpatch && attType.equals("BOOLEAN")) newat = 'B';
+        if (attType.equals("INTEGER")) newat = 'N';
+        //else if (mmpatch && attType.equals("LONG")) newat = 'N';
         else if (attType.equals("DOUBLE")) newat = 'N';
-        else if (mmpatch && attType.equals("DECIMAL")) newat = 'N';
+        //else if (mmpatch && attType.equals("DECIMAL")) newat = 'N';
         else if (attType.equals("STRING")) newat = 'S';
-        else if (mmpatch && attType.equals("CHAR")) newat = 'S';
-        else if (mmpatch && attType.equals("ENUM")) newat = 'E';
+        //else if (mmpatch && attType.equals("CHAR")) newat = 'S';
+        //else if (mmpatch && attType.equals("ENUM")) newat = 'E';
         else if (attType.equals("GEOMETRY")) newat = 'G';
         else;
         // No type change
@@ -812,7 +817,7 @@ public class QueryDialog extends BDialog {
         
                 int total = 0; // total number of objects to scan
                 int featuresfound = 0;
-                if (layerCB.getSelectedIndex()==1) {
+                if (layerCB.getSelectedIndex() == SELECTION) {
                     for (Iterator it = selectedFeatures.getLayersWithSelectedItems().iterator() ; it.hasNext() ; ) {
                         Layer layer = (Layer)it.next();
                         srcFeaturesMap.put(layer, selectedFeatures.getFeaturesWithSelectedItems(layer));
@@ -826,7 +831,8 @@ public class QueryDialog extends BDialog {
                 }
                 
                 // Set the selection used as target for geometric operations
-                if (operator.type=='G' && valueCB.getSelectedIndex()==0) {
+                // Bug fixed on 2007-08-10 : selection has index 1 (SELECTION), not 0
+                if (operator.type=='G' && valueCB.getSelectedIndex() == SELECTION) {
                     selection = context.getLayerViewPanel().getSelectionManager().getSelectedItems();
                 }
                 

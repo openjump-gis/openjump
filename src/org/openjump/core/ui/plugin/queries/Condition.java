@@ -16,8 +16,9 @@ import buoy.widget.BComboBox;
 
 /**
  * Condition
- * @author Michaël MICHAUD
+ * @author Michael MICHAUD
  * @version 0.2 (16 Oct 2005)
+ * version 0.2.1 (10 aug 2007)
  */ 
 public class Condition  {
     QueryDialog query;
@@ -50,7 +51,7 @@ public class Condition  {
         Object o = null;
         //System.out.print("Nature de l'attribut : ");
         if(query.attributeType=='G') {
-            //System.out.println(" géométrique");
+            //System.out.println(" geometrique");
             //System.out.println("Operator = " + op);
             o = feature.getGeometry();
             if(ft.type=='G') return test(gfunction((Geometry)o));
@@ -59,7 +60,7 @@ public class Condition  {
             else return false;
         }
         else {
-            // System.out.println(" sémantique");
+            // System.out.println(" semantique");
             // attributes which does not exist for this feature must have
             // been eliminated before the test procedure
             // (see QueryDialog#executeQuery())
@@ -122,8 +123,9 @@ public class Condition  {
     private boolean test(Geometry g) throws Exception {
         int pos = query.valueCB.getSelectedIndex();
         // Target Geometry is the selection
-        // System.out.println("position de la valeur sélectionnée : " + pos);
-        if (pos==0) {
+        // System.out.println("position de la valeur selectionnee : " + pos);
+        // pos 1 = selected features case
+        if (pos == QueryDialog.SELECTION) {
             for (Iterator it = query.selection.iterator() ; it.hasNext() ;) {
                 Geometry p = (Geometry)it.next();
                 if (op==Operator.INTER && g.intersects(p)) return true;
@@ -138,7 +140,8 @@ public class Condition  {
             }
             return false;
         }
-        else if (pos==1) {
+        // pos 2 = selected layers case
+        else if (pos == QueryDialog.SELECTED_LAYERS) {
             Layer[] ll = context.getLayerNamePanel().getSelectedLayers();
             for (int i = 0 ; i < ll.length ; i++) {
                 FeatureCollection fc = ll[i].getFeatureCollectionWrapper();
@@ -157,7 +160,8 @@ public class Condition  {
                 return false;
             }
         }
-        else if (pos==2) {
+        // pos 0 = all layers case
+        else if (pos == QueryDialog.ALL_LAYERS) {
             List ll = context.getLayerManager().getLayers();
             for (int i = 0 ; i < ll.size() ; i++) {
                 FeatureCollection fc = ((Layer)ll.get(i)).getFeatureCollectionWrapper();
