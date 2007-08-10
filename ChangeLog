@@ -1,3 +1,8 @@
+2007-08-09 sstein <sstein@geo.unizh.ch>
+		src/com/vividsolutions/jump/io/ShapefileWriter
+		* added that an Exception is thrown, when layer geometries are of different type. 
+		Data aren't saved then. (otherwise the user wonders when only polygons are stored)
+
 2007-08-10 Andreas Schmitz <schmitz@lat-lon.de>
         src/com/vividsolutions/jump/workbench/ui/plugin/wms/URLWizardPanel.java,
         src/com/vividsolutions/jump/workbench/ui/plugin/wms/AddWMSQueryPlugIn.java:
