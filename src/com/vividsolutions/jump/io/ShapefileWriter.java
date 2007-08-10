@@ -247,7 +247,24 @@ public class ShapefileWriter implements JUMPWriter {
         int loc;
 
         GeometryCollection gc;
-
+        
+        //-- sstein: check first if features are of different geometry type.
+        int i= 0;
+        Class firstClass = null;
+        for (Iterator iter = featureCollection.iterator(); iter.hasNext();) {
+			Feature myf = (Feature) iter.next();
+			if (i==0){
+				firstClass = myf.getGeometry().getClass();
+			}
+			else{
+				if (firstClass != myf.getGeometry().getClass()){
+			           throw new IllegalParametersException(
+			            "mixed geometry types found, please separate Polygons from Lines and Points when saving to *.shp");
+				}
+			}
+			i++;
+        }
+        
         shpfileName = dp.getProperty(FILE_PROPERTY_KEY);
 
         if (shpfileName == null) {
