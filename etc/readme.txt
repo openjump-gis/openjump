@@ -1,7 +1,8 @@
 OpenJUMP readme file
 --------------------
-Version 1.00
-November 23rd, 2006
+Version 1.2 C (pre-release)
+
+August 11th, 2007
 
 Contents
 --------
@@ -35,10 +36,10 @@ c:/OpenJUMP/lib
 3. Running OpenJUMP
 -------------------
 Run the startup scripts contained in the /bin folder:
-- For windows, double-click on "JUMPWorkbench.bat"
-- For Linux/Unix, launch JUMPWorkbench-unix.sh
-- For Mac, launch JUMPWorkbench-mac.sh
-- an improved script for unix exists: JUMPWorkbench-unix2.sh
+- For windows, double-click on "openjump.bat"
+- For Linux/Unix, launch openjump-unix.sh or openjump.sh
+- For Mac, launch openjump.sh
+- an improved script for unix exists: openjump-unix2.sh
 
 Further notes can be found on our wiki: www.openjump.org
 
@@ -91,7 +92,7 @@ features of JUMP. They launched an independent development branch called OpenJUM
 This name gives credit to the original JUMP development, and at the same time 
 describes the particularity of this project to be fully open to anyone wanting
 to contribute.
-Since May 2005 a complete development environment is available at:
+Since May 2005 a complete development source is available at:
 www.sourceforge.net/projects/jump-pilot
 And a website for OpenJUMP is under construction at: www.openjump.org
 
@@ -112,14 +113,20 @@ OpenJUMP regular (*and past) contributors are (non exaustive list!):
 - Michael Michaud,
 - Stefan Steiniger,
 - Ugo Taddei, 
-- Steve Tanner,
 - Uwe Dallüge,
+- Andreas Schmitz
+- Stephan Holl
+- Paul Austin
+- Martin Davis
+- Sascha Teichmann
 
 * past contributors
 - Axel Orth*,
 - Ole Rahn*,
 - Basile Chandesris*,
 - Ezequias Rodrigues da Rocha*,
+- Steve Tanner*,
+
 
 Projects and Companies
 - Larry Becker and Robert Littlefield (SkyJUMP team)
