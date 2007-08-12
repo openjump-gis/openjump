@@ -20,6 +20,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.IntersectionMatrix;
 import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
 import com.vividsolutions.jts.operation.linemerge.LineMerger;
 import com.vividsolutions.jts.operation.polygonize.Polygonizer;
@@ -68,6 +69,8 @@ public class PlanarGraphPlugIn extends ThreadedBasePlugIn {
     public final static String CALCULATE_FACES     = I18N.get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Calculate-faces");
     public final static String CALCULATE_RELATIONS = I18N.get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Calculate-the-relations-arcs-nodes-and-/or-arcs-faces");
     public final static String KEEP_ATTRIBUTES     = I18N.get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Keep-attributes");
+    
+    public final static Integer MINUS_ONE          = new Integer(-1);
     
     GeometryFactory gf = new GeometryFactory();
     
@@ -148,7 +151,7 @@ public class PlanarGraphPlugIn extends ThreadedBasePlugIn {
             if (attributesb) {
                 // Use mapping to get the attributes
                 mapping = new AttributeMapping(new FeatureSchema(), new FeatureSchema());
-                List aFeatures = null;
+                List aFeatures = new ArrayList();
                 monitor.report(I18N.get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Transfer-of-attributes"));
                 if (FeatureCollectionUtil.getFeatureCollectionDimension(fcSource)==2){
                     mapping = new AttributeMapping(fcSource.getFeatureSchema(), fcFace.getFeatureSchema());
@@ -157,6 +160,9 @@ public class PlanarGraphPlugIn extends ThreadedBasePlugIn {
                 else if (FeatureCollectionUtil.getFeatureCollectionDimension(fcSource)==1) {
                     mapping = new AttributeMapping(fcSource.getFeatureSchema(), fcFace.getFeatureSchema());
                     aFeatures = fcEdge.getFeatures();
+                }
+                else {context.getWorkbenchFrame().warnUser(
+                    I18N.get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Cannot-transfer-attributes"));
                 }
                         
                 FeatureDataset fcRecup = new FeatureDataset(mapping.createSchema("GEOMETRY"));
@@ -183,8 +189,10 @@ public class PlanarGraphPlugIn extends ThreadedBasePlugIn {
                     // Resulting geometry is cloned
                     feature.setGeometry((Geometry) aFeature.getGeometry().clone()); 
                     fcRecup.add(feature);
-                }                           
-                context.getLayerManager().addLayer(CATEGORY, layerName + "_" + MAPPING, fcRecup);
+                }
+                if (fcRecup.size() > 0) {
+                    context.getLayerManager().addLayer(CATEGORY, layerName + "_" + MAPPING, fcRecup);
+                }
             }
             else {
                 // Michael Michaud : Debug : gcFace is not in this else statement
@@ -351,7 +359,9 @@ public class PlanarGraphPlugIn extends ThreadedBasePlugIn {
         int no = 0;
         for (Iterator it = polygonizer.getPolygons().iterator() ; it.hasNext() ;) {
             Feature f = new BasicFeature(fsFace);
-            f.setGeometry((Geometry)it.next());
+            Geometry face = (Geometry)it.next();
+            face.normalize();    // add on 2007-08-11
+            f.setGeometry(face);
             f.setAttribute("ID", new Integer(++no));
             //System.out.println(this.sFace + ": " + f.getID() + " : " + f.getAttribute("ID"));
             fcFace.add(f);
@@ -364,12 +374,14 @@ public class PlanarGraphPlugIn extends ThreadedBasePlugIn {
             for (Iterator it = fcEdge.getFeatures().iterator() ; it.hasNext() ; ) {
                 Feature edge = (Feature)it.next();
                 // Fix added on 2007-07-09 [mmichaud]
-                edge.setAttribute(RIGHT_FACE, new Integer(-1));
-                edge.setAttribute(LEFT_FACE, new Integer(-1));
+                edge.setAttribute(RIGHT_FACE, MINUS_ONE);
+                edge.setAttribute(LEFT_FACE, MINUS_ONE);
                 Geometry g1 = edge.getGeometry();
                 List list = fcFace.query(g1.getEnvelopeInternal());
                 for (int i = 0 ; i < list.size() ; i++) {
                     Feature face = (Feature)list.get(i);
+                    labelEdge(edge, face);
+                    /*
                     Geometry g2 = face.getGeometry();
                     Geometry inters = g2.intersection(g1);
                     // Michael Michaud : added on 2006-05-01
@@ -377,28 +389,53 @@ public class PlanarGraphPlugIn extends ThreadedBasePlugIn {
                     if (inters.isEmpty()) continue;
                     else if (inters.getLength()>0) {
                         Integer idValue = (Integer) face.getAttribute("ID");
-                        if (!idValue.equals("")) {
+                        if (!idValue.equals(MINUS_ONE)) {
                             if (inters.getCoordinates()[0].equals(g1.getCoordinates()[0])) {
                                 edge.setAttribute(RIGHT_FACE, face.getAttribute("ID"));
                             }
                             else {edge.setAttribute(LEFT_FACE, face.getAttribute("ID"));}
                         }
                     }
-                    // Remove this buggy code on 2007-07-09 [mmichaud]
-                    /*
-                    else {
-                        if (inters.getCoordinates()[0].equals(g1.getCoordinates()[0])) {
-                            edge.setAttribute(RIGHT_FACE, new Integer(-1));
-                        }
-                        else {edge.setAttribute(LEFT_FACE, new Integer(-1));}
-                    }  
                     */
                 }
             }
         }
         return fcFace;
     }
-     
+    
+    private void labelEdge(Feature edge, Feature face) {
+        IntersectionMatrix im = edge.getGeometry().relate(face.getGeometry());
+        // intersection between boundaries has dimension 1
+        if (im.matches("*1*******")) {
+            int edgeC0 = getIndex(edge.getGeometry().getCoordinates()[0], face.getGeometry());
+            int edgeC1 = getIndex(edge.getGeometry().getCoordinates()[1], face.getGeometry());
+            // The Math.abs(edgeC1-edgeC0) test inverse the rule when the two consecutive
+            // points are the last point and the first point of a ring...
+            if ((edgeC1 > edgeC0 && Math.abs(edgeC1-edgeC0) == 1) ||
+                (edgeC1 < edgeC0 && Math.abs(edgeC1-edgeC0) > 1)) {
+                edge.setAttribute(RIGHT_FACE, face.getAttribute("ID"));
+            }
+            else edge.setAttribute(LEFT_FACE, face.getAttribute("ID"));
+        }
+        // intersection between the line and the polygon interior has dimension 1
+        else if (im.matches("1********")) {
+            edge.setAttribute(RIGHT_FACE, face.getAttribute("ID"));
+            edge.setAttribute(LEFT_FACE, face.getAttribute("ID"));
+        }
+        // intersection between the line and the polygon exterior has dimension 1
+        //else if (im.matches("F********")) {}
+        else;
+    }
+    
+    // Returns the index of c in the geometry g or -1 if c is not a vertex of g
+    private int getIndex(Coordinate c, Geometry g) {
+        Coordinate[] cc = g.getCoordinates();
+        for (int i = 0 ; i < cc.length ; i++) {
+            if (cc[i].equals(c)) return i;
+        }
+        return -1;
+    }
+    
 }
 
 
