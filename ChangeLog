@@ -1,3 +1,17 @@
+2007-08-12 mmichaud <michael.michaud@free.fr>
+
+        * org.openjump.sigle.plugin.geoprocessing.oneLayer.topology.PlanarGraphPlugIn
+          Fixed a bug (submitted by Hisaji Ono) where some edges had
+          wrong links to faces. The method has been entirely rewritten.
+
+        * added a warning message in language files to manage the case where
+          one tries to transfer attributes from an heterogeneous layer with
+          PlanarGraphPlugIn
+
+2007-08-11 sstein <sstein@geo.unizh.ch>
+
+        * OpenJUMP 1.2 C release
+
 2007-08-10 mmichaud <michael.michaud@free.fr>
 
         * org.openjump.core.ui.plugin.queries.QueryDialog
@@ -85,10 +99,6 @@
           Took the liberty and updated the demo.deegree.org URL to a working
           value.
 
-        * src/com/vividsolutions/jump/workbench/ui/plugin/wms/AddWMSQueryPlugIn.java:
-          Took the liberty and updated the demo.deegree.org URL to a working
-          value.
-
 2007-07-31 Andreas Schmitz <schmitz@lat-lon.de>
 
         * src/de/latlon/deejump/plugin/style/LayerStyle2SLDPlugIn.java,
@@ -108,9 +118,9 @@
 
 2007-07-13 mmichaud <michael.michaud@free.fr>
 
-        * Bug fix in LabelStyle : added trim() to avoid labels to be ex-centered
+        * Fixed a bug in LabelStyle : added trim() to avoid labels to be ex-centered
 
-        * Bug fix : thick closed lines (and polygons) did not have a nice
+        * Fixed a bug where thick closed lines (and polygons) did not have a nice
           join_bevel on the first/last point (tip from Larry Becker)
 
 2007-07-11 Paul Austin <paul.austin@revolsys.com>
@@ -124,9 +134,6 @@
 
         * scripts/openjump.sh: Added improved startup script for Unix from
 	      Paul Austin.
-
-        * scripts/openjump.sh: Added improved startup script for Unix from
-          Paul Austin.
 
 2007-07-08 mmichaud <michael.michaud@free.fr>
 
@@ -159,7 +166,7 @@
           I forgot to set back the closeable property to true. Done.
 
         * src/com/vividsolutions/jump/workbench/ui/plugin/analysis/UnionPlugIn.java
-          Fix a bug in the Comparator used to sort geometries and
+          Fixed a bug in the Comparator used to sort geometries and
           improve union performance.
 
 2007-06-22  s-l-teichmann <teichmann@intevation.de>
@@ -177,7 +184,7 @@
 
 2007-06-06  s-l-teichmann <teichmann@intevation.de>
 
-        - Fix for expensive BasicStyle construction (slowed down colour theming a lot)
+        - Fixed for expensive BasicStyle construction (slowed down colour theming a lot)
         - Reorganisation of ChangeLog, Changes.txt and TODO.txt
 
         * src/com/vividsolutions/jump/workbench/ui/renderer/style/BasicStyle.java,
@@ -222,7 +229,7 @@
 
 2007-06-02  michaudm <michael.michaud@free.fr>
 
-        * src/com/vividsolutions/jump/workbench/ui/TaskFrame.java: Fix the
+        * src/com/vividsolutions/jump/workbench/ui/TaskFrame.java: Fixed the
           "Closing Cloned Window" bug (1475013) : now, layer manager
           resources are released only when the last internal frame using it
           is closed.
@@ -314,7 +321,7 @@
 
         * src/com/vividsolutions/jump/workbench/: model/LayerManager.java,
           ui/plugin/RemoveSelectedLayersPlugIn.java,
-          ui/renderer/RenderingManager.java: Fix the memory leak problem
+          ui/renderer/RenderingManager.java: Fixed the memory leak problem
           when removing a Layer (the LayerRender cache was not freed)
 
 2007-05-22  s-l-teichmann <teichmann@intevation.de>
@@ -369,12 +376,12 @@
 2007-05-13  michaudm <michael.michaud@free.fr>
 
         * src/com/vividsolutions/jump/workbench/ui/renderer/style/ArrowLineStringEndpointStyle.java:
-          bug fix 1367145 : "End feathers" decoration appeared on wrong end
+          fixed bug 1367145 : "End feathers" decoration appeared on wrong end
 
 2007-05-12  michaudm <michael.michaud@free.fr>
 
         * src/com/vividsolutions/jump/workbench/ui/cursortool/AbstractCursorTool.java:
-          fix bug 1713295 (Snap always on)
+          fixed bug 1713295 (Snap always on)
 
 2007-05-12  mentaer <sstein@geo.unizh.ch>
 
@@ -451,7 +458,7 @@
 
         * src/: com/vividsolutions/jump/I18N.java,
           org/openjump/core/ui/plugin/customize/BeanToolsPlugIn.java: fix
-          internationalization problem in BeanTools, I18N cleanup, chnaged
+          internationalization problem in BeanTools, I18N cleanup, changed
           log.warn to log.debug for missing resources
 
 2007-03-30  mentaer <sstein@geo.unizh.ch>
