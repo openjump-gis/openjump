@@ -66,6 +66,7 @@ public abstract class MultiClickTool extends AbstractCursorTool {
     private CoordinateListMetrics metrics = null;
     private LayerViewPanel panel;
     private WorkbenchFrame frame;
+    private boolean activated = false; //LDB: prevent multiple activate
 
     public MultiClickTool() {
     }
@@ -244,8 +245,10 @@ public abstract class MultiClickTool extends AbstractCursorTool {
     public void deactivate()
     {
     	super.deactivate();
-        if (frame != null) 
-            frame.removeEasyKeyListener(keyListener);    	
+        if (frame != null) {
+            frame.removeEasyKeyListener(keyListener); 
+            activated = false;
+        }
     }
     
     //-- [sstein: 24Mar2007] added for to allow to cancel last vertex per backspace
@@ -257,9 +260,11 @@ public abstract class MultiClickTool extends AbstractCursorTool {
         panel = layerViewPanel;
         frame = AbstractCursorTool.workbenchFrame(panel);
         
-        if (frame != null) 
+        if ((frame != null) & (!activated)) {  //LDB: prevent multiple activate
             frame.addEasyKeyListener(keyListener);
-    }
+            activated = true;
+        }
+     }
     
     private KeyListener keyListener = new KeyListener() 
     {
