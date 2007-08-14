@@ -89,7 +89,8 @@ public class RenderingManager {
 
 	//250 ms wasn't as good as 1 s because less got painted on each repaint,
 	//making rendering appear to be slower. [Jon Aquino]
-	private Timer repaintTimer = new Timer(1000, new ActionListener() {
+	//LDB: 400 ms is better when using mouse wheel zooming
+	private Timer repaintTimer = new Timer(400, new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 			for (Iterator i = contentIDToRendererMap.values().iterator(); i
 					.hasNext();) {
