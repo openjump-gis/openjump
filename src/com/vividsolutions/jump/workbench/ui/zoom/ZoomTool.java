@@ -36,6 +36,7 @@ package com.vividsolutions.jump.workbench.ui.zoom;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 
@@ -47,6 +48,7 @@ import com.vividsolutions.jump.util.MathUtil;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.cursortool.DragTool;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jts.geom.Coordinate;
 
 
 public class ZoomTool extends DragTool {
@@ -56,6 +58,7 @@ public class ZoomTool extends DragTool {
      */
     private static final int BOX_TOLERANCE = 4;
     private static final double ZOOM_IN_FACTOR = 2;
+    private static final double WHEEL_ZOOM_IN_FACTOR = 1.25;
 
     public ZoomTool() {                        
         setColor(Color.black);
@@ -148,6 +151,21 @@ public class ZoomTool extends DragTool {
     public void mouseReleased(MouseEvent e) {                             
         super.mouseReleased(e);
     }
+    
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		int nclicks = e.getWheelRotation();  //negative is up/away
+        try {
+            double zoomFactor = (nclicks > 0)
+                ? (1 / (Math.abs(nclicks)*WHEEL_ZOOM_IN_FACTOR)) : 
+                	(Math.abs(nclicks)*WHEEL_ZOOM_IN_FACTOR);
+            //zoomAt(e.getPoint(), zoomFactor);  //zoom to cursor 
+            zoomAt(getPanel().getViewport().toViewPoint(  //zoom to center
+            		getPanel().getViewport().
+            		getEnvelopeInModelCoordinates().centre()), zoomFactor);
+        } catch (Throwable t) {
+            getPanel().getContext().handleThrowable(t);
+        }
+	}
 
     public void activate(LayerViewPanel layerViewPanel) {                        
         super.activate(layerViewPanel);

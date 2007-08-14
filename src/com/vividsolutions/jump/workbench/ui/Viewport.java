@@ -161,9 +161,9 @@ public class Viewport implements Java2DConverter.PointConverter {
                 panel.getSize().height / heightOfNewViewAsPerceivedByOldView);
         double realWidthOfNewViewAsPerceivedByOldView = panel.getSize().width / zoomFactor;
         double realHeightOfNewViewAsPerceivedByOldView = panel.getSize().height / zoomFactor;
-
-        zoom(
-            toModelEnvelope(
+        Envelope zoomEnvelope;
+        try {
+        	 zoomEnvelope = toModelEnvelope(
                 centreOfNewViewAsPerceivedByOldView.getX()
                     - (0.5 * realWidthOfNewViewAsPerceivedByOldView),
                 centreOfNewViewAsPerceivedByOldView.getX()
@@ -171,7 +171,13 @@ public class Viewport implements Java2DConverter.PointConverter {
                 centreOfNewViewAsPerceivedByOldView.getY()
                     - (0.5 * realHeightOfNewViewAsPerceivedByOldView),
                 centreOfNewViewAsPerceivedByOldView.getY()
-                    + (0.5 * realHeightOfNewViewAsPerceivedByOldView)));
+                    + (0.5 * realHeightOfNewViewAsPerceivedByOldView));
+        } catch (NoninvertibleTransformException ex){
+        	//LDB: (for Mouse Wheel Zooming) eat exception and restore a valid zoom
+        	zoomToFullExtent();
+        	return;
+        }
+        zoom(zoomEnvelope);
     }
 
     public Point2D toModelPoint(Point2D viewPoint) throws NoninvertibleTransformException {

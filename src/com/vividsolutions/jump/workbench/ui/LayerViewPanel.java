@@ -37,6 +37,8 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.awt.event.MouseWheelListener;
+import java.awt.event.MouseWheelEvent;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -59,6 +61,8 @@ import com.vividsolutions.jump.workbench.ui.cursortool.DummyTool;
 import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
 import com.vividsolutions.jump.workbench.ui.renderer.java2D.Java2DConverter;
 import com.vividsolutions.jump.workbench.ui.renderer.style.PinEqualCoordinatesStyle;
+import com.vividsolutions.jump.workbench.ui.zoom.ZoomTool;
+import com.vividsolutions.jump.workbench.ui.cursortool.QuasimodeTool;
 
 //<<TODO:FIX>> One user (GK) gets an infinite repaint loop (the map moves around
 //chaotically) when the LayerViewPanel is put side by side with the LayerTreePanel
@@ -88,7 +92,15 @@ public class LayerViewPanel extends JPanel
 	private FenceLayerFinder fenceLayerFinder;
 	private SelectionManager selectionManager;
 	private Blackboard blackboard = new Blackboard();
-
+	private boolean deferLayerEvents = false;
+	
+	class MouseWheelZoomListener implements MouseWheelListener {
+		 public void mouseWheelMoved(MouseWheelEvent e) {
+			 if (((QuasimodeTool)currentCursorTool).getDelegate() instanceof ZoomTool) {
+				((ZoomTool) ((QuasimodeTool)currentCursorTool).getDelegate()).mouseWheelMoved(e);
+			 }				 
+		 }
+	}
 	public LayerViewPanel(LayerManager layerManager,
 			LayerViewPanelContext context) {
 		//Errors occur if the LayerViewPanel is sized to 0. [Jon Aquino]
@@ -155,6 +167,9 @@ public class LayerViewPanel extends JPanel
 					}
 				}
 			});
+			
+			addMouseWheelListener(new MouseWheelZoomListener() );
+
 		} catch (Throwable t) {
 			context.handleThrowable(t);
 		}
@@ -355,14 +370,17 @@ public class LayerViewPanel extends JPanel
 				}
 			});
 
-			if ((e.getType() == LayerEventType.ADDED)
-					|| (e.getType() == LayerEventType.REMOVED)
-					|| (e.getType() == LayerEventType.APPEARANCE_CHANGED)) {
-				renderingManager.render(e.getLayerable());
-			} else if (e.getType() == LayerEventType.VISIBILITY_CHANGED) {
-				renderingManager.render(e.getLayerable(), false);
-			} else {
-				Assert.shouldNeverReachHere();
+			if (! deferLayerEvents)
+			{
+				if ((e.getType() == LayerEventType.ADDED)
+						|| (e.getType() == LayerEventType.REMOVED)
+						|| (e.getType() == LayerEventType.APPEARANCE_CHANGED)) {
+					renderingManager.render(e.getLayerable());
+				} else if (e.getType() == LayerEventType.VISIBILITY_CHANGED) {
+					renderingManager.render(e.getLayerable(), false);
+				} else {
+					Assert.shouldNeverReachHere();
+				}
 			}
 		} catch (Throwable t) {
 			context.handleThrowable(t);
@@ -648,4 +666,8 @@ public class LayerViewPanel extends JPanel
 						BasicStroke.JOIN_ROUND), 100);
 	}
 
+	public void setDeferLayerEvents(boolean defer)
+	{
+		deferLayerEvents = defer;
+	}
 }
