@@ -1,4 +1,12 @@
-2007-08-09 sstein <sstein@geo.unizh.ch>
+
+2007-08-15 sstein <sstein@geo.unizh.ch>
+
+		* added windows exe for openjump (with params: 
+		Xmx 256, plugin-directory, properties file), hoping that it works 
+		also for future versions
+
+2007-08-15 sstein <sstein@geo.unizh.ch>
+
 		* set OpenJUMP version to OJ 1.2D in language files 
 		(preparation for new release witout image display problems and 
 		PlanarGraph bugfix by Michael and MouseWheel support by Larry) 
