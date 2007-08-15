@@ -65,6 +65,7 @@ package com.vividsolutions.jump.workbench.imagery.graphic;
  * www.ashs.isa.com
  */
 import java.awt.AlphaComposite;
+import java.awt.Composite;
 import java.awt.RenderingHints;
 import java.io.File;
 
@@ -315,9 +316,10 @@ public class GraphicImage
           //to add 1 to the right bottom coordinate of the source rectangle
           //since jpgRightPixel & jpgBotPixel are defined in terms of array element position
           //any questions, see Java documentation for Graphics object
-          
+          Composite composite = g.getComposite();
           g.setComposite(AlphaComposite.Src);
           g.drawImage(image.getAsBufferedImage(), image_x, image_y, image_x + image_w, image_y + image_h, jpgLeftPixel, jpgTopPixel, jpgRightPixel + 1, jpgBotPixel + 1, viewport.getPanel());
+          g.setComposite(composite);
 	  }
   }
 
