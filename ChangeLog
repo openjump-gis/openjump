@@ -1,3 +1,7 @@
+2007-08-15 sstein <sstein@geo.unizh.ch>
+		* set default SRID to -1
+		de.hawhamburg.sridsupport.SRIDstyle.java
+		org.openjump.core.ccordsys.srid.java
 
 2007-08-15 sstein <sstein@geo.unizh.ch>
 
