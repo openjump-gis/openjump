@@ -1,3 +1,16 @@
+2007-08-15 beckerl <becker.larry@gmail.com>
+		* fixed a problem with the window turning black when an Image Layer
+		was added due to the graphics context composite being changed.
+		com.vividsolutions.jump.workbench.imagery.graphic.GraphicImage.java
+		
+2007-08-15 beckerl <becker.larry@gmail.com>
+		* added support for mouse wheel zooming when the zoom cursor is over 
+		the layer view panel. Each click of the mouse wheel zooms by 25%.
+		com.vividsolutions.jump.workbench.ui.LayerViewPanel.java
+		com.vividsolutions.jump.workbench.ui.zoom.ZoomTool.java
+		com.vividsolutions.jump.workbench.ui.Viewport.java	
+		com.vividsolutions.jump.workbench.ui.renderer.RenderingManager.java
+
 2007-08-15 sstein <sstein@geo.unizh.ch>
 		* set default SRID to -1
 		de.hawhamburg.sridsupport.SRIDstyle.java
