@@ -55,15 +55,18 @@ import org.openjump.core.ui.plugin.view.ShowScalePlugIn;
 import org.openjump.core.ui.plugin.view.ZoomToScalePlugIn;
 import org.openjump.core.ui.plugin.wms.ZoomToWMSPlugIn;
 import org.openjump.core.ui.style.decoration.ArrowLineStringMiddlepointStyle;
+import org.openjump.core.ui.style.decoration.SegmentDownhillArrowStyle;
 import org.openjump.sigle.plugin.geoprocessing.layers.SpatialJoinPlugIn;
 import org.openjump.sigle.plugin.geoprocessing.oneLayer.topology.PlanarGraphPlugIn;
 import org.openjump.sigle.plugin.joinTable.JoinTablePlugIn;
 import org.openjump.sigle.plugin.replace.ReplaceValuePlugIn;
 
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
+import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.plugin.BeanShellPlugIn;
 
 import de.fho.jump.pirol.plugins.EditAttributeByFormula.EditAttributeByFormulaPlugIn;
@@ -350,7 +353,13 @@ public class OpenJumpConfiguration{
 		 *  Decoration
 		 ***********************/
 		
-		workbenchContext.getWorkbench().getFrame().addChoosableStyleClass(ArrowLineStringMiddlepointStyle.NarrowSolidMiddle.class);
+		JUMPWorkbench workbench = workbenchContext.getWorkbench();
+    WorkbenchFrame workbenchFrame = workbench.getFrame();
+    workbenchFrame.addChoosableStyleClass(ArrowLineStringMiddlepointStyle.NarrowSolidMiddle.class);
+
+    workbenchFrame.addChoosableStyleClass(SegmentDownhillArrowStyle.NarrowSolidMiddle.class);
+    workbenchFrame.addChoosableStyleClass(SegmentDownhillArrowStyle.Open.class);
+    workbenchFrame.addChoosableStyleClass(SegmentDownhillArrowStyle.Solid.class);
 		
 		/***********************
 		 *  Set Defaults
