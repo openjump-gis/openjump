@@ -1,5 +1,11 @@
+2007-08-16 mmichaud <michael.michaud@free.fr>
+
+        * Make snap points to the grid or to vertices possible
+          (note that Jon Aquino disabled this option, I'm not sure
+          why he found that it could be confusing for the user)
+
 2007-08-16 paul_d_austin <paul.austin@revolsys.com
-	* Added a Segment Downhill Arrrow Style
+	    * Added a Segment Downhill Arrrow Style
 
 2007-08-16 sstein <sstein@geo.unizh.ch>
 
