@@ -42,6 +42,7 @@ import java.util.Iterator;
 import javax.swing.JPopupMenu;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.Layerable;
@@ -55,7 +56,8 @@ public class ToggleVisiblityPlugIn extends AbstractPlugIn
 {   
 	private final static String toggleVisibility =I18N.get("org.openjump.core.ui.plugin.layer.ToggleVisiblityPlugIn.Toggle-Visibility");
 	private final static String errorSeeOutputWindow =I18N.get("org.openjump.core.ui.plugin.layer.ToggleVisiblityPlugIn.Error-See-Output-Window");
-	
+	private final static String layerName = I18N.get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Layer-Name");
+
     public void initialize(PlugInContext context) throws Exception
     {
         WorkbenchContext workbenchContext = context.getWorkbenchContext();
@@ -63,7 +65,6 @@ public class ToggleVisiblityPlugIn extends AbstractPlugIn
         JPopupMenu layerNamePopupMenu = workbenchContext.getWorkbench()
                                                         .getFrame()
                                                         .getLayerNamePopupMenu();
-//        layerNamePopupMenu.setToolTipText("5 selected objects");
         featureInstaller.addPopupMenuItem(layerNamePopupMenu,
             this, toggleVisibility,
             false, null,
@@ -78,27 +79,27 @@ public class ToggleVisiblityPlugIn extends AbstractPlugIn
             ToggleVisiblityPlugIn.createEnableCheck2(workbenchContext));
         
     }
-    
+
     public boolean execute(PlugInContext context) throws Exception
     {
         try
         {
-            context.getWorkbenchFrame().getOutputFrame().createNewDocument();
-            Collection layerCollection = (Collection) context.getWorkbenchContext().getLayerNamePanel().selectedNodes(Layer.class);
-            for (Iterator j = layerCollection.iterator(); j.hasNext();)
-            {
-                Layer layer = (Layer) j.next();
-                layer.setVisible(!layer.isVisible());
-            }
-            
-            Collection sidLayerCollection = (Collection) context.getWorkbenchContext().getLayerNamePanel().selectedNodes(Layerable.class);
-            for (Iterator j = sidLayerCollection.iterator(); j.hasNext();)
-            {
-                Layerable layer = (Layerable) j.next();
-                layer.setVisible(!layer.isVisible()); 
-            }
-            return true;
-        }
+            Collection layerCollection = (Collection) context.getWorkbenchContext().getLayerNamePanel().selectedNodes(Layerable.class);
+			boolean firingEvents = context.getLayerManager().isFiringEvents();
+			context.getLayerManager().setFiringEvents(false);
+			try {				
+	            for (Iterator j = layerCollection.iterator(); j.hasNext();)
+	            {
+	            	Layerable layer = (Layerable) j.next();
+//	            	monitor.report(layerName+": " + layer.getName());
+	                layer.setVisible(!layer.isVisible());
+	            }
+			} finally {
+				context.getLayerManager().setFiringEvents(firingEvents);
+				context.getLayerViewPanel().repaint();
+				context.getWorkbenchFrame().repaint();
+			}
+       }
         catch (Exception e)
         {
             context.getWorkbenchFrame().warnUser(errorSeeOutputWindow);
@@ -106,7 +107,8 @@ public class ToggleVisiblityPlugIn extends AbstractPlugIn
             context.getWorkbenchFrame().getOutputFrame().addText("ToggleVisiblityPlugIn Exception:" + e.toString());
             return false;
         }
-    }
+        return true;
+    }    
     
     public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext)
     {
