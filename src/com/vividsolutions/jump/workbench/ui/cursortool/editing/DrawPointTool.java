@@ -65,8 +65,12 @@ public class DrawPointTool extends NClickTool {
 		//Don't allow snapping. The user will get confused if he tries to draw
 		//a point near another point and sees nothing happen because
 		//snapping is happening. [Jon Aquino]
+        
+        //Don't agree : if snapping is requested, snapping must happens.
+        //With transparency and points appearing different from simple vertices
+        //I feel that adding snapped points is not so confusing [mmichaud 2007-08-16]
 		return featureDrawingUtil.prepare(
-			new DrawPointTool(featureDrawingUtil), false);
+			new DrawPointTool(featureDrawingUtil), true);
 	}
 
 	public Icon getIcon() {
