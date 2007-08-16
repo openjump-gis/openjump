@@ -1,3 +1,11 @@
+2007-08-16 sstein <sstein@geo.unizh.ch>
+
+		* removed windows exe for openjump (does not work with nightly built)
+
+2007-08-16 sstein <sstein@geo.unizh.ch>
+
+		* release of OpenJUMP 1.2 D
+
 2007-08-15 beckerl <becker.larry@gmail.com>
 		* fixed a problem with the window turning black when an Image Layer
 		was added due to the graphics context composite being changed.
