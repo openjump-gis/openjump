@@ -125,6 +125,8 @@ public class ColorPanel extends JPanel {
         setLineStroke(style.getLineStroke());
       if (style.isRenderingFillPattern())
         fillPattern = style.getFillPattern();
+      else
+    	  fillPattern = null;
     }
 
     public void setLineStroke(BasicStroke stroke) {
