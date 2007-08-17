@@ -1,4 +1,9 @@
 2007-08-17 beckerl <becker.larry@gmail.com>
+		* Fixed the problem with the toolbar selection arrow tool 
+		losing the feature selection when right clicking.
+		com.vividsolutions.jump.workbench.ui.cursortool.QuasimodeTool.java
+		
+2007-08-17 beckerl <becker.larry@gmail.com>
 		* Fixed problem in Color Theming Style Panel with all cells 
 		displaying a fill pattern when any one was set using Custom.
 		com.vividsolutions.jump.workbench.ui.ColorPanel.java
