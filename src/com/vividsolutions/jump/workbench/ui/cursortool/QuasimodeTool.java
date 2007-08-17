@@ -167,6 +167,18 @@ public class QuasimodeTool extends DelegatingTool {
             //-- [sstein : ] deactivated and repalced by line above see comment 
             //	             on windowListener above
             frame.addWindowListener(windowListener);
+            
+            //Need to do the following so that the delegate gets set to the LeftClickFilter
+            //This fixes a problem where the selection was being lost on a right click
+            //when using the selector tool on the tool bar.
+            //The following code is executed during windowActivated event in WindowAdapter windowListener above.
+            //This is why the problem fixed itself when returning to the window after bringing
+            //another application forward.
+            //This event was done when clicking the selection tool on the toolbox so
+            //that is why it was always working.
+			setTool(new KeyEvent(panel, KeyEvent.KEY_PRESSED, 
+	                0, 0, KeyEvent.VK_UNDEFINED, KeyEvent.CHAR_UNDEFINED));
+			
             /*frame.addWindowListener(new WindowAdapter() {
                 public void windowActivated(WindowEvent e) {
 					super.windowActivated(e);
