@@ -33,6 +33,8 @@ package com.vividsolutions.jump.workbench;
 
 import com.vividsolutions.jts.util.*;
 import org.openjump.OpenJumpConfiguration;
+import org.openjump.core.ui.plugin.tools.ZoomRealtimeTool;
+
 import com.vividsolutions.jump.I18N;
 
 import com.vividsolutions.jump.datastore.*;
@@ -1132,6 +1134,7 @@ public void configureDatastores(final WorkbenchContext context) throws Exception
                 zoomToSelectedItemsPlugIn,
                 ZoomToSelectedItemsPlugIn.createEnableCheck(workbenchContext),
                 workbenchContext);
+        add(new ZoomRealtimeTool(), workbenchContext);  //TODO: move to OpenJumpConfiguration if possible
         frame
                 .getToolBar()
                 .addPlugIn(
