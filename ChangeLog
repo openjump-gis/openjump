@@ -1,3 +1,17 @@
+2007-08-17 beckerl <becker.larry@gmail.com>
+		* added a Zoom Realtime tool to the toolbar.  This tool uses
+		image stretching to simulate the zoom before it occurs for an
+		accurate preview.
+		org.openjump.core.ui.plugin.tools.ZoomRealtimeTool.java
+		com.vividsolutions.jump.workbench.ui.images.Magnify3.gif
+		com.vividsolutions.jump.workbench.ui.images.MagnifyCursor2.gif
+		com.vividsolutions.jump.workbench.JUMPConfiguration.java
+
+2007-08-16 beckerl <becker.larry@gmail.com>
+		* fixed a problem with the Toggle Visibility Layer Name
+        popup menu item.  It was totally nonfunctional.
+        org.openjump.core.ui.plugin.layer.ToggleVisiblityPlugIn.java
+
 2007-08-16 mmichaud <michael.michaud@free.fr>
 
         * Make snap points to the grid or to vertices possible
