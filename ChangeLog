@@ -1,4 +1,9 @@
 2007-08-17 beckerl <becker.larry@gmail.com>
+		* Fixed problem in Color Theming Style Panel with all cells 
+		displaying a fill pattern when any one was set using Custom.
+		com.vividsolutions.jump.workbench.ui.ColorPanel.java
+		
+2007-08-17 beckerl <becker.larry@gmail.com>
 		* added a Zoom Realtime tool to the toolbar.  This tool uses
 		image stretching to simulate the zoom before it occurs for an
 		accurate preview.
