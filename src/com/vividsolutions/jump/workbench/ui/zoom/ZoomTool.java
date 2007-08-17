@@ -49,6 +49,7 @@ import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.cursortool.DragTool;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
 
 
 public class ZoomTool extends DragTool {
@@ -158,10 +159,19 @@ public class ZoomTool extends DragTool {
             double zoomFactor = (nclicks > 0)
                 ? (1 / (Math.abs(nclicks)*WHEEL_ZOOM_IN_FACTOR)) : 
                 	(Math.abs(nclicks)*WHEEL_ZOOM_IN_FACTOR);
-            //zoomAt(e.getPoint(), zoomFactor);  //zoom to cursor 
-            zoomAt(getPanel().getViewport().toViewPoint(  //zoom to center
-            		getPanel().getViewport().
-            		getEnvelopeInModelCoordinates().centre()), zoomFactor);
+            zoomAt(e.getPoint(), zoomFactor);  //zoom to cursor 
+            Coordinate zoomPoint = getPanel().getViewport().toModelCoordinate(e.getPoint());
+            Coordinate centre = getPanel().getViewport().getEnvelopeInModelCoordinates().centre();
+            double xDisplacement = zoomPoint.x - centre.x;
+            double yDisplacement = zoomPoint.y - centre.y;
+            Envelope oldEnvelope = getPanel().getViewport().getEnvelopeInModelCoordinates();
+            getPanel().getViewport().zoom(new Envelope(oldEnvelope.getMinX() -
+                xDisplacement, oldEnvelope.getMaxX() - xDisplacement,
+                oldEnvelope.getMinY() - yDisplacement,
+                oldEnvelope.getMaxY() - yDisplacement));
+//            zoomAt(getPanel().getViewport().toViewPoint(  //zoom to center
+//            		getPanel().getViewport().
+//            		getEnvelopeInModelCoordinates().centre()), zoomFactor);
         } catch (Throwable t) {
             getPanel().getContext().handleThrowable(t);
         }
