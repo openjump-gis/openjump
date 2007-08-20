@@ -38,6 +38,7 @@ import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Path2D;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -53,19 +54,19 @@ import com.vividsolutions.jump.workbench.ui.renderer.java2D.Java2DConverter.Line
 // Converted PolygonShape from java.awt.Polygon to GeneralPath
 // for more accurate (float instead of int) rendering.
 // From larry becker's SkyJUMP code to OpenJUMP [mmichaud]
+// LDB: Changed GeneralPath (float) to Path2D.Double to increase rendering precision
 public class PolygonShape implements Shape {
-    private GeneralPath shell;
+    private Path2D.Double shell;
     private ArrayList holes = new ArrayList();
-    
-    public PolygonShape(){
-    	shell = null;
-    	holes = null;
-    }
-    
+
     /**
      * @param shellVertices in view coordinates
      * @param holeVerticesCollection a Coordinate[] for each hole, in view coordinates
      */
+    public PolygonShape(){
+    	shell = null;
+    	holes = null;
+    }
     public PolygonShape(Coordinate[] shellVertices,
         Collection holeVerticesCollection) {
         shell = toPolygon(shellVertices);
@@ -76,7 +77,7 @@ public class PolygonShape implements Shape {
         }
     }
 
-    class PolygonPath implements PathIterator {
+	class PolygonPath implements PathIterator {
 		private int iterate;
 		private int numPoints;
 		private Coordinate[] points;
@@ -112,10 +113,10 @@ public class PolygonShape implements Shape {
 			iterate++;
 		}	
 	}
-    
-    public final GeneralPath toPolygon(Coordinate[] coordinates) {
+
+	public final Path2D.Double toPolygon(Coordinate[] coordinates) {
 		int numPoints = coordinates.length;	
-		GeneralPath shape = new GeneralPath(GeneralPath.WIND_EVEN_ODD, numPoints);
+		Path2D.Double shape = new Path2D.Double(GeneralPath.WIND_EVEN_ODD, numPoints);
 		PathIterator pi = new PolygonPath(coordinates);
 		shape.append(pi,false);
 		return shape;
@@ -148,9 +149,8 @@ public class PolygonShape implements Shape {
     */
 
     public Rectangle getBounds() {
-        /**@todo Implement this java.awt.Shape method*/
-        throw new java.lang.UnsupportedOperationException(
-            "Method getBounds() not yet implemented.");
+        // LDB: Implemented for printing interface
+    	return shell.getBounds();
     }
 
     public Rectangle2D getBounds2D() {

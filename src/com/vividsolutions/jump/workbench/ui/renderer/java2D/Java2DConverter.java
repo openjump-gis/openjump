@@ -36,7 +36,7 @@ package com.vividsolutions.jump.workbench.ui.renderer.java2D;
 import java.awt.Shape;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.NoninvertibleTransformException;
-import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.Point2D.Double;
@@ -66,6 +66,7 @@ import com.vividsolutions.jts.geom.Polygon;
  // Reduced darw times by 60%.
  // 3 - Made toViewCoordinates(Coordinate[]) public to make use
  // of its decimation optimization in AbstractSelectionRenderer.
+ // 4 - Changed GeneralPath (float) to Path2D.Double to increase rendering precision
 public class Java2DConverter {
 	private static double POINT_MARKER_SIZE = 3.0;
 	private PointConverter pointConverter;
@@ -144,9 +145,9 @@ public class Java2DConverter {
 		return shape;
 	}
 
-	private GeneralPath toShape(MultiLineString mls)
+	private Path2D.Double toShape(MultiLineString mls)
 		throws NoninvertibleTransformException {
-		GeneralPath path = new GeneralPath();
+		Path2D.Double path = new Path2D.Double();
 
 		for (int i = 0; i < mls.getNumGeometries(); i++) {
 			LineString lineString = (LineString) mls.getGeometryN(i);
@@ -158,25 +159,21 @@ public class Java2DConverter {
 		return path;
 	}
 
-    class LineStringPath extends LineString implements PathIterator {
+	class LineStringPath implements PathIterator {
 		
 		private int iterate;
 		private int numPoints;
 		private Coordinate[] points;
-		private Java2DConverter j2D;
-        private boolean closed;
+		private boolean closed;
 		
 		public LineStringPath(LineString linestring, Java2DConverter j2D){
-			super(null, new GeometryFactory());
-			//this.linestring = linestring;
-			this.j2D = j2D;
 			try {
 			  points = j2D.toViewCoordinates(linestring.getCoordinates());
 			}
 			catch (NoninvertibleTransformException ex){	}
-			this.numPoints = points.length; //linestring.getNumPoints();
+			this.numPoints = points.length; 
 			iterate = 0;
-            closed = (numPoints>1) && (points[0].equals2D(points[numPoints-1]));
+			closed = (numPoints>1) && (points[0].equals2D(points[numPoints-1]));
 		}
 		private int getSegType(){
             // tip from Larry Becker for a better rendering 2007-07-13 [mmichaud]
@@ -205,12 +202,11 @@ public class Java2DConverter {
 		}
 		
 	}
-
-	private GeneralPath toShape(LineString lineString)
+	private Path2D.Double toShape(LineString lineString)
 		throws NoninvertibleTransformException {
-        int numPoints = lineString.getNumPoints();
-		GeneralPath shape = new GeneralPath(GeneralPath.WIND_NON_ZERO, numPoints);
-        PathIterator pi = new LineStringPath(lineString, this);
+		int numPoints = lineString.getNumPoints();
+		Path2D.Double shape = new Path2D.Double(GeneralPath.WIND_NON_ZERO, numPoints);
+		PathIterator pi = new LineStringPath(lineString, this);
 		shape.append(pi,false);
 		//Point2D viewPoint = toViewPoint(lineString.getCoordinateN(0));
 		//shape.moveTo((float) viewPoint.getX(), (float) viewPoint.getY());

@@ -59,12 +59,24 @@ public class GeometryCollectionShape implements Shape {
     }
 
     public Rectangle getBounds() {
-        /**@todo Implement this java.awt.Shape method*/
-        throw new java.lang.UnsupportedOperationException(
-        		I18N.get("ui.renderer.GeometryCollectionShape.method-getBounds-not-yet-implemented"));
+        Rectangle rectangle = null;
+
+        for (Iterator i = shapes.iterator(); i.hasNext();) {
+            Shape shape = (Shape) i.next();
+
+            if (rectangle == null) {
+                rectangle = shape.getBounds();
+            } else {
+                rectangle.add(shape.getBounds());
+            }
+        }
+        return rectangle;   	
+//        throw new java.lang.UnsupportedOperationException(
+//            "Method getBounds() not yet implemented.");
     }
 
     public Rectangle2D getBounds2D() {
+//    	 LDB: Implemented for printing interface
         Rectangle2D rectangle = null;
 
         for (Iterator i = shapes.iterator(); i.hasNext();) {
