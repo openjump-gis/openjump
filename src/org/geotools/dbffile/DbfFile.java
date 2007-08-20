@@ -235,6 +235,8 @@ public class DbfFile implements DbfConsts {
     //
     // Will return a String, Double, or Integer
     // not currently supporting Data or logical since we dont have any test datasets
+    static boolean useIntern = true;
+    
     public Object ParseRecordColumn(StringBuffer rec, int wantedCol)
         throws Exception {
         int start;
@@ -244,7 +246,21 @@ public class DbfFile implements DbfConsts {
 
         switch (fielddef[wantedCol].fieldtype) {
         case 'C': //character
-            return rec.substring(start, end).intern();
+        	while ((start < end) && (rec.charAt(end-1) == ' '))
+                 	end--;  //trim trailing spaces
+        	String s;
+        	if (useIntern) {  //initialized to true
+        		 try {
+        		   s = rec.substring(start, end).intern();
+        		 } catch (Exception e) {  //catch the out of permgen memory exception
+        		   s = rec.substring(start, end);
+        		   useIntern = false;
+        		 }
+        		} else {
+        		     s = rec.substring(start, end);
+        		}
+
+            return s;
 
         case 'F': //same as numeric, more or less
         case 'N': //numeric
@@ -293,8 +309,8 @@ public class DbfFile implements DbfConsts {
     public Vector ParseRecord(StringBuffer rec) {
         Vector record = new Vector(numfields);
         String t;
-        Integer I = new Integer(0);
-        Double F = new Double(0.0);
+        //Integer I = new Integer(0);
+        //Double F = new Double(0.0);
         t = rec.toString();
 
         for (int i = 0; i < numfields; i++) {
@@ -329,14 +345,14 @@ public class DbfFile implements DbfConsts {
                     try {
                         String tt = t.substring(fielddef[i].fieldstart,
                                 fielddef[i].fieldstart + fielddef[i].fieldlen);
-                        record.addElement(I.valueOf(tt.trim()));
+                        record.addElement(Integer.valueOf(tt.trim()));
                     } catch (java.lang.NumberFormatException e) {
                         record.addElement(new Integer(0));
                     }
                 } else { //its a float
 
                     try {
-                        record.addElement(F.valueOf(t.substring(
+                        record.addElement(Double.valueOf(t.substring(
                                     fielddef[i].fieldstart,
                                     fielddef[i].fieldstart +
                                     fielddef[i].fieldlen).trim()));
@@ -350,7 +366,7 @@ public class DbfFile implements DbfConsts {
             case 'F':
 
                 try {
-                    record.addElement(F.valueOf(t.substring(
+                    record.addElement(Double.valueOf(t.substring(
                                 fielddef[i].fieldstart,
                                 fielddef[i].fieldstart + fielddef[i].fieldlen)
                                                  .trim()));
