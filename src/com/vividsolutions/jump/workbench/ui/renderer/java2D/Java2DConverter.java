@@ -36,7 +36,7 @@ package com.vividsolutions.jump.workbench.ui.renderer.java2D;
 import java.awt.Shape;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.NoninvertibleTransformException;
-import java.awt.geom.Path2D;
+import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.Point2D.Double;
@@ -66,7 +66,6 @@ import com.vividsolutions.jts.geom.Polygon;
  // Reduced darw times by 60%.
  // 3 - Made toViewCoordinates(Coordinate[]) public to make use
  // of its decimation optimization in AbstractSelectionRenderer.
- // 4 - Changed GeneralPath (float) to Path2D.Double to increase rendering precision
 public class Java2DConverter {
 	private static double POINT_MARKER_SIZE = 3.0;
 	private PointConverter pointConverter;
@@ -145,9 +144,9 @@ public class Java2DConverter {
 		return shape;
 	}
 
-	private Path2D.Double toShape(MultiLineString mls)
+	private GeneralPath toShape(MultiLineString mls)
 		throws NoninvertibleTransformException {
-		Path2D.Double path = new Path2D.Double();
+		GeneralPath path = new GeneralPath();
 
 		for (int i = 0; i < mls.getNumGeometries(); i++) {
 			LineString lineString = (LineString) mls.getGeometryN(i);
@@ -202,11 +201,12 @@ public class Java2DConverter {
 		}
 		
 	}
-	private Path2D.Double toShape(LineString lineString)
+
+	private GeneralPath toShape(LineString lineString)
 		throws NoninvertibleTransformException {
-		int numPoints = lineString.getNumPoints();
-		Path2D.Double shape = new Path2D.Double(GeneralPath.WIND_NON_ZERO, numPoints);
-		PathIterator pi = new LineStringPath(lineString, this);
+        int numPoints = lineString.getNumPoints();
+		GeneralPath shape = new GeneralPath(GeneralPath.WIND_NON_ZERO, numPoints);
+        PathIterator pi = new LineStringPath(lineString, this);
 		shape.append(pi,false);
 		//Point2D viewPoint = toViewPoint(lineString.getCoordinateN(0));
 		//shape.moveTo((float) viewPoint.getX(), (float) viewPoint.getY());
