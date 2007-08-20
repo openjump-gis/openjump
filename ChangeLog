@@ -1,8 +1,20 @@
 2007-08-20 beckerl <becker.larry@gmail.com>
+		* Modified the rendering of polygons and linstrings so that they 
+		are more accurate at the subpixel level. This will hopefully improve 
+		the rendering quality to resolutions higher than the screen (like printing).
+		*** Warning (signifcant change): StyleUtil now checks for an instance of 
+		Path2D.Double instead of GeneralPath. Custom styles should be OK if they
+		call StyleUtil.paint(), otherwise symptom is linstrings that fill.
+		com.vividsolutions.jump.workbench.ui.renderer.java2D.Java2DConverter.java
+		com.vividsolutions.jump.workbench.ui.renderer.java2D.GeometryCollectionShape.java
+		com.vividsolutions.jump.workbench.ui.renderer.java2D.PolygonShape.java
+		com.vividsolutions.jump.workbench.ui.renderer.style.StyleUtil.java
+		
+2007-08-20 beckerl <becker.larry@gmail.com>
 		* fixed the interned string problem with large datasets where 
 		every attribute value was different by adding exception handler 
 		that stops further interns
-		com.vividsolutions.jump.io.EndianDataInputStream.DbfFile.java
+		org.geotools.dbffile.DbfFile.java
 
 2007-08-17 beckerl <becker.larry@gmail.com>
 		* Fixed the problem with the toolbar selection arrow tool 
