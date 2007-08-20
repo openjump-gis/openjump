@@ -43,6 +43,7 @@ import com.vividsolutions.jump.workbench.ui.Viewport;
 import java.awt.*;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Path2D;
 
 
 public class StyleUtil {
@@ -62,7 +63,7 @@ public class StyleUtil {
         }
 
         Shape shape = toShape(geometry, viewport);
-        if (!(shape instanceof GeneralPath) && renderingFill) {
+        if (!(shape instanceof Path2D.Double) && renderingFill) {
             g.setStroke(fillStroke);
             g.setPaint(fillPaint);
             g.fill(shape);
