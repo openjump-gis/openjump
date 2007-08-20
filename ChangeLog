@@ -1,4 +1,4 @@
-2007-08-17 beckerl <becker.larry@gmail.com>
+2007-08-20 beckerl <becker.larry@gmail.com>
 		* fixed the interned string problem with large datasets where 
 		every attribute value was different by adding exception handler 
 		that stops further interns
