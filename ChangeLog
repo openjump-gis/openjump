@@ -1,37 +1,41 @@
+2007-08-21 Andreas Schmitz <schmitz@lat-lon.de>
+        * src/org/openjump/core/ui/plugin/layer/ChangeLayerableNamePlugIn.java:
+        Catched null name when clicking cancel.
+
 2007-08-20 beckerl <becker.larry@gmail.com>
-		* Cleaned up LineStringPath implementation in Java2DConverter and 
-		implemented getBounds in PolygonShape and GeometryCollectionShape
-		com.vividsolutions.jump.workbench.ui.renderer.java2D.Java2DConverter.java
-		com.vividsolutions.jump.workbench.ui.renderer.java2D.GeometryCollectionShape.java
-		com.vividsolutions.jump.workbench.ui.renderer.java2D.PolygonShape.java
-		
+                * Cleaned up LineStringPath implementation in Java2DConverter and
+                implemented getBounds in PolygonShape and GeometryCollectionShape
+                com.vividsolutions.jump.workbench.ui.renderer.java2D.Java2DConverter.java
+                com.vividsolutions.jump.workbench.ui.renderer.java2D.GeometryCollectionShape.java
+                com.vividsolutions.jump.workbench.ui.renderer.java2D.PolygonShape.java
+
 2007-08-20 beckerl <becker.larry@gmail.com>
-		* fixed the interned string problem with large datasets where 
-		every attribute value was different by adding exception handler 
-		that stops further interns
-		org.geotools.dbffile.DbfFile.java
+                * fixed the interned string problem with large datasets where
+                every attribute value was different by adding exception handler
+                that stops further interns
+                org.geotools.dbffile.DbfFile.java
 
 2007-08-17 beckerl <becker.larry@gmail.com>
-		* Fixed the problem with the toolbar selection arrow tool 
-		losing the feature selection when right clicking.
-		com.vividsolutions.jump.workbench.ui.cursortool.QuasimodeTool.java
-		
+                * Fixed the problem with the toolbar selection arrow tool
+                losing the feature selection when right clicking.
+                com.vividsolutions.jump.workbench.ui.cursortool.QuasimodeTool.java
+
 2007-08-17 beckerl <becker.larry@gmail.com>
-		* Fixed problem in Color Theming Style Panel with all cells 
-		displaying a fill pattern when any one was set using Custom.
-		com.vividsolutions.jump.workbench.ui.ColorPanel.java
-		
+                * Fixed problem in Color Theming Style Panel with all cells
+                displaying a fill pattern when any one was set using Custom.
+                com.vividsolutions.jump.workbench.ui.ColorPanel.java
+
 2007-08-17 beckerl <becker.larry@gmail.com>
-		* added a Zoom Realtime tool to the toolbar.  This tool uses
-		image stretching to simulate the zoom before it occurs for an
-		accurate preview.
-		org.openjump.core.ui.plugin.tools.ZoomRealtimeTool.java
-		com.vividsolutions.jump.workbench.ui.images.Magnify3.gif
-		com.vividsolutions.jump.workbench.ui.images.MagnifyCursor2.gif
-		com.vividsolutions.jump.workbench.JUMPConfiguration.java
+                * added a Zoom Realtime tool to the toolbar.  This tool uses
+                image stretching to simulate the zoom before it occurs for an
+                accurate preview.
+                org.openjump.core.ui.plugin.tools.ZoomRealtimeTool.java
+                com.vividsolutions.jump.workbench.ui.images.Magnify3.gif
+                com.vividsolutions.jump.workbench.ui.images.MagnifyCursor2.gif
+                com.vividsolutions.jump.workbench.JUMPConfiguration.java
 
 2007-08-16 beckerl <becker.larry@gmail.com>
-		* fixed a problem with the Toggle Visibility Layer Name
+                * fixed a problem with the Toggle Visibility Layer Name
         popup menu item.  It was totally nonfunctional.
         org.openjump.core.ui.plugin.layer.ToggleVisiblityPlugIn.java
 
@@ -42,45 +46,45 @@
           why he found that it could be confusing for the user)
 
 2007-08-16 paul_d_austin <paul.austin@revolsys.com
-	    * Added a Segment Downhill Arrrow Style
+            * Added a Segment Downhill Arrrow Style
 
 2007-08-16 sstein <sstein@geo.unizh.ch>
 
-		* removed windows exe for openjump (does not work with nightly built)
+                * removed windows exe for openjump (does not work with nightly built)
 
 2007-08-16 sstein <sstein@geo.unizh.ch>
 
-		* release of OpenJUMP 1.2 D
+                * release of OpenJUMP 1.2 D
 
 2007-08-15 beckerl <becker.larry@gmail.com>
-		* fixed a problem with the window turning black when an Image Layer
-		was added due to the graphics context composite being changed.
-		com.vividsolutions.jump.workbench.imagery.graphic.GraphicImage.java
-		
+                * fixed a problem with the window turning black when an Image Layer
+                was added due to the graphics context composite being changed.
+                com.vividsolutions.jump.workbench.imagery.graphic.GraphicImage.java
+
 2007-08-15 beckerl <becker.larry@gmail.com>
-		* added support for mouse wheel zooming when the zoom cursor is over 
-		the layer view panel. Each click of the mouse wheel zooms by 25%.
-		com.vividsolutions.jump.workbench.ui.LayerViewPanel.java
-		com.vividsolutions.jump.workbench.ui.zoom.ZoomTool.java
-		com.vividsolutions.jump.workbench.ui.Viewport.java	
-		com.vividsolutions.jump.workbench.ui.renderer.RenderingManager.java
+                * added support for mouse wheel zooming when the zoom cursor is over
+                the layer view panel. Each click of the mouse wheel zooms by 25%.
+                com.vividsolutions.jump.workbench.ui.LayerViewPanel.java
+                com.vividsolutions.jump.workbench.ui.zoom.ZoomTool.java
+                com.vividsolutions.jump.workbench.ui.Viewport.java
+                com.vividsolutions.jump.workbench.ui.renderer.RenderingManager.java
 
 2007-08-15 sstein <sstein@geo.unizh.ch>
-		* set default SRID to -1
-		de.hawhamburg.sridsupport.SRIDstyle.java
-		org.openjump.core.ccordsys.srid.java
-
-2007-08-15 sstein <sstein@geo.unizh.ch>
-
-		* added windows exe for openjump (with params: 
-		Xmx 256, plugin-directory, properties file), hoping that it works 
-		also for future versions
+                * set default SRID to -1
+                de.hawhamburg.sridsupport.SRIDstyle.java
+                org.openjump.core.ccordsys.srid.java
 
 2007-08-15 sstein <sstein@geo.unizh.ch>
 
-		* set OpenJUMP version to OJ 1.2D in language files 
-		(preparation for new release witout image display problems and 
-		PlanarGraph bugfix by Michael and MouseWheel support by Larry) 
+                * added windows exe for openjump (with params:
+                Xmx 256, plugin-directory, properties file), hoping that it works
+                also for future versions
+
+2007-08-15 sstein <sstein@geo.unizh.ch>
+
+                * set OpenJUMP version to OJ 1.2D in language files
+                (preparation for new release witout image display problems and
+                PlanarGraph bugfix by Michael and MouseWheel support by Larry)
 
 2007-08-12 mmichaud <michael.michaud@free.fr>
 
@@ -106,8 +110,8 @@
 2007-08-09 sstein <sstein@geo.unizh.ch>
 
         * src/com/vividsolutions/jump/io/ShapefileWriter
-		  added that an Exception is thrown, when layer geometries are of different type. 
-		  Data aren't saved then. (otherwise the user wonders when only polygons are stored)
+                  added that an Exception is thrown, when layer geometries are of different type.
+                  Data aren't saved then. (otherwise the user wonders when only polygons are stored)
 
 2007-08-10 Andreas Schmitz <schmitz@lat-lon.de>
 
@@ -208,16 +212,16 @@
           join_bevel on the first/last point (tip from Larry Becker)
 
 2007-07-11 Paul Austin <paul.austin@revolsys.com>
-        
+
         * Added .settings, build, target, .classpath & .project to svi:ignore to
           prevent accidental checkin of eclipse config and maven/ant generated dirs
-        
+
         * Changed InfoModel to remove layers after the listeners are notified
 
 2007-07-09 Andreas Schmitz <schmitz@lat-lon.de>
 
         * scripts/openjump.sh: Added improved startup script for Unix from
-	      Paul Austin.
+              Paul Austin.
 
 2007-07-08 mmichaud <michael.michaud@free.fr>
 
@@ -231,7 +235,7 @@
           and put the format chooser at the bottom of the dialog (as in SkyJUMP)
 
 2007-07-03 mmichaud <michael.michaud@free.fr>
-    
+
         * Simple query PlugIn : add some keys in the language property files
           in order to replace gnof, bnof, snof and nnof by an empty string in
           the user interface of Simple Query (xnof means 'no function' for data

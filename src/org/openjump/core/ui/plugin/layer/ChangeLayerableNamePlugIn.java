@@ -63,17 +63,19 @@ public class ChangeLayerableNamePlugIn extends AbstractPlugIn {
 				.get("org.openjump.core.ui.plugin.layer.ChangeLayerableName.Rename"),
 			getName(), JOptionPane.PLAIN_MESSAGE, null, null,
 			oldName);
-	execute(new UndoableCommand(getName()) {
-	    @Override
-	    public void execute() {
-		layer.setName(newName);
-	    }
+	if(newName != null) {
+	    execute(new UndoableCommand(getName()) {
+		@Override
+		public void execute() {
+		    layer.setName(newName);
+		}
 
-	    @Override
-	    public void unexecute() {
-		layer.setName(oldName);
-	    }
-	}, context);
+		@Override
+		public void unexecute() {
+		    layer.setName(oldName);
+		}
+	    }, context);
+	}
 	return true;
     }
 
