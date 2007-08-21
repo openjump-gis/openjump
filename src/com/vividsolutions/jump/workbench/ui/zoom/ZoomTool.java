@@ -46,6 +46,7 @@ import javax.swing.SwingUtilities;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.MathUtil;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
+import com.vividsolutions.jump.workbench.ui.Viewport;
 import com.vividsolutions.jump.workbench.ui.cursortool.DragTool;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -154,24 +155,24 @@ public class ZoomTool extends DragTool {
     }
     
 	public void mouseWheelMoved(MouseWheelEvent e) {
+		//TODO: combine the ZoomAt and zoom into one method call
 		int nclicks = e.getWheelRotation();  //negative is up/away
         try {
             double zoomFactor = (nclicks > 0)
                 ? (1 / (Math.abs(nclicks)*WHEEL_ZOOM_IN_FACTOR)) : 
                 	(Math.abs(nclicks)*WHEEL_ZOOM_IN_FACTOR);
-            zoomAt(e.getPoint(), zoomFactor);  //zoom to cursor 
-            Coordinate zoomPoint = getPanel().getViewport().toModelCoordinate(e.getPoint());
-            Coordinate centre = getPanel().getViewport().getEnvelopeInModelCoordinates().centre();
-            double xDisplacement = zoomPoint.x - centre.x;
-            double yDisplacement = zoomPoint.y - centre.y;
-            Envelope oldEnvelope = getPanel().getViewport().getEnvelopeInModelCoordinates();
-            getPanel().getViewport().zoom(new Envelope(oldEnvelope.getMinX() -
-                xDisplacement, oldEnvelope.getMaxX() - xDisplacement,
-                oldEnvelope.getMinY() - yDisplacement,
-                oldEnvelope.getMaxY() - yDisplacement));
-//            zoomAt(getPanel().getViewport().toViewPoint(  //zoom to center
-//            		getPanel().getViewport().
-//            		getEnvelopeInModelCoordinates().centre()), zoomFactor);
+            zoomAt(e.getPoint(), zoomFactor);  //zoom cursor to centre
+            Viewport vp = getPanel().getViewport();
+            Coordinate zoomPoint = vp.toModelCoordinate(e.getPoint());
+            Coordinate centre = vp.getEnvelopeInModelCoordinates().centre();
+            double dx = zoomPoint.x - centre.x;
+            double dy = zoomPoint.y - centre.y;
+            Envelope oldEnvelope = vp.getEnvelopeInModelCoordinates();
+            vp.zoom(new Envelope(    //pan centre back to cursor
+            		oldEnvelope.getMinX() - dx, 
+            		oldEnvelope.getMaxX() - dx,
+                    oldEnvelope.getMinY() - dy,
+                    oldEnvelope.getMaxY() - dy));
         } catch (Throwable t) {
             getPanel().getContext().handleThrowable(t);
         }
