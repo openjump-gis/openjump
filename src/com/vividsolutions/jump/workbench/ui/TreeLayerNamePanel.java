@@ -541,7 +541,7 @@ public class TreeLayerNamePanel extends JPanel
         return selectedNodes;
     }
 
-    private void setSelectedLayers(Layer[] layers) {
+    public void setSelectedLayers(Layer[] layers) {
         tree.getSelectionModel().clearSelection();
 
         for (int i = 0; i < layers.length; i++) {
