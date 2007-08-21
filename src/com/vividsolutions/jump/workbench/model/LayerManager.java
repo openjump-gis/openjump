@@ -621,6 +621,37 @@ public class LayerManager {
 
         return visibleLayers;
     }
+    
+   /**
+    * The old method dispose(Layerable layerable) is deprecated.
+    * It has been replaced by dispose(WorkbenchFrame frame, Layerable layerable)
+    * I add it again for compatibility issues with some older plugins (Pirol's
+    * raster PlugIn)
+    * I'll remove this method as soon as no more plugin use it
+    * @deprecated
+    */
+    public void dispose(Layerable layerable) {
+        for (Iterator i = categories.iterator(); i.hasNext();) {
+            Category c = (Category) i.next();
+            // deleting the layer from the category
+            int index = c.indexOf(layerable);
+            if (index != -1) {
+                c.remove(layerable);
+                for (Iterator j = layerReferencesToDispose.iterator(); j.hasNext();) {
+                    WeakReference reference = (WeakReference) j.next();
+                    Layer layer = (Layer) reference.get();
+                    if (layer == layerable)
+                    {
+                        // removing the reference to layer
+                        layer.dispose();
+                        layerManagerCount--;
+                    }
+                }
+                // changing appearance of layer tree
+                fireLayerChanged(layerable, LayerEventType.REMOVED, c, index);
+            }
+        }
+    }
 
    /**
     * SIGLE [obedel] on 2005 then [mmichaud] on 2007-05-22
