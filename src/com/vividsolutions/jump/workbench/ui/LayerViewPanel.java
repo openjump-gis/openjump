@@ -96,8 +96,9 @@ public class LayerViewPanel extends JPanel
 	
 	class MouseWheelZoomListener implements MouseWheelListener {
 		 public void mouseWheelMoved(MouseWheelEvent e) {
-			 if (((QuasimodeTool)currentCursorTool).getDelegate() instanceof ZoomTool) {
-				((ZoomTool) ((QuasimodeTool)currentCursorTool).getDelegate()).mouseWheelMoved(e);
+			 if (currentCursorTool instanceof QuasimodeTool) 
+				 if (((QuasimodeTool)currentCursorTool).getDelegate() instanceof ZoomTool) {
+					 ((ZoomTool) ((QuasimodeTool)currentCursorTool).getDelegate()).mouseWheelMoved(e);
 			 }				 
 		 }
 	}
