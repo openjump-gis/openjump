@@ -46,6 +46,7 @@ import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.io.datasource.Connection;
 import com.vividsolutions.jump.io.datasource.DataSource;
 import com.vividsolutions.jump.task.TaskMonitor;
+import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.util.java2xml.XML2Java;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Category;
@@ -53,13 +54,17 @@ import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.model.Task;
+import com.vividsolutions.jump.workbench.model.UndoableEditReceiver;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.ThreadedBasePlugIn;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 
 public class OpenProjectPlugIn extends ThreadedBasePlugIn {
-    private JFileChooser fileChooser;
+	private final static String RECENT_MENU_LIST_KEY = 
+		OpenProjectPlugIn.class.getName() + " - RECENT_MENU_LIST";  //LDB: probably shouldn't internationalize keys
+	public final static int RECENT_MENU_LIST_MAX = 8;
+	private JFileChooser fileChooser;
 
     private Task newTask;
 
@@ -107,6 +112,33 @@ public class OpenProjectPlugIn extends ThreadedBasePlugIn {
         return true;
     }
 
+    public boolean execute(PlugInContext context, File file) throws Exception 
+    {
+    	if (file.exists())
+    	{
+    		WorkbenchContext workbenchContext = context.getWorkbenchContext();
+    		LayerManager layerManager = workbenchContext.getLayerManager();
+    		if (layerManager == null)
+    			return false;
+			UndoableEditReceiver undoableEditReceiver = layerManager.getUndoableEditReceiver();
+			if (undoableEditReceiver != null) 
+			{
+				undoableEditReceiver.startReceiving();
+				reportNothingToUndoYet(context);
+			}
+    		
+          	open(file, context.getWorkbenchFrame());
+          	if (undoableEditReceiver != null)
+          		undoableEditReceiver.stopReceiving();
+          	          	
+          	return true;
+    	}
+    	else
+    	{
+    		return false;
+    	}
+      }
+
     public void run(TaskMonitor monitor, PlugInContext context)
             throws Exception {
         loadLayers(context, sourceTask.getLayerManager(), newTask.getLayerManager(),
@@ -134,7 +166,31 @@ public class OpenProjectPlugIn extends ThreadedBasePlugIn {
             workbenchFrame.addTaskFrame(newTask);
         } finally {
             reader.close();
+            putRecentList(workbenchFrame.getContext(), file.getAbsolutePath());
+            //ArrayList recentList = getRecentList(blackboard); //retrieve list of recent tasks
         }
+    }
+
+    public static ArrayList getRecentList(WorkbenchContext context) {
+        Blackboard blackboard = PersistentBlackboardPlugIn.get(context);
+        if (blackboard.get(RECENT_MENU_LIST_KEY) == null) {
+            blackboard.put(RECENT_MENU_LIST_KEY, new ArrayList(RECENT_MENU_LIST_MAX));
+        }
+        ArrayList list =  (ArrayList) blackboard.get(RECENT_MENU_LIST_KEY);
+        return list;
+    }
+
+    public static void putRecentList(WorkbenchContext context, String path) {
+        Blackboard blackboard = PersistentBlackboardPlugIn.get(context);
+        if (blackboard.get(RECENT_MENU_LIST_KEY) == null) {
+            blackboard.put(RECENT_MENU_LIST_KEY, new ArrayList(RECENT_MENU_LIST_MAX));
+        }
+       ArrayList list = (ArrayList) blackboard.get(RECENT_MENU_LIST_KEY);
+       if (list.contains(path)) return;
+       if (list.size() >= RECENT_MENU_LIST_MAX){
+    	   list.remove(list.size()-1);  //remove last element
+       }
+	   list.add(0,path);  //push rest of list down
     }
 
     private void initializeDataSources(Task task, WorkbenchContext context) {
