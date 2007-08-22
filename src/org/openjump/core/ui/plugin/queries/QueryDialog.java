@@ -27,12 +27,16 @@ import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.util.CollectionMap;
 import com.vividsolutions.jump.workbench.ui.InfoFrame;
 import com.vividsolutions.jump.workbench.ui.FeatureSelection;
+import com.vividsolutions.jump.workbench.model.CategoryEvent;
+import com.vividsolutions.jump.workbench.model.FeatureEvent;
+import com.vividsolutions.jump.workbench.model.LayerEvent;
 import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
 import com.vividsolutions.jump.workbench.model.Layer;
+import com.vividsolutions.jump.workbench.model.LayerListener;
+import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.ui.TaskFrame;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.I18N;
-
 
 
 /**
@@ -134,7 +138,7 @@ public class QueryDialog extends BDialog {
         //}
         this.context = context;
         setTitle(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.query-builder"));
-        initUI();
+        initUI(context);
     }
     
   /**
@@ -161,7 +165,7 @@ public class QueryDialog extends BDialog {
    /**
     * User Interface Initialization
     */
-    protected void initUI() {
+    protected void initUI(PlugInContext context) {
         // LAYOUT DEFINITIONS
         LayoutInfo centerNone6 =
             new LayoutInfo(LayoutInfo.CENTER, LayoutInfo.NONE,
@@ -329,6 +333,13 @@ public class QueryDialog extends BDialog {
         dialogContainer.add(northPanel, dialogContainer.NORTH);
         dialogContainer.add(centerPanel, dialogContainer.CENTER);
         dialogContainer.add(southPanel, dialogContainer.SOUTH);
+        
+        // added on 2007-08-22 to synchronize the UI with layerNamePanel changes
+        context.getLayerManager().addLayerListener(new LayerListener() {
+            public void categoryChanged(CategoryEvent e) {}
+            public void featuresChanged(FeatureEvent e) {}
+            public void layerChanged(LayerEvent e) {if (!runningQuery) refresh();}
+        }); 
         
         initComboBoxes();
         setContent(dialogContainer);
@@ -915,7 +926,8 @@ public class QueryDialog extends BDialog {
                     }
                     if(create.getState()) {
                         context.getLayerManager().addLayer(
-                            context.getLayerManager().getCategory(layer).getName(),
+                            //context.getLayerManager().getCategory(layer).getName(),
+                            StandardCategoryNames.RESULT, // modified on 2007-08-22
                             layer.getName()+"_"+value, dataset
                         );
                     }
