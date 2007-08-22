@@ -33,6 +33,7 @@ package com.vividsolutions.jump.workbench;
 
 import com.vividsolutions.jts.util.*;
 import org.openjump.OpenJumpConfiguration;
+import org.openjump.core.ui.plugin.file.OpenRecentProjectPlugIn;
 import org.openjump.core.ui.plugin.tools.ZoomRealtimeTool;
 
 import com.vividsolutions.jump.I18N;
@@ -239,6 +240,9 @@ public class JUMPConfiguration implements Setup {
     private ImageLayerManagerPlugIn imageLayerManagerPlugIn = new ImageLayerManagerPlugIn();
 
   	private RefreshDataStoreLayerPlugin refreshDataStoreLayerPlugin = new RefreshDataStoreLayerPlugin();
+  	
+  	private OpenRecentProjectPlugIn openRecentProject  = 
+  		new OpenRecentProjectPlugIn();  //LDB: must be defined here after PersistentBlackboardPlugIn
   	
     public void setup(WorkbenchContext workbenchContext) throws Exception {
         configureStyles(workbenchContext);
