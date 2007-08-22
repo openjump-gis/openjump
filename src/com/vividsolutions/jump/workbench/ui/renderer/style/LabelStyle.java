@@ -39,6 +39,11 @@ import java.awt.geom.*;
 import java.util.Iterator;
 import java.util.List;
 
+import java.awt.BasicStroke;
+import java.awt.Stroke;
+
+import org.openjump.core.ui.util.ScreenScale;
+
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.index.quadtree.Quadtree;
 import com.vividsolutions.jts.util.Assert;
@@ -51,6 +56,7 @@ import com.vividsolutions.jump.util.CoordinateArrays;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.Viewport;
+
 public class LabelStyle implements Style {
     public final static int FONT_BASE_SIZE = 12;
     public final static String ABOVE_LINE = "ABOVE_LINE";
@@ -58,10 +64,19 @@ public class LabelStyle implements Style {
     public final static String BELOW_LINE = "BELOW_LINE";
     // At the moment, niternationalization is of no use as the UI display
     // an image in the vertical alignment ComboBox used [mmichaud 2007-06-02]
-    //public static String ABOVE_LINE = I18N.get("ui.renderer.style.LabelStyle.ABOVE_LINE");
-    //public static String ON_LINE = I18N.get("ui.renderer.style.LabelStyle.ON_LINE");
-    //public static String BELOW_LINE =I18N.get("ui.renderer.style.LabelStyle.BELOW_LINE");
+//    public static String ABOVE_LINE = I18N.get("ui.renderer.style.LabelStyle.ABOVE_LINE");
+//    public static String ON_LINE = I18N.get("ui.renderer.style.LabelStyle.ON_LINE");
+//    public static String BELOW_LINE =I18N.get("ui.renderer.style.LabelStyle.BELOW_LINE");
     public static final String FID_COLUMN = "$FID";
+    public final static String JUSTIFY_CENTER_TEXT = 
+    	I18N.get("ui.renderer.style.LabelStyle.center");//"CENTER";
+    public final static String JUSTIFY_LEFT_TEXT   = 
+    	I18N.get("ui.renderer.style.LabelStyle.left");//"LEFT";
+    public final static String JUSTIFY_RIGHT_TEXT  = 
+    	I18N.get("ui.renderer.style.LabelStyle.right");//"RIGHT";
+    public final static int JUSTIFY_CENTER = 0; 
+    public final static int JUSTIFY_LEFT   = 1;
+    public final static int JUSTIFY_RIGHT  = 2; 
     private GeometryFactory factory = new GeometryFactory();
     private Color originalColor;
     private AffineTransform originalTransform;
@@ -79,6 +94,15 @@ public class LabelStyle implements Style {
     private double height = 12;
     private boolean hidingOverlappingLabels = true;
     public String verticalAlignment = ABOVE_LINE;
+    private boolean outlineShowing = false;
+    private Color outlineColor = new Color(230,230,230, 192);
+    private double outlineWidth = 4d;
+    private Stroke outlineStroke = new BasicStroke(4f,
+    		BasicStroke.CAP_BUTT,BasicStroke.JOIN_BEVEL);
+    private boolean hideAtScale = false;
+    private double scaleToHideAt = 20000d;
+    private int horizontalAlignment = JUSTIFY_CENTER;
+    
     public LabelStyle() {}
     public void initialize(Layer layer) {
         labelsDrawn = new Quadtree();
@@ -109,7 +133,7 @@ public class LabelStyle implements Style {
         paint(
             g,
             attribute.toString().trim(),    // added .trim() 2007-07-13 [mmichaud]
-            viewport.getScale(),
+            viewport,//.getScale(),
             labelCentreInViewSpace,
             angle(f, getAngleAttribute(), spec.angle),
             height(f, getHeightAttribute(), getHeight()),
@@ -155,12 +179,18 @@ public class LabelStyle implements Style {
         if (geometry.getDimension() == 1) {
             return modelSpaceLabelSpec1D(geometry);
         }
+        if ( geometry.getDimension() == 0) { //LDB: treat points as linear to justify them
+        	return new ModelSpaceLabelSpec(geometry.getCoordinate(), 0d, true); 
+        }
         return new ModelSpaceLabelSpec(interiorPointFinder.findPoint(geometry), 0, false);
     }
     private ModelSpaceLabelSpec modelSpaceLabelSpec1D(Geometry geometry) {
         LineSegment longestSegment = longestSegment(geometry);
-        return new ModelSpaceLabelSpec(
-            CoordUtil.average(longestSegment.p0, longestSegment.p1),
+        return new ModelSpaceLabelSpec( 
+        	(horizontalAlignment == JUSTIFY_CENTER) ?
+        			CoordUtil.average(longestSegment.p0, longestSegment.p1) : 
+        				(horizontalAlignment == JUSTIFY_LEFT) ? 
+        						longestSegment.p0 : longestSegment.p1 ,
             angle(longestSegment),
             true);
     }
@@ -212,18 +242,25 @@ public class LabelStyle implements Style {
     public void paint(
         Graphics2D g,
         String text,
-        double viewportScale,
+        Viewport viewport,
+        //double viewportScale,
         Point2D viewCentre,
         double angle,
         double height,
         boolean linear) {
         setup(g);
         try {
+        	double viewportScale = viewport.getScale();
             double scale = height / getFont().getSize2D();
             if (isScaling()) {
                 scale *= viewportScale;
             }
-            g.setColor(getColor());
+            if (isHidingAtScale()){
+        		double realScale = ScreenScale.getHorizontalMapScale(viewport);            	
+            	if (realScale > scaleToHideAt)
+            	return;
+            }
+            //g.setColor(getColor());
             TextLayout layout = new TextLayout(text, getFont(), g.getFontRenderContext());
             AffineTransform transform = g.getTransform();
             configureTransform(transform, viewCentre, scale, layout, angle, linear);
@@ -241,6 +278,12 @@ public class LabelStyle implements Style {
                     transformedLabelBoundsEnvelope,
                     transformedLabelBounds);
             }
+            if (outlineShowing) {
+	            g.setColor(outlineColor);
+	            g.setStroke(outlineStroke);
+	            g.draw(layout.getOutline(null));
+            }
+            g.setColor(getColor());
             layout.draw(g, 0, 0);
         } finally {
             cleanup(g);
@@ -283,7 +326,11 @@ public class LabelStyle implements Style {
      */
     private Geometry intersection(Geometry geometry, Viewport viewport)
         throws NoninvertibleTransformException {
-        return geometry.intersection(viewportRectangle(viewport));
+    	Geometry geo = geometry.intersection(viewportRectangle(viewport));
+    	if (geo.getNumGeometries() == 0){
+    		return null;
+    	}
+        return geo;
     }
     private Geometry viewportRectangle(Viewport viewport)
         throws NoninvertibleTransformException {
@@ -314,15 +361,17 @@ public class LabelStyle implements Style {
         TextLayout layout,
         double angle,
         boolean linear) {
-        double xTranslation =
-            viewCentre.getX() - ((scale * layout.getBounds().getWidth()) / 2d);
-        double yTranslation =
-            viewCentre.getY() + ((scale * GUIUtil.trueAscent(layout)) / 2d);
+    	
+        double xTranslation = viewCentre.getX();
+        double yTranslation = viewCentre.getY() + ((scale * GUIUtil.trueAscent(layout)) / 2d);
         if (linear) {
-            yTranslation
-                -= verticalAlignmentOffset(scale * layout.getBounds().getHeight());
+        	xTranslation -= horizontalAlignmentOffset(scale * layout.getBounds().getWidth());
+            yTranslation -= verticalAlignmentOffset(scale * layout.getBounds().getHeight());
         }
-        //Negate the angle because the positive y-axis points downwards.
+        else {
+        	xTranslation -= ((scale * layout.getBounds().getWidth()) / 2d);      	
+        }
+         //Negate the angle because the positive y-axis points downwards.
         //See the #rotate JavaDoc. [Jon Aquino]
         transform.rotate(-angle, viewCentre.getX(), viewCentre.getY());
         transform.translate(xTranslation, yTranslation);
@@ -346,6 +395,21 @@ public class LabelStyle implements Style {
         Assert.shouldNeverReachHere();
         return 0;
     }
+    
+    private double horizontalAlignmentOffset(double width) {
+        if (getHorizontalAlignment()==JUSTIFY_CENTER) {
+            return width/2d;
+        }
+        if (getHorizontalAlignment()==JUSTIFY_LEFT) {
+            return 0;
+        }
+        if (getHorizontalAlignment()==JUSTIFY_RIGHT) {
+            return width;  //LDB: see hack in modelSpaceLabelSpec1D
+        }
+        Assert.shouldNeverReachHere();
+        return 0;
+    }
+    
     public String getAttribute() {
         return attribute;
     }
@@ -373,11 +437,39 @@ public class LabelStyle implements Style {
     public boolean isHidingOverlappingLabels() {
         return hidingOverlappingLabels;
     }
+    public boolean isHidingAtScale() {
+        return hideAtScale;
+    }
+    public boolean getHideAtScale() {
+        return hideAtScale;
+    }
     public String getVerticalAlignment() {
         return verticalAlignment;
+    }    
+    public int getHorizontalAlignment() {
+        return horizontalAlignment;
+    }    
+    public boolean getHidingOverlappingLabels() {
+        return hidingOverlappingLabels;
     }
+    
+    public boolean getOutlineShowing(){
+    	return outlineShowing;
+    }
+    public double getOutlineWidth(){
+    	return outlineWidth;
+    }
+    public double getScaleToHideAt(){
+    	return scaleToHideAt;
+    }
+    public Color getOutlineColor(){
+    	return outlineColor;
+    }    
     public void setVerticalAlignment(String verticalAlignment) {
         this.verticalAlignment = verticalAlignment;
+    }
+    public void setHorizontalAlignment(int horizontalAlignment) {
+        this.horizontalAlignment = horizontalAlignment;
     }
     public void setAttribute(String attribute) {
         this.attribute = attribute;
@@ -405,6 +497,32 @@ public class LabelStyle implements Style {
     }
     public void setHidingOverlappingLabels(boolean hidingOverlappingLabels) {
         this.hidingOverlappingLabels = hidingOverlappingLabels;
+    }
+    public void setOutlineShowing( boolean outlineShowing){
+    	this.outlineShowing = outlineShowing;
+    }
+    public void setOutlineWidth( double outlineWidth){
+    	this.outlineWidth = outlineWidth;
+     	this.outlineStroke = new BasicStroke((float) outlineWidth,
+        		BasicStroke.CAP_BUTT,BasicStroke.JOIN_BEVEL);
+    }
+    public void setScaleToHideAt( double scaleToHideAt){
+    	this.scaleToHideAt = scaleToHideAt;
+    }
+    public void setOutlineColor( Color outlineColor, int alpha){
+    	this.outlineColor = new Color(outlineColor.getRed(),
+    			                      outlineColor.getGreen(),
+       			                      outlineColor.getBlue(),
+       			                      alpha);
+    }
+    public void setOutlineColor( Color outlineColor){
+    	if (outlineColor != null) {
+    		int alpha = this.outlineColor.getAlpha();
+    		setOutlineColor( outlineColor, alpha);
+    	}
+    }
+    public void setHideAtScale( boolean hideAtScale){
+    	this.hideAtScale = hideAtScale;
     }
     public Object clone() {
         try {

@@ -10,4 +10,10 @@
   <element xml-name="verticalAlignment" java-name="verticalAlignment"/>
   <element xml-name="scaled" java-name="scaling"/>
   <element xml-name="overlappingLabelsHidden" java-name="hidingOverlappingLabels"/>
+  <element xml-name="outlineShowing" java-name="outlineShowing"/>
+  <element xml-name="outlineColor" java-name="outlineColor"/>
+  <element xml-name="outlineWidth" java-name="outlineWidth"/>
+  <element xml-name="hideAtScale" java-name="hideAtScale"/>
+  <element xml-name="scaleToHideAt" java-name="scaleToHideAt"/>
+  <element xml-name="horizontalAlignment" java-name="horizontalAlignment"/>
 </root>

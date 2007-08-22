@@ -56,7 +56,48 @@ import com.vividsolutions.jump.workbench.ui.renderer.style.LabelStyle;
 
 
 public class LabelStylePanel extends JPanel implements StylePanel {
-    private static final String NONE = "("+I18N.get("ui.style.LabelStylePanel.none")+")";
+    private static final String NONE = "("+
+    	I18N.get("ui.style.LabelStylePanel.none")+")";
+    private static final String CHOOSE_COLOUR = 
+    	I18N.get("ui.style.LabelStylePanel.choose-colour");
+    private static final String CHOOSE_FONT = 
+    	I18N.get("ui.style.LabelStylePanel.choose-font");
+    private static final String BROWSE = 
+    	I18N.get("ui.style.LabelStylePanel.browse");
+    private static final String LABEL_ATTRIBUTE = 
+    	I18N.get("ui.style.LabelStylePanel.label-attribute");
+    private static final String SCALE_LABELS_WITH_THE_ZOOM_LEVEL = 
+    	I18N.get("ui.style.LabelStylePanel.scale-labels-with-the-zoom-level");
+    private static final String HIDE_LABELS_WHEN = 
+    	I18N.get("ui.style.LabelStylePanel.hide-labels-when"); 
+    private static final String DRAW_OUTLINE_HALO_AROUND_LABELS = 
+    	I18N.get("ui.style.LabelStylePanel.draw-outline-halo-around-labels"); 
+    private static final String ENABLE_LABELLING = 
+    	I18N.get("ui.style.LabelStylePanel.enable-labelling");
+    private static final String HEIGHT = 
+    	I18N.get("ui.style.LabelStylePanel.height");
+    private static final String OUTLINE_WIDTH = 
+    	I18N.get("ui.style.LabelStylePanel.outline-width"); 
+    private static final String PREVIEW_AT_CURRENT_ZOOM_LEVEL = 
+    	I18N.get("ui.style.LabelStylePanel.preview-at-current-zoom-level");
+    private static final String VERTICAL_ALIGNMENT_FOR_POINTS_AND_LINES = 
+    	I18N.get("ui.style.LabelStylePanel.vertical-alignment-for-lines");  
+    private static final String HORIZONTAL_ALIGNMENT_FOR_POINTS_AND_LINES = 
+    	I18N.get("ui.style.LabelStylePanel.horizontal-alignment-for-points_and_lines");
+    private static final String CHANGE_FONT = 
+    	I18N.get("ui.style.LabelStylePanel.change-font");
+    private static final String CHANGE_COLOR = 
+    	I18N.get("ui.style.LabelStylePanel.change-color");  
+    private static final String ANGLE_ATTRIBUTE_DEGREES = 
+    	I18N.get("ui.style.LabelStylePanel.angle-attribute-degrees");
+    private static final String HIDE_OVERLAPPING_LABELS = 
+    	I18N.get("ui.style.LabelStylePanel.hide-overlapping-labels");
+    private static final String HEIGHT_ATTRIBUTE = 
+    	I18N.get("ui.style.LabelStylePanel.height-attribute");
+    private static final String SCALE_IS_BELOW = 
+    	I18N.get("ui.style.LabelStylePanel.scale-is-below");
+
+    private static final String HIDE_AT_SCALE_TEXT = SCALE_IS_BELOW+"   1:";
     private BorderLayout borderLayout1 = new BorderLayout();
     private GridBagLayout gridBagLayout6 = new GridBagLayout();
     private JLabel attributeLabel = new JLabel();
@@ -70,29 +111,29 @@ public class LabelStylePanel extends JPanel implements StylePanel {
     }
 
     private JPanel previewPanel = new JPanel() {
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
 
-                LabelStyle labelStyle = createLabelStyle(layer.getLabelStyle());
+        LabelStyle labelStyle = createLabelStyle(layer.getLabelStyle());
 
-                if (!labelStyle.isEnabled()) {
-                    return;
-                }
+        if (!labelStyle.isEnabled()) {
+            return;
+        }
 
-                labelStyle.initialize(layer);
-                labelStyle.paint((Graphics2D) g, sampleText(),
-                    layerViewPanel.getViewport().getScale(),
-                    new Point2D.Double(getWidth() / 2d, getHeight() / 2d),
-                    layer.getFeatureCollectionWrapper().isEmpty() ? 0
-                                                           : LabelStyle.angle(
-                        (Feature) layer.getFeatureCollectionWrapper().iterator().next(),
-                        getAngleAttribute(), 0),
-                    layer.getFeatureCollectionWrapper().isEmpty() ? getLabelHeight()
-                                                           : LabelStyle.height(
-                        (Feature) layer.getFeatureCollectionWrapper().iterator().next(),
-                        getHeightAttribute(), getLabelHeight()), false);
-            }
-        };
+        labelStyle.initialize(layer);
+        labelStyle.paint((Graphics2D) g, sampleText(),
+            layerViewPanel.getViewport(),//.getScale(),
+            new Point2D.Double(getWidth() / 2d, getHeight() / 2d),
+            layer.getFeatureCollectionWrapper().isEmpty() ? 0
+                                                   : LabelStyle.angle(
+                (Feature) layer.getFeatureCollectionWrapper().iterator().next(),
+                getAngleAttribute(), 0),
+            layer.getFeatureCollectionWrapper().isEmpty() ? getLabelHeight()
+                                                   : LabelStyle.height(
+                (Feature) layer.getFeatureCollectionWrapper().iterator().next(),
+                getHeightAttribute(), getLabelHeight()), false);
+	    }
+	};
 
     private JCheckBox scaleCheckBox = new JCheckBox();
     private Layer layer;
@@ -101,6 +142,7 @@ public class LabelStylePanel extends JPanel implements StylePanel {
     private LayerViewPanel layerViewPanel;
     private JDialog parent;
     private Color color;
+    private Color outlineColor;
     private Font labelFont;
 
     private ValidatingTextField heightTextField = new ValidatingTextField("999",
@@ -120,12 +162,30 @@ public class LabelStylePanel extends JPanel implements StylePanel {
                     }
                 }
             });
+    private ValidatingTextField outlineWidthField = new 
+    		ValidatingTextField("4",7,
+            new ValidatingTextField.Validator() {
+                public boolean isValid(String text) {
+                    if (text.length() == 0) {
+                        return true;
+                    }
+                    try {
+                        Double.parseDouble(text);
+                        return true;
+                    } catch (NumberFormatException e) {
+                        return false;
+                    }
+                }
+            });
     private JLabel heightLabel = new JLabel();
-    private JLabel previewLabel = new JLabel();
+    private JLabel outlineLabel = new JLabel();
+     private JLabel previewLabel = new JLabel();
     private JPanel fillerPanel = new JPanel();
     private JPanel buttonPanel = new JPanel();
     private GridBagLayout gridBagLayout2 = new GridBagLayout();
     private JButton colorButton = new JButton();
+    private JButton outlineColorButton = new JButton();
+    private JPanel outlineButtonPanel = new JPanel();
     private JButton fontButton = new JButton();
     private JPanel jPanel3 = new JPanel();
     private JLabel verticalAlignmentLabel = new JLabel();
@@ -134,7 +194,28 @@ public class LabelStylePanel extends JPanel implements StylePanel {
     private JCheckBox hideOverlappingLabelsCheckBox = new JCheckBox();
     private JLabel heightAttributeLabel = new JLabel();
     private JComboBox heightAttributeComboBox = new JComboBox();
+    private JLabel horizontalAlignmentLabel = new JLabel();
+    private JComboBox horizontalAlignmentComboBox = new JComboBox();
 
+    private JCheckBox showOutlineCheckBox = new JCheckBox();
+    private JCheckBox hideAtScaleCheckBox = new JCheckBox();
+    private JLabel hideAtScaleLabel = new JLabel();
+    private ValidatingTextField hideAtScaleField = new 
+	ValidatingTextField("999999",7,
+    new ValidatingTextField.Validator() {
+        public boolean isValid(String text) {
+            if (text.length() == 0) {
+                return true;
+            }
+            try {
+                Double.parseDouble(text);
+                return true;
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        }
+    });
+    
     public LabelStylePanel(Layer layer, LayerViewPanel layerViewPanel,
         JDialog parent, ErrorHandler errorHandler) {
         try {
@@ -147,6 +228,9 @@ public class LabelStylePanel extends JPanel implements StylePanel {
             verticalAlignmentComboBox.addItem(LabelStyle.ON_LINE);
             verticalAlignmentComboBox.addItem(LabelStyle.BELOW_LINE);
 
+            horizontalAlignmentComboBox.addItem(LabelStyle.JUSTIFY_CENTER_TEXT);
+            horizontalAlignmentComboBox.addItem(LabelStyle.JUSTIFY_LEFT_TEXT);
+            horizontalAlignmentComboBox.addItem(LabelStyle.JUSTIFY_RIGHT_TEXT);
             //Call #setLayer before #jbInit, so no events will be fired. Otherwise,
             //NullPointerExceptions will be thrown. [Jon Aquino]
             setLayer(layer);
@@ -168,8 +252,44 @@ public class LabelStylePanel extends JPanel implements StylePanel {
                         updateControls();
                     }
                 });
-            colorButton.setToolTipText(I18N.get("ui.style.LabelStylePanel.browse"));
-            fontButton.setToolTipText(I18N.get("ui.style.LabelStylePanel.browse"));
+            outlineWidthField.getDocument().addDocumentListener(new DocumentListener() {
+                public void insertUpdate(DocumentEvent e) {
+                    documentChanged();
+                }
+
+                public void removeUpdate(DocumentEvent e) {
+                    documentChanged();
+                }
+
+                public void changedUpdate(DocumentEvent e) {
+                    documentChanged();
+                }
+
+                private void documentChanged() {
+                    updateControls();
+                }
+              });
+            hideAtScaleField.getDocument().addDocumentListener(new DocumentListener() {
+                public void insertUpdate(DocumentEvent e) {
+                    documentChanged();
+                }
+
+                public void removeUpdate(DocumentEvent e) {
+                    documentChanged();
+                }
+
+                public void changedUpdate(DocumentEvent e) {
+                    documentChanged();
+                }
+
+                private void documentChanged() {
+                    updateControls();
+                }
+              });
+            
+            colorButton.setToolTipText(BROWSE);
+            outlineColorButton.setToolTipText(BROWSE);
+            fontButton.setToolTipText(BROWSE);
             updateControls();
             verticalAlignmentComboBox.setRenderer(new ListCellRenderer() {
                     private Icon aboveIcon = IconLoader.icon(
@@ -223,19 +343,28 @@ public class LabelStylePanel extends JPanel implements StylePanel {
 
     private void setLayer(Layer layer) {
         this.layer = layer;
-        setLabelling(layer.getLabelStyle().isEnabled());
+        LabelStyle labelStyle = layer.getLabelStyle();
+        setLabelling(labelStyle.isEnabled());
         setAttributes(layer.getFeatureCollectionWrapper().getFeatureSchema());
-        setAttribute(layer.getLabelStyle().getAttribute());
-        setAngleAttribute(layer.getLabelStyle().getAngleAttribute());
-        setHeightAttribute(layer.getLabelStyle().getHeightAttribute());
-        setColor(layer.getLabelStyle().getColor());
-        setLabelFont(layer.getLabelStyle().getFont());
-        setScaling(layer.getLabelStyle().isScaling());
-        hideOverlappingLabelsCheckBox.setSelected(layer.getLabelStyle()
-                                                       .isHidingOverlappingLabels());
-        heightTextField.setText(layer.getLabelStyle().getHeight() + "");
-        verticalAlignmentComboBox.setSelectedItem(layer.getLabelStyle()
-                                                       .getVerticalAlignment());
+        setAttribute(labelStyle.getAttribute());
+        setAngleAttribute(labelStyle.getAngleAttribute());
+        setHeightAttribute(labelStyle.getHeightAttribute());
+        setColor(labelStyle.getColor());
+        setLabelFont(labelStyle.getFont());
+        setScaling(labelStyle.isScaling());
+        setHideAtScale(labelStyle.isHidingAtScale());
+        setHideAtScaleField(labelStyle.getScaleToHideAt());
+        setOutline(labelStyle.getOutlineShowing());
+        
+        hideOverlappingLabelsCheckBox.setSelected(labelStyle.isHidingOverlappingLabels());
+        heightTextField.setText(labelStyle.getHeight() + "");
+        outlineWidthField.setText(labelStyle.getOutlineWidth() + "");
+        verticalAlignmentComboBox.setSelectedItem(labelStyle.getVerticalAlignment());
+        horizontalAlignmentComboBox.setSelectedIndex(labelStyle.getHorizontalAlignment());
+    }
+    
+    private void setHideAtScaleField(double scaleField) {
+    	hideAtScaleField.setText(scaleField + "");
     }
 
     private void setAttributes(FeatureSchema schema) {
@@ -263,6 +392,10 @@ public class LabelStylePanel extends JPanel implements StylePanel {
 
     private void setColor(Color color) {
         this.color = color;
+    }
+
+    private void setOutlineColor(Color color) {
+        this.outlineColor = color;
     }
 
     private void setAttribute(String attribute) {
@@ -298,152 +431,231 @@ public class LabelStylePanel extends JPanel implements StylePanel {
         scaleCheckBox.setSelected(scaling);
     }
 
+    private void setOutline(boolean showOutline){
+    	showOutlineCheckBox.setSelected(showOutline);
+    }
+
+    private void setHideAtScale(boolean hideAtScale){
+    	 hideAtScaleCheckBox.setSelected(hideAtScale);
+    }
+    
     void jbInit() throws Exception {
         border1 = BorderFactory.createEmptyBorder(10, 10, 10, 10);
         this.setLayout(borderLayout1);
         setLayout(gridBagLayout6);
-        attributeLabel.setText(I18N.get("ui.style.LabelStylePanel.label-attribute"));
+        attributeLabel.setText(LABEL_ATTRIBUTE);
         previewPanel.setBackground(Color.white);
         previewPanel.setBorder(BorderFactory.createLoweredBevelBorder());
         previewPanel.setMaximumSize(new Dimension(200, 40));
         previewPanel.setMinimumSize(new Dimension(200, 40));
         previewPanel.setPreferredSize(new Dimension(200, 40));
-        scaleCheckBox.setText(I18N.get("ui.style.LabelStylePanel.scale-labels-with-the-zoom-level"));
+        scaleCheckBox.setText(SCALE_LABELS_WITH_THE_ZOOM_LEVEL);
         scaleCheckBox.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     scaleCheckBox_actionPerformed(e);
                 }
             });
+        hideAtScaleCheckBox.setText(HIDE_LABELS_WHEN); 
+        hideAtScaleCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	hideAtScaleCheckBox_actionPerformed(e);
+            }
+        });
+        hideAtScaleLabel.setText(HIDE_AT_SCALE_TEXT);
+        showOutlineCheckBox.setText(DRAW_OUTLINE_HALO_AROUND_LABELS);
+        showOutlineCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	showOutlineCheckBox_actionPerformed(e);
+            }
+        });
         setBorder(border1);
-        labellingCheckBox.setText(I18N.get("ui.style.LabelStylePanel.enable-labelling"));
+        labellingCheckBox.setText(ENABLE_LABELLING);
         labellingCheckBox.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     enableLabellingCheckBox_actionPerformed(e);
                 }
             });
-        heightLabel.setText(I18N.get("ui.style.LabelStylePanel.height"));
+        heightLabel.setText(HEIGHT);
         attributeComboBox.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     attributeComboBox_actionPerformed(e);
                 }
             });
+        outlineLabel.setText(OUTLINE_WIDTH);
         angleAttributeComboBox.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     angleAttributeComboBox_actionPerformed(e);
                 }
             });
-        previewLabel.setText(I18N.get("ui.style.LabelStylePanel.preview-at-current-zoom-level"));
+        previewLabel.setText(PREVIEW_AT_CURRENT_ZOOM_LEVEL);
         buttonPanel.setLayout(gridBagLayout2);
-        colorButton.setText(I18N.get("ui.style.LabelStylePanel.change-colour"));
+        outlineButtonPanel.setLayout(gridBagLayout2);
+        colorButton.setText(CHANGE_COLOR);
         colorButton.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     colorButton_actionPerformed(e);
                 }
             });
-        fontButton.setText(I18N.get("ui.style.LabelStylePanel.change-font"));
+        outlineColorButton.setText(CHANGE_COLOR);
+        outlineColorButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	outlineColorButton_actionPerformed(e);
+            }
+        });
+        fontButton.setText(CHANGE_FONT);
         fontButton.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     fontButton_actionPerformed(e);
                 }
             });
-        verticalAlignmentLabel.setText(I18N.get("ui.style.LabelStylePanel.vertical-alignment-for-lines"));
+        verticalAlignmentLabel.setText(VERTICAL_ALIGNMENT_FOR_POINTS_AND_LINES);
         verticalAlignmentComboBox.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     verticalAlignmentComboBox_actionPerformed(e);
                 }
             });
-        angleLabel.setText(I18N.get("ui.style.LabelStylePanel.angle-attribute-degrees"));
-        hideOverlappingLabelsCheckBox.setText(I18N.get("ui.style.LabelStylePanel.hide-overlapping-labels"));
+        horizontalAlignmentLabel.setText(HORIZONTAL_ALIGNMENT_FOR_POINTS_AND_LINES);
+        horizontalAlignmentComboBox.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                	horizontalAlignmentComboBox_actionPerformed(e);
+                }
+            });
+        angleLabel.setText(ANGLE_ATTRIBUTE_DEGREES);
+        hideOverlappingLabelsCheckBox.setText(HIDE_OVERLAPPING_LABELS);
         hideOverlappingLabelsCheckBox.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     hideOverlappingLabelsCheckBox_actionPerformed(e);
                 }
             });
-        heightAttributeLabel.setText(I18N.get("ui.style.LabelStylePanel.height-attribute"));
+        heightAttributeLabel.setText(HEIGHT_ATTRIBUTE);
         heightAttributeComboBox.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     heightAttributeComboBox_actionPerformed(e);
                 }
             });
+        int row = 0;
+        add(labellingCheckBox,
+            new GridBagConstraints(0, row++, 2, 1, 0.0, 0.0,
+                    GridBagConstraints.WEST, GridBagConstraints.NONE,
+                    new Insets(0, 0, 0, 0), 0, 0));
         add(attributeLabel,
-            new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0,
+            new GridBagConstraints(0, row, 1, 1, 0.0, 0.0,
                 GridBagConstraints.WEST, GridBagConstraints.NONE,
                 new Insets(0, 0, 0, 0), 0, 0));
         add(attributeComboBox,
-            new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0,
+            new GridBagConstraints(1, row++, 1, 1, 0.0, 0.0,
                 GridBagConstraints.WEST, GridBagConstraints.NONE,
                 new Insets(2, 4, 2, 0), 0, 0));
-        add(angleAttributeComboBox,
-            new GridBagConstraints(1, 3, 1, 1, 0.0, 0.0,
+        this.add(verticalAlignmentLabel,
+            new GridBagConstraints(0, row, 1, 1, 0.0, 0.0,
+                GridBagConstraints.WEST, GridBagConstraints.NONE,
+                new Insets(0, 0, 0, 0), 0, 0));
+        this.add(verticalAlignmentComboBox,
+            new GridBagConstraints(1, row++, 1, 1, 0.0, 0.0,
+                GridBagConstraints.WEST, GridBagConstraints.NONE,
+                new Insets(2, 4, 2, 0), 0, 0));
+        this.add(horizontalAlignmentLabel,
+		    new GridBagConstraints(0, row, 1, 1, 0.0, 0.0,
+		        GridBagConstraints.WEST, GridBagConstraints.NONE,
+		        new Insets(0, 0, 0, 0), 0, 0));
+		this.add(horizontalAlignmentComboBox,
+		    new GridBagConstraints(1, row++, 1, 1, 0.0, 0.0,
+		        GridBagConstraints.WEST, GridBagConstraints.NONE,
+		        new Insets(2, 4, 2, 0), 0, 0));
+        this.add(angleLabel,
+            new GridBagConstraints(0, row, 1, 1, 0.0, 0.0,
+                GridBagConstraints.WEST, GridBagConstraints.NONE,
+                new Insets(0, 0, 0, 0), 0, 0));
+        this.add(angleAttributeComboBox,
+            new GridBagConstraints(1, row++, 1, 1, 0.0, 0.0,
                 GridBagConstraints.WEST, GridBagConstraints.NONE,
                 new Insets(0, 4, 2, 0), 0, 0));
-        add(previewPanel,
-            new GridBagConstraints(0, 13, 2, 1, 0.0, 0.0,
-                GridBagConstraints.WEST, GridBagConstraints.NONE,
-                new Insets(0, 10, 4, 4), 0, 0));
-        add(scaleCheckBox,
-            new GridBagConstraints(0, 9, 2, 1, 0.0, 0.0,
+        this.add(heightAttributeLabel,
+            new GridBagConstraints(0, row, 1, 1, 0.0, 0.0,
                 GridBagConstraints.WEST, GridBagConstraints.NONE,
                 new Insets(0, 0, 0, 0), 0, 0));
-        add(labellingCheckBox,
-            new GridBagConstraints(0, 0, 2, 1, 0.0, 0.0,
-                GridBagConstraints.WEST, GridBagConstraints.NONE,
-                new Insets(0, 0, 0, 0), 0, 0));
+        this.add(heightAttributeComboBox,
+            new GridBagConstraints(1, row++, 1, 1, 0.0, 0.0,
+	            GridBagConstraints.WEST, GridBagConstraints.NONE, 
+	            new Insets(2, 4, 2, 0), 0, 0));
         this.add(heightTextField,
-              new GridBagConstraints(1, 5, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 4, 0, 0), 0, 0));
+            new GridBagConstraints(1, row, 1, 1, 0.0, 0.0,
+            	GridBagConstraints.WEST, GridBagConstraints.NONE, 
+            	new Insets(0, 4, 0, 0), 0, 0));
         this.add(heightLabel,
-            new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0,
+            new GridBagConstraints(0, row++, 1, 1, 0.0, 0.0,
                 GridBagConstraints.WEST, GridBagConstraints.NONE,
                 new Insets(0, 0, 0, 0), 0, 0));
+        this.add(scaleCheckBox,
+            new GridBagConstraints(0, row++, 2, 1, 0.0, 0.0,
+                GridBagConstraints.WEST, GridBagConstraints.NONE,
+                new Insets(0, 0, 0, 0), 0, 0));
+        this.add(hideAtScaleCheckBox,
+            new GridBagConstraints(0, row++, 2, 1, 0.0, 0.0,
+                    GridBagConstraints.WEST, GridBagConstraints.NONE,
+                    new Insets(0, 0, 0, 0), 0, 0));
+        this.add(hideAtScaleField,
+            new GridBagConstraints(1, row, 1, 1, 0.0, 0.0,
+                GridBagConstraints.WEST, GridBagConstraints.NONE, 
+                new Insets(0, 4, 0, 0), 0, 0));
+        this.add(hideAtScaleLabel,
+            new GridBagConstraints(0, row++, 1, 1, 0.0, 0.0,
+                GridBagConstraints.EAST, GridBagConstraints.NONE,
+                new Insets(0, 0, 0, 0), 0, 0));
+        this.add(hideOverlappingLabelsCheckBox,
+            new GridBagConstraints(0, row++, 2, 1, 0.0, 0.0,
+                GridBagConstraints.WEST, GridBagConstraints.NONE,
+                new Insets(0, 0, 0, 0), 0, 0));
+        this.add(buttonPanel,
+            new GridBagConstraints(0, row++, 3, 1, 0.0, 0.0,
+                GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+                new Insets(0, 0, 0, 0), 0, 0));
+    	        buttonPanel.add(colorButton,
+    	            new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
+    	                GridBagConstraints.CENTER, GridBagConstraints.NONE,
+    	                new Insets(2, 2, 2, 2), 0, 0));
+    	        buttonPanel.add(fontButton,
+    	            new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0,
+    	                GridBagConstraints.CENTER, GridBagConstraints.NONE,
+    	                new Insets(2, 2, 2, 2), 0, 0));
+    	        buttonPanel.add(jPanel3,
+    	            new GridBagConstraints(3, 0, 1, 1, 1.0, 0.0,
+    	                GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+    	                new Insets(0, 0, 0, 0), 0, 0));
+       
+        this.add(showOutlineCheckBox,
+            new GridBagConstraints(0, row++, 2, 1, 0.0, 0.0,
+                GridBagConstraints.WEST, GridBagConstraints.NONE,
+                new Insets(0, 0, 0, 0), 0, 0));
+        this.add(outlineWidthField,
+            new GridBagConstraints(1, row, 1, 1, 0.0, 0.0,
+                GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 4, 0, 0), 0, 0));
+        this.add(outlineLabel,
+            new GridBagConstraints(0, row++, 1, 1, 0.0, 0.0,
+                GridBagConstraints.WEST, GridBagConstraints.NONE,
+                new Insets(0, 0, 0, 0), 0, 0));
+        this.add(outlineButtonPanel,
+            new GridBagConstraints(0, row++, 3, 1, 0.0, 0.0,
+                GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+                new Insets(0, 0, 0, 0), 0, 0));
+	        outlineButtonPanel.add(outlineColorButton,
+                new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
+                    GridBagConstraints.CENTER, GridBagConstraints.NONE,
+                    new Insets(2, 2, 2, 2), 0, 0));
+
         this.add(previewLabel,
-            new GridBagConstraints(0, 12, 2, 1, 0.0, 0.0,
+            new GridBagConstraints(0, row++, 2, 1, 0.0, 0.0,
                 GridBagConstraints.WEST, GridBagConstraints.NONE,
                 new Insets(10, 0, 0, 0), 0, 0));
+        this.add(previewPanel,
+            new GridBagConstraints(0, row++, 2, 1, 0.0, 0.0,
+                GridBagConstraints.WEST, GridBagConstraints.NONE,
+                new Insets(0, 10, 4, 4), 0, 0));
         this.add(fillerPanel,
             new GridBagConstraints(98, 104, 1, 1, 1.0, 1.0,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(0, 0, 0, 0), 0, 0));
-        this.add(buttonPanel,
-            new GridBagConstraints(0, 11, 3, 1, 0.0, 0.0,
-                GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-                new Insets(0, 0, 0, 0), 0, 0));
-        buttonPanel.add(colorButton,
-            new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
-                GridBagConstraints.CENTER, GridBagConstraints.NONE,
-                new Insets(2, 2, 2, 2), 0, 0));
-        buttonPanel.add(fontButton,
-            new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0,
-                GridBagConstraints.CENTER, GridBagConstraints.NONE,
-                new Insets(2, 2, 2, 2), 0, 0));
-        buttonPanel.add(jPanel3,
-            new GridBagConstraints(3, 0, 1, 1, 1.0, 0.0,
-                GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
-                new Insets(0, 0, 0, 0), 0, 0));
-        this.add(verticalAlignmentLabel,
-            new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0,
-                GridBagConstraints.WEST, GridBagConstraints.NONE,
-                new Insets(0, 0, 0, 0), 0, 0));
-        this.add(verticalAlignmentComboBox,
-            new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0,
-                GridBagConstraints.WEST, GridBagConstraints.NONE,
-                new Insets(2, 4, 2, 0), 0, 0));
-        this.add(angleLabel,
-            new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0,
-                GridBagConstraints.WEST, GridBagConstraints.NONE,
-                new Insets(0, 0, 0, 0), 0, 0));
-        this.add(hideOverlappingLabelsCheckBox,
-            new GridBagConstraints(0, 10, 2, 1, 0.0, 0.0,
-                GridBagConstraints.WEST, GridBagConstraints.NONE,
-                new Insets(0, 0, 0, 0), 0, 0));
-        this.add(heightAttributeLabel,
-            new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0,
-                GridBagConstraints.WEST, GridBagConstraints.NONE,
-                new Insets(0, 0, 0, 0), 0, 0));
-        this.add(heightAttributeComboBox,
-             new GridBagConstraints(1, 4, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(2, 4, 2, 0), 0, 0));
-    }
+     }
 
     public void updateStyles() {
         boolean firingEvents = layer.getLayerManager().isFiringEvents();
@@ -489,11 +701,17 @@ public class LabelStylePanel extends JPanel implements StylePanel {
         labelStyle.setAngleAttribute(getAngleAttribute());
         labelStyle.setHeightAttribute(getHeightAttribute());
         labelStyle.setColor(color);
+        labelStyle.setOutlineColor(outlineColor);
         labelStyle.setFont(labelFont);
         labelStyle.setScaling(scaleCheckBox.isSelected());
+        labelStyle.setHideAtScale(hideAtScaleCheckBox.isSelected());
+        labelStyle.setOutlineShowing(showOutlineCheckBox.isSelected());
         labelStyle.setHidingOverlappingLabels(hideOverlappingLabelsCheckBox.isSelected());
         labelStyle.setHeight(getLabelHeight());
+        labelStyle.setOutlineWidth(getOutlineWidth());
+        labelStyle.setScaleToHideAt(getScaleToHideAt());
         labelStyle.setVerticalAlignment((String) verticalAlignmentComboBox.getSelectedItem());
+        labelStyle.setHorizontalAlignment(horizontalAlignmentComboBox.getSelectedIndex());
 
         return labelStyle;
     }
@@ -504,6 +722,19 @@ public class LabelStylePanel extends JPanel implements StylePanel {
         : Double.parseDouble(heightTextField.getText());
     }
 
+    private double getOutlineWidth() {
+        return (outlineWidthField.getText().length() == 0)
+        ? LabelStyle.FONT_BASE_SIZE
+        : Double.parseDouble(outlineWidthField.getText());
+    }
+    
+    private double getScaleToHideAt() {
+        double scale = (hideAtScaleField.getText().length() == 0)
+        ? 20000d
+        : Double.parseDouble(hideAtScaleField.getText());
+        return scale;
+    }
+    
     public void updateControls() {
         previewPanel.repaint();
         attributeLabel.setEnabled(labellingCheckBox.isSelected());
@@ -518,16 +749,29 @@ public class LabelStylePanel extends JPanel implements StylePanel {
             getHeightAttribute().equals(""));
         heightTextField.setEnabled(labellingCheckBox.isSelected() &&
             getHeightAttribute().equals(""));
+        showOutlineCheckBox.setEnabled(labellingCheckBox.isSelected());
+        outlineWidthField.setEnabled(labellingCheckBox.isSelected() &&
+        		showOutlineCheckBox.isSelected());
+        outlineLabel.setEnabled(labellingCheckBox.isSelected() &&
+        		showOutlineCheckBox.isSelected());
+        outlineColorButton.setEnabled(labellingCheckBox.isSelected() &&
+        		showOutlineCheckBox.isSelected());
         scaleCheckBox.setEnabled(labellingCheckBox.isSelected());
         hideOverlappingLabelsCheckBox.setEnabled(labellingCheckBox.isSelected());
+        hideAtScaleCheckBox.setEnabled(labellingCheckBox.isSelected());
+        hideAtScaleLabel.setEnabled(labellingCheckBox.isSelected() &&
+        		hideAtScaleCheckBox.isSelected());
+        hideAtScaleField.setEnabled(labellingCheckBox.isSelected() &&
+        		hideAtScaleCheckBox.isSelected());
         previewLabel.setEnabled(labellingCheckBox.isSelected());
         previewPanel.setEnabled(labellingCheckBox.isSelected());
         verticalAlignmentLabel.setEnabled(labellingCheckBox.isSelected());
         verticalAlignmentComboBox.setEnabled(labellingCheckBox.isSelected());
+        horizontalAlignmentLabel.setEnabled(labellingCheckBox.isSelected());
+        horizontalAlignmentComboBox.setEnabled(labellingCheckBox.isSelected());
     }
-
     void colorButton_actionPerformed(ActionEvent e) {
-        Color newColor = JColorChooser.showDialog(this, I18N.get("ui.style.LabelStylePanel.choose-colour"), color);
+        Color newColor = JColorChooser.showDialog(this, CHOOSE_COLOUR, color);
 
         if (newColor == null) {
             return;
@@ -537,8 +781,16 @@ public class LabelStylePanel extends JPanel implements StylePanel {
         updateControls();
     }
 
+    void outlineColorButton_actionPerformed(ActionEvent e) {
+        Color newColor = JColorChooser.showDialog(this, CHOOSE_COLOUR, color);
+        if (newColor == null) {
+            return;
+        }
+        setOutlineColor(newColor);
+        updateControls();
+    }
     void fontButton_actionPerformed(ActionEvent e) {
-        Font newFont = FontChooser.showDialog(parent, I18N.get("ui.style.LabelStylePanel.choose-font"), labelFont);
+        Font newFont = FontChooser.showDialog(parent, CHOOSE_FONT, labelFont);
 
         if (newFont == null) {
             return;
@@ -561,10 +813,20 @@ public class LabelStylePanel extends JPanel implements StylePanel {
     }
 
     void scaleCheckBox_actionPerformed(ActionEvent e) {
+       updateControls();
+    }
+    void hideAtScaleCheckBox_actionPerformed(ActionEvent e) {
         updateControls();
     }
-
+    void showOutlineCheckBox_actionPerformed(ActionEvent e) {
+        updateControls();
+    }
+    
     void verticalAlignmentComboBox_actionPerformed(ActionEvent e) {
+        updateControls();
+    }
+    
+    void horizontalAlignmentComboBox_actionPerformed(ActionEvent e) {
         updateControls();
     }
 
