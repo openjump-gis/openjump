@@ -2,10 +2,11 @@
 
 JAVA_OPTS=-Xmx256M
 MAIN=com.vividsolutions.jump.workbench.JUMPWorkbench
-SAXDRIVER=org.apache.xerces.parsers.SAXParser 
+SAXDRIVER=org.apache.xerces.parsers.SAXParser
 JAVA=`which java`;
 JUMP_HOME=`dirname $0`/..
 JUMP_PROPERTIES=~/.jump/workbench-properties.xml
+JUMP_STATE=~/.jump/
 
 JUMP_PROFILE=~/.jump/openjump.profile
 if [ -f "$JUMP_PROFILE" ]; then
@@ -33,8 +34,11 @@ export CLASSPATH;
 
 JUMP_OPTS="-plug-in-directory $JUMP_PLUGIN_DIR"
 if [ -f "$JUMP_PROPERTIES" ]; then
-  JUMP_OPTS=$JUMP_OPTS -properties $JUMP_PROPERTIES
+  JUMP_OPTS="$JUMP_OPTS -properties $JUMP_PROPERTIES"
+fi
+
+if ( test -d "$JUMP_STATE" || test -f "$JUMP_STATE") then
+  JUMP_OPTS="$JUMP_OPTS -state $JUMP_STATE"
 fi
 
 $JAVA -cp $CLASSPATH:$JUMP_HOME/bin $JAVA_OPTS -Dorg.xml.sax.driver=$SAXDRIVER $MAIN $JUMP_OPTS
-    

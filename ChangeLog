@@ -1,3 +1,11 @@
+2007-08-24 Andreas Schmitz <schmitz@lat-lon.de>
+        * Added -state command line option to specify a directory where
+          the workbench-state.xml file should be stored (or a file name).
+        * Updated the openjump.sh script to set the -state directory to
+          $HOME/.jump/.
+          scripts/openjump.sh,
+          src/com/vividsolutions/jump/workbench/JUMPWorkbench.java.
+
 2007-08-22 sstein <sstein@geo.unizh.ch>
 
         * added 1.2D release files
@@ -11,14 +19,14 @@
 2007-08-21 beckerl <becker.larry@gmail.com>
         * Added right click on Layer View menu item "Select Layers with Selected Items".
           Made setSelectedLayers() public in TreeLayerNamePanel to support this function.
-          Added I18n strings to all language properties files.  French, German, and Spanish 
+          Added I18n strings to all language properties files.  French, German, and Spanish
           tentative translations made.  Needs check by native speakers.
           org.openjump.OpenJumpConfiguration.java
           org.openjump.core.ui.plugin.mousemenu.SelectLayersWithSelectedItemsPlugIn.java
           com.vividsolutions.jump.workbench.ui.TreeLayerNamePanel.java
           Also cleaned up some code in ZoomTool.mouseWheelMoved today
           and fixed an Exception in LayerViewPanel.MouseWheelZoomListener.
-                
+
 2007-08-21 Andreas Schmitz <schmitz@lat-lon.de>
         * src/org/openjump/core/ui/plugin/layer/ChangeLayerableNamePlugIn.java:
           Catched null name when clicking cancel.

@@ -45,6 +45,7 @@ import com.vividsolutions.jump.workbench.ui.SplashPanel;
 import com.vividsolutions.jump.workbench.ui.SplashWindow;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 
 import java.awt.*;
 import java.awt.event.WindowAdapter;
@@ -56,10 +57,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.*;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.UIManager;
 
 /**
  * This class is responsible for setting up and displaying the main JUMP
@@ -85,6 +82,7 @@ public class JUMPWorkbench {
 	public final static String PLUG_IN_DIRECTORY_OPTION = "plug-in-directory";
 	public final static String I18N_FILE = "i18n";
 	public static final String INITIAL_PROJECT_FILE = "project";
+    public static final String STATE_OPTION = "state";
 	
 	// Added by STanner to allow I18N to have access to this
 	public static String I18N_SETLOCALE = "";
@@ -182,6 +180,17 @@ public class JUMPWorkbench {
 		    this.getBlackboard().put( INITIAL_PROJECT_FILE, task );
 		}
 		
+        if(commandLine.hasOption(STATE_OPTION)) {
+            File option = new File(commandLine.getOption(STATE_OPTION).getArg(0));
+            if(option.isDirectory()) {
+                PersistentBlackboardPlugIn.setPersistenceDirectory(option.getPath());
+            }
+            if(option.isFile()) {
+                PersistentBlackboardPlugIn.setFileName(option.getName());
+                PersistentBlackboardPlugIn.setPersistenceDirectory(option.getAbsoluteFile().getParent());
+            }
+        }
+        
 		plugInManager = new PlugInManager(context, extensionsDirectory, monitor);
 
 		//Load drivers before initializing the frame because part of the frame
@@ -302,6 +311,7 @@ public class JUMPWorkbench {
 		commandLine.addOptionSpec(new OptionSpec(I18N_FILE, 1));
 		//[UT] 17.08.2005 
 		commandLine.addOptionSpec(new OptionSpec( INITIAL_PROJECT_FILE, 1));
+        commandLine.addOptionSpec(new OptionSpec(STATE_OPTION, 1));
 		
 		try {
 			commandLine.parse(args);
