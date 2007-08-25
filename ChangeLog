@@ -1,3 +1,15 @@
+2007-08-25 mmichaud <michael.michaud@free.fr>
+        
+        * SchemaPanel height set to 20 to have a readable combo box
+          with the MetalLookAndFeel
+          
+        * Bug fixed in SaveDatasetAsPlugIn (1770783): now display the
+          layer name in the file chooser
+        
+        * Bug fixed in LoadDatasetPlugIn : refresh the file list each time the
+          plugin is called
+          
+
 2007-08-24 Andreas Schmitz <schmitz@lat-lon.de>
         * Added -state command line option to specify a directory where
           the workbench-state.xml file should be stored (or a file name).
