@@ -38,6 +38,7 @@ import javax.swing.JFileChooser;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 
+import com.vividsolutions.jump.io.datasource.DataSource;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
@@ -52,6 +53,8 @@ import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 public class SaveFileDataSourceQueryChooser extends FileDataSourceQueryChooser {
     private static final String FILE_CHOOSER_DIRECTORY_KEY = SaveFileDataSourceQueryChooser.class.getName() +
         " - FILE CHOOSER DIRECTORY";
+    public static final String FILE_CHOOSER_PANEL_KEY = SaveFileDataSourceQueryChooser.class.getName() +
+            " - SAVE FILE CHOOSER PANEL";
     private WorkbenchContext context;
 
     /**
@@ -64,8 +67,10 @@ public class SaveFileDataSourceQueryChooser extends FileDataSourceQueryChooser {
     }
 
     protected FileChooserPanel getFileChooserPanel() {
-        final String FILE_CHOOSER_PANEL_KEY = SaveFileDataSourceQueryChooser.class.getName() +
-            " - SAVE FILE CHOOSER PANEL";
+        //Moved this local String to a static public String to be able to access to it
+        //from SaveDatasetAsPlugIn [mmichaud 2007-08-25]
+        //final String FILE_CHOOSER_PANEL_KEY = SaveFileDataSourceQueryChooser.class.getName() +
+        //    " - SAVE FILE CHOOSER PANEL";
 
         //SaveFileDataSourceQueryChoosers share the same JFileChooser so that the user's
         //work is not lost when he switches data-source types. The JFileChooser options
@@ -89,7 +94,7 @@ public class SaveFileDataSourceQueryChooser extends FileDataSourceQueryChooser {
                 }
                 public void ancestorMoved(AncestorEvent event) { }
                 public void ancestorRemoved(AncestorEvent event) { }
-            });            
+            });
         }
 
         return (FileChooserPanel) blackboard().get(FILE_CHOOSER_PANEL_KEY);

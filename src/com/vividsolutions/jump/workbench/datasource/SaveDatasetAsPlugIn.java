@@ -31,8 +31,11 @@
  */
 package com.vividsolutions.jump.workbench.datasource;
 
+import java.io.File;
 import java.util.Collection;
+import javax.swing.JFileChooser;
 
+import com.vividsolutions.jump.workbench.datasource.FileDataSourceQueryChooser.FileChooserPanel;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 
@@ -43,6 +46,15 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
 public class SaveDatasetAsPlugIn extends AbstractSaveDatasetAsPlugIn {
     protected Collection showDialog(WorkbenchContext context) {
         GUIUtil.centreOnWindow(getDialog());
+        
+        // initialize the FileChooser with the layer name [mmichaud 2007-08-25]
+        FileChooserPanel fcp = (FileChooserPanel)context.getBlackboard().get(SaveFileDataSourceQueryChooser.FILE_CHOOSER_PANEL_KEY);
+        if (fcp != null) {
+            JFileChooser jfc = fcp.getChooser();
+            jfc.setSelectedFile(new File(jfc.getCurrentDirectory(),
+                                context.getLayerNamePanel().getSelectedLayers()[0].getName()));
+        }
+
         getDialog().setVisible(true);
         return getDialog().wasOKPressed() ? getDialog().getCurrentChooser().getDataSourceQueries() : null;        
     }
