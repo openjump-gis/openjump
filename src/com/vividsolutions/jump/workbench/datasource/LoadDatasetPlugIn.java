@@ -41,6 +41,7 @@ import com.vividsolutions.jump.io.datasource.Connection;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.util.CollectionUtil;
 import com.vividsolutions.jump.util.StringUtil;
+import com.vividsolutions.jump.workbench.datasource.FileDataSourceQueryChooser.FileChooserPanel;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
@@ -147,6 +148,19 @@ public class LoadDatasetPlugIn extends ThreadedBasePlugIn {
     }
 
     public boolean execute(PlugInContext context) throws Exception {
+
+        //Rescan current directory, otherwise, if the directory is updated, one has
+        //to select the parent direcory then to come back to the current directory
+        //in order to update the ui.
+        FileChooserPanel fcp =
+            (FileChooserPanel)context.getWorkbenchContext()
+                                     .getBlackboard()
+                                     .get(LoadFileDataSourceQueryChooser.FILE_CHOOSER_PANEL_KEY);
+        if (fcp != null) {
+            JFileChooser jfc = fcp.getChooser();
+            jfc.rescanCurrentDirectory();
+        }
+        
         GUIUtil.centreOnWindow(getDialog(context));
         getDialog(context).setVisible(true);
 
