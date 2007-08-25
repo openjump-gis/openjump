@@ -376,6 +376,7 @@ public class SchemaPanel extends JPanel {
 
     private void updateComponents() {
         table.setShowGrid(layer.isEditable());
+        table.setRowHeight(20); // fix proposed by uwe to have readable comboboxes with MetalL&F
         applyButton.setEnabled(layer.isEditable());
         revertButton.setEnabled(layer.isEditable());
         forceInvalidConversionsToNullCheckBox.setEnabled(layer.isEditable());
