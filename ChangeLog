@@ -1,3 +1,7 @@
+2007-08-27 paul_d_austin <paul.austin@revolsys.com>
+	* Added some getting methods to FileDataSourceQueryChooser for the
+	  new load dialog implementation.
+	  
 2007-08-25 mmichaud <michael.michaud@free.fr>
         
         * SchemaPanel height set to 20 to have a readable combo box
