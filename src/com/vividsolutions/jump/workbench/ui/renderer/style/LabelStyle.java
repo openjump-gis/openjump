@@ -59,23 +59,25 @@ import com.vividsolutions.jump.workbench.ui.Viewport;
 
 public class LabelStyle implements Style {
     public final static int FONT_BASE_SIZE = 12;
-    public final static String ABOVE_LINE = "ABOVE_LINE";
+    public final static String ABOVE_LINE = "ABOVE_LINE";  //LDB: keep these for Project file
     public final static String ON_LINE = "ON_LINE";
     public final static String BELOW_LINE = "BELOW_LINE";
-    // At the moment, niternationalization is of no use as the UI display
+    public final static String[] verticalAlignmentLookup = {ABOVE_LINE, ON_LINE,BELOW_LINE};
+    // At the moment, internationalization is of no use as the UI display
     // an image in the vertical alignment ComboBox used [mmichaud 2007-06-02]
-//    public static String ABOVE_LINE = I18N.get("ui.renderer.style.LabelStyle.ABOVE_LINE");
-//    public static String ON_LINE = I18N.get("ui.renderer.style.LabelStyle.ON_LINE");
-//    public static String BELOW_LINE =I18N.get("ui.renderer.style.LabelStyle.BELOW_LINE");
+    // Disabled image in ComboBox and replaced with existing I18N text [LDB 2007-08-27]
+    public static String ABOVE_LINE_TEXT = I18N.get("ui.renderer.style.LabelStyle.ABOVE_LINE");
+    public static String ON_LINE_TEXT = I18N.get("ui.renderer.style.LabelStyle.ON_LINE");
+    public static String BELOW_LINE_TEXT =I18N.get("ui.renderer.style.LabelStyle.BELOW_LINE");
     public static final String FID_COLUMN = "$FID";
     public final static String JUSTIFY_CENTER_TEXT = 
-    	I18N.get("ui.renderer.style.LabelStyle.center");//"CENTER";
+    	I18N.get("ui.renderer.style.LabelStyle.center");
     public final static String JUSTIFY_LEFT_TEXT   = 
-    	I18N.get("ui.renderer.style.LabelStyle.left");//"LEFT";
+    	I18N.get("ui.renderer.style.LabelStyle.left");
     public final static String JUSTIFY_RIGHT_TEXT  = 
-    	I18N.get("ui.renderer.style.LabelStyle.right");//"RIGHT";
-    public final static int JUSTIFY_CENTER = 0; 
-    public final static int JUSTIFY_LEFT   = 1;
+    	I18N.get("ui.renderer.style.LabelStyle.right");
+    public final static int JUSTIFY_CENTER = 0; //LDB: in retrospect, should have used text lookup as above
+    public final static int JUSTIFY_LEFT   = 1; // for readabiilty of Project XML file
     public final static int JUSTIFY_RIGHT  = 2; 
     private GeometryFactory factory = new GeometryFactory();
     private Color originalColor;
@@ -324,9 +326,13 @@ public class LabelStyle implements Style {
      * itself may not intersect the viewport. In this case, this method
      * returns null.
      */
-    private Geometry intersection(Geometry geometry, Viewport viewport)
-        throws NoninvertibleTransformException {
-    	Geometry geo = geometry.intersection(viewportRectangle(viewport));
+    private Geometry intersection(Geometry geometry, Viewport viewport) {
+    	Geometry geo;
+    	try {  //LDB: need to catch the NoninvertibleTransformException instead of just throwing it
+    		 geo = geometry.intersection(viewportRectangle(viewport));
+    	} catch (NoninvertibleTransformException e){
+    		return null;
+    	}
     	if (geo.getNumGeometries() == 0){
     		return null;
     	}
