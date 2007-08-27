@@ -224,9 +224,9 @@ public class LabelStylePanel extends JPanel implements StylePanel {
 
             //Populate verticalAlignmentComboBox before calling #setLayer so that
             //initially selected item can be properly set. [Jon Aquino]
-            verticalAlignmentComboBox.addItem(LabelStyle.ABOVE_LINE);
-            verticalAlignmentComboBox.addItem(LabelStyle.ON_LINE);
-            verticalAlignmentComboBox.addItem(LabelStyle.BELOW_LINE);
+            verticalAlignmentComboBox.addItem(LabelStyle.ABOVE_LINE_TEXT);
+            verticalAlignmentComboBox.addItem(LabelStyle.ON_LINE_TEXT);
+            verticalAlignmentComboBox.addItem(LabelStyle.BELOW_LINE_TEXT);
 
             horizontalAlignmentComboBox.addItem(LabelStyle.JUSTIFY_CENTER_TEXT);
             horizontalAlignmentComboBox.addItem(LabelStyle.JUSTIFY_LEFT_TEXT);
@@ -291,27 +291,28 @@ public class LabelStylePanel extends JPanel implements StylePanel {
             outlineColorButton.setToolTipText(BROWSE);
             fontButton.setToolTipText(BROWSE);
             updateControls();
-            verticalAlignmentComboBox.setRenderer(new ListCellRenderer() {
-                    private Icon aboveIcon = IconLoader.icon(
-                            "BigLabelAbove.gif");
-                    private Icon onIcon = IconLoader.icon("BigLabelOn.gif");
-                    private Icon belowIcon = IconLoader.icon(
-                            "BigLabelBelow.gif");
-                    private DefaultListCellRenderer renderer = new DefaultListCellRenderer();
-
-                    public Component getListCellRendererComponent(JList list,
-                        Object value, int index, boolean isSelected,
-                        boolean cellHasFocus) {
-                        JLabel label = (JLabel) renderer.getListCellRendererComponent(list,
-                                "", index, isSelected, cellHasFocus);
-                        label.setIcon(value.equals(LabelStyle.ABOVE_LINE)
-                            ? aboveIcon
-                            : (value.equals(LabelStyle.ON_LINE) ? onIcon
-                                                                : belowIcon));
-
-                        return label;
-                    }
-                });
+            // Disabled image in ComboBox and replaced with existing I18N text [LDB 2007-08-27]
+//            verticalAlignmentComboBox.setRenderer(new ListCellRenderer() {
+//                    private Icon aboveIcon = IconLoader.icon(
+//                            "BigLabelAbove.gif");
+//                    private Icon onIcon = IconLoader.icon("BigLabelOn.gif");
+//                    private Icon belowIcon = IconLoader.icon(
+//                            "BigLabelBelow.gif");
+//                    private DefaultListCellRenderer renderer = new DefaultListCellRenderer();
+//
+//                    public Component getListCellRendererComponent(JList list,
+//                        Object value, int index, boolean isSelected,
+//                        boolean cellHasFocus) {
+//                        JLabel label = (JLabel) renderer.getListCellRendererComponent(list,
+//                                "", index, isSelected, cellHasFocus);
+//                        label.setIcon(value.equals(LabelStyle.ABOVE_LINE)
+//                            ? aboveIcon
+//                            : (value.equals(LabelStyle.ON_LINE) ? onIcon
+//                                                                : belowIcon));
+//
+//                        return label;
+//                    }
+//                });
         } catch (Throwable t) {
             errorHandler.handleThrowable(t);
         }
@@ -710,7 +711,8 @@ public class LabelStylePanel extends JPanel implements StylePanel {
         labelStyle.setHeight(getLabelHeight());
         labelStyle.setOutlineWidth(getOutlineWidth());
         labelStyle.setScaleToHideAt(getScaleToHideAt());
-        labelStyle.setVerticalAlignment((String) verticalAlignmentComboBox.getSelectedItem());
+        //labelStyle.setVerticalAlignment((String) verticalAlignmentComboBox.getSelectedItem());
+        labelStyle.setVerticalAlignment(LabelStyle.verticalAlignmentLookup[verticalAlignmentComboBox.getSelectedIndex()]);
         labelStyle.setHorizontalAlignment(horizontalAlignmentComboBox.getSelectedIndex());
 
         return labelStyle;
