@@ -1,3 +1,12 @@
+2007-08-21 beckerl <becker.larry@gmail.com>
+        * Consolodated Label Style enhancements (from SkyJUMP).
+        * Finished implementation of horizontal alignment in LabelStyle.
+          Replaced the vertical alignment images (Above the line, etc.) with I18N text. 
+        * Added support for halo text. A halo is a surrounding outline in a
+          contrasting color to improve readability when using a mixed background
+        * Added support for hiding text below a specified scale.  This makes it possible
+          to stop text from rendering when zoomed out too far to actually read it
+          
 2007-08-27 paul_d_austin <paul.austin@revolsys.com>
 	* Added some getting methods to FileDataSourceQueryChooser for the
 	  new load dialog implementation.
