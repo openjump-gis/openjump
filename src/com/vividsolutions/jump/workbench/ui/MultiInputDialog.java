@@ -392,7 +392,7 @@ public class MultiInputDialog extends JDialog {
         String toolTipText,
         Collection layers) {
         addComboBox(fieldName, initialValue, layers, toolTipText);
-        getComboBox(fieldName).setRenderer(layerListCellRenderer);
+        getComboBox(fieldName).setRenderer(new LayerNameRenderer());  //LDB try new instead of layerListCellRenderer
         return getComboBox(fieldName);
     }
     public JCheckBox addCheckBox(String fieldName, boolean initialValue) {
