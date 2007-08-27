@@ -140,10 +140,10 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
 	 * Workaround for bug 4238829 in the Java bug database: "JComboBox
 	 * containing JPanel fails to display selected item at creation time"
 	 */
-//	public void setBounds(int x, int y, int w, int h) {
-//		super.setBounds(x, y, w, h);
-//		validate();
-//	}
+	public void setBounds(int x, int y, int w, int h) {
+		super.setBounds(x, y, w, h);
+		validate();
+	}
 
 	public Component getListCellRendererComponent(JList list, Object value,
 			int index, boolean isSelected, boolean cellHasFocus) {
