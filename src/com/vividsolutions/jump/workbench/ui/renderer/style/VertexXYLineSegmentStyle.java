@@ -40,6 +40,7 @@ import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.font.*;
 
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.Viewport;
@@ -75,7 +76,7 @@ public class VertexXYLineSegmentStyle extends LineStringVertexStyle
 
   public static class VertexXY extends VertexXYLineSegmentStyle {
     public VertexXY() {
-      super("Vertex XY", "VertexXYDecorator.gif");
+      super(I18N.get("ui.renderer.style.VertexZValueStyle.Vertex-XY"), "VertexXYDecorator.gif");
     }
   }
 
