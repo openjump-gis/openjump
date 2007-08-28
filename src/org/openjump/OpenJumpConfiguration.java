@@ -57,6 +57,7 @@ import org.openjump.core.ui.plugin.view.ZoomToScalePlugIn;
 import org.openjump.core.ui.plugin.wms.ZoomToWMSPlugIn;
 import org.openjump.core.ui.style.decoration.ArrowLineStringMiddlepointStyle;
 import org.openjump.core.ui.style.decoration.SegmentDownhillArrowStyle;
+import org.openjump.core.ui.style.decoration.VertexZValueStyle;
 import org.openjump.sigle.plugin.geoprocessing.layers.SpatialJoinPlugIn;
 import org.openjump.sigle.plugin.geoprocessing.oneLayer.topology.PlanarGraphPlugIn;
 import org.openjump.sigle.plugin.joinTable.JoinTablePlugIn;
@@ -364,6 +365,8 @@ public class OpenJumpConfiguration{
     workbenchFrame.addChoosableStyleClass(SegmentDownhillArrowStyle.NarrowSolidMiddle.class);
     workbenchFrame.addChoosableStyleClass(SegmentDownhillArrowStyle.Open.class);
     workbenchFrame.addChoosableStyleClass(SegmentDownhillArrowStyle.Solid.class);
+    
+    workbenchFrame.addChoosableStyleClass(VertexZValueStyle.VertexZValue.class);
 		
 		/***********************
 		 *  Set Defaults
