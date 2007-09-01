@@ -1,19 +1,20 @@
 package com.vividsolutions.jump.workbench.ui.plugin;
 
+import java.awt.BorderLayout;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 import javax.imageio.ImageIO;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
+import javax.swing.JPanel;
 import javax.swing.filechooser.FileFilter;
+
+import org.openjump.core.ui.plugin.file.WorldFileWriter;
 
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
@@ -23,6 +24,7 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 
 public class SaveImageAsPlugIn extends ExportImagePlugIn {
     //ImageIO doesn't know about the "gif" format. I guess it's a copyright
@@ -39,6 +41,7 @@ public class SaveImageAsPlugIn extends ExportImagePlugIn {
                 
     private JFileChooser fileChooser = null;
     private WorkbenchContext workbenchContext;
+    private JCheckBox worldFileCheckBox = null;
     
     
     private JFileChooser getFileChooser() {
@@ -67,6 +70,11 @@ public class SaveImageAsPlugIn extends ExportImagePlugIn {
             fileChooser.setFileFilter((FileFilter) formatToFileFilterMap.get(
                     PersistentBlackboardPlugIn.get(workbenchContext)
                             .get(FORMAT_KEY, "png")));
+            JPanel jPanel = new JPanel();
+            fileChooser.add(jPanel,  BorderLayout.SOUTH);
+            worldFileCheckBox = new javax.swing.JCheckBox();
+            worldFileCheckBox.setText(I18N.get("ui.plugin.SaveImageAsPlugIn.write-world-file"));
+            jPanel.add(worldFileCheckBox);
         }
         return fileChooser;
     }
@@ -109,17 +117,20 @@ public class SaveImageAsPlugIn extends ExportImagePlugIn {
         if (JFileChooser.APPROVE_OPTION != getFileChooser()
                 .showSaveDialog(context.getWorkbenchFrame())) {
             return false;
-        }
+        }      
         MyFileFilter fileFilter = (MyFileFilter) getFileChooser()
                 .getFileFilter();
         BufferedImage image = image(context.getLayerViewPanel());
         String filename = addExtension(getFileChooser().getSelectedFile()
                 .getPath(), fileFilter.getFormat());
-        save(image, fileFilter.getFormat(), new File(filename));
+        File imageFile = new File(filename);
+        save(image, fileFilter.getFormat(), imageFile);
         PersistentBlackboardPlugIn.get(workbenchContext)
                 .put(FORMAT_KEY, fileFilter.getFormat());
         PersistentBlackboardPlugIn.get(workbenchContext)
                 .put(LAST_FILENAME_KEY, filename);
+        if ((worldFileCheckBox != null) && (worldFileCheckBox.isSelected()))
+        	WorldFileWriter.writeWorldFile( imageFile,  context.getLayerViewPanel() );
         return true;
     }
 
