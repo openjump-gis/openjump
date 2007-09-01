@@ -1,3 +1,17 @@
+2007-08-31 beckerl <becker.larry@gmail.com>
+        * Improved Tools->Generate->Buffer.
+    	  Supports buffering the selection. Provides a convenience union option.
+          Sidebar picture  previews the current options.  It copies attributes by
+		  default, even from selections on multiple layers, but this can beturned off.  
+		  Supports setting the number of segments in a quarter circle.
+		    com.vividsolutions.jump.workbench.ui.plugin.analysis.BufferPlugIn.java
+		    com.vividsolutions.jump.workbench.ui.images.Butt-union.gif
+		    com.vividsolutions.jump.workbench.ui.images.Butt.gif
+		    com.vividsolutions.jump.workbench.ui.images.Round-union.gif
+		    com.vividsolutions.jump.workbench.ui.images.Round.gif
+		    com.vividsolutions.jump.workbench.ui.images.Square-union.gif
+		    com.vividsolutions.jump.workbench.ui.images.Square.gif
+
 2007-08-28 mmichaud <michael.michaud@free.fr>
         
         * Added a VertexZValue style and internationalized the
