@@ -76,7 +76,7 @@ public class OpenRecentProjectPlugIn extends OpenProjectPlugIn {
         FeatureInstaller featureInstaller = context.getFeatureInstaller();
        if (recentList.size() == 0){
            featureInstaller.addMainMenuItem(this, FILE_MENU,
-        		   OPEN_RECENT_TASK + "{pos:3}", null, 
+        		   OPEN_RECENT_TASK + "{pos:5}", null, 
            		new EnableCheck() {
 		                public String check(JComponent component) {
 		                    return  NO_TASKS_ON_RECENT_LIST;
@@ -88,7 +88,7 @@ public class OpenRecentProjectPlugIn extends OpenProjectPlugIn {
         	//submenus need a little help overriding the default location at the end of the menu
         	JMenu fileMenu = featureInstaller.menuBarMenu(FILE_MENU);
             final JMenu recentMenu =new JMenu(OPEN_RECENT_TASK);
-            fileMenu.insert(recentMenu, 2);
+            fileMenu.insert(recentMenu, 5);
             //once the submenu has been created, the featureInstaller code will do the rest
           	for (int i = 0; i < recentList.size(); i++){
         		openRecentProjectPlugInArray[i] = new OpenRecentProjectPlugIn(i);
