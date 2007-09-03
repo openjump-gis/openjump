@@ -46,12 +46,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.filechooser.FileFilter;
 
 import org.openjump.core.geomutils.GeoUtils;
+import org.openjump.core.ui.images.IconLoader;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
@@ -137,9 +139,11 @@ public class SaveDatasetsPlugIn extends AbstractPlugIn
                                                         .getLayerNamePopupMenu();
         featureInstaller.addPopupMenuItem(layerNamePopupMenu,
             this, sSaveSelectedDatasets +"{pos:12}",
-            false, null,
+            false, ICON,
             SaveDatasetsPlugIn.createEnableCheck(workbenchContext));
     }
+    
+    public static final ImageIcon ICON = IconLoader.icon("disk_multiple.png");
     
     public boolean execute(PlugInContext context) throws Exception
     {
