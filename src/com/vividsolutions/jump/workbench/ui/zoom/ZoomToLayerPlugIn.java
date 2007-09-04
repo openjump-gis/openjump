@@ -36,6 +36,7 @@ package com.vividsolutions.jump.workbench.ui.zoom;
 import java.util.Arrays;
 import java.util.Iterator;
 
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 
@@ -49,6 +50,7 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 
 public class ZoomToLayerPlugIn extends AbstractPlugIn {
@@ -93,4 +95,7 @@ public class ZoomToLayerPlugIn extends AbstractPlugIn {
                 }
             });
     }
+    
+    public static final ImageIcon ICON = IconLoader.icon("zoom.gif");
+
 }

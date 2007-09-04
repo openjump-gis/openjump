@@ -31,12 +31,15 @@
  */
 package com.vividsolutions.jump.workbench.ui.plugin.clipboard;
 
+import javax.swing.ImageIcon;
+
 import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.MacroPlugIn;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugIn;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.DeleteSelectedItemsPlugIn;
 
 
@@ -59,4 +62,7 @@ public class CutSelectedItemsPlugIn extends MacroPlugIn {
     public MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
         return DeleteSelectedItemsPlugIn.createEnableCheck(workbenchContext);
     }
+    
+    public static final ImageIcon ICON = IconLoader.icon("cut.gif");
+
 }

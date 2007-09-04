@@ -33,12 +33,15 @@
 
 package com.vividsolutions.jump.workbench.ui.plugin;
 
+import javax.swing.ImageIcon;
+
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 
 public class RemoveSelectedLayersPlugIn extends AbstractPlugIn {
@@ -77,4 +80,7 @@ public class RemoveSelectedLayersPlugIn extends AbstractPlugIn {
                                      .add(checkFactory.createAtLeastNLayerablesMustBeSelectedCheck(
                 1, Layerable.class));
     }
+    
+    public static final ImageIcon ICON = IconLoader.icon("cross.png");
+
 }

@@ -36,6 +36,8 @@ package com.vividsolutions.jump.workbench.ui.plugin;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javax.swing.ImageIcon;
+
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
@@ -49,6 +51,7 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.EnterWKTDialog;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class AddNewFeaturesPlugIn extends WKTPlugIn {
     public AddNewFeaturesPlugIn() {}
@@ -104,4 +107,7 @@ public class AddNewFeaturesPlugIn extends WKTPlugIn {
             .add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
             .add(checkFactory.createAtLeastNLayersMustBeEditableCheck(1));
     }
+    
+    public static final ImageIcon ICON = IconLoader.icon("add.png");
+
 }
