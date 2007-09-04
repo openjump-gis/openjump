@@ -40,6 +40,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import javax.swing.ImageIcon;
+
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -52,6 +54,7 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
 import com.vividsolutions.jump.workbench.ui.GeometryEditor;
 import com.vividsolutions.jump.workbench.ui.SelectionManagerProxy;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 //Say "delete" for features but "remove" for layers; otherwise, "delete layers" may
 //sound to a user that we're actually deleting the file from the disk. [Jon Aquino]
@@ -113,5 +116,7 @@ public class DeleteSelectedItemsPlugIn extends AbstractPlugIn {
         context.getWorkbench().getFrame().addKeyboardShortcut(KeyEvent.VK_DELETE,
             0, this, createEnableCheck(context));
     }
+
+    public static final ImageIcon ICON = IconLoader.icon("delete.png");
 
 }
