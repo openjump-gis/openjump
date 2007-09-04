@@ -33,11 +33,14 @@ package com.vividsolutions.jump.workbench.datasource;
 
 import java.io.File;
 import java.util.Collection;
+
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 
 import com.vividsolutions.jump.workbench.datasource.FileDataSourceQueryChooser.FileChooserPanel;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 /**
  * Prompts the user to pick a dataset to save.
@@ -81,4 +84,6 @@ public class SaveDatasetAsPlugIn extends AbstractSaveDatasetAsPlugIn {
         return (DataSourceQueryChooserDialog) getContext().getWorkbench()
                 .getBlackboard().get(KEY);
     }
+    
+    public static final ImageIcon ICON = IconLoader.icon("disk.png");
 }
