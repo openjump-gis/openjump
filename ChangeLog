@@ -7,6 +7,14 @@
 		com.vividsolutions.jump.workbench.ui.plugin.DeleteSelectedItemsPlugIn.java
 		com.vividsolutions.jump.workbench.ui.plugin.DeleteAllFeaturesPlugIn.java
 		com.vividsolutions.jump.workbench.ui.images.delete.png
+		com.vividsolutions.jump.workbench.ui.plugin.RemoveSelectedLayersPlugIn.java
+		com.vividsolutions.jump.workbench.ui.images.cross.png
+		com.vividsolutions.jump.workbench.ui.plugin.AddNewFeaturesPlugIn.java
+		com.vividsolutions.jump.workbench.ui.images.add.png
+		com.vividsolutions.jump.workbench.ui.zoomZoomToLayerPlugIn.java
+		com.vividsolutions.jump.workbench.ui.images.zoom.gif
+		com.vividsolutions.jump.workbench.ui.plugin.clipboard.CutSelectedItemsPlugIn.java
+		com.vividsolutions.jump.workbench.ui.images.cut.gif
 		com.vividsolutions.jump.workbench.JUMPConfiguration.java
 		
 2007-09-03 beckerl <becker.larry@gmail.com>
