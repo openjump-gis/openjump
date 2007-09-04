@@ -48,6 +48,7 @@ import com.vividsolutions.jump.workbench.plugin.*;
 import com.vividsolutions.jump.workbench.ui.*;
 import com.vividsolutions.jump.workbench.ui.cursortool.*;
 import com.vividsolutions.jump.workbench.ui.cursortool.editing.*;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.*;
 import com.vividsolutions.jump.workbench.ui.plugin.analysis.*;
 import com.vividsolutions.jump.workbench.ui.plugin.clipboard.*;
@@ -370,7 +371,7 @@ public class JUMPConfiguration implements Setup {
                 CopySelectedItemsPlugIn.createEnableCheck(workbenchContext));
         AttributeTab.addPopupMenuItem(workbenchContext,
                 deleteSelectedItemsPlugIn, deleteSelectedItemsPlugIn.getName(),
-                false, null, DeleteSelectedItemsPlugIn
+                false, DeleteSelectedItemsPlugIn.ICON, DeleteSelectedItemsPlugIn
                         .createEnableCheck(workbenchContext));
     }
 
@@ -424,7 +425,7 @@ public class JUMPConfiguration implements Setup {
                         .createEnableCheck(workbenchContext));*/
         featureInstaller.addPopupMenuItem(layerNamePopupMenu,
         		saveDatasetAsPlugIn, saveDatasetAsPlugIn.getName() + "...",
-                false, null, AbstractSaveDatasetAsPlugIn
+                false, SaveDatasetAsPlugIn.ICON, AbstractSaveDatasetAsPlugIn
                         .createEnableCheck(workbenchContext));
 
         layerNamePopupMenu.addSeparator(); // ===================
@@ -464,7 +465,7 @@ public class JUMPConfiguration implements Setup {
                 PasteItemsPlugIn.createEnableCheck(workbenchContext));
         featureInstaller.addPopupMenuItem(layerNamePopupMenu,
                 deleteAllFeaturesPlugIn, deleteAllFeaturesPlugIn.getName(),
-                false, null, deleteAllFeaturesPlugIn
+                false, DeleteAllFeaturesPlugIn.ICON, deleteAllFeaturesPlugIn
                         .createEnableCheck(workbenchContext));
     }
 
@@ -524,7 +525,7 @@ public class JUMPConfiguration implements Setup {
                 editSelectedFeaturePlugIn.getName(), false, null,
                 EditSelectedFeaturePlugIn.createEnableCheck(workbenchContext));
         featureInstaller.addPopupMenuItem(popupMenu, deleteSelectedItemsPlugIn,
-                deleteSelectedItemsPlugIn.getName(), false, null,
+                deleteSelectedItemsPlugIn.getName(), false, DeleteSelectedItemsPlugIn.ICON,
                 DeleteSelectedItemsPlugIn.createEnableCheck(workbenchContext));
         featureInstaller.addPopupMenuItem(popupMenu,
                 combineSelectedFeaturesPlugIn, combineSelectedFeaturesPlugIn
@@ -551,7 +552,7 @@ public class JUMPConfiguration implements Setup {
                 loadDatasetPlugIn.getName() + "...", false, LoadDatasetPlugIn.getIcon(), LoadDatasetPlugIn
                         .createEnableCheck(workbenchContext));        
         featureInstaller.addMainMenuItemWithJava14Fix(saveDatasetAsPlugIn, new String[] {MenuNames.FILE},
-                saveDatasetAsPlugIn.getName() + "...", false, null,
+                saveDatasetAsPlugIn.getName() + "...", false, SaveDatasetAsPlugIn.ICON,
                 SaveDatasetAsPlugIn.createEnableCheck(workbenchContext));  
         featureInstaller.addMenuSeparator(MenuNames.FILE); // ===================
         featureInstaller.addMainMenuItemWithJava14Fix(newTaskPlugIn, new String[] {MenuNames.FILE}, newTaskPlugIn
@@ -611,7 +612,7 @@ public class JUMPConfiguration implements Setup {
                         .createEnableCheck(workbenchContext));
         featureInstaller.addMenuSeparator(MenuNames.EDIT); // ===================
         featureInstaller.addMainMenuItemWithJava14Fix(deleteSelectedItemsPlugIn, new String[] {MenuNames.EDIT},
-                deleteSelectedItemsPlugIn.getName(), false, null,
+                deleteSelectedItemsPlugIn.getName(), false, DeleteSelectedItemsPlugIn.ICON,
                 DeleteSelectedItemsPlugIn.createEnableCheck(workbenchContext));
         //featureInstaller.addMenuSeparator(MenuNames.EDIT); // ===================
         /*//--[sstein 24 march 2007] moved to new customize menu 
