@@ -1,5 +1,7 @@
 2007-09-03 beckerl <becker.larry@gmail.com>
-		Added menu icons to Save Selected Datasets.,
+		Added menu icons to Save Selected Datasets,Save Dataset As,
+		Delete Selected Items, Delete All Features, Remove Selected Layers,
+		Add New Features, Zoom To Layer, and Cut Selected Items.
 		org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.java
 		org.openjump.core.ui.images.disk_multiple.png
 		com.vividsolutions.jump.workbench.datasource.SaveDatasetAsPlugIn.java
@@ -11,7 +13,7 @@
 		com.vividsolutions.jump.workbench.ui.images.cross.png
 		com.vividsolutions.jump.workbench.ui.plugin.AddNewFeaturesPlugIn.java
 		com.vividsolutions.jump.workbench.ui.images.add.png
-		com.vividsolutions.jump.workbench.ui.zoomZoomToLayerPlugIn.java
+		com.vividsolutions.jump.workbench.ui.ZoomZoomToLayerPlugIn.java
 		com.vividsolutions.jump.workbench.ui.images.zoom.gif
 		com.vividsolutions.jump.workbench.ui.plugin.clipboard.CutSelectedItemsPlugIn.java
 		com.vividsolutions.jump.workbench.ui.images.cut.gif
