@@ -1,4 +1,15 @@
 2007-09-03 beckerl <becker.larry@gmail.com>
+		Added menu icons to Save Selected Datasets.,
+		org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.java
+		org.openjump.core.ui.images.disk_multiple.png
+		com.vividsolutions.jump.workbench.datasource.SaveDatasetAsPlugIn.java
+		com.vividsolutions.jump.workbench.ui.images.disk.png
+		com.vividsolutions.jump.workbench.ui.plugin.DeleteSelectedItemsPlugIn.java
+		com.vividsolutions.jump.workbench.ui.plugin.DeleteAllFeaturesPlugIn.java
+		com.vividsolutions.jump.workbench.ui.images.delete.png
+		com.vividsolutions.jump.workbench.JUMPConfiguration.java
+		
+2007-09-03 beckerl <becker.larry@gmail.com>
 		* Moved menu item to more appropriate posiiton below Open Project.
 		org.openjump.core.ui.plugin.file.OpenRecentProjectPlugIn.java
 		
