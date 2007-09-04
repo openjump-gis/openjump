@@ -345,7 +345,7 @@ public class JUMPConfiguration implements Setup {
                 copySelectedLayersPlugIn.createEnableCheck(workbenchContext));
         featureInstaller.addPopupMenuItem(wmsLayerNamePopupMenu,
                 removeSelectedLayersPlugIn, removeSelectedLayersPlugIn
-                        .getName(), false, null, removeSelectedLayersPlugIn
+                        .getName(), false, RemoveSelectedLayersPlugIn.ICON, removeSelectedLayersPlugIn
                         .createEnableCheck(workbenchContext));
     }
 
@@ -363,7 +363,7 @@ public class JUMPConfiguration implements Setup {
                 viewSchemaPlugIn.getName(), false, ViewSchemaPlugIn.ICON,
                 ViewSchemaPlugIn.createEnableCheck(workbenchContext));
         AttributeTab.addPopupMenuItem(workbenchContext, cutSelectedItemsPlugIn,
-                cutSelectedItemsPlugIn.getName(), false, null,
+                cutSelectedItemsPlugIn.getName(), false,CutSelectedItemsPlugIn.ICON,
                 cutSelectedItemsPlugIn.createEnableCheck(workbenchContext));
         AttributeTab.addPopupMenuItem(workbenchContext,
                 copySelectedItemsPlugIn, copySelectedItemsPlugIn
@@ -388,7 +388,7 @@ public class JUMPConfiguration implements Setup {
 
         layerNamePopupMenu.addSeparator(); // ===================
         featureInstaller.addPopupMenuItem(layerNamePopupMenu,
-                zoomToLayerPlugIn, zoomToLayerPlugIn.getName(), false, null,
+                zoomToLayerPlugIn, zoomToLayerPlugIn.getName(), false, ZoomToLayerPlugIn.ICON,
                 zoomToLayerPlugIn.createEnableCheck(workbenchContext));
         featureInstaller.addPopupMenuItem(layerNamePopupMenu,
                 changeStylesPlugIn, changeStylesPlugIn.getName() + "...",
@@ -447,13 +447,13 @@ public class JUMPConfiguration implements Setup {
                 copySelectedLayersPlugIn.createEnableCheck(workbenchContext));
         featureInstaller.addPopupMenuItem(layerNamePopupMenu,
                 removeSelectedLayersPlugIn, removeSelectedLayersPlugIn
-                        .getName(), false, null, removeSelectedLayersPlugIn
+                        .getName(), false, RemoveSelectedLayersPlugIn.ICON, removeSelectedLayersPlugIn
                         .createEnableCheck(workbenchContext));
 
         layerNamePopupMenu.addSeparator(); // ===================
         featureInstaller.addPopupMenuItem(layerNamePopupMenu,
                 addNewFeaturesPlugIn, addNewFeaturesPlugIn.getName() + "...",
-                false, null, AddNewFeaturesPlugIn
+                false, AddNewFeaturesPlugIn.ICON, AddNewFeaturesPlugIn
                         .createEnableCheck(workbenchContext));
 
         //<<TODO:REFACTORING>> JUMPConfiguration is polluted with a lot of
@@ -513,7 +513,7 @@ public class JUMPConfiguration implements Setup {
                         .getName(), false, null, SelectFeaturesInFencePlugIn
                         .createEnableCheck(workbenchContext));
         featureInstaller.addPopupMenuItem(popupMenu, cutSelectedItemsPlugIn,
-                cutSelectedItemsPlugIn.getName(), false, null,
+                cutSelectedItemsPlugIn.getName(), false, CutSelectedItemsPlugIn.ICON,
                 cutSelectedItemsPlugIn.createEnableCheck(workbenchContext));
         featureInstaller.addPopupMenuItem(popupMenu, copySelectedItemsPlugIn,
                 copySelectedItemsPlugIn.getNameWithMnemonic(), false, null,
@@ -587,7 +587,7 @@ public class JUMPConfiguration implements Setup {
                 redoPlugIn.createEnableCheck(workbenchContext));
         featureInstaller.addMenuSeparator(MenuNames.EDIT); // ===================
         featureInstaller.addMainMenuItemWithJava14Fix(addNewFeaturesPlugIn, new String[] {MenuNames.EDIT},
-                addNewFeaturesPlugIn.getName() + "...", false, null,
+                addNewFeaturesPlugIn.getName() + "...", false, AddNewFeaturesPlugIn.ICON,
                 AddNewFeaturesPlugIn.createEnableCheck(workbenchContext));
         featureInstaller.addMainMenuItemWithJava14Fix(editSelectedFeaturePlugIn, new String[] {MenuNames.EDIT},
                 editSelectedFeaturePlugIn.getName(), false, null,
@@ -602,7 +602,7 @@ public class JUMPConfiguration implements Setup {
                         .createEnableCheck(workbenchContext));
         featureInstaller.addMenuSeparator(MenuNames.EDIT); // ===================
         featureInstaller.addMainMenuItemWithJava14Fix(cutSelectedItemsPlugIn, new String[] {MenuNames.EDIT},
-                cutSelectedItemsPlugIn.getName(), false, null, cutSelectedItemsPlugIn
+                cutSelectedItemsPlugIn.getName(), false, CutSelectedItemsPlugIn.ICON, cutSelectedItemsPlugIn
                         .createEnableCheck(workbenchContext));
         featureInstaller.addMainMenuItem(copySelectedItemsPlugIn, new String[] {MenuNames.EDIT},
                 copySelectedItemsPlugIn.getNameWithMnemonic(), false, null,
@@ -795,7 +795,7 @@ public class JUMPConfiguration implements Setup {
 
         featureInstaller.addMenuSeparator(MENU_LAYER); // ===================
         featureInstaller.addMainMenuItem(removeSelectedLayersPlugIn, MENU_LAYER,
-                removeSelectedLayersPlugIn.getName(), null,
+                removeSelectedLayersPlugIn.getName(), RemoveSelectedLayersPlugIn.ICON,
                 removeSelectedLayersPlugIn.createEnableCheck(workbenchContext));
         featureInstaller.addMainMenuItem(removeSelectedCategoriesPlugIn,
                 MENU_LAYER, removeSelectedCategoriesPlugIn.getName(), null,
