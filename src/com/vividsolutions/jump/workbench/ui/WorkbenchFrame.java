@@ -257,6 +257,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
 					categoryPopupMenu});
 	private int positionIndex = -1;
 	private int primaryInfoFrameIndex = -1;
+  private int addedMenuItems = -1;
 	public WorkbenchFrame(String title, ImageIcon icon,
 			final WorkbenchContext workbenchContext) throws Exception {
 		setTitle(title);
@@ -780,41 +781,14 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
 		closeApplication();
 	}
 	void windowMenu_menuSelected(MenuEvent e) {
-		//<<TODO:MAINTAINABILITY>> This algorithm is not robust. It assumes
-		// the Window
-		//menu has exactly one "regular" menu item (newWindowMenuItem). [Jon
-		// Aquino]
-		int addedMenuItems = 3; //[sstein: new menus: options + log + separator]
-		int allItems = windowMenu.getItemCount();
-		String t = windowMenu.getItem(addedMenuItems).getText();
-		String name = AbstractPlugIn.createName(CloneWindowPlugIn.class);
-		boolean isWindowCloneClass = t.equals(name);				
-		if (windowMenu.getItemCount() > addedMenuItems
-				&& windowMenu.getItem(addedMenuItems) != null
-				&& isWindowCloneClass) {
-			JMenuItem newWindowMenuItem = windowMenu.getItem(addedMenuItems);
-			//windowMenu.removeAll();
-			int loopsdone = 0;
-			for(int itemIdx = addedMenuItems; itemIdx < allItems; itemIdx ++){
-				//-- subtract since number of window-menu-items shrinks				
-				try{
-					//String tt = windowMenu.getItem(itemIdx-loopsdone).getText();
-					//-- [sstein:] an exception for the line above is thrown if the item is a separator
-					//             then, getText seems not to work 
-					windowMenu.remove(itemIdx-loopsdone);
-					loopsdone = loopsdone+1;
-				}
-				catch(Exception exc){
-					//eat -- should be thrown caused by a separator
-					System.out.println("WorkbenchFrame: exception in windowMenu_Selected() ");
-				}				
-			}
-			windowMenu.add(newWindowMenuItem);
-			windowMenu.addSeparator();
-		} else {
-			//ezLink doesn't have a Clone Window menu [Jon Aquino]
-			windowMenu.removeAll();
-		}
+    // If this is the first call get the number of added menu items.
+    // After this point no new menus can be added
+    if (addedMenuItems == -1) {
+      addedMenuItems = windowMenu.getItemCount();
+    }
+    while (windowMenu.getItemCount() > addedMenuItems) {
+      windowMenu.remove(windowMenu.getItemCount()-1);
+    }
 		final JInternalFrame[] frames = desktopPane.getAllFrames();
 		for (int i = 0; i < frames.length; i++) {
 			JMenuItem menuItem = new JMenuItem();

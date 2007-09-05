@@ -1,3 +1,6 @@
+2007-09-05 paul_d_austin <paul.austin@revolsys.com
+	* Removed the hard coded number of items in the Window menu
+
 2007-09-05 beckerl <becker.larry@gmail.com>
 		Fixed NullPointerException when Open Recent Project with no project
 		window open.  Removed execute(context, file) from OpenProjectPlugin.
