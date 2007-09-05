@@ -108,7 +108,7 @@ public class OpenRecentProjectPlugIn extends OpenProjectPlugIn {
     	if (fileName == null) return false;
     	File file = new File(fileName);
     	if (file.exists()) {
-    		execute(context, file);
+          	open(file, context.getWorkbenchFrame());          	
         	return true;
     	}
     	else {
