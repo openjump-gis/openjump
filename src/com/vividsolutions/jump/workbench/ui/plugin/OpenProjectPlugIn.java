@@ -112,33 +112,6 @@ public class OpenProjectPlugIn extends ThreadedBasePlugIn {
         return true;
     }
 
-    public boolean execute(PlugInContext context, File file) throws Exception 
-    {
-    	if (file.exists())
-    	{
-    		WorkbenchContext workbenchContext = context.getWorkbenchContext();
-    		LayerManager layerManager = workbenchContext.getLayerManager();
-    		if (layerManager == null)
-    			return false;
-			UndoableEditReceiver undoableEditReceiver = layerManager.getUndoableEditReceiver();
-			if (undoableEditReceiver != null) 
-			{
-				undoableEditReceiver.startReceiving();
-				reportNothingToUndoYet(context);
-			}
-    		
-          	open(file, context.getWorkbenchFrame());
-          	if (undoableEditReceiver != null)
-          		undoableEditReceiver.stopReceiving();
-          	          	
-          	return true;
-    	}
-    	else
-    	{
-    		return false;
-    	}
-      }
-
     public void run(TaskMonitor monitor, PlugInContext context)
             throws Exception {
         loadLayers(context, sourceTask.getLayerManager(), newTask.getLayerManager(),
