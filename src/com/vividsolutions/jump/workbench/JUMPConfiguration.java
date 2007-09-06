@@ -353,7 +353,7 @@ public class JUMPConfiguration implements Setup {
             final WorkbenchContext workbenchContext,
             FeatureInstaller featureInstaller, EnableCheckFactory checkFactory) {
         AttributeTab.addPopupMenuItem(workbenchContext, editablePlugIn,
-                editablePlugIn.getName(), true, null, editablePlugIn
+                editablePlugIn.getName(), true, EditablePlugIn.ICON, editablePlugIn
                         .createEnableCheck(workbenchContext));
         AttributeTab.addPopupMenuItem(workbenchContext, featureInfoPlugIn,
                 featureInfoPlugIn.getName(), false, GUIUtil
@@ -383,7 +383,7 @@ public class JUMPConfiguration implements Setup {
                 .getFrame().getLayerNamePopupMenu();
 
         featureInstaller.addPopupMenuItem(layerNamePopupMenu, editablePlugIn,
-                editablePlugIn.getName(), true, null, editablePlugIn
+                editablePlugIn.getName(), true, EditablePlugIn.ICON, editablePlugIn
                         .createEnableCheck(workbenchContext));
 
         layerNamePopupMenu.addSeparator(); // ===================
