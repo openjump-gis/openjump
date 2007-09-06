@@ -1,3 +1,11 @@
+2007-09-05 beckerl <becker.larry@gmail.com>
+		* Added menu icons to EditablePlugIn and RotatePlugIn
+		com.vividsolutions.jump.workbench.ui.plugin.EditablePlugIn.java
+		com.vividsolutions.jump.workbench.ui.images.edit.gif
+		org.openjump.core.ui.plugin.mousemenu.RotatePlugIn.java
+		org.openjump.core.ui.images.rotate16.gif
+		com.vividsolutions.jump.workbench.JUMPConfiguration.java
+		
 2007-09-05 paul_d_austin <paul.austin@revolsys.com
 	* Removed the hard coded number of items in the Window menu
 
