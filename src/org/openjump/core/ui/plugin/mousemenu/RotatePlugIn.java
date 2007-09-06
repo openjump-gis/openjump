@@ -38,6 +38,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import javax.swing.ImageIcon;
 import javax.swing.JPopupMenu;
+
+import org.openjump.core.ui.images.IconLoader;
+
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateFilter;
 import com.vividsolutions.jts.geom.Envelope;
@@ -50,8 +53,10 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
+import com.vividsolutions.jump.workbench.ui.cursortool.FeatureInfoTool;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 public class RotatePlugIn extends AbstractPlugIn {
@@ -75,6 +80,8 @@ public class RotatePlugIn extends AbstractPlugIn {
     private Collection methodNames = new ArrayList();
     private String methodNameToRun = METHOD_ABOUTCENTER;
 
+    public static final ImageIcon ICON = IconLoader.icon("Rotate16.gif");
+
     public void initialize(PlugInContext context) throws Exception
     {     
         workbenchContext = context.getWorkbenchContext();
@@ -82,7 +89,7 @@ public class RotatePlugIn extends AbstractPlugIn {
         JPopupMenu popupMenu = LayerViewPanel.popupMenu();
         featureInstaller.addPopupMenuItem(popupMenu,
             this, sRotate,
-            false, null,  //to do: add icon
+            false, ICON, 
             this.createEnableCheck(workbenchContext)); 
         methodNames.add(METHOD_ABOUTCENTER);
         methodNames.add(METHOD_ABOUTCLICKPOINT); 
