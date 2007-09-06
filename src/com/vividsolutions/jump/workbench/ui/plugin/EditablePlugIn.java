@@ -35,6 +35,7 @@ package com.vividsolutions.jump.workbench.ui.plugin;
 import java.util.Arrays;
 import java.util.Iterator;
 
+import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 
@@ -47,10 +48,13 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.cursortool.editing.EditingPlugIn;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class EditablePlugIn extends AbstractPlugIn {
 
     private EditingPlugIn editingPlugIn;
+
+    public static final ImageIcon ICON = IconLoader.icon("edit.gif");
 
     public boolean execute(PlugInContext context) throws Exception {
         reportNothingToUndoYet(context);
