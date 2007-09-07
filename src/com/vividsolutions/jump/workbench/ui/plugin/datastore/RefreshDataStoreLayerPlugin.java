@@ -1,5 +1,6 @@
 package com.vividsolutions.jump.workbench.ui.plugin.datastore;
 
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 
 import com.vividsolutions.jump.I18N;
@@ -15,9 +16,11 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class RefreshDataStoreLayerPlugin extends AbstractPlugIn {
 
+    public static final ImageIcon ICON = IconLoader.icon("arrow_refresh.png");
 
     public RefreshDataStoreLayerPlugin() {
         super(I18N.get("ui.plugin.datastore.RefreshDataStoreLayerPlugin.Refresh-Layer"));

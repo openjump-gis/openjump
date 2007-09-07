@@ -32,6 +32,7 @@
 
 package com.vividsolutions.jump.workbench.ui.plugin;
 
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 
 import com.vividsolutions.jump.I18N;
@@ -45,9 +46,14 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanel;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class MoveLayerablePlugIn extends AbstractPlugIn {
-    public static final MoveLayerablePlugIn UP = new MoveLayerablePlugIn(-1) {
+    
+    public static final ImageIcon UPICON = IconLoader.icon("arrow_up.png");
+    public static final ImageIcon DOWNICON = IconLoader.icon("arrow_down.png");
+
+   public static final MoveLayerablePlugIn UP = new MoveLayerablePlugIn(-1) {
         public String getName() {
             return I18N.get("ui.plugin.MoveLayerablePlugIn.move-layer-up");
         }

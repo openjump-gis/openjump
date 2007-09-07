@@ -329,10 +329,10 @@ public class JUMPConfiguration implements Setup {
                         .createEnableCheck(workbenchContext));
         wmsLayerNamePopupMenu.addSeparator(); // ===================
         featureInstaller.addPopupMenuItem(wmsLayerNamePopupMenu, moveUpPlugIn,
-                moveUpPlugIn.getName(), false, null, moveUpPlugIn
+                moveUpPlugIn.getName(), false, MoveLayerablePlugIn.UPICON, moveUpPlugIn
                         .createEnableCheck(workbenchContext));
         featureInstaller.addPopupMenuItem(wmsLayerNamePopupMenu,
-                moveDownPlugIn, moveDownPlugIn.getName(), false, null,
+                moveDownPlugIn, moveDownPlugIn.getName(), false, MoveLayerablePlugIn.DOWNICON,
                 moveDownPlugIn.createEnableCheck(workbenchContext));
         wmsLayerNamePopupMenu.addSeparator(); // ===================
         featureInstaller.addPopupMenuItem(wmsLayerNamePopupMenu,
@@ -414,7 +414,7 @@ public class JUMPConfiguration implements Setup {
                 ImageLayerManagerPlugIn.createEnableCheck(workbenchContext));
         
         featureInstaller.addPopupMenuItem(layerNamePopupMenu, refreshDataStoreLayerPlugin,
-        		refreshDataStoreLayerPlugin.getName() + "...", false, null,
+        		refreshDataStoreLayerPlugin.getName() + "...", false, RefreshDataStoreLayerPlugin.ICON,
                 RefreshDataStoreLayerPlugin.createEnableCheck(workbenchContext));
 
 
@@ -430,10 +430,10 @@ public class JUMPConfiguration implements Setup {
 
         layerNamePopupMenu.addSeparator(); // ===================
         featureInstaller.addPopupMenuItem(layerNamePopupMenu, moveUpPlugIn,
-                moveUpPlugIn.getName(), false, null, moveUpPlugIn
+                moveUpPlugIn.getName(), false, MoveLayerablePlugIn.UPICON, moveUpPlugIn
                         .createEnableCheck(workbenchContext));
         featureInstaller.addPopupMenuItem(layerNamePopupMenu, moveDownPlugIn,
-                moveDownPlugIn.getName(), false, null, moveDownPlugIn
+                moveDownPlugIn.getName(), false, MoveLayerablePlugIn.DOWNICON, moveDownPlugIn
                         .createEnableCheck(workbenchContext));
 
         layerNamePopupMenu.addSeparator(); // ===================
