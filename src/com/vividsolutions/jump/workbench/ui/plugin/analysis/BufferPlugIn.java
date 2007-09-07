@@ -39,6 +39,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.*;
 
+import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 
@@ -58,6 +59,9 @@ public class BufferPlugIn
     extends AbstractPlugIn
     implements ThreadedPlugIn
 {
+	
+  public static final ImageIcon ICON = IconLoader.icon("buffer.gif");
+
   private  String LAYER ;
   private  String DISTANCE;
   private  String END_CAP_STYLE;

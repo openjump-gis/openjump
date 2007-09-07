@@ -922,7 +922,7 @@ public class JUMPConfiguration implements Setup {
 			new String[] {MenuNames.TOOLS, MenuNames.TOOLS_GENERATE},
 			bufferPlugIn.getName() + "...",
 			false,
-			null,
+			BufferPlugIn.ICON,
 			new MultiEnableCheck()
 			.add(
 					checkFactory
