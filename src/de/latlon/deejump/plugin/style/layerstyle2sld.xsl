@@ -25,11 +25,10 @@
 			xmlns:xlink="http://www.w3.org/1999/xlink"
 			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 			xmlns:app="http://www.deegree.org/app">
-			<xsl:apply-templates select="./layer" />
-			<!-- sometimes it is "project" here -->
+			<xsl:apply-templates select="layer" />
 		</sld:StyledLayerDescriptor>
 	</xsl:template>
-	<!-- template for all layers -->
+
 	<xsl:template match="layer" name="layer">
 		<sld:NamedLayer>
 			<sld:Name>
@@ -47,11 +46,12 @@
 					<sld:Name>
 						<xsl:value-of select="$featureTypeStyle"/>
 					</sld:Name>
-					<xsl:apply-templates select="./styles/style"/>
+					<xsl:apply-templates select="styles/style"/>
 				</sld:FeatureTypeStyle>
 			</sld:UserStyle>
 		</sld:NamedLayer>
 	</xsl:template>
+	
 	<!-- template for theming styles -->
 	<xsl:template match="style" name="basicstyle">
 		<xsl:if test="@class='com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle'">
@@ -99,12 +99,12 @@
 		</xsl:if> <!-- normal color theming style -->
 		<xsl:if test="@class='com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStyle'">
 			<xsl:if test="@enabled='true'">
-				<xsl:apply-templates select="./attribute-value-to-style-map"/>
+				<xsl:apply-templates select="attribute-value-to-style-map"/>
 			</xsl:if>
 		</xsl:if><!-- normal deeJUMP color theming style for points -->
 		<xsl:if test="@class='de.latlon.deejump.plugin.style.DeeColorThemingStyle'">
 			<xsl:if test="@enabled='true'">
-				<xsl:apply-templates select="./attribute-value-to-style-map"/>
+				<xsl:apply-templates select="attribute-value-to-style-map"/>
 			</xsl:if>
 		</xsl:if>
 		<!-- label style -->
@@ -199,6 +199,7 @@
 			</xsl:if>
 		</xsl:if>
 	</xsl:template>
+	
 	<!-- FIXME hmm don't like it. shouldn't go so deep here; should go attribute-value-to-style-map first -->
 	<xsl:template match="attribute-value-to-style-map/mapping" name="rules">
 		<sld:Rule>
@@ -207,14 +208,14 @@
 			</sld:Name>
 			<sld:MinScaleDenominator><xsl:value-of select="$minScale"/></sld:MinScaleDenominator>
 			<sld:MaxScaleDenominator><xsl:value-of select="$maxScale"/></sld:MaxScaleDenominator>
-								<xsl:if test="../@class='java.util.TreeMap'">
+			<xsl:if test="../@class='java.util.TreeMap'">
 				<ogc:Filter>
 					<ogc:PropertyIsLike wildCard="*" singleChar="?" escape="\">
 						<ogc:PropertyName>
 							<xsl:value-of select="../../attribute-name"/>
 						</ogc:PropertyName>
 						<ogc:Literal>
-							<xsl:value-of select="./key"/>
+							<xsl:value-of select="key"/>
 						</ogc:Literal>
 					</ogc:PropertyIsLike>
 				</ogc:Filter>
@@ -227,15 +228,15 @@
 						</ogc:PropertyName>
 						<ogc:LowerBoundary>
 							<ogc:Literal>
-								<xsl:value-of select="./key/min"/>
+								<xsl:value-of select="key/min"/>
 							</ogc:Literal>
 						</ogc:LowerBoundary>
 						<ogc:UpperBoundary>
 							<ogc:Literal>
 								<xsl:choose>
 									<xsl:when test="./key/max/@class='com.vividsolutions.jump.util.Range$PositiveInfinity'">
-								999999999
-								</xsl:when>
+										999999999
+									</xsl:when>
 									<xsl:otherwise>
 										<xsl:value-of select="./key/max"/>
 									</xsl:otherwise>
@@ -250,17 +251,15 @@
 					<sld:PolygonSymbolizer>
 						<sld:Geometry>
 							<ogc:PropertyName><xsl:value-of select="$geomProperty"/></ogc:PropertyName>
-							<!-- [PENDING: this is actually user input; but for shapes almost always GEOM ] -->
 						</sld:Geometry>
-						<xsl:apply-templates select="./value/fill"/>
-						<xsl:apply-templates select="./value/line"/>
+						<xsl:apply-templates select="value/fill"/>
+						<xsl:apply-templates select="value/line"/>
 					</sld:PolygonSymbolizer>
 				</xsl:when>
 				<xsl:when test="contains($geoType,'Line')">
 					<sld:LineSymbolizer>
 						<sld:Geometry>
-							<ogc:PropertyName>GEOM</ogc:PropertyName>
-							<!-- [PENDING: this is actually user input; but for shapes almost always GEOM ] -->
+							<ogc:PropertyName><xsl:value-of select="$geomProperty"/></ogc:PropertyName>
 						</sld:Geometry>
 						<xsl:apply-templates select="./value/line"/>
 					</sld:LineSymbolizer>
@@ -268,7 +267,7 @@
 				<xsl:when test="contains($geoType,'Point')">
 					<sld:PointSymbolizer>
 						<sld:Geometry>
-							<ogc:PropertyName>GEOM</ogc:PropertyName>
+							<ogc:PropertyName><xsl:value-of select="$geomProperty"/></ogc:PropertyName>
 						</sld:Geometry>
 						<sld:Graphic>
 							<xsl:choose>

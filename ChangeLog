@@ -1,56 +1,72 @@
+2007-09-10 Andreas Schmitz <schmitz@lat-lon.de>
+        src/language/jump_fi.properties,
+        src/language/jump.properties,
+        src/language/jump_zh_CN.properties,
+        src/language/jump_en.properties,
+        src/language/jump_pt.properties,
+        src/language/jump_pt_BR.properties,
+        src/language/jump_es.properties,
+        src/language/jump_fr.properties,
+        src/language/jump_de.properties,
+        src/de/latlon/deejump/plugin/style/LayerStyle2SLDPlugIn.java,
+        src/de/latlon/deejump/plugin/style/layerstyle2sld.xsl:
+        Fixed the Style2SLD plugin. The plugin did not work correctly
+        because of a mixup of I18N strings and parameters for the xsl
+        script.
+
 2007-09-06 beckerl <becker.larry@gmail.com>
-		* Added menu icons to MoveLayerablePlugIn, BufferPlugIn, and RefreshDataStoreLayerPlugin
-		com.vividsolutions.jump.workbench.ui.plugin.MoveLayerablePlugIn.java
-		com.vividsolutions.jump.workbench.ui.plugin.datastore.RefreshDataStoreLayerPlugin.java
-		com.vividsolutions.jump.workbench.ui.plugin.analysis.BufferPlugIn.java
-		com.vividsolutions.jump.workbench.ui.images.arrow_refresh.png
-		com.vividsolutions.jump.workbench.ui.images.arrow_up.png
-		com.vividsolutions.jump.workbench.ui.images.arrow_down.png
-		com.vividsolutions.jump.workbench.ui.images.buffer.gif
-		com.vividsolutions.jump.workbench.JUMPConfiguration.java
+                * Added menu icons to MoveLayerablePlugIn, BufferPlugIn, and RefreshDataStoreLayerPlugin
+                com.vividsolutions.jump.workbench.ui.plugin.MoveLayerablePlugIn.java
+                com.vividsolutions.jump.workbench.ui.plugin.datastore.RefreshDataStoreLayerPlugin.java
+                com.vividsolutions.jump.workbench.ui.plugin.analysis.BufferPlugIn.java
+                com.vividsolutions.jump.workbench.ui.images.arrow_refresh.png
+                com.vividsolutions.jump.workbench.ui.images.arrow_up.png
+                com.vividsolutions.jump.workbench.ui.images.arrow_down.png
+                com.vividsolutions.jump.workbench.ui.images.buffer.gif
+                com.vividsolutions.jump.workbench.JUMPConfiguration.java
 
 2007-09-05 beckerl <becker.larry@gmail.com>
-		* Added menu icons to EditablePlugIn and RotatePlugIn
-		com.vividsolutions.jump.workbench.ui.plugin.EditablePlugIn.java
-		com.vividsolutions.jump.workbench.ui.images.edit.gif
-		org.openjump.core.ui.plugin.mousemenu.RotatePlugIn.java
-		org.openjump.core.ui.images.rotate16.gif
-		com.vividsolutions.jump.workbench.JUMPConfiguration.java
-		
+                * Added menu icons to EditablePlugIn and RotatePlugIn
+                com.vividsolutions.jump.workbench.ui.plugin.EditablePlugIn.java
+                com.vividsolutions.jump.workbench.ui.images.edit.gif
+                org.openjump.core.ui.plugin.mousemenu.RotatePlugIn.java
+                org.openjump.core.ui.images.rotate16.gif
+                com.vividsolutions.jump.workbench.JUMPConfiguration.java
+
 2007-09-05 paul_d_austin <paul.austin@revolsys.com
-	* Removed the hard coded number of items in the Window menu
+        * Removed the hard coded number of items in the Window menu
 
 2007-09-05 beckerl <becker.larry@gmail.com>
-		Fixed NullPointerException when Open Recent Project with no project
-		window open.  Removed execute(context, file) from OpenProjectPlugin.
-		com.vividsolutions.jump.workbench.ui.plugin.OpenProjectPlugIn.java
-		org.openjump.core.ui.plugin.file.OpenRecentProjectPlugIn.java
-		
+                Fixed NullPointerException when Open Recent Project with no project
+                window open.  Removed execute(context, file) from OpenProjectPlugin.
+                com.vividsolutions.jump.workbench.ui.plugin.OpenProjectPlugIn.java
+                org.openjump.core.ui.plugin.file.OpenRecentProjectPlugIn.java
+
 2007-09-03 beckerl <becker.larry@gmail.com>
-		Added menu icons to Save Selected Datasets,Save Dataset As,
-		Delete Selected Items, Delete All Features, Remove Selected Layers,
-		Add New Features, Zoom To Layer, and Cut Selected Items.
-		org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.java
-		org.openjump.core.ui.images.disk_multiple.png
-		com.vividsolutions.jump.workbench.datasource.SaveDatasetAsPlugIn.java
-		com.vividsolutions.jump.workbench.ui.images.disk.png
-		com.vividsolutions.jump.workbench.ui.plugin.DeleteSelectedItemsPlugIn.java
-		com.vividsolutions.jump.workbench.ui.plugin.DeleteAllFeaturesPlugIn.java
-		com.vividsolutions.jump.workbench.ui.images.delete.png
-		com.vividsolutions.jump.workbench.ui.plugin.RemoveSelectedLayersPlugIn.java
-		com.vividsolutions.jump.workbench.ui.images.cross.png
-		com.vividsolutions.jump.workbench.ui.plugin.AddNewFeaturesPlugIn.java
-		com.vividsolutions.jump.workbench.ui.images.add.png
-		com.vividsolutions.jump.workbench.ui.ZoomZoomToLayerPlugIn.java
-		com.vividsolutions.jump.workbench.ui.images.zoom.gif
-		com.vividsolutions.jump.workbench.ui.plugin.clipboard.CutSelectedItemsPlugIn.java
-		com.vividsolutions.jump.workbench.ui.images.cut.gif
-		com.vividsolutions.jump.workbench.JUMPConfiguration.java
-		
+                Added menu icons to Save Selected Datasets,Save Dataset As,
+                Delete Selected Items, Delete All Features, Remove Selected Layers,
+                Add New Features, Zoom To Layer, and Cut Selected Items.
+                org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.java
+                org.openjump.core.ui.images.disk_multiple.png
+                com.vividsolutions.jump.workbench.datasource.SaveDatasetAsPlugIn.java
+                com.vividsolutions.jump.workbench.ui.images.disk.png
+                com.vividsolutions.jump.workbench.ui.plugin.DeleteSelectedItemsPlugIn.java
+                com.vividsolutions.jump.workbench.ui.plugin.DeleteAllFeaturesPlugIn.java
+                com.vividsolutions.jump.workbench.ui.images.delete.png
+                com.vividsolutions.jump.workbench.ui.plugin.RemoveSelectedLayersPlugIn.java
+                com.vividsolutions.jump.workbench.ui.images.cross.png
+                com.vividsolutions.jump.workbench.ui.plugin.AddNewFeaturesPlugIn.java
+                com.vividsolutions.jump.workbench.ui.images.add.png
+                com.vividsolutions.jump.workbench.ui.ZoomZoomToLayerPlugIn.java
+                com.vividsolutions.jump.workbench.ui.images.zoom.gif
+                com.vividsolutions.jump.workbench.ui.plugin.clipboard.CutSelectedItemsPlugIn.java
+                com.vividsolutions.jump.workbench.ui.images.cut.gif
+                com.vividsolutions.jump.workbench.JUMPConfiguration.java
+
 2007-09-03 beckerl <becker.larry@gmail.com>
-		* Moved menu item to more appropriate posiiton below Open Project.
-		org.openjump.core.ui.plugin.file.OpenRecentProjectPlugIn.java
-		
+                * Moved menu item to more appropriate posiiton below Open Project.
+                org.openjump.core.ui.plugin.file.OpenRecentProjectPlugIn.java
+
 2007-09-01 beckerl <becker.larry@gmail.com>
         * Added an option to "Write world file" in the Save Image As dialog.
         I18N strings were added but need translation.
@@ -59,47 +75,47 @@
 
 2007-08-31 beckerl <becker.larry@gmail.com>
         * Improved Tools->Generate->Buffer.
-    	  Supports buffering the selection. Provides a convenience union option.
+          Supports buffering the selection. Provides a convenience union option.
           Sidebar picture  previews the current options.  It copies attributes by
-		  default, even from selections on multiple layers, but this can beturned off.  
-		  Supports setting the number of segments in a quarter circle.
-		    com.vividsolutions.jump.workbench.ui.plugin.analysis.BufferPlugIn.java
-		    com.vividsolutions.jump.workbench.ui.images.Butt-union.gif
-		    com.vividsolutions.jump.workbench.ui.images.Butt.gif
-		    com.vividsolutions.jump.workbench.ui.images.Round-union.gif
-		    com.vividsolutions.jump.workbench.ui.images.Round.gif
-		    com.vividsolutions.jump.workbench.ui.images.Square-union.gif
-		    com.vividsolutions.jump.workbench.ui.images.Square.gif
+                  default, even from selections on multiple layers, but this can beturned off.
+                  Supports setting the number of segments in a quarter circle.
+                    com.vividsolutions.jump.workbench.ui.plugin.analysis.BufferPlugIn.java
+                    com.vividsolutions.jump.workbench.ui.images.Butt-union.gif
+                    com.vividsolutions.jump.workbench.ui.images.Butt.gif
+                    com.vividsolutions.jump.workbench.ui.images.Round-union.gif
+                    com.vividsolutions.jump.workbench.ui.images.Round.gif
+                    com.vividsolutions.jump.workbench.ui.images.Square-union.gif
+                    com.vividsolutions.jump.workbench.ui.images.Square.gif
 
 2007-08-28 mmichaud <michael.michaud@free.fr>
-        
+
         * Added a VertexZValue style and internationalized the
           VertexXYLineSegment style
 
 2007-08-21 beckerl <becker.larry@gmail.com>
         * Consolodated Label Style enhancements (from SkyJUMP).
         * Finished implementation of horizontal alignment in LabelStyle.
-          Replaced the vertical alignment images (Above the line, etc.) with I18N text. 
+          Replaced the vertical alignment images (Above the line, etc.) with I18N text.
         * Added support for halo text. A halo is a surrounding outline in a
           contrasting color to improve readability when using a mixed background
         * Added support for hiding text below a specified scale.  This makes it possible
           to stop text from rendering when zoomed out too far to actually read it
-          
+
 2007-08-27 paul_d_austin <paul.austin@revolsys.com>
-	    * Added some getting methods to FileDataSourceQueryChooser for the
-	      new load dialog implementation.
-	  
+            * Added some getting methods to FileDataSourceQueryChooser for the
+              new load dialog implementation.
+
 2007-08-25 mmichaud <michael.michaud@free.fr>
-        
+
         * SchemaPanel height set to 20 to have a readable combo box
           with the MetalLookAndFeel
-          
+
         * Bug fixed in SaveDatasetAsPlugIn (1770783): now display the
           layer name in the file chooser
-        
+
         * Bug fixed in LoadDatasetPlugIn : refresh the file list each time the
           plugin is called
-          
+
 
 2007-08-24 Andreas Schmitz <schmitz@lat-lon.de>
         * Added -state command line option to specify a directory where
