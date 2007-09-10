@@ -10,6 +10,20 @@
         src/language/jump_de.properties,
         src/de/latlon/deejump/plugin/style/LayerStyle2SLDPlugIn.java,
         src/de/latlon/deejump/plugin/style/layerstyle2sld.xsl:
+        Added namespace capability to SLD export.
+
+2007-09-10 Andreas Schmitz <schmitz@lat-lon.de>
+        src/language/jump_fi.properties,
+        src/language/jump.properties,
+        src/language/jump_zh_CN.properties,
+        src/language/jump_en.properties,
+        src/language/jump_pt.properties,
+        src/language/jump_pt_BR.properties,
+        src/language/jump_es.properties,
+        src/language/jump_fr.properties,
+        src/language/jump_de.properties,
+        src/de/latlon/deejump/plugin/style/LayerStyle2SLDPlugIn.java,
+        src/de/latlon/deejump/plugin/style/layerstyle2sld.xsl:
         Fixed the Style2SLD plugin. The plugin did not work correctly
         because of a mixup of I18N strings and parameters for the xsl
         script.

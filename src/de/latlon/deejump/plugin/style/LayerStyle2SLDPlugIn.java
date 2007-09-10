@@ -49,11 +49,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.Reader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -66,6 +68,8 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.openjump.core.ui.util.ScreenScale;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -96,6 +100,8 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
  */
 public class LayerStyle2SLDPlugIn extends AbstractPlugIn {
 
+    private static final Logger LOG = Logger.getLogger( LayerStyle2SLDPlugIn.class );
+
     /**
      * The <code>Transformer</code> object used in the transformation of a task/project/layer xml
      * to sld.
@@ -114,7 +120,7 @@ public class LayerStyle2SLDPlugIn extends AbstractPlugIn {
 
     private MultiInputDialog dialog;
 
-    private String styleTitle, geomProperty, styleName, wmsLayerName;
+    private String styleTitle, geomProperty, styleName, wmsLayerName, namespace, prefix;
 
     private String featureTypeStyle;
 
@@ -192,6 +198,8 @@ public class LayerStyle2SLDPlugIn extends AbstractPlugIn {
         styleTitle = dialog.getText( I18N.get( "deejump.pluging.style.LayerStyle2SLDPlugIn.Style-title" ) );
         featureTypeStyle = dialog.getText( I18N.get( "deejump.pluging.style.LayerStyle2SLDPlugIn.Feature-Type-Style" ) );
         geomProperty = dialog.getText( I18N.get( "deejump.pluging.style.LayerStyle2SLDPlugIn.geomProperty" ) );
+        namespace = dialog.getText( I18N.get( "deejump.pluging.style.LayerStyle2SLDPlugIn.Namespace" ) );
+        prefix = namespace.substring( namespace.lastIndexOf( '/' ) + 1 );
 
         if ( fileChooser == null ) {
             fileChooser = new JFileChooser();
@@ -264,6 +272,9 @@ public class LayerStyle2SLDPlugIn extends AbstractPlugIn {
                                  I18N.get( "deejump.pluging.style.LayerStyle2SLDPlugIn.Style-title" ) );
             dialog.addTextField( I18N.get( "deejump.pluging.style.LayerStyle2SLDPlugIn.Feature-Type-Style" ), name, 25,
                                  null, I18N.get( "deejump.pluging.style.LayerStyle2SLDPlugIn.Feature-Type-Style" ) );
+            dialog.addTextField( I18N.get( "deejump.pluging.style.LayerStyle2SLDPlugIn.Namespace" ),
+                                 "http://www.deegree.org/app", 25, null,
+                                 I18N.get( "deejump.pluging.style.LayerStyle2SLDPlugIn.Namespace" ) );
             GUIUtil.centreOnWindow( dialog );
         }
     }
@@ -290,6 +301,9 @@ public class LayerStyle2SLDPlugIn extends AbstractPlugIn {
         map.put( "styleTitle", styleTitle );
         map.put( "geoType", geoType );
         map.put( "geomProperty", geomProperty );
+        map.put( "Namespace", namespace );
+        map.put( "NamespacePrefix", prefix + ":" );
+        map.put( "NamespacePrefixWithoutColon", prefix );
 
         // ATENTION : note that min and max are swapped in JUMP!!!
         // will swap later, in transformContext
@@ -319,14 +333,18 @@ public class LayerStyle2SLDPlugIn extends AbstractPlugIn {
     // // will need this? extend threaded plug-in
     // }
 
-    public static String transformContext( InputStream layerXML, HashMap<String, String> parMap )
+    public static String transformContext( InputStream layerXML, Map<String, String> parMap )
                             throws TransformerException, UnsupportedEncodingException {
+        return transformContext( new InputStreamReader( layerXML, UTF_8 ), parMap );
+    }
+
+    public static String transformContext( Reader layerXML, Map<String, String> parMap )
+                            throws TransformerException {
 
         StringWriter sw = new StringWriter();
         StreamResult sr = new StreamResult( sw );
 
-        InputStreamReader isr = new InputStreamReader( layerXML, UTF_8 );
-        StreamSource streamSource = new StreamSource( isr );
+        StreamSource streamSource = new StreamSource( layerXML );
 
         // if you don't clear the pars, xalan throws a nasty NPE
         transformer.clearParameters();
@@ -342,7 +360,10 @@ public class LayerStyle2SLDPlugIn extends AbstractPlugIn {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        // System.out.println( "sw.toString(): " + sw.toString() );
+
+        if ( LOG.getLevel() == Level.DEBUG ) {
+            LOG.debug( sw.toString() );
+        }
 
         return sw.toString();
     }
