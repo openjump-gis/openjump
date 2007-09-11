@@ -135,6 +135,7 @@ public class ShapefileReader implements JUMPReader {
         DbfFile mydbf = getDbfFile(dbfFileName, dp.getProperty(COMPRESSED_FILE_PROPERTY_KEY));
         GeometryFactory factory = new GeometryFactory();
         GeometryCollection collection = myshape.read(factory);
+        myshape.close(); //ensure we can delete input shape files before task is closed
         FeatureSchema fs = new FeatureSchema();
 
         // fill in schema

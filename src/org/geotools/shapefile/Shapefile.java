@@ -83,6 +83,16 @@ public class Shapefile  {
        myInputStream = IS;
     }
     
+    public void close()
+    {
+    	try
+    	{
+    		myInputStream.close();
+    	}
+    	catch (IOException ex)
+    	{
+    	}
+    }
     
     private EndianDataInputStream getInputStream() throws IOException
     {
