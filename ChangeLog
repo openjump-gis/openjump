@@ -1,3 +1,8 @@
+2007-09-11 beckerl <becker.larry@gmail.com>
+          * Closed the shape file after it was read to allow it to be deleted.
+          com.vividsolutions.jump.io.ShapefileReader.java
+          org.geotools.shapefile.Shapefile.java
+          
 2007-09-10 Andreas Schmitz <schmitz@lat-lon.de>
         src/language/jump_fi.properties,
         src/language/jump.properties,
@@ -29,77 +34,77 @@
         script.
 
 2007-09-06 beckerl <becker.larry@gmail.com>
-                * Added menu icons to MoveLayerablePlugIn, BufferPlugIn, and RefreshDataStoreLayerPlugin
-                com.vividsolutions.jump.workbench.ui.plugin.MoveLayerablePlugIn.java
-                com.vividsolutions.jump.workbench.ui.plugin.datastore.RefreshDataStoreLayerPlugin.java
-                com.vividsolutions.jump.workbench.ui.plugin.analysis.BufferPlugIn.java
-                com.vividsolutions.jump.workbench.ui.images.arrow_refresh.png
-                com.vividsolutions.jump.workbench.ui.images.arrow_up.png
-                com.vividsolutions.jump.workbench.ui.images.arrow_down.png
-                com.vividsolutions.jump.workbench.ui.images.buffer.gif
-                com.vividsolutions.jump.workbench.JUMPConfiguration.java
+          * Added menu icons to MoveLayerablePlugIn, BufferPlugIn, and RefreshDataStoreLayerPlugin
+            com.vividsolutions.jump.workbench.ui.plugin.MoveLayerablePlugIn.java
+            com.vividsolutions.jump.workbench.ui.plugin.datastore.RefreshDataStoreLayerPlugin.java
+            com.vividsolutions.jump.workbench.ui.plugin.analysis.BufferPlugIn.java
+            com.vividsolutions.jump.workbench.ui.images.arrow_refresh.png
+            com.vividsolutions.jump.workbench.ui.images.arrow_up.png
+            com.vividsolutions.jump.workbench.ui.images.arrow_down.png
+            com.vividsolutions.jump.workbench.ui.images.buffer.gif
+            com.vividsolutions.jump.workbench.JUMPConfiguration.java
 
 2007-09-05 beckerl <becker.larry@gmail.com>
-                * Added menu icons to EditablePlugIn and RotatePlugIn
-                com.vividsolutions.jump.workbench.ui.plugin.EditablePlugIn.java
-                com.vividsolutions.jump.workbench.ui.images.edit.gif
-                org.openjump.core.ui.plugin.mousemenu.RotatePlugIn.java
-                org.openjump.core.ui.images.rotate16.gif
-                com.vividsolutions.jump.workbench.JUMPConfiguration.java
+          * Added menu icons to EditablePlugIn and RotatePlugIn
+            com.vividsolutions.jump.workbench.ui.plugin.EditablePlugIn.java
+            com.vividsolutions.jump.workbench.ui.images.edit.gif
+            org.openjump.core.ui.plugin.mousemenu.RotatePlugIn.java
+            org.openjump.core.ui.images.rotate16.gif
+            com.vividsolutions.jump.workbench.JUMPConfiguration.java
 
 2007-09-05 paul_d_austin <paul.austin@revolsys.com
         * Removed the hard coded number of items in the Window menu
 
 2007-09-05 beckerl <becker.larry@gmail.com>
-                Fixed NullPointerException when Open Recent Project with no project
-                window open.  Removed execute(context, file) from OpenProjectPlugin.
-                com.vividsolutions.jump.workbench.ui.plugin.OpenProjectPlugIn.java
-                org.openjump.core.ui.plugin.file.OpenRecentProjectPlugIn.java
+          * Fixed NullPointerException when Open Recent Project with no project
+            window open.  Removed execute(context, file) from OpenProjectPlugin.
+            com.vividsolutions.jump.workbench.ui.plugin.OpenProjectPlugIn.java
+            org.openjump.core.ui.plugin.file.OpenRecentProjectPlugIn.java
 
 2007-09-03 beckerl <becker.larry@gmail.com>
-                Added menu icons to Save Selected Datasets,Save Dataset As,
-                Delete Selected Items, Delete All Features, Remove Selected Layers,
-                Add New Features, Zoom To Layer, and Cut Selected Items.
-                org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.java
-                org.openjump.core.ui.images.disk_multiple.png
-                com.vividsolutions.jump.workbench.datasource.SaveDatasetAsPlugIn.java
-                com.vividsolutions.jump.workbench.ui.images.disk.png
-                com.vividsolutions.jump.workbench.ui.plugin.DeleteSelectedItemsPlugIn.java
-                com.vividsolutions.jump.workbench.ui.plugin.DeleteAllFeaturesPlugIn.java
-                com.vividsolutions.jump.workbench.ui.images.delete.png
-                com.vividsolutions.jump.workbench.ui.plugin.RemoveSelectedLayersPlugIn.java
-                com.vividsolutions.jump.workbench.ui.images.cross.png
-                com.vividsolutions.jump.workbench.ui.plugin.AddNewFeaturesPlugIn.java
-                com.vividsolutions.jump.workbench.ui.images.add.png
-                com.vividsolutions.jump.workbench.ui.ZoomZoomToLayerPlugIn.java
-                com.vividsolutions.jump.workbench.ui.images.zoom.gif
-                com.vividsolutions.jump.workbench.ui.plugin.clipboard.CutSelectedItemsPlugIn.java
-                com.vividsolutions.jump.workbench.ui.images.cut.gif
-                com.vividsolutions.jump.workbench.JUMPConfiguration.java
+          * Added menu icons to Save Selected Datasets,Save Dataset As,
+          Delete Selected Items, Delete All Features, Remove Selected Layers,
+		  Add New Features, Zoom To Layer, and Cut Selected Items.
+		  org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.java
+		  org.openjump.core.ui.images.disk_multiple.png
+		  com.vividsolutions.jump.workbench.datasource.SaveDatasetAsPlugIn.java
+		  com.vividsolutions.jump.workbench.ui.images.disk.png
+		  com.vividsolutions.jump.workbench.ui.plugin.DeleteSelectedItemsPlugIn.java
+		  com.vividsolutions.jump.workbench.ui.plugin.DeleteAllFeaturesPlugIn.java
+		  com.vividsolutions.jump.workbench.ui.images.delete.png
+		  com.vividsolutions.jump.workbench.ui.plugin.RemoveSelectedLayersPlugIn.java
+		  com.vividsolutions.jump.workbench.ui.images.cross.png
+		  com.vividsolutions.jump.workbench.ui.plugin.AddNewFeaturesPlugIn.java
+		  com.vividsolutions.jump.workbench.ui.images.add.png
+		  com.vividsolutions.jump.workbench.ui.ZoomZoomToLayerPlugIn.java
+		  com.vividsolutions.jump.workbench.ui.images.zoom.gif
+		  com.vividsolutions.jump.workbench.ui.plugin.clipboard.CutSelectedItemsPlugIn.java
+		  com.vividsolutions.jump.workbench.ui.images.cut.gif
+		  com.vividsolutions.jump.workbench.JUMPConfiguration.java
 
 2007-09-03 beckerl <becker.larry@gmail.com>
-                * Moved menu item to more appropriate posiiton below Open Project.
-                org.openjump.core.ui.plugin.file.OpenRecentProjectPlugIn.java
+          * Moved menu item to more appropriate posiiton below Open Project.
+            org.openjump.core.ui.plugin.file.OpenRecentProjectPlugIn.java
 
 2007-09-01 beckerl <becker.larry@gmail.com>
         * Added an option to "Write world file" in the Save Image As dialog.
-        I18N strings were added but need translation.
-        com.vividsolutions.jump.workbench.ui.plugin.SaveImageAsPlugIn.java
-        org.openjump.core.ui.plugin.file.WorldFileWriter.java
+		  I18N strings were added but need translation.
+		  com.vividsolutions.jump.workbench.ui.plugin.SaveImageAsPlugIn.java
+		  org.openjump.core.ui.plugin.file.WorldFileWriter.java
 
 2007-08-31 beckerl <becker.larry@gmail.com>
         * Improved Tools->Generate->Buffer.
           Supports buffering the selection. Provides a convenience union option.
           Sidebar picture  previews the current options.  It copies attributes by
-                  default, even from selections on multiple layers, but this can beturned off.
-                  Supports setting the number of segments in a quarter circle.
-                    com.vividsolutions.jump.workbench.ui.plugin.analysis.BufferPlugIn.java
-                    com.vividsolutions.jump.workbench.ui.images.Butt-union.gif
-                    com.vividsolutions.jump.workbench.ui.images.Butt.gif
-                    com.vividsolutions.jump.workbench.ui.images.Round-union.gif
-                    com.vividsolutions.jump.workbench.ui.images.Round.gif
-                    com.vividsolutions.jump.workbench.ui.images.Square-union.gif
-                    com.vividsolutions.jump.workbench.ui.images.Square.gif
+          default, even from selections on multiple layers, but this can beturned off.
+          Supports setting the number of segments in a quarter circle.
+            com.vividsolutions.jump.workbench.ui.plugin.analysis.BufferPlugIn.java
+            com.vividsolutions.jump.workbench.ui.images.Butt-union.gif
+            com.vividsolutions.jump.workbench.ui.images.Butt.gif
+            com.vividsolutions.jump.workbench.ui.images.Round-union.gif
+            com.vividsolutions.jump.workbench.ui.images.Round.gif
+            com.vividsolutions.jump.workbench.ui.images.Square-union.gif
+            com.vividsolutions.jump.workbench.ui.images.Square.gif
 
 2007-08-28 mmichaud <michael.michaud@free.fr>
 
