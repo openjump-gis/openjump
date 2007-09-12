@@ -1,7 +1,18 @@
 2007-09-11 beckerl <becker.larry@gmail.com>
+          * Added the LayerPropertiesPlugIn which adds a menu item
+            "Layer Properties" to the Layer Name popup menu.  This
+            feature will display layer information such as name, number
+            of features, number of points, number of attributes, geometry type,
+            DataSource class, and source path.  It works on single or multiple
+            layer selections.  It also includes a transparency adjustment slider
+            that works for layer selections.
+            Language file entries have been made.  Only German translation is done.
+            org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.java
+            
+2007-09-11 beckerl <becker.larry@gmail.com>
           * Closed the shape file after it was read to allow it to be deleted.
-          com.vividsolutions.jump.io.ShapefileReader.java
-          org.geotools.shapefile.Shapefile.java
+            com.vividsolutions.jump.io.ShapefileReader.java
+            org.geotools.shapefile.Shapefile.java
           
 2007-09-10 Andreas Schmitz <schmitz@lat-lon.de>
         src/language/jump_fi.properties,
