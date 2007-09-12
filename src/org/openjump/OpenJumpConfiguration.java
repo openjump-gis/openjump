@@ -31,6 +31,7 @@ import org.openjump.core.ui.plugin.file.SaveImageAsSVGPlugIn;
 import org.openjump.core.ui.plugin.layer.AddSIDLayerPlugIn;
 import org.openjump.core.ui.plugin.layer.ChangeLayerableNamePlugIn;
 import org.openjump.core.ui.plugin.layer.ChangeSRIDPlugIn;
+import org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn;
 import org.openjump.core.ui.plugin.layer.ToggleVisiblityPlugIn;
 import org.openjump.core.ui.plugin.mousemenu.EditSelectedSidePlugIn;
 import org.openjump.core.ui.plugin.mousemenu.MoveAlongAnglePlugIn;
@@ -293,6 +294,9 @@ public class OpenJumpConfiguration{
 				
 		SaveDatasetsPlugIn mySaveDataSetPlugIn = new SaveDatasetsPlugIn();
 		mySaveDataSetPlugIn.initialize(new PlugInContext(workbenchContext, null, null, null, null));
+		
+		LayerPropertiesPlugIn myLayerPropertiesPlugIn = new LayerPropertiesPlugIn();
+		myLayerPropertiesPlugIn.initialize(new PlugInContext(workbenchContext, null, null, null, null));
 		
 		EditSelectedSidePlugIn myEditSidePlugin = new EditSelectedSidePlugIn();
 		myEditSidePlugin.initialize(new PlugInContext(workbenchContext, null, null, null, null));
