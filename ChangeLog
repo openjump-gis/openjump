@@ -1,3 +1,6 @@
+2007-09-13 paul_d_austin <paul.austin@revolsys.com
+        * Fixed conf directory location in openjump.sh and removed batik sub dir
+
 2007-09-11 beckerl <becker.larry@gmail.com>
           * Added the LayerPropertiesPlugIn which adds a menu item
             "Layer Properties" to the Layer Name popup menu.  This

@@ -25,11 +25,11 @@ if [ -z "$JUMP_PROPERTIES" -o ! -f $JUMP_PROPERTIES ]; then
   JUMP_PROPERTIES=$OPENJUMP_HOME/bin/workbench-properties.xml
 fi
 
-for libfile in $JUMP_LIB/*.jar $JUMP_LIB/*.zip $JUMP_LIB/batik/*.jar
+for libfile in $JUMP_LIB/*.jar $JUMP_LIB/*.zip
 do
   CLASSPATH=$libfile:$CLASSPATH;
 done
-CLASSPATH=$OPENJUMP_HOME/conf:$CLASSPATH
+CLASSPATH=$JUMP_HOME/conf:$CLASSPATH
 export CLASSPATH;
 
 JUMP_OPTS="-plug-in-directory $JUMP_PLUGIN_DIR"
