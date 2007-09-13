@@ -476,8 +476,8 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         updatingComponents = true;
 
         try {
-            attributeLabel.setEnabled(enableColorThemingCheckBox.isSelected());
-            attributeNameComboBox.setEnabled(enableColorThemingCheckBox.isSelected());
+            //attributeLabel.setEnabled(enableColorThemingCheckBox.isSelected());  //LDB: keep enabled always
+            //attributeNameComboBox.setEnabled(enableColorThemingCheckBox.isSelected());
             state.getPanel().setEnabled(enableColorThemingCheckBox.isSelected() &&
                 (attributeNameComboBox.getItemCount() > 0));
             colorSchemeLabel.setEnabled(enableColorThemingCheckBox.isSelected() &&
