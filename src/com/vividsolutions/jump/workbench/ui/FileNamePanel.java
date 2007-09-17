@@ -41,7 +41,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -347,6 +349,24 @@ public class FileNamePanel extends JPanel {
 
     public void setFileFilter(FileFilter fileFilter) {
         this.fileFilter = fileFilter;
+    }
+
+    public List<File> getFiles() {
+      List<File> files = new ArrayList<File>();
+      for (int i = 0; i <comboBoxModel.getSize(); i++) {
+        String path = (String)comboBox.getItemAt(i);
+        files.add(new File(path));
+      }
+      return files;
+    }
+
+    public void setFiles(List<File> files) {
+      
+      List<File> reverseFiles = new ArrayList<File>(files);
+      Collections.reverse(reverseFiles);
+      for (File file : reverseFiles) {
+        addToComboBox(file, comboBoxModel);
+      }
     }
 
 }

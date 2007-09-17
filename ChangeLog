@@ -1,3 +1,6 @@
+2007-09-17 paul_d_austin <paul.austin@revolsys.com
+        * Improved the windows and UNIX startup scripts
+
 2007-09-13 paul_d_austin <paul.austin@revolsys.com
         * Fixed conf directory location in openjump.sh and removed batik sub dir
 

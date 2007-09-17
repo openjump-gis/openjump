@@ -22,14 +22,14 @@ if [ -z "$JUMP_PLUGIN_DIR" ]; then
 fi
 
 if [ -z "$JUMP_PROPERTIES" -o ! -f $JUMP_PROPERTIES ]; then
-  JUMP_PROPERTIES=$OPENJUMP_HOME/bin/workbench-properties.xml
+  JUMP_PROPERTIES=~/.jump/workbench-properties.xml
 fi
 
 for libfile in $JUMP_LIB/*.jar $JUMP_LIB/*.zip
 do
   CLASSPATH=$libfile:$CLASSPATH;
 done
-CLASSPATH=$JUMP_HOME/conf:$CLASSPATH
+CLASSPATH=$JUMP_HOME:$JUMP_HOME/conf:$CLASSPATH
 export CLASSPATH;
 
 JUMP_OPTS="-plug-in-directory $JUMP_PLUGIN_DIR"
@@ -40,5 +40,7 @@ fi
 if ( test -d "$JUMP_STATE" || test -f "$JUMP_STATE") then
   JUMP_OPTS="$JUMP_OPTS -state $JUMP_STATE"
 fi
+JAVA_OPTS="$JAVA_OPTS -Djump.home=$JUMP_HOME"
+JAVA_OPTS="$JAVA_OPTS -Dorg.xml.sax.driver=$SAXDRIVER"
 
-$JAVA -cp $CLASSPATH:$JUMP_HOME/bin $JAVA_OPTS -Dorg.xml.sax.driver=$SAXDRIVER $MAIN $JUMP_OPTS
+$JAVA -cp $CLASSPATH:$JUMP_HOME/bin $JAVA_OPTS $MAIN $JUMP_OPTS

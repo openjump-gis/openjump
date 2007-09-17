@@ -1,5 +1,21 @@
-set LIB=../lib
-set CLASSPATH=../conf;%LIB%/bsh-2.0b4.jar;%LIB%/Buoy.jar;%LIB%/Jama-1.0.1.jar;%LIB%/jdom.jar;%LIB%/jts-1.7.2.jar;%LIB%/jump-workbench-@VERSION@.jar;%LIB%/jump-api-@VERSION@.jar;%LIB%/xercesImpl.jar;%LIB%/xml-apis.jar;%LIB%/xml-apis-ext.jar;%LIB%/log4j-1.2.8.jar;%LIB%/batik-all.jar;%LIB%/jmat_5.0m.jar;%LIB%/ermapper.jar;%LIB%/jai_codec.jar;%LIB%/jai_core.jar;%LIB%/ext
-REM Add extension directory to path, so extensions can put DLL's there [Jon Aquino 2005-03-18]
-set PATH=%PATH%;%LIB%/ext
-start javaw -Dlog4j.configuration=file:./log4j.xml -Xms256M -Xmx256M -cp %CLASSPATH% com.vividsolutions.jump.workbench.JUMPWorkbench -properties workbench-properties.xml -plug-in-directory %LIB%/ext
+@echo off
+set OLD_DIR=%CD%
+set JUMP_HOME=%~dp0..%
+set JAVA_OPTS=-Xms256M -Xmx256M -Dlog4j.configuration=file:conf\log4j.xml "-Djump.home=%JUMP_HOME%"
+
+cd %JUMP_HOME%
+set LIB=lib
+
+set CLASSPATH=.
+set CLASSPATH=conf;%CLASSPATH%
+set CLASSPATH=lib\ext;%CLASSPATH%
+
+for %%i in ("lib\*.jar") do call "%JUMP_HOME%\bin\lcp.bat" %%i
+for %%i in ("lib\*.zip") do call "%JUMP_HOME%\bin\lcp.bat" %%i
+
+set PATH=%PATH%;%LIB%\ext
+
+set JUMP_OPTS=-properties bin\workbench-properties.xml -plug-in-directory "%LIB%\ext"
+start javaw -cp "%CLASSPATH%" %JAVA_OPTS% com.vividsolutions.jump.workbench.JUMPWorkbench %JUMP_OPTS%
+
+cd %OLD_DIR%
