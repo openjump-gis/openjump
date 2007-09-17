@@ -177,7 +177,9 @@ public class UnionByAttributePlugIn extends AbstractPlugIn implements ThreadedPl
         
         // Create the schema for the output dataset
         FeatureSchema newSchema = new FeatureSchema();
-        newSchema.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
+        //fix bug on 2007-09-17 : must take the geometry name of the source layer
+        //newSchema.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
+        newSchema.addAttribute(schema.getAttributeName(schema.getGeometryIndex()), AttributeType.GEOMETRY);
         newSchema.addAttribute(att, schema.getAttributeType(att));
         if (total_numeric_fields) {
             for (int i = 0, max = schema.getAttributeCount() ; i < max ; i++) {
