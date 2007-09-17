@@ -160,7 +160,8 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
 						.getDescription())
 						: ""));
 		if (isSelected) {
-			label.setForeground(list.getSelectionForeground());
+			label.setForeground(list.getForeground());            //LDB: use this instead of following
+//			label.setForeground(list.getSelectionForeground());   //LDB: causes Vista render problem
 			label.setBackground(list.getSelectionBackground());
 			setForeground(list.getSelectionForeground());
 			setBackground(list.getSelectionBackground());
