@@ -35,12 +35,15 @@ package com.vividsolutions.jump.workbench.ui.zoom;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 
 import javax.swing.*;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jump.workbench.ui.Viewport;
 import com.vividsolutions.jump.workbench.ui.cursortool.DragTool;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
@@ -94,9 +97,36 @@ public class PanTool extends DragTool
     super.mouseReleased(e);
   }
 
-  protected Shape getShape(Point2D source, Point2D destination) {
-    return null;
-  }
+  private void zoomAt(Point2D p, double zoomFactor)
+			throws NoninvertibleTransformException {
+		getPanel().getViewport().zoomToViewPoint(p, zoomFactor);
+	}
+
+	private static final double WHEEL_ZOOM_IN_FACTOR = 1.25;
+
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		int nclicks = e.getWheelRotation(); // negative is up/away
+		try {
+			double zoomFactor = (nclicks > 0) ? (1 / (Math.abs(nclicks) * WHEEL_ZOOM_IN_FACTOR))
+					: (Math.abs(nclicks) * WHEEL_ZOOM_IN_FACTOR);
+			zoomAt(e.getPoint(), zoomFactor); // zoom cursor to centre
+			Viewport vp = getPanel().getViewport();
+			Coordinate zoomPoint = vp.toModelCoordinate(e.getPoint());
+			Coordinate centre = vp.getEnvelopeInModelCoordinates().centre();
+			double dx = zoomPoint.x - centre.x;
+			double dy = zoomPoint.y - centre.y;
+			Envelope oldEnvelope = vp.getEnvelopeInModelCoordinates();
+			vp.zoom(new Envelope( // pan centre back to cursor
+					oldEnvelope.getMinX() - dx, oldEnvelope.getMaxX() - dx,
+					oldEnvelope.getMinY() - dy, oldEnvelope.getMaxY() - dy));
+		} catch (Throwable t) {
+			getPanel().getContext().handleThrowable(t);
+		}
+	}
+
+	protected Shape getShape(Point2D source, Point2D destination) {
+		return null;
+	}
 
   protected void gestureFinished() throws NoninvertibleTransformException {
     reportNothingToUndoYet();
