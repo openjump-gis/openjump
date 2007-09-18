@@ -1,3 +1,14 @@
+2007-09-17 beckerl <becker.larry@gmail.com>
+          * Added mouse wheel zooming to the PanTool. 
+            com.vividsolutions.jump.workbench.ui.zoom.PanTool.java
+            com.vividsolutions.jump.workbench.ui.LayerViewPanel.java
+          * Added the SelectablePlugIn to control selectability of layers.
+            Moved Layer Properites below Selectable menu item.
+            com.vividsolutions.jump.workbench.ui.plugin.SelectablePlugIn.java
+            org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.java
+            com.vividsolutions.jump.workbench.JUMPConfiguration.java
+            Language file entries have been made.
+          
 2007-09-17 paul_d_austin <paul.austin@revolsys.com
         * Improved the windows and UNIX startup scripts
 
