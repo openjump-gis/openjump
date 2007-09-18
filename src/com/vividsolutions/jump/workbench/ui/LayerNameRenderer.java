@@ -82,6 +82,11 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
 	private JLabel progressIconLabel = new JLabel();
 	private Font font = new JLabel().getFont();
 	private Font editableFont = font.deriveFont(Font.BOLD);
+
+	private Font unselectableFont = font.deriveFont(Font.ITALIC);
+
+	private Font editableUnselectableFont = font.deriveFont(Font.BOLD+Font.ITALIC);
+
 	private JLabel wmsIconLabel = new JLabel(MapLayerPanel.ICON);
 
 	public LayerNameRenderer() {
@@ -173,9 +178,20 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
 		}
 		colorPanel.setVisible(layerable instanceof Layer);
 		checkBox.setSelected(layerable.isVisible());
-		if (indicatingEditability && layerable instanceof Layer
-				&& ((Layer) layerable).isEditable()) {
-			label.setFont(editableFont);
+		if (indicatingEditability && layerable instanceof Layer) {
+			if (((Layer) layerable).isEditable()) {
+				if (!((Layer) layerable).isSelectable()) {  
+					label.setFont(editableUnselectableFont); //LDB [2007-09-18] italic feedback
+				}else {
+					label.setFont(editableFont);
+				}
+			}else {
+				if (!((Layer) layerable).isSelectable()) {
+					label.setFont(unselectableFont);
+				}else {
+					label.setFont(font);
+				}
+			}
 			label.setForeground(isSelected ? SELECTED_EDITABLE_FONT_COLOR
 					: UNSELECTED_EDITABLE_FONT_COLOR);
 		} else {
