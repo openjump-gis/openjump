@@ -141,6 +141,8 @@ public class JUMPConfiguration implements Setup {
 
     private EditablePlugIn editablePlugIn = new EditablePlugIn(editingPlugIn);
 
+    private SelectablePlugIn selectablePlugIn = new SelectablePlugIn();
+
     // [Michael Michaud 2007-03-23] Moved BeanShellPlugIn initialization in OpenJUMPConfiguration
     // private BeanShellPlugIn beanShellPlugIn = new BeanShellPlugIn();
 
@@ -384,6 +386,9 @@ public class JUMPConfiguration implements Setup {
 
         featureInstaller.addPopupMenuItem(layerNamePopupMenu, editablePlugIn,
                 editablePlugIn.getName(), true, EditablePlugIn.ICON, editablePlugIn
+                        .createEnableCheck(workbenchContext));
+        featureInstaller.addPopupMenuItem(layerNamePopupMenu, selectablePlugIn,
+                selectablePlugIn.getName(), true, selectablePlugIn.ICON, selectablePlugIn
                         .createEnableCheck(workbenchContext));
 
         layerNamePopupMenu.addSeparator(); // ===================

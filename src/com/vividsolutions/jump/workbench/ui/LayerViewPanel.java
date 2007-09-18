@@ -58,9 +58,11 @@ import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.model.*;
 import com.vividsolutions.jump.workbench.ui.cursortool.CursorTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.DummyTool;
+import com.vividsolutions.jump.workbench.ui.cursortool.LeftClickFilter;
 import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
 import com.vividsolutions.jump.workbench.ui.renderer.java2D.Java2DConverter;
 import com.vividsolutions.jump.workbench.ui.renderer.style.PinEqualCoordinatesStyle;
+import com.vividsolutions.jump.workbench.ui.zoom.PanTool;
 import com.vividsolutions.jump.workbench.ui.zoom.ZoomTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.QuasimodeTool;
 
@@ -95,13 +97,20 @@ public class LayerViewPanel extends JPanel
 	private boolean deferLayerEvents = false;
 	
 	class MouseWheelZoomListener implements MouseWheelListener {
-		 public void mouseWheelMoved(MouseWheelEvent e) {
-			 if (currentCursorTool instanceof QuasimodeTool) 
-				 if (((QuasimodeTool)currentCursorTool).getDelegate() instanceof ZoomTool) {
-					 ((ZoomTool) ((QuasimodeTool)currentCursorTool).getDelegate()).mouseWheelMoved(e);
-			 }				 
-		 }
+		public void mouseWheelMoved(MouseWheelEvent e) {
+			if (currentCursorTool instanceof QuasimodeTool) {
+				Object tool = ((QuasimodeTool) currentCursorTool).getDelegate();
+				if (tool instanceof ZoomTool)  {
+					((ZoomTool) tool).mouseWheelMoved(e);
+				} else if  (tool instanceof LeftClickFilter) {
+					CursorTool wrappee = ((LeftClickFilter) tool).getWrappee();
+					if (wrappee instanceof PanTool)
+						((PanTool) wrappee).mouseWheelMoved(e);					
+				}
+			}
+		}
 	}
+	
 	public LayerViewPanel(LayerManager layerManager,
 			LayerViewPanelContext context) {
 		//Errors occur if the LayerViewPanel is sized to 0. [Jon Aquino]
