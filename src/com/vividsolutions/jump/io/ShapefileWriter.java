@@ -248,22 +248,8 @@ public class ShapefileWriter implements JUMPWriter {
 
         GeometryCollection gc;
         
-        //-- sstein: check first if features are of different geometry type.
-        int i= 0;
-        Class firstClass = null;
-        for (Iterator iter = featureCollection.iterator(); iter.hasNext();) {
-			Feature myf = (Feature) iter.next();
-			if (i==0){
-				firstClass = myf.getGeometry().getClass();
-			}
-			else{
-				if (firstClass != myf.getGeometry().getClass()){
-			           throw new IllegalParametersException(
-			            "mixed geometry types found, please separate Polygons from Lines and Points when saving to *.shp");
-				}
-			}
-			i++;
-        }
+        //sstein: check for mixed geometry types in the FC
+        this.checkIfGeomsAreMixed(featureCollection);
         
         shpfileName = dp.getProperty(FILE_PROPERTY_KEY);
 
@@ -550,6 +536,52 @@ public class ShapefileWriter implements JUMPWriter {
                      // return -1 if all geometries are single point
     }
 
+    public void checkIfGeomsAreMixed(FeatureCollection featureCollection)
+    	throws IllegalParametersException, Exception {
+	    //-- sstein: check first if features are of different geometry type.
+	    int i= 0;
+	    Class firstClass = null;
+	    Geometry firstGeom = null;
+		System.out.println("ShapeFileWriter: start mixed-geom-test");
+	    for (Iterator iter = featureCollection.iterator(); iter.hasNext();) {
+	    	//System.out.println("test");
+			Feature myf = (Feature) iter.next();
+			if (i==0){
+				firstClass = myf.getGeometry().getClass();
+				firstGeom = myf.getGeometry();
+			}
+			else{
+				if (firstClass != myf.getGeometry().getClass()){
+			       // System.out.println("first test failed");
+					if((firstGeom instanceof Polygon) && (myf.getGeometry() instanceof MultiPolygon)){
+						//everything is ok
+					}
+					else if((firstGeom instanceof MultiPolygon) && (myf.getGeometry() instanceof Polygon)){
+						//everything is ok
+					}
+					else if((firstGeom instanceof Point) && (myf.getGeometry() instanceof MultiPoint)){
+						//everything is ok
+					}
+					else if((firstGeom instanceof MultiPoint) && (myf.getGeometry() instanceof Point)){
+						//everything is ok
+					}
+					else if((firstGeom instanceof LineString) && (myf.getGeometry() instanceof MultiLineString)){
+						//everything is ok
+					}
+					else if((firstGeom instanceof MultiLineString) && (myf.getGeometry() instanceof LineString)){
+						//everything is ok
+					}
+					else{
+			          System.out.println("test completely failed - throw exception");
+			           throw new IllegalParametersException(
+			            "mixed geometry types found, please separate Polygons from Lines and Points when saving to *.shp");
+			        }
+				}
+			}
+			i++;
+	    }
+	}
+    
     /**
      *  reverses the order of points in lr (is CW -> CCW or CCW->CW)
      */
@@ -626,7 +658,7 @@ public class ShapefileWriter implements JUMPWriter {
         throws Exception {
         GeometryCollection result;
         Geometry[] allGeoms = new Geometry[fc.size()];
-
+        
         int geomtype = findBestGeometryType(fc);
 
         if (geomtype == 0) {
