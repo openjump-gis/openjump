@@ -47,10 +47,6 @@ import com.vividsolutions.jump.workbench.model.Task;
 import com.vividsolutions.jump.workbench.model.UndoableEditReceiver;
 import com.vividsolutions.jump.workbench.model.WMSLayer;
 import com.vividsolutions.jump.workbench.plugin.*;
-import com.vividsolutions.jump.workbench.plugin.EnableCheck;
-import com.vividsolutions.jump.workbench.plugin.PlugIn;
-import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.plugin.ThreadedPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.CloneWindowPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ChoosableStyle;
@@ -76,28 +72,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.text.DecimalFormat;
 import java.util.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
 import javax.swing.*;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JDesktopPane;
-import javax.swing.JFrame;
-import javax.swing.JInternalFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
@@ -105,6 +80,8 @@ import javax.swing.event.InternalFrameListener;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
+
+import org.openjump.swing.factory.component.ComponentFactory;
 /**
  * This class is responsible for the main window of the JUMP application.
  */
@@ -121,6 +98,8 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
 	JLabel messageLabel = new JLabel();
 	JPanel statusPanel = new JPanel();
 	JLabel timeLabel = new JLabel();
+	ComponentFactory<TaskFrame> taskFrameFactory;
+	
 	//<<TODO:FEATURE>> Before JUMP Workbench closes, prompt the user to save
 	// any
 	//unsaved layers [Jon Aquino]
@@ -626,7 +605,15 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
 		return task;
 	}
 	public TaskFrame addTaskFrame(Task task) {
-		return addTaskFrame(new TaskFrame(task, workbenchContext));
+	  
+		TaskFrame taskFrame = new TaskFrame(task, workbenchContext);
+		if (taskFrameFactory != null) {
+		  taskFrame = taskFrameFactory.createComponent();
+		  taskFrame.setTask(task);
+		} else {
+		  taskFrame = new TaskFrame(task, workbenchContext);
+		}
+    return addTaskFrame(taskFrame);
 	}
 	public TaskFrame addTaskFrame(TaskFrame taskFrame) {
 		taskFrame.getTask().getLayerManager().addLayerListener(

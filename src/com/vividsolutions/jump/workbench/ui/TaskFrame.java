@@ -89,71 +89,78 @@ public class TaskFrame extends JInternalFrame implements TaskFrameProxy,
 
     private TaskFrame(Task task, int cloneIndex,
             final WorkbenchContext workbenchContext) {
-        this.task = task;
-        //this.layerManager = task.getLayerManager();
-        this.cloneIndex = cloneIndex;
-        this.workbenchContext = workbenchContext;
-        addInternalFrameListener(new InternalFrameAdapter() {
-            public void internalFrameDeactivated(InternalFrameEvent e) {
-                //Deactivate the current CursorTool. Otherwise, the following
-                // problem
-                //can occur:
-                //  -- Start drawing a linestring on a task frame. Don't
-                // double-click
-                //      to end the gesture.
-                //  -- Open a new task frame. You're still drawing the
-                // linestring!
-                //      This shouldn't happen; instead, the drawing should be
-                // cancelled.
-                //[Jon Aquino]
-                layerViewPanel.setCurrentCursorTool(new DummyTool());
-            }
+      this.cloneIndex = cloneIndex;
+      this.workbenchContext = workbenchContext;
+        setTask(task);
+    }
 
-            public void internalFrameClosed(InternalFrameEvent e) {
-                try {
-                    // Code to manage TaskFrame INTERNAL_FRAME_CLOSED event
-                    // has been moved to closeTaskFrame method in WorkbenchFrame
-                    // I let this method because of the timer.stop [mmichaud]
-                    // Maybe the WorkbenchFrame.closeTaskFrame should be moved here...
-                    timer.stop();
-                    //memoryCleanup();
-                } catch (Throwable t) {
-                    workbenchContext.getWorkbench().getFrame().handleThrowable(
-                            t);
-                }
-            }
+    public void setTask(Task task) {
+      if (this.task!= null) {
+        throw new IllegalStateException("Task cannot be changed once set");
+      }
+      this.task = task;
+      //this.layerManager = task.getLayerManager();
+      addInternalFrameListener(new InternalFrameAdapter() {
+          public void internalFrameDeactivated(InternalFrameEvent e) {
+              //Deactivate the current CursorTool. Otherwise, the following
+              // problem
+              //can occur:
+              //  -- Start drawing a linestring on a task frame. Don't
+              // double-click
+              //      to end the gesture.
+              //  -- Open a new task frame. You're still drawing the
+              // linestring!
+              //      This shouldn't happen; instead, the drawing should be
+              // cancelled.
+              //[Jon Aquino]
+              layerViewPanel.setCurrentCursorTool(new DummyTool());
+          }
 
-            public void internalFrameOpened(InternalFrameEvent e) {
-                //Set the layerNamePanel when the frame is opened, not in the
-                // constructor,
-                //because #createLayerNamePanel may be overriden in a subclass,
-                // and the
-                //subclass has not yet been constructed -- weird things happen,
-                // like variables
-                //are unexpectedly null. [Jon Aquino]
-                splitPane.remove((Component) layerNamePanel);
-                layerNamePanel = createLayerNamePanel();
-                splitPane.add((Component) layerNamePanel, JSplitPane.LEFT);
-                layerNamePanel.addListener(workbenchContext.getWorkbench()
-                        .getFrame().getLayerNamePanelListener());
-            }
+          public void internalFrameClosed(InternalFrameEvent e) {
+              try {
+                  // Code to manage TaskFrame INTERNAL_FRAME_CLOSED event
+                  // has been moved to closeTaskFrame method in WorkbenchFrame
+                  // I let this method because of the timer.stop [mmichaud]
+                  // Maybe the WorkbenchFrame.closeTaskFrame should be moved here...
+                  timer.stop();
+                  //memoryCleanup();
+              } catch (Throwable t) {
+                  workbenchContext.getWorkbench().getFrame().handleThrowable(
+                          t);
+              }
+          }
 
-        });
-        layerViewPanel = new LayerViewPanel(task.getLayerManager(),
-                workbenchContext.getWorkbench().getFrame());
+          public void internalFrameOpened(InternalFrameEvent e) {
+              //Set the layerNamePanel when the frame is opened, not in the
+              // constructor,
+              //because #createLayerNamePanel may be overriden in a subclass,
+              // and the
+              //subclass has not yet been constructed -- weird things happen,
+              // like variables
+              //are unexpectedly null. [Jon Aquino]
+              splitPane.remove((Component) layerNamePanel);
+              layerNamePanel = createLayerNamePanel();
+              splitPane.add((Component) layerNamePanel, JSplitPane.LEFT);
+              layerNamePanel.addListener(workbenchContext.getWorkbench()
+                      .getFrame().getLayerNamePanelListener());
+          }
 
-        try {
-            jbInit();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+      });
+      layerViewPanel = new LayerViewPanel(task.getLayerManager(),
+              workbenchContext.getWorkbench().getFrame());
 
-        layerViewPanel.addListener(workbenchContext.getWorkbench().getFrame()
-                .getLayerViewPanelListener());
-        layerViewPanel.getViewport().addListener(
-                workbenchContext.getWorkbench().getFrame());
-        task.add(this);
-        installAnimator();
+      try {
+          jbInit();
+      } catch (Exception e) {
+          e.printStackTrace();
+      }
+
+      layerViewPanel.addListener(workbenchContext.getWorkbench().getFrame()
+              .getLayerViewPanelListener());
+      layerViewPanel.getViewport().addListener(
+              workbenchContext.getWorkbench().getFrame());
+      task.add(this);
+      installAnimator();
     }
 
     protected LayerNamePanel createLayerNamePanel() {
