@@ -81,7 +81,6 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
-import org.openjump.swing.factory.component.ComponentFactory;
 /**
  * This class is responsible for the main window of the JUMP application.
  */
@@ -98,7 +97,6 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
 	JLabel messageLabel = new JLabel();
 	JPanel statusPanel = new JPanel();
 	JLabel timeLabel = new JLabel();
-	ComponentFactory<TaskFrame> taskFrameFactory;
 	
 	//<<TODO:FEATURE>> Before JUMP Workbench closes, prompt the user to save
 	// any
@@ -607,12 +605,6 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
 	public TaskFrame addTaskFrame(Task task) {
 	  
 		TaskFrame taskFrame = new TaskFrame(task, workbenchContext);
-		if (taskFrameFactory != null) {
-		  taskFrame = taskFrameFactory.createComponent();
-		  taskFrame.setTask(task);
-		} else {
-		  taskFrame = new TaskFrame(task, workbenchContext);
-		}
     return addTaskFrame(taskFrame);
 	}
 	public TaskFrame addTaskFrame(TaskFrame taskFrame) {
