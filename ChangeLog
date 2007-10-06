@@ -1,3 +1,18 @@
+2007-10-06 beckerl <becker.larry@gmail.com>
+          * Refactored PanTool and ZoomTool and created a new
+            super class AbstractZoomTool.  Fixed click zoom so that it
+            also zooms to cursor point to be consistent with mouse wheel zoom.
+            com.vividsolutions.jump.workbench.ui.zoom.PanTool.java
+            com.vividsolutions.jump.workbench.ui.zoom.ZoomTool.java
+            com.vividsolutions.jump.workbench.ui.zoom.AbstractZoomTool.java
+
+2007-10-05 beckerl <becker.larry@gmail.com>
+          * Added Extract by Geometry Type on layer name context menu.
+          	Added keys to all language files.  Translated german and french.
+			org.openjump.OpenJumpConfiguration.java
+			com.vividsolutions.jump.workbench.ui.images.extract.gif
+  			org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.java
+   		
 2007-09-17 beckerl <becker.larry@gmail.com>
           * Added mouse wheel zooming to the PanTool. 
             com.vividsolutions.jump.workbench.ui.zoom.PanTool.java
