@@ -36,31 +36,23 @@ package com.vividsolutions.jump.workbench.ui.zoom;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 
 import javax.swing.Icon;
 import javax.swing.SwingUtilities;
 
-import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.MathUtil;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
-import com.vividsolutions.jump.workbench.ui.Viewport;
-import com.vividsolutions.jump.workbench.ui.cursortool.DragTool;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
 
 
-public class ZoomTool extends DragTool {
+public class ZoomTool extends AbstractZoomTool {
     /**
      * If the selection box has side length less than this value, the input
      * will be considered to be a click rather than a box.
      */
-    private static final int BOX_TOLERANCE = 4;
-    private static final double ZOOM_IN_FACTOR = 2;
-    private static final double WHEEL_ZOOM_IN_FACTOR = 1.25;
+    public static final String ZOOM_TOOL_NAME = "Zoom In/Out";
 
     public ZoomTool() {                        
         setColor(Color.black);
@@ -71,7 +63,7 @@ public class ZoomTool extends DragTool {
     }
 
     public String getName() {                            
-        return I18N.get("ui.zoom.ZoomTool.zoom-in-out");
+        return ZOOM_TOOL_NAME;
     }
 
     public Cursor getCursor() {                             
@@ -86,8 +78,6 @@ public class ZoomTool extends DragTool {
         double minY = Math.min(getViewSource().getY(), getViewDestination().getY());
         double maxY = Math.max(getViewSource().getY(), getViewDestination().getY());
 
-        //<<TODO:REFACTORING>> MD feels we should move this logic into
-        //Viewport, in case other classes want to use it [Jon Aquino]
         double widthOfNewViewAsPerceivedByOldView = maxX - minX;
         double heightOfNewViewAsPerceivedByOldView = maxY - minY;
 
@@ -112,8 +102,6 @@ public class ZoomTool extends DragTool {
             widthOfNewViewAsPerceivedByOldView,
             heightOfNewViewAsPerceivedByOldView);
 
-        //<<TODO:ERGONOMICS>> If user draws a tiny square (e.g. 3 pixels), treat it as
-        //a click. [Jon Aquino]
     }
 
     public void mouseClicked(MouseEvent e) {                      
@@ -138,7 +126,8 @@ public class ZoomTool extends DragTool {
 
     private void zoomAt(Point2D p, double zoomFactor)
         throws NoninvertibleTransformException {                                
-        getPanel().getViewport().zoomToViewPoint(p, zoomFactor);
+        //getPanel().getViewport().zoomToViewPoint(p, zoomFactor);
+    	zoomAt(p,zoomFactor,getAnimatingZoom());
     }
 
     public boolean isRightMouseButtonUsed() {                              
@@ -154,30 +143,6 @@ public class ZoomTool extends DragTool {
         super.mouseReleased(e);
     }
     
-	public void mouseWheelMoved(MouseWheelEvent e) {
-		//TODO: combine the ZoomAt and zoom into one method call
-		int nclicks = e.getWheelRotation();  //negative is up/away
-        try {
-            double zoomFactor = (nclicks > 0)
-                ? (1 / (Math.abs(nclicks)*WHEEL_ZOOM_IN_FACTOR)) : 
-                	(Math.abs(nclicks)*WHEEL_ZOOM_IN_FACTOR);
-            zoomAt(e.getPoint(), zoomFactor);  //zoom cursor to centre
-            Viewport vp = getPanel().getViewport();
-            Coordinate zoomPoint = vp.toModelCoordinate(e.getPoint());
-            Coordinate centre = vp.getEnvelopeInModelCoordinates().centre();
-            double dx = zoomPoint.x - centre.x;
-            double dy = zoomPoint.y - centre.y;
-            Envelope oldEnvelope = vp.getEnvelopeInModelCoordinates();
-            vp.zoom(new Envelope(    //pan centre back to cursor
-            		oldEnvelope.getMinX() - dx, 
-            		oldEnvelope.getMaxX() - dx,
-                    oldEnvelope.getMinY() - dy,
-                    oldEnvelope.getMaxY() - dy));
-        } catch (Throwable t) {
-            getPanel().getContext().handleThrowable(t);
-        }
-	}
-
     public void activate(LayerViewPanel layerViewPanel) {                        
         super.activate(layerViewPanel);
     }

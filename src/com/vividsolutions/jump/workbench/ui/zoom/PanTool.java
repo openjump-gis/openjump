@@ -46,20 +46,20 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.workbench.ui.Viewport;
 import com.vividsolutions.jump.workbench.ui.cursortool.DragTool;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-
+import com.vividsolutions.jump.workbench.ui.zoom.AbstractZoomTool;
 /**
  * Pans the image in the current task window.
  * Image handling is designed to minimize flickering and latency.
  *
  * @author Jon Aquino
- * @version 1.0
+ * @version 1.1
  */
-public class PanTool extends DragTool
+public class PanTool extends AbstractZoomTool
 {
   // MD - incorporates fco lavin's fix for eliminating flicker
   private boolean dragging = false;
-  private Image origImage;
-  private Image auxImage = null;
+//  private Image origImage;
+//  private Image auxImage = null;
 
   public PanTool() {
   }
@@ -97,34 +97,7 @@ public class PanTool extends DragTool
     super.mouseReleased(e);
   }
 
-  private void zoomAt(Point2D p, double zoomFactor)
-			throws NoninvertibleTransformException {
-		getPanel().getViewport().zoomToViewPoint(p, zoomFactor);
-	}
-
-	private static final double WHEEL_ZOOM_IN_FACTOR = 1.25;
-
-	public void mouseWheelMoved(MouseWheelEvent e) {
-		int nclicks = e.getWheelRotation(); // negative is up/away
-		try {
-			double zoomFactor = (nclicks > 0) ? (1 / (Math.abs(nclicks) * WHEEL_ZOOM_IN_FACTOR))
-					: (Math.abs(nclicks) * WHEEL_ZOOM_IN_FACTOR);
-			zoomAt(e.getPoint(), zoomFactor); // zoom cursor to centre
-			Viewport vp = getPanel().getViewport();
-			Coordinate zoomPoint = vp.toModelCoordinate(e.getPoint());
-			Coordinate centre = vp.getEnvelopeInModelCoordinates().centre();
-			double dx = zoomPoint.x - centre.x;
-			double dy = zoomPoint.y - centre.y;
-			Envelope oldEnvelope = vp.getEnvelopeInModelCoordinates();
-			vp.zoom(new Envelope( // pan centre back to cursor
-					oldEnvelope.getMinX() - dx, oldEnvelope.getMaxX() - dx,
-					oldEnvelope.getMinY() - dy, oldEnvelope.getMaxY() - dy));
-		} catch (Throwable t) {
-			getPanel().getContext().handleThrowable(t);
-		}
-	}
-
-	protected Shape getShape(Point2D source, Point2D destination) {
+ 	protected Shape getShape(Point2D source, Point2D destination) {
 		return null;
 	}
 
@@ -141,11 +114,6 @@ public class PanTool extends DragTool
         oldEnvelope.getMaxY() - yDisplacement));
   }
 
-  private void cacheImage() {
-	origImage = createImageIfNeeded(origImage);
-    getPanel().paint(origImage.getGraphics());
-    
-  }
 
   private void drawImage(Point p) throws NoninvertibleTransformException {
     double dx = p.getX() - getViewSource().getX();
@@ -158,24 +126,4 @@ public class PanTool extends DragTool
     getPanel().getGraphics().drawImage(auxImage, 0, 0, getPanel());
   }
   
-  /**
-   * Creates a new BufferedImage if the given image doesn't exist
-   * or is the wrong size for the panel.
-   * @param currImage an image buffer
-   * @return a new image, or the existing one if it's compatible
-   */
-  private Image createImageIfNeeded(Image currImage)
-  {
-	if (currImage == null
-			|| currImage.getHeight(null) != getPanel().getHeight()
-			|| currImage.getWidth(null) != getPanel().getWidth()) {
-	    Graphics2D g = (Graphics2D) getPanel().getGraphics();
-	    Image img = g.getDeviceConfiguration().createCompatibleImage(
-	    		getPanel().getWidth(), getPanel().getHeight(), Transparency.OPAQUE);
-	    return img;
-
-	}
-    	//return getPanel().createBlankPanelImage();
-	return currImage;
-  }
-}
+ }
