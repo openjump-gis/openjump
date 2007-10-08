@@ -346,10 +346,10 @@ public class EnableCheckFactory {
                             .getWorkbench()
                             .getFrame()
                             .getActiveInternalFrame())
-                            .getSelectionManager()
-                            .getFeatureSelection()
-                            .getFeaturesWithSelectedItems()
-                            .size())
+                            .getSelectionManager().getFeaturesWithSelectedItemsCount())
+//                            .getFeatureSelection()
+//                            .getFeaturesWithSelectedItems()
+//                            .size())
                     ? ("At least " + n + " feature" + StringUtil.s(n) + " must be selected")
                     : null;
             }
@@ -363,7 +363,8 @@ public class EnableCheckFactory {
                 	.getFrame().getActiveInternalFrame();
                 int selected = 0;
                 try{//sstein [13. Aug. 2006]: 
-                	selected = ((SelectionManagerProxy)iFrame).getSelectionManager().getSelectedItems().size();
+                	selected = ((SelectionManagerProxy)iFrame).getSelectionManager().getSelectedItemsCount();
+                	//.getSelectedItems().size();
                 }
                 catch(Exception e){
                 	//-- sstein:
@@ -394,10 +395,10 @@ public class EnableCheckFactory {
                             .getWorkbench()
                             .getFrame()
                             .getActiveInternalFrame())
-                            .getSelectionManager()
-                            .getFeatureSelection()
-                            .getFeaturesWithSelectedItems()
-                            .size())
+                            .getSelectionManager().getFeaturesWithSelectedItemsCount())
+//                            .getFeatureSelection()
+//                            .getFeaturesWithSelectedItems()
+//                            .size())
                     ? ("Exactly " + n + " feature" + StringUtil.s(n) + " must be selected")
                     : null;
             }
@@ -413,9 +414,9 @@ public class EnableCheckFactory {
                             .getWorkbench()
                             .getFrame()
                             .getActiveInternalFrame())
-                            .getSelectionManager()
-                            .getSelectedItems()
-                            .size())
+                            .getSelectionManager().getSelectedItemsCount())
+//                            .getSelectedItems()
+//                            .size())
                     ? ("Exactly " + n + " item" + StringUtil.s(n) + " must be selected")
                     : null;
             }
@@ -449,9 +450,9 @@ public class EnableCheckFactory {
                             .getWorkbench()
                             .getFrame()
                             .getActiveInternalFrame())
-                            .getSelectionManager()
-                            .getFeaturesWithSelectedItems()
-                            .size())
+                            .getSelectionManager().getFeaturesWithSelectedItemsCount())
+//                            .getFeaturesWithSelectedItems()
+//                            .size())
                     ? ("Exactly " + n + " feature" + StringUtil.s(n) + " must have selected items")
                     : null;
             }
@@ -509,9 +510,9 @@ public class EnableCheckFactory {
                             .getWorkbench()
                             .getFrame()
                             .getActiveInternalFrame())
-                            .getSelectionManager()
-                            .getFeaturesWithSelectedItems()
-                            .size())
+                            .getSelectionManager().getFeaturesWithSelectedItemsCount())
+//                            .getFeaturesWithSelectedItems()
+//                            .size())
                     ? ("At least " + n + " feature" + StringUtil.s(n) + " must have selected items")
                     : null;
             }

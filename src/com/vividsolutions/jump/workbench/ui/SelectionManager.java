@@ -76,6 +76,9 @@ public class SelectionManager {
     private LayerManagerProxy layerManagerProxy;
     private LayerViewPanel panel;
 
+    protected int featuresWithSelectedItemsCount = 0;
+    protected int selectedItems = 0;
+
     /**
      * A feature may get split into two or more -- for example, if two linestrings of a feature
      * are selected. 
@@ -198,6 +201,10 @@ public class SelectionManager {
         }
         return selectedItems;
     }
+    
+    public int getSelectedItemsCount() {
+    	return selectedItems;
+    }
 
     public Collection getSelectedItems(Layer layer) {
         ArrayList selectedItems = new ArrayList();
@@ -248,6 +255,9 @@ public class SelectionManager {
         if (!panelUpdatesEnabled) {
             return;
         }
+    	selectedItems = this.getSelectedItems().size(); //need to cache these to optimize size checks
+    	featuresWithSelectedItemsCount = this.getFeaturesWithSelectedItems().size();  
+
         panel.fireSelectionChanged();
         panel.getRenderingManager().render(SelectionBackgroundRenderer.CONTENT_ID);
         for (Iterator i = selections.iterator(); i.hasNext();) {
@@ -324,6 +334,10 @@ public class SelectionManager {
             featuresWithSelectedItems.addAll(getFeaturesWithSelectedItems(layer));
         }
         return featuresWithSelectedItems;
+    }
+
+    public int getFeaturesWithSelectedItemsCount() {
+    	return featuresWithSelectedItemsCount;
     }
 
     public boolean arePanelUpdatesEnabled() {
