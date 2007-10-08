@@ -1,3 +1,13 @@
+2007-10-07 beckerl <becker.larry@gmail.com>
+          * Optimizations to improve responsiveness with large selections of points.
+            Added getSelectedItemsCount() and getFeaturesWithSelectedItemsCount() to
+            SelectionManager.  Changed EnableCheckFactory to use them.
+            In AbstractSelectionRenderer, stopped drawing a point if it would be 
+            obscurred by a selection handle.  Reduced point handle redraw by 50%.
+            com.vividsolutions.jump.workbench.ui.SelectionManager.java
+            com.vividsolutions.jump.workbench.plugin.EnableCheckFactory.java
+            com.vividsolutions.jump.workbench.ui.renderer.AbstractSelectionRenderer.java
+          
 2007-10-06 beckerl <becker.larry@gmail.com>
           * Refactored PanTool and ZoomTool and created a new
             super class AbstractZoomTool.  Fixed click zoom so that it
