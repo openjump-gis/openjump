@@ -33,7 +33,6 @@ package com.vividsolutions.jump.workbench;
 
 import com.vividsolutions.jts.util.*;
 import org.openjump.OpenJumpConfiguration;
-import org.openjump.core.ui.plugin.file.OpenRecentProjectPlugIn;
 import org.openjump.core.ui.plugin.tools.ZoomRealtimeTool;
 
 import com.vividsolutions.jump.I18N;
@@ -148,7 +147,6 @@ public class JUMPConfiguration implements Setup {
 
 
     private LoadDatasetPlugIn loadDatasetPlugIn = new LoadDatasetPlugIn();
-    //private LoadDatasetFromFilePlugIn loadDatasetFromFilePlugIn = new LoadDatasetFromFilePlugIn();
     private SaveDatasetAsPlugIn saveDatasetAsPlugIn = new SaveDatasetAsPlugIn();
     //private SaveDatasetAsFilePlugIn saveDatasetAsFilePlugIn = new SaveDatasetAsFilePlugIn();
     private SaveImageAsPlugIn saveImageAsPlugIn = new SaveImageAsPlugIn();
@@ -244,9 +242,6 @@ public class JUMPConfiguration implements Setup {
 
   	private RefreshDataStoreLayerPlugin refreshDataStoreLayerPlugin = new RefreshDataStoreLayerPlugin();
   	
-  	private OpenRecentProjectPlugIn openRecentProject  = 
-  		new OpenRecentProjectPlugIn();  //LDB: must be defined here after PersistentBlackboardPlugIn
-  	
     public void setup(WorkbenchContext workbenchContext) throws Exception {
         configureStyles(workbenchContext);
         configureDatastores(workbenchContext);
@@ -281,6 +276,7 @@ public class JUMPConfiguration implements Setup {
         //add items to the toolbar will add them to the *end* of the toolbar.
         // [Jon Aquino]
         initializeBuiltInPlugIns(workbenchContext);
+        OpenJumpConfiguration.postExtensionInitialization(workbenchContext);
     }
 
     private void configureCategoryPopupMenu(WorkbenchContext workbenchContext,
@@ -545,27 +541,33 @@ public class JUMPConfiguration implements Setup {
 
     private void configureMainMenus(final WorkbenchContext workbenchContext,
             final EnableCheckFactory checkFactory,
-		//-- FILE
             FeatureInstaller featureInstaller) throws Exception {
-        /*featureInstaller.addMainMenuItemWithJava14Fix(loadDatasetFromFilePlugIn, new String[] {MenuNames.FILE},
-                loadDatasetFromFilePlugIn.getName() + "...", false, null, AbstractLoadDatasetPlugIn
-                        .createEnableCheck(workbenchContext));
-        featureInstaller.addMainMenuItemWithJava14Fix(saveDatasetAsFilePlugIn, new String[] {MenuNames.FILE},
-                saveDatasetAsFilePlugIn.getName() + "...", false, null,
-                AbstractSaveDatasetAsPlugIn.createEnableCheck(workbenchContext));*/
-        featureInstaller.addMainMenuItemWithJava14Fix(loadDatasetPlugIn, new String[] {MenuNames.FILE},
-                loadDatasetPlugIn.getName() + "...", false, LoadDatasetPlugIn.getIcon(), LoadDatasetPlugIn
-                        .createEnableCheck(workbenchContext));        
-        featureInstaller.addMainMenuItemWithJava14Fix(saveDatasetAsPlugIn, new String[] {MenuNames.FILE},
+
+      FeatureInstaller.addMainMenu(featureInstaller, new String[] {
+        MenuNames.FILE
+      }, MenuNames.FILE_NEW, 0);
+      featureInstaller.addMainMenuItemWithJava14Fix(newTaskPlugIn, new String[] {
+        MenuNames.FILE, MenuNames.FILE_NEW
+      }, newTaskPlugIn.getName(), false, newTaskPlugIn.getIcon(), null);
+      featureInstaller.addMenuSeparator(new String[] {
+        MenuNames.FILE, MenuNames.FILE_NEW
+      }); // ===================
+      featureInstaller.addMainMenuItemWithJava14Fix(addNewLayerPlugIn,
+        new String[] {
+          MenuNames.FILE, MenuNames.FILE_NEW
+        }, I18N.get("com.vividsolutions.jump.workbench.ui.plugin.AddNewLayerPlugIn.name"), false, null,
+        checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck());
+      featureInstaller.addMainMenuItem(addNewCategoryPlugIn,
+        new String[] {
+          MenuNames.FILE, MenuNames.FILE_NEW
+        }, I18N.get("com.vividsolutions.jump.workbench.ui.plugin.AddNewCategoryPlugIn.name"), false, null,
+        checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck());
+
+      featureInstaller.addMenuSeparator(MenuNames.FILE); // ===================
+
+      featureInstaller.addMainMenuItemWithJava14Fix(saveDatasetAsPlugIn, new String[] {MenuNames.FILE},
                 saveDatasetAsPlugIn.getName() + "...", false, SaveDatasetAsPlugIn.ICON,
                 SaveDatasetAsPlugIn.createEnableCheck(workbenchContext));  
-        featureInstaller.addMenuSeparator(MenuNames.FILE); // ===================
-        featureInstaller.addMainMenuItemWithJava14Fix(newTaskPlugIn, new String[] {MenuNames.FILE}, newTaskPlugIn
-                .getName()
-                + "...", false, NewTaskPlugIn.getIcon(), null);
-        featureInstaller.addMainMenuItemWithJava14Fix(openProjectPlugIn, new String[] {MenuNames.FILE},
-                openProjectPlugIn.getName() + "...", false, null,
-                new MultiEnableCheck());
         featureInstaller.addMainMenuItemWithJava14Fix(saveProjectPlugIn, new String[] {MenuNames.FILE},
                 saveProjectPlugIn.getName(), false, null, checkFactory
                         .createTaskWindowMustBeActiveCheck());
@@ -1128,10 +1130,6 @@ public void configureDatastores(final WorkbenchContext context) throws Exception
         		newTaskPlugIn,
         		NewTaskPlugIn.createEnableCheck(workbenchContext),
 				workbenchContext);                
-        frame.getToolBar().addPlugIn(LoadDatasetPlugIn.getIcon(),
-        		loadDatasetPlugIn,
-        		LoadDatasetPlugIn.createEnableCheck(workbenchContext),
-				workbenchContext);        
         frame.getToolBar().addSeparator();        
         add(new ZoomTool(), workbenchContext);
         add(new PanTool(), workbenchContext);

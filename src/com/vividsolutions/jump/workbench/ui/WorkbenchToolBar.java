@@ -199,4 +199,14 @@ public class WorkbenchToolBar extends EnableableToolBar {
 
         return button;
     }
+    
+    public JButton addPlugIn(final int index, final PlugIn plugIn,
+      final Icon icon, final EnableCheck enableCheck,
+      final WorkbenchContext workbenchContext) {
+      JButton button = new JButton();
+      ActionListener listener = AbstractPlugIn.toActionListener(plugIn,
+        workbenchContext, taskMonitorManager);
+      add(index, button, plugIn.getName(), icon, listener, enableCheck);
+      return button;
+  }
 }

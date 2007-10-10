@@ -87,80 +87,76 @@ public class TaskFrame extends JInternalFrame implements TaskFrameProxy,
         return getLayerViewPanel().getSelectionManager();
     }
 
+    public TaskFrame() {
+    }
+    
     private TaskFrame(Task task, int cloneIndex,
             final WorkbenchContext workbenchContext) {
-      this.cloneIndex = cloneIndex;
-      this.workbenchContext = workbenchContext;
-        setTask(task);
-    }
+        this.task = task;
+        //this.layerManager = task.getLayerManager();
+        this.cloneIndex = cloneIndex;
+        this.workbenchContext = workbenchContext;
+        addInternalFrameListener(new InternalFrameAdapter() {
+            public void internalFrameDeactivated(InternalFrameEvent e) {
+                //Deactivate the current CursorTool. Otherwise, the following
+                // problem
+                //can occur:
+                //  -- Start drawing a linestring on a task frame. Don't
+                // double-click
+                //      to end the gesture.
+                //  -- Open a new task frame. You're still drawing the
+                // linestring!
+                //      This shouldn't happen; instead, the drawing should be
+                // cancelled.
+                //[Jon Aquino]
+                layerViewPanel.setCurrentCursorTool(new DummyTool());
+            }
 
-    public void setTask(Task task) {
-      if (this.task!= null) {
-        throw new IllegalStateException("Task cannot be changed once set");
-      }
-      this.task = task;
-      //this.layerManager = task.getLayerManager();
-      addInternalFrameListener(new InternalFrameAdapter() {
-          public void internalFrameDeactivated(InternalFrameEvent e) {
-              //Deactivate the current CursorTool. Otherwise, the following
-              // problem
-              //can occur:
-              //  -- Start drawing a linestring on a task frame. Don't
-              // double-click
-              //      to end the gesture.
-              //  -- Open a new task frame. You're still drawing the
-              // linestring!
-              //      This shouldn't happen; instead, the drawing should be
-              // cancelled.
-              //[Jon Aquino]
-              layerViewPanel.setCurrentCursorTool(new DummyTool());
-          }
+            public void internalFrameClosed(InternalFrameEvent e) {
+                try {
+                    // Code to manage TaskFrame INTERNAL_FRAME_CLOSED event
+                    // has been moved to closeTaskFrame method in WorkbenchFrame
+                    // I let this method because of the timer.stop [mmichaud]
+                    // Maybe the WorkbenchFrame.closeTaskFrame should be moved here...
+                    timer.stop();
+                    //memoryCleanup();
+                } catch (Throwable t) {
+                    workbenchContext.getWorkbench().getFrame().handleThrowable(
+                            t);
+                }
+            }
 
-          public void internalFrameClosed(InternalFrameEvent e) {
-              try {
-                  // Code to manage TaskFrame INTERNAL_FRAME_CLOSED event
-                  // has been moved to closeTaskFrame method in WorkbenchFrame
-                  // I let this method because of the timer.stop [mmichaud]
-                  // Maybe the WorkbenchFrame.closeTaskFrame should be moved here...
-                  timer.stop();
-                  //memoryCleanup();
-              } catch (Throwable t) {
-                  workbenchContext.getWorkbench().getFrame().handleThrowable(
-                          t);
-              }
-          }
+            public void internalFrameOpened(InternalFrameEvent e) {
+                //Set the layerNamePanel when the frame is opened, not in the
+                // constructor,
+                //because #createLayerNamePanel may be overriden in a subclass,
+                // and the
+                //subclass has not yet been constructed -- weird things happen,
+                // like variables
+                //are unexpectedly null. [Jon Aquino]
+                splitPane.remove((Component) layerNamePanel);
+                layerNamePanel = createLayerNamePanel();
+                splitPane.add((Component) layerNamePanel, JSplitPane.LEFT);
+                layerNamePanel.addListener(workbenchContext.getWorkbench()
+                        .getFrame().getLayerNamePanelListener());
+            }
 
-          public void internalFrameOpened(InternalFrameEvent e) {
-              //Set the layerNamePanel when the frame is opened, not in the
-              // constructor,
-              //because #createLayerNamePanel may be overriden in a subclass,
-              // and the
-              //subclass has not yet been constructed -- weird things happen,
-              // like variables
-              //are unexpectedly null. [Jon Aquino]
-              splitPane.remove((Component) layerNamePanel);
-              layerNamePanel = createLayerNamePanel();
-              splitPane.add((Component) layerNamePanel, JSplitPane.LEFT);
-              layerNamePanel.addListener(workbenchContext.getWorkbench()
-                      .getFrame().getLayerNamePanelListener());
-          }
+        });
+        layerViewPanel = new LayerViewPanel(task.getLayerManager(),
+                workbenchContext.getWorkbench().getFrame());
 
-      });
-      layerViewPanel = new LayerViewPanel(task.getLayerManager(),
-              workbenchContext.getWorkbench().getFrame());
+        try {
+            jbInit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-      try {
-          jbInit();
-      } catch (Exception e) {
-          e.printStackTrace();
-      }
-
-      layerViewPanel.addListener(workbenchContext.getWorkbench().getFrame()
-              .getLayerViewPanelListener());
-      layerViewPanel.getViewport().addListener(
-              workbenchContext.getWorkbench().getFrame());
-      task.add(this);
-      installAnimator();
+        layerViewPanel.addListener(workbenchContext.getWorkbench().getFrame()
+                .getLayerViewPanelListener());
+        layerViewPanel.getViewport().addListener(
+                workbenchContext.getWorkbench().getFrame());
+        task.add(this);
+        installAnimator();
     }
 
     protected LayerNamePanel createLayerNamePanel() {
@@ -231,6 +227,13 @@ public class TaskFrame extends JInternalFrame implements TaskFrameProxy,
         return layerViewPanel;
     }
 
+    public void setTask(Task task) {
+      if (this.task != null) {
+        throw new IllegalStateException("Task is already set");
+      } else {
+        this.task = task;
+      }
+    }
     public Task getTask() {
         return task;
     }
@@ -285,7 +288,7 @@ public class TaskFrame extends JInternalFrame implements TaskFrameProxy,
         updateTitle();
     }
 
-    private void updateTitle() {
+    protected void updateTitle() {
         String title = task.getName();
         if (cloneIndex > 0) {
             title += " (View " + (cloneIndex + 1) + ")";
@@ -297,7 +300,7 @@ public class TaskFrame extends JInternalFrame implements TaskFrameProxy,
         return splitPane;
     }
 
-    private void installAnimator() {
+    protected void installAnimator() {
         timer = new Timer(500, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (clockedRenderingInProgress()) {

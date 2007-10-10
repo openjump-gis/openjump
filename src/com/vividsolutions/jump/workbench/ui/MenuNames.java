@@ -38,7 +38,8 @@ import com.vividsolutions.jump.I18N;
  * @author Basile Chandesris - <chandesris@pt-consulting.lu>
  */
 public interface MenuNames {
-	public static String FILE = I18N.get("ui.MenuNames.FILE");
+  public static String FILE = I18N.get("ui.MenuNames.FILE");
+  public static String FILE_NEW = I18N.get("ui.MenuNames.FILE.NEW");
 	public static String FILE_EXPORTLAYERVIEW = I18N.get("ui.MenuNames.FILE.EXPORTLAYERVIEW");
 	public static String EDIT = I18N.get("ui.MenuNames.EDIT");
 	public static String TOOLS_EDIT_ATTRIBUTES = I18N.get("ui.MenuNames.EDIT") +  " " + I18N.get("ui.MenuNames.ATTRIBUTS");
@@ -62,7 +63,7 @@ public interface MenuNames {
     // New menu for plugin manager, beanshell console, scripts
 	public static String CUSTOMIZE = I18N.get("ui.MenuNames.CUSTOMIZE");
 	
-	//erwan début décembre 2005 --- SIGLE	
+	//erwan dï¿½but dï¿½cembre 2005 --- SIGLE	
 	//Menu
 	public static String ATTRIBUTS = I18N.get("ui.MenuNames.ATTRIBUTS");
 	public static String SELECTION = I18N.get("ui.MenuNames.SELECTION");
@@ -82,6 +83,6 @@ public interface MenuNames {
 	public static String DELETE = I18N.get("ui.MenuNames.DELETE");
 	public static String DETECT = I18N.get("ui.MenuNames.DETECT");
 		
-	//	erwan fin décembre 2005
+	//	erwan fin dï¿½cembre 2005
 
 }

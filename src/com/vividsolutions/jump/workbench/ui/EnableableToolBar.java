@@ -34,7 +34,6 @@ package com.vividsolutions.jump.workbench.ui;
 
 import java.awt.Dimension;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -45,6 +44,8 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 
+import org.openjump.swing.listener.InvokeMethodActionListener;
+
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 
 /**
@@ -54,6 +55,7 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 
 public class EnableableToolBar extends JToolBar {
     protected HashMap buttonToEnableCheckMap = new HashMap();
+    private InvokeMethodActionListener updateStateListener = new InvokeMethodActionListener(this, "updateEnabledState");
 
     public EnableCheck getEnableCheck(AbstractButton button) {
         return (EnableCheck) buttonToEnableCheckMap.get(button);
@@ -75,8 +77,6 @@ public class EnableableToolBar extends JToolBar {
                 (EnableCheck) buttonToEnableCheckMap.get(component);
             component.setEnabled(enableCheck.check(component) == null);
         }
-        //Strange -- occasionally I've seen the depressed cursor tool enabled and
-        //all the other tools disabled. Maybe it's a bug in Java 1.3? [Jon Aquino]
     }
 
     /**
@@ -103,12 +103,21 @@ public class EnableableToolBar extends JToolBar {
         button.setMargin(new Insets(0, 0, 0, 0));
         button.setToolTipText(tooltip);
         button.addActionListener(actionListener);
-        button.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                updateEnabledState();
-            }
-        });
+        button.addActionListener(updateStateListener);
         add(button);
     }
 
+    public void add(final int index, final AbstractButton button,
+      final String tooltip, final Icon icon,
+      final ActionListener actionListener, final EnableCheck enableCheck) {
+        if (enableCheck != null) {
+            buttonToEnableCheckMap.put(button, enableCheck);
+        }
+        button.setIcon(icon);
+        button.setMargin(new Insets(0, 0, 0, 0));
+        button.setToolTipText(tooltip);
+        button.addActionListener(actionListener);
+        button.addActionListener(updateStateListener);
+        add(button, index);
+    }
 }
