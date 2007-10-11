@@ -91,6 +91,10 @@ public class SelectByTypePlugIn extends AbstractPlugIn
 				this.createEnableCheck(workbenchContext));
     }
     
+    public String getName(){
+    	return sSelectByGeometryType;
+    }
+    
     public boolean execute(final PlugInContext context) throws Exception
     {
         reportNothingToUndoYet(context);
