@@ -1,3 +1,7 @@
+2007-10-11 Andreas Schmitz <schmitz@lat-lon.de>
+        etc/build.xml:
+        Set source and target options of javac to 1.5.
+
 2007-09-24 paul_d_austin <paul.austin@revolsys.com
           * Added new abstract plugin/threaded plugins which have a name, icon
             and tooltip under the openjump package. Also added methods to
