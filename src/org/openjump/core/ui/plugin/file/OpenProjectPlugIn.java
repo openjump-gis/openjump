@@ -40,7 +40,7 @@ import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 
 import org.openjump.core.ui.enablecheck.BooleanPropertyEnableCheck;
-import org.openjump.core.ui.plugin.ThreadedBasePlugIn;
+import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.coordsys.CoordinateSystemRegistry;
@@ -64,7 +64,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.plugin.SaveProjectAsPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.WorkbenchContextReference;
 
-public class OpenProjectPlugIn extends ThreadedBasePlugIn {
+public class OpenProjectPlugIn extends AbstractThreadedUiPlugIn {
   private static final String KEY = OpenProjectPlugIn.class.getName();
 
   private static final String FILE_DOES_NOT_EXIST = I18N.get(KEY

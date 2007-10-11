@@ -39,7 +39,7 @@ import java.util.Set;
 import javax.swing.JMenu;
 import javax.swing.event.MenuListener;
 
-import org.openjump.core.ui.plugin.AbstractPlugIn;
+import org.openjump.core.ui.plugin.AbstractUiPlugIn;
 import org.openjump.swing.listener.InvokeMethodPropertyChangeListener;
 
 import com.vividsolutions.jump.util.Blackboard;
@@ -49,7 +49,7 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 
-public class OpenRecentPlugIn extends AbstractPlugIn {
+public class OpenRecentPlugIn extends AbstractUiPlugIn {
   private static final String KEY = OpenRecentPlugIn.class.getName();
 
   private static final String RECENT_FILES_KEY = KEY + ".FILES";

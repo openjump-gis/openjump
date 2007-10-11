@@ -38,7 +38,7 @@ import javax.swing.Icon;
 
 import org.openjump.core.ui.enablecheck.BooleanPropertyEnableCheck;
 import org.openjump.core.ui.io.file.FileLayerLoader;
-import org.openjump.core.ui.plugin.ThreadedBasePlugIn;
+import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 import org.openjump.core.ui.plugin.file.open.OpenFileWizardState;
 import org.openjump.core.ui.plugin.file.open.SelectFileLoaderPanel;
 import org.openjump.core.ui.plugin.file.open.SelectFileOptionsPanel;
@@ -66,7 +66,7 @@ import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
  * 
  * @author Paul Austin
  */
-public class OpenFilePlugIn extends ThreadedBasePlugIn {
+public class OpenFilePlugIn extends AbstractThreadedUiPlugIn {
   private static final String KEY = OpenFilePlugIn.class.getName();
 
   private static final String FILE_DOES_NOT_EXIST = I18N.get(KEY

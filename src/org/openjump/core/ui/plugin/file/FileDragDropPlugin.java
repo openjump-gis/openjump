@@ -28,7 +28,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JRootPane;
 import javax.swing.border.Border;
 
-import org.openjump.core.ui.plugin.AbstractPlugIn;
+import org.openjump.core.ui.plugin.AbstractUiPlugIn;
 
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
@@ -36,7 +36,7 @@ import com.vividsolutions.jump.workbench.ui.ErrorHandler;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 
-public class FileDragDropPlugin extends AbstractPlugIn implements
+public class FileDragDropPlugin extends AbstractUiPlugIn implements
   DropTargetListener {
   public static final Set<String> PROJECT_EXTENSIONS = new HashSet<String>(
     Arrays.asList(new String[] {

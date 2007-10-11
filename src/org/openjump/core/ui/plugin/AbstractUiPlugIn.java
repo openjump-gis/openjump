@@ -26,7 +26,7 @@ import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
  * name, converting a PlugIn into an ActionListener (for use with JButtons, for
  * example), and supporting undo.
  */
-public abstract class AbstractPlugIn implements PlugIn, ActionListener {
+public abstract class AbstractUiPlugIn implements PlugIn, ActionListener {
   /** The icon for the plug-in. */
   private Icon icon;
 
@@ -41,28 +41,28 @@ public abstract class AbstractPlugIn implements PlugIn, ActionListener {
 
   protected EnableCheck enableCheck;
 
-  public AbstractPlugIn() {
+  public AbstractUiPlugIn() {
   }
 
-  public AbstractPlugIn(final String name) {
+  public AbstractUiPlugIn(final String name) {
     this.name = name;
   }
 
-  public AbstractPlugIn(final ImageIcon icon) {
+  public AbstractUiPlugIn(final ImageIcon icon) {
     this.icon = icon;
   }
 
-  public AbstractPlugIn(final String name, final String toolTip) {
+  public AbstractUiPlugIn(final String name, final String toolTip) {
     this.name = name;
     this.toolTip = toolTip;
   }
 
-  public AbstractPlugIn(final String name, final Icon icon) {
+  public AbstractUiPlugIn(final String name, final Icon icon) {
     this.name = name;
     this.icon = icon;
   }
 
-  public AbstractPlugIn(final String name, final Icon icon, final String toolTip) {
+  public AbstractUiPlugIn(final String name, final Icon icon, final String toolTip) {
     this.name = name;
     this.icon = icon;
     this.toolTip = toolTip;

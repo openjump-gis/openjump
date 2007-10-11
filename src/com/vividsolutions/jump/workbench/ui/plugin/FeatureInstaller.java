@@ -51,6 +51,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
+import org.openjump.core.ui.plugin.AbstractUiPlugIn;
 import org.openjump.core.ui.swing.listener.EnableCheckMenuItemShownListener;
 import org.openjump.core.ui.swing.listener.MenuItemShownMenuListener;
 
@@ -237,7 +238,7 @@ public class FeatureInstaller {
   }
 
   public JMenuItem addMainMenuItem(final String[] menuPath,
-    final org.openjump.core.ui.plugin.AbstractPlugIn plugin, final int index) {
+    final AbstractUiPlugIn plugin, final int index) {
     String menuItemName = plugin.getName();
     JMenu menu = menuBarMenu(menuPath[0]);
     if (menu == null) {
@@ -563,8 +564,7 @@ public class FeatureInstaller {
     return menu;
   }
 
-  public JMenuItem addMainMenuItem(String[] menuPath,
-    org.openjump.core.ui.plugin.AbstractPlugIn plugIn) {
+  public JMenuItem addMainMenuItem(String[] menuPath, AbstractUiPlugIn plugIn) {
     return addMainMenuItem(menuPath, plugIn, -1);
   }
 }
