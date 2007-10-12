@@ -2,6 +2,10 @@
         etc/build.xml:
         Set source and target options of javac to 1.5.
 
+2007-10-03 eri_lemesre <eric.lemesre@gmail.com>
+          * Add Replace attribute value by copy from an other attribute 
+            org.openjump.sigle.plugin.replace.ReplaceValuePlugIn.java
+              
 2007-09-24 paul_d_austin <paul.austin@revolsys.com
           * Added new abstract plugin/threaded plugins which have a name, icon
             and tooltip under the openjump package. Also added methods to
@@ -15,7 +19,7 @@
           * Added the new Open File, Open Project and Open Recent menus.
           * Added drag and drop support for loading files
  
- 2007-09-17 beckerl <becker.larry@gmail.com>
+2007-09-17 beckerl <becker.larry@gmail.com>
           * Added mouse wheel zooming to the PanTool. 
             com.vividsolutions.jump.workbench.ui.zoom.PanTool.java
             com.vividsolutions.jump.workbench.ui.LayerViewPanel.java
