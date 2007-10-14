@@ -58,6 +58,8 @@ import java.util.List;
 
 import javax.swing.*;
 
+import org.openjump.OpenJumpConfiguration;
+
 /**
  * This class is responsible for setting up and displaying the main JUMP
  * workbench window.
@@ -257,6 +259,7 @@ public class JUMPWorkbench {
 			setup.setup(workbench.context);
 
 			workbench.context.getWorkbench().getPlugInManager().load();
+      OpenJumpConfiguration.postExtensionInitialization(workbench.context);
 			workbench.getFrame().setVisible(true);
 		} catch (Throwable t) {
 			WorkbenchFrame.handleThrowable(t, null);

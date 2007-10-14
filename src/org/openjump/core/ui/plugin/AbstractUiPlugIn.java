@@ -13,6 +13,7 @@ import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.UndoableEditReceiver;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
+import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.ThreadedPlugIn;
@@ -39,7 +40,7 @@ public abstract class AbstractUiPlugIn implements PlugIn, ActionListener {
   /** The tool-tip for the plug-in. */
   private String toolTip;
 
-  protected EnableCheck enableCheck;
+  protected EnableCheck enableCheck = new MultiEnableCheck();
 
   public AbstractUiPlugIn() {
   }

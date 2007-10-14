@@ -20,6 +20,7 @@ import org.openjump.core.ui.io.file.DataSourceFileLayerLoader;
 import org.openjump.core.ui.io.file.FileLayerLoader;
 import org.openjump.core.ui.io.file.ReferencedImageFactoryFileLayerLoader;
 import org.openjump.core.ui.plugin.customize.BeanToolsPlugIn;
+import org.openjump.core.ui.plugin.datastore.AddDataStoreLayerWizard;
 import org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn;
 import org.openjump.core.ui.plugin.edit.SelectAllLayerItemsPlugIn;
 import org.openjump.core.ui.plugin.edit.SelectByTypePlugIn;
@@ -33,10 +34,12 @@ import org.openjump.core.ui.plugin.edittoolbox.DrawConstrainedLineStringPlugIn;
 import org.openjump.core.ui.plugin.edittoolbox.DrawConstrainedPolygonPlugIn;
 import org.openjump.core.ui.plugin.edittoolbox.RotateSelectedItemPlugIn;
 import org.openjump.core.ui.plugin.edittoolbox.SelectOneItemPlugIn;
+import org.openjump.core.ui.plugin.file.DataSourceQueryChooserOpenWizard;
 import org.openjump.core.ui.plugin.file.FileDragDropPlugin;
 import org.openjump.core.ui.plugin.file.OpenFilePlugIn;
 import org.openjump.core.ui.plugin.file.OpenProjectPlugIn;
 import org.openjump.core.ui.plugin.file.OpenRecentPlugIn;
+import org.openjump.core.ui.plugin.file.OpenWizardPlugIn;
 import org.openjump.core.ui.plugin.file.SaveImageAsSVGPlugIn;
 import org.openjump.core.ui.plugin.layer.AddSIDLayerPlugIn;
 import org.openjump.core.ui.plugin.layer.ChangeLayerableNamePlugIn;
@@ -65,12 +68,14 @@ import org.openjump.core.ui.plugin.view.MapToolTipPlugIn;
 import org.openjump.core.ui.plugin.view.ShowFullPathPlugIn;
 import org.openjump.core.ui.plugin.view.ShowScalePlugIn;
 import org.openjump.core.ui.plugin.view.ZoomToScalePlugIn;
+import org.openjump.core.ui.plugin.wms.AddWmsLayerWizard;
 import org.openjump.core.ui.plugin.wms.ZoomToWMSPlugIn;
 import org.openjump.core.ui.style.decoration.ArrowLineStringMiddlepointStyle;
 import org.openjump.core.ui.style.decoration.SegmentDownhillArrowStyle;
 import org.openjump.core.ui.style.decoration.VertexZValueStyle;
 import org.openjump.core.ui.swing.factory.field.FieldComponentFactoryRegistry;
 import org.openjump.core.ui.swing.factory.field.FileFieldComponentFactory;
+import org.openjump.core.ui.swing.wizard.WizardGroup;
 import org.openjump.sigle.plugin.geoprocessing.layers.SpatialJoinPlugIn;
 import org.openjump.sigle.plugin.geoprocessing.oneLayer.topology.PlanarGraphPlugIn;
 import org.openjump.sigle.plugin.joinTable.JoinTablePlugIn;
@@ -79,6 +84,7 @@ import org.openjump.sigle.plugin.replace.ReplaceValuePlugIn;
 import com.vividsolutions.jump.io.datasource.StandardReaderWriterFileDataSource;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.datasource.DataSourceQueryChooser;
 import com.vividsolutions.jump.workbench.datasource.DataSourceQueryChooserManager;
 import com.vividsolutions.jump.workbench.datasource.FileDataSourceQueryChooser;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageFactory;
@@ -111,8 +117,6 @@ public class OpenJumpConfiguration {
     throws Exception {
     PlugInContext pluginContext = workbenchContext.createPlugInContext();
 
-
-
     /*-----------------------------------------------
      *  add here first the field which holds the plugin
      *  and afterwards initialize it for the menu
@@ -120,15 +124,18 @@ public class OpenJumpConfiguration {
     PersistentBlackboardPlugIn persistentBlackboard = new PersistentBlackboardPlugIn();
     persistentBlackboard.initialize(pluginContext);
 
-    /* *************************************************************************
+    /***************************************************************************
      * Field Component Factories
-     * ************************************************************************/
-    FieldComponentFactoryRegistry.setFactory(workbenchContext,
-      "FileString", new FileFieldComponentFactory(workbenchContext));
+     **************************************************************************/
+    FieldComponentFactoryRegistry.setFactory(workbenchContext, "FileString",
+      new FileFieldComponentFactory(workbenchContext));
 
-    /* *************************************************************************
+    /***************************************************************************
      * menu FILE
-     * ************************************************************************/
+     **************************************************************************/
+    OpenWizardPlugIn open = new OpenWizardPlugIn();
+    open.initialize(pluginContext);
+
     OpenFilePlugIn openFile = new OpenFilePlugIn();
     openFile.initialize(pluginContext);
 
@@ -140,7 +147,7 @@ public class OpenJumpConfiguration {
 
     FileDragDropPlugin fileDragDropPlugin = new FileDragDropPlugin();
     fileDragDropPlugin.initialize(pluginContext);
-    
+
     SaveImageAsSVGPlugIn imageSvgPlugin = new SaveImageAsSVGPlugIn();
     imageSvgPlugin.initialize(new PlugInContext(workbenchContext, null, null,
       null, null));
@@ -476,6 +483,17 @@ public class OpenJumpConfiguration {
       EditTransaction.ROLLING_BACK_INVALID_EDITS_KEY, true);
 
     /***************************************************************************
+     * Open Wizards
+     **************************************************************************/
+    AddDataStoreLayerWizard addDataStoreLayerWizard = new AddDataStoreLayerWizard(
+      workbenchContext);
+    OpenWizardPlugIn.addWizard(workbenchContext, addDataStoreLayerWizard);
+
+    AddWmsLayerWizard addWmsLayerWizard = new AddWmsLayerWizard(
+      workbenchContext);
+    OpenWizardPlugIn.addWizard(workbenchContext, addWmsLayerWizard);
+
+    /***************************************************************************
      * testing
      **************************************************************************/
     /*
@@ -517,6 +535,17 @@ public class OpenJumpConfiguration {
         "tfw"
       });
     addFactory(workbenchContext, registry, new MrSIDImageFactory(), null);
+
+    //
+    DataSourceQueryChooserManager manager = DataSourceQueryChooserManager.get(workbenchContext.getWorkbench()
+      .getBlackboard());
+    for (DataSourceQueryChooser chooser : (List<DataSourceQueryChooser>)manager.getLoadDataSourceQueryChoosers()) {
+      if (!(chooser instanceof FileDataSourceQueryChooser)) {
+        WizardGroup wizard = new DataSourceQueryChooserOpenWizard(
+          workbenchContext, chooser);
+        OpenWizardPlugIn.addWizard(workbenchContext, wizard);
+      }
+    }
 
   }
 

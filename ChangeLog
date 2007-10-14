@@ -1,3 +1,8 @@
+2007-10-14 paul_d_austin <paul.austin@revolsys.com
+   * Added a new wizard for opening different types of data. Includes
+     functionality from the LoadDataset, AddWMSLayer and AddDataStoreLayer 
+     plugins
+
 2007-10-11 Andreas Schmitz <schmitz@lat-lon.de>
         etc/build.xml:
         Set source and target options of javac to 1.5.

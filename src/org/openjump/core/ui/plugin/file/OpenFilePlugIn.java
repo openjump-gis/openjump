@@ -39,6 +39,7 @@ import javax.swing.Icon;
 import org.openjump.core.ui.enablecheck.BooleanPropertyEnableCheck;
 import org.openjump.core.ui.io.file.FileLayerLoader;
 import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
+import org.openjump.core.ui.plugin.file.open.OpenFileWizard;
 import org.openjump.core.ui.plugin.file.open.OpenFileWizardState;
 import org.openjump.core.ui.plugin.file.open.SelectFileLoaderPanel;
 import org.openjump.core.ui.plugin.file.open.SelectFileOptionsPanel;
@@ -129,24 +130,14 @@ public class OpenFilePlugIn extends AbstractThreadedUiPlugIn {
       this.enableCheck = checkFactory.createWindowWithLayerManagerMustBeActiveCheck();
       FeatureInstaller featureInstaller = new FeatureInstaller(workbenchContext);
 
-      JUMPWorkbench workbench = workbenchContext.getWorkbench();
-      WorkbenchFrame frame = workbench.getFrame();
-
-      Icon icon = getIcon();
-      String name = getName();
-
       // Add File Menu
       featureInstaller.addMainMenuItem(new String[] {
         MenuNames.FILE
-      }, this, 1);
-
-      // Add tool-bar Icon
-      WorkbenchToolBar toolBar = frame.getToolBar();
-      toolBar.addPlugIn(1, this, icon, enableCheck, workbenchContext);
-
-      // Add layer pop-up menu
-      featureInstaller.addPopupMenuItem(frame.getCategoryPopupMenu(), this,
-        name, false, icon, enableCheck);
+      }, this, 2);
+      
+      // Register the Open File Wizard
+      OpenFileWizard openFileWizard = new OpenFileWizard(workbenchContext);
+      OpenWizardPlugIn.addWizard(workbenchContext, openFileWizard);
     }
   }
 

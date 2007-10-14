@@ -276,7 +276,6 @@ public class JUMPConfiguration implements Setup {
         //add items to the toolbar will add them to the *end* of the toolbar.
         // [Jon Aquino]
         initializeBuiltInPlugIns(workbenchContext);
-        OpenJumpConfiguration.postExtensionInitialization(workbenchContext);
     }
 
     private void configureCategoryPopupMenu(WorkbenchContext workbenchContext,
