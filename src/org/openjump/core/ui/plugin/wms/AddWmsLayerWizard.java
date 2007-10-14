@@ -35,7 +35,7 @@ public class AddWmsLayerWizard extends AbstractWizardGroup {
 
   private WorkbenchContext workbenchContext;
 
-  private String[] cachedURLs;
+  private String[] cachedURLs = new String[0];
 
   private String lastWMSVersion = WMService.WMS_1_1_1;
 
