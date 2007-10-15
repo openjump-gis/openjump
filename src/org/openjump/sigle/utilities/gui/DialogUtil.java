@@ -15,10 +15,11 @@ import java.util.List;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JList;
 
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.Feature;
-import com.vividsolutions.jump.workbench.model.Layer;
+import com.vividsolutions.jump.workbench.model.*;
 
 /**
  * @author Olivier
@@ -80,6 +81,22 @@ public class DialogUtil {
                 
         AttributeType nameType = l.getFeatureCollectionWrapper().getFeatureSchema().getAttributeType(attributeName);
         label.setText(nameType.toString());
+    }
     
+    public static void setLayerNamesAsListData(LayerManager argManager, JList argList)
+    {
+    	List layers = argManager.getLayers();
+    	List<String> layerNames = new LinkedList<String>();
+    	
+    	Iterator goOverEach = layers.iterator();
+    	
+    	while(goOverEach.hasNext())
+    	{
+    		Layer thisElement = (Layer) goOverEach.next();
+    		String layerName = thisElement.getName();
+    		layerNames.add(layerName);
+    	}
+    	Object[] arrayForJList = layerNames.toArray();
+    	argList.setListData(arrayForJList);
     }
 }
