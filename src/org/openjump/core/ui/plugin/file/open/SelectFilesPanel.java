@@ -68,11 +68,20 @@ public class SelectFilesPanel extends JFileChooser implements WizardPanel {
 
   private OpenFileWizardState state;
 
-  public SelectFilesPanel(final WorkbenchContext context,
+  private WorkbenchContext workbenchContext;
+
+  private boolean initialized = false;
+
+  public SelectFilesPanel(final WorkbenchContext workbenchContext,
     final OpenFileWizardState state) {
     this.state = state;
-    blackboard = PersistentBlackboardPlugIn.get(context);
-    Registry registry = context.getRegistry();
+    this.workbenchContext = workbenchContext;
+  }
+
+  private void initialize() {
+    initialized = true;
+    blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
+    Registry registry = workbenchContext.getRegistry();
 
     String savedDirectoryName = (String)blackboard.get(LoadFileDataSourceQueryChooser.FILE_CHOOSER_DIRECTORY_KEY);
     if (savedDirectoryName != null) {
@@ -120,6 +129,7 @@ public class SelectFilesPanel extends JFileChooser implements WizardPanel {
   }
 
   public void enteredFromLeft(final Map dataMap) {
+    initialize();
     rescanCurrentDirectory();
     state.setCurrentPanel(KEY);
   }
