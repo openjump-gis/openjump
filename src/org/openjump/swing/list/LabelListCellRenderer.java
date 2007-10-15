@@ -24,16 +24,6 @@ public class LabelListCellRenderer extends DefaultListCellRenderer {
       Color bg = null;
       Color fg = null;
 
-      JList.DropLocation dropLocation = list.getDropLocation();
-      if (dropLocation != null && !dropLocation.isInsert()
-        && dropLocation.getIndex() == index) {
-
-        bg = UIManager.getColor("List.dropCellBackground");
-        fg = UIManager.getColor("List.dropCellForeground");
-
-        isSelected = true;
-      }
-
       if (isSelected) {
         label.setBackground(bg == null ? list.getSelectionBackground() : bg);
         label.setForeground(fg == null ? list.getSelectionForeground() : fg);
