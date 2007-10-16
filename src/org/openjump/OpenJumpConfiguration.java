@@ -44,6 +44,8 @@ import org.openjump.core.ui.plugin.file.SaveImageAsSVGPlugIn;
 import org.openjump.core.ui.plugin.layer.AddSIDLayerPlugIn;
 import org.openjump.core.ui.plugin.layer.ChangeLayerableNamePlugIn;
 import org.openjump.core.ui.plugin.layer.ChangeSRIDPlugIn;
+import org.openjump.core.ui.plugin.layer.ExtractLayerInFence;
+import org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry;
 import org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn;
 import org.openjump.core.ui.plugin.layer.ToggleVisiblityPlugIn;
 import org.openjump.core.ui.plugin.mousemenu.EditSelectedSidePlugIn;
@@ -384,6 +386,13 @@ public class OpenJumpConfiguration {
     LayerPropertiesPlugIn myLayerPropertiesPlugIn = new LayerPropertiesPlugIn();
     myLayerPropertiesPlugIn.initialize(new PlugInContext(workbenchContext,
       null, null, null, null));
+
+	ExtractLayersByGeometry myExtractLayersByGeometryPlugin = new ExtractLayersByGeometry();
+	myExtractLayersByGeometryPlugin.initialize(new PlugInContext(workbenchContext, null, null, null, null));
+	
+	ExtractLayerInFence myExtractLayerInFence = new ExtractLayerInFence();
+	myExtractLayerInFence.initialize(new PlugInContext(workbenchContext, null, null, null, null));
+	
 
     EditSelectedSidePlugIn myEditSidePlugin = new EditSelectedSidePlugIn();
     myEditSidePlugin.initialize(new PlugInContext(workbenchContext, null, null,
