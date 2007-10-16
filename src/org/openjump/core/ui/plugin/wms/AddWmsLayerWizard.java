@@ -99,7 +99,7 @@ public class AddWmsLayerWizard extends AbstractWizardGroup {
     StringBuilder string = new StringBuilder();
     for (int i = 0; i < values.length; i++) {
       string.append(values[i]);
-      if (i == values.length - 1) {
+      if (i != values.length - 1) {
         string.append(",");
       }
     }
