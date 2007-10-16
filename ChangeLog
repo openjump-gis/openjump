@@ -23,6 +23,32 @@
             Swing Components (fields).
           * Added the new Open File, Open Project and Open Recent menus.
           * Added drag and drop support for loading files
+          
+ 2007-10-07 beckerl <becker.larry@gmail.com>
+          * Optimizations to improve responsiveness with large selections of points.
+            Added getSelectedItemsCount() and getFeaturesWithSelectedItemsCount() to
+            SelectionManager.  Changed EnableCheckFactory to use them.
+            In AbstractSelectionRenderer, stopped drawing a point if it would be 
+            obscurred by a selection handle.  Reduced point handle redraw by 50%.
+            com.vividsolutions.jump.workbench.ui.SelectionManager.java
+            com.vividsolutions.jump.workbench.plugin.EnableCheckFactory.java
+            com.vividsolutions.jump.workbench.ui.renderer.AbstractSelectionRenderer.java
+          
+2007-10-06 beckerl <becker.larry@gmail.com>
+          * Refactored PanTool and ZoomTool and created a new
+            super class AbstractZoomTool.  Fixed click zoom so that it
+            also zooms to cursor point to be consistent with mouse wheel zoom.
+            com.vividsolutions.jump.workbench.ui.zoom.PanTool.java
+            com.vividsolutions.jump.workbench.ui.zoom.ZoomTool.java
+            com.vividsolutions.jump.workbench.ui.zoom.AbstractZoomTool.java
+
+2007-10-05 beckerl <becker.larry@gmail.com>
+          * Added Extract by Geometry Type on layer name context menu.
+          	Added keys to all language files.  Translated german and french.
+			org.openjump.OpenJumpConfiguration.java
+			com.vividsolutions.jump.workbench.ui.images.extract.gif
+  			org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.java
+   		
  
 2007-09-17 beckerl <becker.larry@gmail.com>
           * Added mouse wheel zooming to the PanTool. 
