@@ -1,3 +1,17 @@
+2007-10-18 Andreas Schmitz <schmitz@lat-lon.de>
+    src/de/latlon/deejump/plugin/style/DeeChangeStylesPlugIn.java:
+    Added initialization code.
+    src/com/vividsolutions/jump/workbench/ui/renderer/ImageCachingFeatureCollectionRenderer.java:
+    Fixed null pointer.
+
+2007-10-18 Andreas Schmitz <schmitz@lat-lon.de>
+    scripts/openjump.sh:
+    Passing parameters to the script to OpenJUMP.
+
+    src/de/latlon/deejump/plugin/style/layerstyle2sld.xsl,
+    src/de/latlon/deejump/plugin/style/XSLUtility.java:
+	Added proper exporting of transparency, line and polygon patterns.
+
 2007-10-16 Andreas Schmitz <schmitz@lat-lon.de>
 	src/org/openjump/core/ui/plugin/wms/AddWmsLayerWizard.java:
 	Fixed storing of cached URLs.

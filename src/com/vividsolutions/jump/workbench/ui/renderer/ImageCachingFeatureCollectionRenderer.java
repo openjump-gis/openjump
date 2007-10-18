@@ -1,10 +1,9 @@
 package com.vividsolutions.jump.workbench.ui.renderer;
 
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.util.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -41,7 +40,7 @@ public class ImageCachingFeatureCollectionRenderer extends ImageCachingRenderer 
 		if (!layer.isVisible()) {
 			return;
 		}
-		if (!style.isEnabled()) {
+		if (style == null || !style.isEnabled()) {
 			return;
 		}
 		style.initialize(layer);
