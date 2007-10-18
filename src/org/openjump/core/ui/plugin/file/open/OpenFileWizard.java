@@ -59,6 +59,7 @@ public class OpenFileWizard extends AbstractWizardGroup {
     for (FileLayerLoader fileLayerLoader : loaders) {
       state.addFileLoader(fileLayerLoader);
     }
+    removeAllPanels();
     chooseProjectPanel = new ChooseProjectPanel(workbenchContext,
       SelectFilesPanel.KEY);
     addPanel(chooseProjectPanel);
