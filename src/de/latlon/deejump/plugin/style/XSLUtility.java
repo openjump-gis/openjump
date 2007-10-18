@@ -52,40 +52,33 @@ import org.w3c.dom.Node;
  * ...
  * 
  * @author <a href="mailto:taddei@lat-lon.de">Ugo Taddei </a>
- *  
+ * 
  */
 public class XSLUtility {
 
-    static {
-
-        //FIXME there is a problem when this class is added as an extension
-        // jump cannot find it (not in class path, because it's dynamically loaded)
-        //       System.out.println( "never called" );
-        //       System.out.println( System.getProperty( "java.class.path" ) );
-    }
-
     public static String toHexColor( Node colorNode ) {
         String value = "#000000";
-        if(colorNode == null) return value;
-        
-        try {//FIXME no good to grab 1st child and then node val
-            if(colorNode.getFirstChild() == null) return value;
+        if ( colorNode == null )
+            return value;
+
+        try {// FIXME no good to grab 1st child and then node val
+            if ( colorNode.getFirstChild() == null )
+                return value;
             String nodeVal = colorNode.getFirstChild().getNodeValue();
             String[] components = nodeVal.split( ", " );
             StringBuffer sb = new StringBuffer( 100 );
             sb.append( "#" );
-            for (int i = 0; i < components.length - 1; i++) {
+            for ( int i = 0; i < components.length - 1; i++ ) {
 
                 String uglyHack = Integer.toHexString( Integer.parseInt( components[i] ) );
-                uglyHack = uglyHack.length() == 1 ? "0"
-                    + uglyHack : uglyHack;
+                uglyHack = uglyHack.length() == 1 ? "0" + uglyHack : uglyHack;
                 sb.append( uglyHack );
 
             }
 
             value = sb.toString();
-            
-        } catch (Exception e) {
+
+        } catch ( Exception e ) {
             e.printStackTrace();
         }
 
@@ -95,12 +88,15 @@ public class XSLUtility {
     public static String toAlphaValue( Node colorNode ) {
         String value = "1";
 
-        try {//FIXME no good to grab 1st child than node val
-            String nodeVal = colorNode.getFirstChild().getNodeValue();
-            String[] components = nodeVal.split( ", " );
+        if ( colorNode == null || colorNode.getFirstChild() == null ) {
+            return value;
+        }
 
-            value = String.valueOf( Double.parseDouble( components[3] ) / 255d );
-        } catch (Exception e) {
+        try {// FIXME no good to grab 1st child than node val
+            String nodeVal = colorNode.getFirstChild().getNodeValue();
+
+            value = String.valueOf( Double.parseDouble( nodeVal ) / 255d );
+        } catch ( Exception e ) {
             e.printStackTrace();
         }
         // don't care about number formating, just trim the string
@@ -113,11 +109,11 @@ public class XSLUtility {
     public static String toFontFamily( Node colorNode ) {
         String value = "Dialog";
 
-        try {//FIXME no good to grab 1st child than node val
+        try {// FIXME no good to grab 1st child than node val
             String nodeVal = colorNode.getFirstChild().getNodeValue();
             String[] components = nodeVal.split( ", " );
             value = components[0];
-        } catch (Exception e) {
+        } catch ( Exception e ) {
             e.printStackTrace();
         }
         return value;
@@ -128,55 +124,42 @@ public class XSLUtility {
         final String[] styles = { "normal", "normal", "italic" };
 
         String value = styles[0];
-        try {//FIXME no good to grab 1st child than node val
+        try {// FIXME no good to grab 1st child than node val
             String nodeVal = fontNode.getFirstChild().getNodeValue();
             String[] components = nodeVal.split( ", " );
 
-            //cheap, cheap, cheap
+            // cheap, cheap, cheap
             value = styles[Integer.parseInt( components[1] )];
-        } catch (Exception e) {
+        } catch ( Exception e ) {
             e.printStackTrace();
         }
         return value;
     }
 
-    public static boolean _toWellKnowName( Node vertexStyleNode ) {
-        String value = "square";
-        try {//FIXME no good to grab 1st child than node val
-            String nodeVal = vertexStyleNode.getFirstChild().getNodeValue();
-            String[] components = nodeVal.split( ", " );
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return true;
-    }
-
-    
     public static String toWellKnowName( Node vertexStyleNode ) {
-        if( vertexStyleNode == null ){
+        if ( vertexStyleNode == null ) {
             return "";
         }
-        
+
         String value = "square";
         try {
-            
+
             NamedNodeMap atts = vertexStyleNode.getAttributes();
             String nodeVal = atts.getNamedItem( "class" ).getNodeValue();
-            
-            if ( nodeVal.indexOf( "Square" ) > -1  ){
-                //already there
-            } else if ( nodeVal.indexOf( "Circle" ) > -1 ){
+
+            if ( nodeVal.indexOf( "Square" ) > -1 ) {
+                // already there
+            } else if ( nodeVal.indexOf( "Circle" ) > -1 ) {
                 value = "circle";
-            } else if ( nodeVal.indexOf( "Cross" ) > -1 ){
+            } else if ( nodeVal.indexOf( "Cross" ) > -1 ) {
                 value = "cross";
-            } else if ( nodeVal.indexOf( "Star" ) > -1 ){
+            } else if ( nodeVal.indexOf( "Star" ) > -1 ) {
                 value = "star";
-            } else if ( nodeVal.indexOf( "Triangle" ) > -1 ){
+            } else if ( nodeVal.indexOf( "Triangle" ) > -1 ) {
                 value = "triangle";
-            } 
-            
-        } catch (Exception e) {
+            }
+
+        } catch ( Exception e ) {
             e.printStackTrace();
         }
         return value;
@@ -185,11 +168,26 @@ public class XSLUtility {
     public static String fileToURL( String filename ) {
         File f = new File( filename );
         f.deleteOnExit();
-        
+
         try {
             return f.toURL().toString();
-        } catch (MalformedURLException e) {
+        } catch ( MalformedURLException e ) {
             return filename;
         }
     }
+
+    public static String replaceComma( Node node ) {
+        if ( node.getFirstChild().getTextContent() == null ) {
+            return "";
+        }
+
+        String[] ss = node.getFirstChild().getTextContent().split( "," );
+
+        if ( ss.length == 1 ) {
+            return ss[0] + " " + ss[0];
+        }
+
+        return ss[0] + " " + ss[1];
+    }
+
 }

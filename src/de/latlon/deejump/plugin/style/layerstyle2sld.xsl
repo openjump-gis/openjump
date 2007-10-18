@@ -73,8 +73,8 @@
 								<sld:Geometry>
 									<ogc:PropertyName><xsl:value-of select="$NamespacePrefix"/><xsl:value-of select="$geomProperty"/></ogc:PropertyName>
 								</sld:Geometry>
-								<xsl:apply-templates select="./fill"/>
-								<xsl:apply-templates select="./line"/>
+ 								<xsl:apply-templates select="fill"/>
+								<xsl:apply-templates select="line"/>
 							</sld:PolygonSymbolizer>
 						</sld:Rule>
 					</xsl:when>
@@ -92,14 +92,15 @@
 									<ogc:PropertyName><xsl:value-of select="$NamespacePrefix"/><xsl:value-of select="$geomProperty"/>
 									</ogc:PropertyName>
 								</sld:Geometry>
-								<sld:Stroke>
+								<xsl:apply-templates select="line"/>
+<!-- 								<sld:Stroke>
 									<sld:CssParameter name="stroke">
 										<xsl:value-of select="$defaultStrokeColor"/>
 									</sld:CssParameter>
 									<sld:CssParameter name="stroke-width">
 										<xsl:value-of select="$defaultStrokeWidth"/>
 									</sld:CssParameter>
-								</sld:Stroke>
+								</sld:Stroke>-->
 							</sld:LineSymbolizer>
 						</sld:Rule>
 					</xsl:when>
@@ -347,7 +348,7 @@
 				<xsl:value-of select="xslutil:toHexColor(color)"/>
 			</sld:CssParameter>
 			<sld:CssParameter name="fill-opacity">
-				<xsl:value-of select="xslutil:toAlphaValue(color)"/>
+				<xsl:value-of select="xslutil:toAlphaValue(../alpha)"/>
 			</sld:CssParameter>
 			<!--[PENDING: this is the last token of the above] -->
 		</sld:Fill>
@@ -358,13 +359,14 @@
 				<xsl:value-of select="xslutil:toHexColor(color)"/>
 			</sld:CssParameter>
 			<sld:CssParameter name="stroke-opacity">
-				<xsl:value-of select="xslutil:toAlphaValue(color)"/>
+				<xsl:value-of select="xslutil:toAlphaValue(../alpha)"/>
 			</sld:CssParameter>
 			<sld:CssParameter name="stroke-width">
 				<xsl:value-of select="@width"/>
 			</sld:CssParameter>
-			<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
-			<!--[PENDING: is this in JUMP?] -->
+			<xsl:if test="pattern[@enabled='true']">
+				<sld:CssParameter name="stroke-dasharray"><xsl:value-of select="xslutil:replaceComma(pattern)" /></sld:CssParameter>
+			</xsl:if>
 		</sld:Stroke>
 	</xsl:template>
 </xsl:stylesheet>
