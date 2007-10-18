@@ -50,7 +50,7 @@ public class InvokeMethodActionListener implements ActionListener {
 
   public InvokeMethodActionListener(final Object object,
     final String methodName, boolean invokeLater) {
-    this(object, methodName, new Object[0], false);
+    this(object, methodName, new Object[0], invokeLater);
   }
 
   public InvokeMethodActionListener(final Object object,

@@ -42,9 +42,9 @@ import com.vividsolutions.jump.workbench.ui.InputChangedListener;
 import com.vividsolutions.jump.workbench.ui.plugin.SaveProjectAsPlugIn;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
 
-public class SelectProjectPanel extends JFileChooser implements WizardPanel {
+public class SelectProjectFilesPanel extends JFileChooser implements WizardPanel {
 
-  public static final String KEY = SelectProjectPanel.class.getName();
+  public static final String KEY = SelectProjectFilesPanel.class.getName();
 
   public static final String TITLE = I18N.get("ui.plugin.OpenProjectPlugIn.open-project");
 
@@ -56,10 +56,10 @@ public class SelectProjectPanel extends JFileChooser implements WizardPanel {
 
   private Blackboard blackboard;
 
-  public SelectProjectPanel(final WorkbenchContext context) {
+  public SelectProjectFilesPanel(final WorkbenchContext context) {
     setDialogType(JFileChooser.OPEN_DIALOG);
     setFileSelectionMode(JFileChooser.FILES_ONLY);
-    setMultiSelectionEnabled(false);
+    setMultiSelectionEnabled(true);
     GUIUtil.removeChoosableFileFilters(this);
     addChoosableFileFilter(SaveProjectAsPlugIn.JUMP_PROJECT_FILE_FILTER);
     addChoosableFileFilter(GUIUtil.ALL_FILES_FILTER);

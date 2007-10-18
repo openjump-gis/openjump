@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.openjump.core.ui.plugin.AbstractUiPlugIn;
+import org.openjump.core.ui.plugin.file.open.ChooseProjectPanel;
 import org.openjump.core.ui.swing.wizard.AbstractWizardGroup;
 
 import com.vividsolutions.jump.I18N;
@@ -14,16 +16,19 @@ import com.vividsolutions.jump.workbench.model.Category;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.model.UndoableCommand;
+import com.vividsolutions.jump.workbench.model.UndoableEditReceiver;
 import com.vividsolutions.jump.workbench.model.WMSLayer;
-import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.plugin.ThreadedPlugIn;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanel;
+import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.wms.MapLayerWizardPanel;
 import com.vividsolutions.jump.workbench.ui.plugin.wms.OneSRSWizardPanel;
 import com.vividsolutions.jump.workbench.ui.plugin.wms.SRSWizardPanel;
 import com.vividsolutions.jump.workbench.ui.plugin.wms.URLWizardPanel;
+import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
 import com.vividsolutions.wms.MapLayer;
 import com.vividsolutions.wms.WMService;
@@ -39,6 +44,8 @@ public class AddWmsLayerWizard extends AbstractWizardGroup {
 
   private String lastWMSVersion = WMService.WMS_1_1_1;
 
+  private ChooseProjectPanel chooseProjectPanel;
+
   public AddWmsLayerWizard(WorkbenchContext workbenchContext) {
     super(I18N.get(KEY), IconLoader.icon("SmallWorld.gif"),
       URLWizardPanel.class.getName());
@@ -49,15 +56,32 @@ public class AddWmsLayerWizard extends AbstractWizardGroup {
       cachedURLs = urlString.split(",");
     }
 
-    addPanel(new URLWizardPanel(cachedURLs, lastWMSVersion));
+    URLWizardPanel urlPanel = new URLWizardPanel(cachedURLs, lastWMSVersion);
+    chooseProjectPanel = new ChooseProjectPanel(workbenchContext,
+      urlPanel.getID());
+    addPanel(chooseProjectPanel);
+
+    addPanel(urlPanel);
     addPanel(new MapLayerWizardPanel());
     addPanel(new SRSWizardPanel());
     addPanel(new OneSRSWizardPanel());
   }
 
+  public String getFirstId() {
+    String firstId = super.getFirstId();
+    if (!chooseProjectPanel.hasActiveTaskFrame()
+      && chooseProjectPanel.hasTaskFrames()) {
+      chooseProjectPanel.setNextID(firstId);
+      return chooseProjectPanel.getID();
+    } else {
+      return firstId;
+    }
+  }
+
   public void run(WizardDialog dialog, TaskMonitor monitor) {
+    chooseProjectPanel.activateSelectedProject();
     try {
-      final PlugInContext context = workbenchContext.createPlugInContext();
+      PlugInContext context = workbenchContext.createPlugInContext();
       List<MapLayer> mapLayers = (List<MapLayer>)dialog.getData(MapLayerWizardPanel.LAYERS_KEY);
       String title = mapLayers.get(0).getTitle();
       List<String> layerNames = toLayerNames(mapLayers);
@@ -65,25 +89,17 @@ public class AddWmsLayerWizard extends AbstractWizardGroup {
       WMService service = (WMService)dialog.getData(URLWizardPanel.SERVICE_KEY);
       String srs = (String)dialog.getData(SRSWizardPanel.SRS_KEY);
       String format = ((String)dialog.getData(URLWizardPanel.FORMAT_KEY));
-      final WMSLayer layer = new WMSLayer(title, context.getLayerManager(),
-        service, srs, layerNames, format);
+      WMSLayer layer = new WMSLayer(title, context.getLayerManager(), service,
+        srs, layerNames, format);
 
-      AbstractPlugIn.execute(new UndoableCommand(getName()) {
-        public void execute() {
-          LayerNamePanel layerNamePanel = context.getLayerNamePanel();
-          Collection<Category> selectedCategories = layerNamePanel.getSelectedCategories();
-          LayerManager mgr = context.getLayerManager();
-          String categoryName = StandardCategoryNames.WORKING;
-          if (!selectedCategories.isEmpty()) {
-            categoryName = selectedCategories.iterator().next().getName();
-          }
-          mgr.addLayerable(categoryName, layer);
-        }
-
-        public void unexecute() {
-          context.getLayerManager().remove(layer);
-        }
-      }, context.getLayerViewPanel());
+      LayerNamePanel layerNamePanel = context.getLayerNamePanel();
+      Collection<Category> selectedCategories = layerNamePanel.getSelectedCategories();
+      LayerManager mgr = context.getLayerManager();
+      String categoryName = StandardCategoryNames.WORKING;
+      if (!selectedCategories.isEmpty()) {
+        categoryName = selectedCategories.iterator().next().getName();
+      }
+      mgr.addLayerable(categoryName, layer);
       cachedURLs = (String[])dialog.getData(URLWizardPanel.URL_KEY);
       lastWMSVersion = (String)dialog.getData(URLWizardPanel.VERSION_KEY);
 

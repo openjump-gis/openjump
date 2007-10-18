@@ -1,3 +1,9 @@
+2007-10-14 Paul Austin <paul.austin@revolsys.com
+          * Improved the Open Wizard to work when there is no active project.
+            If there are no projects at all a new one is created. If all
+            projects are iconized the user will be able to select either a
+            new project or use an existing one.
+            
 2007-10-18 Andreas Schmitz <schmitz@lat-lon.de>
     src/de/latlon/deejump/plugin/style/DeeChangeStylesPlugIn.java:
     Added initialization code.

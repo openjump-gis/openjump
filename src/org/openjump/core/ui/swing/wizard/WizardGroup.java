@@ -5,6 +5,7 @@ import java.util.List;
 import javax.swing.Icon;
 
 import com.vividsolutions.jump.task.TaskMonitor;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
 
@@ -16,6 +17,8 @@ public interface WizardGroup {
   public List<WizardPanel> getPanels();
   
   public String getFirstId();
+  
+  public void initialize(WorkbenchContext workbenchContext);
   
   public void run(WizardDialog dialog, TaskMonitor monitor);
 }

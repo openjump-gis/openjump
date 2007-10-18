@@ -6,11 +6,15 @@ import java.util.Collection;
 import javax.swing.SwingUtilities;
 
 import org.openjump.core.ui.plugin.file.OpenProjectPlugIn;
+import org.openjump.core.ui.plugin.file.open.ChooseProjectPanel;
+import org.openjump.core.ui.plugin.file.open.SelectFilesPanel;
 import org.openjump.core.ui.swing.wizard.AbstractWizardGroup;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.coordsys.CoordinateSystemRegistry;
 import com.vividsolutions.jump.feature.FeatureCollection;
+import com.vividsolutions.jump.io.datasource.Connection;
+import com.vividsolutions.jump.io.datasource.DataSource;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -32,15 +36,32 @@ public class AddDataStoreLayerWizard extends AbstractWizardGroup {
 
   private WorkbenchContext workbenchContext;
 
+  private ChooseProjectPanel chooseProjectPanel;
+
   public AddDataStoreLayerWizard(WorkbenchContext workbenchContext) {
     super(I18N.get(KEY), IconLoader.icon("Table.gif"),
       AddDataStoreLayerWizardPanel.class.getName());
     this.workbenchContext = workbenchContext;
     dataStoreWizardPanel = new AddDataStoreLayerWizardPanel(workbenchContext);
     addPanel(dataStoreWizardPanel);
+    chooseProjectPanel = new ChooseProjectPanel(workbenchContext,
+      dataStoreWizardPanel.getID());
+    addPanel(chooseProjectPanel);
   }
 
+  public String getFirstId() {
+    String firstId = super.getFirstId();
+    if (!chooseProjectPanel.hasActiveTaskFrame()
+      && chooseProjectPanel.hasTaskFrames()) {
+      chooseProjectPanel.setNextID(firstId);
+      return chooseProjectPanel.getID();
+    } else {
+      return firstId;
+    }
+  }
+  
   public void run(WizardDialog dialog, TaskMonitor monitor) {
+    chooseProjectPanel.activateSelectedProject();
     try {
       AddDatastoreLayerPanel dataStorePanel = dataStoreWizardPanel.getDataStorePanel();
       final Layer layer = createLayer(dataStorePanel, monitor);
@@ -84,8 +105,28 @@ public class AddDataStoreLayerWizard extends AbstractWizardGroup {
     layer.setDataSourceQuery(dsq);
 
     CoordinateSystemRegistry crsRegistry = CoordinateSystemRegistry.instance(workbenchContext.getBlackboard());
-    OpenProjectPlugIn.load(layer, crsRegistry, monitor);
+    load(layer, crsRegistry, monitor);
     return layer;
+  }
+
+  public static void load(Layer layer, CoordinateSystemRegistry registry,
+    TaskMonitor monitor) throws Exception {
+    layer.setFeatureCollection(executeQuery(layer.getDataSourceQuery()
+      .getQuery(), layer.getDataSourceQuery().getDataSource(), registry,
+      monitor));
+    layer.setFeatureCollectionModified(false);
+  }
+
+  private static FeatureCollection executeQuery(String query,
+    DataSource dataSource, CoordinateSystemRegistry registry,
+    TaskMonitor monitor) throws Exception {
+    Connection connection = dataSource.getConnection();
+    try {
+      return dataSource.installCoordinateSystem(connection.executeQuery(query,
+        monitor), registry);
+    } finally {
+      connection.close();
+    }
   }
 
 }

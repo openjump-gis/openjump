@@ -88,7 +88,7 @@ public class JUMPConfiguration implements Setup {
 
     private InstallGridPlugIn installGridPlugIn = new InstallGridPlugIn();
 
-    private PersistentBlackboardPlugIn persistentBlackboardPlugIn = new PersistentBlackboardPlugIn();
+//    private PersistentBlackboardPlugIn persistentBlackboardPlugIn = new PersistentBlackboardPlugIn();
 
     //FirstTaskFramePlugIn will be initialized using reflection in
     // #initializePlugIns [Jon Aquino]
@@ -282,7 +282,7 @@ public class JUMPConfiguration implements Setup {
             FeatureInstaller featureInstaller) {
         featureInstaller.addPopupMenuItem(workbenchContext.getWorkbench()
                 .getFrame().getCategoryPopupMenu(), addNewLayerPlugIn,
-                addNewLayerPlugIn.getName(), false, null, null);  
+                addNewLayerPlugIn.getName(), false, IconLoader.icon("layers.png"), null);  
 
     	//[sstein 20.01.2006] added again after user request
         featureInstaller.addPopupMenuItem(workbenchContext.getWorkbench()
@@ -554,12 +554,12 @@ public class JUMPConfiguration implements Setup {
       featureInstaller.addMainMenuItemWithJava14Fix(addNewLayerPlugIn,
         new String[] {
           MenuNames.FILE, MenuNames.FILE_NEW
-        }, I18N.get("com.vividsolutions.jump.workbench.ui.plugin.AddNewLayerPlugIn.name"), false, null,
+        }, I18N.get("com.vividsolutions.jump.workbench.ui.plugin.AddNewLayerPlugIn.name"), false, IconLoader.icon("layers.png"),
         checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck());
       featureInstaller.addMainMenuItem(addNewCategoryPlugIn,
         new String[] {
           MenuNames.FILE, MenuNames.FILE_NEW
-        }, I18N.get("com.vividsolutions.jump.workbench.ui.plugin.AddNewCategoryPlugIn.name"), false, null,
+        }, I18N.get("com.vividsolutions.jump.workbench.ui.plugin.AddNewCategoryPlugIn.name"), false, IconLoader.icon("chart_organisation.png"),
         checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck());
 
       featureInstaller.addMenuSeparator(MenuNames.FILE); // ===================

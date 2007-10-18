@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.swing.Icon;
 
+import org.openjump.core.ui.images.IconLoader;
 import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 import org.openjump.core.ui.plugin.file.open.OpenDataTypePanel;
 import org.openjump.core.ui.swing.wizard.WizardGroup;
@@ -18,7 +19,6 @@ import com.vividsolutions.jump.workbench.registry.Registry;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.WorkbenchToolBar;
-import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
@@ -32,7 +32,7 @@ public class OpenWizardPlugIn extends AbstractThreadedUiPlugIn {
   private WizardDialog dialog;
 
   public OpenWizardPlugIn() {
-    super(I18N.get(KEY), IconLoader.icon("Open.gif"));
+    super(I18N.get(KEY), IconLoader.icon("folder.png"));
   }
 
   public static void addWizard(final WorkbenchContext workbenchContext,
@@ -72,14 +72,16 @@ public class OpenWizardPlugIn extends AbstractThreadedUiPlugIn {
 
     List<WizardGroup> wizards = registry.getEntries(KEY);
     for (WizardGroup wizardGroup : wizards) {
+      wizardGroup.initialize(workbenchContext);
       panels.addAll(wizardGroup.getPanels());
+      
     }
 
     openDataTypePanel = new OpenDataTypePanel(workbenchContext, wizards);
     panels.add(0, openDataTypePanel);
 
     dialog.init(panels.toArray(new WizardPanel[panels.size()]));
-    dialog.setSize(700, 580);
+    dialog.pack();
     dialog.setVisible(true);
     if (dialog.wasFinishPressed()) {
       return true;

@@ -1,7 +1,6 @@
 package org.openjump.core.ui.plugin;
 
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 
 import com.vividsolutions.jump.workbench.plugin.ThreadedPlugIn;
 import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
@@ -30,7 +29,7 @@ public abstract class AbstractThreadedUiPlugIn extends AbstractUiPlugIn implemen
     super(name);
   }
 
-  public AbstractThreadedUiPlugIn(ImageIcon icon) {
+  public AbstractThreadedUiPlugIn(Icon icon) {
     super(icon);
   }
 }

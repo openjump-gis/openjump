@@ -26,41 +26,44 @@
  ******************************************************************************/
 package org.openjump.swing.listener;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-
 import javax.swing.SwingUtilities;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.openjump.swing.util.InvokeMethodRunnable;
 
-public class InvokeMethodPropertyChangeListener implements
-  PropertyChangeListener {
+/**
+ * An ActionListener that invokes the method on the object when the action is
+ * performed.
+ * 
+ * @author Paul Austin
+ */
+public class InvokeMethodListSelectionListener implements ListSelectionListener {
   private Runnable runnable;
 
   private boolean invokeLater;
 
-  public InvokeMethodPropertyChangeListener(final Object object,
-    final String methodName) {
+  public InvokeMethodListSelectionListener(final Object object, final String methodName) {
     this(object, methodName, new Object[0]);
   }
 
-  public InvokeMethodPropertyChangeListener(final Object object,
+  public InvokeMethodListSelectionListener(final Object object,
     final String methodName, boolean invokeLater) {
     this(object, methodName, new Object[0], invokeLater);
   }
 
-  public InvokeMethodPropertyChangeListener(final Object object,
+  public InvokeMethodListSelectionListener(final Object object,
     final String methodName, Object[] parameters) {
     this(object, methodName, parameters, false);
   }
 
-  public InvokeMethodPropertyChangeListener(final Object object,
+  public InvokeMethodListSelectionListener(final Object object,
     final String methodName, Object[] parameters, boolean invokeLater) {
     runnable = new InvokeMethodRunnable(object, methodName, parameters);
     this.invokeLater = invokeLater;
   }
 
-  public void propertyChange(PropertyChangeEvent evt) {
+  public void valueChanged(ListSelectionEvent e) {
     if (invokeLater) {
       SwingUtilities.invokeLater(runnable);
     } else {

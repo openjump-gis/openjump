@@ -1,5 +1,6 @@
 package org.openjump.core.ui.plugin.file;
 
+import java.awt.Component;
 import java.io.File;
 import java.util.Iterator;
 import java.util.Vector;
@@ -16,10 +17,10 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
 
     private JFileChooser fileChooser;
 
-    private PlugInContext context;
+    private Component window;
 
-    public FindFile(PlugInContext context) {
-      this.context = context;
+    public FindFile(Component window) {
+      this.window = window;
       fileChooser = new JFileChooser();
       fileChooser = GUIUtil.createJFileChooserWithExistenceChecking();
       fileChooser.setDialogTitle("Choose current location of: ");
@@ -28,8 +29,8 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
       fileChooser.setMultiSelectionEnabled(false);
     }
 
-    public FindFile(PlugInContext context, JFileChooser fileChooser) {
-      this(context);
+    public FindFile(Component window, JFileChooser fileChooser) {
+      this(window);
       this.fileChooser = fileChooser;
     }
 
@@ -72,7 +73,7 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
         fileChooser.setFileFilter(fileFilter);
       }
 
-      if (JFileChooser.APPROVE_OPTION == fileChooser.showOpenDialog(context.getWorkbenchFrame())) {
+      if (JFileChooser.APPROVE_OPTION == fileChooser.showOpenDialog(window)) {
         String newParent = fileChooser.getSelectedFile().getParent()
           + File.separator;
         String oldParent = new File(filenamepath).getParent() + File.separator;

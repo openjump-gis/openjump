@@ -40,7 +40,6 @@ import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -75,8 +74,6 @@ public class WizardDialog extends JDialog implements WizardContext,
   private JButton nextButton = new JButton();
 
   private JButton backButton = new JButton();
-
-  private GridBagLayout gridBagLayout2 = new GridBagLayout();
 
   private JPanel centerPanel = new JPanel();
 
@@ -143,6 +140,12 @@ public class WizardDialog extends JDialog implements WizardContext,
     instructionTextArea.setText(currentWizardPanel.getInstructions());
   }
 
+  public void setCurrentWizardPanel(String id) {
+    WizardPanel panel = find(id);
+    panel.enteredFromLeft(dataMap);
+    setCurrentWizardPanel(panel);
+  }
+
   private WizardPanel getCurrentWizardPanel() {
     return currentWizardPanel;
   }
@@ -203,8 +206,8 @@ public class WizardDialog extends JDialog implements WizardContext,
     titlePanel.add(instructionTextArea);
 
     centerPanel.setLayout(cardLayout);
-    centerPanel.setBorder(BorderFactory.createEtchedBorder(
-      Color.white, new Color(148, 145, 140)));
+    centerPanel.setBorder(BorderFactory.createEtchedBorder(Color.white,
+      new Color(148, 145, 140)));
     contentPane.add(centerPanel, BorderLayout.CENTER);
 
     JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 3, 0));

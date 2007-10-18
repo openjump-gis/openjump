@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.openjump.core.ui.plugin.file.open.ChooseProjectPanel;
 import org.openjump.core.ui.swing.wizard.AbstractWizardGroup;
 
 import com.vividsolutions.jts.util.Assert;
@@ -22,6 +23,7 @@ import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
 
 public class DataSourceQueryChooserOpenWizard extends AbstractWizardGroup {
@@ -30,16 +32,34 @@ public class DataSourceQueryChooserOpenWizard extends AbstractWizardGroup {
 
   private WorkbenchContext workbenchContext;
 
+  private ChooseProjectPanel chooseProjectPanel;
+
   public DataSourceQueryChooserOpenWizard(WorkbenchContext workbenchContext,
     DataSourceQueryChooser chooser) {
-    super(chooser.toString(), null, chooser.getClass().getName());
+    super(chooser.toString(), IconLoader.icon("Table.gif"), chooser.getClass().getName());
     this.workbenchContext = workbenchContext;
     this.chooser = chooser;
-    addPanel(new ComponentWizardPanel(chooser.toString(), chooser.getClass()
-      .getName(), chooser.getComponent()));
+    ComponentWizardPanel componentPanel = new ComponentWizardPanel(
+      chooser.toString(), chooser.getClass().getName(), chooser.getComponent());
+    chooseProjectPanel = new ChooseProjectPanel(workbenchContext,
+      componentPanel.getID());
+    addPanel(chooseProjectPanel);
+    addPanel(componentPanel);
+  }
+
+  public String getFirstId() {
+    String firstId = super.getFirstId();
+    if (!chooseProjectPanel.hasActiveTaskFrame()
+      && chooseProjectPanel.hasTaskFrames()) {
+      chooseProjectPanel.setNextID(firstId);
+      return chooseProjectPanel.getID();
+    } else {
+      return firstId;
+    }
   }
 
   public void run(WizardDialog dialog, TaskMonitor monitor) {
+    chooseProjectPanel.activateSelectedProject();
     PlugInContext context = workbenchContext.createPlugInContext();
     Collection dataSourceQueries = chooser.getDataSourceQueries();
     Assert.isTrue(!dataSourceQueries.isEmpty());

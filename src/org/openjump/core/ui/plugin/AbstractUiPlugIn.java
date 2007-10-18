@@ -4,7 +4,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.StringUtil;
@@ -49,7 +48,7 @@ public abstract class AbstractUiPlugIn implements PlugIn, ActionListener {
     this.name = name;
   }
 
-  public AbstractUiPlugIn(final ImageIcon icon) {
+  public AbstractUiPlugIn(final Icon icon) {
     this.icon = icon;
   }
 
@@ -200,6 +199,13 @@ public abstract class AbstractUiPlugIn implements PlugIn, ActionListener {
     } catch (java.util.MissingResourceException e) {
       return StringUtil.toFriendlyName(plugInClass.getName(), "PlugIn");
     }
+  }
+
+  /**
+   * @param workbenchContext the workbenchContext to set
+   */
+  protected void setWorkbenchContext(WorkbenchContext workbenchContext) {
+    this.workbenchContext = workbenchContext;
   }
 
   /**

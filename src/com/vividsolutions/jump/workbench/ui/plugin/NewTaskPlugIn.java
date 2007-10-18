@@ -60,6 +60,6 @@ public class NewTaskPlugIn extends AbstractPlugIn {
         
     //[sstein 26.08.2006] added for toolbar
     public static ImageIcon getIcon() {
-            return IconLoader.icon("Document.gif");
+            return IconLoader.icon("layout_add.png");
     }
 }

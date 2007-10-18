@@ -29,7 +29,6 @@ import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.model.Task;
-import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.PlugInManager;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
@@ -44,11 +43,13 @@ public class OpenProjectWizard extends AbstractWizardGroup {
   /** The workbench context. */
   private WorkbenchContext workbenchContext;
 
-  private SelectProjectPanel selectProjectPanel;
+  private SelectProjectFilesPanel selectProjectPanel;
 
   private Task sourceTask;
 
   private Task newTask;
+
+  private File[] files;
 
   /**
    * Construct a new OpenFileWizard.
@@ -56,10 +57,17 @@ public class OpenProjectWizard extends AbstractWizardGroup {
    * @param workbenchContext The workbench context.
    */
   public OpenProjectWizard(final WorkbenchContext workbenchContext) {
-    super(I18N.get(KEY), IconLoader.icon("Open.gif"), SelectProjectPanel.KEY);
+    super(I18N.get(KEY), IconLoader.icon("Open.gif"),
+      SelectProjectFilesPanel.KEY);
     this.workbenchContext = workbenchContext;
-    selectProjectPanel = new SelectProjectPanel(workbenchContext);
+    selectProjectPanel = new SelectProjectFilesPanel(workbenchContext);
     addPanel(selectProjectPanel);
+  }
+
+  public OpenProjectWizard(final WorkbenchContext workbenchContext,
+    final File[] files) {
+    this.workbenchContext = workbenchContext;
+    this.files = files;
   }
 
   /**
@@ -68,40 +76,49 @@ public class OpenProjectWizard extends AbstractWizardGroup {
    * @param monitor The task monitor.
    */
   public void run(WizardDialog dialog, TaskMonitor monitor) {
-    PlugInContext pluginContext = workbenchContext.createPlugInContext();
-    try {
-      open(selectProjectPanel.getSelectedFile(),
-        pluginContext.getWorkbenchFrame());
-      LayerManager sourceLayerManager = sourceTask.getLayerManager();
-      LayerManager newLayerManager = newTask.getLayerManager();
-      CoordinateSystemRegistry crsRegistry = CoordinateSystemRegistry.instance(workbenchContext.getBlackboard());
-      loadLayers(pluginContext, sourceLayerManager, newLayerManager,
-        crsRegistry, monitor);
-    } catch (Exception e) {
-      monitor.report(e);
+    if (files == null) {
+      File[] selectedFiles = selectProjectPanel.getSelectedFiles();
+      open(selectedFiles, monitor);
+    } else {
+      open(files, monitor);
     }
   }
 
-  public void open(File file, WorkbenchFrame workbenchFrame) throws Exception {
-    FileReader reader = new FileReader(file);
+  private void open(File[] files, TaskMonitor monitor) {
+    for (File file : files) {
+      open(file, monitor);
+    }
+  }
 
+  public void open(File file, TaskMonitor monitor) {
     try {
-      JUMPWorkbench workbench = workbenchContext.getWorkbench();
-      PlugInManager plugInManager = workbench.getPlugInManager();
-      ClassLoader pluginClassLoader = plugInManager.getClassLoader();
-      sourceTask = (Task)new XML2Java(pluginClassLoader).read(reader,
-        Task.class);
-      initializeDataSources(sourceTask, workbenchFrame.getContext());
-      newTask = new Task();
-      newTask.setName(GUIUtil.nameWithoutExtension(file));
-      newTask.setProjectFile(file);
+      FileReader reader = new FileReader(file);
 
-      workbenchFrame.addTaskFrame(newTask);
+      try {
+        JUMPWorkbench workbench = workbenchContext.getWorkbench();
+        WorkbenchFrame workbenchFrame = workbench.getFrame();
+        PlugInManager plugInManager = workbench.getPlugInManager();
+        ClassLoader pluginClassLoader = plugInManager.getClassLoader();
+        sourceTask = (Task)new XML2Java(pluginClassLoader).read(reader,
+          Task.class);
+        initializeDataSources(sourceTask, workbenchFrame.getContext());
+        newTask = new Task();
+        newTask.setName(GUIUtil.nameWithoutExtension(file));
+        newTask.setProjectFile(file);
 
-      OpenRecentPlugIn.get(workbenchContext).addRecentProject(file);
+        workbenchFrame.addTaskFrame(newTask);
+        LayerManager sourceLayerManager = sourceTask.getLayerManager();
+        LayerManager newLayerManager = newTask.getLayerManager();
+        CoordinateSystemRegistry crsRegistry = CoordinateSystemRegistry.instance(workbenchContext.getBlackboard());
+        loadLayers(sourceLayerManager, newLayerManager, crsRegistry, monitor);
 
-    } finally {
-      reader.close();
+        OpenRecentPlugIn.get(workbenchContext).addRecentProject(file);
+
+      } finally {
+        reader.close();
+      }
+    } catch (Exception e) {
+      monitor.report(e);
     }
   }
 
@@ -118,10 +135,12 @@ public class OpenProjectWizard extends AbstractWizardGroup {
     }
   }
 
-  private void loadLayers(PlugInContext context,
-    LayerManager sourceLayerManager, LayerManager newLayerManager,
-    CoordinateSystemRegistry registry, TaskMonitor monitor) throws Exception {
-    FindFile findFile = new FindFile(context);
+  private void loadLayers(LayerManager sourceLayerManager,
+    LayerManager newLayerManager, CoordinateSystemRegistry registry,
+    TaskMonitor monitor) throws Exception {
+    JUMPWorkbench workbench = workbenchContext.getWorkbench();
+    WorkbenchFrame workbenchFrame = workbench.getFrame();
+    FindFile findFile = new FindFile(workbenchFrame);
     boolean displayDialog = true;
 
     List<Category> categories = sourceLayerManager.getCategories();
@@ -150,7 +169,7 @@ public class OpenProjectWizard extends AbstractWizardGroup {
               displayDialog = false;
 
               int response = JOptionPane.showConfirmDialog(
-                context.getWorkbenchFrame(),
+                workbenchFrame,
                 I18N.get("ui.plugin.OpenProjectPlugIn.At-least-one-file-in-the-task-could-not-be-found")
                   + "\n"
                   + I18N.get("ui.plugin.OpenProjectPlugIn.Do-you-want-to-locate-it-and-continue-loading-the-task"),
