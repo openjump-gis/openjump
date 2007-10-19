@@ -31,6 +31,7 @@
  */
 package com.vividsolutions.jump.workbench.ui.plugin.wms;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -43,6 +44,7 @@ import com.vividsolutions.jump.workbench.model.UndoableCommand;
 import com.vividsolutions.jump.workbench.model.WMSLayer;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.ErrorHandler;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
@@ -80,7 +82,13 @@ public class AddWMSQueryPlugIn extends AbstractPlugIn {
         reportNothingToUndoYet(context);
 
         WizardDialog d = new WizardDialog(context.getWorkbenchFrame(),
-        		I18N.get("ui.plugin.wms.AddWMSQueryPlugIn.connect-to-web-map-server"), context.getErrorHandler());
+        		I18N.get("ui.plugin.wms.AddWMSQueryPlugIn.connect-to-web-map-server"), new ErrorHandler(){
+                    public void handleThrowable( Throwable t ) {
+                        if (!(t instanceof IOException)) {
+                            context.getErrorHandler().handleThrowable(t);
+                        }
+                    }
+        });
 
         d.init(new WizardPanel[] {
                 new URLWizardPanel(cachedURLs, lastWMSVersion), new MapLayerWizardPanel(),

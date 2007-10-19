@@ -36,9 +36,14 @@
 
 package com.vividsolutions.wms;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+
+import javax.swing.JOptionPane;
+
+import com.vividsolutions.jump.I18N;
 
 /**
  * Represents a remote WMS Service.
@@ -79,6 +84,7 @@ public class WMService {
   /**
    * Connect to the service and get the capabilities.
    * This must be called before anything else is done with this service.
+   * @throws IOException 
    */
 	public void initialize() throws IOException {
 //    [UT]
@@ -89,11 +95,25 @@ public class WMService {
 	    	req = "SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities";
 	    }
 	    
-	    String requestUrlString = this.serverUrl + req;
-	    URL requestUrl = new URL( requestUrlString );
-	    InputStream inStream = requestUrl.openStream();
-	    Parser p = new Parser();
-	    cap = p.parseCapabilities( this, inStream );
+        try{
+            String requestUrlString = this.serverUrl + req;
+            URL requestUrl = new URL( requestUrlString );
+            InputStream inStream = requestUrl.openStream();
+            Parser p = new Parser();
+            cap = p.parseCapabilities( this, inStream );
+        } catch ( FileNotFoundException e ){
+            JOptionPane.showMessageDialog( null, I18N.getMessage( "com.vividsolutions.wms.WMService.WMS-Not-Found",
+                                                                  new Object[] { e.getLocalizedMessage() } ),
+                                           I18N.get( "com.vividsolutions.wms.WMService.Error" ),
+                                           JOptionPane.ERROR_MESSAGE );
+            throw e;
+        } catch ( IOException e ) {
+            JOptionPane.showMessageDialog( null, I18N.getMessage( "com.vividsolutions.wms.WMService.WMS-IO-Error",
+                                                                  new Object[] { e.getClass().getSimpleName(), e.getLocalizedMessage() } ),
+                                           I18N.get( "com.vividsolutions.wms.WMService.Error" ),
+                                           JOptionPane.ERROR_MESSAGE );
+            throw e;
+        }
   }
 
 

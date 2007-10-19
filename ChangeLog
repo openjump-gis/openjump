@@ -1,3 +1,19 @@
+2007-10-19 Andreas Schmitz <schmitz@lat-lon.de>
+      src/language/jump_it.properties,
+      src/language/jump_fi.properties,
+      src/language/jump.properties,
+      src/language/jump_zh_CN.properties,
+      src/language/jump_en.properties,
+      src/language/jump_pt.properties,
+      src/language/jump_pt_BR.properties,
+      src/language/jump_es.properties,
+      src/language/jump_fr.properties,
+      src/language/jump_de.properties,
+      src/com/vividsolutions/wms/WMService.java,
+      src/com/vividsolutions/jump/workbench/ui/plugin/wms/AddWMSQueryPlugIn.java:
+	  Fixed issue
+	  http://sourceforge.net/tracker/index.php?func=detail&aid=1748657&group_id=118054&atid=679906
+
 2007-10-19 Paul Austin <paul.austin@revolsys.com
           * Removed Open, close buttons from the open project panel
           * Added double click handling to the new open wizards
