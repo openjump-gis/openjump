@@ -36,7 +36,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
-import java.awt.Image;
 import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
@@ -84,357 +83,356 @@ import com.vividsolutions.jump.workbench.ui.renderer.style.VertexStyle;
 import com.vividsolutions.jump.workbench.ui.style.BasicStylePanel;
 import com.vividsolutions.jump.workbench.ui.style.StylePanel;
 
-
 public class DeeRenderingStylePanel extends BasicStylePanel implements StylePanel {
-	
-	VertexStyleChooser vertexStyleChooser = new VertexStyleChooser(false);
+
+    private static final long serialVersionUID = 2657390245955765563L;
+
+    private VertexStyleChooser vertexStyleChooser = new VertexStyleChooser( false );
+
     private Layer layer;
-    private JTextArea fillPatternTipLabel = new JTextArea();    
-    private JCheckBox vertexCheckBox = new JCheckBox(){};
+
+    private JTextArea fillPatternTipLabel = new JTextArea();
+
+    private JCheckBox vertexCheckBox = new JCheckBox();
+
     private JSlider vertexSlider = new JSlider() {
 
-            {
-                addChangeListener(new ChangeListener() {
-                        public void stateChanged(ChangeEvent e) {
-                            JSlider test = (JSlider) e.getSource();
-                            updateControls();
-                        }
-                    });
-            }
-        };
+        private static final long serialVersionUID = 2448805758500776691L;
 
-	private Image image;
-	private String currentFilename;	
+        {
+            addChangeListener( new ChangeListener() {
+                public void stateChanged( ChangeEvent e ) {
+                    // JSlider test = (JSlider) e.getSource();
+                    updateControls();
+                }
+            } );
+        }
+    };
+
+    // private Image image;
+    //
+    // private String currentFilename;
+
     private JPanel previewPanel = new JPanel() {
 
-            {
-                setBackground(Color.white);
-                setBorder(BorderFactory.createLoweredBevelBorder());
-                setMaximumSize(new Dimension(200, 40));
-                setMinimumSize(new Dimension(200, 40));
-                setPreferredSize(new Dimension(200, 40));
+        /**
+         * 
+         */
+        private static final long serialVersionUID = -2316761329707400966L;
+
+        {
+            setBackground( Color.white );
+            setBorder( BorderFactory.createLoweredBevelBorder() );
+            setMaximumSize( new Dimension( 200, 40 ) );
+            setMinimumSize( new Dimension( 200, 40 ) );
+            setPreferredSize( new Dimension( 200, 40 ) );
+        }
+
+        private LayerViewPanel dummyLayerViewPanel = new LayerViewPanel( new LayerManager(),
+                                                                         new LayerViewPanelContext() {
+                                                                             public void setStatusMessage(
+                                                                                                           String message ) {
+                                                                             }
+
+                                                                             public void warnUser( String warning ) {
+                                                                             }
+
+                                                                             public void handleThrowable( Throwable t ) {
+                                                                             }
+                                                                         } );
+
+        // Enough of a viewport to satisfy the two styles [Jon Aquino]
+        private Viewport viewport = new Viewport( dummyLayerViewPanel ) {
+            private AffineTransform transform = new AffineTransform();
+
+            @Override
+            public Envelope getEnvelopeInModelCoordinates() {
+                return new Envelope( 0, 200, 0, 40 );
             }
 
-            private LayerViewPanel dummyLayerViewPanel = new LayerViewPanel(new LayerManager(),
-                    new LayerViewPanelContext() {
-                        public void setStatusMessage(String message) {
-                        }
-
-                        public void warnUser(String warning) {
-                        }
-
-                        public void handleThrowable(Throwable t) {
-                        }
-                    });
-
-            //Enough of a viewport to satisfy the two styles [Jon Aquino]
-            private Viewport viewport = new Viewport(dummyLayerViewPanel) {
-                    private AffineTransform transform = new AffineTransform();
-
-                    public Envelope getEnvelopeInModelCoordinates() {
-                        return new Envelope(0, 200, 0, 40);
-                    }
-
-                    public AffineTransform getModelToViewTransform() {
-                        return transform;
-                    }
-
-                    public Point2D toViewPoint(Coordinate modelCoordinate) {
-                        return new Point2D.Double(modelCoordinate.x,
-                            modelCoordinate.y);
-                    }
-                };
-
-            private void paint(Style style, Graphics2D g) {
-                Stroke originalStroke = g.getStroke();
-
-                try {
-                    style.paint(feature, g, viewport);
-                } catch (Exception e) {
-                    //Eat it [Jon Aquino]
-                } finally {
-                    //Restore original stroke. Otherwise preview-panel's borders
-                    //will have dashes. [Jon Aquino]
-                    g.setStroke(originalStroke);
-                }
+            @Override
+            public AffineTransform getModelToViewTransform() {
+                return transform;
             }
 
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                    RenderingHints.VALUE_ANTIALIAS_ON);
-                paint(getBasicStyle(), (Graphics2D) g);
-
-                if (vertexCheckBox.isSelected()) {
-                    VertexStyle vertexStyle = getVertexStyle();
-                    vertexStyleChooser.setSelectedStyle( getCurrentVertexStyle() );
-
-                    //Ensure the vertex colour shown on the preview panel stays
-                    //up to date. [Jon Aquino]
-                    vertexStyle.initialize(new Layer() {
-                            public BasicStyle getBasicStyle() {
-                                return DeeRenderingStylePanel.this.getBasicStyle();
-                            }
-                        });
-                    paint(vertexStyle, (Graphics2D) g);
-                }
-            }
-
-            private Feature feature = createFeature();
-
-            private Feature createFeature() {
-                try {
-                    return FeatureUtil.toFeature(new WKTReader().read(
-                            "POLYGON ((-200 80, 100 20, 400 -40, 400 80, -200 80))"),
-                        new FeatureSchema() {
-                            private static final long serialVersionUID = -8627306219650589202L;
-                            {
-                                addAttribute("GEOMETRY", AttributeType.GEOMETRY);
-                            }
-                        });
-                } catch (ParseException e) {
-                    Assert.shouldNeverReachHere();
-
-                    return null;
-                }
+            @Override
+            public Point2D toViewPoint( Coordinate modelCoordinate ) {
+                return new Point2D.Double( modelCoordinate.x, modelCoordinate.y );
             }
         };
+
+        private void paint( Style style, Graphics2D g ) {
+            Stroke originalStroke = g.getStroke();
+
+            try {
+                style.paint( feature, g, viewport );
+            } catch ( Exception e ) {
+                // Eat it [Jon Aquino]
+            } finally {
+                // Restore original stroke. Otherwise preview-panel's borders
+                // will have dashes. [Jon Aquino]
+                g.setStroke( originalStroke );
+            }
+        }
+
+        @Override
+        protected void paintComponent( Graphics g ) {
+            super.paintComponent( g );
+            ( (Graphics2D) g ).setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
+            paint( getBasicStyle(), (Graphics2D) g );
+
+            if ( vertexCheckBox.isSelected() ) {
+                VertexStyle vertexStyle = getVertexStyle();
+                vertexStyleChooser.setSelectedStyle( getCurrentVertexStyle() );
+
+                // Ensure the vertex colour shown on the preview panel stays
+                // up to date. [Jon Aquino]
+                vertexStyle.initialize( new Layer() {
+                    @Override
+                    public BasicStyle getBasicStyle() {
+                        return DeeRenderingStylePanel.this.getBasicStyle();
+                    }
+                } );
+                paint( vertexStyle, (Graphics2D) g );
+            }
+        }
+
+        private Feature feature = createFeature();
+
+        private Feature createFeature() {
+            try {
+                return FeatureUtil.toFeature(
+                                              new WKTReader().read( "POLYGON ((-200 80, 100 20, 400 -40, 400 80, -200 80))" ),
+                                              new FeatureSchema() {
+                                                  private static final long serialVersionUID = -8627306219650589202L;
+                                                  {
+                                                      addAttribute( "GEOMETRY", AttributeType.GEOMETRY );
+                                                  }
+                                              } );
+            } catch ( ParseException e ) {
+                Assert.shouldNeverReachHere();
+
+                return null;
+            }
+        }
+    };
 
     /**
      * Parameterless constructor for JBuilder GUI designer.
      */
     public DeeRenderingStylePanel() {
-    	this.vertexStyleChooser.sizeSlider = this.vertexSlider;
+        this.vertexStyleChooser.sizeSlider = this.vertexSlider;
     }
-    
+
     // GH 2005.09.22 this Methode returns the current VertexStyle
-    private String getCurrentVertexStyle(){
-    	VertexStyle  currentVertexStyle = layer.getVertexStyle();
-    	if(currentVertexStyle instanceof SquareVertexStyle){
-    		return VertexStylesFactory.SQUARE_STYLE;
-    	}
-    	else if(currentVertexStyle instanceof CircleVertexStyle){
-    		return  VertexStylesFactory.CIRCLE_STYLE;
-    	}
-    	 else if(currentVertexStyle instanceof CrossVertexStyle){
-    	 	return  VertexStylesFactory.CROSS_STYLE;
-    	}
-    	else if(currentVertexStyle instanceof TriangleVertexStyle){
-    		return VertexStylesFactory.TRIANGLE_STYLE;
-    	 }
-    	 else if(currentVertexStyle instanceof StarVertexStyle){
-    	 	return  VertexStylesFactory.STAR_STYLE;
-    	 }
-//    	 else if(currentVertexStyle instanceof BitmapVertexStyle){
-//    	 	return  I18N.get( "ui.style.RenderingStylePanel.bitmap" ) ;
-//    	 }
-    	 
-    	return "";
+    private String getCurrentVertexStyle() {
+        VertexStyle currentVertexStyle = layer.getVertexStyle();
+        if ( currentVertexStyle instanceof SquareVertexStyle ) {
+            return VertexStylesFactory.SQUARE_STYLE;
+        } else if ( currentVertexStyle instanceof CircleVertexStyle ) {
+            return VertexStylesFactory.CIRCLE_STYLE;
+        } else if ( currentVertexStyle instanceof CrossVertexStyle ) {
+            return VertexStylesFactory.CROSS_STYLE;
+        } else if ( currentVertexStyle instanceof TriangleVertexStyle ) {
+            return VertexStylesFactory.TRIANGLE_STYLE;
+        } else if ( currentVertexStyle instanceof StarVertexStyle ) {
+            return VertexStylesFactory.STAR_STYLE;
+        } else if ( currentVertexStyle instanceof BitmapVertexStyle ) {
+            return VertexStylesFactory.BITMAP_STYLE;
+        }
+
+        return "";
     }
 
-    public DeeRenderingStylePanel(Blackboard blackboard, Layer layer) {
-        super(blackboard, ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+    public DeeRenderingStylePanel( Blackboard blackboard, Layer layer ) {
+        super( blackboard, ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER );
 
-        Hashtable labelTable = new Hashtable();
-        labelTable.put(new Integer(5), new JLabel("5"));
-        labelTable.put(new Integer(10), new JLabel("10"));
-        labelTable.put(new Integer(15), new JLabel("15"));
-        labelTable.put(new Integer(20), new JLabel("20"));
-        vertexSlider.setLabelTable(labelTable);
-        setBasicStyle(layer.getBasicStyle());
-        //initPointDisplayType();
+        Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
+        labelTable.put( new Integer( 5 ), new JLabel( "5" ) );
+        labelTable.put( new Integer( 10 ), new JLabel( "10" ) );
+        labelTable.put( new Integer( 15 ), new JLabel( "15" ) );
+        labelTable.put( new Integer( 20 ), new JLabel( "20" ) );
+        vertexSlider.setLabelTable( labelTable );
+        setBasicStyle( layer.getBasicStyle() );
+        // initPointDisplayType();
         try {
             jbInit();
             updateControls();
-        } catch (Exception ex) {
+        } catch ( Exception ex ) {
             ex.printStackTrace();
         }
 
-        //Set layer after #jbInit, because both methods initialize the components. [Jon Aquino]
-        setLayer(layer);
+        // Set layer after #jbInit, because both methods initialize the components. [Jon Aquino]
+        setLayer( layer );
     }
 
+    @Override
     public void updateControls() {
         super.updateControls();
 
-        if (vertexSlider == null) {
-            //Get here during superclass initialization. [Jon Aquino]
+        if ( vertexSlider == null ) {
+            // Get here during superclass initialization. [Jon Aquino]
             return;
         }
 
         previewPanel.repaint();
-        
-//    	GH 2005-09-08  set pointDisplayType enable
-		vertexSlider.setEnabled(vertexCheckBox.isSelected());
-		vertexStyleChooser.setEnabled( vertexCheckBox.isSelected() );
 
+        // GH 2005-09-08 set pointDisplayType enable
+        vertexSlider.setEnabled( vertexCheckBox.isSelected() );
+        vertexStyleChooser.setEnabled( vertexCheckBox.isSelected() );
 
-//// GH 2005-09-08  set pointDisplayType enable
-//    	bitmapChangeButton.setEnabled(vertexCheckBox.isSelected() ); 
-    			////&& SymbolConstant.CIRCLE.equals( pointDisplayType.getSelectedItem())));
-    	
-        for (Enumeration e = vertexSlider.getLabelTable().elements();
-                e.hasMoreElements();) {
-            JLabel label = (JLabel) e.nextElement();
-            label.setEnabled(vertexCheckBox.isSelected());
+        // // GH 2005-09-08 set pointDisplayType enable
+        // bitmapChangeButton.setEnabled(vertexCheckBox.isSelected() );
+        // //&& SymbolConstant.CIRCLE.equals( pointDisplayType.getSelectedItem())));
+
+        for ( Enumeration<JLabel> e = vertexSlider.getLabelTable().elements(); e.hasMoreElements(); ) {
+            JLabel label = e.nextElement();
+            label.setEnabled( vertexCheckBox.isSelected() );
         }
     }
 
     public String getTitle() {
-        return I18N.get("ui.style.RenderingStylePanel.rendering");
+        return I18N.get( "ui.style.RenderingStylePanel.rendering" );
     }
 
-    private void setLayer(Layer layer) {
+    private void setLayer( Layer layer ) {
         this.layer = layer;
-        setSynchronizingLineColor(layer.isSynchronizingLineColor());
-        vertexCheckBox.setSelected(layer.getVertexStyle().isEnabled());
-        vertexSlider.setValue(layer.getVertexStyle().getSize());
-//      [UT] click box by default, if layer is of point type
-        Iterator iter = layer.getFeatureCollectionWrapper().getUltimateWrappee()
-        	.getFeatures().iterator();
-        String type = "";
-        if( iter.hasNext() ){
-            Feature f = (Feature)iter.next();
-            type = f.getGeometry().getGeometryType();
-             
-        }
-        if( "MultiPoint".equals( type ) || "Point".equals( type ) ){
-            vertexCheckBox.doClick();            
-        }
+        setSynchronizingLineColor( layer.isSynchronizingLineColor() );
+        vertexCheckBox.setSelected( layer.getVertexStyle().isEnabled() );
+        vertexSlider.setValue( layer.getVertexStyle().getSize() );
+        // [UT] click box by default, if layer is of point type
+//        Iterator<Feature> iter = layer.getFeatureCollectionWrapper().getUltimateWrappee().getFeatures().iterator();
+//        String type = "";
+//        if ( iter.hasNext() ) {
+//            Feature f = iter.next();
+//            type = f.getGeometry().getGeometryType();
+//
+//        }
+//        if ( "MultiPoint".equals( type ) || "Point".equals( type ) ) {
+//            vertexCheckBox.doClick();
+//        }
     }
 
-    protected void jbInit() throws Exception {
-        if (vertexSlider == null) {
-            //Get here during superclass initialization. [Jon Aquino]
+    @Override
+    protected void jbInit()
+                            throws Exception {
+        if ( vertexSlider == null ) {
+            // Get here during superclass initialization. [Jon Aquino]
             super.jbInit();
 
             return;
         }
-        vertexCheckBox.setText(I18N.get("ui.style.RenderingStylePanel.vertices-size"));
-        //GH 2005.09.22 this Listner is better than actionListener for this Checkbox  
-        vertexCheckBox.addItemListener(  new ItemListener() {
-        	public void itemStateChanged( ItemEvent e ){
-        		showVerticesCheckBox_actionPerformed(e);
-        	}
-        });
-        
-        
-        
-        vertexSlider.setMinorTickSpacing(1);
-        vertexSlider.setMajorTickSpacing(0);
-        vertexSlider.setPaintLabels(true);
-        vertexSlider.setMinimum(4);
-        vertexSlider.setValue(4);
-        vertexSlider.setMaximum(20);
-        vertexSlider.setSnapToTicks(true);
-        vertexSlider.setPreferredSize(SLIDER_DIMENSION);
-        fillPatternTipLabel.setFont(new java.awt.Font("SansSerif", 2, 10));
-        fillPatternTipLabel.setOpaque(false);
-        fillPatternTipLabel.setEditable(false);
-        fillPatternTipLabel.setText(I18N.get("ui.style.RenderingStylePanel.tip-after-selecting-a-pattern-use-your-keyboard"));
-        fillPatternTipLabel.setLineWrap(true);
-        fillPatternTipLabel.setWrapStyleWord(true);
-        
-        centerPanel.add(vertexSlider,
-            new GridBagConstraints(1, 35, 1, 1, 0.0, 0.0,
-                GridBagConstraints.WEST, GridBagConstraints.NONE,
-                new Insets(2, 2, 2, 2), 0, 0));
-        centerPanel.add(GUIUtil.createSyncdTextField(vertexSlider, SLIDER_TEXT_FIELD_COLUMNS),
-            new GridBagConstraints(2, 35, 1, 1, 0.0, 0.0,
-                GridBagConstraints.WEST, GridBagConstraints.NONE,
-                new Insets(2, 2, 2, 2), 0, 0));
-        centerPanel.add(vertexCheckBox,
-            new GridBagConstraints(0, 35, 2, 1, 0.0, 0.0,
-                GridBagConstraints.WEST, GridBagConstraints.NONE,
-                new Insets(2, 2, 2, 2), 0, 0));
-        centerPanel.add(new JLabel(I18N.get("ui.style.RenderingStylePanel.preview")),
-            new GridBagConstraints(0, 40, 3, 1, 0.0, 0.0,
-                GridBagConstraints.WEST, GridBagConstraints.NONE,
-                new Insets(2, 2, 0, 2), 0, 0));
-        centerPanel.add(previewPanel,
-            new GridBagConstraints(0, 45, 3, 1, 0.0, 0.0,
-                GridBagConstraints.WEST, GridBagConstraints.NONE,
-                new Insets(0, 10, 2, 2), 0, 0));
-        
-        centerPanel.add( vertexStyleChooser,
-                new GridBagConstraints(0, 50, 3, 1, 0.0, 0.0,
-                    GridBagConstraints.WEST, GridBagConstraints.NONE,
-                    new Insets(2, 2, 0, 2), 0, 0));//
+        vertexCheckBox.setText( I18N.get( "ui.style.RenderingStylePanel.vertices-size" ) );
+        // GH 2005.09.22 this Listner is better than actionListener for this Checkbox
+        vertexCheckBox.addItemListener( new ItemListener() {
+            public void itemStateChanged( ItemEvent e ) {
+                showVerticesCheckBox_actionPerformed( e );
+            }
+        } );
 
-//      GH 2005.10.26 I have deleted the actionListner of the BitmapButton 
-        //where is the suitable place to call ChangeVertexStyle()??.
-        
-        vertexStyleChooser.addActionListener( new ActionListener(){
-    		public void actionPerformed(ActionEvent arg0) {
-				   	changeVertexStyle( );
-    		}	
-         }
-         );
-        
-        
-        centerPanel.add(fillPatternTipLabel,     new GridBagConstraints(0, 8, 3, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-        
-        vertexStyleChooser.addChangeListener( new ChangeListener(){
+        vertexSlider.setMinorTickSpacing( 1 );
+        vertexSlider.setMajorTickSpacing( 0 );
+        vertexSlider.setPaintLabels( true );
+        vertexSlider.setMinimum( 4 );
+        vertexSlider.setValue( 4 );
+        vertexSlider.setMaximum( 20 );
+        vertexSlider.setSnapToTicks( true );
+        vertexSlider.setPreferredSize( SLIDER_DIMENSION );
+        fillPatternTipLabel.setFont( new java.awt.Font( "SansSerif", 2, 10 ) );
+        fillPatternTipLabel.setOpaque( false );
+        fillPatternTipLabel.setEditable( false );
+        fillPatternTipLabel.setText( I18N.get( "ui.style.RenderingStylePanel.tip-after-selecting-a-pattern-use-your-keyboard" ) );
+        fillPatternTipLabel.setLineWrap( true );
+        fillPatternTipLabel.setWrapStyleWord( true );
+
+        centerPanel.add( vertexSlider, new GridBagConstraints( 1, 35, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
+                                                               GridBagConstraints.NONE, new Insets( 2, 2, 2, 2 ), 0, 0 ) );
+        centerPanel.add( GUIUtil.createSyncdTextField( vertexSlider, SLIDER_TEXT_FIELD_COLUMNS ),
+                         new GridBagConstraints( 2, 35, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
+                                                 GridBagConstraints.NONE, new Insets( 2, 2, 2, 2 ), 0, 0 ) );
+        centerPanel.add( vertexCheckBox, new GridBagConstraints( 0, 35, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
+                                                                 GridBagConstraints.NONE, new Insets( 2, 2, 2, 2 ), 0,
+                                                                 0 ) );
+        centerPanel.add( new JLabel( I18N.get( "ui.style.RenderingStylePanel.preview" ) ),
+                         new GridBagConstraints( 0, 40, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+                                                 GridBagConstraints.NONE, new Insets( 2, 2, 0, 2 ), 0, 0 ) );
+        centerPanel.add( previewPanel,
+                         new GridBagConstraints( 0, 45, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+                                                 GridBagConstraints.NONE, new Insets( 0, 10, 2, 2 ), 0, 0 ) );
+
+        centerPanel.add( vertexStyleChooser, new GridBagConstraints( 0, 50, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+                                                                     GridBagConstraints.NONE, new Insets( 2, 2, 0, 2 ),
+                                                                     0, 0 ) );//
+
+        // GH 2005.10.26 I have deleted the actionListner of the BitmapButton
+        // where is the suitable place to call ChangeVertexStyle()??.
+
+        vertexStyleChooser.addActionListener( new ActionListener() {
+            public void actionPerformed( ActionEvent arg0 ) {
+                changeVertexStyle();
+            }
+        } );
+
+        centerPanel.add( fillPatternTipLabel, new GridBagConstraints( 0, 8, 3, 1, 0.0, 0.0, GridBagConstraints.CENTER,
+                                                                      GridBagConstraints.BOTH,
+                                                                      new Insets( 0, 0, 0, 0 ), 0, 0 ) );
+
+        vertexStyleChooser.addChangeListener( new ChangeListener() {
             public void stateChanged( ChangeEvent e ) {
-                JSlider slider = (JSlider)e.getSource();
+                JSlider slider = (JSlider) e.getSource();
                 vertexSlider.setValue( slider.getValue() );
             }
-        });
-        
-    }
-    
-    // GH 2005-08-30
-    public void changeVertexStyle(){
-    	Style st = layer.getStyle(VertexStyle.class);
-        layer.removeStyle( st );
-        layer.addStyle( vertexStyleChooser.getSelectedStyle());
-        
-        
-    }
-        
-    public VertexStyle getVertexStyle() {
+        } );
 
+    }
+
+    // GH 2005-08-30
+    public void changeVertexStyle() {
+        Style st = layer.getStyle( VertexStyle.class );
+        layer.removeStyle( st );
+        layer.addStyle( vertexStyleChooser.getSelectedStyle() );
+    }
+
+    public VertexStyle getVertexStyle() {
         VertexStyle vertexStyle = (VertexStyle) layer.getVertexStyle().clone();
-        vertexStyle.setEnabled(vertexCheckBox.isSelected());
-        vertexStyle.setSize(vertexSlider.getValue());
+        vertexStyle.setEnabled( vertexCheckBox.isSelected() );
+        vertexStyle.setSize( vertexSlider.getValue() );
         return vertexStyle;
     }
 
     public void updateStyles() {
         boolean firingEvents = layer.getLayerManager().isFiringEvents();
-        layer.getLayerManager().setFiringEvents(false);
+        layer.getLayerManager().setFiringEvents( false );
 
         try {
-            layer.removeStyle(layer.getBasicStyle());
-            layer.addStyle(getBasicStyle());
+            layer.removeStyle( layer.getBasicStyle() );
+            layer.addStyle( getBasicStyle() );
 
-            //Call #getVertexStyle before removing layer's vertex style,
-            //because one depends on the other. [Jon Aquino]
+            // Call #getVertexStyle before removing layer's vertex style,
+            // because one depends on the other. [Jon Aquino]
             VertexStyle newVertexStyle = getVertexStyle();
-            layer.removeStyle(layer.getVertexStyle());
-            
-            layer.addStyle(newVertexStyle);
-            
-            layer.setSynchronizingLineColor(synchronizeCheckBox.isSelected());
+            layer.removeStyle( layer.getVertexStyle() );
+
+            layer.addStyle( newVertexStyle );
+
+            layer.setSynchronizingLineColor( synchronizeCheckBox.isSelected() );
         } finally {
-            layer.getLayerManager().setFiringEvents(firingEvents);
+            layer.getLayerManager().setFiringEvents( firingEvents );
         }
         layer.fireAppearanceChanged();
 
     }
 
-    void showVerticesCheckBox_actionPerformed(ActionEvent e) {
+    void showVerticesCheckBox_actionPerformed( ActionEvent e ) {
         updateControls();
     }
 
     public String validateInput() {
         return null;
     }
-    
-    void showVerticesCheckBox_actionPerformed(ItemEvent e) {
+
+    void showVerticesCheckBox_actionPerformed( ItemEvent e ) {
         updateControls();
     }
-    
-    
+
 }

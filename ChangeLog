@@ -1,3 +1,9 @@
+2007-10-19 Andreas Schmitz <schmitz@lat-lon.de>
+    src/de/latlon/deejump/plugin/style/DeeChangeStylesPlugIn.java,
+    src/de/latlon/deejump/plugin/style/DeeRenderingStylePanel.java:
+	Made a first attempt to fix the following bug:
+	http://sourceforge.net/tracker/index.php?func=detail&aid=1566976&group_id=118054&atid=679906
+	
 2007-10-14 Paul Austin <paul.austin@revolsys.com
           * Improved the Open Wizard to work when there is no active project.
             If there are no projects at all a new one is created. If all

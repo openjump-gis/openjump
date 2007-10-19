@@ -49,6 +49,7 @@ import javax.swing.JTabbedPane;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
+import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.UndoableCommand;
@@ -59,6 +60,7 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
+import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.WorkbenchToolBar;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
@@ -93,17 +95,19 @@ public class DeeChangeStylesPlugIn extends AbstractPlugIn {
     @Override
     public boolean execute( PlugInContext context )
                             throws Exception {
+        WorkbenchFrame wbframe = context.getWorkbenchFrame();
+        WorkbenchContext wbcontext = context.getWorkbenchContext();
+        Blackboard blackboard = wbcontext.getWorkbench().getBlackboard();
+
         final Layer layer = context.getSelectedLayer( 0 );
-        MultiInputDialog dialog = new MultiInputDialog( context.getWorkbenchFrame(),
+        MultiInputDialog dialog = new MultiInputDialog( wbframe,
                                                         I18N.get( "ui.style.ChangeStylesPlugIn.change-styles" ), true );
         dialog.setInset( 0 );
         dialog.setSideBarImage( IconLoader.icon( "Symbology.gif" ) );
         dialog.setSideBarDescription( I18N.get( "ui.style.ChangeStylesPlugIn.you-can-use-this-dialog-to-change-the-colour-line-width" ) );
 
         final ArrayList<StylePanel> stylePanels = new ArrayList<StylePanel>();
-        DeeRenderingStylePanel renderingStylePanel = new DeeRenderingStylePanel(
-                                                                                 context.getWorkbenchContext().getWorkbench().getBlackboard(),
-                                                                                 layer );
+        DeeRenderingStylePanel renderingStylePanel = new DeeRenderingStylePanel( blackboard, layer );
 
         stylePanels.add( renderingStylePanel );
         stylePanels.add( new ScaleStylePanel( layer, context.getLayerViewPanel() ) );
@@ -114,42 +118,36 @@ public class DeeChangeStylesPlugIn extends AbstractPlugIn {
         // a bit more height -- any less, and its text boxes will shrink to
         // zero-width. I've found that if you don't give text boxes enough height,
         // they simply shrink to zero-width. [Jon Aquino]
-        DecorationStylePanel decorationStylePanel = new DecorationStylePanel(
-                                                                              layer,
-                                                                              context.getWorkbenchFrame().getChoosableStyleClasses() );
+        DecorationStylePanel decorationStylePanel = new DecorationStylePanel( layer, wbframe.getChoosableStyleClasses() );
         decorationStylePanel.setPreferredSize( new Dimension( 400, 300 ) );
         if ( layer.getFeatureCollectionWrapper().getFeatureSchema().getAttributeCount() > 1 ) {
-            Iterator<Feature> iter = layer.getFeatureCollectionWrapper().getUltimateWrappee().getFeatures().iterator();
-            String type = "";
-            if ( iter.hasNext() ) {
-                Feature f = iter.next();
-                type = f.getGeometry().getGeometryType();
+//            Iterator<Feature> iter = layer.getFeatureCollectionWrapper().getUltimateWrappee().getFeatures().iterator();
+//            String type = "";
+//            if ( iter.hasNext() ) {
+//                Feature f = iter.next();
+//                type = f.getGeometry().getGeometryType();
+//
+//            }
 
-            }
-
-            if ( "MultiPoint".equals( type ) || "Point".equals( type ) ) {
-                // -- [sstein 18.oct 2006] test de-activation and using original
-                // DeeColorThemingStylePanel deeColorThemingStylePanel = new
-                // DeeColorThemingStylePanel(layer,
-                // context.getWorkbenchContext());
-                ColorThemingStylePanel colorThemingStylePanel = new ColorThemingStylePanel(
-                                                                                            layer,
-                                                                                            context.getWorkbenchContext() );
-                // deeColorThemingStylePanel.setPreferredSize(new Dimension(400, 300));
-                colorThemingStylePanel.setPreferredSize( new Dimension( 400, 300 ) );
-                // stylePanels.add(deeColorThemingStylePanel);
-                stylePanels.add( colorThemingStylePanel );
-                GUIUtil.sync( renderingStylePanel.getTransparencySlider(),
-                // deeColorThemingStylePanel.getTransparencySlider());
-                              colorThemingStylePanel.getTransparencySlider() );
-                GUIUtil.sync( renderingStylePanel.getSynchronizeCheckBox(),
-                // deeColorThemingStylePanel.getSynchronizeCheckBox());
-                              colorThemingStylePanel.getSynchronizeCheckBox() );
-
-            } else {
-                ColorThemingStylePanel colorThemingStylePanel = new ColorThemingStylePanel(
-                                                                                            layer,
-                                                                                            context.getWorkbenchContext() );
+//            if ( "MultiPoint".equals( type ) || "Point".equals( type ) ) {
+//                // -- [sstein 18.oct 2006] test de-activation and using original
+//                DeeColorThemingStylePanel deeColorThemingStylePanel = new DeeColorThemingStylePanel( layer, wbcontext );
+//                // ColorThemingStylePanel colorThemingStylePanel = new ColorThemingStylePanel(
+//                // layer,
+//                // context.getWorkbenchContext() );
+//                deeColorThemingStylePanel.setPreferredSize( new Dimension( 400, 300 ) );
+//                // colorThemingStylePanel.setPreferredSize( new Dimension( 400, 300 ) );
+//                stylePanels.add( deeColorThemingStylePanel );
+//                // stylePanels.add( colorThemingStylePanel );
+//                GUIUtil.sync( renderingStylePanel.getTransparencySlider(),
+//                              deeColorThemingStylePanel.getTransparencySlider() );
+//                // colorThemingStylePanel.getTransparencySlider() );
+//                GUIUtil.sync( renderingStylePanel.getSynchronizeCheckBox(),
+//                              deeColorThemingStylePanel.getSynchronizeCheckBox() );
+//                // colorThemingStylePanel.getSynchronizeCheckBox() );
+//
+//            } else {
+                ColorThemingStylePanel colorThemingStylePanel = new ColorThemingStylePanel( layer, wbcontext );
                 colorThemingStylePanel.setPreferredSize( new Dimension( 400, 300 ) );
                 stylePanels.add( colorThemingStylePanel );
                 GUIUtil.sync( renderingStylePanel.getTransparencySlider(),
@@ -157,7 +155,7 @@ public class DeeChangeStylesPlugIn extends AbstractPlugIn {
                 GUIUtil.sync( renderingStylePanel.getSynchronizeCheckBox(),
                               colorThemingStylePanel.getSynchronizeCheckBox() );
 
-            }
+//            }
 
         } else {
             stylePanels.add( new DummyColorThemingStylePanel() );
@@ -179,15 +177,12 @@ public class DeeChangeStylesPlugIn extends AbstractPlugIn {
         }
 
         dialog.addRow( tabbedPane );
-        tabbedPane.setSelectedComponent( find(
-                                               stylePanels,
-                                               (String) context.getWorkbenchContext().getWorkbench().getBlackboard().get(
-                                                                                                                          LAST_TAB_KEY,
-                                                                                                                          ( stylePanels.iterator().next() ).getTitle() ) ) );
+
+        String selectedTab = (String) blackboard.get( LAST_TAB_KEY, ( stylePanels.iterator().next() ).getTitle() );
+
+        tabbedPane.setSelectedComponent( find( stylePanels, selectedTab ) );
         dialog.setVisible( true );
-        context.getWorkbenchContext().getWorkbench().getBlackboard().put(
-                                                                          LAST_TAB_KEY,
-                                                                          ( (StylePanel) tabbedPane.getSelectedComponent() ).getTitle() );
+        blackboard.put( LAST_TAB_KEY, ( (StylePanel) tabbedPane.getSelectedComponent() ).getTitle() );
 
         if ( dialog.wasOKPressed() ) {
             final Collection oldStyles = layer.cloneStyles();
