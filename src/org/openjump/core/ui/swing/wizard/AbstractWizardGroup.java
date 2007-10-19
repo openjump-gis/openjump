@@ -6,6 +6,7 @@ import java.util.List;
 import javax.swing.Icon;
 
 import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
 
 public abstract class AbstractWizardGroup implements WizardGroup {
@@ -26,7 +27,7 @@ public abstract class AbstractWizardGroup implements WizardGroup {
     this.firstId = firstId;
   }
 
-  public void initialize(WorkbenchContext workbenchContext) {
+  public void initialize(WorkbenchContext workbenchContext, WizardDialog dialog) {
   }
   
   public String getFirstId() {

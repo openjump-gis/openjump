@@ -18,7 +18,7 @@ public interface WizardGroup {
   
   public String getFirstId();
   
-  public void initialize(WorkbenchContext workbenchContext);
+  public void initialize(WorkbenchContext workbenchContext, WizardDialog dialog);
   
   public void run(WizardDialog dialog, TaskMonitor monitor);
 }

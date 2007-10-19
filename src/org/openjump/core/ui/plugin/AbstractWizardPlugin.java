@@ -49,7 +49,7 @@ public class AbstractWizardPlugin extends AbstractThreadedUiPlugIn {
     dialog = new WizardDialog(workbenchFrame, getName(),
       context.getErrorHandler());
 
-    wizard.initialize(workbenchContext);
+    wizard.initialize(workbenchContext, dialog);
     List<WizardPanel> panels = wizard.getPanels();
     String firstId = wizard.getFirstId();
     if (panels.isEmpty() || firstId == null) {

@@ -1,3 +1,7 @@
+2007-10-19 Paul Austin <paul.austin@revolsys.com
+          * Removed Open, close buttons from the open project panel
+          * Added double click handling to the new open wizards
+
 2007-10-19 Andreas Schmitz <schmitz@lat-lon.de>
     src/de/latlon/deejump/plugin/style/DeeChangeStylesPlugIn.java,
     src/de/latlon/deejump/plugin/style/DeeRenderingStylePanel.java:

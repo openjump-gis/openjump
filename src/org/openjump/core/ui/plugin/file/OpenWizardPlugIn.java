@@ -72,12 +72,12 @@ public class OpenWizardPlugIn extends AbstractThreadedUiPlugIn {
 
     List<WizardGroup> wizards = registry.getEntries(KEY);
     for (WizardGroup wizardGroup : wizards) {
-      wizardGroup.initialize(workbenchContext);
+      wizardGroup.initialize(workbenchContext, dialog);
       panels.addAll(wizardGroup.getPanels());
       
     }
 
-    openDataTypePanel = new OpenDataTypePanel(workbenchContext, wizards);
+    openDataTypePanel = new OpenDataTypePanel(workbenchContext, dialog, wizards);
     panels.add(0, openDataTypePanel);
 
     dialog.init(panels.toArray(new WizardPanel[panels.size()]));

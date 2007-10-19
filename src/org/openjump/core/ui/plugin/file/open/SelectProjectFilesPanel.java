@@ -34,12 +34,15 @@ import java.util.Set;
 
 import javax.swing.JFileChooser;
 
+import org.openjump.swing.listener.InvokeMethodActionListener;
+
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.InputChangedListener;
 import com.vividsolutions.jump.workbench.ui.plugin.SaveProjectAsPlugIn;
+import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
 
 public class SelectProjectFilesPanel extends JFileChooser implements WizardPanel {
@@ -56,7 +59,7 @@ public class SelectProjectFilesPanel extends JFileChooser implements WizardPanel
 
   private Blackboard blackboard;
 
-  public SelectProjectFilesPanel(final WorkbenchContext context) {
+  public SelectProjectFilesPanel(final WorkbenchContext context, final WizardDialog dialog) {
     setDialogType(JFileChooser.OPEN_DIALOG);
     setFileSelectionMode(JFileChooser.FILES_ONLY);
     setMultiSelectionEnabled(true);
@@ -65,11 +68,14 @@ public class SelectProjectFilesPanel extends JFileChooser implements WizardPanel
     addChoosableFileFilter(GUIUtil.ALL_FILES_FILTER);
     setFileFilter(SaveProjectAsPlugIn.JUMP_PROJECT_FILE_FILTER);
 
+    setControlButtonsAreShown(false);
+
     addPropertyChangeListener(new PropertyChangeListener() {
       public void propertyChange(PropertyChangeEvent evt) {
         fireInputChanged();
       }
     });
+    addActionListener(new InvokeMethodActionListener(dialog, "next"));
   }
 
   public void enteredFromLeft(final Map dataMap) {

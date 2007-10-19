@@ -26,6 +26,8 @@
  ******************************************************************************/
 package org.openjump.core.ui.plugin.file.open;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -42,6 +44,7 @@ import javax.swing.filechooser.FileFilter;
 import org.openjump.core.ui.io.file.FileLayerLoader;
 import org.openjump.core.ui.io.file.FileLayerLoaderExtensionFilter;
 import org.openjump.core.ui.io.file.FileNameExtensionFilter;
+import org.openjump.swing.listener.InvokeMethodActionListener;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.Blackboard;
@@ -50,6 +53,7 @@ import com.vividsolutions.jump.workbench.datasource.LoadFileDataSourceQueryChoos
 import com.vividsolutions.jump.workbench.registry.Registry;
 import com.vividsolutions.jump.workbench.ui.InputChangedListener;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
+import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
 
 public class SelectFilesPanel extends JFileChooser implements WizardPanel {
@@ -72,10 +76,13 @@ public class SelectFilesPanel extends JFileChooser implements WizardPanel {
 
   private boolean initialized = false;
 
+  private WizardDialog dialog;
+
   public SelectFilesPanel(final WorkbenchContext workbenchContext,
-    final OpenFileWizardState state) {
+    final WizardDialog dialog, final OpenFileWizardState state) {
     this.state = state;
     this.workbenchContext = workbenchContext;
+    this.dialog = dialog;
   }
 
   private void initialize() {
@@ -126,6 +133,8 @@ public class SelectFilesPanel extends JFileChooser implements WizardPanel {
         fireInputChanged();
       }
     });
+    
+    addActionListener(new InvokeMethodActionListener(dialog, "next"));
   }
 
   public void enteredFromLeft(final Map dataMap) {

@@ -51,7 +51,7 @@ public class OpenFileWizard extends AbstractWizardGroup {
     this.files = files;
   }
 
-  public void initialize(final WorkbenchContext workbenchContext) {
+  public void initialize(final WorkbenchContext workbenchContext, WizardDialog dialog) {
     this.workbenchContext = workbenchContext;
     state = new OpenFileWizardState(workbenchContext.getErrorHandler());
     Registry registry = workbenchContext.getRegistry();
@@ -63,7 +63,7 @@ public class OpenFileWizard extends AbstractWizardGroup {
     chooseProjectPanel = new ChooseProjectPanel(workbenchContext,
       SelectFilesPanel.KEY);
     addPanel(chooseProjectPanel);
-    addPanel(new SelectFilesPanel(workbenchContext, state));
+    addPanel(new SelectFilesPanel(workbenchContext, dialog,state));
     addPanel(new SelectFileLoaderPanel(state));
     addPanel(new SelectFileOptionsPanel(workbenchContext, state));
     if (files != null) {
