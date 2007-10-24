@@ -47,7 +47,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Iterator;
 
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;

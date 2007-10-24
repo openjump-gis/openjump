@@ -449,6 +449,7 @@ public class BasicStylePanel extends JPanel {
         linePatternCheckBox.setSelected(basicStyle.isRenderingLinePattern());
         fillPatternCheckBox.setSelected(basicStyle.isRenderingFillPattern());
         linePatternComboBox.setSelectedItem(basicStyle.getLinePattern());
+        linePatternComboBox.updateUI();
 
         //Update fill pattern colors before finding the basic style's current fill
         //pattern in the combobox. [Jon Aquino]

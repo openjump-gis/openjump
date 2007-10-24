@@ -48,7 +48,6 @@ import javax.swing.JTabbedPane;
 
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
