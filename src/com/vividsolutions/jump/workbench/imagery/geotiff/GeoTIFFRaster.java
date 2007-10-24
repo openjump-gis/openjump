@@ -56,6 +56,7 @@ public class GeoTIFFRaster extends GeoReferencedRaster
       throws Exception
   {
     super(imageFileLocation);
+    fileName = imageFileLocation;
     registerWithJAI();
     readRasterfile();
   }
@@ -123,15 +124,14 @@ public class GeoTIFFRaster extends GeoReferencedRaster
       String line = (String) lines.get(i);
       tags[i] = Double.parseDouble(line);
     }
+    setCoorRasterTiff_tiepointLT(new Coordinate(0, 0) );
+    setCoorModel_tiepointLT(new Coordinate(0, 0) );
     setAffineTransformation(new AffineTransform(tags));
   }
 
   protected void readRasterfile() throws Exception
   {
 //    ImageCodec originalCodec = ImageCodec.getCodec("tiff");
-
-    try
-    {
       super.readRasterfile();
 
       // Get access to the tags and geokeys.
@@ -158,9 +158,6 @@ public class GeoTIFFRaster extends GeoReferencedRaster
               "Neither geotiff tags nor valid worldfile found.\n" + MSG_GENERAL);
         }
       }
-    } finally
-    {
-    }
   }
 
 }

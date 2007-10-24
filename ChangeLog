@@ -1,3 +1,7 @@
+2007-10-24 Andreas Schmitz <schmitz@lat-lon.de>
+	  src/com/vividsolutions/jump/workbench/imagery/geotiff/GeoTIFFRaster.java:
+	  Fixed reading of TIFF rasters with world files.
+
 2007-10-19 Andreas Schmitz <schmitz@lat-lon.de>
       src/language/jump_it.properties,
       src/language/jump_fi.properties,
