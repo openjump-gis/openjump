@@ -31,110 +31,16 @@
  */
 package com.vividsolutions.jump.workbench.ui.plugin.wms;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import org.openjump.core.ui.plugin.AbstractWizardPlugin;
+import org.openjump.core.ui.plugin.wms.AddWmsLayerWizard;
 
-import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.workbench.model.LayerManager;
-import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
-import com.vividsolutions.jump.workbench.model.UndoableCommand;
-import com.vividsolutions.jump.workbench.model.WMSLayer;
-import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.ui.ErrorHandler;
-import com.vividsolutions.jump.workbench.ui.GUIUtil;
-import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
-import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
-import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
-import com.vividsolutions.wms.MapLayer;
-import com.vividsolutions.wms.WMService;
 
 
-public class AddWMSQueryPlugIn extends AbstractPlugIn {
-    
-    private String[] cachedURLs;
-    private String lastWMSVersion = WMService.WMS_1_1_1;
-    
-    private static final String CACHED_URL = "AddWMSQueryPlugin.CACHED_URL";
-
-    public AddWMSQueryPlugIn() {
-	cachedURLs = new String[]{"http://demo.deegree.org/deegree-wms/services"};
-    }
-    
-    private List<String> toLayerNames(List<MapLayer> mapLayers) {
-        ArrayList<String> names = new ArrayList<String>();
-        for (Iterator<MapLayer> i = mapLayers.iterator(); i.hasNext();) {
-            MapLayer layer = i.next();
-            names.add(layer.getName());
-        }
-
-        return names;
-    }
-
-    public boolean execute(final PlugInContext context)
-        throws Exception {
-	String s = (String)PersistentBlackboardPlugIn.get(context.getWorkbenchContext()).get(CACHED_URL);
-	if(s != null) cachedURLs = s.split(",");
-	
-        reportNothingToUndoYet(context);
-
-        WizardDialog d = new WizardDialog(context.getWorkbenchFrame(),
-        		I18N.get("ui.plugin.wms.AddWMSQueryPlugIn.connect-to-web-map-server"), new ErrorHandler(){
-                    public void handleThrowable( Throwable t ) {
-                        if (!(t instanceof IOException)) {
-                            context.getErrorHandler().handleThrowable(t);
-                        }
-                    }
-        });
-
-        d.init(new WizardPanel[] {
-                new URLWizardPanel(cachedURLs, lastWMSVersion), new MapLayerWizardPanel(),
-                new SRSWizardPanel(), new OneSRSWizardPanel()
-            });
-
-        //Set size after #init, because #init calls #pack. [Jon Aquino]
-        d.setSize(500, 400);
-        GUIUtil.centreOnWindow(d);
-        d.setVisible(true);
-        if (!d.wasFinishPressed()) {
-            return false;
-        }
-
-        // title of the layer will be the title of the first WMS layer
-        String title = ((MapLayer)((List)d.getData(MapLayerWizardPanel.LAYERS_KEY)).get(0)).getTitle();
-        
-        final WMSLayer layer = new WMSLayer(title,context.getLayerManager(),
-                (WMService) d.getData(URLWizardPanel.SERVICE_KEY),
-                (String) d.getData(SRSWizardPanel.SRS_KEY),
-                toLayerNames((List) d.getData(MapLayerWizardPanel.LAYERS_KEY)),
-                ((String) d.getData(URLWizardPanel.FORMAT_KEY)));
-        execute(new UndoableCommand(getName()) {
-                public void execute() {
-                    Collection selectedCategories = context.getLayerNamePanel()
-                                                           .getSelectedCategories();
-                    LayerManager mgr = context.getLayerManager();
-                    mgr.addLayerable(selectedCategories.isEmpty()
-                        ? StandardCategoryNames.WORKING
-                        : selectedCategories.iterator().next().toString(), layer);
-                }
-
-                public void unexecute() {
-                    context.getLayerManager().remove(layer);
-                }
-            }, context);
-        cachedURLs = (String[]) d.getData(URLWizardPanel.URL_KEY);
-        lastWMSVersion = (String) d.getData( URLWizardPanel.VERSION_KEY );
-
-        StringBuilder urls = new StringBuilder();
-        for(int i = 0; i < cachedURLs.length; ++i)
-            if(i == cachedURLs.length-1) urls.append(cachedURLs[i]);
-            else urls.append(cachedURLs[i]).append(",");
-        
-        PersistentBlackboardPlugIn.get(context.getWorkbenchContext()).put(CACHED_URL, urls.toString());
-        
-        return true;
+public class AddWMSQueryPlugIn extends AbstractWizardPlugin {
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+      AddWmsLayerWizard wizard = new AddWmsLayerWizard(context.getWorkbenchContext());
+      setWizard(wizard);
     }
 }

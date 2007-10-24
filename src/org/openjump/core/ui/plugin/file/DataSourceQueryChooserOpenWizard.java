@@ -8,7 +8,6 @@ import java.util.Iterator;
 import org.openjump.core.ui.plugin.file.open.ChooseProjectPanel;
 import org.openjump.core.ui.swing.wizard.AbstractWizardGroup;
 
-import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.coordsys.CoordinateSystemRegistry;
 import com.vividsolutions.jump.feature.FeatureCollection;
@@ -28,6 +27,8 @@ import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
 
 public class DataSourceQueryChooserOpenWizard extends AbstractWizardGroup {
 
+  public static final String KEY = DataSourceQueryChooserOpenWizard.class.getName();
+
   private DataSourceQueryChooser chooser;
 
   private WorkbenchContext workbenchContext;
@@ -36,9 +37,14 @@ public class DataSourceQueryChooserOpenWizard extends AbstractWizardGroup {
 
   public DataSourceQueryChooserOpenWizard(WorkbenchContext workbenchContext,
     DataSourceQueryChooser chooser) {
-    super(chooser.toString(), IconLoader.icon("Table.gif"), chooser.getClass().getName());
+    super(chooser.toString(), IconLoader.icon("Table.gif"), chooser.getClass()
+      .getName());
     this.workbenchContext = workbenchContext;
     this.chooser = chooser;
+  }
+
+  public void initialize(WorkbenchContext workbenchContext, WizardDialog dialog) {
+    removeAllPanels();
     ComponentWizardPanel componentPanel = new ComponentWizardPanel(
       chooser.toString(), chooser.getClass().getName(), chooser.getComponent());
     chooseProjectPanel = new ChooseProjectPanel(workbenchContext,
@@ -62,41 +68,49 @@ public class DataSourceQueryChooserOpenWizard extends AbstractWizardGroup {
     chooseProjectPanel.activateSelectedProject();
     PlugInContext context = workbenchContext.createPlugInContext();
     Collection dataSourceQueries = chooser.getDataSourceQueries();
-    Assert.isTrue(!dataSourceQueries.isEmpty());
+    if (!dataSourceQueries.isEmpty()) {
 
-    boolean exceptionsEncountered = false;
-    for (Iterator i = dataSourceQueries.iterator(); i.hasNext();) {
-      DataSourceQuery dataSourceQuery = (DataSourceQuery)i.next();
-      ArrayList exceptions = new ArrayList();
-      Assert.isTrue(dataSourceQuery.getDataSource().isReadable());
-      monitor.report("Loading " + dataSourceQuery.toString() + "...");
+      boolean exceptionsEncountered = false;
+      for (Iterator i = dataSourceQueries.iterator(); i.hasNext();) {
+        DataSourceQuery dataSourceQuery = (DataSourceQuery)i.next();
+        ArrayList exceptions = new ArrayList();
+        if (dataSourceQuery.getDataSource().isReadable()) {
+          monitor.report("Loading " + dataSourceQuery.toString() + "...");
 
-      Connection connection = dataSourceQuery.getDataSource().getConnection();
-      try {
-        FeatureCollection dataset = dataSourceQuery.getDataSource()
-          .installCoordinateSystem(
-            connection.executeQuery(dataSourceQuery.getQuery(), exceptions,
-              monitor),
-            CoordinateSystemRegistry.instance(workbenchContext.getBlackboard()));
-        if (dataset != null) {
-          context.getLayerManager().addLayer(chooseCategory(context),
-            dataSourceQuery.toString(), dataset).setDataSourceQuery(
-            dataSourceQuery).setFeatureCollectionModified(false);
+          Connection connection = dataSourceQuery.getDataSource()
+            .getConnection();
+          try {
+            FeatureCollection dataset = dataSourceQuery.getDataSource()
+              .installCoordinateSystem(
+                connection.executeQuery(dataSourceQuery.getQuery(), exceptions,
+                  monitor),
+                CoordinateSystemRegistry.instance(workbenchContext.getBlackboard()));
+            if (dataset != null) {
+              context.getLayerManager().addLayer(chooseCategory(context),
+                dataSourceQuery.toString(), dataset).setDataSourceQuery(
+                dataSourceQuery).setFeatureCollectionModified(false);
+            }
+          } finally {
+            connection.close();
+          }
+          if (!exceptions.isEmpty()) {
+            if (!exceptionsEncountered) {
+              context.getOutputFrame().createNewDocument();
+              exceptionsEncountered = true;
+            }
+            reportExceptions(exceptions, dataSourceQuery, context);
+          }
+        } else {
+          context.getWorkbenchFrame().warnUser(
+            I18N.get("datasource.LoadDatasetPlugIn.query-not-readable"));
         }
-      } finally {
-        connection.close();
       }
-      if (!exceptions.isEmpty()) {
-        if (!exceptionsEncountered) {
-          context.getOutputFrame().createNewDocument();
-          exceptionsEncountered = true;
-        }
-        reportExceptions(exceptions, dataSourceQuery, context);
+      if (exceptionsEncountered) {
+        context.getWorkbenchFrame().warnUser(
+          I18N.get("datasource.LoadDatasetPlugIn.problems-were-encountered"));
       }
-    }
-    if (exceptionsEncountered) {
-      context.getWorkbenchFrame().warnUser(
-        I18N.get("datasource.LoadDatasetPlugIn.problems-were-encountered"));
+    } else {
+      context.getWorkbenchFrame().warnUser(I18N.get(KEY + ".no-queries-found"));
     }
   }
 

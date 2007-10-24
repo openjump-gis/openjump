@@ -5,9 +5,7 @@ import java.util.Collection;
 
 import javax.swing.SwingUtilities;
 
-import org.openjump.core.ui.plugin.file.OpenProjectPlugIn;
 import org.openjump.core.ui.plugin.file.open.ChooseProjectPanel;
-import org.openjump.core.ui.plugin.file.open.SelectFilesPanel;
 import org.openjump.core.ui.swing.wizard.AbstractWizardGroup;
 
 import com.vividsolutions.jump.I18N;

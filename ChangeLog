@@ -1,3 +1,9 @@
+2007-10-24 Paul Austin <paul.austin@revolsys.com
+          * Changed the AddWmsLayerPlugin to use the new WMS wizard and improved
+            the invalid URL handling so next is not available until a potential
+            valid URL is entered.
+          * Minor enhancements to the Open framework
+
 2007-10-24 Andreas Schmitz <schmitz@lat-lon.de>
 	  src/com/vividsolutions/jump/workbench/imagery/geotiff/GeoTIFFRaster.java:
 	  Fixed reading of TIFF rasters with world files.

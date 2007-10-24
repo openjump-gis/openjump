@@ -40,7 +40,9 @@ public class AddWmsLayerWizard extends AbstractWizardGroup {
 
   private WorkbenchContext workbenchContext;
 
-  private String[] cachedURLs = new String[0];
+  private String[] cachedURLs = new String[] {
+    "http://demo.deegree.org/deegree-wms/services"
+  };
 
   private String lastWMSVersion = WMService.WMS_1_1_1;
 
@@ -50,6 +52,10 @@ public class AddWmsLayerWizard extends AbstractWizardGroup {
     super(I18N.get(KEY), IconLoader.icon("SmallWorld.gif"),
       URLWizardPanel.class.getName());
     this.workbenchContext = workbenchContext;
+  }
+
+  public void initialize(WorkbenchContext workbenchContext, WizardDialog dialog) {
+    removeAllPanels();
     String urlString = (String)PersistentBlackboardPlugIn.get(workbenchContext)
       .get(CACHED_URL);
     if (urlString != null) {
