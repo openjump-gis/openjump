@@ -65,52 +65,55 @@ public class DataSourceQueryChooserOpenWizard extends AbstractWizardGroup {
   }
 
   public void run(WizardDialog dialog, TaskMonitor monitor) {
-    chooseProjectPanel.activateSelectedProject();
-    PlugInContext context = workbenchContext.createPlugInContext();
-    Collection dataSourceQueries = chooser.getDataSourceQueries();
-    if (!dataSourceQueries.isEmpty()) {
+    if (chooser.isInputValid()) {
+      chooseProjectPanel.activateSelectedProject();
+      PlugInContext context = workbenchContext.createPlugInContext();
+      Collection dataSourceQueries = chooser.getDataSourceQueries();
+      if (!dataSourceQueries.isEmpty()) {
 
-      boolean exceptionsEncountered = false;
-      for (Iterator i = dataSourceQueries.iterator(); i.hasNext();) {
-        DataSourceQuery dataSourceQuery = (DataSourceQuery)i.next();
-        ArrayList exceptions = new ArrayList();
-        if (dataSourceQuery.getDataSource().isReadable()) {
-          monitor.report("Loading " + dataSourceQuery.toString() + "...");
+        boolean exceptionsEncountered = false;
+        for (Iterator i = dataSourceQueries.iterator(); i.hasNext();) {
+          DataSourceQuery dataSourceQuery = (DataSourceQuery)i.next();
+          ArrayList exceptions = new ArrayList();
+          if (dataSourceQuery.getDataSource().isReadable()) {
+            monitor.report("Loading " + dataSourceQuery.toString() + "...");
 
-          Connection connection = dataSourceQuery.getDataSource()
-            .getConnection();
-          try {
-            FeatureCollection dataset = dataSourceQuery.getDataSource()
-              .installCoordinateSystem(
-                connection.executeQuery(dataSourceQuery.getQuery(), exceptions,
-                  monitor),
-                CoordinateSystemRegistry.instance(workbenchContext.getBlackboard()));
-            if (dataset != null) {
-              context.getLayerManager().addLayer(chooseCategory(context),
-                dataSourceQuery.toString(), dataset).setDataSourceQuery(
-                dataSourceQuery).setFeatureCollectionModified(false);
+            Connection connection = dataSourceQuery.getDataSource()
+              .getConnection();
+            try {
+              FeatureCollection dataset = dataSourceQuery.getDataSource()
+                .installCoordinateSystem(
+                  connection.executeQuery(dataSourceQuery.getQuery(),
+                    exceptions, monitor),
+                  CoordinateSystemRegistry.instance(workbenchContext.getBlackboard()));
+              if (dataset != null) {
+                context.getLayerManager().addLayer(chooseCategory(context),
+                  dataSourceQuery.toString(), dataset).setDataSourceQuery(
+                  dataSourceQuery).setFeatureCollectionModified(false);
+              }
+            } finally {
+              connection.close();
             }
-          } finally {
-            connection.close();
-          }
-          if (!exceptions.isEmpty()) {
-            if (!exceptionsEncountered) {
-              context.getOutputFrame().createNewDocument();
-              exceptionsEncountered = true;
+            if (!exceptions.isEmpty()) {
+              if (!exceptionsEncountered) {
+                context.getOutputFrame().createNewDocument();
+                exceptionsEncountered = true;
+              }
+              reportExceptions(exceptions, dataSourceQuery, context);
             }
-            reportExceptions(exceptions, dataSourceQuery, context);
+          } else {
+            context.getWorkbenchFrame().warnUser(
+              I18N.get("datasource.LoadDatasetPlugIn.query-not-readable"));
           }
-        } else {
-          context.getWorkbenchFrame().warnUser(
-            I18N.get("datasource.LoadDatasetPlugIn.query-not-readable"));
         }
-      }
-      if (exceptionsEncountered) {
+        if (exceptionsEncountered) {
+          context.getWorkbenchFrame().warnUser(
+            I18N.get("datasource.LoadDatasetPlugIn.problems-were-encountered"));
+        }
+      } else {
         context.getWorkbenchFrame().warnUser(
-          I18N.get("datasource.LoadDatasetPlugIn.problems-were-encountered"));
+          I18N.get(KEY + ".no-queries-found"));
       }
-    } else {
-      context.getWorkbenchFrame().warnUser(I18N.get(KEY + ".no-queries-found"));
     }
   }
 
