@@ -102,8 +102,13 @@
     </repository>
     <repository>
       <id>cam</id>
-      <name>Refractions Research Maven 2 Repository</name>
+      <name>Cambridge Maven 2 Repository</name>
       <url>http://wwmm.ch.cam.ac.uk/maven2/</url>
+    </repository>
+    <repository>
+      <id>revolsys</id>
+      <name>Revolution Systems Inc. Maven 2 Repository</name>
+      <url>http://open.revolsys.com/m2</url>
     </repository>
   </repositories>
   <dependencies>
@@ -111,97 +116,97 @@
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
       <version>1.2.8</version>
-      <scope>runtime</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.vividsolutions</groupId>
       <artifactId>jts</artifactId>
       <version>1.8</version>
-      <scope>runtime</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.beanshell</groupId>
       <artifactId>bsh</artifactId>
       <version>2.0b4</version>
-      <scope>runtime</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.sun.media</groupId>
       <artifactId>jai_codec</artifactId>
       <version>1.1.2_01</version>
-      <scope>runtime</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>jdom</groupId>
       <artifactId>jdom</artifactId>
       <version>1.0b8</version>
-      <scope>runtime</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>xerces</groupId>
       <artifactId>xercesImpl</artifactId>
       <version>2.8.1</version>
-      <scope>runtime</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>postgresql</groupId>
       <artifactId>postgresql</artifactId>
       <version>8.1-407.jdbc3</version>
-      <scope>runtime</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>batik</groupId>
       <artifactId>batik-awt-util</artifactId>
       <version>1.6</version>
-      <scope>runtime</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>batik</groupId>
       <artifactId>batik-dom</artifactId>
       <version>1.6</version>
-      <scope>runtime</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>batik</groupId>
       <artifactId>batik-svggen</artifactId>
       <version>1.6</version>
-      <scope>runtime</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>batik</groupId>
       <artifactId>batik-squiggle</artifactId>
       <version>1.6</version>
-      <scope>runtime</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>net.sf.buoy</groupId>
       <artifactId>buoy</artifactId>
       <version>1.8</version>
-      <scope>runtime</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.jmat</groupId>
       <artifactId>jmat</artifactId>
       <version>5.0</version>
-      <scope>runtime</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>jama</groupId>
       <artifactId>jama</artifactId>
       <version>1.0.2</version>
-      <scope>runtime</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.ermapper</groupId>
       <artifactId>ermapper</artifactId>
       <version>UNKNOWN</version>
-      <scope>runtime</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>3.8</version>
-      <scope>test</scope>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 
