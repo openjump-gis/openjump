@@ -39,6 +39,7 @@
         <configuration>
           <archive>
             <manifest>
+              <mainClass>com.vividsolutions.jump.workbench.JUMPWorkbench</mainClass>
               <addClasspath>true</addClasspath>
             </manifest>
           </archive>

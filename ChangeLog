@@ -1,3 +1,7 @@
+2007-10-25 Andreas Schmitz <schmitz@lat-lon.de>
+	pom.xml:
+	Added main class entry to manifest.
+
 2007-10-24 Paul Austin <paul.austin@revolsys.com
           * Changed the AddWmsLayerPlugin to use the new WMS wizard and improved
             the invalid URL handling so next is not available until a potential
