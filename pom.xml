@@ -108,8 +108,8 @@
     </repository>
     <repository>
       <id>revolsys</id>
-      <name>Revolution Systems Inc. Maven 2 Repository</name>
-      <url>http://open.revolsys.com/m2</url>
+      <name>OpenJUMP Maven 2 Repository</name>
+      <url>http://jump-pilot.svn.sourceforge.net/svnroot/jump-pilot/maven-repository/</url>
     </repository>
   </repositories>
   <dependencies>
