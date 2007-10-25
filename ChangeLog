@@ -5,6 +5,13 @@
           * Minor enhancements to the Open framework
 
 2007-10-24 Andreas Schmitz <schmitz@lat-lon.de>
+      src/de/latlon/deejump/plugin/style/DeeChangeStylesPlugIn.java,
+      src/de/latlon/deejump/plugin/style/DeeRenderingStylePanel.java,
+      src/com/vividsolutions/jump/workbench/ui/style/BasicStylePanel.java:
+      Fixed item 1 of issue
+      http://sourceforge.net/tracker/index.php?func=detail&aid=1691836&group_id=118054&atid=679906
+
+2007-10-24 Andreas Schmitz <schmitz@lat-lon.de>
 	  src/com/vividsolutions/jump/workbench/imagery/geotiff/GeoTIFFRaster.java:
 	  Fixed reading of TIFF rasters with world files.
 
