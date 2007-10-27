@@ -20,7 +20,9 @@ OpenJUMP is distributed under the GPL license. A description of this license
 can be found in the "gpl.txt" file on the same location than this readme file.
 OpenJUMP uses the BATIK libraries to write svg format. The BATIK libraries are
 used under the terms of the APACHE license, which can be found in the "apache.txt" 
-file or on www.apache.org.
+file or on www.apache.org. We use also a math library called JMath. JMath and its 
+successor projects JMathTools (IO,Plot,Array) are distributed under BSD license, 
+to be found in "jmathlicense.txt".
 
 
 2. Installation instructions
@@ -81,6 +83,8 @@ General questions regarding OpenJUMP can be found in:
 - www.jump-project.org  the original JUMP site
 - www.openjump.org the OpenJUMP home
 - jump-pilot.sourceforge.net the old OpenJUMP developper site
+
+For commerical support, e.g. payed plugin development, see our www.openjump.org home.
 
 
 5. OpenJUMP history
