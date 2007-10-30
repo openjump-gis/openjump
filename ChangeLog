@@ -1,3 +1,9 @@
+2007-10-30 Paul Austin <paul.austin@revolsys.com
+  * Improved the PastePlugin to support point coordinates in the form (1.0,1,1)
+    or (1 1 1) with any ammount of white space. Multiple points can be pasted
+    at the same time.
+  * Added support for plug-ins to have their own I18N resource bundles.
+
 2007-10-25 Andreas Schmitz <schmitz@lat-lon.de>
 	pom.xml:
 	Added main class entry to manifest.

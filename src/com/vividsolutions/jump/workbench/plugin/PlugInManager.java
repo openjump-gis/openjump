@@ -38,6 +38,7 @@ import java.util.zip.ZipFile;
 import org.apache.log4j.Logger;
 
 import com.vividsolutions.jts.util.Assert;
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.util.LangUtil;
 import com.vividsolutions.jump.util.StringUtil;
@@ -67,6 +68,7 @@ public class PlugInManager {
         classLoader = plugInDirectory != null ? new URLClassLoader(
                 toURLs((File[]) findFilesRecursively(plugInDirectory).toArray(
                         new File[] {}))) : getClass().getClassLoader();
+        I18N.setClassLoader(classLoader);
         this.context = context;
         //Find the configurations right away so they get reported to the splash
         //screen ASAP. [Jon Aquino]

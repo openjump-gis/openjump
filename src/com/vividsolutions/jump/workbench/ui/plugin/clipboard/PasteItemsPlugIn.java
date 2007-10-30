@@ -44,6 +44,7 @@ import java.util.regex.Pattern;
 
 import javax.swing.JComponent;
 
+import com.sun.org.apache.xerces.internal.impl.dv.xs.DecimalDV;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -52,8 +53,6 @@ import com.vividsolutions.jump.coordsys.Reprojector;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.BasicFeature;
 import com.vividsolutions.jump.feature.Feature;
-import com.vividsolutions.jump.feature.FeatureCollection;
-import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.io.WKTReader;
 import com.vividsolutions.jump.util.StringUtil;
@@ -74,7 +73,17 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
 public class PasteItemsPlugIn extends AbstractPlugIn {
   private WKTReader reader = new WKTReader();
 
-  private static final Pattern pointCoordsPattern = Pattern.compile("(\\d+(?:\\.\\d+)?) (\\d+(?:\\.\\d+)?)(?: (\\d+(?:\\.\\d+)?))?");
+  private static final String DECIMAL_PATTERN = "\\d+(?:\\.\\d+)?";
+
+  private static final String WHITESPACE_OR_COMMA = "(?:\\s+|(?:\\s*,\\s*))";
+
+  private static final Pattern pointCoordsPattern = Pattern.compile("\\s*\\(?\\s*("
+    + DECIMAL_PATTERN
+    + ")"
+    + WHITESPACE_OR_COMMA
+    + "("
+    + DECIMAL_PATTERN
+    + ")(?:" + WHITESPACE_OR_COMMA + "(" + DECIMAL_PATTERN + "))?\\s*\\)?\\s*");
 
   // Note: Need to copy the data twice: once when the user hits Copy, so she is
   // free to modify the original afterwards, and again when the user hits Paste,
@@ -100,23 +109,8 @@ public class PasteItemsPlugIn extends AbstractPlugIn {
     } else {
       // Allow the user to paste features using WKT. [Jon Aquino]
       String value = (String)transferable.getTransferData(DataFlavor.stringFlavor);
-      Matcher matcher = pointCoordsPattern.matcher(value);
-      if (matcher.matches()) {
-        double x = Double.parseDouble(matcher.group(1));
-        double y = Double.parseDouble(matcher.group(2));
-        Coordinate coordinate = new Coordinate(x, y);
-        String zString = matcher.group(3);
-        if (zString != null) {
-          coordinate.z = Double.parseDouble(zString);
-        }
-        FeatureSchema featureSchema = new FeatureSchema();
-        featureSchema.addAttribute("Geometry", AttributeType.GEOMETRY);
-
-        Feature feature = new BasicFeature(featureSchema);
-        Point point = new GeometryFactory().createPoint(coordinate);
-        feature.setGeometry(point);
-        features = Collections.singletonList(feature);
-      } else {
+      features = processCoordinates(value);
+      if (features.isEmpty()) {
         features = reader.read(new StringReader(value)).getFeatures();
       }
     }
@@ -135,6 +129,28 @@ public class PasteItemsPlugIn extends AbstractPlugIn {
     }, context);
 
     return true;
+  }
+
+  private Collection<Feature> processCoordinates(String value) {
+    Matcher matcher = pointCoordsPattern.matcher(value);
+    Collection<Feature> features = new ArrayList<Feature>();
+    while (matcher.find()) {
+      double x = Double.parseDouble(matcher.group(1));
+      double y = Double.parseDouble(matcher.group(2));
+      Coordinate coordinate = new Coordinate(x, y);
+      String zString = matcher.group(3);
+      if (zString != null) {
+        coordinate.z = Double.parseDouble(zString);
+      }
+      FeatureSchema featureSchema = new FeatureSchema();
+      featureSchema.addAttribute("Geometry", AttributeType.GEOMETRY);
+
+      Feature feature = new BasicFeature(featureSchema);
+      Point point = new GeometryFactory().createPoint(coordinate);
+      feature.setGeometry(point);
+      features.add(feature);
+    }
+    return features;
   }
 
   public static Collection conform(Collection features,
@@ -216,7 +232,7 @@ public class PasteItemsPlugIn extends AbstractPlugIn {
         }
 
         private boolean isCoordinates(String value) {
-          return pointCoordsPattern.matcher(value).matches();
+          return pointCoordsPattern.matcher(value).find();
         }
 
         private boolean isWKT(String s) {
