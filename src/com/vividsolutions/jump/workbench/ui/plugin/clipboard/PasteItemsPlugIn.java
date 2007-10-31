@@ -219,10 +219,11 @@ public class PasteItemsPlugIn extends AbstractPlugIn {
           }
 
           try {
-            String value = (String)transferable.getTransferData(DataFlavor.stringFlavor);
-            if (transferable.isDataFlavorSupported(DataFlavor.stringFlavor)
-              && (isWKT(value) || isCoordinates(value))) {
-              return null;
+            if (transferable.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+              String value = (String)transferable.getTransferData(DataFlavor.stringFlavor);
+              if (isWKT(value) || isCoordinates(value)) {
+                return null;
+              }
             }
           } catch (Exception e) {
             workbenchContext.getErrorHandler().handleThrowable(e);
