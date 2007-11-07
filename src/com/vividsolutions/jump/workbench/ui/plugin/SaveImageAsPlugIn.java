@@ -8,23 +8,32 @@ import java.io.IOException;
 import java.util.*;
 
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.Icon;
 import javax.swing.filechooser.FileFilter;
 
+import org.openjump.core.ui.plugin.file.LayerPrinter2;
 import org.openjump.core.ui.plugin.file.WorldFileWriter;
 
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
+import com.vividsolutions.jump.workbench.ui.ValidatingTextField;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class SaveImageAsPlugIn extends ExportImagePlugIn {
     //ImageIO doesn't know about the "gif" format. I guess it's a copyright
@@ -42,8 +51,26 @@ public class SaveImageAsPlugIn extends ExportImagePlugIn {
     private JFileChooser fileChooser = null;
     private WorkbenchContext workbenchContext;
     private JCheckBox worldFileCheckBox = null;
+    private JLabel pixelSizeLabel = new JLabel("X");
+    private final ImageIcon icon = IconLoader.icon("Box.gif");
+    private Geometry fence = null;
+    private boolean fenceFound = false;
     
-    
+    private ValidatingTextField pixelSizeField = new ValidatingTextField("9999",5,
+    		new ValidatingTextField.Validator() {
+    	public boolean isValid(String text) {
+    		if (text.length() == 0) {
+    			return true;
+    		}
+    		try {
+    			int i = Integer.parseInt(text);
+    			return i<=3800;
+    		} catch (NumberFormatException e) {
+    			return false;
+    		}
+    	}
+    });
+
     private JFileChooser getFileChooser() {
         if (fileChooser == null) {
             fileChooser = new GUIUtil.FileChooserWithOverwritePrompting() {
@@ -71,15 +98,28 @@ public class SaveImageAsPlugIn extends ExportImagePlugIn {
                     PersistentBlackboardPlugIn.get(workbenchContext)
                             .get(FORMAT_KEY, "png")));
             JPanel jPanel = new JPanel();
-            fileChooser.add(jPanel,  BorderLayout.SOUTH);
             worldFileCheckBox = new javax.swing.JCheckBox();
             worldFileCheckBox.setText(I18N.get("ui.plugin.SaveImageAsPlugIn.write-world-file"));
+            if (fence != null){
+            	JLabel fenceIcon = new JLabel(icon);
+            	jPanel.add(fenceIcon);
+            }
+            jPanel.add(pixelSizeLabel);
+            jPanel.add(pixelSizeField);
             jPanel.add(worldFileCheckBox);
+            fileChooser.add(jPanel,  BorderLayout.NORTH);
         }
         return fileChooser;
     }
     
-    
+    private int getPixelSize() {
+    	String text = pixelSizeField.getText();
+		try {
+			return Integer.parseInt(text);
+		} catch (NumberFormatException e) {
+			return 800;  //some reasonable default
+		}   	
+    }
     private MyFileFilter createFileFilter(String description, String format,
             int bufferedmageType) {
         return new MyFileFilter(description, format);
@@ -114,13 +154,40 @@ public class SaveImageAsPlugIn extends ExportImagePlugIn {
     
     public boolean execute(PlugInContext context) throws Exception {
         this.workbenchContext = context.getWorkbenchContext();
+   		fence = context.getLayerViewPanel().getFence();	
+   		fenceFound = (fence != null);
+   		if (fenceFound){
+   			pixelSizeField.setText("800");
+   		}
+   		else {
+   			pixelSizeField.setText(context.getLayerViewPanel().getWidth() + "");}
         if (JFileChooser.APPROVE_OPTION != getFileChooser()
                 .showSaveDialog(context.getWorkbenchFrame())) {
-            return false;
-        }      
+           fileChooser = null; //rebuild next invocation
+           return false;
+        }
         MyFileFilter fileFilter = (MyFileFilter) getFileChooser()
                 .getFileFilter();
-        BufferedImage image = image(context.getLayerViewPanel());
+        BufferedImage image;
+        LayerViewPanel viewPanel =context.getLayerViewPanel();
+		Envelope envelope = null;
+        if (!fenceFound && (getPixelSize() == context.getLayerViewPanel().getWidth())) {
+            image = image(viewPanel);        	
+        }
+        else {
+        	LayerPrinter2 layerPrinter = new LayerPrinter2();
+ 			if (fenceFound)
+			{
+ 				envelope = fence.getEnvelopeInternal(); 		            
+ 				Layer fenceLayer = workbenchContext.getLayerNamePanel().getLayerManager().getLayer("Fence");
+				fenceLayer.setVisible(false);
+			}
+			else {
+				envelope = workbenchContext.getLayerViewPanel().getViewport().getEnvelopeInModelCoordinates();
+			}
+			image = layerPrinter.print(workbenchContext.getLayerManager().getLayers(), envelope, getPixelSize());
+        	viewPanel = layerPrinter.getLayerViewPanel();
+        }
         String filename = addExtension(getFileChooser().getSelectedFile()
                 .getPath(), fileFilter.getFormat());
         File imageFile = new File(filename);
@@ -130,7 +197,8 @@ public class SaveImageAsPlugIn extends ExportImagePlugIn {
         PersistentBlackboardPlugIn.get(workbenchContext)
                 .put(LAST_FILENAME_KEY, filename);
         if ((worldFileCheckBox != null) && (worldFileCheckBox.isSelected()))
-        	WorldFileWriter.writeWorldFile( imageFile,  context.getLayerViewPanel() );
+        	WorldFileWriter.writeWorldFile( imageFile,  viewPanel );
+        fileChooser = null; //rebuild next invocation
         return true;
     }
 
