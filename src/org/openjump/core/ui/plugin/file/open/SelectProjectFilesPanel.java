@@ -26,6 +26,7 @@
  ******************************************************************************/
 package org.openjump.core.ui.plugin.file.open;
 
+import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.LinkedHashSet;
@@ -58,8 +59,9 @@ public class SelectProjectFilesPanel extends JFileChooser implements WizardPanel
   private Set<InputChangedListener> listeners = new LinkedHashSet<InputChangedListener>();
 
   private Blackboard blackboard;
+  private ActionListener dialogActionListener;
 
-  public SelectProjectFilesPanel(final WorkbenchContext context, final WizardDialog dialog) {
+  public SelectProjectFilesPanel(final WorkbenchContext context) {
     setDialogType(JFileChooser.OPEN_DIALOG);
     setFileSelectionMode(JFileChooser.FILES_ONLY);
     setMultiSelectionEnabled(true);
@@ -75,9 +77,14 @@ public class SelectProjectFilesPanel extends JFileChooser implements WizardPanel
         fireInputChanged();
       }
     });
-    addActionListener(new InvokeMethodActionListener(dialog, "next"));
   }
 
+  public void setDialog(WizardDialog dialog) {
+    removeActionListener(dialogActionListener);
+    dialogActionListener = new InvokeMethodActionListener(dialog, "next");
+    addActionListener(dialogActionListener);
+    
+  }
   public void enteredFromLeft(final Map dataMap) {
     rescanCurrentDirectory();
   }

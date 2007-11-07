@@ -79,9 +79,8 @@ public class SelectFileLoaderPanel extends JPanel implements WizardPanel {
 
   private OpenFileWizardState state;
 
-  public SelectFileLoaderPanel(final OpenFileWizardState state) {
+  public SelectFileLoaderPanel() {
     super(new BorderLayout());
-    this.state = state;
     JPanel scrollPanel = new JPanel(new BorderLayout());
 
     mainPanel = new JPanel();
@@ -90,7 +89,14 @@ public class SelectFileLoaderPanel extends JPanel implements WizardPanel {
     scrollPanel.add(mainPanel, BorderLayout.NORTH);
     JScrollPane scrollPane = new JScrollPane(scrollPanel);
     add(scrollPane, BorderLayout.CENTER);
+  }
 
+  public OpenFileWizardState getState() {
+    return state;
+  }
+
+  public void setState(OpenFileWizardState state) {
+    this.state = state;
   }
 
   private void addFiles(final String extension, final Set<URI> files,

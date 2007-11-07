@@ -78,10 +78,26 @@ public class SelectFilesPanel extends JFileChooser implements WizardPanel {
 
   private WizardDialog dialog;
 
-  public SelectFilesPanel(final WorkbenchContext workbenchContext,
-    final WizardDialog dialog, final OpenFileWizardState state) {
-    this.state = state;
+  public SelectFilesPanel(final WorkbenchContext workbenchContext) {
     this.workbenchContext = workbenchContext;
+  }
+
+  public OpenFileWizardState getState() {
+    return state;
+  }
+
+  public void setState(OpenFileWizardState state) {
+    this.state = state;
+    for (FileFilter filter : getChoosableFileFilters()) {
+      removeChoosableFileFilter(filter);
+    }
+  }
+
+  public WizardDialog getDialog() {
+    return dialog;
+  }
+
+  public void setDialog(WizardDialog dialog) {
     this.dialog = dialog;
   }
 
@@ -133,7 +149,7 @@ public class SelectFilesPanel extends JFileChooser implements WizardPanel {
         fireInputChanged();
       }
     });
-    
+
     addActionListener(new InvokeMethodActionListener(dialog, "next"));
   }
 

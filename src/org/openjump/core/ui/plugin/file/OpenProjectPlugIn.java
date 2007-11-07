@@ -47,6 +47,8 @@ public class OpenProjectPlugIn extends AbstractWizardPlugin {
 
   private File[] files;
 
+  private OpenProjectWizard wizard;
+
   public OpenProjectPlugIn() {
     super(IconLoader.icon("folder_layout_add.png"));
   }
@@ -59,15 +61,11 @@ public class OpenProjectPlugIn extends AbstractWizardPlugin {
     };
     this.enableCheck = new BooleanPropertyEnableCheck(file, "exists", true,
       FILE_DOES_NOT_EXIST + ": " + file.getAbsolutePath());
-    OpenProjectWizard wizard = new OpenProjectWizard(workbenchContext, files);
-    setWizard(wizard);
   }
 
   public OpenProjectPlugIn(WorkbenchContext workbenchContext, File[] files) {
     this.workbenchContext = workbenchContext;
     this.files = files;
-    OpenProjectWizard wizard = new OpenProjectWizard(workbenchContext, files);
-    setWizard(wizard);
   }
 
   public void initialize(PlugInContext context) throws Exception {
@@ -79,8 +77,18 @@ public class OpenProjectPlugIn extends AbstractWizardPlugin {
       MenuNames.FILE
     }, this, 3);
 
-    OpenProjectWizard wizard = new OpenProjectWizard(workbenchContext);
+    wizard = new OpenProjectWizard(workbenchContext);
     setWizard(wizard);
     OpenWizardPlugIn.addWizard(workbenchContext, wizard);
+  }
+
+  @Override
+  public boolean execute(PlugInContext context) throws Exception {
+    if (wizard == null) {
+      wizard = new OpenProjectWizard(workbenchContext, files);
+      setWizard(wizard);
+    }
+    // TODO Auto-generated method stub
+    return super.execute(context);
   }
 }

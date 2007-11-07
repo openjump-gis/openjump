@@ -1,4 +1,9 @@
- 2007-11-06 beckerl <becker.larry@gmail.com>
+ 2007-11-06 Paul Austin <paul.austin@revolsys.com
+  * Improved speed of the Open Wizard Plug-in. Added support to remember last 
+    panel used in the current session. Added the switching between types as a
+    side bar.
+
+2007-11-06 beckerl <becker.larry@gmail.com>
           * Fixed File->Save View as Raster bug with the Metal L&F that caused
             the save file name text box to dissappear.  Moved the Save World File
             check box to the top of the dialog.  Also added an X edit box that

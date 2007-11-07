@@ -67,7 +67,7 @@ import com.vividsolutions.jump.workbench.ui.InputChangedListener;
 
 public class WizardDialog extends JDialog implements WizardContext,
   InputChangedListener {
-  private ArrayList completedWizardPanels;
+  private List<WizardPanel> completedWizardPanels = new ArrayList<WizardPanel>();
 
   private JButton cancelButton = new JButton();
 
@@ -83,7 +83,7 @@ public class WizardDialog extends JDialog implements WizardContext,
 
   private WizardPanel currentWizardPanel;
 
-  private List allWizardPanels;
+  private List<WizardPanel> allWizardPanels = new ArrayList<WizardPanel>();
 
   private ErrorHandler errorHandler;
 
@@ -140,10 +140,11 @@ public class WizardDialog extends JDialog implements WizardContext,
     instructionTextArea.setText(currentWizardPanel.getInstructions());
   }
 
-  public void setCurrentWizardPanel(String id) {
+  public WizardPanel setCurrentWizardPanel(String id) {
     WizardPanel panel = find(id);
     panel.enteredFromLeft(dataMap);
     setCurrentWizardPanel(panel);
+    return panel;
   }
 
   private WizardPanel getCurrentWizardPanel() {
@@ -166,16 +167,26 @@ public class WizardDialog extends JDialog implements WizardContext,
    *          is displayed
    */
   public void init(WizardPanel[] wizardPanels) {
-    allWizardPanels = Arrays.asList(wizardPanels);
+    List<WizardPanel> panels = Arrays.asList(wizardPanels);
+    init(panels);
+  }
+
+  protected void setPanels(List<WizardPanel> wizardPanels) {
+    allWizardPanels.clear();
+    allWizardPanels.addAll(wizardPanels);
+    completedWizardPanels.clear();
     checkIDs(allWizardPanels);
 
-    for (int i = 0; i < wizardPanels.length; i++) {
-      centerPanel.add((Component)wizardPanels[i], wizardPanels[i].getID());
+    for (WizardPanel wizardPanel : wizardPanels) {
+      centerPanel.add((Component)wizardPanel, wizardPanel.getID());
     }
+  }
 
-    completedWizardPanels = new ArrayList();
-    wizardPanels[0].enteredFromLeft(dataMap);
-    setCurrentWizardPanel(wizardPanels[0]);
+  public void init(List<WizardPanel> wizardPanels) {
+    setPanels(wizardPanels);
+    WizardPanel firstPanel = wizardPanels.get(0);
+    firstPanel.enteredFromLeft(dataMap);
+    setCurrentWizardPanel(firstPanel);
     pack();
   }
 

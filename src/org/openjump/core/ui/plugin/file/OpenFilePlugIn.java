@@ -54,7 +54,7 @@ public class OpenFilePlugIn extends AbstractWizardPlugin {
    * Construct the main Open File plug-in.
    */
   public OpenFilePlugIn() {
-    super(IconLoader.icon("folder_add.png"));
+    super(IconLoader.icon("folder_page.png"));
   }
 
   /**
@@ -71,13 +71,13 @@ public class OpenFilePlugIn extends AbstractWizardPlugin {
     };
     this.enableCheck = new BooleanPropertyEnableCheck(file, "exists", true,
       FILE_DOES_NOT_EXIST + ": " + file.getAbsolutePath());
-    OpenFileWizard openFileWizard = new OpenFileWizard(files);
+    OpenFileWizard openFileWizard = new OpenFileWizard(workbenchContext, files);
     setWizard(openFileWizard);
   }
 
   public OpenFilePlugIn(WorkbenchContext workbenchContext, File[] files) {
     setWorkbenchContext(workbenchContext);
-    OpenFileWizard openFileWizard = new OpenFileWizard(files);
+    OpenFileWizard openFileWizard = new OpenFileWizard(workbenchContext, files);
     setWizard(openFileWizard);
   }
 
@@ -98,7 +98,7 @@ public class OpenFilePlugIn extends AbstractWizardPlugin {
     }, this, 2);
 
     // Register the Open File Wizard
-    OpenFileWizard openFileWizard = new OpenFileWizard();
+    OpenFileWizard openFileWizard = new OpenFileWizard(workbenchContext);
     setWizard(openFileWizard);
     OpenWizardPlugIn.addWizard(workbenchContext, openFileWizard);
   }

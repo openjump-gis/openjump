@@ -60,18 +60,23 @@ public class OpenProjectWizard extends AbstractWizardGroup {
     super(I18N.get(KEY), IconLoader.icon("Open.gif"),
       SelectProjectFilesPanel.KEY);
     this.workbenchContext = workbenchContext;
+    initPanels(workbenchContext);
   }
 
   public OpenProjectWizard(final WorkbenchContext workbenchContext,
     final File[] files) {
     this.workbenchContext = workbenchContext;
     this.files = files;
+    initPanels(workbenchContext);
+  }
+
+  private void initPanels(final WorkbenchContext workbenchContext) {
+    selectProjectPanel = new SelectProjectFilesPanel(workbenchContext);
+    addPanel(selectProjectPanel);
   }
 
   public void initialize(WorkbenchContext workbenchContext, WizardDialog dialog) {
-    removeAllPanels();
-    selectProjectPanel = new SelectProjectFilesPanel(workbenchContext, dialog);
-    addPanel(selectProjectPanel);
+    selectProjectPanel.setDialog(dialog);
   }
 
   /**

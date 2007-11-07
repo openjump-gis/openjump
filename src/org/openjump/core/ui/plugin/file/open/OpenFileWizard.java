@@ -8,21 +8,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import javax.swing.JInternalFrame;
-
 import org.openjump.core.ui.io.file.FileLayerLoader;
 import org.openjump.core.ui.plugin.file.OpenRecentPlugIn;
 import org.openjump.core.ui.swing.wizard.AbstractWizardGroup;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.task.TaskMonitor;
-import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.registry.Registry;
-import com.vividsolutions.jump.workbench.ui.TaskFrame;
-import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
+import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
 
 public class OpenFileWizard extends AbstractWizardGroup {
   /** The key for the wizard. */
@@ -38,36 +34,65 @@ public class OpenFileWizard extends AbstractWizardGroup {
 
   private ChooseProjectPanel chooseProjectPanel;
 
+  private SelectFilesPanel selectFilesPanel;
+
+  private SelectFileLoaderPanel selectFileLoaderPanel;
+
+  private SelectFileOptionsPanel selectFileOptionsPanel;
+
   /**
    * Construct a new OpenFileWizard.
    * 
    * @param workbenchContext The workbench context.
    */
-  public OpenFileWizard() {
+  public OpenFileWizard(final WorkbenchContext workbenchContext) {
     super(I18N.get(KEY), IconLoader.icon("Open.gif"), SelectFilesPanel.KEY);
+    initPanels(workbenchContext);
   }
 
-  public OpenFileWizard(final File[] files) {
+  public OpenFileWizard(final WorkbenchContext workbenchContext,
+    final File[] files) {
     this.files = files;
   }
 
-  public void initialize(final WorkbenchContext workbenchContext, WizardDialog dialog) {
+  public void initialize(final WorkbenchContext workbenchContext,
+    WizardDialog dialog) {
     this.workbenchContext = workbenchContext;
+    initPanels(workbenchContext);
     state = new OpenFileWizardState(workbenchContext.getErrorHandler());
     Registry registry = workbenchContext.getRegistry();
     List<FileLayerLoader> loaders = registry.getEntries(FileLayerLoader.KEY);
     for (FileLayerLoader fileLayerLoader : loaders) {
       state.addFileLoader(fileLayerLoader);
     }
-    removeAllPanels();
-    chooseProjectPanel = new ChooseProjectPanel(workbenchContext,
-      SelectFilesPanel.KEY);
-    addPanel(chooseProjectPanel);
-    addPanel(new SelectFilesPanel(workbenchContext, dialog,state));
-    addPanel(new SelectFileLoaderPanel(state));
-    addPanel(new SelectFileOptionsPanel(workbenchContext, state));
+    if (selectFilesPanel != null) {
+      selectFilesPanel.setState(state);
+      selectFilesPanel.setDialog(dialog);
+    }
+    selectFileLoaderPanel.setState(state);
+    selectFileOptionsPanel.setState(state);
     if (files != null) {
       state.setupFileLoaders(files, null);
+    }
+  }
+
+  private void initPanels(final WorkbenchContext workbenchContext) {
+    if (selectFileLoaderPanel == null) {
+      if (files == null) {
+        chooseProjectPanel = new ChooseProjectPanel(workbenchContext,
+          SelectFilesPanel.KEY);
+        addPanel(chooseProjectPanel);
+        selectFilesPanel = new SelectFilesPanel(workbenchContext);
+        addPanel(selectFilesPanel);
+      } else {
+        chooseProjectPanel = new ChooseProjectPanel(workbenchContext,
+          SelectFileLoaderPanel.KEY);
+        addPanel(chooseProjectPanel);
+      }
+      selectFileLoaderPanel = new SelectFileLoaderPanel();
+      addPanel(selectFileLoaderPanel);
+      selectFileOptionsPanel = new SelectFileOptionsPanel(workbenchContext);
+      addPanel(selectFileOptionsPanel);
     }
   }
 
@@ -86,7 +111,7 @@ public class OpenFileWizard extends AbstractWizardGroup {
       return firstId;
     }
   }
-
+ 
   /**
    * Load the files selected in the wizard.
    * 

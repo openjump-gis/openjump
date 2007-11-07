@@ -56,7 +56,7 @@ public class AbstractWizardPlugin extends AbstractThreadedUiPlugIn {
       return true;
     }
 
-    dialog.init(panels.toArray(new WizardPanel[panels.size()]));
+    dialog.init(panels);
     dialog.setCurrentWizardPanel(firstId);
     dialog.pack();
     dialog.setVisible(true);

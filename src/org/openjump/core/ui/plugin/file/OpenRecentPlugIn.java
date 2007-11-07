@@ -95,7 +95,7 @@ public class OpenRecentPlugIn extends AbstractUiPlugIn {
     InvokeMethodPropertyChangeListener listener = new InvokeMethodPropertyChangeListener(
       this, "updateFileAndProjectMenu", new Object[] {
         recentMenu
-      });
+      }, true);
     addPropertyChangeListener(listener);
     updateFileAndProjectMenu(recentMenu);
   }

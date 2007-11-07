@@ -81,11 +81,9 @@ public class SelectFileOptionsPanel extends JPanel implements WizardPanel {
 
   private WorkbenchContext workbenchContext;
 
-  public SelectFileOptionsPanel(WorkbenchContext workbenchContext,
-    OpenFileWizardState state) {
+  public SelectFileOptionsPanel(WorkbenchContext workbenchContext) {
     super(new BorderLayout());
     this.workbenchContext = workbenchContext;
-    this.state = state;
     JPanel scrollPanel = new JPanel(new BorderLayout());
 
     mainPanel = new JPanel();
@@ -94,6 +92,14 @@ public class SelectFileOptionsPanel extends JPanel implements WizardPanel {
     scrollPanel.add(mainPanel, BorderLayout.NORTH);
     JScrollPane scrollPane = new JScrollPane(scrollPanel);
     add(scrollPane, BorderLayout.CENTER);
+  }
+
+  public OpenFileWizardState getState() {
+    return state;
+  }
+
+  public void setState(OpenFileWizardState state) {
+    this.state = state;
   }
 
   public void enteredFromLeft(Map dataMap) {

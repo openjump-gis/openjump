@@ -1,14 +1,14 @@
 package org.openjump.core.ui.plugin.file;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.Icon;
 
 import org.openjump.core.ui.images.IconLoader;
 import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
-import org.openjump.core.ui.plugin.file.open.OpenDataTypePanel;
+import org.openjump.core.ui.plugin.file.open.OpenProjectWizard;
 import org.openjump.core.ui.swing.wizard.WizardGroup;
+import org.openjump.core.ui.swing.wizard.WizardGroupDialog;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.task.TaskMonitor;
@@ -20,19 +20,17 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.WorkbenchToolBar;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
-import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
-import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
 
 public class OpenWizardPlugIn extends AbstractThreadedUiPlugIn {
 
   private static final String KEY = OpenWizardPlugIn.class.getName();
 
-  private OpenDataTypePanel openDataTypePanel;
+  private WizardGroupDialog dialog;
 
-  private WizardDialog dialog;
+  private WizardGroup lastWizard;
 
   public OpenWizardPlugIn() {
-    super(I18N.get(KEY), IconLoader.icon("folder.png"));
+    super(I18N.get(KEY), IconLoader.icon("folder_add.png"));
   }
 
   public static void addWizard(final WorkbenchContext workbenchContext,
@@ -59,30 +57,31 @@ public class OpenWizardPlugIn extends AbstractThreadedUiPlugIn {
     toolBar.addPlugIn(1, this, icon, enableCheck, workbenchContext);
 
     // Add layer pop-up menu
-    featureInstaller.addPopupMenuItem(frame.getCategoryPopupMenu(), this, name +"{pos:3}",
-      false, icon, enableCheck);
+    featureInstaller.addPopupMenuItem(frame.getCategoryPopupMenu(), this, name
+      + "{pos:3}", false, icon, enableCheck);
   }
 
   public boolean execute(PlugInContext context) throws Exception {
     Registry registry = workbenchContext.getRegistry();
 
-    dialog = new WizardDialog(context.getWorkbenchFrame(), getName(),
-      context.getErrorHandler());
-    List<WizardPanel> panels = new ArrayList<WizardPanel>();
+    WorkbenchFrame workbenchFrame = context.getWorkbenchFrame();
+    String name = getName();
+    if (dialog == null) {
+      dialog = new WizardGroupDialog(workbenchContext, workbenchFrame, name);
 
-    List<WizardGroup> wizards = registry.getEntries(KEY);
-    for (WizardGroup wizardGroup : wizards) {
-      wizardGroup.initialize(workbenchContext, dialog);
-      panels.addAll(wizardGroup.getPanels());
-      
+      List<WizardGroup> wizards = registry.getEntries(KEY);
+      lastWizard = wizards.get(0);
+      for (WizardGroup wizard : wizards) {
+        dialog.addWizard(wizard);
+        if (wizard instanceof OpenProjectWizard) {
+          lastWizard = wizard;
+        }
+      }
+
     }
-
-    openDataTypePanel = new OpenDataTypePanel(workbenchContext, dialog, wizards);
-    panels.add(0, openDataTypePanel);
-
-    dialog.init(panels.toArray(new WizardPanel[panels.size()]));
-    dialog.pack();
+    dialog.setSelectedWizard(lastWizard);
     dialog.setVisible(true);
+    lastWizard = dialog.getSelectedWizard();
     if (dialog.wasFinishPressed()) {
       return true;
     }
@@ -90,7 +89,7 @@ public class OpenWizardPlugIn extends AbstractThreadedUiPlugIn {
   }
 
   public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
-    WizardGroup wizard = openDataTypePanel.getSlectedWizardGroup();
+    WizardGroup wizard = dialog.getSelectedWizard();
     wizard.run(dialog, monitor);
   }
 }
