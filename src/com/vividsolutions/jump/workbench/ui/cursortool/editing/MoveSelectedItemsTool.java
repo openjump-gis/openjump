@@ -38,6 +38,8 @@ import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Point2D;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -45,6 +47,10 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
+
+import org.openjump.core.geomutils.GeoUtils;
+import org.openjump.core.geomutils.MathVector;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateFilter;
@@ -64,6 +70,11 @@ public class MoveSelectedItemsTool extends DragTool {
     private Shape selectedFeaturesShape;
     private GeometryFactory geometryFactory = new GeometryFactory();
     private List verticesToSnap = null;
+    private Coordinate centerCoord = null;
+    protected boolean clockwise = true;
+    private double fullAngle = 0.0;
+    private boolean shiftDown = false;
+    private Cursor rotateCursor = createCursor(IconLoader.icon("RotateSelCursor.gif").getImage());;
 
     public MoveSelectedItemsTool(EnableCheckFactory checkFactory) {
         this.checkFactory = checkFactory;
@@ -97,7 +108,10 @@ public class MoveSelectedItemsTool extends DragTool {
             public Geometry edit(Geometry geometryWithSelectedItems, Collection selectedItems) {
                 for (Iterator j = selectedItems.iterator(); j.hasNext();) {
                     Geometry item = (Geometry) j.next();
-                    move(item, displacement);
+                    if (shiftDown)
+                        rotate(item);
+                    else
+                    	move(item, displacement);
                 }
 
                 return geometryWithSelectedItems;
@@ -115,13 +129,38 @@ public class MoveSelectedItemsTool extends DragTool {
     }
 
     public Cursor getCursor() {
-        return Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR);
+       	if (shiftDown)
+    		return rotateCursor;
+    	else
+    		return Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR);
     }
 
     public Icon getIcon() {
         return IconLoader.icon("Move.gif");
     }
-
+    
+    private void rotate(Geometry geometry) {
+        geometry.apply(new CoordinateFilter() {
+            public void filter(Coordinate coordinate) {
+                double cosAngle = Math.cos(fullAngle);
+                double sinAngle = Math.sin(fullAngle);
+                double x = coordinate.x - centerCoord.x;
+                double y = coordinate.y - centerCoord.y;
+                coordinate.x = centerCoord.x + (x*cosAngle) + (y*sinAngle);
+                coordinate.y = centerCoord.y + (y*cosAngle) - (x*sinAngle);
+              }
+        });
+    }
+    
+    public void mouseMoved(MouseEvent e)
+    {
+    	boolean shiftWasDown = shiftDown;
+    	shiftDown = e.isShiftDown();
+    	if (shiftWasDown != shiftDown)
+    		getPanel().setCursor(getCursor());
+    	super.mouseMoved(e);
+    }
+    
     public void mousePressed(MouseEvent e) {
         try {
             if (!check(checkFactory.createAtLeastNItemsMustBeSelectedCheck(1))) {
@@ -133,6 +172,7 @@ public class MoveSelectedItemsTool extends DragTool {
             }
 
             verticesToSnap = null;
+            centerCoord = null;
             selectedFeaturesShape = createSelectedItemsShape();
             super.mousePressed(e);
         } catch (Throwable t) {
@@ -179,16 +219,64 @@ public class MoveSelectedItemsTool extends DragTool {
             geometryFactory.createGeometryCollection(
                 (Geometry[]) itemsToRender.toArray(new Geometry[] {}));
 
+        if (centerCoord == null) {
+        	centerCoord = gc.getCentroid().getCoordinate(); 
+        }
         return getPanel().getJava2DConverter().toShape(gc);
     }
 
     protected Shape getShape() throws Exception {
-        AffineTransform transform = new AffineTransform();
-        transform.translate(
-            getViewDestination().getX() - getViewSource().getX(),
-            getViewDestination().getY() - getViewSource().getY());
+        if (shiftDown) {
+            AffineTransform transform = new AffineTransform();
+            Point2D centerPt = getPanel().getViewport().toViewPoint(new Point2D.Double(centerCoord.x, centerCoord.y));
+            Point2D initialPt = getViewSource();
+            Point2D currPt = getViewDestination();
+            MathVector center = new MathVector(centerPt.getX(), centerPt.getY());
+            MathVector initial = new MathVector(initialPt.getX(), initialPt.getY());
+            MathVector curr = new MathVector(currPt.getX(), currPt.getY());
+            MathVector initVec = initial.vectorBetween(center);
+            MathVector currVec = curr.vectorBetween(center);
+            double arcAngle = initVec.angleRad(currVec);
+            Coordinate initialCoord = getPanel().getViewport().toModelCoordinate(initialPt);
+            Coordinate currCoord = getPanel().getViewport().toModelCoordinate(currPt);
+            
+            boolean toRight = (GeoUtils.pointToRight(currCoord, centerCoord, initialCoord));      
+            boolean cwQuad = ((fullAngle >= 0.0) &&(fullAngle <= 90.0) && clockwise);
+            boolean ccwQuad = ((fullAngle < 0.0) &&(fullAngle >= -90.0) && !clockwise);
+            
+            if ((arcAngle <= 90.0) && (cwQuad || ccwQuad))
+            {
+                if (toRight)
+                    clockwise = true;
+                else
+                    clockwise = false;
+            }
 
-        return transform.createTransformedShape(selectedFeaturesShape);
+            if ((fullAngle > 90.0) || (fullAngle < -90))
+            {
+                if ((clockwise && !toRight) || (!clockwise && toRight))
+                    fullAngle = 360 - arcAngle;
+                else
+                    fullAngle = arcAngle;
+            }
+            else
+            {
+                fullAngle = arcAngle;
+            }
+            
+            if (!clockwise)
+                fullAngle = -fullAngle;
+
+             transform.rotate(fullAngle, centerPt.getX(), centerPt.getY());
+            return transform.createTransformedShape(selectedFeaturesShape);       	
+        } else {
+	        AffineTransform transform = new AffineTransform();
+	        transform.translate(
+	            getViewDestination().getX() - getViewSource().getX(),
+	            getViewDestination().getY() - getViewSource().getY());
+	
+	        return transform.createTransformedShape(selectedFeaturesShape);
+        }
     }
 
     protected void setModelDestination(Coordinate modelDestination) {
