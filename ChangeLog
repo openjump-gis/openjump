@@ -1,4 +1,12 @@
- 2007-11-07 beckerl <becker.larry@gmail.com>
+2007-11-08 beckerl <becker.larry@gmail.com>
+           * Added a Paste Items At Point menu item on the layer view context
+             menu that pastes the clipboard at the right-clicked point.  Note 
+             that there must be an editable layer highlighted.  No I18n entries yet.
+             org.openjump.core.ui.plugin.mousemenu.PasteItemsAtPlugIn.java
+             com.vividsolutions.jump.workbench.JUMPConfiguration.java
+
+ 
+2007-11-07 beckerl <becker.larry@gmail.com>
            * Added a shift key mode to Move Selected Items cursor tool that 
              turns it into Rotate Selected Items.
              com.vividsolutions.jump.workbench.ui.cursortool.editing.MoveSelectedItemsTool.java
