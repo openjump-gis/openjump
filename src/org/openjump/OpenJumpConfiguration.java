@@ -50,6 +50,7 @@ import org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn;
 import org.openjump.core.ui.plugin.layer.ToggleVisiblityPlugIn;
 import org.openjump.core.ui.plugin.mousemenu.EditSelectedSidePlugIn;
 import org.openjump.core.ui.plugin.mousemenu.MoveAlongAnglePlugIn;
+import org.openjump.core.ui.plugin.mousemenu.PasteItemsAtPlugIn;
 import org.openjump.core.ui.plugin.mousemenu.RotatePlugIn;
 import org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn;
 import org.openjump.core.ui.plugin.mousemenu.SelectLayersWithSelectedItemsPlugIn;
@@ -411,6 +412,11 @@ public class OpenJumpConfiguration {
     ChangeLayerableNamePlugIn changeLayerableNamePlugIn = new ChangeLayerableNamePlugIn();
     changeLayerableNamePlugIn.initialize(new PlugInContext(workbenchContext,
       null, null, null, null));
+    
+    PasteItemsAtPlugIn pasteItemsAtPlugIn = new PasteItemsAtPlugIn();
+    pasteItemsAtPlugIn.initialize(new PlugInContext(workbenchContext,
+      null, null, null, null));
+
 
     /***************************************************************************
      * EDITing toolbox
