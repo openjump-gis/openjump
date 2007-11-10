@@ -219,11 +219,18 @@ public class PasteItemsPlugIn extends AbstractPlugIn {
           }
 
           try {
+        	//-- old stuff [sstein]
+        	 String value = (String)transferable.getTransferData(DataFlavor.stringFlavor);
+        	 if (transferable.isDataFlavorSupported(DataFlavor.stringFlavor)
+        	 && (isWKT(value) || isCoordinates(value))) {
+        	 return null;
+        	/* ---- new stuff by Paul that creates bug with linestrings ---
             if (transferable.isDataFlavorSupported(DataFlavor.stringFlavor)) {
               String value = (String)transferable.getTransferData(DataFlavor.stringFlavor);
               if (isWKT(value) || isCoordinates(value)) {
                 return null;
               }
+              */
             }
           } catch (Exception e) {
             workbenchContext.getErrorHandler().handleThrowable(e);
