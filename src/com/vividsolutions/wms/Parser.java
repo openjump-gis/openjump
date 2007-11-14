@@ -286,9 +286,9 @@ public class Parser {
       try {
           DOMParser parser = new DOMParser();
           parser.setFeature( "http://xml.org/sax/features/validation", false );
+          parser.setFeature( "http://apache.org/xml/features/nonvalidating/load-external-dtd", false );
           //was throwing java.io.UTFDataFormatException: Invalid byte 2 of 3-byte UTF-8 sequence.
 //          parser.parse( new InputSource( inStream ) );
-          
           InputStreamReader ireader = new InputStreamReader( inStream );
           
           parser.parse( new InputSource( ireader ) );

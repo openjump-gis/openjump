@@ -1,3 +1,8 @@
+2007-11-14 Andreas Schmitz <schmitz@lat-lon.de>
+      src/com/vividsolutions/wms/Parser.java:
+      External DTDs are not loaded automatically anymore for WMS, this
+      enables offline working with local WMSs.
+      
 2007-11-08 beckerl <becker.larry@gmail.com>
            * Added a Paste Items At Point menu item on the layer view context
              menu that pastes the clipboard at the right-clicked point.  Note 
