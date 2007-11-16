@@ -158,7 +158,7 @@ public class JoinAttributes {
 	 * @param oldSchema
 	 * @return
 	 */
-	private static FeatureSchema copyFeatureSchema(FeatureSchema oldSchema){
+	public static FeatureSchema copyFeatureSchema(FeatureSchema oldSchema){
 		FeatureSchema fs = new FeatureSchema();
 		for (int i = 0; i < oldSchema.getAttributeCount(); i++) {
 			AttributeType at = oldSchema.getAttributeType(i);
@@ -175,7 +175,7 @@ public class JoinAttributes {
 	 * @param oldSchema
 	 * @return Feature
 	 */
-	private static Feature copyFeature(Feature feature, FeatureSchema newSchema){
+	public static Feature copyFeature(Feature feature, FeatureSchema newSchema){
 		FeatureSchema oldSchema = feature.getSchema();
 		Feature newF = new BasicFeature(newSchema);
 		int n = 0;
