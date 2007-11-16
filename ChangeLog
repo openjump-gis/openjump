@@ -1,3 +1,9 @@
+2007-11-16 sstein <sstein@geo.unizh.ch>
+      src/org.openjump.core.spatialAttributeOps/AttributeOp.java:
+      added lib: jmatharray-20070905.jar
+      removed lib: jmath5m.jar
+      Updated to newer version of jmatharray library which works on double[][].
+      
 2007-11-14 Andreas Schmitz <schmitz@lat-lon.de>
       src/com/vividsolutions/wms/Parser.java:
       External DTDs are not loaded automatically anymore for WMS, this

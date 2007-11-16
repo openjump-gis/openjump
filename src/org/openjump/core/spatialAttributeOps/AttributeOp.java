@@ -42,9 +42,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.jmat.MatlabSyntax;
-import org.jmat.data.AbstractMatrix;
-import org.jmat.data.Matrix;
+import org.math.array.DoubleArray;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jump.feature.AttributeType;
@@ -112,26 +110,31 @@ public class AttributeOp {
                 boolean doEval = true; 
                 AttributeType at = fs.getAttributeType(attributeName);
 		        int n = features.size();
-		        Matrix mat = MatlabSyntax.zeros(n,1);
+		        double[] vals = org.math.array.StatisticSample.fill(n,0);
+		        //Matrix mat = MatlabSyntax.zeros(n,1);
 		        int count=0;
 		        for (Iterator iter = features.iterator(); iter.hasNext();) {
 		            Feature f = (Feature) iter.next();
 		            if (at == AttributeType.DOUBLE){
 		                Double val = (Double)f.getAttribute(attributeName);
-		                mat.set(count,0, val.doubleValue());
+		                //mat.set(count,0, val.doubleValue());
+		                vals[count] = val.doubleValue();
 		            }
 		            else if(at == AttributeType.INTEGER){
 		                Integer val = (Integer)f.getAttribute(attributeName);
-		                mat.set(count,0, val.doubleValue());		                
+		                //mat.set(count,0, val.doubleValue());	
+		                vals[count] = val.doubleValue();
 		            }
 		            else if(at == AttributeType.GEOMETRY){
 		                //-- simply set to one for count 
 		                Geometry geom = (Geometry)f.getAttribute(attributeName);
 		                if (geom != null){
-		                    mat.set(count,0, 1);
+		                    //mat.set(count,0, 1);
+		                    vals[count] = 1;
 		                }
 		                else{
-		                    mat.set(count,0, 0);
+		                    //mat.set(count,0, 0);
+		                    vals[count] = 0;
 		                }
 		            }		            
 		            else{
@@ -142,38 +145,34 @@ public class AttributeOp {
 		        }
 		        if(doEval){
 		            if (attributeOp == AttributeOp.MAJORITY){
-		            	result = majorityEval(mat);
+		            	result = majorityEval(vals);
 		            }
 		            else if(attributeOp == AttributeOp.MINORITY){
-		            	result = minorityEval(mat); 
+		            	result = minorityEval(vals); 
 		            }		            
 		            else if(attributeOp == AttributeOp.MAX){
-		                AbstractMatrix max = mat.max();
-		            	result = max.get(0,0); 
+		            	result = org.math.array.DoubleArray.max(vals);
+		  
 		            }
 		            else if(attributeOp == AttributeOp.MIN){
-		                AbstractMatrix min = mat.min();
-		            	result = min.get(0,0); 
+		            	result = org.math.array.DoubleArray.min(vals);
 		            }
 		            else if(attributeOp == AttributeOp.MEAN){
-		                AbstractMatrix mean = mat.mean();
-		            	result = mean.get(0,0); 
+		            	result = org.math.array.StatisticSample.mean(vals); 
 		            }
 		            else if(attributeOp == AttributeOp.STD){
-		                AbstractMatrix var = mat.variance();
-		            	result = Math.sqrt(var.get(0,0)); 
+		            	result = org.math.array.StatisticSample.stddeviation(vals);
 		            }		            
 		            else if(attributeOp == AttributeOp.MEDIAN){
-		        	    Matrix sortmat = MatlabSyntax.sort_Y(mat);
-		        	    int index = (int)Math.ceil(mat.getRowDimension()/2.0);	                
-		            	result = mat.get(index-1,0); 
+		        	    double[] sortvals = DoubleArray.sort(vals);
+		        	    int index = (int)Math.ceil(vals.length/2.0);	                
+		            	result = vals[index-1]; 
 		            }
 		            else if(attributeOp == AttributeOp.SUM){
-		                AbstractMatrix sum = mat.sum();
-		            	result = sum.get(0,0); 
+		            	result = DoubleArray.sum(vals); 
 		            }
 		            else if(attributeOp == AttributeOp.COUNT){
-		            	result = (double) mat.getRowDimension(); 
+		            	result = (double)vals.length; 
 		            }		            		            
 		            else{
 		                System.out.println("AttributeOp: attribute operation not supported");
@@ -192,14 +191,13 @@ public class AttributeOp {
         return result;
     }
     
-    private static double majorityEval(Matrix mat){
+    private static double majorityEval(double[] values){
         double result=0;
         //-- built list of all values
         ArrayList vals = new ArrayList();
-        for(int i=0; i < mat.getRowDimension(); i++){
-            for(int j=0; j < mat.getColumnDimension(); j++){
-                double val = mat.get(i,j);
-                if( (i==0) && (j==0)){
+        for(int i=0; i < values.length; i++){
+                double val = values[i];
+                if(i==0){
                     //-- add first value
                     vals.add(new Double(val));
                 }
@@ -222,7 +220,6 @@ public class AttributeOp {
 	                    vals.add(new Double(val));
 	                }	                
                 }                
-            }
         }
         //-- count number of values
         int[] countVals = new int[vals.size()];
@@ -230,9 +227,8 @@ public class AttributeOp {
         for (int i = 0; i < countVals.length; i++) {
             countVals[i]=0;
         }
-        for(int i=0; i < mat.getRowDimension(); i++){
-            for(int j=0; j < mat.getColumnDimension(); j++){
-                double val = mat.get(i,j);
+        for(int i=0; i < values.length; i++){
+                double val = values[i];
                 boolean stop = false; int count =0;
                 while(stop == false){
                     Double d = (Double)vals.get(count);
@@ -248,7 +244,6 @@ public class AttributeOp {
                         stop = true;
                     }
                 }
-            }
         }
 //        if (mat.getRowDimension() > 15){
 //            String s= "Stop here for debugging"; 
@@ -267,14 +262,13 @@ public class AttributeOp {
         return result;
     }
 
-    private static double minorityEval(Matrix mat){
+    private static double minorityEval(double[] values){
         double result=0;
         //-- built list of all values
         ArrayList vals = new ArrayList();
-        for(int i=0; i < mat.getRowDimension(); i++){
-            for(int j=0; j < mat.getColumnDimension(); j++){
-                double val = mat.get(i,j);
-                if( (i==0) && (j==0)){
+        for(int i=0; i < values.length; i++){
+                 double val = values[i];
+                if(i==0){
                     //-- add first value
                     vals.add(new Double(val));
                 }
@@ -297,7 +291,6 @@ public class AttributeOp {
 	                    vals.add(new Double(val));
 	                }
                 }                
-            }
         }
         //-- count number of values
         int[] countVals = new int[vals.size()];
@@ -305,9 +298,8 @@ public class AttributeOp {
         for (int i = 0; i < countVals.length; i++) {
             countVals[i]=0;
         }
-        for(int i=0; i < mat.getRowDimension(); i++){
-            for(int j=0; j < mat.getColumnDimension(); j++){
-                double val = mat.get(i,j);
+        for(int i=0; i < values.length; i++){
+                double val = values[i];
                 boolean stop = false; int count =0;
                 while(stop == false){
                     Double d = (Double)vals.get(count);
@@ -323,7 +315,6 @@ public class AttributeOp {
                         stop = true;
                     }
                 }
-            }
         }
         //-- get minimum count
         int mincount = countVals[0];
