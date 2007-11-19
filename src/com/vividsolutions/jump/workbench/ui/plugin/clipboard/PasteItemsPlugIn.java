@@ -134,21 +134,23 @@ public class PasteItemsPlugIn extends AbstractPlugIn {
   private Collection<Feature> processCoordinates(String value) {
     Matcher matcher = pointCoordsPattern.matcher(value);
     Collection<Feature> features = new ArrayList<Feature>();
-    while (matcher.find()) {
-      double x = Double.parseDouble(matcher.group(1));
-      double y = Double.parseDouble(matcher.group(2));
-      Coordinate coordinate = new Coordinate(x, y);
-      String zString = matcher.group(3);
-      if (zString != null) {
-        coordinate.z = Double.parseDouble(zString);
-      }
-      FeatureSchema featureSchema = new FeatureSchema();
-      featureSchema.addAttribute("Geometry", AttributeType.GEOMETRY);
+    if (matcher.find() && matcher.start() == 0) {
+      do {
+        double x = Double.parseDouble(matcher.group(1));
+        double y = Double.parseDouble(matcher.group(2));
+        Coordinate coordinate = new Coordinate(x, y);
+        String zString = matcher.group(3);
+        if (zString != null) {
+          coordinate.z = Double.parseDouble(zString);
+        }
+        FeatureSchema featureSchema = new FeatureSchema();
+        featureSchema.addAttribute("Geometry", AttributeType.GEOMETRY);
 
-      Feature feature = new BasicFeature(featureSchema);
-      Point point = new GeometryFactory().createPoint(coordinate);
-      feature.setGeometry(point);
-      features.add(feature);
+        Feature feature = new BasicFeature(featureSchema);
+        Point point = new GeometryFactory().createPoint(coordinate);
+        feature.setGeometry(point);
+        features.add(feature);
+      } while (matcher.find());
     }
     return features;
   }
@@ -219,18 +221,11 @@ public class PasteItemsPlugIn extends AbstractPlugIn {
           }
 
           try {
-        	//-- old stuff [sstein]
-        	 String value = (String)transferable.getTransferData(DataFlavor.stringFlavor);
-        	 if (transferable.isDataFlavorSupported(DataFlavor.stringFlavor)
-        	 && (isWKT(value) || isCoordinates(value))) {
-        	 return null;
-        	/* ---- new stuff by Paul that creates bug with linestrings ---
             if (transferable.isDataFlavorSupported(DataFlavor.stringFlavor)) {
               String value = (String)transferable.getTransferData(DataFlavor.stringFlavor);
               if (isWKT(value) || isCoordinates(value)) {
                 return null;
               }
-              */
             }
           } catch (Exception e) {
             workbenchContext.getErrorHandler().handleThrowable(e);
