@@ -107,7 +107,7 @@
       <url>http://wwmm.ch.cam.ac.uk/maven2/</url>
     </repository>
     <repository>
-      <id>revolsys</id>
+      <id>openjump</id>
       <name>OpenJUMP Maven 2 Repository</name>
       <url>http://jump-pilot.svn.sourceforge.net/svnroot/jump-pilot/maven-repository/</url>
     </repository>
@@ -186,9 +186,9 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.jmat</groupId>
-      <artifactId>jmat</artifactId>
-      <version>5.0</version>
+      <groupId>org.math.array</groupId>
+      <artifactId>jmatharray</artifactId>
+      <version>20070905</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -210,5 +210,4 @@
       <scope>compile</scope>
     </dependency>
   </dependencies>
-
 </project>
