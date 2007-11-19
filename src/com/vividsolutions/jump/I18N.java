@@ -292,4 +292,18 @@ public final class I18N {
       return mformat.format(objects);
     }
   }
+  /**
+   * Get the I18N text from the language file associated with the specified
+   * category. If no label is defined then a default string is created from the
+   * last part of the key.
+   * 
+   * @param category The category.
+   * @param label with argument insertion : {0}
+   * @param objects
+   * @return i18n label
+   */
+  public static String getMessage(final String category, final String label, final Object[] objects) {
+    I18N i18n = getInstance(category);
+    return i18n.getMessage(label,objects);
+  }
 }
