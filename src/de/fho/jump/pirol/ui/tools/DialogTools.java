@@ -21,9 +21,10 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import org.openjump.core.apiTools.ToolToMakeYourLifeEasier;
+
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 
-import de.fho.jump.pirol.utilities.apiTools.ToolToMakeYourLifeEasier;
 
 /**
  * @author <strong>Ole Rahn, Stefan Ostermann, Carsten Schulze</strong>

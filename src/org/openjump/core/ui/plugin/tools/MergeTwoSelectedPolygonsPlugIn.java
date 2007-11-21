@@ -14,6 +14,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.openjump.core.apiTools.FeatureCollectionTools;
+import org.openjump.core.apiTools.LayerTools;
 import org.openjump.core.geomutils.algorithm.PolygonMerge;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -29,8 +31,6 @@ import com.vividsolutions.jump.workbench.ui.EditTransaction;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
-import de.fho.jump.pirol.utilities.apiTools.FeatureCollectionTools;
-import de.fho.jump.pirol.utilities.apiTools.LayerTools;
 
 /**
  * @author sstein

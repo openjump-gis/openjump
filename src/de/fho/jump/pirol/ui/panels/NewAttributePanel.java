@@ -46,10 +46,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.openjump.core.apiTools.FeatureCollectionTools;
+
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
 
-import de.fho.jump.pirol.utilities.apiTools.FeatureCollectionTools;
 import de.fho.jump.pirol.utilities.attributes.AttributeInfo;
 import de.fho.jump.pirol.utilities.debugOutput.DebugUserIds;
 import de.fho.jump.pirol.utilities.debugOutput.PersonalLogger;

@@ -11,7 +11,8 @@ package de.fho.jump.pirol.utilities.i18n;
 
 import java.util.MissingResourceException;
 
-import de.fho.jump.pirol.utilities.apiTools.HandlerToMakeYourLifeEasier;
+import org.openjump.core.apiTools.HandlerToMakeYourLifeEasier;
+
 import de.fho.jump.pirol.utilities.debugOutput.DebugUserIds;
 import de.fho.jump.pirol.utilities.debugOutput.PersonalLogger;
 

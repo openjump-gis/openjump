@@ -7,7 +7,7 @@
  *  $Date$
  *  $Id$
  */
-package de.fho.jump.pirol.utilities.apiTools;
+package org.openjump.core.apiTools;
 
 /**
  * This class has no real purpose (yet??), except to be a common base class for the utility classes to get a relation 

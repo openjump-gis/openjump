@@ -7,7 +7,7 @@
  *  $Date$
  *  $Id$s
  */
-package de.fho.jump.pirol.utilities.apiTools;
+package org.openjump.core.apiTools;
 
 import java.util.ArrayList;
 import java.util.Date;

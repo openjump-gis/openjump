@@ -18,6 +18,10 @@ import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
+import org.openjump.core.apiTools.FeatureCollectionTools;
+import org.openjump.core.apiTools.LayerTools;
+import org.openjump.core.apiTools.SelectionTools;
+
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -29,9 +33,6 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.ErrorHandler;
 import com.vividsolutions.jump.workbench.ui.task.TaskMonitorDialog;
 
-import de.fho.jump.pirol.utilities.apiTools.FeatureCollectionTools;
-import de.fho.jump.pirol.utilities.apiTools.LayerTools;
-import de.fho.jump.pirol.utilities.apiTools.SelectionTools;
 import de.fho.jump.pirol.utilities.debugOutput.PersonalLogger;
 import de.fho.jump.pirol.utilities.i18n.PirolPlugInMessages;
 import de.fho.jump.pirol.utilities.settings.PirolPlugInSettings;

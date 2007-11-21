@@ -7,7 +7,7 @@
  *  $Date$
  *  $Id$
  */
-package de.fho.jump.pirol.utilities.apiTools;
+package org.openjump.core.apiTools;
 
 /**
  * Just an interface to have a relation between some utility classes that have kind of the
