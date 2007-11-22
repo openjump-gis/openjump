@@ -12,7 +12,7 @@ package de.fho.jump.pirol.utilities.metaData;
 import java.util.HashMap;
 import java.util.Set;
 
-import org.openjump.core.apiTools.HandlerToMakeYourLifeEasier;
+import org.openjump.core.apitools.HandlerToMakeYourLifeEasier;
 
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.workbench.model.Layer;

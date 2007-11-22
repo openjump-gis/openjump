@@ -84,7 +84,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
-import org.openjump.core.apiTools.FeatureCollectionTools;
+import org.openjump.core.apitools.FeatureCollectionTools;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.FeatureCollection;

@@ -36,7 +36,7 @@
  *  indices like mean, max, median for a set of features.
  * 
  ***********************************************/
-package org.openjump.core.spatialAttributeOps;
+package org.openjump.core.attributeoperations;
 
 import java.util.ArrayList;
 import java.util.Iterator;

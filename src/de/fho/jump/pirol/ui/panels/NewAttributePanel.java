@@ -46,7 +46,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.openjump.core.apiTools.FeatureCollectionTools;
+import org.openjump.core.apitools.FeatureCollectionTools;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;

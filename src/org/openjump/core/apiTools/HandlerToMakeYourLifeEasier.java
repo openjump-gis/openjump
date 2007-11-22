@@ -7,7 +7,7 @@
  *  $Date$
  *  $Id$
  */
-package org.openjump.core.apiTools;
+package org.openjump.core.apitools;
 
 /**
  * Just an interface to have a relation between some utility classes that have kind of the

@@ -26,7 +26,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import org.openjump.core.apiTools.FeatureSchemaTools;
+import org.openjump.core.apitools.FeatureSchemaTools;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;

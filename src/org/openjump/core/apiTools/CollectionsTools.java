@@ -7,7 +7,7 @@
  *  $Date$
  *  $Id$
  */
-package org.openjump.core.apiTools;
+package org.openjump.core.apitools;
 
 import java.util.List;
 

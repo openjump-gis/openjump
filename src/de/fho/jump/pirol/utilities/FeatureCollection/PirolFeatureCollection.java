@@ -14,8 +14,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.openjump.core.apiTools.CollectionsTools;
-import org.openjump.core.apiTools.FeatureCollectionTools;
+import org.openjump.core.apitools.CollectionsTools;
+import org.openjump.core.apitools.FeatureCollectionTools;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.feature.Feature;

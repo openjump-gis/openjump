@@ -21,7 +21,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.openjump.core.apiTools.ToolToMakeYourLifeEasier;
+import org.openjump.core.apitools.ToolToMakeYourLifeEasier;
 
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 

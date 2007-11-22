@@ -14,8 +14,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.openjump.core.apiTools.FeatureCollectionTools;
-import org.openjump.core.apiTools.LayerTools;
+import org.openjump.core.apitools.FeatureCollectionTools;
+import org.openjump.core.apitools.LayerTools;
 import org.openjump.core.geomutils.algorithm.PolygonMerge;
 
 import com.vividsolutions.jts.geom.Geometry;

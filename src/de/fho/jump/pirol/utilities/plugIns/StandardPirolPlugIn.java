@@ -18,9 +18,9 @@ import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
-import org.openjump.core.apiTools.FeatureCollectionTools;
-import org.openjump.core.apiTools.LayerTools;
-import org.openjump.core.apiTools.SelectionTools;
+import org.openjump.core.apitools.FeatureCollectionTools;
+import org.openjump.core.apitools.LayerTools;
+import org.openjump.core.apitools.SelectionTools;
 
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jump.feature.Feature;

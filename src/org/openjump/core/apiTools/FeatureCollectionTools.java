@@ -7,7 +7,7 @@
  *  $Date$
  *  $Id$s
  */
-package org.openjump.core.apiTools;
+package org.openjump.core.apitools;
 
 import java.util.ArrayList;
 import java.util.Date;

@@ -7,7 +7,7 @@
  *  $Date$
  *  $Id$
  */
-package org.openjump.core.apiTools;
+package org.openjump.core.apitools;
 
 /**
  * This class has no real purpose (yet??), except to be a common base class for the utility classes to get a relation 

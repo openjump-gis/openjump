@@ -21,7 +21,7 @@ import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.Set;
 
-import org.openjump.core.apiTools.HandlerToMakeYourLifeEasier;
+import org.openjump.core.apitools.HandlerToMakeYourLifeEasier;
 
 import de.fho.jump.pirol.utilities.settings.PirolPlugInSettings;
 
@@ -37,7 +37,7 @@ import de.fho.jump.pirol.utilities.settings.PirolPlugInSettings;
  * @version $Rev$
  * 
  */
-public class PropertiesHandler implements org.openjump.core.apiTools.HandlerToMakeYourLifeEasier {
+public class PropertiesHandler implements org.openjump.core.apitools.HandlerToMakeYourLifeEasier {
     
     protected String propertiesFile = null;
     protected Properties properties = null;

@@ -36,7 +36,7 @@
  * 		which fullfill some spatial criterion
  * 
  ***********************************************/
-package org.openjump.core.spatialAttributeOps;
+package org.openjump.core.attributeoperations;
 
 import java.util.ArrayList;
 import java.util.Iterator;

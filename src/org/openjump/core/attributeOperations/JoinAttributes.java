@@ -35,7 +35,7 @@
  * 	joins attribute values according to some spatial and statistical criterion
  * 
  ***********************************************/
-package org.openjump.core.spatialAttributeOps;
+package org.openjump.core.attributeoperations;
 
 import java.util.ArrayList;
 import java.util.Collection;

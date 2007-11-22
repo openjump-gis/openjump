@@ -47,7 +47,7 @@ import java.util.List;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 
-import org.openjump.core.attributeOperations.*;
+import org.openjump.core.attributeoperations.*;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.FeatureDataset;
