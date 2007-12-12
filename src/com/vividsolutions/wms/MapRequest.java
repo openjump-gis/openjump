@@ -289,7 +289,6 @@ public class MapRequest {
       
       
       LOG.info(urlBuf.toString());
-      
       return new URL( urlBuf.toString() );
     }
 

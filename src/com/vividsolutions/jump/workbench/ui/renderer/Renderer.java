@@ -3,6 +3,8 @@ package com.vividsolutions.jump.workbench.ui.renderer;
 import java.awt.Graphics2D;
 import java.awt.geom.NoninvertibleTransformException;
 
+import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
+
 /**
  * First call #createRunnable. If it returns null, get the image using #copyTo.
  * Otherwise, run the Runnable in a separate thread. You can call #copyTo while
@@ -30,6 +32,6 @@ public interface Renderer {
     //[sstein: 20.01.2006] from Ole for RenderingManager changes
     // for not hardwired renderers and to including pirol image layers 
     public static interface ContentDependendFactory {
-        public Renderer create(Object contentID);
+        public Renderer create(Object contentID, LayerViewPanel layerViewPanel);
     } 
 }

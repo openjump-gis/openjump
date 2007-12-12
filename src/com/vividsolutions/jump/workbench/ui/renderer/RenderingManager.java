@@ -263,7 +263,7 @@ public class RenderingManager {
 		}
 	    //[sstein: 20.01.2006] Start: added by Ole
 	    if(RenderingManager.getRenderFactoryForLayerable(contentID.getClass())!=null){
-	          return RenderingManager.getRenderFactoryForLayerable(contentID.getClass()).create(contentID); }
+	          return RenderingManager.getRenderFactoryForLayerable(contentID.getClass()).create(contentID,this.panel); }
         //End: added by Ole*
 		if (contentIDToLowRendererFactoryMap.containsKey(contentID)) {
 			return ((Renderer.Factory) contentIDToLowRendererFactoryMap
