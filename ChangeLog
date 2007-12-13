@@ -1,3 +1,8 @@
+2007-12-13 Andreas Schmitz <schmitz@lat-lon.de>
+      src/org/openjump/OpenJumpConfiguration.java,
+      src/org/openjump/core/ui/plugin/edit/CopyBBoxPlugin.java:
+      Added function to copy current bounding box to clipboard.
+
 2007-11-16 sstein <sstein@geo.unizh.ch>
       src/org.openjump.core.spatialAttributeOps/AttributeOp.java:
       added lib: jmatharray-20070905.jar

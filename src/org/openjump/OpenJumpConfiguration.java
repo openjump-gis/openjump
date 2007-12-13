@@ -21,6 +21,7 @@ import org.openjump.core.ui.io.file.FileLayerLoader;
 import org.openjump.core.ui.io.file.ReferencedImageFactoryFileLayerLoader;
 import org.openjump.core.ui.plugin.customize.BeanToolsPlugIn;
 import org.openjump.core.ui.plugin.datastore.AddDataStoreLayerWizard;
+import org.openjump.core.ui.plugin.edit.CopyBBoxPlugin;
 import org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn;
 import org.openjump.core.ui.plugin.edit.SelectAllLayerItemsPlugIn;
 import org.openjump.core.ui.plugin.edit.SelectByTypePlugIn;
@@ -177,6 +178,8 @@ public class OpenJumpConfiguration {
     SelectByTypePlugIn mySelectByGeomTypePlugIn = new SelectByTypePlugIn();
     mySelectByGeomTypePlugIn.initialize(new PlugInContext(workbenchContext,
       null, null, null, null));
+
+    new CopyBBoxPlugin().initialize(new PlugInContext(workbenchContext, null, null, null, null));
 
     /***************************************************************************
      * menu VIEW
