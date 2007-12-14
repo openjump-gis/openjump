@@ -155,7 +155,17 @@ public class TaskMonitorManager {
                 // AutoConflatePlugIn displays a dialog using #invokeLater,
                 // but timer keeps on running until dialog is closed . . .
                 // [Jon Aquino 2004-09-07]
-                dialog.setVisible(false);
+                
+                // sleep while dialog is not yet active to avoid dangling dialogs
+                // (else the setVisible does not have an effect)
+                while ( !dialog.isActive() ) {
+                    try {
+                        Thread.sleep( 100 );
+                    } catch ( InterruptedException e ) {
+                        break;
+                    }
+                }
+                dialog.setVisible( false );
 
                 if (throwable != null) {
                     context.getErrorHandler().handleThrowable(throwable);

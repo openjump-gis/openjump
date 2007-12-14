@@ -247,6 +247,7 @@ public class WizardDialog extends JDialog implements WizardContext,
   }
 
   public void cancel() {
+    finishPressed = false;
     setVisible(false);
   }
 

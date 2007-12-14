@@ -1,3 +1,9 @@
+2007-12-14 Andreas Schmitz <schmitz@lat-lon.de>
+      src/com/vividsolutions/jump/workbench/ui/wizard/WizardDialog.java:
+      Fixed behaviour when pressing cancel.
+      src/com/vividsolutions/jump/workbench/ui/task/TaskMonitorManager.java:
+      Added loop to avoid dangling monitor dialogs.
+
 2007-12-13 Andreas Schmitz <schmitz@lat-lon.de>
       src/org/openjump/OpenJumpConfiguration.java,
       src/org/openjump/core/ui/plugin/edit/CopyBBoxPlugin.java:
