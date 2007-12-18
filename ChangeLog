@@ -1,3 +1,7 @@
+2007-12-18 Andreas Schmitz <schmitz@lat-lon.de>
+      src/language/jump_de.properties:
+      Translated remaining values to german.
+
 2007-12-14 Andreas Schmitz <schmitz@lat-lon.de>
       src/com/vividsolutions/jump/workbench/ui/wizard/WizardDialog.java:
       Fixed behaviour when pressing cancel.
