@@ -30,8 +30,11 @@ public interface Renderer {
     }    
     
     //[sstein: 20.01.2006] from Ole for RenderingManager changes
-    // for not hardwired renderers and to including pirol image layers 
+    // for not hardwired renderers and to including pirol image layers
+    /**
+     * @deprecated Replaced by {@link RendererFactory}
+     */
     public static interface ContentDependendFactory {
-        public Renderer create(Object contentID, LayerViewPanel layerViewPanel);
+        public Renderer create(Object contentID);
     } 
 }

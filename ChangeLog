@@ -1,3 +1,7 @@
+2007-12-18 Paul Austin <paul.austin@revolsys.com
+  * Added a new RendererFactory implementation which accepts the LayerViewPanel
+    as an argument.
+    
 2007-12-18 Andreas Schmitz <schmitz@lat-lon.de>
       src/language/jump_de.properties:
       Translated remaining values to german.
