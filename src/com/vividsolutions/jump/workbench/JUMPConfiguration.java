@@ -31,48 +31,162 @@
  */
 package com.vividsolutions.jump.workbench;
 
-import com.vividsolutions.jts.util.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.lang.reflect.Field;
+
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JPopupMenu;
+import javax.swing.JToggleButton;
+
 import org.openjump.OpenJumpConfiguration;
 import org.openjump.core.ui.plugin.tools.ZoomRealtimeTool;
 
+import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
-
-import com.vividsolutions.jump.datastore.*;
-import com.vividsolutions.jump.datastore.postgis.*;
-import com.vividsolutions.jump.workbench.datasource.*;
-import com.vividsolutions.jump.workbench.datastore.*;
+import com.vividsolutions.jump.datastore.DataStoreDriver;
+import com.vividsolutions.jump.datastore.DataStoreException;
+import com.vividsolutions.jump.datastore.postgis.PostgisDataStoreDriver;
+import com.vividsolutions.jump.plugin.edit.AffineTransformationPlugIn;
+import com.vividsolutions.jump.plugin.edit.ExtractSegmentsPlugIn;
+import com.vividsolutions.jump.plugin.edit.LineNoderPlugIn;
+import com.vividsolutions.jump.plugin.edit.PolygonizerPlugIn;
+import com.vividsolutions.jump.plugin.edit.PrecisionReducerPlugIn;
+import com.vividsolutions.jump.plugin.qa.DiffGeometryPlugIn;
+import com.vividsolutions.jump.workbench.datasource.AbstractSaveDatasetAsPlugIn;
+import com.vividsolutions.jump.workbench.datasource.InstallStandardDataSourceQueryChoosersPlugIn;
 import com.vividsolutions.jump.workbench.datasource.LoadDatasetPlugIn;
 import com.vividsolutions.jump.workbench.datasource.SaveDatasetAsPlugIn;
-import com.vividsolutions.jump.workbench.plugin.*;
-import com.vividsolutions.jump.workbench.ui.*;
-import com.vividsolutions.jump.workbench.ui.cursortool.*;
-import com.vividsolutions.jump.workbench.ui.cursortool.editing.*;
+import com.vividsolutions.jump.workbench.datastore.ConnectionManager;
+import com.vividsolutions.jump.workbench.model.Layer;
+import com.vividsolutions.jump.workbench.model.WMSLayer;
+import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
+import com.vividsolutions.jump.workbench.plugin.EnableCheck;
+import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
+import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
+import com.vividsolutions.jump.workbench.plugin.PlugIn;
+import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.ApplicationExitHandler;
+import com.vividsolutions.jump.workbench.ui.AttributeTab;
+import com.vividsolutions.jump.workbench.ui.CloneableInternalFrame;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
+import com.vividsolutions.jump.workbench.ui.MenuNames;
+import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
+import com.vividsolutions.jump.workbench.ui.cursortool.CursorTool;
+import com.vividsolutions.jump.workbench.ui.cursortool.DrawPolygonFenceTool;
+import com.vividsolutions.jump.workbench.ui.cursortool.DrawRectangleFenceTool;
+import com.vividsolutions.jump.workbench.ui.cursortool.FeatureInfoTool;
+import com.vividsolutions.jump.workbench.ui.cursortool.MeasureTool;
+import com.vividsolutions.jump.workbench.ui.cursortool.OrCompositeTool;
+import com.vividsolutions.jump.workbench.ui.cursortool.QuasimodeTool;
+import com.vividsolutions.jump.workbench.ui.cursortool.SelectFeaturesTool;
+import com.vividsolutions.jump.workbench.ui.cursortool.editing.EditingPlugIn;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import com.vividsolutions.jump.workbench.ui.plugin.*;
-import com.vividsolutions.jump.workbench.ui.plugin.analysis.*;
-import com.vividsolutions.jump.workbench.ui.plugin.clipboard.*;
-import com.vividsolutions.jump.workbench.ui.plugin.datastore.*;
+import com.vividsolutions.jump.workbench.ui.plugin.AboutPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.AddNewCategoryPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.AddNewFeaturesPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.AddNewLayerPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.AddWMSDemoBoxEasterEggPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.ClearSelectionPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.CloneWindowPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.CombineSelectedFeaturesPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.DeleteAllFeaturesPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.DeleteSelectedItemsPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.EditSelectedFeaturePlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.EditablePlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.ExplodeSelectedFeaturesPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.FeatureInfoPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
+import com.vividsolutions.jump.workbench.ui.plugin.FeatureStatisticsPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.FirstTaskFramePlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.GenerateLogPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.InstallStandardFeatureTextWritersPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.LayerStatisticsPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.MapToolTipsPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.MoveLayerablePlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.NewTaskPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.OpenProjectPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.OptionsPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.OutputWindowPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.RedoPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.RemoveSelectedCategoriesPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.RemoveSelectedLayersPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.SaveImageAsPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.SaveProjectAsPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.SaveProjectPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.SelectFeaturesInFencePlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.SelectablePlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.ShortcutKeysPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.UndoPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.ValidateSelectedLayersPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.VerticesInFencePlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.ViewAttributesPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.ViewSchemaPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.analysis.AttributeQueryPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.analysis.BufferPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.analysis.CalculateAreasAndLengthsPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.analysis.ConvexHullPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.analysis.GeometryFunctionPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.analysis.OverlayPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.analysis.SpatialJoinPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.analysis.SpatialQueryPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.analysis.UnionByAttributePlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.analysis.UnionPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.clipboard.CopyImagePlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.clipboard.CopySelectedItemsPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.clipboard.CopySelectedLayersPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.clipboard.CopyThisCoordinatePlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.clipboard.CutSelectedItemsPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.clipboard.CutSelectedLayersPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.clipboard.PasteItemsPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.clipboard.PasteLayersPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.datastore.AddDatastoreLayerPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.datastore.InstallDatastoreLayerRendererHintsPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.datastore.RefreshDataStoreLayerPlugin;
+import com.vividsolutions.jump.workbench.ui.plugin.datastore.RunDatastoreQueryPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.imagery.AddImageLayerPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.imagery.ImageLayerManagerPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.imagery.InstallReferencedImageFactoriesPlugin;
-import com.vividsolutions.jump.workbench.ui.plugin.scalebar.*;
+import com.vividsolutions.jump.workbench.ui.plugin.scalebar.InstallScaleBarPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.scalebar.ScaleBarPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.scalebar.ScaleBarRenderer;
 import com.vividsolutions.jump.workbench.ui.plugin.skin.InstallSkinsPlugIn;
-import com.vividsolutions.jump.workbench.ui.plugin.test.*;
-import com.vividsolutions.jump.workbench.ui.plugin.wms.*;
-import com.vividsolutions.jump.workbench.ui.renderer.style.*;
-import com.vividsolutions.jump.workbench.ui.snap.*;
-import com.vividsolutions.jump.workbench.ui.style.*;
-import com.vividsolutions.jump.workbench.ui.task.*;
-import com.vividsolutions.jump.workbench.ui.warp.*;
-import com.vividsolutions.jump.workbench.ui.zoom.*;
-import com.vividsolutions.jump.plugin.qa.*;
-import com.vividsolutions.jump.plugin.edit.*;
-
-//import de.latlon.deejump.plugin.style.DeeChangeStylesPlugIn;
-
-import java.awt.event.*;
-import java.lang.reflect.*;
-import javax.swing.*;
+import com.vividsolutions.jump.workbench.ui.plugin.test.RandomArrowsPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.test.RandomTrianglesPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.wms.AddWMSQueryPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.wms.EditWMSQueryPlugIn;
+import com.vividsolutions.jump.workbench.ui.renderer.LayerRendererFactory;
+import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
+import com.vividsolutions.jump.workbench.ui.renderer.WmsLayerRendererFactory;
+import com.vividsolutions.jump.workbench.ui.renderer.style.ArrowLineStringEndpointStyle;
+import com.vividsolutions.jump.workbench.ui.renderer.style.ArrowLineStringSegmentStyle;
+import com.vividsolutions.jump.workbench.ui.renderer.style.CircleLineStringEndpointStyle;
+import com.vividsolutions.jump.workbench.ui.renderer.style.MetricsLineStringSegmentStyle;
+import com.vividsolutions.jump.workbench.ui.renderer.style.VertexIndexLineSegmentStyle;
+import com.vividsolutions.jump.workbench.ui.renderer.style.VertexXYLineSegmentStyle;
+import com.vividsolutions.jump.workbench.ui.snap.InstallGridPlugIn;
+import com.vividsolutions.jump.workbench.ui.snap.SnapToVerticesPolicy;
+import com.vividsolutions.jump.workbench.ui.style.ChangeStylesPlugIn;
+import com.vividsolutions.jump.workbench.ui.style.CopyStylesPlugIn;
+import com.vividsolutions.jump.workbench.ui.style.PasteStylesPlugIn;
+import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
+import com.vividsolutions.jump.workbench.ui.warp.AffineTransformPlugIn;
+import com.vividsolutions.jump.workbench.ui.warp.WarpingPlugIn;
+import com.vividsolutions.jump.workbench.ui.zoom.InstallZoomBarPlugIn;
+import com.vividsolutions.jump.workbench.ui.zoom.PanTool;
+import com.vividsolutions.jump.workbench.ui.zoom.ZoomBarPlugIn;
+import com.vividsolutions.jump.workbench.ui.zoom.ZoomNextPlugIn;
+import com.vividsolutions.jump.workbench.ui.zoom.ZoomPreviousPlugIn;
+import com.vividsolutions.jump.workbench.ui.zoom.ZoomToClickPlugIn;
+import com.vividsolutions.jump.workbench.ui.zoom.ZoomToCoordinatePlugIn;
+import com.vividsolutions.jump.workbench.ui.zoom.ZoomToFencePlugIn;
+import com.vividsolutions.jump.workbench.ui.zoom.ZoomToFullExtentPlugIn;
+import com.vividsolutions.jump.workbench.ui.zoom.ZoomToLayerPlugIn;
+import com.vividsolutions.jump.workbench.ui.zoom.ZoomToSelectedItemsPlugIn;
+import com.vividsolutions.jump.workbench.ui.zoom.ZoomTool;
 
 /**
  * Initializes the Workbench with various menus and cursor tools. Accesses the
@@ -265,6 +379,8 @@ public class JUMPConfiguration implements Setup {
         configureLayerViewPanelPopupMenu(workbenchContext, checkFactory,
                 featureInstaller);
 
+        initializeRenderingManager();
+        
         /********************************************
          * [sstein] 11.08.2005
          * the following line calls the new OpenJump plugins
@@ -276,6 +392,11 @@ public class JUMPConfiguration implements Setup {
         //add items to the toolbar will add them to the *end* of the toolbar.
         // [Jon Aquino]
         initializeBuiltInPlugIns(workbenchContext);
+    }
+
+    private void initializeRenderingManager() {
+      RenderingManager.setRendererFactory(Layer.class, new LayerRendererFactory());
+      RenderingManager.setRendererFactory(WMSLayer.class, new WmsLayerRendererFactory()); 
     }
 
     private void configureCategoryPopupMenu(WorkbenchContext workbenchContext,

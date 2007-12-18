@@ -1,4 +1,7 @@
 2007-12-18 Paul Austin <paul.austin@revolsys.com
+  *  Migrated the Layer and WMSLayer to use the new RendererFactory implementation
+
+2007-12-18 Paul Austin <paul.austin@revolsys.com
   * Added a new RendererFactory implementation which accepts the LayerViewPanel
     as an argument.
     

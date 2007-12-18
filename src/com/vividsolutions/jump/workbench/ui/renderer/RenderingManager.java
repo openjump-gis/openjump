@@ -43,18 +43,25 @@ import java.util.Map;
 
 import javax.swing.Timer;
 
-import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.util.OrderedMap;
-import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.Layerable;
-import com.vividsolutions.jump.workbench.model.WMSLayer;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 
-// [sstein] : 30.07.2005 added variable maxFeatures with getters and setters
-
 public class RenderingManager {
+
+  // [sstein: 20.01.2006] added for Ole
+  /** @deprecated */
+  protected static HashMap layerableClassToRendererFactoryMap = new HashMap();
+
+  private static final Map<Class, RendererFactory> CLASS_RENDERER_FACTORY_MAP = new HashMap<Class, RendererFactory>();
+
   private LayerViewPanel panel;
 
+  /**
+   * this variable will be used for {@link LayerRenderer} which extends
+   * {@link FeatureCollectionRenderer} default in FeatureCollectionRenderer is
+   * 100 features.
+   */
   private int maxFeatures = 100; // this variable will be used for
 
   // LayerRenderer.class which extends
@@ -107,11 +114,6 @@ public class RenderingManager {
   });
 
   private boolean paintingEnabled = true;
-
-  // [sstein: 20.01.2006] added for Ole
-  protected static HashMap layerableClassToRendererFactoryMap = new HashMap();
-
-  protected static Map<Class, RendererFactory> classRebdererFactoryMap = new HashMap<Class, RendererFactory>();
 
   public RenderingManager(final LayerViewPanel panel) {
     this.panel = panel;
@@ -233,6 +235,9 @@ public class RenderingManager {
   // which is the case, at the time the PlugIns are initialized and to have one
   // map
   // for all RenderingManager
+  /**
+   * @deprecated see {@link #getRendererFactory(Class)}
+   */
   public static Renderer.ContentDependendFactory getRenderFactoryForLayerable(
     Class clss) {
     if (layerableClassToRendererFactoryMap.containsKey(clss)) {
@@ -241,6 +246,11 @@ public class RenderingManager {
     return null;
   }
 
+  /**
+   * @param clss
+   * @param rendererFactory
+   * @deprecated see {@link #setRendererFactory(Class, RendererFactory)}
+   */
   public static void putRendererForLayerable(Class clss,
     Renderer.ContentDependendFactory rendererFactory) {
     if (!layerableClassToRendererFactoryMap.containsKey(clss)) {
@@ -252,17 +262,13 @@ public class RenderingManager {
 
   // this method is called by method render();
   protected Renderer createRenderer(Object contentID) {
-    if (contentID instanceof Layer) {
-      // [sstein] new
-      LayerRenderer lr = new LayerRenderer((Layer)contentID, this.panel);
-      lr.setMaxFeatures(this.maxFeatures);
-      return lr;
-      // [sstein] old
-      // return new LayerRenderer((Layer) contentID, panel);
+    RendererFactory rendererFactory = getRendererFactory(contentID.getClass());
+    if (rendererFactory != null) {
+      return rendererFactory.create(contentID, panel, maxFeatures);
     }
-    if (contentID instanceof WMSLayer) {
-      return new WMSLayerRenderer((WMSLayer)contentID, panel);
-    }
+    // p_d_austin: The following items should be removed when all renderers
+    // are migrated to the RendererFactory framework.
+
     // [sstein: 20.01.2006] Start: added by Ole
     if (RenderingManager.getRenderFactoryForLayerable(contentID.getClass()) != null) {
       return RenderingManager.getRenderFactoryForLayerable(contentID.getClass())
@@ -274,11 +280,6 @@ public class RenderingManager {
     }
     if (contentIDToHighRendererFactoryMap.containsKey(contentID)) {
       return ((Renderer.Factory)contentIDToHighRendererFactoryMap.get(contentID)).create();
-    }
-
-    RendererFactory rendererFactory = getRendererFactory(contentID.getClass());
-    if (rendererFactory != null) {
-      return rendererFactory.create(contentID, panel);
     }
 
     throw new IllegalArgumentException("No renderer defined for layerable: "
@@ -354,7 +355,15 @@ public class RenderingManager {
    * @return The renderer factory.
    */
   public static RendererFactory getRendererFactory(Class clazz) {
-    return classRebdererFactoryMap.get(clazz);
+    if (clazz == null) {
+      return null;
+    } else {
+      RendererFactory factory = CLASS_RENDERER_FACTORY_MAP.get(clazz);
+      if (factory == null) {
+        return getRendererFactory(clazz.getSuperclass());
+      }
+      return factory;
+    }
   }
 
   /**
@@ -364,7 +373,7 @@ public class RenderingManager {
    * @param factory The renderer factory.
    */
   public static void setRendererFactory(Class clazz, RendererFactory factory) {
-    classRebdererFactoryMap.put(clazz, factory);
+    CLASS_RENDERER_FACTORY_MAP.put(clazz, factory);
   }
 
 }
