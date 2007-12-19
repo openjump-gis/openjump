@@ -33,6 +33,9 @@
 
 package com.vividsolutions.jump.workbench.plugin;
 
+import static com.vividsolutions.jump.I18N.get;
+import static com.vividsolutions.jump.I18N.getMessage;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -41,17 +44,14 @@ import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
 
 import com.vividsolutions.jts.util.Assert;
-import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanel;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanelProxy;
-import com.vividsolutions.jump.workbench.ui.LayerViewFrame;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanelProxy;
-import com.vividsolutions.jump.workbench.ui.SelectionManager;
 import com.vividsolutions.jump.workbench.ui.SelectionManagerProxy;
 import com.vividsolutions.jump.workbench.ui.TaskFrame;
 import com.vividsolutions.jump.workbench.ui.TaskFrameProxy;
@@ -62,7 +62,7 @@ import com.vividsolutions.jump.workbench.ui.warp.WarpingVectorLayerFinder;
  * @see EnableCheck
  */
 public class EnableCheckFactory {
-    private WorkbenchContext workbenchContext;
+    WorkbenchContext workbenchContext;
 
     public EnableCheckFactory(WorkbenchContext workbenchContext) {
         Assert.isTrue(workbenchContext != null);
@@ -94,7 +94,7 @@ public class EnableCheckFactory {
                 return (
                     !(workbenchContext.getWorkbench().getFrame().getActiveInternalFrame()
                         instanceof TaskFrame))
-                    ? "A Task Window must be active"
+                    ? get("com.vividsolutions.jump.workbench.plugin.A-Task-Window-must-be-active")
                     : null;
             }
         };
@@ -106,7 +106,7 @@ public class EnableCheckFactory {
                 return (
                     !(workbenchContext.getWorkbench().getFrame().getActiveInternalFrame()
                         instanceof SelectionManagerProxy))
-                    ? "A window with a selection manager must be active"
+                    ? get("com.vividsolutions.jump.workbench.plugin.A-window-with-a-selection-manager-must-be-active")
                     : null;
             }
         };
@@ -118,7 +118,7 @@ public class EnableCheckFactory {
                 return (
                     !(workbenchContext.getWorkbench().getFrame().getActiveInternalFrame()
                         instanceof LayerManagerProxy))
-                    ? "A window with a layer manager must be active"
+                    ? get("com.vividsolutions.jump.workbench.plugin.A-window-with-a-layer-manager-must-be-active")
                     : null;
             }
         };
@@ -130,7 +130,7 @@ public class EnableCheckFactory {
                 return (
                     !(workbenchContext.getWorkbench().getFrame().getActiveInternalFrame()
                         instanceof TaskFrameProxy))
-                    ? "A window with an associated task frame must be active"
+                    ? get("com.vividsolutions.jump.workbench.plugin.A-window-with-an-associated-task-frame-must-be-active")
                     : null;
             }
         };
@@ -142,7 +142,7 @@ public class EnableCheckFactory {
                 return (
                     !(workbenchContext.getWorkbench().getFrame().getActiveInternalFrame()
                         instanceof LayerNamePanelProxy))
-                    ? "A window with a layer-name panel must be active"
+                    ? get("com.vividsolutions.jump.workbench.plugin.A-window-with-a-layer-name-panel-must-be-active")
                     : null;
             }
         };
@@ -154,7 +154,7 @@ public class EnableCheckFactory {
                 return (
                     !(workbenchContext.getWorkbench().getFrame().getActiveInternalFrame()
                         instanceof LayerViewPanelProxy))
-                    ? "A window with a layer-view panel must be active"
+                    ? get("com.vividsolutions.jump.workbench.plugin.A-window-with-a-layer-view-panel-must-be-active")
                     : null;
             }
         };
@@ -173,7 +173,7 @@ public class EnableCheckFactory {
                         .getLayersWithSelectedItems();
 
                 return (layersWithSelectedFeatures.size() > 1)
-                    ? "Only one layer may have selected features"
+                    ? get("com.vividsolutions.jump.workbench.plugin.Only-one-layer-may-have-selected-features")
                     : null;
             }
         };
@@ -190,7 +190,7 @@ public class EnableCheckFactory {
                         .getSelectionManager()
                         .getLayersWithSelectedItems();
                 return (layersWithSelectedItems.size() > 1)
-                    ? "Only one layer may have selected items"
+                    ? get("com.vividsolutions.jump.workbench.plugin.Only-one-layer-may-have-selected-items")
                     : null;
             }
         };
@@ -212,7 +212,9 @@ public class EnableCheckFactory {
                     Layer layer = (Layer) i.next();
 
                     if (!layer.isEditable()) {
-                        return "Selected items' layers must be editable (" + layer.getName() + ")";
+                        return getMessage(
+                                "com.vividsolutions.jump.workbench.plugin.Selected-items'-layers-must-be-editable",
+                                new String[] { layer.getName() });
                     }
                 }
 
@@ -224,9 +226,16 @@ public class EnableCheckFactory {
     public EnableCheck createExactlyNCategoriesMustBeSelectedCheck(final int n) {
         return new EnableCheck() {
             public String check(JComponent component) {
-                return (n != workbenchContext.getLayerNamePanel().getSelectedCategories().size())
-                    ? ("Exactly " + n + " categor" + StringUtil.ies(n) + " must be selected")
-                    : null;
+                String msg;
+                if (n == 1) {
+                    msg = get("com.vividsolutions.jump.workbench.plugin.Exactly-one-category-must-be-selected");
+                } else {
+                    msg = getMessage(
+                            "com.vividsolutions.jump.workbench.plugin.Exactly-n-categories-must-be-selected",
+                            new Object[] { n });
+                }
+                return (n != workbenchContext.getLayerNamePanel()
+                        .getSelectedCategories().size()) ? msg : null;
             }
         };
     }
@@ -236,13 +245,16 @@ public class EnableCheckFactory {
         final Class layerableClass) {
         return new EnableCheck() {
             public String check(JComponent component) {
-                return (
-                    n
-                        != (workbenchContext.getLayerNamePanel())
-                            .selectedNodes(layerableClass)
-                            .size())
-                    ? ("Exactly " + n + " layer" + StringUtil.s(n) + " must be selected")
-                    : null;
+                String msg;
+                if (n == 1) {
+                    msg = get("com.vividsolutions.jump.workbench.plugin.Exactly-one-layer-must-be-selected");
+                } else {
+                    msg = getMessage(
+                            "com.vividsolutions.jump.workbench.plugin.Exactly-n-layers-must-be-selected",
+                            new Object[] { n });
+                }
+                return (n != (workbenchContext.getLayerNamePanel())
+                        .selectedNodes(layerableClass).size()) ? msg : null;
             }
         };
     }
@@ -254,9 +266,16 @@ public class EnableCheckFactory {
     public EnableCheck createAtLeastNCategoriesMustBeSelectedCheck(final int n) {
         return new EnableCheck() {
             public String check(JComponent component) {
-                return (n > workbenchContext.getLayerNamePanel().getSelectedCategories().size())
-                    ? ("At least " + n + " categor" + StringUtil.ies(n) + " must be selected")
-                    : null;
+                String msg;
+                if (n == 1) {
+                    msg = get("com.vividsolutions.jump.workbench.plugin.At-least-one-category-must-be-selected");
+                } else {
+                    msg = getMessage(
+                            "com.vividsolutions.jump.workbench.plugin.At-least-n-categories-must-be-selected",
+                            new Object[] { n });
+                }
+                return (n > workbenchContext.getLayerNamePanel()
+                        .getSelectedCategories().size()) ? msg : null;
             }
         };
     }
@@ -266,15 +285,19 @@ public class EnableCheckFactory {
         final Class layerableClass) {
         return new EnableCheck() {
             public String check(JComponent component) {
-                LayerNamePanel layerNamePanel = workbenchContext.getLayerNamePanel();
-                return (
-                                layerNamePanel == null || 
-                    n
-                        > (workbenchContext.getLayerNamePanel())
-                            .selectedNodes(layerableClass)
-                            .size())
-                    ? ("At least " + n + " layer" + StringUtil.s(n) + " must be selected")
-                    : null;
+                LayerNamePanel layerNamePanel = workbenchContext
+                        .getLayerNamePanel();
+                String msg;
+                if (n == 1) {
+                    msg = get("com.vividsolutions.jump.workbench.plugin.At-least-one-layer-must-be-selected");
+                } else {
+                    msg = getMessage(
+                            "com.vividsolutions.jump.workbench.plugin.At-least-n-layers-must-be-selected",
+                            new Object[] { n });
+                }
+                return (layerNamePanel == null || n > (workbenchContext
+                        .getLayerNamePanel()).selectedNodes(layerableClass)
+                        .size()) ? msg : null;
             }
         };
     }
@@ -286,9 +309,16 @@ public class EnableCheckFactory {
     public EnableCheck createAtLeastNLayersMustBeEditableCheck(final int n) {
         return new EnableCheck() {
             public String check(JComponent component) {
-                return (n > workbenchContext.getLayerManager().getEditableLayers().size())
-                    ? ("At least " + n + " layer" + StringUtil.s(n) + " must be editable")
-                    : null;
+                String msg;
+                if (n == 1) {
+                    msg = get("com.vividsolutions.jump.workbench.plugin.At-least-one-layer-must-be-editable");
+                } else {
+                    msg = getMessage(
+                            "com.vividsolutions.jump.workbench.plugin.At-least-n-layers-must-be-editable",
+                            new Object[] { n });
+                }
+                return (n > workbenchContext.getLayerManager()
+                        .getEditableLayers().size()) ? msg : null;
             }
         };
     }
@@ -297,11 +327,16 @@ public class EnableCheckFactory {
         return new EnableCheck() {
             public String check(JComponent component) {
                 LayerManager layerManager = workbenchContext.getLayerManager();
-                return (
-                                layerManager == null ||
-                                n > layerManager.size())
-                    ? ("At least " + n + " layer" + StringUtil.s(n) + " must exist")
-                    : null;
+                String msg;
+                if (n == 1) {
+                    msg = get("com.vividsolutions.jump.workbench.plugin.At-least-one-layer-must-exist");
+                } else {
+                    msg = getMessage(
+                            "com.vividsolutions.jump.workbench.plugin.At-least-n-layers-must-exist",
+                            new Object[] { n });
+                }
+                return (layerManager == null || n > layerManager.size()) ? msg
+                        : null;
             }
         };
     }
@@ -309,9 +344,16 @@ public class EnableCheckFactory {
     public EnableCheck createAtMostNLayersMustExistCheck(final int n) {
         return new EnableCheck() {
             public String check(JComponent component) {
-                return (n < workbenchContext.getLayerManager().size())
-                    ? ("At most " + n + " layer" + StringUtil.s(n) + " must exist")
-                    : null;
+                String msg;
+                if (n == 1) {
+                    msg = get("com.vividsolutions.jump.workbench.plugin.At-most-one-layer-must-exist");
+                } else {
+                    msg = getMessage(
+                            "com.vividsolutions.jump.workbench.plugin.At-most-n-layers-must-exist",
+                            new Object[] { n });
+                }
+                return (n < workbenchContext.getLayerManager().size()) ? msg
+                        : null;
             }
         };
     }
@@ -319,20 +361,33 @@ public class EnableCheckFactory {
     public EnableCheck createExactlyNVectorsMustBeDrawnCheck(final int n) {
         return new EnableCheck() {
             public String check(JComponent component) {
-                return (n != vectorCount())
-                    ? ("Exactly " + n + " vector" + StringUtil.s(n) + " must be drawn")
-                    : null;
+                String msg;
+                if (n == 1) {
+                    msg = get("com.vividsolutions.jump.workbench.plugin.Exactly-one-vector-must-be-drawn");
+                } else {
+                    msg = getMessage(
+                            "com.vividsolutions.jump.workbench.plugin.Exactly-n-vectors-must-be-drawn",
+                            new Object[] { n });
+                }
+                return (n != vectorCount()) ? msg : null;
             }
         };
     }
 
-    //<<TODO:REFACTORING>> I wonder if we can refactor some of these methods [Jon Aquino]
+    // <<TODO:REFACTORING>> I wonder if we can refactor some of these methods
+    // [Jon Aquino]
     public EnableCheck createAtLeastNVectorsMustBeDrawnCheck(final int n) {
         return new EnableCheck() {
             public String check(JComponent component) {
-                return (n > vectorCount())
-                    ? ("At least " + n + " vector" + StringUtil.s(n) + " must be drawn")
-                    : null;
+                String msg;
+                if (n == 1) {
+                    msg = get("com.vividsolutions.jump.workbench.plugin.At-least-one-vector-must-be-drawn");
+                } else {
+                    msg = getMessage(
+                            "com.vividsolutions.jump.workbench.plugin.At-least-n-vectors-must-be-drawn",
+                            new Object[] { n });
+                }
+                return (n > vectorCount()) ? msg : null;
             }
         };
     }
@@ -340,18 +395,18 @@ public class EnableCheckFactory {
     public EnableCheck createAtLeastNFeaturesMustBeSelectedCheck(final int n) {
         return new EnableCheck() {
             public String check(JComponent component) {
-                return (
-                    n
-                        > ((SelectionManagerProxy) workbenchContext
-                            .getWorkbench()
-                            .getFrame()
-                            .getActiveInternalFrame())
-                            .getSelectionManager().getFeaturesWithSelectedItemsCount())
-//                            .getFeatureSelection()
-//                            .getFeaturesWithSelectedItems()
-//                            .size())
-                    ? ("At least " + n + " feature" + StringUtil.s(n) + " must be selected")
-                    : null;
+                String msg;
+                if (n == 1) {
+                    msg = get("com.vividsolutions.jump.workbench.plugin.At-least-one-feature-must-be-selected");
+                } else {
+                    msg = getMessage(
+                            "com.vividsolutions.jump.workbench.plugin.At-least-n-features-must-be-selected",
+                            new Object[] { n });
+                }
+                return (n > ((SelectionManagerProxy) workbenchContext
+                        .getWorkbench().getFrame().getActiveInternalFrame())
+                        .getSelectionManager()
+                        .getFeaturesWithSelectedItemsCount()) ? msg : null;
             }
         };
     }
@@ -375,11 +430,18 @@ public class EnableCheckFactory {
                 	//which are the ones accessible to the SelectionManager
                 }
                 String retVal = null;
-                if ((iFrame == null)  || (n > selected)){
-                	retVal = ("At least " + n + " item" + StringUtil.s(n) + " must be selected");
+                String msg;
+                if (n == 1) {
+                    msg = get("com.vividsolutions.jump.workbench.plugin.At-least-one-item-must-be-selected");
+                } else {
+                    msg = getMessage(
+                            "com.vividsolutions.jump.workbench.plugin.At-least-n-items-must-be-selected",
+                            new Object[] { n });
                 }
-                else{
-                	retVal = null;
+                if ((iFrame == null) || (n > selected)) {
+                    retVal = msg;
+                } else {
+                    retVal = null;
                 }
                 return retVal;
             }
@@ -389,18 +451,18 @@ public class EnableCheckFactory {
     public EnableCheck createExactlyNFeaturesMustBeSelectedCheck(final int n) {
         return new EnableCheck() {
             public String check(JComponent component) {
-                return (
-                    n
-                        != ((SelectionManagerProxy) workbenchContext
-                            .getWorkbench()
-                            .getFrame()
-                            .getActiveInternalFrame())
-                            .getSelectionManager().getFeaturesWithSelectedItemsCount())
-//                            .getFeatureSelection()
-//                            .getFeaturesWithSelectedItems()
-//                            .size())
-                    ? ("Exactly " + n + " feature" + StringUtil.s(n) + " must be selected")
-                    : null;
+                String msg;
+                if (n == 1) {
+                    msg = get("com.vividsolutions.jump.workbench.plugin.Exactly-one-feature-must-be-selected");
+                } else {
+                    msg = getMessage(
+                            "com.vividsolutions.jump.workbench.plugin.Exactly-n-features-must-be-selected",
+                            new Object[] { n });
+                }
+                return (n != ((SelectionManagerProxy) workbenchContext
+                        .getWorkbench().getFrame().getActiveInternalFrame())
+                        .getSelectionManager()
+                        .getFeaturesWithSelectedItemsCount()) ? msg : null;
             }
         };
     }
@@ -408,17 +470,18 @@ public class EnableCheckFactory {
     public EnableCheck createExactlyNItemsMustBeSelectedCheck(final int n) {
         return new EnableCheck() {
             public String check(JComponent component) {
-                return (
-                    n
-                        != ((SelectionManagerProxy) workbenchContext
-                            .getWorkbench()
-                            .getFrame()
-                            .getActiveInternalFrame())
-                            .getSelectionManager().getSelectedItemsCount())
-//                            .getSelectedItems()
-//                            .size())
-                    ? ("Exactly " + n + " item" + StringUtil.s(n) + " must be selected")
-                    : null;
+                String msg;
+                if (n == 1) {
+                    msg = get("com.vividsolutions.jump.workbench.plugin.Exactly-one-item-must-be-selected");
+                } else {
+                    msg = getMessage(
+                            "com.vividsolutions.jump.workbench.plugin.Exactly-n-items-must-be-selected",
+                            new Object[] { n });
+                }
+                return (n != ((SelectionManagerProxy) workbenchContext
+                        .getWorkbench().getFrame().getActiveInternalFrame())
+                        .getSelectionManager().getSelectedItemsCount()) ? msg
+                        : null;
             }
         };
     }
@@ -426,17 +489,18 @@ public class EnableCheckFactory {
     public EnableCheck createExactlyNLayersMustHaveSelectedItemsCheck(final int n) {
         return new EnableCheck() {
             public String check(JComponent component) {
-                return (
-                    n
-                        != ((SelectionManagerProxy) workbenchContext
-                            .getWorkbench()
-                            .getFrame()
-                            .getActiveInternalFrame())
-                            .getSelectionManager()
-                            .getLayersWithSelectedItems()
-                            .size())
-                    ? ("Exactly " + n + " layer" + StringUtil.s(n) + " must have selected items")
-                    : null;
+                String msg;
+                if (n == 1) {
+                    msg = get("com.vividsolutions.jump.workbench.plugin.Exactly-one-layer-must-have-selected-items");
+                } else {
+                    msg = getMessage(
+                            "com.vividsolutions.jump.workbench.plugin.Exactly-n-layers-must-have-selected-items",
+                            new Object[] { n });
+                }
+                return (n != ((SelectionManagerProxy) workbenchContext
+                        .getWorkbench().getFrame().getActiveInternalFrame())
+                        .getSelectionManager().getLayersWithSelectedItems()
+                        .size()) ? msg : null;
             }
         };
     }
@@ -444,17 +508,18 @@ public class EnableCheckFactory {
     public EnableCheck createExactlyNFeaturesMustHaveSelectedItemsCheck(final int n) {
         return new EnableCheck() {
             public String check(JComponent component) {
-                return (
-                    n
-                        != ((SelectionManagerProxy) workbenchContext
-                            .getWorkbench()
-                            .getFrame()
-                            .getActiveInternalFrame())
-                            .getSelectionManager().getFeaturesWithSelectedItemsCount())
-//                            .getFeaturesWithSelectedItems()
-//                            .size())
-                    ? ("Exactly " + n + " feature" + StringUtil.s(n) + " must have selected items")
-                    : null;
+                String msg;
+                if (n == 1) {
+                    msg = get("com.vividsolutions.jump.workbench.plugin.Exactly-one-feature-must-have-selected-items");
+                } else {
+                    msg = getMessage(
+                            "com.vividsolutions.jump.workbench.plugin.Exactly-n-features-must-have-selected-items",
+                            new Object[] { n });
+                }
+                return (n != ((SelectionManagerProxy) workbenchContext
+                        .getWorkbench().getFrame().getActiveInternalFrame())
+                        .getSelectionManager()
+                        .getFeaturesWithSelectedItemsCount()) ? msg : null;
             }
         };
     }    
@@ -462,10 +527,12 @@ public class EnableCheckFactory {
     public EnableCheck createSelectedLayersMustBeEditableCheck() {
         return new EnableCheck() {
             public String check(JComponent component) {
-                for (Iterator i = Arrays.asList(workbenchContext.getLayerNamePanel().getSelectedLayers()).iterator(); i.hasNext(); ) {
-                    Layer layer = (Layer) i.next();
-                    if (!layer.isEditable()) { 
-                        return "Selected layers must be editable (" + layer.getName() + ")";
+                for (Iterator<Layer> i = Arrays.asList(workbenchContext.getLayerNamePanel().getSelectedLayers()).iterator(); i.hasNext(); ) {
+                    Layer layer = i.next();
+                    if (!layer.isEditable()) {
+                        return getMessage(
+                                "com.vividsolutions.jump.workbench.plugin.Selected-layers-must-be-editable",
+                                new String[] { layer.getName() });
                     }
                 }
                 return null;
@@ -479,8 +546,8 @@ public class EnableCheckFactory {
                 LayerViewPanel layerViewPanel = workbenchContext.getLayerViewPanel();  
                 return ( layerViewPanel == null || //[UT] 20.10.2005 not quite the error mesg
                                 null == layerViewPanel.getFence())
-                    ? "A fence must be drawn"
-                    : null;
+                    ? get("com.vividsolutions.jump.workbench.plugin.A-fence-must-be-drawn")
+                        : null;
             }
         };
     }
@@ -489,33 +556,37 @@ public class EnableCheckFactory {
         return new EnableCheck() {
             public String check(JComponent component) {
                 return ((vectorCount() > max) || (vectorCount() < min))
-                    ? ("Between " + min + " and " + max + " vectors must be drawn")
+                    ? getMessage(
+                        "com.vividsolutions.jump.workbench.plugin.Between-and-vectors-must-be-drawn",
+                        new Object[] { min, max })
                     : null;
             }
         };
     }
 
-    private int vectorCount() {
+    int vectorCount() {
         return new WarpingVectorLayerFinder(workbenchContext).getVectors().size();
     }
 
 
     
-    public EnableCheck createAtLeastNFeaturesMustHaveSelectedItemsCheck(final int n) {
+    public EnableCheck createAtLeastNFeaturesMustHaveSelectedItemsCheck(
+            final int n) {
         return new EnableCheck() {
             public String check(JComponent component) {
-                return (
-                    n
-                        > ((SelectionManagerProxy) workbenchContext
-                            .getWorkbench()
-                            .getFrame()
-                            .getActiveInternalFrame())
-                            .getSelectionManager().getFeaturesWithSelectedItemsCount())
-//                            .getFeaturesWithSelectedItems()
-//                            .size())
-                    ? ("At least " + n + " feature" + StringUtil.s(n) + " must have selected items")
-                    : null;
+                String msg;
+                if (n == 1) {
+                    msg = get("com.vividsolutions.jump.workbench.plugin.At-least-one-feature-must-have-selected-items");
+                } else {
+                    msg = getMessage(
+                            "com.vividsolutions.jump.workbench.plugin.At-least-n-features-must-have-selected-items",
+                            new Object[] { n });
+                }
+                return (n > ((SelectionManagerProxy) workbenchContext
+                        .getWorkbench().getFrame().getActiveInternalFrame())
+                        .getSelectionManager()
+                        .getFeaturesWithSelectedItemsCount()) ? msg : null;
             }
         };
-    }    
+    }
 }

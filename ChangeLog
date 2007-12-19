@@ -1,3 +1,7 @@
+2007-12-19 Andreas Schmitz <schmitz@lat-lon.de>
+      translations:
+      Added the enable check factory, fixing an item on Jukka's list.
+
 2007-12-18 Paul Austin <paul.austin@revolsys.com
   *  Migrated the Layer and WMSLayer to use the new RendererFactory implementation
 
