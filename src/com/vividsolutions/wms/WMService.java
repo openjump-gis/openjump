@@ -36,6 +36,10 @@
 
 package com.vividsolutions.wms;
 
+import static javax.swing.JOptionPane.NO_OPTION;
+import static javax.swing.JOptionPane.YES_NO_OPTION;
+import static javax.swing.JOptionPane.showConfirmDialog;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -66,6 +70,7 @@ public class WMService {
   /**
    * Constructs a WMService object from a server URL.
    * @param serverUrl the URL of the WMS server
+   * @param wmsVersion 
    */
   public WMService( String serverUrl, String wmsVersion ) {
     this.serverUrl = serverUrl;   
@@ -101,6 +106,15 @@ public class WMService {
             InputStream inStream = requestUrl.openStream();
             Parser p = new Parser();
             cap = p.parseCapabilities( this, inStream );
+            String url1 = cap.getService().getServerUrl();
+            String url2 = cap.getGetMapURL();
+            if(!url1.equals(url2)){
+                int resp = showConfirmDialog(null, I18N.getMessage("com.vididsolutions.wms.WMService.Other-GetMap-URL-Found",
+                        new Object[]{url2}), null, YES_NO_OPTION);
+                if(resp == NO_OPTION) {
+                    cap.setGetMapURL(url1);
+                }
+            }
         } catch ( FileNotFoundException e ){
             JOptionPane.showMessageDialog( null, I18N.getMessage( "com.vividsolutions.wms.WMService.WMS-Not-Found",
                                                                   new Object[] { e.getLocalizedMessage() } ),

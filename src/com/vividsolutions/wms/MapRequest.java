@@ -48,8 +48,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.vividsolutions.jump.I18N;
-
 /**
  * Represents all of the parameters of a getMap request from a WMS server.
  * @author Chris Hodgson chodgson@refractions.net
@@ -269,7 +267,7 @@ public class MapRequest {
       } else if ( WMService.WMS_1_1_1.equals( version ) ){
           ver = "REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1";
       }
-      urlBuf.append( service.getServerUrl() + ver + "&WIDTH=" + imgWidth + "&HEIGHT=" + imgHeight );
+      urlBuf.append( service.getCapabilities().getGetMapURL() + ver + "&WIDTH=" + imgWidth + "&HEIGHT=" + imgHeight );
       urlBuf.append( "&LAYERS=" + listToString( layerList ) );
       if( transparent ) {
         urlBuf.append( "&TRANSPARENT=TRUE" );

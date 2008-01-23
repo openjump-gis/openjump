@@ -39,6 +39,8 @@ package com.vividsolutions.wms;
 
 import java.util.*;
 
+import static com.vividsolutions.jump.workbench.ui.plugin.wms.URLWizardPanel.*;
+
 /**
  * Represents the capabilities WMS XML.
  * @author Chris Hodgson chodgson@refractions.net
@@ -49,6 +51,7 @@ public class Capabilities {
   private String title;
   private ArrayList mapFormats;
   private WMService service;
+  private String getMapURL, getFeatureInfoURL;
 
   /** 
    * Creates a new WMS Capabilities object. Should generally only be used by the Parser.
@@ -62,8 +65,16 @@ public class Capabilities {
     this.title = title;
     this.topLayer = topLayer;
     this.mapFormats = new ArrayList( mapFormats );
+    this.getMapURL = service.getServerUrl();
+    this.getFeatureInfoURL = service.getServerUrl();
   }
   
+  public Capabilities(WMService service, String title, MapLayer topLayer, Collection mapFormats, String getMapURL, String getFeatureInfoURL) {
+      this(service, title, topLayer, mapFormats);
+      this.getMapURL = fixUrlForWMService(getMapURL);
+      this.getFeatureInfoURL = fixUrlForWMService(getFeatureInfoURL);
+    }
+
   /**
    * Gets a reference to the service which these Capabilities describe.
    * @return the WMService which these Capabilities describe
@@ -86,6 +97,18 @@ public class Capabilities {
    */
   public String getTitle() {
     return this.title;
+  }
+  
+  public String getGetMapURL() {
+      return getMapURL;
+  }
+  
+  public String getGetFeatureInfoURL() {
+      return getFeatureInfoURL;
+  }
+  
+  public void setGetMapURL(String url) {
+      getMapURL = url;
   }
   
   /**

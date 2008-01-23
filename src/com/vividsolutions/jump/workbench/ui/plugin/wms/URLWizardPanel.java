@@ -160,7 +160,7 @@ public class URLWizardPanel extends JPanel implements WizardPanel {
   //
   // The WMService appends other parameters to the end of the URL
   //
-  private String fixUrlForWMService(String url) {
+  public static String fixUrlForWMService(String url) {
     String fixedURL = url.trim();
 
     if (fixedURL.indexOf("?") == -1) {

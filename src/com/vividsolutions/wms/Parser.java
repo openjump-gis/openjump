@@ -43,22 +43,20 @@ package com.vividsolutions.wms;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.LinkedList;
-// For the ArrayList [uwe dalluege]
-import java.util.*;
 
 import org.apache.log4j.Logger;
 import org.apache.xerces.parsers.DOMParser;
 import org.w3c.dom.CharacterData;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-
-import com.vividsolutions.jump.util.*; 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.wms.util.XMLTools;
 
@@ -104,8 +102,8 @@ public class Parser {
   public MapLayer wmsLayerFromNode( Node layerNode ) {
     String name = null;
     String title = null;
-    LinkedList srsList = new LinkedList();
-    LinkedList subLayers = new LinkedList();
+    LinkedList<String> srsList = new LinkedList<String>();
+    LinkedList<MapLayer> subLayers = new LinkedList<MapLayer>();
     BoundingBox bbox = null;
     
 // I think, bbox is LatLonBoundingBox.
@@ -113,7 +111,7 @@ public class Parser {
 // It must be a list because in the OGC document
 // stands that Layers may have zero or more <BoundingBox> [uwe dalluege]
 //    BoundingBox boundingBox = null;
-    ArrayList boundingBoxList = new ArrayList ( );
+    ArrayList<BoundingBox> boundingBoxList = new ArrayList<BoundingBox> ( );
     
     NodeList nl = layerNode.getChildNodes();
 
@@ -233,7 +231,7 @@ public class Parser {
   private Capabilities parseCapabilities_1_0_0( WMService service, InputStream inStream ) throws IOException {
       MapLayer topLayer = null;
       String title = null;
-      LinkedList formatList = new LinkedList();
+      LinkedList<String> formatList = new LinkedList<String>();
       Document doc;
       
       try {
@@ -280,7 +278,8 @@ public class Parser {
   private Capabilities parseCapabilities_1_1_1( WMService service, InputStream inStream ) throws IOException {
       MapLayer topLayer = null;
       String title = null;
-      LinkedList formatList = new LinkedList();
+      String getMapURL, getFeatureInfoURL;
+      LinkedList<String> formatList = new LinkedList<String>();
       Document doc;
       
       try {
@@ -307,7 +306,7 @@ public class Parser {
       }
       
       // get the supported file formats			// UT was "WMT_MS_Capabilities/Capability/Request/Map/Format"
-      Node formatNode = XMLTools.simpleXPath( doc, "WMT_MS_Capabilities/Capability/Request/GetMap" );
+      final Node formatNode = XMLTools.simpleXPath( doc, "WMT_MS_Capabilities/Capability/Request/GetMap" );
 
       NodeList nl = formatNode.getChildNodes();
       for( int i=0; i < nl.getLength(); i++ ) {
@@ -317,10 +316,20 @@ public class Parser {
         }
       }
       
+      // get the possible URLs
+      String xp = "DCPType/HTTP/Get/OnlineResource";
+      String xlink = "http://www.w3.org/1999/xlink";
+      Element e = (Element) XMLTools.simpleXPath(formatNode, xp);
+      getMapURL = e.getAttributeNS(xlink, "href");
+
+      xp = "WMT_MS_Capabilities/Capability/Request/GetFeatureInfo/DCPType/HTTP/Get/OnlineResource";
+      e = (Element) XMLTools.simpleXPath(doc, xp);
+      getFeatureInfoURL = e.getAttributeNS(xlink, "href");
+
       // get the top layer
       topLayer = wmsLayerFromNode( XMLTools.simpleXPath( doc, "WMT_MS_Capabilities/Capability/Layer" ) );
       
-      return new Capabilities( service, title, topLayer, formatList );
+      return new Capabilities( service, title, topLayer, formatList, getMapURL, getFeatureInfoURL );
     }
   
 }
