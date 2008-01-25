@@ -201,7 +201,7 @@ public class URLWizardPanel extends JPanel implements WizardPanel {
       WMService service = new WMService(url, wmsVersion);
       // WMService service = new WMService( url );
 
-      service.initialize();
+      service.initialize(true);
       dataMap.put(SERVICE_KEY, service);
       // [UT] 20.04.2005 added version
       MapImageFormatChooser formatChooser = new MapImageFormatChooser(

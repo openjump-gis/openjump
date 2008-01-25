@@ -87,11 +87,19 @@ public class WMService {
   }
 
   /**
+ * @throws IOException
+ */
+public void initialize() throws IOException {
+      initialize(false);
+  }
+  
+  /**
    * Connect to the service and get the capabilities.
    * This must be called before anything else is done with this service.
+   * @param alertDifferingURL alert the user if a different GetMap URL is available
    * @throws IOException 
    */
-	public void initialize() throws IOException {
+	public void initialize(boolean alertDifferingURL) throws IOException {
 //    [UT]
 	    String req = "request=capabilities&WMTVER=1.0";
 	    if( WMS_1_1_0.equals( wmsVersion) ){
@@ -109,9 +117,13 @@ public class WMService {
             String url1 = cap.getService().getServerUrl();
             String url2 = cap.getGetMapURL();
             if(!url1.equals(url2)){
-                int resp = showConfirmDialog(null, I18N.getMessage("com.vididsolutions.wms.WMService.Other-GetMap-URL-Found",
-                        new Object[]{url2}), null, YES_NO_OPTION);
-                if(resp == NO_OPTION) {
+                if(alertDifferingURL) {
+                    int resp = showConfirmDialog(null, I18N.getMessage("com.vididsolutions.wms.WMService.Other-GetMap-URL-Found",
+                            new Object[]{url2}), null, YES_NO_OPTION);
+                    if(resp == NO_OPTION) {
+                        cap.setGetMapURL(url1);
+                    }
+                } else {
                     cap.setGetMapURL(url1);
                 }
             }
