@@ -414,6 +414,10 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
 
             layer.addStyle( newVertexStyle );
 
+            if(newVertexStyle.isEnabled()) {
+                layer.getBasicStyle().setEnabled(false);
+            }
+            
             layer.setSynchronizingLineColor( synchronizeCheckBox.isSelected() );
         } finally {
             layer.getLayerManager().setFiringEvents( firingEvents );
