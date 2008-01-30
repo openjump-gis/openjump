@@ -350,12 +350,68 @@
 
   <xsl:template match="fill" name="fill">
     <sld:Fill>
-      <sld:CssParameter name="fill">
-        <xsl:value-of select="xslutil:toHexColor(color)"/>
-      </sld:CssParameter>
-      <sld:CssParameter name="fill-opacity">
-        <xsl:value-of select="xslutil:toAlphaValue(../alpha)"/>
-      </sld:CssParameter>
+      <xsl:choose>
+        <xsl:when test="pattern/@class='com.vividsolutions.jump.workbench.ui.renderer.style.ImageFillPattern'">
+          <xsl:variable name="imageURL">
+            <xsl:value-of select="xslutil:getIconURL(pattern/properties/properties/mapping[string(key) = 'FILENAME']/value)" />
+          </xsl:variable>
+
+          <xsl:variable name="fileName">
+            <xsl:value-of select="translate(string(pattern/properties/properties/mapping[string(key) = 'FILENAME']/value), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')" />
+          </xsl:variable>
+
+          <sld:GraphicFill>
+            <sld:Graphic>
+              <sld:ExternalGraphic>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple">
+                  <xsl:attribute name="xlink:href"><xsl:value-of select="$imageURL"/></xsl:attribute>
+                </OnlineResource>
+                <sld:Format>
+                  <xsl:choose>
+                    <xsl:when test="contains($fileName, 'png')">image/png</xsl:when>
+                    <xsl:when test="contains($fileName, 'jpg')">image/jpg</xsl:when>
+                    <xsl:when test="contains($fileName, 'gif')">image/gif</xsl:when>
+                    <xsl:otherwise>unknown format</xsl:otherwise>
+                  </xsl:choose>
+                </sld:Format>
+              </sld:ExternalGraphic>
+            </sld:Graphic>
+          </sld:GraphicFill>
+        </xsl:when>
+        <xsl:when test="pattern/@class='com.vividsolutions.jump.workbench.ui.renderer.style.WKTFillPattern'">
+          <xsl:variable name="width">
+            <xsl:value-of select="number(pattern/properties/properties/mapping[string(key) = 'LINE WIDTH']/value)" />
+          </xsl:variable>
+          <xsl:variable name="extent">
+            <xsl:value-of select="number(pattern/properties/properties/mapping[string(key) = 'EXTENT']/value)" />
+          </xsl:variable>
+          <xsl:variable name="pattern">
+            <xsl:value-of select="string(pattern/properties/properties/mapping[string(key) = 'PATTERN WKT']/value)" />
+          </xsl:variable>
+          <xsl:variable name="color">
+            <xsl:value-of select="xslutil:toHexColor(pattern/properties/properties/mapping[string(key) = 'COLOR']/value)" />
+          </xsl:variable>
+
+          <sld:GraphicFill>
+            <sld:Graphic>
+              <sld:ExternalGraphic>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple">
+                  <xsl:attribute name="xlink:href"><xsl:value-of select="xslutil:createPatternImage(number($width), number($extent), $pattern, $color)"/></xsl:attribute>
+                </OnlineResource>
+                <sld:Format>image/png</sld:Format>
+              </sld:ExternalGraphic>
+            </sld:Graphic>
+          </sld:GraphicFill>
+        </xsl:when>
+        <xsl:otherwise>
+          <sld:CssParameter name="fill">
+            <xsl:value-of select="xslutil:toHexColor(color)"/>
+          </sld:CssParameter>
+          <sld:CssParameter name="fill-opacity">
+            <xsl:value-of select="xslutil:toAlphaValue(../alpha)"/>
+          </sld:CssParameter>
+        </xsl:otherwise>
+      </xsl:choose>
       <!--[PENDING: this is the last token of the above] -->
     </sld:Fill>
   </xsl:template>

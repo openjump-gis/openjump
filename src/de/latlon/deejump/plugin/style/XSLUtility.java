@@ -42,11 +42,21 @@
  ---------------------------------------------------------------------------*/
 package de.latlon.deejump.plugin.style;
 
+import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
+
+import javax.imageio.ImageIO;
 
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
+
+import com.vividsolutions.jump.util.Blackboard;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.renderer.style.BasicFillPattern;
+import com.vividsolutions.jump.workbench.ui.renderer.style.WKTFillPattern;
 
 /**
  * ...
@@ -56,88 +66,89 @@ import org.w3c.dom.Node;
  */
 public class XSLUtility {
 
-    public static String toHexColor( Node colorNode ) {
+    public static String toHexColor(Node colorNode) {
         String value = "#000000";
-        if ( colorNode == null )
+        if (colorNode == null)
             return value;
 
         try {// FIXME no good to grab 1st child and then node val
-            if ( colorNode.getFirstChild() == null )
+            if (colorNode.getFirstChild() == null)
                 return value;
             String nodeVal = colorNode.getFirstChild().getNodeValue();
-            String[] components = nodeVal.split( ", " );
-            StringBuffer sb = new StringBuffer( 100 );
-            sb.append( "#" );
-            for ( int i = 0; i < components.length - 1; i++ ) {
+            String[] components = nodeVal.split(", ");
+            StringBuffer sb = new StringBuffer(100);
+            sb.append("#");
+            for (int i = 0; i < components.length - 1; i++) {
 
-                String uglyHack = Integer.toHexString( Integer.parseInt( components[i] ) );
+                String uglyHack = Integer.toHexString(Integer
+                        .parseInt(components[i]));
                 uglyHack = uglyHack.length() == 1 ? "0" + uglyHack : uglyHack;
-                sb.append( uglyHack );
+                sb.append(uglyHack);
 
             }
 
             value = sb.toString();
 
-        } catch ( Exception e ) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         return value;
     }
 
-    public static String toAlphaValue( Node colorNode ) {
+    public static String toAlphaValue(Node colorNode) {
         String value = "1";
 
-        if ( colorNode == null || colorNode.getFirstChild() == null ) {
+        if (colorNode == null || colorNode.getFirstChild() == null) {
             return value;
         }
 
         try {// FIXME no good to grab 1st child than node val
             String nodeVal = colorNode.getFirstChild().getNodeValue();
 
-            value = String.valueOf( Double.parseDouble( nodeVal ) / 255d );
-        } catch ( Exception e ) {
+            value = String.valueOf(Double.parseDouble(nodeVal) / 255d);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         // don't care about number formating, just trim the string
-        if ( value.length() > 6 ) {
-            value = value.substring( 0, 5 );
+        if (value.length() > 6) {
+            value = value.substring(0, 5);
         }
         return value;
     }
 
-    public static String toFontFamily( Node colorNode ) {
+    public static String toFontFamily(Node colorNode) {
         String value = "Dialog";
 
         try {// FIXME no good to grab 1st child than node val
             String nodeVal = colorNode.getFirstChild().getNodeValue();
-            String[] components = nodeVal.split( ", " );
+            String[] components = nodeVal.split(", ");
             value = components[0];
-        } catch ( Exception e ) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return value;
     }
 
-    public static String toFontStyle( Node fontNode ) {
+    public static String toFontStyle(Node fontNode) {
         // bold not supported in SLD?
         final String[] styles = { "normal", "normal", "italic" };
 
         String value = styles[0];
         try {// FIXME no good to grab 1st child than node val
             String nodeVal = fontNode.getFirstChild().getNodeValue();
-            String[] components = nodeVal.split( ", " );
+            String[] components = nodeVal.split(", ");
 
             // cheap, cheap, cheap
-            value = styles[Integer.parseInt( components[1] )];
-        } catch ( Exception e ) {
+            value = styles[Integer.parseInt(components[1])];
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return value;
     }
 
-    public static String toWellKnowName( Node vertexStyleNode ) {
-        if ( vertexStyleNode == null ) {
+    public static String toWellKnowName(Node vertexStyleNode) {
+        if (vertexStyleNode == null) {
             return "";
         }
 
@@ -145,49 +156,65 @@ public class XSLUtility {
         try {
 
             NamedNodeMap atts = vertexStyleNode.getAttributes();
-            String nodeVal = atts.getNamedItem( "class" ).getNodeValue();
+            String nodeVal = atts.getNamedItem("class").getNodeValue();
 
-            if ( nodeVal.indexOf( "Square" ) > -1 ) {
+            if (nodeVal.indexOf("Square") > -1) {
                 // already there
-            } else if ( nodeVal.indexOf( "Circle" ) > -1 ) {
+            } else if (nodeVal.indexOf("Circle") > -1) {
                 value = "circle";
-            } else if ( nodeVal.indexOf( "Cross" ) > -1 ) {
+            } else if (nodeVal.indexOf("Cross") > -1) {
                 value = "cross";
-            } else if ( nodeVal.indexOf( "Star" ) > -1 ) {
+            } else if (nodeVal.indexOf("Star") > -1) {
                 value = "star";
-            } else if ( nodeVal.indexOf( "Triangle" ) > -1 ) {
+            } else if (nodeVal.indexOf("Triangle") > -1) {
                 value = "triangle";
             }
 
-        } catch ( Exception e ) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return value;
     }
 
-    public static String fileToURL( String filename ) {
-        File f = new File( filename );
+    public static String fileToURL(String filename) {
+        File f = new File(filename);
         f.deleteOnExit();
 
         try {
             return f.toURL().toString();
-        } catch ( MalformedURLException e ) {
+        } catch (MalformedURLException e) {
             return filename;
         }
     }
 
-    public static String replaceComma( Node node ) {
-        if ( node.getFirstChild().getTextContent() == null ) {
+    public static String replaceComma(Node node) {
+        if (node.getFirstChild().getTextContent() == null) {
             return "";
         }
 
-        String[] ss = node.getFirstChild().getTextContent().split( "," );
+        String[] ss = node.getFirstChild().getTextContent().split(",");
 
-        if ( ss.length == 1 ) {
+        if (ss.length == 1) {
             return ss[0] + " " + ss[0];
         }
 
         return ss[0] + " " + ss[1];
+    }
+
+    public static String getIconURL(String icon) {
+        return IconLoader.class.getResource(icon).toExternalForm();
+    }
+
+    public static String createPatternImage(int width, int extent,
+            String pattern, String color) throws IOException {
+        File file = File.createTempFile("ojp", "pti.png");
+        WKTFillPattern pat = new WKTFillPattern(width, extent, pattern);
+        Blackboard b = pat.getProperties();
+        Color c = Color.decode(color);
+        b.put(BasicFillPattern.COLOR_KEY, c);
+        BufferedImage img = pat.createImage(pat.getProperties());
+        ImageIO.write(img, "png", file);
+        return file.toURL().toExternalForm();
     }
 
 }
