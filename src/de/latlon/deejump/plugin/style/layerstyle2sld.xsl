@@ -205,9 +205,14 @@
                     <sld:Fill>
                       <!-- fill is the color of basic style -->
                       <sld:CssParameter name="fill">
-                        <xsl:value-of select="$defaultFillColor"/>
+                        <xsl:value-of select="xslutil:toHexColor(color)"/>
                       </sld:CssParameter>
                     </sld:Fill>
+                    <sld:Stroke>
+                      <sld:CssParameter name="stroke">
+                        <xsl:value-of select="xslutil:toHexColor(stroke-color)"/>
+                      </sld:CssParameter>
+                    </sld:Stroke>
                   </sld:Mark>
                   <xsl:if
                      test="string-length(@size) &gt; 0">

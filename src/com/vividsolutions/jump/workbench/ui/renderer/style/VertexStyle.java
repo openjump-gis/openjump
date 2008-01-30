@@ -82,6 +82,22 @@ public abstract class VertexStyle implements Style {
         return size;
     }
 
+    public Color getFillColor() {
+        return fillColor;
+    }
+    
+    public void setFillColor(Color c) {
+        fillColor = c;
+    }
+    
+    public Color getStrokeColor() {
+        return strokeColor;
+    }
+    
+    public void setStrokeColor(Color c) {
+        strokeColor = c;
+    }
+    
     public void initialize(Layer layer) {
         //Set the vertices' fill color to the layer's line color
         fillColor = GUIUtil.alphaColor(layer.getBasicStyle().getFillColor(),
