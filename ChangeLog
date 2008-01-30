@@ -1,4 +1,9 @@
 2008-01-30 Andreas Schmitz <schmitz@lat-lon.de>
+      src/de/latlon/deejump/plugin/style/VertexStyleChooser.java,
+      src/de/latlon/deejump/plugin/style/DeeRenderingStylePanel.java:
+      Fixed preview of point symbols.
+
+2008-01-30 Andreas Schmitz <schmitz@lat-lon.de>
       src/de/latlon/deejump/plugin/style/layerstyle2sld.xsl,
       src/de/latlon/deejump/plugin/style/VertexStyleChooser.java:
       Fixed/added handling of custom point symbols (deeJUMP).

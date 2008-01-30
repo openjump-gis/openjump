@@ -6,11 +6,15 @@
  */
 package de.latlon.deejump.plugin.style;
 
+import static de.latlon.deejump.plugin.style.VertexStylesFactory.BITMAP_STYLE;
+import static de.latlon.deejump.plugin.style.VertexStylesFactory.CIRCLE_STYLE;
+import static de.latlon.deejump.plugin.style.VertexStylesFactory.CROSS_STYLE;
+import static de.latlon.deejump.plugin.style.VertexStylesFactory.SQUARE_STYLE;
+import static de.latlon.deejump.plugin.style.VertexStylesFactory.STAR_STYLE;
+import static de.latlon.deejump.plugin.style.VertexStylesFactory.TRIANGLE_STYLE;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Image;
-import java.awt.MediaTracker;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -28,7 +32,7 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
-import static de.latlon.deejump.plugin.style.VertexStylesFactory.*;
+
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.ui.renderer.style.VertexStyle;
 
@@ -42,11 +46,13 @@ import com.vividsolutions.jump.workbench.ui.renderer.style.VertexStyle;
  */
 public class VertexStyleChooser extends JPanel {
 
-    private static final List STYLE_NAMES;
+    private static final long serialVersionUID = 7256506666365045855L;
+
+    static final List<String> STYLE_NAMES;
 
     static {
 
-        List TEMP_STYLE_NAMES = new ArrayList(5);
+        List<String> TEMP_STYLE_NAMES = new ArrayList<String>(5);
         TEMP_STYLE_NAMES.add(SQUARE_STYLE);
         TEMP_STYLE_NAMES.add(CIRCLE_STYLE);
         TEMP_STYLE_NAMES.add(TRIANGLE_STYLE);
@@ -61,11 +67,12 @@ public class VertexStyleChooser extends JPanel {
 
     private JButton bitmapChangeButton;
 
-    private String selectedItem;
-
     private String currentFilename;
 
     // [sstein 02.08.2006] - removed because we would have two sliders
+    /**
+     * 
+     */
     public JSlider sizeSlider;
 
     private boolean activateOwnSlider = false;
@@ -95,10 +102,9 @@ public class VertexStyleChooser extends JPanel {
         pointTypeComboBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 JComboBox comboBox = (JComboBox) e.getSource();
-                String selectedItem = (String) STYLE_NAMES.get(comboBox
+                String selectedItem = STYLE_NAMES.get(comboBox
                         .getSelectedIndex());
                 setSelectedStyle(selectedItem);
-                setSelectedItem(selectedItem);
             }
         });
 
@@ -114,7 +120,7 @@ public class VertexStyleChooser extends JPanel {
         }
         sizeSlider.setBorder(BorderFactory.createTitledBorder("Point size: "));
         if (this.activateOwnSlider == true) {
-            Hashtable labelTable = new Hashtable();
+            Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
             labelTable.put(new Integer(5), new JLabel("5"));
             labelTable.put(new Integer(10), new JLabel("10"));
             labelTable.put(new Integer(15), new JLabel("15"));
@@ -157,11 +163,6 @@ public class VertexStyleChooser extends JPanel {
     public void removeActionListener(ActionListener actionListener) {
         pointTypeComboBox.removeActionListener(actionListener);
         bitmapChangeButton.removeActionListener(actionListener);
-    }
-
-    private void setSelectedItem(String selectedItem) {
-        this.selectedItem = selectedItem;
-
     }
 
     public void addChangeListener(ChangeListener cl) {
@@ -222,13 +223,13 @@ public class VertexStyleChooser extends JPanel {
      * @return the selected vertex style
      */
     public VertexStyle getSelectedStyle() {
-        String wellKnowName = (String) STYLE_NAMES.get(this.pointTypeComboBox
+        String wellKnowName = STYLE_NAMES.get(this.pointTypeComboBox
                 .getSelectedIndex());
-        if (VertexStylesFactory.BITMAP_STYLE.equals(wellKnowName)) {
+        if (BITMAP_STYLE.equals(wellKnowName)) {
             wellKnowName = getCurrentFileName();
             if (wellKnowName == null) {
                 // reset to the first style
-                wellKnowName = (String) STYLE_NAMES.get(0);
+                wellKnowName = STYLE_NAMES.get(0);
             }
         }
         VertexStyle vertexStyle = VertexStylesFactory
