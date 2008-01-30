@@ -195,7 +195,6 @@
                       </xsl:choose>
                     </sld:Format>
                   </sld:ExternalGraphic>
-                  <sld:Mark/>
                 </xsl:when>
                 <xsl:otherwise>
                   <sld:Mark>
