@@ -740,7 +740,7 @@ public class SaveDatasetsPlugIn extends AbstractPlugIn
 		        FeatureCollectionWrapper pointFeatureCollection = pointLayer.getFeatureCollectionWrapper();
 		        newLayers.add(pointLayer);
 		        context.getWorkbenchFrame().getOutputFrame().addText(sNewLayerCreated + ": " + pointLayer.getName());
-		    	context.getWorkbenchFrame().warnUser(sNewLayerCreated + " - " + sErrorSeeOutputWindow);
+		    	context.getWorkbenchFrame().warnUser(sNewLayerCreated + " - " + sWarningSeeOutputWindow);
 	           
 				for (int i = 0; i < pointFeatures.size(); i++)
 	            {
