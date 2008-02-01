@@ -351,7 +351,7 @@
   <xsl:template match="fill" name="fill">
     <sld:Fill>
       <xsl:choose>
-        <xsl:when test="pattern/@class='com.vividsolutions.jump.workbench.ui.renderer.style.ImageFillPattern'">
+        <xsl:when test="pattern/@class='com.vividsolutions.jump.workbench.ui.renderer.style.ImageFillPattern' and pattern/@enabled='true'">
           <xsl:variable name="imageURL">
             <xsl:value-of select="xslutil:getIconURL(pattern/properties/properties/mapping[string(key) = 'FILENAME']/value)" />
           </xsl:variable>
@@ -378,7 +378,7 @@
             </sld:Graphic>
           </sld:GraphicFill>
         </xsl:when>
-        <xsl:when test="pattern/@class='com.vividsolutions.jump.workbench.ui.renderer.style.WKTFillPattern'">
+        <xsl:when test="pattern/@class='com.vividsolutions.jump.workbench.ui.renderer.style.WKTFillPattern' and pattern/@enabled='true'">
           <xsl:variable name="width">
             <xsl:value-of select="number(pattern/properties/properties/mapping[string(key) = 'LINE WIDTH']/value)" />
           </xsl:variable>

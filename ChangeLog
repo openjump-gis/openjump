@@ -1,3 +1,7 @@
+2008-02-01 Andreas Schmitz <schmitz@lat-lon.de>
+      src/de/latlon/deejump/plugin/style/layerstyle2sld.xsl:
+      Fixed handling of disabled pattern styles.
+
 2008-01-30 Andreas Schmitz <schmitz@lat-lon.de>
       src/de/latlon/deejump/plugin/style/layerstyle2sld.xsl,
       src/de/latlon/deejump/plugin/style/XSLUtility.java:
