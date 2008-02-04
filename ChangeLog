@@ -1,3 +1,33 @@
+2008-02-04 Andreas Schmitz <schmitz@lat-lon.de>
+      src/language/jump_it.properties,
+      src/language/jump_fi.properties,
+      src/language/jump.properties,
+      src/language/jump_zh_CN.properties,
+      src/language/jump_en.properties,
+      src/language/jump_pt.properties,
+      src/language/jump_pt_BR.properties,
+      src/language/jump_es.properties,
+      src/language/jump_fr.properties,
+      src/language/jump_de.properties,
+      src/org/openjump/OpenJumpConfiguration.java,
+      src/org/openjump/core/ui/plugin/style,
+      src/org/openjump/core/ui/plugin/style/ImportSLDPlugIn.java,
+      src/org/openjump/util/SLDImporter.java,
+      src/org/openjump/util/CustomTexturePaint.java,
+      src/org/openjump/util/CustomTexturePaint.java2xml,
+      src/de/latlon/deejump/plugin/style/LayerStyle2SLDPlugIn.java,
+      src/de/latlon/deejump/plugin/style/layerstyle2sld.xsl,
+      src/de/latlon/deejump/plugin/style/CrossVertexStyle.java2xml,
+      src/de/latlon/deejump/plugin/style/CircleVertexStyle.java2xml,
+      src/de/latlon/deejump/plugin/style/TriangleVertexStyle.java2xml,
+      src/de/latlon/deejump/plugin/style/BitmapVertexStyle.java,
+      src/de/latlon/deejump/plugin/style/StarVertexStyle.java2xml,
+      src/de/latlon/deejump/plugin/style/BitmapVertexStyle.java2xml,
+      src/com/vividsolutions/jump/workbench/ui/renderer/style/ColorThemingStyle.java,
+      src/com/vividsolutions/jump/workbench/ui/renderer/style/VertexStyle.java,
+      src/com/vividsolutions/jump/workbench/ui/renderer/style/BasicStyle.java:
+      Added ImportSLD plugin. Made some necessary changes/extended the LayerStyle2SLDPlugIn.
+
 2008-02-01 Andreas Schmitz <schmitz@lat-lon.de>
       src/de/latlon/deejump/plugin/style/layerstyle2sld.xsl:
       Fixed handling of disabled pattern styles.

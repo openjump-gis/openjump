@@ -54,7 +54,6 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import javax.swing.Icon;
@@ -76,8 +75,8 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.BasicFeature;
-import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.util.java2xml.Java2XML;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
@@ -91,6 +90,7 @@ import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
+import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 
 /**
  * ...
@@ -100,11 +100,12 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
  */
 public class LayerStyle2SLDPlugIn extends AbstractPlugIn {
 
-    private static final Logger LOG = Logger.getLogger( LayerStyle2SLDPlugIn.class );
+    private static final Logger LOG = Logger
+            .getLogger(LayerStyle2SLDPlugIn.class);
 
     /**
-     * The <code>Transformer</code> object used in the transformation of a task/project/layer xml
-     * to sld.
+     * The <code>Transformer</code> object used in the transformation of a
+     * task/project/layer xml to sld.
      */
     protected static Transformer transformer = null;
 
@@ -120,7 +121,8 @@ public class LayerStyle2SLDPlugIn extends AbstractPlugIn {
 
     private MultiInputDialog dialog;
 
-    private String styleTitle, geomProperty, styleName, wmsLayerName, namespace, prefix;
+    private String styleTitle, geomProperty, styleName, wmsLayerName,
+            namespace, prefix;
 
     private String featureTypeStyle;
 
@@ -128,7 +130,8 @@ public class LayerStyle2SLDPlugIn extends AbstractPlugIn {
 
     @Override
     public String getName() {
-        return I18N.get( "deejump.pluging.style.LayerStyle2SLDPlugIn.Transform-layer-style-into-sld" );
+        return I18N
+                .get("deejump.pluging.style.LayerStyle2SLDPlugIn.Transform-layer-style-into-sld");
     }
 
     /**
@@ -137,232 +140,290 @@ public class LayerStyle2SLDPlugIn extends AbstractPlugIn {
      * @param context
      * @throws Exception
      */
-    public void install( PlugInContext context )
-                            throws Exception {
+    public void install(PlugInContext context) throws Exception {
 
-        context.getWorkbenchContext().getWorkbench().getFrame().getToolBar().addPlugIn(
-                                                                                        getIcon(),
-                                                                                        this,
-                                                                                        createEnableCheck( context.getWorkbenchContext() ),
-                                                                                        context.getWorkbenchContext() );
+        context.getWorkbenchContext().getWorkbench().getFrame().getToolBar()
+                .addPlugIn(getIcon(), this,
+                        createEnableCheck(context.getWorkbenchContext()),
+                        context.getWorkbenchContext());
 
     }
 
     @Override
-    public void initialize( PlugInContext context )
-                            throws Exception {
+    public void initialize(PlugInContext context) throws Exception {
 
-        FeatureInstaller featureInstaller = new FeatureInstaller( context.getWorkbenchContext() );
-        featureInstaller.addMainMenuItem( this, // exe
-                                          new String[] { MenuNames.VIEW }, // menu path
-                                          this.getName() + "{pos:2}", // name methode .getName
-                                          // recieved by
-                                          // AbstractPlugIn
-                                          false, // checkbox
-                                          null, // icon
-                                          createEnableCheck( context.getWorkbenchContext() ) ); // enable
+        FeatureInstaller featureInstaller = new FeatureInstaller(context
+                .getWorkbenchContext());
+        featureInstaller.addMainMenuItem(this, // exe
+                new String[] { MenuNames.VIEW }, // menu path
+                this.getName() + "{pos:2}", // name methode .getName
+                // recieved by
+                // AbstractPlugIn
+                false, // checkbox
+                null, // icon
+                createEnableCheck(context.getWorkbenchContext())); // enable
         // check
     }
 
     @Override
-    public boolean execute( PlugInContext context )
-                            throws Exception {
-        reportNothingToUndoYet( context );
+    public boolean execute(PlugInContext context) throws Exception {
+        Blackboard bb = PersistentBlackboardPlugIn.get(context
+                .getWorkbenchContext());
+        String fileName = (String) bb.get("LayerStyle2SLDPlugIn.filename");
 
-        Layer layer = context.getSelectedLayer( 0 );
-        if ( layer == null ) {
+        reportNothingToUndoYet(context);
+
+        Layer layer = context.getSelectedLayer(0);
+        if (layer == null) {
             return false;
         }
 
         geomProperty = "GEOM";
 
-        FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
-        for ( int i = 0; i < schema.getAttributeCount(); ++i ) {
-            if ( schema.getAttributeType( i ) == AttributeType.GEOMETRY ) {
-                geomProperty = schema.getAttributeName( i );
+        FeatureSchema schema = layer.getFeatureCollectionWrapper()
+                .getFeatureSchema();
+        for (int i = 0; i < schema.getAttributeCount(); ++i) {
+            if (schema.getAttributeType(i) == AttributeType.GEOMETRY) {
+                geomProperty = schema.getAttributeName(i);
             }
         }
 
-        initDialog( context );
+        initDialog(context);
 
-        dialog.setVisible( true );
+        dialog.setVisible(true);
 
-        if ( !dialog.wasOKPressed() ) {
+        if (!dialog.wasOKPressed()) {
             return false;
         }
 
-        // why the field name given when constructing the dialog are used both for the label and
+        // why the field name given when constructing the dialog are used both
+        // for the label and
         // for the key is beyond me
-        wmsLayerName = dialog.getText( I18N.get( "deejump.pluging.style.LayerStyle2SLDPlugIn.WMS-Layer-name" ) );
-        styleName = dialog.getText( I18N.get( "deejump.pluging.style.LayerStyle2SLDPlugIn.Style-name" ) );
-        styleTitle = dialog.getText( I18N.get( "deejump.pluging.style.LayerStyle2SLDPlugIn.Style-title" ) );
-        featureTypeStyle = dialog.getText( I18N.get( "deejump.pluging.style.LayerStyle2SLDPlugIn.Feature-Type-Style" ) );
-        geomProperty = dialog.getText( I18N.get( "deejump.pluging.style.LayerStyle2SLDPlugIn.geomProperty" ) );
-        namespace = dialog.getText( I18N.get( "deejump.pluging.style.LayerStyle2SLDPlugIn.Namespace" ) );
-        prefix = namespace.substring( namespace.lastIndexOf( '/' ) + 1 );
+        wmsLayerName = dialog
+                .getText(I18N
+                        .get("deejump.pluging.style.LayerStyle2SLDPlugIn.WMS-Layer-name"));
+        styleName = dialog.getText(I18N
+                .get("deejump.pluging.style.LayerStyle2SLDPlugIn.Style-name"));
+        styleTitle = dialog.getText(I18N
+                .get("deejump.pluging.style.LayerStyle2SLDPlugIn.Style-title"));
+        featureTypeStyle = dialog
+                .getText(I18N
+                        .get("deejump.pluging.style.LayerStyle2SLDPlugIn.Feature-Type-Style"));
+        geomProperty = dialog
+                .getText(I18N
+                        .get("deejump.pluging.style.LayerStyle2SLDPlugIn.geomProperty"));
+        namespace = dialog.getText(I18N
+                .get("deejump.pluging.style.LayerStyle2SLDPlugIn.Namespace"));
+        prefix = namespace.substring(namespace.lastIndexOf('/') + 1);
 
-        if ( fileChooser == null ) {
+        if (fileChooser == null) {
             fileChooser = new JFileChooser();
-            fileChooser.setApproveButtonText( I18N.get( "deejump.pluging.style.LayerStyle2SLDPlugIn.Save" ) );
-            fileChooser.setDialogTitle( I18N.get( "deejump.pluging.style.LayerStyle2SLDPlugIn.Save-style-as-SLD" ) );
+            if (fileName != null) {
+                fileChooser.setCurrentDirectory(new File(fileName)
+                        .getParentFile());
+            }
+            fileChooser.setApproveButtonText(I18N
+                    .get("deejump.pluging.style.LayerStyle2SLDPlugIn.Save"));
+            fileChooser
+                    .setDialogTitle(I18N
+                            .get("deejump.pluging.style.LayerStyle2SLDPlugIn.Save-style-as-SLD"));
         }
 
-        if ( JFileChooser.APPROVE_OPTION == fileChooser.showOpenDialog( context.getWorkbenchFrame() ) ) {
+        if (JFileChooser.APPROVE_OPTION == fileChooser.showOpenDialog(context
+                .getWorkbenchFrame())) {
 
-            // FIXME no good: saving to file to transform...
-            File file = File.createTempFile( "temptask", ".xml" );
+            File file = File.createTempFile("temptask", ".xml");
             file.deleteOnExit();
+            bb.put("LayerStyle2SLDPlugIn.filename", fileChooser
+                    .getSelectedFile().getAbsoluteFile().toString());
 
-            activateVertexStyle( layer );
+            scaleFactor = calcScaleFactor(context.getLayerViewPanel());
 
-            scaleFactor = calcScaleFactor( context.getLayerViewPanel() );
-
-            transformXML( layer, file, fileChooser.getSelectedFile(), scaleFactor );
+            transformXML(layer, file, fileChooser.getSelectedFile(),
+                    scaleFactor);
 
         }
 
         return true;
     }
 
-    /**
-     * When starting up, vertex styles might be deactivated, though they are "shown". So, if layer
-     * if of point type, and basic style is activated, activated vertex style too.
-     * 
-     * @param layer
-     */
-    private void activateVertexStyle( Layer layer ) {
-        Iterator<?> iter = layer.getFeatureCollectionWrapper().getUltimateWrappee().getFeatures().iterator();
-        String type = "";
-        if ( iter.hasNext() ) {
-            Feature f = (Feature) iter.next();
-            type = f.getGeometry().getGeometryType();
+    private void initDialog(PlugInContext context) {
+        if (dialog == null) {
 
-        }
-        if ( layer.getBasicStyle().isEnabled() ) {
-            if ( "MultiPoint".equals( type ) || "Point".equals( type ) ) {
-                layer.getVertexStyle().setEnabled( true );
-            }
-        }
-    }
-
-    private void initDialog( PlugInContext context ) {
-        if ( dialog == null ) {
-
-            dialog = new MultiInputDialog( context.getWorkbenchFrame(),
-                                           I18N.get( "deejump.pluging.style.LayerStyle2SLDPlugIn.SLD-Parameters" ),
-                                           true );
+            dialog = new MultiInputDialog(
+                    context.getWorkbenchFrame(),
+                    I18N
+                            .get("deejump.pluging.style.LayerStyle2SLDPlugIn.SLD-Parameters"),
+                    true);
 
             dialog.addSeparator();
 
-            dialog.addTextField(
-                                 I18N.get( "deejump.pluging.style.LayerStyle2SLDPlugIn.geomProperty" ),
-                                 geomProperty,
-                                 25,
-                                 null,
-                                 I18N.get( "deejump.pluging.style.LayerStyle2SLDPlugIn.Input-the-name-of-the-geometry-property" ) );
+            dialog
+                    .addTextField(
+                            I18N
+                                    .get("deejump.pluging.style.LayerStyle2SLDPlugIn.geomProperty"),
+                            geomProperty,
+                            25,
+                            null,
+                            I18N
+                                    .get("deejump.pluging.style.LayerStyle2SLDPlugIn.Input-the-name-of-the-geometry-property"));
 
             dialog.addSeparator();
-            String name = context.getCandidateLayer( 0 ).getName();
+            String name = context.getCandidateLayer(0).getName();
 
-            dialog.addTextField( I18N.get( "deejump.pluging.style.LayerStyle2SLDPlugIn.WMS-Layer-name" ), name, 25,
-                                 null, I18N.get( "deejump.pluging.style.LayerStyle2SLDPlugIn.WMS-Layer-name" ) );
-            dialog.addTextField( I18N.get( "deejump.pluging.style.LayerStyle2SLDPlugIn.Style-name" ), name, 25, null,
-                                 I18N.get( "deejump.pluging.style.LayerStyle2SLDPlugIn.Style-name" ) );
-            dialog.addTextField( I18N.get( "deejump.pluging.style.LayerStyle2SLDPlugIn.Style-title" ), name, 25, null,
-                                 I18N.get( "deejump.pluging.style.LayerStyle2SLDPlugIn.Style-title" ) );
-            dialog.addTextField( I18N.get( "deejump.pluging.style.LayerStyle2SLDPlugIn.Feature-Type-Style" ), name, 25,
-                                 null, I18N.get( "deejump.pluging.style.LayerStyle2SLDPlugIn.Feature-Type-Style" ) );
-            dialog.addTextField( I18N.get( "deejump.pluging.style.LayerStyle2SLDPlugIn.Namespace" ),
-                                 "http://www.deegree.org/app", 25, null,
-                                 I18N.get( "deejump.pluging.style.LayerStyle2SLDPlugIn.Namespace" ) );
-            GUIUtil.centreOnWindow( dialog );
+            dialog
+                    .addTextField(
+                            I18N
+                                    .get("deejump.pluging.style.LayerStyle2SLDPlugIn.WMS-Layer-name"),
+                            name,
+                            25,
+                            null,
+                            I18N
+                                    .get("deejump.pluging.style.LayerStyle2SLDPlugIn.WMS-Layer-name"));
+            dialog
+                    .addTextField(
+                            I18N
+                                    .get("deejump.pluging.style.LayerStyle2SLDPlugIn.Style-name"),
+                            name,
+                            25,
+                            null,
+                            I18N
+                                    .get("deejump.pluging.style.LayerStyle2SLDPlugIn.Style-name"));
+            dialog
+                    .addTextField(
+                            I18N
+                                    .get("deejump.pluging.style.LayerStyle2SLDPlugIn.Style-title"),
+                            name,
+                            25,
+                            null,
+                            I18N
+                                    .get("deejump.pluging.style.LayerStyle2SLDPlugIn.Style-title"));
+            dialog
+                    .addTextField(
+                            I18N
+                                    .get("deejump.pluging.style.LayerStyle2SLDPlugIn.Feature-Type-Style"),
+                            name,
+                            25,
+                            null,
+                            I18N
+                                    .get("deejump.pluging.style.LayerStyle2SLDPlugIn.Feature-Type-Style"));
+            dialog
+                    .addTextField(
+                            I18N
+                                    .get("deejump.pluging.style.LayerStyle2SLDPlugIn.Namespace"),
+                            "http://www.deegree.org/app",
+                            25,
+                            null,
+                            I18N
+                                    .get("deejump.pluging.style.LayerStyle2SLDPlugIn.Namespace"));
+            GUIUtil.centreOnWindow(dialog);
         }
     }
 
-    private void transformXML( Layer layer, File inputXML, File outputXML, double scaleFactor )
-                            throws Exception {
+    private void transformXML(Layer layer, File inputXML, File outputXML,
+            double scaleFactor) throws Exception {
 
         // TODO don't assume has 1 item!!!
-        BasicFeature bf = (BasicFeature) layer.getFeatureCollectionWrapper().getFeatures().get( 0 );
+        BasicFeature bf = (BasicFeature) layer.getFeatureCollectionWrapper()
+                .getFeatures().get(0);
         Geometry geo = bf.getGeometry();
         String geoType = geo.getGeometryType();
 
-        java2Xml.write( layer, "layer", inputXML );
+        java2Xml.write(layer, "layer", inputXML);
 
-        FileInputStream input = new FileInputStream( inputXML );
+        FileInputStream input = new FileInputStream(inputXML);
 
         // FileWriter fw = new FileWriter( outputXML );
-        OutputStreamWriter fw = new OutputStreamWriter( new FileOutputStream( outputXML ), UTF_8 );
+        OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(
+                outputXML), UTF_8);
 
-        HashMap<String, String> map = new HashMap<String, String>( 10 );
-        map.put( "wmsLayerName", wmsLayerName );
-        map.put( "featureTypeStyle", featureTypeStyle );
-        map.put( "styleName", styleName );
-        map.put( "styleTitle", styleTitle );
-        map.put( "geoType", geoType );
-        map.put( "geomProperty", geomProperty );
-        map.put( "Namespace", namespace );
-        map.put( "NamespacePrefix", prefix + ":" );
-        map.put( "NamespacePrefixWithoutColon", prefix );
+        HashMap<String, String> map = new HashMap<String, String>(10);
+        map.put("wmsLayerName", wmsLayerName);
+        map.put("featureTypeStyle", featureTypeStyle);
+        map.put("styleName", styleName);
+        map.put("styleTitle", styleTitle);
+        map.put("geoType", geoType);
+        map.put("geomProperty", geomProperty);
+        map.put("Namespace", namespace);
+        map.put("NamespacePrefix", prefix + ":");
+        map.put("NamespacePrefixWithoutColon", prefix);
 
         // ATENTION : note that min and max are swapped in JUMP!!!
         // will swap later, in transformContext
         Double d = layer.getMinScale();
-        d = d != null ? d : new Double( 0 );
+        d = d != null ? d : new Double(0);
 
-        map.put( "minScale", "" + toRealWorldScale( scaleFactor, d.doubleValue() ) );
+        map
+                .put("minScale", ""
+                        + toRealWorldScale(scaleFactor, d.doubleValue()));
 
         // using Double.MAX_VALUE is creating a large number - too many 0's
         // make it simple and hardcde a large number
         final double largeNumber = 99999999999d;
         d = layer.getMaxScale();
-        d = d != null ? d : new Double( largeNumber );
+        d = d != null ? d : new Double(largeNumber);
 
-        map.put( "maxScale", "" + toRealWorldScale( scaleFactor, d.doubleValue() ) );
+        map
+                .put("maxScale", ""
+                        + toRealWorldScale(scaleFactor, d.doubleValue()));
 
-        fw.write( transformContext( input, map ) );
+        fw.write(transformContext(input, map));
         fw.close();
 
     }
 
+    /**
+     * @return the icon
+     */
     public Icon getIcon() {
-        return new ImageIcon( LayerStyle2SLDPlugIn.class.getResource( "sldstyle.png" ) );
+        return new ImageIcon(LayerStyle2SLDPlugIn.class
+                .getResource("sldstyle.png"));
     }
 
-    // public void run( TaskMonitor monitor, PlugInContext context ) throws Exception {
-    // // will need this? extend threaded plug-in
-    // }
-
-    public static String transformContext( InputStream layerXML, Map<String, String> parMap )
-                            throws TransformerException, UnsupportedEncodingException {
-        return transformContext( new InputStreamReader( layerXML, UTF_8 ), parMap );
+    /**
+     * @param layerXML
+     * @param parMap
+     * @return the transformed XML (?)
+     * @throws TransformerException
+     * @throws UnsupportedEncodingException
+     */
+    public static String transformContext(InputStream layerXML,
+            Map<String, String> parMap) throws TransformerException,
+            UnsupportedEncodingException {
+        return transformContext(new InputStreamReader(layerXML, UTF_8), parMap);
     }
 
-    public static String transformContext( Reader layerXML, Map<String, String> parMap )
-                            throws TransformerException {
+    /**
+     * @param layerXML
+     * @param parMap
+     * @return the transformed XML (?)
+     * @throws TransformerException
+     */
+    public static String transformContext(Reader layerXML,
+            Map<String, String> parMap) throws TransformerException {
 
         StringWriter sw = new StringWriter();
-        StreamResult sr = new StreamResult( sw );
+        StreamResult sr = new StreamResult(sw);
 
-        StreamSource streamSource = new StreamSource( layerXML );
+        StreamSource streamSource = new StreamSource(layerXML);
 
         // if you don't clear the pars, xalan throws a nasty NPE
         transformer.clearParameters();
 
-        for ( String key : parMap.keySet() ) {
-            transformer.setParameter( key, parMap.get( key ) );
+        for (String key : parMap.keySet()) {
+            transformer.setParameter(key, parMap.get(key));
         }
 
-        transformer.transform( streamSource, sr );
+        transformer.transform(streamSource, sr);
 
         try {
             sw.close();
-        } catch ( IOException e ) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
-        if ( LOG.getLevel() == Level.DEBUG ) {
-            LOG.debug( sw.toString() );
+        if (LOG.getLevel() == Level.DEBUG) {
+            LOG.debug(sw.toString());
         }
 
         return sw.toString();
@@ -372,43 +433,58 @@ public class LayerStyle2SLDPlugIn extends AbstractPlugIn {
 
         try {
 
-            URL xslUrl = LayerStyle2SLDPlugIn.class.getResource( "layerstyle2sld.xsl" );
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            URL xslUrl = LayerStyle2SLDPlugIn.class
+                    .getResource("layerstyle2sld.xsl");
+            TransformerFactory transformerFactory = TransformerFactory
+                    .newInstance();
 
-            InputStreamReader isr = new InputStreamReader( xslUrl.openStream(), UTF_8 );
+            InputStreamReader isr = new InputStreamReader(xslUrl.openStream(),
+                    UTF_8);
 
-            StreamSource streamSrc = new StreamSource( isr );
+            StreamSource streamSrc = new StreamSource(isr);
 
-            transformer = transformerFactory.newTransformer( streamSrc );
-        } catch ( TransformerConfigurationException e ) {
+            transformer = transformerFactory.newTransformer(streamSrc);
+        } catch (TransformerConfigurationException e) {
             e.printStackTrace();
-        } catch ( TransformerFactoryConfigurationError e ) {
+        } catch (TransformerFactoryConfigurationError e) {
             e.printStackTrace();
-        } catch ( IOException e ) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public EnableCheck createEnableCheck( final WorkbenchContext workbenchContext ) {
-        EnableCheckFactory ecf = new EnableCheckFactory( workbenchContext );
+    /**
+     * @param workbenchContext
+     * @return the enable check
+     */
+    public EnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
+        EnableCheckFactory ecf = new EnableCheckFactory(workbenchContext);
 
-        MultiEnableCheck mec = new MultiEnableCheck().add( ecf.createWindowWithLayerNamePanelMustBeActiveCheck() ).add(
-                                                                                                                        ecf.createExactlyNLayerablesMustBeSelectedCheck(
-                                                                                                                                                                         1,
-                                                                                                                                                                         Layer.class ) );
+        MultiEnableCheck mec = new MultiEnableCheck().add(
+                ecf.createWindowWithLayerNamePanelMustBeActiveCheck())
+                .add(
+                        ecf.createExactlyNLayerablesMustBeSelectedCheck(1,
+                                Layer.class));
 
         return mec;
 
     }
 
-    public static final Double toRealWorldScale( double scaleFactor, double jumpScale ) {
+    /**
+     * @param scaleFactor
+     * @param jumpScale
+     * @return the scale
+     */
+    public static final Double toRealWorldScale(double scaleFactor,
+            double jumpScale) {
 
-        return new Double( jumpScale / scaleFactor );
+        return new Double(jumpScale / scaleFactor);
     }
 
-    private double calcScaleFactor( LayerViewPanel panel ) {
+    private double calcScaleFactor(LayerViewPanel panel) {
         double internalScale = 1d / panel.getViewport().getScale();
-        double realScale = ScreenScale.getHorizontalMapScale( panel.getViewport() );
+        double realScale = ScreenScale.getHorizontalMapScale(panel
+                .getViewport());
         return internalScale / realScale;
     }
 

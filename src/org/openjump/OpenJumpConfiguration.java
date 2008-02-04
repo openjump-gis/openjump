@@ -56,6 +56,7 @@ import org.openjump.core.ui.plugin.mousemenu.RotatePlugIn;
 import org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn;
 import org.openjump.core.ui.plugin.mousemenu.SelectLayersWithSelectedItemsPlugIn;
 import org.openjump.core.ui.plugin.queries.SimpleQueryPlugIn;
+import org.openjump.core.ui.plugin.style.ImportSLDPlugIn;
 import org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn;
 import org.openjump.core.ui.plugin.tools.ConvexHullPlugIn;
 import org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn;
@@ -149,6 +150,8 @@ public class OpenJumpConfiguration {
     OpenRecentPlugIn openRecent = OpenRecentPlugIn.get(workbenchContext);
     openRecent.initialize(pluginContext);
 
+    new ImportSLDPlugIn().initialize(pluginContext);
+    
     FileDragDropPlugin fileDragDropPlugin = new FileDragDropPlugin();
     fileDragDropPlugin.initialize(pluginContext);
 

@@ -1,4 +1,3 @@
-
 /*
  * The Unified Mapping Platform (JUMP) is an extensible, interactive GUI 
  * for visualizing and manipulating spatial features with geometry and attributes.
@@ -39,6 +38,8 @@ import java.awt.Shape;
 import java.awt.geom.Point2D;
 import java.awt.geom.RectangularShape;
 
+import org.openjump.util.SLDImporter.SizedStrokeFillStyle;
+
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.feature.Feature;
@@ -46,22 +47,26 @@ import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.Viewport;
 
-
-public abstract class VertexStyle implements Style {
-    //UT
-    //protected RectangularShape shape;
+public abstract class VertexStyle implements Style, SizedStrokeFillStyle {
+    // UT
+    // protected RectangularShape shape;
     protected Shape shape;
-    
+
     protected int size = 4;
+
     private Color fillColor;
+
+    private int alpha;
+
     private boolean enabled = false;
-    
-    //UT
+
+    // UT
     private Color strokeColor;
 
-    protected VertexStyle(){}
-    
-    //UT made RectangularShape shape a Shape 
+    protected VertexStyle() {
+    }
+
+    // UT made RectangularShape shape a Shape
     protected VertexStyle(Shape shape) {
         this.shape = shape;
     }
@@ -85,41 +90,67 @@ public abstract class VertexStyle implements Style {
     public Color getFillColor() {
         return fillColor;
     }
-    
+
     public void setFillColor(Color c) {
-        fillColor = c;
+        fillColor = GUIUtil.alphaColor(c, alpha);
     }
-    
-    public Color getStrokeColor() {
+
+    public void setLineColor(Color c) {
+        strokeColor = GUIUtil.alphaColor(c, alpha);
+    }
+
+    /**
+     * @return the color, for java2xml
+     */
+    public Color getLineColor() {
         return strokeColor;
     }
-    
-    public void setStrokeColor(Color c) {
-        strokeColor = c;
+
+    public BasicStyle setRenderingLinePattern(boolean b) {
+        return null; // ignored
     }
-    
+
+    public BasicStyle setLinePattern(String s) {
+        return null; // ignored
+    }
+
+    public void setAlpha(int a) {
+        if (fillColor != null) {
+            fillColor = GUIUtil.alphaColor(fillColor, a);
+        }
+        if (strokeColor != null) {
+            strokeColor = GUIUtil.alphaColor(strokeColor, a);
+        }
+        alpha = a;
+    }
+
+    public void setLineWidth(int w) {
+        // ignore
+    }
+
     public void initialize(Layer layer) {
-        //Set the vertices' fill color to the layer's line color
+        // Set the vertices' fill color to the layer's line color
         fillColor = GUIUtil.alphaColor(layer.getBasicStyle().getFillColor(),
                 layer.getBasicStyle().getAlpha());
         strokeColor = GUIUtil.alphaColor(layer.getBasicStyle().getLineColor(),
-            layer.getBasicStyle().getAlpha());
+                layer.getBasicStyle().getAlpha());
 
     }
 
     public void paint(Feature f, Graphics2D g, Viewport viewport)
-        throws Exception {
+            throws Exception {
         Coordinate[] coordinates = f.getGeometry().getCoordinates();
         g.setColor(fillColor);
 
         for (int i = 0; i < coordinates.length; i++) {
-            if (!viewport.getEnvelopeInModelCoordinates().contains(coordinates[i])) {
-                //Otherwise get "sun.dc.pr.PRException: endPath: bad path" exception [Jon Aquino 10/22/2003]
+            if (!viewport.getEnvelopeInModelCoordinates().contains(
+                    coordinates[i])) {
+                // Otherwise get "sun.dc.pr.PRException: endPath: bad path"
+                // exception [Jon Aquino 10/22/2003]
                 continue;
-            }            
-            paint(g,
-                viewport.toViewPoint(
-                    new Point2D.Double(coordinates[i].x, coordinates[i].y)));
+            }
+            paint(g, viewport.toViewPoint(new Point2D.Double(coordinates[i].x,
+                    coordinates[i].y)));
         }
     }
 
@@ -129,21 +160,24 @@ public abstract class VertexStyle implements Style {
     }
 
     private void setFrame(Point2D p) {
-        //UT
-        /*shape.setFrame(p.getX() - (getSize() / 2d),
-            p.getY() - (getSize() / 2d), getSize(), getSize());*/
-        ((RectangularShape)shape).setFrame(p.getX() - (getSize() / 2d),
-            p.getY() - (getSize() / 2d), getSize(), getSize());
+        // UT
+        /*
+         * shape.setFrame(p.getX() - (getSize() / 2d), p.getY() - (getSize() /
+         * 2d), getSize(), getSize());
+         */
+        ((RectangularShape) shape).setFrame(p.getX() - (getSize() / 2d), p
+                .getY()
+                - (getSize() / 2d), getSize(), getSize());
     }
 
     protected void render(Graphics2D g) {
-        //UT was
-//        g.fill(shape);
-        
+        // UT was
+        // g.fill(shape);
+
         // deeJUMP
         g.setColor(strokeColor);
-   	 	g.draw(shape);
-   	 	g.setColor(fillColor);
+        g.draw(shape);
+        g.setColor(fillColor);
         g.fill(shape);
     }
 

@@ -31,8 +31,17 @@
  */
 package com.vividsolutions.jump.workbench.ui.renderer.style;
 
-import com.vividsolutions.jts.util.Assert;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Paint;
+import java.awt.Stroke;
+import java.awt.geom.NoninvertibleTransformException;
+import java.util.List;
 
+import org.openjump.util.SLDImporter.StrokeFillStyle;
+
+import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.util.StringUtil;
@@ -40,17 +49,8 @@ import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.Viewport;
 
-import java.awt.*;
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Stroke;
-import java.awt.geom.NoninvertibleTransformException;
 
-import java.util.List;
-
-
-public class BasicStyle implements Style {
+public class BasicStyle implements Style, StrokeFillStyle {
     private boolean renderingFill = true;
     private boolean renderingLine = true;
     private boolean renderingLinePattern = false;

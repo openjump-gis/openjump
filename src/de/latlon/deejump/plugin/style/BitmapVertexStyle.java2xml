@@ -2,5 +2,5 @@
 <root>
   <attribute xml-name="enabled" java-name="enabled"/>
   <attribute xml-name="size" java-name="size"/>
-  <attribute xml-name="imageURL" java-name="imageURL"/>
+  <attribute xml-name="imageURL" java-name="fileName"/>
 </root>

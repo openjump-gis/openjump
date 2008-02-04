@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<!--?xml version="1.0" encoding="UTF-8"?-->
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:deegreewfs="http://www.deegree.org/wfs" xmlns:java="java" xmlns:xslutil="de.latlon.deejump.plugin.style.XSLUtility" xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:deegreewfs="http://www.deegree.org/wfs" xmlns:java="java" xmlns:xslutil="de.latlon.deejump.plugin.style.XSLUtility" xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" version="1.0">
   <xsl:param name="defaultFillColor" select="xslutil:toHexColor(/layer/styles/style[1]/fill/color)"/>
   <xsl:param name="defaultStrokeColor" select="xslutil:toHexColor(/layer/styles/style[1]/line/color)"/>
   <xsl:param name="defaultStrokeWidth" select="/layer/styles/style[1]/line/@width"/>
@@ -17,23 +16,15 @@
   <xsl:param name="NamespacePrefix"/>
 
   <xsl:template match="/">
-    <sld:StyledLayerDescriptor version="1.0.0"
-                               xmlns="http://www.opengis.net/sld"
-                               xmlns:sld="http://www.opengis.net/sld"
-                               xmlns:gml="http://www.opengis.net/gml"
-                               xmlns:wfs="http://www.opengis.net/wfs"
-                               xmlns:ogc="http://www.opengis.net/ogc"
-                               xmlns:xlink="http://www.w3.org/1999/xlink"
-                               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <xsl:variable name="tmp">xmlns:<xsl:value-of select="$NamespacePrefixWithoutColon" /></xsl:variable>
+    <sld:StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:sld="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:wfs="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0.0">
+      <xsl:variable name="tmp">xmlns:<xsl:value-of select="$NamespacePrefixWithoutColon"/></xsl:variable>
       <xsl:attribute name="{$tmp}">
-        <xsl:value-of select="$Namespace" />
+        <xsl:value-of select="$Namespace"/>
       </xsl:attribute>
-      <xsl:apply-templates select="./layer" />
+      <xsl:apply-templates select="layer"/>
     </sld:StyledLayerDescriptor>
   </xsl:template>
-
-  <xsl:template match="layer" name="layer">
+  <xsl:template match="layer">
     <sld:NamedLayer>
       <sld:Name>
         <xsl:value-of select="$wmsLayerName"/>
@@ -50,13 +41,14 @@
           <sld:Name>
             <xsl:value-of select="$featureTypeStyle"/>
           </sld:Name>
-          <xsl:apply-templates select="./styles/style"/>
+          <xsl:apply-templates select="styles/style"/>
         </sld:FeatureTypeStyle>
       </sld:UserStyle>
     </sld:NamedLayer>
   </xsl:template>
+
   <!-- template for theming styles -->
-  <xsl:template match="style" name="basicstyle">
+  <xsl:template match="style">
     <xsl:if test="@class='com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle'">
       <xsl:if test="@enabled='true'">
         <xsl:choose>
@@ -89,23 +81,36 @@
               </sld:MaxScaleDenominator>
               <sld:LineSymbolizer>
                 <sld:Geometry>
-                  <ogc:PropertyName><xsl:value-of select="$NamespacePrefix"/><xsl:value-of select="$geomProperty"/>
-                  </ogc:PropertyName>
+                  <ogc:PropertyName><xsl:value-of select="$NamespacePrefix"/><xsl:value-of select="$geomProperty"/></ogc:PropertyName>
                 </sld:Geometry>
                 <xsl:apply-templates select="line"/>
-                <!--                                                            <sld:Stroke>
-                                                                                <sld:CssParameter name="stroke">
-                                                                                  <xsl:value-of select="$defaultStrokeColor"/>
-                                                                                </sld:CssParameter>
-                                                                                <sld:CssParameter name="stroke-width">
-                                                                                  <xsl:value-of select="$defaultStrokeWidth"/>
-                                                                                </sld:CssParameter>
-                  </sld:Stroke>-->
               </sld:LineSymbolizer>
             </sld:Rule>
           </xsl:when>
+          <xsl:when test="contains($geoType,'Point')">
+            <sld:Rule>
+              <sld:Name>basicPointStyle</sld:Name>
+              <sld:MinScaleDenominator>
+                <xsl:value-of select="$minScale"/>
+              </sld:MinScaleDenominator>
+              <sld:MaxScaleDenominator>
+                <xsl:value-of select="$maxScale"/>
+              </sld:MaxScaleDenominator>
+              <sld:PointSymbolizer>
+                <sld:Geometry>
+                  <ogc:PropertyName><xsl:value-of select="$NamespacePrefix"/><xsl:value-of select="$geomProperty"/></ogc:PropertyName>
+                </sld:Geometry>
+                <sld:Graphic>
+                  <sld:Mark>
+                    <xsl:apply-templates select="fill"/>
+                    <xsl:apply-templates select="line"/>
+                  </sld:Mark>
+                </sld:Graphic>
+              </sld:PointSymbolizer>
+            </sld:Rule>
+          </xsl:when>
           <xsl:otherwise>
-
+            <!-- Something that's not implemented -->
           </xsl:otherwise>
         </xsl:choose>
       </xsl:if>
@@ -113,13 +118,7 @@
     <!-- normal color theming style -->
     <xsl:if test="@class='com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStyle'">
       <xsl:if test="@enabled='true'">
-        <xsl:apply-templates select="./attribute-value-to-style-map"/>
-      </xsl:if>
-    </xsl:if>
-    <!-- normal deeJUMP color theming style for points -->
-    <xsl:if test="@class='de.latlon.deejump.plugin.style.DeeColorThemingStyle'">
-      <xsl:if test="@enabled='true'">
-        <xsl:apply-templates select="./attribute-value-to-style-map"/>
+        <xsl:apply-templates select="attribute-value-to-style-map"/>
       </xsl:if>
     </xsl:if>
     <!-- label style -->
@@ -155,6 +154,9 @@
               <sld:CssParameter name="fill">
                 <xsl:value-of select="xslutil:toHexColor(color)"/>
               </sld:CssParameter>
+              <sld:CssParameter name="fill-opacity">
+                <xsl:value-of select="xslutil:toAlphaValue(alpha)"/>
+              </sld:CssParameter>
             </sld:Fill>
             <sld:Halo/>
           </sld:TextSymbolizer>
@@ -180,14 +182,12 @@
                 <xsl:when test="contains(@class, 'BitmapVertexStyle')">
                   <sld:ExternalGraphic>
                     <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple">
-                      <xsl:attribute name="xlink:href"><xsl:value-of select="xslutil:fileToURL(@imageURL)"/></xsl:attribute>
+                      <xsl:attribute name="xlink:href">
+                        <xsl:value-of select="xslutil:fileToURL(@imageURL)"/>
+                      </xsl:attribute>
                     </OnlineResource>
                     <sld:Format>
                       <xsl:choose>
-                        <!-- does this exist?
-                                                                                                     <xsl:when test="ends-with((@imageURL, 'png')">
-                                                                                                       or perhaps use "image/" + substring( imgname, end - 3 , till end) that 'd return the extension
-                                                                                                       -->
                         <xsl:when test="contains(@imageURL, 'png')">image/png</xsl:when>
                         <xsl:when test="contains(@imageURL, 'jpg')">image/jpg</xsl:when>
                         <xsl:when test="contains(@imageURL, 'gif')">image/gif</xsl:when>
@@ -201,23 +201,12 @@
                     <sld:WellKnownName>
                       <xsl:value-of select="xslutil:toWellKnowName(.)"/>
                     </sld:WellKnownName>
-                    <sld:Fill>
-                      <!-- fill is the color of basic style -->
-                      <sld:CssParameter name="fill">
-                        <xsl:value-of select="xslutil:toHexColor(color)"/>
-                      </sld:CssParameter>
-                    </sld:Fill>
-                    <sld:Stroke>
-                      <sld:CssParameter name="stroke">
-                        <xsl:value-of select="xslutil:toHexColor(stroke-color)"/>
-                      </sld:CssParameter>
-                    </sld:Stroke>
+                    <xsl:apply-templates select="../style[contains(@class, 'BasicStyle')]/fill" />
+                    <xsl:apply-templates select="../style[contains(@class, 'BasicStyle')]/line" />
                   </sld:Mark>
-                  <xsl:if
-                     test="string-length(@size) &gt; 0">
+                  <xsl:if test="string-length(@size) &gt; 0">
                     <sld:Size>
-                      <xsl:value-of
-                         select="@size * 2" />
+                      <xsl:value-of select="@size * 2"/>
                     </sld:Size>
                   </xsl:if>
                 </xsl:otherwise>
@@ -229,12 +218,9 @@
     </xsl:if>
   </xsl:template>
 
-  <!-- FIXME hmm don't like it. shouldn't go so deep here; should go attribute-value-to-style-map first -->
   <xsl:template match="attribute-value-to-style-map/mapping" name="rules">
     <sld:Rule>
-      <sld:Name>
-        <xsl:value-of select="../../attribute-name"/>_<xsl:value-of select="./key"/>
-      </sld:Name>
+      <sld:Name><xsl:value-of select="../../attribute-name"/>_<xsl:value-of select="./key"/></sld:Name>
       <sld:MinScaleDenominator>
         <xsl:value-of select="$minScale"/>
       </sld:MinScaleDenominator>
@@ -281,8 +267,8 @@
             <sld:Geometry>
               <ogc:PropertyName><xsl:value-of select="$NamespacePrefix"/><xsl:value-of select="$geomProperty"/></ogc:PropertyName>
             </sld:Geometry>
-            <xsl:apply-templates select="./value/fill"/>
-            <xsl:apply-templates select="./value/line"/>
+            <xsl:apply-templates select="value/fill"/>
+            <xsl:apply-templates select="value/line"/>
           </sld:PolygonSymbolizer>
         </xsl:when>
         <xsl:when test="contains($geoType,'Line')">
@@ -290,7 +276,7 @@
             <sld:Geometry>
               <ogc:PropertyName><xsl:value-of select="$NamespacePrefix"/><xsl:value-of select="$geomProperty"/></ogc:PropertyName>
             </sld:Geometry>
-            <xsl:apply-templates select="./value/line"/>
+            <xsl:apply-templates select="value/line"/>
           </sld:LineSymbolizer>
         </xsl:when>
         <xsl:when test="contains($geoType,'Point')">
@@ -303,14 +289,12 @@
                 <xsl:when test="contains(./value/vertexstyle/@class, 'BitmapVertexStyle')">
                   <sld:ExternalGraphic>
                     <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple">
-                      <xsl:attribute name="xlink:href"><xsl:value-of select="xslutil:fileToURL(./value/vertexstyle/@imageURL)"/></xsl:attribute>
+                      <xsl:attribute name="xlink:href">
+                        <xsl:value-of select="xslutil:fileToURL(./value/vertexstyle/@imageURL)"/>
+                      </xsl:attribute>
                     </OnlineResource>
                     <sld:Format>
                       <xsl:choose>
-                        <!-- does this exist?
-                             <xsl:when test="ends-with((@imageURL, 'png')">
-                               or perhaps use "image/" + substring( imgname, end - 3 , till end) that 'd return the extension
-                               -->
                         <xsl:when test="contains(./value/vertexstyle/@imageURL, 'png')">image/png</xsl:when>
                         <xsl:when test="contains(./value/vertexstyle/@imageURL, 'jpg')">image/jpg</xsl:when>
                         <xsl:when test="contains(./value/vertexstyle/@imageURL, 'gif')">image/gif</xsl:when>
@@ -328,15 +312,18 @@
                     <sld:Fill>
                       <!-- fill is the color of basic style -->
                       <sld:CssParameter name="fill">
-                        <xsl:value-of select="xslutil:toHexColor(./value/fill/color)"/>
+                        <xsl:value-of select="xslutil:toHexColor(value/fill/color)"/>
                       </sld:CssParameter>
                     </sld:Fill>
+                    <sld:Stroke>
+                      <sld:CssParameter name="stroke">
+                        <xsl:value-of select="xslutil:toHexColor(value/line/stroke-color)"/>
+                      </sld:CssParameter>
+                    </sld:Stroke>
                   </sld:Mark>
-                  <xsl:if
-                     test="string-length(value/vertexstyle/@size) &gt; 0">
+                  <xsl:if test="string-length(value/vertexstyle/@size) &gt; 0">
                     <sld:Size>
-                      <xsl:value-of
-                         select="value/vertexstyle/@size" />
+                      <xsl:value-of select="value/vertexstyle/@size"/>
                     </sld:Size>
                   </xsl:if>
                 </xsl:otherwise>
@@ -348,23 +335,23 @@
     </sld:Rule>
   </xsl:template>
 
-  <xsl:template match="fill" name="fill">
+  <xsl:template match="fill">
     <sld:Fill>
       <xsl:choose>
         <xsl:when test="pattern/@class='com.vividsolutions.jump.workbench.ui.renderer.style.ImageFillPattern' and pattern/@enabled='true'">
           <xsl:variable name="imageURL">
-            <xsl:value-of select="xslutil:getIconURL(pattern/properties/properties/mapping[string(key) = 'FILENAME']/value)" />
+            <xsl:value-of select="xslutil:getIconURL(pattern/properties/properties/mapping[string(key) = 'FILENAME']/value)"/>
           </xsl:variable>
-
           <xsl:variable name="fileName">
-            <xsl:value-of select="translate(string(pattern/properties/properties/mapping[string(key) = 'FILENAME']/value), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')" />
+            <xsl:value-of select="translate(string(pattern/properties/properties/mapping[string(key) = 'FILENAME']/value), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')"/>
           </xsl:variable>
-
           <sld:GraphicFill>
             <sld:Graphic>
               <sld:ExternalGraphic>
                 <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple">
-                  <xsl:attribute name="xlink:href"><xsl:value-of select="$imageURL"/></xsl:attribute>
+                  <xsl:attribute name="xlink:href">
+                    <xsl:value-of select="$imageURL"/>
+                  </xsl:attribute>
                 </OnlineResource>
                 <sld:Format>
                   <xsl:choose>
@@ -380,23 +367,38 @@
         </xsl:when>
         <xsl:when test="pattern/@class='com.vividsolutions.jump.workbench.ui.renderer.style.WKTFillPattern' and pattern/@enabled='true'">
           <xsl:variable name="width">
-            <xsl:value-of select="number(pattern/properties/properties/mapping[string(key) = 'LINE WIDTH']/value)" />
+            <xsl:value-of select="number(pattern/properties/properties/mapping[string(key) = 'LINE WIDTH']/value)"/>
           </xsl:variable>
           <xsl:variable name="extent">
-            <xsl:value-of select="number(pattern/properties/properties/mapping[string(key) = 'EXTENT']/value)" />
+            <xsl:value-of select="number(pattern/properties/properties/mapping[string(key) = 'EXTENT']/value)"/>
           </xsl:variable>
           <xsl:variable name="pattern">
-            <xsl:value-of select="string(pattern/properties/properties/mapping[string(key) = 'PATTERN WKT']/value)" />
+            <xsl:value-of select="string(pattern/properties/properties/mapping[string(key) = 'PATTERN WKT']/value)"/>
           </xsl:variable>
           <xsl:variable name="color">
-            <xsl:value-of select="xslutil:toHexColor(pattern/properties/properties/mapping[string(key) = 'COLOR']/value)" />
+            <xsl:value-of select="xslutil:toHexColor(pattern/properties/properties/mapping[string(key) = 'COLOR']/value)"/>
           </xsl:variable>
-
           <sld:GraphicFill>
             <sld:Graphic>
               <sld:ExternalGraphic>
                 <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple">
-                  <xsl:attribute name="xlink:href"><xsl:value-of select="xslutil:createPatternImage(number($width), number($extent), $pattern, $color)"/></xsl:attribute>
+                  <xsl:attribute name="xlink:href">
+                    <xsl:value-of select="xslutil:createPatternImage(number($width), number($extent), $pattern, $color)"/>
+                  </xsl:attribute>
+                </OnlineResource>
+                <sld:Format>image/png</sld:Format>
+              </sld:ExternalGraphic>
+            </sld:Graphic>
+          </sld:GraphicFill>
+        </xsl:when>
+        <xsl:when test="pattern/@class='org.openjump.util.CustomTexturePaint' and pattern/@enabled='true'">
+          <sld:GraphicFill>
+            <sld:Graphic>
+              <sld:ExternalGraphic>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple">
+                  <xsl:attribute name="xlink:href">
+                    <xsl:value-of select="pattern[@class='org.openjump.util.CustomTexturePaint']/url"/>
+                  </xsl:attribute>
                 </OnlineResource>
                 <sld:Format>image/png</sld:Format>
               </sld:ExternalGraphic>
@@ -412,11 +414,10 @@
           </sld:CssParameter>
         </xsl:otherwise>
       </xsl:choose>
-      <!--[PENDING: this is the last token of the above] -->
     </sld:Fill>
   </xsl:template>
 
-  <xsl:template match="line" name="stroke">
+  <xsl:template match="line">
     <sld:Stroke>
       <sld:CssParameter name="stroke">
         <xsl:value-of select="xslutil:toHexColor(color)"/>
@@ -428,7 +429,9 @@
         <xsl:value-of select="@width"/>
       </sld:CssParameter>
       <xsl:if test="pattern[@enabled='true']">
-        <sld:CssParameter name="stroke-dasharray"><xsl:value-of select="xslutil:replaceComma(pattern)" /></sld:CssParameter>
+        <sld:CssParameter name="stroke-dasharray">
+          <xsl:value-of select="xslutil:replaceComma(pattern)"/>
+        </sld:CssParameter>
       </xsl:if>
     </sld:Stroke>
   </xsl:template>
