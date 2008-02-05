@@ -155,10 +155,8 @@ public class ColorThemingStyle implements Style {
 						((BasicStyle) attributeValueToBasicStyleMap
 								.get(attribute)).clone());
 			}
-            clone.attributeValueToLabelMap = new HashMap();
-            if(attributeValueToLabelMap != null){
-                clone.attributeValueToLabelMap.putAll(attributeValueToLabelMap);
-            }
+            clone.attributeValueToLabelMap = (Map) attributeValueToLabelMap.getClass().newInstance();
+            clone.attributeValueToLabelMap.putAll(attributeValueToLabelMap);
 			return clone;
 		} catch (InstantiationException e) {
 			Assert.shouldNeverReachHere();
