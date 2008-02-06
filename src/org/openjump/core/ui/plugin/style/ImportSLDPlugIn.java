@@ -42,7 +42,10 @@ import static com.vividsolutions.jump.I18N.get;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
 
 import java.io.File;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.swing.JFileChooser;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -51,7 +54,11 @@ import org.openjump.core.ccordsys.srid.SRIDStyle;
 import org.openjump.util.SLDImporter;
 import org.w3c.dom.Document;
 
+import com.vividsolutions.jump.feature.AttributeType;
+import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.util.Blackboard;
+import com.vividsolutions.jump.util.Range;
+import com.vividsolutions.jump.util.Range.RangeTreeMap;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
@@ -61,6 +68,7 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
+import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.LabelStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.SquareVertexStyle;
@@ -135,6 +143,7 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
             }
             checkStyle(ColorThemingStyle.class, l);
             checkStyle(LabelStyle.class, l);
+            checkStyle(BasicStyle.class, l);
             if (l.getVertexStyle() == null) {
                 checkStyle(SquareVertexStyle.class, l);
             }
@@ -143,6 +152,56 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
                     .getStyle(ColorThemingStyle.class);
             if (cts.getDefaultStyle() == null) {
                 cts.setDefaultStyle(l.getBasicStyle());
+            }
+
+            try {
+                if (cts.getAttributeValueToLabelMap().keySet().iterator()
+                        .next() instanceof Range) {
+                    RangeTreeMap map = new RangeTreeMap();
+                    RangeTreeMap labelMap = new RangeTreeMap();
+
+                    map.putAll(cts.getAttributeValueToBasicStyleMap());
+                    labelMap.putAll(cts.getAttributeValueToLabelMap());
+
+                    cts.setAttributeValueToBasicStyleMap(map);
+                    cts.setAttributeValueToLabelMap(labelMap);
+                    
+                    return false;
+                }
+            } catch (Exception e) {
+                // ignore, probably no elements in the map
+            }
+
+            FeatureSchema fs = l.getFeatureCollectionWrapper()
+                    .getFeatureSchema();
+
+            String a = cts.getAttributeName();
+            AttributeType t = fs.getAttributeType(a);
+            Class<?> c = t.toJavaClass();
+            if (c.equals(Integer.class)) {
+                Map<Long, Style> map = new TreeMap<Long, Style>();
+                Map<?, ?> oldMap = cts.getAttributeValueToBasicStyleMap();
+                Map<Long, String> labelMap = new TreeMap<Long, String>();
+                for (Object key : oldMap.keySet()) {
+                    Style s = (Style) oldMap.get(key);
+                    map.put(Long.valueOf((String) key), s);
+                    labelMap.put(Long.valueOf((String) key), (String) key);
+                }
+                cts.setAttributeValueToBasicStyleMap(map);
+                cts.setAttributeValueToLabelMap(labelMap);
+            }
+
+            if (c.equals(Double.class)) {
+                Map<Double, Style> map = new TreeMap<Double, Style>();
+                Map<?, ?> oldMap = cts.getAttributeValueToBasicStyleMap();
+                Map<Double, String> labelMap = new TreeMap<Double, String>();
+                for (Object key : oldMap.keySet()) {
+                    Style s = (Style) oldMap.get(key);
+                    map.put(Double.valueOf((String) key), s);
+                    labelMap.put(Double.valueOf((String) key), (String) key);
+                }
+                cts.setAttributeValueToBasicStyleMap(map);
+                cts.setAttributeValueToLabelMap(labelMap);
             }
         }
 

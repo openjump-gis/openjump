@@ -47,13 +47,16 @@ import java.awt.Paint;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import com.vividsolutions.jump.util.Range;
 import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
+import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.SquareVertexStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.Style;
 
@@ -78,6 +81,11 @@ public class SLDImporter {
      */
     public static final String SLDNS = "http://www.opengis.net/sld";
 
+    /**
+     * 
+     */
+    public static final String OGCNS = "http://www.opengis.net/ogc";
+
     private static int getInt(String name, Element e) {
         NodeList nl = e.getElementsByTagNameNS(SLDNS, name);
         if (nl.getLength() == 0) {
@@ -99,7 +107,11 @@ public class SLDImporter {
     }
 
     private static Element getElement(String name, Element e) {
-        NodeList nl = e.getElementsByTagNameNS(SLDNS, name);
+        return getElement(name, SLDNS, e);
+    }
+
+    private static Element getElement(String name, String ns, Element e) {
+        NodeList nl = e.getElementsByTagNameNS(ns, name);
 
         if (nl.getLength() == 0) {
             return null;
@@ -298,6 +310,86 @@ public class SLDImporter {
         return list;
     }
 
+    private static Object parseValues(Element filter) {
+        Element lower = getElement("LowerBoundary", OGCNS, filter);
+        Element upper = getElement("UpperBoundary", OGCNS, filter);
+        if (lower != null && upper != null) {
+            String s1 = getElement("Literal", OGCNS, lower).getTextContent()
+                    .trim();
+            String s2 = getElement("Literal", OGCNS, upper).getTextContent()
+                    .trim();
+            return new Range(s1, true, s2, false);
+        }
+
+        return getElement("Literal", OGCNS, filter).getTextContent().trim();
+    }
+
+    // note that not at all are all filters supported, they're (informally)
+    // expected to be in the format of the SLD exporter
+    private static ColorThemingStyle parseColorThemingStyle(NodeList rules,
+            NodeList filters) {
+        ColorThemingStyle style = new ColorThemingStyle();
+
+        String att = (((Element) rules.item(0)).getElementsByTagNameNS(OGCNS,
+                "PropertyName")).item(0).getTextContent();
+        att = att.substring(att.indexOf(':') + 1);
+
+        style.setAttributeName(att);
+        HashMap<Object, StrokeFillStyle> map = new HashMap<Object, StrokeFillStyle>();
+        HashMap<Object, String> labelMap = new HashMap<Object, String>();
+
+        for (int i = 0; i < rules.getLength(); ++i) {
+            Element symbolizer = getElement("PointSymbolizer", (Element) rules
+                    .item(i));
+
+            if (symbolizer != null) {
+                StrokeFillStyle s = parsePointSymbolizer(symbolizer).getFirst();
+                s.setEnabled(true);
+                Object val = parseValues((Element) filters.item(i));
+                map.put(val, s);
+                labelMap.put(val, val.toString());
+                if (style.getDefaultStyle() == null) {
+                    style.setDefaultStyle((BasicStyle) s);
+                }
+            }
+
+            symbolizer = getElement("LineSymbolizer", (Element) rules.item(i));
+
+            if (symbolizer != null) {
+                StrokeFillStyle s = parseLineSymbolizer(symbolizer).getFirst();
+                s.setEnabled(true);
+                Object val = parseValues((Element) filters.item(i));
+                map.put(val, s);
+                labelMap.put(val, val.toString());
+                if (style.getDefaultStyle() == null) {
+                    style.setDefaultStyle((BasicStyle) s);
+                }
+            }
+
+            symbolizer = getElement("PolygonSymbolizer", (Element) rules
+                    .item(i));
+
+            if (symbolizer != null) {
+                StrokeFillStyle s = parsePolygonSymbolizer(symbolizer)
+                        .getFirst();
+                s.setEnabled(true);
+                Object val = parseValues((Element) filters.item(i));
+                map.put(val, s);
+                labelMap.put(val, val.toString());
+                if (style.getDefaultStyle() == null) {
+                    style.setDefaultStyle((BasicStyle) s);
+                }
+            }
+
+        }
+
+        style.setAttributeValueToBasicStyleMap(map);
+        style.setEnabled(true);
+        style.setAttributeValueToLabelMap(labelMap);
+
+        return style;
+    }
+
     /**
      * @param doc
      * @return a list of corresponding JUMP styles
@@ -308,21 +400,26 @@ public class SLDImporter {
         // maybe ask which feature type style to use?
 
         NodeList nl = doc.getElementsByTagNameNS(SLDNS, "Rule");
+        NodeList filters = doc.getElementsByTagNameNS(OGCNS, "Filter");
 
-        for (int i = 0; i < nl.getLength(); ++i) {
-            Element rule = (Element) nl.item(i);
-            LinkedList<Element> symbolizers = getElements("PointSymbolizer",
-                    rule);
-            for (Element s : symbolizers) {
-                styles.addAll(parsePointSymbolizer(s));
-            }
-            symbolizers = getElements("LineSymbolizer", rule);
-            for (Element s : symbolizers) {
-                styles.addAll(parseLineSymbolizer(s));
-            }
-            symbolizers = getElements("PolygonSymbolizer", rule);
-            for (Element s : symbolizers) {
-                styles.addAll(parsePolygonSymbolizer(s));
+        if (nl.getLength() == filters.getLength()) {
+            styles.add(parseColorThemingStyle(nl, filters));
+        } else {
+            for (int i = 0; i < nl.getLength(); ++i) {
+                Element rule = (Element) nl.item(i);
+                LinkedList<Element> symbolizers = getElements(
+                        "PointSymbolizer", rule);
+                for (Element s : symbolizers) {
+                    styles.addAll(parsePointSymbolizer(s));
+                }
+                symbolizers = getElements("LineSymbolizer", rule);
+                for (Element s : symbolizers) {
+                    styles.addAll(parseLineSymbolizer(s));
+                }
+                symbolizers = getElements("PolygonSymbolizer", rule);
+                for (Element s : symbolizers) {
+                    styles.addAll(parsePolygonSymbolizer(s));
+                }
             }
         }
 

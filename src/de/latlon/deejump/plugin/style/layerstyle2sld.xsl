@@ -249,9 +249,8 @@
             <ogc:UpperBoundary>
               <ogc:Literal>
                 <xsl:choose>
-                  <xsl:when test="./key/max/@class='com.vividsolutions.jump.util.Range$PositiveInfinity'">
-                    999999999
-                  </xsl:when>
+                  <xsl:when test="./key/max/@class='com.vividsolutions.jump.util.Range$PositiveInfinity'">999999999</xsl:when>
+                  <xsl:when test="./key/max/@class='com.vividsolutions.jump.util.Range$NegativeInfinity'">-999999999</xsl:when>
                   <xsl:otherwise>
                     <xsl:value-of select="./key/max"/>
                   </xsl:otherwise>
