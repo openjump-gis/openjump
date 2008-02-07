@@ -39,16 +39,23 @@
 package org.openjump.util;
 
 import static java.awt.Color.decode;
+import static java.awt.Font.BOLD;
+import static java.awt.Font.ITALIC;
+import static java.awt.Font.PLAIN;
 import static java.lang.Double.parseDouble;
 import static java.lang.Integer.parseInt;
+import static java.lang.Math.round;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Paint;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -57,6 +64,7 @@ import org.w3c.dom.NodeList;
 import com.vividsolutions.jump.util.Range;
 import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStyle;
+import com.vividsolutions.jump.workbench.ui.renderer.style.LabelStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.SquareVertexStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.Style;
 
@@ -310,6 +318,80 @@ public class SLDImporter {
         return list;
     }
 
+    private static LinkedList<LabelStyle> parseTextSymbolizer(Element symbolizer) {
+        LabelStyle style = new LabelStyle();
+
+        Element label = getElement("Label", symbolizer);
+
+        String lAtt = getElement("PropertyName", OGCNS, label).getTextContent();
+        lAtt = lAtt.substring(lAtt.indexOf(':') + 1);
+        style.setAttribute(lAtt);
+
+        Element fill = getElement("Fill", symbolizer);
+
+        LinkedList<Element> params = getElements("CssParameter", fill);
+
+        for (Element p : params) {
+            String type = p.getAttribute("name");
+            String a = p.getTextContent();
+            if (a == null || a.trim().length() == 0) {
+                continue;
+            }
+
+            if (type.equals("fill")) {
+                style.setColor(decode(a));
+            }
+        }
+
+        Element font = getElement("Font", symbolizer);
+
+        params = getElements("CssParameter", font);
+
+        String fFamily = null;
+        int fStyle = 0, fSize = 0;
+        for (Element p : params) {
+            String type = p.getAttribute("name");
+            String a = p.getTextContent();
+            if (a == null || a.trim().length() == 0) {
+                continue;
+            }
+
+            if (type.equals("font-family")) {
+                fFamily = a;
+            }
+
+            if (type.equals("font-style")) {
+                if (a.equalsIgnoreCase("normal")) {
+                    fStyle |= PLAIN;
+                }
+                if (a.equalsIgnoreCase("italic")) {
+                    fStyle |= ITALIC;
+                }
+            }
+
+            if (type.equals("font-weight")) {
+                if (a.equalsIgnoreCase("normal")) {
+                    fStyle |= PLAIN;
+                }
+                if (a.equalsIgnoreCase("bold")) {
+                    fStyle |= BOLD;
+                }
+            }
+
+            if (type.equals("font-size")) {
+                fSize = (int) round(parseDouble(a));
+            }
+        }
+
+        style.setFont(new Font(fFamily, fStyle, fSize));
+        style.setEnabled(true);
+
+        LinkedList<LabelStyle> list = new LinkedList<LabelStyle>();
+        list.add(style);
+
+        return list;
+    }
+
     private static Object parseValues(Element filter) {
         Element lower = getElement("LowerBoundary", OGCNS, filter);
         Element upper = getElement("UpperBoundary", OGCNS, filter);
@@ -326,26 +408,29 @@ public class SLDImporter {
 
     // note that not at all are all filters supported, they're (informally)
     // expected to be in the format of the SLD exporter
-    private static ColorThemingStyle parseColorThemingStyle(NodeList rules,
-            NodeList filters) {
+    private static ColorThemingStyle parseColorThemingStyle(
+            List<Element> rules, List<Element> filters) {
         ColorThemingStyle style = new ColorThemingStyle();
 
-        String att = (((Element) rules.item(0)).getElementsByTagNameNS(OGCNS,
-                "PropertyName")).item(0).getTextContent();
+        String att = rules.get(0).getElementsByTagNameNS(OGCNS, "PropertyName")
+                .item(0).getTextContent();
         att = att.substring(att.indexOf(':') + 1);
 
         style.setAttributeName(att);
         HashMap<Object, StrokeFillStyle> map = new HashMap<Object, StrokeFillStyle>();
         HashMap<Object, String> labelMap = new HashMap<Object, String>();
 
-        for (int i = 0; i < rules.getLength(); ++i) {
-            Element symbolizer = getElement("PointSymbolizer", (Element) rules
-                    .item(i));
+        Iterator<Element> rulesI = rules.iterator();
+        Iterator<Element> filtersI = filters.iterator();
+        while (rulesI.hasNext() && filtersI.hasNext()) {
+            Element filter = filtersI.next();
+            Element rule = rulesI.next();
+            Element symbolizer = getElement("PointSymbolizer", rule);
 
             if (symbolizer != null) {
                 StrokeFillStyle s = parsePointSymbolizer(symbolizer).getFirst();
                 s.setEnabled(true);
-                Object val = parseValues((Element) filters.item(i));
+                Object val = parseValues(filter);
                 map.put(val, s);
                 labelMap.put(val, val.toString());
                 if (style.getDefaultStyle() == null) {
@@ -353,12 +438,12 @@ public class SLDImporter {
                 }
             }
 
-            symbolizer = getElement("LineSymbolizer", (Element) rules.item(i));
+            symbolizer = getElement("LineSymbolizer", rule);
 
             if (symbolizer != null) {
                 StrokeFillStyle s = parseLineSymbolizer(symbolizer).getFirst();
                 s.setEnabled(true);
-                Object val = parseValues((Element) filters.item(i));
+                Object val = parseValues(filter);
                 map.put(val, s);
                 labelMap.put(val, val.toString());
                 if (style.getDefaultStyle() == null) {
@@ -366,14 +451,13 @@ public class SLDImporter {
                 }
             }
 
-            symbolizer = getElement("PolygonSymbolizer", (Element) rules
-                    .item(i));
+            symbolizer = getElement("PolygonSymbolizer", rule);
 
             if (symbolizer != null) {
                 StrokeFillStyle s = parsePolygonSymbolizer(symbolizer)
                         .getFirst();
                 s.setEnabled(true);
-                Object val = parseValues((Element) filters.item(i));
+                Object val = parseValues(filter);
                 map.put(val, s);
                 labelMap.put(val, val.toString());
                 if (style.getDefaultStyle() == null) {
@@ -400,13 +484,15 @@ public class SLDImporter {
         // maybe ask which feature type style to use?
 
         NodeList nl = doc.getElementsByTagNameNS(SLDNS, "Rule");
-        NodeList filters = doc.getElementsByTagNameNS(OGCNS, "Filter");
-
-        if (nl.getLength() == filters.getLength()) {
-            styles.add(parseColorThemingStyle(nl, filters));
-        } else {
-            for (int i = 0; i < nl.getLength(); ++i) {
-                Element rule = (Element) nl.item(i);
+        List<Element> rules = new LinkedList<Element>();
+        List<Element> filters = new LinkedList<Element>();
+        for (int i = 0; i < nl.getLength(); ++i) {
+            Element rule = (Element) nl.item(i);
+            Element filter = getElement("Filter", OGCNS, rule);
+            if (filter != null) {
+                rules.add(rule);
+                filters.add(filter);
+            } else {
                 LinkedList<Element> symbolizers = getElements(
                         "PointSymbolizer", rule);
                 for (Element s : symbolizers) {
@@ -420,8 +506,14 @@ public class SLDImporter {
                 for (Element s : symbolizers) {
                     styles.addAll(parsePolygonSymbolizer(s));
                 }
+                symbolizers = getElements("TextSymbolizer", rule);
+                for (Element s : symbolizers) {
+                    styles.addAll(parseTextSymbolizer(s));
+                }
             }
         }
+
+        styles.add(parseColorThemingStyle(rules, filters));
 
         return styles;
     }

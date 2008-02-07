@@ -1,3 +1,8 @@
+2008-02-07 Andreas Schmitz <schmitz@lat-lon.de>
+      src/org/openjump/core/ui/plugin/style/ImportSLDPlugIn.java,
+      src/org/openjump/util/SLDImporter.java:
+      Fixed smaller problems, added label style importing.
+
 2008-02-06 Andreas Schmitz <schmitz@lat-lon.de>
       src/org/openjump/core/ui/plugin/style/ImportSLDPlugIn.java,
       src/org/openjump/util/SLDImporter.java,

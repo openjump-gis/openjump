@@ -42,7 +42,6 @@ import static com.vividsolutions.jump.I18N.get;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
 
 import java.io.File;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -141,7 +140,9 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
             if (l.getStyle(SRIDStyle.class) == null) {
                 l.addStyle(new SRIDStyle());
             }
-            checkStyle(ColorThemingStyle.class, l);
+            if (l.getStyle(ColorThemingStyle.class) == null) {
+                ColorThemingStyle.get(l);
+            }
             checkStyle(LabelStyle.class, l);
             checkStyle(BasicStyle.class, l);
             if (l.getVertexStyle() == null) {
@@ -165,7 +166,7 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
 
                     cts.setAttributeValueToBasicStyleMap(map);
                     cts.setAttributeValueToLabelMap(labelMap);
-                    
+
                     return false;
                 }
             } catch (Exception e) {
@@ -176,6 +177,7 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
                     .getFeatureSchema();
 
             String a = cts.getAttributeName();
+
             AttributeType t = fs.getAttributeType(a);
             Class<?> c = t.toJavaClass();
             if (c.equals(Integer.class)) {
