@@ -1,4 +1,8 @@
 2008-02-07 Andreas Schmitz <schmitz@lat-lon.de>
+      src/com/vividsolutions/jump/workbench/ui/wizard/WizardDialog.java:
+      The next button is the default button.
+
+2008-02-07 Andreas Schmitz <schmitz@lat-lon.de>
       src/org/openjump/core/ui/plugin/style/ImportSLDPlugIn.java,
       src/org/openjump/util/SLDImporter.java:
       Fixed smaller problems, added label style importing.

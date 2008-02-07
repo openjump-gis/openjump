@@ -233,6 +233,7 @@ public class WizardDialog extends JDialog implements WizardContext,
     nextButton.setText(I18N.get("ui.wizard.WizardDialog.next") + " >");
     nextButton.addActionListener(new InvokeMethodActionListener(this, "next"));
     buttonPanel.add(nextButton);
+    getRootPane().setDefaultButton(nextButton);
 
     JLabel spacer = new JLabel();
     spacer.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
