@@ -327,7 +327,13 @@ public class SLDImporter {
         lAtt = lAtt.substring(lAtt.indexOf(':') + 1);
         style.setAttribute(lAtt);
 
-        Element fill = getElement("Fill", symbolizer);
+        List<Element> fills = getElements("Fill", symbolizer);
+        Element fill = null;
+        for (Element f : fills) {
+            if (f.getParentNode().getLocalName().equals("TextSymbolizer")) {
+                fill = f;
+            }
+        }
 
         LinkedList<Element> params = getElements("CssParameter", fill);
 
@@ -385,6 +391,26 @@ public class SLDImporter {
 
         style.setFont(new Font(fFamily, fStyle, fSize));
         style.setEnabled(true);
+
+        Element halo = getElement("Halo", symbolizer);
+        if (halo != null) {
+            style.setOutlineShowing(true);
+            style.setOutlineWidth((int) parseDouble(getElement("Radius", halo)
+                    .getTextContent()));
+
+            params = getElements("CssParameter", getElement("Fill", halo));
+            for (Element p : params) {
+                String type = p.getAttribute("name");
+                String a = p.getTextContent();
+                if (a == null || a.trim().length() == 0) {
+                    continue;
+                }
+
+                if (type.equals("fill")) {
+                    style.setOutlineColor(decode(a));
+                }
+            }
+        }
 
         LinkedList<LabelStyle> list = new LinkedList<LabelStyle>();
         list.add(style);
@@ -513,7 +539,9 @@ public class SLDImporter {
             }
         }
 
-        styles.add(parseColorThemingStyle(rules, filters));
+        if (rules.size() > 0 && filters.size() > 0) {
+            styles.add(parseColorThemingStyle(rules, filters));
+        }
 
         return styles;
     }

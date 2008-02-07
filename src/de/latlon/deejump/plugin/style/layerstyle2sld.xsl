@@ -149,7 +149,23 @@
               <sld:CssParameter name="font-size">
                 <xsl:value-of select="./height"/>
               </sld:CssParameter>
+              <sld:CssParameter name="font-color"> <!-- not in the SLD standard,
+                WMS should use fill! -->
+                <xsl:value-of select="xslutil:toHexColor(color)"/>
+              </sld:CssParameter>
             </sld:Font>
+            <xsl:if test="outlineShowing='true'">
+              <sld:Halo>
+                <sld:Radius>
+                  <xsl:value-of select="outlineWidth" />
+                </sld:Radius>
+                <sld:Fill>
+                  <sld:CssParameter name="fill">
+                    <xsl:value-of select="xslutil:toHexColor(outlineColor)" />
+                  </sld:CssParameter>
+                </sld:Fill>
+              </sld:Halo>
+            </xsl:if>
             <sld:Fill>
               <sld:CssParameter name="fill">
                 <xsl:value-of select="xslutil:toHexColor(color)"/>
@@ -158,7 +174,6 @@
                 <xsl:value-of select="xslutil:toAlphaValue(alpha)"/>
               </sld:CssParameter>
             </sld:Fill>
-            <sld:Halo/>
           </sld:TextSymbolizer>
         </sld:Rule>
       </xsl:if>

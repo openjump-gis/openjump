@@ -1,4 +1,9 @@
 2008-02-07 Andreas Schmitz <schmitz@lat-lon.de>
+      src/org/openjump/util/SLDImporter.java,
+      src/de/latlon/deejump/plugin/style/layerstyle2sld.xsl:
+      Added support for halos (text outlines).
+
+2008-02-07 Andreas Schmitz <schmitz@lat-lon.de>
       src/com/vividsolutions/jump/workbench/ui/wizard/WizardDialog.java:
       The next button is the default button.
 
