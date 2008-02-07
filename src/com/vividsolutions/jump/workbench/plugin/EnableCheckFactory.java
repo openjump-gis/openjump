@@ -213,7 +213,7 @@ public class EnableCheckFactory {
 
                     if (!layer.isEditable()) {
                         return getMessage(
-                                "com.vividsolutions.jump.workbench.plugin.Selected-items'-layers-must-be-editable",
+                                "com.vividsolutions.jump.workbench.plugin.Selected-items-layers-must-be-editable",
                                 new String[] { layer.getName() });
                     }
                 }
