@@ -29,6 +29,8 @@
         com.vividsolutions.jump.workbench.WorkbenchContext
 
 
+- see also wiki (TODO section)
+
  - Javadoc (last but not least!)
 
 ---------------------------------------
