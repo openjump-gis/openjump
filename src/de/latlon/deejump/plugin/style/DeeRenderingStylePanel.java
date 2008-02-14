@@ -91,12 +91,12 @@ import com.vividsolutions.jump.workbench.ui.style.StylePanel;
  * <code>DeeRenderingStylePanel</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author:$
+ * @author last edited by: $Author$
  * 
- * @version $Revision:$, $Date:$
+ * @version $Revision$, $Date: 2008-01-30 15:42:50 +0100 (Wed, 30 Jan
+ *          2008) $
  */
-public class DeeRenderingStylePanel extends BasicStylePanel implements
-        StylePanel {
+public class DeeRenderingStylePanel extends BasicStylePanel implements StylePanel {
 
     private static final long serialVersionUID = 2657390245955765563L;
 
@@ -134,8 +134,8 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements
             setPreferredSize(new Dimension(200, 40));
         }
 
-        private LayerViewPanel dummyLayerViewPanel = new LayerViewPanel(
-                new LayerManager(), new LayerViewPanelContext() {
+        private LayerViewPanel dummyLayerViewPanel = new LayerViewPanel(new LayerManager(),
+                new LayerViewPanelContext() {
                     public void setStatusMessage(String message) {
                     }
 
@@ -183,14 +183,13 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
-            ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                    RenderingHints.VALUE_ANTIALIAS_ON);
+            ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             paint(getBasicStyle(), (Graphics2D) g);
 
             if (vertexCheckBox.isSelected()) {
                 VertexStyle vertexStyle = getVertexStyle();
                 // unknown why this was called here:
-                //vertexStyleChooser.setSelectedStyle(getCurrentVertexStyle());
+                // vertexStyleChooser.setSelectedStyle(getCurrentVertexStyle());
 
                 // Ensure the vertex colour shown on the preview panel stays
                 // up to date. [Jon Aquino]
@@ -208,17 +207,13 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements
 
         private Feature createFeature() {
             try {
-                return FeatureUtil
-                        .toFeature(
-                                new WKTReader()
-                                        .read("POLYGON ((-200 80, 100 20, 400 -40, 400 80, -200 80))"),
-                                new FeatureSchema() {
-                                    private static final long serialVersionUID = -8627306219650589202L;
-                                    {
-                                        addAttribute("GEOMETRY",
-                                                AttributeType.GEOMETRY);
-                                    }
-                                });
+                return FeatureUtil.toFeature(new WKTReader()
+                        .read("POLYGON ((-200 80, 100 20, 400 -40, 400 80, -200 80))"), new FeatureSchema() {
+                    private static final long serialVersionUID = -8627306219650589202L;
+                    {
+                        addAttribute("GEOMETRY", AttributeType.GEOMETRY);
+                    }
+                });
             } catch (ParseException e) {
                 Assert.shouldNeverReachHere();
 
@@ -254,8 +249,11 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements
         return "";
     }
 
-    protected DeeRenderingStylePanel(Blackboard blackboard, Layer layer) {
+    protected DeeRenderingStylePanel(Blackboard blackboard, Layer layer, Blackboard persistentBlackboard) {
         super(blackboard, ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+
+        vertexStyleChooser.setBlackboard(persistentBlackboard);
+        vertexStyleChooser.setStylePanel(this);
 
         Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
         labelTable.put(new Integer(5), new JLabel("5"));
@@ -264,6 +262,7 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements
         labelTable.put(new Integer(20), new JLabel("20"));
         vertexSlider.setLabelTable(labelTable);
         setBasicStyle(layer.getBasicStyle());
+
         try {
             jbInit();
             updateControls();
@@ -274,6 +273,14 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements
         // Set layer after #jbInit, because both methods initialize the
         // components. [Jon Aquino]
         setLayer(layer);
+
+        if (layer.getVertexStyle() instanceof BitmapVertexStyle) {
+            String fileName = ((BitmapVertexStyle) layer.getVertexStyle()).getFileName();
+            // side effects used for the WORST
+            vertexStyleChooser.setCurrentFileName(fileName);
+        }
+
+        vertexStyleChooser.setSelectedStyle(getCurrentVertexStyle());
     }
 
     @Override
@@ -289,9 +296,8 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements
         vertexSlider.setEnabled(vertexCheckBox.isSelected());
         vertexStyleChooser.setEnabled(vertexCheckBox.isSelected());
 
-        for (Enumeration<JLabel> e = vertexSlider.getLabelTable().elements(); e
-                .hasMoreElements();) {
-            JLabel label = e.nextElement();
+        for (Enumeration<?> e = vertexSlider.getLabelTable().elements(); e.hasMoreElements();) {
+            JLabel label = (JLabel) e.nextElement();
             label.setEnabled(vertexCheckBox.isSelected());
         }
 
@@ -317,8 +323,7 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements
 
             return;
         }
-        vertexCheckBox.setText(I18N
-                .get("ui.style.RenderingStylePanel.vertices-size"));
+        vertexCheckBox.setText(I18N.get("ui.style.RenderingStylePanel.vertices-size"));
         // GH 2005.09.22 this Listner is better than actionListener for this
         // Checkbox
         vertexCheckBox.addItemListener(new ItemListener() {
@@ -338,28 +343,24 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements
         fillPatternTipLabel.setFont(new java.awt.Font("SansSerif", 2, 10));
         fillPatternTipLabel.setOpaque(false);
         fillPatternTipLabel.setEditable(false);
-        fillPatternTipLabel
-                .setText(I18N
-                        .get("ui.style.RenderingStylePanel.tip-after-selecting-a-pattern-use-your-keyboard"));
+        fillPatternTipLabel.setText(I18N
+                .get("ui.style.RenderingStylePanel.tip-after-selecting-a-pattern-use-your-keyboard"));
         fillPatternTipLabel.setLineWrap(true);
         fillPatternTipLabel.setWrapStyleWord(true);
 
-        centerPanel.add(vertexSlider, new GridBagConstraints(1, 35, 1, 1, 0.0,
-                0.0, WEST, NONE, new Insets(2, 2, 2, 2), 0, 0));
-        centerPanel.add(GUIUtil.createSyncdTextField(vertexSlider,
-                SLIDER_TEXT_FIELD_COLUMNS), new GridBagConstraints(2, 35, 1, 1,
-                0.0, 0.0, WEST, NONE, new Insets(2, 2, 2, 2), 0, 0));
-        centerPanel.add(vertexCheckBox, new GridBagConstraints(0, 35, 2, 1,
-                0.0, 0.0, WEST, NONE, new Insets(2, 2, 2, 2), 0, 0));
-        centerPanel.add(new JLabel(I18N
-                .get("ui.style.RenderingStylePanel.preview")),
-                new GridBagConstraints(0, 40, 3, 1, 0.0, 0.0, WEST, NONE,
-                        new Insets(2, 2, 0, 2), 0, 0));
-        centerPanel.add(previewPanel, new GridBagConstraints(0, 45, 3, 1, 0.0,
-                0.0, WEST, NONE, new Insets(0, 10, 2, 2), 0, 0));
+        centerPanel.add(vertexSlider, new GridBagConstraints(1, 35, 1, 1, 0.0, 0.0, WEST, NONE, new Insets(2, 2, 2, 2),
+                0, 0));
+        centerPanel.add(GUIUtil.createSyncdTextField(vertexSlider, SLIDER_TEXT_FIELD_COLUMNS), new GridBagConstraints(
+                2, 35, 1, 1, 0.0, 0.0, WEST, NONE, new Insets(2, 2, 2, 2), 0, 0));
+        centerPanel.add(vertexCheckBox, new GridBagConstraints(0, 35, 2, 1, 0.0, 0.0, WEST, NONE,
+                new Insets(2, 2, 2, 2), 0, 0));
+        centerPanel.add(new JLabel(I18N.get("ui.style.RenderingStylePanel.preview")), new GridBagConstraints(0, 40, 3,
+                1, 0.0, 0.0, WEST, NONE, new Insets(2, 2, 0, 2), 0, 0));
+        centerPanel.add(previewPanel, new GridBagConstraints(0, 45, 3, 1, 0.0, 0.0, WEST, NONE,
+                new Insets(0, 10, 2, 2), 0, 0));
 
-        centerPanel.add(vertexStyleChooser, new GridBagConstraints(0, 50, 3, 1,
-                0.0, 0.0, WEST, NONE, new Insets(2, 2, 0, 2), 0, 0));//
+        centerPanel.add(vertexStyleChooser, new GridBagConstraints(0, 50, 3, 1, 0.0, 0.0, WEST, NONE, new Insets(2, 2,
+                0, 2), 0, 0));//
 
         // GH 2005.10.26 I have deleted the actionListner of the BitmapButton
         // where is the suitable place to call ChangeVertexStyle()??.
@@ -370,8 +371,8 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements
             }
         });
 
-        centerPanel.add(fillPatternTipLabel, new GridBagConstraints(0, 8, 3, 1,
-                0.0, 0.0, CENTER, BOTH, new Insets(0, 0, 0, 0), 0, 0));
+        centerPanel.add(fillPatternTipLabel, new GridBagConstraints(0, 8, 3, 1, 0.0, 0.0, CENTER, BOTH, new Insets(0,
+                0, 0, 0), 0, 0));
 
         vertexStyleChooser.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
@@ -379,6 +380,14 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements
                 vertexSlider.setValue(slider.getValue());
             }
         });
+
+        ActionListener listener = new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                changeVertexStyle();
+            }
+        };
+        fillColorChooserPanel.addActionListener(listener);
+        lineColorChooserPanel.addActionListener(listener);
     }
 
     // GH 2005-08-30

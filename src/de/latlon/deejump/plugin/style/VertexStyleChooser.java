@@ -1,9 +1,3 @@
-/*
- * Created on 27.09.2005
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
 package de.latlon.deejump.plugin.style;
 
 import static de.latlon.deejump.plugin.style.VertexStylesFactory.BITMAP_STYLE;
@@ -34,15 +28,17 @@ import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.ui.renderer.style.VertexStyle;
+import com.vividsolutions.jump.workbench.ui.style.BasicStylePanel;
 
 /**
- * @author hamammi
+ * <code>VertexStyleChooser</code>
  * 
- * TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
+ * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+ * @author last edited by: $Author:$
  * 
- * [sstein 02.08.2006] - removed point size slider
+ * @version $Revision:$, $Date:$
  */
 public class VertexStyleChooser extends JPanel {
 
@@ -77,39 +73,46 @@ public class VertexStyleChooser extends JPanel {
 
     private boolean activateOwnSlider = false;
 
+    private Blackboard blackboard;
+
+    private BasicStylePanel stylePanel;
+
+    /**
+     * @param activateOwnSlider
+     */
     public VertexStyleChooser(boolean activateOwnSlider) {
         super();
         initGUI();
         this.activateOwnSlider = activateOwnSlider;
     }
 
+    protected void setBlackboard(Blackboard persistentBlackboard) {
+        blackboard = persistentBlackboard;
+    }
+
+    protected void setStylePanel(DeeRenderingStylePanel stylePanel) {
+        this.stylePanel = stylePanel;
+    }
+
     private void initGUI() {
         pointTypeComboBox = new JComboBox();
         pointTypeComboBox.setEditable(false);
-        pointTypeComboBox.addItem(I18N
-                .get("deejump.ui.style.RenderingStylePanel.square"));
-        pointTypeComboBox.addItem(I18N
-                .get("deejump.ui.style.RenderingStylePanel.circle"));
-        pointTypeComboBox.addItem(I18N
-                .get("deejump.ui.style.RenderingStylePanel.triangle"));
-        pointTypeComboBox.addItem(I18N
-                .get("deejump.ui.style.RenderingStylePanel.cross"));
-        pointTypeComboBox.addItem(I18N
-                .get("deejump.ui.style.RenderingStylePanel.star"));
-        pointTypeComboBox.addItem(I18N
-                .get("deejump.ui.style.RenderingStylePanel.bitmap"));
+        pointTypeComboBox.addItem(I18N.get("deejump.ui.style.RenderingStylePanel.square"));
+        pointTypeComboBox.addItem(I18N.get("deejump.ui.style.RenderingStylePanel.circle"));
+        pointTypeComboBox.addItem(I18N.get("deejump.ui.style.RenderingStylePanel.triangle"));
+        pointTypeComboBox.addItem(I18N.get("deejump.ui.style.RenderingStylePanel.cross"));
+        pointTypeComboBox.addItem(I18N.get("deejump.ui.style.RenderingStylePanel.star"));
+        pointTypeComboBox.addItem(I18N.get("deejump.ui.style.RenderingStylePanel.bitmap"));
 
         pointTypeComboBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 JComboBox comboBox = (JComboBox) e.getSource();
-                String selectedItem = STYLE_NAMES.get(comboBox
-                        .getSelectedIndex());
+                String selectedItem = STYLE_NAMES.get(comboBox.getSelectedIndex());
                 setSelectedStyle(selectedItem);
             }
         });
 
-        bitmapChangeButton = new JButton(I18N
-                .get("deejump.ui.style.RenderingStylePanel.bitmap-change"));
+        bitmapChangeButton = new JButton(I18N.get("deejump.ui.style.RenderingStylePanel.bitmap-change"));
         bitmapChangeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 openFileChooser();
@@ -137,10 +140,7 @@ public class VertexStyleChooser extends JPanel {
             sizeSlider.setPreferredSize(new Dimension(130, 49));
         }
         JPanel oberstPanel = new JPanel();
-        oberstPanel
-                .add(new JLabel(
-                        I18N
-                                .get("deejump.ui.style.RenderingStylePanel.point-display-type")));
+        oberstPanel.add(new JLabel(I18N.get("deejump.ui.style.RenderingStylePanel.point-display-type")));
         oberstPanel.add(pointTypeComboBox);
         oberstPanel.add(bitmapChangeButton);
         JPanel sliderPanel = new JPanel(); // [sstein] always init although it
@@ -154,23 +154,35 @@ public class VertexStyleChooser extends JPanel {
 
     }
 
+    /**
+     * @param actionListener
+     */
     public void addActionListener(ActionListener actionListener) {
         pointTypeComboBox.addActionListener(actionListener);
         bitmapChangeButton.addActionListener(actionListener);
 
     }
 
+    /**
+     * @param actionListener
+     */
     public void removeActionListener(ActionListener actionListener) {
         pointTypeComboBox.removeActionListener(actionListener);
         bitmapChangeButton.removeActionListener(actionListener);
     }
 
+    /**
+     * @param cl
+     */
     public void addChangeListener(ChangeListener cl) {
         if (this.activateOwnSlider == true) {
             this.sizeSlider.addChangeListener(cl);
         }
     }
 
+    /**
+     * @param cl
+     */
     public void removeChangeListener(ChangeListener cl) {
         if (this.activateOwnSlider == true) {
             this.sizeSlider.removeChangeListener(cl);
@@ -180,16 +192,26 @@ public class VertexStyleChooser extends JPanel {
     boolean openFileChooser() {
         boolean imageIsLoaded = false;
         JFileChooser fileChooser = new JFileChooser();
+        String f = (String) blackboard.get("VertexStyleChooser.last-location");
+        if (f != null) {
+            File dir = new File(f);
+            while (!dir.isDirectory()) {
+                dir = dir.getParentFile();
+            }
+            fileChooser.setCurrentDirectory(dir);
+        }
         fileChooser.setFileFilter(new FileFilter() {
+            @Override
             public boolean accept(File file) {
-                return file.isDirectory()
-                        || file.getName().toLowerCase().endsWith(".png")
+                return file.isDirectory() || file.getName().toLowerCase().endsWith(".png")
                         || file.getName().toLowerCase().endsWith(".gif")
-                        || file.getName().toLowerCase().endsWith(".jpg");
+                        || file.getName().toLowerCase().endsWith(".jpg")
+                        || file.getName().toLowerCase().endsWith(".svg");
             }
 
+            @Override
             public String getDescription() {
-                return "Bitmap";
+                return "*.png, *.gif, *.jpg, *.svg";
             }
         });
         int showFileChooser = fileChooser.showOpenDialog(this);
@@ -198,18 +220,23 @@ public class VertexStyleChooser extends JPanel {
             currentFilePath = fileChooser.getSelectedFile().getAbsolutePath();
             setCurrentFileName(currentFilePath);
             setSelectedStyle(BITMAP_STYLE);
+            blackboard.put("VertexStyleChooser.last-location", currentFilePath);
         }
         return imageIsLoaded;
     }
 
-    private void setCurrentFileName(String fileName) {
+    protected void setCurrentFileName(String fileName) {
         currentFilename = fileName;
     }
 
+    /**
+     * @return the file name
+     */
     public String getCurrentFileName() {
         return currentFilename;
     }
 
+    @Override
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
         this.pointTypeComboBox.setEnabled(enabled);
@@ -223,8 +250,7 @@ public class VertexStyleChooser extends JPanel {
      * @return the selected vertex style
      */
     public VertexStyle getSelectedStyle() {
-        String wellKnowName = STYLE_NAMES.get(this.pointTypeComboBox
-                .getSelectedIndex());
+        String wellKnowName = STYLE_NAMES.get(this.pointTypeComboBox.getSelectedIndex());
         if (BITMAP_STYLE.equals(wellKnowName)) {
             wellKnowName = getCurrentFileName();
             if (wellKnowName == null) {
@@ -232,11 +258,10 @@ public class VertexStyleChooser extends JPanel {
                 wellKnowName = STYLE_NAMES.get(0);
             }
         }
-        VertexStyle vertexStyle = VertexStylesFactory
-                .createVertexStyle(wellKnowName);
-        if (!(vertexStyle instanceof BitmapVertexStyle)) {
-            vertexStyle.setSize(sizeSlider.getValue());
-        }
+        VertexStyle vertexStyle = VertexStylesFactory.createVertexStyle(wellKnowName);
+        vertexStyle.setSize(sizeSlider.getValue());
+        vertexStyle.setFillColor(stylePanel.getBasicStyle().getFillColor());
+        vertexStyle.setLineColor(stylePanel.getBasicStyle().getLineColor());
         return vertexStyle;
     }
 

@@ -100,7 +100,7 @@ public abstract class VertexStyle implements Style, SizedStrokeFillStyle {
     }
 
     /**
-     * @return the color, for java2xml
+     * @return the color
      */
     public Color getLineColor() {
         return strokeColor;
@@ -130,27 +130,22 @@ public abstract class VertexStyle implements Style, SizedStrokeFillStyle {
 
     public void initialize(Layer layer) {
         // Set the vertices' fill color to the layer's line color
-        fillColor = GUIUtil.alphaColor(layer.getBasicStyle().getFillColor(),
-                layer.getBasicStyle().getAlpha());
-        strokeColor = GUIUtil.alphaColor(layer.getBasicStyle().getLineColor(),
-                layer.getBasicStyle().getAlpha());
+        fillColor = GUIUtil.alphaColor(layer.getBasicStyle().getFillColor(), layer.getBasicStyle().getAlpha());
+        strokeColor = GUIUtil.alphaColor(layer.getBasicStyle().getLineColor(), layer.getBasicStyle().getAlpha());
 
     }
 
-    public void paint(Feature f, Graphics2D g, Viewport viewport)
-            throws Exception {
+    public void paint(Feature f, Graphics2D g, Viewport viewport) throws Exception {
         Coordinate[] coordinates = f.getGeometry().getCoordinates();
         g.setColor(fillColor);
 
         for (int i = 0; i < coordinates.length; i++) {
-            if (!viewport.getEnvelopeInModelCoordinates().contains(
-                    coordinates[i])) {
+            if (!viewport.getEnvelopeInModelCoordinates().contains(coordinates[i])) {
                 // Otherwise get "sun.dc.pr.PRException: endPath: bad path"
                 // exception [Jon Aquino 10/22/2003]
                 continue;
             }
-            paint(g, viewport.toViewPoint(new Point2D.Double(coordinates[i].x,
-                    coordinates[i].y)));
+            paint(g, viewport.toViewPoint(new Point2D.Double(coordinates[i].x, coordinates[i].y)));
         }
     }
 
@@ -165,9 +160,8 @@ public abstract class VertexStyle implements Style, SizedStrokeFillStyle {
          * shape.setFrame(p.getX() - (getSize() / 2d), p.getY() - (getSize() /
          * 2d), getSize(), getSize());
          */
-        ((RectangularShape) shape).setFrame(p.getX() - (getSize() / 2d), p
-                .getY()
-                - (getSize() / 2d), getSize(), getSize());
+        ((RectangularShape) shape).setFrame(p.getX() - (getSize() / 2d), p.getY() - (getSize() / 2d), getSize(),
+                getSize());
     }
 
     protected void render(Graphics2D g) {

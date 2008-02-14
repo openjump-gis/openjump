@@ -1,3 +1,11 @@
+2008-02-14 Andreas Schmitz <schmitz@lat-lon.de>
+      src/de/latlon/deejump/plugin/style/VertexStyleChooser.java,
+      src/de/latlon/deejump/plugin/style/DeeChangeStylesPlugIn.java,
+      src/de/latlon/deejump/plugin/style/BitmapVertexStyle.java,
+      src/de/latlon/deejump/plugin/style/DeeRenderingStylePanel.java,
+      src/com/vividsolutions/jump/workbench/ui/renderer/style/VertexStyle.java:
+      Added support for SVGs, whose color is changed on the fly. Also fixed small bugs in the styling panel.
+
 2008-02-07 Andreas Schmitz <schmitz@lat-lon.de>
       src/org/openjump/util/SLDImporter.java,
       src/de/latlon/deejump/plugin/style/layerstyle2sld.xsl:
