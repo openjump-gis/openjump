@@ -206,6 +206,7 @@
                         <xsl:when test="contains(@imageURL, 'png')">image/png</xsl:when>
                         <xsl:when test="contains(@imageURL, 'jpg')">image/jpg</xsl:when>
                         <xsl:when test="contains(@imageURL, 'gif')">image/gif</xsl:when>
+                        <xsl:when test="contains(@imageURL, 'svg')">image/svg+xml</xsl:when>
                         <xsl:otherwise>unknown format</xsl:otherwise>
                       </xsl:choose>
                     </sld:Format>
@@ -219,13 +220,13 @@
                     <xsl:apply-templates select="../style[contains(@class, 'BasicStyle')]/fill" />
                     <xsl:apply-templates select="../style[contains(@class, 'BasicStyle')]/line" />
                   </sld:Mark>
-                  <xsl:if test="string-length(@size) &gt; 0">
-                    <sld:Size>
-                      <xsl:value-of select="@size * 2"/>
-                    </sld:Size>
-                  </xsl:if>
                 </xsl:otherwise>
               </xsl:choose>
+              <xsl:if test="string-length(@size) &gt; 0">
+                <sld:Size>
+                  <xsl:value-of select="@size * 2"/>
+                </sld:Size>
+              </xsl:if>
             </sld:Graphic>
           </sld:PointSymbolizer>
         </sld:Rule>
@@ -309,9 +310,10 @@
                     </OnlineResource>
                     <sld:Format>
                       <xsl:choose>
-                        <xsl:when test="contains(./value/vertexstyle/@imageURL, 'png')">image/png</xsl:when>
-                        <xsl:when test="contains(./value/vertexstyle/@imageURL, 'jpg')">image/jpg</xsl:when>
-                        <xsl:when test="contains(./value/vertexstyle/@imageURL, 'gif')">image/gif</xsl:when>
+                        <xsl:when test="contains(value/vertexstyle/@imageURL, 'png')">image/png</xsl:when>
+                        <xsl:when test="contains(value/vertexstyle/@imageURL, 'jpg')">image/jpg</xsl:when>
+                        <xsl:when test="contains(value/vertexstyle/@imageURL, 'gif')">image/gif</xsl:when>
+                        <xsl:when test="contains(value/vertexstyle/@imageURL, 'svg')">image/svg+xml</xsl:when>
                         <xsl:otherwise>unknown format</xsl:otherwise>
                       </xsl:choose>
                     </sld:Format>
@@ -335,13 +337,13 @@
                       </sld:CssParameter>
                     </sld:Stroke>
                   </sld:Mark>
-                  <xsl:if test="string-length(value/vertexstyle/@size) &gt; 0">
-                    <sld:Size>
-                      <xsl:value-of select="value/vertexstyle/@size"/>
-                    </sld:Size>
-                  </xsl:if>
                 </xsl:otherwise>
               </xsl:choose>
+              <xsl:if test="string-length(value/vertexstyle/@size) &gt; 0">
+                <sld:Size>
+                  <xsl:value-of select="value/vertexstyle/@size"/>
+                </sld:Size>
+              </xsl:if>
             </sld:Graphic>
           </sld:PointSymbolizer>
         </xsl:when>
@@ -372,6 +374,7 @@
                     <xsl:when test="contains($fileName, 'png')">image/png</xsl:when>
                     <xsl:when test="contains($fileName, 'jpg')">image/jpg</xsl:when>
                     <xsl:when test="contains($fileName, 'gif')">image/gif</xsl:when>
+                    <xsl:when test="contains($fileName, 'svg')">image/svg+xml</xsl:when>
                     <xsl:otherwise>unknown format</xsl:otherwise>
                   </xsl:choose>
                 </sld:Format>

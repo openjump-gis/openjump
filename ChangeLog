@@ -1,4 +1,8 @@
 2008-02-14 Andreas Schmitz <schmitz@lat-lon.de>
+      src/de/latlon/deejump/plugin/style/layerstyle2sld.xsl:
+      Added SLD-Export of SVG images.
+
+2008-02-14 Andreas Schmitz <schmitz@lat-lon.de>
       src/de/latlon/deejump/plugin/style/VertexStyleChooser.java,
       src/de/latlon/deejump/plugin/style/DeeChangeStylesPlugIn.java,
       src/de/latlon/deejump/plugin/style/BitmapVertexStyle.java,
