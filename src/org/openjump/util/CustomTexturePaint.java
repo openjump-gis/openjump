@@ -38,6 +38,12 @@
 
 package org.openjump.util;
 
+import static com.vividsolutions.jump.I18N.get;
+import static com.vividsolutions.jump.I18N.getMessage;
+import static java.awt.Color.black;
+import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
+
+import java.awt.Graphics;
 import java.awt.Paint;
 import java.awt.PaintContext;
 import java.awt.Rectangle;
@@ -71,28 +77,37 @@ public class CustomTexturePaint implements Paint {
      * 
      */
     public CustomTexturePaint() {
-        // for java2xml
+        BufferedImage img = new BufferedImage(300, 20, TYPE_INT_ARGB);
+        Graphics g = img.getGraphics();
+        g.setColor(black);
+        g.drawString(get("org.openjump.util.CustomTexturePaint.no-image-chosen"), 25, 10);
+        g.dispose();
+        texturePaint = new TexturePaint(img, new Rectangle2D.Float(0, 0, img.getWidth(), img.getHeight()));
     }
 
     /**
      * @param url
      */
     public CustomTexturePaint(URL url) {
-        setUrl(url.toExternalForm());
+        try {
+            setUrl(url.toExternalForm());
+        } catch (IOException e) {
+            // ignore IOs
+        }
     }
 
     /**
      * @param url
+     * @throws IOException
      */
-    public void setUrl(String url) {
-        try {
-            this.url = new URL(url);
-            BufferedImage img = ImageIO.read(this.url);
-            texturePaint = new TexturePaint(img, new Rectangle2D.Float(0, 0,
-                    img.getWidth(), img.getHeight()));
-        } catch (IOException e) {
-            // ignore IOs
+    public void setUrl(String url) throws IOException {
+        this.url = new URL(url);
+        BufferedImage img = ImageIO.read(this.url);
+        if (img == null) {
+            throw new IOException(getMessage("org.openjump.util.CustomTexturePaint.the-url-does-not-point-to-an-image",
+                    new Object[] { url }));
         }
+        texturePaint = new TexturePaint(img, new Rectangle2D.Float(0, 0, img.getWidth(), img.getHeight()));
     }
 
     /**
@@ -102,10 +117,9 @@ public class CustomTexturePaint implements Paint {
         return url.toExternalForm();
     }
 
-    public PaintContext createContext(ColorModel cm, Rectangle deviceBounds,
-            Rectangle2D userBounds, AffineTransform xform, RenderingHints hints) {
-        return texturePaint.createContext(cm, deviceBounds, userBounds, xform,
-                hints);
+    public PaintContext createContext(ColorModel cm, Rectangle deviceBounds, Rectangle2D userBounds,
+            AffineTransform xform, RenderingHints hints) {
+        return texturePaint.createContext(cm, deviceBounds, userBounds, xform, hints);
     }
 
     public int getTransparency() {

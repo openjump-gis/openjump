@@ -42,28 +42,20 @@
  ---------------------------------------------------------------------------*/
 package de.latlon.deejump.plugin.style;
 
+import static de.latlon.deejump.plugin.style.BitmapVertexStyle.getUpdatedSVGImage;
+import static javax.imageio.ImageIO.write;
+
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
 import java.net.MalformedURLException;
 
 import javax.imageio.ImageIO;
-import javax.media.jai.JAI;
-import javax.media.jai.RenderedOp;
 
-import org.apache.batik.transcoder.TranscoderException;
-import org.apache.batik.transcoder.TranscoderInput;
-import org.apache.batik.transcoder.TranscoderOutput;
-import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
-import com.sun.media.jai.codec.MemoryCacheSeekableStream;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.renderer.style.BasicFillPattern;
@@ -199,33 +191,7 @@ public class XSLUtility {
         if (filename.toLowerCase().endsWith(".svg")) {
             File file = File.createTempFile("ojp", "pti.png");
 
-            ByteArrayOutputStream bos = new ByteArrayOutputStream(size * size * 4);
-            TranscoderOutput output = new TranscoderOutput(bos);
-
-            PNGTranscoder trc = new PNGTranscoder();
-            try {
-                Reader in = new StringReader(BitmapVertexStyle.updateSVGColors(new File(filename), toHexColor(stroke),
-                        toHexColor(fill)).toString());
-                TranscoderInput input = new TranscoderInput(in);
-                trc.addTranscodingHint(PNGTranscoder.KEY_HEIGHT, new Float(size));
-                trc.addTranscodingHint(PNGTranscoder.KEY_WIDTH, new Float(size));
-                trc.transcode(input, output);
-                bos.close();
-                ByteArrayInputStream is = new ByteArrayInputStream(bos.toByteArray());
-                MemoryCacheSeekableStream mcss = new MemoryCacheSeekableStream(is);
-                RenderedOp rop = JAI.create("stream", mcss);
-                BufferedImage image = rop.getAsBufferedImage();
-                ImageIO.write(image, "png", file);
-            } catch (TranscoderException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (MalformedURLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            write(getUpdatedSVGImage("filename", toHexColor(stroke), toHexColor(fill), size), "png", file);
 
             return file.toURL().toExternalForm();
         }

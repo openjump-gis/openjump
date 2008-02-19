@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -119,7 +120,11 @@ public class BitmapVertexStyle extends VertexStyle {
         }
     }
 
-    private static String toHexColor(Color col) {
+    /**
+     * @param col
+     * @return a #rrggbb string
+     */
+    public static String toHexColor(Color col) {
         if (col == null) {
             col = Color.black;
         }
@@ -132,10 +137,6 @@ public class BitmapVertexStyle extends VertexStyle {
     }
 
     // due to the lack of xpaths, this is VERY crude
-    private static StringBuffer updateSVGColors(File file, Color stroke, Color fill) throws IOException {
-        return updateSVGColors(file, toHexColor(stroke), toHexColor(fill));
-    }
-
     /**
      * @param file
      * @param stroke
@@ -165,40 +166,51 @@ public class BitmapVertexStyle extends VertexStyle {
 
     /**
      * @param fileName
+     * @param stroke
+     * @param fill
+     * @param size
+     * @return a SVG image with black colors overwritten with the given colors
+     */
+    public static BufferedImage getUpdatedSVGImage(String fileName, String stroke, String fill, int size) {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(size * size * 4);
+        TranscoderOutput output = new TranscoderOutput(bos);
+
+        PNGTranscoder trc = new PNGTranscoder();
+        try {
+            Reader in = new StringReader(updateSVGColors(new File(fileName), stroke, fill).toString());
+            TranscoderInput input = new TranscoderInput(in);
+            if (size > 0) {
+                trc.addTranscodingHint(PNGTranscoder.KEY_HEIGHT, new Float(size));
+                trc.addTranscodingHint(PNGTranscoder.KEY_WIDTH, new Float(size));
+            }
+            trc.transcode(input, output);
+            bos.close();
+            ByteArrayInputStream is = new ByteArrayInputStream(bos.toByteArray());
+            MemoryCacheSeekableStream mcss = new MemoryCacheSeekableStream(is);
+            RenderedOp rop = JAI.create("stream", mcss);
+            return rop.getAsBufferedImage();
+        } catch (TranscoderException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    /**
+     * @param fileName
      */
     public void setFileName(String fileName) {
         this.fileName = fileName;
 
         if (fileName.toLowerCase().endsWith(".svg")) {
-            int size = getSize();
-
-            ByteArrayOutputStream bos = new ByteArrayOutputStream(size * size * 4);
-            TranscoderOutput output = new TranscoderOutput(bos);
-
-            PNGTranscoder trc = new PNGTranscoder();
-            try {
-                Reader in = new StringReader(updateSVGColors(new File(fileName), getLineColor(), getFillColor())
-                        .toString());
-                TranscoderInput input = new TranscoderInput(in);
-                trc.addTranscodingHint(PNGTranscoder.KEY_HEIGHT, new Float(size));
-                trc.addTranscodingHint(PNGTranscoder.KEY_WIDTH, new Float(size));
-                trc.transcode(input, output);
-                bos.close();
-                ByteArrayInputStream is = new ByteArrayInputStream(bos.toByteArray());
-                MemoryCacheSeekableStream mcss = new MemoryCacheSeekableStream(is);
-                RenderedOp rop = JAI.create("stream", mcss);
-                image = rop.getAsBufferedImage();
-            } catch (TranscoderException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (MalformedURLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-
+            image = getUpdatedSVGImage(fileName, toHexColor(getLineColor()), toHexColor(getFillColor()), getSize());
         } else {
             image = Toolkit.getDefaultToolkit().getImage(fileName);
         }

@@ -1,4 +1,13 @@
 2008-02-19 Andreas Schmitz <schmitz@lat-lon.de>
+      (language files),
+      src/org/openjump/util/CustomTexturePaint.java,
+      src/de/latlon/deejump/plugin/style/XSLUtility.java,
+      src/de/latlon/deejump/plugin/style/BitmapVertexStyle.java,
+      src/com/vividsolutions/jump/workbench/ui/renderer/style/FillPatternFactory.java,
+      src/com/vividsolutions/jump/workbench/ui/style/BasicStylePanel.java:
+      Added capability to use external graphics as fill patterns.
+
+2008-02-19 Andreas Schmitz <schmitz@lat-lon.de>
       src/de/latlon/deejump/plugin/style/layerstyle2sld.xsl,
       src/de/latlon/deejump/plugin/style/XSLUtility.java,
       src/de/latlon/deejump/plugin/style/BitmapVertexStyle.java:
