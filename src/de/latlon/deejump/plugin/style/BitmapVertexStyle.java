@@ -32,9 +32,10 @@ import com.vividsolutions.jump.workbench.ui.renderer.style.VertexStyle;
  * <code>BitmapVertexStyle</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author:$
+ * @author last edited by: $Author$
  * 
- * @version $Revision:$, $Date:$
+ * @version $Revision$, $Date: 2008-02-14 14:37:00 +0100 (Thu, 14 Feb
+ *          2008) $
  */
 public class BitmapVertexStyle extends VertexStyle {
 
@@ -131,20 +132,28 @@ public class BitmapVertexStyle extends VertexStyle {
     }
 
     // due to the lack of xpaths, this is VERY crude
-    private StringBuffer updateSVGColors(File file) throws IOException {
+    private static StringBuffer updateSVGColors(File file, Color stroke, Color fill) throws IOException {
+        return updateSVGColors(file, toHexColor(stroke), toHexColor(fill));
+    }
+
+    /**
+     * @param file
+     * @param stroke
+     * @param fill
+     * @return the new svg code
+     * @throws IOException
+     */
+    public static StringBuffer updateSVGColors(File file, String stroke, String fill) throws IOException {
         BufferedReader in = new BufferedReader(new FileReader(file));
         StringWriter sout = new StringWriter((int) file.length());
         PrintWriter out = new PrintWriter(sout);
 
-        String scol = toHexColor(getLineColor());
-        String fcol = toHexColor(getFillColor());
-
         String s;
         while ((s = in.readLine()) != null) {
-            s = s.replace("fill:#000000", "fill:" + fcol);
-            s = s.replace("fill:black", "fill:" + fcol);
-            s = s.replace("stroke:#000000", "stroke:" + scol);
-            s = s.replace("stroke:black", "stroke:" + scol);
+            s = s.replace("fill:#000000", "fill:" + fill);
+            s = s.replace("fill:black", "fill:" + fill);
+            s = s.replace("stroke:#000000", "stroke:" + stroke);
+            s = s.replace("stroke:black", "stroke:" + stroke);
             out.println(s);
         }
 
@@ -168,7 +177,8 @@ public class BitmapVertexStyle extends VertexStyle {
 
             PNGTranscoder trc = new PNGTranscoder();
             try {
-                Reader in = new StringReader(updateSVGColors(new File(fileName)).toString());
+                Reader in = new StringReader(updateSVGColors(new File(fileName), getLineColor(), getFillColor())
+                        .toString());
                 TranscoderInput input = new TranscoderInput(in);
                 trc.addTranscodingHint(PNGTranscoder.KEY_HEIGHT, new Float(size));
                 trc.addTranscodingHint(PNGTranscoder.KEY_WIDTH, new Float(size));

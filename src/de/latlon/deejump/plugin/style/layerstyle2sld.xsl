@@ -198,7 +198,7 @@
                   <sld:ExternalGraphic>
                     <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple">
                       <xsl:attribute name="xlink:href">
-                        <xsl:value-of select="xslutil:fileToURL(@imageURL)"/>
+                        <xsl:value-of select="xslutil:getImageURL(@imageURL, ../style[contains(@class, 'BasicStyle')]/fill/color, ../style[contains(@class, 'BasicStyle')]/line/color, number(@size))"/>
                       </xsl:attribute>
                     </OnlineResource>
                     <sld:Format>
@@ -206,7 +206,7 @@
                         <xsl:when test="contains(@imageURL, 'png')">image/png</xsl:when>
                         <xsl:when test="contains(@imageURL, 'jpg')">image/jpg</xsl:when>
                         <xsl:when test="contains(@imageURL, 'gif')">image/gif</xsl:when>
-                        <xsl:when test="contains(@imageURL, 'svg')">image/svg+xml</xsl:when>
+                        <xsl:when test="contains(@imageURL, 'svg')">image/png</xsl:when>
                         <xsl:otherwise>unknown format</xsl:otherwise>
                       </xsl:choose>
                     </sld:Format>
@@ -224,7 +224,12 @@
               </xsl:choose>
               <xsl:if test="string-length(@size) &gt; 0">
                 <sld:Size>
-                  <xsl:value-of select="@size * 2"/>
+                  <xsl:choose>
+                    <xsl:when test="contains(@imageURL, 'svg')"><xsl:value-of select="@size" /></xsl:when>
+                    <xsl:otherwise>
+                      <xsl:value-of select="@size * 2"/>
+                    </xsl:otherwise>
+                  </xsl:choose>
                 </sld:Size>
               </xsl:if>
             </sld:Graphic>
@@ -305,7 +310,7 @@
                   <sld:ExternalGraphic>
                     <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple">
                       <xsl:attribute name="xlink:href">
-                        <xsl:value-of select="xslutil:fileToURL(./value/vertexstyle/@imageURL)"/>
+                        <xsl:value-of select="xslutil:getImageURL(./value/vertexstyle/@imageURL, value/fill/color, value/fill/stroke-color, number(value/vertexstyle/@size))"/>
                       </xsl:attribute>
                     </OnlineResource>
                     <sld:Format>
@@ -313,7 +318,7 @@
                         <xsl:when test="contains(value/vertexstyle/@imageURL, 'png')">image/png</xsl:when>
                         <xsl:when test="contains(value/vertexstyle/@imageURL, 'jpg')">image/jpg</xsl:when>
                         <xsl:when test="contains(value/vertexstyle/@imageURL, 'gif')">image/gif</xsl:when>
-                        <xsl:when test="contains(value/vertexstyle/@imageURL, 'svg')">image/svg+xml</xsl:when>
+                        <xsl:when test="contains(value/vertexstyle/@imageURL, 'svg')">image/png</xsl:when>
                         <xsl:otherwise>unknown format</xsl:otherwise>
                       </xsl:choose>
                     </sld:Format>
