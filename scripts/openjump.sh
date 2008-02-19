@@ -3,7 +3,11 @@
 JAVA_OPTS=-Xmx256M
 MAIN=com.vividsolutions.jump.workbench.JUMPWorkbench
 SAXDRIVER=org.apache.xerces.parsers.SAXParser
-JAVA=`which java`;
+if(test -z $JAVA_HOME) then
+  JAVA=`which java`
+else
+  JAVA=$JAVA_HOME/bin/java
+fi
 JUMP_HOME=`dirname $0`/..
 JUMP_PROPERTIES=~/.jump/workbench-properties.xml
 JUMP_STATE=~/.jump/
