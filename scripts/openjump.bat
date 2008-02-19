@@ -6,7 +6,7 @@ set JAVA_OPTS=-Xms256M -Xmx256M -Dlog4j.configuration=file:conf\log4j.xml "-Djum
 cd %JUMP_HOME%
 set LIB=lib
 
-set CLASSPATH=.
+set CLASSPATH=.;bin
 set CLASSPATH=conf;%CLASSPATH%
 set CLASSPATH=lib\ext;%CLASSPATH%
 

@@ -1,4 +1,8 @@
 2008-02-19 Andreas Schmitz <schmitz@lat-lon.de>
+      scripts/openjump.bat:
+      Properly added bin directory to classpath, also changed to DOS line endings.
+
+2008-02-19 Andreas Schmitz <schmitz@lat-lon.de>
       (language files),
       src/org/openjump/util/CustomTexturePaint.java,
       src/de/latlon/deejump/plugin/style/XSLUtility.java,
