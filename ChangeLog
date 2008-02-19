@@ -1,5 +1,9 @@
 2008-02-19 Andreas Schmitz <schmitz@lat-lon.de>
       scripts/openjump.bat:
+      Removed redundant command line option.
+
+2008-02-19 Andreas Schmitz <schmitz@lat-lon.de>
+      scripts/openjump.bat:
       Properly added bin directory to classpath, also changed to DOS line endings.
 
 2008-02-19 Andreas Schmitz <schmitz@lat-lon.de>

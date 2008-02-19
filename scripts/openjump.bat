@@ -1,7 +1,7 @@
 @echo off
 set OLD_DIR=%CD%
 set JUMP_HOME=%~dp0..%
-set JAVA_OPTS=-Xms256M -Xmx256M -Dlog4j.configuration=file:conf\log4j.xml "-Djump.home=%JUMP_HOME%"
+set JAVA_OPTS=-Xms256M -Xmx256M "-Djump.home=%JUMP_HOME%"
 
 cd %JUMP_HOME%
 set LIB=lib
