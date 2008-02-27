@@ -53,6 +53,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
@@ -72,6 +73,11 @@ public class CustomTexturePaint implements Paint {
     private TexturePaint texturePaint;
 
     private URL url;
+
+    /**
+     * 
+     */
+    public File svg;
 
     /**
      * 
@@ -114,7 +120,7 @@ public class CustomTexturePaint implements Paint {
      * @return the image's URL
      */
     public String getUrl() {
-        return url.toExternalForm();
+        return url == null ? null : url.toExternalForm();
     }
 
     public PaintContext createContext(ColorModel cm, Rectangle deviceBounds, Rectangle2D userBounds,
@@ -124,6 +130,16 @@ public class CustomTexturePaint implements Paint {
 
     public int getTransparency() {
         return texturePaint.getTransparency();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        // boy is this bad...
+        if (other instanceof CustomTexturePaint) {
+            return true;
+        }
+
+        return super.equals(other);
     }
 
 }

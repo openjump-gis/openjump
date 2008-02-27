@@ -103,9 +103,10 @@ import com.vividsolutions.jump.workbench.ui.renderer.style.FillPatternFactory;
  * <code>BasicStylePanel</code> is used to edit the basic style.
  * 
  * @author unknown
- * @author last edited by: $Author:$
+ * @author last edited by: $Author$
  * 
- * @version $Revision:$, $Date:$
+ * @version $Revision$, $Date: 2008-02-19 14:52:27 +0100 (Tue, 19 Feb
+ *          2008) $
  */
 public class BasicStylePanel extends JPanel {
     protected static final int SLIDER_TEXT_FIELD_COLUMNS = 3;
@@ -265,6 +266,10 @@ public class BasicStylePanel extends JPanel {
 
             addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
+                    // to prevent dialog from being shown before dialog popup
+                    if (!isFocusOwner())
+                        return;
+
                     Object val = getSelectedItem();
                     if (val != null && getSelectedIndex() == getItemCount() - 1 && val instanceof CustomTexturePaint) {
                         JFileChooser chooser = new JFileChooser();
@@ -279,36 +284,37 @@ public class BasicStylePanel extends JPanel {
                             File file = chooser.getSelectedFile();
 
                             CustomTexturePaint paint = (CustomTexturePaint) val;
-                            try {
-                                if (file.toString().toLowerCase().endsWith(".svg")) {
-                                    BufferedImage image = getUpdatedSVGImage(file.toString(),
-                                            toHexColor(lineColorChooserPanel.getColor()),
-                                            toHexColor(fillColorChooserPanel.getColor()), 10);
-                                    File f = File.createTempFile("ojp", "fill.png");
-                                    ImageIO.write(image, "png", f);
-                                    paint.setUrl(f.toURL().toExternalForm());
-                                } else {
-                                    paint.setUrl(file.toURL().toExternalForm());
-                                }
-
-                                blackboard.put("BasicStylePanel.last-fill-file", file.toString());
-                            } catch (MalformedURLException e1) {
-                                // eat it, it's not gonna happen
-                            } catch (IOException e1) {
-                                showMessageDialog(
-                                        getParent(),
-                                        getMessage(
-                                                "com.vividsolutions.jump.workbench.ui.style.BasicStylePanel.error-opening-file",
-                                                new Object[] { e1.getMessage() }),
-                                        get("com.vividsolutions.jump.workbench.ui.style.BasicStylePanel.error"),
-                                        ERROR_MESSAGE);
-                            }
+                            updateTexturePaintColor(paint, file);
                         }
                     }
                 }
             });
         }
     };
+
+    void updateTexturePaintColor(CustomTexturePaint paint, File file) {
+        try {
+            if (file.toString().toLowerCase().endsWith(".svg")) {
+                BufferedImage image = getUpdatedSVGImage(file.toString(), toHexColor(lineColorChooserPanel.getColor()),
+                        toHexColor(fillColorChooserPanel.getColor()), 0);
+                File f = File.createTempFile("ojp", "fill.png");
+                ImageIO.write(image, "png", f);
+                paint.setUrl(f.toURL().toExternalForm());
+                paint.svg = file;
+            } else {
+                paint.setUrl(file.toURL().toExternalForm());
+            }
+
+            blackboard.put("BasicStylePanel.last-fill-file", file.toString());
+        } catch (MalformedURLException e1) {
+            // eat it, it's not gonna happen
+        } catch (IOException e1) {
+            showMessageDialog(getParent(), getMessage(
+                    "com.vividsolutions.jump.workbench.ui.style.BasicStylePanel.error-opening-file", new Object[] { e1
+                            .getMessage() }), get("com.vividsolutions.jump.workbench.ui.style.BasicStylePanel.error"),
+                    ERROR_MESSAGE);
+        }
+    }
 
     protected JSlider lineWidthSlider = new JSlider() {
 
@@ -600,9 +606,17 @@ public class BasicStylePanel extends JPanel {
         // the combo box contents = fillPatterns + customFillPatterns [Jon
         // Aquino]
         for (int i = 0; i < fillPatternComboBox.getItemCount(); i++) {
-            if (fillPatternComboBox.getItemAt(i) instanceof BasicFillPattern) {
-                ((BasicFillPattern) fillPatternComboBox.getItemAt(i)).setColor(GUIUtil.alphaColor(fillColorChooserPanel
-                        .getColor(), getAlpha()));
+            Object item = fillPatternComboBox.getItemAt(i);
+
+            if (item instanceof BasicFillPattern) {
+                ((BasicFillPattern) item).setColor(GUIUtil.alphaColor(fillColorChooserPanel.getColor(), getAlpha()));
+            }
+
+            if (item instanceof CustomTexturePaint) {
+                CustomTexturePaint p = (CustomTexturePaint) item;
+                if (p.svg != null) {
+                    updateTexturePaintColor(p, p.svg);
+                }
             }
         }
     }
