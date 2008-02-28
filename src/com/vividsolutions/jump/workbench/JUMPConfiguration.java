@@ -169,7 +169,6 @@ import com.vividsolutions.jump.workbench.ui.renderer.style.VertexIndexLineSegmen
 import com.vividsolutions.jump.workbench.ui.renderer.style.VertexXYLineSegmentStyle;
 import com.vividsolutions.jump.workbench.ui.snap.InstallGridPlugIn;
 import com.vividsolutions.jump.workbench.ui.snap.SnapToVerticesPolicy;
-import com.vividsolutions.jump.workbench.ui.style.ChangeStylesPlugIn;
 import com.vividsolutions.jump.workbench.ui.style.CopyStylesPlugIn;
 import com.vividsolutions.jump.workbench.ui.style.PasteStylesPlugIn;
 import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
@@ -187,6 +186,8 @@ import com.vividsolutions.jump.workbench.ui.zoom.ZoomToFullExtentPlugIn;
 import com.vividsolutions.jump.workbench.ui.zoom.ZoomToLayerPlugIn;
 import com.vividsolutions.jump.workbench.ui.zoom.ZoomToSelectedItemsPlugIn;
 import com.vividsolutions.jump.workbench.ui.zoom.ZoomTool;
+
+import de.latlon.deejump.plugin.style.DeeChangeStylesPlugIn;
 
 /**
  * Initializes the Workbench with various menus and cursor tools. Accesses the
@@ -297,7 +298,8 @@ public class JUMPConfiguration implements Setup {
 
 // [sstein, 01.08.2006] commented out for test reasons with DeeChangeStylePlugIn
 // [sstein, 27.09.2006] comment in - problem with colour theming    
-    private ChangeStylesPlugIn changeStylesPlugIn = new ChangeStylesPlugIn();
+    // stranger: giving dee change styles another try
+    private DeeChangeStylesPlugIn changeStylesPlugIn = new DeeChangeStylesPlugIn();
 
     private UndoPlugIn undoPlugIn = new UndoPlugIn();
 

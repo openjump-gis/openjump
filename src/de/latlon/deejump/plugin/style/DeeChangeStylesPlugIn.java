@@ -43,7 +43,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JTabbedPane;
 
 import com.vividsolutions.jts.util.Assert;
@@ -60,9 +59,7 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
-import com.vividsolutions.jump.workbench.ui.WorkbenchToolBar;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStylePanel;
 import com.vividsolutions.jump.workbench.ui.style.DecorationStylePanel;
@@ -74,9 +71,10 @@ import com.vividsolutions.jump.workbench.ui.style.StylePanel;
  * <code>DeeChangeStylesPlugIn</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author:$
+ * @author last edited by: $Author$
  * 
- * @version $Revision:$, $Date:$
+ * @version $Revision$, $Date: 2008-02-14 14:37:00 +0100 (Thu, 14 Feb
+ *          2008) $
  */
 public class DeeChangeStylesPlugIn extends AbstractPlugIn {
     private final static String LAST_TAB_KEY = DeeChangeStylesPlugIn.class.getName() + " - LAST TAB";
@@ -84,20 +82,6 @@ public class DeeChangeStylesPlugIn extends AbstractPlugIn {
     @Override
     public String getName() {
         return I18N.get("ui.style.ChangeStylesPlugIn.change-styles");
-    }
-
-    @Override
-    public void initialize(PlugInContext context) {
-        WorkbenchContext wbcontext = context.getWorkbenchContext();
-        WorkbenchToolBar toolbar = wbcontext.getWorkbench().getFrame().getToolBar();
-
-        toolbar.addPlugIn(getIcon(), this, createEnableCheck(wbcontext), wbcontext);
-        FeatureInstaller featureInstaller = new FeatureInstaller(wbcontext);
-        JPopupMenu layerNamePopupMenu = wbcontext.getWorkbench().getFrame().getLayerNamePopupMenu();
-
-        featureInstaller.addPopupMenuItem(layerNamePopupMenu, this, getName() + "...", false, GUIUtil
-                .toSmallIcon(getIcon()), createEnableCheck(wbcontext));
-
     }
 
     @Override

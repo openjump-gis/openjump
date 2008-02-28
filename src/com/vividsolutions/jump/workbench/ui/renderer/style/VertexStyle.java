@@ -60,6 +60,8 @@ public abstract class VertexStyle implements Style, SizedStrokeFillStyle {
 
     private boolean enabled = false;
 
+    private boolean filling = true;
+
     // UT
     private Color strokeColor;
 
@@ -164,6 +166,20 @@ public abstract class VertexStyle implements Style, SizedStrokeFillStyle {
                 getSize());
     }
 
+    /**
+     * @param filling
+     */
+    public void setFilling(boolean filling) {
+        this.filling = filling;
+    }
+    
+    /**
+     * @return whether the fill is rendered or not
+     */
+    public boolean getFilling() {
+        return filling;
+    }
+    
     protected void render(Graphics2D g) {
         // UT was
         // g.fill(shape);
@@ -171,8 +187,10 @@ public abstract class VertexStyle implements Style, SizedStrokeFillStyle {
         // deeJUMP
         g.setColor(strokeColor);
         g.draw(shape);
-        g.setColor(fillColor);
-        g.fill(shape);
+        if (filling) {
+            g.setColor(fillColor);
+            g.fill(shape);
+        }
     }
 
     public Object clone() {

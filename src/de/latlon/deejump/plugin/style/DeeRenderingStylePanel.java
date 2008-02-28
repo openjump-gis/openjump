@@ -313,6 +313,9 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
         setSynchronizingLineColor(layer.isSynchronizingLineColor());
         vertexCheckBox.setSelected(layer.getVertexStyle().isEnabled());
         vertexSlider.setValue(layer.getVertexStyle().getSize());
+        if (layer.getVertexStyle().isEnabled()) {
+            fillCheckBox.setSelected(layer.getVertexStyle().getFilling());
+        }
     }
 
     @Override
@@ -402,6 +405,7 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
         VertexStyle vertexStyle = (VertexStyle) layer.getVertexStyle().clone();
         vertexStyle.setEnabled(vertexCheckBox.isSelected());
         vertexStyle.setSize(vertexSlider.getValue());
+        vertexStyle.setFilling(fillCheckBox.isSelected());
         return vertexStyle;
     }
 

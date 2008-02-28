@@ -1,3 +1,16 @@
+2008-02-28 Andreas Schmitz <schmitz@lat-lon.de>
+      src/de/latlon/deejump/plugin/style/CrossVertexStyle.java2xml,
+      src/de/latlon/deejump/plugin/style/CircleVertexStyle.java2xml,
+      src/de/latlon/deejump/plugin/style/DeeChangeStylesPlugIn.java,
+      src/de/latlon/deejump/plugin/style/TriangleVertexStyle.java2xml,
+      src/de/latlon/deejump/plugin/style/StarVertexStyle.java2xml,
+      src/de/latlon/deejump/plugin/style/DeeRenderingStylePanel.java,
+      src/com/vividsolutions/jump/workbench/JUMPConfiguration.java,
+      src/com/vividsolutions/jump/workbench/ui/renderer/style/VertexStyle.java,
+      src/com/vividsolutions/jump/workbench/ui/renderer/style/SquareVertexStyle.java2xml:
+      Added fill/nofill capability to custom symbols (like Triangle).
+      Re-enabled the DeeChangeStylesPlugIn (instead of the old ChangeStylesPlugIn).
+
 2008-02-27 Andreas Schmitz <schmitz@lat-lon.de>
       src/org/openjump/util/CustomTexturePaint.java,
       src/com/vividsolutions/jump/workbench/ui/style/BasicStylePanel.java:
