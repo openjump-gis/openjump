@@ -1,5 +1,6 @@
 ##
 ## OpenJUMP TODO
+## file is a stub .. need to use
 ##
 
 2007-07-08 mmichaud <michael.michaud@free.fr>
