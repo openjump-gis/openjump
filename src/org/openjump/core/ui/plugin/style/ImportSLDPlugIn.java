@@ -39,7 +39,11 @@
 package org.openjump.core.ui.plugin.style;
 
 import static com.vividsolutions.jump.I18N.get;
+import static com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn.get;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
+import static javax.xml.parsers.DocumentBuilderFactory.newInstance;
+import static org.apache.log4j.Logger.getLogger;
+import static org.openjump.util.SLDImporter.importSLD;
 
 import java.io.File;
 import java.util.List;
@@ -49,8 +53,8 @@ import java.util.TreeMap;
 import javax.swing.JFileChooser;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.log4j.Logger;
 import org.openjump.core.ccordsys.srid.SRIDStyle;
-import org.openjump.util.SLDImporter;
 import org.w3c.dom.Document;
 
 import com.vividsolutions.jump.feature.AttributeType;
@@ -66,7 +70,6 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
-import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.LabelStyle;
@@ -83,22 +86,18 @@ import com.vividsolutions.jump.workbench.ui.renderer.style.Style;
  */
 public class ImportSLDPlugIn extends AbstractPlugIn {
 
+    private static final Logger LOG = getLogger(ImportSLDPlugIn.class);
+
     @Override
     public void initialize(PlugInContext context) throws Exception {
-        EnableCheckFactory enableCheckFactory = new EnableCheckFactory(context
-                .getWorkbenchContext());
+        EnableCheckFactory enableCheckFactory = new EnableCheckFactory(context.getWorkbenchContext());
 
         EnableCheck enableCheck = new MultiEnableCheck().add(
-                enableCheckFactory
-                        .createWindowWithLayerManagerMustBeActiveCheck()).add(
-                enableCheckFactory.createExactlyNLayerablesMustBeSelectedCheck(
-                        1, Layerable.class));
+                enableCheckFactory.createWindowWithLayerManagerMustBeActiveCheck()).add(
+                enableCheckFactory.createExactlyNLayerablesMustBeSelectedCheck(1, Layerable.class));
 
-        context.getFeatureInstaller().addMainMenuItem(
-                this,
-                new String[] { MenuNames.FILE },
-                get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.name")
-                        + "{pos:4}", false, null, enableCheck);
+        context.getFeatureInstaller().addMainMenuItem(this, new String[] { MenuNames.FILE },
+                get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.name") + "{pos:4}", false, null, enableCheck);
     }
 
     // avoiding redundant code with reflection...
@@ -118,8 +117,7 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
 
     @Override
     public boolean execute(PlugInContext context) throws Exception {
-        Blackboard bb = PersistentBlackboardPlugIn.get(context
-                .getWorkbenchContext());
+        Blackboard bb = get(context.getWorkbenchContext());
         String fileName = (String) bb.get("ImportSLDPlugin.filename");
 
         JFileChooser chooser = new JFileChooser();
@@ -131,11 +129,11 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
             File f = chooser.getSelectedFile();
             bb.put("ImportSLDPlugin.filename", f.getAbsoluteFile().toString());
             Layer l = context.getSelectedLayer(0);
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilderFactory dbf = newInstance();
             dbf.setNamespaceAware(true);
 
             Document doc = dbf.newDocumentBuilder().parse(f);
-            List<Style> styles = SLDImporter.importSLD(doc);
+            List<Style> styles = importSLD(doc);
             l.setStyles(styles);
             if (l.getStyle(SRIDStyle.class) == null) {
                 l.addStyle(new SRIDStyle());
@@ -149,20 +147,45 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
                 checkStyle(SquareVertexStyle.class, l);
             }
 
-            ColorThemingStyle cts = (ColorThemingStyle) l
-                    .getStyle(ColorThemingStyle.class);
+            ColorThemingStyle cts = (ColorThemingStyle) l.getStyle(ColorThemingStyle.class);
             if (cts.getDefaultStyle() == null) {
                 cts.setDefaultStyle(l.getBasicStyle());
             }
 
+            FeatureSchema fs = l.getFeatureCollectionWrapper().getFeatureSchema();
+
+            String a = cts.getAttributeName();
+
+            AttributeType t = fs.getAttributeType(a);
+            Class<?> c = t.toJavaClass();
+
             try {
-                if (cts.getAttributeValueToLabelMap().keySet().iterator()
-                        .next() instanceof Range) {
+                if (cts.getAttributeValueToLabelMap().keySet().iterator().next() instanceof Range) {
                     RangeTreeMap map = new RangeTreeMap();
                     RangeTreeMap labelMap = new RangeTreeMap();
 
-                    map.putAll(cts.getAttributeValueToBasicStyleMap());
-                    labelMap.putAll(cts.getAttributeValueToLabelMap());
+                    Map<?, ?> oldMap = cts.getAttributeValueToBasicStyleMap();
+                    Map<?, ?> oldLabelMap = cts.getAttributeValueToLabelMap();
+
+                    if (c.equals(Integer.class)) {
+                        for (Object k : cts.getAttributeValueToBasicStyleMap().keySet()) {
+                            Range r = (Range) k;
+                            Range newRange = new Range(Integer.valueOf((String) r.getMin()), r.isIncludingMin(),
+                                    Integer.valueOf((String) r.getMax()), r.isIncludingMax());
+                            map.put(newRange, oldMap.get(r));
+                            labelMap.put(newRange, oldLabelMap.get(r));
+                        }
+                    }
+
+                    if (c.equals(Double.class)) {
+                        for (Object k : cts.getAttributeValueToBasicStyleMap().keySet()) {
+                            Range r = (Range) k;
+                            Range newRange = new Range(Double.valueOf((String) r.getMin()), r.isIncludingMin(), Double
+                                    .valueOf((String) r.getMax()), r.isIncludingMax());
+                            map.put(newRange, oldMap.get(r));
+                            labelMap.put(newRange, oldLabelMap.get(r));
+                        }
+                    }
 
                     cts.setAttributeValueToBasicStyleMap(map);
                     cts.setAttributeValueToLabelMap(labelMap);
@@ -170,24 +193,18 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
                     return false;
                 }
             } catch (Exception e) {
+                LOG.debug("Unknown error: ", e);
                 // ignore, probably no elements in the map
             }
 
-            FeatureSchema fs = l.getFeatureCollectionWrapper()
-                    .getFeatureSchema();
-
-            String a = cts.getAttributeName();
-
-            AttributeType t = fs.getAttributeType(a);
-            Class<?> c = t.toJavaClass();
             if (c.equals(Integer.class)) {
-                Map<Long, Style> map = new TreeMap<Long, Style>();
+                Map<Integer, Style> map = new TreeMap<Integer, Style>();
                 Map<?, ?> oldMap = cts.getAttributeValueToBasicStyleMap();
-                Map<Long, String> labelMap = new TreeMap<Long, String>();
+                Map<Integer, String> labelMap = new TreeMap<Integer, String>();
                 for (Object key : oldMap.keySet()) {
                     Style s = (Style) oldMap.get(key);
-                    map.put(Long.valueOf((String) key), s);
-                    labelMap.put(Long.valueOf((String) key), (String) key);
+                    map.put(Integer.valueOf((String) key), s);
+                    labelMap.put(Integer.valueOf((String) key), (String) key);
                 }
                 cts.setAttributeValueToBasicStyleMap(map);
                 cts.setAttributeValueToLabelMap(labelMap);

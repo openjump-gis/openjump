@@ -57,6 +57,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -84,13 +85,15 @@ import de.latlon.deejump.plugin.style.TriangleVertexStyle;
  */
 public class SLDImporter {
 
+    private static final Logger LOG = Logger.getLogger(SLDImporter.class);
+
     /**
      * The SLD namespace URI.
      */
     public static final String SLDNS = "http://www.opengis.net/sld";
 
     /**
-     * 
+     * The OGC namespace URI.
      */
     public static final String OGCNS = "http://www.opengis.net/ogc";
 
@@ -133,6 +136,10 @@ public class SLDImporter {
             return;
         }
 
+        if (style instanceof BasicStyle) {
+            ((BasicStyle) style).setRenderingFill(true);
+        }
+
         LinkedList<Element> params = getElements("CssParameter", fill);
 
         for (Element p : params) {
@@ -155,6 +162,10 @@ public class SLDImporter {
     private static void applyStroke(Element stroke, StrokeFillStyle style) {
         if (stroke == null) {
             return;
+        }
+
+        if (style instanceof BasicStyle) {
+            ((BasicStyle) style).setRenderingLine(true);
         }
 
         LinkedList<Element> params = getElements("CssParameter", stroke);
@@ -217,10 +228,13 @@ public class SLDImporter {
         return null;
     }
 
-    private static LinkedList<StrokeFillStyle> parsePointSymbolizer(
-            Element symbolizer) {
+    private static LinkedList<StrokeFillStyle> parsePointSymbolizer(Element symbolizer, BasicStyle style) {
         Element e = getElement("WellKnownName", symbolizer);
-        StrokeFillStyle style = new BasicStyle();
+        if (style == null) {
+            style = new BasicStyle();
+            style.setRenderingFill(false);
+            style.setRenderingLine(false);
+        }
         SizedStrokeFillStyle extra = null;
 
         if (e != null) {
@@ -278,9 +292,12 @@ public class SLDImporter {
         return styles;
     }
 
-    private static LinkedList<StrokeFillStyle> parseLineSymbolizer(
-            Element symbolizer) {
-        StrokeFillStyle style = new BasicStyle();
+    private static BasicStyle parseLineSymbolizer(Element symbolizer, BasicStyle style) {
+        if (style == null) {
+            style = new BasicStyle();
+            style.setRenderingFill(false);
+            style.setRenderingLine(false);
+        }
 
         Element fill = getElement("Fill", symbolizer);
         Element stroke = getElement("Stroke", symbolizer);
@@ -288,15 +305,15 @@ public class SLDImporter {
         applyFill(fill, style);
         applyStroke(stroke, style);
 
-        LinkedList<StrokeFillStyle> list = new LinkedList<StrokeFillStyle>();
-        list.add(style);
-
-        return list;
+        return style;
     }
 
-    private static LinkedList<StrokeFillStyle> parsePolygonSymbolizer(
-            Element symbolizer) {
-        BasicStyle style = new BasicStyle();
+    private static BasicStyle parsePolygonSymbolizer(Element symbolizer, BasicStyle style) {
+        if (style == null) {
+            style = new BasicStyle();
+            style.setRenderingFill(false);
+            style.setRenderingLine(false);
+        }
 
         Element fill = getElement("Fill", symbolizer);
         Element stroke = getElement("Stroke", symbolizer);
@@ -311,11 +328,9 @@ public class SLDImporter {
         applyFill(fill, style);
         applyStroke(stroke, style);
 
-        LinkedList<StrokeFillStyle> list = new LinkedList<StrokeFillStyle>();
-        list.add(style);
         style.setEnabled(true);
 
-        return list;
+        return style;
     }
 
     private static LinkedList<LabelStyle> parseTextSymbolizer(Element symbolizer) {
@@ -395,8 +410,7 @@ public class SLDImporter {
         Element halo = getElement("Halo", symbolizer);
         if (halo != null) {
             style.setOutlineShowing(true);
-            style.setOutlineWidth((int) parseDouble(getElement("Radius", halo)
-                    .getTextContent()));
+            style.setOutlineWidth((int) parseDouble(getElement("Radius", halo).getTextContent()));
 
             params = getElements("CssParameter", getElement("Fill", halo));
             for (Element p : params) {
@@ -422,10 +436,8 @@ public class SLDImporter {
         Element lower = getElement("LowerBoundary", OGCNS, filter);
         Element upper = getElement("UpperBoundary", OGCNS, filter);
         if (lower != null && upper != null) {
-            String s1 = getElement("Literal", OGCNS, lower).getTextContent()
-                    .trim();
-            String s2 = getElement("Literal", OGCNS, upper).getTextContent()
-                    .trim();
+            String s1 = getElement("Literal", OGCNS, lower).getTextContent().trim();
+            String s2 = getElement("Literal", OGCNS, upper).getTextContent().trim();
             return new Range(s1, true, s2, false);
         }
 
@@ -434,12 +446,10 @@ public class SLDImporter {
 
     // note that not at all are all filters supported, they're (informally)
     // expected to be in the format of the SLD exporter
-    private static ColorThemingStyle parseColorThemingStyle(
-            List<Element> rules, List<Element> filters) {
+    private static ColorThemingStyle parseColorThemingStyle(List<Element> rules, List<Element> filters) {
         ColorThemingStyle style = new ColorThemingStyle();
 
-        String att = rules.get(0).getElementsByTagNameNS(OGCNS, "PropertyName")
-                .item(0).getTextContent();
+        String att = rules.get(0).getElementsByTagNameNS(OGCNS, "PropertyName").item(0).getTextContent();
         att = att.substring(att.indexOf(':') + 1);
 
         style.setAttributeName(att);
@@ -454,7 +464,7 @@ public class SLDImporter {
             Element symbolizer = getElement("PointSymbolizer", rule);
 
             if (symbolizer != null) {
-                StrokeFillStyle s = parsePointSymbolizer(symbolizer).getFirst();
+                StrokeFillStyle s = parsePointSymbolizer(symbolizer, null).getFirst();
                 s.setEnabled(true);
                 Object val = parseValues(filter);
                 map.put(val, s);
@@ -467,7 +477,7 @@ public class SLDImporter {
             symbolizer = getElement("LineSymbolizer", rule);
 
             if (symbolizer != null) {
-                StrokeFillStyle s = parseLineSymbolizer(symbolizer).getFirst();
+                StrokeFillStyle s = parseLineSymbolizer(symbolizer, null);
                 s.setEnabled(true);
                 Object val = parseValues(filter);
                 map.put(val, s);
@@ -480,9 +490,7 @@ public class SLDImporter {
             symbolizer = getElement("PolygonSymbolizer", rule);
 
             if (symbolizer != null) {
-                StrokeFillStyle s = parsePolygonSymbolizer(symbolizer)
-                        .getFirst();
-                s.setEnabled(true);
+                StrokeFillStyle s = parsePolygonSymbolizer(symbolizer, null);
                 Object val = parseValues(filter);
                 map.put(val, s);
                 labelMap.put(val, val.toString());
@@ -512,25 +520,31 @@ public class SLDImporter {
         NodeList nl = doc.getElementsByTagNameNS(SLDNS, "Rule");
         List<Element> rules = new LinkedList<Element>();
         List<Element> filters = new LinkedList<Element>();
+        BasicStyle basicStyle = null;
         for (int i = 0; i < nl.getLength(); ++i) {
             Element rule = (Element) nl.item(i);
             Element filter = getElement("Filter", OGCNS, rule);
-            if (filter != null) {
+            if (filter != null && getElement("PropertyIsInstanceOf", OGCNS, filter) == null) {
                 rules.add(rule);
                 filters.add(filter);
             } else {
-                LinkedList<Element> symbolizers = getElements(
-                        "PointSymbolizer", rule);
+                LinkedList<Element> symbolizers = getElements("PointSymbolizer", rule);
                 for (Element s : symbolizers) {
-                    styles.addAll(parsePointSymbolizer(s));
+                    if (basicStyle == null) {
+                        LinkedList<StrokeFillStyle> all = parsePointSymbolizer(s, null);
+                        styles.addAll(all);
+                        basicStyle = (BasicStyle) all.getFirst();
+                    } else {
+                        styles.addAll(parsePointSymbolizer(s, basicStyle));
+                    }
                 }
                 symbolizers = getElements("LineSymbolizer", rule);
                 for (Element s : symbolizers) {
-                    styles.addAll(parseLineSymbolizer(s));
+                    styles.add(basicStyle = parseLineSymbolizer(s, basicStyle));
                 }
                 symbolizers = getElements("PolygonSymbolizer", rule);
                 for (Element s : symbolizers) {
-                    styles.addAll(parsePolygonSymbolizer(s));
+                    styles.add(basicStyle = parsePolygonSymbolizer(s, basicStyle));
                 }
                 symbolizers = getElements("TextSymbolizer", rule);
                 for (Element s : symbolizers) {
@@ -541,6 +555,22 @@ public class SLDImporter {
 
         if (rules.size() > 0 && filters.size() > 0) {
             styles.add(parseColorThemingStyle(rules, filters));
+        }
+
+        // remove duplicates
+        // LinkedList<Style> oldStyles = new LinkedList<Style>(styles);
+        // styles.clear();
+        // for (Style s : oldStyles) {
+        // if (!styles.contains(s)) {
+        // styles.add(s);
+        // }
+        // }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Found styles:");
+            for (Style s : styles) {
+                LOG.debug(s.getClass());
+            }
         }
 
         return styles;
@@ -632,8 +662,7 @@ public class SLDImporter {
      * 
      * @version $Revision:$, $Date:$
      */
-    public static interface StrokeFillStyle extends StrokeStyle, FillStyle,
-            Style {
+    public static interface StrokeFillStyle extends StrokeStyle, FillStyle, Style {
 
         // no methods, they're combined by the stroke and fill interfaces
 
@@ -647,8 +676,7 @@ public class SLDImporter {
      * 
      * @version $Revision:$, $Date:$
      */
-    public static interface SizedStrokeFillStyle extends StrokeFillStyle,
-            SizedStyle {
+    public static interface SizedStrokeFillStyle extends StrokeFillStyle, SizedStyle {
         // no methods, they're combined
     }
 

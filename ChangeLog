@@ -1,3 +1,10 @@
+2008-02-28 Andreas Schmitz <schmitz@lat-lon.de>
+      src/org/openjump/core/ui/plugin/style/ImportSLDPlugIn.java,
+      src/org/openjump/util/SLDImporter.java,
+      src/de/latlon/deejump/plugin/style/layerstyle2sld.xsl:
+      Fixed some issues with the importer and color theming styles,
+      made the exported SLD more robust against geometry types.
+
 2008-03-09 mentaer <sstein@geo.unizh.ch>
 	  renamed CutPolygonPlugIn to SplitPolygonPlugIn 
 	  added CutPolygon PlugIn from SIGLE
