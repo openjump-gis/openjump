@@ -56,7 +56,7 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.SelectionManagerProxy;
 import com.vividsolutions.jump.workbench.ui.plugin.analysis.GeometryFunction;
-public class CutPolygonPlugIn extends AbstractPlugIn implements ThreadedPlugIn
+public class SplitPolygonPlugIn extends AbstractPlugIn implements ThreadedPlugIn
 {
 	  private static String UPDATE_SRC = I18N.get("org.openjump.core.ui.plugin.tools.CutPolygonPlugIn.Update-the-polygon-with-result");
 	  private static String ADD_TO_SRC = I18N.get("org.openjump.core.ui.plugin.tools.CutPolygonPlugIn.Add-result-to-the-polygon-layer");
@@ -75,7 +75,7 @@ public class CutPolygonPlugIn extends AbstractPlugIn implements ThreadedPlugIn
 	  private boolean updateSource = false;
 	  private boolean addToSource = false;
 
-	  public CutPolygonPlugIn(){
+	  public SplitPolygonPlugIn(){
 	  }
 
 	  public void initialize(PlugInContext context) throws Exception 

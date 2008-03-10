@@ -28,6 +28,7 @@ import org.openjump.core.ui.plugin.edit.SelectByTypePlugIn;
 import org.openjump.core.ui.plugin.edit.SelectItemsByCircleFromSelectedLayersPlugIn;
 import org.openjump.core.ui.plugin.edit.SelectItemsByFenceFromSelectedLayersPlugIn;
 import org.openjump.core.ui.plugin.edittoolbox.ConstrainedMoveVertexPlugIn;
+import org.openjump.core.ui.plugin.edittoolbox.CutPolygonSIGLEPlugIn;
 import org.openjump.core.ui.plugin.edittoolbox.DrawCircleWithGivenRadiusPlugIn;
 import org.openjump.core.ui.plugin.edittoolbox.DrawConstrainedArcPlugIn;
 import org.openjump.core.ui.plugin.edittoolbox.DrawConstrainedCirclePlugIn;
@@ -60,7 +61,7 @@ import org.openjump.core.ui.plugin.style.ImportSLDPlugIn;
 import org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn;
 import org.openjump.core.ui.plugin.tools.ConvexHullPlugIn;
 import org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn;
-import org.openjump.core.ui.plugin.tools.CutPolygonPlugIn;
+import org.openjump.core.ui.plugin.tools.SplitPolygonPlugIn;
 import org.openjump.core.ui.plugin.tools.DeleteEmptyGeometriesPlugIn;
 import org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn;
 import org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn;
@@ -283,7 +284,7 @@ public class OpenJumpConfiguration {
     twopolymerger.initialize(new PlugInContext(workbenchContext, null, null,
       null, null));
 
-    CutPolygonPlugIn cutpoly = new CutPolygonPlugIn();
+    SplitPolygonPlugIn cutpoly = new SplitPolygonPlugIn();
     cutpoly.initialize(new PlugInContext(workbenchContext, null, null, null,
       null));
 
@@ -458,6 +459,10 @@ public class OpenJumpConfiguration {
 
     DrawCircleWithGivenRadiusPlugIn drawCirclePlugin = new DrawCircleWithGivenRadiusPlugIn();
     drawCirclePlugin.initialize(new PlugInContext(workbenchContext, null, null,
+      null, null));
+    
+    CutPolygonSIGLEPlugIn cutPolyPlugin = new CutPolygonSIGLEPlugIn();
+    cutPolyPlugin.initialize(new PlugInContext(workbenchContext, null, null,
       null, null));
 
     // -- now initialized in #EditingPlugIn.java to fill toolbox
