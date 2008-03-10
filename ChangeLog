@@ -1,3 +1,12 @@
+2008-03-09 mentaer <sstein@geo.unizh.ch>
+	  renamed CutPolygonPlugIn to SplitPolygonPlugIn 
+	  added CutPolygon PlugIn from SIGLE
+	  Adding  src/org/openjump/core/ui/plugin/edittoolbox/CutPolygonSIGLEPlugIn.java
+      Adding  src/org/openjump/core/ui/plugin/edittoolbox/cursortools/CutPolygon.gif
+      Adding  src/org/openjump/core/ui/plugin/edittoolbox/cursortools/CutPolygonTool.java
+      Change  src/org/openjump/OpenJumpConfiguration.java
+      		  + language files
+      
 2008-02-28 Andreas Schmitz <schmitz@lat-lon.de>
       src/de/latlon/deejump/plugin/style/CrossVertexStyle.java2xml,
       src/de/latlon/deejump/plugin/style/CircleVertexStyle.java2xml,
