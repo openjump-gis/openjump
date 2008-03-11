@@ -1,3 +1,7 @@
+2008-03-11 Andreas Schmitz <schmitz@lat-lon.de>
+      src/de/latlon/deejump/plugin/style/XSLUtility.java:
+      Fixed bug when exporting svg symbols via menu item.
+
 2008-02-28 Andreas Schmitz <schmitz@lat-lon.de>
       src/org/openjump/core/ui/plugin/style/ImportSLDPlugIn.java,
       src/org/openjump/util/SLDImporter.java,

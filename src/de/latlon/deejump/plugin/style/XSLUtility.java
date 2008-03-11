@@ -69,6 +69,10 @@ import com.vividsolutions.jump.workbench.ui.renderer.style.WKTFillPattern;
  */
 public class XSLUtility {
 
+    /**
+     * @param colorNode
+     * @return the hex color
+     */
     public static String toHexColor(Node colorNode) {
         String value = "#000000";
         if (colorNode == null)
@@ -98,6 +102,10 @@ public class XSLUtility {
         return value;
     }
 
+    /**
+     * @param colorNode
+     * @return the alpha value
+     */
     public static String toAlphaValue(Node colorNode) {
         String value = "1";
 
@@ -119,6 +127,10 @@ public class XSLUtility {
         return value;
     }
 
+    /**
+     * @param colorNode
+     * @return the family name
+     */
     public static String toFontFamily(Node colorNode) {
         String value = "Dialog";
 
@@ -132,6 +144,10 @@ public class XSLUtility {
         return value;
     }
 
+    /**
+     * @param fontNode
+     * @return the style
+     */
     public static String toFontStyle(Node fontNode) {
         // bold not supported in SLD?
         final String[] styles = { "normal", "normal", "italic" };
@@ -149,6 +165,10 @@ public class XSLUtility {
         return value;
     }
 
+    /**
+     * @param vertexStyleNode
+     * @return the WKN
+     */
     public static String toWellKnowName(Node vertexStyleNode) {
         if (vertexStyleNode == null) {
             return "";
@@ -191,24 +211,32 @@ public class XSLUtility {
         if (filename.toLowerCase().endsWith(".svg")) {
             File file = File.createTempFile("ojp", "pti.png");
 
-            write(getUpdatedSVGImage("filename", toHexColor(stroke), toHexColor(fill), size), "png", file);
+            write(getUpdatedSVGImage(filename, toHexColor(stroke), toHexColor(fill), size), "png", file);
 
-            return file.toURL().toExternalForm();
+            return file.toURI().toURL().toExternalForm();
         }
 
         return fileToURL(filename);
     }
 
+    /**
+     * @param filename
+     * @return the url
+     */
     public static String fileToURL(String filename) {
         File f = new File(filename);
 
         try {
-            return f.toURL().toString();
+            return f.toURI().toURL().toString();
         } catch (MalformedURLException e) {
             return filename;
         }
     }
 
+    /**
+     * @param node
+     * @return the new string
+     */
     public static String replaceComma(Node node) {
         if (node.getFirstChild().getTextContent() == null) {
             return "";
@@ -223,10 +251,22 @@ public class XSLUtility {
         return ss[0] + " " + ss[1];
     }
 
+    /**
+     * @param icon
+     * @return the url
+     */
     public static String getIconURL(String icon) {
         return IconLoader.class.getResource(icon).toExternalForm();
     }
 
+    /**
+     * @param width
+     * @param extent
+     * @param pattern
+     * @param color
+     * @return the image url
+     * @throws IOException
+     */
     public static String createPatternImage(int width, int extent, String pattern, String color) throws IOException {
         File file = File.createTempFile("ojp", "pti.png");
         WKTFillPattern pat = new WKTFillPattern(width, extent, pattern);
@@ -235,7 +275,7 @@ public class XSLUtility {
         b.put(BasicFillPattern.COLOR_KEY, c);
         BufferedImage img = pat.createImage(pat.getProperties());
         ImageIO.write(img, "png", file);
-        return file.toURL().toExternalForm();
+        return file.toURI().toURL().toExternalForm();
     }
 
 }
