@@ -55,6 +55,7 @@ import com.vividsolutions.jump.workbench.ui.LayerViewPanelProxy;
 import com.vividsolutions.jump.workbench.ui.SelectionManagerProxy;
 import com.vividsolutions.jump.workbench.ui.TaskFrame;
 import com.vividsolutions.jump.workbench.ui.TaskFrameProxy;
+import com.vividsolutions.jump.workbench.ui.plugin.ViewAttributesPlugIn.ViewAttributesFrame;
 import com.vividsolutions.jump.workbench.ui.warp.WarpingVectorLayerFinder;
 
 /**
@@ -419,7 +420,11 @@ public class EnableCheckFactory {
                 int selected = 0;
                 try{//sstein [13. Aug. 2006]: 
                 	selected = ((SelectionManagerProxy)iFrame).getSelectionManager().getSelectedItemsCount();
-                	//.getSelectedItems().size();
+                	//sstein [13. Mar. 2008]: added since getSelectedItemsCount is not aware of selection in AttributeTable 
+                	//                        maybe we need to change SelectionManager.getSelectedItemsCount() or SelectionManager.updatePanel();
+                	if (iFrame instanceof ViewAttributesFrame){
+                		selected = ((SelectionManagerProxy)iFrame).getSelectionManager().getSelectedItems().size();
+                	}      
                 }
                 catch(Exception e){
                 	//-- sstein:

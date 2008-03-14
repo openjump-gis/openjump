@@ -1,3 +1,10 @@
+2008-03-13 mentaer <sstein@geo.unizh.ch>
+      src/com/vividsolutions/jump/workbench/plugin/EnableCheckFactory.java
+      Fixed bug of non-activation of Item-Info-Button in Attribute Table,
+      and non-activation of attribute mouse menu items.
+      Error is in SelectionManager.getSelectedItemsCount() but the problem is
+      resolved by a work around in EnableCheckFactory  
+
 2008-03-11 Andreas Schmitz <schmitz@lat-lon.de>
       src/de/latlon/deejump/plugin/style/XSLUtility.java:
       Fixed bug when exporting svg symbols via menu item.
