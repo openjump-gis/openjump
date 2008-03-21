@@ -1,3 +1,7 @@
+2008-03-21 mentaer <sstein@geo.unizh.ch>
+      Replaced old PostgreSQL driver (v.2) by newer Version 3.0 
+      in OpenJUMP/lib/ directory  
+      
 2008-03-13 mentaer <sstein@geo.unizh.ch>
       src/com/vividsolutions/jump/workbench/plugin/EnableCheckFactory.java
       Fixed bug of non-activation of Item-Info-Button in Attribute Table,
