@@ -64,8 +64,8 @@ public class CopyBBoxPlugin extends AbstractPlugIn {
         WorkbenchContext wbcontext = context.getWorkbenchContext();
         FeatureInstaller installer = new FeatureInstaller( wbcontext );
 
-        installer.addMainMenuItemWithJava14Fix( this, new String[] { MenuNames.EDIT },
-                                                I18N.get( "org.openjump.core.ui.plugin.edit.CopyBBoxPlugin.name" ),
+        installer.addMainMenuItemWithJava14Fix( this, new String[] { MenuNames.VIEW },
+                                                I18N.get( "org.openjump.core.ui.plugin.edit.CopyBBoxPlugin.name" )+"{pos:2}",
                                                 false, null, null );
     }
 
@@ -86,8 +86,21 @@ public class CopyBBoxPlugin extends AbstractPlugIn {
         sb.append( env.getMinX() ).append( " " ).append( env.getMinY() );
         sb.append( "))" );
 
-        Toolkit.getDefaultToolkit().getSystemClipboard().setContents( new StringSelection( sb.toString() ), null );
-        Toolkit.getDefaultToolkit().getSystemSelection().setContents( new StringSelection( sb.toString() ), null );
+        StringBuffer sbcleartext = new StringBuffer( 512 );
+        sbcleartext.append( "bbox(" );
+        sbcleartext.append( env.getMinX() );
+        sbcleartext.append( "," );
+        sbcleartext.append( env.getMinY() );
+        sbcleartext.append( "," );
+        sbcleartext.append( env.getMaxX() );
+        sbcleartext.append( "," );
+        sbcleartext.append( env.getMaxY() );
+        sbcleartext.append( ")" );
+
+        
+        Toolkit.getDefaultToolkit().getSystemClipboard().setContents( new StringSelection( sbcleartext.toString() ), null );
+        //-- [sstein: 21mar2008 ] the following line seems to be buggy so I comment it
+        //Toolkit.getDefaultToolkit().getSystemSelection().setContents( new StringSelection( sb.toString() ), null );
 
         return false;
     }

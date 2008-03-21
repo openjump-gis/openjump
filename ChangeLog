@@ -1,4 +1,8 @@
 2008-03-21 mentaer <sstein@geo.unizh.ch>
+      src/org/openjump/core/ui/plugin/edit/CopyBBoxPlugin.java:
+      changed the string output to the clipboard according to Jukka's suggestions   
+      
+2008-03-21 mentaer <sstein@geo.unizh.ch>
       Replaced old PostgreSQL driver (v.2) by newer Version 3.0 
       in OpenJUMP/lib/ directory  
       
