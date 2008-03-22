@@ -1,4 +1,7 @@
 2008-03-21 mentaer <sstein@geo.unizh.ch>
+	  set OJ version to 1.2F to better distinguish bug reports 
+
+2008-03-21 mentaer <sstein@geo.unizh.ch>
       src/com/vividsolutions/jump/workbench/JUMPConfiguration.java:
 	  removed WMSQueryPlugIn and AddDatastoreLayerPlugIn from context 
 	  menu as those can be called now from new open menu.
