@@ -33,7 +33,7 @@
 
 package com.vividsolutions.jump.geom;
 
-import com.vividsolutions.jts.algorithm.SimplePointInAreaLocator;
+import com.vividsolutions.jts.algorithm.locate.SimplePointInAreaLocator;
 import com.vividsolutions.jts.geom.*;
 
 
