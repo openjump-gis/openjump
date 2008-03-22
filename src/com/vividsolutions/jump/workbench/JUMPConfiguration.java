@@ -417,13 +417,18 @@ public class JUMPConfiguration implements Setup {
                 .getFrame().getCategoryPopupMenu(), loadDatasetFromFilePlugIn,
                 loadDatasetFromFilePlugIn.getName() + "...", false, null,
                 LoadDatasetPlugIn.createEnableCheck(workbenchContext));*/
+        
+        //[sstein 21.Mar.2008] removed since now contained in new open menu
+        /*
         featureInstaller.addPopupMenuItem(workbenchContext.getWorkbench()
                 .getFrame().getCategoryPopupMenu(), addDatastoreLayerPlugIn,
                 addDatastoreLayerPlugIn.getName() + "...", false, null,
                 null);
+        
         featureInstaller.addPopupMenuItem(workbenchContext.getWorkbench()
                 .getFrame().getCategoryPopupMenu(), addWMSQueryPlugIn,
                 addWMSQueryPlugIn.getName() + "...", false, null, null);
+        */
         featureInstaller.addPopupMenuItem(workbenchContext.getWorkbench()
                 .getFrame().getCategoryPopupMenu(), addImageLayerPlugIn,
                 addImageLayerPlugIn.getName() + "...", false, null, null);

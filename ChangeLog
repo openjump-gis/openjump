@@ -1,4 +1,10 @@
 2008-03-21 mentaer <sstein@geo.unizh.ch>
+      src/com/vividsolutions/jump/workbench/JUMPConfiguration.java:
+	  removed WMSQueryPlugIn and AddDatastoreLayerPlugIn from context 
+	  menu as those can be called now from new open menu.
+
+
+2008-03-21 mentaer <sstein@geo.unizh.ch>
       src/org/openjump/core/ui/plugin/edit/CopyBBoxPlugin.java:
       changed the string output to the clipboard according to Jukka's suggestions   
       
