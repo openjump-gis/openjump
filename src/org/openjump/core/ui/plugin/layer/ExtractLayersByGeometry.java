@@ -62,6 +62,7 @@ import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
@@ -86,10 +87,20 @@ public class ExtractLayersByGeometry extends AbstractPlugIn {
 		WorkbenchContext workbenchContext = context.getWorkbenchContext();
 		FeatureInstaller featureInstaller = new FeatureInstaller(
 				workbenchContext);
+		/*
 		JPopupMenu layerNamePopupMenu = workbenchContext.getWorkbench()
 				.getFrame().getLayerNamePopupMenu();
 		featureInstaller.addPopupMenuItem(layerNamePopupMenu, this, getName(),
 				false, ICON, createEnableCheck(workbenchContext));
+		*/
+		
+	    context.getFeatureInstaller().addMainMenuItemWithJava14Fix(this,
+		        new String[]
+				{MenuNames.EDIT},
+				getName(), 
+				false, 
+				ICON, 
+				createEnableCheck(context.getWorkbenchContext()));
 	}
 
     public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext)

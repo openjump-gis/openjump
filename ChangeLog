@@ -1,4 +1,12 @@
 2008-03-21 mentaer <sstein@geo.unizh.ch>
+	  cleaned up the menus (Layer Menu, Category popup menu,
+	  Layer popup menu). Moved ExtractLayerInFence and ExtractLayersByGeometry
+	  from layer popup to Edit menu. Removed also DeleteAllFeatures from popup.
+	  Note: we need to check Postgis Plugin needs (I left the LoadDataSet for 
+	  now) and where the MrSID files need to be placed (e.g. mrsidgeoinfo.exe
+	  and mrsidgeodecode.exe)
+	  
+2008-03-21 mentaer <sstein@geo.unizh.ch>
 	  replaced JTS version 1.72 by 1.9
 	  this required to change as well a classpath in 
 	  com.vividsolutions.jump.geom.EnvelopeIntersector 

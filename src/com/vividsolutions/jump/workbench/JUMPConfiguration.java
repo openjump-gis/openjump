@@ -428,10 +428,12 @@ public class JUMPConfiguration implements Setup {
         featureInstaller.addPopupMenuItem(workbenchContext.getWorkbench()
                 .getFrame().getCategoryPopupMenu(), addWMSQueryPlugIn,
                 addWMSQueryPlugIn.getName() + "...", false, null, null);
-        */
+
         featureInstaller.addPopupMenuItem(workbenchContext.getWorkbench()
                 .getFrame().getCategoryPopupMenu(), addImageLayerPlugIn,
                 addImageLayerPlugIn.getName() + "...", false, null, null);
+        */        
+              
         featureInstaller.addPopupMenuItem(workbenchContext.getWorkbench()
                 .getFrame().getCategoryPopupMenu(), pasteLayersPlugIn,
                 pasteLayersPlugIn.getNameWithMnemonic(), false, null,
@@ -591,10 +593,13 @@ public class JUMPConfiguration implements Setup {
         featureInstaller.addPopupMenuItem(layerNamePopupMenu, pasteItemsPlugIn,
                 pasteItemsPlugIn.getNameWithMnemonic(), false, null,
                 PasteItemsPlugIn.createEnableCheck(workbenchContext));
+        //-- [sstein 21Mar2008] I think this plugin is kind of unnecessary
+        /*
         featureInstaller.addPopupMenuItem(layerNamePopupMenu,
                 deleteAllFeaturesPlugIn, deleteAllFeaturesPlugIn.getName(),
                 false, DeleteAllFeaturesPlugIn.ICON, deleteAllFeaturesPlugIn
                         .createEnableCheck(workbenchContext));
+         */
     }
 
     private void configureLayerViewPanelPopupMenu(
@@ -898,24 +903,29 @@ public class JUMPConfiguration implements Setup {
                 final EnableCheckFactory checkFactory,
                 FeatureInstaller featureInstaller) throws Exception {
 
-      String MENU_LAYER = MenuNames.LAYER;
-      featureInstaller.addLayerViewMenuItem(addNewLayerPlugIn, MENU_LAYER,
-              addNewLayerPlugIn.getName());
-      featureInstaller.addLayerViewMenuItem(addDatastoreLayerPlugIn, MENU_LAYER,
+       String MENU_LAYER = MenuNames.LAYER;
+       //--[sstein 21Mar2008] -- disabled because of new menu structure by Paul
+       /*
+       featureInstaller.addLayerViewMenuItem(addNewLayerPlugIn, MENU_LAYER,
+               addNewLayerPlugIn.getName());
+       featureInstaller.addLayerViewMenuItem(addDatastoreLayerPlugIn, MENU_LAYER,
               addDatastoreLayerPlugIn.getName() + "...");
-      featureInstaller.addLayerViewMenuItem(runDatastoreQueryPlugIn, MENU_LAYER,
+       */
+       featureInstaller.addLayerViewMenuItem(runDatastoreQueryPlugIn, MENU_LAYER,
               runDatastoreQueryPlugIn.getName() + "...");
-
+       //--[sstein 21Mar2008] -- disabled because of new menu structure by Paul
+       /*
         featureInstaller.addLayerViewMenuItem(addWMSQueryPlugIn, MENU_LAYER,
                 addWMSQueryPlugIn.getName() + "...");
-        
+      
         featureInstaller.addLayerViewMenuItem(addImageLayerPlugIn, MENU_LAYER,
                 addImageLayerPlugIn.getName() + "...");
-        
+      
         featureInstaller.addMainMenuItem(addNewCategoryPlugIn, MENU_LAYER,
                 addNewCategoryPlugIn.getName(), null, addNewCategoryPlugIn
                         .createEnableCheck(workbenchContext));
-
+		*/
+        
         featureInstaller.addMenuSeparator(MENU_LAYER); // ===================
         featureInstaller.addMainMenuItem(cutSelectedLayersPlugIn, MENU_LAYER,
                 cutSelectedLayersPlugIn.getNameWithMnemonic(), null,

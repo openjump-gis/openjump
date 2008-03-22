@@ -36,7 +36,7 @@ public class ChangeLayerableNamePlugIn extends AbstractPlugIn {
 		null, enableCheck);
 	JPopupMenu popupMenu = workbenchContext.getWorkbench().getFrame()
 		.getLayerNamePopupMenu();
-	installer.addPopupMenuItem(popupMenu, this, getName() + "{pos:19}",
+	installer.addPopupMenuItem(popupMenu, this, getName() + "{pos:5}",
 		false, null, createEnableCheck(workbenchContext));
 	popupMenu = workbenchContext.getWorkbench().getFrame()
 		.getWMSLayerNamePopupMenu();

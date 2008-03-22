@@ -182,6 +182,13 @@ public class OpenJumpConfiguration {
     SelectByTypePlugIn mySelectByGeomTypePlugIn = new SelectByTypePlugIn();
     mySelectByGeomTypePlugIn.initialize(new PlugInContext(workbenchContext,
       null, null, null, null));
+    
+	ExtractLayersByGeometry myExtractLayersByGeometryPlugin = new ExtractLayersByGeometry();
+	myExtractLayersByGeometryPlugin.initialize(new PlugInContext(workbenchContext, null, null, null, null));
+	
+	ExtractLayerInFence myExtractLayerInFence = new ExtractLayerInFence();
+	myExtractLayerInFence.initialize(new PlugInContext(workbenchContext, null, null, null, null));
+
 
     new CopyBBoxPlugin().initialize(new PlugInContext(workbenchContext, null, null, null, null));
 
@@ -230,10 +237,14 @@ public class OpenJumpConfiguration {
     myToggleVisPlugIn.initialize(new PlugInContext(workbenchContext, null,
       null, null, null));
 
+    //-- [sstein 21March2008] unnecessary with new menu structure
+    //	 MRSIDtype is added with new open file dialog (see below)
+    /*
     AddSIDLayerPlugIn myMrSIDPlugIn = new AddSIDLayerPlugIn();
     myMrSIDPlugIn.initialize(new PlugInContext(workbenchContext, null, null,
       null, null));
-
+	*/
+    
     ChangeSRIDPlugIn myChangeSRIDPlugIn = new ChangeSRIDPlugIn();
     myChangeSRIDPlugIn.initialize(new PlugInContext(workbenchContext, null,
       null, null, null));
@@ -393,14 +404,11 @@ public class OpenJumpConfiguration {
 
     LayerPropertiesPlugIn myLayerPropertiesPlugIn = new LayerPropertiesPlugIn();
     myLayerPropertiesPlugIn.initialize(new PlugInContext(workbenchContext,
+      null, null, null, null));	
+    
+    ChangeLayerableNamePlugIn changeLayerableNamePlugIn = new ChangeLayerableNamePlugIn();
+    changeLayerableNamePlugIn.initialize(new PlugInContext(workbenchContext,
       null, null, null, null));
-
-	ExtractLayersByGeometry myExtractLayersByGeometryPlugin = new ExtractLayersByGeometry();
-	myExtractLayersByGeometryPlugin.initialize(new PlugInContext(workbenchContext, null, null, null, null));
-	
-	ExtractLayerInFence myExtractLayerInFence = new ExtractLayerInFence();
-	myExtractLayerInFence.initialize(new PlugInContext(workbenchContext, null, null, null, null));
-	
 
     EditSelectedSidePlugIn myEditSidePlugin = new EditSelectedSidePlugIn();
     myEditSidePlugin.initialize(new PlugInContext(workbenchContext, null, null,
@@ -415,10 +423,6 @@ public class OpenJumpConfiguration {
     JoinTablePlugIn joinTablePlugIn = new JoinTablePlugIn();
     joinTablePlugIn.initialize(new PlugInContext(workbenchContext, null, null,
       null, null));
-
-    ChangeLayerableNamePlugIn changeLayerableNamePlugIn = new ChangeLayerableNamePlugIn();
-    changeLayerableNamePlugIn.initialize(new PlugInContext(workbenchContext,
-      null, null, null, null));
     
     PasteItemsAtPlugIn pasteItemsAtPlugIn = new PasteItemsAtPlugIn();
     pasteItemsAtPlugIn.initialize(new PlugInContext(workbenchContext,
