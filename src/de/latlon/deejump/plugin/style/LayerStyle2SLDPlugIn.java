@@ -42,6 +42,8 @@
  ---------------------------------------------------------------------------*/
 package de.latlon.deejump.plugin.style;
 
+import static com.vividsolutions.jump.workbench.ui.MenuNames.LAYER;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -87,7 +89,6 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
-import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
@@ -155,8 +156,8 @@ public class LayerStyle2SLDPlugIn extends AbstractPlugIn {
         FeatureInstaller featureInstaller = new FeatureInstaller(context
                 .getWorkbenchContext());
         featureInstaller.addMainMenuItem(this, // exe
-                new String[] { MenuNames.VIEW }, // menu path
-                this.getName() + "{pos:2}", // name methode .getName
+                new String[] { LAYER }, // menu path
+                this.getName(), // name methode .getName
                 // recieved by
                 // AbstractPlugIn
                 false, // checkbox

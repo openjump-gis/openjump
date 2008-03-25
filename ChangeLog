@@ -1,3 +1,9 @@
+2008-03-25 Andreas Schmitz <schmitz@lat-lon.de>
+      src/org/openjump/OpenJumpConfiguration.java,
+      src/org/openjump/core/ui/plugin/style/ImportSLDPlugIn.java,
+      src/de/latlon/deejump/plugin/style/LayerStyle2SLDPlugIn.java:
+      Switched positions of SLD related menu entries.
+
 2008-03-21 mentaer <sstein@geo.unizh.ch>
 	  Added category tools from Pirol Projekt
 	  added: org/openjump/core/ui/plugin/mousemenu/category/*

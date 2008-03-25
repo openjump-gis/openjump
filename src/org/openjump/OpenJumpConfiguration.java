@@ -10,6 +10,8 @@
  */
 package org.openjump;
 
+import static com.vividsolutions.jump.workbench.ui.MenuNames.LAYER;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -43,7 +45,6 @@ import org.openjump.core.ui.plugin.file.OpenProjectPlugIn;
 import org.openjump.core.ui.plugin.file.OpenRecentPlugIn;
 import org.openjump.core.ui.plugin.file.OpenWizardPlugIn;
 import org.openjump.core.ui.plugin.file.SaveImageAsSVGPlugIn;
-import org.openjump.core.ui.plugin.layer.AddSIDLayerPlugIn;
 import org.openjump.core.ui.plugin.layer.ChangeLayerableNamePlugIn;
 import org.openjump.core.ui.plugin.layer.ChangeSRIDPlugIn;
 import org.openjump.core.ui.plugin.layer.ExtractLayerInFence;
@@ -66,7 +67,6 @@ import org.openjump.core.ui.plugin.style.ImportSLDPlugIn;
 import org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn;
 import org.openjump.core.ui.plugin.tools.ConvexHullPlugIn;
 import org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn;
-import org.openjump.core.ui.plugin.tools.SplitPolygonPlugIn;
 import org.openjump.core.ui.plugin.tools.DeleteEmptyGeometriesPlugIn;
 import org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn;
 import org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn;
@@ -74,6 +74,7 @@ import org.openjump.core.ui.plugin.tools.LineSimplifyJTS15AlgorithmPlugIn;
 import org.openjump.core.ui.plugin.tools.MeasureM_FPlugIn;
 import org.openjump.core.ui.plugin.tools.MergeTwoSelectedPolygonsPlugIn;
 import org.openjump.core.ui.plugin.tools.ReducePointsISAPlugIn;
+import org.openjump.core.ui.plugin.tools.SplitPolygonPlugIn;
 import org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn;
 import org.openjump.core.ui.plugin.view.MapToolTipPlugIn;
 import org.openjump.core.ui.plugin.view.ShowFullPathPlugIn;
@@ -156,8 +157,6 @@ public class OpenJumpConfiguration {
     OpenRecentPlugIn openRecent = OpenRecentPlugIn.get(workbenchContext);
     openRecent.initialize(pluginContext);
 
-    new ImportSLDPlugIn().initialize(pluginContext);
-    
     FileDragDropPlugin fileDragDropPlugin = new FileDragDropPlugin();
     fileDragDropPlugin.initialize(pluginContext);
 
@@ -217,10 +216,17 @@ public class OpenJumpConfiguration {
     myMapTipPlugIn.initialize(new PlugInContext(workbenchContext, null, null,
       null, null));
 
+    pluginContext.getFeatureInstaller().addMenuSeparator(LAYER);
+
     // -- deeJUMP function by LAT/LON [01.08.2006 sstein]
     LayerStyle2SLDPlugIn mySytle2SLDplugIn = new LayerStyle2SLDPlugIn();
     mySytle2SLDplugIn.initialize(new PlugInContext(workbenchContext, null,
       null, null, null));
+
+    new ImportSLDPlugIn().initialize(pluginContext);
+    
+    pluginContext.getFeatureInstaller().addMenuSeparator(LAYER);
+
     // -- to install in Toolbar
     // mySytle2SLDplugIn.install(new PlugInContext(workbenchContext, null, null,
     // null, null));

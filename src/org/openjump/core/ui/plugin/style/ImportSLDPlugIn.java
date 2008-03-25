@@ -39,6 +39,7 @@
 package org.openjump.core.ui.plugin.style;
 
 import static com.vividsolutions.jump.I18N.get;
+import static com.vividsolutions.jump.workbench.ui.MenuNames.LAYER;
 import static com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn.get;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
 import static javax.xml.parsers.DocumentBuilderFactory.newInstance;
@@ -69,7 +70,6 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.LabelStyle;
@@ -96,8 +96,8 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
                 enableCheckFactory.createWindowWithLayerManagerMustBeActiveCheck()).add(
                 enableCheckFactory.createExactlyNLayerablesMustBeSelectedCheck(1, Layerable.class));
 
-        context.getFeatureInstaller().addMainMenuItem(this, new String[] { MenuNames.FILE },
-                get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.name") + "{pos:4}", false, null, enableCheck);
+        context.getFeatureInstaller().addMainMenuItem(this, new String[] { LAYER },
+                get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.name"), false, null, enableCheck);
     }
 
     // avoiding redundant code with reflection...
