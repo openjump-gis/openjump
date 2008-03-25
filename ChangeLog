@@ -1,4 +1,11 @@
 2008-03-21 mentaer <sstein@geo.unizh.ch>
+	  Added category tools from Pirol Projekt
+	  added: org/openjump/core/ui/plugin/mousemenu/category/*
+	  		 org/openjump/core/apitools/PlugInContextTools.java
+	  change:  src/org/openjump/OpenJumpConfiguration.java
+	  	  
+	  
+2008-03-21 mentaer <sstein@geo.unizh.ch>
 	  cleaned up the menus (Layer Menu, Category popup menu,
 	  Layer popup menu). Moved ExtractLayerInFence and ExtractLayersByGeometry
 	  from layer popup to Edit menu. Removed also DeleteAllFeatures from popup.

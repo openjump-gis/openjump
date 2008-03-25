@@ -56,6 +56,11 @@ import org.openjump.core.ui.plugin.mousemenu.PasteItemsAtPlugIn;
 import org.openjump.core.ui.plugin.mousemenu.RotatePlugIn;
 import org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn;
 import org.openjump.core.ui.plugin.mousemenu.SelectLayersWithSelectedItemsPlugIn;
+import org.openjump.core.ui.plugin.mousemenu.category.MoveCategoryOneDown;
+import org.openjump.core.ui.plugin.mousemenu.category.MoveCategoryOneUp;
+import org.openjump.core.ui.plugin.mousemenu.category.MoveCategoryToBottom;
+import org.openjump.core.ui.plugin.mousemenu.category.MoveCategoryToTop;
+import org.openjump.core.ui.plugin.mousemenu.category.SetCategoryVisibilityPlugIn;
 import org.openjump.core.ui.plugin.queries.SimpleQueryPlugIn;
 import org.openjump.core.ui.plugin.style.ImportSLDPlugIn;
 import org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn;
@@ -348,14 +353,7 @@ public class OpenJumpConfiguration {
       null, null));
 
     /***************************************************************************
-     * menu vector geoprocessing previously used by Projet-sigle.org
-     **************************************************************************/
-
-    // -- Two layers
-    // -- One Layer
-    // -- Topology
-    /***************************************************************************
-     * menu CUSTOMIZE [added byte Michael Michaud on 2007-03-04]
+     * menu CUSTOMIZE [added by Michael Michaud on 2007-03-04]
      **************************************************************************/
     // -- deeJUMP function by LAT/LON [05.08.2006 sstein]
     ExtensionManagerPlugIn extensionManagerPlugIn = new ExtensionManagerPlugIn();
@@ -428,6 +426,21 @@ public class OpenJumpConfiguration {
     pasteItemsAtPlugIn.initialize(new PlugInContext(workbenchContext,
       null, null, null, null));
 
+    /**+++++++++++++++++++++++
+     * Category Context menu
+     *++++++++++++++++++++++++**/
+    
+    // -- Pirol plugins
+    SetCategoryVisibilityPlugIn.getInstance(workbenchContext.createPlugInContext()).initialize(new PlugInContext(workbenchContext,
+    	      null, null, null, null));
+    new MoveCategoryToTop().initialize(new PlugInContext(workbenchContext,
+    	      null, null, null, null));
+    new MoveCategoryOneUp().initialize(new PlugInContext(workbenchContext,
+    	      null, null, null, null));
+    new MoveCategoryOneDown().initialize(new PlugInContext(workbenchContext,
+    	      null, null, null, null));
+    new MoveCategoryToBottom().initialize(new PlugInContext(workbenchContext,
+    	      null, null, null, null));
 
     /***************************************************************************
      * EDITing toolbox
