@@ -15,6 +15,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JPopupMenu;
 
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Category;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
@@ -41,7 +42,8 @@ public class MoveCategoryToTop extends AbstractPlugIn {
         Collection cats = context.getLayerNamePanel().getSelectedCategories();
         
         if (cats.size() > 1 || cats.size() <= 0){
-        	context.getWorkbenchFrame().warnUser("Only a single category can be moved!");
+        	String s = I18N.get("org.openjump.core.ui.plugin.mousemenu.category.MoveCategoryOneDown.Only-a-single-category-can-be-moved!");
+            context.getWorkbenchFrame().warnUser(s);
             return false;
         }
         
@@ -56,6 +58,10 @@ public class MoveCategoryToTop extends AbstractPlugIn {
         return new ImageIcon(getClass().getResource("bullet_arrow_top.png"));
     }
     
+    public String getName(){
+    	return 	I18N.get("org.openjump.core.ui.plugin.mousemenu.category.MoveCategoryToTop.Move-Category-To-Top");
+    }
+    
     public void initialize(PlugInContext context) throws Exception {
         
         JPopupMenu layerNamePopupMenu = context.getWorkbenchContext().getWorkbench().getFrame().getCategoryPopupMenu();
@@ -66,8 +72,6 @@ public class MoveCategoryToTop extends AbstractPlugIn {
                 GUIUtil.toSmallIcon((ImageIcon) this.getIcon()),
                 MoveCategoryToTop.createEnableCheck(context.getWorkbenchContext()));
     }
-    
-    
     
     public static MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
         

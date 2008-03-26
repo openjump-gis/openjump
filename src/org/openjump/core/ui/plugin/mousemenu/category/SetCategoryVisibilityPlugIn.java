@@ -29,6 +29,7 @@ import de.fho.jump.pirol.utilities.debugOutput.DebugUserIds;
 import de.fho.jump.pirol.utilities.debugOutput.PersonalLogger;
 import de.fho.jump.pirol.utilities.plugIns.StandardPirolPlugIn;
 
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Category;
 import com.vividsolutions.jump.workbench.model.Layerable;
@@ -77,7 +78,10 @@ public class SetCategoryVisibilityPlugIn extends AbstractPlugIn implements Layer
         return SetCategoryVisibilityPlugIn.instance;
     }
 
-
+    public String getName(){
+    	return 	I18N.get("org.openjump.core.ui.plugin.mousemenu.category.SetCategoryVisibilityPlugIn.Set-Category-Visibility");
+    }
+    
     public void initialize(PlugInContext context) throws Exception {
         /* add to pirol menu */
         //super.initialize(context);
