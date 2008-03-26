@@ -54,10 +54,10 @@ public class SaveImageAsSVGPlugIn extends AbstractPlugIn implements ThreadedPlug
 	public void initialize(PlugInContext context) throws Exception {
     	
 		context.getFeatureInstaller().addMainMenuItemWithJava14Fix(this,		        
-				new String[] {MenuNames.FILE},
-				//new String[] {MenuNames.FILE, MenuNames.FILE_EXPORTLAYERVIEW},
-		        //I18N.get("org.openjump.core.ui.plugin.file.SaveImageAsSVGPlugIn.save-image-in-svg-format"),
-				I18N.get("org.openjump.core.ui.plugin.file.SaveImageAsSVGPlugIn.save-image-in-svg-format") + "{pos:10}",
+      	      new String[] {
+		          MenuNames.FILE, MenuNames.FILE_SAVEVIEW
+		        }, 
+		        I18N.get("org.openjump.core.ui.plugin.file.SaveImageAsSVGPlugIn.save-image-in-svg-format") + "{pos:10}",
 				false, 
 				null, 
                 createEnableCheck(context.getWorkbenchContext())); //enable check

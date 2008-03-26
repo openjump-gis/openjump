@@ -40,7 +40,7 @@ import com.vividsolutions.jump.I18N;
 public interface MenuNames {
   public static String FILE = I18N.get("ui.MenuNames.FILE");
   public static String FILE_NEW = I18N.get("ui.MenuNames.FILE.NEW");
-	public static String FILE_EXPORTLAYERVIEW = I18N.get("ui.MenuNames.FILE.EXPORTLAYERVIEW");
+	public static String FILE_SAVEVIEW = I18N.get("ui.MenuNames.FILE.SAVEVIEW");
 	public static String EDIT = I18N.get("ui.MenuNames.EDIT");
 	public static String TOOLS_EDIT_ATTRIBUTES = I18N.get("ui.MenuNames.EDIT") +  " " + I18N.get("ui.MenuNames.ATTRIBUTS");
 	public static String TOOLS_EDIT_GEOMETRY = I18N.get("ui.MenuNames.EDIT") +  " " + I18N.get("ui.MenuNames.GEOMETRY");
