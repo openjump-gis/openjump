@@ -52,10 +52,14 @@ import org.openjump.core.graph.delauneySimplexInsert.DTriangulationForJTS;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.index.quadtree.Quadtree;
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.feature.BasicFeature;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
+import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.feature.FeatureDatasetFactory;
+import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
@@ -87,18 +91,25 @@ public class CreateThiessenPolygonsPlugIn extends AbstractPlugIn implements Thre
     private String sideBarText = "Creates a Delaunay triangulation and returns the Voronoi regions.";
     private String msgCreateDG = "create triangulation";
     private String msgCreatePolys = "create polygons from voronoi edges";
+    //-- [sstein 27Mar2008: 2 new strings to translate for attribute transfer]
+    private String msgAddAttributesPolys = "add attributes from points";
+    private String msgMultiplePointsInPoly = "Error: found multiple points in polygon";
+    //--
     private String msgNoPoint = "no point geometry";
     private Layer itemlayer = null;
-
+    private PlugInContext pcontext = null;
+    
     public void initialize(PlugInContext context) throws Exception {
-    	
+    		
     		this.CLAYER = I18N.get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.select-point-layer");
     	    this.sName = I18N.get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.Create-Thiessen-Polygons");
     	    this.sideBarText = I18N.get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.Creates-a-Delaunay-triangulation-and-returns-the-Voronoi-regions");
     	    this.msgCreateDG = I18N.get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.create-triangulation");
     	    this.msgCreatePolys = I18N.get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.create-polygons-from-voronoi-edges");
     	    this.msgNoPoint =I18N.get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.no-point-geometry");
-    			
+    		
+    		this.pcontext = context;
+    	    
 	        FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
 	    	featureInstaller.addMainMenuItem(
 	    	        this,								//exe
@@ -150,11 +161,13 @@ public class CreateThiessenPolygonsPlugIn extends AbstractPlugIn implements Thre
 	    //-- get selected items
 	    final Collection features = this.itemlayer.getFeatureCollectionWrapper().getFeatures();
 	    ArrayList points = new ArrayList();
+	    Quadtree qtree = new Quadtree(); //-- tree used later to transfer attributes
 	    for (Iterator iter = features.iterator(); iter.hasNext();) {
             Feature f = (Feature) iter.next();
             Geometry g = f.getGeometry();
             if(g instanceof Point){
                 points.add(f.getGeometry());
+                qtree.insert(g.getEnvelopeInternal(), f);
             }
             else{
                 context.getWorkbenchFrame().warnUser(this.msgNoPoint);
@@ -182,13 +195,57 @@ public class CreateThiessenPolygonsPlugIn extends AbstractPlugIn implements Thre
 			//context.addLayer(StandardCategoryNames.WORKING, "bbox", myCollE);
 			
 		    monitor.report(this.msgCreatePolys);
-		    Collection polys = tri.getThiessenPolys();
-		    FeatureCollection myCollC = FeatureDatasetFactory.createFromGeometry(polys);	    
+		    ArrayList polys = tri.getThiessenPolys();
+		    //FeatureCollection myCollC = FeatureDatasetFactory.createFromGeometry(polys);
+		    
+		    monitor.report(this.msgAddAttributesPolys);
+		    //-- add attributes
+		    FeatureDataset myCollC = this.transferAttributes(this.itemlayer.getFeatureCollectionWrapper().getFeatureSchema(),
+		    		qtree, polys);
 			context.addLayer(StandardCategoryNames.WORKING, "Thiessen polygons", myCollC);
 	    }
 	    else{
 	    	context.getWorkbenchFrame().warnUser(this.msgNoPoint);
 	    }
 		return true;        		
-	}	  	
+	}
+	
+	public FeatureDataset transferAttributes(FeatureSchema fs, Quadtree treeWithFeatures, ArrayList thiessenGeoms){
+	    FeatureDataset fd = new FeatureDataset(fs);
+		//-- walk through list of polygons and find points that are inside
+	    for (Iterator iterator = thiessenGeoms.iterator(); iterator.hasNext();) {
+			Geometry poly = (Geometry) iterator.next();
+			Feature newFeature = new BasicFeature(fs);
+			newFeature.setGeometry(poly);
+			//-- find points near by
+			Collection candidates = treeWithFeatures.query(poly.getEnvelopeInternal());
+			//-- find the candidate points that are inside the thiessen poly
+			//   this should only be one
+			int pointsInside = 0;
+			for (Iterator iterator2 = candidates.iterator(); iterator2.hasNext();) {
+				Feature pt = (Feature) iterator2.next();			
+				if (poly.contains(pt.getGeometry())){
+					//-- create a copy of feature without geometry
+					//   and add new thiessen poly geom
+					newFeature = pt.clone(false);
+					newFeature.setGeometry(poly);
+					//-- do some tests
+					pointsInside = pointsInside +1;
+					if (pointsInside > 1){
+						//-- too much points => no unique identification
+						//	 this actually should not happen, but one never knows
+						this.pcontext.getWorkbenchFrame().warnUser(this.msgMultiplePointsInPoly + ": " + pointsInside);
+						//-- reset attributes to zero (i.e. create a new feature)
+						if (pointsInside == 2){//=2 to do this only once
+							newFeature = new BasicFeature(fs);
+							newFeature.setGeometry(poly);
+						}
+					}
+				}
+			}
+			//-- add thiessen poly (with or without attributes)
+			fd.add(newFeature);
+		}
+	    return  fd;
+	}
 }

@@ -1,3 +1,8 @@
+2008-03-27 mentaer <sstein@geo.unizh.ch>
+	  Added transfer of attributes when Thiessen polygons are created
+	  changed: org/openjump/core/ui/plugin/tools/CreateThiessenPolygonsPlugIn.java
+	  note:  translation needs to be added (defered because Peppe works on it)
+	  
 2008-03-25 Andreas Schmitz <schmitz@lat-lon.de>
       src/org/openjump/OpenJumpConfiguration.java,
       src/org/openjump/core/ui/plugin/style/ImportSLDPlugIn.java,
