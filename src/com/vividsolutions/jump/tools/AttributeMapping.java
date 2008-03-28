@@ -178,10 +178,15 @@ public class AttributeMapping {
      */
     public void transferAttributes(Feature aFeature, Feature bFeature,
         Feature cFeature) {
-        transferAttributes(aFeature, cFeature, aAttributeNames,
-            aNewAttributeNames);
-        transferAttributes(bFeature, cFeature, bAttributeNames,
-            bNewAttributeNames);
+    	//-- [sstein: 27Mar2008] added check to avoid errors
+    	if ((aFeature != null) && (cFeature != null)){
+	        transferAttributes(aFeature, cFeature, aAttributeNames,
+	            aNewAttributeNames);
+    	}
+    	if ((bFeature != null) && (cFeature != null)){
+	        transferAttributes(bFeature, cFeature, bAttributeNames,
+	            bNewAttributeNames);
+    	}
     }
 
     private void transferAttributes(Feature source, Feature dest,
@@ -189,6 +194,8 @@ public class AttributeMapping {
         for (int i = 0; i < attributeNames.size(); i++) {
             String attributeName = (String) attributeNames.get(i);
             String newAttributeName = (String) newAttributeNames.get(i);
+            AttributeType p = source.getSchema().getAttributeType(attributeName);
+            int b=1+1;
             Assert.isTrue(source.getSchema().getAttributeType(attributeName) != AttributeType.GEOMETRY);
             dest.setAttribute(newAttributeName,
                 source.getAttribute(attributeName));

@@ -1,4 +1,11 @@
 2008-03-27 mentaer <sstein@geo.unizh.ch>
+	  hopefuly fixed bug (1775862) in Transfer Attributes Plugin 
+	  changed: org/openjump/core/ui/plugin/tools/SpatialJoinPlugIn.java
+	  		   com/vividsolutions/jump/tools/AttributeMapping.java
+	  Btw.: This function is also acomplished by 
+	  		   Tools\Analysis\Spatial Join of Geometries...
+	  
+2008-03-27 mentaer <sstein@geo.unizh.ch>
 	  Added transfer of attributes when Thiessen polygons are created
 	  changed: org/openjump/core/ui/plugin/tools/CreateThiessenPolygonsPlugIn.java
 	  note:  translation needs to be added (defered because Peppe works on it)

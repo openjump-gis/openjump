@@ -49,9 +49,9 @@ public class SpatialJoinPlugIn extends ThreadedBasePlugIn {
 	  private static String METHODS = I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.spatial-operation");
 
 	  private static String METHOD_EQUAL = I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.equal");
-	  private static String METHOD_WITHIN = I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.within");
-	  private static String METHOD_EQUAL_AND_WITHIN = I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.equal-AND-within");
-	  private static String METHOD_EQUAL_OR_WITHIN = I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.equal-OR-within");
+	  private static String METHOD_WITHIN = "A " + I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.within") +" B";
+	  private static String METHOD_EQUAL_AND_WITHIN = "A " + I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.equal-AND-within" +" B");
+	  private static String METHOD_EQUAL_OR_WITHIN = "A " + I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.equal-OR-within" +" B");
 	 
 	  private static Collection getSpatialJoinMethodNames()
 	  {
@@ -90,9 +90,9 @@ public class SpatialJoinPlugIn extends ThreadedBasePlugIn {
 	  public boolean execute(PlugInContext context) throws Exception {
 		 METHODS = I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.spatial-operation");
 		 METHOD_EQUAL = I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.equal");
-		 METHOD_WITHIN = I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.within");
-		 METHOD_EQUAL_AND_WITHIN = I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.equal-AND-within");
-		 METHOD_EQUAL_OR_WITHIN = I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.equal-OR-within");
+		 METHOD_WITHIN = "A " + I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.within" +" B");
+		 METHOD_EQUAL_AND_WITHIN = "A " + I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.equal-AND-within" +" B");
+		 METHOD_EQUAL_OR_WITHIN = "A " + I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.equal-OR-within" +" B");
 	  	
 	    MultiInputDialog dialog = new MultiInputDialog(
 	        context.getWorkbenchFrame(), getName(), true);
@@ -193,31 +193,25 @@ public class SpatialJoinPlugIn extends ThreadedBasePlugIn {
 	        // on ne transfere les attributs que lorsque la geometry resultat 
         	// n'est contenue que une seule geometry source
 	        if (nbFeatureEqual == 1) {
+	        	mapping.transferAttributes(fEqual, aFeature, feature);
+	        	feature.setGeometry((Geometry) aFeature.getGeometry().clone()); 
+		        fcRecup.add(feature);
+	        }
+	        
+	        else if (nbFeatureWithin == 1){
 	        	mapping.transferAttributes(fWithin, aFeature, feature);
 	        	feature.setGeometry((Geometry) aFeature.getGeometry().clone()); 
 		        fcRecup.add(feature);
 	        }
 	        
-	        else if (nbFeatureWithin == 1){
-	        	mapping.transferAttributes(fEqual, aFeature, feature);
-	        	feature.setGeometry((Geometry) aFeature.getGeometry().clone()); 
-		        fcRecup.add(feature);
-	        }
-	        
-	        else if (nbFeatureWithin == 1){
-	        	mapping.transferAttributes(fEqual, aFeature, feature);
-	        	feature.setGeometry((Geometry) aFeature.getGeometry().clone()); 
-		        fcRecup.add(feature);
-	        }
-	        
 	        else if (nbFeatureEqualAndWithin == 1){
-	        	mapping.transferAttributes(fEqual, aFeature, feature);
+	        	mapping.transferAttributes(fEqualAndWithin, aFeature, feature);
 	        	feature.setGeometry((Geometry) aFeature.getGeometry().clone()); 
 		        fcRecup.add(feature);
 	        }
 	        
 	        else if (nbFeatureEqualOrWithin == 1){
-	        	mapping.transferAttributes(fEqual, aFeature, feature);
+	        	mapping.transferAttributes(fEqualOrWithin, aFeature, feature);
 	        	feature.setGeometry((Geometry) aFeature.getGeometry().clone()); 
 		        fcRecup.add(feature);
 	        }
