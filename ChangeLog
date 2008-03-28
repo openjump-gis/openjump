@@ -1,3 +1,8 @@
+2008-03-28 mentaer <sstein@geo.unizh.ch>
+	  exchanged SrcA and SrcB so that spatial criteria is readable 
+	  in dialog from top to bottom 
+	  changed: com/vividsolutions/jump/ui/plugin/analysis/SpatialJoinPlugIn.java
+	  		   
 2008-03-27 mentaer <sstein@geo.unizh.ch>
 	  hopefuly fixed bug (1775862) in Transfer Attributes Plugin 
 	  changed: org/openjump/core/ui/plugin/tools/SpatialJoinPlugIn.java

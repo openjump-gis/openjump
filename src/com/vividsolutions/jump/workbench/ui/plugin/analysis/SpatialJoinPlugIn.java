@@ -101,8 +101,8 @@ public class SpatialJoinPlugIn
 
     FeatureCollection srcAFC = srcLayerA.getFeatureCollectionWrapper();
     FeatureCollection srcBFC = srcLayerB.getFeatureCollectionWrapper();
-
-    SpatialJoinExecuter executer = new SpatialJoinExecuter(srcAFC, srcBFC);
+    //-- [sstein 28.Mar.2008] reversed order of input (to be able to read from top to down the spatial relations) 
+    SpatialJoinExecuter executer = new SpatialJoinExecuter(srcBFC, srcAFC);
     FeatureCollection resultFC = executer.getResultFC();
     executer.execute(monitor, functionToRun, params, resultFC);
 
