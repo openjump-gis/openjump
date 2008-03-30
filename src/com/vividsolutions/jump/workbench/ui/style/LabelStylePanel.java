@@ -86,8 +86,8 @@ public class LabelStylePanel extends JPanel implements StylePanel {
     	I18N.get("ui.style.LabelStylePanel.horizontal-alignment-for-points_and_lines");
     private static final String CHANGE_FONT = 
     	I18N.get("ui.style.LabelStylePanel.change-font");
-    private static final String CHANGE_COLOR = 
-    	I18N.get("ui.style.LabelStylePanel.change-color");  
+    private static final String CHANGE_COLOUR = 
+    	I18N.get("ui.style.LabelStylePanel.change-colour");  
     private static final String ANGLE_ATTRIBUTE_DEGREES = 
     	I18N.get("ui.style.LabelStylePanel.angle-attribute-degrees");
     private static final String HIDE_OVERLAPPING_LABELS = 
@@ -491,13 +491,13 @@ public class LabelStylePanel extends JPanel implements StylePanel {
         previewLabel.setText(PREVIEW_AT_CURRENT_ZOOM_LEVEL);
         buttonPanel.setLayout(gridBagLayout2);
         outlineButtonPanel.setLayout(gridBagLayout2);
-        colorButton.setText(CHANGE_COLOR);
+        colorButton.setText(CHANGE_COLOUR);
         colorButton.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     colorButton_actionPerformed(e);
                 }
             });
-        outlineColorButton.setText(CHANGE_COLOR);
+        outlineColorButton.setText(CHANGE_COLOUR);
         outlineColorButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
             	outlineColorButton_actionPerformed(e);
