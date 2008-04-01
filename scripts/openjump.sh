@@ -46,5 +46,6 @@ if ( test -d "$JUMP_STATE" || test -f "$JUMP_STATE") then
 fi
 JAVA_OPTS="$JAVA_OPTS -Djump.home=$JUMP_HOME"
 JAVA_OPTS="$JAVA_OPTS -Dorg.xml.sax.driver=$SAXDRIVER"
+JAVA_OPTS="$JAVA_OPTS -Dswing.defaultlaf=javax.swing.plaf.metal.MetalLookAndFeel"
 
 $JAVA -cp $CLASSPATH:$JUMP_HOME/bin $JAVA_OPTS $MAIN $JUMP_OPTS $*
