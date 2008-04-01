@@ -69,6 +69,7 @@ import com.vividsolutions.jump.warp.CoordinateTransform;
 import com.vividsolutions.jump.warp.DummyTransform;
 import com.vividsolutions.jump.warp.BilinearInterpolatedTransform;
 import com.vividsolutions.jump.warp.Triangulator;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.CategoryEvent;
 import com.vividsolutions.jump.workbench.model.FeatureEvent;
 import com.vividsolutions.jump.workbench.model.Layer;
@@ -81,8 +82,10 @@ import com.vividsolutions.jump.workbench.ui.LayerNamePanel;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanelListener;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanelProxy;
 import com.vividsolutions.jump.workbench.ui.LayerNameRenderer;
+import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanelProxy;
 import com.vividsolutions.jump.workbench.ui.TaskFrame;
+import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com
     .vividsolutions
@@ -543,7 +546,7 @@ public class WarpingPanel extends JPanel {
             FeatureUtil.toGeometries(
                 CopySelectedLayersToWarpingVectorsPlugIn.removeNonVectorFeaturesAndWarn(
                     vectorFeatures,
-                    toolbox.getContext().getWorkbench().getFrame()));
+                    toolbox.getContext().getWorkbench().getFrame()));        
         Map triangleMap =
             triangulator.triangleMap(
                 sourceLayerEnvelope,
@@ -591,6 +594,13 @@ public class WarpingPanel extends JPanel {
     void warpButton_actionPerformed(ActionEvent e) {
         try {
             if (warpConditionsMet()) {
+            	//[sstein 31Mar2008] -- added to inform user
+            	if(this.currentSourceLayer() != null){
+            		if (this.currentSourceLayer().getFeatureCollectionWrapper().size() == 1){
+	            		String sWarning = "Can't init with 1 point. Try again.";
+	            		toolbox.getContext().getWorkbench().getFrame().warnUser(sWarning);
+	            		}
+            	}
                 warp();
             }
         } catch (Throwable t) {

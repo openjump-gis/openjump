@@ -1,3 +1,16 @@
+2008-04-01 mentaer <sstein@geo.unizh.ch>
+	  Tried to identify why warping runs endless/crashes JUMP 
+	  when layer contains only one point bug [1920024] 
+	  (note this does not happen for polygons).
+	  I found the reason why it runs in a loop and added a check. 
+	  However creating a triangle for the warping fails for the
+	  first time with only 1 point (since we can not create a 
+	  triangle) but it works surprisingly for the 2nd time.
+	  I added therefore only a message to WarpingPanel that 
+	  motivates the user to do a 2nd try.
+	  modified: com/vividsolutions/jump/warp/Triangulator.java
+	  			com/vividsolutions/jump/workbench/ui/warp/WarpingPanel.java
+	  
 2008-03-31 mentaer <sstein@geo.unizh.ch>
 	  replaced "Transfer Attributes" from SIGLE with Spatial Join from JUMP
 	  achieved by SIGLE "Spatial Join" deactivation in OpenJUMPConfiguration

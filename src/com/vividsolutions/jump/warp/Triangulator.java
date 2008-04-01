@@ -123,15 +123,29 @@ public class Triangulator {
         Envelope sourceEnvelope = new Envelope(datasetEnvelope);
         Quadrilateral sourceQuad;
         Quadrilateral destQuad;
+//    	int count=0;
         while (true) {
             //#sourceQuad will grow the envelope by 5%. [Jon Aquino]
             sourceQuad = sourceQuad(sourceEnvelope);
             destQuad = destQuad(sourceQuad, vectorListCopy);
+            //sstein[30.March.2008] -- note.. this loop will run endless 
+            //     if we try to warp a single point. therefore we check if
+            //     the envelope truly grows. It can't grow for dx=dy=0
+            if ((sourceEnvelope.getWidth() == 0.0) && (sourceEnvelope.getHeight() == 0.0)){
+            	break;
+            }
+            //-- 
             if (outlyingVectors(sourceQuad, destQuad, vectorListCopy).isEmpty()
                 && sourceQuad.verticesOutside(sourceHints).isEmpty()
                 && destQuad.verticesOutside(destinationHints).isEmpty()) {
                 break;
             }
+//            else{
+//            	System.out.print("."); count=count+1;
+//            	if ((count/50.0) == (Math.floor(count/50.0))){
+//            		System.out.println(" " + count);
+//            	}
+//            }
             sourceEnvelope = sourceQuad.getEnvelope();
         }
 
