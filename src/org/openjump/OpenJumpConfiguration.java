@@ -88,7 +88,7 @@ import org.openjump.core.ui.style.decoration.VertexZValueStyle;
 import org.openjump.core.ui.swing.factory.field.FieldComponentFactoryRegistry;
 import org.openjump.core.ui.swing.factory.field.FileFieldComponentFactory;
 import org.openjump.core.ui.swing.wizard.WizardGroup;
-import org.openjump.sigle.plugin.geoprocessing.layers.SpatialJoinPlugIn;
+//import org.openjump.sigle.plugin.geoprocessing.layers.SpatialJoinPlugIn;
 import org.openjump.sigle.plugin.geoprocessing.oneLayer.topology.PlanarGraphPlugIn;
 import org.openjump.sigle.plugin.joinTable.JoinTablePlugIn;
 import org.openjump.sigle.plugin.replace.ReplaceValuePlugIn;
@@ -318,10 +318,13 @@ public class OpenJumpConfiguration {
     EditAttributeByFormulaPlugIn formulaEdit = new EditAttributeByFormulaPlugIn();
     formulaEdit.initialize(new PlugInContext(workbenchContext, null, null,
       null, null));
-
+    
+    /* sstein 31.March08
+     * function replaced by JUMP function of similar name that works better
     SpatialJoinPlugIn spatialJoinPlugIn = new SpatialJoinPlugIn();
     spatialJoinPlugIn.initialize(new PlugInContext(workbenchContext, null,
       null, null, null));
+     */
 
     /** ** GENERALIZATION *** */
     ReducePointsISAPlugIn mySimplifyISA = new ReducePointsISAPlugIn();

@@ -71,7 +71,9 @@ public class SpatialJoinPlugIn
   private String categoryName = StandardCategoryNames.RESULT;
 
   public String getName(){
-	  	return I18N.get("ui.plugin.analysis.SpatialJoinPlugIn.Spatial-Join");
+	    //-- exchanged plugin with SIGLE plugin
+	  	//return I18N.get("ui.plugin.analysis.SpatialJoinPlugIn.Spatial-Join");
+	    return I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.Transfer-Attributes");
 	  }
   
   public void setCategoryName(String value) {
@@ -124,9 +126,13 @@ public class SpatialJoinPlugIn
 
   private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
     //dialog.setSideBarImage(new ImageIcon(getClass().getResource("DiffSegments.png")));
-    dialog.setSideBarDescription(
+	//-- [sstein 31March2008] replaced sidebar description by better description use in SIGLE plugin  
+    /*
+	  dialog.setSideBarDescription(
     		I18N.get("ui.plugin.analysis.SpatialJoinPlugIn.Joins-two-layers-on-a-given-spatial-relationship")
         + " (" + I18N.get("ui.plugin.analysis.SpatialJoinPlugIn.example") +")");
+    */
+    dialog.setSideBarDescription(I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.Transfers-the-attributes-of-Layer-B-to-Layer-A-using-a-spatial-criterion"));
 
     //Set initial layer values to the first and second layers in the layer list.
     //In #initialize we've already checked that the number of layers >= 1. [Jon Aquino]

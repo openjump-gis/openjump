@@ -875,7 +875,8 @@ public class JUMPConfiguration implements Setup {
         //-- [sstein: 23.02.2006 new in VividJump]
         configToolsAnalysis(workbenchContext, checkFactory, featureInstaller);
         configToolsEdit(workbenchContext, checkFactory, featureInstaller);
-        configToolsQA(workbenchContext, checkFactory, featureInstaller);        
+        configToolsQA(workbenchContext, checkFactory, featureInstaller);  
+        configToolsAttributes(workbenchContext, checkFactory, featureInstaller);  
 
         featureInstaller.addMainMenuItemWithJava14Fix(shortcutKeysPlugIn, new String[]{MenuNames.HELP},
                 shortcutKeysPlugIn.getName() + "...", false, null, null);
@@ -1021,16 +1022,7 @@ public class JUMPConfiguration implements Setup {
 					.add(
 							checkFactory
 							.createAtLeastNLayersMustExistCheck(1)));
- 
-	featureInstaller.addMainMenuItem(
-            spatialJoinPlugIn,
-            MENU_TOOLS_ANALYSIS,
-            spatialJoinPlugIn.getName() + "...",
-            false,
-            null,
-            new MultiEnableCheck()
-                    .add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
-                    .add(checkFactory.createAtLeastNLayersMustExistCheck(2)));
+
 	//======================================
 	//featureInstaller.addMenuSeparator(MENU_TOOLS_ANALYSIS);
 	featureInstaller
@@ -1211,6 +1203,25 @@ private void configToolsQA(final WorkbenchContext workbenchContext,
 	            new MultiEnableCheck()
 	                    .add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
 	                    .add(checkFactory.createAtLeastNLayersMustExistCheck(2)));
+
+}
+
+private void configToolsAttributes(final WorkbenchContext workbenchContext,
+		final EnableCheckFactory checkFactory,
+		FeatureInstaller featureInstaller) throws Exception {
+
+	String MENU_TOOLS = MenuNames.TOOLS;
+	String MENU_EAT = MenuNames.TOOLS_EDIT_ATTRIBUTES;
+	String[] MENU_TOOLS_EAT= new String[] { MENU_TOOLS, MENU_EAT};
+	featureInstaller.addMainMenuItem(
+			spatialJoinPlugIn,
+			MENU_TOOLS_EAT,
+			spatialJoinPlugIn.getName() + "...",
+			false,
+			null,
+			new MultiEnableCheck()
+			.add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
+			.add(checkFactory.createAtLeastNLayersMustExistCheck(2)));
 
 }
 

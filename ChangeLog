@@ -1,3 +1,9 @@
+2008-03-31 mentaer <sstein@geo.unizh.ch>
+	  replaced "Transfer Attributes" from SIGLE with Spatial Join from JUMP
+	  achieved by SIGLE "Spatial Join" deactivation in OpenJUMPConfiguration
+	  and JUMP SpatialJoin change of menu position in JumpConfiguration
+	  update of language files
+	  
 2008-03-28 mentaer <sstein@geo.unizh.ch>
 	  exchanged SrcA and SrcB so that spatial criteria is readable 
 	  in dialog from top to bottom 
