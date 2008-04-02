@@ -1,4 +1,7 @@
 2008-04-01 mentaer <sstein@geo.unizh.ch>
+	  reenabled deleteAllFeaturesPlugIn and MrSIDPlugin 
+
+2008-04-01 mentaer <sstein@geo.unizh.ch>
 	  Tried to identify why warping runs endless/crashes JUMP 
 	  when layer contains only one point bug [1920024] 
 	  (note this does not happen for polygons).

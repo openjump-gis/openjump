@@ -593,13 +593,12 @@ public class JUMPConfiguration implements Setup {
         featureInstaller.addPopupMenuItem(layerNamePopupMenu, pasteItemsPlugIn,
                 pasteItemsPlugIn.getNameWithMnemonic(), false, null,
                 PasteItemsPlugIn.createEnableCheck(workbenchContext));
-        //-- [sstein 21Mar2008] I think this plugin is kind of unnecessary
-        /*
+
         featureInstaller.addPopupMenuItem(layerNamePopupMenu,
                 deleteAllFeaturesPlugIn, deleteAllFeaturesPlugIn.getName(),
                 false, DeleteAllFeaturesPlugIn.ICON, deleteAllFeaturesPlugIn
                         .createEnableCheck(workbenchContext));
-         */
+         
     }
 
     private void configureLayerViewPanelPopupMenu(

@@ -45,6 +45,7 @@ import org.openjump.core.ui.plugin.file.OpenProjectPlugIn;
 import org.openjump.core.ui.plugin.file.OpenRecentPlugIn;
 import org.openjump.core.ui.plugin.file.OpenWizardPlugIn;
 import org.openjump.core.ui.plugin.file.SaveImageAsSVGPlugIn;
+import org.openjump.core.ui.plugin.layer.AddSIDLayerPlugIn;
 import org.openjump.core.ui.plugin.layer.ChangeLayerableNamePlugIn;
 import org.openjump.core.ui.plugin.layer.ChangeSRIDPlugIn;
 import org.openjump.core.ui.plugin.layer.ExtractLayerInFence;
@@ -250,11 +251,11 @@ public class OpenJumpConfiguration {
 
     //-- [sstein 21March2008] unnecessary with new menu structure
     //	 MRSIDtype is added with new open file dialog (see below)
-    /*
+    
     AddSIDLayerPlugIn myMrSIDPlugIn = new AddSIDLayerPlugIn();
     myMrSIDPlugIn.initialize(new PlugInContext(workbenchContext, null, null,
       null, null));
-	*/
+	
     
     ChangeSRIDPlugIn myChangeSRIDPlugIn = new ChangeSRIDPlugIn();
     myChangeSRIDPlugIn.initialize(new PlugInContext(workbenchContext, null,
