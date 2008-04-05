@@ -1,3 +1,10 @@
+2008-04-05 mentaer <sstein@geo.unizh.ch>
+	  Replaced throwing of XMLBinder Exception by writing of error message 
+	  when style attributes are missing. (this ensures that a project can 
+	  be load even if style information are missing). see email from UWE 
+	  [JPP-Devel] Project does not work, 31.Mar.2008
+	  com/vividsolutions/jump/util/java2xml/XML2Java.java
+
 2008-04-01 mentaer <sstein@geo.unizh.ch>
 	  reenabled deleteAllFeaturesPlugIn and MrSIDPlugin 
 

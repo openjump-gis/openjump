@@ -26,10 +26,6 @@
  */
 package com.vividsolutions.jump.util.java2xml;
 import java.io.*;
-import java.io.File;
-import java.io.FileReader;
-import java.io.Reader;
-import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -37,13 +33,17 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import com.vividsolutions.jts.util.Assert;
+import com.vividsolutions.jump.io.datasource.DataSource;
 import com.vividsolutions.jump.util.StringUtil;
 public class XML2Java extends XMLBinder {
     private ArrayList listeners = new ArrayList();
     private ClassLoader classLoader = getClass().getClassLoader();
+	private static Logger LOG = Logger.getLogger(XMLBinder.class);
     public XML2Java() {
     }
     public XML2Java(ClassLoader classLoader) {
@@ -109,13 +109,23 @@ public class XML2Java extends XMLBinder {
             public void attributeSpecFound(String xmlName, String javaName)
                     throws Exception {
                 if (tag.getAttribute(xmlName) == null) {
-                    throw new XMLBinderException("Expected '"
+                    String msg = ("Expected '"
                             + xmlName
                             + "' attribute but found none. Tag = "
                             + tag.getName()
                             + "; Attributes = "
                             + StringUtil.toCommaDelimitedString(tag
                                     .getAttributes()));
+                    // [sstein 5April2008] replaced XMLB exception by Log
+                    // so when a problem with styling appears data are still loaded
+                    if (tag.getName().equalsIgnoreCase("style")){
+                    	LOG.warn(msg);
+                    	System.out.println(msg);
+                    	return; //return to avoid further messages
+                    }
+                    else{
+                    	throw new XMLBinderException(msg);
+                    }
                 }
                 Method setter = setter(object.getClass(), javaName);
                 setValue(object, setter, toJava(tag.getAttribute(xmlName)
