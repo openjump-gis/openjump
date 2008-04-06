@@ -1,4 +1,8 @@
 2008-04-05 mentaer <sstein@geo.unizh.ch>
+
+           **** release of OpenJUMP 1.2 (Release F) ****
+                
+2008-04-05 mentaer <sstein@geo.unizh.ch>
 	  Replaced throwing of XMLBinder Exception by writing of error message 
 	  when style attributes are missing. (this ensures that a project can 
 	  be load even if style information are missing). see email from UWE 
