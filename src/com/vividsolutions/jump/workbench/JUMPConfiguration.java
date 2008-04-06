@@ -868,7 +868,7 @@ public class JUMPConfiguration implements Setup {
                     }
                 });
       
-        featureInstaller.addMenuSeparator(MenuNames.WINDOW); // ===================
+        //featureInstaller.addMenuSeparator(MenuNames.WINDOW); // ===================
 
         //-- TOOLS
         //-- [sstein: 23.02.2006 new in VividJump]

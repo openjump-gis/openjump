@@ -266,6 +266,43 @@ public class FeatureInstaller {
     return menuItem;
   }
 
+  /**
+   * Add a Plugin as a JMenuItem or a subclass of JMenuItem to the main menu
+   * @param menuPath path from the main menu to the menu item
+   * @param plugin the plugin associated to this menu item
+   * @param jmi the menu item (JMenuItem, JCheckBoxMenuItem, JMenu, JRadioButtonMenuItem)
+   * @param index the index of the menu item in its parent menu
+   */
+  //Added by Michael Michaud on 2008-04-06
+  //This method makes it possible to add any subclasses of JMenuItem
+  public JMenuItem addMainMenuItem(final String[] menuPath,
+    final AbstractUiPlugIn plugin, final JMenuItem menuItem, final int index) {
+    String menuItemName = plugin.getName();
+    JMenu menu = menuBarMenu(menuPath[0]);
+    if (menu == null) {
+      menu = (JMenu)installMnemonic(new JMenu(menuPath[0]), menuBar());
+      addToMenuBar(menu);
+    }
+    JMenu parent = createMenusIfNecessary(menu, behead(menuPath));
+    installMnemonic(menuItem, parent);
+    menuItem.setIcon(plugin.getIcon());
+    menuItem.addActionListener(plugin);
+    if (index == Integer.MAX_VALUE) {
+      parent.add(menuItem);
+    } else if (index < 0) {
+      int endIndex = parent.getMenuComponentCount() + index + 1;
+      parent.add(menuItem, endIndex);
+    } else {
+      parent.add(menuItem, index);
+    }
+    EnableCheck enableCheck = plugin.getEnableCheck();
+    if (enableCheck != null) {
+      addMenuItemShownListener(menuItem, new EnableCheckMenuItemShownListener(
+        workbenchContext, enableCheck, plugin.getToolTip()));
+    }
+    return menuItem;
+  }
+
   private Menu createMenu(final JMenu menu) {
     return new Menu() {
 

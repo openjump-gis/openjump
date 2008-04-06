@@ -56,6 +56,9 @@ public interface MenuNames {
 	//public static String TOOLS_PROGRAMMING =I18N.get("ui.MenuNames.TOOLS.PROGRAMMING");
 	public static String TOOLS_QUERIES =I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.menu");
 	public static String WINDOW = I18N.get("ui.MenuNames.WINDOW");
+    // Michael Michaud 2008-04-06
+    // New menu for synchronization
+    public static String WINDOW_SYNCHRONIZATION = I18N.get("ui.MenuNames.WINDOW.SYNCHRONIZATION");
 	public static String HELP = I18N.get("ui.MenuNames.HELP");
 	public static String PLUGINS = I18N.get("ui.MenuNames.PLUGINS");
 	

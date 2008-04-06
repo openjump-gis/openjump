@@ -81,6 +81,8 @@ import org.openjump.core.ui.plugin.view.MapToolTipPlugIn;
 import org.openjump.core.ui.plugin.view.ShowFullPathPlugIn;
 import org.openjump.core.ui.plugin.view.ShowScalePlugIn;
 import org.openjump.core.ui.plugin.view.ZoomToScalePlugIn;
+import org.openjump.core.ui.plugin.window.MosaicInternalFramesPlugIn;
+import org.openjump.core.ui.plugin.window.SynchronizationPlugIn;
 import org.openjump.core.ui.plugin.wms.AddWmsLayerWizard;
 import org.openjump.core.ui.plugin.wms.ZoomToWMSPlugIn;
 import org.openjump.core.ui.style.decoration.ArrowLineStringMiddlepointStyle;
@@ -109,6 +111,7 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.registry.Registry;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
+import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.plugin.BeanShellPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
@@ -383,6 +386,16 @@ public class OpenJumpConfiguration {
     /***************************************************************************
      * menu WINDOW
      **************************************************************************/
+
+    MosaicInternalFramesPlugIn mosaicInternalFramesPlugIn = new MosaicInternalFramesPlugIn();
+    mosaicInternalFramesPlugIn.initialize(new PlugInContext(workbenchContext, null, null,
+      null, null));
+
+    SynchronizationPlugIn synchronizationPlugIn = new SynchronizationPlugIn("");
+    synchronizationPlugIn.initialize(new PlugInContext(workbenchContext, null, null,
+      null, null));
+
+    pluginContext.getFeatureInstaller().addMenuSeparator(MenuNames.WINDOW);
 
     /***************************************************************************
      * menu HELP
