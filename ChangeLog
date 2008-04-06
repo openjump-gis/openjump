@@ -1,3 +1,18 @@
+2008-04-06 mmichaud <michael.michaud@free.fr>
+        * Added two plugins and updated language files
+          com.vividsolutions.jump.workbench.JUMPConfiguration
+             -> remove a MenuSeparator
+          com.vividsolutions.jump.workbench.ui.MenuNames
+             -> add the Synchronization menu
+          com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller
+             -> new method to add a JMenuItem subclass
+          org.openjump.OpenJUMPConfiguration
+             -> initialization of new plugins
+          org.openjump.core.ui.plugin.window.MosaicInternalFramesPlugIn
+             -> new PlugIn to make a mosaic with internal frames
+          org.openjump.core.ui.plugin.window.SynchronizationPlugIn
+             -> new PlugIn to synchronize every frame containing viewpanel
+
 2008-04-05 mentaer <sstein@geo.unizh.ch>
 
            **** release of OpenJUMP 1.2 (Release F) ****
