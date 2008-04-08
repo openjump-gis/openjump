@@ -1,8 +1,8 @@
 OpenJUMP readme file
 --------------------
-Version 1.2 C (pre-release)
+Version 1.2 (Release F)
 
-August 11th, 2007
+April 5th, 2008
 
 Contents
 --------
@@ -39,9 +39,8 @@ c:/OpenJUMP/lib
 -------------------
 Run the startup scripts contained in the /bin folder:
 - For windows, double-click on "openjump.bat"
-- For Linux/Unix, launch openjump-unix.sh or openjump.sh
+- For Linux/Unix, launch openjump.sh
 - For Mac, launch openjump.sh
-- an improved script for unix exists: openjump-unix2.sh
 
 Further notes can be found on our wiki: www.openjump.org
 
@@ -110,18 +109,20 @@ Original development team of JUMP was:
 - David Blasby and Paul Ramsey from Refractions Research Inc (www.refractions.net) 
 
 OpenJUMP regular (*and past) contributors are (non exaustive list!):
-- Jonathan Aquino*, 
+- Jonathan Aquino*,
+- Guiseppe Aruta, 
+- Paul Austin,
+- Larry Becker,
 - Landon Blake (Sunburned Surveyor),
 - Erwan Bocher,
-- Joe Desbonet,
-- Michael Michaud,
-- Stefan Steiniger,
-- Ugo Taddei, 
 - Uwe Dallüge,
-- Andreas Schmitz
+- Martin Davis,
+- Joe Desbonet,
 - Stephan Holl
-- Paul Austin
-- Martin Davis
+- Eric Lemesre
+- Michael Michaud,
+- Andreas Schmitz,
+- Stefan Steiniger,
 - Sascha Teichmann
 
 * past contributors
@@ -130,6 +131,7 @@ OpenJUMP regular (*and past) contributors are (non exaustive list!):
 - Basile Chandesris*,
 - Ezequias Rodrigues da Rocha*,
 - Steve Tanner*,
+- Ugo Taddei* 
 
 
 Projects and Companies
@@ -141,7 +143,7 @@ Projects and Companies
   (contact: Malte Weller)
 - Lat/Lon GmbH (deeJUMP team)
   for providing some plugins and functionality (i.e. WFS and WMS Plugins)
-  contact: Stephan Holl/Markus Müller/Ugo Taddei
+  contact: Stephan Holl/Markus Müller/Andreas Schmitz
 - VividSolutions Inc. 
   for support and answering the never ending stream of questions, especially:
   Martin Davis (now at Refractions Inc.)
