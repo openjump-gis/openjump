@@ -140,17 +140,17 @@ Projects and Companies
   for providing their Jump ISA tools code and numerous other improvements
 - Pirol Project from University of Applied Sciences Osnabrück
   for providing the attribute editor
-  (contact: Malte Weller)
+  (contact: Arnd Kielhorn)
 - Lat/Lon GmbH (deeJUMP team)
   for providing some plugins and functionality (i.e. WFS and WMS Plugins)
-  contact: Stephan Holl/Markus Müller/Andreas Schmitz
+  contact: Markus Müller/Andreas Schmitz
 - VividSolutions Inc. 
   for support and answering the never ending stream of questions, especially:
   Martin Davis (now at Refractions Inc.)
   David Zwiers
 - Intevation GmbH
   for collaborative PlugIn development (Print Layout PlugIn)
-  contact: Jan Oliver Wagner
+  contact: Jan Oliver Wagner/Stephan Holl
 
 Translation contributors are:
 - French: Basile Chandesris, Erwan Bocher, Steve Tanner, Michaël Michaud
