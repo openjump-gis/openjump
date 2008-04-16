@@ -29,6 +29,7 @@ import org.openjump.core.ui.plugin.edit.SelectAllLayerItemsPlugIn;
 import org.openjump.core.ui.plugin.edit.SelectByTypePlugIn;
 import org.openjump.core.ui.plugin.edit.SelectItemsByCircleFromSelectedLayersPlugIn;
 import org.openjump.core.ui.plugin.edit.SelectItemsByFenceFromSelectedLayersPlugIn;
+import org.openjump.core.ui.plugin.edittoolbox.AutoCompletePolygonPlugIn;
 import org.openjump.core.ui.plugin.edittoolbox.ConstrainedMoveVertexPlugIn;
 import org.openjump.core.ui.plugin.edittoolbox.CutPolygonSIGLEPlugIn;
 import org.openjump.core.ui.plugin.edittoolbox.DrawCircleWithGivenRadiusPlugIn;
@@ -503,6 +504,10 @@ public class OpenJumpConfiguration {
     
     CutPolygonSIGLEPlugIn cutPolyPlugin = new CutPolygonSIGLEPlugIn();
     cutPolyPlugin.initialize(new PlugInContext(workbenchContext, null, null,
+      null, null));
+    
+    AutoCompletePolygonPlugIn myAutoCompletePlugIn = new AutoCompletePolygonPlugIn();
+    myAutoCompletePlugIn.initialize(new PlugInContext(workbenchContext, null, null,
       null, null));
 
     // -- now initialized in #EditingPlugIn.java to fill toolbox
