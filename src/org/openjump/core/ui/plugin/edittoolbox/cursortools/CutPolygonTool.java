@@ -92,12 +92,12 @@ public class CutPolygonTool extends PolygonTool {
 	            
 	            if (selectedLayers.length == 0){
 	            
-	            	JOptionPane.showMessageDialog(null, I18N.get("org.openjump.sigle.plugin.edittoolbox.At-least-one-layer-must-be-selected"),  I18N.get("org.openjump.sigle.plugin.edittoolbox.Information"), JOptionPane.INFORMATION_MESSAGE);
+	            	JOptionPane.showMessageDialog(null, I18N.get("com.vividsolutions.jump.workbench.plugin.At-least-one-layer-must-be-selected"),  I18N.get("org.openjump.core.ui.plugin.edittoolbox.Information"), JOptionPane.INFORMATION_MESSAGE);
 	            }
 	            
 	           else if (selectedLayers.length > 1) {
 	           	
-	           	JOptionPane.showMessageDialog(null,  I18N.get("org.openjump.sigle.plugin.edittoolbox.One-layer-must-be-selected"),  I18N.get("org.openjump.sigle.plugin.edittoolbox.Information"), JOptionPane.INFORMATION_MESSAGE);
+	           	JOptionPane.showMessageDialog(null,  I18N.get("com.vividsolutions.jump.workbench.plugin.Exactly-one-layer-must-have-selected-items"),  I18N.get("org.openjump.core.ui.plugin.edittoolbox.Information"), JOptionPane.INFORMATION_MESSAGE);
 	           }
 	           
 	           
@@ -154,7 +154,7 @@ public class CutPolygonTool extends PolygonTool {
 	    	  }
 	           else {
 	        	
-	           	JOptionPane.showMessageDialog(null,  I18N.get("org.openjump.sigle.plugin.edittoolbox.Layer-must-be-editable"),  I18N.get("org.openjump.sigle.plugin.edittoolbox.Information"), JOptionPane.INFORMATION_MESSAGE);
+	           	JOptionPane.showMessageDialog(null,  I18N.get("ui.SchemaPanel.layer-must-be-editable"),  I18N.get("org.openjump.core.ui.plugin.edittoolbox.Information"), JOptionPane.INFORMATION_MESSAGE);
 	          
 	           }
 	    	  }
