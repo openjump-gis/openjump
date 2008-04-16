@@ -597,7 +597,7 @@ public class WarpingPanel extends JPanel {
             	//[sstein 31Mar2008] -- added to inform user
             	if(this.currentSourceLayer() != null){
             		if (this.currentSourceLayer().getFeatureCollectionWrapper().size() == 1){
-	            		String sWarning = "Can't init with 1 point. Try again.";
+	            		String sWarning = I18N.get("ui.warp.WarpingPanel.initerror-for-one-point");
 	            		toolbox.getContext().getWorkbench().getFrame().warnUser(sWarning);
 	            		}
             	}
