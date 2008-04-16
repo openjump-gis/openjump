@@ -91,7 +91,6 @@ public class CreateThiessenPolygonsPlugIn extends AbstractPlugIn implements Thre
     private String sideBarText = "Creates a Delaunay triangulation and returns the Voronoi regions.";
     private String msgCreateDG = "create triangulation";
     private String msgCreatePolys = "create polygons from voronoi edges";
-    //-- [sstein 27Mar2008: 2 new strings to translate for attribute transfer]
     private String msgAddAttributesPolys = "add attributes from points";
     private String msgMultiplePointsInPoly = "Error: found multiple points in polygon";
     //--
@@ -107,7 +106,9 @@ public class CreateThiessenPolygonsPlugIn extends AbstractPlugIn implements Thre
     	    this.msgCreateDG = I18N.get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.create-triangulation");
     	    this.msgCreatePolys = I18N.get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.create-polygons-from-voronoi-edges");
     	    this.msgNoPoint =I18N.get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.no-point-geometry");
-    		
+    	    this.msgAddAttributesPolys = I18N.get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.add-attributes-from-points");
+    	    this.msgMultiplePointsInPoly = I18N.get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.Error-found-multiple-points-in-polygon");
+    	    	
     		this.pcontext = context;
     	    
 	        FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
