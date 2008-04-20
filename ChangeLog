@@ -1,3 +1,11 @@
+2008-04-05 mentaer <sstein@geo.unizh.ch>
+	  added Auto Complete Polygon Tool from Uni Hannover via Malte W.
+	  new: 	org.openjump.core.ui.plugin.edittoolbox.cursortools.AutoCompletePolygonCursorTool.java
+	  		org.openjump.core.ui.plugin.edittoolbox.cursortools.AutoCompletePoly.gif
+	  		org.openjump.core.ui.plugin.edittoolbox.AutoCompletePolygonPlugIn.java
+	  mod:  org.openjump.OpenJumpConfiguration.java
+	  		language files
+	  
 2008-04-06 mmichaud <michael.michaud@free.fr>
         * Added two plugins and updated language files
           com.vividsolutions.jump.workbench.JUMPConfiguration
