@@ -89,7 +89,7 @@ public class AutoCompletePolygonCursorTool extends PolygonTool {
          newFeature.setGeometry(diffGeo);
          fc.add(newFeature);
 
-         context.getLayerManager().fireLayerChanged(lay, LayerEventType.VISIBILITY_CHANGED);
+         context.getLayerManager().fireLayerChanged(lay, LayerEventType.APPEARANCE_CHANGED);
 
          //System.out.println("Polygon added");
       
