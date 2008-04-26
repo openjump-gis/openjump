@@ -57,6 +57,7 @@ import javax.swing.SwingUtilities;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.JUMPException;
@@ -597,9 +598,12 @@ public class WarpingPanel extends JPanel {
             	//[sstein 31Mar2008] -- added to inform user
             	if(this.currentSourceLayer() != null){
             		if (this.currentSourceLayer().getFeatureCollectionWrapper().size() == 1){
-	            		String sWarning = I18N.get("ui.warp.WarpingPanel.initerror-for-one-point");
-	            		toolbox.getContext().getWorkbench().getFrame().warnUser(sWarning);
-	            		}
+            			Feature f = (Feature)this.currentSourceLayer().getFeatureCollectionWrapper().getFeatures().get(0);
+            			if (f.getGeometry() instanceof Point){
+		            		String sWarning = I18N.get("ui.warp.WarpingPanel.initerror-for-one-point");
+		            		toolbox.getContext().getWorkbench().getFrame().warnUser(sWarning);
+            			}
+	            	}
             	}
                 warp();
             }
