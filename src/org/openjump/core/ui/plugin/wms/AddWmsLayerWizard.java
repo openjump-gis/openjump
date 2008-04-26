@@ -41,7 +41,8 @@ public class AddWmsLayerWizard extends AbstractWizardGroup {
   private WorkbenchContext workbenchContext;
 
   private String[] cachedURLs = new String[] {
-    "http://demo.deegree.org/deegree-wms/services"
+	"http://openaerialmap.org/wms/",
+    "http://demo.deegree.org/deegree-wms/services"  
   };
 
   private String lastWMSVersion = WMService.WMS_1_1_1;
