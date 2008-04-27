@@ -14,6 +14,9 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxDialog;
 import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxPlugIn;
 public class BeanShellPlugIn extends ToolboxPlugIn {
+	
+	private static final String sName = I18N.get("com.vividsolutions.jump.workbench.ui.plugin.BeanShellPlugIn.BeanShell-Console");
+	
 	public void initialize(PlugInContext context) throws Exception {
         // [Michael Michaud 2007-03-23]
         // Moves MenuNames.TOOLS/MenuNames.TOOLS_PROGRAMMING to MenuNames.CUSTOMIZE
@@ -24,7 +27,7 @@ public class BeanShellPlugIn extends ToolboxPlugIn {
 	public String getName() {
         // [Michael Michaud 2007-03-23] Rename BeanShell to BeanShell Console to differentiate
         // from BeanShell scripts menus
-		return "BeanShell Console";
+		return sName;
 	}
 
 	protected void initializeToolbox(ToolboxDialog toolbox) {

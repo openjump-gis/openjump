@@ -170,7 +170,7 @@ public class AboutDialog extends JDialog {
         buttonPanel.add(okButton, null);
         jTabbedPane1.setBounds(0, 0, 0, 0);
         jTabbedPane1.addTab(I18N.get("ui.AboutDialog.info"), infoPanel);
-        jTabbedPane1.addTab(StringUtil.toFriendlyName(extensionsAboutPanel.getClass().getName(), "AboutPanel"), extensionsAboutPanel);
+        jTabbedPane1.addTab(I18N.get("ui.AboutDialog.Extensions"), extensionsAboutPanel);
         infoPanel.add(jPanel1, BorderLayout.CENTER);
         jPanel1.add(
             jLabel2,

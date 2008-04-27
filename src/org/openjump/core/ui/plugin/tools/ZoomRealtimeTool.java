@@ -47,6 +47,7 @@ import javax.swing.*;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.cursortool.DragTool;
@@ -72,7 +73,7 @@ public class ZoomRealtimeTool extends DragTool
   private boolean rightMouse = false;
 //  private RenderThreadListener renderThreadListener = new RenderThreadListener();
   
-  //TODO:  override getName() with internationalized version
+  private static final String sName = I18N.get("org.openjump.core.ui.plugin.tools.ZoomRealtimeTool.Zoom-Realtime");
 
   public ZoomRealtimeTool() {
   }
@@ -89,6 +90,10 @@ public class ZoomRealtimeTool extends DragTool
       return true;
   }
 
+  public String getName(){
+	  return sName;
+  }
+  
   public void mouseDragged(MouseEvent e) {
     try {
       rightMouse = SwingUtilities.isRightMouseButton(e);

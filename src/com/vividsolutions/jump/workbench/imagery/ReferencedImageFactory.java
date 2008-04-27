@@ -32,6 +32,7 @@ package com.vividsolutions.jump.workbench.imagery;
  * www.vividsolutions.com
  */
 import com.vividsolutions.jump.JUMPException;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 
 /**
  * A factory for {@link ReferencedImage}s.
@@ -50,5 +51,5 @@ public interface ReferencedImageFactory {
 
     public boolean isEditableImage(String location);
 
-	boolean isAvailable();
+	boolean isAvailable(WorkbenchContext wbContext);
 }

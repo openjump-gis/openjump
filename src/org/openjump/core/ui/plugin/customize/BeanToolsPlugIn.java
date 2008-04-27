@@ -65,7 +65,8 @@ import org.apache.log4j.Logger;
 public class BeanToolsPlugIn extends AbstractPlugIn {
 	
 	private static final Logger LOG = Logger.getLogger(BeanToolsPlugIn.class);
-    
+	private static final String sName = I18N.get("org.openjump.core.ui.plugin.customize.BeanToolsPlugIn.Bean-Tools");
+	
     private String lastcmd = "";
     private String beanShellDirName;
     private TaskMonitorManager taskMonitorManager;
@@ -137,7 +138,7 @@ public class BeanToolsPlugIn extends AbstractPlugIn {
     }
     
     public String getName() {
-        return "Bean Tools";
+        return sName;
     }
     
     public boolean execute(final PlugInContext context) throws Exception {

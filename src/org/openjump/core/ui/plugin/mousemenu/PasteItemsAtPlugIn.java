@@ -13,6 +13,7 @@ import javax.swing.JPopupMenu;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateFilter;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.geom.CoordUtil;
@@ -35,7 +36,7 @@ import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxDialog;
 public class PasteItemsAtPlugIn extends PasteItemsPlugIn {
 
     WKTReader reader = new WKTReader();
-	private static final String PASTE_ITEMS_AT_POINT = "Paste Items At Point";
+	private static final String PASTE_ITEMS_AT_POINT = I18N.get("org.openjump.core.ui.plugin.mousemenu.PasteItemsAtPlugIn.Paste-Items-At-Point");
 	
     public void initialize(PlugInContext context) throws Exception
 	    {     
