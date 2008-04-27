@@ -143,7 +143,7 @@ public class ExtensionHelper {
                 JarFile jf = juc.getJarFile();
                 
                 Enumeration enumer = jf.entries();
-                String resourceFile = plugInDirectory + "\\" + resourceName;
+                String resourceFile = plugInDirectory + File.separator + resourceName;
                 fileList.add( new File(resourceFile) );
                 
                 FileOutputStream fos = new FileOutputStream( resourceFile );
