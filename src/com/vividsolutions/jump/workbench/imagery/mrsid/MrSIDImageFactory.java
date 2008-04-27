@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.IOException;
 
 import com.vividsolutions.jump.JUMPException;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImage;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageFactory;
 
@@ -70,7 +71,8 @@ public class MrSIDImageFactory implements ReferencedImageFactory {
         return false;
     }
 
-	public boolean isAvailable() {
+    public boolean isAvailable() {
+//	public boolean isAvailable(WorkbenchContext context) {
 		int i = -1;
 		// [sstein 19.Apr.2008] replaced with old code from AddSIDLayerPlugIn 
 //		try{
@@ -81,10 +83,10 @@ public class MrSIDImageFactory implements ReferencedImageFactory {
 	        p.destroy();
 	        */
 			//-- new
-			workbenchContext.getWorkbench().getPlugInManager();
+//			context.getWorkbench().getPlugInManager();
 			File empty = new File("");
 			String sep = File.separator;
-		    WORKING_DIR = empty.getAbsoluteFile().getParent() + sep;
+//		    WORKING_DIR = context.getWorkbench().getPlugInManager().getPlugInDirectory() + sep;
 		    ETC_PATH = WORKING_DIR + "etc" + sep;
 		    TMP_PATH = WORKING_DIR + "tmp" + sep;
 	        MRSIDDECODE = ETC_PATH + MRSIDDECODEFILE;

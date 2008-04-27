@@ -51,5 +51,6 @@ public interface ReferencedImageFactory {
 
     public boolean isEditableImage(String location);
 
-	boolean isAvailable(WorkbenchContext wbContext);
+	boolean isAvailable();
+	//boolean isAvailable(WorkbenchContext wbContext);
 }
