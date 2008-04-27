@@ -1,3 +1,14 @@
+2008-04-27 mentaer <sstein@geo.unizh.ch>
+	  added wms-default url to http://openaerialmap.org/wms/, bug [1944641]
+	  
+2008-04-27 mentaer <sstein@geo.unizh.ch>
+	  translation for several files
+
+2008-04-27 mentaer <sstein@geo.unizh.ch>
+	  fixed bug [1729554] in extension manager
+	  mod:  de.latlon.deejump.plugin.manager.ExtensionHelper.java
+	  		language files
+	  		
 2008-04-05 mentaer <sstein@geo.unizh.ch>
 	  added Auto Complete Polygon Tool from Uni Hannover via Malte W.
 	  new: 	org.openjump.core.ui.plugin.edittoolbox.cursortools.AutoCompletePolygonCursorTool.java
