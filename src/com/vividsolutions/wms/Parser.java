@@ -324,7 +324,11 @@ public class Parser {
 
       xp = "WMT_MS_Capabilities/Capability/Request/GetFeatureInfo/DCPType/HTTP/Get/OnlineResource";
       e = (Element) XMLTools.simpleXPath(doc, xp);
-      getFeatureInfoURL = e.getAttributeNS(xlink, "href");
+      if (e != null) {
+            getFeatureInfoURL = e.getAttributeNS(xlink, "href");
+        } else {
+            getFeatureInfoURL = "";
+        }
 
       // get the top layer
       topLayer = wmsLayerFromNode( XMLTools.simpleXPath( doc, "WMT_MS_Capabilities/Capability/Layer" ) );

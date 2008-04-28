@@ -1,3 +1,7 @@
+2008-04-28 Andreas Schmitz <schmitz@lat-lon.de>
+      src/com/vividsolutions/wms/Parser.java:
+      Fixed parsing of capabilities without GetFeatureInfo section.
+
 2008-04-27 mentaer <sstein@geo.unizh.ch>
 	  added wms-default url to http://openaerialmap.org/wms/, bug [1944641]
 	  
