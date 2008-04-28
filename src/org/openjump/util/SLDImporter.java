@@ -149,6 +149,8 @@ public class SLDImporter {
                 continue;
             }
 
+            a = a.trim();
+            
             if (type.equals("fill")) {
                 style.setFillColor(decode(a));
             }
@@ -177,6 +179,8 @@ public class SLDImporter {
                 continue;
             }
 
+            a = a.trim();
+            
             if (type.equals("stroke")) {
                 style.setLineColor(decode(a));
             }
@@ -210,7 +214,7 @@ public class SLDImporter {
             u = new URL(s);
         } catch (MalformedURLException ex) {
             try {
-                u = new File(s).toURL();
+                u = new File(s).toURI().toURL();
             } catch (MalformedURLException e1) {
                 // ignore it
             }
@@ -359,6 +363,8 @@ public class SLDImporter {
                 continue;
             }
 
+            a = a.trim();
+            
             if (type.equals("fill")) {
                 style.setColor(decode(a));
             }
@@ -377,6 +383,8 @@ public class SLDImporter {
                 continue;
             }
 
+            a = a.trim();
+            
             if (type.equals("font-family")) {
                 fFamily = a;
             }
@@ -420,6 +428,8 @@ public class SLDImporter {
                     continue;
                 }
 
+                a = a.trim();
+                
                 if (type.equals("fill")) {
                     style.setOutlineColor(decode(a));
                 }

@@ -1,4 +1,8 @@
 2008-04-28 Andreas Schmitz <schmitz@lat-lon.de>
+      src/org/openjump/util/SLDImporter.java:
+      Trimming parsed values.
+
+2008-04-28 Andreas Schmitz <schmitz@lat-lon.de>
       src/com/vividsolutions/wms/Parser.java:
       Fixed parsing of capabilities without GetFeatureInfo section.
 
