@@ -491,12 +491,13 @@ public class SIDLayer extends WMSLayer
     {
     	return sidInfoList.getFileNames();
     }
-    
-    private Blackboard blackboard = new Blackboard();
-    public Blackboard getBlackboard()
-    {
-        return blackboard;
-    }   
+
+//[sstein 27.April.2008] not needed, and it causes an null pointer exception	    
+//    private Blackboard blackboard = new Blackboard();
+//    public Blackboard getBlackboard()
+//    {
+//        return blackboard;
+//    }   
 
     private class SID_Info
 	{
