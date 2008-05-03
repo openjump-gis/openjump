@@ -1,4 +1,12 @@
 2008-05-03 mentaer <sstein@geo.unizh.ch>
+	  changes to enable the loading of Mr.SID layers using AddSIDLayerPlugin
+	  but also enabling of zooming
+	  org.openjump.core.ui.plugin.layer.AddSIDLayerPlugIn
+	  org.openjump.core.ui.plugin.wms.ZoomToWMSPlugIn
+	  org.openjump.io.SIDLayer
+	  com.vividsolutions.jump.workbench.model.WMSLayer
+	  
+2008-05-03 mentaer <sstein@geo.unizh.ch>
 	  changed interface ReferencedImageFactory.isAvailable
 	  to #.isAvailable(WorkbenchContext wbContext)
 	  this enables access to the plugin directory

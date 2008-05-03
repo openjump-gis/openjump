@@ -134,6 +134,7 @@ public class SIDLayer extends WMSLayer
         //view and panel refer to the workbench portion with which the user is interacting
         //raster refers to the visible portion of the SID file drawn onto the view panel
         //image refers to the created image onto which is drawn the raster extracted from the SID file
+    	totalBounds = new Envelope();
         BufferedImage newImage = new BufferedImage(panel.getWidth(), panel.getHeight(), BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = (Graphics2D)newImage.getGraphics();
         g.setColor(new Color(0,0,0,0)); //alpha channel = 0 for transparent background
@@ -181,6 +182,9 @@ public class SIDLayer extends WMSLayer
                 double rwSidFileRightEdge = rwSidFileLeftEdge + (sidPixelWidth * sid_xres);
                 double rwSidFileTopEdge = sid_uly + halfPixel;
                 double rwSidFileBotEdge = rwSidFileTopEdge - (sidPixelHeight * sid_xres);
+                
+                totalBounds.expandToInclude(rwSidFileLeftEdge, rwSidFileBotEdge);
+                totalBounds.expandToInclude(rwSidFileRightEdge, rwSidFileTopEdge);
                 
                 double rwRasterLeft = Math.max(rwViewLeft, rwSidFileLeftEdge);
                 double rwRasterRight = Math.min(rwViewRight, rwSidFileRightEdge);

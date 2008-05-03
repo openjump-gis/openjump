@@ -76,13 +76,13 @@ public class AddSIDLayerPlugIn extends AbstractPlugIn
     {
         context.getFeatureInstaller().addMainMenuItemWithJava14Fix(this,
         new String[] {MenuNames.LAYER}, sAddMrSIDLayer +"{pos:3}", false, null, this.createEnableCheck(context.getWorkbenchContext()));
-        File empty = new File("");
-        String sep = File.separator;
-        WORKING_DIR = empty.getAbsoluteFile().getParent() + sep;
+		File empty = new File("");
+		String sep = File.separator;
+	    WORKING_DIR = context.getWorkbenchContext().getWorkbench().getPlugInManager().getPlugInDirectory() + sep;
         ETC_PATH = WORKING_DIR + "etc" + sep;
         TMP_PATH = WORKING_DIR + "tmp" + sep;
-        MRSIDDECODE = ETC_PATH + "mrsiddecode.exe";
-        MRSIDINFO = ETC_PATH + "mrsidinfo.exe";
+        MRSIDDECODE = ETC_PATH + "mrsidgeodecode.exe";
+        MRSIDINFO = ETC_PATH + "mrsidgeoinfo.exe";
     }
     
     public boolean execute(final PlugInContext context) throws Exception

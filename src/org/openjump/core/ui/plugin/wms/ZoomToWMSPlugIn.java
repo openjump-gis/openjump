@@ -22,6 +22,7 @@
 package org.openjump.core.ui.plugin.wms;
 
 import java.lang.reflect.*;
+import java.util.Iterator;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.table.*;
@@ -40,6 +41,7 @@ import com.vividsolutions.wms.*;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.plugin.*;
+import com.vividsolutions.jump.geom.EnvelopeUtil;
 import com.vividsolutions.jump.util.*;
 
 public class ZoomToWMSPlugIn extends AbstractPlugIn 
@@ -58,6 +60,8 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn
 
     JScrollPane infoTableSc = null;
 
+    final WorkbenchContext wbcontext = null;
+    
     public void initialize( PlugInContext context ) throws Exception {
         this.context = context;
         final WorkbenchContext wbcontext = context.getWorkbenchContext();
@@ -67,22 +71,17 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn
 
         EnableCheck enableCheck = new MultiEnableCheck().add(
             enableCheckFactory.createWindowWithLayerManagerMustBeActiveCheck() ).add(
-            enableCheckFactory.createExactlyNLayerablesMustBeSelectedCheck( 1, WMSLayer.class ))
-                    .add(new EnableCheck()
-                    {
-                        public String check(JComponent component)
-                        {
-                            for (Iterator i = wbcontext.getLayerNamePanel().selectedNodes(WMSLayer.class).iterator(); i.hasNext();)
+                    enableCheckFactory.createWindowWithLayerManagerMustBeActiveCheck()).add(
+                            createWMSLayerCannotBeSelectedCheck()).add(new EnableCheck()
                             {
-                                WMSLayer layer = (WMSLayer) i.next();
-                                if (layer.getClass() == SIDLayer.class)
+                                public String check(JComponent component) 
                                 {
-                                    return "Exclude SID layers from selection";
+                                    ((JMenuItem) component).setText(getName() +
+                                        StringUtil.s(wbcontext.getLayerNamePanel()
+                                                     .selectedNodes(WMSLayer.class).size()));
+                                                     return null;
                                 }
-                            }
-                            return null;
-                        }
-                       });
+                             });
 
         context.getFeatureInstaller()
         //			.addMainMenuItemWithJava14Fix ( this, new String [ ] { "View" },
@@ -99,18 +98,39 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn
 
     public boolean execute( PlugInContext context ) throws Exception {
         this.context = context;
-        ArrayList mapLayerOfChoosenLayers = getMapLayerOfChoosenLayers( context );
-        String selectedSRS = getSelectedSRS( context );
-
-        Hashtable boundingBoxesForSRS = getBoundingBoxesForSRS( mapLayerOfChoosenLayers,
-            selectedSRS );
-        zoomToBoundingBox( context, boundingBoxesForSRS, selectedSRS );
-
+        boolean isSIDLayer = false;
+        final WorkbenchContext wbcontext = context.getWorkbenchContext();
+        //-- [sstein 3.Mai.2008] added check for MrSID compatibility
+        for (Iterator i = wbcontext.getLayerNamePanel().selectedNodes(WMSLayer.class).iterator(); i.hasNext();)
+        {
+            WMSLayer layer = (WMSLayer) i.next();
+            if (layer.getClass() == SIDLayer.class)
+            {
+            	isSIDLayer = true;
+            }
+        }
+        if (isSIDLayer){
+            reportNothingToUndoYet(context);
+            Envelope env = envelopeOfSelectedLayers(context);
+            
+            if ((env.getHeight() > 0.0) && (env.getWidth() > 0.0))
+            {
+            	context.getLayerViewPanel().getViewport().zoom(EnvelopeUtil.bufferByFraction(env, 0.03));
+            }
+        }
+        else{
+	        ArrayList mapLayerOfChoosenLayers = getMapLayerOfChoosenLayers( context );
+	        String selectedSRS = getSelectedSRS( context );
+	
+	        Hashtable boundingBoxesForSRS = getBoundingBoxesForSRS( mapLayerOfChoosenLayers,
+	            selectedSRS );
+	        zoomToBoundingBox( context, boundingBoxesForSRS, selectedSRS );
+        }
         return true;
     } // End execute ( )
     
     public String getName() {
-        return "ZoomToWMS";
+        return I18N.get("org.openjump.core.ui.plugin.wms.ZoomToWMSPlugIn.zoom-to-wms-layer");
     }
 
         WMSLayer[] getSelectedWMSLayer( PlugInContext context ) {
@@ -865,5 +885,53 @@ System.out.println ( "ZoomToWMS srs: " + srs + "  latLonBBMinX: " + latLonBB.get
 
     } // Ende MASpasKu
 
+    //-- [sstein 3.Mai.2008] method added from ISA ZoomToWMSPlugIn for MrSID compatibility
+    private Envelope envelopeOfSelectedLayers(PlugInContext context) {
+        Envelope envelope = new Envelope();
+        
+        for (Iterator i = context.getLayerNamePanel().selectedNodes(WMSLayer.class).iterator(); i.hasNext();) 
+        {
+            WMSLayer layer = (WMSLayer) i.next();
+            Envelope env = layer.getEnvelope();
+            boolean goodEnv = true;
+            
+            if (env == null) goodEnv = false;
+            if (goodEnv) goodEnv = ((env.getHeight() > 0.0) && (env.getWidth() > 0.0));
 
+            if (goodEnv)
+            {
+            	envelope.expandToInclude(layer.getEnvelope());
+            }
+            else
+            {
+            	context.getWorkbenchFrame().getOutputFrame().createNewDocument();
+            	context.getWorkbenchFrame().getOutputFrame().addText("Could not determine zoom envelope for layer: " + layer.getName());               
+            }
+            	
+        }
+
+        return envelope;
+    }
+    
+    //-- [sstein 3.Mai.2008] method added from ISA ZoomToWMSPlugIn for MrSID compatibility
+    private EnableCheck createWMSLayerCannotBeSelectedCheck() 
+    {
+        return new EnableCheck() 
+        {
+            public String check(JComponent component) 
+            {
+                final WorkbenchContext wbcontext = context.getWorkbenchContext();
+                for (Iterator i = wbcontext.getLayerNamePanel().selectedNodes(WMSLayer.class).iterator(); i.hasNext();) 
+                {
+                    WMSLayer layer = (WMSLayer) i.next();
+                    if (layer.getClass().getSuperclass() != WMSLayer.class)
+                    {
+                    	return "Exclude WMS layers from selection";
+                    }
+                }
+                return null;
+            }
+        };
+    }
+    
 } // End ZoomToWMSPLugIn

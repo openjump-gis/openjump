@@ -70,6 +70,9 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
 
 	private WMService service;
 
+	//-- [sstein 03.Mai.2008] added field to be able to zoom to MrSID layers
+    protected Envelope totalBounds = new Envelope();
+    
 	private String wmsVersion = WMService.WMS_1_0_0;
 
 	protected Reference oldImage;
@@ -257,5 +260,35 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
     }
     public void setWmsVersion(String wmsVersion) {
         this.wmsVersion = wmsVersion;
+    }
+    
+    //-- [sstein 03.Mai.2008] added method to be able to zoom to MrSID layers
+    //   it will probably not work for WMSLayers
+    public Envelope getEnvelope()
+    {
+    	return totalBounds;
+    	
+    	/*WMService serv;
+    	try
+    	{
+    		serv = getService();
+    	}
+    	catch (IOException ex)
+    	{
+    		return null;
+    	}
+    	
+    	BoundingBox bb = serv.getCapabilities().getTopLayer().getBoundingBox();
+    	
+    	//don't know if WMS always returns a bounding box
+    	//so check for the usual failure modes
+    	if (bb == null)
+    		return null;
+    	if ((bb.getMaxX() - bb.getMinX()) <= 0.0)
+    		return null;
+    	if ((bb.getMaxY() - bb.getMinY()) <= 0.0)
+    		return null;
+
+    	return new Envelope(bb.getMinX(), bb.getMaxX(), bb.getMinY(), bb.getMaxY());*/
     }
 }
