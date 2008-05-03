@@ -25,11 +25,15 @@ import java.lang.reflect.*;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.table.*;
+
+import org.openjump.io.SIDLayer;
+
 import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.*;
 import com.vividsolutions.jump.workbench.model.*;
 import com.vividsolutions.wms.*;
@@ -56,13 +60,29 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn
 
     public void initialize( PlugInContext context ) throws Exception {
         this.context = context;
-
+        final WorkbenchContext wbcontext = context.getWorkbenchContext();
         EnableCheckFactory enableCheckFactory = new EnableCheckFactory( context
             .getWorkbenchContext() );
 
+
         EnableCheck enableCheck = new MultiEnableCheck().add(
             enableCheckFactory.createWindowWithLayerManagerMustBeActiveCheck() ).add(
-            enableCheckFactory.createExactlyNLayerablesMustBeSelectedCheck( 1, WMSLayer.class ) );
+            enableCheckFactory.createExactlyNLayerablesMustBeSelectedCheck( 1, WMSLayer.class ))
+                    .add(new EnableCheck()
+                    {
+                        public String check(JComponent component)
+                        {
+                            for (Iterator i = wbcontext.getLayerNamePanel().selectedNodes(WMSLayer.class).iterator(); i.hasNext();)
+                            {
+                                WMSLayer layer = (WMSLayer) i.next();
+                                if (layer.getClass() == SIDLayer.class)
+                                {
+                                    return "Exclude SID layers from selection";
+                                }
+                            }
+                            return null;
+                        }
+                       });
 
         context.getFeatureInstaller()
         //			.addMainMenuItemWithJava14Fix ( this, new String [ ] { "View" },
