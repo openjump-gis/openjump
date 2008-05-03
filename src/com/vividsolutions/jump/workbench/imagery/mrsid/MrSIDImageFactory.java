@@ -34,6 +34,7 @@ package com.vividsolutions.jump.workbench.imagery.mrsid;
 import java.io.File;
 import java.io.IOException;
 
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.JUMPException;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImage;
@@ -50,6 +51,9 @@ public class MrSIDImageFactory implements ReferencedImageFactory {
     public static final String MRSIDDECODEFILE = "mrsidgeodecode.exe";
     public static final String MRSIDINFOFILE = "mrsidgeoinfo.exe";
     
+	final static String sNotInstalled=I18N.get("org.openjump.core.ui.plugin.layer.AddSIDLayerPlugIn.not-installed");
+	final static String sErrorSeeOutputWindow =I18N.get("org.openjump.core.ui.plugin.layer.AddSIDLayerPlugIn.Error-See-Output-Window");
+	
     public String getTypeName() {
         return "MrSID";
     }
@@ -71,8 +75,7 @@ public class MrSIDImageFactory implements ReferencedImageFactory {
         return false;
     }
 
-    public boolean isAvailable() {
-//	public boolean isAvailable(WorkbenchContext context) {
+	public boolean isAvailable(WorkbenchContext context) {
 		int i = -1;
 		// [sstein 19.Apr.2008] replaced with old code from AddSIDLayerPlugIn 
 //		try{
@@ -83,10 +86,10 @@ public class MrSIDImageFactory implements ReferencedImageFactory {
 	        p.destroy();
 	        */
 			//-- new
-//			context.getWorkbench().getPlugInManager();
+			context.getWorkbench().getPlugInManager();
 			File empty = new File("");
 			String sep = File.separator;
-//		    WORKING_DIR = context.getWorkbench().getPlugInManager().getPlugInDirectory() + sep;
+		    WORKING_DIR = context.getWorkbench().getPlugInManager().getPlugInDirectory() + sep;
 		    ETC_PATH = WORKING_DIR + "etc" + sep;
 		    TMP_PATH = WORKING_DIR + "tmp" + sep;
 	        MRSIDDECODE = ETC_PATH + MRSIDDECODEFILE;
@@ -94,15 +97,15 @@ public class MrSIDImageFactory implements ReferencedImageFactory {
 	        
             if (!new File(MRSIDDECODE).exists())
             {
-                //context.getWorkbenchFrame().warnUser(sErrorSeeOutputWindow);
-                //context.getWorkbenchFrame().getOutputFrame().addText(MRSIDDECODE + " " + sNotInstalled);
+                context.getWorkbench().getFrame().warnUser(sErrorSeeOutputWindow);
+                context.getWorkbench().getFrame().getOutputFrame().addText(MRSIDDECODE + " " + sNotInstalled);
                 return false;
             }
             
             if (!new File(MRSIDINFO).exists())
             {
-                //context.getWorkbenchFrame().warnUser(sErrorSeeOutputWindow);
-                //context.getWorkbenchFrame().getOutputFrame().addText(MRSIDINFO + " " + sNotInstalled);
+                context.getWorkbench().getFrame().warnUser(sErrorSeeOutputWindow);
+                context.getWorkbench().getFrame().getOutputFrame().addText(MRSIDINFO + " " + sNotInstalled);
                 return false;
             }
          //System.out.println("found Mrsid decode files");

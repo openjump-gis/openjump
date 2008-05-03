@@ -17,6 +17,7 @@ import com.vividsolutions.jump.util.Block;
 import com.vividsolutions.jump.util.CollectionUtil;
 import com.vividsolutions.jump.util.FileUtil;
 import com.vividsolutions.jump.util.OrderedMap;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.imagery.ImageryLayerDataset;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImage;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageFactory;
@@ -75,7 +76,7 @@ public class ImageFeatureCreator {
             if ( selectedFiles != null && selectedFiles.length > 0 ) {
             	ReferencedImageFactory rif = ( ReferencedImageFactory ) fileFilterToReferencedImageFactoryMap.get( fileChooser.getFileFilter() );
             	
-            	if(rif.isAvailable()){
+            	if(rif.isAvailable(context.getWorkbenchContext())){
 	                selectedFeatures = createFeatures(
 	                        rif,
 	                        selectedFiles,
@@ -216,7 +217,7 @@ public class ImageFeatureCreator {
             this.referencedImageFactories = new ArrayList();
             for ( Iterator i = referencedImageFactories.iterator(); i.hasNext();  ) {
                 ReferencedImageFactory referencedImageFactory = ( ReferencedImageFactory ) i.next();
-                if(referencedImageFactory.isAvailable()){
+                if(referencedImageFactory.isAvailable(null)){
                 	this.referencedImageFactories.add(referencedImageFactory);
                 }
             }
@@ -262,7 +263,7 @@ public class ImageFeatureCreator {
             throw new UnsupportedOperationException();
         }
 
-		public boolean isAvailable() {
+		public boolean isAvailable(WorkbenchContext context) {
 			return true;
 		}
     }

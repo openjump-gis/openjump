@@ -32,6 +32,7 @@ package com.vividsolutions.jump.workbench.imagery.ecw;
  * www.vividsolutions.com
  */
 import com.vividsolutions.jump.JUMPException;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImage;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageFactory;
 
@@ -64,7 +65,7 @@ public class ECWImageFactory implements ReferencedImageFactory {
         return false;
     }
 
-	public boolean isAvailable() {
+	public boolean isAvailable(WorkbenchContext context) {
 		Class c = null;
 		try{
 			c = this.getClass().getClassLoader().loadClass("com.ermapper.ecw.JNCSRenderer");

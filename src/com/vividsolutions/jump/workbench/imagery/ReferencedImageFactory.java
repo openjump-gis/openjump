@@ -50,7 +50,11 @@ public interface ReferencedImageFactory {
     public String[] getExtensions();
 
     public boolean isEditableImage(String location);
-
-	boolean isAvailable();
-	//boolean isAvailable(WorkbenchContext wbContext);
+    
+    /**
+     * 
+     * @param wbContext can be null, depending on the implementation (e.g. not null for MrSid driver)
+     * @return
+     */
+	boolean isAvailable(WorkbenchContext wbContext);
 }

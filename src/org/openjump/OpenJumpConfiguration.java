@@ -623,7 +623,7 @@ public class OpenJumpConfiguration {
   private static void addFactory(WorkbenchContext workbenchContext,
     Registry registry, ReferencedImageFactory factory,
     String[] supportFileExtensions) {
-    if (factory.isAvailable()) {
+    if (factory.isAvailable(workbenchContext)) {
       ReferencedImageFactoryFileLayerLoader loader = new ReferencedImageFactoryFileLayerLoader(
         workbenchContext, factory, supportFileExtensions);
       registry.createEntry(FileLayerLoader.KEY, loader);
