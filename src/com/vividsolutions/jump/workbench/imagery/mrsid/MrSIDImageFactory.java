@@ -86,7 +86,6 @@ public class MrSIDImageFactory implements ReferencedImageFactory {
 	        p.destroy();
 	        */
 			//-- new
-			context.getWorkbench().getPlugInManager();
 			File empty = new File("");
 			String sep = File.separator;
 		    WORKING_DIR = context.getWorkbench().getPlugInManager().getPlugInDirectory() + sep;
