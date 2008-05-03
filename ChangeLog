@@ -1,3 +1,8 @@
+2008-05-03 mentaer <sstein@geo.unizh.ch>
+	  changed interface ReferencedImageFactory.isAvailable
+	  to #.isAvailable(WorkbenchContext wbContext)
+	  this enables access to the plugin directory
+	  
 2008-04-28 Andreas Schmitz <schmitz@lat-lon.de>
       src/org/openjump/util/SLDImporter.java:
       Trimming parsed values.
