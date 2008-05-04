@@ -80,7 +80,7 @@ public class AddSIDLayerPlugIn extends AbstractPlugIn
 		String sep = File.separator;
 	    WORKING_DIR = context.getWorkbenchContext().getWorkbench().getPlugInManager().getPlugInDirectory() + sep;
         ETC_PATH = WORKING_DIR + "etc" + sep;
-        TMP_PATH = WORKING_DIR + "tmp" + sep;
+        TMP_PATH = WORKING_DIR + "etc" + sep + "tmp" + sep;
         MRSIDDECODE = ETC_PATH + "mrsidgeodecode.exe";
         MRSIDINFO = ETC_PATH + "mrsidgeoinfo.exe";
     }
