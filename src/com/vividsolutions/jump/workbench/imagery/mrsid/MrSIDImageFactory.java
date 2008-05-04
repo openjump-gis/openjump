@@ -59,7 +59,6 @@ public class MrSIDImageFactory implements ReferencedImageFactory {
     }
 
     public ReferencedImage createImage(String location) throws JUMPException {
-     
         return new MrSIDReferencedImage(SIDInfo.readInfo(location),location);
     }
 
@@ -90,7 +89,7 @@ public class MrSIDImageFactory implements ReferencedImageFactory {
 			String sep = File.separator;
 		    WORKING_DIR = context.getWorkbench().getPlugInManager().getPlugInDirectory() + sep;
 		    ETC_PATH = WORKING_DIR + "etc" + sep;
-		    TMP_PATH = WORKING_DIR + "tmp" + sep;
+		    TMP_PATH = WORKING_DIR + "etc" + sep + "tmp" + sep;
 	        MRSIDDECODE = ETC_PATH + MRSIDDECODEFILE;
 	        MRSIDINFO = ETC_PATH + MRSIDINFOFILE;
 	        

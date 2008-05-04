@@ -65,6 +65,7 @@ package com.vividsolutions.jump.workbench.imagery.mrsid;
  * www.ashs.isa.com
  */
 import java.awt.AlphaComposite;
+import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
@@ -73,7 +74,10 @@ import java.io.File;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.FileImageInputStream;
+import javax.media.jai.RenderedOp;
+import javax.media.jai.operator.FileLoadDescriptor;
 
+import com.sun.image.codec.jpeg.JPEGDecodeParam;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.JUMPException;
 import com.vividsolutions.jump.feature.Feature;
@@ -112,6 +116,9 @@ public class MrSIDReferencedImage implements ReferencedImage{
         }
         else
         {
+            int sidDRmin = 0; //LDB: added
+            int sidDRmax = 255; //LDB: added
+
             int sidPixelWidth = sidInfo.getPixelWidth();
             int sidPixelHeight = sidInfo.getPixelHeight();
             double sid_xres = sidInfo.getXRes();
@@ -223,12 +230,14 @@ public class MrSIDReferencedImage implements ReferencedImage{
                 
                 try
                 {
-                    File jpgFile = File.createTempFile("Temp", ".jpg");
+                    File jpgDir = new File(MrSIDImageFactory.TMP_PATH);
+                    File jpgFile = File.createTempFile("Temp", ".jpg", jpgDir);
                     String jpgFilename = jpgFile.getCanonicalPath();
                     
                     String [] runStr =
                     {
-                    		MrSIDImageFactory.MRSIDDECODE,
+                    	MrSIDImageFactory.MRSIDDECODE,
+                        //"C:\\ashsii\\jump\\etc\\mrsidgeodecode.exe",
                         "-i",
                         sidFilename,
                         "-s",
@@ -244,15 +253,23 @@ public class MrSIDReferencedImage implements ReferencedImage{
                         "-jpg",
                         "-quiet",
                         "-coord",
-                        "image"
-                    };
+                        "image",
+                        "-drmin",
+                        ""+sidDRmin,
+                        "-drmax",
+                        ""+sidDRmax
+                                    };
                     
                     Process p = Runtime.getRuntime().exec(runStr);
                     p.waitFor();
                     p.destroy();
-                
+                    //--[sstein 03.Mai.2008] note: I checked, that until here everything is fine (i.e. the jpg image correctly created)
+                    //						 with respect to creating a jpg file out of the sid image and store it in the tmp folder
 	                if (((jpgFile.exists()) && (jpgFile.isFile()) && (jpgFile.canRead())))
 	                {
+
+	                	//-- [sstein 3.Mai.2008] old stuff
+	                	/*  	
 	                	//-- [sstein 02.04.2006] changed to javax to work with free JavaVM
 	                	//   as proposed by Petter Reinholdtsen (see jpp-devel 12.03.2006)
 	                	FileImageInputStream in = new FileImageInputStream(new File(jpgFilename));
@@ -271,10 +288,41 @@ public class MrSIDReferencedImage implements ReferencedImage{
 	                    g.setComposite(AlphaComposite.Src);
 	                    g.drawImage(image, image_x, image_y, image_w, image_h, viewport.getPanel());
 	                    new File(jpgFilename).delete(); //so they don't accumulate in the tmp dir
+	                	*/
+	                	//--- [sstein 3.Mai.2008] new stuff (note: the grey values are a bit different now: lighter)                    
+	                	RenderedOp image = FileLoadDescriptor.create(jpgFile.getPath(),null,null,null);
+	                	
+	                    int jpg_colorspace = image.getColorModel().getColorSpace().getType();
+	                    if (jpg_colorspace != JPEGDecodeParam.COLOR_ID_GRAY)
+	                    {
+	                        RenderingHints rh = new RenderingHints(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+	                        g.setRenderingHints(rh);
+	                    }
+	                    Composite composite = g.getComposite();
+	                    g.setComposite(AlphaComposite.Src);
+	                    BufferedImage img = image.getAsBufferedImage();
+	                    g.drawImage(img, image_x, image_y, image_w, image_h, viewport.getPanel());
+	                    g.setComposite(composite);
+	                    //-- testing, since some files are not deleted properly
+	                    boolean done = false;
+	                    //int count=0;
+	                    //while (!done){
+		                done = jpgFile.delete(); //so they don't accumulate in the tmp dir
+		                    //count++;
+		                    //System.out.print(".");
+		                    //if (count == 1000){
+		                    	//done = true;
+		                if (!done){jpgFile.delete();}
+		                if (!done){jpgFile.deleteOnExit();}
+		                    	//System.out.print("not deleted in 1000 rounds");
+		                    //}
+	                    //}
+	                    //System.out.println("");
 	                }
                     
                 } catch (Throwable t)
                 {
+                	t.printStackTrace();
                 	throw new JUMPException(t.getMessage());
                 }
             }

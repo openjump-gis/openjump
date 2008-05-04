@@ -1,4 +1,11 @@
 2008-05-03 mentaer <sstein@geo.unizh.ch>
+	  enabled loading of Mr.SID layers using the new OpenFramework
+	  (note: problems exist with deleting the temp-jpg-files in
+	  MrSIDReferencedImage.paint)
+	  com.vividsolutions.jump.workbench.imagery.mrsid.MrSIDReferencedImage
+	  com.vividsolutions.jump.workbench.imagery.mrsid.MrSIDImageFactory
+	  
+2008-05-03 mentaer <sstein@geo.unizh.ch>
 	  changes to enable the loading of Mr.SID layers using AddSIDLayerPlugin
 	  but also enabling of zooming
 	  org.openjump.core.ui.plugin.layer.AddSIDLayerPlugIn
