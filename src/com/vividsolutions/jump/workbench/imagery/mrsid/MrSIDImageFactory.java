@@ -95,15 +95,19 @@ public class MrSIDImageFactory implements ReferencedImageFactory {
 	        
             if (!new File(MRSIDDECODE).exists())
             {
-                context.getWorkbench().getFrame().warnUser(sErrorSeeOutputWindow);
-                context.getWorkbench().getFrame().getOutputFrame().addText(MRSIDDECODE + " " + sNotInstalled);
+            	//-- error messages can not be send, as the workbench does not exist yet 
+                //context.getWorkbench().getFrame().warnUser(sErrorSeeOutputWindow);                
+                //context.getWorkbench().getFrame().getOutputFrame().addText(MRSIDDECODE + " " + sNotInstalled);
+            	//System.out.println(MRSIDDECODE + " " + sNotInstalled);
                 return false;
             }
             
             if (!new File(MRSIDINFO).exists())
             {
-                context.getWorkbench().getFrame().warnUser(sErrorSeeOutputWindow);
-                context.getWorkbench().getFrame().getOutputFrame().addText(MRSIDINFO + " " + sNotInstalled);
+            	//-- error messages can not be send, as the workbench does not exist yet
+                //context.getWorkbench().getFrame().warnUser(sErrorSeeOutputWindow);                
+                //context.getWorkbench().getFrame().getOutputFrame().addText(MRSIDINFO + " " + sNotInstalled);
+            	//System.out.println(MRSIDINFO + " " + sNotInstalled);
                 return false;
             }
          //System.out.println("found Mrsid decode files");
