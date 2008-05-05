@@ -166,17 +166,35 @@ public class PolygonHandler implements ShapeHandler{
                 points[i]=coords[offset];
                 offset++;
             }
-            LinearRing ring = geometryFactory.createLinearRing(points);
-            if(cga.isCCW(points)){
-                holes.add(ring);
+    		//REVISIT: polyons with only 1 or 2 points are not polygons - geometryFactory will bomb so we skip if we find one.
+            if(points.length == 0 || points.length > 3){ 
+            	LinearRing ring = geometryFactory.createLinearRing(points);
+            	if(CGAlgorithms.isCCW(points)){
+            		holes.add(ring);
+            	}
+            	else{
+            		shells.add(ring);
+            	}
             }
-            else{
-                shells.add(ring);
-            }
+    	}
+        
+        if ((shells.size()>1) && (holes.size()== 0)) {
+        	//some shells may be CW holes - esri tolerates this
+        	holes = findCWHoles(shells);  //find all rings contained in others
+        	if (holes.size() > 0) {
+        		shells.removeAll(holes);   
+        		ArrayList ccwHoles = new ArrayList(holes.size());
+        		for (int i=0; i<holes.size(); i++) {
+        			ccwHoles.add( reverseRing((LinearRing) holes.get(i)) );
+        		}
+        		holes = ccwHoles;
+        	}
         }
         
-        //now we have a list of all shells and all holes
+   //now we have a list of all shells and all holes
         ArrayList holesForShells = new ArrayList(shells.size());
+        ArrayList holesWithoutShells = new ArrayList();
+        
         for(int i=0;i<shells.size();i++){
             holesForShells.add(new ArrayList());
         }
@@ -211,7 +229,8 @@ public class PolygonHandler implements ShapeHandler{
             
             if (minShell == null)
             {
-                System.out.println("polygon found with a hole thats not inside a shell");
+            	holesWithoutShells.add(testRing);
+                //System.out.println("polygon found with a hole thats not inside a shell");
             }
             else
             {
@@ -219,9 +238,14 @@ public class PolygonHandler implements ShapeHandler{
             }
         }
         
-        Polygon[] polygons = new Polygon[shells.size()];
+        Polygon[] polygons = new Polygon[shells.size() + holesWithoutShells.size()];
         for(int i=0;i<shells.size();i++){
             polygons[i]=geometryFactory.createPolygon((LinearRing)shells.get(i),(LinearRing[])((ArrayList)holesForShells.get(i)).toArray(new LinearRing[0]));
+        }
+        
+        for (int i=0;i<holesWithoutShells.size();i++)
+        {
+            polygons[shells.size() + i]=geometryFactory.createPolygon((LinearRing)holesWithoutShells.get(i), null);        	
         }
         
         if(polygons.length==1){
@@ -229,6 +253,7 @@ public class PolygonHandler implements ShapeHandler{
         }
         
         holesForShells = null;
+        holesWithoutShells = null;
         shells = null;
         holes = null;
         //its a multi part
@@ -240,6 +265,44 @@ public class PolygonHandler implements ShapeHandler{
         return result;        
     }
     
+    ArrayList findCWHoles(ArrayList shells) {
+        ArrayList holesCW = new ArrayList(shells.size());
+        for (int i = 0; i < shells.size(); i++) {
+    		LinearRing iRing = (LinearRing) shells.get(i);
+    		Envelope iEnv = iRing.getEnvelopeInternal();
+			Coordinate[] coordList = iRing.getCoordinates();
+    		LinearRing jRing;
+    		for (int j = 0; j < shells.size(); j++) {
+    			if (i == j) continue;
+    			jRing = (LinearRing) shells.get(j);               
+    			Envelope jEnv = jRing.getEnvelopeInternal();                
+        		Coordinate jPt = jRing.getCoordinateN(0);
+        		Coordinate jPt2 = jRing.getCoordinateN(1);
+				if ( iEnv.contains(jEnv) 
+						&& (CGAlgorithms.isPointInRing(jPt, coordList) || pointInList(jPt, coordList))
+						&& (CGAlgorithms.isPointInRing(jPt2, coordList) || pointInList(jPt2, coordList))) {
+					if (!holesCW.contains(jRing)) holesCW.add(jRing);
+				}
+    		}
+    	}
+    	return holesCW;
+    }
+        
+    /**
+     *  reverses the order of points in lr (is CW -> CCW or CCW->CW)
+     */
+    LinearRing reverseRing(LinearRing lr) {
+        int numPoints = lr.getNumPoints();
+        Coordinate[] newCoords = new Coordinate[numPoints];
+
+        for (int t = 0; t < numPoints; t++) {
+            newCoords[t] = lr.getCoordinateN(numPoints - t - 1);
+        }
+
+        return new LinearRing(newCoords, new PrecisionModel(), 0);
+    }
+
+  
      public void write(Geometry geometry,EndianDataOutputStream file)throws IOException{
          
 
@@ -427,11 +490,20 @@ public class PolygonHandler implements ShapeHandler{
 
 /*
  * $Log$
- * Revision 1.1  2005/06/16 14:54:43  javamap
- * *** empty log message ***
+ * Revision 1.6  2008/04/22 20:55:36  beckerl
+ * Restored the original inline code in read() and added the CW hole detection.  The new geotools routines always created Multipolygons.
  *
- * Revision 1.1  2005/04/29 13:30:59  javamap
- * *** empty log message ***
+ * Revision 1.3  2007/01/03 22:43:17  rlittlefield
+ * changed so that the holesWithoutShells array initialized to zero length
+ *
+ * Revision 1.2  2007/01/03 16:48:43  rlittlefield
+ * modified code so that holes without shells are not excluded
+ *
+ * Revision 1.1  2006/11/28 22:30:57  beckerl
+ * First SkyJUMP commit.  Prior version numbers lost.
+ *
+ * Revision 1.1  2006/02/28 22:42:14  ashsdesigner
+ * Initial commit of larry's jump/org Eclipse project folder
  *
  * Revision 1.5  2003/09/23 17:15:26  dblasby
  * *** empty log message ***
