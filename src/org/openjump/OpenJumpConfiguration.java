@@ -70,6 +70,7 @@ import org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn;
 import org.openjump.core.ui.plugin.tools.ConvexHullPlugIn;
 import org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn;
 import org.openjump.core.ui.plugin.tools.DeleteEmptyGeometriesPlugIn;
+import org.openjump.core.ui.plugin.tools.IntersectPolygonLayersPlugIn;
 import org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn;
 import org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn;
 import org.openjump.core.ui.plugin.tools.LineSimplifyJTS15AlgorithmPlugIn;
@@ -450,6 +451,11 @@ public class OpenJumpConfiguration {
     pasteItemsAtPlugIn.initialize(new PlugInContext(workbenchContext,
       null, null, null, null));
 
+    //-- [sstein: 4.Mai.2008] testing
+    IntersectPolygonLayersPlugIn intersectLayers = new IntersectPolygonLayersPlugIn();
+    intersectLayers.initialize(new PlugInContext(workbenchContext,
+    	      null, null, null, null));
+    
     /**+++++++++++++++++++++++
      * Category Context menu
      *++++++++++++++++++++++++**/
