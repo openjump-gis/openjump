@@ -1,3 +1,10 @@
+2008-04-28 Andreas Schmitz <schmitz@lat-lon.de>
+      src/org/openjump/core/ui/swing/SelectFromListPanel.java,
+      src/org/openjump/core/ui/plugin/style/ImportSLDPlugIn.java,
+      src/org/openjump/util/SLDImporter.java,
+      src/org/openjump/util/XPathUtils.java:
+      Started reworking the SLD import. Only simple (Basic-) styles can currently be imported.
+
 2008-05-03 mentaer <sstein@geo.unizh.ch>
 	  enabled loading of Mr.SID layers using the new OpenFramework
 	  (note: problems exist with deleting the temp-jpg-files in

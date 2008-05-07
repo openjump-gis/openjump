@@ -39,35 +39,27 @@
 package org.openjump.util;
 
 import static java.awt.Color.decode;
-import static java.awt.Font.BOLD;
-import static java.awt.Font.ITALIC;
-import static java.awt.Font.PLAIN;
 import static java.lang.Double.parseDouble;
-import static java.lang.Integer.parseInt;
-import static java.lang.Math.round;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Paint;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
+
+import javax.xml.namespace.NamespaceContext;
+import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
-import com.vividsolutions.jump.util.Range;
 import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
-import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStyle;
-import com.vividsolutions.jump.workbench.ui.renderer.style.LabelStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.SquareVertexStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.Style;
+import com.vividsolutions.jump.workbench.ui.renderer.style.VertexStyle;
 
 import de.latlon.deejump.plugin.style.BitmapVertexStyle;
 import de.latlon.deejump.plugin.style.CircleVertexStyle;
@@ -97,149 +89,160 @@ public class SLDImporter {
      */
     public static final String OGCNS = "http://www.opengis.net/ogc";
 
-    private static int getInt(String name, Element e) {
-        NodeList nl = e.getElementsByTagNameNS(SLDNS, name);
-        if (nl.getLength() == 0) {
-            return 0;
-        }
-        return parseInt(nl.item(0).getTextContent());
-    }
+    private static final NamespaceContext NSCONTEXT = new NamespaceContext() {
 
-    private static LinkedList<Element> getElements(String name, Element e) {
-        NodeList nl = e.getElementsByTagNameNS(SLDNS, name);
-        if (nl.getLength() == 0) {
-            return new LinkedList<Element>();
-        }
-        LinkedList<Element> elems = new LinkedList<Element>();
-        for (int i = 0; i < nl.getLength(); ++i) {
-            elems.add((Element) nl.item(i));
-        }
-        return elems;
-    }
+        public String getNamespaceURI(String prefix) {
+            if (prefix.equals("sld")) {
+                return SLDNS;
+            }
+            if (prefix.equals("ogc")) {
+                return OGCNS;
+            }
 
-    private static Element getElement(String name, Element e) {
-        return getElement(name, SLDNS, e);
-    }
-
-    private static Element getElement(String name, String ns, Element e) {
-        NodeList nl = e.getElementsByTagNameNS(ns, name);
-
-        if (nl.getLength() == 0) {
             return null;
         }
 
-        return (Element) nl.item(0);
-    }
-
-    private static void applyFill(Element fill, StrokeFillStyle style) {
-        if (fill == null) {
-            return;
-        }
-
-        if (style instanceof BasicStyle) {
-            ((BasicStyle) style).setRenderingFill(true);
-        }
-
-        LinkedList<Element> params = getElements("CssParameter", fill);
-
-        for (Element p : params) {
-            String type = p.getAttribute("name");
-            String a = p.getTextContent();
-            if (a == null || a.trim().length() == 0) {
-                continue;
+        public String getPrefix(String namespace) {
+            if (namespace.equals(SLDNS)) {
+                return "sld";
             }
 
-            a = a.trim();
-            
-            if (type.equals("fill")) {
-                style.setFillColor(decode(a));
+            if (namespace.equals(OGCNS)) {
+                return "ogc";
             }
 
-            if (type.equals("fill-opacity")) {
-                style.setAlpha((int) (255 * parseDouble(a)));
-            }
-        }
-    }
-
-    private static void applyStroke(Element stroke, StrokeFillStyle style) {
-        if (stroke == null) {
-            return;
-        }
-
-        if (style instanceof BasicStyle) {
-            ((BasicStyle) style).setRenderingLine(true);
-        }
-
-        LinkedList<Element> params = getElements("CssParameter", stroke);
-
-        for (Element p : params) {
-            String type = p.getAttribute("name");
-            String a = p.getTextContent();
-            if (a == null || a.trim().length() == 0) {
-                continue;
-            }
-
-            a = a.trim();
-            
-            if (type.equals("stroke")) {
-                style.setLineColor(decode(a));
-            }
-
-            if (type.equals("stroke-width")) {
-                style.setLineWidth(parseInt(a));
-            }
-
-            if (type.equals("stroke-opacity")) {
-                style.setAlpha((int) (255 * parseDouble(a)));
-            }
-
-            if (type.equals("stroke-dasharray")) {
-                style.setLinePattern(a.replace(' ', ','));
-                style.setRenderingLinePattern(true);
-            }
-        }
-    }
-
-    private static URL parseGraphicURL(Element e) {
-        e = getElement("OnlineResource", e);
-
-        if (e == null) {
             return null;
         }
 
-        // assume, it's an external graphic
-        String s = e.getAttributeNS("http://www.w3.org/1999/xlink", "href");
-        URL u = null;
+        public Iterator<String> getPrefixes(String namespace) {
+            if (namespace.equals(SLDNS)) {
+                return new Iterator<String>() {
+                    boolean done = false;
+
+                    public boolean hasNext() {
+                        return !done;
+                    }
+
+                    public String next() {
+                        done = true;
+                        return "sld";
+                    }
+
+                    public void remove() {
+                        // ignore
+                    }
+                };
+            }
+
+            if (namespace.equals(OGCNS)) {
+                return new Iterator<String>() {
+                    boolean done = false;
+
+                    public boolean hasNext() {
+                        return !done;
+                    }
+
+                    public String next() {
+                        done = true;
+                        return "ogc";
+                    }
+
+                    public void remove() {
+                        // ignore
+                    }
+                };
+            }
+
+            return null;
+        }
+    };
+
+    /**
+     * @param doc
+     * @return a list of SLD rule names
+     */
+    public static LinkedList<String> getRuleNames(Document doc) {
+        LinkedList<String> list = new LinkedList<String>();
+
         try {
-            u = new URL(s);
-        } catch (MalformedURLException ex) {
-            try {
-                u = new File(s).toURI().toURL();
-            } catch (MalformedURLException e1) {
-                // ignore it
+            LinkedList<Element> elems = XPathUtils.getElements("//sld:Rule/sld:Name", doc.getDocumentElement(),
+                    NSCONTEXT);
+            for (Element e : elems) {
+                list.add(e.getTextContent());
             }
+        } catch (XPathExpressionException e) {
+            // only happens if the xpath is not valid
+            LOG.error(e);
+            return null;
         }
 
-        return u;
+        return list;
     }
 
-    private static SizedStrokeFillStyle parseGraphic(Element e) {
-        URL u = parseGraphicURL(e);
-        if (u != null) {
-            return new BitmapVertexStyle(u.getFile());
-        }
-
-        return null;
-    }
-
-    private static LinkedList<StrokeFillStyle> parsePointSymbolizer(Element symbolizer, BasicStyle style) {
-        Element e = getElement("WellKnownName", symbolizer);
-        if (style == null) {
-            style = new BasicStyle();
+    /**
+     * Ignores any filters, and uses the information from Point-, Line- and
+     * PolygonSymbolizers.
+     * 
+     * @param name
+     * @param doc
+     * @return a corresponding BasicStyle
+     */
+    public static BasicStyle getBasicStyle(String name, Document doc) {
+        try {
+            BasicStyle style = new BasicStyle();
             style.setRenderingFill(false);
+            style.setRenderingFillPattern(false);
             style.setRenderingLine(false);
+            style.setRenderingLinePattern(false);
+
+            Element rule = XPathUtils.getElement("//sld:Rule[sld:Name='" + name + "']", doc.getDocumentElement(),
+                    NSCONTEXT);
+
+            Element symbolizer = XPathUtils.getElement("sld:PointSymbolizer", rule, NSCONTEXT);
+            applyPointSymbolizer(symbolizer, style);
+
+            symbolizer = XPathUtils.getElement("sld:LineSymbolizer", rule, NSCONTEXT);
+            applyLineSymbolizer(symbolizer, style);
+
+            symbolizer = XPathUtils.getElement("sld:PolygonSymbolizer", rule, NSCONTEXT);
+            applyPolygonSymbolizer(symbolizer, style);
+
+            return style;
+        } catch (XPathExpressionException e) {
+            // only happens if some xpath is not valid
+            LOG.error(e);
+            return null;
         }
-        SizedStrokeFillStyle extra = null;
+    }
+
+    /**
+     * @param name
+     * @param doc
+     * @return a vertex style, if a special one was found (use the basic style from #getBasicStyle if this is null)
+     */
+    public static VertexStyle getVertexStyle(String name, Document doc) {
+        try {
+            Element rule = XPathUtils.getElement("//sld:Rule[sld:Name='" + name + "']", doc.getDocumentElement(),
+                    NSCONTEXT);
+
+            Element symbolizer = XPathUtils.getElement("sld:PointSymbolizer", rule, NSCONTEXT);
+            return applyPointSymbolizer(symbolizer, new BasicStyle());
+        } catch (XPathExpressionException e) {
+            // only happens if some xpath is not valid
+            LOG.error(e);
+            return null;
+        }
+    }
+
+    private static VertexStyle applyPointSymbolizer(Element symbolizer, BasicStyle style)
+            throws XPathExpressionException {
+        if (symbolizer == null) {
+            return null;
+        }
+
+        Element e = XPathUtils.getElement(".//sld:WellKnownName", symbolizer, NSCONTEXT);
+
+        VertexStyle extra = null;
 
         if (e != null) {
             String n = e.getTextContent();
@@ -270,13 +273,14 @@ public class SLDImporter {
             extra = parseGraphic(symbolizer);
         }
 
-        int size = getInt("Size", symbolizer);
+        int size = 0;
+
         if (size != 0) {
             extra.setSize(size / 2);
         }
 
-        Element fill = getElement("Fill", symbolizer);
-        Element stroke = getElement("Stroke", symbolizer);
+        Element fill = XPathUtils.getElement(".//sld:Fill", symbolizer, NSCONTEXT);
+        Element stroke = XPathUtils.getElement(".//sld:Stroke", symbolizer, NSCONTEXT);
 
         applyFill(fill, style);
         applyStroke(stroke, style);
@@ -285,26 +289,16 @@ public class SLDImporter {
             applyStroke(stroke, extra);
         }
 
-        LinkedList<StrokeFillStyle> styles = new LinkedList<StrokeFillStyle>();
-        styles.add(style);
-        if (extra != null) {
-            style.setEnabled(false);
-            extra.setEnabled(true);
-            styles.add(extra);
-        }
-
-        return styles;
+        return extra;
     }
 
-    private static BasicStyle parseLineSymbolizer(Element symbolizer, BasicStyle style) {
-        if (style == null) {
-            style = new BasicStyle();
-            style.setRenderingFill(false);
-            style.setRenderingLine(false);
+    private static BasicStyle applyLineSymbolizer(Element symbolizer, BasicStyle style) throws XPathExpressionException {
+        if (symbolizer == null) {
+            return null;
         }
 
-        Element fill = getElement("Fill", symbolizer);
-        Element stroke = getElement("Stroke", symbolizer);
+        Element fill = XPathUtils.getElement("sld:Fill", symbolizer, NSCONTEXT);
+        Element stroke = XPathUtils.getElement("sld:Stroke", symbolizer, NSCONTEXT);
 
         applyFill(fill, style);
         applyStroke(stroke, style);
@@ -312,15 +306,14 @@ public class SLDImporter {
         return style;
     }
 
-    private static BasicStyle parsePolygonSymbolizer(Element symbolizer, BasicStyle style) {
-        if (style == null) {
-            style = new BasicStyle();
-            style.setRenderingFill(false);
-            style.setRenderingLine(false);
+    private static BasicStyle applyPolygonSymbolizer(Element symbolizer, BasicStyle style)
+            throws XPathExpressionException {
+        if (symbolizer == null) {
+            return null;
         }
 
-        Element fill = getElement("Fill", symbolizer);
-        Element stroke = getElement("Stroke", symbolizer);
+        Element fill = XPathUtils.getElement("sld:Fill", symbolizer, NSCONTEXT);
+        Element stroke = XPathUtils.getElement("sld:Stroke", symbolizer, NSCONTEXT);
 
         URL u = parseGraphicURL(symbolizer);
         if (u != null) {
@@ -332,29 +325,19 @@ public class SLDImporter {
         applyFill(fill, style);
         applyStroke(stroke, style);
 
-        style.setEnabled(true);
-
         return style;
     }
 
-    private static LinkedList<LabelStyle> parseTextSymbolizer(Element symbolizer) {
-        LabelStyle style = new LabelStyle();
-
-        Element label = getElement("Label", symbolizer);
-
-        String lAtt = getElement("PropertyName", OGCNS, label).getTextContent();
-        lAtt = lAtt.substring(lAtt.indexOf(':') + 1);
-        style.setAttribute(lAtt);
-
-        List<Element> fills = getElements("Fill", symbolizer);
-        Element fill = null;
-        for (Element f : fills) {
-            if (f.getParentNode().getLocalName().equals("TextSymbolizer")) {
-                fill = f;
-            }
+    private static void applyFill(Element fill, StrokeFillStyle style) throws XPathExpressionException {
+        if (fill == null) {
+            return;
         }
 
-        LinkedList<Element> params = getElements("CssParameter", fill);
+        if (style instanceof BasicStyle) {
+            ((BasicStyle) style).setRenderingFill(true);
+        }
+
+        LinkedList<Element> params = XPathUtils.getElements("sld:CssParameter", fill, NSCONTEXT);
 
         for (Element p : params) {
             String type = p.getAttribute("name");
@@ -364,18 +347,28 @@ public class SLDImporter {
             }
 
             a = a.trim();
-            
+
             if (type.equals("fill")) {
-                style.setColor(decode(a));
+                style.setFillColor(decode(a));
+            }
+
+            if (type.equals("fill-opacity")) {
+                style.setAlpha((int) (255 * parseDouble(a)));
             }
         }
+    }
 
-        Element font = getElement("Font", symbolizer);
+    private static void applyStroke(Element stroke, StrokeFillStyle style) throws XPathExpressionException {
+        if (stroke == null) {
+            return;
+        }
 
-        params = getElements("CssParameter", font);
+        if (style instanceof BasicStyle) {
+            ((BasicStyle) style).setRenderingLine(true);
+        }
 
-        String fFamily = null;
-        int fStyle = 0, fSize = 0;
+        LinkedList<Element> params = XPathUtils.getElements("sld:CssParameter", stroke, NSCONTEXT);
+
         for (Element p : params) {
             String type = p.getAttribute("name");
             String a = p.getTextContent();
@@ -384,190 +377,303 @@ public class SLDImporter {
             }
 
             a = a.trim();
-            
-            if (type.equals("font-family")) {
-                fFamily = a;
+
+            if (type.equals("stroke")) {
+                style.setLineColor(decode(a));
             }
 
-            if (type.equals("font-style")) {
-                if (a.equalsIgnoreCase("normal")) {
-                    fStyle |= PLAIN;
-                }
-                if (a.equalsIgnoreCase("italic")) {
-                    fStyle |= ITALIC;
-                }
+            if (type.equals("stroke-width")) {
+                style.setLineWidth((int) parseDouble(a));
             }
 
-            if (type.equals("font-weight")) {
-                if (a.equalsIgnoreCase("normal")) {
-                    fStyle |= PLAIN;
-                }
-                if (a.equalsIgnoreCase("bold")) {
-                    fStyle |= BOLD;
-                }
+            if (type.equals("stroke-opacity")) {
+                style.setAlpha((int) (255 * parseDouble(a)));
             }
 
-            if (type.equals("font-size")) {
-                fSize = (int) round(parseDouble(a));
+            if (type.equals("stroke-dasharray")) {
+                style.setLinePattern(a.replace(' ', ','));
+                style.setRenderingLinePattern(true);
             }
         }
-
-        style.setFont(new Font(fFamily, fStyle, fSize));
-        style.setEnabled(true);
-
-        Element halo = getElement("Halo", symbolizer);
-        if (halo != null) {
-            style.setOutlineShowing(true);
-            style.setOutlineWidth((int) parseDouble(getElement("Radius", halo).getTextContent()));
-
-            params = getElements("CssParameter", getElement("Fill", halo));
-            for (Element p : params) {
-                String type = p.getAttribute("name");
-                String a = p.getTextContent();
-                if (a == null || a.trim().length() == 0) {
-                    continue;
-                }
-
-                a = a.trim();
-                
-                if (type.equals("fill")) {
-                    style.setOutlineColor(decode(a));
-                }
-            }
-        }
-
-        LinkedList<LabelStyle> list = new LinkedList<LabelStyle>();
-        list.add(style);
-
-        return list;
     }
 
-    private static Object parseValues(Element filter) {
-        Element lower = getElement("LowerBoundary", OGCNS, filter);
-        Element upper = getElement("UpperBoundary", OGCNS, filter);
-        if (lower != null && upper != null) {
-            String s1 = getElement("Literal", OGCNS, lower).getTextContent().trim();
-            String s2 = getElement("Literal", OGCNS, upper).getTextContent().trim();
-            return new Range(s1, true, s2, false);
+    private static URL parseGraphicURL(Element e) throws XPathExpressionException {
+        e = XPathUtils.getElement("sld:OnlineResource", e, NSCONTEXT);
+
+        if (e == null) {
+            return null;
         }
 
-        return getElement("Literal", OGCNS, filter).getTextContent().trim();
+        // assume, it's an external graphic
+        String s = e.getAttributeNS("http://www.w3.org/1999/xlink", "href");
+        URL u = null;
+        try {
+            u = new URL(s);
+        } catch (MalformedURLException ex) {
+            try {
+                u = new File(s).toURI().toURL();
+            } catch (MalformedURLException e1) {
+                // ignore it
+            }
+        }
+
+        return u;
     }
+
+    private static VertexStyle parseGraphic(Element e) throws XPathExpressionException {
+        URL u = parseGraphicURL(e);
+        if (u != null) {
+            return new BitmapVertexStyle(u.getFile());
+        }
+
+        return null;
+    }
+
+    // **************************************************************
+
+    // private static LinkedList<LabelStyle> parseTextSymbolizer(Element
+    // symbolizer) {
+    // LabelStyle style = new LabelStyle();
+    //
+    // Element label = getElement("Label", symbolizer);
+    //
+    // String lAtt = getElement("PropertyName", OGCNS, label).getTextContent();
+    // lAtt = lAtt.substring(lAtt.indexOf(':') + 1);
+    // style.setAttribute(lAtt);
+    //
+    // List<Element> fills = getElements("Fill", symbolizer);
+    // Element fill = null;
+    // for (Element f : fills) {
+    // if (f.getParentNode().getLocalName().equals("TextSymbolizer")) {
+    // fill = f;
+    // }
+    // }
+    //
+    // LinkedList<Element> params = getElements("CssParameter", fill);
+    //
+    // for (Element p : params) {
+    // String type = p.getAttribute("name");
+    // String a = p.getTextContent();
+    // if (a == null || a.trim().length() == 0) {
+    // continue;
+    // }
+    //
+    // a = a.trim();
+    //
+    // if (type.equals("fill")) {
+    // style.setColor(decode(a));
+    // }
+    // }
+    //
+    // Element font = getElement("Font", symbolizer);
+    //
+    // params = getElements("CssParameter", font);
+    //
+    // String fFamily = null;
+    // int fStyle = 0, fSize = 0;
+    // for (Element p : params) {
+    // String type = p.getAttribute("name");
+    // String a = p.getTextContent();
+    // if (a == null || a.trim().length() == 0) {
+    // continue;
+    // }
+    //
+    // a = a.trim();
+    //
+    // if (type.equals("font-family")) {
+    // fFamily = a;
+    // }
+    //
+    // if (type.equals("font-style")) {
+    // if (a.equalsIgnoreCase("normal")) {
+    // fStyle |= PLAIN;
+    // }
+    // if (a.equalsIgnoreCase("italic")) {
+    // fStyle |= ITALIC;
+    // }
+    // }
+    //
+    // if (type.equals("font-weight")) {
+    // if (a.equalsIgnoreCase("normal")) {
+    // fStyle |= PLAIN;
+    // }
+    // if (a.equalsIgnoreCase("bold")) {
+    // fStyle |= BOLD;
+    // }
+    // }
+    //
+    // if (type.equals("font-size")) {
+    // fSize = (int) round(parseDouble(a));
+    // }
+    // }
+    //
+    // style.setFont(new Font(fFamily, fStyle, fSize));
+    // style.setEnabled(true);
+    //
+    // Element halo = getElement("Halo", symbolizer);
+    // if (halo != null) {
+    // style.setOutlineShowing(true);
+    // Element rad = getElement("Radius", halo);
+    // if (rad != null) {
+    // style.setOutlineWidth((int) parseDouble(rad.getTextContent()));
+    // }
+    //
+    // params = getElements("CssParameter", getElement("Fill", halo));
+    // for (Element p : params) {
+    // String type = p.getAttribute("name");
+    // String a = p.getTextContent();
+    // if (a == null || a.trim().length() == 0) {
+    // continue;
+    // }
+    //
+    // a = a.trim();
+    //
+    // if (type.equals("fill")) {
+    // style.setOutlineColor(decode(a));
+    // }
+    // }
+    // }
+    //
+    // LinkedList<LabelStyle> list = new LinkedList<LabelStyle>();
+    // list.add(style);
+    //
+    // return list;
+    // }
+    //
+    // private static Object parseValues(Element filter) {
+    // Element lower = getElement("LowerBoundary", OGCNS, filter);
+    // Element upper = getElement("UpperBoundary", OGCNS, filter);
+    // if (lower != null && upper != null) {
+    // String s1 = getElement("Literal", OGCNS, lower).getTextContent().trim();
+    // String s2 = getElement("Literal", OGCNS, upper).getTextContent().trim();
+    // return new Range(s1, true, s2, false);
+    // }
+    //
+    // return getElement("Literal", OGCNS, filter).getTextContent().trim();
+    // }
 
     // note that not at all are all filters supported, they're (informally)
     // expected to be in the format of the SLD exporter
-    private static ColorThemingStyle parseColorThemingStyle(List<Element> rules, List<Element> filters) {
-        ColorThemingStyle style = new ColorThemingStyle();
+    // private static ColorThemingStyle parseColorThemingStyle(List<Element>
+    // rules, List<Element> filters) {
+    // ColorThemingStyle style = new ColorThemingStyle();
+    //
+    // String att = rules.get(0).getElementsByTagNameNS(OGCNS,
+    // "PropertyName").item(0).getTextContent();
+    // att = att.substring(att.indexOf(':') + 1);
+    //
+    // style.setAttributeName(att);
+    // HashMap<Object, StrokeFillStyle> map = new HashMap<Object,
+    // StrokeFillStyle>();
+    // HashMap<Object, String> labelMap = new HashMap<Object, String>();
+    //
+    // Iterator<Element> rulesI = rules.iterator();
+    // Iterator<Element> filtersI = filters.iterator();
+    // while (rulesI.hasNext() && filtersI.hasNext()) {
+    // Element filter = filtersI.next();
+    // Element rule = rulesI.next();
+    // Element symbolizer = getElement("PointSymbolizer", rule);
+    //
+    // if (symbolizer != null) {
+    // StrokeFillStyle s = parsePointSymbolizer(symbolizer, null).getFirst();
+    // s.setEnabled(true);
+    // Object val = parseValues(filter);
+    // map.put(val, s);
+    // labelMap.put(val, val.toString());
+    // if (style.getDefaultStyle() == null) {
+    // style.setDefaultStyle((BasicStyle) s);
+    // }
+    // }
+    //
+    // symbolizer = getElement("LineSymbolizer", rule);
+    //
+    // if (symbolizer != null) {
+    // StrokeFillStyle s = parseLineSymbolizer(symbolizer, null);
+    // s.setEnabled(true);
+    // Object val = parseValues(filter);
+    // map.put(val, s);
+    // labelMap.put(val, val.toString());
+    // if (style.getDefaultStyle() == null) {
+    // style.setDefaultStyle((BasicStyle) s);
+    // }
+    // }
+    //
+    // symbolizer = getElement("PolygonSymbolizer", rule);
+    //
+    // if (symbolizer != null) {
+    // StrokeFillStyle s = parsePolygonSymbolizer(symbolizer, null);
+    // Object val = parseValues(filter);
+    // map.put(val, s);
+    // labelMap.put(val, val.toString());
+    // if (style.getDefaultStyle() == null) {
+    // style.setDefaultStyle((BasicStyle) s);
+    // }
+    // }
+    //
+    // }
+    //
+    // style.setAttributeValueToBasicStyleMap(map);
+    // style.setEnabled(true);
+    // style.setAttributeValueToLabelMap(labelMap);
+    //
+    // return style;
+    // }
 
-        String att = rules.get(0).getElementsByTagNameNS(OGCNS, "PropertyName").item(0).getTextContent();
-        att = att.substring(att.indexOf(':') + 1);
-
-        style.setAttributeName(att);
-        HashMap<Object, StrokeFillStyle> map = new HashMap<Object, StrokeFillStyle>();
-        HashMap<Object, String> labelMap = new HashMap<Object, String>();
-
-        Iterator<Element> rulesI = rules.iterator();
-        Iterator<Element> filtersI = filters.iterator();
-        while (rulesI.hasNext() && filtersI.hasNext()) {
-            Element filter = filtersI.next();
-            Element rule = rulesI.next();
-            Element symbolizer = getElement("PointSymbolizer", rule);
-
-            if (symbolizer != null) {
-                StrokeFillStyle s = parsePointSymbolizer(symbolizer, null).getFirst();
-                s.setEnabled(true);
-                Object val = parseValues(filter);
-                map.put(val, s);
-                labelMap.put(val, val.toString());
-                if (style.getDefaultStyle() == null) {
-                    style.setDefaultStyle((BasicStyle) s);
-                }
-            }
-
-            symbolizer = getElement("LineSymbolizer", rule);
-
-            if (symbolizer != null) {
-                StrokeFillStyle s = parseLineSymbolizer(symbolizer, null);
-                s.setEnabled(true);
-                Object val = parseValues(filter);
-                map.put(val, s);
-                labelMap.put(val, val.toString());
-                if (style.getDefaultStyle() == null) {
-                    style.setDefaultStyle((BasicStyle) s);
-                }
-            }
-
-            symbolizer = getElement("PolygonSymbolizer", rule);
-
-            if (symbolizer != null) {
-                StrokeFillStyle s = parsePolygonSymbolizer(symbolizer, null);
-                Object val = parseValues(filter);
-                map.put(val, s);
-                labelMap.put(val, val.toString());
-                if (style.getDefaultStyle() == null) {
-                    style.setDefaultStyle((BasicStyle) s);
-                }
-            }
-
-        }
-
-        style.setAttributeValueToBasicStyleMap(map);
-        style.setEnabled(true);
-        style.setAttributeValueToLabelMap(labelMap);
-
-        return style;
-    }
-
-    /**
-     * @param doc
-     * @return a list of corresponding JUMP styles
-     */
-    public static LinkedList<Style> importSLD(Document doc) {
-        LinkedList<Style> styles = new LinkedList<Style>();
-
-        // maybe ask which feature type style to use?
-
-        NodeList nl = doc.getElementsByTagNameNS(SLDNS, "Rule");
-        List<Element> rules = new LinkedList<Element>();
-        List<Element> filters = new LinkedList<Element>();
-        BasicStyle basicStyle = null;
-        for (int i = 0; i < nl.getLength(); ++i) {
-            Element rule = (Element) nl.item(i);
-            Element filter = getElement("Filter", OGCNS, rule);
-            if (filter != null && getElement("PropertyIsInstanceOf", OGCNS, filter) == null) {
-                rules.add(rule);
-                filters.add(filter);
-            } else {
-                LinkedList<Element> symbolizers = getElements("PointSymbolizer", rule);
-                for (Element s : symbolizers) {
-                    if (basicStyle == null) {
-                        LinkedList<StrokeFillStyle> all = parsePointSymbolizer(s, null);
-                        styles.addAll(all);
-                        basicStyle = (BasicStyle) all.getFirst();
-                    } else {
-                        styles.addAll(parsePointSymbolizer(s, basicStyle));
-                    }
-                }
-                symbolizers = getElements("LineSymbolizer", rule);
-                for (Element s : symbolizers) {
-                    styles.add(basicStyle = parseLineSymbolizer(s, basicStyle));
-                }
-                symbolizers = getElements("PolygonSymbolizer", rule);
-                for (Element s : symbolizers) {
-                    styles.add(basicStyle = parsePolygonSymbolizer(s, basicStyle));
-                }
-                symbolizers = getElements("TextSymbolizer", rule);
-                for (Element s : symbolizers) {
-                    styles.addAll(parseTextSymbolizer(s));
-                }
-            }
-        }
-
-        if (rules.size() > 0 && filters.size() > 0) {
-            styles.add(parseColorThemingStyle(rules, filters));
-        }
-
-        // remove duplicates
+//    /**
+//     * @param doc
+//     * @return a list of corresponding JUMP styles
+//     */
+//    public static LinkedList<Style> importSLD(Document doc) {
+        // LinkedList<Style> styles = new LinkedList<Style>();
+        //
+        // // maybe ask which feature type style to use?
+        //
+        // NodeList nl = doc.getElementsByTagNameNS(SLDNS, "Rule");
+        //
+        // LOG.debug("Found " + nl.getLength() + " rules.");
+        //
+        // List<Element> rules = new LinkedList<Element>();
+        // List<Element> filters = new LinkedList<Element>();
+        // BasicStyle basicStyle = null;
+        // for (int i = 0; i < nl.getLength(); ++i) {
+        // Element rule = (Element) nl.item(i);
+        // Element filter = getElement("Filter", OGCNS, rule);
+        // if (filter != null && getElement("PropertyIsInstanceOf", OGCNS,
+        // filter) == null) {
+        // rules.add(rule);
+        // filters.add(filter);
+        // } else {
+        // LinkedList<Element> symbolizers = getElements("PointSymbolizer",
+        // rule);
+        // for (Element s : symbolizers) {
+        // if (basicStyle == null) {
+        // LinkedList<StrokeFillStyle> all = parsePointSymbolizer(s, null);
+        // styles.addAll(all);
+        // basicStyle = (BasicStyle) all.getFirst();
+        // } else {
+        // styles.addAll(parsePointSymbolizer(s, basicStyle));
+        // }
+        // }
+        // symbolizers = getElements("LineSymbolizer", rule);
+        // for (Element s : symbolizers) {
+        // styles.add(basicStyle = parseLineSymbolizer(s, basicStyle));
+        // }
+        // symbolizers = getElements("PolygonSymbolizer", rule);
+        // for (Element s : symbolizers) {
+        // styles.add(basicStyle = parsePolygonSymbolizer(s, basicStyle));
+        // }
+        // symbolizers = getElements("TextSymbolizer", rule);
+        // for (Element s : symbolizers) {
+        // styles.addAll(parseTextSymbolizer(s));
+        // }
+        // }
+        // }
+        //
+        // if (rules.size() > 0 && filters.size() > 0) {
+        // styles.add(parseColorThemingStyle(rules, filters));
+        // }
+        //
+        // // remove duplicates
         // LinkedList<Style> oldStyles = new LinkedList<Style>(styles);
         // styles.clear();
         // for (Style s : oldStyles) {
@@ -575,16 +681,17 @@ public class SLDImporter {
         // styles.add(s);
         // }
         // }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Found styles:");
-            for (Style s : styles) {
-                LOG.debug(s.getClass());
-            }
-        }
-
-        return styles;
-    }
+        //
+        // if (LOG.isDebugEnabled()) {
+        // LOG.debug("Found styles:");
+        // for (Style s : styles) {
+        // LOG.debug(s.getClass());
+        // }
+        // }
+        //
+        // return styles;
+//        return null;
+//    }
 
     /**
      * <code>FillStyle</code>
@@ -689,5 +796,35 @@ public class SLDImporter {
     public static interface SizedStrokeFillStyle extends StrokeFillStyle, SizedStyle {
         // no methods, they're combined
     }
+
+    // private static LinkedList<Element> getElements(String name, Element e) {
+    // if (e == null) {
+    // return new LinkedList<Element>();
+    // }
+    //
+    // NodeList nl = e.getElementsByTagNameNS(SLDNS, name);
+    // if (nl.getLength() == 0) {
+    // return new LinkedList<Element>();
+    // }
+    // LinkedList<Element> elems = new LinkedList<Element>();
+    // for (int i = 0; i < nl.getLength(); ++i) {
+    // elems.add((Element) nl.item(i));
+    // }
+    // return elems;
+    // }
+    //
+    // private static Element getElement(String name, Element e) {
+    // return getElement(name, SLDNS, e);
+    // }
+    //
+    // private static Element getElement(String name, String ns, Element e) {
+    // NodeList nl = e.getElementsByTagNameNS(ns, name);
+    //
+    // if (nl.getLength() == 0) {
+    // return null;
+    // }
+    //
+    // return (Element) nl.item(0);
+    // }
 
 }
