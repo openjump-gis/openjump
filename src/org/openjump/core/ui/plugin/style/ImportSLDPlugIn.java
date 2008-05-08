@@ -43,12 +43,17 @@ import static com.vividsolutions.jump.workbench.ui.MenuNames.LAYER;
 import static com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn.get;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
 import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
+import static javax.swing.JOptionPane.YES_NO_OPTION;
+import static javax.swing.JOptionPane.YES_OPTION;
+import static javax.swing.JOptionPane.showConfirmDialog;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.xml.parsers.DocumentBuilderFactory.newInstance;
 import static org.openjump.util.SLDImporter.getBasicStyle;
+import static org.openjump.util.SLDImporter.getLabelStyle;
 import static org.openjump.util.SLDImporter.getRuleNames;
 import static org.openjump.util.SLDImporter.getVertexStyle;
 
+import java.awt.Component;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.Vector;
@@ -59,6 +64,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.openjump.core.ui.swing.SelectFromListPanel;
 import org.w3c.dom.Document;
 
+import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.Layerable;
@@ -68,7 +74,10 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.OKCancelDialog;
+import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
+import com.vividsolutions.jump.workbench.ui.OKCancelDialog.Validator;
 import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
+import com.vividsolutions.jump.workbench.ui.renderer.style.LabelStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.VertexStyle;
 
 /**
@@ -110,23 +119,70 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
     // }
     // }
 
-    private static void setStyles(Layer l, BasicStyle style, VertexStyle vs) {
-        style.setEnabled(true);
-        l.removeStyle(l.getBasicStyle());
-        l.addStyle(style);
+    private static void setStyles(Layer l, BasicStyle style, VertexStyle vs, LabelStyle ls, WorkbenchFrame frame) {
+        if (style != null) {
+            style.setEnabled(true);
+            l.removeStyle(l.getBasicStyle());
+            l.addStyle(style);
+        }
 
         if (vs != null) {
             vs.setEnabled(true);
-            l.getBasicStyle().setEnabled(false);
-
             l.removeStyle(l.getVertexStyle());
             l.addStyle(vs);
-        } else {
-            vs = l.getVertexStyle();
-            if (vs != null) {
-                vs.setEnabled(false);
-            }
         }
+
+        if (ls != null) {
+            ls.setEnabled(true);
+            l.removeStyle(l.getLabelStyle());
+            l.addStyle(ls);
+
+            String att = ls.getAttribute();
+            if (!l.getFeatureCollectionWrapper().getFeatureSchema().hasAttribute(att)) {
+                if (att.indexOf(':') != -1) {
+                    att = att.substring(att.indexOf(':'));
+                }
+                if (!l.getFeatureCollectionWrapper().getFeatureSchema().hasAttribute(att)) {
+                    att = att.toUpperCase();
+                }
+            }
+            att = chooseAttribute(l, att, frame);
+            ls.setAttribute(att);
+        }
+
+        l.fireAppearanceChanged();
+    }
+
+    private static String chooseAttribute(Layer l, String def, WorkbenchFrame frame) {
+        final SelectFromListPanel panel = new SelectFromListPanel("none");
+        Vector<String> list = new Vector<String>();
+
+        FeatureSchema fs = l.getFeatureCollectionWrapper().getFeatureSchema();
+        for (int i = 0; i < fs.getAttributeCount(); ++i) {
+            list.add(fs.getAttributeName(i));
+        }
+
+        if (list.size() == 1) {
+            return list.firstElement();
+        }
+
+        panel.list.setListData(list);
+        if (list.contains(def)) {
+            panel.list.setSelectedValue(def, true);
+        }
+
+        OKCancelDialog dlg = new OKCancelDialog(frame,
+                get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Select-Attribute"), true, panel,
+                new Validator() {
+                    public String validateInput(Component component) {
+                        return panel.list.getSelectedValue() == null ? get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Must-Select-Attribute")
+                                : null;
+                    }
+                });
+
+        dlg.setVisible(true);
+
+        return dlg.wasOKPressed() ? (String) panel.list.getSelectedValue() : null;
     }
 
     @Override
@@ -158,23 +214,34 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
             }
 
             if (rules.size() == 1) {
-                setStyles(l, getBasicStyle(rules.peek(), doc), getVertexStyle(rules.peek(), doc));
+                setStyles(l, getBasicStyle(rules.peek(), doc), getVertexStyle(rules.peek(), doc), getLabelStyle(rules
+                        .peek(), doc), context.getWorkbenchFrame());
                 return false;
             }
 
-            SelectFromListPanel panel = new SelectFromListPanel(
-                    get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Choose-Style"));
-            panel.list.setListData(new Vector<String>(rules));
+            OKCancelDialog dlg;
+            do {
+                final StyleChooserPanel panel = new StyleChooserPanel(doc);
 
-            OKCancelDialog dlg = new OKCancelDialog(context.getWorkbenchFrame(),
-                    get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Choose-Style"), true, panel, null);
+                dlg = new OKCancelDialog(context.getWorkbenchFrame(),
+                        get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Choose-Style"), true, panel,
+                        new Validator() {
+                            public String validateInput(Component component) {
+                                return panel.getSelectedStyle() == null ? get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Must-Select-Style")
+                                        : null;
+                            }
+                        });
 
-            dlg.setVisible(true);
+                dlg.setVisible(true);
 
-            if (dlg.wasOKPressed()) {
-                setStyles(l, getBasicStyle((String) panel.list.getSelectedValue(), doc), getVertexStyle(
-                        (String) panel.list.getSelectedValue(), doc));
-            }
+                if (dlg.wasOKPressed()) {
+                    setStyles(l, getBasicStyle(panel.getSelectedStyle(), doc), getVertexStyle(panel.getSelectedStyle(),
+                            doc), getLabelStyle(panel.getSelectedStyle(), doc), context.getWorkbenchFrame());
+                }
+            } while (dlg.wasOKPressed()
+                    && showConfirmDialog(context.getWorkbenchFrame(),
+                            get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Select-Another-Style"),
+                            get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Question"), YES_NO_OPTION) == YES_OPTION);
         }
 
         // List<Style> styles = importSLD(doc);

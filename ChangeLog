@@ -1,4 +1,10 @@
-2008-04-28 Andreas Schmitz <schmitz@lat-lon.de>
+2008-05-08 Andreas Schmitz <schmitz@lat-lon.de>
+      src/org/openjump/core/ui/plugin/style/StyleChooserPanel.java,
+      src/org/openjump/core/ui/plugin/style/ImportSLDPlugIn.java,
+      src/org/openjump/util/SLDImporter.java:
+      Styles can now be chosen upon loading. Work on color theming styles is left to do, Labels work.
+
+2008-05-07 Andreas Schmitz <schmitz@lat-lon.de>
       src/org/openjump/core/ui/swing/SelectFromListPanel.java,
       src/org/openjump/core/ui/plugin/style/ImportSLDPlugIn.java,
       src/org/openjump/util/SLDImporter.java,
