@@ -60,8 +60,8 @@ public class ValueConverterFactory
     if (classname.equalsIgnoreCase("java.String"))
       return STRING_MAPPER;
 
-    // default is string
-    return STRING_MAPPER;
+    // default is null
+    return null;
   }
 
   public static class IntegerConverter implements ValueConverter
