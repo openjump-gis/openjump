@@ -37,14 +37,19 @@
 package com.vividsolutions.wms;
 
 import java.awt.Image;
-import java.awt.Toolkit;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.imageio.ImageIO;
+
+import sun.misc.BASE64Encoder;
 
 import org.apache.log4j.Logger;
 
@@ -295,24 +300,13 @@ public class MapRequest {
    * Connect to the service and get an Image of the map.
    * @return the retrieved map Image
    */
-  public Image getImage() throws MalformedURLException {
-    return Toolkit.getDefaultToolkit().createImage( getURL() );
-
-    /* for using local file method of download
-    InputStream inStream = requestUrl.openStream();
-    File tempImage = File.createTempFile( "wms", ".img");
-    System.out.println( tempImage.getAbsolutePath() );
-    FileOutputStream outStream = new FileOutputStream( tempImage );
-    byte[] bytes = new byte[1024];
-    int count;
-    while( (count = inStream.read( bytes )) > 0 ) {
-      outStream.write( bytes, 0, count );
-    }
-    outStream.close();
-    Image img = Toolkit.getDefaultToolkit().createImage( tempImage.getAbsolutePath() );
-    // tempImage.delete(); // this breaks the asynchronous loadin used in the above line
-    */
-
+  public Image getImage() throws IOException {
+      URL requestUrl = getURL();
+      URLConnection con = requestUrl.openConnection();
+      if(requestUrl.getUserInfo() != null)
+          con.setRequestProperty("Authorization", "Basic " +
+                  new BASE64Encoder().encode(requestUrl.getUserInfo().getBytes()));
+      return ImageIO.read(con.getInputStream());
   }
   
   //UT

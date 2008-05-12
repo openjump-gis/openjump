@@ -42,8 +42,10 @@ import static javax.swing.JOptionPane.showConfirmDialog;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
+
+import sun.misc.BASE64Encoder;
 
 import javax.swing.JOptionPane;
 
@@ -107,17 +109,21 @@ public void initialize() throws IOException {
 	    } else if ( WMS_1_1_1.equals( wmsVersion) ){
 	    	req = "SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities";
 	    }
-	    
+        
         try{
             String requestUrlString = this.serverUrl + req;
             URL requestUrl = new URL( requestUrlString );
-            InputStream inStream = requestUrl.openStream();
+            URLConnection con = requestUrl.openConnection();
+            if(requestUrl.getUserInfo() != null)
+                con.setRequestProperty("Authorization", "Basic " +
+                        new BASE64Encoder().encode(requestUrl.getUserInfo().getBytes()));
             Parser p = new Parser();
-            cap = p.parseCapabilities( this, inStream );
+            cap = p.parseCapabilities( this, con.getInputStream() );
             String url1 = cap.getService().getServerUrl();
             String url2 = cap.getGetMapURL();
             if(!url1.equals(url2)){
-                if(alertDifferingURL) {
+                //if the difference is only in credentials then use url1 else ask from user
+                if(alertDifferingURL && !new URL(url1).equals(new URL(url2))) {
                     int resp = showConfirmDialog(null, I18N.getMessage("com.vididsolutions.wms.WMService.Other-GetMap-URL-Found",
                             new Object[]{url2}), null, YES_NO_OPTION);
                     if(resp == NO_OPTION) {

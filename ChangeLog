@@ -1,4 +1,12 @@
 2008-05-11 mentaer <sstein@geo.unizh.ch>
+      Added patch from Jakko which allows use of WMS servers protected 
+      with basic HTTP authentication. Credentials are taken from URL, 
+      which can be entered as 'http://user:password@server/path'
+      changed
+      com.vividsolutions.wms.MapRequest
+      com.vividsolutions.wms.WMService
+
+2008-05-11 mentaer <sstein@geo.unizh.ch>
       Added new function to intersect two layers that contain
       polygons under /Tools/Analysis/. The function allows in
       a second step to transfer the attributes from both
