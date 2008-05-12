@@ -1,4 +1,10 @@
 2008-05-11 mentaer <sstein@geo.unizh.ch>
+      Added patch from Jakko which enables basic use of tables in 
+      other than public schema. (bug 1694304, at least partly)
+      changed
+      com.vividsolutions.jump.datastore.postgis.PostgisDSMetadata
+      
+2008-05-11 mentaer <sstein@geo.unizh.ch>
       Added patch from Jakko which allows use of WMS servers protected 
       with basic HTTP authentication. Credentials are taken from URL, 
       which can be entered as 'http://user:password@server/path'

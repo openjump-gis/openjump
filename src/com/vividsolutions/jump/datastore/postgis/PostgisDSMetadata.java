@@ -55,8 +55,15 @@ public class PostgisDSMetadata implements DataStoreMetadata {
     final Envelope[] e = new Envelope[]{null};
     //
     // Use find_extent - sometimes estimated_extent was returning null
-    //
-    String sql = "SELECT AsBinary(find_extent( '" + datasetName + "', '" + attributeName + "' ))";
+    //    
+    String sql = "";
+    //find_extent needs schema and table as separate arguments or it fails with "relation does not exist"
+    if(datasetName.indexOf('.') != -1) {
+        String[] parts = datasetName.split("\\.", 2);
+        sql = "SELECT AsBinary(find_extent( '" + parts[0] + "', '" + parts[1] +"', '" + attributeName + "' ))";
+    } else {
+        sql = "SELECT AsBinary(find_extent( '" + datasetName + "', '" + attributeName + "' ))";
+    }
 
     JDBCUtil.execute(
         conn.getConnection(), sql,
