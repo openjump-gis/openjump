@@ -1,28 +1,24 @@
 /***********************************************
  * created on 		5.May.2008
- * last modified: 	
+ * last modified: 	11.May.2008
  * 
  * author:			sstein
  * license: 		LGPL
  * 
  * description:
- * 	provides functions to merge an ArrayList the contains
- *  several (possibly different) geometries 
+ * 	provides functions to merge/intersects an ArrayList of geometries
+ *  that may contain several (possibly different) geometries 
  ***********************************************/
 package org.openjump.core.geomutils.algorithm;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jump.feature.FeatureCollection;
-import com.vividsolutions.jump.feature.FeatureDatasetFactory;
 import com.vividsolutions.jump.task.TaskMonitor;
-import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 
 public class IntersectGeometries {
@@ -61,7 +57,7 @@ public class IntersectGeometries {
 					return withoutIntersection;
 				}
 				else{
-					monitor.report("size of collection now: " + geomList.size());
+					monitor.report("n: " + geomList.size());
 				}
 			}
 			//-- avoid that already GeomCollections are inside
@@ -100,7 +96,7 @@ public class IntersectGeometries {
 					//-- remove the item (first the latter one, then the others)
 					geomList.remove(count);
 					geomList.remove(0);
-					System.out.println("size now:" + geomList.size());
+//					System.out.println("size now:" + geomList.size());
 					//-- add instead the parts
 					geomList.addAll(intersection);
 					geomList.addAll(nonIntersection);
