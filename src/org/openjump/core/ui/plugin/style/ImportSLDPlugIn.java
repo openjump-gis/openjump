@@ -152,16 +152,17 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
 
         if (cts != null) {
             cts.setAttributeName(fixAttribute(l, frame, cts.getAttributeName()));
-            cts.setDefaultStyle(l.getBasicStyle());
             try {
                 fixColorThemingAttributeMap(l, cts, frame);
+                cts.setDefaultStyle((BasicStyle) cts.getAttributeValueToBasicStyleMap().values().iterator().next());
                 cts.setEnabled(true);
                 l.removeStyle(l.getStyle(ColorThemingStyle.class));
                 l.addStyle(cts);
             } catch (NumberFormatException e) {
                 showMessageDialog(frame, getMessage(
-                        "org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Number-Error-reading-styles", new Object[] { e
-                                .getLocalizedMessage() }), get("com.vividsolutions.wms.WMService.Error"), ERROR_MESSAGE);
+                        "org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Number-Error-reading-styles",
+                        new Object[] { e.getLocalizedMessage() }), get("com.vividsolutions.wms.WMService.Error"),
+                        ERROR_MESSAGE);
             }
         }
 

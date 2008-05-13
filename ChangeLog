@@ -1,6 +1,11 @@
 2008-05-13 Andreas Schmitz <schmitz@lat-lon.de>
       src/org/openjump/core/ui/plugin/style/ImportSLDPlugIn.java,
       src/org/openjump/util/SLDImporter.java:
+      Fixed problems choosing the imported color theming style.
+
+2008-05-13 Andreas Schmitz <schmitz@lat-lon.de>
+      src/org/openjump/core/ui/plugin/style/ImportSLDPlugIn.java,
+      src/org/openjump/util/SLDImporter.java:
       Improved/re-added SLD import of color theming styles.
 
 2008-05-11 mentaer <sstein@geo.unizh.ch>
