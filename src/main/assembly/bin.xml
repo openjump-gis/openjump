@@ -45,6 +45,10 @@
         <include>log4j.xml</include>
       </includes>
     </fileSet>
+    <fileSet>
+      <directory>lib/ext</directory>
+      <outputDirectory>/lib/ext</outputDirectory>
+    </fileSet>
 <!--
     <fileSet>
       <directory>docs</directory>
