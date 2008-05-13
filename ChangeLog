@@ -1,3 +1,8 @@
+2008-05-13 Andreas Schmitz <schmitz@lat-lon.de>
+      src/org/openjump/core/ui/plugin/style/ImportSLDPlugIn.java,
+      src/org/openjump/util/SLDImporter.java:
+      Improved/re-added SLD import of color theming styles.
+
 2008-05-11 mentaer <sstein@geo.unizh.ch>
       Added patch from Jakko which enables basic use of tables in 
       other than public schema. (bug 1694304, at least partly)

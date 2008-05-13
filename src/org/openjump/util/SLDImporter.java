@@ -54,6 +54,7 @@ import java.awt.Paint;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -64,7 +65,9 @@ import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.vividsolutions.jump.util.Range;
 import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
+import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.LabelStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.SquareVertexStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.Style;
@@ -203,6 +206,7 @@ public class SLDImporter {
         } catch (XPathExpressionException e) {
             // only happens if the xpath is not valid
             LOG.error(e);
+            e.printStackTrace();
             return null;
         }
 
@@ -219,13 +223,15 @@ public class SLDImporter {
         try {
             LinkedList<Element> elems = getElements("//sld:UserStyle/sld:FeatureTypeStyle"
                     + "[count(sld:Rule)=(count(sld:Rule/ogc:Filter/ogc:PropertyIsBetween)+"
-                    + "count(sld:Rule/ogc:Filter/ogc:PropertyIsEqualTo))]/sld:Name", doc.getDocumentElement(), NSCONTEXT);
+                    + "count(sld:Rule/ogc:Filter/ogc:PropertyIsEqualTo))]/sld:Name", doc.getDocumentElement(),
+                    NSCONTEXT);
             for (Element e : elems) {
                 list.add(e.getTextContent());
             }
         } catch (XPathExpressionException e) {
             // only happens if the xpath is not valid
             LOG.error(e);
+            e.printStackTrace();
             return null;
         }
 
@@ -248,6 +254,7 @@ public class SLDImporter {
         } catch (XPathExpressionException e) {
             // only happens if the xpath is not valid
             LOG.error(e);
+            e.printStackTrace();
             return null;
         }
 
@@ -255,22 +262,40 @@ public class SLDImporter {
     }
 
     /**
-     * Ignores any filters, and uses the information from Point-, Line- and
-     * PolygonSymbolizers.
-     * 
      * @param name
      * @param doc
      * @return a corresponding BasicStyle
+     * @see #getBasicStyle(Element)
      */
     public static BasicStyle getBasicStyle(String name, Document doc) {
+        try {
+            return getBasicStyle(getElement("//sld:Rule[sld:Name='" + name + "']", doc.getDocumentElement(), NSCONTEXT));
+        } catch (XPathExpressionException e) {
+            // only happens if some xpath is not valid
+            LOG.error(e);
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Ignores any filters, and uses the information from Point-, Line- and
+     * PolygonSymbolizers.
+     * 
+     * @param rule
+     * @return a corresponding BasicStyle
+     */
+    public static BasicStyle getBasicStyle(Element rule) {
+        if (rule == null) {
+            return null;
+        }
+
         try {
             BasicStyle style = new BasicStyle();
             style.setRenderingFill(false);
             style.setRenderingFillPattern(false);
             style.setRenderingLine(false);
             style.setRenderingLinePattern(false);
-
-            Element rule = getElement("//sld:Rule[sld:Name='" + name + "']", doc.getDocumentElement(), NSCONTEXT);
 
             boolean oneApplied = false;
 
@@ -300,6 +325,7 @@ public class SLDImporter {
         } catch (XPathExpressionException e) {
             // only happens if some xpath is not valid
             LOG.error(e);
+            e.printStackTrace();
             return null;
         }
     }
@@ -314,11 +340,16 @@ public class SLDImporter {
         try {
             Element rule = getElement("//sld:Rule[sld:Name='" + name + "']", doc.getDocumentElement(), NSCONTEXT);
 
+            if (rule == null) {
+                return null;
+            }
+
             Element symbolizer = getElement("sld:PointSymbolizer", rule, NSCONTEXT);
             return applyPointSymbolizer(symbolizer, new BasicStyle());
         } catch (XPathExpressionException e) {
             // only happens if some xpath is not valid
             LOG.error(e);
+            e.printStackTrace();
             return null;
         }
     }
@@ -544,25 +575,27 @@ public class SLDImporter {
 
             Element fill = getElement("sld:Fill", symbolizer, NSCONTEXT);
 
-            LinkedList<Element> params = getElements("sld:CssParameter", fill, NSCONTEXT);
+            if (fill != null) {
+                LinkedList<Element> params = getElements("sld:CssParameter", fill, NSCONTEXT);
 
-            for (Element p : params) {
-                String type = p.getAttribute("name");
-                String a = p.getTextContent();
-                if (a == null || a.trim().length() == 0) {
-                    continue;
-                }
+                for (Element p : params) {
+                    String type = p.getAttribute("name");
+                    String a = p.getTextContent();
+                    if (a == null || a.trim().length() == 0) {
+                        continue;
+                    }
 
-                a = a.trim();
+                    a = a.trim();
 
-                if (type.equals("fill")) {
-                    style.setColor(decode(a));
+                    if (type.equals("fill")) {
+                        style.setColor(decode(a));
+                    }
                 }
             }
 
             Element font = getElement("sld:Font", symbolizer, NSCONTEXT);
 
-            params = getElements("sld:CssParameter", font, NSCONTEXT);
+            LinkedList<Element> params = getElements("sld:CssParameter", font, NSCONTEXT);
 
             String fFamily = null;
             int fStyle = 0, fSize = 0;
@@ -632,164 +665,73 @@ public class SLDImporter {
         } catch (XPathExpressionException e) {
             // only happens if some xpath is not valid
             LOG.error(e);
+            e.printStackTrace();
             return null;
         }
     }
 
-    // **************************************************************
+    private static Object parseValues(Element filter) throws XPathExpressionException {
+        if (filter == null) {
+            LOG.warn("An ogc:filter could not be found while trying to parse a color theming style.");
+            return null;
+        }
 
-    // private static Object parseValues(Element filter) {
-    // Element lower = getElement("LowerBoundary", OGCNS, filter);
-    // Element upper = getElement("UpperBoundary", OGCNS, filter);
-    // if (lower != null && upper != null) {
-    // String s1 = getElement("Literal", OGCNS, lower).getTextContent().trim();
-    // String s2 = getElement("Literal", OGCNS, upper).getTextContent().trim();
-    // return new Range(s1, true, s2, false);
-    // }
-    //
-    // return getElement("Literal", OGCNS, filter).getTextContent().trim();
-    // }
+        Element lower = getElement(".//ogc:LowerBoundary", filter, NSCONTEXT);
+        Element upper = getElement(".//ogc:UpperBoundary", filter, NSCONTEXT);
+        if (lower != null && upper != null) {
+            String s1 = getElement("ogc:Literal", lower, NSCONTEXT).getTextContent().trim();
+            String s2 = getElement("ogc:Literal", upper, NSCONTEXT).getTextContent().trim();
+            return new Range(s1, true, s2, false);
+        }
 
-    // note that not at all are all filters supported, they're (informally)
-    // expected to be in the format of the SLD exporter
-    // private static ColorThemingStyle parseColorThemingStyle(List<Element>
-    // rules, List<Element> filters) {
-    // ColorThemingStyle style = new ColorThemingStyle();
-    //
-    // String att = rules.get(0).getElementsByTagNameNS(OGCNS,
-    // "PropertyName").item(0).getTextContent();
-    // att = att.substring(att.indexOf(':') + 1);
-    //
-    // style.setAttributeName(att);
-    // HashMap<Object, StrokeFillStyle> map = new HashMap<Object,
-    // StrokeFillStyle>();
-    // HashMap<Object, String> labelMap = new HashMap<Object, String>();
-    //
-    // Iterator<Element> rulesI = rules.iterator();
-    // Iterator<Element> filtersI = filters.iterator();
-    // while (rulesI.hasNext() && filtersI.hasNext()) {
-    // Element filter = filtersI.next();
-    // Element rule = rulesI.next();
-    // Element symbolizer = getElement("PointSymbolizer", rule);
-    //
-    // if (symbolizer != null) {
-    // StrokeFillStyle s = parsePointSymbolizer(symbolizer, null).getFirst();
-    // s.setEnabled(true);
-    // Object val = parseValues(filter);
-    // map.put(val, s);
-    // labelMap.put(val, val.toString());
-    // if (style.getDefaultStyle() == null) {
-    // style.setDefaultStyle((BasicStyle) s);
-    // }
-    // }
-    //
-    // symbolizer = getElement("LineSymbolizer", rule);
-    //
-    // if (symbolizer != null) {
-    // StrokeFillStyle s = parseLineSymbolizer(symbolizer, null);
-    // s.setEnabled(true);
-    // Object val = parseValues(filter);
-    // map.put(val, s);
-    // labelMap.put(val, val.toString());
-    // if (style.getDefaultStyle() == null) {
-    // style.setDefaultStyle((BasicStyle) s);
-    // }
-    // }
-    //
-    // symbolizer = getElement("PolygonSymbolizer", rule);
-    //
-    // if (symbolizer != null) {
-    // StrokeFillStyle s = parsePolygonSymbolizer(symbolizer, null);
-    // Object val = parseValues(filter);
-    // map.put(val, s);
-    // labelMap.put(val, val.toString());
-    // if (style.getDefaultStyle() == null) {
-    // style.setDefaultStyle((BasicStyle) s);
-    // }
-    // }
-    //
-    // }
-    //
-    // style.setAttributeValueToBasicStyleMap(map);
-    // style.setEnabled(true);
-    // style.setAttributeValueToLabelMap(labelMap);
-    //
-    // return style;
-    // }
+        return getElement(".//ogc:Literal", filter, NSCONTEXT).getTextContent().trim();
+    }
 
-    // /**
-    // * @param doc
-    // * @return a list of corresponding JUMP styles
-    // */
-    // public static LinkedList<Style> importSLD(Document doc) {
-    // LinkedList<Style> styles = new LinkedList<Style>();
-    //
-    // // maybe ask which feature type style to use?
-    //
-    // NodeList nl = doc.getElementsByTagNameNS(SLDNS, "Rule");
-    //
-    // LOG.debug("Found " + nl.getLength() + " rules.");
-    //
-    // List<Element> rules = new LinkedList<Element>();
-    // List<Element> filters = new LinkedList<Element>();
-    // BasicStyle basicStyle = null;
-    // for (int i = 0; i < nl.getLength(); ++i) {
-    // Element rule = (Element) nl.item(i);
-    // Element filter = getElement("Filter", OGCNS, rule);
-    // if (filter != null && getElement("PropertyIsInstanceOf", OGCNS,
-    // filter) == null) {
-    // rules.add(rule);
-    // filters.add(filter);
-    // } else {
-    // LinkedList<Element> symbolizers = getElements("PointSymbolizer",
-    // rule);
-    // for (Element s : symbolizers) {
-    // if (basicStyle == null) {
-    // LinkedList<StrokeFillStyle> all = parsePointSymbolizer(s, null);
-    // styles.addAll(all);
-    // basicStyle = (BasicStyle) all.getFirst();
-    // } else {
-    // styles.addAll(parsePointSymbolizer(s, basicStyle));
-    // }
-    // }
-    // symbolizers = getElements("LineSymbolizer", rule);
-    // for (Element s : symbolizers) {
-    // styles.add(basicStyle = parseLineSymbolizer(s, basicStyle));
-    // }
-    // symbolizers = getElements("PolygonSymbolizer", rule);
-    // for (Element s : symbolizers) {
-    // styles.add(basicStyle = parsePolygonSymbolizer(s, basicStyle));
-    // }
-    // symbolizers = getElements("TextSymbolizer", rule);
-    // for (Element s : symbolizers) {
-    // styles.addAll(parseTextSymbolizer(s));
-    // }
-    // }
-    // }
-    //
-    // if (rules.size() > 0 && filters.size() > 0) {
-    // styles.add(parseColorThemingStyle(rules, filters));
-    // }
-    //
-    // // remove duplicates
-    // LinkedList<Style> oldStyles = new LinkedList<Style>(styles);
-    // styles.clear();
-    // for (Style s : oldStyles) {
-    // if (!styles.contains(s)) {
-    // styles.add(s);
-    // }
-    // }
-    //
-    // if (LOG.isDebugEnabled()) {
-    // LOG.debug("Found styles:");
-    // for (Style s : styles) {
-    // LOG.debug(s.getClass());
-    // }
-    // }
-    //
-    // return styles;
-    // return null;
-    // }
+    /**
+     * @param name
+     *            the name of the feature type style
+     * @param doc
+     * @return the color theming style
+     */
+    public static ColorThemingStyle getColorThemingStyle(String name, Document doc) {
+        try {
+            Element featureTypeStyle = getElement("//sld:UserStyle/sld:FeatureTypeStyle"
+                    + "[count(sld:Rule)=(count(sld:Rule/ogc:Filter/ogc:PropertyIsBetween)+"
+                    + "count(sld:Rule/ogc:Filter/ogc:PropertyIsEqualTo)) and sld:Name='" + name + "']", doc
+                    .getDocumentElement(), NSCONTEXT);
+
+            if (featureTypeStyle == null) {
+                return null;
+            }
+
+            ColorThemingStyle style = new ColorThemingStyle();
+            String att = getElement(".//ogc:PropertyName", featureTypeStyle, NSCONTEXT).getTextContent();
+            style.setAttributeName(att);
+
+            HashMap<Object, StrokeFillStyle> map = new HashMap<Object, StrokeFillStyle>();
+            HashMap<Object, String> labelMap = new HashMap<Object, String>();
+
+            LinkedList<Element> rules = getElements("sld:Rule", featureTypeStyle, NSCONTEXT);
+            for (Element rule : rules) {
+                BasicStyle basic = getBasicStyle(rule);
+                Object val = parseValues(getElement("ogc:Filter", rule, NSCONTEXT));
+                if (val != null) {
+                    map.put(val, basic);
+                    labelMap.put(val, val.toString());
+                }
+            }
+
+            style.setAttributeValueToBasicStyleMap(map);
+            style.setAttributeValueToLabelMap(labelMap);
+
+            return style;
+        } catch (XPathExpressionException e) {
+            // only happens if some xpath is not valid
+            LOG.error(e);
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     /**
      * <code>FillStyle</code>

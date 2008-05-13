@@ -39,16 +39,20 @@
 package org.openjump.core.ui.plugin.style;
 
 import static com.vividsolutions.jump.I18N.get;
+import static com.vividsolutions.jump.I18N.getMessage;
 import static com.vividsolutions.jump.workbench.ui.MenuNames.LAYER;
 import static com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn.get;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
 import static javax.swing.JOptionPane.YES_NO_OPTION;
 import static javax.swing.JOptionPane.YES_OPTION;
 import static javax.swing.JOptionPane.showConfirmDialog;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.xml.parsers.DocumentBuilderFactory.newInstance;
+import static org.apache.log4j.Logger.getLogger;
 import static org.openjump.util.SLDImporter.getBasicStyle;
+import static org.openjump.util.SLDImporter.getColorThemingStyle;
 import static org.openjump.util.SLDImporter.getLabelStyle;
 import static org.openjump.util.SLDImporter.getRuleNames;
 import static org.openjump.util.SLDImporter.getVertexStyle;
@@ -56,16 +60,22 @@ import static org.openjump.util.SLDImporter.getVertexStyle;
 import java.awt.Component;
 import java.io.File;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.Vector;
 
 import javax.swing.JFileChooser;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.log4j.Logger;
 import org.openjump.core.ui.swing.SelectFromListPanel;
 import org.w3c.dom.Document;
 
+import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.util.Blackboard;
+import com.vividsolutions.jump.util.Range;
+import com.vividsolutions.jump.util.Range.RangeTreeMap;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
@@ -77,7 +87,9 @@ import com.vividsolutions.jump.workbench.ui.OKCancelDialog;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.OKCancelDialog.Validator;
 import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
+import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.LabelStyle;
+import com.vividsolutions.jump.workbench.ui.renderer.style.Style;
 import com.vividsolutions.jump.workbench.ui.renderer.style.VertexStyle;
 
 /**
@@ -90,7 +102,7 @@ import com.vividsolutions.jump.workbench.ui.renderer.style.VertexStyle;
  */
 public class ImportSLDPlugIn extends AbstractPlugIn {
 
-    // private static final Logger LOG = getLogger(ImportSLDPlugIn.class);
+    private static Logger LOG = getLogger(ImportSLDPlugIn.class);
 
     @Override
     public void initialize(PlugInContext context) throws Exception {
@@ -104,26 +116,25 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
                 get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.name"), false, null, enableCheck);
     }
 
-    // avoiding redundant code with reflection...
-    // private void checkStyle(Class<? extends Style> c, Layer l) {
-    // if (l.getStyle(c) == null) {
-    // try {
-    // Style s = c.newInstance();
-    // s.setEnabled(false);
-    // l.addStyle(s);
-    // } catch (InstantiationException e) {
-    // // ignore
-    // } catch (IllegalAccessException e) {
-    // // ignore
-    // }
-    // }
-    // }
+    private static String fixAttribute(Layer l, WorkbenchFrame frame, String old) {
+        FeatureSchema fs = l.getFeatureCollectionWrapper().getFeatureSchema();
+        if (!fs.hasAttribute(old)) {
+            if (old.indexOf(':') != -1) {
+                old = old.substring(old.indexOf(':'));
+            }
+            if (!fs.hasAttribute(old)) {
+                old = old.toUpperCase();
+            }
+        }
+        return chooseAttribute(l, old, frame);
+    }
 
-    private static void setStyles(Layer l, BasicStyle style, VertexStyle vs, LabelStyle ls, WorkbenchFrame frame) {
-        if (style != null) {
-            style.setEnabled(true);
+    private static void setStyles(Layer l, BasicStyle bs, VertexStyle vs, LabelStyle ls, ColorThemingStyle cts,
+            WorkbenchFrame frame) {
+        if (bs != null) {
+            bs.setEnabled(true);
             l.removeStyle(l.getBasicStyle());
-            l.addStyle(style);
+            l.addStyle(bs);
         }
 
         if (vs != null) {
@@ -133,24 +144,117 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
         }
 
         if (ls != null) {
+            ls.setAttribute(fixAttribute(l, frame, ls.getAttribute()));
             ls.setEnabled(true);
             l.removeStyle(l.getLabelStyle());
             l.addStyle(ls);
+        }
 
-            String att = ls.getAttribute();
-            if (!l.getFeatureCollectionWrapper().getFeatureSchema().hasAttribute(att)) {
-                if (att.indexOf(':') != -1) {
-                    att = att.substring(att.indexOf(':'));
-                }
-                if (!l.getFeatureCollectionWrapper().getFeatureSchema().hasAttribute(att)) {
-                    att = att.toUpperCase();
-                }
+        if (cts != null) {
+            cts.setAttributeName(fixAttribute(l, frame, cts.getAttributeName()));
+            cts.setDefaultStyle(l.getBasicStyle());
+            try {
+                fixColorThemingAttributeMap(l, cts, frame);
+                cts.setEnabled(true);
+                l.removeStyle(l.getStyle(ColorThemingStyle.class));
+                l.addStyle(cts);
+            } catch (NumberFormatException e) {
+                showMessageDialog(frame, getMessage(
+                        "org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Number-Error-reading-styles", new Object[] { e
+                                .getLocalizedMessage() }), get("com.vividsolutions.wms.WMService.Error"), ERROR_MESSAGE);
             }
-            att = chooseAttribute(l, att, frame);
-            ls.setAttribute(att);
         }
 
         l.fireAppearanceChanged();
+    }
+
+    // this method contains the hacks to fix the color theming styles
+    private static void fixColorThemingAttributeMap(Layer l, ColorThemingStyle cts, WorkbenchFrame frame) {
+        FeatureSchema fs = l.getFeatureCollectionWrapper().getFeatureSchema();
+
+        String a = cts.getAttributeName();
+
+        try {
+            AttributeType t = fs.getAttributeType(a);
+            Class<?> c = t.toJavaClass();
+
+            try {
+                if (cts.getAttributeValueToLabelMap().keySet().iterator().next() instanceof Range) {
+                    RangeTreeMap map = new RangeTreeMap();
+                    RangeTreeMap labelMap = new RangeTreeMap();
+
+                    Map<?, ?> oldMap = cts.getAttributeValueToBasicStyleMap();
+                    Map<?, ?> oldLabelMap = cts.getAttributeValueToLabelMap();
+
+                    if (c.equals(Integer.class)) {
+                        for (Object k : cts.getAttributeValueToBasicStyleMap().keySet()) {
+                            Range r = (Range) k;
+                            Range newRange = new Range(Integer.valueOf((String) r.getMin()), r.isIncludingMin(),
+                                    Integer.valueOf((String) r.getMax()), r.isIncludingMax());
+                            map.put(newRange, oldMap.get(r));
+                            labelMap.put(newRange, oldLabelMap.get(r));
+                        }
+                    }
+
+                    if (c.equals(Double.class)) {
+                        for (Object k : cts.getAttributeValueToBasicStyleMap().keySet()) {
+                            Range r = (Range) k;
+                            Range newRange = new Range(Double.valueOf((String) r.getMin()), r.isIncludingMin(), Double
+                                    .valueOf((String) r.getMax()), r.isIncludingMax());
+                            map.put(newRange, oldMap.get(r));
+                            labelMap.put(newRange, oldLabelMap.get(r));
+                        }
+                    }
+
+                    cts.setAttributeValueToBasicStyleMap(map);
+                    cts.setAttributeValueToLabelMap(labelMap);
+
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                throw e;
+            } catch (Exception e) {
+                LOG.debug("Unknown error: ", e);
+                // ignore, probably no elements in the map
+                return;
+            }
+
+            if (c.equals(Integer.class)) {
+                Map<Integer, Style> map = new TreeMap<Integer, Style>();
+                Map<?, ?> oldMap = cts.getAttributeValueToBasicStyleMap();
+                Map<Integer, String> labelMap = new TreeMap<Integer, String>();
+                for (Object key : oldMap.keySet()) {
+                    Style s = (Style) oldMap.get(key);
+                    map.put(Integer.valueOf((String) key), s);
+                    labelMap.put(Integer.valueOf((String) key), (String) key);
+                }
+                cts.setAttributeValueToBasicStyleMap(map);
+                cts.setAttributeValueToLabelMap(labelMap);
+            }
+
+            if (c.equals(Double.class)) {
+                Map<Double, Style> map = new TreeMap<Double, Style>();
+                Map<?, ?> oldMap = cts.getAttributeValueToBasicStyleMap();
+                Map<Double, String> labelMap = new TreeMap<Double, String>();
+                for (Object key : oldMap.keySet()) {
+                    Style s = (Style) oldMap.get(key);
+                    map.put(Double.valueOf((String) key), s);
+                    labelMap.put(Double.valueOf((String) key), (String) key);
+                }
+                cts.setAttributeValueToBasicStyleMap(map);
+                cts.setAttributeValueToLabelMap(labelMap);
+            }
+
+            return;
+        } catch (NumberFormatException e) {
+            throw e;
+        } catch (IllegalArgumentException e) {
+            showMessageDialog(frame, getMessage(
+                    "org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Error-reading-styles", new Object[] { e
+                            .getLocalizedMessage() }), get("com.vividsolutions.wms.WMService.Error"), ERROR_MESSAGE);
+            LOG.debug("Probably unknown attribute name: ", e);
+            return;
+        }
     }
 
     private static String chooseAttribute(Layer l, String def, WorkbenchFrame frame) {
@@ -215,7 +319,7 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
 
             if (rules.size() == 1) {
                 setStyles(l, getBasicStyle(rules.peek(), doc), getVertexStyle(rules.peek(), doc), getLabelStyle(rules
-                        .peek(), doc), context.getWorkbenchFrame());
+                        .peek(), doc), getColorThemingStyle(rules.peek(), doc), context.getWorkbenchFrame());
                 return false;
             }
 
@@ -236,141 +340,14 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
 
                 if (dlg.wasOKPressed()) {
                     setStyles(l, getBasicStyle(panel.getSelectedStyle(), doc), getVertexStyle(panel.getSelectedStyle(),
-                            doc), getLabelStyle(panel.getSelectedStyle(), doc), context.getWorkbenchFrame());
+                            doc), getLabelStyle(panel.getSelectedStyle(), doc), getColorThemingStyle(panel
+                            .getSelectedStyle(), doc), context.getWorkbenchFrame());
                 }
             } while (dlg.wasOKPressed()
                     && showConfirmDialog(context.getWorkbenchFrame(),
                             get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Select-Another-Style"),
                             get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Question"), YES_NO_OPTION) == YES_OPTION);
         }
-
-        // List<Style> styles = importSLD(doc);
-        //
-        // LinkedList<BasicStyle> basicStyles = new LinkedList<BasicStyle>();
-        //
-        // for (Style s : styles) {
-        // if (s instanceof BasicStyle) {
-        // if (!basicStyles.contains(s)) {
-        // basicStyles.add((BasicStyle) s);
-        // }
-        // }
-        // }
-
-        // if (basicStyles.size() > 1) {
-        // SelectFromListPanel panel = new SelectFromListPanel();
-        // panel.list.setListData(new Vector<BasicStyle>(basicStyles));
-        // new PanelDialog(context.getWorkbenchFrame(), panel).setVisible(true);
-        // l.setStyles(Collections.singleton((BasicStyle)
-        // panel.list.getSelectedValue()));
-        // } else {
-        // l.setStyles(styles);
-        // }
-
-        // if (l.getStyle(SRIDStyle.class) == null) {
-        // l.addStyle(new SRIDStyle());
-        // }
-        // if (l.getStyle(ColorThemingStyle.class) == null) {
-        // ColorThemingStyle.get(l);
-        // }
-        // checkStyle(LabelStyle.class, l);
-        // checkStyle(BasicStyle.class, l);
-        // if (l.getVertexStyle() == null) {
-        // checkStyle(SquareVertexStyle.class, l);
-        // }
-        //
-        // ColorThemingStyle cts = (ColorThemingStyle)
-        // l.getStyle(ColorThemingStyle.class);
-        // if (cts.getDefaultStyle() == null) {
-        // cts.setDefaultStyle(l.getBasicStyle());
-        // }
-        //
-        // FeatureSchema fs =
-        // l.getFeatureCollectionWrapper().getFeatureSchema();
-        //
-        // String a = cts.getAttributeName();
-        //
-        // try {
-        // AttributeType t = fs.getAttributeType(a);
-        // Class<?> c = t.toJavaClass();
-        //
-        // try {
-        // if (cts.getAttributeValueToLabelMap().keySet().iterator().next()
-        // instanceof
-        // Range) {
-        // RangeTreeMap map = new RangeTreeMap();
-        // RangeTreeMap labelMap = new RangeTreeMap();
-        //
-        // Map<?, ?> oldMap = cts.getAttributeValueToBasicStyleMap();
-        // Map<?, ?> oldLabelMap = cts.getAttributeValueToLabelMap();
-        //
-        // if (c.equals(Integer.class)) {
-        // for (Object k : cts.getAttributeValueToBasicStyleMap().keySet()) {
-        // Range r = (Range) k;
-        // Range newRange = new Range(Integer.valueOf((String) r.getMin()),
-        // r.isIncludingMin(),
-        // Integer.valueOf((String) r.getMax()), r.isIncludingMax());
-        // map.put(newRange, oldMap.get(r));
-        // labelMap.put(newRange, oldLabelMap.get(r));
-        // }
-        // }
-        //
-        // if (c.equals(Double.class)) {
-        // for (Object k : cts.getAttributeValueToBasicStyleMap().keySet()) {
-        // Range r = (Range) k;
-        // Range newRange = new Range(Double.valueOf((String) r.getMin()),
-        // r.isIncludingMin(),
-        // Double.valueOf((String) r.getMax()), r.isIncludingMax());
-        // map.put(newRange, oldMap.get(r));
-        // labelMap.put(newRange, oldLabelMap.get(r));
-        // }
-        // }
-        //
-        // cts.setAttributeValueToBasicStyleMap(map);
-        // cts.setAttributeValueToLabelMap(labelMap);
-        //
-        // return false;
-        // }
-        // } catch (Exception e) {
-        // LOG.debug("Unknown error: ", e);
-        // // ignore, probably no elements in the map
-        // }
-        //
-        // if (c.equals(Integer.class)) {
-        // Map<Integer, Style> map = new TreeMap<Integer, Style>();
-        // Map<?, ?> oldMap = cts.getAttributeValueToBasicStyleMap();
-        // Map<Integer, String> labelMap = new TreeMap<Integer, String>();
-        // for (Object key : oldMap.keySet()) {
-        // Style s = (Style) oldMap.get(key);
-        // map.put(Integer.valueOf((String) key), s);
-        // labelMap.put(Integer.valueOf((String) key), (String) key);
-        // }
-        // cts.setAttributeValueToBasicStyleMap(map);
-        // cts.setAttributeValueToLabelMap(labelMap);
-        // }
-        //
-        // if (c.equals(Double.class)) {
-        // Map<Double, Style> map = new TreeMap<Double, Style>();
-        // Map<?, ?> oldMap = cts.getAttributeValueToBasicStyleMap();
-        // Map<Double, String> labelMap = new TreeMap<Double, String>();
-        // for (Object key : oldMap.keySet()) {
-        // Style s = (Style) oldMap.get(key);
-        // map.put(Double.valueOf((String) key), s);
-        // labelMap.put(Double.valueOf((String) key), (String) key);
-        // }
-        // cts.setAttributeValueToBasicStyleMap(map);
-        // cts.setAttributeValueToLabelMap(labelMap);
-        // }
-        // } catch (IllegalArgumentException e) {
-        // showMessageDialog(context.getWorkbenchFrame(), getMessage(
-        // "org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Error-reading-styles",
-        // new
-        // Object[] { e
-        // .getLocalizedMessage() }),
-        // get("com.vividsolutions.wms.WMService.Error"),
-        // ERROR_MESSAGE);
-        // LOG.debug("Probably unknown attribute name: ", e);
-        // }
-        // }
 
         return false;
     }
