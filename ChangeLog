@@ -1,4 +1,9 @@
 2008-05-15 Andreas Schmitz <schmitz@lat-lon.de>
+      src/org/openjump/core/ui/plugin/style/ImportSLDPlugIn.java:
+      Removed the long/int hack, since it was caused by the deeJUMP shape
+      file reader and is fixed now.
+
+2008-05-15 Andreas Schmitz <schmitz@lat-lon.de>
       src/org/openjump/core/ui/plugin/style/ImportSLDPlugIn.java,
       src/org/openjump/util/SLDImporter.java:
       Fixed SLD import for long/int values. There are shape files
