@@ -1,3 +1,8 @@
+2008-05-15 Andreas Schmitz <schmitz@lat-lon.de>
+      src/org/openjump/core/ui/plugin/style/ImportSLDPlugIn.java:
+      Refactored the plugin so the main logic can be used by
+      other SLD providers such as external tools.
+
 2008-05-13 Andreas Schmitz <schmitz@lat-lon.de>
       src/org/openjump/core/ui/plugin/style/ImportSLDPlugIn.java,
       src/org/openjump/util/SLDImporter.java:

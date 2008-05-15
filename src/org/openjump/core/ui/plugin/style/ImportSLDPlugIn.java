@@ -290,6 +290,57 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
         return dlg.wasOKPressed() ? (String) panel.list.getSelectedValue() : null;
     }
 
+    /**
+     * Executes the plugin part once you have a SLD document and a PlugIn
+     * context. It can be called from other plugins that aquire SLD from
+     * elsewhere.
+     * 
+     * @param doc
+     * @param context
+     */
+    public static void importSLD(Document doc, PlugInContext context) {
+        Layer l = context.getSelectedLayer(0);
+        LinkedList<String> rules = getRuleNames(doc);
+
+        if (rules.isEmpty()) {
+            showMessageDialog(context.getWorkbenchFrame(),
+                    get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.No-Styles-Found"),
+                    get("com.vividsolutions.wms.WMService.Error"), INFORMATION_MESSAGE);
+            return;
+        }
+
+        if (rules.size() == 1) {
+            setStyles(l, getBasicStyle(rules.peek(), doc), getVertexStyle(rules.peek(), doc), getLabelStyle(rules
+                    .peek(), doc), getColorThemingStyle(rules.peek(), doc), context.getWorkbenchFrame());
+            return;
+        }
+
+        OKCancelDialog dlg;
+        do {
+            final StyleChooserPanel panel = new StyleChooserPanel(doc);
+
+            dlg = new OKCancelDialog(context.getWorkbenchFrame(),
+                    get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Choose-Style"), true, panel,
+                    new Validator() {
+                        public String validateInput(Component component) {
+                            return panel.getSelectedStyle() == null ? get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Must-Select-Style")
+                                    : null;
+                        }
+                    });
+
+            dlg.setVisible(true);
+
+            if (dlg.wasOKPressed()) {
+                setStyles(l, getBasicStyle(panel.getSelectedStyle(), doc),
+                        getVertexStyle(panel.getSelectedStyle(), doc), getLabelStyle(panel.getSelectedStyle(), doc),
+                        getColorThemingStyle(panel.getSelectedStyle(), doc), context.getWorkbenchFrame());
+            }
+        } while (dlg.wasOKPressed()
+                && showConfirmDialog(context.getWorkbenchFrame(),
+                        get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Select-Another-Style"),
+                        get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Question"), YES_NO_OPTION) == YES_OPTION);
+    }
+
     @Override
     public boolean execute(PlugInContext context) throws Exception {
         Blackboard bb = get(context.getWorkbenchContext());
@@ -303,51 +354,12 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
         if (res == APPROVE_OPTION) {
             File f = chooser.getSelectedFile();
             bb.put("ImportSLDPlugin.filename", f.getAbsoluteFile().toString());
-            Layer l = context.getSelectedLayer(0);
             DocumentBuilderFactory dbf = newInstance();
             dbf.setNamespaceAware(true);
 
             Document doc = dbf.newDocumentBuilder().parse(f);
 
-            LinkedList<String> rules = getRuleNames(doc);
-
-            if (rules.isEmpty()) {
-                showMessageDialog(context.getWorkbenchFrame(),
-                        get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.No-Styles-Found"),
-                        get("com.vividsolutions.wms.WMService.Error"), INFORMATION_MESSAGE);
-                return false;
-            }
-
-            if (rules.size() == 1) {
-                setStyles(l, getBasicStyle(rules.peek(), doc), getVertexStyle(rules.peek(), doc), getLabelStyle(rules
-                        .peek(), doc), getColorThemingStyle(rules.peek(), doc), context.getWorkbenchFrame());
-                return false;
-            }
-
-            OKCancelDialog dlg;
-            do {
-                final StyleChooserPanel panel = new StyleChooserPanel(doc);
-
-                dlg = new OKCancelDialog(context.getWorkbenchFrame(),
-                        get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Choose-Style"), true, panel,
-                        new Validator() {
-                            public String validateInput(Component component) {
-                                return panel.getSelectedStyle() == null ? get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Must-Select-Style")
-                                        : null;
-                            }
-                        });
-
-                dlg.setVisible(true);
-
-                if (dlg.wasOKPressed()) {
-                    setStyles(l, getBasicStyle(panel.getSelectedStyle(), doc), getVertexStyle(panel.getSelectedStyle(),
-                            doc), getLabelStyle(panel.getSelectedStyle(), doc), getColorThemingStyle(panel
-                            .getSelectedStyle(), doc), context.getWorkbenchFrame());
-                }
-            } while (dlg.wasOKPressed()
-                    && showConfirmDialog(context.getWorkbenchFrame(),
-                            get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Select-Another-Style"),
-                            get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Question"), YES_NO_OPTION) == YES_OPTION);
+            importSLD(doc, context);
         }
 
         return false;
