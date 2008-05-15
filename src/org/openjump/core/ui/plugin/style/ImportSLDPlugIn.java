@@ -59,6 +59,7 @@ import static org.openjump.util.SLDImporter.getVertexStyle;
 
 import java.awt.Component;
 import java.io.File;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeMap;
@@ -221,11 +222,13 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
             }
 
             if (c.equals(Integer.class)) {
-                Map<Integer, Style> map = new TreeMap<Integer, Style>();
+                Map<Object, Style> map = new HashMap<Object, Style>();
                 Map<?, ?> oldMap = cts.getAttributeValueToBasicStyleMap();
-                Map<Integer, String> labelMap = new TreeMap<Integer, String>();
+                Map<Object, String> labelMap = new HashMap<Object, String>();
                 for (Object key : oldMap.keySet()) {
                     Style s = (Style) oldMap.get(key);
+                    map.put(Long.valueOf((String) key), s);
+                    labelMap.put(Long.valueOf((String) key), (String) key);
                     map.put(Integer.valueOf((String) key), s);
                     labelMap.put(Integer.valueOf((String) key), (String) key);
                 }

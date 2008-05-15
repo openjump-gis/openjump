@@ -1,4 +1,12 @@
 2008-05-15 Andreas Schmitz <schmitz@lat-lon.de>
+      src/org/openjump/core/ui/plugin/style/ImportSLDPlugIn.java,
+      src/org/openjump/util/SLDImporter.java:
+      Fixed SLD import for long/int values. There are shape files
+      that result in Integer values, and there are shape files that
+      result in Long values. But the java type of the attribute type
+      is always Integer!
+
+2008-05-15 Andreas Schmitz <schmitz@lat-lon.de>
       src/org/openjump/core/ui/plugin/style/ImportSLDPlugIn.java:
       Refactored the plugin so the main logic can be used by
       other SLD providers such as external tools.

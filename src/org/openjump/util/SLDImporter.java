@@ -221,8 +221,8 @@ public class SLDImporter {
         LinkedList<String> list = new LinkedList<String>();
 
         try {
-            LinkedList<Element> elems = getElements("//sld:UserStyle/sld:FeatureTypeStyle"
-                    + "[count(sld:Rule/ogc:Filter) > 0]/sld:Name", doc.getDocumentElement(), NSCONTEXT);
+            LinkedList<Element> elems = getElements("//sld:UserStyle[count(sld:FeatureTypeStyle"
+                    + "/sld:Rule/ogc:Filter) > 0]/sld:Name", doc.getDocumentElement(), NSCONTEXT);
             for (Element e : elems) {
                 list.add(e.getTextContent());
             }
@@ -693,9 +693,9 @@ public class SLDImporter {
      */
     public static ColorThemingStyle getColorThemingStyle(String name, Document doc) {
         try {
-            Element featureTypeStyle = getElement("//sld:UserStyle/sld:FeatureTypeStyle"
-                    + "[(count(sld:Rule/ogc:Filter) > 0) and sld:Name='" + name + "']", doc.getDocumentElement(),
-                    NSCONTEXT);
+            Element featureTypeStyle = getElement("//sld:UserStyle[(count(sld:FeatureTypeStyle"
+                    + "/sld:Rule/ogc:Filter) > 0) and sld:Name='" + name + "']/sld:FeatureTypeStyle", doc
+                    .getDocumentElement(), NSCONTEXT);
 
             if (featureTypeStyle == null) {
                 return null;
