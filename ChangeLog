@@ -1,3 +1,13 @@
+2008-05-19 mentaer <sstein@geo.unizh.ch>
+      Did some major changes for Intersect Polygon Layers PlugIn, to avoid
+      malformed output polygons. The new version utilizes the Polygonizer
+      and attributes are transferred automatically (i.e. no option anymore)
+      changed
+      org.openjump.core.geomutils.algorithm.IntersectGeometries
+      org.openjump.core.ui.plugin.tools.IntersectPolygonLayersPlugIn
+      added
+      org.openjump.core.geomutils.algorithm.GeometryConverter
+      
 2008-05-15 Andreas Schmitz <schmitz@lat-lon.de>
       src/org/openjump/core/ui/plugin/style/ImportSLDPlugIn.java:
       Removed the long/int hack, since it was caused by the deeJUMP shape
