@@ -1,9 +1,11 @@
 package org.openjump.core.ui.plugin.tools;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.openjump.core.geomutils.algorithm.GeometryConverter;
 import org.openjump.core.geomutils.algorithm.IntersectGeometries;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -12,6 +14,7 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.index.SpatialIndex;
 import com.vividsolutions.jts.index.strtree.STRtree;
+import com.vividsolutions.jts.operation.polygonize.Polygonizer;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.BasicFeature;
 import com.vividsolutions.jump.feature.Feature;
@@ -103,9 +106,9 @@ public class IntersectPolygonLayersPlugIn extends ThreadedBasePlugIn {
 		this.context = context;
 		monitor.allowCancellationRequests();
 		FeatureSchema featureSchema = new FeatureSchema();
-		FeatureCollection resultColl = runIntersection(layer1
+		FeatureCollection resultColl = runIntersectionNew(layer1
 				.getFeatureCollectionWrapper(), layer2
-				.getFeatureCollectionWrapper(), this.accurracy, this.transferAtt, monitor,
+				.getFeatureCollectionWrapper(), this.transferAtt, monitor,
 				context);
 		if ((resultColl != null) && (resultColl.size() > 0)) {
 			context.addLayer(StandardCategoryNames.WORKING, I18N.get("Result"),
@@ -121,22 +124,173 @@ public class IntersectPolygonLayersPlugIn extends ThreadedBasePlugIn {
 
 	/**
 	 * Merges/Intersects two polygon layers into one layer. It therefore
-	 * calculates all geometric intersections between the polygons. Afterwards
-	 * the attributes are transferred. The later step assumes that a new created
+	 * extracts all lines of the polygons and creates new polygons 
+	 * with the Polygonizer class. Afterwards it is checked which polygons have a
+	 * correspondent in the input layers. If the polygon does not have it is removed
+	 * otherwise the attributes are transferred. The later step assumes that a new created
 	 * intersection polygon has at max only one correspondent polygon per layer.
 	 * 
 	 * @param fcA
 	 * @param fcB
-	 * @param transferAttributes
-	 *            should attributes be transfered?
-	 * @param monitor
-	 *            can be null
-	 * @param context
-	 *            can be null
+	 * @param transfer Attributes should attributes be transfered?
+	 * @param monitor can be null
+	 * @param context can be null
 	 * @return a FeatureCollection that contains the result of the intersection
 	 *         (i.e. the new created features)
 	 */
-	private FeatureCollection runIntersection(FeatureCollection fcA,
+	private FeatureCollection runIntersectionNew(FeatureCollection fcA,
+			FeatureCollection fcB, boolean transferAttributes,
+			TaskMonitor monitor, PlugInContext context) {
+		FeatureCollection fd = null;
+		// -- put all geoms in one list and calculate their intersections
+		// i.e. iterate until pure
+		ArrayList<Geometry> geomsToCheck = new ArrayList<Geometry>();
+		for (Iterator iterator = fcA.iterator(); iterator.hasNext();) {
+			Feature f = (Feature) iterator.next();
+			geomsToCheck.add(f.getGeometry());
+		}
+		for (Iterator iterator = fcB.iterator(); iterator.hasNext();) {
+			Feature f = (Feature) iterator.next();
+			geomsToCheck.add(f.getGeometry());
+		}
+		// -- sort out the different geometry types and receive Lines
+		ArrayList lines = new ArrayList();
+
+		for (Iterator iterator = geomsToCheck.iterator(); iterator.hasNext();) {
+			Geometry geom = (Geometry) iterator.next();
+			if ((geom instanceof Polygon) || (geom instanceof MultiPolygon)) {
+				// everything is fine
+				// -- get Lines
+				lines.addAll(GeometryConverter.transformPolygonToLineStrings(geom));
+			} else {
+				// --
+				if (context != null) {
+					context.getWorkbenchFrame().warnUser(
+							I18N.get("org.openjump.plugin.tools.IntersectPolygonLayersPlugIn.Geometry-no-Polygon-or-Multi-Polygon"));
+				}
+				// --
+				return null;
+			}
+		}
+		//-- calculate the intersections and use the Polygonizer
+		Collection nodedLines = IntersectGeometries.nodeLines((List) lines);
+	    Polygonizer polygonizer = new Polygonizer();
+	    for (Iterator i = nodedLines.iterator(); i.hasNext(); ) {
+	        Geometry g = (Geometry) i.next();
+	        polygonizer.add(g);
+	      }
+	    //-- get the Polygons
+		Collection withoutIntersection = polygonizer.getPolygons();
+		//-- check if the polygon has a correspondent 
+		//	 if yes, transfer the attributes - if no: remove the polygon
+		
+		//-- build a tree for the existing layers first.
+		SpatialIndex treeA = new STRtree();
+		for (Iterator iterator = fcA.iterator(); iterator.hasNext();) {
+			Feature f = (Feature) iterator.next();
+			treeA.insert(f.getGeometry().getEnvelopeInternal(), f);
+		}
+		SpatialIndex treeB = new STRtree();
+		for (Iterator iterator = fcB.iterator(); iterator.hasNext();) {
+			Feature f = (Feature) iterator.next();
+			treeB.insert(f.getGeometry().getEnvelopeInternal(), f);
+		}
+		// -- get all intersecting features (usually there should be only one
+		// corresponding feature per layer)
+		// to avoid problems with spatial predicates we do the query for an
+		// internal point of the result polygons
+		// and apply an point in polygon test
+		AttributeMapping mapping = new AttributeMapping(fcA.getFeatureSchema(),
+				fcB.getFeatureSchema());
+		// -- create the empty dataset with the final FeatureSchema
+		fd = new FeatureDataset(mapping.createSchema("Geometry"));
+		// -- add the features and do the attribute mapping
+		for (Iterator iterator = withoutIntersection.iterator(); iterator
+				.hasNext();) {
+			Geometry geom = (Geometry) iterator.next();
+			Point pt = geom.getInteriorPoint();
+			Feature f = new BasicFeature(fd.getFeatureSchema());
+			Feature featureA = null;
+			Feature featureB = null;
+			// -- query Layer A ---
+			List candidatesA = treeA.query(pt.getEnvelopeInternal());
+			int foundCountA = 0;
+			for (Iterator iterator2 = candidatesA.iterator(); iterator2.hasNext();){
+				Feature ftemp = (Feature) iterator2.next();
+				if (ftemp.getGeometry().contains(pt)) {
+					foundCountA++;
+					featureA = ftemp;
+				}
+			}
+			if (foundCountA > 1) {
+				if (context != null) {
+					context.getWorkbenchFrame().warnUser(
+							I18N.get("org.openjump.plugin.tools.IntersectPolygonLayersPlugIn.Found-more-than-one-source-feature-in-Layer")
+							+ " " + GenericNames.LAYER_A);
+				}
+			} else if (foundCountA == 0) {
+				if (context != null) {
+					// context.getWorkbenchFrame().warnUser("no corresponding
+					// feature in Layer A");
+				}
+			}
+			// -- query Layer B ---
+			List candidatesB = treeB.query(pt.getEnvelopeInternal());
+			int foundCountB = 0;
+			for (Iterator iterator2 = candidatesB.iterator(); iterator2.hasNext();){
+				Feature ftemp = (Feature) iterator2.next();
+				if (ftemp.getGeometry().contains(pt)) {
+					foundCountB++;
+					featureB = ftemp;
+				}
+			}
+			if (foundCountB > 1) {
+				if (context != null) {
+					context.getWorkbenchFrame().warnUser(
+						I18N.get("org.openjump.plugin.tools.IntersectPolygonLayersPlugIn.Found-more-than-one-source-feature-in-Layer")
+						+ " " + GenericNames.LAYER_B);
+				}
+			} else if (foundCountB == 0) {
+				if (context != null) {
+					// context.getWorkbenchFrame().warnUser("no corresponding
+					// feature in Layer B");
+				}
+			}
+			if ((foundCountA > 0) || (foundCountB > 0)){ 
+				// -- do mapping
+				mapping.transferAttributes(featureA, featureB, f);
+				// -- set Geometry
+				f.setGeometry((Geometry) geom.clone());
+				fd.add(f);
+			}
+//			else{
+//				System.out.println("polygon without correspondent"); 
+//			}
+		}
+		// --
+		return fd;
+	}
+	
+	/**
+	 * Merges/Intersects two polygon layers into one layer. It therefore
+	 * calculates all geometric intersections between the polygons. Afterwards
+	 * the attributes are transferred. The later step assumes that a new created
+	 * intersection polygon has at max only one correspondent polygon per layer.
+	 * Note: this approach using the IntersectGeometries() class results in
+	 * unwanted spikes during the polygon intersection. The method runIntersectionNew()
+	 * tries to avoid this by not using the polygon intersection but creating polygons
+	 * from all lines derived from the polygons and removing some of those.
+	 * 
+	 * @param fcA
+	 * @param fcB
+	 * @param accuraccy this parameter has currently no effect (now the default fixed precision model is used)
+	 * @param transferAttributes should attributes be transfered?
+	 * @param monitor can be null
+	 * @param context can be null
+	 * @return a FeatureCollection that contains the result of the intersection
+	 *         (i.e. the new created features)
+	 */
+	private FeatureCollection runIntersectionOld(FeatureCollection fcA,
 			FeatureCollection fcB, double accurracy, boolean transferAttributes,
 			TaskMonitor monitor, PlugInContext context) {
 		FeatureCollection fd = null;
@@ -288,14 +442,14 @@ public class IntersectPolygonLayersPlugIn extends ThreadedBasePlugIn {
 		dialog.addLayerComboBox(LAYER1, layer1, context.getLayerManager());
 		dialog.addLayerComboBox(LAYER2, layer2, context.getLayerManager());
 		//dialog.addDoubleField(sAccurracy, this.accurracy, 7);
-		dialog.addCheckBox(sTRANSFER, this.transferAtt);
+		//dialog.addCheckBox(sTRANSFER, this.transferAtt);
 
 	}
 
 	private void getDialogValues(MultiInputDialog dialog) {
 		layer1 = dialog.getLayer(LAYER1);
 		layer2 = dialog.getLayer(LAYER2);
-		this.transferAtt = dialog.getBoolean(sTRANSFER);
+		//this.transferAtt = dialog.getBoolean(sTRANSFER);
 		//this.accurracy = dialog.getDouble(sAccurracy);
 	}
 

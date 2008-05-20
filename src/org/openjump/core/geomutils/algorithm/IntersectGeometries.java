@@ -1,6 +1,6 @@
 /***********************************************
  * created on 		5.May.2008
- * last modified: 	11.May.2008
+ * last modified: 	19.May.2008
  * 
  * author:			sstein
  * license: 		LGPL
@@ -12,8 +12,11 @@
 package org.openjump.core.geomutils.algorithm;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -22,20 +25,20 @@ import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.PrecisionModel;
-import com.vividsolutions.jump.plugin.edit.PrecisionReducerPlugIn;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 
 public class IntersectGeometries {
 
-	/**
+
+/*	*//**
 	 * TODO: this method is not properly tested for mixed geometries and needs to be revised.
 	 * It can be used either for collections of LineString or Polygons
 	 * @param geomList
 	 * @param monitor can be null
 	 * @param context can be null
 	 * @return
-	 */
+	 *//*
 	public static ArrayList<Geometry> intersectGeometries(ArrayList<Geometry> geomList, TaskMonitor monitor, PlugInContext context){
 		ArrayList<Geometry> withoutIntersection = new ArrayList<Geometry>(); 
 		//-- resolve all GeometryCollections/Multigeometries
@@ -43,7 +46,7 @@ public class IntersectGeometries {
 		for (int i = 0; i < geomList.size(); i++) {
 			Geometry geom = geomList.get(i);
 			if (geom instanceof GeometryCollection){
-				ArrayList<Geometry> parts = IntersectGeometries.explodeGeomsIfMultiG(geom);
+				ArrayList<Geometry> parts = GeometryConverter.explodeGeomsIfMultiG(geom);
 				tempList.addAll(parts);
 			}
 			else{
@@ -68,7 +71,7 @@ public class IntersectGeometries {
 			}
 			//-- avoid that already GeomCollections are inside
 			while (g2Test instanceof GeometryCollection){
-				ArrayList<Geometry> parts = IntersectGeometries.explodeGeomsIfMultiG(g2Test);
+				ArrayList<Geometry> parts = GeometryConverter.explodeGeomsIfMultiG(g2Test);
 				geomList.addAll(parts);
 				geomList.remove(0);
 				g2Test = geomList.get(0);
@@ -97,8 +100,8 @@ public class IntersectGeometries {
 //						gnewNi = gtemp.symDifference(g2Test);
 //					}	
 					//explode multi-geoms
-					ArrayList<Geometry> intersection = IntersectGeometries.explodeGeomsIfMultiG(gnewI);
-					ArrayList<Geometry> nonIntersection = IntersectGeometries.explodeGeomsIfMultiG(gnewNi);
+					ArrayList<Geometry> intersection = GeometryConverter.explodeGeomsIfMultiG(gnewI);
+					ArrayList<Geometry> nonIntersection = GeometryConverter.explodeGeomsIfMultiG(gnewNi);
 					//-- remove the item (first the latter one, then the others)
 					geomList.remove(count);
 					geomList.remove(0);
@@ -135,11 +138,14 @@ public class IntersectGeometries {
 		//-- add the last (or only) one
 		withoutIntersection.add(geomList.get(0));
 		return withoutIntersection;
-	}
-
+	}*/
+	
 	/**
 	 * the method intersects all polygons in the geometry list with each other. An intersection is only
-	 * proceeded if it returns another polygon (i.e. the intersection area > 0) 
+	 * proceeded if it returns another polygon (i.e. the intersection area > 0). Unfortunately the method
+	 * returns results where some polygons may contain spikes. For this reason it may be better to create an 
+	 * an intersection of Linestrings (derived from the Polygons) and then use the Polygonizer (see IntersectPolygonLayersPlugIn).  
+	 * 
 	 * @param geomList
 	 * @param this parameter is currently not used and replaced by the use of a fixed precision model
 	 * @param monitor can be null
@@ -153,7 +159,7 @@ public class IntersectGeometries {
 		for (int i = 0; i < geomList.size(); i++) {
 			Geometry geom = geomList.get(i);
 			if (geom instanceof GeometryCollection){
-				ArrayList<Geometry> parts = IntersectGeometries.explodeGeomsIfMultiG(geom);
+				ArrayList<Geometry> parts = GeometryConverter.explodeGeomsIfMultiG(geom);
 				tempList.addAll(parts);
 			}
 			else{
@@ -162,7 +168,7 @@ public class IntersectGeometries {
 		}
 		geomList = tempList;
 		//-- use a fixed precision model 
-		double scaleFactor = (1.0/accurracy)/10.0; //devide additionally by 10 to remove one digit more
+		//double scaleFactor = (1.0/accurracy)/10.0; //devide additionally by 10 to remove one digit more
 		//PrecisionModel pm = new PrecisionModel(scaleFactor);
 		PrecisionModel pm = new PrecisionModel(PrecisionModel.FIXED);
 		GeometryFactory gf = new GeometryFactory(pm);
@@ -195,7 +201,7 @@ public class IntersectGeometries {
 			}
 			//-- avoid that already GeomCollections are inside
 			while (g2Test instanceof GeometryCollection){
-				ArrayList<Geometry> parts = IntersectGeometries.explodeGeomsIfMultiG(g2Test);
+				ArrayList<Geometry> parts = GeometryConverter.explodeGeomsIfMultiG(g2Test);
 				geomList.addAll(parts);
 				geomList.remove(0);
 				g2Test = geomList.get(0);
@@ -218,39 +224,22 @@ public class IntersectGeometries {
 					//   the this geometry and not the other
 					gnewNi = g2Test.symDifference(gtemp);
 					//explode multi-geoms
-					ArrayList<Geometry> intersection = IntersectGeometries.explodeGeomsIfMultiG(gnewI);
-					ArrayList<Geometry> nonIntersection = IntersectGeometries.explodeGeomsIfMultiG(gnewNi);
+					ArrayList<Geometry> intersection = GeometryConverter.explodeGeomsIfMultiG(gnewI);
+					ArrayList<Geometry> nonIntersection = GeometryConverter.explodeGeomsIfMultiG(gnewNi);
 					//-- remove the item (first the latter one, then the others)
 					geomList.remove(count);
 					geomList.remove(0);
-//					System.out.println("size now:" + geomList.size());
-					//-- add instead the parts
 					geomList.addAll(intersection);
 					geomList.addAll(nonIntersection);
-					//-- testing stuff
-//					System.out.println("size new:" + geomList.size());
-//					System.out.println("tested g1: " + g2Test.getClass() + " g2: " + gtemp.getClass());
-//					checkIntersectionByGeomTypeB(g2Test,gtemp); //for checking again
-//					FeatureCollection fc = FeatureDatasetFactory.createFromGeometry(geomList);
-//					ArrayList<Geometry> tointersect = new ArrayList<Geometry>();
-//					tointersect.add(g2Test); tointersect.add(gtemp);
-//					FeatureCollection fc2 = FeatureDatasetFactory.createFromGeometry(tointersect);
-//					context.addLayer(StandardCategoryNames.WORKING, "tointersect", fc2);
-//					context.addLayer(StandardCategoryNames.WORKING, "loop", fc);
 				}
 				if(((count+1) == geomList.size()) && (checkNext == true)){
 					//-- nothing more to test
 					//   so we can add this geometry to the finalList
-					//System.out.println("added");
 					withoutIntersection.add((Geometry)g2Test.clone());
 					//-- we remove it from the list of items
 					geomList.remove(0);
 					checkNext = false;
 				}
-				// if(totalCount == 1000000){
-				//	  checkNext = false;
-				//	  //System.out.println("stopped");
-				//  }
 			}
 		}
 		//-- add the last (or only) one
@@ -288,81 +277,6 @@ public class IntersectGeometries {
 			return null;
 		}
 	}
-
-	/**
-	 * The method explodes a geometry, if it is a multi-geometry (Geometry Collection), into their parts. 
-	 * @param geom
-	 * @return
-	 */
-	public static ArrayList<Geometry> explodeGeomsIfMultiG(Geometry geom){
-		ArrayList<Geometry> geoms = new ArrayList<Geometry>(); 
-		if (geom instanceof GeometryCollection){
-			//System.out.println("explode multigeoms");
-			GeometryCollection multig = (GeometryCollection)geom;
-			for (int i = 0; i < multig.getNumGeometries(); i++) {
-				Geometry g = (Geometry) multig.getGeometryN(i);
-				geoms.add(g);
-			}
-		}
-		else{
-			geoms.add(geom);
-		}
-		return geoms;
-	}
-
-//	[sstein] does not work for simple case of two overlapping polys!!!
-//	/**
-//	 * Evaluates if two geometries intersect for the purpose of merging two layers. E.g. for two polygons it evaluates if 
-//	 * the intersection is an area and not just a line. \n
-//	 * This method is used since <i>area1.intersection(area2)</i> does return also a positive result
-//	 * if the intersection is on the boundary (i.e. no intersection of the interior).\n
-//	 * Note1: the order of how the geometries are provided matters! It tested such that 
-//	 * <i>g1.SpatialCritearia(g2)</i>. NOTE 2: the function has not been checked for mixed
-//	 * geometry types
-//	 * 
-//	 * @param g1
-//	 * @param g2
-//	 * @return returns "1" if g1 is split by g2 in at least 2 parts, it returns "2" for vis versa, and it returns "-1" if there is no "intersection"
-//	 * 
-//	 * @TODO: enable check of mixed geometries. 
-//	 */
-//	public static int checkIntersectionByGeomType(Geometry g1, Geometry g2){
-//				Geometry diff = g1.difference(g2);
-//				if (diff instanceof GeometryCollection){
-//					if (((GeometryCollection)diff).getNumGeometries() > 1){
-//						return 1;
-//					}
-//					else{
-//						Geometry diff2 = g2.difference(g1);
-//						if (diff2 instanceof GeometryCollection){
-//							if (((GeometryCollection)diff2).getNumGeometries() > 1){
-//								return 2;
-//							}
-//							else{
-//								return -1;
-//							}
-//						}
-//						else{
-//							return -1;	
-//						}
-//					}
-//				}
-//				else{
-//					//-- try the other way around
-//					Geometry diff2 = g2.difference(g1);
-//					if (diff2 instanceof GeometryCollection){
-//						if (((GeometryCollection)diff2).getNumGeometries() > 1){
-//							return 2;
-//						}
-//						else{
-//							return -1;
-//						}
-//					}
-//					else{
-//						return -1;	
-//					}
-//				}
-//	}
 	
 	/**
 	 * evaluates if two geometries intersect. E.g. for two polygons it evaluates if 
@@ -532,5 +446,46 @@ public class IntersectGeometries {
 		else{
 			return false;
 		}
-	}		
+	}	
+
+	/**
+	 * Nodes a collection of linestrings.
+	 * Noding is done via JTS union, which is reasonably effective but
+	 * may exhibit robustness failures. \n
+	 * note: the method is taken from PolygonizerPlugIn
+	 *
+	 * @param lines the linear geometries to node
+	 * @return a collection of linear geometries, noded together
+	 */
+	public static Collection nodeLines(Collection lines)
+	{
+		GeometryFactory fact = new GeometryFactory();
+		Geometry linesGeom = fact.createMultiLineString(fact.toLineStringArray(lines));
+
+		Geometry unionInput  = fact.createMultiLineString(null);
+		// force the unionInput to be non-empty if possible, to ensure union is not optimized away
+		Geometry point = extractPoint(lines);
+		if (point != null)
+			unionInput = point;
+
+		Geometry noded = linesGeom.union(unionInput);
+		List nodedList = new ArrayList();
+		nodedList.add(noded);
+		return nodedList;
+	}
+
+	private static Geometry extractPoint(Collection lines)
+	{
+		int minPts = Integer.MAX_VALUE;
+		Geometry point = null;
+		// extract first point from first non-empty geometry
+		for (Iterator i = lines.iterator(); i.hasNext(); ) {
+			Geometry g = (Geometry) i.next();
+			if (! g.isEmpty()) {
+				Coordinate p = g.getCoordinate();
+				point = g.getFactory().createPoint(p);
+			}
+		}
+		return point;
+	}
 }
