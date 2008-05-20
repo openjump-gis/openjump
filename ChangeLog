@@ -1,3 +1,7 @@
+2008-05-20 Andreas Schmitz <schmitz@lat-lon.de>
+      src/de/latlon/deejump/plugin/style/layerstyle2sld.xsl:
+      Fixed order of Min/MaxScaleDenominator.
+
 2008-05-19 mentaer <sstein@geo.unizh.ch>
       Did some major changes for Intersect Polygon Layers PlugIn, to avoid
       malformed output polygons. The new version utilizes the Polygonizer

@@ -16,7 +16,7 @@
   <xsl:param name="NamespacePrefix"/>
 
   <xsl:template match="/">
-    <sld:StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:sld="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:wfs="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0.0">
+    <sld:StyledLayerDescriptor xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd" xmlns="http://www.opengis.net/sld" xmlns:sld="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:wfs="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0.0">
       <xsl:variable name="tmp">xmlns:<xsl:value-of select="$NamespacePrefixWithoutColon"/></xsl:variable>
       <xsl:attribute name="{$tmp}">
         <xsl:value-of select="$Namespace"/>
@@ -260,12 +260,6 @@
   <xsl:template match="attribute-value-to-style-map/mapping" name="rules">
     <sld:Rule>
       <sld:Name><xsl:value-of select="../../attribute-name"/>_<xsl:value-of select="./key"/></sld:Name>
-      <sld:MinScaleDenominator>
-        <xsl:value-of select="$minScale"/>
-      </sld:MinScaleDenominator>
-      <sld:MaxScaleDenominator>
-        <xsl:value-of select="$maxScale"/>
-      </sld:MaxScaleDenominator>
       <xsl:if test="../@class='java.util.TreeMap'">
         <ogc:Filter>
           <ogc:PropertyIsLike wildCard="*" singleChar="?" escape="\">
@@ -299,6 +293,12 @@
           </ogc:PropertyIsBetween>
         </ogc:Filter>
       </xsl:if>
+      <sld:MinScaleDenominator>
+        <xsl:value-of select="$minScale"/>
+      </sld:MinScaleDenominator>
+      <sld:MaxScaleDenominator>
+        <xsl:value-of select="$maxScale"/>
+      </sld:MaxScaleDenominator>
       <xsl:choose>
         <xsl:when test="contains($geoType,'Polygon')">
           <sld:PolygonSymbolizer>
