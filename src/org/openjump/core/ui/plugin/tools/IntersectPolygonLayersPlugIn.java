@@ -53,6 +53,7 @@ public class IntersectPolygonLayersPlugIn extends ThreadedBasePlugIn {
 	private final static String sTRANSFER = I18N
 			.get("org.openjump.plugin.tools.IntersectPolygonLayersPlugIn.Transfer-attributes");
 	private String sDescription = "Intersects all geometries of two layers that contain both polygons. Note: The Planar Graph function provides similar functionality.";
+	private final static String sAccurracy = "Set calculation accuray in map units";
 	// -- reset in execute to correct language
 	private MultiInputDialog dialog;
 	private Layer layer1, layer2;
@@ -60,7 +61,8 @@ public class IntersectPolygonLayersPlugIn extends ThreadedBasePlugIn {
 	private boolean exceptionThrown = false;
 	private PlugInContext context = null;
 	private boolean transferAtt = true;
-
+	private double accurracy = 0.01; 
+	
 	public void initialize(PlugInContext context) throws Exception {
 		context.getFeatureInstaller().addMainMenuItem(
 				this,
@@ -103,7 +105,7 @@ public class IntersectPolygonLayersPlugIn extends ThreadedBasePlugIn {
 		FeatureSchema featureSchema = new FeatureSchema();
 		FeatureCollection resultColl = runIntersection(layer1
 				.getFeatureCollectionWrapper(), layer2
-				.getFeatureCollectionWrapper(), this.transferAtt, monitor,
+				.getFeatureCollectionWrapper(), this.accurracy, this.transferAtt, monitor,
 				context);
 		if ((resultColl != null) && (resultColl.size() > 0)) {
 			context.addLayer(StandardCategoryNames.WORKING, I18N.get("Result"),
@@ -135,7 +137,7 @@ public class IntersectPolygonLayersPlugIn extends ThreadedBasePlugIn {
 	 *         (i.e. the new created features)
 	 */
 	private FeatureCollection runIntersection(FeatureCollection fcA,
-			FeatureCollection fcB, boolean transferAttributes,
+			FeatureCollection fcB, double accurracy, boolean transferAttributes,
 			TaskMonitor monitor, PlugInContext context) {
 		FeatureCollection fd = null;
 		// -- put all geoms in one list and calculate their intersections
@@ -168,7 +170,7 @@ public class IntersectPolygonLayersPlugIn extends ThreadedBasePlugIn {
 			}
 		}
 		ArrayList<Geometry> withoutIntersection = IntersectGeometries
-				.intersectGeometries(geomsToCheck, monitor, context);
+				.intersectPolygons(geomsToCheck, accurracy, monitor, context);
 		if (transferAttributes == false) {
 			fd = FeatureDatasetFactory.createFromGeometry(withoutIntersection);
 			return fd;
@@ -285,6 +287,7 @@ public class IntersectPolygonLayersPlugIn extends ThreadedBasePlugIn {
 		// [Jon Aquino]
 		dialog.addLayerComboBox(LAYER1, layer1, context.getLayerManager());
 		dialog.addLayerComboBox(LAYER2, layer2, context.getLayerManager());
+		//dialog.addDoubleField(sAccurracy, this.accurracy, 7);
 		dialog.addCheckBox(sTRANSFER, this.transferAtt);
 
 	}
@@ -293,6 +296,7 @@ public class IntersectPolygonLayersPlugIn extends ThreadedBasePlugIn {
 		layer1 = dialog.getLayer(LAYER1);
 		layer2 = dialog.getLayer(LAYER2);
 		this.transferAtt = dialog.getBoolean(sTRANSFER);
+		//this.accurracy = dialog.getDouble(sAccurracy);
 	}
 
 }
