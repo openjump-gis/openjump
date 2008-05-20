@@ -1,4 +1,9 @@
 2008-05-20 Andreas Schmitz <schmitz@lat-lon.de>
+      src/org/openjump/core/ui/plugin/style/ImportSLDPlugIn.java,
+      src/org/openjump/util/SLDImporter.java:
+      Fixed import of uDig SLD files.
+
+2008-05-20 Andreas Schmitz <schmitz@lat-lon.de>
       src/de/latlon/deejump/plugin/style/layerstyle2sld.xsl:
       Fixed order of Min/MaxScaleDenominator.
 

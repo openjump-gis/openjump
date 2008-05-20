@@ -668,6 +668,10 @@ public class SLDImporter {
         }
     }
 
+    // TODO this method does not really check for the content of the filter
+    // expressions
+    // it assumes ogc:And structures, so in most cases this method will actually
+    // return something that's WRONG
     private static Object parseValues(Element filter) throws XPathExpressionException {
         if (filter == null) {
             LOG.warn("An ogc:filter could not be found while trying to parse a color theming style.");
@@ -680,6 +684,25 @@ public class SLDImporter {
             String s1 = getElement("ogc:Literal", lower, NSCONTEXT).getTextContent().trim();
             String s2 = getElement("ogc:Literal", upper, NSCONTEXT).getTextContent().trim();
             return new Range(s1, true, s2, false);
+        }
+
+        // try different filters, as used by uDig
+        boolean lowerEqual = false;
+        boolean upperEqual = false;
+        upper = getElement(".//ogc:PropertyIsLessThan", filter, NSCONTEXT);
+        if (upper == null) {
+            upper = getElement(".//ogc:PropertyIsLessThanOrEqualTo", filter, NSCONTEXT);
+            upperEqual = true;
+        }
+        lower = getElement(".//ogc:PropertyIsGreaterThan", filter, NSCONTEXT);
+        if (lower == null) {
+            lower = getElement(".//ogc:PropertyIsGreaterThanOrEqualTo", filter, NSCONTEXT);
+            lowerEqual = true;
+        }
+        if (lower != null && upper != null) {
+            String s1 = getElement("ogc:Literal", lower, NSCONTEXT).getTextContent().trim();
+            String s2 = getElement("ogc:Literal", upper, NSCONTEXT).getTextContent().trim();
+            return new Range(s1, lowerEqual, s2, upperEqual);
         }
 
         return getElement(".//ogc:Literal", filter, NSCONTEXT).getTextContent().trim();

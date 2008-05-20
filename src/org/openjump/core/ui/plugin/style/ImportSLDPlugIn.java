@@ -165,8 +165,6 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
                         ERROR_MESSAGE);
             }
         }
-
-        l.fireAppearanceChanged();
     }
 
     // this method contains the hacks to fix the color theming styles
@@ -181,6 +179,7 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
 
             try {
                 if (cts.getAttributeValueToLabelMap().keySet().iterator().next() instanceof Range) {
+                    LOG.debug("Color theming values are ranges.");
                     RangeTreeMap map = new RangeTreeMap();
                     RangeTreeMap labelMap = new RangeTreeMap();
 
@@ -188,6 +187,7 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
                     Map<?, ?> oldLabelMap = cts.getAttributeValueToLabelMap();
 
                     if (c.equals(Integer.class)) {
+                        LOG.debug("Color theming values are ranges of integers.");
                         for (Object k : cts.getAttributeValueToBasicStyleMap().keySet()) {
                             Range r = (Range) k;
                             Range newRange = new Range(Integer.valueOf((String) r.getMin()), r.isIncludingMin(),
@@ -198,6 +198,7 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
                     }
 
                     if (c.equals(Double.class)) {
+                        LOG.debug("Color theming values are ranges of doubles.");
                         for (Object k : cts.getAttributeValueToBasicStyleMap().keySet()) {
                             Range r = (Range) k;
                             Range newRange = new Range(Double.valueOf((String) r.getMin()), r.isIncludingMin(), Double
@@ -205,6 +206,10 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
                             map.put(newRange, oldMap.get(r));
                             labelMap.put(newRange, oldLabelMap.get(r));
                         }
+                    }
+
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Color theming values are ranges of java class " + c + ".");
                     }
 
                     cts.setAttributeValueToBasicStyleMap(map);
@@ -221,6 +226,7 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
             }
 
             if (c.equals(Integer.class)) {
+                LOG.debug("Color theming values are integers.");
                 Map<Integer, Style> map = new TreeMap<Integer, Style>();
                 Map<?, ?> oldMap = cts.getAttributeValueToBasicStyleMap();
                 Map<Integer, String> labelMap = new TreeMap<Integer, String>();
@@ -234,6 +240,7 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
             }
 
             if (c.equals(Double.class)) {
+                LOG.debug("Color theming values are doubles.");
                 Map<Double, Style> map = new TreeMap<Double, Style>();
                 Map<?, ?> oldMap = cts.getAttributeValueToBasicStyleMap();
                 Map<Double, String> labelMap = new TreeMap<Double, String>();
@@ -244,6 +251,10 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
                 }
                 cts.setAttributeValueToBasicStyleMap(map);
                 cts.setAttributeValueToLabelMap(labelMap);
+            }
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Color theming values are of java type " + c + ".");
             }
 
             return;
