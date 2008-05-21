@@ -1,3 +1,8 @@
+2008-05-21 Andreas Schmitz <schmitz@lat-lon.de>
+      src/org/openjump/OpenJumpConfiguration.java,
+      src/org/openjump/core/ui/plugin/style/ImportArcMapStylePlugIn.java:
+      Added ArcMap2SLD-style importer plugin (untested because of a definitive lack of ArcMap...).
+
 2008-05-20 Andreas Schmitz <schmitz@lat-lon.de>
       src/org/openjump/core/ui/plugin/style/ImportSLDPlugIn.java,
       src/org/openjump/util/SLDImporter.java:

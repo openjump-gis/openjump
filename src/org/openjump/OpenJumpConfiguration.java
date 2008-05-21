@@ -65,6 +65,7 @@ import org.openjump.core.ui.plugin.mousemenu.category.MoveCategoryToBottom;
 import org.openjump.core.ui.plugin.mousemenu.category.MoveCategoryToTop;
 import org.openjump.core.ui.plugin.mousemenu.category.SetCategoryVisibilityPlugIn;
 import org.openjump.core.ui.plugin.queries.SimpleQueryPlugIn;
+import org.openjump.core.ui.plugin.style.ImportArcMapStylePlugIn;
 import org.openjump.core.ui.plugin.style.ImportSLDPlugIn;
 import org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn;
 import org.openjump.core.ui.plugin.tools.ConvexHullPlugIn;
@@ -93,7 +94,6 @@ import org.openjump.core.ui.style.decoration.VertexZValueStyle;
 import org.openjump.core.ui.swing.factory.field.FieldComponentFactoryRegistry;
 import org.openjump.core.ui.swing.factory.field.FileFieldComponentFactory;
 import org.openjump.core.ui.swing.wizard.WizardGroup;
-//import org.openjump.sigle.plugin.geoprocessing.layers.SpatialJoinPlugIn;
 import org.openjump.sigle.plugin.geoprocessing.oneLayer.topology.PlanarGraphPlugIn;
 import org.openjump.sigle.plugin.joinTable.JoinTablePlugIn;
 import org.openjump.sigle.plugin.replace.ReplaceValuePlugIn;
@@ -124,7 +124,7 @@ import de.latlon.deejump.plugin.manager.ExtensionManagerPlugIn;
 import de.latlon.deejump.plugin.style.LayerStyle2SLDPlugIn;
 
 /**
- * @description: This class loads all openjump plugins. The method
+ * This class loads all openjump plugins. The method
  *               loadOpenJumpPlugIns() is called from
  *               com.vividsolutions.jump.workbench.JUMPConfiguaration.
  * @author sstein
@@ -230,6 +230,7 @@ public class OpenJumpConfiguration {
       null, null, null));
 
     new ImportSLDPlugIn().initialize(pluginContext);
+    new ImportArcMapStylePlugIn().initialize(pluginContext);
     
     pluginContext.getFeatureInstaller().addMenuSeparator(LAYER);
 
