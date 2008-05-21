@@ -72,7 +72,8 @@ public class PostgisResultSetConverter
       // into AttributeType.STRINGs [mmichaud 2007-05-13]
       if (mapper[i].getType() == AttributeType.GEOMETRY) {
         if (featureSchema.getGeometryIndex() == -1) {
-          colName = "GEOMETRY";
+          // fixed by mmichaud using a patch from jaakko [2008-05-21] :
+          // use colName instead of "GEOMETRY" for attribute name
           featureSchema.addAttribute(colName, mapper[i].getType());
         }
         else {
