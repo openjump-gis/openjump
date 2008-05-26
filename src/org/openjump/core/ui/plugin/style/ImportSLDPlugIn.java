@@ -180,11 +180,11 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
             try {
                 if (cts.getAttributeValueToLabelMap().keySet().iterator().next() instanceof Range) {
                     LOG.debug("Color theming values are ranges.");
-                    RangeTreeMap map = new RangeTreeMap();
-                    RangeTreeMap labelMap = new RangeTreeMap();
+                    RangeTreeMap<Range, BasicStyle> map = new RangeTreeMap<Range, BasicStyle>();
+                    RangeTreeMap<Range, String> labelMap = new RangeTreeMap<Range, String>();
 
-                    Map<?, ?> oldMap = cts.getAttributeValueToBasicStyleMap();
-                    Map<?, ?> oldLabelMap = cts.getAttributeValueToLabelMap();
+                    Map<Range, BasicStyle> oldMap = cts.getAttributeValueToBasicStyleMap();
+                    Map<Range, String> oldLabelMap = cts.getAttributeValueToLabelMap();
 
                     if (c.equals(Integer.class)) {
                         LOG.debug("Color theming values are ranges of integers.");

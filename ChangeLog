@@ -1,4 +1,10 @@
 2008-05-26 Andreas Schmitz <schmitz@lat-lon.de>
+      src/org/openjump/core/ui/plugin/style/ImportSLDPlugIn.java,
+      src/org/openjump/util/SLDImporter.java,
+      src/com/vividsolutions/jump/util/Range.java:
+      Added generics to RangeTreeMap.
+
+2008-05-26 Andreas Schmitz <schmitz@lat-lon.de>
       src/org/openjump/util/SLDImporter.java:
       Fixed import of external graphics.
 

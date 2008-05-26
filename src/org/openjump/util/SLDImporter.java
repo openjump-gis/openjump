@@ -101,7 +101,10 @@ public class SLDImporter {
      */
     public static final String OGCNS = "http://www.opengis.net/ogc";
 
-    private static final NamespaceContext NSCONTEXT = new NamespaceContext() {
+    /**
+     * Namespace context with sld and ogc namespaces.
+     */
+    public static final NamespaceContext NSCONTEXT = new NamespaceContext() {
 
         public String getNamespaceURI(String prefix) {
             if (prefix.equals("sld")) {

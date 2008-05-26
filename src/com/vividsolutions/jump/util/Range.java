@@ -153,7 +153,7 @@ public class Range {
     };    
 
     //Trivial, but necessary for Java2XML serialization. [Jon Aquino]
-    public static class RangeTreeMap extends TreeMap {
+    public static class RangeTreeMap <T, U> extends TreeMap<T, U> {
         public RangeTreeMap() {
             super(RANGE_COMPARATOR);
         }
