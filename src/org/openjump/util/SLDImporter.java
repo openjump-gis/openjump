@@ -184,6 +184,7 @@ public class SLDImporter {
         } catch (XPathExpressionException e) {
             // only happens if the xpath is not valid
             LOG.error(e);
+            e.printStackTrace();
             return null;
         }
 
@@ -516,7 +517,7 @@ public class SLDImporter {
     }
 
     private static URL parseGraphicURL(Element e) throws XPathExpressionException {
-        e = getElement("sld:OnlineResource", e, NSCONTEXT);
+        e = getElement(".//sld:OnlineResource", e, NSCONTEXT);
 
         if (e == null) {
             return null;

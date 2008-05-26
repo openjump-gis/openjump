@@ -1,3 +1,7 @@
+2008-05-26 Andreas Schmitz <schmitz@lat-lon.de>
+      src/org/openjump/util/SLDImporter.java:
+      Fixed import of external graphics.
+
 2008-05-21 Andreas Schmitz <schmitz@lat-lon.de>
       src/org/openjump/OpenJumpConfiguration.java,
       src/org/openjump/core/ui/plugin/style/ImportArcMapStylePlugIn.java:
