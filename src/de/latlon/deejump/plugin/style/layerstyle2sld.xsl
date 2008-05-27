@@ -172,6 +172,18 @@
                 <xsl:value-of select="xslutil:toHexColor(color)"/>
               </sld:CssParameter>
             </sld:Font>
+            <xsl:if test="not(angleAttribute='')">
+              <sld:LabelPlacement>
+                <sld:PointPlacement>
+                  <sld:Rotation>
+                    <ogc:Mul>
+                      <ogc:Literal>-1</ogc:Literal>
+                      <ogc:PropertyName><xsl:value-of select="$NamespacePrefix"/><xsl:value-of select="angleAttribute"/></ogc:PropertyName>
+                    </ogc:Mul>
+                  </sld:Rotation>
+                </sld:PointPlacement>
+              </sld:LabelPlacement>
+            </xsl:if>
             <xsl:if test="outlineShowing='true'">
               <sld:Halo>
                 <sld:Radius>
