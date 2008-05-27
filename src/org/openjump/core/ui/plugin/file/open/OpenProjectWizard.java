@@ -114,6 +114,7 @@ public class OpenProjectWizard extends AbstractWizardGroup {
         newTask = new Task();
         newTask.setName(GUIUtil.nameWithoutExtension(file));
         newTask.setProjectFile(file);
+        newTask.setProperties(sourceTask.getProperties());
 
         workbenchFrame.addTaskFrame(newTask);
         LayerManager sourceLayerManager = sourceTask.getLayerManager();

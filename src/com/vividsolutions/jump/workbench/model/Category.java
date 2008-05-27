@@ -56,6 +56,14 @@ public class Category {
         fireCategoryChanged(CategoryEventType.METADATA_CHANGED);
     }
 
+    public Task getTask() {
+      if (layerManager != null) {
+        return layerManager.getTask();
+      } else {
+        return null;
+      }
+    }
+
     public void setLayerManager(LayerManager layerManager) {
         this.layerManager = layerManager;
     }

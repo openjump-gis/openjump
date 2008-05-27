@@ -25,7 +25,11 @@
  * (250)385-6040 www.vividsolutions.com
  */
 package com.vividsolutions.jump.util.java2xml;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.Reader;
+import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -34,11 +38,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.namespace.QName;
+
 import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
+
 import com.vividsolutions.jts.util.Assert;
-import com.vividsolutions.jump.io.datasource.DataSource;
 import com.vividsolutions.jump.util.StringUtil;
 public class XML2Java extends XMLBinder {
     private ArrayList listeners = new ArrayList();
@@ -137,6 +143,9 @@ public class XML2Java extends XMLBinder {
         if (tag.getAttribute("null") != null
                 && tag.getAttributeValue("null").equals("true")) {
             return null;
+        }
+        if (c == QName.class) {
+          return QName.valueOf(tag.getTextTrim());
         }
         if (specifyingTypeExplicitly(c)) {
             if (tag.getAttribute("class") == null) {

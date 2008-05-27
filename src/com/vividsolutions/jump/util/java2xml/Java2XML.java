@@ -32,16 +32,14 @@ import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
 
 import java.io.*;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import javax.xml.namespace.QName;
 public class Java2XML extends XMLBinder {
 	private static Logger LOG = Logger.getLogger(Java2XML.class);
     public Java2XML() {
@@ -99,7 +97,7 @@ public class Java2XML extends XMLBinder {
                         tag.addContent(childTag);
                         childTags.add(childTag);
                     }
-                    //The parent may specify additional tags for itself in the
+                    // The parent may specify additional tags for itself in the
                     // children. [Jon Aquino]
                     for (Iterator i = childTags.iterator(); i.hasNext();) {
                         Element childTag = (Element) i.next();
@@ -150,6 +148,8 @@ public class Java2XML extends XMLBinder {
                 Object item = i.next();
                 writeChildTag(childTag, "item", item, true);
             }
+        } else if (value instanceof QName) {
+            childTag.addContent(value.toString());
         } else {
             write(value, childTag, specElements(value.getClass()));
         }
@@ -160,8 +160,8 @@ public class Java2XML extends XMLBinder {
             boolean specifyingType) throws Exception {
         ArrayList childTags = new ArrayList();
         if (value instanceof Collection) {
-            //Might or might not need to specify type, depending on how
-            //concrete the setter's parameter is. [Jon Aquino]
+            // Might or might not need to specify type, depending on how
+            // concrete the setter's parameter is. [Jon Aquino]
             for (Iterator i = ((Collection) value).iterator(); i.hasNext();) {
                 Object item = i.next();
                 childTags.add(writeChildTag(tag, name, item, specifyingType));
@@ -174,7 +174,7 @@ public class Java2XML extends XMLBinder {
     private Method getter(Class fieldClass, String field)
             throws XMLBinderException {
         Method[] methods = fieldClass.getMethods();
-        //Exact match first [Jon Aquino]
+        // Exact match first [Jon Aquino]
         for (int i = 0; i < methods.length; i++) {
             if (!methods[i].getName().toUpperCase().equals(
                     "GET" + field.toUpperCase())

@@ -85,12 +85,19 @@ public class LayerManager {
     private ArrayList layerListeners = new ArrayList();
     private Iterator firstColors;
     private Blackboard blackboard = new Blackboard();
+    
+    private Task task;
 
     public LayerManager() {
         firstColors = firstColors().iterator();
         layerManagerCount++;
     }
-    
+
+    public LayerManager(final Task task) {
+        this();
+        this.task = task;
+    }
+   
     public UndoableEditReceiver getUndoableEditReceiver() {
         return undoableEditReceiver;
     }
@@ -782,5 +789,9 @@ public class LayerManager {
 	   Assert.isTrue(type != FeatureEventType.GEOMETRY_MODIFIED);
 	   fireFeaturesChanged(features, type, layer, oldFeatureClones);
 
+    }
+
+    public Task getTask() {
+      return task;
     }
 }

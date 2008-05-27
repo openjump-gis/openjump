@@ -116,6 +116,14 @@ public abstract class AbstractLayerable implements Layerable {
         fireLayerChanged(LayerEventType.METADATA_CHANGED);
     }
 
+    public Task getTask() {
+      if (layerManager != null) {
+        return layerManager.getTask();
+      } else {
+        return null;
+      }
+    }
+    
     public void setVisible(boolean visible) {
         if (this.visible == visible) {
             return;

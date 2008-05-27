@@ -136,6 +136,7 @@ public class OpenProjectPlugIn extends ThreadedBasePlugIn {
             newTask = new Task();
             newTask.setName(GUIUtil.nameWithoutExtension(file));
             newTask.setProjectFile(file);
+            newTask.setProperties(sourceTask.getProperties());
             workbenchFrame.addTaskFrame(newTask);
         } finally {
             reader.close();
