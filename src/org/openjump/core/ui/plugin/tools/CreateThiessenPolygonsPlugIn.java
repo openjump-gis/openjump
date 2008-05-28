@@ -50,6 +50,7 @@ import javax.swing.JComboBox;
 
 import org.openjump.core.graph.delauneySimplexInsert.DTriangulationForJTS;
 
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.index.quadtree.Quadtree;
@@ -88,15 +89,20 @@ public class CreateThiessenPolygonsPlugIn extends AbstractPlugIn implements Thre
 
     private String sName = "Create Thiessen Polygons";
     private String CLAYER = "select point layer";
+    private String BLAYER = "background layer to estimate the thiessen polygon size";
+    private String sUseBGD = "use Background Layer";
+    
     private String sideBarText = "Creates a Delaunay triangulation and returns the Voronoi regions.";
     private String msgCreateDG = "create triangulation";
     private String msgCreatePolys = "create polygons from voronoi edges";
     private String msgAddAttributesPolys = "add attributes from points";
-    private String msgMultiplePointsInPoly = "Error: found multiple points in polygon";
+    private String msgMultiplePointsInPoly = "Error: found multiple points in polygon";    
     //--
     private String msgNoPoint = "no point geometry";
     private Layer itemlayer = null;
+    private Layer bckgrdlayer = null;
     private PlugInContext pcontext = null;
+    private boolean useBackground = false;
     
     public void initialize(PlugInContext context) throws Exception {
     		
@@ -144,11 +150,15 @@ public class CreateThiessenPolygonsPlugIn extends AbstractPlugIn implements Thre
     private void setDialogValues(MultiInputDialog dialog, PlugInContext context)
 	  {
 	    dialog.setSideBarDescription(this.sideBarText);	    
-    	JComboBox addLayerComboBoxBuild = dialog.addLayerComboBox(this.CLAYER, context.getCandidateLayer(0), null, context.getLayerManager());    	
+    	JComboBox addLayerComboBoxBuild = dialog.addLayerComboBox(this.CLAYER, context.getCandidateLayer(0), null, context.getLayerManager());
+    	dialog.addCheckBox(this.sUseBGD, this.useBackground);
+    	JComboBox addLayerComboBoxBuild2 = dialog.addLayerComboBox(this.BLAYER, context.getCandidateLayer(0), null, context.getLayerManager());
 	  }
 
 	private void getDialogValues(MultiInputDialog dialog) {
     	this.itemlayer = dialog.getLayer(this.CLAYER);
+    	this.bckgrdlayer = dialog.getLayer(this.BLAYER);
+    	this.useBackground = dialog.getBoolean(this.sUseBGD);
 	  }
 	
     public void run(TaskMonitor monitor, PlugInContext context) throws Exception{            		
@@ -176,7 +186,15 @@ public class CreateThiessenPolygonsPlugIn extends AbstractPlugIn implements Thre
         }
 	    if (points.size() > 0){
 		    monitor.report(this.msgCreateDG);
-		    DTriangulationForJTS tri = new DTriangulationForJTS(points);
+		    DTriangulationForJTS tri = null;
+		    if (this.useBackground == true){
+		    	FeatureCollection fc = this.bckgrdlayer.getFeatureCollectionWrapper();
+		    	Envelope env = fc.getEnvelope(); 
+		    	tri = new DTriangulationForJTS(points, env);
+		    }
+		    else{
+		    	tri = new DTriangulationForJTS(points);
+		    }
 		    
 		    //ArrayList nodes = tri.drawAllSites();	    
 		    //FeatureCollection myCollA = FeatureDatasetFactory.createFromGeometry(nodes);	    
@@ -188,12 +206,12 @@ public class CreateThiessenPolygonsPlugIn extends AbstractPlugIn implements Thre
 			
 		    //ArrayList edges = tri.drawAllVoronoi(); 
 		    //FeatureCollection myCollB = FeatureDatasetFactory.createFromGeometry(edges);	    
-			//context.addLayer(StandardCategoryNames.WORKING, "voronoi edges", myCollB);
+		    //context.addLayer(StandardCategoryNames.WORKING, "voronoi edges", myCollB);
 		    
-			//ArrayList bbox = new ArrayList(); 
-			//bbox.add(tri.getThiessenBoundingBox());
+		    //ArrayList bbox = new ArrayList(); 
+		    //bbox.add(tri.getThiessenBoundingBox());
 		    //FeatureCollection myCollE = FeatureDatasetFactory.createFromGeometry(bbox);	    
-			//context.addLayer(StandardCategoryNames.WORKING, "bbox", myCollE);
+		    //context.addLayer(StandardCategoryNames.WORKING, "bbox", myCollE);
 			
 		    monitor.report(this.msgCreatePolys);
 		    ArrayList polys = tri.getThiessenPolys();

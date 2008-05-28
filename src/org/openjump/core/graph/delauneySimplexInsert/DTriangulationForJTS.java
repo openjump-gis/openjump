@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
@@ -75,6 +76,51 @@ public class DTriangulationForJTS {
         this.addPoints(pointList);
     }
  
+    /**
+     * 
+     * @param pointList
+     * @param envelope the envelope my extend the initial point cloud and result in a larger initial simplex 
+     */
+    public DTriangulationForJTS(ArrayList pointList, Envelope envelope){  
+        double argmaxx = 0; double argmaxy = 0;
+        double argminx = 0; double argminy = 0;
+        int count = 0;
+        //-- calc coordinates of initial symplex
+        for (Iterator iter = pointList.iterator(); iter.hasNext();) {
+            Point pt = (Point) iter.next();
+            if (count==0){
+                argmaxx = pt.getX(); argminx = pt.getX();
+                argmaxy = pt.getY(); argminy = pt.getY();
+            }
+            else{
+                if (pt.getX() < argminx){argminx = pt.getX();}
+                if (pt.getX() > argmaxx){argmaxx = pt.getX();}
+                if (pt.getY() < argminy){argminy = pt.getY();}
+                if (pt.getY() > argmaxy){argmaxy = pt.getY();}                
+            }
+            count++;
+        }
+        //-- do check also for the delivered envelope
+        	if (envelope.getMinX() < argminx){argminx = envelope.getMinX();}
+        	if (envelope.getMaxX() > argmaxx){argmaxx = envelope.getMaxX();}
+        	if (envelope.getMinY() < argminy){argminy = envelope.getMinY();}
+        	if (envelope.getMaxY() > argmaxy){argmaxy = envelope.getMaxY();}                        
+        //--
+        this.dx=argmaxx-argminx;
+        this.dy=argmaxy-argminy;
+        //-- the initial simplex must contain all points
+        //-- take the bounding box, move the diagonals (sidewards) 
+        //	 the meeting point will be the mirrored bbox-center on the top edge  
+        this.initialTriangle = new Simplex(new Pnt[] {
+    	        				new Pnt(argminx-(1.5*dx), argminy-dy), //lower left
+    	        				new Pnt(argmaxx+(1.5*dx), argminy-dy), //lower right
+    	        				//new Pnt(argminx+(dx/2.0), argmaxy+(dy/2.0))});	//center, top
+        						new Pnt(argminx+(dx/2.0), argmaxy+1.5*dy)});	//center, top
+        
+        this.lowerLeftPnt = new Pnt(argminx-(1.5*dx), argminy-dy);
+        this.dt = new DelaunayTriangulation(initialTriangle);
+        this.addPoints(pointList);
+    }
     
     public void addPoints(ArrayList pointList){
         for (Iterator iter = pointList.iterator(); iter.hasNext();) {

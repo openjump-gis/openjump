@@ -1,3 +1,11 @@
+2008-05-28 mentaer <sstein@geo.unizh.ch>
+      Changed Thiessen polygon creation to be aware of the extent 
+      of background layers. The code needs still some clean up 
+      (for the enabling of layer selection in the dialog) and translation.
+      changed:
+      org.openjump.core.graph.delauneySimplexInsert.DTriangulationForJTS
+      org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn 
+
 2008-05-27 Paul Austin <paul.austin@revolsys.com>
       Added properties to tasks
       Added link from LayerManager to task
