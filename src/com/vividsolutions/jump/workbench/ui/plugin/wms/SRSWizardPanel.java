@@ -32,6 +32,10 @@
 
 package com.vividsolutions.jump.workbench.ui.plugin.wms;
 
+import static com.vividsolutions.jump.workbench.ui.plugin.wms.MapLayerWizardPanel.COMMON_SRS_LIST_KEY;
+import static com.vividsolutions.jump.workbench.ui.plugin.wms.MapLayerWizardPanel.FORMAT_LIST_KEY;
+import static java.awt.GridBagConstraints.WEST;
+
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -56,9 +60,11 @@ public class SRSWizardPanel extends JPanel implements WizardPanel {
     private Map dataMap;
     private GridBagLayout gridBagLayout1 = new GridBagLayout();
     private JLabel srsLabel = new JLabel();
-    private JPanel fillerPanel = new JPanel();
     private DefaultComboBoxModel comboBoxModel = new DefaultComboBoxModel();
+    private DefaultComboBoxModel formatBoxModel = new DefaultComboBoxModel();
     private JComboBox comboBox = new JComboBox();
+    private JLabel formatLabel;
+    private JComboBox formatBox;
 
     public SRSWizardPanel() {
         try {
@@ -82,29 +88,35 @@ public class SRSWizardPanel extends JPanel implements WizardPanel {
 
     void jbInit() throws Exception {
         srsLabel.setText(I18N.get("ui.plugin.wms.SRSWizardPanel.coordinate-reference-system"));
+        formatLabel = new JLabel(I18N.get("ui.plugin.wms.SRSWizardPanel.image-format"));
+        formatBox = new JComboBox();
         this.setLayout(gridBagLayout1);
-        this.add(srsLabel,
-            new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0,
-                GridBagConstraints.CENTER, GridBagConstraints.NONE,
-                new Insets(0, 0, 0, 4), 0, 0));
-        this.add(fillerPanel,
-            new GridBagConstraints(2, 10, 1, 1, 1.0, 1.0,
-                GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                new Insets(0, 0, 0, 0), 0, 0));
-        this.add(comboBox,
-            new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0,
-                GridBagConstraints.CENTER, GridBagConstraints.NONE,
-                new Insets(0, 0, 0, 0), 0, 0));
+        GridBagConstraints gb = new GridBagConstraints();
+        gb.anchor = WEST;
+        gb.gridx = 0;
+        gb.gridy = 0;
+        gb.insets = new Insets(5, 5, 5, 5);
+        add(srsLabel, gb);
+        ++gb.gridx;
+        add(comboBox, gb);
+
+        ++gb.gridy;
+        gb.gridx = 0;
+
+        add(formatLabel, gb);
+        ++gb.gridx;
+        add(formatBox, gb);
     }
 
     public void exitingToRight() {
         int index = comboBox.getSelectedIndex();
         String srsCode = (String) getCommonSrsList().get( index );
         dataMap.put( SRS_KEY, srsCode );
+        dataMap.put(URLWizardPanel.FORMAT_KEY, formatBox.getSelectedItem());
     }
 
     private List getCommonSrsList() {
-        return (List) dataMap.get(MapLayerWizardPanel.COMMON_SRS_LIST_KEY);
+        return (List) dataMap.get(COMMON_SRS_LIST_KEY);
     }
 
     public void enteredFromLeft(Map dataMap) {
@@ -115,8 +127,14 @@ public class SRSWizardPanel extends JPanel implements WizardPanel {
             String srsName = SRSUtils.getName( srs );
             comboBoxModel.addElement( srsName );
         }
-
         comboBox.setModel(comboBoxModel);
+
+        String[] formats = (String[]) dataMap.get(FORMAT_LIST_KEY);
+        formatBoxModel.removeAllElements();
+        for (String f : formats) {
+            formatBoxModel.addElement(f);
+        }
+        formatBox.setModel(formatBoxModel);
     }
 
     public String getTitle() {

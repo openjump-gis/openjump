@@ -218,6 +218,7 @@ public class URLWizardPanel extends JPanel implements WizardPanel {
           I18N.get("ui.plugin.wms.URLWizardPanel.the-server-does-not-support-gif-png-or-jpeg-format"));
       }
 
+      dataMap.put(MapLayerWizardPanel.FORMAT_LIST_KEY, service.getCapabilities().getMapFormats());
       dataMap.put(FORMAT_KEY, format);
       dataMap.put(MapLayerWizardPanel.INITIAL_LAYER_NAMES_KEY, null);
       dataMap.put(VERSION_KEY, wmsVersion);

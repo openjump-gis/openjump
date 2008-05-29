@@ -57,8 +57,11 @@ public class EditWMSQueryPanel extends JPanel {
     private GridBagLayout gridBagLayout1 = new GridBagLayout();
     private MapLayerPanel mapLayerPanel = new MapLayerPanel();
     private JLabel srsLabel = new JLabel();
+    private JLabel formatLabel = new JLabel();
     private DefaultComboBoxModel comboBoxModel = new DefaultComboBoxModel();
     private JComboBox srsComboBox = new JComboBox(comboBoxModel);
+    private DefaultComboBoxModel formatBoxModel = new DefaultComboBoxModel();
+    private JComboBox formatComboBox = new JComboBox(formatBoxModel);
     private Border border1;
     private TransparencyPanel transparencyPanel = new TransparencyPanel();
     private JLabel transparencyLabel = new JLabel();
@@ -86,7 +89,7 @@ public class EditWMSQueryPanel extends JPanel {
         WMService service,
         List initialChosenMapLayers,
         String initialSRS,
-        int alpha) {
+        int alpha, String format) {
         try {
             jbInit();
             String url = service.getServerUrl();
@@ -99,7 +102,14 @@ public class EditWMSQueryPanel extends JPanel {
             updateComboBox();
             String srsName = SRSUtils.getName( initialSRS );
             srsComboBox.setSelectedItem(srsName);
+            
+            formatBoxModel.removeAllElements();
+            for (String f : service.getCapabilities().getMapFormats()) {
+                formatBoxModel.addElement(f);
+            }
 
+            formatComboBox.setSelectedItem(format);
+            
             mapLayerPanel.add(new InputChangedListener() {
                 public void inputChanged() {
                     updateComboBox();
@@ -125,6 +135,10 @@ public class EditWMSQueryPanel extends JPanel {
         return srsCode;
     }
 
+    public String getFormat() {
+        return (String) formatComboBox.getSelectedItem();
+    }
+    
     /**
     * Method updateComboBox.
     */
@@ -157,6 +171,7 @@ public class EditWMSQueryPanel extends JPanel {
         border1 = BorderFactory.createEmptyBorder(10, 10, 10, 10);
         this.setLayout(gridBagLayout1);
         srsLabel.setText(I18N.get("ui.plugin.wms.EditWMSQueryPanel.coordinate-reference-system"));
+        formatLabel.setText(I18N.get("ui.plugin.wms.SRSWizardPanel.image-format"));
         this.setBorder(border1);
         this.setToolTipText("");
         srsComboBox.setMinimumSize(new Dimension(125, 21));
@@ -171,7 +186,7 @@ public class EditWMSQueryPanel extends JPanel {
             new GridBagConstraints(
                 1,
                 2,
-                3,
+                5,
                 1,
                 1.0,
                 1.0,
@@ -194,6 +209,34 @@ public class EditWMSQueryPanel extends JPanel {
                 new Insets(0, 0, 10, 5),
                 0,
                 0));
+        this.add(
+                formatLabel,
+                new GridBagConstraints(
+                    4,
+                    3,
+                    1,
+                    1,
+                    0.0,
+                    0.0,
+                    GridBagConstraints.WEST,
+                    GridBagConstraints.NONE,
+                    new Insets(5, 5, 5, 5),
+                    0,
+                    0));
+        this.add(
+                formatComboBox,
+                new GridBagConstraints(
+                    5,
+                    3,
+                    1,
+                    1,
+                    0.0,
+                    0.0,
+                    GridBagConstraints.WEST,
+                    GridBagConstraints.NONE,
+                    new Insets(5, 5, 5, 5),
+                    0,
+                    0));
         this.add(
             srsComboBox,
             new GridBagConstraints(

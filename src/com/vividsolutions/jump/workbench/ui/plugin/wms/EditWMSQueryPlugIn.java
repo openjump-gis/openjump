@@ -73,7 +73,7 @@ public class EditWMSQueryPlugIn extends AbstractPlugIn {
         		I18N.get("ui.plugin.wms.EditWMSQueryPlugIn.this-dialog-enables-you-to-change-the-layers-being-retrieved-from-a-web-map-server"));
 
         EditWMSQueryPanel panel = new EditWMSQueryPanel(layer.getService(),
-                layer.getLayerNames(), layer.getSRS(), layer.getAlpha());
+                layer.getLayerNames(), layer.getSRS(), layer.getAlpha(), layer.getFormat());
         panel.setPreferredSize(new Dimension(600, 450));
 
         //The field name "Chosen Layers" will appear on validation error messages
@@ -92,6 +92,7 @@ public class EditWMSQueryPlugIn extends AbstractPlugIn {
 
             layer.setSRS(panel.getSRS());
             layer.setAlpha(panel.getAlpha());
+            layer.setFormat(panel.getFormat());
             layer.fireAppearanceChanged();
 
             return true;

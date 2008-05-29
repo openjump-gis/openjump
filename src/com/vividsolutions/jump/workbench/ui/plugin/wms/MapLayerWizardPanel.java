@@ -48,6 +48,7 @@ import com.vividsolutions.wms.WMService;
 public class MapLayerWizardPanel extends JPanel implements WizardPanel {
     public static final String LAYERS_KEY = "LAYERS";
     public static final String COMMON_SRS_LIST_KEY = "COMMON_SRS_LIST";
+    public static final String FORMAT_LIST_KEY = "FORMAT_LIST";
     public final static String INITIAL_LAYER_NAMES_KEY = "INITIAL_LAYER_NAMES";
     public final static String NO_COMMON_SRS_MESSAGE = I18N.get("ui.plugin.wms.MapLayerWizardPanel.the-chosen-layers-do-not-have-a-common-epsg-coordinate-reference-system");
     private MapLayerPanel addRemovePanel = new MapLayerPanel();

@@ -1,4 +1,12 @@
 2008-05-29 Andreas Schmitz <schmitz@lat-lon.de>
+      src/com/vividsolutions/jump/workbench/ui/plugin/wms/EditWMSQueryPlugIn.java,
+      src/com/vividsolutions/jump/workbench/ui/plugin/wms/EditWMSQueryPanel.java,
+      src/com/vividsolutions/jump/workbench/ui/plugin/wms/URLWizardPanel.java,
+      src/com/vividsolutions/jump/workbench/ui/plugin/wms/SRSWizardPanel.java,
+      src/com/vividsolutions/jump/workbench/ui/plugin/wms/MapLayerWizardPanel.java:
+      Added capability to select image format for WMS layers/requests.
+
+2008-05-29 Andreas Schmitz <schmitz@lat-lon.de>
       src/de/latlon/deejump/plugin/style/layerstyle2sld.xsl:
       Changed naming of rules for color theming styles.
 
