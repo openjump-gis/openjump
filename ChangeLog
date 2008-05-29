@@ -1,3 +1,7 @@
+2008-05-29 Andreas Schmitz <schmitz@lat-lon.de>
+      src/de/latlon/deejump/plugin/style/layerstyle2sld.xsl:
+      Changed naming of rules for color theming styles.
+
 2008-05-28 mentaer <sstein@geo.unizh.ch>
       Changed Thiessen polygon creation to be aware of the extent 
       of background layers. The code needs still some clean up 

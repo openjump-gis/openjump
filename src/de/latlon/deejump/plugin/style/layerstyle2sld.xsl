@@ -271,8 +271,8 @@
 
   <xsl:template match="attribute-value-to-style-map/mapping" name="rules">
     <sld:Rule>
-      <sld:Name><xsl:value-of select="../../attribute-name"/>_<xsl:value-of select="./key"/></sld:Name>
       <xsl:if test="../@class='java.util.TreeMap'">
+        <sld:Name><xsl:value-of select="./key"/></sld:Name>
         <ogc:Filter>
           <ogc:PropertyIsLike wildCard="*" singleChar="?" escape="\">
             <ogc:PropertyName><xsl:value-of select="$NamespacePrefix"/><xsl:value-of select="../../attribute-name"/></ogc:PropertyName>
@@ -283,6 +283,7 @@
         </ogc:Filter>
       </xsl:if>
       <xsl:if test="../@class='com.vividsolutions.jump.util.Range$RangeTreeMap'">
+        <sld:Name><xsl:value-of select="./key/min"/> - <xsl:value-of select="./key/max"/></sld:Name>
         <ogc:Filter>
           <ogc:PropertyIsBetween>
             <ogc:PropertyName><xsl:value-of select="$NamespacePrefix"/><xsl:value-of select="../../attribute-name"/></ogc:PropertyName>
