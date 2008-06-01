@@ -1,3 +1,10 @@
+2008-05-28 mentaer <sstein@geo.unizh.ch>
+      improved gui elements (i.e. enabling of drop down box only if
+      checkbox for use of background layers is checked) and added I18n strings
+      changed:
+      org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn 
+      language files
+      
 2008-05-29 Andreas Schmitz <schmitz@lat-lon.de>
       src/com/vividsolutions/jump/workbench/ui/plugin/wms/EditWMSQueryPlugIn.java,
       src/com/vividsolutions/jump/workbench/ui/plugin/wms/EditWMSQueryPanel.java,

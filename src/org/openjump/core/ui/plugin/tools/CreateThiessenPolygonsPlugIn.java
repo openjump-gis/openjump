@@ -42,10 +42,13 @@
 
 package org.openjump.core.ui.plugin.tools;
 
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 
 import org.openjump.core.graph.delauneySimplexInsert.DTriangulationForJTS;
@@ -90,7 +93,7 @@ public class CreateThiessenPolygonsPlugIn extends AbstractPlugIn implements Thre
     private String sName = "Create Thiessen Polygons";
     private String CLAYER = "select point layer";
     private String BLAYER = "background layer to estimate the thiessen polygon size";
-    private String sUseBGD = "use Background Layer";
+    private String sUseBGD = "use background layer";
     
     private String sideBarText = "Creates a Delaunay triangulation and returns the Voronoi regions.";
     private String msgCreateDG = "create triangulation";
@@ -103,11 +106,17 @@ public class CreateThiessenPolygonsPlugIn extends AbstractPlugIn implements Thre
     private Layer bckgrdlayer = null;
     private PlugInContext pcontext = null;
     private boolean useBackground = false;
+    //--
+	private MultiInputDialog dialog;
+	private JCheckBox checkbox;
+	private JComboBox layerComboBoxBackground;
     
     public void initialize(PlugInContext context) throws Exception {
     		
     		this.CLAYER = I18N.get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.select-point-layer");
-    	    this.sName = I18N.get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.Create-Thiessen-Polygons");
+       		this.BLAYER = I18N.get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.background-layer-to-estimate-the-thiessen-polygon-size");
+      		this.sUseBGD = I18N.get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.use-background-layer");    		 
+       		this.sName = I18N.get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.Create-Thiessen-Polygons");
     	    this.sideBarText = I18N.get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.Creates-a-Delaunay-triangulation-and-returns-the-Voronoi-regions");
     	    this.msgCreateDG = I18N.get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.create-triangulation");
     	    this.msgCreatePolys = I18N.get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.create-polygons-from-voronoi-edges");
@@ -137,7 +146,7 @@ public class CreateThiessenPolygonsPlugIn extends AbstractPlugIn implements Thre
 	public boolean execute(PlugInContext context) throws Exception{
 	    this.reportNothingToUndoYet(context);
 	        
- 		MultiInputDialog dialog = new MultiInputDialog(
+ 		dialog = new MultiInputDialog(
 	            context.getWorkbenchFrame(), getName(), true);
 	        setDialogValues(dialog, context);
 	        GUIUtil.centreOnWindow(dialog);
@@ -151,8 +160,11 @@ public class CreateThiessenPolygonsPlugIn extends AbstractPlugIn implements Thre
 	  {
 	    dialog.setSideBarDescription(this.sideBarText);	    
     	JComboBox addLayerComboBoxBuild = dialog.addLayerComboBox(this.CLAYER, context.getCandidateLayer(0), null, context.getLayerManager());
-    	dialog.addCheckBox(this.sUseBGD, this.useBackground);
-    	JComboBox addLayerComboBoxBuild2 = dialog.addLayerComboBox(this.BLAYER, context.getCandidateLayer(0), null, context.getLayerManager());
+    	checkbox = dialog.addCheckBox(this.sUseBGD, this.useBackground);
+		checkbox.addItemListener(new MethodItemListener());
+		//-- add Background-Layer DropDown .. and enable or disable dependent on checkbox values
+    	layerComboBoxBackground = dialog.addLayerComboBox(this.BLAYER, context.getCandidateLayer(0), null, context.getLayerManager());
+		layerComboBoxBackground.setEnabled(this.useBackground);
 	  }
 
 	private void getDialogValues(MultiInputDialog dialog) {
@@ -160,6 +172,13 @@ public class CreateThiessenPolygonsPlugIn extends AbstractPlugIn implements Thre
     	this.bckgrdlayer = dialog.getLayer(this.BLAYER);
     	this.useBackground = dialog.getBoolean(this.sUseBGD);
 	  }
+	
+	private void updateUIForMethod(){ 	
+		//-- if use of background, LAYER selection needs to work
+		boolean val=checkbox.isSelected();
+		layerComboBoxBackground.setEnabled(val);		  	
+		dialog.validate();
+	}
 	
     public void run(TaskMonitor monitor, PlugInContext context) throws Exception{            		
     	    this.createGraph(context, monitor);
@@ -267,4 +286,12 @@ public class CreateThiessenPolygonsPlugIn extends AbstractPlugIn implements Thre
 		}
 	    return  fd;
 	}
+	
+	private class MethodItemListener implements ItemListener{
+		
+		public void itemStateChanged(ItemEvent e) {
+			updateUIForMethod();
+		}
+	}
+	
 }
