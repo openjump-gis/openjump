@@ -62,7 +62,7 @@ import java.lang.ref.SoftReference;
 public class WMSLayer extends AbstractLayerable implements Cloneable {
 	private String format;
 
-	private List layerNames = new ArrayList();
+	private List<String> layerNames = new ArrayList<String>();
 
 	private String srs;
 
@@ -104,24 +104,24 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
 	}
 
     public WMSLayer(String title, LayerManager layerManager, WMService initializedService,
-                    String srs, List layerNames, String format) throws IOException {
+                    String srs, List<String> layerNames, String format) throws IOException {
         this(title, layerManager, initializedService, srs, layerNames, format, initializedService.getVersion());
     }
 
     public WMSLayer(String title, LayerManager layerManager, WMService initializedService,
-			String srs, List layerNames, String format, String version){
+			String srs, List<String> layerNames, String format, String version){
 	    super(title, layerManager);
 		setService(initializedService);
 		setSRS(srs);
-		this.layerNames = new ArrayList(layerNames);
+		this.layerNames = new ArrayList<String>(layerNames);
 		setFormat(format);
 		init();
 		this.wmsVersion = version;
 	}
 
     public WMSLayer(LayerManager layerManager, WMService initializedService,
-                    String srs, List layerNames, String format, String version){
-        this((String) layerNames.get(0), layerManager, initializedService, srs, layerNames, format, version);
+                    String srs, List<String> layerNames, String format, String version){
+        this(layerNames.get(0), layerManager, initializedService, srs, layerNames, format, version);
     }
 
 	protected void init() {
@@ -207,7 +207,7 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
 		layerNames.add(layerName);
 	}
 
-	public List getLayerNames() {
+	public List<String> getLayerNames() {
 		return Collections.unmodifiableList(layerNames);
 	}
 

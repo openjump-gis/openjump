@@ -1,10 +1,14 @@
+2008-06-09 Andreas Schmitz <schmitz@lat-lon.de>
+      src/com/vividsolutions/jump/workbench/model/WMSLayer.java:
+      Added generics to layer list.
+
 2008-05-28 mentaer <sstein@geo.unizh.ch>
       improved gui elements (i.e. enabling of drop down box only if
       checkbox for use of background layers is checked) and added I18n strings
       changed:
-      org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn 
+      org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn
       language files
-      
+
 2008-05-29 Andreas Schmitz <schmitz@lat-lon.de>
       src/com/vividsolutions/jump/workbench/ui/plugin/wms/EditWMSQueryPlugIn.java,
       src/com/vividsolutions/jump/workbench/ui/plugin/wms/EditWMSQueryPanel.java,
@@ -18,19 +22,19 @@
       Changed naming of rules for color theming styles.
 
 2008-05-28 mentaer <sstein@geo.unizh.ch>
-      Changed Thiessen polygon creation to be aware of the extent 
-      of background layers. The code needs still some clean up 
+      Changed Thiessen polygon creation to be aware of the extent
+      of background layers. The code needs still some clean up
       (for the enabling of layer selection in the dialog) and translation.
       changed:
       org.openjump.core.graph.delauneySimplexInsert.DTriangulationForJTS
-      org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn 
+      org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn
 
 2008-05-27 Paul Austin <paul.austin@revolsys.com>
       Added properties to tasks
       Added link from LayerManager to task
       Added getTask (via LayerManager) to AbstractLayerable and Category
       Added saving/loading QName values in the Xml2Java code
-      
+
 2008-05-27 Andreas Schmitz <schmitz@lat-lon.de>
       src/de/latlon/deejump/plugin/style/layerstyle2sld.xsl:
       Added exporting of angle attribute for label styles.
@@ -68,7 +72,7 @@
       org.openjump.core.ui.plugin.tools.IntersectPolygonLayersPlugIn
       added
       org.openjump.core.geomutils.algorithm.GeometryConverter
-      
+
 2008-05-15 Andreas Schmitz <schmitz@lat-lon.de>
       src/org/openjump/core/ui/plugin/style/ImportSLDPlugIn.java:
       Removed the long/int hack, since it was caused by the deeJUMP shape
@@ -98,14 +102,14 @@
       Improved/re-added SLD import of color theming styles.
 
 2008-05-11 mentaer <sstein@geo.unizh.ch>
-      Added patch from Jakko which enables basic use of tables in 
+      Added patch from Jakko which enables basic use of tables in
       other than public schema. (bug 1694304, at least partly)
       changed
       com.vividsolutions.jump.datastore.postgis.PostgisDSMetadata
-      
+
 2008-05-11 mentaer <sstein@geo.unizh.ch>
-      Added patch from Jakko which allows use of WMS servers protected 
-      with basic HTTP authentication. Credentials are taken from URL, 
+      Added patch from Jakko which allows use of WMS servers protected
+      with basic HTTP authentication. Credentials are taken from URL,
       which can be entered as 'http://user:password@server/path'
       changed
       com.vividsolutions.wms.MapRequest
@@ -119,7 +123,7 @@
       Added:
       org.openjump.core.geomutils.algorithm.IntersectGeometries
       org.openjump.core.ui.plugin.tools.IntersectPolygonLayersPlugIn
-      
+
 2008-05-08 Andreas Schmitz <schmitz@lat-lon.de>
       src/org/openjump/core/ui/plugin/style/StyleChooserPanel.java,
       src/org/openjump/core/ui/plugin/style/ImportSLDPlugIn.java,
@@ -134,25 +138,25 @@
       Started reworking the SLD import. Only simple (Basic-) styles can currently be imported.
 
 2008-05-03 mentaer <sstein@geo.unizh.ch>
-	  enabled loading of Mr.SID layers using the new OpenFramework
-	  (note: problems exist with deleting the temp-jpg-files in
-	  MrSIDReferencedImage.paint)
-	  com.vividsolutions.jump.workbench.imagery.mrsid.MrSIDReferencedImage
-	  com.vividsolutions.jump.workbench.imagery.mrsid.MrSIDImageFactory
-	  
+          enabled loading of Mr.SID layers using the new OpenFramework
+          (note: problems exist with deleting the temp-jpg-files in
+          MrSIDReferencedImage.paint)
+          com.vividsolutions.jump.workbench.imagery.mrsid.MrSIDReferencedImage
+          com.vividsolutions.jump.workbench.imagery.mrsid.MrSIDImageFactory
+
 2008-05-03 mentaer <sstein@geo.unizh.ch>
-	  changes to enable the loading of Mr.SID layers using AddSIDLayerPlugin
-	  but also enabling of zooming
-	  org.openjump.core.ui.plugin.layer.AddSIDLayerPlugIn
-	  org.openjump.core.ui.plugin.wms.ZoomToWMSPlugIn
-	  org.openjump.io.SIDLayer
-	  com.vividsolutions.jump.workbench.model.WMSLayer
-	  
+          changes to enable the loading of Mr.SID layers using AddSIDLayerPlugin
+          but also enabling of zooming
+          org.openjump.core.ui.plugin.layer.AddSIDLayerPlugIn
+          org.openjump.core.ui.plugin.wms.ZoomToWMSPlugIn
+          org.openjump.io.SIDLayer
+          com.vividsolutions.jump.workbench.model.WMSLayer
+
 2008-05-03 mentaer <sstein@geo.unizh.ch>
-	  changed interface ReferencedImageFactory.isAvailable
-	  to #.isAvailable(WorkbenchContext wbContext)
-	  this enables access to the plugin directory
-	  
+          changed interface ReferencedImageFactory.isAvailable
+          to #.isAvailable(WorkbenchContext wbContext)
+          this enables access to the plugin directory
+
 2008-04-28 Andreas Schmitz <schmitz@lat-lon.de>
       src/org/openjump/util/SLDImporter.java:
       Trimming parsed values.
@@ -162,24 +166,24 @@
       Fixed parsing of capabilities without GetFeatureInfo section.
 
 2008-04-27 mentaer <sstein@geo.unizh.ch>
-	  added wms-default url to http://openaerialmap.org/wms/, bug [1944641]
-	  
-2008-04-27 mentaer <sstein@geo.unizh.ch>
-	  translation for several files
+          added wms-default url to http://openaerialmap.org/wms/, bug [1944641]
 
 2008-04-27 mentaer <sstein@geo.unizh.ch>
-	  fixed bug [1729554] in extension manager
-	  mod:  de.latlon.deejump.plugin.manager.ExtensionHelper.java
-	  		language files
-	  		
+          translation for several files
+
+2008-04-27 mentaer <sstein@geo.unizh.ch>
+          fixed bug [1729554] in extension manager
+          mod:  de.latlon.deejump.plugin.manager.ExtensionHelper.java
+                        language files
+
 2008-04-05 mentaer <sstein@geo.unizh.ch>
-	  added Auto Complete Polygon Tool from Uni Hannover via Malte W.
-	  new: 	org.openjump.core.ui.plugin.edittoolbox.cursortools.AutoCompletePolygonCursorTool.java
-	  		org.openjump.core.ui.plugin.edittoolbox.cursortools.AutoCompletePoly.gif
-	  		org.openjump.core.ui.plugin.edittoolbox.AutoCompletePolygonPlugIn.java
-	  mod:  org.openjump.OpenJumpConfiguration.java
-	  		language files
-	  
+          added Auto Complete Polygon Tool from Uni Hannover via Malte W.
+          new:  org.openjump.core.ui.plugin.edittoolbox.cursortools.AutoCompletePolygonCursorTool.java
+                        org.openjump.core.ui.plugin.edittoolbox.cursortools.AutoCompletePoly.gif
+                        org.openjump.core.ui.plugin.edittoolbox.AutoCompletePolygonPlugIn.java
+          mod:  org.openjump.OpenJumpConfiguration.java
+                        language files
+
 2008-04-06 mmichaud <michael.michaud@free.fr>
         * Added two plugins and updated language files
           com.vividsolutions.jump.workbench.JUMPConfiguration
@@ -198,53 +202,53 @@
 2008-04-05 mentaer <sstein@geo.unizh.ch>
 
            **** release of OpenJUMP 1.2 (Release F) ****
-                
+
 2008-04-05 mentaer <sstein@geo.unizh.ch>
-	  Replaced throwing of XMLBinder Exception by writing of error message 
-	  when style attributes are missing. (this ensures that a project can 
-	  be load even if style information are missing). see email from UWE 
-	  [JPP-Devel] Project does not work, 31.Mar.2008
-	  com/vividsolutions/jump/util/java2xml/XML2Java.java
+          Replaced throwing of XMLBinder Exception by writing of error message
+          when style attributes are missing. (this ensures that a project can
+          be load even if style information are missing). see email from UWE
+          [JPP-Devel] Project does not work, 31.Mar.2008
+          com/vividsolutions/jump/util/java2xml/XML2Java.java
 
 2008-04-01 mentaer <sstein@geo.unizh.ch>
-	  reenabled deleteAllFeaturesPlugIn and MrSIDPlugin 
+          reenabled deleteAllFeaturesPlugIn and MrSIDPlugin
 
 2008-04-01 mentaer <sstein@geo.unizh.ch>
-	  Tried to identify why warping runs endless/crashes JUMP 
-	  when layer contains only one point bug [1920024] 
-	  (note this does not happen for polygons).
-	  I found the reason why it runs in a loop and added a check. 
-	  However creating a triangle for the warping fails for the
-	  first time with only 1 point (since we can not create a 
-	  triangle) but it works surprisingly for the 2nd time.
-	  I added therefore only a message to WarpingPanel that 
-	  motivates the user to do a 2nd try.
-	  modified: com/vividsolutions/jump/warp/Triangulator.java
-	  			com/vividsolutions/jump/workbench/ui/warp/WarpingPanel.java
-	  
+          Tried to identify why warping runs endless/crashes JUMP
+          when layer contains only one point bug [1920024]
+          (note this does not happen for polygons).
+          I found the reason why it runs in a loop and added a check.
+          However creating a triangle for the warping fails for the
+          first time with only 1 point (since we can not create a
+          triangle) but it works surprisingly for the 2nd time.
+          I added therefore only a message to WarpingPanel that
+          motivates the user to do a 2nd try.
+          modified: com/vividsolutions/jump/warp/Triangulator.java
+                                com/vividsolutions/jump/workbench/ui/warp/WarpingPanel.java
+
 2008-03-31 mentaer <sstein@geo.unizh.ch>
-	  replaced "Transfer Attributes" from SIGLE with Spatial Join from JUMP
-	  achieved by SIGLE "Spatial Join" deactivation in OpenJUMPConfiguration
-	  and JUMP SpatialJoin change of menu position in JumpConfiguration
-	  update of language files
-	  
+          replaced "Transfer Attributes" from SIGLE with Spatial Join from JUMP
+          achieved by SIGLE "Spatial Join" deactivation in OpenJUMPConfiguration
+          and JUMP SpatialJoin change of menu position in JumpConfiguration
+          update of language files
+
 2008-03-28 mentaer <sstein@geo.unizh.ch>
-	  exchanged SrcA and SrcB so that spatial criteria is readable 
-	  in dialog from top to bottom 
-	  changed: com/vividsolutions/jump/ui/plugin/analysis/SpatialJoinPlugIn.java
-	  		   
+          exchanged SrcA and SrcB so that spatial criteria is readable
+          in dialog from top to bottom
+          changed: com/vividsolutions/jump/ui/plugin/analysis/SpatialJoinPlugIn.java
+
 2008-03-27 mentaer <sstein@geo.unizh.ch>
-	  hopefuly fixed bug (1775862) in Transfer Attributes Plugin 
-	  changed: org/openjump/core/ui/plugin/tools/SpatialJoinPlugIn.java
-	  		   com/vividsolutions/jump/tools/AttributeMapping.java
-	  Btw.: This function is also acomplished by 
-	  		   Tools\Analysis\Spatial Join of Geometries...
-	  
+          hopefuly fixed bug (1775862) in Transfer Attributes Plugin
+          changed: org/openjump/core/ui/plugin/tools/SpatialJoinPlugIn.java
+                           com/vividsolutions/jump/tools/AttributeMapping.java
+          Btw.: This function is also acomplished by
+                           Tools\Analysis\Spatial Join of Geometries...
+
 2008-03-27 mentaer <sstein@geo.unizh.ch>
-	  Added transfer of attributes when Thiessen polygons are created
-	  changed: org/openjump/core/ui/plugin/tools/CreateThiessenPolygonsPlugIn.java
-	  note:  translation needs to be added (defered because Peppe works on it)
-	  
+          Added transfer of attributes when Thiessen polygons are created
+          changed: org/openjump/core/ui/plugin/tools/CreateThiessenPolygonsPlugIn.java
+          note:  translation needs to be added (defered because Peppe works on it)
+
 2008-03-25 Andreas Schmitz <schmitz@lat-lon.de>
       src/org/openjump/OpenJumpConfiguration.java,
       src/org/openjump/core/ui/plugin/style/ImportSLDPlugIn.java,
@@ -252,48 +256,48 @@
       Switched positions of SLD related menu entries.
 
 2008-03-21 mentaer <sstein@geo.unizh.ch>
-	  Added category tools from Pirol Projekt
-	  added: org/openjump/core/ui/plugin/mousemenu/category/*
-	  		 org/openjump/core/apitools/PlugInContextTools.java
-	  change:  src/org/openjump/OpenJumpConfiguration.java
-	  	  
-	  
+          Added category tools from Pirol Projekt
+          added: org/openjump/core/ui/plugin/mousemenu/category/*
+                         org/openjump/core/apitools/PlugInContextTools.java
+          change:  src/org/openjump/OpenJumpConfiguration.java
+
+
 2008-03-21 mentaer <sstein@geo.unizh.ch>
-	  cleaned up the menus (Layer Menu, Category popup menu,
-	  Layer popup menu). Moved ExtractLayerInFence and ExtractLayersByGeometry
-	  from layer popup to Edit menu. Removed also DeleteAllFeatures from popup.
-	  Note: we need to check Postgis Plugin needs (I left the LoadDataSet for 
-	  now) and where the MrSID files need to be placed (e.g. mrsidgeoinfo.exe
-	  and mrsidgeodecode.exe)
-	  
+          cleaned up the menus (Layer Menu, Category popup menu,
+          Layer popup menu). Moved ExtractLayerInFence and ExtractLayersByGeometry
+          from layer popup to Edit menu. Removed also DeleteAllFeatures from popup.
+          Note: we need to check Postgis Plugin needs (I left the LoadDataSet for
+          now) and where the MrSID files need to be placed (e.g. mrsidgeoinfo.exe
+          and mrsidgeodecode.exe)
+
 2008-03-21 mentaer <sstein@geo.unizh.ch>
-	  replaced JTS version 1.72 by 1.9
-	  this required to change as well a classpath in 
-	  com.vividsolutions.jump.geom.EnvelopeIntersector 
-	  
+          replaced JTS version 1.72 by 1.9
+          this required to change as well a classpath in
+          com.vividsolutions.jump.geom.EnvelopeIntersector
+
 2008-03-21 mentaer <sstein@geo.unizh.ch>
-	  set OJ version to 1.2F to better distinguish bug reports 
+          set OJ version to 1.2F to better distinguish bug reports
 
 2008-03-21 mentaer <sstein@geo.unizh.ch>
       src/com/vividsolutions/jump/workbench/JUMPConfiguration.java:
-	  removed WMSQueryPlugIn and AddDatastoreLayerPlugIn from context 
-	  menu as those can be called now from new open menu.
+          removed WMSQueryPlugIn and AddDatastoreLayerPlugIn from context
+          menu as those can be called now from new open menu.
 
 
 2008-03-21 mentaer <sstein@geo.unizh.ch>
       src/org/openjump/core/ui/plugin/edit/CopyBBoxPlugin.java:
-      changed the string output to the clipboard according to Jukka's suggestions   
-      
+      changed the string output to the clipboard according to Jukka's suggestions
+
 2008-03-21 mentaer <sstein@geo.unizh.ch>
-      Replaced old PostgreSQL driver (v.2) by newer Version 3.0 
-      in OpenJUMP/lib/ directory  
-      
+      Replaced old PostgreSQL driver (v.2) by newer Version 3.0
+      in OpenJUMP/lib/ directory
+
 2008-03-13 mentaer <sstein@geo.unizh.ch>
       src/com/vividsolutions/jump/workbench/plugin/EnableCheckFactory.java
       Fixed bug of non-activation of Item-Info-Button in Attribute Table,
       and non-activation of attribute mouse menu items.
       Error is in SelectionManager.getSelectedItemsCount() but the problem is
-      resolved by a work around in EnableCheckFactory  
+      resolved by a work around in EnableCheckFactory
 
 2008-03-11 Andreas Schmitz <schmitz@lat-lon.de>
       src/de/latlon/deejump/plugin/style/XSLUtility.java:
@@ -307,14 +311,14 @@
       made the exported SLD more robust against geometry types.
 
 2008-03-09 mentaer <sstein@geo.unizh.ch>
-	  renamed CutPolygonPlugIn to SplitPolygonPlugIn 
-	  added CutPolygon PlugIn from SIGLE
-	  Adding  src/org/openjump/core/ui/plugin/edittoolbox/CutPolygonSIGLEPlugIn.java
+          renamed CutPolygonPlugIn to SplitPolygonPlugIn
+          added CutPolygon PlugIn from SIGLE
+          Adding  src/org/openjump/core/ui/plugin/edittoolbox/CutPolygonSIGLEPlugIn.java
       Adding  src/org/openjump/core/ui/plugin/edittoolbox/cursortools/CutPolygon.gif
       Adding  src/org/openjump/core/ui/plugin/edittoolbox/cursortools/CutPolygonTool.java
       Change  src/org/openjump/OpenJumpConfiguration.java
-      		  + language files
-      
+                  + language files
+
 2008-02-28 Andreas Schmitz <schmitz@lat-lon.de>
       src/de/latlon/deejump/plugin/style/CrossVertexStyle.java2xml,
       src/de/latlon/deejump/plugin/style/CircleVertexStyle.java2xml,
@@ -485,7 +489,7 @@
 2007-12-18 Paul Austin <paul.austin@revolsys.com
   * Added a new RendererFactory implementation which accepts the LayerViewPanel
     as an argument.
-    
+
 2007-12-18 Andreas Schmitz <schmitz@lat-lon.de>
       src/language/jump_de.properties:
       Translated remaining values to german.
@@ -506,37 +510,37 @@
       added lib: jmatharray-20070905.jar
       removed lib: jmath5m.jar
       Updated to newer version of jmatharray library which works on double[][].
-      
+
 2007-11-14 Andreas Schmitz <schmitz@lat-lon.de>
       src/com/vividsolutions/wms/Parser.java:
       External DTDs are not loaded automatically anymore for WMS, this
       enables offline working with local WMSs.
-      
+
 2007-11-08 beckerl <becker.larry@gmail.com>
            * Added a Paste Items At Point menu item on the layer view context
-             menu that pastes the clipboard at the right-clicked point.  Note 
+             menu that pastes the clipboard at the right-clicked point.  Note
              that there must be an editable layer highlighted.  No I18n entries yet.
              org.openjump.core.ui.plugin.mousemenu.PasteItemsAtPlugIn.java
              com.vividsolutions.jump.workbench.JUMPConfiguration.java
 
- 
+
 2007-11-07 beckerl <becker.larry@gmail.com>
-           * Added a shift key mode to Move Selected Items cursor tool that 
+           * Added a shift key mode to Move Selected Items cursor tool that
              turns it into Rotate Selected Items.
              com.vividsolutions.jump.workbench.ui.cursortool.editing.MoveSelectedItemsTool.java
              com.vividsolutions.jump.workbench.ui.images.RotateSelCursor.gif
-             
+
  2007-11-06 Paul Austin <paul.austin@revolsys.com
-  * Improved speed of the Open Wizard Plug-in. Added support to remember last 
+  * Improved speed of the Open Wizard Plug-in. Added support to remember last
     panel used in the current session. Added the switching between types as a
     side bar.
 
 2007-11-06 beckerl <becker.larry@gmail.com>
-           * Added a shift key mode to Move Selected Items cursor tool that 
+           * Added a shift key mode to Move Selected Items cursor tool that
              turns it into Rotate Selected Items.
              com.vividsolutions.jump.workbench.ui.cursortool.editing.MoveSelectedItemsTool.java
              com.vividsolutions.jump.workbench.ui.images.RotateSelCursor.gif
-             
+
  2007-11-06 beckerl <becker.larry@gmail.com>
           * Fixed File->Save View as Raster bug with the Metal L&F that caused
             the save file name text box to dissappear.  Moved the Save World File
@@ -545,7 +549,7 @@
             3800 to save a high resolution image.  A fence icon appears to the left
             of the X box if there is a fence layer, indicating taht it will be
             used in place of the view window to define the picture bounds.
-            
+
 2007-10-30 Paul Austin <paul.austin@revolsys.com
   * Improved the PastePlugin to support point coordinates in the form (1.0,1,1)
     or (1 1 1) with any ammount of white space. Multiple points can be pasted
@@ -553,8 +557,8 @@
   * Added support for plug-ins to have their own I18N resource bundles.
 
 2007-10-25 Andreas Schmitz <schmitz@lat-lon.de>
-	pom.xml:
-	Added main class entry to manifest.
+        pom.xml:
+        Added main class entry to manifest.
 
 2007-10-24 Paul Austin <paul.austin@revolsys.com
           * Changed the AddWmsLayerPlugin to use the new WMS wizard and improved
@@ -570,8 +574,8 @@
       http://sourceforge.net/tracker/index.php?func=detail&aid=1691836&group_id=118054&atid=679906
 
 2007-10-24 Andreas Schmitz <schmitz@lat-lon.de>
-	  src/com/vividsolutions/jump/workbench/imagery/geotiff/GeoTIFFRaster.java:
-	  Fixed reading of TIFF rasters with world files.
+          src/com/vividsolutions/jump/workbench/imagery/geotiff/GeoTIFFRaster.java:
+          Fixed reading of TIFF rasters with world files.
 
 2007-10-19 Andreas Schmitz <schmitz@lat-lon.de>
       src/language/jump_it.properties,
@@ -586,8 +590,8 @@
       src/language/jump_de.properties,
       src/com/vividsolutions/wms/WMService.java,
       src/com/vividsolutions/jump/workbench/ui/plugin/wms/AddWMSQueryPlugIn.java:
-	  Fixed issue
-	  http://sourceforge.net/tracker/index.php?func=detail&aid=1748657&group_id=118054&atid=679906
+          Fixed issue
+          http://sourceforge.net/tracker/index.php?func=detail&aid=1748657&group_id=118054&atid=679906
 
 2007-10-19 Paul Austin <paul.austin@revolsys.com
           * Removed Open, close buttons from the open project panel
@@ -596,15 +600,15 @@
 2007-10-19 Andreas Schmitz <schmitz@lat-lon.de>
     src/de/latlon/deejump/plugin/style/DeeChangeStylesPlugIn.java,
     src/de/latlon/deejump/plugin/style/DeeRenderingStylePanel.java:
-	Made a first attempt to fix the following bug:
-	http://sourceforge.net/tracker/index.php?func=detail&aid=1566976&group_id=118054&atid=679906
-	
+        Made a first attempt to fix the following bug:
+        http://sourceforge.net/tracker/index.php?func=detail&aid=1566976&group_id=118054&atid=679906
+
 2007-10-14 Paul Austin <paul.austin@revolsys.com
           * Improved the Open Wizard to work when there is no active project.
             If there are no projects at all a new one is created. If all
             projects are iconized the user will be able to select either a
             new project or use an existing one.
-            
+
 2007-10-18 Andreas Schmitz <schmitz@lat-lon.de>
     src/de/latlon/deejump/plugin/style/DeeChangeStylesPlugIn.java:
     Added initialization code.
@@ -617,15 +621,15 @@
 
     src/de/latlon/deejump/plugin/style/layerstyle2sld.xsl,
     src/de/latlon/deejump/plugin/style/XSLUtility.java:
-	Added proper exporting of transparency, line and polygon patterns.
+        Added proper exporting of transparency, line and polygon patterns.
 
 2007-10-16 Andreas Schmitz <schmitz@lat-lon.de>
-	src/org/openjump/core/ui/plugin/wms/AddWmsLayerWizard.java:
-	Fixed storing of cached URLs.
+        src/org/openjump/core/ui/plugin/wms/AddWmsLayerWizard.java:
+        Fixed storing of cached URLs.
 
 2007-10-14 paul_d_austin <paul.austin@revolsys.com
    * Added a new wizard for opening different types of data. Includes
-     functionality from the LoadDataset, AddWMSLayer and AddDataStoreLayer 
+     functionality from the LoadDataset, AddWMSLayer and AddDataStoreLayer
      plugins
 
 2007-10-11 Andreas Schmitz <schmitz@lat-lon.de>
@@ -633,32 +637,32 @@
         Set source and target options of javac to 1.5.
 
 2007-10-03 eri_lemesre <eric.lemesre@gmail.com>
-          * Add Replace attribute value by copy from an other attribute 
+          * Add Replace attribute value by copy from an other attribute
             org.openjump.sigle.plugin.replace.ReplaceValuePlugIn.java
-              
+
 2007-09-24 paul_d_austin <paul.austin@revolsys.com
           * Added new abstract plugin/threaded plugins which have a name, icon
             and tooltip under the openjump package. Also added methods to
             FeatureInstaller to add these to menus.
-          * Added enable factory and listener classes which use introspection to 
-            invoke methods on objects, so you don't need to create an 
-            implementation class each time you just want to invoke a method from 
+          * Added enable factory and listener classes which use introspection to
+            invoke methods on objects, so you don't need to create an
+            implementation class each time you just want to invoke a method from
             a button or menu on the plugin.
           * Added ComponentFactory frameworks for Swing Components and editable
             Swing Components (fields).
           * Added the new Open File, Open Project and Open Recent menus.
           * Added drag and drop support for loading files
-          
+
  2007-10-07 beckerl <becker.larry@gmail.com>
           * Optimizations to improve responsiveness with large selections of points.
             Added getSelectedItemsCount() and getFeaturesWithSelectedItemsCount() to
             SelectionManager.  Changed EnableCheckFactory to use them.
-            In AbstractSelectionRenderer, stopped drawing a point if it would be 
+            In AbstractSelectionRenderer, stopped drawing a point if it would be
             obscurred by a selection handle.  Reduced point handle redraw by 50%.
             com.vividsolutions.jump.workbench.ui.SelectionManager.java
             com.vividsolutions.jump.workbench.plugin.EnableCheckFactory.java
             com.vividsolutions.jump.workbench.ui.renderer.AbstractSelectionRenderer.java
-          
+
 2007-10-06 beckerl <becker.larry@gmail.com>
           * Refactored PanTool and ZoomTool and created a new
             super class AbstractZoomTool.  Fixed click zoom so that it
@@ -669,14 +673,14 @@
 
 2007-10-05 beckerl <becker.larry@gmail.com>
           * Added Extract by Geometry Type on layer name context menu.
-          	Added keys to all language files.  Translated german and french.
-			org.openjump.OpenJumpConfiguration.java
-			com.vividsolutions.jump.workbench.ui.images.extract.gif
-  			org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.java
-   		
- 
+                Added keys to all language files.  Translated german and french.
+                        org.openjump.OpenJumpConfiguration.java
+                        com.vividsolutions.jump.workbench.ui.images.extract.gif
+                        org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.java
+
+
 2007-09-17 beckerl <becker.larry@gmail.com>
-          * Added mouse wheel zooming to the PanTool. 
+          * Added mouse wheel zooming to the PanTool.
             com.vividsolutions.jump.workbench.ui.zoom.PanTool.java
             com.vividsolutions.jump.workbench.ui.LayerViewPanel.java
           * Added the SelectablePlugIn to control selectability of layers.
@@ -685,7 +689,7 @@
             org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.java
             com.vividsolutions.jump.workbench.JUMPConfiguration.java
             Language file entries have been made.
-          
+
 2007-09-17 paul_d_austin <paul.austin@revolsys.com
         * Improved the windows and UNIX startup scripts
 
@@ -702,12 +706,12 @@
             that works for layer selections.
             Language file entries have been made.  Only German translation is done.
             org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.java
-            
+
 2007-09-11 beckerl <becker.larry@gmail.com>
           * Closed the shape file after it was read to allow it to be deleted.
             com.vividsolutions.jump.io.ShapefileReader.java
             org.geotools.shapefile.Shapefile.java
-          
+
 2007-09-10 Andreas Schmitz <schmitz@lat-lon.de>
         src/language/jump_fi.properties,
         src/language/jump.properties,
@@ -769,23 +773,23 @@
 2007-09-03 beckerl <becker.larry@gmail.com>
           * Added menu icons to Save Selected Datasets,Save Dataset As,
           Delete Selected Items, Delete All Features, Remove Selected Layers,
-		  Add New Features, Zoom To Layer, and Cut Selected Items.
-		  org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.java
-		  org.openjump.core.ui.images.disk_multiple.png
-		  com.vividsolutions.jump.workbench.datasource.SaveDatasetAsPlugIn.java
-		  com.vividsolutions.jump.workbench.ui.images.disk.png
-		  com.vividsolutions.jump.workbench.ui.plugin.DeleteSelectedItemsPlugIn.java
-		  com.vividsolutions.jump.workbench.ui.plugin.DeleteAllFeaturesPlugIn.java
-		  com.vividsolutions.jump.workbench.ui.images.delete.png
-		  com.vividsolutions.jump.workbench.ui.plugin.RemoveSelectedLayersPlugIn.java
-		  com.vividsolutions.jump.workbench.ui.images.cross.png
-		  com.vividsolutions.jump.workbench.ui.plugin.AddNewFeaturesPlugIn.java
-		  com.vividsolutions.jump.workbench.ui.images.add.png
-		  com.vividsolutions.jump.workbench.ui.ZoomZoomToLayerPlugIn.java
-		  com.vividsolutions.jump.workbench.ui.images.zoom.gif
-		  com.vividsolutions.jump.workbench.ui.plugin.clipboard.CutSelectedItemsPlugIn.java
-		  com.vividsolutions.jump.workbench.ui.images.cut.gif
-		  com.vividsolutions.jump.workbench.JUMPConfiguration.java
+                  Add New Features, Zoom To Layer, and Cut Selected Items.
+                  org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.java
+                  org.openjump.core.ui.images.disk_multiple.png
+                  com.vividsolutions.jump.workbench.datasource.SaveDatasetAsPlugIn.java
+                  com.vividsolutions.jump.workbench.ui.images.disk.png
+                  com.vividsolutions.jump.workbench.ui.plugin.DeleteSelectedItemsPlugIn.java
+                  com.vividsolutions.jump.workbench.ui.plugin.DeleteAllFeaturesPlugIn.java
+                  com.vividsolutions.jump.workbench.ui.images.delete.png
+                  com.vividsolutions.jump.workbench.ui.plugin.RemoveSelectedLayersPlugIn.java
+                  com.vividsolutions.jump.workbench.ui.images.cross.png
+                  com.vividsolutions.jump.workbench.ui.plugin.AddNewFeaturesPlugIn.java
+                  com.vividsolutions.jump.workbench.ui.images.add.png
+                  com.vividsolutions.jump.workbench.ui.ZoomZoomToLayerPlugIn.java
+                  com.vividsolutions.jump.workbench.ui.images.zoom.gif
+                  com.vividsolutions.jump.workbench.ui.plugin.clipboard.CutSelectedItemsPlugIn.java
+                  com.vividsolutions.jump.workbench.ui.images.cut.gif
+                  com.vividsolutions.jump.workbench.JUMPConfiguration.java
 
 2007-09-03 beckerl <becker.larry@gmail.com>
           * Moved menu item to more appropriate posiiton below Open Project.
@@ -793,9 +797,9 @@
 
 2007-09-01 beckerl <becker.larry@gmail.com>
         * Added an option to "Write world file" in the Save Image As dialog.
-		  I18N strings were added but need translation.
-		  com.vividsolutions.jump.workbench.ui.plugin.SaveImageAsPlugIn.java
-		  org.openjump.core.ui.plugin.file.WorldFileWriter.java
+                  I18N strings were added but need translation.
+                  com.vividsolutions.jump.workbench.ui.plugin.SaveImageAsPlugIn.java
+                  org.openjump.core.ui.plugin.file.WorldFileWriter.java
 
 2007-08-31 beckerl <becker.larry@gmail.com>
         * Improved Tools->Generate->Buffer.
