@@ -88,7 +88,7 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn
 
         context.getFeatureInstaller()
         //			.addMainMenuItemWithJava14Fix ( this, new String [ ] { "View" },
-			.addMainMenuItemWithJava14Fix( this, new String[] { MenuNames.VIEW },
+			.addMainMenuItem( this, new String[] { MenuNames.VIEW },
                 I18N.get( "org.openjump.core.ui.plugin.wms.ZoomToWMSPlugIn.zoom-to-wms-layer" )
                     + "{pos:8}", false, null, enableCheck ); //enableCheck );
         // Add PlugIn to WMSPopupMenu
@@ -122,7 +122,10 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn
             }
         }
         else{
-	        ArrayList mapLayerOfChoosenLayers = getMapLayerOfChoosenLayers( context );
+            ArrayList mapLayerOfChoosenLayers = getMapLayerOfChoosenLayers( context );
+            if (mapLayerOfChoosenLayers == null) {
+                return false;
+            }
 	        String selectedSRS = getSelectedSRS( context );
 	
 	        Hashtable boundingBoxesForSRS = getBoundingBoxesForSRS( mapLayerOfChoosenLayers,
@@ -601,7 +604,7 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn
         }
 
 
-        public int compareTo( Object object ) { // Muss zum Sortieren überschrieben werden.
+        public int compareTo( Object object ) { // Muss zum Sortieren ï¿½berschrieben werden.
             int ret = 1;
             MapLayerAttributes mla = (MapLayerAttributes) object;
 
@@ -849,7 +852,7 @@ System.out.println ( "ZoomToWMS srs: " + srs + "  latLonBBMinX: " + latLonBB.get
 
     } // End InfoTableModel
 
-    class MASort extends MouseAdapter { // Mausadapter für Spaltensortierung
+    class MASort extends MouseAdapter { // Mausadapter fï¿½r Spaltensortierung
 
         public void mousePressed( MouseEvent me ) {
             if ( me.getButton() == MouseEvent.BUTTON3 ) {

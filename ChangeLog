@@ -1,3 +1,7 @@
+2008-06-10 Andreas Schmitz <schmitz@lat-lon.de>
+      src/org/openjump/core/ui/plugin/wms/ZoomToWMSPlugIn.java:
+      Fixed a null pointer when selected layer is no WMS layer.
+
 2008-06-09 Andreas Schmitz <schmitz@lat-lon.de>
       src/com/vividsolutions/jump/workbench/model/WMSLayer.java:
       Added generics to layer list.
