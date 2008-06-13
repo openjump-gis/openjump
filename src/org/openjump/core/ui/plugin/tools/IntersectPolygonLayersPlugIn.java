@@ -111,7 +111,7 @@ public class IntersectPolygonLayersPlugIn extends ThreadedBasePlugIn {
 				.getFeatureCollectionWrapper(), this.transferAtt, monitor,
 				context);
 		if ((resultColl != null) && (resultColl.size() > 0)) {
-			context.addLayer(StandardCategoryNames.WORKING, I18N.get("Result"),
+			context.addLayer(StandardCategoryNames.RESULT, I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.intersection") + "-" + layer1.getName() +"-"+ layer2.getName(),
 					resultColl);
 		}
 		if (exceptionThrown)
