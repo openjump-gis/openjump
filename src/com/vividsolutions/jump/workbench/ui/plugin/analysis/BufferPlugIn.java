@@ -39,9 +39,11 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.*;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jump.I18N;
@@ -72,6 +74,8 @@ public class BufferPlugIn
   private  String CAP_STYLE_ROUND;
   private  String CAP_STYLE_SQUARE;
   private  String CAP_STYLE_BUTT;
+  private  String ATTRIBUTE;
+  private  String FROMATTRIUBTE;
 
   private List endCapStyles;
 
@@ -85,6 +89,8 @@ public class BufferPlugIn
   private boolean unionResult = false;
   private String sideBarText = "";
   private boolean copyAttributes = true;
+  private boolean fromAttribute = false;
+  private int attributeIndex = 0;
 
   public BufferPlugIn() {
   }
@@ -120,6 +126,8 @@ public class BufferPlugIn
 	  endCapStyles.add(CAP_STYLE_SQUARE);
 	  endCapStyles.add(CAP_STYLE_BUTT);
 	  endCapStyle = CAP_STYLE_ROUND;
+	  ATTRIBUTE = I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Attribute");
+	  FROMATTRIUBTE = I18N.get("ui.plugin.analysis.BufferPlugIn.Get-distance-from-attribute-value");
 	  
 	  dialog = new MultiInputDialog(context.getWorkbenchFrame(), getName(), true);
 	  int n = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems().size();
@@ -206,6 +214,13 @@ public class BufferPlugIn
       if (monitor.isCancelRequested()) break;
       Feature fa = (Feature) ia.next();
       Geometry ga = fa.getGeometry();
+      if (fromAttribute) {
+    	  Object o = fa.getAttribute(attributeIndex);
+    	  if (o instanceof Double)     		  
+    		  bufferDistance = ((Double) o).doubleValue();
+    	  else if (o instanceof Integer)
+       		  bufferDistance = ((Integer) o).doubleValue();
+     }
       Geometry result = runBuffer(ga);
       if (result != null)
         resultColl.add(result);
@@ -238,8 +253,19 @@ public class BufferPlugIn
 //	dialog.addCheckBox(SELECTED_ONLY, useSelected);
     if (useSelected)
     	dialog.addLabel(SELECTED_ONLY);
-    else
+    else {
 		dialog.addLayerComboBox(LAYER, context.getCandidateLayer(0), context.getLayerManager());  	
+   
+		initComboFields(dialog, FROMATTRIUBTE, ATTRIBUTE);
+		final MultiInputDialog fdialog = dialog;
+        dialog.getCheckBox(FROMATTRIUBTE).addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	fromAttribute = fdialog.getCheckBox(FROMATTRIUBTE).isSelected();
+            	fdialog.getComboBox(ATTRIBUTE).setEnabled(fromAttribute);
+            	fdialog.getCheckBox(UNION_RESULT).setEnabled(!fromAttribute);
+            }
+        });
+    }
     dialog.addDoubleField(DISTANCE, bufferDistance, 10, null);
     JComboBox endCapComboBox = dialog.addComboBox(END_CAP_STYLE, endCapStyle, endCapStyles, null);
     endCapComboBox.addActionListener(new ActionListener() {
@@ -258,16 +284,85 @@ public class BufferPlugIn
     }
 
   private void getDialogValues(MultiInputDialog dialog) {
-	if (!useSelected)
-		layer = dialog.getLayer(LAYER);
-    bufferDistance = dialog.getDouble(DISTANCE);
-    endCapStyle = dialog.getText(END_CAP_STYLE);
-    quadrantSegments = dialog.getInteger(QUADRANT_SEGMENTS);
-//    if (useSelectedAvailable)
-//    	useSelected = dialog.getBoolean(SELECTED_ONLY);
-    unionResult = dialog.getBoolean(UNION_RESULT);
-    copyAttributes = dialog.getBoolean(COPY_ATTRIUBTES);
- }
+	  if (!useSelected)
+		  layer = dialog.getLayer(LAYER);
+	  bufferDistance = dialog.getDouble(DISTANCE);
+	  endCapStyle = dialog.getText(END_CAP_STYLE);
+	  quadrantSegments = dialog.getInteger(QUADRANT_SEGMENTS);
+//	  if (useSelectedAvailable)
+//	  useSelected = dialog.getBoolean(SELECTED_ONLY);
+	  unionResult = dialog.getBoolean(UNION_RESULT);
+	  copyAttributes = dialog.getBoolean(COPY_ATTRIUBTES);
+	  if (fromAttribute) {
+		  if (dialog.getCheckBox(FROMATTRIUBTE).isEnabled()) {
+			  Layer destinationLayer = dialog.getLayer(LAYER);
+			  FeatureSchema schema = destinationLayer.getFeatureCollectionWrapper().getFeatureSchema();
+			  String attributeName = dialog.getText(ATTRIBUTE);
+			  attributeIndex = schema.getAttributeIndex(attributeName);
+		  } else {
+			  fromAttribute = false;
+		  }
+	  }
+  }
+
+  private void initComboFields(
+		  final MultiInputDialog dialog,
+		  final String checkBoxFieldName,
+		  final String comboBoxFieldName) {
+	  dialog.addCheckBox(checkBoxFieldName, false);
+	  dialog.addComboBox(comboBoxFieldName, null, new ArrayList(), null);
+	  Layer newLayer = (Layer) dialog.getComboBox(LAYER).getSelectedItem();
+	  if (newLayer != null)
+		  dialog.getComboBox(comboBoxFieldName).setModel(
+				  new DefaultComboBoxModel(
+						  new Vector(candidateAttributeNames(newLayer))));
+	  dialog.getComboBox(LAYER).addActionListener(new ActionListener() {
+          private Layer lastLayer = null;
+		  public void actionPerformed(ActionEvent e) {
+			  Layer newLayer = (Layer) dialog.getComboBox(LAYER).getSelectedItem();
+              if (lastLayer == newLayer) {
+                  return;
+              }
+              lastLayer = newLayer;
+			  dialog.getComboBox(comboBoxFieldName).setModel(
+					  new DefaultComboBoxModel(
+							  new Vector(candidateAttributeNames(newLayer))));
+			  boolean notEmpty = !candidateAttributeNames(newLayer).isEmpty();
+			  dialog.getCheckBox(checkBoxFieldName).setEnabled(notEmpty);
+			  if (notEmpty) {
+				  dialog.getComboBox(comboBoxFieldName).setSelectedItem(
+						  candidateAttributeNames(newLayer).get(0));
+			  }
+		  }
+	  });
+	  dialog
+	  .addEnableChecks(
+			  comboBoxFieldName,
+			  Arrays
+			  .asList(
+					  new Object[] {
+							  new EnableCheck() {
+								  public String check(JComponent component) {
+									  return dialog.getBoolean(checkBoxFieldName)
+									  && dialog.getComboBox(comboBoxFieldName).getItemCount()
+									  == 0 ? " " : null;
+								  }
+							  }
+					  }));
+	  dialog.indentLabel(comboBoxFieldName);
+  }
+	    
+  private List candidateAttributeNames(Layer layer) {
+      ArrayList candidateAttributeNames = new ArrayList();
+      FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
+      for (int i = 0; i < schema.getAttributeCount(); i++) {
+          if ((schema.getAttributeType(i) == AttributeType.DOUBLE) ||
+                  (schema.getAttributeType(i) == AttributeType.INTEGER)) {
+               candidateAttributeNames.add(schema.getAttributeName(i));
+          }
+      }
+      return candidateAttributeNames;
+  }
 
   private int endCapStyleCode(String capStyle)
   {
