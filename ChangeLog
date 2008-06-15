@@ -1,3 +1,8 @@
+2008-06-15 beckerl <becker.larry@gmail.com>
+      * Added "Get distance from attribute" option to Buffer.  
+      Currently it disables the Union option.
+      com/vividsolutions/jump/workbench/ui/plugin/analysis/BufferPlugIn.java
+             
 2008-06-10 Andreas Schmitz <schmitz@lat-lon.de>
       src/org/openjump/core/ui/plugin/wms/ZoomToWMSPlugIn.java:
       Fixed a null pointer when selected layer is no WMS layer.
