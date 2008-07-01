@@ -60,7 +60,7 @@ import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
  */
 public class DataSourceFileLayerLoader extends AbstractFileLayerLoader {
   /** The {@link DataSource} class. */
-  private Class ;
+  private Class dataSourceClass;
 
   /** The workbench context. */
   private WorkbenchContext workbenchContext;
