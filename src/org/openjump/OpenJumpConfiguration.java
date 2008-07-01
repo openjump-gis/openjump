@@ -234,10 +234,6 @@ public class OpenJumpConfiguration {
     
     pluginContext.getFeatureInstaller().addMenuSeparator(LAYER);
 
-    // -- to install in Toolbar
-    // mySytle2SLDplugIn.install(new PlugInContext(workbenchContext, null, null,
-    // null, null));
-
     // --this caused problems with the postgis plugin [sstein]
     // TODO: the problem has been solved (using try/catch) but still class has
     // to be
@@ -342,28 +338,6 @@ public class OpenJumpConfiguration {
     jtsSimplifier.initialize(new PlugInContext(workbenchContext, null, null,
       null, null));
 
-    /** ** tools main *** */
-
-    // -- [sstein] do this to avoid that the programming menu is created after
-    // MeasureM_FPlugIn is added to the tools menu
-    // [Michael Michaud 2007-03-23] : put programming plugins in
-    // MenuNames.CUSTOMIZE menu
-    /*
-     * PlugInContext pc = new PlugInContext(workbenchContext, null, null, null,
-     * null); FeatureInstaller fi = pc.getFeatureInstaller(); JMenu menuTools =
-     * fi.menuBarMenu(MenuNames.TOOLS); fi.createMenusIfNecessary(menuTools, new
-     * String[]{MenuNames.TOOLS_PROGRAMMING});
-     */
-
-    // -- deeJUMP function by LAT/LON [05.08.2006 sstein]
-    // [Michael Michaud 2007-03-23] move the plugin to the CUSTOMIZE menu (see
-    // here after)
-    /*
-     * ExtensionManagerPlugIn extensionManagerPlugIn = new
-     * ExtensionManagerPlugIn(); extensionManagerPlugIn.install(new
-     * PlugInContext(workbenchContext, null, null, null, null));
-     */
-
     MeasureM_FPlugIn myFeetPlugIn = new MeasureM_FPlugIn();
     myFeetPlugIn.initialize(new PlugInContext(workbenchContext, null, null,
       null, null));
@@ -376,12 +350,11 @@ public class OpenJumpConfiguration {
     extensionManagerPlugIn.install(new PlugInContext(workbenchContext, null,
       null, null, null));
 
-    // -- [michael michaud] move from JUMPConfiguration
     BeanShellPlugIn beanShellPlugIn = new BeanShellPlugIn();
     beanShellPlugIn.initialize(new PlugInContext(workbenchContext, null, null,
       null, null));
 
-    // -- [michael michaud] add Larry's BeanToolsPlugIn
+    // -- Larry's BeanToolsPlugIn
     BeanToolsPlugIn beanTools = new BeanToolsPlugIn();
     beanTools.initialize(new PlugInContext(workbenchContext, null, null, null,
       null));
