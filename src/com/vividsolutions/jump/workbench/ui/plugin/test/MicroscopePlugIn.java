@@ -45,6 +45,7 @@ import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.MenuNames;
 public class MicroscopePlugIn extends AbstractPlugIn {
     public MicroscopePlugIn() {
     }
@@ -55,7 +56,7 @@ public class MicroscopePlugIn extends AbstractPlugIn {
             .getFeatureInstaller()
 			.addMainMenuItemWithJava14Fix(
                 this,
-                    new String[] { "Tools", "Test" },
+                    new String[] { MenuNames.TOOLS, "Test" },
                     getName(),
                     false,
                     null,
