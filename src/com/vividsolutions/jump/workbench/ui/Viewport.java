@@ -200,8 +200,8 @@ public class Viewport implements Java2DConverter.PointConverter {
     public Point2D toViewPoint(Point2D modelPoint) throws NoninvertibleTransformException {
         return getModelToViewTransform().transform(toPoint2DDouble(modelPoint), null);
     }
-
-    public Point2D toViewPoint(Coordinate modelCoordinate)
+  
+    public Point2D toViewPoint(Coordinate modelCoordinate) 
     throws NoninvertibleTransformException {
         //Optimization recommended by Todd Warnes [Jon Aquino 2004-02-06]
         Point2D.Double pt = new Point2D.Double(modelCoordinate.x, modelCoordinate.y);
