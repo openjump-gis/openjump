@@ -1,3 +1,5 @@
 <workbench>
+	<!--plug-in> ====== Test PlugIns ===== </plug-in-->
+	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.test.MicroscopePlugIn</plug-in>
 </workbench>
 
