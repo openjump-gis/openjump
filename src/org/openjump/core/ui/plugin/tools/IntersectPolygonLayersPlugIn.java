@@ -69,7 +69,7 @@ public class IntersectPolygonLayersPlugIn extends ThreadedBasePlugIn {
 	public void initialize(PlugInContext context) throws Exception {
 		context.getFeatureInstaller().addMainMenuItem(
 				this,
-				new String[] { MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS },
+				new String[] { MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS, MenuNames.TWOLAYERS },
 				this.getName(),
 				false,
 				null,

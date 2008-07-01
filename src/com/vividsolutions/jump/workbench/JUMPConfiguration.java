@@ -133,7 +133,6 @@ import com.vividsolutions.jump.workbench.ui.plugin.analysis.GeometryFunctionPlug
 import com.vividsolutions.jump.workbench.ui.plugin.analysis.OverlayPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.analysis.SpatialJoinPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.analysis.SpatialQueryPlugIn;
-import com.vividsolutions.jump.workbench.ui.plugin.analysis.UnionByAttributePlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.analysis.UnionPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.clipboard.CopyImagePlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.clipboard.CopySelectedItemsPlugIn;
@@ -962,7 +961,6 @@ public class JUMPConfiguration implements Setup {
     private AttributeQueryPlugIn attrQueryPlugIn = new AttributeQueryPlugIn();
 	private SpatialJoinPlugIn spatialJoinPlugIn = new SpatialJoinPlugIn();
     private UnionPlugIn unionPlugIn = new UnionPlugIn();
-    private UnionByAttributePlugIn unionByAttributePlugIn = new UnionByAttributePlugIn();
     private GeometryFunctionPlugIn geometryFunctionPlugIn = new GeometryFunctionPlugIn();
     private OverlayPlugIn overlayPlugIn = new OverlayPlugIn();
     private ConvexHullPlugIn convexHullPI = new ConvexHullPlugIn();
@@ -976,6 +974,8 @@ public class JUMPConfiguration implements Setup {
     String MENU_TOOLS = MenuNames.TOOLS;
     String MENU_ANALYSIS = MenuNames.TOOLS_ANALYSIS;
     String[] MENU_TOOLS_ANALYSIS = new String[] { MENU_TOOLS, MENU_ANALYSIS};
+    String[] MENU_TOOLS_ANALYSIS_ONE_LAYER = new String[] { MENU_TOOLS, MENU_ANALYSIS, MenuNames.ONELAYER};
+    String[] MENU_TOOLS_ANALYSIS_TWO_LAYER = new String[] { MENU_TOOLS, MENU_ANALYSIS, MenuNames.TWOLAYERS};
     	
 	featureInstaller
 	.addMainMenuItem(
@@ -1027,7 +1027,7 @@ public class JUMPConfiguration implements Setup {
 	featureInstaller
 	.addMainMenuItem(
 			unionPlugIn,
-			MENU_TOOLS_ANALYSIS, //maybe move to analysis join (but currently leave)
+			MENU_TOOLS_ANALYSIS_ONE_LAYER, //maybe move to analysis join (but currently leave)
 			unionPlugIn.getName() + "...",
 			false,
 			null,
@@ -1038,20 +1038,7 @@ public class JUMPConfiguration implements Setup {
 					.add(
 							checkFactory
 							.createAtLeastNLayersMustExistCheck(1)));
-    featureInstaller
-	.addMainMenuItem(
-			unionByAttributePlugIn,
-			MENU_TOOLS_ANALYSIS, //maybe move to analysis join (but currently leave)
-			unionByAttributePlugIn.getName() + "...",
-			false,
-			null,
-			new MultiEnableCheck()
-			.add(
-					checkFactory
-					.createWindowWithLayerNamePanelMustBeActiveCheck())
-					.add(
-							checkFactory
-							.createAtLeastNLayersMustExistCheck(1)));
+
 	featureInstaller
 	.addMainMenuItem(
 			bufferPlugIn,
@@ -1082,7 +1069,7 @@ public class JUMPConfiguration implements Setup {
 	featureInstaller
 	.addMainMenuItem(
 			overlayPlugIn,
-			MENU_TOOLS_ANALYSIS,
+			MENU_TOOLS_ANALYSIS_TWO_LAYER,
 			overlayPlugIn.getName() + "...",
 			false,
 			null,
@@ -1094,7 +1081,7 @@ public class JUMPConfiguration implements Setup {
 	//featureInstaller.addMenuSeparator(MENU_TOOLS_ANALYSIS);
 	
 	featureInstaller.addMainMenuItem(calculateAreasAndLengthsPlugIn,
-			new String[] { MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
+			new String[] { MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS, MenuNames.ONELAYER},
 			calculateAreasAndLengthsPlugIn.getName() + "...", false, null,
 			calculateAreasAndLengthsPlugIn.createEnableCheck(workbenchContext));
 	

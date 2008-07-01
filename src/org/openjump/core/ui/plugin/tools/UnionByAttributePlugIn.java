@@ -30,7 +30,7 @@
  * www.vividsolutions.com
  */
 
-package com.vividsolutions.jump.workbench.ui.plugin.analysis;
+package org.openjump.core.ui.plugin.tools;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -63,9 +63,12 @@ import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
+import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
+import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.ThreadedPlugIn;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
@@ -92,14 +95,21 @@ public class UnionByAttributePlugIn extends AbstractPlugIn implements ThreadedPl
     
     public String getName() {return I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.union-by-attribute");}
 
-    /*
+    
     public void initialize(PlugInContext context) throws Exception {
-        context.getFeatureInstaller().addMainMenuItem(
-            this, "Tools", "Find Unaligned Segments...", null, new MultiEnableCheck()
-            .add(context.getCheckFactory().createWindowWithLayerNamePanelMustBeActiveCheck())
-            .add(context.getCheckFactory().createAtLeastNLayersMustExistCheck(1)));
+		context.getFeatureInstaller().addMainMenuItem(
+				this,
+				new String[] { MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS, MenuNames.ONELAYER },
+				this.getName(),
+				false,
+				null,
+				new MultiEnableCheck().add(
+						new EnableCheckFactory(context.getWorkbenchContext())
+								.createTaskWindowMustBeActiveCheck()).add(
+						new EnableCheckFactory(context.getWorkbenchContext())
+								.createAtLeastNLayersMustExistCheck(1)));
     }
-    */
+    
     
     public boolean execute(PlugInContext context) throws Exception {
     	

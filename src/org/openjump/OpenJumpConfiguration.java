@@ -79,6 +79,7 @@ import org.openjump.core.ui.plugin.tools.MeasureM_FPlugIn;
 import org.openjump.core.ui.plugin.tools.MergeTwoSelectedPolygonsPlugIn;
 import org.openjump.core.ui.plugin.tools.ReducePointsISAPlugIn;
 import org.openjump.core.ui.plugin.tools.SplitPolygonPlugIn;
+import org.openjump.core.ui.plugin.tools.UnionByAttributePlugIn;
 import org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn;
 import org.openjump.core.ui.plugin.view.MapToolTipPlugIn;
 import org.openjump.core.ui.plugin.view.ShowFullPathPlugIn;
@@ -277,6 +278,14 @@ public class OpenJumpConfiguration {
     coveragePlugIn.initialize(new PlugInContext(workbenchContext, null, null,
       null, null));
 
+    IntersectPolygonLayersPlugIn intersectLayers = new IntersectPolygonLayersPlugIn();
+    intersectLayers.initialize(new PlugInContext(workbenchContext,
+    	      null, null, null, null));
+    
+    UnionByAttributePlugIn unionByAttribute = new UnionByAttributePlugIn();
+    unionByAttribute.initialize(new PlugInContext(workbenchContext,
+  	      null, null, null, null)); 
+    
     /** ** GENERATE *** */
     ConvexHullPlugIn myConvHullPlugIn = new ConvexHullPlugIn();
     myConvHullPlugIn.initialize(new PlugInContext(workbenchContext, null, null,
@@ -424,11 +433,6 @@ public class OpenJumpConfiguration {
     PasteItemsAtPlugIn pasteItemsAtPlugIn = new PasteItemsAtPlugIn();
     pasteItemsAtPlugIn.initialize(new PlugInContext(workbenchContext,
       null, null, null, null));
-
-    //-- [sstein: 4.Mai.2008] testing
-    IntersectPolygonLayersPlugIn intersectLayers = new IntersectPolygonLayersPlugIn();
-    intersectLayers.initialize(new PlugInContext(workbenchContext,
-    	      null, null, null, null));
     
     /**+++++++++++++++++++++++
      * Category Context menu

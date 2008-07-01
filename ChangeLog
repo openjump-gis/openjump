@@ -1,3 +1,9 @@
+2008-07-01 mentaer <sstein@geo.uzh.ch>
+      moved some the functions of the tools/analysis menu to new submenus
+      "one layer" and "two layer" to further user friendliness. I also moved
+      UnionByAttribute plugin to openjump.core as this is a function
+      programmed by Michael M.   
+      
 2008-06-15 beckerl <becker.larry@gmail.com>
       * Added "Get distance from attribute" option to Buffer.  
       Currently it disables the Union option.
