@@ -39,6 +39,13 @@
       </includes>
     </fileSet>
     <fileSet>
+      <directory>scripts</directory>
+      <outputDirectory>/bin</outputDirectory>
+      <includes>
+        <include>workbench-properties.xml</include>
+      </includes>
+    </fileSet>
+    <fileSet>
       <directory>etc</directory>
       <outputDirectory>/conf</outputDirectory>
       <includes>
