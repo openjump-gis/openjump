@@ -24,11 +24,6 @@ import org.openjump.core.ui.io.file.ReferencedImageFactoryFileLayerLoader;
 import org.openjump.core.ui.plugin.customize.BeanToolsPlugIn;
 import org.openjump.core.ui.plugin.datastore.AddDataStoreLayerWizard;
 import org.openjump.core.ui.plugin.edit.CopyBBoxPlugin;
-import org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn;
-import org.openjump.core.ui.plugin.edit.SelectAllLayerItemsPlugIn;
-import org.openjump.core.ui.plugin.edit.SelectByTypePlugIn;
-import org.openjump.core.ui.plugin.edit.SelectItemsByCircleFromSelectedLayersPlugIn;
-import org.openjump.core.ui.plugin.edit.SelectItemsByFenceFromSelectedLayersPlugIn;
 import org.openjump.core.ui.plugin.edittoolbox.AutoCompletePolygonPlugIn;
 import org.openjump.core.ui.plugin.edittoolbox.ConstrainedMoveVertexPlugIn;
 import org.openjump.core.ui.plugin.edittoolbox.CutPolygonSIGLEPlugIn;
@@ -49,8 +44,6 @@ import org.openjump.core.ui.plugin.file.SaveImageAsSVGPlugIn;
 import org.openjump.core.ui.plugin.layer.AddSIDLayerPlugIn;
 import org.openjump.core.ui.plugin.layer.ChangeLayerableNamePlugIn;
 import org.openjump.core.ui.plugin.layer.ChangeSRIDPlugIn;
-import org.openjump.core.ui.plugin.layer.ExtractLayerInFence;
-import org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry;
 import org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn;
 import org.openjump.core.ui.plugin.layer.ToggleVisiblityPlugIn;
 import org.openjump.core.ui.plugin.mousemenu.EditSelectedSidePlugIn;
@@ -174,14 +167,17 @@ public class OpenJumpConfiguration {
     /***************************************************************************
      * menu EDIT
      **************************************************************************/
+    
+    //-- [sstein 2.July.2008] now initialized with workbench-properties.xml file
+    /*
     SelectItemsByFenceFromSelectedLayersPlugIn selectItemsFromLayersPlugIn = new SelectItemsByFenceFromSelectedLayersPlugIn();
     selectItemsFromLayersPlugIn.initialize(new PlugInContext(workbenchContext,
       null, null, null, null));
-
+    
     SelectItemsByCircleFromSelectedLayersPlugIn selectItemsFromCirclePlugIn = new SelectItemsByCircleFromSelectedLayersPlugIn();
     selectItemsFromCirclePlugIn.initialize(new PlugInContext(workbenchContext,
       null, null, null, null));
-
+    
     SelectAllLayerItemsPlugIn selectAllLayerItemsPlugIn = new SelectAllLayerItemsPlugIn();
     selectAllLayerItemsPlugIn.initialize(new PlugInContext(workbenchContext,
       null, null, null, null));
@@ -199,14 +195,14 @@ public class OpenJumpConfiguration {
 	
 	ExtractLayerInFence myExtractLayerInFence = new ExtractLayerInFence();
 	myExtractLayerInFence.initialize(new PlugInContext(workbenchContext, null, null, null, null));
-
-
-    new CopyBBoxPlugin().initialize(new PlugInContext(workbenchContext, null, null, null, null));
-
+	*/
+    
     /***************************************************************************
      * menu VIEW
      **************************************************************************/
 
+    new CopyBBoxPlugin().initialize(new PlugInContext(workbenchContext, null, null, null, null));
+    
     ZoomToWMSPlugIn myZoomToWMSPlugIn = new ZoomToWMSPlugIn();
     myZoomToWMSPlugIn.initialize(new PlugInContext(workbenchContext, null,
       null, null, null));
