@@ -5,6 +5,10 @@
       "-workbench-properties". It is intended to deliver a "default-plugins.xml"
       in the /bin/ directory of OpenJUMP. (Note: using two properties files
       enables to separate general OJ plugins from own functions)
+      changes in:
+      core/trunk/src/com/vividsolutions/jump/workbench/JUMPWorkbench.java
+      core/trunk/src/com/vividsolutions/jump/workbench/WorkbenchPropertiesFile.java
+      and in the start-up scripts
       
 2008-07-01 mentaer <sstein@geo.uzh.ch>
       moved some the functions of the tools/analysis menu to new submenus
