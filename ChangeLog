@@ -1,4 +1,4 @@
-2008-07-01 mentaer <sstein@geo.uzh.ch>
+2008-07-06 mentaer <sstein@geo.uzh.ch>
       added new command-line parameter "-default-plugins" to load a "second"
       properties file. Plugins read from a properties file with 
       "-default-plugins" will be loaded before the plugins from 
@@ -9,6 +9,13 @@
       core/trunk/src/com/vividsolutions/jump/workbench/JUMPWorkbench.java
       core/trunk/src/com/vividsolutions/jump/workbench/WorkbenchPropertiesFile.java
       and in the start-up scripts
+      
+2008-07-05 beckerl <becker.larry@gmail.com>
+      Added Multi-Ring-Buffer Function for selected objects (a similar function 
+      can be found in ArcGIS:
+      http://webhelp.esri.com/arcgisdesktop/9.2/index.cfm?TopicName=multiple_ring_buffer_(analysis) )
+      new class:
+	  core/trunk/src/org/openjump/core/ui/plugin/tools/MultiRingBufferSelectedPlugIn.java
       
 2008-07-01 mentaer <sstein@geo.uzh.ch>
       moved some the functions of the tools/analysis menu to new submenus
