@@ -81,6 +81,7 @@ public class JUMPWorkbench {
 	public static final String VERSION_TEXT = I18N.get("JUMPWorkbench.version.number");
 	//-- dont change the following strings 
 	public final static String PROPERTIES_OPTION = "properties";
+	public final static String DEFAULT_PLUGINS = "default-plugins";
 	public final static String PLUG_IN_DIRECTORY_OPTION = "plug-in-directory";
 	public final static String I18N_FILE = "i18n";
 	public static final String INITIAL_PROJECT_FILE = "project";
@@ -144,17 +145,45 @@ public class JUMPWorkbench {
 			}
 		});
 		
+		boolean defaultFileExists = false; //[sstein 6.July.2008] new
+		File defaultFile = null;
+		if (commandLine.hasOption(DEFAULT_PLUGINS)) {
+			defaultFile = new File(commandLine.getOption(
+					DEFAULT_PLUGINS).getArg(0));
+			if (defaultFile.exists()) {
+				defaultFileExists = true;
+				//[sstein 6.July.2008] disabled to enable loading of two properties files
+				//properties = new WorkbenchPropertiesFile(defaultFile, frame);
+			} else {
+				System.out.println("JUMP: Warning: Default plugins file does not exist: "
+								+ defaultFile);
+			}
+		}
+		boolean propertiesFileExists = false; //[sstein 6.July.2008] new
+		File propertiesFile = null;
 		if (commandLine.hasOption(PROPERTIES_OPTION)) {
-			File propertiesFile = new File(commandLine.getOption(
+			propertiesFile = new File(commandLine.getOption(
 					PROPERTIES_OPTION).getArg(0));
 			if (propertiesFile.exists()) {
-				properties = new WorkbenchPropertiesFile(propertiesFile, frame);
+				//[sstein 6.July.2008] disabled to enable loading of two properties files
+				//properties = new WorkbenchPropertiesFile(propertiesFile, frame);
+				propertiesFileExists = true;
 			} else {
 				System.out.println("JUMP: Warning: Properties file does not exist: "
 								+ propertiesFile);
 			}
 		}
-
+		//-- [sstein 6.July.2008] start new
+		if((defaultFileExists) && (propertiesFileExists)){
+			properties = new WorkbenchPropertiesFile(defaultFile, propertiesFile, frame);
+		}
+		else if(defaultFileExists){
+			properties = new WorkbenchPropertiesFile(defaultFile, frame);
+		}
+		else if(propertiesFileExists){
+			properties = new WorkbenchPropertiesFile(propertiesFile, frame);
+		}
+		//-- end new
 		File extensionsDirectory = null;
 		if (commandLine.hasOption(PLUG_IN_DIRECTORY_OPTION)) {
 			extensionsDirectory = new File(commandLine.getOption(
@@ -310,6 +339,7 @@ public class JUMPWorkbench {
 		//<<TODO:QUESTION>> Notify MD: using CommandLine [Jon Aquino]
 		commandLine = new CommandLine('-');
 		commandLine.addOptionSpec(new OptionSpec(PROPERTIES_OPTION, 1));
+		commandLine.addOptionSpec(new OptionSpec(DEFAULT_PLUGINS, 1));
 		commandLine.addOptionSpec(new OptionSpec(PLUG_IN_DIRECTORY_OPTION, 1));
 		commandLine.addOptionSpec(new OptionSpec(I18N_FILE, 1));
 		//[UT] 17.08.2005 
@@ -325,6 +355,13 @@ public class JUMPWorkbench {
 		}
 	}
 
+	private static void addProperties(WorkbenchProperties oldProperties,  WorkbenchProperties newProperties) throws Exception{
+		oldProperties.getPlugInClasses().addAll(newProperties.getPlugInClasses());			
+		oldProperties.getInputDriverClasses().addAll(newProperties.getInputDriverClasses());	
+		oldProperties.getOutputDriverClasses().addAll(newProperties.getOutputDriverClasses());	
+		oldProperties.getConfigurationClasses().addAll(newProperties.getConfigurationClasses());
+	}
+	
 	public PlugInManager getPlugInManager() {
 		return plugInManager;
 	}
@@ -338,7 +375,7 @@ public class JUMPWorkbench {
 	public Blackboard getBlackboard() {
 		return blackboard;
 	}
-
+	
 	private static abstract class ProgressMonitor extends JPanel
 			implements
 				TaskMonitor {

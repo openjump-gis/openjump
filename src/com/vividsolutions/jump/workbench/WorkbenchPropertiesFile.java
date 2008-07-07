@@ -49,7 +49,8 @@ import com.vividsolutions.jump.workbench.ui.ErrorHandler;
 public class WorkbenchPropertiesFile implements WorkbenchProperties {
     private ErrorHandler errorHandler;
 
-    private Element root;
+    private Element root1;
+    private Element root2;
 
     public WorkbenchPropertiesFile(File file, ErrorHandler errorHandler) throws JDOMException, IOException {
         //alainvm [mav92@tiscali.fr] reports that he needs IOException in the throws
@@ -57,10 +58,23 @@ public class WorkbenchPropertiesFile implements WorkbenchProperties {
         //[Jon Aquino 1/12/2004]
         SAXBuilder builder = new SAXBuilder();
         Document document = builder.build(file);
-        root = document.getRootElement();
+        root1 = document.getRootElement();
+        root2 = null;
+        this.errorHandler = errorHandler;          
+    }
+    
+    public WorkbenchPropertiesFile(File file1, File file2, ErrorHandler errorHandler) throws JDOMException, IOException {
+        //alainvm [mav92@tiscali.fr] reports that he needs IOException in the throws
+        //clause. I think he may be using a different version of JDOM.
+        //[Jon Aquino 1/12/2004]
+        SAXBuilder builder = new SAXBuilder();
+        Document document1 = builder.build(file1);
+        Document document2 = builder.build(file2);  
+        root1 = document1.getRootElement();
+        root2 = document2.getRootElement();
         this.errorHandler = errorHandler;        
     }
-
+    
     public List getPlugInClasses() {
         return getPlugInClasses(null); //null invokes default ClassLoader
     }
@@ -68,7 +82,7 @@ public class WorkbenchPropertiesFile implements WorkbenchProperties {
     public List getPlugInClasses(ClassLoader classLoader) {
         ArrayList plugInClasses = new ArrayList();
 
-        for (Iterator i = root.getChildren("plug-in").iterator(); i.hasNext();) {
+        for (Iterator i = root1.getChildren("plug-in").iterator(); i.hasNext();) {
             Element plugInElement = (Element) i.next();
             try {
                 plugInClasses.add(Class.forName(plugInElement.getTextTrim(),false,classLoader));
@@ -76,40 +90,65 @@ public class WorkbenchPropertiesFile implements WorkbenchProperties {
                 errorHandler.handleThrowable(e);
             }
         }
-
+        if (root2 != null){
+            for (Iterator i = root2.getChildren("plug-in").iterator(); i.hasNext();) {
+                Element plugInElement = (Element) i.next();
+                try {
+                    plugInClasses.add(Class.forName(plugInElement.getTextTrim(),false,classLoader));
+                } catch (ClassNotFoundException e) {
+                    errorHandler.handleThrowable(e);
+                }
+            }
+        }
+            
         return plugInClasses;
     }
 
     public List getInputDriverClasses() throws ClassNotFoundException {
         ArrayList inputDriverClasses = new ArrayList();
 
-        for (Iterator i = root.getChildren("input-driver").iterator(); i.hasNext();) {
+        for (Iterator i = root1.getChildren("input-driver").iterator(); i.hasNext();) {
             Element inputDriverElement = (Element) i.next();
             inputDriverClasses.add(Class.forName(inputDriverElement.getTextTrim()));
         }
-
+        if (root2 != null){
+            for (Iterator i = root2.getChildren("input-driver").iterator(); i.hasNext();) {
+                Element inputDriverElement = (Element) i.next();
+                inputDriverClasses.add(Class.forName(inputDriverElement.getTextTrim()));
+            }
+        }
         return inputDriverClasses;
     }
 
     public List getOutputDriverClasses() throws ClassNotFoundException {
         ArrayList outputDriverClasses = new ArrayList();
 
-        for (Iterator i = root.getChildren("output-driver").iterator(); i.hasNext();) {
+        for (Iterator i = root1.getChildren("output-driver").iterator(); i.hasNext();) {
             Element outputDriverElement = (Element) i.next();
             outputDriverClasses.add(Class.forName(outputDriverElement.getTextTrim()));
         }
-
+        if (root2 != null){
+            for (Iterator i = root2.getChildren("output-driver").iterator(); i.hasNext();) {
+                Element outputDriverElement = (Element) i.next();
+                outputDriverClasses.add(Class.forName(outputDriverElement.getTextTrim()));
+            }
+        }
         return outputDriverClasses;
     }
     
     public List getConfigurationClasses() throws ClassNotFoundException {
         ArrayList getConfigurationClasses = new ArrayList();
 
-        for (Iterator i = root.getChildren("extension").iterator(); i.hasNext();) {
+        for (Iterator i = root1.getChildren("extension").iterator(); i.hasNext();) {
             Element configurationElement = (Element) i.next();
             getConfigurationClasses.add(Class.forName(configurationElement.getTextTrim()));
         }
-
+        if (root2 != null){
+            for (Iterator i = root2.getChildren("extension").iterator(); i.hasNext();) {
+                Element configurationElement = (Element) i.next();
+                getConfigurationClasses.add(Class.forName(configurationElement.getTextTrim()));
+            }
+        }
         return getConfigurationClasses;
     }    
 }

@@ -1,4 +1,12 @@
 2008-07-01 mentaer <sstein@geo.uzh.ch>
+      added new command-line parameter "-default-plugins" to load a "second"
+      properties file. Plugins read from a properties file with 
+      "-default-plugins" will be loaded before the plugins from 
+      "-workbench-properties". It is intended to deliver a "default-plugins.xml"
+      in the /bin/ directory of OpenJUMP. (Note: using two properties files
+      enables to separate general OJ plugins from own functions)
+      
+2008-07-01 mentaer <sstein@geo.uzh.ch>
       moved some the functions of the tools/analysis menu to new submenus
       "one layer" and "two layer" to further user friendliness. I also moved
       UnionByAttribute plugin to openjump.core as this is a function

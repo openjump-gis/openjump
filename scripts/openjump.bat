@@ -14,7 +14,7 @@ for %%i in ("lib\*.zip") do call "%JUMP_HOME%\bin\lcp.bat" %%i
 
 set PATH=%PATH%;%LIB%\ext
 
-set JUMP_OPTS=-properties bin\workbench-properties.xml -plug-in-directory "%LIB%\ext"
+set JUMP_OPTS=-default-plugins bin\default-plugins.xml -properties bin\workbench-properties.xml -plug-in-directory "%LIB%\ext"
 start javaw -cp "%CLASSPATH%" %JAVA_OPTS% com.vividsolutions.jump.workbench.JUMPWorkbench %JUMP_OPTS%
 
 cd %OLD_DIR%

@@ -10,6 +10,7 @@ else
 fi
 JUMP_HOME=`dirname $0`/..
 JUMP_PROPERTIES=~/.jump/workbench-properties.xml
+JUMP_DEFAULTP=~/.jump/default-plugins.xml
 JUMP_STATE=~/.jump/
 
 JUMP_PROFILE=~/.jump/openjump.profile
@@ -29,6 +30,10 @@ if [ -z "$JUMP_PROPERTIES" -o ! -f $JUMP_PROPERTIES ]; then
   JUMP_PROPERTIES=~/.jump/workbench-properties.xml
 fi
 
+if [ -z "$JUMP_DEFAULTP" -o ! -f $JUMP_DEFAULTP ]; then
+  JUMP_DEFAULTP=~/.jump/default-plugins.xml
+fi
+
 for libfile in $JUMP_LIB/*.jar $JUMP_LIB/*.zip
 do
   CLASSPATH=$libfile:$CLASSPATH;
@@ -39,6 +44,10 @@ export CLASSPATH;
 JUMP_OPTS="-plug-in-directory $JUMP_PLUGIN_DIR"
 if [ -f "$JUMP_PROPERTIES" ]; then
   JUMP_OPTS="$JUMP_OPTS -properties $JUMP_PROPERTIES"
+fi
+
+if [ -f "$JUMP_DEFAULTP" ]; then
+  JUMP_OPTS="$JUMP_OPTS -properties $JUMP_DEFAULTP"
 fi
 
 if ( test -d "$JUMP_STATE" || test -f "$JUMP_STATE") then

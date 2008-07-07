@@ -1,0 +1,13 @@
+<workbench>
+	<!---  ======================================== /-->
+	<!--  			menu EDIT 						/-->
+	<!--- ========================================  /-->	
+	<plug-in>org.openjump.core.ui.plugin.edit.SelectItemsByFenceFromSelectedLayersPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.edit.SelectItemsByCircleFromSelectedLayersPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.edit.SelectAllLayerItemsPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.edit.SelectByTypePlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.layer.ExtractLayerInFence</plug-in>
+</workbench>
+
