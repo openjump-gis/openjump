@@ -43,6 +43,7 @@
       <outputDirectory>/bin</outputDirectory>
       <includes>
         <include>workbench-properties.xml</include>
+        <include>default-plugins.xml</include>
       </includes>
     </fileSet>
     <fileSet>
