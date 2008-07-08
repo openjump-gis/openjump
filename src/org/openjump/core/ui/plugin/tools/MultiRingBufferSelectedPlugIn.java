@@ -84,6 +84,7 @@ public class MultiRingBufferSelectedPlugIn
   private static String BUFFEROPTIONS;
   private static String SELECTED_ONLY;
   private static String MULTIPLE_RING_BUFFER;
+  private static String sRESET;
   
   private static String layerName;
   private static String attributeName = "Label";
@@ -106,13 +107,14 @@ public class MultiRingBufferSelectedPlugIn
 
   public void initialize(PlugInContext context) throws Exception 
   {
-	  MULTIPLE_RING_BUFFER = I18N.get("Multiple-Ring-Buffer");
+	  MULTIPLE_RING_BUFFER = I18N.get("org.openjump.core.ui.plugin.tools.MultiRingBufferSelectedPlugIn.Multiple-Ring-Buffer");
       context.getFeatureInstaller().addMainMenuItem(this,
       new String[] { MenuNames.TOOLS , MenuNames.TOOLS_GENERATE }, MULTIPLE_RING_BUFFER + "...", false, null, this.createEnableCheck(context.getWorkbenchContext()));
   }
   
   public boolean execute(PlugInContext context) throws Exception {
-	  MULTIPLE_RING_BUFFER = I18N.get("Multiple-Ring-Buffer");
+	  MULTIPLE_RING_BUFFER = I18N.get("org.openjump.core.ui.plugin.tools.MultiRingBufferSelectedPlugIn.Multiple-Ring-Buffer");
+	  sRESET = I18N.get("org.openjump.core.ui.plugin.tools.MultiRingBufferSelectedPlugIn.Reset-all-buffer-options");
 	  SELECTED_ONLY = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Use-selected-features-only");
 	  BUFFERDISTANCE = I18N.get("ui.plugin.analysis.BufferPlugIn.buffer-distance");
 	  BUFFER = I18N.get("com.vividsolutions.jump.workbench.ui.plugin.analysis.BufferPlugIn");
@@ -326,7 +328,7 @@ public class MultiRingBufferSelectedPlugIn
 
 	currBufferDistance = dialog.addTextField(BUFFERDISTANCE, bufferDistances[0], 10, null, "");
     currAttributeValue = dialog.addTextField(ATTRIBUTEVALUE, bufferAttributeValues[0], 30, null, "");
-    JButton resetButton = dialog.addButton("Reset All Buffer Options");
+    JButton resetButton = dialog.addButton(sRESET);
     resetButton.addActionListener(new ResetButtonListener());
     currBufferNumber = 1;
     currBufferDistance.setText("" + bufferDistances[currBufferNumber - 1]);
