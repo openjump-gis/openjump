@@ -93,7 +93,12 @@ public class GeoUtils
     {   //return the Coordinate by vector subracting r from q
          return new Coordinate(q.x * m, q.y * m);
     }
-    
+        
+    public static double dot(Coordinate p, Coordinate q)
+    {
+    	return p.x * q.x + p.y * q.y;
+    }
+
     public static Coordinate rotPt(Coordinate inpt, Coordinate rpt, double theta)
     {   //rotate inpt about rpt by theta degrees (+ clockwise)
         double tr = Math.toRadians(theta);
@@ -152,7 +157,25 @@ public class GeoUtils
             return rAng * 360.0 / (2 * Math.PI);
         }
     }
-    
+
+    public static double getBearingRadians(Coordinate startPt, Coordinate endPt)
+    {   //return Bearing in degrees (-PI to +PE) from startPt to endPt
+        Coordinate r = new Coordinate(endPt.x - startPt.x, endPt.y - startPt.y);
+        double rMag = Math.sqrt(r.x * r.x + r.y * r.y );
+        if (rMag == 0.0)
+        {
+            return 0.0;
+        }
+        else
+        {
+            double rCos = r.x / rMag;
+            double rAng = Math.acos(rCos);           
+            if (r.y < 0.0)
+                rAng = -rAng;
+           return rAng;
+        }
+    }
+
     public static double getBearing360(Coordinate startPt, Coordinate endPt)
     {  //return Bearing in degrees (0 - 360) from startPt to endPt
         double bearing = getBearing180(startPt, endPt);
@@ -353,6 +376,105 @@ public class GeoUtils
             n.y = q.y + uy;
         }
         return n;
+    }
+    
+    public static double interiorAngle(Coordinate p1, Coordinate p2, Coordinate p3) {
+  	//return the angle in radians between vectors p2-p1 and p2-p3  from 0 to 180
+  	//NOTE: this routine returns POSITIVE angles only
+    	Coordinate p = vectorBetween(p1,p2);  //relativize the position vectors
+    	Coordinate q = vectorBetween(p3,p2);
+    	double arg = dot(p,q) / (mag(p)*mag(q));
+    	if (arg < -1.0) arg = -1.0;
+    	else if (arg > 1.0) arg = 1.0;
+    	return Math.toDegrees(Math.acos(arg));
+    }
+    
+    /**
+     * @param ring - LinearRing represented as LineString to analyze
+     * @return - Coordinate[] with first point of passed LineString in [0] 
+     * followed by [1-length] with x as distance and y as angle.
+     * The angle will be the  will be the absolute bearing in the range 0-360.
+     * The original LineString and Coordinate points are unmodified.
+     */
+    public static Coordinate[] getDistanceBearingArray(LineString ring) {
+     	Coordinate[] coords = new Coordinate[ring.getNumPoints()];
+   	 	Coordinate p1 = new Coordinate(ring.getCoordinateN(0));
+     	coords[0] = p1;
+		for (int i = 1; i<coords.length; i++ ) {
+ 			coords[i] = new Coordinate(ring.getCoordinateN(i));
+	   	 	Coordinate p2 = coords[i];
+	   	 	double angle = getBearing360(p1,p2);
+	   	 	double distance = p1.distance(p2);
+	   	 	p1.x = p2.x;
+	   	 	p1.y = p2.y;
+	   	 	coords[i].x = distance;
+	   	 	coords[i].y = angle;	   	 	
+		}
+     	return coords;
+    }
+        
+   /**
+     * @param ring - LinearRing represented as LineString to analyze
+     * @return - Coordinate[] array of with x as distance and y as 
+     * interior angles in degrees 0 to +180.
+     * The angles at each index in the array are the interior angles at the 
+     * vertex position in the (closed polygon) ring.  Every array position if filled.
+     * The distances are the distance at a vertex to the following point.  For [n-2] 
+     * the distance is computed to the [n-1] position assuming the ring is closed.
+     */
+    public static Coordinate[] getDistanceAngleArray(LineString ring) {
+    	int n = ring.getNumPoints();
+     	Coordinate[] coords = new Coordinate[n];    	
+		for (int i = 0; i<coords.length; i++ ) {
+		 	Coordinate pb = ring.getCoordinateN(	//previous Index
+		 			(i == 0) ? n-2 : i-1);
+		 	Coordinate p = ring.getCoordinateN(i);
+			Coordinate pn = ring.getCoordinateN(	//next Index(
+					(i == n-1) ? 1 : i+1);
+	   	 	double angle = interiorAngle(pb,p,pn);
+	   	 	double distance = p.distance(pn);
+	   	 	coords[i] = new Coordinate(distance,angle,Double.NaN);
+		}
+     	return coords;
+    }
+    
+   /**
+     * @param ring - a LineString representing a linear ring
+     * @return - an array of Coordinate points with colinear points removed.
+     * The original LineString and Coordinate points are unmodified.
+     */
+    public static LinearRing removeRedundantPoints(LineString ring) {
+    	final double epsilon = 1E-6; //probably too coarse for lat/long maps
+     	Coordinate[] coords = new Coordinate[ring.getNumPoints()];
+     	int n = coords.length;
+    	boolean[] remove = new boolean[n];
+ 		for (int i = 0; i<n; i++ ) {
+    		coords[i] = new Coordinate(ring.getCoordinateN(i));
+			remove[i] = false;
+		}
+		Coordinate p2 = null;
+		Coordinate p3 = null;
+		for (int i = 0; i<coords.length; i++ ) {
+    	 	Coordinate p1 = coords[i];
+    		if (i > 1) {
+     		    double dist = getDistance( p2, p1, p3); //distance from p2 to segment p1-p3
+	    		boolean colinear = (dist <= epsilon);
+	    		if (colinear) {
+		    		remove[i-1] = colinear;
+		    		n--;	    			
+	    		}
+    		}
+    		p3 = p2;
+    		p2 = p1;
+ 		}
+		Coordinate[] newCoords = new Coordinate[n];
+		int j=0;
+    	for (int i=0; i<coords.length; i++) {
+        	if (!remove[i]) 
+        		newCoords[j++] = new Coordinate(coords[i]);
+    	}
+    	LinearRing linearRing = new LinearRing(newCoords,ring.getPrecisionModel(),ring.getSRID());
+     	return linearRing;
     }
   
     public static Geometry reducePoints(Geometry geo, double tolerance)
