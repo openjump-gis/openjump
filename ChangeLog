@@ -1,3 +1,8 @@
+2008-07-10 mentaer <sstein@geo.uzh.ch>
+      moved all "advanced" plugin functionality to the "default-plugins.xml" file. 
+      Basic functionality (such as file i/o, viewing and styling) is still loaded 
+      from the OpenJumpConfiguration file.
+
 2008-07-06 mentaer <sstein@geo.uzh.ch>
       added new command-line parameter "-default-plugins" to load a "second"
       properties file. Plugins read from a properties file with 

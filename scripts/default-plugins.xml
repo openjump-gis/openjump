@@ -1,7 +1,11 @@
 <workbench>
 	<!---  ======================================== /-->
+	<!--  			menu FILE 						/-->
+	<!--- ========================================= /-->	
+	<plug-in>org.openjump.core.ui.plugin.file.SaveImageAsSVGPlugIn</plug-in>
+	<!---  ======================================== /-->
 	<!--  			menu EDIT 						/-->
-	<!--- ========================================  /-->	
+	<!--- ========================================= /-->	
 	<plug-in>org.openjump.core.ui.plugin.edit.SelectItemsByFenceFromSelectedLayersPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.edit.SelectItemsByCircleFromSelectedLayersPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.edit.SelectAllLayerItemsPlugIn</plug-in>
@@ -10,8 +14,60 @@
 	<plug-in>org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.layer.ExtractLayerInFence</plug-in>
 	<!---  ======================================== /-->
+	<!--  			menu VIEW 						/-->
+	<!--- ========================================= /-->		
+	<plug-in>org.openjump.core.ui.plugin.edit.CopyBBoxPlugin</plug-in>
+	<!---  ======================================== /-->
 	<!--  			menu Tools 						/-->
-	<!--- ========================================  /-->		
+	<!--- ========================================= /-->
+	<!--- =========  Query ====================  /-->
+	<plug-in>org.openjump.core.ui.plugin.queries.SimpleQueryPlugIn</plug-in>	
+	<!--- =========  Analysis ====================  /-->
+	<plug-in>org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn</plug-in>
+	<plug-in>org.openjump.sigle.plugin.geoprocessing.oneLayer.topology.PlanarGraphPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.tools.IntersectPolygonLayersPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.tools.UnionByAttributePlugIn</plug-in>
+	<!--- =========  Generate ====================  /-->
+	<plug-in>org.openjump.core.ui.plugin.tools.ConvexHullPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.tools.MultiRingBufferSelectedPlugIn</plug-in>
+	<!--- =========  QA ====================  /-->		
+	<plug-in>org.openjump.core.ui.plugin.tools.DeleteEmptyGeometriesPlugIn</plug-in>
+	<!--- =========  Edit Geometry ====================  /-->	
+	<plug-in>org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn</plug-in>	
+	<plug-in>org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.tools.MergeTwoSelectedPolygonsPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.tools.SplitPolygonPlugIn</plug-in>	
+	<!--- =========  Edit Attributes ====================  /-->		
+	<plug-in>org.openjump.sigle.plugin.replace.ReplaceValuePlugIn</plug-in>
+	<plug-in>de.fho.jump.pirol.plugins.EditAttributeByFormula.EditAttributeByFormulaPlugIn</plug-in>
+	<!--- =========  Generalization ====================  /-->	
+	<plug-in>org.openjump.core.ui.plugin.tools.LineSimplifyJTS15AlgorithmPlugIn</plug-in>	
+	<plug-in>org.openjump.core.ui.plugin.tools.ReducePointsISAPlugIn</plug-in>
+	<!--- =========  other ====================  /-->
+	<plug-in>org.openjump.core.ui.plugin.tools.MeasureM_FPlugIn</plug-in>
+	<!---  ======================================== /-->
+	<!--  			CUSTOMIZE 						/-->
+	<!--- ========================================= /-->
+	<plug-in>de.latlon.deejump.plugin.manager.ExtensionManagerPlugIn</plug-in>	
+	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.BeanShellPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.customize.BeanToolsPlugIn</plug-in>	
+	<!---  ======================================== /-->
+	<!--  			RIGHT CLICK 					/-->
+	<!--- ========================================= /-->
+	<!--- =========  MapWindow ====================  /-->
+	<plug-in>org.openjump.core.ui.plugin.mousemenu.MoveAlongAnglePlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.mousemenu.RotatePlugIn</plug-in>	
+	<plug-in>org.openjump.core.ui.plugin.mousemenu.SelectLayersWithSelectedItemsPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.mousemenu.EditSelectedSidePlugIn</plug-in>	
+	<plug-in>org.openjump.sigle.plugin.joinTable.JoinTablePlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.mousemenu.PasteItemsAtPlugIn</plug-in>	
+	<!--- =========  EditTools ====================  /-->
+	<plug-in>org.openjump.core.ui.plugin.edittoolbox.CutPolygonSIGLEPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.edittoolbox.AutoCompletePolygonPlugIn</plug-in>
+	<!---  ======================================== /-->
+	<!--  			OTHER 							/-->
+	<!--- ========================================= /-->
+	<plug-in>org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn</plug-in>	
 </workbench>
 

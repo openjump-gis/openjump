@@ -2,11 +2,16 @@
  * Created on Aug 11, 2005
  * 
  * description:
- *   This class loads all openjump plugins.
- *   The method loadOpenJumpPlugIns() is called from 
+ *   This class loads all basic OpenJUMP plugins. Other
+ *   additional - i.e. nice to have - plugins are initialized
+ *   using the file "default-plugins.xml". 
+ *   The contained method loadOpenJumpPlugIns() is called from 
  *   com.vividsolutions.jump.workbench.JUMPConfiguaration. 
- *
- *
+ *   
+ *   Note, the menu order of functionality may change if changes 
+ *   are made in here. The plugins in this file are initialized 
+ *   before the plugins from default-plugins.xml. 
+ *   
  */
 package org.openjump;
 
@@ -21,12 +26,8 @@ import org.openjump.core.ccordsys.srid.EnsureAllLayersHaveSRIDStylePlugIn;
 import org.openjump.core.ui.io.file.DataSourceFileLayerLoader;
 import org.openjump.core.ui.io.file.FileLayerLoader;
 import org.openjump.core.ui.io.file.ReferencedImageFactoryFileLayerLoader;
-import org.openjump.core.ui.plugin.customize.BeanToolsPlugIn;
 import org.openjump.core.ui.plugin.datastore.AddDataStoreLayerWizard;
-import org.openjump.core.ui.plugin.edit.CopyBBoxPlugin;
-import org.openjump.core.ui.plugin.edittoolbox.AutoCompletePolygonPlugIn;
 import org.openjump.core.ui.plugin.edittoolbox.ConstrainedMoveVertexPlugIn;
-import org.openjump.core.ui.plugin.edittoolbox.CutPolygonSIGLEPlugIn;
 import org.openjump.core.ui.plugin.edittoolbox.DrawCircleWithGivenRadiusPlugIn;
 import org.openjump.core.ui.plugin.edittoolbox.DrawConstrainedArcPlugIn;
 import org.openjump.core.ui.plugin.edittoolbox.DrawConstrainedCirclePlugIn;
@@ -40,40 +41,18 @@ import org.openjump.core.ui.plugin.file.OpenFilePlugIn;
 import org.openjump.core.ui.plugin.file.OpenProjectPlugIn;
 import org.openjump.core.ui.plugin.file.OpenRecentPlugIn;
 import org.openjump.core.ui.plugin.file.OpenWizardPlugIn;
-import org.openjump.core.ui.plugin.file.SaveImageAsSVGPlugIn;
-import org.openjump.core.ui.plugin.layer.AddSIDLayerPlugIn;
 import org.openjump.core.ui.plugin.layer.ChangeLayerableNamePlugIn;
 import org.openjump.core.ui.plugin.layer.ChangeSRIDPlugIn;
 import org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn;
 import org.openjump.core.ui.plugin.layer.ToggleVisiblityPlugIn;
-import org.openjump.core.ui.plugin.mousemenu.EditSelectedSidePlugIn;
-import org.openjump.core.ui.plugin.mousemenu.MoveAlongAnglePlugIn;
-import org.openjump.core.ui.plugin.mousemenu.PasteItemsAtPlugIn;
-import org.openjump.core.ui.plugin.mousemenu.RotatePlugIn;
 import org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn;
-import org.openjump.core.ui.plugin.mousemenu.SelectLayersWithSelectedItemsPlugIn;
 import org.openjump.core.ui.plugin.mousemenu.category.MoveCategoryOneDown;
 import org.openjump.core.ui.plugin.mousemenu.category.MoveCategoryOneUp;
 import org.openjump.core.ui.plugin.mousemenu.category.MoveCategoryToBottom;
 import org.openjump.core.ui.plugin.mousemenu.category.MoveCategoryToTop;
 import org.openjump.core.ui.plugin.mousemenu.category.SetCategoryVisibilityPlugIn;
-import org.openjump.core.ui.plugin.queries.SimpleQueryPlugIn;
 import org.openjump.core.ui.plugin.style.ImportArcMapStylePlugIn;
 import org.openjump.core.ui.plugin.style.ImportSLDPlugIn;
-import org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn;
-import org.openjump.core.ui.plugin.tools.ConvexHullPlugIn;
-import org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn;
-import org.openjump.core.ui.plugin.tools.DeleteEmptyGeometriesPlugIn;
-import org.openjump.core.ui.plugin.tools.IntersectPolygonLayersPlugIn;
-import org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn;
-import org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn;
-import org.openjump.core.ui.plugin.tools.LineSimplifyJTS15AlgorithmPlugIn;
-import org.openjump.core.ui.plugin.tools.MeasureM_FPlugIn;
-import org.openjump.core.ui.plugin.tools.MergeTwoSelectedPolygonsPlugIn;
-import org.openjump.core.ui.plugin.tools.ReducePointsISAPlugIn;
-import org.openjump.core.ui.plugin.tools.SplitPolygonPlugIn;
-import org.openjump.core.ui.plugin.tools.UnionByAttributePlugIn;
-import org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn;
 import org.openjump.core.ui.plugin.view.MapToolTipPlugIn;
 import org.openjump.core.ui.plugin.view.ShowFullPathPlugIn;
 import org.openjump.core.ui.plugin.view.ShowScalePlugIn;
@@ -88,9 +67,6 @@ import org.openjump.core.ui.style.decoration.VertexZValueStyle;
 import org.openjump.core.ui.swing.factory.field.FieldComponentFactoryRegistry;
 import org.openjump.core.ui.swing.factory.field.FileFieldComponentFactory;
 import org.openjump.core.ui.swing.wizard.WizardGroup;
-import org.openjump.sigle.plugin.geoprocessing.oneLayer.topology.PlanarGraphPlugIn;
-import org.openjump.sigle.plugin.joinTable.JoinTablePlugIn;
-import org.openjump.sigle.plugin.replace.ReplaceValuePlugIn;
 
 import com.vividsolutions.jump.io.datasource.StandardReaderWriterFileDataSource;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
@@ -109,16 +85,13 @@ import com.vividsolutions.jump.workbench.ui.EditTransaction;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
-import com.vividsolutions.jump.workbench.ui.plugin.BeanShellPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 
-import de.fho.jump.pirol.plugins.EditAttributeByFormula.EditAttributeByFormulaPlugIn;
 import de.latlon.deejump.plugin.SaveLegendPlugIn;
-import de.latlon.deejump.plugin.manager.ExtensionManagerPlugIn;
 import de.latlon.deejump.plugin.style.LayerStyle2SLDPlugIn;
 
 /**
- * This class loads all openjump plugins. The method
+ * This class loads all OpenJUMP plugins. The method
  *               loadOpenJumpPlugIns() is called from
  *               com.vividsolutions.jump.workbench.JUMPConfiguaration.
  * @author sstein
@@ -145,6 +118,9 @@ public class OpenJumpConfiguration {
     /***************************************************************************
      * menu FILE
      **************************************************************************/
+    //--[sstein 10.July.2008] I leave these plugins in this class, as they seem to me
+    //	essential to be removable, similar for the others that are still initialized here
+    
     OpenWizardPlugIn open = new OpenWizardPlugIn();
     open.initialize(pluginContext);
 
@@ -160,15 +136,18 @@ public class OpenJumpConfiguration {
     FileDragDropPlugin fileDragDropPlugin = new FileDragDropPlugin();
     fileDragDropPlugin.initialize(pluginContext);
 
+    //-- [sstein 10.July.2008] now initialized with default-plugins.xml file
+    /*
     SaveImageAsSVGPlugIn imageSvgPlugin = new SaveImageAsSVGPlugIn();
     imageSvgPlugin.initialize(new PlugInContext(workbenchContext, null, null,
       null, null));
-
+	*/
+    
     /***************************************************************************
      * menu EDIT
      **************************************************************************/
     
-    //-- [sstein 2.July.2008] now initialized with workbench-properties.xml file
+    //-- [sstein 10.July.2008] now initialized with default-plugins.xml file
     /*
     SelectItemsByFenceFromSelectedLayersPlugIn selectItemsFromLayersPlugIn = new SelectItemsByFenceFromSelectedLayersPlugIn();
     selectItemsFromLayersPlugIn.initialize(new PlugInContext(workbenchContext,
@@ -200,9 +179,11 @@ public class OpenJumpConfiguration {
     /***************************************************************************
      * menu VIEW
      **************************************************************************/
-
-    new CopyBBoxPlugin().initialize(new PlugInContext(workbenchContext, null, null, null, null));
     
+    //-- [sstein 10.July.2008] now initialized with default-plugins.xml file
+    /*
+    new CopyBBoxPlugin().initialize(new PlugInContext(workbenchContext, null, null, null, null));
+    */
     ZoomToWMSPlugIn myZoomToWMSPlugIn = new ZoomToWMSPlugIn();
     myZoomToWMSPlugIn.initialize(new PlugInContext(workbenchContext, null,
       null, null, null));
@@ -225,7 +206,7 @@ public class OpenJumpConfiguration {
     LayerStyle2SLDPlugIn mySytle2SLDplugIn = new LayerStyle2SLDPlugIn();
     mySytle2SLDplugIn.initialize(new PlugInContext(workbenchContext, null,
       null, null, null));
-
+    
     new ImportSLDPlugIn().initialize(pluginContext);
     new ImportArcMapStylePlugIn().initialize(pluginContext);
     
@@ -239,7 +220,7 @@ public class OpenJumpConfiguration {
     ShowFullPathPlugIn myFullPathPlugin = new ShowFullPathPlugIn();
     myFullPathPlugin.initialize(new PlugInContext(workbenchContext, null, null,
       null, null));
-
+	
     /***************************************************************************
      * menu LAYER
      **************************************************************************/
@@ -250,11 +231,11 @@ public class OpenJumpConfiguration {
 
     //-- [sstein 21March2008] unnecessary with new menu structure
     //	 MRSIDtype is added with new open file dialog (see below)
-    
+    /*
     AddSIDLayerPlugIn myMrSIDPlugIn = new AddSIDLayerPlugIn();
     myMrSIDPlugIn.initialize(new PlugInContext(workbenchContext, null, null,
       null, null));
-	
+	*/
     
     ChangeSRIDPlugIn myChangeSRIDPlugIn = new ChangeSRIDPlugIn();
     myChangeSRIDPlugIn.initialize(new PlugInContext(workbenchContext, null,
@@ -263,8 +244,9 @@ public class OpenJumpConfiguration {
     /***************************************************************************
      * menu TOOLS
      **************************************************************************/
-
+    
     /** ** ANALYSIS *** */
+    /*
     JoinAttributesSpatiallyPlugIn mySpatialJoin = new JoinAttributesSpatiallyPlugIn();
     mySpatialJoin.initialize(new PlugInContext(workbenchContext, null, null,
       null, null));
@@ -281,8 +263,9 @@ public class OpenJumpConfiguration {
     UnionByAttributePlugIn unionByAttribute = new UnionByAttributePlugIn();
     unionByAttribute.initialize(new PlugInContext(workbenchContext,
   	      null, null, null, null)); 
-    
+    */
     /** ** GENERATE *** */
+    /*
     ConvexHullPlugIn myConvHullPlugIn = new ConvexHullPlugIn();
     myConvHullPlugIn.initialize(new PlugInContext(workbenchContext, null, null,
       null, null));
@@ -290,18 +273,21 @@ public class OpenJumpConfiguration {
     CreateThiessenPolygonsPlugIn myThiessenPlugin = new CreateThiessenPolygonsPlugIn();
     myThiessenPlugin.initialize(new PlugInContext(workbenchContext, null, null,
       null, null));
-
+	*/
     /** ** QUERY *** */
+    /*
     SimpleQueryPlugIn mySimpleQueryPlugIn = new SimpleQueryPlugIn();
     mySimpleQueryPlugIn.initialize(new PlugInContext(workbenchContext, null,
       null, null, null));
-
+	*/
     /** ** QA *** */
+    /*
     DeleteEmptyGeometriesPlugIn myDelGeomPlugin = new DeleteEmptyGeometriesPlugIn();
     myDelGeomPlugin.initialize(new PlugInContext(workbenchContext, null, null,
       null, null));
-
+	*/
     /** ** EDIT_GEOMETRY *** */
+    /*
     JoinWithArcPlugIn myJoinWithArcPlugIn = new JoinWithArcPlugIn();
     myJoinWithArcPlugIn.initialize(new PlugInContext(workbenchContext, null,
       null, null, null));
@@ -317,8 +303,9 @@ public class OpenJumpConfiguration {
     SplitPolygonPlugIn cutpoly = new SplitPolygonPlugIn();
     cutpoly.initialize(new PlugInContext(workbenchContext, null, null, null,
       null));
-
+	*/
     /** ** EDIT_ATTIBUTES **** */
+    /*
     ReplaceValuePlugIn myRepVal = new ReplaceValuePlugIn();
     myRepVal.initialize(new PlugInContext(workbenchContext, null, null, null,
       null));
@@ -326,7 +313,7 @@ public class OpenJumpConfiguration {
     EditAttributeByFormulaPlugIn formulaEdit = new EditAttributeByFormulaPlugIn();
     formulaEdit.initialize(new PlugInContext(workbenchContext, null, null,
       null, null));
-    
+    */
     /* sstein 31.March08
      * function replaced by JUMP function of similar name that works better
     SpatialJoinPlugIn spatialJoinPlugIn = new SpatialJoinPlugIn();
@@ -335,6 +322,7 @@ public class OpenJumpConfiguration {
      */
 
     /** ** GENERALIZATION *** */
+    /*
     ReducePointsISAPlugIn mySimplifyISA = new ReducePointsISAPlugIn();
     mySimplifyISA.initialize(new PlugInContext(workbenchContext, null, null,
       null, null));
@@ -342,19 +330,23 @@ public class OpenJumpConfiguration {
     LineSimplifyJTS15AlgorithmPlugIn jtsSimplifier = new LineSimplifyJTS15AlgorithmPlugIn();
     jtsSimplifier.initialize(new PlugInContext(workbenchContext, null, null,
       null, null));
-
+    */
+	/** ** OTHER TOOLS *** */
+    /*
     MeasureM_FPlugIn myFeetPlugIn = new MeasureM_FPlugIn();
     myFeetPlugIn.initialize(new PlugInContext(workbenchContext, null, null,
       null, null));
-
+	*/
+    
     /***************************************************************************
      * menu CUSTOMIZE [added by Michael Michaud on 2007-03-04]
      **************************************************************************/
     // -- deeJUMP function by LAT/LON [05.08.2006 sstein]
+    /*
     ExtensionManagerPlugIn extensionManagerPlugIn = new ExtensionManagerPlugIn();
     extensionManagerPlugIn.install(new PlugInContext(workbenchContext, null,
       null, null, null));
-
+      
     BeanShellPlugIn beanShellPlugIn = new BeanShellPlugIn();
     beanShellPlugIn.initialize(new PlugInContext(workbenchContext, null, null,
       null, null));
@@ -363,7 +355,7 @@ public class OpenJumpConfiguration {
     BeanToolsPlugIn beanTools = new BeanToolsPlugIn();
     beanTools.initialize(new PlugInContext(workbenchContext, null, null, null,
       null));
-
+	*/
     /***************************************************************************
      * menu WINDOW
      **************************************************************************/
@@ -387,7 +379,9 @@ public class OpenJumpConfiguration {
      **************************************************************************/
     JPopupMenu popupMenu = LayerViewPanel.popupMenu();
     popupMenu.addSeparator();
-
+    
+    //-- [sstein 10.July.2008] now initialized with default-plugins.xml file
+    /*
     MoveAlongAnglePlugIn myMoveAlongAnglePlugin = new MoveAlongAnglePlugIn();
     myMoveAlongAnglePlugin.initialize(new PlugInContext(workbenchContext, null,
       null, null, null));
@@ -399,7 +393,8 @@ public class OpenJumpConfiguration {
     SelectLayersWithSelectedItemsPlugIn selectLayersWithSelectedItemsPlugIn = new SelectLayersWithSelectedItemsPlugIn();
     selectLayersWithSelectedItemsPlugIn.initialize(new PlugInContext(
       workbenchContext, null, null, null, null));
-
+	*/
+    //-- [sstein 10.July.2008] leave them, as they seem to be essential
     SaveDatasetsPlugIn mySaveDataSetPlugIn = new SaveDatasetsPlugIn();
     mySaveDataSetPlugIn.initialize(new PlugInContext(workbenchContext, null,
       null, null, null));
@@ -411,17 +406,21 @@ public class OpenJumpConfiguration {
     ChangeLayerableNamePlugIn changeLayerableNamePlugIn = new ChangeLayerableNamePlugIn();
     changeLayerableNamePlugIn.initialize(new PlugInContext(workbenchContext,
       null, null, null, null));
-
+    
+    //-- [sstein 10.July.2008] now initialized with default-plugins.xml file
+    /*
     EditSelectedSidePlugIn myEditSidePlugin = new EditSelectedSidePlugIn();
     myEditSidePlugin.initialize(new PlugInContext(workbenchContext, null, null,
       null, null));
-
+	*/
     // -- deeJUMP plugin
     SaveLegendPlugIn saveLegend = new SaveLegendPlugIn();
     saveLegend.initialize(new PlugInContext(workbenchContext, null, null, null,
       null));
 
     // -- SIGLE plugin
+    //-- [sstein 10.July.2008] now initialized with default-plugins.xml file
+    /*
     JoinTablePlugIn joinTablePlugIn = new JoinTablePlugIn();
     joinTablePlugIn.initialize(new PlugInContext(workbenchContext, null, null,
       null, null));
@@ -429,7 +428,7 @@ public class OpenJumpConfiguration {
     PasteItemsAtPlugIn pasteItemsAtPlugIn = new PasteItemsAtPlugIn();
     pasteItemsAtPlugIn.initialize(new PlugInContext(workbenchContext,
       null, null, null, null));
-    
+    */
     /**+++++++++++++++++++++++
      * Category Context menu
      *++++++++++++++++++++++++**/
@@ -449,7 +448,9 @@ public class OpenJumpConfiguration {
     /***************************************************************************
      * EDITing toolbox
      **************************************************************************/
-
+    
+    //-- [sstein 10.July.2008] leave them, as they seem to be essential
+    //   note: it is intended to replace the original JUMP edition tools with the constrained tools
     DrawConstrainedPolygonPlugIn myConstrainedPolygonPlugIn = new DrawConstrainedPolygonPlugIn();
     myConstrainedPolygonPlugIn.initialize(new PlugInContext(workbenchContext,
       null, null, null, null));
@@ -481,7 +482,10 @@ public class OpenJumpConfiguration {
     DrawCircleWithGivenRadiusPlugIn drawCirclePlugin = new DrawCircleWithGivenRadiusPlugIn();
     drawCirclePlugin.initialize(new PlugInContext(workbenchContext, null, null,
       null, null));
-    
+
+    //-- [sstein 10.July.2008] now initialized with default-plugins.xml file
+    //   as these are advanced editing tools [i.e. more for experts?]
+    /*
     CutPolygonSIGLEPlugIn cutPolyPlugin = new CutPolygonSIGLEPlugIn();
     cutPolyPlugin.initialize(new PlugInContext(workbenchContext, null, null,
       null, null));
@@ -489,7 +493,7 @@ public class OpenJumpConfiguration {
     AutoCompletePolygonPlugIn myAutoCompletePlugIn = new AutoCompletePolygonPlugIn();
     myAutoCompletePlugIn.initialize(new PlugInContext(workbenchContext, null, null,
       null, null));
-
+	*/
     // -- now initialized in #EditingPlugIn.java to fill toolbox
     /*
      * ScaleSelectedItemsPlugIn myScaleItemsPlugin = new
@@ -501,10 +505,12 @@ public class OpenJumpConfiguration {
      * others
      **************************************************************************/
 
+    //-- [sstein 10.July.2008] now initialized with default-plugins.xml file
     // takes care of keyboard navigation
+    /*
     new InstallKeyPanPlugIn().initialize(new PlugInContext(workbenchContext,
       null, null, null, null));
-
+	*/
     // -- enables to store the SRID = EPSG code as style for every Layer
     // since it is stored as style it should be saved in the project file
     EnsureAllLayersHaveSRIDStylePlugIn ensureLayerSRIDPlugin = new EnsureAllLayersHaveSRIDStylePlugIn();
