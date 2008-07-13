@@ -31,6 +31,7 @@
 	<plug-in>org.openjump.core.ui.plugin.tools.ConvexHullPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.tools.MultiRingBufferSelectedPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.tools.PlumePlugIn</plug-in>
 	<!--- =========  QA ====================  /-->		
 	<plug-in>org.openjump.core.ui.plugin.tools.DeleteEmptyGeometriesPlugIn</plug-in>
 	<!--- =========  Edit Geometry ====================  /-->	
