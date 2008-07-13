@@ -33,6 +33,7 @@
 
 package org.openjump.core.geomutils;
 
+import java.util.ArrayList;
 import java.util.BitSet;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -48,7 +49,12 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.util.UniqueCoordinateArrayFilter;
+import com.vividsolutions.jump.feature.Feature;
 
+/**
+ * @author Larry
+ *
+ */
 public class GeoUtils
 {
 	public static final int emptyBit = 0;
@@ -917,4 +923,47 @@ public class GeoUtils
 	    	return foundMatch;
     	}
     };  
+    
+    /**
+     * Generate a plume Polygon using Coordinate[] bounded on each end by circles of radius1 and radius2.
+     * @param coords - Coordinate[] sequence of points derived from a LineString.
+     * @param radius1 - the radius around the first point in coords.
+     * @param radius2 - the radius around the last point in coords.
+     * @return Geometry containing Polygon of plume.
+     */
+    public static Geometry createPlume(Coordinate[] coords, double radius1, double radius2) {
+    	int n = coords.length;
+    	double radiusInc = (radius2 - radius1) / (n-1);
+    	double r1 = radius1;
+    	Geometry plume = null;
+    	for (int i=0; i<n-1; i++) {
+    		Coordinate p0 = coords[i];
+    		Coordinate p1 = coords[i+1];
+    		double r2 = r1+radiusInc;
+    		Polygon buf = taperedBufferSegment(p0, p1, r1, r2);
+    		if (plume == null)
+    			plume = buf;
+    		else 
+    			plume = plume.union(buf);				
+    		r1 = r2;
+    	}
+    	return plume;
+    }
+    
+    public static Polygon taperedBufferSegment(Coordinate p0, Coordinate p1, double d1, double d2) {
+		ArrayList<Coordinate> coordList = new ArrayList<Coordinate>();
+		Coordinate p0Right = perpendicularVector(p0, p1, d1, false);
+		Coordinate p0Left = perpendicularVector(p0, p1, d1, true);
+		coordList.addAll(new Arc(p0, p0Right, 180.0).getCoordinates());
+		coordList.add(p0Left);		
+		Coordinate p1Left = perpendicularVector(p1, p0, d2, false);
+		coordList.addAll(new Arc(p1, p1Left, 180.0).getCoordinates());		
+		Coordinate p1Right = perpendicularVector(p1, p0, d2, true);
+		coordList.add(p1Right);
+		coordList.add(p0Right);
+		Coordinate[] coords = coordList.toArray(new Coordinate[0]);
+		LinearRing linearRing = new GeometryFactory().createLinearRing(coords);
+		return new GeometryFactory().createPolygon(linearRing, null);
+	}
+
 }
