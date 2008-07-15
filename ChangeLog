@@ -1,3 +1,8 @@
+2008-07-15 Andreas Schmitz <schmitz@lat-lon.de>
+      src/de/latlon/deejump/plugin/style/DeeChangeStylesPlugIn.java,
+      src/com/vividsolutions/jump/workbench/ui/renderer/style/BasicStyle.java:
+      Re-enabled the styling of basic style + vertex style.
+
 2008-07-10 mentaer <sstein@geo.uzh.ch>
       moved all "advanced" plugin functionality to the "default-plugins.xml" file. 
       Basic functionality (such as file i/o, viewing and styling) is still loaded 

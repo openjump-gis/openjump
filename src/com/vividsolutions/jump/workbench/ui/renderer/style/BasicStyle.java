@@ -41,6 +41,7 @@ import java.util.List;
 
 import org.openjump.util.SLDImporter.StrokeFillStyle;
 
+import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
@@ -69,6 +70,8 @@ public class BasicStyle implements Style, StrokeFillStyle {
     private boolean enabled = true;
     private String linePattern = "3";
 
+    private boolean renderingVertices = true;
+    
     //Set fill pattern to something, so that the BasicStylePanel combobox won't
     //start empty. [Jon Aquino]
 		// Fixing the GUI is a better idea! [s-l-teichmann]
@@ -112,6 +115,14 @@ public class BasicStyle implements Style, StrokeFillStyle {
         return linePattern;
     }
 
+    public boolean getRenderingVertices() {
+        return renderingVertices;
+    }
+
+    public void setRenderingVertices(boolean renderingVertices) {
+        this.renderingVertices = renderingVertices;
+    }
+    
     /**
      * The actual dash pattern used internally will be the given dash pattern
      * multiplied by the line length. Remember to call #setRenderingLinePattern(true).
@@ -136,6 +147,9 @@ public class BasicStyle implements Style, StrokeFillStyle {
 
     public void paint(Feature f, Graphics2D g, Viewport viewport)
         throws NoninvertibleTransformException {
+        if (!renderingVertices && f.getGeometry() instanceof Point) {
+            return;
+        }
         StyleUtil.paint(f.getGeometry(), g, viewport, renderingFill,
             fillStroke,
             (renderingFillPattern && (fillPattern != null)) ? fillPattern

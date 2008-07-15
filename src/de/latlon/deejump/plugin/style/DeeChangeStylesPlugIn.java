@@ -166,7 +166,7 @@ public class DeeChangeStylesPlugIn extends AbstractPlugIn {
             layer.getLayerManager().deferFiringEvents(new Runnable() {
                 public void run() {
                     if (layer.getVertexStyle().isEnabled()) {
-                        layer.getBasicStyle().setEnabled(false);
+                        layer.getBasicStyle().setRenderingVertices(false);
                     }
                 }
             });
