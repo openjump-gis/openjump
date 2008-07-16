@@ -1,3 +1,6 @@
+2008-07-16 Andreas Schmitz <schmitz@lat-lon.de>
+      * build.xml: Added the classpath manifest entry.
+
 2008-07-15 Andreas Schmitz <schmitz@lat-lon.de>
       src/de/latlon/deejump/plugin/style/DeeChangeStylesPlugIn.java,
       src/com/vividsolutions/jump/workbench/ui/renderer/style/BasicStyle.java:

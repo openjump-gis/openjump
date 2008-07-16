@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<!--  ======================================================================= 
-      OpenJUMP build file. Based on the HttpUnit build file.                                                    
+<!--  =======================================================================
+      OpenJUMP build file. Based on the HttpUnit build file.
 
       OpenJUMP Release Procedure:
        - Update PDF documents (especially version history)
@@ -30,8 +30,10 @@
     <property name="build.dir" value="build"/>
     <property name="build.classes" value="${build.dir}/classes"/>
     <property name="javadoc.dir" value="${build.dir}/javadoc"/>
-    <property name="workbench.jar" value="${build.dir}/jump-workbench-${version}.jar"/>
-    <property name="api.jar" value="${build.dir}/jump-api-${version}.jar"/>
+        <property name="workbench.jar.name" value="jump-workbench-${version}.jar" />
+    <property name="workbench.jar" value="${build.dir}/${workbench.jar.name}"/>
+        <property name="api.jar.name" value="jump-api-${version}.jar" />
+    <property name="api.jar" value="${build.dir}/${api.jar.name}"/>
     <property name="dist.dir" value="dist"/>
     <property name="archive.dir" value="${dist.dir}/${name}-${version}"/>
     <property name="archive.src.dir" value="${dist.dir}/${name}-src-${version}"/>
@@ -99,14 +101,14 @@
             <or>
                 <filename name="com/**" casesensitive="no"/>
                 <filename name="org/**" casesensitive="no"/>
-                <filename name="de/**" casesensitive="no"/>   
+                <filename name="de/**" casesensitive="no"/>
                 <!-- [sstein] added -->
                 <filename name="language/**" casesensitive="no"/>
                 <filename name="versiondoc/**" casesensitive="no"/>
             </or>
         </and>
     </selector>
-        
+
     <!-- =================================================================== -->
     <!-- Defines the classpath used for compilation and test.                -->
     <!-- =================================================================== -->
@@ -115,7 +117,7 @@
             <include name="**/*.jar"/>
         </fileset>
     </path>
-        
+
     <!--  ===================================================================  -->
     <!--  Prepares the build directory                                         -->
     <!--  ===================================================================  -->
@@ -123,7 +125,7 @@
         <tstamp/>
         <mkdir dir="${build.dir}"/>
     </target>
-        
+
     <!--  ===================================================================  -->
     <!--  Compiles the source code                                             -->
     <!--  ===================================================================  -->
@@ -136,7 +138,7 @@
             <fileset dir="${src.dir}" excludes="**/*.java,**/*.class"/>
         </copy>
     </target>
-    
+
     <!--  ===================================================================  -->
     <!--  Creates the jar archive                                              -->
     <!--  ===================================================================  -->
@@ -144,31 +146,52 @@
     <property name="distpathprop" refid="base.classpath"/>
         <!--                       -->
     <target name="jar" depends="compile">
-        <echo file="${build.dir}/info.txt">Manifest-Version: 1.0
+<!--        <echo file="${build.dir}/info.txt">Manifest-Version: 1.0
 Sealed: false
 ${Name}-Version: ${version}
 Build-Date: ${TODAY}
 Build-Time: ${TSTAMP}
 Class-Path: ${distpathprop}
 Main-Class: com.vividsolutions.jump.workbench.JUMPWorkbench
-</echo>
+</echo>-->
         <!-- [sstein] eliminate absolute paths from manifest file -->
         <replaceregexp file="${build.dir}/info.txt" match=":\\" replace="" flags="gs"/>
         <replaceregexp file="${build.dir}/info.txt" match=":[^:;]*lib" replace=": lib" flags="gs"/>
-        <replaceregexp file="${build.dir}/info.txt" match=";[^:;]*lib" replace=" lib" flags="gs"/>      
-        
-        <jar jarfile="${workbench.jar}" manifest="${build.dir}/info.txt">
+        <replaceregexp file="${build.dir}/info.txt" match=";[^:;]*lib" replace=" lib" flags="gs"/>
+        <!-- manifest="${build.dir}/info.txt" -->
+
+                <manifestclasspath property="manifest.classpath" jarfile="lib/bogus.jar">
+                        <classpath refid="base.classpath" />
+                </manifestclasspath>
+        <jar jarfile="${workbench.jar}">
             <fileset dir="${build.classes}">
                 <selector refid="workbench.jar.selector"/>
             </fileset>
+                        <manifest>
+                                <attribute name="Sealed" value="false" />
+                                <attribute name="${Name}-Version" value="${version}" />
+                                <attribute name="Build-Date" value="${TODAY}" />
+                                <attribute name="Build-Time" value="${TSTAMP}" />
+                                <attribute name="Class-Path" value="${manifest.classpath} ${workbench.jar.name} ${api.jar.name}" />
+                                <attribute name="Main-Class" value="com.vividsolutions.jump.workbench.JUMPWorkbench" />
+                        </manifest>
         </jar>
-        <jar jarfile="${api.jar}" manifest="${build.dir}/info.txt">
+<!-- manifest="${build.dir}/info.txt" -->
+        <jar jarfile="${api.jar}">
             <fileset dir="${build.classes}">
                 <selector refid="api.jar.selector"/>
             </fileset>
+                        <manifest>
+                                <attribute name="Sealed" value="false" />
+                                <attribute name="${Name}-Version" value="${version}" />
+                                <attribute name="Build-Date" value="${TODAY}" />
+                                <attribute name="Build-Time" value="${TSTAMP}" />
+                                <attribute name="Class-Path" value="${manifest.classpath} ${workbench.jar.name} ${api.jar.name}" />
+                                <attribute name="Main-Class" value="com.vividsolutions.jump.workbench.JUMPWorkbench" />
+                        </manifest>
         </jar>
     </target>
-    
+
     <!--  ===================================================================  -->
     <!--  Creates the API documentation                                        -->
     <!--  ===================================================================  -->
@@ -185,7 +208,7 @@ Main-Class: com.vividsolutions.jump.workbench.JUMPWorkbench
             </packageset>
         </javadoc>
     </target>
-    
+
     <!--  ===================================================================  -->
     <!--  Creates the distribution                                             -->
     <!--  ===================================================================  -->
@@ -228,7 +251,7 @@ Main-Class: com.vividsolutions.jump.workbench.JUMPWorkbench
         </copy>
         <!-- [sstein] added end -->
     </target>
-    
+
     <!--  ===================================================================  -->
     <!--  Packages the distribution with ZIP                                   -->
     <!--  ===================================================================  -->
@@ -236,7 +259,7 @@ Main-Class: com.vividsolutions.jump.workbench.JUMPWorkbench
         <zip zipfile="${dist.dir}/${name}-${version}.zip" basedir="${dist.dir}" includes="${name}-${version}/**"/>
         <zip zipfile="${dist.dir}/${name}-src-${version}.zip" basedir="${dist.dir}" includes="${name}-src-${version}/**"/>
     </target>
-    
+
     <!--  ===================================================================  -->
     <!--  Cleans up generated stuff                                            -->
     <!--  ===================================================================  -->
