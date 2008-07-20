@@ -11,6 +11,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
 
@@ -39,6 +41,7 @@ public class DbfFile implements DbfConsts {
     RandomAccessFile rFile;
     int filesize;
     int numfields;
+    Map<String,String> uniqueStrings;
     public DbfFieldDef[] fielddef;
     public static final SimpleDateFormat DATE_PARSER = new SimpleDateFormat("yyyyMMdd") {
         {
@@ -162,6 +165,8 @@ public class DbfFile implements DbfConsts {
     private void init(EndianDataInputStream sfile)
         throws IOException, DbfFileException {
         DbfFileHeader head = new DbfFileHeader(sfile);
+        // A map to store a unique reference for identical field value
+        uniqueStrings = new HashMap<String,String>();
         int widthsofar;
 
         if (DEBUG) {
@@ -235,7 +240,12 @@ public class DbfFile implements DbfConsts {
     //
     // Will return a String, Double, or Integer
     // not currently supporting Data or logical since we dont have any test datasets
-    static boolean useIntern = true;
+    
+    // intern() function used to save heapspace is abandonned,
+    // it is replaced by a mechanism used to keep a unique reference for each
+    // string in the heapspace [michael michaud 2008-07-20]
+    // ref : http://mindprod.com/jgloss/interned.html#MANUAL
+    // static boolean useIntern = true;
     
     public Object ParseRecordColumn(StringBuffer rec, int wantedCol)
         throws Exception {
@@ -243,24 +253,19 @@ public class DbfFile implements DbfConsts {
         int end;
         start = fielddef[wantedCol].fieldstart;
         end = start + fielddef[wantedCol].fieldlen;
-
+        String s = null, masterString = null;
         switch (fielddef[wantedCol].fieldtype) {
+            
         case 'C': //character
-        	while ((start < end) && (rec.charAt(end-1) == ' '))
-                 	end--;  //trim trailing spaces
-        	String s;
-        	if (useIntern) {  //initialized to true
-        		 try {
-        		   s = rec.substring(start, end).intern();
-        		 } catch (Exception e) {  //catch the out of permgen memory exception
-        		   s = rec.substring(start, end);
-        		   useIntern = false;
-        		 }
-        		} else {
-        		     s = rec.substring(start, end);
-        		}
-
-            return s;
+            while ((start < end) && (rec.charAt(end-1) == ' '))
+                    end--;  //trim trailing spaces
+            s = rec.substring(start, end);
+            masterString = uniqueStrings.get(s);
+            if (masterString!=null) return masterString;
+            else {
+                uniqueStrings.put(s,s);
+                return s;
+            }
 
         case 'F': //same as numeric, more or less
         case 'N': //numeric
@@ -297,7 +302,13 @@ public class DbfFile implements DbfConsts {
             return parseDate(rec.substring(start, end));
 
         default:
-            return rec.substring(start, end).intern();
+            s = rec.substring(start, end);
+            masterString = uniqueStrings.get(s);
+            if (masterString!=null) return masterString;
+            else {
+                uniqueStrings.put(s,s);
+                return s;
+            }
         }
     }
 
@@ -549,9 +560,9 @@ public class DbfFile implements DbfConsts {
 
     /**
      * Fetches a part column of Strings from the database file.
-     * @param int col - the column to fetch
-     * @param int start - the row to start fetching from
-     * @param int end - the row to stop fetching at.
+     * @param col - the column to fetch
+     * @param start - the row to start fetching from
+     * @param end - the row to stop fetching at.
      * @exception java.io.IOException - on read error
      * @exception DbfFileException - column is not an Integer.
      */
