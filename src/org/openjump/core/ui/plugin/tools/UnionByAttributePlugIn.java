@@ -50,6 +50,7 @@ import javax.swing.JComboBox;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.geom.util.*;
 import com.vividsolutions.jts.operation.linemerge.LineMerger;
+import com.vividsolutions.jts.operation.union.UnaryUnionOp;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
@@ -94,35 +95,32 @@ public class UnionByAttributePlugIn extends AbstractPlugIn implements ThreadedPl
     public UnionByAttributePlugIn() {}
     
     public String getName() {return I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.union-by-attribute");}
-
     
     public void initialize(PlugInContext context) throws Exception {
-		context.getFeatureInstaller().addMainMenuItem(
-				this,
-				new String[] { MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS, MenuNames.ONELAYER },
-				this.getName(),
-				false,
-				null,
-				new MultiEnableCheck().add(
-						new EnableCheckFactory(context.getWorkbenchContext())
-								.createTaskWindowMustBeActiveCheck()).add(
-						new EnableCheckFactory(context.getWorkbenchContext())
-								.createAtLeastNLayersMustExistCheck(1)));
+        context.getFeatureInstaller().addMainMenuItem(
+            this,
+            new String[] { MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS, MenuNames.ONELAYER },
+            this.getName(),
+            false,
+            null,
+            new MultiEnableCheck()
+                .add(new EnableCheckFactory(context.getWorkbenchContext())
+                    .createTaskWindowMustBeActiveCheck())
+                .add(new EnableCheckFactory(context.getWorkbenchContext())
+                    .createAtLeastNLayersMustExistCheck(1)));
     }
     
     
     public boolean execute(PlugInContext context) throws Exception {
-    	
+    
         initDialog(context);
         dialog.setVisible(true);
-        
         if (!dialog.wasOKPressed()) {
             return false;
         }
-        
         return true;
     }
-
+    
     private void initDialog(PlugInContext context) {
         
         dialog = new MultiInputDialog(context.getWorkbenchFrame(),
@@ -228,9 +226,10 @@ public class UnionByAttributePlugIn extends AbstractPlugIn implements ThreadedPl
             Object key = i.next();
             FeatureCollection fca = (FeatureCollection)map.get(key);
             if (fca.size() > 0) {
-                Feature feature = union(monitor, fca, merge_lines, total_numeric_fields);
+                Feature feature = union(context, monitor, fca, merge_lines, total_numeric_fields);
                 feature.setAttribute(att, key);
                 Feature newFeature = new BasicFeature(newSchema);
+                // Copy feature attributes in newFeature
                 for (int j = 0, max = newSchema.getAttributeCount() ; j < max ; j++) {
                     newFeature.setAttribute(j, feature.getAttribute(newSchema.getAttributeName(j)));
                 }
@@ -248,112 +247,58 @@ public class UnionByAttributePlugIn extends AbstractPlugIn implements ThreadedPl
     * The difference is not so important for small datasets, but for large datasets, the
     * difference may of 5 minutes versus 5 hours.
     */
-    private Feature union(TaskMonitor monitor, FeatureCollection fc,
-                                               boolean merge_lines, boolean total) {
-        List[] geometries = getGeometries(fc.iterator());
-        List polygons   = geometries[2];
-        List lines      = geometries[1];
-        List points     = geometries[0];
-        
-        Geometry pointsUnion      = fact.buildGeometry(new ArrayList());
-        Geometry lineStringsUnion = fact.buildGeometry(new ArrayList());
-        Geometry polygonsUnion    = fact.buildGeometry(new ArrayList());
-        
-        // Union Points
-        if (points.size() > 0) {
-            pointsUnion = fact.createMultiPoint((Point[])points.toArray(new Point[0]));
-        }
-        
-        // Union LineString
-        if (lines.size() > 0) {
-            Geometry multiLineGeom = fact.createMultiLineString(fact.toLineStringArray(lines));
-            Geometry unionInput    = fact.createMultiLineString(null);
-            Geometry minLine       = extractPoint(lines);
-            if (minLine != null) unionInput = minLine;
-            lineStringsUnion = multiLineGeom.union(unionInput);
-            if (merge_lines) {
-                lineStringsUnion = mergeLines(lineStringsUnion);
+    private Feature union(PlugInContext context, TaskMonitor monitor,
+                    FeatureCollection fc, boolean merge_lines, boolean total) {
+        Collection points      = new ArrayList();
+        Collection lineStrings = new ArrayList();
+        Collection polygons    = new ArrayList();
+        Collection geoms       = new ArrayList();
+        for (Iterator it = fc.iterator() ; it.hasNext() ; ) {
+            Geometry g = (Geometry)((Feature) it.next()).getGeometry();
+            if (g instanceof Point) points.add(g);
+            else if (g instanceof LineString) lineStrings.add(g);
+            else if (g instanceof Polygon) polygons.add(g);
+            else if (g instanceof GeometryCollection) {
+                Geometry gc = (GeometryCollection)g;
+                for (int j = 0 ; j < gc.getNumGeometries() ; j++) {
+                    Geometry gp = gc.getGeometryN(j);
+                    if (gp instanceof Point) points.add(gp);
+                    else if (gp instanceof LineString) lineStrings.add(gp);
+                    else if (gp instanceof Polygon) polygons.add(gp);
+                    else;
+                }
             }
         }
-        
-        // Union Polygons
-        if (polygons.size() > 0) {
-            int iteration = 1;
-            int nbIteration = 1 + (int)(Math.log(polygons.size())/Math.log(4));
-            while (polygons.size() > 1) {
-                monitor.report(iteration++, nbIteration, I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.union-by-attribute"));
-                final int cellSize = 1 + (int)Math.sqrt(polygons.size());
-                java.util.Comparator comparator =  new java.util.Comparator(){
-                    public int compare(Object o1, Object o2) {
-                        if (o1==null || o2==null) return 0;
-                        Envelope env1 = ((Geometry)o1).getEnvelopeInternal();
-                        Envelope env2 = ((Geometry)o2).getEnvelopeInternal();
-                        double indice1 = env1.getMinX()/cellSize + cellSize*((int)env1.getMinY()/cellSize);
-                        double indice2 = env2.getMinX()/cellSize + cellSize*((int)env2.getMinY()/cellSize);
-                        // Bug fixed on 2007-06-27 : must never return 0
-                        return indice1>=indice2?1:indice1<indice2?-1:0;
-                    }
-                    public boolean equals(Object obj) {return this.equals(obj);}
-                };
-                java.util.TreeSet treeSet = new java.util.TreeSet(comparator);
-                treeSet.addAll(polygons);
-                // Testes with groups of 4, 8 and 16 (4 is better than 8 which is better than 16
-                // for large datasets).
-                polygons = union(monitor, treeSet, 4);
-            }
+        Geometry gp;
+        if (points.size()>0 && null != (gp = UnaryUnionOp.union(points))) {
+            geoms.add(gp);
         }
-        if (polygons.size() > 0) polygonsUnion = (Geometry)polygons.get(0);
-        Geometry union;
-        if (polygonsUnion.isEmpty()) {
-            if (lineStringsUnion.isEmpty()) {
-                if (pointsUnion.isEmpty()) union = fact.buildGeometry(new ArrayList());
-                else union = pointsUnion;
-            }
-            else if (pointsUnion.isEmpty()) union = lineStringsUnion;
-            else union = lineStringsUnion.union(pointsUnion);
+        if (merge_lines && lineStrings.size()>0) {
+            LineMerger merger = new LineMerger();
+            merger.add(lineStrings);
+            geoms.addAll(merger.getMergedLineStrings());
         }
-        else if (lineStringsUnion.isEmpty()) {
-            if (pointsUnion.isEmpty()) union = polygonsUnion;
-            else union = polygonsUnion.union(pointsUnion);
+        else if (lineStrings.size()>0) {
+            context.getOutputFrame().addText("merge_lines = true");
+            gp = UnaryUnionOp.union(lineStrings);
+            if (gp != null) geoms.add(gp);
         }
-        else {
-            if (pointsUnion.isEmpty()) union = polygonsUnion.union(lineStringsUnion);
-            // Can't union poly + linestring + points, because the intermediate result
-            // is GeometryCollection which is non unionable
-            //else union = polygonsUnion.union(lineStringsUnion).union(pointsUnion);
-            else union = polygonsUnion.union(lineStringsUnion);
+        if (polygons.size()>0 && null != (gp = UnaryUnionOp.union(polygons))) {
+            geoms.add(gp);
         }
         
         FeatureSchema schema = fc.getFeatureSchema();
         Feature feature = new BasicFeature(schema);
-        feature.setGeometry(union);
+        if (geoms.size()==0) {
+            feature.setGeometry(fact.createGeometryCollection(new Geometry[]{}));
+        }
+        else {
+            feature.setGeometry(UnaryUnionOp.union(geoms));
+        }
         if (total) {
             feature = totalNumericValues(fc, feature);
         }
         return feature;
-    }
-    
-   /**
-    * Method unioning an ordered set of geometries by small groups.
-    */
-    private List union(TaskMonitor monitor, Set set, int groupSize) {
-        List unionGeometryList = new ArrayList();
-        Geometry currUnion = null;
-        int size = set.size();
-        int count = 0;
-        for (Iterator i = set.iterator(); i.hasNext();) {
-            Geometry geom = (Geometry)i.next();
-            if (count%groupSize==0) currUnion = geom;
-            else {
-                currUnion = currUnion.union(geom);
-                if (groupSize-count%groupSize==1) unionGeometryList.add(currUnion);
-            }
-            count++;
-        }
-        if (groupSize-count%groupSize!=0) {
-            unionGeometryList.add(currUnion);
-        }
-        return unionGeometryList;
     }
     
     // Set the sum of fc collection numeric attribute values into feature numeric attributes.
@@ -381,28 +326,6 @@ public class UnionByAttributePlugIn extends AbstractPlugIn implements ThreadedPl
         return feature;
     }
     
-    
-    private List[] getGeometries(Iterator featureIterator) {
-        List[] lists = new ArrayList[]{new ArrayList(), new ArrayList(), new ArrayList()};
-        for (Iterator i = featureIterator; i.hasNext();) {
-            Geometry g = (Geometry)((Feature) i.next()).getGeometry();
-            if (g instanceof Point) lists[0].add(g);
-            else if (g instanceof LineString) lists[1].add(g);
-            else if (g instanceof Polygon) lists[2].add(g);
-            else if (g instanceof GeometryCollection) {
-                Geometry gc = (GeometryCollection)g;
-                for (int j = 0 ; j < gc.getNumGeometries() ; j++) {
-                    Geometry gp = gc.getGeometryN(j);
-                    if (gp instanceof Point) lists[0].add(gp);
-                    else if (gp instanceof LineString) lists[1].add(gp);
-                    else if (gp instanceof Polygon) lists[2].add(gp);
-                    else;
-                }
-            }
-        }
-        return lists;
-    }
-    
     private Geometry mergeLines(Geometry g) {
         List linesList = new ArrayList();
         LinearComponentExtracter lineFilter = new LinearComponentExtracter(linesList);
@@ -410,20 +333,6 @@ public class UnionByAttributePlugIn extends AbstractPlugIn implements ThreadedPl
         LineMerger merger = new LineMerger();
         merger.add(linesList);
         return fact.buildGeometry(merger.getMergedLineStrings());
-    }
-    
-    private Geometry extractPoint(Collection lines) {
-        int minPts = Integer.MAX_VALUE;
-        Geometry point = null;
-        // extract first point from first non-empty geometry
-        for (Iterator i = lines.iterator(); i.hasNext(); ) {
-            Geometry g = (Geometry) i.next();
-            if (! g.isEmpty()) {
-                Coordinate p = g.getCoordinate();
-                point = g.getFactory().createPoint(p);
-            }
-        }
-        return point;
     }
     
     private List getFieldsFromLayerWithoutGeometry(Layer lyr) {
