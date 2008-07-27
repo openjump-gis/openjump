@@ -61,7 +61,7 @@ public class PlumePlugIn extends AbstractPlugIn {
 	private final static String sPlumeTool = I18N.get("org.openjump.core.ui.plugin.tools.PlumePlugIn.Plume");
 	private final static String sNew = I18N.get("org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn.New");
 	private final static String sTheradius = I18N.get("org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn.The-arc-radius");
-
+	private final static String selectLineStrings = I18N.get("ui.cursortool.SelectLineStringsTool.select-linestrings");
 	private final static String RADIUS = I18N.get("org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn.Radius");
 	private final static String RADIUS1 = RADIUS + " 1";
 	private final static String RADIUS2 = RADIUS + " 2";
@@ -152,7 +152,7 @@ public class PlumePlugIn extends AbstractPlugIn {
 	                            .getSelectionManager()
 	                            .getSelectedItems();	            
 	            if ((Geometry) selectedItems.iterator().next() instanceof LineString) return null;
-	            return I18N.get("ui.cursortool.SelectLineStringsTool.select-linestrings");
+	            return selectLineStrings;
 	            }
 	        };
 	    }
