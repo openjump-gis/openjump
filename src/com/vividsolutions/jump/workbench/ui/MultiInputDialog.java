@@ -468,6 +468,9 @@ public class MultiInputDialog extends JDialog {
                 okCancelPanel_actionPerformed(e);
             }
         });
+        //LDB: set the default button for Enter to the OK for all
+		this.getRootPane().setDefaultButton(okCancelPanel.getButton("OK"));
+        
         this.addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentShown(ComponentEvent e) {
                 this_componentShown(e);
