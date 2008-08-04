@@ -1,5 +1,8 @@
 package de.latlon.deejump.plugin.style;
 
+import static org.apache.batik.transcoder.SVGAbstractTranscoder.KEY_HEIGHT;
+import static org.apache.batik.transcoder.SVGAbstractTranscoder.KEY_WIDTH;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -115,7 +118,7 @@ public class BitmapVertexStyle extends VertexStyle {
     @Override
     public void setSize(int size) {
         super.setSize(size);
-        if (fileName.toLowerCase().endsWith(".svg")) {
+        if (fileName != null && fileName.toLowerCase().endsWith(".svg")) {
             setFileName(fileName);
         }
     }
@@ -180,8 +183,8 @@ public class BitmapVertexStyle extends VertexStyle {
             Reader in = new StringReader(updateSVGColors(new File(fileName), stroke, fill).toString());
             TranscoderInput input = new TranscoderInput(in);
             if (size > 0) {
-                trc.addTranscodingHint(PNGTranscoder.KEY_HEIGHT, new Float(size));
-                trc.addTranscodingHint(PNGTranscoder.KEY_WIDTH, new Float(size));
+                trc.addTranscodingHint(KEY_HEIGHT, new Float(size));
+                trc.addTranscodingHint(KEY_WIDTH, new Float(size));
             }
             trc.transcode(input, output);
             bos.close();

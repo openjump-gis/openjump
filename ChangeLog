@@ -1,3 +1,7 @@
+2008-08-04 Andreas Schmitz <schmitz@lat-lon.de>
+      * src/de/latlon/deejump/plugin/style/BitmapVertexStyle.java:
+      Fixed null pointer when reading from project file.
+
 2008-07-16 Andreas Schmitz <schmitz@lat-lon.de>
       * build.xml: Added the classpath manifest entry.
 
