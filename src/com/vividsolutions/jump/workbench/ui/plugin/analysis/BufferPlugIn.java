@@ -48,6 +48,7 @@ import javax.swing.JComponent;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jts.operation.buffer.BufferOp;
+import com.vividsolutions.jts.operation.union.UnaryUnionOp;
 import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.task.*;
 import com.vividsolutions.jump.workbench.model.*;
@@ -162,13 +163,13 @@ public class BufferPlugIn
     	featureSchema = layer.getFeatureCollectionWrapper().getFeatureSchema();
     	resultFC = new FeatureDataset(featureSchema);
     }
-    if (unionResult) {
-    	Feature f = combine(inputC);
-    	Geometry geom = runBuffer(f.getGeometry());
-    	ArrayList result = new ArrayList();
-    	result.add(geom);
-    	resultFC = FeatureDatasetFactory.createFromGeometry(result);
-    } else {
+//    if (unionResult) {
+//    	Feature f = combine(inputC);
+//    	Geometry geom = runBuffer(f.getGeometry());
+//    	ArrayList result = new ArrayList();
+//    	result.add(geom);
+//    	resultFC = FeatureDatasetFactory.createFromGeometry(result);
+//    } else {
     	FeatureDataset inputFD = new FeatureDataset(inputC, featureSchema);
     	Collection resultGeomColl = runBuffer(monitor, inputFD);
     	if (copyAttributes) {
@@ -188,7 +189,14 @@ public class BufferPlugIn
      	} else {
     		resultFC = FeatureDatasetFactory.createFromGeometry(resultGeomColl);
     	}
-    }
+//	  }
+	if (unionResult) {
+		Collection geoms = FeatureUtil.toGeometries(resultFC.getFeatures());
+		Geometry g = UnaryUnionOp.union(geoms);
+		geoms.clear();
+		geoms.add(g);
+		resultFC = FeatureDatasetFactory.createFromGeometry(geoms);
+	}
     context.getLayerManager().addCategory(categoryName);
     String name;
     if (!useSelected)
