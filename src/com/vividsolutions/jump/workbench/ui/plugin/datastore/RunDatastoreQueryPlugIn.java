@@ -56,7 +56,17 @@ public class RunDatastoreQueryPlugIn extends
                 featureDataset.add( featureInputStream.next() );
                 monitor.report( ++i, -1, I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPlugIn.features"));
             }
-            return new Layer( panel.getQuery(), context.getLayerManager()
+            // Added by Michael Michaud on 2008-08-10 to avoid very long layer
+            // names issued from long queries (keep about 64 characters)
+            String name = panel.getQuery();
+            if (name != null) {
+                // remove the column definition part of the select
+                name = name.replaceAll("(?s).*from\\s+","").trim();
+                name = context.getLayerManager().uniqueLayerName(
+                    name.substring(0, Math.min(name.length(), 64)).trim()
+                );
+            }
+            return new Layer( name, context.getLayerManager()
                 .generateLayerFillColor(), featureDataset, context.getLayerManager() );
         } finally {
             featureInputStream.close();
