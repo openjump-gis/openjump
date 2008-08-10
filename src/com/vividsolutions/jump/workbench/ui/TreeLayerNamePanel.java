@@ -127,8 +127,8 @@ public class TreeLayerNamePanel extends JPanel
             if (path != null) {
                 if (path.getLastPathComponent() instanceof Layer) {
                     Layer layer = (Layer)path.getLastPathComponent();
-                    tip = layer.getName() + " (" +
-                          layer.getFeatureCollectionWrapper().size() + ")";
+                    tip = layer.getName() + " [" +
+                          layer.getFeatureCollectionWrapper().size() + "]";
                 }
                 else tip = path.getLastPathComponent();
             }
