@@ -295,16 +295,11 @@ public class JUMPConfiguration implements Setup {
 
     private ZoomBarPlugIn zoomBarPlugIn = new ZoomBarPlugIn();
 
-// [sstein, 01.08.2006] commented out for test reasons with DeeChangeStylePlugIn
-// [sstein, 27.09.2006] comment in - problem with colour theming    
-    // stranger: giving dee change styles another try
     private DeeChangeStylesPlugIn changeStylesPlugIn = new DeeChangeStylesPlugIn();
 
     private UndoPlugIn undoPlugIn = new UndoPlugIn();
 
     private RedoPlugIn redoPlugIn = new RedoPlugIn();
-
-
 
     private ViewAttributesPlugIn viewAttributesPlugIn = new ViewAttributesPlugIn();
 
@@ -346,10 +341,6 @@ public class JUMPConfiguration implements Setup {
     private ExplodeSelectedFeaturesPlugIn explodeSelectedFeaturesPlugIn = new ExplodeSelectedFeaturesPlugIn();
     
     private InstallSkinsPlugIn installSkinsPlugIn = new InstallSkinsPlugIn(); 
-    
-    //[ssein 01.08.2006] -- added for test reasons
-    //[sstein, 27.09.2006] comment out - problem with colour theming reported by Ole 
-  	//private DeeChangeStylesPlugIn changeStylesPlugIn = new DeeChangeStylesPlugIn(); 
   	
     private InstallReferencedImageFactoriesPlugin installReferencedImageFactoriesPlugin = new InstallReferencedImageFactoriesPlugin();
 
@@ -870,12 +861,12 @@ public class JUMPConfiguration implements Setup {
         //featureInstaller.addMenuSeparator(MenuNames.WINDOW); // ===================
 
         //-- TOOLS
-        //-- [sstein: 23.02.2006 new in VividJump]
-        configToolsAnalysis(workbenchContext, checkFactory, featureInstaller);
-        configToolsEdit(workbenchContext, checkFactory, featureInstaller);
+        /* [sstein 13.Aug.2008] -- initialization now in default-plugins.xml
+        configToolsAnalysis(workbenchContext, checkFactory, featureInstaller); 
+        configToolsEdit(workbenchContext, checkFactory, featureInstaller); 
         configToolsQA(workbenchContext, checkFactory, featureInstaller);  
         configToolsAttributes(workbenchContext, checkFactory, featureInstaller);  
-
+		*/
         featureInstaller.addMainMenuItemWithJava14Fix(shortcutKeysPlugIn, new String[]{MenuNames.HELP},
                 shortcutKeysPlugIn.getName() + "...", false, null, null);
         new FeatureInstaller(workbenchContext).addMainMenuItemWithJava14Fix(
@@ -956,27 +947,29 @@ public class JUMPConfiguration implements Setup {
 //public static String MENU_ANALYSIS = MenuNames.TOOLS_ANALYSIS;
 //public static String[] MENU_TOOLS_ANALYSIS = new String[] { MENU_TOOLS, MENU_ANALYSIS};
 
+    /* [sstein 13.Aug.2008] -- initialization now in default-plugins.xml
+     
     // these must be defined as instance vars for initialization to be performed
-	private SpatialQueryPlugIn spatialQueryPlugIn = new SpatialQueryPlugIn();
-    private AttributeQueryPlugIn attrQueryPlugIn = new AttributeQueryPlugIn();
-	private SpatialJoinPlugIn spatialJoinPlugIn = new SpatialJoinPlugIn();
-    private UnionPlugIn unionPlugIn = new UnionPlugIn();
-    private GeometryFunctionPlugIn geometryFunctionPlugIn = new GeometryFunctionPlugIn();
-    private OverlayPlugIn overlayPlugIn = new OverlayPlugIn();
-    private ConvexHullPlugIn convexHullPI = new ConvexHullPlugIn();
-    private BufferPlugIn bufferPlugIn = new BufferPlugIn();
-    private CalculateAreasAndLengthsPlugIn calculateAreasAndLengthsPlugIn = new CalculateAreasAndLengthsPlugIn();
+	//private SpatialQueryPlugIn spatialQueryPlugIn = new SpatialQueryPlugIn(); //-- sstein: init in file
+    //private AttributeQueryPlugIn attrQueryPlugIn = new AttributeQueryPlugIn(); //-- sstein: init in file
+	//private SpatialJoinPlugIn spatialJoinPlugIn = new SpatialJoinPlugIn();
+    //private UnionPlugIn unionPlugIn = new UnionPlugIn(); //-- sstein: init in file
+    //private GeometryFunctionPlugIn geometryFunctionPlugIn = new GeometryFunctionPlugIn(); //-- sstein: init in file
+    //private OverlayPlugIn overlayPlugIn = new OverlayPlugIn(); //-- sstein: init in file
+    //private ConvexHullPlugIn convexHullPI = new ConvexHullPlugIn(); //-- sstein: init in file
+    //private BufferPlugIn bufferPlugIn = new BufferPlugIn(); //-- sstein: init in file
+    //private CalculateAreasAndLengthsPlugIn calculateAreasAndLengthsPlugIn = new CalculateAreasAndLengthsPlugIn(); //-- sstein: init in file
 
     private void configToolsAnalysis(final WorkbenchContext workbenchContext,
                 final EnableCheckFactory checkFactory,
                 FeatureInstaller featureInstaller) throws Exception {
-
+    
     String MENU_TOOLS = MenuNames.TOOLS;
     String MENU_ANALYSIS = MenuNames.TOOLS_ANALYSIS;
     String[] MENU_TOOLS_ANALYSIS = new String[] { MENU_TOOLS, MENU_ANALYSIS};
     String[] MENU_TOOLS_ANALYSIS_ONE_LAYER = new String[] { MENU_TOOLS, MENU_ANALYSIS, MenuNames.ONELAYER};
     String[] MENU_TOOLS_ANALYSIS_TWO_LAYER = new String[] { MENU_TOOLS, MENU_ANALYSIS, MenuNames.TWOLAYERS};
-    	
+
 	featureInstaller
 	.addMainMenuItem(
 			spatialQueryPlugIn,
@@ -991,7 +984,7 @@ public class JUMPConfiguration implements Setup {
 					.add(
 							checkFactory
 							.createAtLeastNLayersMustExistCheck(2)));
-	
+
 	featureInstaller
 	        .addMainMenuItem(
 	                attrQueryPlugIn,
@@ -1006,7 +999,7 @@ public class JUMPConfiguration implements Setup {
 	                        .add(
 	                                checkFactory
 	                                        .createAtLeastNLayersMustExistCheck(1)));
-    
+
 	featureInstaller
 	.addMainMenuItem(
 			geometryFunctionPlugIn,
@@ -1063,7 +1056,6 @@ public class JUMPConfiguration implements Setup {
 	        null, ConvexHullPlugIn.getEnableCheck(checkFactory)
 		);
 	
-	
 	//======================================
 	//featureInstaller.addMenuSeparator(MENU_TOOLS_ANALYSIS);
 	featureInstaller
@@ -1076,7 +1068,7 @@ public class JUMPConfiguration implements Setup {
 			new MultiEnableCheck()
 			.add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
 			.add(checkFactory.createAtLeastNLayersMustExistCheck(2)));
-	
+
 	//======================================
 	//featureInstaller.addMenuSeparator(MENU_TOOLS_ANALYSIS);
 	
@@ -1084,21 +1076,23 @@ public class JUMPConfiguration implements Setup {
 			new String[] { MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS, MenuNames.ONELAYER},
 			calculateAreasAndLengthsPlugIn.getName() + "...", false, null,
 			calculateAreasAndLengthsPlugIn.createEnableCheck(workbenchContext));
-	
+
 	new WarpingPlugIn().initialize(new PlugInContext(workbenchContext,
 			null, null, null, null));
-	
+
 	new AffineTransformPlugIn().initialize(new PlugInContext(
 			workbenchContext, null, null, null, null));
-	
+
 	new RandomTrianglesPlugIn().initialize(new PlugInContext(
 			workbenchContext, null, null, null, null));
 	new RandomArrowsPlugIn().initialize(new PlugInContext(workbenchContext,
 			null, null, null, null));
 	
-}
+	}
+*/
 
-
+    /* [sstein 13.Aug.2008] -- initialization now in default-plugins.xml
+     * 
 private ExtractSegmentsPlugIn extractSegmentsPlugIn = new ExtractSegmentsPlugIn();
 private LineNoderPlugIn lineNoderPlugIn = new LineNoderPlugIn();
 private PolygonizerPlugIn polygonizerPlugIn = new PolygonizerPlugIn();    
@@ -1117,7 +1111,7 @@ private void configToolsEdit(final WorkbenchContext workbenchContext,
             MENU_TOOLS_EDIT,
                 extractSegmentsPlugIn.getName() + "...", false, null,
                 extractSegmentsPlugIn.createEnableCheck(workbenchContext));
-    
+  
     featureInstaller.addMainMenuItem(lineNoderPlugIn,
             MENU_TOOLS_EDIT,
                 lineNoderPlugIn.getName() + "...", false, null,
@@ -1139,7 +1133,9 @@ private void configToolsEdit(final WorkbenchContext workbenchContext,
           affineTransPlugIn.createEnableCheck(workbenchContext));
 
 }
+*/
 
+    /* [sstein 13.Aug.2008] -- initialization now in default-plugins.xml
 private ValidateSelectedLayersPlugIn validateSelectedLayersPlugIn = new ValidateSelectedLayersPlugIn();
 private LayerStatisticsPlugIn layerStatisticsPlugIn = new LayerStatisticsPlugIn();
 private FeatureStatisticsPlugIn featureStatisticsPlugIn = new FeatureStatisticsPlugIn();
@@ -1152,7 +1148,7 @@ private void configToolsQA(final WorkbenchContext workbenchContext,
 	String MENU_TOOLS = MenuNames.TOOLS;
 	String MENU_QA = MenuNames.TOOLS_QA;
 	String[] MENU_TOOLS_QA= new String[] { MENU_TOOLS, MENU_QA};
-	
+
 	featureInstaller
 	.addMainMenuItem(validateSelectedLayersPlugIn,
 			MENU_TOOLS_QA,
@@ -1161,7 +1157,7 @@ private void configToolsQA(final WorkbenchContext workbenchContext,
 			null,
 			new MultiEnableCheck()
 			.add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
-			.add(checkFactory.createAtLeastNLayersMustBeSelectedCheck(1)));
+			.add(checkFactory.createAtLeastNLayersMustBeSelectedCheck(1)));	
 	featureInstaller
 	.addMainMenuItem(layerStatisticsPlugIn,
 			MENU_TOOLS_QA,
@@ -1191,7 +1187,8 @@ private void configToolsQA(final WorkbenchContext workbenchContext,
 	                    .add(checkFactory.createAtLeastNLayersMustExistCheck(2)));
 
 }
-
+*/
+/* [sstein 13.Aug.2008] -- initialization now in default-plugins.xml
 private void configToolsAttributes(final WorkbenchContext workbenchContext,
 		final EnableCheckFactory checkFactory,
 		FeatureInstaller featureInstaller) throws Exception {
@@ -1209,8 +1206,8 @@ private void configToolsAttributes(final WorkbenchContext workbenchContext,
 			.add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
 			.add(checkFactory.createAtLeastNLayersMustExistCheck(2)));
 
-}
-
+	}
+*/
 public void configureDatastores(final WorkbenchContext context) throws Exception {
 
 	context.getRegistry().

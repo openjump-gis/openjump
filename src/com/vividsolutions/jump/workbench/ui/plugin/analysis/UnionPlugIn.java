@@ -54,12 +54,17 @@ import com.vividsolutions.jump.feature.FeatureDatasetFactory;
 import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.feature.FeatureUtil;
 import com.vividsolutions.jump.task.TaskMonitor;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
+import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
+import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.ThreadedPlugIn;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
+import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 
 public class UnionPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
@@ -80,6 +85,27 @@ public class UnionPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
             .add(context.getCheckFactory().createAtLeastNLayersMustExistCheck(1)));
       }
     */
+    
+    public void initialize(PlugInContext context) throws Exception
+    {
+        	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
+    		featureInstaller.addMainMenuItem(
+    	        this,								//exe
+  				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS, MenuNames.ONELAYER}, 	//menu path
+                this.getName() + "...", //name methode .getName recieved by AbstractPlugIn 
+                false,			//checkbox
+                null,			//icon
+                createEnableCheck(context.getWorkbenchContext())); //enable check  
+    }
+    
+    public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
+        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+
+        return new MultiEnableCheck()
+                        .add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
+                        .add(checkFactory.createAtLeastNLayersMustExistCheck(1));
+    }
+    
     public boolean execute(PlugInContext context) throws Exception {
     	//[sstein, 16.07.2006] put here again to load correct language
         //[mmichaud 2007-05-20] move to UnionPlugIn constructor to load the string only once

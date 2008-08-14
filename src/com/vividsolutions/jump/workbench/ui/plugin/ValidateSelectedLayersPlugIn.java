@@ -57,12 +57,16 @@ import com.vividsolutions.jump.qa.ValidationError;
 import com.vividsolutions.jump.qa.Validator;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.util.CollectionMap;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
+import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
+import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.ThreadedPlugIn;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.renderer.style.RingVertexStyle;
@@ -108,6 +112,26 @@ public class ValidateSelectedLayersPlugIn extends AbstractPlugIn
         return validator != null;
     }
 
+    public void initialize(PlugInContext context) throws Exception
+    {
+        	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
+    		featureInstaller.addMainMenuItem(
+    	        this,								//exe
+  				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_QA}, 	//menu path
+                this.getName() + "...", //name methode .getName recieved by AbstractPlugIn 
+                false,			//checkbox
+                null,			//icon
+                createEnableCheck(context.getWorkbenchContext())); //enable check  
+    }
+    
+    public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
+        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+
+        return new MultiEnableCheck()
+                        .add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
+                        .add(checkFactory.createAtLeastNLayersMustBeSelectedCheck(1));
+    }
+    
     public void run(TaskMonitor monitor, PlugInContext context)
         throws Exception {
         //Call #getSelectedLayers before #clear, because #clear will surface

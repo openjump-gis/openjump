@@ -21,25 +21,48 @@
 	<!--  			menu Tools 						/-->
 	<!--- ========================================= /-->
 	<!--- =========  Query ====================  /-->
+	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.SpatialQueryPlugIn</plug-in>
+	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.AttributeQueryPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.queries.SimpleQueryPlugIn</plug-in>	
 	<!--- =========  Analysis ====================  /-->
+	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.UnionPlugIn</plug-in>
+	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.OverlayPlugIn</plug-in>
+	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.CalculateAreasAndLengthsPlugIn</plug-in>
+	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.GeometryFunctionPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn</plug-in>
 	<plug-in>org.openjump.sigle.plugin.geoprocessing.oneLayer.topology.PlanarGraphPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.tools.IntersectPolygonLayersPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.tools.UnionByAttributePlugIn</plug-in>
 	<!--- =========  Generate ====================  /-->
+	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.BufferPlugIn</plug-in>
+	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.ConvexHullPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.tools.ConvexHullPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.tools.MultiRingBufferSelectedPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.tools.PlumePlugIn</plug-in>
-	<!--- =========  QA ====================  /-->		
+	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.test.RandomTrianglesPlugIn</plug-in>
+	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.test.RandomArrowsPlugIn</plug-in>
+	<!--- =========  WARP ====================  /-->
+	<plug-in>com.vividsolutions.jump.workbench.ui.warp.WarpingPlugIn</plug-in>	
+	<plug-in>com.vividsolutions.jump.workbench.ui.warp.AffineTransformPlugIn</plug-in>	
+	<!--- =========  QA ====================  /-->	
+	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.ValidateSelectedLayersPlugIn</plug-in>	
+	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.LayerStatisticsPlugIn</plug-in>	
+	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.FeatureStatisticsPlugIn</plug-in>	
+	<plug-in>com.vividsolutions.jump.plugin.qa.DiffGeometryPlugIn</plug-in>	
 	<plug-in>org.openjump.core.ui.plugin.tools.DeleteEmptyGeometriesPlugIn</plug-in>
 	<!--- =========  Edit Geometry ====================  /-->	
+	<plug-in>com.vividsolutions.jump.plugin.edit.ExtractSegmentsPlugIn</plug-in>	
+	<plug-in>com.vividsolutions.jump.plugin.edit.LineNoderPlugIn</plug-in>	
+	<plug-in>com.vividsolutions.jump.plugin.edit.PolygonizerPlugIn</plug-in>	
+	<plug-in>com.vividsolutions.jump.plugin.edit.PrecisionReducerPlugIn</plug-in>
+	<plug-in>com.vividsolutions.jump.plugin.edit.AffineTransformationPlugIn</plug-in>	
 	<plug-in>org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn</plug-in>	
 	<plug-in>org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.tools.MergeTwoSelectedPolygonsPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.tools.SplitPolygonPlugIn</plug-in>	
 	<!--- =========  Edit Attributes ====================  /-->		
+	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.SpatialJoinPlugIn</plug-in>
 	<plug-in>org.openjump.sigle.plugin.replace.ReplaceValuePlugIn</plug-in>
 	<plug-in>de.fho.jump.pirol.plugins.EditAttributeByFormula.EditAttributeByFormulaPlugIn</plug-in>
 	<!--- =========  Generalization ====================  /-->	

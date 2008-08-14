@@ -67,9 +67,11 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanelProxy;
+import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 /**
 * Calculates areas and lengths from information obtained
@@ -84,7 +86,18 @@ public class CalculateAreasAndLengthsPlugIn extends AbstractPlugIn {
     private String LENGTH_CHECK_BOX = I18N.get("ui.plugin.analysis.CalculateAreasAndLengthsPlugIn.calculate-length");
     private String AREA_CHECK_BOX = I18N.get("ui.plugin.analysis.CalculateAreasAndLengthsPlugIn.calculate-area");
 
-	
+    public void initialize(PlugInContext context) throws Exception
+    {
+        	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
+    		featureInstaller.addMainMenuItem(
+    	        this,								//exe
+  				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS, MenuNames.ONELAYER}, 	//menu path
+                this.getName() + "...", //name methode .getName recieved by AbstractPlugIn 
+                false,			//checkbox
+                null,			//icon
+                createEnableCheck(context.getWorkbenchContext())); //enable check  
+    }
+    
     public boolean execute(PlugInContext context) throws Exception {
     	//[sstein, 16.07.2006] set again to obtain correct language
         LAYER_COMBO_BOX = I18N.get("ui.plugin.analysis.CalculateAreasAndLengthsPlugIn.layer");

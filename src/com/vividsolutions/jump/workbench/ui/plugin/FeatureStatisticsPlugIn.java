@@ -45,10 +45,14 @@ import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.util.StringUtil;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
+import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
+import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.MenuNames;
 
 
 /**
@@ -66,6 +70,26 @@ public class FeatureStatisticsPlugIn extends AbstractPlugIn {
     public FeatureStatisticsPlugIn() {
     }
 
+    public void initialize(PlugInContext context) throws Exception
+    {
+        	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
+    		featureInstaller.addMainMenuItem(
+    	        this,								//exe
+  				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_QA}, 	//menu path
+                this.getName() + "...", //name methode .getName recieved by AbstractPlugIn 
+                false,			//checkbox
+                null,			//icon
+                createEnableCheck(context.getWorkbenchContext())); //enable check  
+    }
+    
+    public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
+        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+
+        return new MultiEnableCheck()
+                        .add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
+                        .add(checkFactory.createAtLeastNLayersMustBeSelectedCheck(1));
+    }
+    
     public static FeatureSchema getStatisticsSchema() {
         FeatureSchema featureSchema = new FeatureSchema();
         featureSchema.addAttribute("GEOMETRY", AttributeType.GEOMETRY);

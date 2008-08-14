@@ -47,14 +47,17 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.util.StringUtil;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.plugin.*;
 import com.vividsolutions.jump.workbench.plugin.util.*;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.GenericNames;
+import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.SelectionManager;
+import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 /**
 * Queries a layer by a spatial predicate.
@@ -98,6 +101,26 @@ public class AttributeQueryPlugIn
     categoryName = value;
   }
 
+  public void initialize(PlugInContext context) throws Exception
+  {
+      	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
+  		featureInstaller.addMainMenuItem(
+  	        this,								//exe
+				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_QUERIES}, 	//menu path
+              this.getName() , //name methode .getName recieved by AbstractPlugIn 
+              false,			//checkbox
+              null,			//icon
+              createEnableCheck(context.getWorkbenchContext())); //enable check  
+  }
+  
+  public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
+      EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+
+      return new MultiEnableCheck()
+                      .add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
+                      .add(checkFactory.createAtLeastNLayersMustExistCheck(1));
+  }
+  
   public String getName(){
   	return I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Attribute-Query");
   }

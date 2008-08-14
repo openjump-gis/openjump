@@ -44,9 +44,11 @@ import com.vividsolutions.jump.qa.diff.*;
 import com.vividsolutions.jump.util.ColorUtil;
 import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.task.*;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.*;
 import com.vividsolutions.jump.workbench.plugin.*;
 import com.vividsolutions.jump.workbench.ui.*;
+import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 /**
  * Computes both raw segment diffs and geometry diffs
@@ -94,6 +96,26 @@ public class DiffGeometryPlugIn
 
   public String getName(){
   	return I18N.get("jump.plugin.qa.DiffGeometryPlugIn.Calculate-Geometry-Differences"); 
+  }
+  
+  public void initialize(PlugInContext context) throws Exception
+  {
+      	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
+  		featureInstaller.addMainMenuItem(
+  	        this,								//exe
+				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_QA}, 	//menu path
+              this.getName() + "...", //name methode .getName recieved by AbstractPlugIn 
+              false,			//checkbox
+              null,			//icon
+              createEnableCheck(context.getWorkbenchContext())); //enable check  
+  }
+  
+  public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
+      EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+
+      return new MultiEnableCheck()
+                      .add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
+                      .add(checkFactory.createAtLeastNLayersMustExistCheck(2));
   }
   
   public boolean execute(PlugInContext context) throws Exception {

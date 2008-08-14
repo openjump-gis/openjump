@@ -43,6 +43,7 @@ import com.vividsolutions.jump.workbench.*;
 import com.vividsolutions.jump.workbench.model.*;
 import com.vividsolutions.jump.workbench.plugin.*;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.plugin.*;
 import com.vividsolutions.jump.feature.*;
@@ -78,6 +79,18 @@ public class PolygonizerPlugIn
    */
   public String getName() { return I18N.get("jump.plugin.edit.PolygonizerPlugIn.Polygonize"); }
 
+  public void initialize(PlugInContext context) throws Exception
+  {
+      	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
+  		featureInstaller.addMainMenuItem(
+  	        this,								//exe
+				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY}, 	//menu path
+              this.getName() + "...", //name methode .getName recieved by AbstractPlugIn 
+              false,			//checkbox
+              null,			//icon
+              createEnableCheck(context.getWorkbenchContext())); //enable check  
+  }
+  
   public EnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
       EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
       return new MultiEnableCheck()

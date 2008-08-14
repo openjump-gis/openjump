@@ -49,6 +49,7 @@ import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.*;
 import com.vividsolutions.jump.workbench.plugin.*;
 import com.vividsolutions.jump.workbench.ui.*;
+import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 /**
  * Applies an {@link AffineTransformation} to a layer.
@@ -75,6 +76,18 @@ public class AffineTransformationPlugIn
 
   public String getName() { return I18N.get("jump.plugin.edit.AffineTransformationPlugIn.Affine-Transformation"); }
 
+  public void initialize(PlugInContext context) throws Exception
+  {
+      	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
+  		featureInstaller.addMainMenuItem(
+  	        this,								//exe
+				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY}, 	//menu path
+              this.getName() + "...", //name methode .getName recieved by AbstractPlugIn 
+              false,			//checkbox
+              null,			//icon
+              createEnableCheck(context.getWorkbenchContext())); //enable check  
+  }
+  
   public EnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
       EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
       return new MultiEnableCheck()

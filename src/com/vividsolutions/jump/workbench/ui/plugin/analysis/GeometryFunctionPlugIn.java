@@ -49,13 +49,16 @@ import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.task.TaskMonitor;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.model.UndoableCommand;
 import com.vividsolutions.jump.workbench.plugin.*;
 import com.vividsolutions.jump.workbench.plugin.util.*;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
+import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.I18N;
 
 /**
@@ -120,6 +123,15 @@ public class GeometryFunctionPlugIn
   }
 
   public void initialize(PlugInContext context) throws Exception {
+    	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
+  		featureInstaller.addMainMenuItem(
+  	        this,								//exe
+				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS}, 	//menu path
+              this.getName() + "...", //name methode .getName recieved by AbstractPlugIn 
+              false,			//checkbox
+              null,			//icon
+              createEnableCheck(context.getWorkbenchContext())); //enable check  
+  		
     registerFunctions(context);
   }
 
@@ -133,6 +145,14 @@ public class GeometryFunctionPlugIn
     }
   }
 
+  public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
+      EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+
+      return new MultiEnableCheck()
+                      .add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
+                      .add(checkFactory.createAtLeastNLayersMustExistCheck(1));
+  }
+  
   public boolean execute(PlugInContext context) throws Exception {
     //-- [sstein 16.07.2006] put here again for langugae settings
     sErrorsFound = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.errors-found-while-executing-function");

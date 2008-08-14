@@ -93,6 +93,18 @@ public class ExtractSegmentsPlugIn
    */
   public String getName() { return I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Extract-Segments"); }
 
+  public void initialize(PlugInContext context) throws Exception
+  {
+      	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
+  		featureInstaller.addMainMenuItem(
+  	        this,								//exe
+				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY}, 	//menu path
+              this.getName() + "...", //name methode .getName recieved by AbstractPlugIn 
+              false,			//checkbox
+              null,			//icon
+              createEnableCheck(context.getWorkbenchContext())); //enable check  
+  }
+  
   public EnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
       EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
       return new MultiEnableCheck()

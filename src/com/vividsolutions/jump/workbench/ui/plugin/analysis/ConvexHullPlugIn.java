@@ -44,10 +44,13 @@ import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureDatasetFactory;
 import com.vividsolutions.jump.task.TaskMonitor;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.plugin.*;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
+import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 
 public class ConvexHullPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
@@ -63,12 +66,24 @@ public class ConvexHullPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
       categoryName = value;
     }
     
-    public static EnableCheck getEnableCheck(EnableCheckFactory checkFactory) {
+    public void initialize(PlugInContext context) throws Exception
+    {
+        	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
+    		featureInstaller.addMainMenuItem(
+    	        this,								//exe
+  				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_GENERATE}, 	//menu path
+                this.getName() + "...", //name methode .getName recieved by AbstractPlugIn 
+                false,			//checkbox
+                null,			//icon
+                createEnableCheck(context.getWorkbenchContext())); //enable check  
+    }
+    
+    public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
+        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+
         return new MultiEnableCheck()
-        .add(checkFactory
-                        .createWindowWithLayerNamePanelMustBeActiveCheck())
-        .add(checkFactory
-                        .createAtLeastNLayersMustExistCheck(1));
+                        .add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
+                        .add(checkFactory.createAtLeastNLayersMustExistCheck(1));
     }
 
      public boolean execute(PlugInContext context) throws Exception {

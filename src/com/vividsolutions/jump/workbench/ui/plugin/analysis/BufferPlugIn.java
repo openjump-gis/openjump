@@ -51,10 +51,12 @@ import com.vividsolutions.jts.operation.buffer.BufferOp;
 import com.vividsolutions.jts.operation.union.UnaryUnionOp;
 import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.task.*;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.*;
 import com.vividsolutions.jump.workbench.plugin.*;
 import com.vividsolutions.jump.workbench.ui.*;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.plugin.clipboard.PasteItemsPlugIn;
 
 
@@ -104,6 +106,26 @@ public class BufferPlugIn
 
   public void setCategoryName(String value) {
     categoryName = value;
+  }
+  
+  public void initialize(PlugInContext context) throws Exception
+  {
+      	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
+  		featureInstaller.addMainMenuItem(
+  	        this,								//exe
+				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_GENERATE}, 	//menu path
+              this.getName() + "...", //name methode .getName recieved by AbstractPlugIn 
+              false,			//checkbox
+              null,			//icon
+              createEnableCheck(context.getWorkbenchContext())); //enable check  
+  }
+  
+  public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
+      EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+
+      return new MultiEnableCheck()
+                      .add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
+                      .add(checkFactory.createAtLeastNLayersMustExistCheck(1));
   }
   
   public boolean execute(PlugInContext context) throws Exception {
