@@ -1,3 +1,7 @@
+2008-08-18 Andreas Schmitz <schmitz@lat-lon.de>
+	* scripts/openjump.sh: Fixed the startup script to include the default
+	plugins file even in development environments.
+
 2008-08-04 Andreas Schmitz <schmitz@lat-lon.de>
       * src/de/latlon/deejump/plugin/style/BitmapVertexStyle.java:
       Fixed null pointer when reading from project file.
