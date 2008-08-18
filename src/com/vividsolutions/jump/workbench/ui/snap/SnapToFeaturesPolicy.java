@@ -78,6 +78,14 @@ public class SnapToFeaturesPolicy implements SnapPolicy {
                 }
                 return interiorPointFinder.findPoint(intersection);
             }
+
+            GeometryCollection col = (GeometryCollection) candidate;
+            for (int k = 0; k < col.getNumGeometries(); ++k) {
+                Geometry intersection = col.getGeometryN(k).intersection(bufferedTransformedCursorLocation);
+                if (!intersection.isEmpty()) {
+                    return interiorPointFinder.findPoint(intersection);
+                }
+            }
         }
         return null;
     }

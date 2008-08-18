@@ -1,4 +1,9 @@
 2008-08-18 Andreas Schmitz <schmitz@lat-lon.de>
+	* src/com/vividsolutions/jump/workbench/ui/snap/SnapToFeaturesPolicy.java:
+	Updated snapping policy to allow snapping to lines of multi polygons
+	(and geometry collections in general).
+
+2008-08-18 Andreas Schmitz <schmitz@lat-lon.de>
 	* scripts/openjump.sh: Fixed the startup script to include the default
 	plugins file even in development environments.
 
