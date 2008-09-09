@@ -292,7 +292,7 @@ public class BufferPlugIn
             public void actionPerformed(ActionEvent e) {
             	fromAttribute = fdialog.getCheckBox(FROMATTRIUBTE).isSelected();
             	fdialog.getComboBox(ATTRIBUTE).setEnabled(fromAttribute);
-            	fdialog.getCheckBox(UNION_RESULT).setEnabled(!fromAttribute);
+            	//fdialog.getCheckBox(UNION_RESULT).setEnabled(!fromAttribute);
             }
         });
     }
