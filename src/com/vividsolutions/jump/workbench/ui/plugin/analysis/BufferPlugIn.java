@@ -339,13 +339,16 @@ public class BufferPlugIn
 		  final MultiInputDialog dialog,
 		  final String checkBoxFieldName,
 		  final String comboBoxFieldName) {
-	  dialog.addCheckBox(checkBoxFieldName, false).setEnabled(false);
-	  dialog.addComboBox(comboBoxFieldName, null, new ArrayList(), null).setEnabled(false);
+	  JCheckBox checkBox = dialog.addCheckBox(checkBoxFieldName, false);
+	  JComboBox comboBox = dialog.addComboBox(comboBoxFieldName, null, new ArrayList(), null);
 	  Layer newLayer = (Layer) dialog.getComboBox(LAYER).getSelectedItem();
 	  if (newLayer != null)
 		  dialog.getComboBox(comboBoxFieldName).setModel(
 				  new DefaultComboBoxModel(
 						  new Vector(candidateAttributeNames(newLayer))));
+	  boolean numericAttributesPresent = !candidateAttributeNames(newLayer).isEmpty();
+	  checkBox.setEnabled(numericAttributesPresent);
+	  comboBox.setEnabled(numericAttributesPresent);
 	  dialog.getComboBox(LAYER).addActionListener(new ActionListener() {
           private Layer lastLayer = null;
 		  public void actionPerformed(ActionEvent e) {
