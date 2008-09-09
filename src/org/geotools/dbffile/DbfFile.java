@@ -208,20 +208,22 @@ public class DbfFile implements DbfConsts {
      * fetches the <i>row</i>th row of the file
      * @param row - the row to fetch
      * @exception java.io.IOException on read error.
-     */
-    public StringBuffer GetDbfRec(int row) throws java.io.IOException {
-        StringBuffer record = new StringBuffer(rec_size + numfields);
-
+     */    
+    //public StringBuffer GetDbfRec(int row) throws java.io.IOException {
+    //    StringBuffer record = new StringBuffer(rec_size + numfields);  //[sstein 9.Sept.08]
+    public byte[] GetDbfRec(int row) throws java.io.IOException {  //[sstein 9.Sept.08]
+    	
         rFile.seek(data_offset + (rec_size * row));
 
         //Multi byte character modification thanks to Hisaji ONO
         byte[] strbuf = new byte[rec_size]; // <---- byte array buffer fo storing string's byte data
 
         dFile.readByteLEnum(strbuf);
-        record.append(new String(strbuf)); // <- append byte array to String Buffer
+        //record.append(new String(strbuf)); // <- append byte array to String Buffer  //[sstein 9.Sept.08]
 
         //record.append(strbuf);
-        return record;
+        //return record;	 //[sstein 9.Sept.08]
+        return strbuf;		 //[sstein 9.Sept.08]
     }
 
     /**
@@ -247,19 +249,23 @@ public class DbfFile implements DbfConsts {
     // ref : http://mindprod.com/jgloss/interned.html#MANUAL
     // static boolean useIntern = true;
     
-    public Object ParseRecordColumn(StringBuffer rec, int wantedCol)
+    //public Object ParseRecordColumn(StringBuffer rec, int wantedCol)  //[sstein 9.Sept.08]
+    public Object ParseRecordColumn(byte[] rec, int wantedCol)  		//[sstein 9.Sept.08]
         throws Exception {
         int start;
         int end;
         start = fielddef[wantedCol].fieldstart;
+        int len = fielddef[wantedCol].fieldlen;		 //[sstein 9.Sept.08]
         end = start + fielddef[wantedCol].fieldlen;
         String s = null, masterString = null;
         switch (fielddef[wantedCol].fieldtype) {
             
         case 'C': //character
-            while ((start < end) && (rec.charAt(end-1) == ' '))
+            //while ((start < end) && (rec.charAt(end-1) == ' '))  //[sstein 9.Sept.08]
+            while ((start < end) && (rec[end-1] == ' '))  //[sstein 9.Sept.08]
                     end--;  //trim trailing spaces
-            s = rec.substring(start, end);
+            //s = rec.substring(start, end);   //[sstein 9.Sept.08]
+            s = new String(rec, start, end - start);  //[sstein 9.Sept.08]
             masterString = uniqueStrings.get(s);
             if (masterString!=null) return masterString;
             else {
@@ -280,7 +286,8 @@ public class DbfFile implements DbfConsts {
           // while ((start < end) && (rec.charAt(start) == ' '))
           // 	start++;
           
-          String numb = rec.substring(start, end).trim();
+          //String numb = rec.substring(start, end).trim();  //[sstein 9.Sept.08]
+          String numb = new String(rec, start, len).trim();  //[sstein 9.Sept.08]
           if (isInteger) { //its an int
 
               try {
@@ -299,10 +306,12 @@ public class DbfFile implements DbfConsts {
           }
 
         case 'D': //date. Added by [Jon Aquino]
-            return parseDate(rec.substring(start, end));
+            //return parseDate(rec.substring(start, end));  //[sstein 9.Sept.08]
+            return parseDate(new String(rec, start, len));  //[sstein 9.Sept.08]
 
         default:
-            s = rec.substring(start, end);
+            //s = rec.substring(start, end); //[sstein 9.Sept.08]
+        	s = new String(rec, start, len);  //[sstein 9.Sept.08]
             masterString = uniqueStrings.get(s);
             if (masterString!=null) return masterString;
             else {
@@ -317,12 +326,14 @@ public class DbfFile implements DbfConsts {
      * objects
      * @param rec the record to be parsed.
      */
-    public Vector ParseRecord(StringBuffer rec) {
+    //public Vector ParseRecord(StringBuffer rec) {  //[sstein 9.Sept.08]
+    public Vector ParseRecord(byte[] rec) {  //[sstein 9.Sept.08]
         Vector record = new Vector(numfields);
         String t;
         //Integer I = new Integer(0);
         //Double F = new Double(0.0);
-        t = rec.toString();
+        //t = rec.toString(); //[sstein 9.Sept.08]
+        t = new String(rec); //[sstein 9.Sept.08]
 
         for (int i = 0; i < numfields; i++) {
             if (DEBUG) {

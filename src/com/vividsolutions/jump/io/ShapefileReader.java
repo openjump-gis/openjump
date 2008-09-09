@@ -175,7 +175,8 @@ public class ShapefileReader implements JUMPReader {
             for (int x = 0; x < mydbf.getLastRec(); x++) {
                 Feature feature = new BasicFeature(fs);
                 Geometry geo = collection.getGeometryN(x);
-                StringBuffer s = mydbf.GetDbfRec(x);
+                //StringBuffer s = mydbf.GetDbfRec(x); //[sstein 9.Sept.08]
+                byte[] s = mydbf.GetDbfRec(x); //[sstein 9.Sept.08]
 
                 for (int y = 0; y < numfields; y++) {
                     feature.setAttribute(y + 1, mydbf.ParseRecordColumn(s, y));
