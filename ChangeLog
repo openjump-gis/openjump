@@ -1,3 +1,19 @@
+2008-09-09 beckerl <becker.larry@gmail.com>
+      Enabled the Union check box when Get Distance from Attributes is checked.
+      src/com/vividsolutions/jump/workbench/ui/plugin/analysis/BufferPlugIn.java
+     
+2008-09-09 mentaer <sstein@geo.uzh.ch>
+	added patch by Bing to parse single bytes in dbf files, which is better 
+	for chinese characters [see email topic on googlegroups: "patchs for 
+	reading dbf files with multi-bytes character columns"]
+	src/com/vividsolutions/jump/io/ShapefileReader.java:
+	src/org/geotools/dbffile/DbfFile.java:
+
+2008-08-26 beckerl <becker.larry@gmail.com>
+      Added error checking to prevent problems after pasting a Style 
+      that refers to a missing Attribute.
+      src/com/vividsolutions/jump/workbench/ui/style/PasteStylesPlugIn.java
+
 2008-08-18 Andreas Schmitz <schmitz@lat-lon.de>
 	* src/com/vividsolutions/jump/workbench/ui/snap/SnapToFeaturesPolicy.java:
 	Updated snapping policy to allow snapping to lines of multi polygons
@@ -7,9 +23,27 @@
 	* scripts/openjump.sh: Fixed the startup script to include the default
 	plugins file even in development environments.
 
+2008-08-05 beckerl <becker.larry@gmail.com>
+      Changed BufferPlugIn to take advantage of new UnaryUnionOp.union() method of JTS 1.9
+      src/com/vividsolutions/jump/workbench/ui/plugin/analysis/BufferPlugIn.java
+
 2008-08-04 Andreas Schmitz <schmitz@lat-lon.de>
       * src/de/latlon/deejump/plugin/style/BitmapVertexStyle.java:
       Fixed null pointer when reading from project file.
+
+2008-07-27 beckerl <becker.larry@gmail.com>
+      Set the default button for Enter key to the OK.
+      src/com/vividsolutions/jump/workbench/ui/MultiInputDialog.java
+
+2008-07-26 michaudm <michael.michaud@free.fr>
+      Replace old progressiveUnion optimization by the new UnaryUnionOp of 
+      JTS 1.9 which is much faster
+      src/org/openjump/core/ui/plugin/tools/UnionByAttributePlugIn.java
+      src/com/vividsolutions/jump/workbench/ui/plugin/analysis/UnionPlugIn.java
+
+2008-07-26 michaudm <michael.michaud@free.fr>
+      Replace string intern() by a local hashmap to avoid duplicating strings
+	  src/org/geotools/dbffile/DbfFile.java
 
 2008-07-16 Andreas Schmitz <schmitz@lat-lon.de>
       * build.xml: Added the classpath manifest entry.
@@ -18,6 +52,14 @@
       src/de/latlon/deejump/plugin/style/DeeChangeStylesPlugIn.java,
       src/com/vividsolutions/jump/workbench/ui/renderer/style/BasicStyle.java:
       Re-enabled the styling of basic style + vertex style.
+
+2008-07-13 beckerl <becker.larry@gmail.com>
+      Added the Plume tool to the Tools->Generate menu. Select a single 
+      LineString and enter start and end radii.
+      src/org/openjump/core/ui/plugin/tools/PlumePlugIn.java
+      scripts/default-plugins.xml
+      src/org/openjump/core/geomutils/GeoUtils.java
+      + language files
 
 2008-07-10 mentaer <sstein@geo.uzh.ch>
       moved all "advanced" plugin functionality to the "default-plugins.xml" file. 
