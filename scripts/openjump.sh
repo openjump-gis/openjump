@@ -8,7 +8,12 @@ if(test -z $JAVA_HOME) then
 else
   JAVA=$JAVA_HOME/bin/java
 fi
-JUMP_HOME=`dirname $0`/..
+if(test -L $0) then
+    	auxlink=`ls -l $0 | sed 's/^[^>]*-> //g'`
+    	JUMP_HOME=`dirname $auxlink`/..
+else 
+    	JUMP_HOME=`dirname $0`/..
+fi
 JUMP_PROPERTIES=~/.jump/workbench-properties.xml
 JUMP_DEFAULTP=~/.jump/default-plugins.xml
 JUMP_STATE=~/.jump/
