@@ -13,6 +13,7 @@
 	<plug-in>org.openjump.core.ui.plugin.edit.SelectByTypePlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.layer.ExtractLayerInFence</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.layer.ExtractLayersByAttribute</plug-in>
 	<!---  ======================================== /-->
 	<!--  			menu VIEW 						/-->
 	<!--- ========================================= /-->		
