@@ -135,7 +135,9 @@ public class ExtractLayersByAttribute extends AbstractPlugIn {
         ArrayList candidateAttributeNames = new ArrayList();
         FeatureSchema schema = sourceLayer.getFeatureCollectionWrapper().getFeatureSchema();
         for (int i = 0; i < schema.getAttributeCount(); i++) {
-                candidateAttributeNames.add(schema.getAttributeName(i));
+        	String name = schema.getAttributeName(i);
+        	if (!name.equalsIgnoreCase("GEOMETRY"))
+                candidateAttributeNames.add(name);
         }
         return candidateAttributeNames;
     }
