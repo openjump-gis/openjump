@@ -162,7 +162,7 @@ public class ExtractLayersByAttribute extends AbstractPlugIn {
         for (Iterator i = featureList.iterator(); i.hasNext();) {
         	Feature feature = (Feature) i.next();
         	String attributeValue = feature.getAttribute(attributeIndex).toString();
-        	if (attributeValue != null && !attributeValue.isEmpty() && !newLayerNameList.contains(attributeValue)) {
+        	if (attributeValue != null && !(attributeValue.length()== 0) && !newLayerNameList.contains(attributeValue)) {
         		newLayerNameList.add(attributeValue);
         	}
         }
@@ -188,7 +188,7 @@ public class ExtractLayersByAttribute extends AbstractPlugIn {
 	        for (Iterator j = featureList.iterator(); j.hasNext();) {
 	        	Feature feature = (Feature) j.next();
 	        	String attributeValue = feature.getAttribute(attributeIndex).toString();
-	        	if (attributeValue != null && !attributeValue.isEmpty() 
+	        	if (attributeValue != null && !(attributeValue.length()== 0)
 	        			&& attributeValue.equals(layerName)) {
 		        	newFeatureCollection.add((Feature) feature.clone());
 	        	}
