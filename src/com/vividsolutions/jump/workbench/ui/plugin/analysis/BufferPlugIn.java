@@ -175,43 +175,35 @@ public class BufferPlugIn
     featureSchema.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
     FeatureCollection resultFC = new FeatureDataset(featureSchema);
     Collection inputC;
-   if (useSelected) {
+    if (useSelected) {
     	inputC = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems();
     	Feature feature = (Feature) inputC.iterator().next();
     	featureSchema = feature.getSchema();
     	inputC = PasteItemsPlugIn.conform(inputC,featureSchema );
-   } else {
+    } else {
     	inputC = layer.getFeatureCollectionWrapper().getFeatures();
     	featureSchema = layer.getFeatureCollectionWrapper().getFeatureSchema();
     	resultFC = new FeatureDataset(featureSchema);
     }
-//    if (unionResult) {
-//    	Feature f = combine(inputC);
-//    	Geometry geom = runBuffer(f.getGeometry());
-//    	ArrayList result = new ArrayList();
-//    	result.add(geom);
-//    	resultFC = FeatureDatasetFactory.createFromGeometry(result);
-//    } else {
-    	FeatureDataset inputFD = new FeatureDataset(inputC, featureSchema);
-    	Collection resultGeomColl = runBuffer(monitor, inputFD);
-    	if (copyAttributes) {
-    		FeatureCollection resultFeatureColl = new FeatureDataset(featureSchema);
-    		Iterator iResult = resultGeomColl.iterator();
-    		for (Iterator iSource = inputFD.iterator(); iSource.hasNext(); ) {   			
-    			Feature sourceFeature = (Feature) iSource.next();
-     			Geometry gResult = (Geometry) iResult.next();
-    		    if (!(gResult == null || gResult.isEmpty())) {
-     		      Feature newFeature = sourceFeature.clone(true);
-    		      newFeature.setGeometry(gResult);
-    		      resultFeatureColl.add(newFeature);
-    		    }
-    		    if (monitor.isCancelRequested()) break;
+    FeatureDataset inputFD = new FeatureDataset(inputC, featureSchema);
+    Collection resultGeomColl = runBuffer(monitor, inputFD);
+    if (copyAttributes) {
+    	FeatureCollection resultFeatureColl = new FeatureDataset(featureSchema);
+    	Iterator iResult = resultGeomColl.iterator();
+    	for (Iterator iSource = inputFD.iterator(); iSource.hasNext(); ) {   			
+    		Feature sourceFeature = (Feature) iSource.next();
+    		Geometry gResult = (Geometry) iResult.next();
+    		if (!(gResult == null || gResult.isEmpty())) {
+    			Feature newFeature = sourceFeature.clone(true);
+    			newFeature.setGeometry(gResult);
+    			resultFeatureColl.add(newFeature);
     		}
-    		resultFC = resultFeatureColl;
-     	} else {
-    		resultFC = FeatureDatasetFactory.createFromGeometry(resultGeomColl);
+    		if (monitor.isCancelRequested()) break;
     	}
-//	  }
+    	resultFC = resultFeatureColl;
+    } else {
+    	resultFC = FeatureDatasetFactory.createFromGeometry(resultGeomColl);
+    }
 	if (unionResult) {
 		Collection geoms = FeatureUtil.toGeometries(resultFC.getFeatures());
 		Geometry g = UnaryUnionOp.union(geoms);
@@ -346,7 +338,7 @@ public class BufferPlugIn
 		  dialog.getComboBox(comboBoxFieldName).setModel(
 				  new DefaultComboBoxModel(
 						  new Vector(candidateAttributeNames(newLayer))));
-	  boolean numericAttributesPresent = !candidateAttributeNames(newLayer).isEmpty();
+	  boolean numericAttributesPresent = !(candidateAttributeNames(newLayer).size() == 0);
 	  checkBox.setEnabled(numericAttributesPresent);
 	  comboBox.setEnabled(numericAttributesPresent);
 	  dialog.getComboBox(LAYER).addActionListener(new ActionListener() {
@@ -360,7 +352,7 @@ public class BufferPlugIn
 			  dialog.getComboBox(comboBoxFieldName).setModel(
 					  new DefaultComboBoxModel(
 							  new Vector(candidateAttributeNames(newLayer))));
-			  boolean notEmpty = !candidateAttributeNames(newLayer).isEmpty();
+			  boolean notEmpty = !(candidateAttributeNames(newLayer).size() == 0);
 			  dialog.getCheckBox(checkBoxFieldName).setEnabled(notEmpty);
 			  if (notEmpty) {
 				  dialog.getComboBox(comboBoxFieldName).setSelectedItem(
