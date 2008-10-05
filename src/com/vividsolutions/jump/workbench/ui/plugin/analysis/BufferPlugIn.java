@@ -78,7 +78,7 @@ public class BufferPlugIn
   private  String CAP_STYLE_SQUARE;
   private  String CAP_STYLE_BUTT;
   private  String ATTRIBUTE;
-  private  String FROMATTRIUBTE;
+  private  String FROMATTRIBUTE;
 
   private List endCapStyles;
 
@@ -150,7 +150,7 @@ public class BufferPlugIn
 	  endCapStyles.add(CAP_STYLE_BUTT);
 	  endCapStyle = CAP_STYLE_ROUND;
 	  ATTRIBUTE = I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Attribute");
-	  FROMATTRIUBTE = I18N.get("ui.plugin.analysis.BufferPlugIn.Get-distance-from-attribute-value");
+	  FROMATTRIBUTE = I18N.get("ui.plugin.analysis.BufferPlugIn.Get-distance-from-attribute-value");
 	  
 	  dialog = new MultiInputDialog(context.getWorkbenchFrame(), getName(), true);
 	  int n = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems().size();
@@ -278,11 +278,11 @@ public class BufferPlugIn
     else {
 		dialog.addLayerComboBox(LAYER, context.getCandidateLayer(0), context.getLayerManager());  	
    
-		initComboFields(dialog, FROMATTRIUBTE, ATTRIBUTE);
+		initComboFields(dialog, FROMATTRIBUTE, ATTRIBUTE);
 		final MultiInputDialog fdialog = dialog;
-        dialog.getCheckBox(FROMATTRIUBTE).addActionListener(new ActionListener() {
+        dialog.getCheckBox(FROMATTRIBUTE).addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-            	fromAttribute = fdialog.getCheckBox(FROMATTRIUBTE).isSelected();
+            	fromAttribute = fdialog.getCheckBox(FROMATTRIBUTE).isSelected();
             	fdialog.getComboBox(ATTRIBUTE).setEnabled(fromAttribute);
             	//fdialog.getCheckBox(UNION_RESULT).setEnabled(!fromAttribute);
             }
@@ -316,7 +316,7 @@ public class BufferPlugIn
 	  unionResult = dialog.getBoolean(UNION_RESULT);
 	  copyAttributes = dialog.getBoolean(COPY_ATTRIUBTES);
 	  if (fromAttribute) {
-		  if (dialog.getCheckBox(FROMATTRIUBTE).isEnabled()) {
+		  if (dialog.getCheckBox(FROMATTRIBUTE).isEnabled()) {
 			  Layer destinationLayer = dialog.getLayer(LAYER);
 			  FeatureSchema schema = destinationLayer.getFeatureCollectionWrapper().getFeatureSchema();
 			  String attributeName = dialog.getText(ATTRIBUTE);
@@ -340,7 +340,8 @@ public class BufferPlugIn
 						  new Vector(candidateAttributeNames(newLayer))));
 	  boolean numericAttributesPresent = !(candidateAttributeNames(newLayer).size() == 0);
 	  checkBox.setEnabled(numericAttributesPresent);
-	  comboBox.setEnabled(numericAttributesPresent);
+	  //comboBox.setEnabled(numericAttributesPresent);
+      comboBox.setEnabled(false);
 	  dialog.getComboBox(LAYER).addActionListener(new ActionListener() {
           private Layer lastLayer = null;
 		  public void actionPerformed(ActionEvent e) {
