@@ -37,7 +37,7 @@ import de.fho.jump.pirol.utilities.metaData.ObjectContainingMetaInformation;
  * <br>Subproject: Daten- und Wissensmanagement
  * 
  * @version $Rev$
- * @see de.fhOsnabrueck.jump.pirol.utilities.metaData.MetaInformationHandler#createPirolFeatureCollection(FeatureCollection)
+ * @see de.fho.jump.pirol.utilities.metaData.MetaInformationHandler#createPirolFeatureCollection(FeatureCollection)
  *
  */
 public class PirolFeatureCollection implements FeatureCollection, ObjectContainingMetaInformation {

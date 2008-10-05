@@ -331,7 +331,7 @@ public class Dbf implements DbfConsts{
     
     /**
      * Fetches a column of Integers from the database file.
-     * @param int col - the column to fetch
+     * @param col - the column to fetch
      * @exception java.io.IOException - on read error
      * @exception DbfFileException - column is not an Integer.
      */

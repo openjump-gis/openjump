@@ -131,8 +131,7 @@ public class InstallKeyPanPlugIn extends AbstractPlugIn {
     public String getName() { return ""; }
    
     /**
-     * Get the pan/zoom percentage, a value between 0 and 1. Deafult is 0.25 (=25%) 
-     * @return
+     * Get the pan/zoom percentage, a value between 0 and 1. Deafult is 0.25 (=25%)
      */
     public static double getPanPercentage() {
         return 2*panPercentage;
@@ -141,7 +140,7 @@ public class InstallKeyPanPlugIn extends AbstractPlugIn {
     /**
      * Set the pan percentage. Legal values are between greater than 0 and less than 
      * or equal to 1.0
-     * @param panPercentage The value in percent of screen size to pan/zoom. Accepted 
+     * @param panPercent The value in percent of screen size to pan/zoom. Accepted 
      * values are in the range 0 < percentage <= 1
      */
     public static void setPanPercentage(double panPercent ) {

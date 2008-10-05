@@ -48,9 +48,7 @@ import com.sun.media.jai.codec.SeekableStream;
  * declared as serializable to permit its transmission to remote
  * images as a set of parameters to the codec, and to be able
  * to survive as an instantiated property of the RenderedImage.
- * 
  *
- * @serializable
  * @author Niles Ritter
  * @see XTIFFDescriptor
  * @see XTIFFField

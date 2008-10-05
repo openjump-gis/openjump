@@ -29,11 +29,9 @@ import com.vividsolutions.jump.feature.FeatureCollection;
 
 /**
 * @author ERWAN BOCHER Laboratoire RESO UMR CNRS 6590
-* @url www.projet-sigle.org
-* @curentdate 20 févr. 2006
-* @package name org.openjump.sigle.plugin.geoprocessing.layers
-* @license Licence CeCILL http://www.cecill.info/
-* @todo TODO
+* @see <a ref="http://www.projet-sigle.org">projet-sigle</a>
+* curentdate 20 févr. 2006
+* license Licence CeCILL http://www.cecill.info/
 * 
 * Ce plugin permet de réaliser des jointures spatiales en utilisant différents
 * prédicats spatiaux.

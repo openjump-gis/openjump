@@ -8,7 +8,7 @@ package org.geotiff.epsg;
    * contains the factory method for constructing 
    * these things.
    *
-   * @author: Niles D. Ritter
+   * @author Niles D. Ritter
    */
 
 public abstract class HorizontalCS {

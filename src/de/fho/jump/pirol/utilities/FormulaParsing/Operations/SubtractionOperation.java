@@ -28,7 +28,7 @@ import de.fho.jump.pirol.utilities.FormulaParsing.FormulaValue;
 public class SubtractionOperation extends GenericOperation {
 
     /**
-     *@inheritDoc
+     * Sets the value, that will be operated on.
      */
     public SubtractionOperation(FormulaValue value1, FormulaValue value2) {
         super(value1, value2);

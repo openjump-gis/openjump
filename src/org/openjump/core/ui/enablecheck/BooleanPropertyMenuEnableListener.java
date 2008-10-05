@@ -36,8 +36,6 @@ public class BooleanPropertyMenuEnableListener implements MenuListener {
    * @param object The object to invoke the method on.
    * @param checkMethodName The name of the check method which returns a boolean
    *          value.
-   * @param expectedValue The expected value to be returned for the check to be
-   *          enabled.
    */
   public BooleanPropertyMenuEnableListener(final JMenuItem menuItem,
     final Object object, final String checkMethodName,

@@ -15,7 +15,7 @@ public interface Renderer {
 	public abstract void clearImageCache();
 	public abstract boolean isRendering();
     /**
-     *@param  contentID  identifies this Renderer by what it draws
+     *@return contentID which identifies this Renderer by what it draws
      */    
 	public abstract Object getContentID();
 	public abstract void copyTo(Graphics2D graphics);

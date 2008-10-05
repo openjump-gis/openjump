@@ -32,7 +32,7 @@ import com.sun.media.jai.codec.SeekableStream;
  * XTIFFField class. 
  *
  * @see XTIFFDirectory
- * @see XTIFFField
+ * @see org.libtiff.jai.codec.XTIFFField
  */
 public class GeoTIFFFactory extends XTIFFFactory 
 implements java.io.Serializable

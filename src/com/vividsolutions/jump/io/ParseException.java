@@ -58,7 +58,7 @@ public class ParseException extends JUMPException {
      * @param message information about the type of error
      * @param newFname filename the error occurred in
      * @param newLineno line number the error occurred at
-     * @param newCPos character position on the line
+     * @param newCpos character position on the line
      *
      **/
     public ParseException(String message, String newFname, int newLineno,

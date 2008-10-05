@@ -68,8 +68,7 @@ import javax.swing.JComboBox;
 
 
 /**
- * @description:
- *	replicates/ copys selected items in a new or existing layer
+ * Replicates/ copys selected items in a new or existing layer
  *
  * @author sstein
  *

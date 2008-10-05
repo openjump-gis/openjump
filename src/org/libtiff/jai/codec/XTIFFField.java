@@ -31,7 +31,7 @@ package org.libtiff.jai.codec;
  * Revision: Fix getAsLongs to support arrays of Short.
  *
  * @see javax.media.jai.operator.TIFFDescriptor
- * @see TIFFDirectory
+ * @see XTIFFDirectory
  */
 
 public class XTIFFField extends Object 

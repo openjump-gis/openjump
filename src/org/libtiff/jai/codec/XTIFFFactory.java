@@ -39,7 +39,6 @@ import com.sun.media.jai.codec.SeekableStream;
  * to those classes, extend this class as well. See the GeoTIFF package
  * for an example of how to do this.
  *
- * @see org.libtiff.jai.TIFFDescriptor
  * @see XTIFFField
  * @see XTIFFDirectory
  */

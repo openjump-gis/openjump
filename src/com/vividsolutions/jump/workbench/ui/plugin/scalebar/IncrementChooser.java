@@ -48,7 +48,6 @@ public class IncrementChooser {
     }
 
     /**
-     * @param displayWidth in model-space coordinates.
      * @return a Quantity whose value will be a multiple of 10
      */
     public RoundQuantity chooseGoodIncrement(Collection units,

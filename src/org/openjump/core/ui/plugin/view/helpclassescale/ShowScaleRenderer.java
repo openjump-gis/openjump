@@ -26,13 +26,12 @@
  * perriger@gmx.de
  */
 /*****************************************************
- * created:  		original version by Vivid Solution
- * last modified:  	03.06.2005
- * 					01.10.2005 [scale now obtained from other class]
- * 					
- * description:
- * 		calculates the actual scale and draws the text
- * 		and a white rectangle around
+ * created:  original version by Vivid Solution
+ * last modified:  03.06.2005
+ * 01.10.2005 [scale now obtained from other class]
+ * 
+ * Calculates the actual scale and draws the text
+ * and a white rectangle around
  *
  * @author sstein 
  *****************************************************/
@@ -54,9 +53,7 @@ import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.renderer.SimpleRenderer;
 
 /**
-* @description:
-* 		calculates the actual scale and draws the text
-* 		and a white rectangle around
+* Calculates the actual scale and draws the text and a white rectangle around
 *
 * @author sstein 
 **/
@@ -153,7 +150,7 @@ public class ShowScaleRenderer extends SimpleRenderer {
     /**
      * 
      * @param panel
-     * @return
+     * @return true if the scale is enabled in the LayerViewPanel
      */
     public static boolean isEnabled(LayerViewPanel panel) {
         return panel.getBlackboard().get(ENABLED_KEY, false);

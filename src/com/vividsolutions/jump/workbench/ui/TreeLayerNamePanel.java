@@ -157,10 +157,6 @@ public class TreeLayerNamePanel extends JPanel
     private boolean firstTimeDragging = true;
 
     /**
-     * @param layerNamePopupMenu
-     *            null for no popup menu on layer nodes
-     * @param categoryPopupMenu
-     *            null for no popup menu on category nodes
      */
     public TreeLayerNamePanel(LayerManagerProxy layerManagerProxy,
             TreeModel treeModel, RenderingManager renderingManager,

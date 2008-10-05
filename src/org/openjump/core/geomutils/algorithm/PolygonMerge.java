@@ -17,8 +17,7 @@ import com.vividsolutions.jts.geom.IntersectionMatrix;
 import com.vividsolutions.jts.geom.Polygon;
 
 /** 
- * @description:
- * 	merges two polygon and returns the result via
+ *  Merges two polygon and returns the result via
  *  getOutPolygon() if the result is not of another
  *  geometry type. The merge is done with the JTS union()
  *  method.

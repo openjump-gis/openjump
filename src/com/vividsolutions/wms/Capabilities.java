@@ -58,7 +58,7 @@ public class Capabilities {
    * @param service the WMService to which these Capabilites belong
    * @param title the title of this WMService
    * @param topLayer the top MapLayer of the entire layer tree
-   * @param formatList the Collection of supported formats 
+   * @param mapFormats the Collection of supported formats 
    */  
   public Capabilities(WMService service, String title, MapLayer topLayer, Collection mapFormats) {
     this.service = service;

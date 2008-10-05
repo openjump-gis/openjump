@@ -26,14 +26,13 @@
  * perriger@gmx.de
  */
 /*****************************************************
- * created:  		original version by Vivid Solution
- * last modified:  	03.06.2005
- * 					
- * description:
- * 		- initializes renderplugin
- * 		- plugin calculates the actual scale and draws the text
- * 		  (and a white rectangle around) in the map window
- * 		  all things are done in ShowScaleRenderer		
+ * created:  original version by Vivid Solution
+ * last modified:  03.06.2005
+ * 
+ * - initializes renderplugin
+ * - plugin calculates the actual scale and draws the text
+ *   (and a white rectangle around) in the map window
+ *   all things are done in ShowScaleRenderer		
  *
  * @author sstein 
  * TODO how to put a mark on the menue item if tool is activated?
@@ -53,11 +52,10 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 
 /**
-* @description:
-* 		- initializes renderplugin
-* 		- plugin calculates the actual scale and draws the text
-* 		  (and a white rectangle around) in the map window
-*  	  	  all things are done in ShowScaleRenderer		
+* - initializes renderplugin
+* - plugin calculates the actual scale and draws the text
+*   (and a white rectangle around) in the map window
+*   all things are done in ShowScaleRenderer
 * 
 * @author sstein
 */ 

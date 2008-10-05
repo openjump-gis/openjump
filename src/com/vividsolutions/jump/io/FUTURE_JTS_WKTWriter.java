@@ -101,8 +101,8 @@ public class FUTURE_JTS_WKTWriter {
 	 * 
 	 * @param geometry
 	 *            a <code>Geometry</code> to process
-	 * @return a <Geometry Tagged Text> string (see the OpenGIS Simple Features
-	 *         Specification)
+	 * @param writer a writer to write the WKT string to (see the
+     *          OpenGIS Simple Features Specification)
 	 */
 	public void write(Geometry geometry, Writer writer) throws IOException {
 		writeFormatted(geometry, false, writer);
@@ -133,8 +133,8 @@ public class FUTURE_JTS_WKTWriter {
 	 * 
 	 * @param geometry
 	 *            a <code>Geometry</code> to process
-	 * @return a <Geometry Tagged Text> string (see the OpenGIS Simple Features
-	 *         Specification), with newlines and spaces
+	 * @param writer a writer to write the WKT string to (see the OpenGIS
+     *        Simple Features Specification), with newlines and spaces
 	 */
 	public void writeFormatted(Geometry geometry, Writer writer)
 			throws IOException {

@@ -19,7 +19,7 @@ package de.fho.jump.pirol.utilities.FeatureCollection;
  * <br>Subproject: Daten- und Wissensmanagement
  * 
  * @version $Rev$
- * @see de.fhOsnabrueck.jump.pirol.utilities.FeatureCollection.PirolFeatureCollection
+ * @see de.fho.jump.pirol.utilities.FeatureCollection.PirolFeatureCollection
  * 
  */
 public abstract class PirolFeatureCollectionRole {
@@ -79,7 +79,7 @@ public abstract class PirolFeatureCollectionRole {
      * Check if this role is the same type of role as the given one.
      * Caution: If this role contains specific information (like RasterImage role), this information
      * is not checked for equality - Only the type of the role is checked!
-     *@param role role to check for type equality
+     *@param roleType role to check for type equality
      *@return true if this role is the same type of role as the given one, else false
      */
     public boolean equalsRole(PirolFeatureCollectionRoleTypes roleType) {

@@ -230,7 +230,7 @@ public class GMLInputTemplate extends DefaultHandler {
      * Given a tag name and its XML attributes, find the index of the column it belongs to.<br>
      * Returns -1 if it doesnt match any of the columns.
      *@param XMLtagName the tag name found in the xml
-     *@param the attributes associated with the xml
+     *@param xmlAtts the attributes associated with the xml
      */
     public int match(String XMLtagName, Attributes xmlAtts)
         throws ParseException {

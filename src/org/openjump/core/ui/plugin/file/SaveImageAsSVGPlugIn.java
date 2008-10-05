@@ -2,10 +2,9 @@
  * created on 		10.05.2005
  * last modified:	31.05.2005 	
  * 
- * author:			neun and sstein
+ * @author neun and sstein
  * 
- * description:		
- * 	saves the actual map window as svg graphics
+ * Saves the actual map window as svg graphics
  * 
  ***********************************************/
 package org.openjump.core.ui.plugin.file;

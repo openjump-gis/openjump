@@ -42,9 +42,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.InstallRendererPlugIn;
 import com.vividsolutions.jump.workbench.ui.renderer.Renderer;
 
 /**
- * @description
- * 	Ensures that all TaskFrames get a scale bar.
- * 
+ * Ensures that all TaskFrames get a scale bar.
  * @author sstein
  */
 public class InstallShowScalePlugIn extends InstallRendererPlugIn {

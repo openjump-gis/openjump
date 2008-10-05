@@ -19,7 +19,7 @@ package de.fho.jump.pirol.ui.tools;
  * <br>Subproject: Daten- und Wissensmanagement
  * 
  * @version $Rev$
- * @see de.fhOsnabrueck.jump.pirol.dialogs.OKCancelListener
+ * @see de.fho.jump.pirol.ui.eventHandling.OKCancelListener
  * 
  */
 public interface ValueChecker {

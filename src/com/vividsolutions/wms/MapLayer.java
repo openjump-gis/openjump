@@ -97,7 +97,7 @@ public class MapLayer {
 * @return All BoundingBoxes
 * If there is no BoundingBox for this MapLayer the parent-BoundingBox
 * will be taken.
-* @author uwe dalluege
+* [uwe dalluege]
 */  
   public ArrayList getAllBoundingBoxList ( )
   {

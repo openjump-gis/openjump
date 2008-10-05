@@ -26,15 +26,13 @@
  * perriger@gmx.de
  */
 /*****************************************************
- * created:  		22.06.2006
- * last modified:  	
- * 					
+ * created: 22.06.2006
+ * last modified:  
  * 
- * author: sstein
+ * @author sstein
  * 
- * description: 
- * 		merges attributes according to some spatial and statistical criteria
- * 		from one dataset to another 
+ * Merges attributes according to some spatial and statistical criteria
+ * from one dataset to another 
  *****************************************************/
 
 package org.openjump.core.ui.plugin.tools;
@@ -66,9 +64,8 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 
 /**
- * @description: 
- * 		merges attributes according to some spatial and statistical criteria
- * 		from one dataset to another 
+ * Merges attributes according to some spatial and statistical criteria
+ * from one dataset to another 
  * 
  * @author sstein
  *

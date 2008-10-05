@@ -58,7 +58,7 @@ public class CoordinateSystem implements Comparable, Serializable {
 	};
     
     /**
-     * @see http://www.javaworld.com/javaworld/javatips/jw-javatip122.html
+     * @see <a href="http://www.javaworld.com/javaworld/javatips/jw-javatip122.html">www.javaworld.com</a>
      */
     private Object readResolve() {
         return name.equals(UNSPECIFIED.name) ? UNSPECIFIED : this; 

@@ -41,7 +41,7 @@ public class SpatialQueryExecuter
   /**
    * Sets whether duplicate features are allowed in the result set.
    *
-   * @param isRemoveDuplicates true if duplicates are allowed
+   * @param isAllowDuplicates true if duplicates are allowed
    */
   public void setAllowDuplicates(boolean isAllowDuplicates)
   {

@@ -130,7 +130,7 @@ public class PropertiesHandler implements org.openjump.core.apitools.HandlerToMa
     
     /**
      * get all properties as Map object (e.g. to feed into an other map...)
-     * @return
+     * @return a map containing all the properties
      */
     public Map<String,Object> getAll(){
     	HashMap<String, Object> props = new HashMap<String, Object>();

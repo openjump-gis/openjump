@@ -210,8 +210,7 @@ public class FeatureInstaller {
   /**
    * @param menuPath separate items with slashes; items will be created if they
    *          do not already exist
-   * @param menuActionListener listener for the menu (not the menu item); useful
-   *          for setting the menu item's enabled state; can be set to null
+   * @param menuItemName name of the menu item
    * @param checkBox whether to create a JCheckBoxMenuItem or a JMenuItem
    * @return the created JMenuItem
    * @see GUIUtil#toSmallIcon
@@ -270,7 +269,7 @@ public class FeatureInstaller {
    * Add a Plugin as a JMenuItem or a subclass of JMenuItem to the main menu
    * @param menuPath path from the main menu to the menu item
    * @param plugin the plugin associated to this menu item
-   * @param jmi the menu item (JMenuItem, JCheckBoxMenuItem, JMenu, JRadioButtonMenuItem)
+   * @param menuItem the menu item (JMenuItem, JCheckBoxMenuItem, JMenu, JRadioButtonMenuItem)
    * @param index the index of the menu item in its parent menu
    */
   //Added by Michael Michaud on 2008-04-06

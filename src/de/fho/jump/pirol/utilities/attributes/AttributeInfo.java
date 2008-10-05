@@ -25,7 +25,7 @@ import com.vividsolutions.jump.feature.FeatureSchema;
  * 
  * @version $Rev$
  * 
- * @see de.fhOsnabrueck.jump.pirol.utilities.FeatureCollectionTools
+ * @see de.fho.jump.pirol.utilities.FeatureCollectionTools
  */
 public class AttributeInfo implements Comparable {
 

@@ -26,18 +26,17 @@
  * perriger@gmx.de
  */
 /*****************************************************
- * created:  		05.06.2006
- * last modified:   					
- * 					
+ * created:  05.06.2006
+ * last modified:
  * 
  * @author sstein
  * 
  * description:
  *  created voronoi regions/thiessen polygons from a set of points.
- * 	The Delauney algorithm used for the triangulation is by L. Paul Chew and
- * 	his free demonstration java-applet.<p>
- * 	http://www.cs.cornell.edu/Info/People/chew/Delaunay.html
-
+ * The Delauney algorithm used for the triangulation is by L. Paul Chew and
+ * his free demonstration java-applet.<p>
+ * @see <a href="http://www.cs.cornell.edu/Info/People/chew/Delaunay.html">chew</a>
+ *
  *****************************************************/
 
 package org.openjump.core.ui.plugin.tools;

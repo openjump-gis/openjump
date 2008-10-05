@@ -90,7 +90,7 @@ public class GMLGeometryWriter
   /**
    * Sets the <code>gid</code> attribute to be output on the Geometry element.
    * If <code>null</code> no attribute will be output.
-   * @param srsName
+   * @param gid the geographic identifier
    */
   public void setGID(String gid)
   {

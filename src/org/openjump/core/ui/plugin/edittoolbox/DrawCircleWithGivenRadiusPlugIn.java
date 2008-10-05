@@ -27,11 +27,9 @@
  */
 /*****************************************************
  * created:  		03.11.2005
- * last modified:  	
  * 
- * description:
- *    draw a circle for a given radius and a specified 
- *    number of vertices per circle quarter<p>
+ * Draw a circle for a given radius and a specified 
+ * number of vertices per circle quarter<p>
  * 
  *****************************************************/
 
@@ -57,9 +55,8 @@ import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxDialog;
 
 
 /**
- * @description:
- *    selects items of the actual layer
- *    and informs about the number of selected items
+ * Selects items of the actual layer
+ * and informs about the number of selected items
  * 
  * @author sstein
  *

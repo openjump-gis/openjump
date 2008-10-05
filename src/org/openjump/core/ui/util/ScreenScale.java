@@ -14,8 +14,7 @@ import java.awt.Toolkit;
 import com.vividsolutions.jump.workbench.ui.Viewport;
 
 /**
- * @description:
- *		contains function for accessing the actual map scale of the screen 
+ * Contains function for accessing the actual map scale of the screen 
  *
  * @author sstein
  *

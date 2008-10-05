@@ -20,7 +20,7 @@ package org.openjump.core.apitools;
  * <br>Subproject: Daten- und Wissensmanagement
  * 
  * @version $Rev$
- * @see de.fhOsnabrueck.jump.pirol.utilities.ToolToMakeYourLifeEasier
+ * @see org.openjump.core.apitools.ToolToMakeYourLifeEasier
  * 
  */
 public interface HandlerToMakeYourLifeEasier {}

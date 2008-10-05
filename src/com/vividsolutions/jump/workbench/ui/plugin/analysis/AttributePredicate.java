@@ -112,7 +112,7 @@ public abstract class AttributePredicate
   /**
    * Subclasses calling compareObjects should override this method
    * @param comp
-   * @return
+   * @return false
    */
   protected boolean testCompareValue(int comp)
   {

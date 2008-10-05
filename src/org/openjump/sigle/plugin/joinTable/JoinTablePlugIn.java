@@ -1,8 +1,8 @@
 /**
  * @author Olivier BEDEL
- * 	Laboratoire RESO UMR 6590 CNRS
- * 	Bassin Versant du Jaudy-Guindy-Bizien
- * 	26 oct. 2004
+ * Laboratoire RESO UMR 6590 CNRS
+ * Bassin Versant du Jaudy-Guindy-Bizien
+ * 26 oct. 2004
  * 
  */
 package org.openjump.sigle.plugin.joinTable;
@@ -35,10 +35,10 @@ import com.vividsolutions.jump.workbench.ui.plugin.SaveProjectAsPlugIn;
 
 /**
  * @author Olivier BEDEL
- * 	Laboratoire RESO UMR 6590 CNRS
- * 	Bassin Versant du Jaudy-Guindy-Bizien
- * 	26 oct. 2004
- * @license Licence CeCILL http://www.cecill.info/
+ * Laboratoire RESO UMR 6590 CNRS
+ * Bassin Versant du Jaudy-Guindy-Bizien
+ * 26 oct. 2004
+ * license Licence CeCILL http://www.cecill.info/
  * 
  * [sstein 25.March.2007] modified for using it in normal menu and not layerpopupmenu
  * 

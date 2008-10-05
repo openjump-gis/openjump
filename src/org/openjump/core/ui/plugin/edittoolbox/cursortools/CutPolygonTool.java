@@ -32,15 +32,11 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 /**
 * @author ERWAN BOCHER Laboratoire RESO UMR CNRS 6590 et Olivier Bonnefont
-* @url www.projet-sigle.org
-* @curentdate 18 mai 2006
-* @package name org.openjump.sigle.plugin.edittoolbox
-* @license Licence CeCILL http://www.cecill.info/
-* @todo TODO
+* @see <a href="http://url www.projet-sigle.org">projet-sigle</a>
+* curentdate 18 mai 2006
+* license Licence CeCILL http://www.cecill.info/
 * 
 * Cette classe réalise les opérations géometriques en fonction des polygones selectionés et du polygone déssiné.
- * 
-* 
 */
 public class CutPolygonTool extends PolygonTool {
 		  

@@ -214,7 +214,7 @@ import java.util.*;
  *    Shapefile Spec</a>
  * </p>
  *
- *  @todo The link referencing the DBF format specification is broken - fix it!
+ *  @TODO The link referencing the DBF format specification is broken - fix it!
  **/
 public class ShapefileWriter implements JUMPWriter {
 

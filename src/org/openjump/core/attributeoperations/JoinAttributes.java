@@ -52,11 +52,9 @@ import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.task.TaskMonitor;
 
 /**
- * @description:
- * 	joins attribute values according to some spatial and statistical criterion
+ * joins attribute values according to some spatial and statistical criterion
  * 
  * @author sstein
- *	
  *
  */
 public class JoinAttributes {
@@ -69,7 +67,7 @@ public class JoinAttributes {
      * @param attributeOp
      * @param spatialRelation
      * @param bufferRadius
-     * @return
+     * @return a feature dataset
      */
     public static FeatureDataset joinAttributes(Collection sourceFeatures, Collection targetFeatures, String attributeName, int attributeOp, int spatialRelation, double bufferRadius, TaskMonitor monitor){
         /*

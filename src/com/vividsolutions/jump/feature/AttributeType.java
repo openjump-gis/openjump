@@ -66,7 +66,7 @@ public class AttributeType implements Serializable {
     public final static AttributeType INTEGER = new AttributeType("INTEGER", Integer.class);
     
     /**
-     * @see http://www.javaworld.com/javaworld/javatips/jw-javatip122.html
+     * @see <a href="http://www.javaworld.com/javaworld/javatips/jw-javatip122.html">www.javaworld.com</a>
      */
     private Object readResolve() {
         return nameToAttributeTypeMap.get(name);

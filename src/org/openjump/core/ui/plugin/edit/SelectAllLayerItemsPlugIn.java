@@ -53,9 +53,8 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
 
 
 /**
- * @description:
- *    selects all items of the actual layer
- *    and informs about the number of selected items
+ * Selects all items of the actual layer and informs about the number
+ * of selected items
  * 
  * @author sstein
  *

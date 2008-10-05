@@ -29,7 +29,7 @@ public class PersonalLogger {
     protected GenericDebugLogger genericLogger = GenericDebugLogger.getInstance();
     /**
      * Constructor
-     * @param userName - should be taken from class DebugUserIds (in this package)
+     * @param user - should be taken from class DebugUserIds (in this package)
      */
     public PersonalLogger( DebugId user ){
         this.userId = user.getUserName();

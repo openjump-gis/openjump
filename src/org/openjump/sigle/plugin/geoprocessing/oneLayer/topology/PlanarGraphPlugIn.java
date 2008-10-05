@@ -204,7 +204,6 @@ public class PlanarGraphPlugIn extends ThreadedBasePlugIn {
     
     /**
      * @param context
-     * @return
      */
     public void initialize(PlugInContext context) throws Exception {
         context.getFeatureInstaller()

@@ -140,8 +140,8 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy {
         return readonly;
     }
 
-    /**
-     * @Set whether this layer can be made editable.
+   /**
+    * Set whether this layer can be made editable.
     */
     public void setReadonly( boolean value ) {
         readonly = value;

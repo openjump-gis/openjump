@@ -36,7 +36,7 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
  *  and view some metadata.
  *
  * @author     David Zwiers, Vivid Solutions.
- * @created    May 8, 2006
+ * created    May 8, 2006
  */
 public class ImageLayerManagerPlugIn extends AbstractPlugIn {
 

@@ -71,11 +71,10 @@ import com.vividsolutions.jump.workbench.model.Layer;
 import java.util.Collection;
 
 /**
- * @description:
- * 		simplifies a selected line, criterion is a maximal line displacement <p>
- * 		it is used the JTS 1.5 douglas peucker simplification with topology 
- * 		preservation for polygons and DouglasPeuckerSimplifier for linestrings
- * 		n.b.: the jts-algorithm handles all geometry types
+ * Simplifies a selected line, criterion is a maximal line displacement <p>
+ * it is used the JTS 1.5 douglas peucker simplification with topology 
+ * preservation for polygons and DouglasPeuckerSimplifier for linestrings
+ * n.b.: the jts-algorithm handles all geometry types
  *
  * @author sstein
  *

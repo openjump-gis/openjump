@@ -239,7 +239,7 @@ public class LayerManager {
     }
 
     /**
-     * @param name the name of the layer. A number will be appended if a layer
+     * @param layerName the name of the layer. A number will be appended if a layer
      * with the same name already exists. Set to null to automatically generate a
      * new name.
      */
@@ -545,7 +545,7 @@ public class LayerManager {
 
     /**
 	 * @param visibleLayersOnly
-	 * @return
+	 * @return the envelope containing all layers
 	 */
 	public Envelope getEnvelopeOfAllLayers(boolean visibleLayersOnly) {
 		Envelope envelope = new Envelope();
@@ -664,7 +664,7 @@ public class LayerManager {
     * SIGLE [obedel] on 2005 then [mmichaud] on 2007-05-22
     * To free the memory allocated for a layer
     * Called by RemoveSelectedLayersPlugin
-    * @param layerViewPanel the layerViewPanel displaying this layerable
+    * @param frame the worbench frame
     * @param layarable the layerable to remove
     */
     public void dispose(WorkbenchFrame frame, Layerable layerable) {

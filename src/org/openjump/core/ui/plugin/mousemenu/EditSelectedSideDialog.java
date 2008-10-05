@@ -193,7 +193,7 @@ public class EditSelectedSideDialog extends JDialog
     private boolean hasPendingEdits; //if true then user has done some editing and has not applied them
 
     /**
-     * @param frame the frame on which to make this dialog modal and centred
+     * @param context the context on which to make this dialog modal and centred
      */
     public EditSelectedSideDialog(PlugInContext context, String title, boolean modal)
     {

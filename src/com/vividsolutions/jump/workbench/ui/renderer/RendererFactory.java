@@ -21,7 +21,7 @@ public interface RendererFactory<T extends Object> {
    * 
    * @param content The content to render.
    * @param panel The panel to render the content to.
-   * @param maxfeatures The maximum number of features to render.
+   * @param maxFeatures The maximum number of features to render.
    * @return The renderer.
    */
   public Renderer create(T content, LayerViewPanel panel, int maxFeatures);

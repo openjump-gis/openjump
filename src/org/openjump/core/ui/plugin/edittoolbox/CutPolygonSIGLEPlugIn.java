@@ -18,16 +18,11 @@ import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxDialog;
 
 /**
 * @author ERWAN BOCHER Laboratoire RESO UMR CNRS 6590, Olivier Bonnefont, Ugo Tadei
-* @url www.projet-sigle.org
-* @curentdate 18 mai 2006
-* @package name org.openjump.sigle.plugin.edittoolbox
-* @license Licence CeCILL http://www.cecill.info/
-* @todo TODO
+* @see <a href="http://www.projet-sigle.org">projet-sigle</a>
+* curentdate 18 mai 2006
+* license Licence CeCILL http://www.cecill.info/
 * 
-* 
-*  Ce plugin permet de couper des polygones selectionés à partir d'un autre polygone déssiné.
- * 
-* 
+* Ce plugin permet de couper des polygones selectionés à partir d'un autre polygone déssiné.
 */
 public class CutPolygonSIGLEPlugIn extends AbstractPlugIn
 {

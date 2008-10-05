@@ -56,13 +56,11 @@ import com.vividsolutions.jump.workbench.ui.Viewport;
 
 
 /**
- * @description
- * 	zooms to a given map scale, received from a input dialog
+ * Zooms to a given map scale, received from a input dialog
  * 
  * @author sstein
- *
  */
-public class ZoomToScalePlugIn extends AbstractPlugIn{    
+public class ZoomToScalePlugIn extends AbstractPlugIn{
 
     private String T1 = "scale"; //[sstein] this string is not used anymore
     int scale = 0;

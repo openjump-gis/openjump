@@ -54,7 +54,7 @@ public interface ReferencedImageFactory {
     /**
      * 
      * @param wbContext can be null, depending on the implementation (e.g. not null for MrSid driver)
-     * @return
+     * @return true if it is available
      */
 	boolean isAvailable(WorkbenchContext wbContext);
 }

@@ -286,7 +286,7 @@ public class MapLayerPanel extends JPanel {
     }
 
     /**
-     * @param chosenMapLayers null to leave unspecified
+     * @param initialChosenMapLayers null to leave unspecified
      */
     public void init(WMService service, Collection initialChosenMapLayers) {
         final MapLayerTreeModel treeModel = new MapLayerTreeModel(service.getCapabilities()

@@ -285,7 +285,7 @@ public class DTriangulationForJTS {
      * polygonized and the intersecting voronoi polygons with the bounding box
      * are calculated. These intersecting thiessen polygons (in the bounding box) are returned.<p>
      * Note: "thiesen" and "voronoi" is exchangeable. 
-     * @return
+     * @return a list of Polygons
      */
     public ArrayList getThiessenPolys(){        
 		//-- do union of all edges and use the polygonizer to create polygons from it

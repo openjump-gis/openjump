@@ -12,10 +12,10 @@ import java.util.Hashtable;
 
 /**
  * @author Olivier BEDEL
- * 	Laboratoire RESO UMR 6590 CNRS
- * 	Bassin Versant du Jaudy-Guindy-Bizien
- * 	26 oct. 2004
- * @license Licence CeCILL http://www.cecill.info/
+ * Laboratoire RESO UMR 6590 CNRS
+ * Bassin Versant du Jaudy-Guindy-Bizien
+ * 26 oct. 2004
+ * license Licence CeCILL http://www.cecill.info/
  * 
  */
 public interface JoinTableDataSource {

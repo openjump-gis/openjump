@@ -6,7 +6,7 @@ package org.geotiff.epsg;
    * Represents the Projected  coordinate
    * system.
    *
-   * @author: Niles D. Ritter
+   * @author Niles D. Ritter
    */
 
 public class ProjectedCS extends HorizontalCS {

@@ -49,7 +49,7 @@ public class MultiEnableCheck implements EnableCheck {
     private ArrayList enableChecks = new ArrayList();
 
     /**
-     *@param  tooltip  help for the menu item
+     * Create a new MultiEnableCheck
      */
     public MultiEnableCheck() {
     }

@@ -36,7 +36,6 @@ import de.fho.jump.pirol.utilities.debugOutput.PersonalLogger;
  * <br>Subproject: Daten- und Wissensmanagement
  * 
  * @version $Rev$
- * @see de.fhOsnabrueck.jump.pirol.utilities.metaData.MetaInformationKeys
  * 
  */
 public class MetaInformationHandler implements HandlerToMakeYourLifeEasier {
