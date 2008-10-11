@@ -65,6 +65,7 @@
 	<!--- =========  Edit Attributes ====================  /-->		
 	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.SpatialJoinPlugIn</plug-in>
 	<plug-in>org.openjump.sigle.plugin.replace.ReplaceValuePlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn</plug-in>
 	<plug-in>de.fho.jump.pirol.plugins.EditAttributeByFormula.EditAttributeByFormulaPlugIn</plug-in>
 	<!--- =========  Generalization ====================  /-->	
 	<plug-in>org.openjump.core.ui.plugin.tools.LineSimplifyJTS15AlgorithmPlugIn</plug-in>	
