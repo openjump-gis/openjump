@@ -1,5 +1,13 @@
-2008-09-09 mentaer <sstein@geo.uzh.ch>
+2008-10-11 mentaer <sstein@geo.uzh.ch>
+	extended Thiessen polygon creation to be aware of a delineating
+	background polygon (i.e. points are sorted out and polygon is used
+	for clipping)  
+	changed:
+	org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn
+	
+2008-10-11 mentaer <sstein@geo.uzh.ch>
 	added Larry's AutoAssignAttributePlugIn from ISA Tools
+	org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn
 	
 2008-09-09 beckerl <becker.larry@gmail.com>
       Enabled the Union check box when Get Distance from Attributes is checked.

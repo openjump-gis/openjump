@@ -46,6 +46,7 @@ import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -64,6 +65,8 @@ import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.feature.FeatureDatasetFactory;
 import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.task.TaskMonitor;
+import com.vividsolutions.jump.tools.AttributeMapping;
+import com.vividsolutions.jump.tools.OverlayEngine;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
@@ -91,7 +94,7 @@ public class CreateThiessenPolygonsPlugIn extends AbstractPlugIn implements Thre
 
     private String sName = "Create Thiessen Polygons";
     private String CLAYER = "select point layer";
-    private String BLAYER = "background layer to estimate the thiessen polygon size";
+    private String BLAYER = "background layer to delineate the thiessen polygon size";
     private String sUseBGD = "use background layer";
     
     private String sideBarText = "Creates a Delaunay triangulation and returns the Voronoi regions.";
@@ -189,14 +192,33 @@ public class CreateThiessenPolygonsPlugIn extends AbstractPlugIn implements Thre
 	    // --------------------------	    
 	    //-- get selected items
 	    final Collection features = this.itemlayer.getFeatureCollectionWrapper().getFeatures();
+	    //-- get objects from background layer (assuming there is only one
+	    List bkg = this.bckgrdlayer.getFeatureCollectionWrapper().getFeatures();
+	    //--
 	    ArrayList points = new ArrayList();
 	    Quadtree qtree = new Quadtree(); //-- tree used later to transfer attributes
 	    for (Iterator iter = features.iterator(); iter.hasNext();) {
             Feature f = (Feature) iter.next();
             Geometry g = f.getGeometry();
             if(g instanceof Point){
-                points.add(f.getGeometry());
-                qtree.insert(g.getEnvelopeInternal(), f);
+            	if(this.useBackground){
+            		// check if point is in one of the polygons of the background-layer
+            		boolean isInside = false;
+            		for (Iterator iterator = bkg.iterator(); iterator.hasNext();) {
+						Feature ftemp = (Feature) iterator.next();
+						if (ftemp.getGeometry().covers(g)){
+							isInside = true;
+						}
+					}
+            		if(isInside){
+    	                points.add(f.getGeometry());
+    	                qtree.insert(g.getEnvelopeInternal(), f);
+            		}
+            	}
+            	else{
+	                points.add(f.getGeometry());
+	                qtree.insert(g.getEnvelopeInternal(), f);
+	            }
             }
             else{
                 context.getWorkbenchFrame().warnUser(this.msgNoPoint);
@@ -237,8 +259,18 @@ public class CreateThiessenPolygonsPlugIn extends AbstractPlugIn implements Thre
 		    
 		    monitor.report(this.msgAddAttributesPolys);
 		    //-- add attributes
-		    FeatureDataset myCollC = this.transferAttributes(this.itemlayer.getFeatureCollectionWrapper().getFeatureSchema(),
+		    FeatureCollection myCollC = this.transferAttributes(this.itemlayer.getFeatureCollectionWrapper().getFeatureSchema(),
 		    		qtree, polys);
+		    //-- clip to background polygon
+		    if (this.useBackground){
+		    OverlayEngine oe = new OverlayEngine();
+		        FeatureCollection a = myCollC;
+		        FeatureCollection b = this.bckgrdlayer.getFeatureCollectionWrapper();
+		        AttributeMapping mapping = new AttributeMapping(a.getFeatureSchema(), new FeatureSchema());
+		        FeatureCollection overlay = oe.overlay(a, b, mapping, monitor);
+		        myCollC = overlay;
+		    }
+		    //--
 			context.addLayer(StandardCategoryNames.WORKING, "Thiessen polygons", myCollC);
 	    }
 	    else{
@@ -285,7 +317,7 @@ public class CreateThiessenPolygonsPlugIn extends AbstractPlugIn implements Thre
 		}
 	    return  fd;
 	}
-	
+    
 	private class MethodItemListener implements ItemListener{
 		
 		public void itemStateChanged(ItemEvent e) {
