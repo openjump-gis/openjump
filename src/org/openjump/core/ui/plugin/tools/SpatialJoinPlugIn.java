@@ -1,4 +1,4 @@
-package org.openjump.sigle.plugin.geoprocessing.layers;
+package org.openjump.core.ui.plugin.tools;
 
 
 

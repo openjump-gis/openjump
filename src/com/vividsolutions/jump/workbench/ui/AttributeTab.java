@@ -54,7 +54,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.openjump.sigle.plugin.replace.ReplaceValuePlugIn;
+import org.openjump.core.ui.plugin.tools.ReplaceValuePlugIn;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;

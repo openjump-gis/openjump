@@ -5,7 +5,7 @@
  * 26 oct. 2004
  * 
  */
-package org.openjump.sigle.plugin.joinTable;
+package org.openjump.core.ui.plugin.tools;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +14,8 @@ import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileFilter;
+
+import org.openjump.sigle.plugin.joinTable.JoinTable;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.FeatureSchema;

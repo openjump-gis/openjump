@@ -1,4 +1,4 @@
-package org.openjump.sigle.plugin.geoprocessing.oneLayer.topology;
+package org.openjump.core.ui.plugin.tools;
 
 /*
  * This tool has been developped by Michael Michaud Juin 2005

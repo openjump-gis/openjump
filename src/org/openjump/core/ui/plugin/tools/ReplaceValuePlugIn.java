@@ -31,7 +31,7 @@
  * www.vividsolutions.com
  */
 
-package org.openjump.sigle.plugin.replace;
+package org.openjump.core.ui.plugin.tools;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

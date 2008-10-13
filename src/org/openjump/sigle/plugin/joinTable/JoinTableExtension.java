@@ -7,6 +7,8 @@
  */
 package org.openjump.sigle.plugin.joinTable;
 
+import org.openjump.core.ui.plugin.tools.JoinTablePlugIn;
+
 import com.vividsolutions.jump.workbench.plugin.Extension;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 
