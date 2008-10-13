@@ -1,3 +1,7 @@
+2008-10-12 mentaer <sstein@geo.uzh.ch>
+	added Larry's ClipToFencePlugIn from ISA Tools
+	org.openjump.core.ui.plugin.edit.ClipToFencePlugIn
+	
 2008-10-11 mentaer <sstein@geo.uzh.ch>
 	extended Thiessen polygon creation to be aware of a delineating
 	background polygon (i.e. points are sorted out and polygon is used
