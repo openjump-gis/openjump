@@ -32,7 +32,7 @@
 	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.CalculateAreasAndLengthsPlugIn</plug-in>
 	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.GeometryFunctionPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn</plug-in>
-	<plug-in>org.openjump.sigle.plugin.geoprocessing.oneLayer.topology.PlanarGraphPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.tools.PlanarGraphPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.tools.IntersectPolygonLayersPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.tools.UnionByAttributePlugIn</plug-in>
 	<!--- =========  Generate ====================  /-->
@@ -65,7 +65,7 @@
 	<plug-in>org.openjump.core.ui.plugin.tools.SplitPolygonPlugIn</plug-in>	
 	<!--- =========  Edit Attributes ====================  /-->		
 	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.SpatialJoinPlugIn</plug-in>
-	<plug-in>org.openjump.sigle.plugin.replace.ReplaceValuePlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.tools.ReplaceValuePlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn</plug-in>
 	<plug-in>de.fho.jump.pirol.plugins.EditAttributeByFormula.EditAttributeByFormulaPlugIn</plug-in>
 	<!--- =========  Generalization ====================  /-->	
@@ -87,7 +87,7 @@
 	<plug-in>org.openjump.core.ui.plugin.mousemenu.RotatePlugIn</plug-in>	
 	<plug-in>org.openjump.core.ui.plugin.mousemenu.SelectLayersWithSelectedItemsPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.mousemenu.EditSelectedSidePlugIn</plug-in>	
-	<plug-in>org.openjump.sigle.plugin.joinTable.JoinTablePlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.tools.JoinTablePlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.mousemenu.PasteItemsAtPlugIn</plug-in>	
 	<!--- =========  EditTools ====================  /-->
 	<plug-in>org.openjump.core.ui.plugin.edittoolbox.CutPolygonSIGLEPlugIn</plug-in>
