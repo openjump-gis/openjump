@@ -80,7 +80,7 @@ public class ExtractLayerInFence extends AbstractPlugIn {
 		
 	    context.getFeatureInstaller().addMainMenuItemWithJava14Fix(this,
 		        new String[]
-				{MenuNames.EDIT},
+				{MenuNames.EDIT, MenuNames.EXTRACT},
 				getName(), 
 				false, 
 				ICON, 

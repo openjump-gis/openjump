@@ -93,10 +93,17 @@ public class ExtractLayersByGeometry extends AbstractPlugIn {
 		featureInstaller.addPopupMenuItem(layerNamePopupMenu, this, getName(),
 				false, ICON, createEnableCheck(workbenchContext));
 		*/
-		
+		//-- [sstein] this shouldn't be here, but as we try to use now the 
+		//   default-plugins.xml for configuration, we need to add the submenu init
+		//   in the first loaded submenu function
+		featureInstaller.addMenuSeparator(MenuNames.EDIT);
+        FeatureInstaller.addMainMenu(featureInstaller, new String[] {
+                MenuNames.EDIT
+              }, MenuNames.EXTRACT, 14);  
+        //--
 	    context.getFeatureInstaller().addMainMenuItemWithJava14Fix(this,
 		        new String[]
-				{MenuNames.EDIT},
+				{MenuNames.EDIT, MenuNames.EXTRACT},
 				getName(), 
 				false, 
 				ICON, 

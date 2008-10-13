@@ -82,7 +82,7 @@ public class ExtractLayersByAttribute extends AbstractPlugIn {
 	public void initialize(PlugInContext context) throws Exception {
 	    context.getFeatureInstaller().addMainMenuItemWithJava14Fix(this,
 		        new String[]
-				{MenuNames.EDIT},
+				{MenuNames.EDIT, MenuNames.EXTRACT},
 				getName(), 
 				false, 
 				ICON, 

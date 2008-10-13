@@ -1,4 +1,8 @@
 2008-10-12 mentaer <sstein@geo.uzh.ch>
+	did some refactoring of the Edit menu (put Selection and
+	Extraction tools into sub menus)
+	
+2008-10-12 mentaer <sstein@geo.uzh.ch>
 	added Larry's ClipToFencePlugIn from ISA Tools
 	org.openjump.core.ui.plugin.edit.ClipToFencePlugIn
 	

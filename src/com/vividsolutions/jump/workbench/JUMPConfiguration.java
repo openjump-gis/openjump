@@ -699,8 +699,11 @@ public class JUMPConfiguration implements Setup {
         featureInstaller.addMainMenuItemWithJava14Fix(editSelectedFeaturePlugIn, new String[] {MenuNames.EDIT},
                 editSelectedFeaturePlugIn.getName(), false, null,
                 EditSelectedFeaturePlugIn.createEnableCheck(workbenchContext));
+        FeatureInstaller.addMainMenu(featureInstaller, new String[] {
+                MenuNames.EDIT
+              }, MenuNames.SELECTION, 6);  
         featureInstaller
-        	.addMainMenuItemWithJava14Fix(selectFeaturesInFencePlugIn, new String[] {MenuNames.EDIT},
+        	.addMainMenuItemWithJava14Fix(selectFeaturesInFencePlugIn, new String[] {MenuNames.EDIT, MenuNames.SELECTION},
                         selectFeaturesInFencePlugIn.getName(), false, null,
                         SelectFeaturesInFencePlugIn
                                 .createEnableCheck(workbenchContext));
@@ -717,7 +720,7 @@ public class JUMPConfiguration implements Setup {
         featureInstaller.addMainMenuItem(pasteItemsPlugIn, new String[] {MenuNames.EDIT},
                 pasteItemsPlugIn.getNameWithMnemonic(), false, null, PasteItemsPlugIn
                         .createEnableCheck(workbenchContext));
-        featureInstaller.addMenuSeparator(MenuNames.EDIT); // ===================
+        //featureInstaller.addMenuSeparator(MenuNames.EDIT); // ===================
         featureInstaller.addMainMenuItemWithJava14Fix(deleteSelectedItemsPlugIn, new String[] {MenuNames.EDIT},
                 deleteSelectedItemsPlugIn.getName(), false, DeleteSelectedItemsPlugIn.ICON,
                 DeleteSelectedItemsPlugIn.createEnableCheck(workbenchContext));

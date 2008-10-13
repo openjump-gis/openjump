@@ -84,7 +84,7 @@ public class SelectByTypePlugIn extends AbstractPlugIn
     {     
         workbenchContext = context.getWorkbenchContext();
         context.getFeatureInstaller().addMainMenuItemWithJava14Fix(this, 
-        		new String[] { MenuNames.EDIT }, 
+        		new String[] { MenuNames.EDIT, MenuNames.SELECTION }, 
         		sSelectByGeometryType + "..." +"{pos:8}", 
 				false, 
 				null, 
