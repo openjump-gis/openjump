@@ -40,6 +40,7 @@ import javax.swing.Icon;
 
 import com.vividsolutions.jump.workbench.model.FenceLayerFinder;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 
 
 public class DrawRectangleFenceTool extends RectangleTool {
@@ -50,11 +51,11 @@ public class DrawRectangleFenceTool extends RectangleTool {
     }
 
     public Icon getIcon() {
-        return IconLoader.icon("Box.gif");
+        return IconLoaderFamFam.icon("shape_square_edit.png");
     }
 
     public Cursor getCursor() {
-        return createCursor(IconLoader.icon("FenceCursor.gif").getImage());
+        return createCursor(IconLoaderFamFam.icon("shape_square.png").getImage());
     }
 
     protected void gestureFinished() throws Exception {

@@ -35,6 +35,8 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.*;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
+
 import java.awt.BorderLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JInternalFrame;
@@ -64,7 +66,7 @@ public class ViewAttributesPlugIn extends AbstractPlugIn {
 				checkFactory.createExactlyNLayersMustBeSelectedCheck(1));
 	}
 	public ImageIcon getIcon() {
-		return IconLoader.icon("Row.gif");
+		return IconLoaderFamFam.icon("table.png");
 	}
 	public static class ViewAttributesFrame extends JInternalFrame
 			implements

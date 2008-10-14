@@ -62,7 +62,7 @@ public class MeasureTool
   }
 
   public Icon getIcon() {
-    return IconLoader.icon("Ruler.gif");
+    return IconLoader.icon("Ruler_small.png");
   }
 
   public Cursor getCursor() {

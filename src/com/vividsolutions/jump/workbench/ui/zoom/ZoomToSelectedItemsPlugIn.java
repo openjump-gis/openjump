@@ -197,6 +197,6 @@ public class ZoomToSelectedItemsPlugIn extends AbstractPlugIn {
     }
 
     public ImageIcon getIcon() {
-        return IconLoader.icon("ZoomSelected.gif");
+        return IconLoader.icon("ZoomSelected_small.png");
     }
 }

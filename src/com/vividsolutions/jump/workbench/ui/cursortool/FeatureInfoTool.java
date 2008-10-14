@@ -46,10 +46,11 @@ import com.vividsolutions.jump.workbench.model.FenceLayerFinder;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.ui.InfoFrame;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 
 public class FeatureInfoTool extends SpecifyFeaturesTool {
 
-    public static final ImageIcon ICON = IconLoader.icon("Info.gif");
+    public static final ImageIcon ICON = IconLoaderFamFam.icon("information.png");
     public FeatureInfoTool() {
         setColor(Color.magenta);
     }

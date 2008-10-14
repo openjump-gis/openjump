@@ -43,6 +43,7 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 public class UndoPlugIn extends AbstractPlugIn {
     public UndoPlugIn() {}
     public void initialize(PlugInContext context) throws Exception {}
@@ -76,6 +77,6 @@ public class UndoPlugIn extends AbstractPlugIn {
         });
     }
     public ImageIcon getIcon() {
-        return IconLoader.icon("Undo.gif");
+        return IconLoaderFamFam.icon("arrow_undo.png");
     }
 }

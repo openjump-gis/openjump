@@ -60,6 +60,7 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStylePanel;
 import com.vividsolutions.jump.workbench.ui.style.DecorationStylePanel;
@@ -207,7 +208,7 @@ public class DeeChangeStylesPlugIn extends AbstractPlugIn {
      * @return the icon
      */
     public ImageIcon getIcon() {
-        return IconLoader.icon("Palette.gif");
+        return IconLoaderFamFam.icon("palette.png");
     }
 
     /**

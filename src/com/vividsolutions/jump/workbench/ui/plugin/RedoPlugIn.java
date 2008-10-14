@@ -43,6 +43,7 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 public class RedoPlugIn extends AbstractPlugIn {
     public RedoPlugIn() {}
     public void initialize(PlugInContext context) throws Exception {}
@@ -76,6 +77,6 @@ public class RedoPlugIn extends AbstractPlugIn {
         });
     }
     public ImageIcon getIcon() {
-        return IconLoader.icon("Redo.gif");
+        return IconLoaderFamFam.icon("arrow_redo.png");
     }
 }

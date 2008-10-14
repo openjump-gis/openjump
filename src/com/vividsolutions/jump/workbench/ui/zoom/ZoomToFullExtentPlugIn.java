@@ -41,6 +41,7 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 
 
 public class ZoomToFullExtentPlugIn extends AbstractPlugIn {
@@ -55,7 +56,7 @@ public class ZoomToFullExtentPlugIn extends AbstractPlugIn {
     }
 
     public ImageIcon getIcon() {
-        return IconLoader.icon("World.gif");
+        return IconLoaderFamFam.icon("world.png");
     }
 
     public MultiEnableCheck createEnableCheck(

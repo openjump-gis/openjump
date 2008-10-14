@@ -47,6 +47,7 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.Viewport;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 
 
 public class ZoomNextPlugIn extends AbstractPlugIn {
@@ -86,6 +87,6 @@ public class ZoomNextPlugIn extends AbstractPlugIn {
     }
 
     public ImageIcon getIcon() {
-        return IconLoader.icon("Right.gif");
+        return IconLoaderFamFam.icon("application_side_expand.png");
     }
 }

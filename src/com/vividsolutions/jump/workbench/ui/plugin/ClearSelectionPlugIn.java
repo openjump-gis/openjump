@@ -41,6 +41,7 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 
 public class ClearSelectionPlugIn extends AbstractPlugIn {
     public ClearSelectionPlugIn() {}
@@ -59,6 +60,7 @@ public class ClearSelectionPlugIn extends AbstractPlugIn {
     }
 
     public static ImageIcon getIcon() {
-        return IconLoader.icon("deselect.gif");
+        //return IconLoader.icon("deselect.gif");
+    	return IconLoaderFamFam.icon("cross.png");
     }
 }

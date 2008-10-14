@@ -39,6 +39,7 @@ import com.vividsolutions.jump.geom.EnvelopeUtil;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 
 
 public class ZoomToFencePlugIn extends AbstractPlugIn {
@@ -55,6 +56,6 @@ public class ZoomToFencePlugIn extends AbstractPlugIn {
     }
 
     public ImageIcon getIcon() {
-        return IconLoader.icon("ZoomFence.gif");
+        return IconLoaderFamFam.icon("shape_square_go.png");
     }
 }

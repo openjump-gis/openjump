@@ -45,6 +45,7 @@ import javax.swing.SwingUtilities;
 import com.vividsolutions.jump.util.MathUtil;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 
 
 public class ZoomTool extends AbstractZoomTool {
@@ -59,7 +60,8 @@ public class ZoomTool extends AbstractZoomTool {
     }
 
     public Icon getIcon() {                         
-        return IconLoader.icon("Magnify.gif");
+        //return IconLoader.icon("Magnify.gif");
+        return IconLoaderFamFam.icon("zoom.png");
     }
 
     public String getName() {                            
