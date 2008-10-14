@@ -34,16 +34,12 @@ package com.vividsolutions.jump.workbench.ui.cursortool;
 
 import java.awt.Cursor;
 import java.awt.event.MouseEvent;
-import java.awt.geom.NoninvertibleTransformException;
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.Icon;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import com.vividsolutions.jump.geom.Angle;
+import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 
 /**
  * A tool which displays cumlative length, angle and cumlative area of
@@ -62,7 +58,7 @@ public class MeasureTool
   }
 
   public Icon getIcon() {
-    return IconLoader.icon("Ruler_small.png");
+    return IconLoaderFamFam.icon("Ruler_small.png");
   }
 
   public Cursor getCursor() {

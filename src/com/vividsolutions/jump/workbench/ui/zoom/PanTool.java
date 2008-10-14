@@ -33,20 +33,19 @@
 
 package com.vividsolutions.jump.workbench.ui.zoom;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Point;
+import java.awt.Shape;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 
-import javax.swing.*;
+import javax.swing.Icon;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jump.workbench.ui.Viewport;
-import com.vividsolutions.jump.workbench.ui.cursortool.DragTool;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import com.vividsolutions.jump.workbench.ui.zoom.AbstractZoomTool;
+import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 /**
  * Pans the image in the current task window.
  * Image handling is designed to minimize flickering and latency.
@@ -69,7 +68,7 @@ public class PanTool extends AbstractZoomTool
   }
 
   public Icon getIcon() {
-    return IconLoader.icon("BigHand_small.png");
+    return IconLoaderFamFam.icon("BigHand_small.png");
   }
 	  
   public void mouseDragged(MouseEvent e) {

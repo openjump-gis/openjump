@@ -55,7 +55,7 @@ public class DrawRectangleFenceTool extends RectangleTool {
     }
 
     public Cursor getCursor() {
-        return createCursor(IconLoaderFamFam.icon("shape_square.png").getImage());
+        return createCursor(IconLoader.icon("FenceCursor.gif").getImage());
     }
 
     protected void gestureFinished() throws Exception {
