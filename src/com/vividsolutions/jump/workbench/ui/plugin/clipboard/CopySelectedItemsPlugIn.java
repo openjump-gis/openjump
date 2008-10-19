@@ -38,8 +38,12 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.SelectionManagerProxy;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 
 import java.awt.Toolkit;
+
+import javax.swing.ImageIcon;
 
 
 public class CopySelectedItemsPlugIn extends AbstractPlugIn {
@@ -48,6 +52,8 @@ public class CopySelectedItemsPlugIn extends AbstractPlugIn {
     //so she is free to modify the first copy then hit Paste again. [Jon Aquino]
     public CopySelectedItemsPlugIn() {
     }
+    
+    public static final ImageIcon ICON = IconLoaderFamFam.icon("page_copy.png");
     
     public String getNameWithMnemonic() {
         return StringUtil.replace(getName(), "C", "&C", false);

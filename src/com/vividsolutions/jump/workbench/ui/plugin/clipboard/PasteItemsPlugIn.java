@@ -42,6 +42,7 @@ import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 
 import com.sun.org.apache.xerces.internal.impl.dv.xs.DecimalDV;
@@ -65,6 +66,7 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 
 /**
  * Lets user paste items from the clipboard.
@@ -91,6 +93,8 @@ public class PasteItemsPlugIn extends AbstractPlugIn {
   public PasteItemsPlugIn() {
   }
 
+  public static final ImageIcon ICON = IconLoaderFamFam.icon("paste_plain.png");
+  
   public String getNameWithMnemonic() {
     return StringUtil.replace(getName(), "P", "&P", false);
   }

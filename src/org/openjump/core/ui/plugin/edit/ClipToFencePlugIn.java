@@ -7,6 +7,7 @@ import javax.swing.JComponent;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureSchema;
@@ -27,20 +28,20 @@ import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 
 public class ClipToFencePlugIn extends AbstractPlugIn implements ThreadedPlugIn  {
 
-	private static final String FENCELAYERMUSTBEPRESENT = "Fence layer must be present";
-	private static final String CLIPMAPTOFENCE = "Clip Map to Fence";
-	private static final String DIALOGMSG = "All vector layers will be clipped to the Fence."+
+	private static String FENCELAYERMUSTBEPRESENT = "Fence layer must be present";
+	//private static String CLIPMAPTOFENCE = "Clip Map to Fence";
+	private static String DIALOGMSG = "All vector layers will be clipped to the Fence."+
 			" Warning: if your task loaded with layers not visible, they have not be loaded" +
 			" and therefore will not be clipped.";
-	private static final String DIALOGWARNING = "This operation is not undoable.";
-	private static final String VISIBLEONLY = "Visible Only (see Warning)";
+	private static String DIALOGWARNING = "This operation is not undoable.";
+	private static String VISIBLEONLY = "Visible Only (see Warning)";
 	private static final boolean POLYGON_OUTPUT = false;
 	
 	private WorkbenchContext workbenchContext;
 	private boolean visibleOnly = false;
 
     public String getName() {  //for the menu
-    	return CLIPMAPTOFENCE;
+    	return I18N.get("org.openjump.core.ui.plugin.edit.ClipToFencePlugIn.Clip-Map-to-Fence");
     }
 
 	public void initialize( PlugInContext context ) throws Exception 
@@ -49,6 +50,11 @@ public class ClipToFencePlugIn extends AbstractPlugIn implements ThreadedPlugIn 
         context.getFeatureInstaller().addMainMenuItem(this,
         	      new String[] {MenuNames.EDIT}, getName()+ "...", 
         	      		false, null, fenceLayerMustBePresent());
+        
+        DIALOGWARNING=I18N.get("org.openjump.core.ui.plugin.edit.ClipToFencePlugIn.This-operation-is-not-undoable");
+        VISIBLEONLY = I18N.get("org.openjump.core.ui.plugin.edit.ClipToFencePlugIn.Visible-Only-(-see-Warning-)");
+        DIALOGMSG=I18N.get("org.openjump.core.ui.plugin.edit.ClipToFencePlugIn.description");
+        FENCELAYERMUSTBEPRESENT = I18N.get("org.openjump.core.ui.plugin.edit.ClipToFencePlugIn.Fence-layer-must-be-present");
     }
     
    public boolean execute(PlugInContext context) throws Exception {

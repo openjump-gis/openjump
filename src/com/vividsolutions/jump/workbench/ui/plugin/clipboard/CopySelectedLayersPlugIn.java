@@ -39,12 +39,15 @@ import com.vividsolutions.jump.workbench.model.WMSLayer;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 
 import java.awt.Toolkit;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+
+import javax.swing.ImageIcon;
 
 
 public class CopySelectedLayersPlugIn extends LayerableClipboardPlugIn {
@@ -53,6 +56,8 @@ public class CopySelectedLayersPlugIn extends LayerableClipboardPlugIn {
     //so she is free to modify the first copy then hit Paste again. [Jon Aquino]
     public CopySelectedLayersPlugIn() {
     }
+    
+    public static final ImageIcon ICON = IconLoaderFamFam.icon("layers_copy.gif");
     
     public String getNameWithMnemonic() {
         return StringUtil.replace(getName(), "C", "&C", false);

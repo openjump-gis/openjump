@@ -46,6 +46,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureSchema;
@@ -70,16 +71,16 @@ import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 */
 public class AutoAssignAttributePlugIn extends AbstractPlugIn {
 		//TODO: translation
-	    private static final String LAYER_COMBO_BOX = GenericNames.LAYER;
-	    private static final String DEST_COMBO_BOX = "Destination attribute";
-	    private static final String SOURCE_COMBO_BOX = "Source attribute";
-	    private static final String FROM_SOURCE_CHECK_BOX = "Assign from other attribute";
+	    private static String LAYER_COMBO_BOX = GenericNames.LAYER;
+	    private static String DEST_COMBO_BOX = "Destination attribute";
+	    private static String SOURCE_COMBO_BOX = "Source attribute";
+	    private static String FROM_SOURCE_CHECK_BOX = "Assign from other attribute";
 	    private static final String A_CHECK_BOX = "invisible checkbox";
-	    private static final String AUTOINC_CHECK_BOX = "Auto-increment";
-	    private static final String INC_VALUE_EDIT_BOX = "Increment by";
-	    private static final String SELECTED_CHECK_BOX = "Selected features only";
-	    private static final String ASSIGN_VALUE_TEXT_BOX = "Assign this value";
-	    private static final String SELECTONLYONONELAYER = "Select features on only one layer";
+	    private static String AUTOINC_CHECK_BOX = "Auto-increment";
+	    private static String INC_VALUE_EDIT_BOX = "Increment by";
+	    private static String SELECTED_CHECK_BOX = "Selected features only";
+	    private static String ASSIGN_VALUE_TEXT_BOX = "Assign this value";
+	    private static String SELECTONLYONONELAYER = "Select features on only one layer";
 	    private int autoInc;
 	    private Layer destinationLayer;
 	    private FeatureSchema schema;
@@ -99,10 +100,24 @@ public class AutoAssignAttributePlugIn extends AbstractPlugIn {
 	{     
 	      context.getFeatureInstaller().addMainMenuItem(this,
 	    	      new String[] { MenuNames.TOOLS, MenuNames.TOOLS_EDIT_ATTRIBUTES}, 
-	    	      "Auto Assign Attribute"+ "...", false, null, 
+	    	      this.getName() + "...", false, null, 
 	    	      this.createEnableCheck(context.getWorkbenchContext()));
+	      
+		    DEST_COMBO_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Destination-attribute");
+		    SOURCE_COMBO_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Source-attribute");
+		    FROM_SOURCE_CHECK_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Assign-from-other-attribute");
+		    //A_CHECK_BOX = "invisible checkbox";
+		    AUTOINC_CHECK_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Auto-increment");
+		    INC_VALUE_EDIT_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Increment-by");
+		    SELECTED_CHECK_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Selected-features-only");
+		    ASSIGN_VALUE_TEXT_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Assign-this-value");
+		    SELECTONLYONONELAYER = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Select-features-on-only-one-layer");
 	}
 
+	public String getName(){
+		return I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Auto-Assign-Attribute");
+	}
+	
 	public boolean execute(PlugInContext context) throws Exception {
 		MultiInputDialog dialog = prompt(context);
 		if (!dialog.wasOKPressed()) {

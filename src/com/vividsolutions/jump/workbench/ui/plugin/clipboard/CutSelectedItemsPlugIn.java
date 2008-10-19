@@ -40,6 +40,7 @@ import com.vividsolutions.jump.workbench.plugin.MacroPlugIn;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugIn;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 import com.vividsolutions.jump.workbench.ui.plugin.DeleteSelectedItemsPlugIn;
 
 
@@ -63,6 +64,6 @@ public class CutSelectedItemsPlugIn extends MacroPlugIn {
         return DeleteSelectedItemsPlugIn.createEnableCheck(workbenchContext);
     }
     
-    public static final ImageIcon ICON = IconLoader.icon("cut.gif");
+    public static final ImageIcon ICON = IconLoaderFamFam.icon("cut.gif");
 
 }

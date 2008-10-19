@@ -7,6 +7,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 
 import com.vividsolutions.jts.util.Assert;
@@ -16,6 +17,7 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 import com.vividsolutions.jump.workbench.ui.plugin.ExportImagePlugIn;
 
 public class CopyImagePlugIn extends ExportImagePlugIn {
@@ -30,6 +32,9 @@ public class CopyImagePlugIn extends ExportImagePlugIn {
                 .setContents(transferable, new DummyClipboardOwner());
         return true;
     }
+    
+    public static final ImageIcon ICON = IconLoaderFamFam.icon("image_copy.gif");
+    
     private Transferable createTransferable(final PlugInContext context) {
         return new AbstractTransferable(
                 new DataFlavor[]{DataFlavor.imageFlavor}) {
