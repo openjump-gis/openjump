@@ -1,3 +1,10 @@
+2008-10-22 mentaer <sstein@geo.uzh.ch>
+	Added new tool to extract point features from other layer with other geometry types
+	added:   
+	org.openjump.core.ui.plugin.tools.geometrychange.ExtractPointsPlugIn
+	changed:
+	org.openjump.core.apitools.FeatureCollectionTools  
+
 2008-10-13 mentaer <sstein@geo.uzh.ch>
 	Added new main toolbar icon set. 
 	(note: Class SelectFeaturesTool	was copied and renamed to 

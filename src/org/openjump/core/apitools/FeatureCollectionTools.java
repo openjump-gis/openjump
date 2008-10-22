@@ -21,6 +21,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.BasicFeature;
 import com.vividsolutions.jump.feature.Feature;
@@ -898,4 +899,25 @@ public class FeatureCollectionTools extends ToolToMakeYourLifeEasier {
     public static Feature[] FeatureCollection2FeatureArray( List<Feature> features ){
         return (Feature[])features.toArray(new Feature[0]);
     }
+    
+    /**
+     * Extracts all points from an input feature and returns them as list of point features.
+     * Note: for closed Geometry objects the start and end point are extracted - 
+     * i.e. the points may be overlap.   
+     * @param f
+     * @return list of point features
+     */
+    public static ArrayList<Feature> convertToPointFeature(Feature f){
+    	GeometryFactory gf = new GeometryFactory(); 
+    	ArrayList<Feature> points = new ArrayList<Feature>();    	
+    	Coordinate[] coords = f.getGeometry().getCoordinates();  
+    	for (int i=0; i < coords.length; i++) {
+    			Point pt = gf.createPoint(coords[i]);
+    			Feature fNew = copyFeature(f);
+    			fNew.setGeometry(pt);
+    		    points.add(fNew);
+    		 }
+    	return points;
+    }
+    
 }

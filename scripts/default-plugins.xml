@@ -71,6 +71,8 @@
 	<!--- =========  Generalization ====================  /-->	
 	<plug-in>org.openjump.core.ui.plugin.tools.LineSimplifyJTS15AlgorithmPlugIn</plug-in>	
 	<plug-in>org.openjump.core.ui.plugin.tools.ReducePointsISAPlugIn</plug-in>
+	<!--- =========  Convert ====================  /-->
+	<plug-in>org.openjump.core.ui.plugin.tools.geometrychange.ExtractPointsPlugIn</plug-in>			
 	<!--- =========  other ====================  /-->
 	<plug-in>org.openjump.core.ui.plugin.tools.MeasureM_FPlugIn</plug-in>
 	<!---  ======================================== /-->
