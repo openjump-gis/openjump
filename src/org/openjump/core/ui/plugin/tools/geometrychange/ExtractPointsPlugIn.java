@@ -45,7 +45,9 @@ import java.util.Iterator;
 import javax.swing.JComboBox;
 
 import org.openjump.core.apitools.FeatureCollectionTools;
+import org.openjump.sigle.utilities.geom.FeatureCollectionUtil;
 
+import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.feature.FeatureSchema;
@@ -132,13 +134,30 @@ public class ExtractPointsPlugIn extends AbstractPlugIn implements ThreadedPlugI
 	
     public void run(TaskMonitor monitor, PlugInContext context) throws Exception{            			    
     	 System.gc();
-    	 final Collection features = this.itemlayer.getFeatureCollectionWrapper().getFeatures();
+    	 final Collection features = this.itemlayer.getFeatureCollectionWrapper().getFeatures();    	 
     	 FeatureSchema fs = this.itemlayer.getFeatureCollectionWrapper().getFeatureSchema();
-    	 FeatureDataset fd = new FeatureDataset(fs);
+    	 //--
+    	 final String ITEM_ID = "item_id";
+    	 final String SEQ_ID = "sequence_id";    	 
+    	 FeatureSchema fsNew = (FeatureSchema)fs.clone();
+    	 fsNew.addAttribute(ITEM_ID, AttributeType.INTEGER);
+    	 fsNew.addAttribute(SEQ_ID, AttributeType.INTEGER);
+    	 //--
+    	 FeatureDataset fd = new FeatureDataset(fsNew);
+    	 int count=0;
     	 for (Iterator iterator = features.iterator(); iterator.hasNext();) {
-				Feature f = (Feature) iterator.next();
-				ArrayList<Feature> points = FeatureCollectionTools.convertToPointFeature(f);				
-				fd.addAll(points);
+			Feature f = (Feature) iterator.next();
+			ArrayList<Feature> points = FeatureCollectionTools.convertToPointFeature(f);
+		    int seq_count=0;
+			for (Iterator iterator2 = points.iterator(); iterator2.hasNext();) {
+				Feature pt = (Feature) iterator2.next();
+				pt = FeatureCollectionTools.copyFeatureAndSetFeatureSchema(pt, fsNew);
+				pt.setAttribute(ITEM_ID, count);
+				pt.setAttribute(SEQ_ID, seq_count);
+				fd.add(pt);
+			    seq_count++;
+			}			
+ 		 	count++;
 		}	
     	context.addLayer(StandardCategoryNames.RESULT, this.itemlayer.getName() + "-" + sPoints, fd);
     }
