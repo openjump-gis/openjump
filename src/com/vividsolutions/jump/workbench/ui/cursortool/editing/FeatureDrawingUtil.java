@@ -37,11 +37,18 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.CoordinateList;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
@@ -185,4 +192,104 @@ public class FeatureDrawingUtil {
                 tool.getName());
         }
     }
+    
+    private Collection selectedFeaturesMatchingEndPoint(
+    		LineString lineString, LayerViewPanel panel) {
+    	if (layerNamePanelProxy.getLayerNamePanel().chooseEditableLayer() == null) {
+    		return new ArrayList();
+}
+    	ArrayList selectedFeaturesMatchingEndPoints = new ArrayList();
+    	for (Iterator i = panel.getSelectionManager().getFeaturesWithSelectedItems(
+    			layerNamePanelProxy.getLayerNamePanel().
+    			chooseEditableLayer()).iterator(); i.hasNext(); ) {
+    		Feature feature = (Feature) i.next();
+    		if (!(feature.getGeometry() instanceof LineString)) {
+    			continue;
+    		}
+    		LineString lineGeom = ((LineString) feature.getGeometry());
+    		if (!( lineGeom.getCoordinate()
+    				.equals(lineString.getCoordinate()) 	//1=1
+    			|| lineGeom.getCoordinate()
+    				.equals(lineString.getCoordinateN(lineString.getNumPoints()-1))	//1=n
+    			|| lineGeom.getCoordinateN(lineGeom.getNumPoints()-1)
+    				.equals(lineString.getCoordinate())	//m=1
+    			|| lineGeom.getCoordinateN(lineGeom.getNumPoints()-1)
+    				.equals(lineString.getCoordinateN(lineString.getNumPoints()-1))))	//m=n
+    			continue;
+    		selectedFeaturesMatchingEndPoints.add(feature);
+    	}
+    	return selectedFeaturesMatchingEndPoints;
+    }
+    /**
+     * @param lineString to reverse
+     * @return new LineString made from old LineString's points in reverse order
+     */
+    public LineString reverse(LineString lineString) {
+    	CoordinateList coordList = new CoordinateList(lineString.getCoordinates());
+//    	List coordList = Arrays.asList(lineString.getCoordinates());
+    	Collections.reverse(coordList);
+    	return new GeometryFactory().createLineString(coordList.toCoordinateArray());
+    }
+    
+    /**
+     * @param ls1 first LineString to concatenate
+     * @param ls2 second LineString to concatenate
+     * @return new LineString made of (first - last point) + second
+     */
+    public LineString concatLineStrings(LineString ls1, LineString ls2) {
+    	CoordinateList coordList1 = new CoordinateList(ls1.getCoordinates());
+    	CoordinateList coordList2 = new CoordinateList(ls2.getCoordinates());
+    	coordList1.remove(coordList1.size()-1);
+    	coordList1.addAll(coordList2);
+    	return new GeometryFactory().createLineString(coordList1.toCoordinateArray());
+    }
+    		
+    /**
+     * @param ls1 first LineString to merge
+     * @param ls2 second LineString to merge
+     * @return merged LineString if end point in common, otherwise return second LineString
+     */
+    public LineString mergeLineStrings(LineString ls1, LineString ls2) {
+		if (ls1.getCoordinate().equals(ls2.getCoordinate())) {
+			return concatLineStrings(reverse(ls2), ls1);
+		} else if (ls1.getCoordinate().equals(ls2.getCoordinateN(ls2.getNumPoints()-1))) {
+			return concatLineStrings(ls2, ls1);			
+		} else if (ls1.getCoordinateN(ls1.getNumPoints()-1).equals(ls2.getCoordinate())) {
+			return concatLineStrings(ls1, ls2);						
+		}else if (ls1.getCoordinateN(ls1.getNumPoints()-1).equals(ls2.getCoordinateN(ls2.getNumPoints()-1))) {
+			return concatLineStrings(ls1, reverse(ls2));			
+		} else {
+			return ls2;
+		}
+    	
+    }
+    
+    /**
+     * Implement the special check for adding to the end of a selected LineString
+     * @param newLineString LineString to create or add to selected
+     * @param rollingBackInvalidEdits
+     * @param tool AbstractCursorTool - the current cursor tool
+     * @param panel LayerViewPanel
+     */
+    public void drawLineString(
+    		LineString newLineString,
+    		boolean rollingBackInvalidEdits,
+    		AbstractCursorTool tool,
+    		LayerViewPanel panel) {
+    	Collection matchingLineStringFeatures = selectedFeaturesMatchingEndPoint(newLineString, panel);
+    	if (matchingLineStringFeatures.isEmpty() 
+    			|| matchingLineStringFeatures.size() > 1) {
+    		AbstractPlugIn.execute(
+    				createAddCommand(newLineString, rollingBackInvalidEdits, panel, tool), panel);
+    	} else {
+    		LineString oldLineString = (LineString)
+    		((Feature) matchingLineStringFeatures.iterator().next()).getGeometry();
+    		EditTransaction transaction =
+    			new EditTransaction(matchingLineStringFeatures, 
+    					tool.getName(), layer(panel), rollingBackInvalidEdits, false, panel);
+    		transaction.setGeometry(0, mergeLineStrings(oldLineString, newLineString) );
+    		transaction.commit();
+    	}
+    }
+        
 }

@@ -78,8 +78,14 @@ public class DrawLineStringTool extends MultiClickTool {
             return;
         }
 
-        execute(featureDrawingUtil.createAddCommand(getLineString(),
-                isRollingBackInvalidEdits(), getPanel(), this));
+//        execute(featureDrawingUtil.createAddCommand(getLineString(),
+//                isRollingBackInvalidEdits(), getPanel(), this));
+        
+		featureDrawingUtil.drawLineString(
+				getLineString(),
+				isRollingBackInvalidEdits(),
+				this,
+				getPanel());
     }
 
     protected LineString getLineString() throws NoninvertibleTransformException {
