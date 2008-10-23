@@ -905,13 +905,20 @@ public class FeatureCollectionTools extends ToolToMakeYourLifeEasier {
      * Note: for closed Geometry objects the start and end point are extracted - 
      * i.e. the points may be overlap.   
      * @param f
+     * @param accountForRings doesn't add a point for the last coordinate if the geometry is a ring (i.e. first point equals last point) 
      * @return list of point features
      */
-    public static ArrayList<Feature> convertToPointFeature(Feature f){
+    public static ArrayList<Feature> convertToPointFeature(Feature f, boolean accountForRings){
     	GeometryFactory gf = new GeometryFactory(); 
     	ArrayList<Feature> points = new ArrayList<Feature>();    	
     	Coordinate[] coords = f.getGeometry().getCoordinates();  
-    	for (int i=0; i < coords.length; i++) {
+    	int lastCoord = coords.length;
+    	if (accountForRings){ 
+    		if(coords[lastCoord-1].equals2D(coords[0])){
+    			lastCoord = coords.length-1;
+    		}
+    	}
+    	for (int i=0; i < lastCoord; i++) {
     			Point pt = gf.createPoint(coords[i]);
     			Feature fNew = copyFeature(f);
     			fNew.setGeometry(pt);

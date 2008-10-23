@@ -76,11 +76,15 @@ public class ExtractPointsPlugIn extends AbstractPlugIn implements ThreadedPlugI
 
     private String sName = "Extract Points";
     private String CLAYER = "select layer";
+    private String DELETE_LAST_POINT_IF_CLOSED = "Account for closed Geometries";
     
-    private String sideBarText = "Extracts points from polygon or line features and writes them to a new layer. Note, for closed objects the start point may be extracted twice.";
+    private String sideBarText = "Extracts points from polygon or line features and writes them to a new layer. " +
+    		"Note, for closed geometries start point and end point are the same. If closed geometries are to be observed," +
+    		"then the last point is not returned to avoid two overlaying points.";
     private String sPoints = "points";    
     
     private Layer itemlayer = null;
+    private boolean deleteDoublePoints = false;
 	private MultiInputDialog dialog;
 	private JComboBox layerComboBoxBackground;
     
@@ -125,10 +129,12 @@ public class ExtractPointsPlugIn extends AbstractPlugIn implements ThreadedPlugI
 	  {
 	    dialog.setSideBarDescription(this.sideBarText);	    
     	JComboBox addLayerComboBoxBuild = dialog.addLayerComboBox(this.CLAYER, context.getCandidateLayer(0), null, context.getLayerManager());
+    	dialog.addCheckBox(this.DELETE_LAST_POINT_IF_CLOSED, this.deleteDoublePoints);
 	  }
 
 	private void getDialogValues(MultiInputDialog dialog) {
     	this.itemlayer = dialog.getLayer(this.CLAYER);
+    	this.deleteDoublePoints = dialog.getBoolean(this.DELETE_LAST_POINT_IF_CLOSED);
 	  }
 	
 	
@@ -147,7 +153,7 @@ public class ExtractPointsPlugIn extends AbstractPlugIn implements ThreadedPlugI
     	 int count=0;
     	 for (Iterator iterator = features.iterator(); iterator.hasNext();) {
 			Feature f = (Feature) iterator.next();
-			ArrayList<Feature> points = FeatureCollectionTools.convertToPointFeature(f);
+			ArrayList<Feature> points = FeatureCollectionTools.convertToPointFeature(f, this.deleteDoublePoints);
 		    int seq_count=0;
 			for (Iterator iterator2 = points.iterator(); iterator2.hasNext();) {
 				Feature pt = (Feature) iterator2.next();
