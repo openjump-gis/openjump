@@ -98,7 +98,7 @@ public class ExtractPointsPlugIn extends AbstractPlugIn implements ThreadedPlugI
 	        FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
 	    	featureInstaller.addMainMenuItem(
 	    	        this,								//exe
-	                new String[] {MenuNames.TOOLS, MenuNames.CONVERT}, 	//menu path
+	                new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY, MenuNames.CONVERT}, 	//menu path
 	                this.sName, //name methode .getName recieved by AbstractPlugIn 
 	                false,			//checkbox
 	                null,			//icon
