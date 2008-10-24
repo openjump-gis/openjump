@@ -226,7 +226,6 @@ public class FeatureDrawingUtil {
      */
     public LineString reverse(LineString lineString) {
     	CoordinateList coordList = new CoordinateList(lineString.getCoordinates());
-//    	List coordList = Arrays.asList(lineString.getCoordinates());
     	Collections.reverse(coordList);
     	return new GeometryFactory().createLineString(coordList.toCoordinateArray());
     }
@@ -250,14 +249,14 @@ public class FeatureDrawingUtil {
      * @return merged LineString if end point in common, otherwise return second LineString
      */
     public LineString mergeLineStrings(LineString ls1, LineString ls2) {
-		if (ls1.getCoordinate().equals(ls2.getCoordinate())) {
-			return concatLineStrings(reverse(ls2), ls1);
-		} else if (ls1.getCoordinate().equals(ls2.getCoordinateN(ls2.getNumPoints()-1))) {
-			return concatLineStrings(ls2, ls1);			
-		} else if (ls1.getCoordinateN(ls1.getNumPoints()-1).equals(ls2.getCoordinate())) {
+		if (ls1.getCoordinateN(ls1.getNumPoints()-1).equals(ls2.getCoordinate())) {
 			return concatLineStrings(ls1, ls2);						
 		}else if (ls1.getCoordinateN(ls1.getNumPoints()-1).equals(ls2.getCoordinateN(ls2.getNumPoints()-1))) {
 			return concatLineStrings(ls1, reverse(ls2));			
+		} else if (ls1.getCoordinate().equals(ls2.getCoordinate())) {
+			return concatLineStrings(reverse(ls2), ls1);
+		} else if (ls1.getCoordinate().equals(ls2.getCoordinateN(ls2.getNumPoints()-1))) {
+			return concatLineStrings(ls2, ls1);			
 		} else {
 			return ls2;
 		}
@@ -277,17 +276,21 @@ public class FeatureDrawingUtil {
     		AbstractCursorTool tool,
     		LayerViewPanel panel) {
     	Collection matchingLineStringFeatures = selectedFeaturesMatchingEndPoint(newLineString, panel);
-    	if (matchingLineStringFeatures.isEmpty() 
-    			|| matchingLineStringFeatures.size() > 1) {
+    	if (matchingLineStringFeatures.size() == 0) {
     		AbstractPlugIn.execute(
     				createAddCommand(newLineString, rollingBackInvalidEdits, panel, tool), panel);
     	} else {
-    		LineString oldLineString = (LineString)
-    		((Feature) matchingLineStringFeatures.iterator().next()).getGeometry();
-    		EditTransaction transaction =
-    			new EditTransaction(matchingLineStringFeatures, 
-    					tool.getName(), layer(panel), rollingBackInvalidEdits, false, panel);
-    		transaction.setGeometry(0, mergeLineStrings(oldLineString, newLineString) );
+    		LineString oldLineString = null;
+    		Iterator iter=matchingLineStringFeatures.iterator();
+     		EditTransaction transaction = new EditTransaction(matchingLineStringFeatures, 
+    					tool.getName(), layer(panel), rollingBackInvalidEdits, true, panel);
+     		Geometry empty = new GeometryFactory().createLineString(new Coordinate[0]);
+            for (int i = 0; i < transaction.size(); i++) {
+            	oldLineString = (LineString) ((Feature) iter.next()).getGeometry();
+            	newLineString = mergeLineStrings(oldLineString, newLineString);
+            	if (i > 0) transaction.setGeometry(transaction.getFeature(i), empty);
+             }
+            transaction.setGeometry(0, newLineString );
     		transaction.commit();
     	}
     }
