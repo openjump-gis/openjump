@@ -126,7 +126,7 @@ public class GeometryFunctionPlugIn
     	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
   		featureInstaller.addMainMenuItem(
   	        this,								//exe
-				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS}, 	//menu path
+				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY}, 	//menu path
               this.getName() + "...", //name methode .getName recieved by AbstractPlugIn 
               false,			//checkbox
               null,			//icon

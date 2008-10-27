@@ -30,9 +30,7 @@
 	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.UnionPlugIn</plug-in>
 	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.OverlayPlugIn</plug-in>
 	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.CalculateAreasAndLengthsPlugIn</plug-in>
-	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.GeometryFunctionPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn</plug-in>
-	<plug-in>org.openjump.core.ui.plugin.tools.PlanarGraphPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.tools.IntersectPolygonLayersPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.tools.UnionByAttributePlugIn</plug-in>
 	<!--- =========  Generate ====================  /-->
@@ -57,8 +55,10 @@
 	<!--- =========  Edit Geometry - Convert ====================  /-->
 	<plug-in>org.openjump.core.ui.plugin.tools.geometrychange.ExtractPointsPlugIn</plug-in>					
 	<plug-in>com.vividsolutions.jump.plugin.edit.ExtractSegmentsPlugIn</plug-in>	
-	<plug-in>com.vividsolutions.jump.plugin.edit.LineNoderPlugIn</plug-in>	
 	<plug-in>com.vividsolutions.jump.plugin.edit.PolygonizerPlugIn</plug-in>	
+	<plug-in>org.openjump.core.ui.plugin.tools.PlanarGraphPlugIn</plug-in>
+	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.GeometryFunctionPlugIn</plug-in>
+	<plug-in>com.vividsolutions.jump.plugin.edit.LineNoderPlugIn</plug-in>	
 	<plug-in>com.vividsolutions.jump.plugin.edit.PrecisionReducerPlugIn</plug-in>
 	<plug-in>com.vividsolutions.jump.plugin.edit.AffineTransformationPlugIn</plug-in>	
 	<plug-in>org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn</plug-in>	
@@ -67,7 +67,7 @@
 	<plug-in>org.openjump.core.ui.plugin.tools.SplitPolygonPlugIn</plug-in>	
 	<!--- =========  Edit Attributes ====================  /-->		
 	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.SpatialJoinPlugIn</plug-in>
-	<plug-in>org.openjump.core.ui.plugin.tools.ReplaceValuePlugIn</plug-in>
+	<!--plug-in>org.openjump.core.ui.plugin.tools.ReplaceValuePlugIn</plug-in-->
 	<plug-in>org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn</plug-in>
 	<plug-in>de.fho.jump.pirol.plugins.EditAttributeByFormula.EditAttributeByFormulaPlugIn</plug-in>
 	<!--- =========  Generalization ====================  /-->	

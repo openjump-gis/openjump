@@ -45,6 +45,7 @@ import java.util.Vector;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
+import javax.swing.JTextField;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
@@ -81,6 +82,7 @@ public class AutoAssignAttributePlugIn extends AbstractPlugIn {
 	    private static String SELECTED_CHECK_BOX = "Selected features only";
 	    private static String ASSIGN_VALUE_TEXT_BOX = "Assign this value";
 	    private static String SELECTONLYONONELAYER = "Select features on only one layer";
+	    private static String DESCRIPTION = I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Description");
 	    private int autoInc;
 	    private Layer destinationLayer;
 	    private FeatureSchema schema;
@@ -95,6 +97,7 @@ public class AutoAssignAttributePlugIn extends AbstractPlugIn {
 	    private boolean selectedFeaturesOnly;
 	    private String textToAssign;
 	    private String numeric;
+        private JTextField incfield = null;
 
 	public void initialize(PlugInContext context) throws Exception
 	{     
@@ -112,6 +115,7 @@ public class AutoAssignAttributePlugIn extends AbstractPlugIn {
 		    SELECTED_CHECK_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Selected-features-only");
 		    ASSIGN_VALUE_TEXT_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Assign-this-value");
 		    SELECTONLYONONELAYER = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Select-features-on-only-one-layer");
+			DESCRIPTION = I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Description");
 	}
 
 	public String getName(){
@@ -131,6 +135,7 @@ public class AutoAssignAttributePlugIn extends AbstractPlugIn {
     private MultiInputDialog prompt(PlugInContext context) {
         final MultiInputDialog dialog =
             new MultiInputDialog(context.getWorkbenchFrame(), getName(), true);
+    	dialog.setSideBarDescription(DESCRIPTION);  
         dialog.addEditableLayerComboBox(
             LAYER_COMBO_BOX,
             null,
@@ -138,7 +143,7 @@ public class AutoAssignAttributePlugIn extends AbstractPlugIn {
             context.getLayerManager());
         initComboFields(dialog, A_CHECK_BOX, DEST_COMBO_BOX, 0);
         dialog.addCheckBox(AUTOINC_CHECK_BOX, true);
-        dialog.addIntegerField(INC_VALUE_EDIT_BOX, 1, 4, "Auto-increment number by this value");
+        incfield = dialog.addIntegerField(INC_VALUE_EDIT_BOX, 1, 4, "Auto-increment number by this value");
         dialog.indentLabel(INC_VALUE_EDIT_BOX);
         initComboFields(dialog, FROM_SOURCE_CHECK_BOX, SOURCE_COMBO_BOX, 1);
         dialog.getCheckBox(FROM_SOURCE_CHECK_BOX).addActionListener(new ActionListener() {
@@ -149,6 +154,7 @@ public class AutoAssignAttributePlugIn extends AbstractPlugIn {
                 dialog.getLabel(SOURCE_COMBO_BOX).setEnabled(fromSelected);
                 JCheckBox checkbox = dialog.getCheckBox(AUTOINC_CHECK_BOX);
                 checkbox.setEnabled(!fromSelected);
+                incfield.setEnabled(!fromSelected);
                 if (fromSelected)
                 	checkbox.setSelected(false);
             }
