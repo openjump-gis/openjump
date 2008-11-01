@@ -121,19 +121,8 @@ public class TreeLayerNamePanel extends JPanel
         
         // Added by Michael Michaud on 2008-08-10
         // This adds the number of features in tooltip
-        public String getToolTipText(MouseEvent e) {
-            Object tip = null;
-            TreePath path = getPathForLocation(e.getX(), e.getY());
-            if (path != null) {
-                if (path.getLastPathComponent() instanceof Layer) {
-                    Layer layer = (Layer)path.getLastPathComponent();
-                    tip = layer.getName() + " [" +
-                          layer.getFeatureCollectionWrapper().size() + "]";
-                }
-                else tip = path.getLastPathComponent();
-            }
-            return tip == null ? null : tip.toString();
-        }
+        // And removed on 2008-11-01
+        // The ToolTipText content is better managed in LayerNameRenderer class
         
     };
 

@@ -76,6 +76,8 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
 			.icon("Clear.gif"), progressIconSize);
 
 	public static String PROGRESS_ICON_KEY = "PROGRESS_ICON";
+    
+    public static String FEATURE_COUNT = I18N.get("ui.LayerNameRenderer.feature-count");
 
 	private DefaultListCellRenderer defaultListCellRenderer = new DefaultListCellRenderer();
 	private RenderingManager renderingManager;
@@ -158,12 +160,26 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
 		}
 		Layerable layerable = (Layerable) value;
 		label.setText(layerable.getName());
-		setToolTipText(layerable.getName()
+		/*setToolTipText(layerable.getName()
 				+ ((layerable instanceof Layer
 						&& (((Layer) layerable).getDescription() != null) && (((Layer) layerable)
 						.getDescription().trim().length() > 0)) ? (": " + ((Layer) layerable)
 						.getDescription())
-						: ""));
+						: ""));*/
+        String tooltip = "";
+        if (layerable instanceof Layer) {
+            if (((Layer) layerable).getDescription() == null ||
+                ((Layer) layerable).getDescription().trim().length() == 0 ||
+                ((Layer) layerable).getDescription().equals(layerable.getName())) {
+                tooltip = FEATURE_COUNT + " = " +
+                    ((Layer) layerable).getFeatureCollectionWrapper().size();
+            }
+            else {tooltip = layerable.getName() + ": " +
+                  ((Layer) layerable).getDescription();
+            }
+        }
+        else tooltip = layerable.getName();
+        setToolTipText(tooltip);
 		if (isSelected) {
 			label.setForeground(list.getForeground());            //LDB: use this instead of following
 //			label.setForeground(list.getSelectionForeground());   //LDB: causes Vista render problem
