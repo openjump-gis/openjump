@@ -78,7 +78,7 @@ public class JoinTablePlugIn extends ThreadedBasePlugIn {
 		featureInstaller.addMainMenuItem(
 				this,								//exe				
 				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_ATTRIBUTES}, 	//menu path
-				this.getName(), //name methode .getName recieved by AbstractPlugIn 
+				this.getName() + "...", //name methode .getName recieved by AbstractPlugIn 
 				false,			//checkbox
 				null,			//icon
 				new EnableCheckFactory(context.getWorkbenchContext()).createAtLeastNLayersMustExistCheck(1)); //enable check        

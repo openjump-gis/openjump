@@ -82,7 +82,10 @@ public class AutoAssignAttributePlugIn extends AbstractPlugIn {
 	    private static String SELECTED_CHECK_BOX = "Selected features only";
 	    private static String ASSIGN_VALUE_TEXT_BOX = "Assign this value";
 	    private static String SELECTONLYONONELAYER = "Select features on only one layer";
-	    private static String DESCRIPTION = I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Description");
+        private static String DESCRIPTION = "Assign a value from another attribute, " +
+                       "a value, an auto-increment number or a combination of a value " +
+                       "and an auto-increment number";
+	    //private static String DESCRIPTION = I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Description");
 	    private int autoInc;
 	    private Layer destinationLayer;
 	    private FeatureSchema schema;
@@ -115,7 +118,8 @@ public class AutoAssignAttributePlugIn extends AbstractPlugIn {
 		    SELECTED_CHECK_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Selected-features-only");
 		    ASSIGN_VALUE_TEXT_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Assign-this-value");
 		    SELECTONLYONONELAYER = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Select-features-on-only-one-layer");
-			DESCRIPTION = I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Description");
+			DESCRIPTION = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Description");
+            //DESCRIPTION = I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Description");
 	}
 
 	public String getName(){
