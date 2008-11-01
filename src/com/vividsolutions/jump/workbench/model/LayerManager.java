@@ -665,7 +665,7 @@ public class LayerManager {
     * To free the memory allocated for a layer
     * Called by RemoveSelectedLayersPlugin
     * @param frame the worbench frame
-    * @param layarable the layerable to remove
+    * @param layerable the layerable to remove
     */
     public void dispose(WorkbenchFrame frame, Layerable layerable) {
         // removing all LayerRenderers for this Layer
