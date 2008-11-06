@@ -96,6 +96,11 @@ public class CombineSelectedLayersPlugIn extends AbstractPlugIn {
         		String name = schema.getAttributeName(j);
         		if (!featureSchema.hasAttribute(name)) {
         			featureSchema.addAttribute(name, schema.getAttributeType(name));
+        		} else if (schema.getAttributeType(name) 
+        				!= featureSchema.getAttributeType(name)) {
+        			featureSchema.addAttribute(name
+        					+getAttributeTypeChar(schema.getAttributeType(name)), 
+        					schema.getAttributeType(name));        			
         		}
         	}
         }
@@ -131,6 +136,10 @@ public class CombineSelectedLayersPlugIn extends AbstractPlugIn {
         return true;
     }
     
+    private static String getAttributeTypeChar(AttributeType type) {
+    	return type.toString().substring(0, 1);
+    }
+    
     public static Collection conform(Collection features,
     		FeatureSchema targetFeatureSchema, String layerName) {
     	final ArrayList featureCopies = new ArrayList();
@@ -155,19 +164,24 @@ public class CombineSelectedLayersPlugIn extends AbstractPlugIn {
     		}
 
     		String attributeName = original.getSchema().getAttributeName(i);
-
+    		String newAttributeName = original.getSchema().getAttributeName(i);
     		if (!copy.getSchema().hasAttribute(attributeName)) {
     			continue;
     		}
 
     		if (copy.getSchema().getAttributeType(attributeName) != original.getSchema()
     				.getAttributeType(attributeName)) {
-    			continue;
+    			newAttributeName += getAttributeTypeChar(
+    					original.getSchema().getAttributeType(attributeName));
+         		if (copy.getSchema().getAttributeType(newAttributeName) != original.getSchema()
+        				.getAttributeType(attributeName)) {
+        			continue;
+        		}
     		}
 
-    		copy.setAttribute(attributeName, original.getAttribute(attributeName));
-    		copy.setAttribute(LAYER, layerName);
+    		copy.setAttribute(newAttributeName, original.getAttribute(attributeName));
     	}
+		copy.setAttribute(LAYER, layerName);
 
     	return copy;
     }
