@@ -66,7 +66,8 @@ public class ViewAttributesPlugIn extends AbstractPlugIn {
 				checkFactory.createExactlyNLayersMustBeSelectedCheck(1));
 	}
 	public ImageIcon getIcon() {
-		return IconLoaderFamFam.icon("table.png");
+		//return IconLoaderFamFam.icon("table.png");
+		return IconLoader.icon("Row.gif");
 	}
 	public static class ViewAttributesFrame extends JInternalFrame
 			implements

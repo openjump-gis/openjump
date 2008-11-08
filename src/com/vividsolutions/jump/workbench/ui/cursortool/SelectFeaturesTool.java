@@ -47,8 +47,8 @@ public class SelectFeaturesTool extends SelectTool {
     }
 
     public Icon getIcon() {
-        //return IconLoader.icon("Select.gif");
-    	return IconLoaderFamFam.icon("cursor.png");
+        return IconLoader.icon("Select.gif");
+    	//return IconLoaderFamFam.icon("cursor.png");
     }
     
     public void activate(LayerViewPanel layerViewPanel) {

@@ -56,6 +56,7 @@ public class ZoomToFencePlugIn extends AbstractPlugIn {
     }
 
     public ImageIcon getIcon() {
-        return IconLoaderFamFam.icon("shape_square_go.png");
+    	return IconLoader.icon("ZoomFence.gif");
+        //return IconLoaderFamFam.icon("shape_square_go.png");
     }
 }

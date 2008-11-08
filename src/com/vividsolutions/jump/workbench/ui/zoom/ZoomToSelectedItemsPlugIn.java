@@ -54,6 +54,7 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 import com.vividsolutions.jump.workbench.ui.renderer.ThreadQueue;
 
@@ -194,6 +195,7 @@ public class ZoomToSelectedItemsPlugIn extends AbstractPlugIn {
     }
 
     public ImageIcon getIcon() {
-        return IconLoaderFamFam.icon("ZoomSelected_small.png");
+        //return IconLoaderFamFam.icon("ZoomSelected_small.png");
+        return IconLoader.icon("ZoomSelected.gif");
     }
 }

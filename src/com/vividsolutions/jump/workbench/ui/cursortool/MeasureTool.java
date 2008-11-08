@@ -58,7 +58,8 @@ public class MeasureTool
   }
 
   public Icon getIcon() {
-    return IconLoaderFamFam.icon("Ruler_small.png");
+    //return IconLoaderFamFam.icon("Ruler_small.png");
+    return IconLoader.icon("Ruler.gif");
   }
 
   public Cursor getCursor() {

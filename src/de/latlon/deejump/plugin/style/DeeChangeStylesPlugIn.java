@@ -208,7 +208,8 @@ public class DeeChangeStylesPlugIn extends AbstractPlugIn {
      * @return the icon
      */
     public ImageIcon getIcon() {
-        return IconLoaderFamFam.icon("palette.png");
+        //return IconLoaderFamFam.icon("palette.png");
+        return IconLoader.icon("Palette.gif");
     }
 
     /**

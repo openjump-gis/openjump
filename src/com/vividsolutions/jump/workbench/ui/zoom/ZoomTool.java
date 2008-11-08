@@ -60,8 +60,8 @@ public class ZoomTool extends AbstractZoomTool {
     }
 
     public Icon getIcon() {                         
-        //return IconLoader.icon("Magnify.gif");
-        return IconLoaderFamFam.icon("zoom.png");
+        return IconLoader.icon("Magnify.gif");
+        //return IconLoaderFamFam.icon("zoom.png");
     }
 
     public String getName() {                            

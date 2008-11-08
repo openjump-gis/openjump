@@ -77,6 +77,7 @@ public class UndoPlugIn extends AbstractPlugIn {
         });
     }
     public ImageIcon getIcon() {
-        return IconLoaderFamFam.icon("arrow_undo.png");
+        //return IconLoaderFamFam.icon("arrow_undo.png");
+        return IconLoader.icon("Undo.gif");
     }
 }

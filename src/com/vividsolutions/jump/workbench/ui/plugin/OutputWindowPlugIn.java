@@ -53,6 +53,7 @@ public class OutputWindowPlugIn extends AbstractPlugIn {
     }
 
     public ImageIcon getIcon() {
-        return IconLoaderFamFam.icon("application_view_list.png");
+        //return IconLoaderFamFam.icon("application_view_list.png");
+        return IconLoader.icon("Frame.gif");
     }
 }

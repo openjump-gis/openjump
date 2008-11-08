@@ -77,6 +77,7 @@ public class RedoPlugIn extends AbstractPlugIn {
         });
     }
     public ImageIcon getIcon() {
-        return IconLoaderFamFam.icon("arrow_redo.png");
+        //return IconLoaderFamFam.icon("arrow_redo.png");
+        return IconLoader.icon("Redo.gif");
     }
 }

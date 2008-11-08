@@ -56,7 +56,8 @@ public class ZoomToFullExtentPlugIn extends AbstractPlugIn {
     }
 
     public ImageIcon getIcon() {
-        return IconLoaderFamFam.icon("world.png");
+        //return IconLoaderFamFam.icon("world.png");
+        return IconLoader.icon("World.gif");
     }
 
     public MultiEnableCheck createEnableCheck(

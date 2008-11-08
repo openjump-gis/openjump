@@ -51,7 +51,8 @@ public class DrawRectangleFenceTool extends RectangleTool {
     }
 
     public Icon getIcon() {
-        return IconLoaderFamFam.icon("shape_square_edit.png");
+        //return IconLoaderFamFam.icon("shape_square_edit.png");
+        return IconLoader.icon("Box.gif");
     }
 
     public Cursor getCursor() {

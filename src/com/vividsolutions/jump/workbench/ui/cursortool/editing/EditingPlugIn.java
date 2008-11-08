@@ -46,7 +46,6 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.cursortool.NodeLineStringsTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.QuasimodeTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.SelectFeaturesTool;
-import com.vividsolutions.jump.workbench.ui.cursortool.SelectFeaturesToolEditToolbox;
 import com.vividsolutions.jump.workbench.ui.cursortool.SelectLineStringsTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.SelectPartsTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.SplitLineStringTool;
@@ -60,7 +59,8 @@ public class EditingPlugIn extends ToolboxPlugIn {
     
     public String getName() { return I18N.get("ui.cursortool.editing.EditingPlugIn.editing-toolbox"); }
 
-    public static ImageIcon ICON = IconLoaderFamFam.icon("page_white_wrench.png");
+    //public static ImageIcon ICON = IconLoaderFamFam.icon("page_white_wrench.png");
+    public static ImageIcon ICON = IconLoader.icon("EditingToolbox.gif");
 
     public static final String KEY = EditingPlugIn.class.getName();
 
@@ -78,7 +78,7 @@ public class EditingPlugIn extends ToolboxPlugIn {
         EnableCheckFactory checkFactory = new EnableCheckFactory(toolbox.getContext());
         //Null out the quasimodes for [Ctrl] because the Select tools will handle that case. [Jon Aquino]
         toolbox.add(
-            new QuasimodeTool(new SelectFeaturesToolEditToolbox()).add(
+            new QuasimodeTool(new SelectFeaturesTool()).add(
                 new QuasimodeTool.ModifierKeySpec(true, false, false),
                 null));
         toolbox.add(

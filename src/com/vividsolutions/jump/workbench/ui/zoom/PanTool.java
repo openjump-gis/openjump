@@ -68,7 +68,8 @@ public class PanTool extends AbstractZoomTool
   }
 
   public Icon getIcon() {
-    return IconLoaderFamFam.icon("BigHand_small.png");
+    //return IconLoaderFamFam.icon("BigHand_small.png");
+    return IconLoader.icon("BigHand.gif");
   }
 	  
   public void mouseDragged(MouseEvent e) {

@@ -60,7 +60,7 @@ public class ClearSelectionPlugIn extends AbstractPlugIn {
     }
 
     public static ImageIcon getIcon() {
-        //return IconLoader.icon("deselect.gif");
-    	return IconLoaderFamFam.icon("cross.png");
+        return IconLoader.icon("deselect.gif");
+    	//return IconLoaderFamFam.icon("cross.png");
     }
 }

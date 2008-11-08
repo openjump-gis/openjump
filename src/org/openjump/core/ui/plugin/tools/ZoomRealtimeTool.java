@@ -84,8 +84,8 @@ public class ZoomRealtimeTool extends DragTool
   }
 
   public Icon getIcon() {
-    //return IconLoader.icon("Magnify3.gif");
-	  return IconLoaderFamFam.icon("map_magnify.png");
+    return IconLoader.icon("Magnify3.gif");
+	//return IconLoaderFamFam.icon("map_magnify.png");
   }
 
   public boolean isRightMouseButtonUsed() {                              

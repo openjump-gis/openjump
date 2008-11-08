@@ -87,6 +87,7 @@ public class ZoomNextPlugIn extends AbstractPlugIn {
     }
 
     public ImageIcon getIcon() {
-        return IconLoaderFamFam.icon("application_side_expand.png");
+        //return IconLoaderFamFam.icon("application_side_expand.png");
+        return IconLoader.icon("Right.gif");
     }
 }
