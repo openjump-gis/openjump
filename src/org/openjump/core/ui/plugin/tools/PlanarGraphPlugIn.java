@@ -24,6 +24,7 @@ import com.vividsolutions.jts.geom.IntersectionMatrix;
 import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
 import com.vividsolutions.jts.operation.linemerge.LineMerger;
 import com.vividsolutions.jts.operation.polygonize.Polygonizer;
+import com.vividsolutions.jts.operation.union.UnaryUnionOp;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
@@ -278,11 +279,11 @@ public class PlanarGraphPlugIn extends ThreadedBasePlugIn {
         List list = getLines(fc);
         
         // Union the lines (unioning is the most expensive operation)
-        Geometry geom = gf.createMultiLineString(gf.toLineStringArray(list));
-        geom = gf.createMultiLineString(null).union(geom);
-        GeometryCollection gc = geom instanceof GeometryCollection ?
-            (GeometryCollection)geom:
-            gf.createGeometryCollection(new Geometry[]{geom});
+        // fixed on 2008-11-10 by mmichaud, using the new UnaryUnionOp
+        Geometry gc = new UnaryUnionOp(list).union();
+        if (!(gc instanceof GeometryCollection)) {
+            gc = gf.createGeometryCollection(new Geometry[]{gc});
+        }
         
         // Create the edge layer by merging lines between 3+ order nodes
         // (Merged lines are multilines)
