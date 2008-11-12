@@ -1,3 +1,21 @@
+2008-11-10 michaudm <michael.michaud@free.fr>
+    Fixed bug in PlanarGraphPlugIn
+
+2008-11-08 beckerl <becker.larry@gmail.com>
+    Added PlugIn to Combine Selected Layers both geometry and attributes 
+    with automatic colour theming on created layer attribute.     
+    org.openjump.core.ui.plugin.layer.CombineSelectedLayersPlugIn 
+    
+2008-11-8 michaudm <michael.michaud@free.fr>
+    Display of number of features per layer for layer-name tooltip
+  
+2008-10-26 mentaer <sstein@geo.uzh.ch>
+	Re-ordering of menu items
+
+2008-10-24 beckerl <becker.larry@gmail.com>
+    Added support to for extending multiple selected LineStrings or joining 
+    two with a connection 
+    
 2008-10-22 mentaer <sstein@geo.uzh.ch>
 	Added new tool to extract point features from other layer with other geometry types
 	added:   
@@ -11,11 +29,11 @@
 	SelectFeaturesToolEditToolbox as one can handle only one icon size)  
 	
 2008-10-13 mentaer <sstein@geo.uzh.ch>
-	did some refactoring of the Edit menu (put Selection and
+	Did some refactoring of the Edit menu (put Selection and
 	Extraction tools into sub menus)
 	
 2008-10-13 mentaer <sstein@geo.uzh.ch>
-	added Larry's ClipToFencePlugIn from ISA Tools
+	Added Larry's ClipToFencePlugIn from ISA Tools
 	org.openjump.core.ui.plugin.edit.ClipToFencePlugIn
 	
 2008-10-11 mentaer <sstein@geo.uzh.ch>
