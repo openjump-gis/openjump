@@ -73,7 +73,8 @@ public class DbfFileWriter implements DbfConsts{
 
         // field descriptions
         for(int i=0;i<NoFields;i++){
-            ls.writeBytesLE(fields[i].fieldname.toString());
+            //patch from Hisaji Ono for Double byte characters
+            ls.write(fields[i].fieldname.toString().getBytes(), 0, 11 );
             ls.writeByteLE(fields[i].fieldtype);
             for(int j=0;j<4;j++) ls.writeByteLE(0); // junk
             ls.writeByteLE(fields[i].fieldlen);
@@ -131,7 +132,8 @@ public class DbfFileWriter implements DbfConsts{
                     }
                     tmps = new StringBuffer(ss);
                     tmps.setLength(fields[i].fieldlen);
-                    ls.writeBytesLE(tmps.toString());
+                    //patch from Hisaji Ono for Double byte characters
+                    ls.write(tmps.toString().getBytes(), fields[i].fieldstart,fields[i].fieldlen);
                     break;
                 case 'N':
                 case 'n':

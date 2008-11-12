@@ -214,7 +214,7 @@ import java.util.*;
  *    Shapefile Spec</a>
  * </p>
  *
- *  @TODO The link referencing the DBF format specification is broken - fix it!
+ * <TODO> The link referencing the DBF format specification is broken - fix it!</TODO>
  **/
 public class ShapefileWriter implements JUMPWriter {
 
@@ -476,7 +476,8 @@ public class ShapefileWriter implements JUMPWriter {
 
         for (Iterator i = fc.iterator(); i.hasNext();) {
             f = (Feature) i.next();
-            l = f.getString(attributeNumber).length();
+            //patch from Hisaji Ono for Double byte characters
+            l = f.getString(attributeNumber).getBytes().length;
 
             if (l > maxlen) {
                 maxlen = l;
