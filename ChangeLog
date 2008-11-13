@@ -1,12 +1,20 @@
+2008-11-13 mmichaud <michael.michaud@free.fr>
+    * fix the size of combo boxes in the simple query editor
+    to prevent the query dialog panel to become too large
+    
+2008-11-12 mmichaud <michael.michaud@free.fr>
+    * applied a patch from Hisaji Ono to write 2 bytes character
+    correctly in dbf files
+    
 2008-11-10 michaudm <michael.michaud@free.fr>
-    Fixed bug in PlanarGraphPlugIn
+    * Fixed bug in PlanarGraphPlugIn
 
 2008-11-08 beckerl <becker.larry@gmail.com>
     Added PlugIn to Combine Selected Layers both geometry and attributes 
     with automatic colour theming on created layer attribute.     
     org.openjump.core.ui.plugin.layer.CombineSelectedLayersPlugIn 
     
-2008-11-8 michaudm <michael.michaud@free.fr>
+2008-11-01 michaudm <michael.michaud@free.fr>
     Display of number of features per layer for layer-name tooltip
   
 2008-10-26 mentaer <sstein@geo.uzh.ch>
