@@ -283,9 +283,15 @@ public class QueryDialog extends BDialog {
         layerCB = new BComboBox();
             layerCB.addEventLink(ValueChangedEvent.class, this, "layerChanged");
             queryConstructorPanel.add(layerCB, 0, 1);
+            // mmichaud 2008-11-13 limit the width to about 40 chars
+            ((javax.swing.JComboBox)layerCB.getComponent())
+                .setPrototypeDisplayValue("012345678901234567890123456789O1");
         attributeCB = new BComboBox();
             attributeCB.addEventLink(ValueChangedEvent.class, this, "attributeChanged");
             queryConstructorPanel.add(attributeCB, 1, 1);
+            // mmichaud 2008-11-13 limit the width to about 40 chars
+            ((javax.swing.JComboBox)attributeCB.getComponent())
+                .setPrototypeDisplayValue("01234567890123456789012345678901");
         functionCB = new BComboBox();
             functionCB.addEventLink(ValueChangedEvent.class, this, "functionChanged");
             queryConstructorPanel.add(functionCB, 2, 1);
@@ -295,6 +301,9 @@ public class QueryDialog extends BDialog {
         valueCB = new BComboBox();
             valueCB.addEventLink(ValueChangedEvent.class, this, "valueChanged");
             queryConstructorPanel.add(valueCB, 4, 1);
+            // mmichaud 2008-11-13 limit the width to about 40 chars
+            ((javax.swing.JComboBox)valueCB.getComponent())
+                .setPrototypeDisplayValue("012345678901234567890123456789012345678901234567");
             
         comments = new BLabel(" ");
             queryConstructorPanel.add(comments, 0, 2, 5, 1, centerH3);
