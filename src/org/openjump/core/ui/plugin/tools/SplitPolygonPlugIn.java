@@ -137,7 +137,7 @@ public class SplitPolygonPlugIn extends AbstractPlugIn implements ThreadedPlugIn
 				linestring = featureOne.getGeometry();
 			}
 			
-			double bufferWidth = 0.01;
+			final double bufferWidth = 0.01;
 			Geometry buffer = linestring.buffer(bufferWidth);
 
 			//find the poly layer since linestring can be on different layer
@@ -177,12 +177,12 @@ public class SplitPolygonPlugIn extends AbstractPlugIn implements ThreadedPlugIn
 				context.getWorkbenchFrame().warnUser(sError);
 			}
 		    
-			Coordinate[] intersectionPts = intersection.getCoordinates();
+			final Coordinate[] intersectionPts = intersection.getCoordinates();
 			
 		    if (result == null || result.isEmpty()) return;
 		    
-		    int lsNumPts = linestring.getNumPoints();
-		    Coordinate[] lsCoords = linestring.getCoordinates();
+		    final int lsNumPts = linestring.getNumPoints();
+		    final Coordinate[] lsCoords = linestring.getCoordinates();
 		    
 	        for (int j = 0; j < result.getNumGeometries(); j++) 
 	        {
@@ -190,28 +190,26 @@ public class SplitPolygonPlugIn extends AbstractPlugIn implements ThreadedPlugIn
 	            
 	            //snap the resulting geos to the cut line
 	            Geometry geo = (Geometry)result.getGeometryN(j).clone();
-	        	int numPts = geo.getNumPoints();
-	        	Coordinate[] coords = geo.getCoordinates();
-	        	
-	        	for (int m = 0; m < numPts; m++)
-	        	{
-	        		for (int n = 0; n < lsNumPts - 1; n++)
-	        		{
-	        			Coordinate p0 = lsCoords[n];
-	        			Coordinate p1 = lsCoords[n + 1];
-	        			double distToLine = GeoUtils.getDistance(coords[m], p0, p1);
-	        			if (Math.abs((distToLine) - (bufferWidth)) < 0.001)
-	        			{
-	        				//is close to buffer boundary
-	        				Coordinate snapPt = getNearestSnapPoint(coords[m], intersectionPts);
-	        				coords[m].x = snapPt.x;
-	        				coords[m].y = snapPt.y;
-	        			}
-	        		}
-	        	}
-	        	CoordinateList coordList = new CoordinateList(coords, false); //gets rid of duplicates
-				Polygon poly = new GeometryFactory().createPolygon( new GeometryFactory().createLinearRing(coordList.toCoordinateArray()), null);
-	        	fNew.setGeometry(poly);
+	            
+	            geo.apply(new CoordinateFilter() {
+	                public void filter(Coordinate coordinate) {
+		        		for (int n = 0; n < lsNumPts - 1; n++)
+		        		{
+		        			Coordinate p0 = lsCoords[n];
+		        			Coordinate p1 = lsCoords[n + 1];
+		        			double distToLine = GeoUtils.getDistance(coordinate, p0, p1);
+		        			if (Math.abs((distToLine) - (bufferWidth)) < 0.001)
+		        			{
+		        				//is close to buffer boundary
+		        				Coordinate snapPt = getNearestSnapPoint(coordinate, intersectionPts);
+		        				coordinate.x = snapPt.x;
+		        				coordinate.y = snapPt.y;
+		        			}
+		        		}
+	                  }
+	            });
+	            
+	        	fNew.setGeometry(geo);
 	            resultFeatures.add(fNew);
 	        }
 	        
