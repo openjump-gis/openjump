@@ -1,3 +1,19 @@
+2008-11-22 mentaer <sstein@geo.uzh.ch>
+    Added color theming type selection back (from O. Bedel, SIGLE).
+    changed:      
+    com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStylePanel
+    added:
+    com.vividsolutions.jump.workbench.ui.renderer.style.QuantileColorThemingState
+    
+2008-11-19 beckerl <becker.larry@gmail.com>
+    Fixed bug with cutting polygon with hole and linestring did 
+    not go through the hole.      
+    org.openjump.core.ui.plugin.tools.SplitPolygonPlugIn
+    
+2008-11-18 beckerl <becker.larry@gmail.com>
+    Make the original JUMP NoteTool available as a PlugIn.     
+    org.openjump.core.ui.plugin.edittoolbox.NoteToolPlugIn
+    
 2008-11-13 mmichaud <michael.michaud@free.fr>
     * fix the size of combo boxes in the simple query editor
     to prevent the query dialog panel to become too large
