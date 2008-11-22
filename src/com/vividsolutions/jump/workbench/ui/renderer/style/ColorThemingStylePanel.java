@@ -32,7 +32,13 @@
 package com.vividsolutions.jump.workbench.ui.renderer.style;
 
 import com.vividsolutions.jump.I18N;
+
+import com.vividsolutions.jump.feature.AttributeType;
+
 import com.vividsolutions.jump.feature.Feature;
+
+import com.vividsolutions.jump.feature.FeatureSchema;
+
 import com.vividsolutions.jump.util.CollectionUtil;
 import com.vividsolutions.jump.util.Range;
 import com.vividsolutions.jump.util.StringUtil;
@@ -62,6 +68,10 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collection;
@@ -70,6 +80,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+
+import java.util.SortedMap;
+
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -325,6 +338,11 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
             this.layer = layer;
             this.workbenchContext = workbenchContext;
             rangeColorThemingState = new RangeColorThemingState(this);
+
+            // obedel start
+            quantileColorThemingState = new QuantileColorThemingState(this);
+            // obedel end
+
             jbInit();
             byRangeCheckBox.setSelected(colorThemingStyleHasRanges(layer));
 
@@ -476,14 +494,22 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         updatingComponents = true;
 
         try {
-            //attributeLabel.setEnabled(enableColorThemingCheckBox.isSelected());  //LDB: keep enabled always
-            //attributeNameComboBox.setEnabled(enableColorThemingCheckBox.isSelected());
+            attributeLabel.setEnabled(enableColorThemingCheckBox.isSelected());  //LDB: keep enabled always
+            attributeNameComboBox.setEnabled(enableColorThemingCheckBox.isSelected());
             state.getPanel().setEnabled(enableColorThemingCheckBox.isSelected() &&
                 (attributeNameComboBox.getItemCount() > 0));
             colorSchemeLabel.setEnabled(enableColorThemingCheckBox.isSelected() &&
                 (attributeNameComboBox.getItemCount() > 0));
-            byRangeCheckBox.setEnabled(enableColorThemingCheckBox.isSelected() &&
-                (attributeNameComboBox.getItemCount() > 0));
+            //byRangeCheckBox.setEnabled(enableColorThemingCheckBox.isSelected() &&
+            //    (attributeNameComboBox.getItemCount() > 0));
+
+//          obedel start
+			classificationLabel.setEnabled(enableColorThemingCheckBox.isSelected() &&
+					(attributeNameComboBox.getItemCount() > 0));
+			classificationComboBox.setEnabled(enableColorThemingCheckBox.isSelected() &&
+					(attributeNameComboBox.getItemCount() > 0));
+			// obedel end
+
             colorSchemeComboBox.setEnabled(enableColorThemingCheckBox.isSelected() &&
                 (attributeNameComboBox.getItemCount() > 0));
             table.setEnabled(enableColorThemingCheckBox.isSelected() &&
@@ -720,12 +746,21 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
                 }
             });
         enableColorThemingCheckBox.setText(I18N.get("ui.renderer.style.ColorThemingPanel.enable-colour-theming"));
+
+     // obedel start
+		// byRangeCheckBox replaced by new classification combobox
+        /*
         byRangeCheckBox.setText(I18N.get("ui.renderer.style.ColorThemingPanel.by-range"));
         byRangeCheckBox.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     byRangeCheckBox_actionPerformed(e);
                 }
             });
+            */
+		initClassificationComboBox();
+		// obedel end
+
+
         transparencySlider.setMaximum(255);
         transparencySlider.setPreferredSize(new Dimension(75, 24));
 
@@ -793,10 +828,22 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
             new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE,
                 new Insets(2, 2, 2, 2), 0, 0));
+
+    //  obedel start
+        /*
         jPanel5.add(byRangeCheckBox,
             new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE,
                 new Insets(2, 2, 2, 2), 0, 0));
+        */
+        jPanel5.add(classificationLabel, new GridBagConstraints(1, 0, 1, 1,
+				0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.HORIZONTAL, new Insets(2, 2, 2, 2), 0, 0));
+		jPanel5.add(classificationComboBox, new GridBagConstraints(2, 0, 1, 1,
+				0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.HORIZONTAL, new Insets(2, 2, 2, 2), 0, 0));
+		// obedel end
+
         scrollPane.getViewport().add(table);
     }
 
@@ -1093,4 +1140,94 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
             return commonPart + specificPart;
         }
     }
+
+    //obedel [12/10/2005]
+    // return an ordered map (value -> count of corresponding features)
+    // Erwan Bocher [20/01/2005]
+    // Add button to calculate range and populateTable
+
+
+    public SortedMap getAttributeValuesCount() {
+        TreeMap values = new TreeMap();
+
+        for (Iterator i = layer.getFeatureCollectionWrapper().getFeatures()
+                               .iterator(); i.hasNext();) {
+            Feature feature = (Feature) i.next();
+
+            if (feature.getAttribute(getAttributeName()) != null) {
+                Object key = ColorThemingStyle.trimIfString(feature.getAttribute(getAttributeName()));
+            	Integer count = (Integer) values.get(key);
+                if (count==null)
+                	values.put(key,new Integer(1));
+                else
+                	values.put(key,new Integer(count.intValue()+1));
+            }
+        }
+        return values;
+    }
+
+    private void initAttributeNameComboBoxWithNumericValues(Layer layer) {
+		DefaultComboBoxModel model = new DefaultComboBoxModel();
+		attributeNameComboBox.removeAllItems();
+		FeatureSchema fs = layer.getFeatureCollectionWrapper().getFeatureSchema();
+		for (int i = 0; i < fs.getAttributeCount(); i++) {
+			AttributeType at = fs.getAttributeType(i);
+			if (at.equals(AttributeType.INTEGER) ||	at.equals(AttributeType.DOUBLE))
+					model.addElement(fs.getAttributeName(i));
+		}
+		attributeNameComboBox.setModel(model);
+
+		if (model.getSize() != 0)
+			attributeNameComboBox.setSelectedItem(attributeNameComboBox.getItemAt(0));
+	}
+
+    private JComboBox classificationComboBox = new JComboBox();
+
+	private JLabel classificationLabel = new JLabel(I18N.get("ColorThemingStylePanel.Classification_Method"));
+
+	private QuantileColorThemingState quantileColorThemingState;
+
+    private class ActionClassification implements ItemListener {
+		public void itemStateChanged(ItemEvent arg0) {
+			switch (classificationComboBox.getSelectedIndex()) {
+			case UNIQUE_VALUE:
+				setState(discreteColorThemingState);
+				initAttributeNameComboBox(layer);
+				break;
+			case EQUAL_INTERVAL:
+				initAttributeNameComboBoxWithNumericValues(layer);
+				if(attributeNameComboBox.getItemCount() != 0)
+					setState((State) rangeColorThemingState);
+				else
+				    classificationComboBox.setSelectedIndex(UNIQUE_VALUE);
+				break;
+			case QUANTILE:
+				initAttributeNameComboBoxWithNumericValues(layer);
+				if(attributeNameComboBox.getItemCount() != 0)
+				    setState((State) quantileColorThemingState);
+				else
+				    classificationComboBox.setSelectedIndex(UNIQUE_VALUE);
+				break;
+			}
+
+
+
+
+		}
+	}
+
+	private static final int UNIQUE_VALUE = 0;
+
+	private static final int EQUAL_INTERVAL = 1;
+
+	private static final int QUANTILE = 2;
+
+	private void initClassificationComboBox() {
+		classificationComboBox.addItem(I18N.get("ColorThemingStylePanel.Unique_value"));
+		classificationComboBox.addItem(I18N.get("ColorThemingStylePanel.Equal_Interval"));
+		classificationComboBox.addItem(I18N.get("ColorThemingStylePanel.Quantile"));
+		classificationComboBox.addItemListener(new ActionClassification());
+	}
+
+	//obedel Erwan Bocher end
 }
