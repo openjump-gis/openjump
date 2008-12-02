@@ -484,7 +484,7 @@ public class ShapefileWriter implements JUMPWriter {
             }
         }
 
-        return maxlen;
+        return Math.max(1, maxlen); //LDB: don't allow zero length strings
     }
 
     /**
