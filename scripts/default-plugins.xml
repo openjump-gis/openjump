@@ -95,6 +95,7 @@
 	<!--- =========  EditTools ====================  /-->
 	<plug-in>org.openjump.core.ui.plugin.edittoolbox.CutPolygonSIGLEPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.edittoolbox.AutoCompletePolygonPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.edittoolbox.NoteToolPlugIn</plug-in>
 	<!---  ======================================== /-->
 	<!--  			OTHER 							/-->
 	<!--- ========================================= /-->
