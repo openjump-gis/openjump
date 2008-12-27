@@ -1,3 +1,29 @@
+2008-12-27 mentaer <sstein@geo.uzh.ch>
+    Added function to simplify polygons if they are part of a tesselation in Tools/Generalization.
+    added:
+    org.openjump.core.ui.plugin.tools.generalization.SimplifyPolygonCoveragePlugIn
+    
+2008-12-27 mentaer <sstein@geo.uzh.ch>
+    Added function to extract boundaries of polygons in Tools/Edit Geometry/Convert/.
+    This function can be used to simplify the boundaries and then to recreate 
+    simplified polygons. 
+    added:
+    org.openjump.core.ui.plugin.tools.geometrychange.ExtractCommonBoundaryBetweenSelectedPolysPlugIn
+    org.openjump.core.graph.polygongraph.PolygonGraph
+    org.openjump.core.graph.polygongraph.PolygonGraphEdge
+	org.openjump.core.graph.polygongraph.PolygonGraphNode
+	
+2008-12-27 mentaer <sstein@geo.uzh.ch>
+    . Internationalization for Extract Point plugin. 
+    . removal of ISA simplification plugin (made init as comment in default-plugins.xml).
+    changed:
+    org.openjump.core.ui.plugin.tools.geometrychange.ExtractPointsPlugIn
+        
+2008-12-02 beckerl <becker.larry@gmail.com>
+    Modified findMaxStringLength() to not allow zero length string fields  
+    changed:      
+    com.vividsolutions.jump.io.ShapefileWriter
+
 2008-11-22 mentaer <sstein@geo.uzh.ch>
     Added color theming type selection back (from O. Bedel, SIGLE).
     changed:      
@@ -5,7 +31,7 @@
     added:
     com.vividsolutions.jump.workbench.ui.renderer.style.QuantileColorThemingState
     
-2008-11-19 beckerl <becker.larry@gmail.com>
+2008-11-20 beckerl <becker.larry@gmail.com>
     Fixed bug with cutting polygon with hole and linestring did 
     not go through the hole.      
     org.openjump.core.ui.plugin.tools.SplitPolygonPlugIn

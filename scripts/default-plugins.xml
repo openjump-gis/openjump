@@ -54,7 +54,8 @@
 	<plug-in>org.openjump.core.ui.plugin.tools.DeleteEmptyGeometriesPlugIn</plug-in>
 	<!--- =========  Edit Geometry ====================  /-->
 	<!--- =========  Edit Geometry - Convert ====================  /-->
-	<plug-in>org.openjump.core.ui.plugin.tools.geometrychange.ExtractPointsPlugIn</plug-in>					
+	<plug-in>org.openjump.core.ui.plugin.tools.geometrychange.ExtractPointsPlugIn</plug-in>	
+	<plug-in>org.openjump.core.ui.plugin.tools.geometrychange.ExtractCommonBoundaryBetweenPolysPlugIn</plug-in>			
 	<plug-in>com.vividsolutions.jump.plugin.edit.ExtractSegmentsPlugIn</plug-in>	
 	<plug-in>com.vividsolutions.jump.plugin.edit.PolygonizerPlugIn</plug-in>	
 	<plug-in>org.openjump.core.ui.plugin.tools.PlanarGraphPlugIn</plug-in>
@@ -73,7 +74,8 @@
 	<plug-in>de.fho.jump.pirol.plugins.EditAttributeByFormula.EditAttributeByFormulaPlugIn</plug-in>
 	<!--- =========  Generalization ====================  /-->	
 	<plug-in>org.openjump.core.ui.plugin.tools.LineSimplifyJTS15AlgorithmPlugIn</plug-in>	
-	<plug-in>org.openjump.core.ui.plugin.tools.ReducePointsISAPlugIn</plug-in>
+	<!--plug-in>org.openjump.core.ui.plugin.tools.ReducePointsISAPlugIn</plug-in-->
+	<plug-in>org.openjump.core.ui.plugin.tools.generalization.SimplifyPolygonCoveragePlugIn</plug-in>	
 	<!--- =========  other ====================  /-->
 	<plug-in>org.openjump.core.ui.plugin.tools.MeasureM_FPlugIn</plug-in>
 	<!---  ======================================== /-->
