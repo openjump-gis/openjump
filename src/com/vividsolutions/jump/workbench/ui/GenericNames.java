@@ -43,6 +43,7 @@ public interface GenericNames {
 	public static String LAYER_A = I18N.get("ui.GenericNames.LAYER_A");
 	public static String LAYER_B = I18N.get("ui.GenericNames.LAYER_B");
 	public static String RESULT_LAYER=I18N.get("ui.GenericNames.ResultLayer");
+	public static String LAYER_POLYGONS = I18N.get("ui.GenericNames.LAYER-with-Polygons");
 	public static String LAYER_GRID=I18N.get("ui.GenericNames.LayerGrid");
 	public static String ANGLE=I18N.get("ui.GenericNames.ANGLE");
 	public static String SOURCE_LAYER=I18N.get("ui.GenericNames.Source-Layer");
