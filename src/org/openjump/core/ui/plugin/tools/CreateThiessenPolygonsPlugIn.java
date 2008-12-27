@@ -149,7 +149,7 @@ public class CreateThiessenPolygonsPlugIn extends AbstractPlugIn implements Thre
 	    this.reportNothingToUndoYet(context);
 	        
  		dialog = new MultiInputDialog(
-	            context.getWorkbenchFrame(), getName(), true);
+	            context.getWorkbenchFrame(), this.sName, true);
 	        setDialogValues(dialog, context);
 	        GUIUtil.centreOnWindow(dialog);
 	        dialog.setVisible(true);
