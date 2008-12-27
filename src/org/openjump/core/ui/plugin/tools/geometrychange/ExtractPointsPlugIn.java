@@ -47,6 +47,7 @@ import javax.swing.JComboBox;
 import org.openjump.core.apitools.FeatureCollectionTools;
 import org.openjump.sigle.utilities.geom.FeatureCollectionUtil;
 
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureDataset;
@@ -61,6 +62,7 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.ThreadedPlugIn;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.GenericNames;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
@@ -90,11 +92,12 @@ public class ExtractPointsPlugIn extends AbstractPlugIn implements ThreadedPlugI
     
     public void initialize(PlugInContext context) throws Exception {
     		
-    		//this.CLAYER = I18N.get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.select-point-layer");
-       		//this.sName = I18N.get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.Create-Thiessen-Polygons");
-    	    //this.sideBarText = I18N.get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.Creates-a-Delaunay-triangulation-and-returns-the-Voronoi-regions");
-    		//this.sPoints = ...
-    	    
+    		this.CLAYER = GenericNames.LAYER;
+       		this.sName = I18N.get("org.openjump.core.ui.plugin.tools.ExtractPointsPlugIn.Extract-Points");
+    	    this.sideBarText = I18N.get("org.openjump.core.ui.plugin.tools.ExtractPointsPlugIn.description");
+    		this.sPoints = I18N.get("org.openjump.core.ui.plugin.tools.ExtractPointsPlugIn.points");
+    	    this.DELETE_LAST_POINT_IF_CLOSED = I18N.get("org.openjump.core.ui.plugin.tools.ExtractPointsPlugIn.Account-for-closed-Geometries");
+    		
 	        FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
 	    	featureInstaller.addMainMenuItem(
 	    	        this,								//exe
@@ -116,7 +119,7 @@ public class ExtractPointsPlugIn extends AbstractPlugIn implements ThreadedPlugI
 	    this.reportNothingToUndoYet(context);
 	        
  		dialog = new MultiInputDialog(
-	            context.getWorkbenchFrame(), getName(), true);
+	            context.getWorkbenchFrame(), this.sName, true);
 	        setDialogValues(dialog, context);
 	        GUIUtil.centreOnWindow(dialog);
 	        dialog.setVisible(true);
