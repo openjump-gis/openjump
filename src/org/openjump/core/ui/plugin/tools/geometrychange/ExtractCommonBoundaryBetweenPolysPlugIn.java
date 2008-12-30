@@ -129,7 +129,7 @@ public class ExtractCommonBoundaryBetweenPolysPlugIn extends AbstractPlugIn impl
 	    	Feature firstFeature = (Feature)features.iterator().next();
 	    	if (firstFeature.getGeometry() instanceof Polygon){
 		    	monitor.report(sCreateGraph);
-		    	PolygonGraph pg = new PolygonGraph(features);
+		    	PolygonGraph pg = new PolygonGraph(features, monitor);
 		    	//pg.getCommonBoundaries(pg.nodes.get(0));
 		    	//FeatureCollection resultD = pg.getBoundaries(pg.nodes.get(0));
 		    	//-- old sorted return of boundaries

@@ -159,9 +159,12 @@ public class SimplifyPolygonCoveragePlugIn extends AbstractPlugIn implements Thr
 	    	if (firstFeature.getGeometry() instanceof Polygon){
 	    		//-- extract the unique boundaries
 		    	monitor.report(sCreateGraph);
-		    	PolygonGraph pg = new PolygonGraph(features);
+		    	PolygonGraph pg = new PolygonGraph(features, monitor);
 		    	FeatureCollection boundaries = pg.getSharedBoundaries();
 		    	boundaries.addAll(pg.getNonSharedBoundaries().getFeatures());
+		    	if (monitor.isCancelRequested()){
+		    		return;
+		    	}
 	    		//-- simplify the unique boundaries
 		    	monitor.report(sSimplify);
 		    	int count = 0; int noItems = boundaries.size();
@@ -172,6 +175,9 @@ public class SimplifyPolygonCoveragePlugIn extends AbstractPlugIn implements Thr
 					edge.setGeometry(resultgeom);
 				    String mytext =  count + " / " + noItems + " : " + sSimplificationFinalized;
 				    monitor.report(mytext);
+			    	if (monitor.isCancelRequested()){
+			    		return;
+			    	}
 				}
 		    	//-- create polygons	  
 		    	monitor.report(sPolygonize);
@@ -186,11 +192,14 @@ public class SimplifyPolygonCoveragePlugIn extends AbstractPlugIn implements Thr
 			    for (Iterator i = nodedLines.iterator(); i.hasNext(); ) {
 			        Geometry g = (Geometry) i.next();
 			        polygonizer.add(g);
+			    	if (monitor.isCancelRequested()){
+			    		return;
+			    	}
 			      }
 			    //-- get the Polygons
 				Collection<Geometry> withoutIntersection = polygonizer.getPolygons();
 		    	//-- transfer Attributes
-				FeatureCollection resultD = this.transferAttributesFromPolysToPolys(this.regions, withoutIntersection, context);
+				FeatureCollection resultD = this.transferAttributesFromPolysToPolys(this.regions, withoutIntersection, context, monitor);
 		    	context.addLayer(StandardCategoryNames.RESULT, this.input + "-" + sSimplify, resultD);
 	    	}
 	    	else{
@@ -212,7 +221,7 @@ public class SimplifyPolygonCoveragePlugIn extends AbstractPlugIn implements Thr
         GUIUtil.centreOnWindow(dialog);
     }	
 
-	public FeatureCollection transferAttributesFromPolysToPolys(FeatureCollection fcA, Collection<Geometry> geometries, PlugInContext context){
+	public FeatureCollection transferAttributesFromPolysToPolys(FeatureCollection fcA, Collection<Geometry> geometries, PlugInContext context, TaskMonitor monitor){
 		//-- check if the polygon has a correspondent 
 		//	 if yes, transfer the attributes - if no: remove the polygon
 		
@@ -271,6 +280,11 @@ public class SimplifyPolygonCoveragePlugIn extends AbstractPlugIn implements Thr
 //			else{
 //				System.out.println("polygon without correspondent"); 
 //			}
+	    	if (monitor != null){
+	    		if (monitor.isCancelRequested()){
+	    			return fd;
+	    		}
+	    	}
 		}
 		return fd;
 	}
