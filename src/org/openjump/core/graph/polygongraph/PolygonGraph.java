@@ -30,6 +30,7 @@ import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.task.TaskMonitor;
 
 public class PolygonGraph{
 
@@ -41,16 +42,30 @@ public class PolygonGraph{
 	 * @param polygonFeatures
 	 */
 	public PolygonGraph(Collection<Feature> polygonFeatures){
-		this.createPolygonGraphFrom(polygonFeatures);
+		this.createPolygonGraphFrom(polygonFeatures, null);
+	}
+	
+	/**
+	 * creates a new polygon graph objects and populates it with the feature delivered 
+	 * @param polygonFeatures
+	 * @param monitor can be null, used to cancel operation
+	 */
+	public PolygonGraph(Collection<Feature> polygonFeatures, TaskMonitor monitor){
+		this.createPolygonGraphFrom(polygonFeatures, monitor);
 	}
 	
 	public PolygonGraph(FeatureCollection polygonFeatures){
-		this.createPolygonGraphFrom(polygonFeatures.getFeatures());
+		this.createPolygonGraphFrom(polygonFeatures.getFeatures(), null);
 	}
 	
-	public void createPolygonGraphFrom(Collection<Feature> fc){
+	/**
+	 * 
+	 * @param fc
+	 * @param monitor can be null, used to cancel operation
+	 */
+	public void createPolygonGraphFrom(Collection<Feature> fc, TaskMonitor monitor){
 		//----------------------------------------------
-		// check if this are really polgyons
+		// check if this are really polygons
 		// if yes create a PolygonGraphNode
 		// and add the node to a STRtree for faster search
 		//----------------------------------------------
@@ -63,7 +78,7 @@ public class PolygonGraph{
 				this.nodes.add(node);
 				tree.insert(f.getGeometry().getEnvelopeInternal(), node);
 			}
-			if(f.getGeometry() instanceof MultiPolygon){
+			else if(f.getGeometry() instanceof MultiPolygon){ //must be else if !!!
 				Geometry geom = f.getGeometry(); 
 				//-- explode and add
 				ArrayList<Geometry> parts = GeometryConverter.explodeGeomsIfMultiG(geom);
@@ -72,12 +87,18 @@ public class PolygonGraph{
 					Feature fnew = FeatureCollectionTools.copyFeature(f);					
 					fnew.setGeometry(gpart);
 					//-- create a new node
-					PolygonGraphNode node = new PolygonGraphNode(f); 
+					PolygonGraphNode node = new PolygonGraphNode(fnew); 
 					this.nodes.add(node);					
 					tree.insert(gpart.getEnvelopeInternal(), node);
 				}
-			}			
+			}
 		}
+    	if (monitor != null){
+    		if (monitor.isCancelRequested()){
+    			monitor.report("canceled 1");
+    			return;
+    		}
+    	}
 		//--------------------------------------------
 		// analyze relations
 		// note: updating the nodes with its relations should 
@@ -114,6 +135,12 @@ public class PolygonGraph{
 						this.edges.add(edge);
 					}
 				}
+		    	if (monitor != null){
+		    		if (monitor.isCancelRequested()){
+		    			monitor.report("canceled 2");
+		    			return;
+		    		}
+		    	}
 			}//-- end loop over candidates
 		}//-- end loop over all nodes		
 	}
