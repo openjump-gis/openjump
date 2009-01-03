@@ -56,7 +56,7 @@ public class SearchAllAttributes extends AbstractPlugIn
 	private final static String SEARCHFOR = I18N.get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.search-for"); 
 	private final static String SEARCHALLATTRIBUTES = I18N.get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.search-all-attributes");
 	private final static String INCLUDEGEOMETRY = I18N.get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.include-geometry");
-	private final static String MATCHOR = I18N.get("org.openjump.core.ui.plugin.queries.SearchAllAttributes..match-any-search-word");
+	private final static String MATCHOR = I18N.get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.match-any-search-word");
 	private final static String MATCHAND = I18N.get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.match-all-search-words");
 	private final static String MATCHHINT = I18N.get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.all-search-words-must-be-ina-single-attribute");
 	private final static String CASESENSITIVE = I18N.get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.case-sensitive");
