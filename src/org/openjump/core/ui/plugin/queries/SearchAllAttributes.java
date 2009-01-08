@@ -62,6 +62,7 @@ public class SearchAllAttributes extends AbstractPlugIn
 	private final static String CASESENSITIVE = I18N.get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.case-sensitive");
 	private final static String WHOLEWORD = I18N.get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.whole-word");
 	private final static String SIDEBARTEXT = I18N.get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.search-for-text-in-any-attribute");
+	private final static String REGULAREXPRESSIONS = I18N.get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.Regular-Expressions"); 
 //		+" and select matching map objects.\n\n"
 //		+"Uses Java Pattern matcher which supports:\n"
 //		+". - Match any character\n"
@@ -73,6 +74,7 @@ public class SearchAllAttributes extends AbstractPlugIn
 	private String searchString = "";
 	private int patternCaseOption = Pattern.CASE_INSENSITIVE;
 	private boolean wholeWord = false;
+	private boolean regularExpressions = false;
 	
 		
 	private boolean multiWordMatchAnd = true;
@@ -112,6 +114,7 @@ public class SearchAllAttributes extends AbstractPlugIn
 		dialog.addRadioButton(MATCHAND, "MatchOptions", multiWordMatchAnd, MATCHHINT);
 		dialog.addRadioButton(MATCHOR, "MatchOptions", !multiWordMatchAnd, MATCHHINT);
 		dialog.addCheckBox(INCLUDEGEOMETRY, includeGeometry);  
+		dialog.addCheckBox(REGULAREXPRESSIONS, regularExpressions);  
 	}
 
 
@@ -125,6 +128,7 @@ public class SearchAllAttributes extends AbstractPlugIn
 		else
 			patternCaseOption = Pattern.CASE_INSENSITIVE;
 		includeGeometry = dialog.getCheckBox(INCLUDEGEOMETRY).isSelected();
+		regularExpressions = dialog.getCheckBox(REGULAREXPRESSIONS).isSelected();
 	}
 
 
@@ -141,12 +145,18 @@ public class SearchAllAttributes extends AbstractPlugIn
 		String[] searchStrings = searchString.split(" ");
 		int nwords = searchStrings.length;
 		Pattern[] patterns = new Pattern[nwords];
+		String quote = "\\Q";
+		String endQuote = "\\E";
+		if (regularExpressions) {
+			quote = "";
+			endQuote = "";
+		}			
 		for (int k=0; k<nwords; k++) {
 			String regex;
 			if (wholeWord)
-				regex = "\\b"+searchStrings[k]+"\\b";
+				regex = "\\b"+quote+searchStrings[k]+endQuote+"\\b";
 			else
-				regex = searchStrings[k];
+				regex = quote+searchStrings[k]+endQuote;
 			patterns[k] = Pattern.compile(regex,patternCaseOption);
 		}
 		ArrayList layerList = new ArrayList(layerManager.getVisibleLayers(false));         		
