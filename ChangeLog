@@ -1,3 +1,14 @@
+2009-01-01 mmichaud <michael.michaud@free.fr>
+    * fixed bug 1821235 : I had to change a lot of code in 
+    ECWImage class (maybe more than needed, but at least, it seems to work...)
+    changed:
+    core/trunk/src/com/vividsolutions/jump/workbench/imagery/ecw/ECWImage.java
+
+2008-12-31 beckerl <becker.larry@gmail.com>
+    new Function: Search All Attributes aims to add search engine capability to a gis.
+    added:      
+    org.openjump.core.ui.plugin.queries.SearchAllAttributes.java
+    
 2008-12-27 mentaer <sstein@geo.uzh.ch>
     Added function to simplify polygons if they are part of a tesselation in Tools/Generalization.
     added:
