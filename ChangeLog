@@ -1,3 +1,8 @@
+2009-01-14 mentaer <sstein@geo.uzh.ch>
+    Added function to delete features from a layer that have the same geometry.
+    added:
+    org.openjump.core.ui.plugin.tools.DeleteDuplicateGeometriesPlugIn
+    
 2009-01-01 mmichaud <michael.michaud@free.fr>
     * fixed bug 1821235 : I had to change a lot of code in 
     ECWImage class (maybe more than needed, but at least, it seems to work...)
