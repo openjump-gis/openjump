@@ -68,11 +68,16 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerTreeModel;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
+import com.vividsolutions.jump.workbench.plugin.EnableCheck;
+import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
+import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.ColorPanel;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanel;
+import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.TreeLayerNamePanel;
+import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
 
 /**
@@ -95,14 +100,27 @@ public class SaveLegendPlugIn extends AbstractPlugIn {
 	private String filename = null;
 	
 	public void initialize(PlugInContext context) throws Exception {
-		
+
+		/*
 		context.getFeatureInstaller().addPopupMenuItem(
 				context.getWorkbenchContext().getWorkbench().getFrame().getLayerNamePopupMenu(), 
 				this, 
 				this.getName()+"{pos:13}", 				
 				false, 
 				null, 
-				null);		
+				null);
+		*/
+		
+        EnableCheckFactory enableCheckFactory = new EnableCheckFactory(context
+                .getWorkbenchContext());
+        EnableCheck enableCheck = new MultiEnableCheck().add(
+                enableCheckFactory
+                        .createWindowWithLayerManagerMustBeActiveCheck()).add(
+                enableCheckFactory.createExactlyNLayersMustBeSelectedCheck(1));
+        
+        new FeatureInstaller(context.getWorkbenchContext())
+        .addMainMenuItemWithJava14Fix(this, new String[]{MenuNames.LAYER},
+                this.getName() + "...", false, null, enableCheck);
 	}    
 	
 	public boolean execute(PlugInContext context) throws Exception {
