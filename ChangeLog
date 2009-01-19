@@ -1,3 +1,6 @@
+2009-01-18 mentaer <sstein@geo.uzh.ch>
+    Replaced jts 1.9 with jts 1.10
+    
 2009-01-14 mentaer <sstein@geo.uzh.ch>
     Added function to delete features from a layer that have the same geometry.
     added:
