@@ -72,5 +72,6 @@ public interface GenericNames {
 	
 	public static String USE_SELECTED_FEATURES_ONLY=I18N.get("jump.plugin.edit.PolygonizerPlugIn.Use-selected-features-only");
 	public static String ATTRIBUTE=I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Attribute");
+	public static String SELECT_LAYER=I18N.get("org.openjump.core.ui.plugin.tools.DeleteDuplicateGeometriesPlugIn.select-layer");
     
 }

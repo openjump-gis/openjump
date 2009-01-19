@@ -46,6 +46,7 @@ import java.util.Iterator;
 import javax.swing.JComboBox;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
@@ -61,6 +62,7 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.ThreadedPlugIn;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.GenericNames;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
@@ -76,7 +78,6 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
  **/
 public class DeleteDuplicateGeometriesPlugIn extends AbstractPlugIn implements ThreadedPlugIn{
 
-    private String T1 ="delete double items";
     private String CLAYER = "select layer";    
     private String sDescription = "deletes features with similar geometry";
     private String deleteByAttribute = "delete only if attributes are the same";
@@ -88,6 +89,13 @@ public class DeleteDuplicateGeometriesPlugIn extends AbstractPlugIn implements T
       
     public void initialize(PlugInContext context) throws Exception {
     	
+	        this.CLAYER = GenericNames.SELECT_LAYER;    
+	        this.sDescription = I18N.get("org.openjump.core.ui.plugin.tools.DeleteDuplicateGeometriesPlugIn.deletes-features-with-similar-geometry");
+	        this.deleteByAttribute = I18N.get("org.openjump.core.ui.plugin.tools.DeleteDuplicateGeometriesPlugIn.delete-only-if-attributes-are-the-same");
+	        this.sName = I18N.get("org.openjump.core.ui.plugin.tools.DeleteDuplicateGeometriesPlugIn.Delete-Duplicate-Geometries");
+	        this.sChecked = I18N.get("org.openjump.core.ui.plugin.tools.DeleteDuplicateGeometriesPlugIn.checked");
+	        this.sCleaned = I18N.get("org.openjump.core.ui.plugin.tools.DeleteDuplicateGeometriesPlugIn.cleaned");
+        
 		    context.getFeatureInstaller().addPopupMenuItem(
 		    		LayerViewPanel.popupMenu(),
 					this,
