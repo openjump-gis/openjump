@@ -1,4 +1,8 @@
 2009-01-18 mentaer <sstein@geo.uzh.ch>
+    added changes to openjump.sh script from Peppe, so loading of JYthon should 
+    work with Debian now (and not only with Windows)
+    
+2009-01-18 mentaer <sstein@geo.uzh.ch>
     Replaced jts 1.9 with jts 1.10
     
 2009-01-14 mentaer <sstein@geo.uzh.ch>

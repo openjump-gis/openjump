@@ -14,9 +14,9 @@ if(test -L $0) then
 else 
     	JUMP_HOME=`dirname $0`/..
 fi
-JUMP_PROPERTIES=~/.jump/workbench-properties.xml
-JUMP_DEFAULTP=~/.jump/default-plugins.xml
-JUMP_STATE=~/.jump/
+JUMP_PROPERTIES=$JUMP_HOME/bin/workbench-properties.xml
+JUMP_DEFAULTP=$JUMP_HOME/bin/default-plugins.xml
+JUMP_STATE=$JUMP_HOME/bin/
 
 JUMP_PROFILE=~/.jump/openjump.profile
 if [ -f "$JUMP_PROFILE" ]; then
@@ -32,7 +32,7 @@ if [ -z "$JUMP_PLUGIN_DIR" ]; then
 fi
 
 if [ -z "$JUMP_PROPERTIES" -o ! -f $JUMP_PROPERTIES ]; then
-  JUMP_PROPERTIES=~/.jump/workbench-properties.xml
+  JUMP_PROPERTIES=$JUMP_HOME/bin/workbench-properties.xml
 fi
 
 if [ -z "$JUMP_DEFAULTP" -o ! -f $JUMP_DEFAULTP ]; then
