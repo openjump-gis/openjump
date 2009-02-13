@@ -20,14 +20,6 @@
 	<!--  			menu VIEW 						/-->
 	<!--- ========================================= /-->		
 	<plug-in>org.openjump.core.ui.plugin.edit.CopyBBoxPlugin</plug-in>
-		<!--  			menu LAYER 						/-->
-	<!--- ========================================= /-->
-	<!--- =========  Sort Categories =============  /-->
-	<plug-in>org.openjump.core.ui.plugin.layer.SortCategoryByFeaturesPlugIn</plug-in>	
-	<plug-in>org.openjump.core.ui.plugin.layer.SortCategoryByNamePlugIn</plug-in>	
-	<plug-in>org.openjump.core.ui.plugin.layer.SortCategoryRestorePlugIn</plug-in>	
-	<plug-in>org.openjump.core.ui.plugin.layer.SortCategorySavePlugIn</plug-in>		
-	<!---  ======================================== /-->
 	<!---  ======================================== /-->
 	<!--  			menu Tools 						/-->
 	<!--- ========================================= /-->
