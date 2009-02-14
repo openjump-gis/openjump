@@ -1,3 +1,6 @@
+2009-02-09 jclark <jsclark@gmail.com>
+    Added functions to sort categories by name and number of features 
+    
 2009-01-18 mentaer <sstein@geo.uzh.ch>
     added changes to openjump.sh script from Peppe, so loading of JYthon should 
     work with Debian now (and not only with Windows)

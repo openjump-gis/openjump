@@ -46,6 +46,7 @@ import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
+import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 /**
  * Sort categories by number of features
@@ -76,6 +77,9 @@ public class SortCategoryByFeaturesPlugIn extends SortCategoryAbstractPlugIn {
 		this.leastLabel = I18N
 				.get("org.openjump.core.ui.plugin.layer.SortCategoryByFeaturesPlugIn.By-Most-Number-of-Features");
 
+        FeatureInstaller.addMainMenu(context.getFeatureInstaller(), 
+        		new String[] {MenuNames.LAYER}, menuLabelOnLayer, 5);
+              
 		context.getFeatureInstaller()
 				.addMainMenuItem(
 						this,
