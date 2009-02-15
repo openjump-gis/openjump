@@ -106,8 +106,6 @@ public class SortCategoryRestorePlugIn extends AbstractPlugIn {
 
 			try {
 				removeLayers(layerManager, allLayerables);
-				allLayerables.get(18).getBlackboard().get(
-						SortCategorySavePlugIn.BLACKBOARD_CATEGORY);
 
 				// add unsaved to end, saved to beginning
 				addUnSavedBack(layerManager, allLayerables, unsaved,
