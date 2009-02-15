@@ -1,3 +1,16 @@
+2009-02-15 mentaer <sstein@geo.uzh.ch>
+    Integrated Jython tools from ISA / SkyJUMP.
+    added:      
+    org.openjump.core.ui.plugin.customize.PythonToolsPlugIn.java
+    org.openjump.util.python.*
+    lib/ext/jython/*
+    jython.jar
+ 
+2009-02-05 mentaer <sstein@geo.uzh.ch>
+    disabled plugin that allows panning with keys due to feedback with layer navigation
+    to re-enable add the following line to default-plugin.xml
+    <plug-in>org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn</plug-in>	  
+    
 2009-02-09 jclark <jsclark@gmail.com>
     Added functions to sort categories by name and number of features 
     
