@@ -1,4 +1,24 @@
 2009-02-15 mentaer <sstein@geo.uzh.ch>
+    Added further 1-D Classification methods for ColorTheming.
+    Besides using the equal-interval and equal-number methods, 
+    class breaks can now be calculated using i) Mean-Standard Deviation,
+    ii) maximal breaks, iii) Jenks optimal breaks.
+    Note: The equal-number breaks calculation has been replace with one contained
+    in Classifier1D to keep consistent with API methods (however, tests show that
+    the old and the new method deliver slightly different results)
+    - added:      
+	org.openjump.core.attributeoperations.Classifier1D.java
+	com.vividsolutions.jump.workbench.ui.renderer.style.attributeclassifications.JenksBreaksColorThemingState	
+	com.vividsolutions.jump.workbench.ui.renderer.style.attributeclassifications.MaximalBreaksColorThemingState
+	com.vividsolutions.jump.workbench.ui.renderer.style.attributeclassifications.MeanSTDevColorThemingState
+	- moved 
+	to com.vividsolutions.jump.workbench.ui.renderer.style.attributeclassifications:
+    QuantileColorThemingState 
+    RangeColorThemingState
+    - modified:
+    com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStylePanel
+    
+2009-02-15 mentaer <sstein@geo.uzh.ch>
     Integrated Jython tools from ISA / SkyJUMP.
     added:      
     org.openjump.core.ui.plugin.customize.PythonToolsPlugIn.java

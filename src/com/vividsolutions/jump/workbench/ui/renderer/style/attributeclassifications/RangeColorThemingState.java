@@ -29,7 +29,7 @@
  * (250)385-6040
  * www.vividsolutions.com
  */
-package com.vividsolutions.jump.workbench.ui.renderer.style;
+package com.vividsolutions.jump.workbench.ui.renderer.style.attributeclassifications;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -61,6 +61,11 @@ import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.CollectionUtil;
 import com.vividsolutions.jump.util.Range;
+import com.vividsolutions.jump.workbench.ui.renderer.style.ColorScheme;
+import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStylePanel;
+import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingTableModel;
+import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStylePanel.State;
+import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingTableModel.AttributeValueTableModelEvent;
 
 public class RangeColorThemingState implements ColorThemingStylePanel.State {
     private ColorThemingStylePanel stylePanel;

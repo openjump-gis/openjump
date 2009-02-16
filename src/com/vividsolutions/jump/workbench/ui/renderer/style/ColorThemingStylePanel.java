@@ -31,34 +31,6 @@
  */
 package com.vividsolutions.jump.workbench.ui.renderer.style;
 
-import com.vividsolutions.jump.I18N;
-
-import com.vividsolutions.jump.feature.AttributeType;
-
-import com.vividsolutions.jump.feature.Feature;
-
-import com.vividsolutions.jump.feature.FeatureSchema;
-
-import com.vividsolutions.jump.util.CollectionUtil;
-import com.vividsolutions.jump.util.Range;
-import com.vividsolutions.jump.util.StringUtil;
-import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.model.Layer;
-import com.vividsolutions.jump.workbench.model.LayerManager;
-import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
-import com.vividsolutions.jump.workbench.plugin.EnableCheck;
-import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
-import com.vividsolutions.jump.workbench.plugin.PlugIn;
-import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.ui.ColorPanel;
-import com.vividsolutions.jump.workbench.ui.EnableableToolBar;
-import com.vividsolutions.jump.workbench.ui.GUIUtil;
-import com.vividsolutions.jump.workbench.ui.OKCancelPanel;
-import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import com.vividsolutions.jump.workbench.ui.style.BasicStylePanel;
-import com.vividsolutions.jump.workbench.ui.style.StylePanel;
-
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -68,26 +40,20 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collection;
 import java.util.EventObject;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-
 import java.util.SortedMap;
-
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
-
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultCellEditor;
@@ -116,6 +82,32 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
+
+import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.feature.AttributeType;
+import com.vividsolutions.jump.feature.Feature;
+import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.util.CollectionUtil;
+import com.vividsolutions.jump.util.Range;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.model.Layer;
+import com.vividsolutions.jump.workbench.model.LayerManager;
+import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
+import com.vividsolutions.jump.workbench.plugin.EnableCheck;
+import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
+import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.ColorPanel;
+import com.vividsolutions.jump.workbench.ui.EnableableToolBar;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.OKCancelPanel;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.renderer.style.attributeclassifications.JenksBreaksColorThemingState;
+import com.vividsolutions.jump.workbench.ui.renderer.style.attributeclassifications.MaximalBreaksColorThemingState;
+import com.vividsolutions.jump.workbench.ui.renderer.style.attributeclassifications.MeanSTDevColorThemingState;
+import com.vividsolutions.jump.workbench.ui.renderer.style.attributeclassifications.QuantileColorThemingState;
+import com.vividsolutions.jump.workbench.ui.renderer.style.attributeclassifications.RangeColorThemingState;
+import com.vividsolutions.jump.workbench.ui.style.BasicStylePanel;
+import com.vividsolutions.jump.workbench.ui.style.StylePanel;
 
 
 public class ColorThemingStylePanel extends JPanel implements StylePanel {
@@ -337,12 +329,20 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
                     ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
             this.layer = layer;
             this.workbenchContext = workbenchContext;
+            // I - equal Range
             rangeColorThemingState = new RangeColorThemingState(this);
 
-            // obedel start
+            //-- obedel start (II - Quantile = equal number)
             quantileColorThemingState = new QuantileColorThemingState(this);
-            // obedel end
-
+            //-- obedel end
+            //-- [sstein - 15.Feb.2009 - add further methods]
+            //   III - Mean-Standard-Deviation
+            //   IV  - Maximal Breaks
+            //    V   - Jenks Optimal
+            meanSTDevColorThemingState = new MeanSTDevColorThemingState(this);
+            maxBreaksColorThemingState = new MaximalBreaksColorThemingState(this);
+            jenksColorThemingState = new JenksBreaksColorThemingState(this);
+            //--
             jbInit();
             byRangeCheckBox.setSelected(colorThemingStyleHasRanges(layer));
 
@@ -503,12 +503,12 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
             //byRangeCheckBox.setEnabled(enableColorThemingCheckBox.isSelected() &&
             //    (attributeNameComboBox.getItemCount() > 0));
 
-//          obedel start
+            //-- obedel start
 			classificationLabel.setEnabled(enableColorThemingCheckBox.isSelected() &&
 					(attributeNameComboBox.getItemCount() > 0));
 			classificationComboBox.setEnabled(enableColorThemingCheckBox.isSelected() &&
 					(attributeNameComboBox.getItemCount() > 0));
-			// obedel end
+			//-- obedel end
 
             colorSchemeComboBox.setEnabled(enableColorThemingCheckBox.isSelected() &&
                 (attributeNameComboBox.getItemCount() > 0));
@@ -747,7 +747,7 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
             });
         enableColorThemingCheckBox.setText(I18N.get("ui.renderer.style.ColorThemingPanel.enable-colour-theming"));
 
-     // obedel start
+        //-- obedel start
 		// byRangeCheckBox replaced by new classification combobox
         /*
         byRangeCheckBox.setText(I18N.get("ui.renderer.style.ColorThemingPanel.by-range"));
@@ -758,7 +758,7 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
             });
             */
 		initClassificationComboBox();
-		// obedel end
+		//-- obedel end
 
 
         transparencySlider.setMaximum(255);
@@ -829,20 +829,29 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
                 GridBagConstraints.CENTER, GridBagConstraints.NONE,
                 new Insets(2, 2, 2, 2), 0, 0));
 
-    //  obedel start
+        //-- obedel start
         /*
         jPanel5.add(byRangeCheckBox,
             new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE,
                 new Insets(2, 2, 2, 2), 0, 0));
         */
-        jPanel5.add(classificationLabel, new GridBagConstraints(1, 0, 1, 1,
-				0.0, 0.0, GridBagConstraints.WEST,
-				GridBagConstraints.HORIZONTAL, new Insets(2, 2, 2, 2), 0, 0));
-		jPanel5.add(classificationComboBox, new GridBagConstraints(2, 0, 1, 1,
-				0.0, 0.0, GridBagConstraints.WEST,
-				GridBagConstraints.HORIZONTAL, new Insets(2, 2, 2, 2), 0, 0));
-		// obedel end
+//        jPanel5.add(classificationLabel, new GridBagConstraints(1, 0, 1, 1,
+//				0.0, 0.0, GridBagConstraints.WEST,
+//				GridBagConstraints.HORIZONTAL, new Insets(2, 2, 2, 2), 0, 0));   
+//		jPanel5.add(classificationComboBox, new GridBagConstraints(2, 0, 1, 1,
+//				0.0, 0.0, GridBagConstraints.WEST,
+//				GridBagConstraints.HORIZONTAL, new Insets(2, 2, 2, 2), 0, 0));
+        //-- sstein new:
+		jPanel5.add(classificationComboBox, 
+				new GridBagConstraints(1, 1, 1, 1,0.0, 0.0, 
+				GridBagConstraints.WEST, GridBagConstraints.NONE, 
+				new Insets(2, 2, 2, 2), 0, 0));
+        jPanel5.add(classificationLabel, 
+        		new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, 
+        		GridBagConstraints.EAST, GridBagConstraints.NONE, 
+        		new Insets(2, 2, 2, 2), 0, 0));  
+		//-- obedel end
 
         scrollPane.getViewport().add(table);
     }
@@ -1141,7 +1150,7 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         }
     }
 
-    //obedel [12/10/2005]
+    //-- obedel [12/10/2005]
     // return an ordered map (value -> count of corresponding features)
     // Erwan Bocher [20/01/2005]
     // Add button to calculate range and populateTable
@@ -1186,7 +1195,10 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
 	private JLabel classificationLabel = new JLabel(I18N.get("ColorThemingStylePanel.Classification_Method"));
 
 	private QuantileColorThemingState quantileColorThemingState;
-
+	private MeanSTDevColorThemingState meanSTDevColorThemingState;
+	private MaximalBreaksColorThemingState maxBreaksColorThemingState;
+	private JenksBreaksColorThemingState jenksColorThemingState;
+	
     private class ActionClassification implements ItemListener {
 		public void itemStateChanged(ItemEvent arg0) {
 			switch (classificationComboBox.getSelectedIndex()) {
@@ -1201,13 +1213,36 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
 				else
 				    classificationComboBox.setSelectedIndex(UNIQUE_VALUE);
 				break;
-			case QUANTILE:
+			case QUANTILE: //i.e. equal number
 				initAttributeNameComboBoxWithNumericValues(layer);
 				if(attributeNameComboBox.getItemCount() != 0)
 				    setState((State) quantileColorThemingState);
 				else
 				    classificationComboBox.setSelectedIndex(UNIQUE_VALUE);
 				break;
+			//[sstein 15.Feb.2009]
+			case MEAN_STDEV: 
+				initAttributeNameComboBoxWithNumericValues(layer);
+				if(attributeNameComboBox.getItemCount() != 0)
+				    setState((State) meanSTDevColorThemingState);
+				else
+				    classificationComboBox.setSelectedIndex(UNIQUE_VALUE);
+				break;
+			case MAX_BREAKS:
+				initAttributeNameComboBoxWithNumericValues(layer);
+				if(attributeNameComboBox.getItemCount() != 0)
+				    setState((State) maxBreaksColorThemingState);
+				else
+				    classificationComboBox.setSelectedIndex(UNIQUE_VALUE);
+				break;
+			case JENKS:
+				initAttributeNameComboBoxWithNumericValues(layer);
+				if(attributeNameComboBox.getItemCount() != 0)
+				    setState((State) jenksColorThemingState);
+				else
+				    classificationComboBox.setSelectedIndex(UNIQUE_VALUE);
+				break;
+			//-- end: sstein
 			}
 
 
@@ -1221,13 +1256,24 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
 	private static final int EQUAL_INTERVAL = 1;
 
 	private static final int QUANTILE = 2;
+	
+	private static final int MEAN_STDEV = 3;
+	
+	private static final int MAX_BREAKS = 4;
+	
+	private static final int JENKS = 5;
 
 	private void initClassificationComboBox() {
 		classificationComboBox.addItem(I18N.get("ColorThemingStylePanel.Unique_value"));
 		classificationComboBox.addItem(I18N.get("ColorThemingStylePanel.Equal_Interval"));
 		classificationComboBox.addItem(I18N.get("ColorThemingStylePanel.Quantile"));
+		// -- [sstein 15.Feb.2009]
+		classificationComboBox.addItem("Mean Standard Deviation");
+		classificationComboBox.addItem("Maximal Breaks");
+		classificationComboBox.addItem("Jenks Optimal Method");
+		// -- stein:end
 		classificationComboBox.addItemListener(new ActionClassification());
 	}
 
-	//obedel Erwan Bocher end
+	//-- obedel Erwan Bocher end
 }

@@ -29,7 +29,7 @@
  * (250)385-6040
  * www.vividsolutions.com
  */
-package com.vividsolutions.jump.workbench.ui.renderer.style;
+package com.vividsolutions.jump.workbench.ui.renderer.style.attributeclassifications;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -57,19 +57,26 @@ import javax.swing.JPanel;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
+import org.openjump.core.attributeoperations.Classifier1D;
+
 //import org.openjump.core.ui.style.classification.CalculRange;
 
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.CollectionUtil;
 import com.vividsolutions.jump.util.Range;
+import com.vividsolutions.jump.workbench.ui.renderer.style.ColorScheme;
+import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStylePanel;
+import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingTableModel;
+import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStylePanel.State;
+import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingTableModel.AttributeValueTableModelEvent;
 
 
 
-public class QuantileColorThemingState implements ColorThemingStylePanel.State {
+public class MeanSTDevColorThemingState implements ColorThemingStylePanel.State {
     private ColorThemingStylePanel stylePanel;
     private static final String RANGE_COUNT_KEY =
-        QuantileColorThemingState.class.getName() + " - QUANTILE COUNT";
+        MeanSTDevColorThemingState.class.getName() + " - MEANSTDEVBREAKS COUNT";
     public String getAllOtherValuesDescription() {
         return I18N.get("ui.renderer.style.RangeColorThemingState.values-below-these-values");
     }
@@ -84,54 +91,40 @@ public class QuantileColorThemingState implements ColorThemingStylePanel.State {
     	return stylePanel.getAttributeValuesCount().entrySet().size()+1;
     }
 
-    // return a collection of lower bound values for a quantile classification.
-    // avgClassSize is the average size of a quantile class
-    // valuesCount is the map (attributeValue -> number of corresponding entities)
-    private Collection getQuantileBreaks(double avgClassSize, SortedMap valuesCount){
-    	Set filteredValues = new TreeSet();
-    	Iterator v = valuesCount.keySet().iterator();
-    	if (!v.hasNext())
-    		return filteredValues;
-    	Object value = v.next();
-		int count= ((Integer) valuesCount.get(value)).intValue();
-		filteredValues.add(value);
-		// update of classification variables
-		int classified = count; // total classified at this point
-		double avgClassifiedAtNextLoop = avgClassSize; // expected to be classified at next loop
-    	while(v.hasNext()) {
-    		value = v.next();
-    		count = ((Integer) valuesCount.get(value)).intValue();
-
-        	if (((double)classified)>avgClassifiedAtNextLoop) {
-//        		System.out.println("break value : " + value.toString());
-        		filteredValues.add(value);
-        		avgClassifiedAtNextLoop = avgClassifiedAtNextLoop + avgClassSize; // expected to be classified at next loop
-        	}
-        	classified = classified + count; // total classified at this point
-        }
-    	return filteredValues;
-    }
-
+    /**
+     * Returns a Collection with double values that are corresponding to the class breaks.
+     * Note: the smallest number is equal to the minValue of all attributes.
+     */
     public Collection filterAttributeValues(SortedSet attributeValues) {
         //-1 because one row in the table is reserved for "all other values". [Jon Aquino]
     	//int classCount = getRangeCount() - 1;
 
-    	// -1 deleted because class range is false
+    	// obedel: -1 deleted because there will be no other values
     	int classCount = getRangeCount();
 
-        int featuresCount = stylePanel.getLayer().getFeatureCollectionWrapper().size();
-        double avgClassSize = ((double) featuresCount) / ((double) classCount); // type double to avoid round off errors
-        SortedMap valuesCount = stylePanel.getAttributeValuesCount();
-    //System.out.println("classCount : " + classCount);
-//        System.out.println("featuresCount : " + featuresCount);
-//        System.out.println("classSize : " + avgClassSize);
-//        System.out.println("valuesCount : " + valuesCount.size());
-        Collection filteredValues = getQuantileBreaks(avgClassSize, valuesCount);
-
-        //obedel : to be best done
-//        int effectivClassCount = filteredValues.size();
-//        if (effectivClassCount!=classCount)
-//        	comboBox.setSelectedItem(new Integer(effectivClassCount));
+        double[] data = new double[attributeValues.size()];
+        int i=0;
+        for (Iterator iterator = attributeValues.iterator(); iterator.hasNext();) {
+			Object val = (Object) iterator.next();
+			if (val instanceof Integer){
+				data[i] = (Integer)val;
+			}
+			else if (val instanceof Double){
+				data[i] = (Double)val;
+			}
+			else{
+				data[i] = Double.NaN;
+			}
+			i++;
+		}
+        double[] breaks = Classifier1D.classifyMeanStandardDeviation(data, classCount);
+        double minVal = org.math.array.DoubleArray.min(data);
+        Collection filteredValues = new ArrayList();
+        filteredValues.add(new Double(minVal));
+        for (int j = 0; j < breaks.length; j++) {
+			filteredValues.add(new Double(breaks[j]));
+		}
+        int x = 1+1;
         return filteredValues;
     }
 
@@ -144,7 +137,7 @@ public class QuantileColorThemingState implements ColorThemingStylePanel.State {
         }
     };
 
-    public QuantileColorThemingState(final ColorThemingStylePanel stylePanel) {
+    public MeanSTDevColorThemingState(final ColorThemingStylePanel stylePanel) {
         this.stylePanel = stylePanel;
         addComboBoxItems();
         comboBox.setSelectedItem(
