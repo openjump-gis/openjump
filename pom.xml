@@ -209,5 +209,11 @@
       <version>3.8</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>jython</groupId>
+      <artifactId>jython</artifactId>
+      <version>UNKNOWN</version>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
 </project>
