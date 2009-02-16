@@ -9,10 +9,11 @@
  */
 package de.fho.jump.pirol.utilities.FormulaParsing.Values;
 
+import org.openjump.core.apitools.comparisonandsorting.ObjectComparator;
+
 import com.vividsolutions.jump.feature.Feature;
 
 import de.fho.jump.pirol.utilities.FormulaParsing.FormulaValue;
-import de.fho.jump.pirol.utilities.comparisonAndSorting.ObjectComparator;
 
 /**
  * Class to extract integer or double values (as double) out of the given Feature...

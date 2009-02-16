@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.openjump.core.apitools.comparisonandsorting.ObjectComparator;
+
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -35,7 +37,6 @@ import com.vividsolutions.jump.workbench.ui.EditTransaction;
 import de.fho.jump.pirol.utilities.FeatureCollection.PirolFeatureCollection;
 import de.fho.jump.pirol.utilities.FormulaParsing.FormulaValue;
 import de.fho.jump.pirol.utilities.attributes.AttributeInfo;
-import de.fho.jump.pirol.utilities.comparisonAndSorting.ObjectComparator;
 import de.fho.jump.pirol.utilities.debugOutput.DebugUserIds;
 import de.fho.jump.pirol.utilities.debugOutput.PersonalLogger;
 import de.fho.jump.pirol.utilities.metaData.MetaInformationHandler;

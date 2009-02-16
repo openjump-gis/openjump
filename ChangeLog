@@ -1,3 +1,17 @@
+2009-02-16 mentaer <sstein@geo.uzh.ch>
+    Integrated Layer Statistics tool from Pirol.
+    To be found in /Tools/Analysis/One Layer/Attribute Statistic Overview
+    - added:      
+	org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewPlugIn.java
+	org.openjump.core.apitools.comparisonandsorting.*
+	org.openjump.core.apitools.tables.*
+	org.openjump.core.attributeoperations.statistics.*
+	org.openjump.core.graph.pirolProject.*
+	org.openjump.core.ui.plugin.tools.statistics.*
+    - changed:
+    org.openjump.core.apitools.FeatureCollectionTools (different import)
+    de.fho.jump.pirol.utilities.FormulaParsing.Values.AttributeValue (different import)
+    
 2009-02-15 mentaer <sstein@geo.uzh.ch>
     Added further 1-D Classification methods for ColorTheming.
     Besides using the equal-interval and equal-number methods, 
