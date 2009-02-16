@@ -209,11 +209,10 @@
       <version>3.8</version>
       <scope>compile</scope>
     </dependency>
-    <dependency>
-      <groupId>jython</groupId>
+	<dependency>
+      <groupId>org.python</groupId>
       <artifactId>jython</artifactId>
-      <version>UNKNOWN</version>
-      <scope>compile</scope>
+      <version>2.2</version>
     </dependency>
   </dependencies>
 </project>
