@@ -1,4 +1,15 @@
 2009-02-16 mentaer <sstein@geo.uzh.ch>
+    Integrated RasterImageLayer from Pirol - this will allow to
+    use Sextante with OpenJUMP directly (when Sextante bindings are changed too).
+    - added:      
+	org.openjump.core.rasterimage,*
+    - changed:
+    some refactoring of metdata classes (used by rasterimages) into 
+    org.openjump.util.metadata.*
+    org.openjump.core.apitools.FeatureCollectionTools
+    de.fho.jump.pirol.xxx
+    
+2009-02-16 mentaer <sstein@geo.uzh.ch>
     Integrated Layer Statistics tool from Pirol.
     To be found in /Tools/Analysis/One Layer/Attribute Statistic Overview
     - added:      

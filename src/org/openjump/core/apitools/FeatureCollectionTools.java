@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.openjump.core.apitools.comparisonandsorting.ObjectComparator;
+import org.openjump.util.metaData.MetaInformationHandler;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -39,7 +40,6 @@ import de.fho.jump.pirol.utilities.FormulaParsing.FormulaValue;
 import de.fho.jump.pirol.utilities.attributes.AttributeInfo;
 import de.fho.jump.pirol.utilities.debugOutput.DebugUserIds;
 import de.fho.jump.pirol.utilities.debugOutput.PersonalLogger;
-import de.fho.jump.pirol.utilities.metaData.MetaInformationHandler;
 
 /**
  * Class to speed up handling of FeatureCollections (or lists of features) during progamming by implementing

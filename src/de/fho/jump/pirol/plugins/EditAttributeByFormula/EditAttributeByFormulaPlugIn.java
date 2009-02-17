@@ -85,6 +85,7 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 import org.openjump.core.apitools.FeatureCollectionTools;
+import org.openjump.util.metaData.MetaInformationHandler;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.FeatureCollection;
@@ -99,7 +100,6 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
 import de.fho.jump.pirol.utilities.FormulaParsing.FormulaValue;
 import de.fho.jump.pirol.utilities.Properties.PropertiesHandler;
 import de.fho.jump.pirol.utilities.attributes.AttributeInfo;
-import de.fho.jump.pirol.utilities.metaData.MetaInformationHandler;
 import de.fho.jump.pirol.utilities.plugIns.StandardPirolPlugIn;
 import de.fho.jump.pirol.utilities.settings.PirolPlugInSettings;
 

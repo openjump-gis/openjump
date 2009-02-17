@@ -16,15 +16,14 @@ import java.util.List;
 
 import org.openjump.core.apitools.CollectionsTools;
 import org.openjump.core.apitools.FeatureCollectionTools;
+import org.openjump.util.metaData.MetaDataMap;
+import org.openjump.util.metaData.ObjectContainingMetaInformation;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.feature.FeatureSchema;
-
-import de.fho.jump.pirol.utilities.metaData.MetaDataMap;
-import de.fho.jump.pirol.utilities.metaData.ObjectContainingMetaInformation;
 
 /**
  * 
