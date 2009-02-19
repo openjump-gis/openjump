@@ -163,9 +163,19 @@ public class ExtractLayersByAttribute extends AbstractPlugIn {
        	ArrayList newLayerNameList = new ArrayList();    	
         for (Iterator i = featureList.iterator(); i.hasNext();) {
         	Feature feature = (Feature) i.next();
-        	String attributeValue = feature.getAttribute(attributeIndex).toString();
-        	if (attributeValue != null && !(attributeValue.length()== 0) && !newLayerNameList.contains(attributeValue)) {
-        		newLayerNameList.add(attributeValue);
+			// modified by michaelm on 2009-02-20 to handle null and empty strings
+        	Object attributeValue = feature.getAttribute(attributeIndex);
+			if (attributeValue == null && !newLayerNameList.contains("NULL")) {
+				newLayerNameList.add("NULL");
+			}
+			else {
+				String attibuteString = attributeValue.toString();
+				if (attibuteString.length()== 0 && !newLayerNameList.contains("EMPTY STRING")) {
+				    newLayerNameList.add("EMPTY STRING");
+				}
+        	    else if (!newLayerNameList.contains(attibuteString)) {
+        		    newLayerNameList.add(attibuteString);
+				}
         	}
         }
  
@@ -189,12 +199,25 @@ public class ExtractLayersByAttribute extends AbstractPlugIn {
            
 	        for (Iterator j = featureList.iterator(); j.hasNext();) {
 	        	Feature feature = (Feature) j.next();
-	        	String attributeValue = feature.getAttribute(attributeIndex).toString();
-	        	if (attributeValue != null && !(attributeValue.length()== 0)
-	        			&& attributeValue.equals(layerName)) {
-		        	newFeatureCollection.add((Feature) feature.clone());
+				// modified by michaelm on 2009-02-20 to handle null and empty strings
+	        	Object attributeValue = feature.getAttribute(attributeIndex);
+				if (attributeValue == null) {
+					if (layerName.equals("NULL")) {
+						newFeatureCollection.add((Feature) feature.clone());
+					}
+				}
+				else {
+					String attributeString = attributeValue.toString();
+				    if (attributeString.length()== 0) {
+						if (layerName.equals("EMPTY STRING")) {
+							newFeatureCollection.add((Feature) feature.clone());
+						}
+					}
+					else if (attributeString.equals(layerName)) {
+		        	    newFeatureCollection.add((Feature) feature.clone());
+					}
 	        	}
-            }       	
+            }
         }
         
 		context.getLayerManager().setFiringEvents(wasFiringEvents);
