@@ -317,9 +317,9 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
       public void actionPerformed(ActionEvent e) {
         memoryLabel.setText(getMBCommittedMemory() + " MB "
           + I18N.get("ui.WorkbenchFrame.committed-memory"));
-        memoryLabel.setToolTipText(LayerManager.layerManagerCount() + " "
-          + I18N.get("ui.WorkbenchFrame.layer-manager")
-          + StringUtil.s(LayerManager.layerManagerCount()));
+        //memoryLabel.setToolTipText(LayerManager.layerManagerCount() + " "
+        //  + I18N.get("ui.WorkbenchFrame.layer-manager")
+        //  + StringUtil.s(LayerManager.layerManagerCount()));
       }
     }).start();
     this.workbenchContext = workbenchContext;
@@ -446,6 +446,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
   public void setTimeMessage(String message) {
     // <<TODO:IMPROVE>> Treat null messages like "" [Jon Aquino]
     timeLabel.setText((message == "") ? " " : message);
+	timeLabel.setToolTipText(message);
     // Make message at least a space so that status bar won't collapse [Jon
     // Aquino]
   }
@@ -1038,20 +1039,21 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
     statusPanel.add(coordinateLabel, new GridBagConstraints(5, 1, 1, 1, 0.0,
       0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(
         0, 0, 0, 0), 0, 0));
-    statusPanel.add(timeLabel, new GridBagConstraints(2, 1, 1, 1, 0.0, 0.0,
+    statusPanel.add(timeLabel, new GridBagConstraints(2, 1, 1, 1, 1.0, 0.0,
       GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0,
         0, 0, 0), 0, 0));
-    statusPanel.add(messageLabel, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0,
+    statusPanel.add(messageLabel, new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0,
       GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0,
         0, 0, 0), 0, 0));
     // Give memoryLabel the 1.0 weight. All the rest should have their
     // sizes
     // configured using #configureStatusLabel. [Jon Aquino]
-    statusPanel.add(memoryLabel, new GridBagConstraints(3, 1, 1, 1, 1.0, 0.0,
+    statusPanel.add(memoryLabel, new GridBagConstraints(3, 1, 1, 1, 0.0, 0.0,
       GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0,
         0, 0, 0), 0, 0));
-    statusPanel.add(wmsLabel, new GridBagConstraints(4, 1, 1, 1, 0.0, 0.0,
-      GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0),
+	// GridBagConstraints.HORIZONTAL, as the other ones [michaelm 2009-02-20]
+    statusPanel.add(wmsLabel, new GridBagConstraints(4, 1, 1, 1, 1.0, 0.0,
+      GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0),
       0, 0));
   }
 
