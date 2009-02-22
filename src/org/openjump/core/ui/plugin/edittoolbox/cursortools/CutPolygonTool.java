@@ -1,3 +1,4 @@
+// license Licence CeCILL http://www.cecill.info/
 
 package org.openjump.core.ui.plugin.edittoolbox.cursortools;
 
@@ -8,8 +9,6 @@ import java.util.Iterator;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
-
-
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
@@ -31,12 +30,13 @@ import com.vividsolutions.jump.workbench.ui.cursortool.editing.FeatureDrawingUti
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 /**
+* This cursor tool is installed by CutPoygonSIGLEPlugIn
+* To use it, select one or several Polygon a in layer A, draw a Polygon b by
+* hand, every selected polygon a will be changed into¨a - b.
+*
 * @author ERWAN BOCHER Laboratoire RESO UMR CNRS 6590 et Olivier Bonnefont
 * @see <a href="http://url www.projet-sigle.org">projet-sigle</a>
-* curentdate 18 mai 2006
-* license Licence CeCILL http://www.cecill.info/
-* 
-* Cette classe réalise les opérations géometriques en fonction des polygones selectionés et du polygone déssiné.
+* @version 2006-05-18
 */
 public class CutPolygonTool extends PolygonTool {
 		  
@@ -47,115 +47,92 @@ public class CutPolygonTool extends PolygonTool {
 	Geometry newGeomIntersect = null;
 	Geometry newGeomDiff = null;
 	
-		private FeatureDrawingUtil featureDrawingUtil;
+	private FeatureDrawingUtil featureDrawingUtil;
 					
-	    protected CutPolygonTool(FeatureDrawingUtil featuredrawingutil)
-	    {
-	        this.featureDrawingUtil = featureDrawingUtil;
-	    }
+	protected CutPolygonTool(FeatureDrawingUtil featuredrawingutil) {
+	    this.featureDrawingUtil = featureDrawingUtil;
+	}
 
-		public static CursorTool create(LayerNamePanelProxy layerNamePanelProxy) {
-			FeatureDrawingUtil featureDrawingUtil =
+	public static CursorTool create(LayerNamePanelProxy layerNamePanelProxy) {
+		FeatureDrawingUtil featureDrawingUtil =
 				new FeatureDrawingUtil(layerNamePanelProxy);
 
 			return featureDrawingUtil.prepare(
 				new CutPolygonTool(featureDrawingUtil),
 				true);
-		}
-    	
-	    //	Ici on va chercher l'icone pour le plugin. L'icone est localisé dans le repertoire de votre package
-	    public Icon getIcon() {
-	    	return new ImageIcon(getClass().getResource("CutPolygon.gif"));
-		}
-
-	    public String getName(){
-	    	return sCookieCut;
-	    }
-
-	    //Traitement réalisé lors du déplacement de la souris
-	    protected void gestureFinished()throws Exception {
-	    	  
-	    	//Ici on va chercher la couche
-	    	  	
-	    	  	WorkbenchContext context = getWorkbench().getContext();
-	    	  	
-	    	  	LayerNamePanel layernamepanel = context.getLayerNamePanel();
-	    	  	
-				
-	            Layer[] selectedLayers = layernamepanel.getSelectedLayers();
-	           
-	            // Conditions pour l'utilisation de la fonction de découpage de polygones
-	            
-	            if (selectedLayers.length == 0){
-	            
-	            	JOptionPane.showMessageDialog(null, I18N.get("com.vividsolutions.jump.workbench.plugin.At-least-one-layer-must-be-selected"),  I18N.get("org.openjump.core.ui.plugin.edittoolbox.Information"), JOptionPane.INFORMATION_MESSAGE);
-	            }
-	            
-	           else if (selectedLayers.length > 1) {
-	           	
-	           	JOptionPane.showMessageDialog(null,  I18N.get("com.vividsolutions.jump.workbench.plugin.Exactly-one-layer-must-have-selected-items"),  I18N.get("org.openjump.core.ui.plugin.edittoolbox.Information"), JOptionPane.INFORMATION_MESSAGE);
-	           }
-	           
-	           
-	           else {
-	            
-	           	Layer activeLayer = (Layer) selectedLayers[0];
-	            Collection selectedFeatures = context.getLayerViewPanel().getSelectionManager() .getFeaturesWithSelectedItems(activeLayer);
-	               
-	           if (activeLayer.isEditable()) {
-	    	
-	            if (!checkPolygon()) {
-				return;
-	            }
-	    		    	
-	            else  {
-	    		    		
-	    		
-	    		for (Iterator k = selectedFeatures.iterator(); k.hasNext();){
-	    			
-	    			Feature featureSelected = (Feature) k.next();
-	    			 
-	    			geomSelected = featureSelected.getGeometry();
-	    			geomDraw = getPolygon();
-	    			
-	    				    			
-	    			if(!getPolygon().intersects(geomSelected))
-	    			 {
-	    				
-	    			 }
-	    			else {
-	    				if ((geomSelected instanceof Polygon)||(geomSelected instanceof MultiPolygon)){
-	    			newGeomIntersect = geomSelected.intersection(geomDraw);
-	    			newGeomDiff = geomSelected.difference(newGeomIntersect);
-	    			
-	    			
-	    			  	BasicFeature featureIntersect = new BasicFeature(activeLayer.getFeatureCollectionWrapper().getFeatureSchema());
-	    		        BasicFeature featureDiff = new BasicFeature(activeLayer.getFeatureCollectionWrapper().getFeatureSchema());
-	    		        FeatureUtil.copyAttributes(featureSelected, featureIntersect);
-	    		        featureIntersect.setGeometry(newGeomIntersect);
-	    		        FeatureUtil.copyAttributes(featureSelected, featureDiff);	    		        	
-	    		        featureDiff.setGeometry(newGeomDiff);
-	    		        
-	    		        // on suprime l'entité d'entrée que l'on remplace par les entités produites
-	    		        	activeLayer.getFeatureCollectionWrapper().remove(featureSelected);
-	    		        	activeLayer.getFeatureCollectionWrapper().add(featureIntersect);
-	    		        	activeLayer.getFeatureCollectionWrapper().add(featureDiff);
-	    		        
-	    		       //	rafraîchissement de l’affichage
-	    		        	context.getLayerViewPanel().repaint();
-	    				   }
-	    			    	}
-	    	}
-	            }
-	    	  }
-	           else {
-	        	
-	           	JOptionPane.showMessageDialog(null,  I18N.get("ui.SchemaPanel.layer-must-be-editable"),  I18N.get("org.openjump.core.ui.plugin.edittoolbox.Information"), JOptionPane.INFORMATION_MESSAGE);
-	          
-	           }
-	    	  }
-	    		    		    	
-	    	  }   	  
-	    
-	        
 	}
+
+	// Get the icon for the plugin. The image is located in the same directory
+	// as the class
+	public Icon getIcon() {
+	    return new ImageIcon(getClass().getResource("CutPolygon.gif"));
+    }
+
+	public String getName(){
+	    return sCookieCut;
+	}
+
+	// The user finishes to draw the polygon with the mouse
+	protected void gestureFinished() throws Exception {
+	    
+	    //Ici on va chercher la couche
+	    WorkbenchContext context = getWorkbench().getContext();
+	    
+	    LayerNamePanel layernamepanel = context.getLayerNamePanel();
+		
+	    Layer[] selectedLayers = layernamepanel.getSelectedLayers();
+	    
+	    // Conditions pour l'utilisation de la fonction de découpage de polygones
+	    
+	    if (selectedLayers.length == 0){
+			JOptionPane.showMessageDialog(null, I18N.getMessage("com.vividsolutions.jump.workbench.plugin.At-least-one-layer-must-be-selected", new Object[]{1}),  I18N.get("org.openjump.core.ui.plugin.edittoolbox.Information"), JOptionPane.INFORMATION_MESSAGE);
+	    }
+	    
+	    else if (selectedLayers.length > 1) {
+	        JOptionPane.showMessageDialog(null,  I18N.getMessage("com.vividsolutions.jump.workbench.plugin.Exactly-one-layer-must-have-selected-items", new Object[]{1}),  I18N.get("org.openjump.core.ui.plugin.edittoolbox.Information"), JOptionPane.INFORMATION_MESSAGE);
+	    }
+	    
+	    else {
+	        Layer activeLayer = (Layer) selectedLayers[0];
+	        Collection selectedFeatures = context.getLayerViewPanel().getSelectionManager() .getFeaturesWithSelectedItems(activeLayer);
+	        if (activeLayer.isEditable()) {
+	            if (!checkPolygon()) {
+				    return;
+	            }
+	            else  {
+	    		    for (Iterator k = selectedFeatures.iterator(); k.hasNext();) {
+						Feature featureSelected = (Feature) k.next();
+						geomSelected = featureSelected.getGeometry();
+						geomDraw = getPolygon();
+                        
+						if(!getPolygon().intersects(geomSelected)) {
+						}
+	    			    else {
+							if ((geomSelected instanceof Polygon)||(geomSelected instanceof MultiPolygon)){
+								newGeomIntersect = geomSelected.intersection(geomDraw);
+								newGeomDiff = geomSelected.difference(newGeomIntersect);
+								BasicFeature featureIntersect = new BasicFeature(activeLayer.getFeatureCollectionWrapper().getFeatureSchema());
+								BasicFeature featureDiff = new BasicFeature(activeLayer.getFeatureCollectionWrapper().getFeatureSchema());
+								FeatureUtil.copyAttributes(featureSelected, featureIntersect);
+								featureIntersect.setGeometry(newGeomIntersect);
+								FeatureUtil.copyAttributes(featureSelected, featureDiff);	    		        	
+								featureDiff.setGeometry(newGeomDiff);
+								
+								// on suprime l'entité d'entrée que l'on remplace par les entités produites
+								activeLayer.getFeatureCollectionWrapper().remove(featureSelected);
+								activeLayer.getFeatureCollectionWrapper().add(featureIntersect);
+								activeLayer.getFeatureCollectionWrapper().add(featureDiff);
+								
+								//	rafraîchissement de l’affichage
+								context.getLayerViewPanel().repaint();
+							}
+	    			    }
+					}
+	            }
+			}
+	        else {
+	           	JOptionPane.showMessageDialog(null,  I18N.get("ui.SchemaPanel.layer-must-be-editable"),  I18N.get("org.openjump.core.ui.plugin.edittoolbox.Information"), JOptionPane.INFORMATION_MESSAGE);
+	        }
+	    }
+	}
+}
