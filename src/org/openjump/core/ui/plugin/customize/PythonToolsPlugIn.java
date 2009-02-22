@@ -67,7 +67,7 @@ import java.io.File;
 public class PythonToolsPlugIn extends ToolboxPlugIn
 {
 	private static final Logger LOG = Logger.getLogger(PythonToolsPlugIn.class);
-	private static final String sName = "Python Tools";
+	private static String sName = "Python Console and Tools";
 	//-- add string to language files
 	//private static final String sName = I18N.get("org.openjump.core.ui.plugin.customize.PythonToolsPlugIn.Python-Tools");
 
@@ -78,6 +78,7 @@ public class PythonToolsPlugIn extends ToolboxPlugIn
     
 	public void initialize(PlugInContext context) throws Exception
     {        
+		this.sName = I18N.get("org.openjump.core.ui.plugin.customize.PythonToolsPlugIn.Python-Console-and-Tools");
         //[sstein - old, access via button]
 		//context.getWorkbenchContext().getWorkbench().getFrame().getToolBar().addPlugIn(getIcon(), this, createEnableCheck(context.getWorkbenchContext()), context.getWorkbenchContext());
         //[sstein - neu, access via menu]

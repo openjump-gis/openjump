@@ -1192,7 +1192,7 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
 
     private JComboBox classificationComboBox = new JComboBox();
 
-	private JLabel classificationLabel = new JLabel(I18N.get("ColorThemingStylePanel.Classification_Method"));
+	private JLabel classificationLabel = new JLabel(I18N.get("ColorThemingStylePanel.Classification-Method"));
 
 	private QuantileColorThemingState quantileColorThemingState;
 	private MeanSTDevColorThemingState meanSTDevColorThemingState;
@@ -1264,13 +1264,13 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
 	private static final int JENKS = 5;
 
 	private void initClassificationComboBox() {
-		classificationComboBox.addItem(I18N.get("ColorThemingStylePanel.Unique_value"));
-		classificationComboBox.addItem(I18N.get("ColorThemingStylePanel.Equal_Interval"));
-		classificationComboBox.addItem(I18N.get("ColorThemingStylePanel.Quantile"));
+		classificationComboBox.addItem(I18N.get("ColorThemingStylePanel.Unique-value"));
+		classificationComboBox.addItem(I18N.get("ColorThemingStylePanel.Equal-Interval"));
+		classificationComboBox.addItem(I18N.get("ColorThemingStylePanel.Quantile-Equal-Number"));
 		// -- [sstein 15.Feb.2009]
-		classificationComboBox.addItem("Mean Standard Deviation");
-		classificationComboBox.addItem("Maximal Breaks");
-		classificationComboBox.addItem("Jenks Optimal Method");
+		classificationComboBox.addItem(I18N.get("ColorThemingStylePanel.Mean-Standard-Deviation"));
+		classificationComboBox.addItem(I18N.get("ColorThemingStylePanel.Maximal-Breaks"));
+		classificationComboBox.addItem(I18N.get("ColorThemingStylePanel.Jenks-Optimal-Method"));
 		// -- stein:end
 		classificationComboBox.addItemListener(new ActionClassification());
 	}

@@ -56,7 +56,7 @@ public class StatisticOverViewPlugIn extends AbstractPlugIn{
     
     private WorkbenchContext workbenchContext;
     
-    String sStatisticsOverview=I18N.get("org.openjump.core.ui.plugin.tools.StatisticOverViewPlugIn.Attribute-Statistics-Overview");
+    String sStatisticsOverview=I18N.get("org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewPlugIn.Layer-Attribute-Statistics");
 	
     public void initialize(PlugInContext context) throws Exception
     {     
@@ -71,7 +71,7 @@ public class StatisticOverViewPlugIn extends AbstractPlugIn{
     }
     
     public String getName() {
-        return sStatisticsOverview;
+        return sStatisticsOverview + "...";
     }
     
     /**

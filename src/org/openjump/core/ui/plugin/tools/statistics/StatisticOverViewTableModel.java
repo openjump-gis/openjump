@@ -41,8 +41,13 @@ public class StatisticOverViewTableModel  extends StandardPirolTableModel {
     protected Feature[] features = null;
 
     public StatisticOverViewTableModel(Feature[] features) {
-        super(new String[]{ I18N.get("attribute"), I18N.get("type"), I18N.get("min-value"), 
-        		I18N.get("mean-mode"), I18N.get("max-value"), I18N.get("deviation") });
+        super(new String[]{ 
+        		I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.attribute"), 
+        		I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Attribute-type"), 
+        		I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.minimum"), 
+        		I18N.get("org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewTableModel.mean-mode"), 
+        		I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.maximum"), 
+        		I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.standard-dev") });
         this.features = features;
         
         this.setupTable();
