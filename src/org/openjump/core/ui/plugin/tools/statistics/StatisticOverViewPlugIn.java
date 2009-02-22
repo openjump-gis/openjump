@@ -63,7 +63,7 @@ public class StatisticOverViewPlugIn extends AbstractPlugIn{
         workbenchContext = context.getWorkbenchContext();
         context.getFeatureInstaller().addMainMenuItemWithJava14Fix(
         		this, 
-				new String[] { MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS, MenuNames.ONELAYER }, 
+				new String[] { MenuNames.TOOLS, MenuNames.STATISTICS}, 
 				this.getName(), 
 				false, 
 				null, 

@@ -1,3 +1,7 @@
+2009-02-21 mentaer <sstein@geo.uzh.ch>
+    Created new "statistics" menu in tools. Moved feature-, layer-, 
+    and attribute statistics functions into the menu.
+    
 2009-02-16 mentaer <sstein@geo.uzh.ch>
     Integrated RasterImageLayer from Pirol - this will allow to
     use Sextante with OpenJUMP directly (when Sextante bindings are changed too).

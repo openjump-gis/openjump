@@ -75,7 +75,7 @@ public class FeatureStatisticsPlugIn extends AbstractPlugIn {
         	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
     		featureInstaller.addMainMenuItem(
     	        this,								//exe
-  				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_QA}, 	//menu path
+  				new String[] {MenuNames.TOOLS, MenuNames.STATISTICS}, 	//menu path
                 this.getName() + "...", //name methode .getName recieved by AbstractPlugIn 
                 false,			//checkbox
                 null,			//icon
