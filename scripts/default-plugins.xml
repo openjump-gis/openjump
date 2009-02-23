@@ -28,7 +28,6 @@
 	<plug-in>org.openjump.core.ui.plugin.layer.SortCategoryByNamePlugIn</plug-in>	
 	<plug-in>org.openjump.core.ui.plugin.layer.SortCategoryRestorePlugIn</plug-in>	
 	<plug-in>org.openjump.core.ui.plugin.layer.SortCategorySavePlugIn</plug-in>		
-	<plug-in>org.openjump.core.ui.plugin.layer.pirolraster.LoadSextanteRasterImagePlugIn</plug-in>	
 	<!---  ======================================== /-->
 	<!--  			menu Tools 						/-->
 	<!--- ========================================= /-->

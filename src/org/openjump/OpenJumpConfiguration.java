@@ -23,6 +23,7 @@ import java.util.List;
 import javax.swing.JPopupMenu;
 
 import org.openjump.core.ccordsys.srid.EnsureAllLayersHaveSRIDStylePlugIn;
+import org.openjump.core.rasterimage.AddRasterImageLayerWizard;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.RasterImageLayerRendererFactory;
 import org.openjump.core.ui.io.file.DataSourceFileLayerLoader;
@@ -559,7 +560,12 @@ public class OpenJumpConfiguration {
     AddWmsLayerWizard addWmsLayerWizard = new AddWmsLayerWizard(
       workbenchContext);
     OpenWizardPlugIn.addWizard(workbenchContext, addWmsLayerWizard);
-
+    
+    //[sstein] 22.Feb.2009 -- added to load Pirol/Sextante images
+    AddRasterImageLayerWizard addRasterImageLayerWizard = new AddRasterImageLayerWizard(
+    		workbenchContext);
+    OpenWizardPlugIn.addWizard(workbenchContext, addRasterImageLayerWizard);
+    
     /***************************************************************************
      * testing
      **************************************************************************/
