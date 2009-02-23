@@ -13,15 +13,15 @@ import java.util.HashMap;
 import java.util.Set;
 
 import org.openjump.core.apitools.HandlerToMakeYourLifeEasier;
+import org.openjump.core.apitools.objecttyperoles.FeatureCollectionRole;
+import org.openjump.core.apitools.objecttyperoles.FeatureCollectionRoleTypes;
+import org.openjump.core.apitools.objecttyperoles.PirolFeatureCollection;
+import org.openjump.core.apitools.objecttyperoles.RoleStandardFeatureCollection;
 import org.openjump.util.metaData.ObjectContainingMetaInformation;
 
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.workbench.model.Layer;
 
-import de.fho.jump.pirol.utilities.FeatureCollection.PirolFeatureCollection;
-import de.fho.jump.pirol.utilities.FeatureCollection.PirolFeatureCollectionRole;
-import de.fho.jump.pirol.utilities.FeatureCollection.PirolFeatureCollectionRoleTypes;
-import de.fho.jump.pirol.utilities.FeatureCollection.RoleStandardFeatureCollection;
 import de.fho.jump.pirol.utilities.debugOutput.DebugUserIds;
 import de.fho.jump.pirol.utilities.debugOutput.PersonalLogger;
 
@@ -92,7 +92,7 @@ public class MetaInformationHandler implements HandlerToMakeYourLifeEasier {
      *@param fc regular FeatureCollection
      *@return PirolFeatureCollection
      */
-    public static final PirolFeatureCollection createPirolFeatureCollection(FeatureCollection fc, PirolFeatureCollectionRole role){
+    public static final PirolFeatureCollection createPirolFeatureCollection(FeatureCollection fc, FeatureCollectionRole role){
         PirolFeatureCollection pfc = null;
         
         if (!PirolFeatureCollection.class.isInstance(fc)){
@@ -100,7 +100,7 @@ public class MetaInformationHandler implements HandlerToMakeYourLifeEasier {
         } else {
             pfc = (PirolFeatureCollection)fc;
             
-            if (!role.equalsRole(PirolFeatureCollectionRoleTypes.STANDARD)){
+            if (!role.equalsRole(FeatureCollectionRoleTypes.STANDARD)){
                 pfc.addRole(role);
             }
             

@@ -23,6 +23,8 @@ import java.util.List;
 import javax.swing.JPopupMenu;
 
 import org.openjump.core.ccordsys.srid.EnsureAllLayersHaveSRIDStylePlugIn;
+import org.openjump.core.rasterimage.RasterImageLayer;
+import org.openjump.core.rasterimage.RasterImageLayerRendererFactory;
 import org.openjump.core.ui.io.file.DataSourceFileLayerLoader;
 import org.openjump.core.ui.io.file.FileLayerLoader;
 import org.openjump.core.ui.io.file.ReferencedImageFactoryFileLayerLoader;
@@ -45,6 +47,7 @@ import org.openjump.core.ui.plugin.layer.ChangeLayerableNamePlugIn;
 import org.openjump.core.ui.plugin.layer.ChangeSRIDPlugIn;
 import org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn;
 import org.openjump.core.ui.plugin.layer.ToggleVisiblityPlugIn;
+import org.openjump.core.ui.plugin.layer.pirolraster.RasterImageContextMenu;
 import org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn;
 import org.openjump.core.ui.plugin.mousemenu.category.MoveCategoryOneDown;
 import org.openjump.core.ui.plugin.mousemenu.category.MoveCategoryOneUp;
@@ -86,6 +89,7 @@ import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
+import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
 
 import de.latlon.deejump.plugin.SaveLegendPlugIn;
 import de.latlon.deejump.plugin.style.LayerStyle2SLDPlugIn;
@@ -406,6 +410,12 @@ public class OpenJumpConfiguration {
     ChangeLayerableNamePlugIn changeLayerableNamePlugIn = new ChangeLayerableNamePlugIn();
     changeLayerableNamePlugIn.initialize(new PlugInContext(workbenchContext,
       null, null, null, null));
+    
+    //-- [sstein 22.Feb.2009]
+    //-- adds renderer for (Pirol/Sextante) raster images
+    RenderingManager.putRendererForLayerable(RasterImageLayer.class, new RasterImageLayerRendererFactory(pluginContext.getWorkbenchContext()));
+    //-- adds the context menu for (Pirol/Sextante) Raster Images
+    pluginContext.getWorkbenchFrame().getNodeClassToPopupMenuMap().put(RasterImageLayer.class, RasterImageContextMenu.getInstance(pluginContext));
     
     //-- [sstein 10.July.2008] now initialized with default-plugins.xml file
     /*

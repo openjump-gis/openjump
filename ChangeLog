@@ -1,6 +1,13 @@
+2009-02-22 mentaer <sstein@geo.uzh.ch>
+    Added layer context menus for Pirol/Sextante raster images.
+    
 2009-02-21 mentaer <sstein@geo.uzh.ch>
     Created new "statistics" menu in tools. Moved feature-, layer-, 
     and attribute statistics functions into the menu.
+    
+2009-02-20 mmichaud <michael.michaud@free.fr>
+	Newly created layers are marked with featureCollectionModified=true.
+	So when OpenJUMP is closed, it should ask for saving the data.
     
 2009-02-16 mentaer <sstein@geo.uzh.ch>
     Integrated RasterImageLayer from Pirol - this will allow to

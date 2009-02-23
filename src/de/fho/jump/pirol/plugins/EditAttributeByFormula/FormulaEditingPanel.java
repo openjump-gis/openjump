@@ -27,6 +27,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import org.openjump.core.apitools.FeatureSchemaTools;
+import org.openjump.core.ui.swing.ValueChecker;
+import org.openjump.io.PropertiesHandler;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
@@ -35,10 +37,8 @@ import com.vividsolutions.jump.workbench.ui.GenericNames;
 
 import de.fho.jump.pirol.ui.documents.NumberInputDocument;
 import de.fho.jump.pirol.ui.panels.NewAttributePanel;
-import de.fho.jump.pirol.ui.tools.ValueChecker;
 import de.fho.jump.pirol.utilities.FormulaParsing.FormulaParser;
 import de.fho.jump.pirol.utilities.FormulaParsing.FormulaValue;
-import de.fho.jump.pirol.utilities.Properties.PropertiesHandler;
 import de.fho.jump.pirol.utilities.attributes.AttributeInfo;
 import de.fho.jump.pirol.utilities.debugOutput.DebugUserIds;
 import de.fho.jump.pirol.utilities.debugOutput.PersonalLogger;

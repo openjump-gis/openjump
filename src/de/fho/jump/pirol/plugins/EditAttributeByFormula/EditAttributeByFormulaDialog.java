@@ -20,15 +20,16 @@ import java.awt.Insets;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 
+import org.openjump.core.ui.swing.DialogTools;
+import org.openjump.core.ui.swing.OkCancelButtonPanel;
+import org.openjump.core.ui.swing.listener.OKCancelListener;
+import org.openjump.io.PropertiesHandler;
+
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.FeatureSchema;
 
-import de.fho.jump.pirol.ui.eventHandling.OKCancelListener;
 import de.fho.jump.pirol.ui.panels.NewAttributePanel;
-import de.fho.jump.pirol.ui.panels.OkCancelButtonPanel;
-import de.fho.jump.pirol.ui.tools.DialogTools;
 import de.fho.jump.pirol.utilities.FormulaParsing.FormulaValue;
-import de.fho.jump.pirol.utilities.Properties.PropertiesHandler;
 import de.fho.jump.pirol.utilities.attributes.AttributeInfo;
 
 /**

@@ -16,7 +16,8 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Calendar;
 
-import de.fho.jump.pirol.utilities.Properties.PropertiesHandler;
+import org.openjump.io.PropertiesHandler;
+
 import de.fho.jump.pirol.utilities.settings.PirolPlugInSettings;
 
 /**

@@ -17,6 +17,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.openjump.core.apitools.objecttyperoles.FeatureCollectionRole;
+import org.openjump.core.apitools.objecttyperoles.PirolFeatureCollection;
+import org.openjump.core.apitools.objecttyperoles.RoleTriangularIrregularNet;
+
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.BasicFeature;
@@ -29,9 +33,6 @@ import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 
-import de.fho.jump.pirol.utilities.FeatureCollection.PirolFeatureCollection;
-import de.fho.jump.pirol.utilities.FeatureCollection.PirolFeatureCollectionRole;
-import de.fho.jump.pirol.utilities.FeatureCollection.RoleTriangularIrregularNet;
 import de.fho.jump.pirol.utilities.i18n.PirolPlugInMessages;
 import de.fho.jump.pirol.utilities.settings.PirolPlugInSettings;
 
@@ -44,7 +45,7 @@ import de.fho.jump.pirol.utilities.settings.PirolPlugInSettings;
  * FH Osnabrück - University of Applied Sciences Osnabrück
  * Project PIROL 2005
  * Daten- und Wissensmanagement
- * 
+ * [sstein] - 22.Feb.2009 - modified to work in OpenJUMP
  */
 public class LayerTools extends ToolToMakeYourLifeEasier {
     protected PlugInContext context = null;
@@ -88,28 +89,28 @@ public class LayerTools extends ToolToMakeYourLifeEasier {
         return context.getSelectedLayers().length;
     }
     
-    public static Layer addStandardResultLayer( String title, FeatureCollection featCollection, PlugInContext context, PirolFeatureCollectionRole role  ){
+    public static Layer addStandardResultLayer( String title, FeatureCollection featCollection, PlugInContext context, FeatureCollectionRole role  ){
         return LayerTools.addStandardResultLayer(title, featCollection, Color.yellow, context, role);
     }
     
-    public static Layer addAndSelectStandardResultLayer( String title, FeatureCollection featCollection, Color color,  PlugInContext context, PirolFeatureCollectionRole role  ){
+    public static Layer addAndSelectStandardResultLayer( String title, FeatureCollection featCollection, Color color,  PlugInContext context, FeatureCollectionRole role  ){
         return LayerTools.addStandardResultLayer(title, featCollection, color, context, true, role);
     }
     
-    public static Layer addAndSelectStandardResultLayer( String title, FeatureCollection featCollection, PlugInContext context, PirolFeatureCollectionRole role  ){
+    public static Layer addAndSelectStandardResultLayer( String title, FeatureCollection featCollection, PlugInContext context, FeatureCollectionRole role  ){
         return LayerTools.addStandardResultLayer(title, featCollection, Color.YELLOW, context, true, role);
     }
     
-    public static Layer addStandardResultLayer( String title, FeatureCollection featCollection, Color color,  PlugInContext context, PirolFeatureCollectionRole role  ){
+    public static Layer addStandardResultLayer( String title, FeatureCollection featCollection, Color color,  PlugInContext context, FeatureCollectionRole role  ){
         return LayerTools.addStandardResultLayer(title, featCollection, color, context, false, role);
     }
     
-    public static Layer addStandardResultLayer( String title, FeatureCollection featCollection, Color color,  PlugInContext context, boolean select, PirolFeatureCollectionRole role ){
+    public static Layer addStandardResultLayer( String title, FeatureCollection featCollection, Color color,  PlugInContext context, boolean select, FeatureCollectionRole role ){
         if (featCollection==null || context==null || LayerTools.getResultCategory(context)==null) return null;
         
         Layer newLayer = null;
         
-        if (!PirolFeatureCollection.class.isInstance(featCollection)) {
+        if (!FeatureCollection.class.isInstance(featCollection)) {
             newLayer = new Layer( title, color, new PirolFeatureCollection(featCollection, role), context.getLayerManager());
         } else {
         	if (role != null)
@@ -126,7 +127,7 @@ public class LayerTools extends ToolToMakeYourLifeEasier {
 		return newLayer;
     }
     
-    public Layer addStandardResultLayer( String title, FeatureCollection featCollection, PirolFeatureCollectionRole role ){
+    public Layer addStandardResultLayer( String title, FeatureCollection featCollection, FeatureCollectionRole role ){
         return LayerTools.addStandardResultLayer(title,featCollection,this.context, role);
     }
     

@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.openjump.core.apitools.comparisonandsorting.ObjectComparator;
+import org.openjump.core.apitools.objecttyperoles.PirolFeatureCollection;
 import org.openjump.util.metaData.MetaInformationHandler;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -35,7 +36,6 @@ import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
 
-import de.fho.jump.pirol.utilities.FeatureCollection.PirolFeatureCollection;
 import de.fho.jump.pirol.utilities.FormulaParsing.FormulaValue;
 import de.fho.jump.pirol.utilities.attributes.AttributeInfo;
 import de.fho.jump.pirol.utilities.debugOutput.DebugUserIds;
@@ -54,6 +54,7 @@ import de.fho.jump.pirol.utilities.debugOutput.PersonalLogger;
  * <br>Subproject: Daten- und Wissensmanagement
  * 
  * @version $Rev$
+ * [sstein] - 22.Feb.2009 - modified to work in OpenJUMP
  */
 
 public class FeatureCollectionTools extends ToolToMakeYourLifeEasier {
