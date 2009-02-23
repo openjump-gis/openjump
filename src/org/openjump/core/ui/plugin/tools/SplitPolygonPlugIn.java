@@ -58,14 +58,14 @@ import com.vividsolutions.jump.workbench.ui.SelectionManagerProxy;
 import com.vividsolutions.jump.workbench.ui.plugin.analysis.GeometryFunction;
 public class SplitPolygonPlugIn extends AbstractPlugIn implements ThreadedPlugIn
 {
-	  private static String UPDATE_SRC = I18N.get("org.openjump.core.ui.plugin.tools.CutPolygonPlugIn.Update-the-polygon-with-result");
-	  private static String ADD_TO_SRC = I18N.get("org.openjump.core.ui.plugin.tools.CutPolygonPlugIn.Add-result-to-the-polygon-layer");
-	  private static String CREATE_LYR = I18N.get("org.openjump.core.ui.plugin.tools.CutPolygonPlugIn.Create-new-layer-for-result");
-	  private static String sCutPolygon = I18N.get("org.openjump.core.ui.plugin.tools.CutPolygonPlugIn.Cut-Polygon");
-	  private static String sError = I18N.get("org.openjump.core.ui.plugin.tools.CutPolygonPlugIn.Errors-found-while-executing-Cut-Polygon");
-	  private static String sExecuting = I18N.get("org.openjump.core.ui.plugin.tools.CutPolygonPlugIn.Executing-Difference-function");
-	  private static String sMustSelect = I18N.get("org.openjump.core.ui.plugin.tools.CutPolygonPlugIn.Must-select-one-polygon-and-one-linestring");
-	  private static String sDescription = I18N.get("org.openjump.core.ui.plugin.tools.CutPolygonPlugIn.Uses-the-selected-linestring-to-cut-the-selected-polygon-into-separate-sections");
+	  private static String UPDATE_SRC = I18N.get("org.openjump.core.ui.plugin.tools.SplitPolygonPlugIn.Update-the-polygon-with-result");
+	  private static String ADD_TO_SRC = I18N.get("org.openjump.core.ui.plugin.tools.SplitPolygonPlugIn.Add-result-to-the-polygon-layer");
+	  private static String CREATE_LYR = I18N.get("org.openjump.core.ui.plugin.tools.SplitPolygonPlugIn.Create-new-layer-for-result");
+	  private static String sCutPolygon = I18N.get("org.openjump.core.ui.plugin.tools.SplitPolygonPlugIn.Cut-Polygon");
+	  private static String sError = I18N.get("org.openjump.core.ui.plugin.tools.SplitPolygonPlugIn.Errors-found-while-executing-Cut-Polygon");
+	  private static String sExecuting = I18N.get("org.openjump.core.ui.plugin.tools.SplitPolygonPlugIn.Executing-Difference-function");
+	  private static String sMustSelect = I18N.get("org.openjump.core.ui.plugin.tools.SplitPolygonPlugIn.Must-select-one-polygon-and-one-linestring");
+	  private static String sDescription = I18N.get("org.openjump.core.ui.plugin.tools.SplitPolygonPlugIn.Uses-the-selected-linestring-to-cut-the-selected-polygon-into-separate-sections");
 	  
 	  private MultiInputDialog dialog;
 	  private Layer srcLayer;
@@ -81,14 +81,14 @@ public class SplitPolygonPlugIn extends AbstractPlugIn implements ThreadedPlugIn
 	  public void initialize(PlugInContext context) throws Exception 
 	  {
 		  //-- load again in the correct language
-		  UPDATE_SRC = I18N.get("org.openjump.core.ui.plugin.tools.CutPolygonPlugIn.Update-the-polygon-with-result");
-		  ADD_TO_SRC = I18N.get("org.openjump.core.ui.plugin.tools.CutPolygonPlugIn.Add-result-to-the-polygon-layer");
-		  CREATE_LYR = I18N.get("org.openjump.core.ui.plugin.tools.CutPolygonPlugIn.Create-new-layer-for-result");
-		  sCutPolygon = I18N.get("org.openjump.core.ui.plugin.tools.CutPolygonPlugIn.Cut-Polygon");
-		  sError = I18N.get("org.openjump.core.ui.plugin.tools.CutPolygonPlugIn.Errors-found-while-executing-Cut-Polygon");
-		  sExecuting = I18N.get("org.openjump.core.ui.plugin.tools.CutPolygonPlugIn.Executing-Difference-function");
-		  sMustSelect = I18N.get("org.openjump.core.ui.plugin.tools.CutPolygonPlugIn.Must-select-one-polygon-and-one-linestring");
-		  sDescription = I18N.get("org.openjump.core.ui.plugin.tools.CutPolygonPlugIn.Uses-the-selected-linestring-to-cut-the-selected-polygon-into-separate-sections");
+		  UPDATE_SRC = I18N.get("org.openjump.core.ui.plugin.tools.SplitPolygonPlugIn.Update-the-polygon-with-result");
+		  ADD_TO_SRC = I18N.get("org.openjump.core.ui.plugin.tools.SplitPolygonPlugIn.Add-result-to-the-polygon-layer");
+		  CREATE_LYR = I18N.get("org.openjump.core.ui.plugin.tools.SplitPolygonPlugIn.Create-new-layer-for-result");
+		  sCutPolygon = I18N.get("org.openjump.core.ui.plugin.tools.SplitPolygonPlugIn.Cut-Polygon");
+		  sError = I18N.get("org.openjump.core.ui.plugin.tools.SplitPolygonPlugIn.Errors-found-while-executing-Cut-Polygon");
+		  sExecuting = I18N.get("org.openjump.core.ui.plugin.tools.SplitPolygonPlugIn.Executing-Difference-function");
+		  sMustSelect = I18N.get("org.openjump.core.ui.plugin.tools.SplitPolygonPlugIn.Must-select-one-polygon-and-one-linestring");
+		  sDescription = I18N.get("org.openjump.core.ui.plugin.tools.SplitPolygonPlugIn.Uses-the-selected-linestring-to-cut-the-selected-polygon-into-separate-sections");
 		  
 		  //-- [sstein 11 March 2007] it is a bit circumstantially to access a geometry function 
 		  //   using i18n strings - we should introduce an unique ID
