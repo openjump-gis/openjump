@@ -74,7 +74,7 @@ public class DeleteEmptyGeometriesPlugIn extends AbstractPlugIn
         context.getFeatureInstaller().addMainMenuItemWithJava14Fix(
         		this, 
 				new String[] { MenuNames.TOOLS, MenuNames.TOOLS_QA }, 
-				sDeleteEmptyGeometries, 
+				sDeleteEmptyGeometries + "...", 
 				false, 
 				null, 
 				this.createEnableCheck(workbenchContext));

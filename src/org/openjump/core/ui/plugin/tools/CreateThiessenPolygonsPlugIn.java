@@ -81,7 +81,6 @@ import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 /**
- * @description:
  *	Creates voronoi regions from a set of points.
  * 	The Delauney algorithm used for the triangulation is by L. Paul Chew and
  * 	his free demonstration java-applet.<p>
@@ -132,7 +131,7 @@ public class CreateThiessenPolygonsPlugIn extends AbstractPlugIn implements Thre
 	    	featureInstaller.addMainMenuItem(
 	    	        this,								//exe
 	                new String[] {MenuNames.TOOLS, MenuNames.TOOLS_GENERATE}, 	//menu path
-	                this.sName +"{pos:2}", //name methode .getName recieved by AbstractPlugIn 
+	                this.sName + "..." /*+ "{pos:2}"*/, //name methode .getName received by AbstractPlugIn
 	                false,			//checkbox
 	                null,			//icon
 	                createEnableCheck(context.getWorkbenchContext())); //enable check
