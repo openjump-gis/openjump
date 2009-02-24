@@ -45,7 +45,7 @@ import de.fho.jump.pirol.utilities.settings.PirolPlugInSettings;
  * 
  * @author Ole Rahn, Stefan Ostermann
  * <br>
- * <br>FH Osnabrück - University of Applied Sciences Osnabrück,
+ * <br>FH Osnabr&uuml;ck - University of Applied Sciences Osnabr&uuml;ck,
  * <br>Project: PIROL (2005),
  * <br>Subproject: Daten- und Wissensmanagement
  * 

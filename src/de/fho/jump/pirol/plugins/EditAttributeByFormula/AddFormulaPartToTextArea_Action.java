@@ -82,7 +82,7 @@ public class AddFormulaPartToTextArea_Action extends AbstractAction {
         if (buttonText.length() != 0){
             boolean formulaOk = true;
             
-            // TODO: prüfen ob zwei operatoren oder zwei operanden hintereinander benutzt wurden...
+            // TODO: check whether two operators or two operands in a row were used...
             
             if (formulaOk){
                 //this.textArea.append(buttonText);

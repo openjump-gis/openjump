@@ -12,7 +12,7 @@
  *  kleine Verbesserung im Worldfilehandler
  *
  *  Revision 1.1  2006/01/04 18:11:04  orahn
- *  neues Model für RasterImage-Support - erfordert u.U. noch Kern-Patch
+ *  new model for raster image support - may require yet core patch
  *
  *  Revision 1.5  2005/07/13 10:11:26  orahn
  *  +HandlerToMakeYourLifeEasier

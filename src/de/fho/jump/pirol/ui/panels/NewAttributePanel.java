@@ -26,13 +26,13 @@
  *
  *  Revision 1.3  2005/06/29 16:03:11  orahn
  *  +default Attribut-Name
- *  +Möglichkeit einen Attr. Namen vorzugeben
+ *  +Possibility of a Attribute name follows
  *
  *  Revision 1.2  2005/06/28 15:46:17  orahn
- *  einstellbar, ob ein default-Wert für das neue Attribut abgefragt werden soll...
+ *  adjustable, if a default value for the new attribute to be queried ...
  *
  *  Revision 1.1  2005/06/20 18:18:23  orahn
- *  Vorbereitung für Formeleditor
+ *  preparation for the Formula Editor
  *
  */
 package de.fho.jump.pirol.ui.panels;

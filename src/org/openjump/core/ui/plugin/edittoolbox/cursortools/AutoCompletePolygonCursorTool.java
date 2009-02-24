@@ -39,7 +39,7 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.ui.cursortool.PolygonTool;
 
 /*
- * @author Daniel Kümper
+ * @author Daniel K&uuml;mper
  */
 public class AutoCompletePolygonCursorTool extends PolygonTool {
 

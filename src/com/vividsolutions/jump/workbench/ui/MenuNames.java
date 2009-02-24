@@ -66,7 +66,7 @@ public interface MenuNames {
     // New menu for plugin manager, beanshell console, scripts
 	public static String CUSTOMIZE = I18N.get("ui.MenuNames.CUSTOMIZE");
 	
-	//erwan d�but d�cembre 2005 --- SIGLE	
+	//erwan begin 2005-12-01 --- SIGLE	
 	//Menu
 	public static String ATTRIBUTS = I18N.get("ui.MenuNames.ATTRIBUTS");
 	public static String SELECTION = I18N.get("ui.MenuNames.SELECTION");
@@ -86,6 +86,6 @@ public interface MenuNames {
 	public static String DELETE = I18N.get("ui.MenuNames.DELETE");
 	public static String DETECT = I18N.get("ui.MenuNames.DETECT");
 		
-	//	erwan fin d�cembre 2005
+	//	erwan end 2005-12-01
 
 }

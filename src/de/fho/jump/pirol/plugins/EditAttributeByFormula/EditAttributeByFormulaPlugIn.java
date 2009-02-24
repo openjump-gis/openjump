@@ -39,11 +39,11 @@
  *  added Pirol Plugin for Attribute Calculations for testing, which needs the baseclasses.jar
  *
  *  Revision 1.12  2006/05/09 14:31:39  orahn
- *  kleiner GUI verschönerung
+ *  small GUI beautification
  *
  *  Revision 1.11  2006/02/01 17:35:56  orahn
- *  + Unterstützung f. Attributnamen mit Leerzeichen
- *  + kleines, generelles Update für das PlugIn
+ *  + support attribute names with spaces
+ *  + small, general update for the PlugIn
  *
  *  Revision 1.10  2005/08/03 13:50:44  orahn
  *  +i18n
@@ -65,8 +65,8 @@
  *  aufgemotzt
  *
  *  Revision 1.4  2005/06/28 15:35:18  orahn
- *  fast soweit: es fehlt noch eine "taste" wie backspace für ganze operatoren bzw. operanden
- *  und das Formel-Text-Feld muß gegen direkte User-Eingaben geschützt werden
+ *  almost as far: it still lacks a "taste" like backspace for all operators and operands
+ *  and the Formula text box must be protected against direct user input
  *
  *  Revision 1.3  2005/06/23 13:57:20  orahn
  *  nutzt jetzt uniqueAttributeName

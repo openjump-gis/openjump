@@ -29,7 +29,7 @@ import com.vividsolutions.jump.workbench.ui.SelectionManager;
  * 
  * @author Ole Rahn
  * 
- * FH Osnabrück - University of Applied Sciences Osnabrück
+ * FH Osnabr&uuml;ck - University of Applied Sciences Osnabr&uuml;ck
  * Project PIROL 2005
  * Daten- und Wissensmanagement
  * 

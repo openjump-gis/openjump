@@ -82,7 +82,7 @@ public class CutPolygonTool extends PolygonTool {
 		
 	    Layer[] selectedLayers = layernamepanel.getSelectedLayers();
 	    
-	    // Conditions pour l'utilisation de la fonction de découpage de polygones
+	    // Conditions to use the CutPolygon function
 	    
 	    if (selectedLayers.length == 0){
 			JOptionPane.showMessageDialog(null, I18N.getMessage("com.vividsolutions.jump.workbench.plugin.At-least-one-layer-must-be-selected", new Object[]{1}),  I18N.get("org.openjump.core.ui.plugin.edittoolbox.Information"), JOptionPane.INFORMATION_MESSAGE);
@@ -118,12 +118,12 @@ public class CutPolygonTool extends PolygonTool {
 								FeatureUtil.copyAttributes(featureSelected, featureDiff);	    		        	
 								featureDiff.setGeometry(newGeomDiff);
 								
-								// on suprime l'entité d'entrée que l'on remplace par les entités produites
+								// replace orignal polygons by cut polygons
 								activeLayer.getFeatureCollectionWrapper().remove(featureSelected);
 								activeLayer.getFeatureCollectionWrapper().add(featureIntersect);
 								activeLayer.getFeatureCollectionWrapper().add(featureDiff);
 								
-								//	rafraîchissement de l’affichage
+								// refresh screen
 								context.getLayerViewPanel().repaint();
 							}
 	    			    }

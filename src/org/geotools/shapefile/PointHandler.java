@@ -8,7 +8,7 @@ import com.vividsolutions.jump.io.EndianDataOutputStream;
 /**
  * Wrapper for a Shapefile point.
  * 
- * getLength() modified by Michaël MICHAUD on 3 nov. 2004 to handle properly
+ * getLength() modified by Micha&euml;l MICHAUD on 3 nov. 2004 to handle properly
  * Point, PointM and PointZ length
  */
 public class PointHandler implements ShapeHandler {

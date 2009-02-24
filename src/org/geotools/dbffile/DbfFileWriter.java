@@ -12,7 +12,7 @@ import com.vividsolutions.jump.io.EndianDataOutputStream;
 
 /** a class for writing dbf files
  * @author Ian Turton
- * modified by Michaël MICHAUD on 3 nov. 2004
+ * modified by Micha&euml;l MICHAUD on 3 nov. 2004
  */
 
 
@@ -120,7 +120,7 @@ public class DbfFileWriter implements DbfConsts{
                 case 'C':
                 case 'c':
                 case 'D': //Added by [Jon Aquino]
-                //case 'L': moved to the end by Michaël MICHAUD
+                //case 'L': moved to the end by mmichaud
                 case 'M':
                 case 'G':
                 //chars
@@ -143,7 +143,7 @@ public class DbfFileWriter implements DbfConsts{
                         if (o instanceof Integer) {
                             fs = FormatedString.format(((Integer)o).intValue(),fields[i].fieldlen);
                         }
-                        // case LONG added by Michaël MICHAUD on 18 sept. 2004
+                        // case LONG added by mmichaud on 18 sept. 2004
                         else if (o instanceof Long) {
                             fs = FormatedString.format(((Long)o).toString(), 0, fields[i].fieldlen);
                         }
@@ -174,7 +174,7 @@ public class DbfFileWriter implements DbfConsts{
                     String x = FormatedString.format(s,fields[i].fieldnumdec,fields[i].fieldlen);
                     ls.writeBytesLE(x);
                     break;
-                // Case 'logical' added by Michaël Michaud on 18 sept. 2004
+                // Case 'logical' added by mmichaud on 18 sept. 2004
                 case 'L':
                     //boolean
                     if (o==null || o.equals("") || o.equals(" ")) ls.writeBytesLE(" ");

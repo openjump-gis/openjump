@@ -42,7 +42,7 @@ import de.fho.jump.pirol.utilities.settings.PirolPlugInSettings;
  * 
  * @author Ole Rahn
  * 
- * FH Osnabrück - University of Applied Sciences Osnabrück
+ * FH Osnabr&uuml;ck - University of Applied Sciences Osnabr&uuml;ck
  * Project PIROL 2005
  * Daten- und Wissensmanagement
  * [sstein] - 22.Feb.2009 - modified to work in OpenJUMP

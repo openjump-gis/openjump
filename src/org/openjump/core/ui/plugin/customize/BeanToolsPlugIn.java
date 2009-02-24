@@ -60,7 +60,7 @@ import org.apache.log4j.Logger;
 /**
  * This OpenJUMP PlugIn adds the capability to launch a scripted file from the menu.
  * The original design is from ISA (Larry Becker - 2005)
- * Modified by Michaël Michaud in order to make hirarchical menus possible.
+ * Modified by Micha&euml;l Michaud in order to make hirarchical menus possible.
  */
 public class BeanToolsPlugIn extends AbstractPlugIn {
 	
