@@ -56,7 +56,7 @@ public class StatisticOverViewPlugIn extends AbstractPlugIn{
     
     private WorkbenchContext workbenchContext;
     
-    String sStatisticsOverview=I18N.get("org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewPlugIn.Layer-Attribute-Statistics");
+    String sStatisticsOverview=I18N.get("org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewPlugIn.Attribute-Statistics-Overview");
 	
     public void initialize(PlugInContext context) throws Exception
     {     
@@ -64,14 +64,14 @@ public class StatisticOverViewPlugIn extends AbstractPlugIn{
         context.getFeatureInstaller().addMainMenuItemWithJava14Fix(
         		this, 
 				new String[] { MenuNames.TOOLS, MenuNames.STATISTICS}, 
-				this.getName(), 
+				this.getName() + "...", 
 				false, 
 				null, 
 				this.createEnableCheck(workbenchContext));
     }
     
     public String getName() {
-        return sStatisticsOverview + "...";
+        return sStatisticsOverview;
     }
     
     /**

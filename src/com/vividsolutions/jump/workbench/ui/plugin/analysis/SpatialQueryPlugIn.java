@@ -102,7 +102,7 @@ public class SpatialQueryPlugIn
   	featureInstaller.addMainMenuItem(
   	        this,								//exe
 				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_QUERIES}, 	//menu path
-              this.getName() , //name methode .getName recieved by AbstractPlugIn 
+              this.getName() + "..." , //name methode .getName received by AbstractPlugIn 
               false,			//checkbox
               null,			//icon
               createEnableCheck(context.getWorkbenchContext())); //enable check  
