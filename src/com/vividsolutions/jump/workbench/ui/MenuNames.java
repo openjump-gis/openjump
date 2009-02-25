@@ -82,7 +82,7 @@ public interface MenuNames {
 	public static String MERGE = I18N.get("ui.MenuNames.MERGE");
 	public static String GENERALIZATION = I18N.get("ui.MenuNames.GENERALIZATION");
 	public static String TOPOLOGY = I18N.get("ui.MenuNames.TOPOLOGY");
-	public static String QA = I18N.get("ui.MenuNames.QA");
+	//public static String QA = I18N.get("ui.MenuNames.QA"); // see MenuNames.TOOLS_QA
 	public static String DELETE = I18N.get("ui.MenuNames.DELETE");
 	public static String DETECT = I18N.get("ui.MenuNames.DETECT");
 		
