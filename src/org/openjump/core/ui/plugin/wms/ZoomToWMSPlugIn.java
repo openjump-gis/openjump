@@ -604,7 +604,7 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn
         }
 
 
-        public int compareTo( Object object ) { // Muss zum Sortieren �berschrieben werden.
+        public int compareTo( Object object ) { // Sorting must be overwritten
             int ret = 1;
             MapLayerAttributes mla = (MapLayerAttributes) object;
 
@@ -852,7 +852,7 @@ System.out.println ( "ZoomToWMS srs: " + srs + "  latLonBBMinX: " + latLonBB.get
 
     } // End InfoTableModel
 
-    class MASort extends MouseAdapter { // Mausadapter f�r Spaltensortierung
+    class MASort extends MouseAdapter { // Mouse Adapter for column sorting
 
         public void mousePressed( MouseEvent me ) {
             if ( me.getButton() == MouseEvent.BUTTON3 ) {

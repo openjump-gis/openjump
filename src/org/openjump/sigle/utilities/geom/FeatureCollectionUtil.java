@@ -1,5 +1,11 @@
+/*
+ * Bassin Versant du Jaudy-Guindy-Bizien, 
+ * Laboratoire RESO UMR ESO 6590 CNRS, Universit&euml; de Rennes 2
+ * licence Cecill
+ */
 
 package org.openjump.sigle.utilities.geom;
+
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -10,14 +16,12 @@ import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureSchema;
 
 /**
+ * This class can check if a FeatureCollection has only one Geometry Type
+ * and in this case, return this Geometry Type.
+ *
  * @author Erwan Bocher 
  * @author Olivier Bedel
- * Created on 10 août 2005
- * Bassin Versant du Jaudy-Guindy-Bizien, 
- * Laboratoire RESO UMR ESO 6590 CNRS, Université de Rennes 2
- * licence Cecill
- * 
- * Cette classe permet de savoir si la feature collection est composée d'une seule géometrie et dans ce cas le type de géometrie
+ * @version 2005-08-10
  *
  */
 

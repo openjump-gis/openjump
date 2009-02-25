@@ -3,7 +3,7 @@
  *
  * Olivier BEDEL 
  * Bassin Versant du Jaudy-Guindy-Bizien, 
- * Laboratoire RESO UMR ESO 6590 CNRS, Université de Rennes 2
+ * Laboratoire RESO UMR ESO 6590 CNRS, Universit&euml; de Rennes 2
  * 
  */
 package org.openjump.core.ui.style.decoration;

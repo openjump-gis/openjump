@@ -163,7 +163,7 @@ public class JoinTableDataSourceCSV implements JoinTableDataSource {
 		try {
 			fileReader = new FileReader(filePath);
 			FileInputStream fis = new FileInputStream(filePath);
-			// non gestion des fichiers encodé en UTF-16
+			// do not manage UTF-16 encoded files
 			//bufferedReader = new BufferedReader(new InputStreamReader(fis,"UTF-8"));
 			bufferedReader = new BufferedReader(new InputStreamReader(fis));
 			
@@ -238,7 +238,7 @@ public class JoinTableDataSourceCSV implements JoinTableDataSource {
 					if (s.length()< 10)
 						res = AttributeType.INTEGER;
 					else
-						res = AttributeType.DOUBLE;	// les nombres entiers de plus de 10 chiffres sont considérés comme des chaines de caracteres
+						res = AttributeType.DOUBLE;	// integers with more than 10 digits are processed as strings
 				else
 					res = AttributeType.DOUBLE;
 			}

@@ -1,9 +1,7 @@
 /*
- * Created on 14 août 2005
- *
  * Olivier BEDEL 
  * Bassin Versant du Jaudy-Guindy-Bizien, 
- * Laboratoire RESO UMR ESO 6590 CNRS, Université de Rennes 2
+ * Laboratoire RESO UMR ESO 6590 CNRS, Universit&euml; de Rennes 2
  * 
  */
 
@@ -22,8 +20,9 @@ import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.model.*;
 
 /**
+ * Utility class to select attributes from a layer.
  * @author Olivier
- * Classe utilitaire pour selectionner des champs à partir d'une couche
+ * @version 2005-08-14
  */
 
 public class DialogUtil {
@@ -37,7 +36,7 @@ public class DialogUtil {
         return fields;
     }
     
-    // met à jour la combo cb avec la liste des champs de la couche l
+    // update the combobox with layer 1 attributes
     public static void updateFieldComboBox(JComboBox cb, Layer l) {
         cb.removeAllItems();
         for (Iterator i = getFieldsFromLayer(l).iterator(); i.hasNext();)
@@ -62,8 +61,8 @@ public class DialogUtil {
         return fields;
     }
     
-    // renvoie un objet Double créé a partir de la valeur de l'attibut attributeName de l'entite f
-    // si la valeur ne peut être interpretee comme une valeur double, renvoie NaN (Not a Number)  
+    // returns a Double computed from attributeName value of feature f
+    // if the value is not parsable as a double, returns NaN (Not a Number)  
     public static Double getDoubleFromAttribute(Feature f, String attributeName) {
         Double d = new Double(Double.NaN);
         AttributeType type =  f.getSchema().getAttributeType(attributeName);
@@ -76,7 +75,7 @@ public class DialogUtil {
         return d;
     }
     
-    // met à jour un JLabel  avec le format du champ sélectionné.
+    // update a JLabel with the AttributeType of the selected attribute
     public static void updateFieldTypeLabel(JLabel label, Layer l, String attributeName) {
                 
         AttributeType nameType = l.getFeatureCollectionWrapper().getFeatureSchema().getAttributeType(attributeName);
