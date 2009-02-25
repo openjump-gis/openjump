@@ -18,13 +18,13 @@
  *  korrektere Fehlerausgabe
  *
  *  Revision 1.3  2005/07/06 13:02:46  orahn
- *  Code bereinigen, Performance erhöhen(?)
+ *  Code clean up, improve performance (?)
  *
  *  Revision 1.2  2005/06/30 10:43:30  orahn
- *  Standard ok/Cancel-Listener erweitert um die Möglichkeit, den OK Button ausser Funktion zu setzen, wenn die Eingabewert nicht schlüssig sind...
+ *  Standard ok/cancel Listener added the possibility of the OK button to function except when the input value is not valid...
  *
  *  Revision 1.1  2005/06/20 18:18:23  orahn
- *  Vorbereitung für Formeleditor
+ *  Preparation for the Formula Editor
  *
  */
 package org.openjump.core.ui.swing.listener;
