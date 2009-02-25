@@ -107,8 +107,8 @@ public class DeleteDuplicateGeometriesPlugIn extends AbstractPlugIn implements T
 	        FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
 	    	featureInstaller.addMainMenuItem(
 	    	        this,								//exe
-	                new String[] {MenuNames.TOOLS, MenuNames.QA}, 	//menu path
-	                this.getName(), //name methode .getName recieved by AbstractPlugIn 
+	                new String[] {MenuNames.TOOLS, MenuNames.TOOLS_QA}, 	//menu path
+	                this.getName() + "...", //name methode .getName received by AbstractPlugIn 
 	                false,			//checkbox
 	                null,			//icon
 	                createEnableCheck(context.getWorkbenchContext())); //enable check

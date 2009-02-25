@@ -81,7 +81,7 @@ public class AffineTransformationPlugIn
       	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
   		featureInstaller.addMainMenuItem(
   	        this,								//exe
-				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY}, 	//menu path
+				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_WARP}, 	//menu path
               this.getName() + "...", //name methode .getName recieved by AbstractPlugIn 
               false,			//checkbox
               null,			//icon
