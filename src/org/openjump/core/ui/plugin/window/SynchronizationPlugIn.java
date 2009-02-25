@@ -5,7 +5,7 @@
  * JUMP is Copyright (C) 2003 Vivid Solutions
  *
  * This program implements extensions to JUMP and is
- * Copyright (C) Michaël Michaud.
+ * Copyright (C) Micha&euml;l Michaud.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License

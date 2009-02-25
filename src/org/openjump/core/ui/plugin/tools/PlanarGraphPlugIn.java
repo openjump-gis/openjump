@@ -140,10 +140,10 @@ public class PlanarGraphPlugIn extends ThreadedBasePlugIn {
         monitor.report(I18N.get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Layer-of-faces-generated"));
     
         //Erwan aout 2005
-        //Ici on applique la procédure pour récuperer les attributs de la couche d'origine
-        //Les attributs sont rappatriés si l'entité produite est contenue dans l'entité source
-        // Si la couche d'entrée est une couche de polygones alors les attributs sont rappatriés pour la couche de faces
-        // Si la couche d'entrée est une couche de linestring alors les attributs sont rappatriés pour la couche d'arcs
+        // Here, one process the result dataset to get attributes from source layer
+        // Attributes are transferred if the primitive is included in the source feature
+        // If the source layer is made of polygons, attributes are transferred to faces
+        // If the source layer is made of linestrings, attributes are transferred to edges
        
         if (faceb){
             Feature fWithin = null;
@@ -368,8 +368,8 @@ public class PlanarGraphPlugIn extends ThreadedBasePlugIn {
         }
         //context.getLayerManager().addLayer("Graph", layerName+"_Face", fcFace);
         
-        // inscrit les numéros de face dans les arcs
-        // Les arcs qui sont en bords de face sont codés à -1.
+        // write face identifiers into edges
+        // if there is no face on the side of an edge, id number is -1
         if(relations) {
             for (Iterator it = fcEdge.getFeatures().iterator() ; it.hasNext() ; ) {
                 Feature edge = (Feature)it.next();

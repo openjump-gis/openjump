@@ -17,7 +17,7 @@ import com.vividsolutions.jump.I18N;
  * <LI>results as a selection, a table or a new layer</LI></OL>
  * Version 0.2 of the SimpleQueryPlugIn is an adaptation of the original
  * version to the core of OpenJUMP (refactoring, internationalization)
- * @author Michaël MICHAUD
+ * @author Micha&euml;l MICHAUD
  * @version 0.2 (16 Oct 2005)
  */ 
 public class SimpleQueryPlugIn extends AbstractPlugIn {

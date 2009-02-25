@@ -83,7 +83,6 @@ public class JoinTablePlugIn extends ThreadedBasePlugIn {
 				null,			//icon
 				new EnableCheckFactory(context.getWorkbenchContext()).createAtLeastNLayersMustExistCheck(1)); //enable check        
 
-			//Joindre des données -> I18N.get(name,"org.OpenJUMP.layer.joinTable.JoinTablePlugin.MenuName")
 		fileChooser = GUIUtil.createJFileChooserWithExistenceChecking();
 		fileChooser.setDialogTitle(I18N.get("org.openjump.sigle.plugin.joinTable.Choose_file_data_to_join"));
 		fileChooser.setDialogType(JFileChooser.OPEN_DIALOG);

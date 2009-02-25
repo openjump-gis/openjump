@@ -20,7 +20,7 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
  * Provides methods to move a category including the layers in it within the LayerNamePanel.
  *
  * @author Ole Rahn
- * @author FH Osnabrück - University of Applied Sciences Osnabrück,
+ * @author FH Osnabr&uuml;ck - University of Applied Sciences Osnabr&uuml;ck,
  * Project: PIROL (2005),
  * Subproject: Daten- und Wissensmanagement
  * 

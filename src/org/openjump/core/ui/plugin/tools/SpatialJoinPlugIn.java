@@ -1,6 +1,6 @@
+// license Licence CeCILL http://www.cecill.info/
+
 package org.openjump.core.ui.plugin.tools;
-
-
 
 
 import java.util.Iterator;
@@ -28,14 +28,13 @@ import com.vividsolutions.jump.feature.FeatureCollection;
 
 
 /**
+* 
+* This PlugIn can make spatial joins using different geometry predicates.
+* 
 * @author ERWAN BOCHER Laboratoire RESO UMR CNRS 6590
 * @see <a ref="http://www.projet-sigle.org">projet-sigle</a>
-* curentdate 20 févr. 2006
-* license Licence CeCILL http://www.cecill.info/
-* 
-* Ce plugin permet de réaliser des jointures spatiales en utilisant différents
-* prédicats spatiaux.
-* 
+* @version 2006-02-20
+*
 */
 
 public class SpatialJoinPlugIn extends ThreadedBasePlugIn {

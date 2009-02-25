@@ -29,7 +29,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
  * 
  *
  * @author Ole Rahn
- * @author FH Osnabrück - University of Applied Sciences Osnabrück,
+ * @author FH Osnabr&uuml;ck - University of Applied Sciences Osnabr&uuml;ck,
  * Project: PIROL (2005),
  * Subproject: Daten- und Wissensmanagement
  * 

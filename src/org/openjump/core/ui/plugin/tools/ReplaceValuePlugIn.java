@@ -184,15 +184,15 @@ public class ReplaceValuePlugIn
     
     layer = context.getSelectedLayer(0);
     
-    //  combos sélection d'un champ
+    //  combos field selection
     List columns = DialogUtil.getFieldsFromLayerWithoutGeometry(layer);
     String column1 = null;
     
     if (columns.size()>0)
-    	column1 = (String) columns.get(0);  // récupération du premier attribut s'il existe
+    	column1 = (String) columns.get(0);  // get the first attribute if exists
      
     
-    dialog.addComboBox(ATTRIBUTE,column1,columns , "Attribut à modifier"); // TODO:I18N move to I18N [lemesre]
+    dialog.addComboBox(ATTRIBUTE,column1,columns , "Attribute to modify"); // TODO:I18N move to I18N [lemesre]
     
    
     final JTextField textfield = dialog.addTextField(
@@ -203,9 +203,9 @@ public class ReplaceValuePlugIn
     
     dialog.getComboBox(ATTRIBUTE).addActionListener(new ActionListener() { 
         public void actionPerformed(ActionEvent e) {
-            // recuperation de la combo couche 
+            // get the combo for the layer
             JComboBox cb = (JComboBox) e.getSource();
-            // recuperation de l'attribut selectionné
+            // get the selected attribute
            String attributeName = (String) cb.getSelectedItem();
             
            textfield.setText((layer.getFeatureCollectionWrapper().getFeatureSchema().getAttributeType(attributeName)).toString());
@@ -254,7 +254,7 @@ public class ReplaceValuePlugIn
 		  Feature f = (Feature) i.next();
 
 		  if (byAttribute) {
-			  // remplacement par la valeur de l'attribut selectionné
+			  // replace by the value of selected attribute
 
 		  }else {
 			  // remplacement par la valeur saisie
@@ -289,7 +289,7 @@ public class ReplaceValuePlugIn
 		  AttrValue = (String) f.getAttribute(attrNameSrc);
 
 		  if (byAttribute) {
-			  // remplacement par la valeur de l'attribut selectionné
+			  // replace by the value of selected attribute
 			  if (typeDest == AttributeType.DOUBLE) {		    
 				  f.setAttribute(attrNameDest, new Double (AttrValue));
 

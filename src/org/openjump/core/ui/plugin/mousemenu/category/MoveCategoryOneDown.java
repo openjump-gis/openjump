@@ -30,7 +30,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
  * in the layer name panel to the category context menu. 
  *
  * @author Ole Rahn
- * @author FH Osnabrück - University of Applied Sciences Osnabrück,
+ * @author FH Osnabr&uuml;ck - University of Applied Sciences Osnabr&uuml;ck,
  * Project: PIROL (2005),
  * Subproject: Daten- und Wissensmanagement
  * 

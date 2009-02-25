@@ -23,7 +23,6 @@ import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxDialog;
 * @see <a href="http://www.projet-sigle.org">projet-sigle</a>
 * @version 2006-05-18
 * 
-* Ce plugin permet de couper des polygones selectionés à partir d'un autre polygone déssiné.
 */
 public class CutPolygonSIGLEPlugIn extends AbstractPlugIn
 {
