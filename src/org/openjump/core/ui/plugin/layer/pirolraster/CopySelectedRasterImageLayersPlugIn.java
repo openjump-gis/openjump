@@ -63,7 +63,7 @@ public class CopySelectedRasterImageLayersPlugIn extends LayerableClipboardPlugI
      * @inheritDoc
      */
     public String getName() {
-        return I18N.get("Copy-Selected-Raster-Image-Layers");
+        return I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.CopySelectedRasterImageLayersPlugIn.Copy-Selected-Raster-Image-Layers");
     }
 
     public boolean execute(PlugInContext context) throws Exception {

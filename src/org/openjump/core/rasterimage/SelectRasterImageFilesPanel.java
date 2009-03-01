@@ -50,11 +50,11 @@ public class SelectRasterImageFilesPanel extends JFileChooser implements WizardP
 
   public static final String KEY = SelectRasterImageFilesPanel.class.getName();
 
-  public static final String TITLE = I18N.get("blablabla");
+  public static final String TITLE = I18N.get("org.openjump.core.rasterimage.SelectRasterImageFilesPanel.Select-Raster-Image");
 
-  public static final String INSTRUCTIONS = I18N.get("instructions");
+  public static final String INSTRUCTIONS = I18N.get("org.openjump.core.ui.plugin.file.open.SelectFileOptionsPanel.instructions");
 
-  public static final String ALL_FILES = I18N.get("all-files");
+  public static final String ALL_FILES = I18N.get("org.openjump.core.ui.plugin.file.open.SelectFilesPanel.all-files");
 
   private Set<InputChangedListener> listeners = new LinkedHashSet<InputChangedListener>();
 
@@ -76,7 +76,7 @@ public class SelectRasterImageFilesPanel extends JFileChooser implements WizardP
     addChoosableFileFilter(JPG_FILE_FILTER);
     addChoosableFileFilter(PNG_FILE_FILTER);
     */
-    FileFilter JAI_IMAGE_FILE_FILTER = GUIUtil.createFileFilter("supported raster image formats", 
+    FileFilter JAI_IMAGE_FILE_FILTER = GUIUtil.createFileFilter(I18N.get("org.openjump.core.rasterimage.SelectRasterImageFilesPanel.supported-raster-image-formats"), 
     		new String[]{ "tif", "tiff", "gif", "jpg", "png" });
     addChoosableFileFilter(JAI_IMAGE_FILE_FILTER);
     addChoosableFileFilter(GUIUtil.ALL_FILES_FILTER);

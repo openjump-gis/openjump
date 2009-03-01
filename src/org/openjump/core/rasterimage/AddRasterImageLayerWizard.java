@@ -3,26 +3,10 @@ package org.openjump.core.rasterimage;
 import java.awt.Point;
 import java.awt.geom.NoninvertibleTransformException;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
 
-import javax.swing.JFileChooser;
-
-import org.openjump.core.ui.io.file.FileLayerLoader;
-import org.openjump.core.ui.io.file.ReferencedImageFactoryFileLayerLoader;
 import org.openjump.core.ui.plugin.file.OpenRecentPlugIn;
 import org.openjump.core.ui.plugin.file.open.ChooseProjectPanel;
-import org.openjump.core.ui.plugin.file.open.OpenFileWizardState;
-import org.openjump.core.ui.plugin.file.open.SelectFileLoaderPanel;
-import org.openjump.core.ui.plugin.file.open.SelectFilesPanel;
-import org.openjump.core.ui.plugin.file.open.SelectProjectFilesPanel;
 import org.openjump.core.ui.plugin.layer.pirolraster.LoadSextanteRasterImagePlugIn;
 import org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel;
 import org.openjump.core.ui.swing.wizard.AbstractWizardGroup;
@@ -35,24 +19,13 @@ import com.sun.media.jai.codec.TIFFField;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.coordsys.CoordinateSystemRegistry;
 import com.vividsolutions.jump.task.TaskMonitor;
-import com.vividsolutions.jump.util.java2xml.XML2Java;
-import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.imagery.geotiff.GeoTIFFImageFactory;
 import com.vividsolutions.jump.workbench.model.Category;
-import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
-import com.vividsolutions.jump.workbench.model.Task;
-import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.plugin.PlugInManager;
-import com.vividsolutions.jump.workbench.registry.Registry;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
-import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
-import com.vividsolutions.jump.workbench.ui.plugin.wms.URLWizardPanel;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
 
@@ -75,11 +48,11 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
   protected boolean allwaysLookForTFWExtension = true;
   protected boolean zoomToInsertedImage = true;
   private String imageFileName = "";
-  private String cachedLayer = I18N.get("default-layer-name");
+  private String cachedLayer = "default-layer-name";
   //------ 
   
   public AddRasterImageLayerWizard(WorkbenchContext workbenchContext) {	 
-	  super(I18N.get("Add-Sextante-Raster-Image"), IconLoaderFamFam.icon("image.png"),
+	  super(I18N.get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.Add-Sextante-Raster-Image"), IconLoaderFamFam.icon("image.png"),
 			  SelectRasterImageFilesPanel.KEY);	  
 	  this.workbenchContext = workbenchContext;
   }
@@ -182,11 +155,11 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
       // #################################
       
       MetaInformationHandler mih = new MetaInformationHandler(rLayer);
-      
-      mih.addMetaInformation(I18N.get("file-name"), this.imageFileName);
-      mih.addMetaInformation(I18N.get("resolution"), imageDimensions.x + " (px) x " + imageDimensions.y + " (px)");
-      mih.addMetaInformation(I18N.get("real-world-width"), new Double(envelope.getWidth()));
-      mih.addMetaInformation(I18N.get("real-world-height"), new Double(envelope.getHeight()));
+      // [sstein 28.Feb.2009] -- not sure if these keys should be translated
+      mih.addMetaInformation("file-name", this.imageFileName);
+      mih.addMetaInformation("resolution", imageDimensions.x + " (px) x " + imageDimensions.y + " (px)");
+      mih.addMetaInformation("real-world-width", new Double(envelope.getWidth()));
+      mih.addMetaInformation("real-world-height", new Double(envelope.getHeight()));
       
       // ###################################
 
@@ -215,7 +188,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
       
       if (imageDimensions == null){
     	  //logger.printError("can not determine image dimensions");
-    	  context.getWorkbench().getFrame().warnUser(I18N.get("can-not-determine-image-dimensions"));
+    	  context.getWorkbench().getFrame().warnUser(I18N.get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.can-not-determine-image-dimensions"));
           return null;
       }
       
@@ -304,7 +277,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
           
           if (!isGeoTiff || env==null){
               //logger.printDebug(PirolPlugInMessages.getString("no-worldfile-found"));
-        	  context.getWorkbench().getFrame().warnUser(I18N.get("no-worldfile-found"));
+        	  context.getWorkbench().getFrame().warnUser(I18N.get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.no-worldfile-found"));
               WizardDialog d = new WizardDialog(
                      context.getWorkbench().getFrame(),
                      I18N.get("RasterImagePlugIn.34")

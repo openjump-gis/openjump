@@ -31,9 +31,9 @@ import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.workbench.model.Category;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.Layerable;
+import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 
-import de.fho.jump.pirol.utilities.i18n.PirolPlugInMessages;
 import de.fho.jump.pirol.utilities.settings.PirolPlugInSettings;
 
 /**
@@ -106,11 +106,14 @@ public class LayerTools extends ToolToMakeYourLifeEasier {
     }
     
     public static Layer addStandardResultLayer( String title, FeatureCollection featCollection, Color color,  PlugInContext context, boolean select, FeatureCollectionRole role ){
-        if (featCollection==null || context==null || LayerTools.getResultCategory(context)==null) return null;
-        
-        Layer newLayer = null;
-        
-        if (!FeatureCollection.class.isInstance(featCollection)) {
+    	//-- [sstein] 28.Feb.2009 : not needed since replace with StandardCategoryNames.RESULT
+    	//if (featCollection==null || context==null || LayerTools.getResultCategory(context)==null) return null;
+     	if (featCollection==null || context==null) return null;     
+  
+     	Layer newLayer = null;
+     	//[sstein] 28.Feb.2009 - removed ! as i think it should be the other way around and I obtain an error 
+        //if (!FeatureCollection.class.isInstance(featCollection)) {
+        if (FeatureCollection.class.isInstance(featCollection)) {
             newLayer = new Layer( title, color, new PirolFeatureCollection(featCollection, role), context.getLayerManager());
         } else {
         	if (role != null)
@@ -118,7 +121,7 @@ public class LayerTools extends ToolToMakeYourLifeEasier {
             newLayer = new Layer( title, color, featCollection, context.getLayerManager());
         }
         
-		context.getLayerManager().addLayer(PirolPlugInSettings.resultLayerCategory(), newLayer);
+		context.getLayerManager().addLayer(StandardCategoryNames.RESULT, newLayer);
 		
 		if (select){
 		    SelectionTools.selectLayer(context, newLayer);
@@ -137,7 +140,7 @@ public class LayerTools extends ToolToMakeYourLifeEasier {
     
     public final static Layer putGeometryArrayIntoMap(Geometry[] geometryArray, PlugInContext context){
         FeatureSchema fs = new FeatureSchema();
-        fs.addAttribute(PirolPlugInMessages.getString("geometry"), AttributeType.GEOMETRY);
+        fs.addAttribute("geometry", AttributeType.GEOMETRY);
         FeatureCollection fc = new FeatureDataset(fs);
         
         Feature f;
@@ -147,7 +150,7 @@ public class LayerTools extends ToolToMakeYourLifeEasier {
             fc.add(f);
         }
         
-        return LayerTools.addStandardResultLayer(PirolPlugInMessages.getString("triangles"), fc, context, new RoleTriangularIrregularNet());
+        return LayerTools.addStandardResultLayer("triangles", fc, context, new RoleTriangularIrregularNet());
     }
     
     public static Map getLayer2FeatureMap(List features, PlugInContext context){

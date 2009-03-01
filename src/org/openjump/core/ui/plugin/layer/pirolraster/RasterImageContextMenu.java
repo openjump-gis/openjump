@@ -123,7 +123,7 @@ public class RasterImageContextMenu extends TitledPopupMenu {
         
         ZoomToRasterImagePlugIn zoomToRasterImagePlugIn = new ZoomToRasterImagePlugIn();
         featureInstaller.addPopupMenuItem(this, 
-                zoomToRasterImagePlugIn, zoomToRasterImagePlugIn.getName() + "...",false,
+                zoomToRasterImagePlugIn, zoomToRasterImagePlugIn.getName(),false,
                 null,null);
         
         this.addSeparator(); // ===================
@@ -135,7 +135,7 @@ public class RasterImageContextMenu extends TitledPopupMenu {
         
         ExportEnvelopeAsGeometryPlugIn exportEnvelopeAsGeometryPlugIn = new ExportEnvelopeAsGeometryPlugIn();
         featureInstaller.addPopupMenuItem(this, 
-                exportEnvelopeAsGeometryPlugIn, exportEnvelopeAsGeometryPlugIn.getName() + "...",false,
+                exportEnvelopeAsGeometryPlugIn, exportEnvelopeAsGeometryPlugIn.getName(),false,
                 null,null);
         
         this.addSeparator(); // ===================
@@ -152,17 +152,22 @@ public class RasterImageContextMenu extends TitledPopupMenu {
         
         CutSelectedRasterImageLayersPlugIn cutSelectedRasterImageLayersPlugIn = new CutSelectedRasterImageLayersPlugIn();
         featureInstaller.addPopupMenuItem(this,
-                cutSelectedRasterImageLayersPlugIn, cutSelectedRasterImageLayersPlugIn.getName() + "...", false, null,
+                cutSelectedRasterImageLayersPlugIn, cutSelectedRasterImageLayersPlugIn.getName(), false, null,
                 cutSelectedRasterImageLayersPlugIn.createEnableCheck(context.getWorkbenchContext()));
         
         CopySelectedRasterImageLayersPlugIn copySelectedRasterImageLayersPlugIn = new CopySelectedRasterImageLayersPlugIn();
         featureInstaller.addPopupMenuItem(this,
-                copySelectedRasterImageLayersPlugIn, copySelectedRasterImageLayersPlugIn.getName() + "...", false, null,
+                copySelectedRasterImageLayersPlugIn, copySelectedRasterImageLayersPlugIn.getName(), false, null,
                 copySelectedRasterImageLayersPlugIn.createEnableCheck(context.getWorkbenchContext()));
+        
+        PasteRasterImageLayersPlugIn pasteRasterImageLayersPlugIn = new PasteRasterImageLayersPlugIn();
+        featureInstaller.addPopupMenuItem(this,
+        		pasteRasterImageLayersPlugIn, pasteRasterImageLayersPlugIn.getName(), false, null,
+        		pasteRasterImageLayersPlugIn.createEnableCheck(context.getWorkbenchContext()));
         
         RemoveSelectedRasterImageLayersPlugIn removeSelectedLayersPlugIn = new RemoveSelectedRasterImageLayersPlugIn();
         featureInstaller.addPopupMenuItem(this,
-                removeSelectedLayersPlugIn, removeSelectedLayersPlugIn.getName() + "...", 
+                removeSelectedLayersPlugIn, removeSelectedLayersPlugIn.getName(), 
                 false, null, removeSelectedLayersPlugIn.createEnableCheck(context.getWorkbenchContext()));
     }
 

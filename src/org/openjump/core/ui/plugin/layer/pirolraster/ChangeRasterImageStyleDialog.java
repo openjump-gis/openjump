@@ -73,8 +73,7 @@ public class ChangeRasterImageStyleDialog extends JDialog {
 		BorderLayout borderLayout = new BorderLayout();
 		borderLayout.setVgap(15);
 		this.jContentPane.setLayout(borderLayout);
-		
-		this.jContentPane.add(DialogTools.getPanelWithLabels(I18N.get("Change-RasterImage-Style-Dialog-intro-text"), 65), BorderLayout.NORTH); //$NON-NLS-1$
+		this.jContentPane.add(DialogTools.getPanelWithLabels(I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.ChangeRasterImageStyleDialog.Change-RasterImage-Style-Dialog-intro-text"), 65), BorderLayout.NORTH); //$NON-NLS-1$
 		
 		JPanel controllsPanel = new RasterImageLayerControllPanel(this.rasterImageLayer);
 		this.jContentPane.add(controllsPanel, BorderLayout.CENTER);

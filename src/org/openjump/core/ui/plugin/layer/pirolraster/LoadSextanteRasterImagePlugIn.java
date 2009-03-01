@@ -28,7 +28,6 @@ import javax.swing.filechooser.FileFilter;
 
 import org.openjump.core.rasterimage.GeoTiffConstants;
 import org.openjump.core.rasterimage.RasterImageLayer;
-import org.openjump.core.rasterimage.RasterImageLayerRendererFactory;
 import org.openjump.core.rasterimage.WorldFileHandler;
 import org.openjump.io.PropertiesHandler;
 import org.openjump.util.metaData.MetaInformationHandler;
@@ -54,7 +53,7 @@ import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
 
 public class LoadSextanteRasterImagePlugIn extends AbstractPlugIn {
     private String imageFileName = "";
-    private String cachedLayer = I18N.get("default-layer-name");
+    private String cachedLayer = "default-layer-name";
     
     protected WorldFileHandler worldFileHandler = null;
     //protected static PersonalLogger logger = new PersonalLogger(DebugUserIds.OLE);
@@ -82,7 +81,7 @@ public class LoadSextanteRasterImagePlugIn extends AbstractPlugIn {
      * @inheritDoc
      */
     public String getName() {
-        return I18N.get("Add-Sextante-Raster-Layer");
+        return I18N.get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.Add-Sextante-Raster-Image");
     }
     
     private boolean addImage(WorkbenchContext context, Envelope envelope, Point imageDimensions) {
@@ -161,8 +160,8 @@ public class LoadSextanteRasterImagePlugIn extends AbstractPlugIn {
         layerNamePopupMenu.addSeparator();
         
         PasteRasterImageLayersPlugIn pasteRasterImagePlugIn = new PasteRasterImageLayersPlugIn();
-        featureInstaller.addPopupMenuItem(layerNamePopupMenu, pasteRasterImagePlugIn, I18N.get("paste-raster-layer") + "...", false, null, pasteRasterImagePlugIn.createEnableCheck(context.getWorkbenchContext()));
-        featureInstaller.addPopupMenuItem(layerNamePopupMenu, this, I18N.get("add-raster-layer") + "...", false, null, null);
+        featureInstaller.addPopupMenuItem(layerNamePopupMenu, pasteRasterImagePlugIn, I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.PasteRasterImageLayersPlugIn.paste-raster-layer") + "...", false, null, pasteRasterImagePlugIn.createEnableCheck(context.getWorkbenchContext()));
+        featureInstaller.addPopupMenuItem(layerNamePopupMenu, this, I18N.get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.Add-Sextante-Raster-Image") + "...", false, null, null);
         
         layerNamePopupMenu.addSeparator();
 
@@ -242,7 +241,7 @@ public class LoadSextanteRasterImagePlugIn extends AbstractPlugIn {
         
         if (imageDimensions == null){
             //logger.printError("can not determine image dimensions");
-        	context.getWorkbenchFrame().warnUser(I18N.get("can-not-determine-image-dimensions"));
+        	context.getWorkbenchFrame().warnUser(I18N.get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.can-not-determine-image-dimensions"));
             return null;
         }
         
@@ -331,7 +330,7 @@ public class LoadSextanteRasterImagePlugIn extends AbstractPlugIn {
             
             if (!isGeoTiff || env==null){
                 //logger.printDebug(PirolPlugInMessages.getString("no-worldfile-found"));
-                context.getWorkbenchFrame().warnUser(I18N.get("no-worldfile-found"));
+                context.getWorkbenchFrame().warnUser(I18N.get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.no-worldfile-found"));
                 WizardDialog d = new WizardDialog(
                        context.getWorkbenchFrame(),
                        I18N.get("RasterImagePlugIn.34")

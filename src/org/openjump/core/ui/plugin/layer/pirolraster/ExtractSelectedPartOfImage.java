@@ -59,7 +59,7 @@ public class ExtractSelectedPartOfImage extends AbstractPlugIn {
      * @inheritDoc
      */
     public String getName() {
-        return I18N.get("Extract-Selected-Part-Of-Image");
+        return I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage.Extract-Selected-Part-Of-Image");
     }
     
     /**
@@ -69,7 +69,7 @@ public class ExtractSelectedPartOfImage extends AbstractPlugIn {
         RasterImageLayer rLayer = (RasterImageLayer) LayerTools.getSelectedLayerable(context, RasterImageLayer.class);
         
         if (rLayer==null){
-            context.getWorkbenchFrame().warnUser(I18N.get("no-layer-selected")); //$NON-NLS-1$
+            context.getWorkbenchFrame().warnUser(I18N.get("pirol.plugIns.EditAttributeByFormulaPlugIn.no-layer-selected")); //$NON-NLS-1$
             return false;
         }
         
@@ -79,7 +79,7 @@ public class ExtractSelectedPartOfImage extends AbstractPlugIn {
         BufferedImage partOfImageWanted = rLayer.getTileAsImage(envWanted);
         
         if (partOfImageWanted==null){
-            context.getWorkbenchFrame().warnUser(I18N.get("fence-in-wrong-region"));
+            context.getWorkbenchFrame().warnUser(I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage.fence-in-wrong-region"));
             return false;
         }
         
@@ -91,7 +91,7 @@ public class ExtractSelectedPartOfImage extends AbstractPlugIn {
     protected boolean putImageIntoMap(BufferedImage image, Envelope envelope, RasterImageLayer rLayer, PlugInContext context){
 		if (image==null) return false;
 	
-		String newLayerName = context.getLayerManager().uniqueLayerName(I18N.get("part-of") + rLayer.getName());
+		String newLayerName = context.getLayerManager().uniqueLayerName(I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage.part-of") + rLayer.getName());
         
         RasterImageLayer newRasterLayer = new RasterImageLayer(newLayerName, context.getLayerManager(), image, envelope);
 		

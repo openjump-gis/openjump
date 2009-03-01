@@ -43,6 +43,7 @@ import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Category;
 import com.vividsolutions.jump.workbench.model.Layerable;
+import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
@@ -71,7 +72,7 @@ public class PasteRasterImageLayersPlugIn extends LayerableClipboardPlugIn {
      * @inheritDoc
      */
     public String getName() {
-        return I18N.get("Paste-Raster-Image-Layers");
+        return I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.PasteRasterImageLayersPlugIn.Paste-Raster-Image-Layers");
     }
     
     public boolean execute(PlugInContext context) throws Exception {
@@ -89,13 +90,15 @@ public class PasteRasterImageLayersPlugIn extends LayerableClipboardPlugIn {
                 CollectionOfLayerablesTransferable.COLLECTION_OF_LAYERABLES_FLAVOR);
         //Cache selected category because selection will change (to layer) after adding first layer
         //if no other layers exist. [Jon Aquino]
-        Category selectedCategory =
-            ((Category) context.getLayerNamePanel().getSelectedCategories().iterator().next());
+        //-- [sstein] 28.Feb.20009 - just paste to System-Category, without category info 
+        //Category selectedCategory =
+        //    ((Category) context.getLayerNamePanel().getSelectedCategories().iterator().next());
         for (Iterator i = layerables.iterator(); i.hasNext();) {
             Layerable layerable = (Layerable) i.next();
             Layerable clone = cloneLayerable(layerable);
             clone.setLayerManager(context.getLayerManager());            
-            context.getLayerManager().addLayerable(selectedCategory.getName(), clone);
+            //context.getLayerManager().addLayerable(selectedCategory.getName(), clone);
+            context.getLayerManager().addLayerable(StandardCategoryNames.SYSTEM, clone);
             clone.setName(context.getLayerManager().uniqueLayerName(clone.getName()));            
         }
         
@@ -105,24 +108,24 @@ public class PasteRasterImageLayersPlugIn extends LayerableClipboardPlugIn {
     public MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
         EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
 
-        return new MultiEnableCheck().add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
-                                     .add(checkFactory.createExactlyNCategoriesMustBeSelectedCheck(
+        return new MultiEnableCheck().add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck());
+                                     /*.add(checkFactory.createExactlyNCategoriesMustBeSelectedCheck(
                 1)).add(new EnableCheck() {
                 public String check(JComponent component) {
                     Transferable transferable = GUIUtil.getContents(Toolkit.getDefaultToolkit()
                                                                            .getSystemClipboard());
 
                     if (transferable == null) {
-                        return "Clipboard must not be empty";
+                        return I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.PasteRasterImageLayersPlugIn.Clipboard-must-not-be-empty");
                     }
 
                     if (!transferable.isDataFlavorSupported(
                                 CollectionOfLayerablesTransferable.COLLECTION_OF_LAYERABLES_FLAVOR)) {
-                        return "Clipboard contents must be layers";
+                        return I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.PasteRasterImageLayersPlugIn.Clipboard-contents-must-be-layers");
                     }
 
                     return null;
                 }
-            });
+            });*/
     }
 }

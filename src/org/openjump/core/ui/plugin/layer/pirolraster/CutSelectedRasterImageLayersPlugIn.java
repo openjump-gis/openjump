@@ -50,7 +50,7 @@ public class CutSelectedRasterImageLayersPlugIn extends MacroPlugIn {
      * @inheritDoc
      */
     public String getName() {
-        return I18N.get("Cut-Selected-Raster-Image-Layers");
+        return I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.CutSelectedRasterImageLayersPlugIn.Cut-Selected-Raster-Image-Layers");
     }
 
     public MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {

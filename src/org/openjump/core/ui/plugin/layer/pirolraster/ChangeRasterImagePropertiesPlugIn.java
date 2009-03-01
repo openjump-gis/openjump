@@ -53,7 +53,7 @@ public class ChangeRasterImagePropertiesPlugIn extends AbstractPlugIn {
      * @inheritDoc
      */
     public String getName() {
-        return I18N.get("Change-Raster-Image-Properties");
+        return I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.ChangeRasterImagePropertiesPlugIn.Change-Raster-Image-Properties");
     }
     
     /**

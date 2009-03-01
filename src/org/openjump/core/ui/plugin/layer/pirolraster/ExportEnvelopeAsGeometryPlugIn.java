@@ -47,7 +47,7 @@ public class ExportEnvelopeAsGeometryPlugIn extends AbstractPlugIn {
         if (ExportEnvelopeAsGeometryPlugIn.defaultSchema==null){
             ExportEnvelopeAsGeometryPlugIn.defaultSchema = new FeatureSchema();
             
-            ExportEnvelopeAsGeometryPlugIn.defaultSchema.addAttribute(I18N.get("geometry"), AttributeType.GEOMETRY);
+            ExportEnvelopeAsGeometryPlugIn.defaultSchema.addAttribute("geometry", AttributeType.GEOMETRY);
         }
     }
 
@@ -62,7 +62,7 @@ public class ExportEnvelopeAsGeometryPlugIn extends AbstractPlugIn {
      * @inheritDoc
      */
     public String getName() {
-        return I18N.get("Export-Envelope-As-Geometry");
+        return I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.ExportEnvelopeAsGeometryPlugIn.Export-Envelope-As-Geometry");
     }
     
     /**
@@ -72,7 +72,7 @@ public class ExportEnvelopeAsGeometryPlugIn extends AbstractPlugIn {
         RasterImageLayer rLayer = (RasterImageLayer) LayerTools.getSelectedLayerable(context, RasterImageLayer.class);
         
         if (rLayer==null){
-            context.getWorkbenchFrame().warnUser(I18N.get("no-layer-selected"));
+            context.getWorkbenchFrame().warnUser(I18N.get("pirol.plugIns.EditAttributeByFormulaPlugIn.no-layer-selected"));
             return false;
         }
         
@@ -86,11 +86,11 @@ public class ExportEnvelopeAsGeometryPlugIn extends AbstractPlugIn {
         
         BasicFeature feature = new BasicFeature((FeatureSchema)ExportEnvelopeAsGeometryPlugIn.defaultSchema.clone());
         
-        feature.setAttribute(I18N.get("geometry"), geom);
+        feature.setAttribute("geometry", geom);
         
         newFeaturecollection.add(feature);
         
-        LayerTools.addStandardResultLayer(I18N.get("geometry") + "-" + rLayer.getName(), newFeaturecollection, context, new RoleOutline() );
+        LayerTools.addStandardResultLayer(I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.ExportEnvelopeAsGeometryPlugIn.Geometry") + "-" + rLayer.getName(), newFeaturecollection, context, new RoleOutline() );
         
         return false;
     }
