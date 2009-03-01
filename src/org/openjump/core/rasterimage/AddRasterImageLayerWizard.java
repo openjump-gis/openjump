@@ -52,7 +52,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
   //------ 
   
   public AddRasterImageLayerWizard(WorkbenchContext workbenchContext) {	 
-	  super(I18N.get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.Add-Sextante-Raster-Image"), IconLoaderFamFam.icon("image.png"),
+	  super(I18N.get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.Sextante-Raster-Image"), IconLoaderFamFam.icon("image.png"),
 			  SelectRasterImageFilesPanel.KEY);	  
 	  this.workbenchContext = workbenchContext;
   }
@@ -180,6 +180,20 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
       return true;
   }
 
+  /**
+   * TODO: [sstein] Feb.2009 - I discovered a 0.5px offset towards south-east for 
+   * the envelope, in comparison with images loaded with Jon's/VividSolutions implementation, 
+   * if the envelope is obtained from a worldfile. 
+   * Not sure what is correct. I.e. this implementation seems to assume that the worldfile 
+   * coordinate system origin is the corner of the first pixel and not the center. 
+   * I have corrected this in WorldFileHandler.readWorldFile()  
+   * @param fileName
+   * @param allwaysLookForTFWExtension
+   * @param imageDimensions
+   * @param context
+   * @return
+   * @throws IOException
+   */
   protected Envelope getGeoReferencing(String fileName, boolean allwaysLookForTFWExtension, Point imageDimensions, WorkbenchContext context) throws IOException{
       double minx, maxx, miny, maxy;
       Envelope env = null;

@@ -158,12 +158,19 @@ public class WorldFileHandler implements HandlerToMakeYourLifeEasier{
             //this.logger.printError("Can not read worldfile: " + e.getMessage());
             return null;
         }
-        
+        //[sstein] Feb.2009 -- the use of CoordX (Easting) and CoordY (Northing) below does not
+        //                     respect that the coordinates are given for the
+        //                     center of the upper left pixel and not the corner.
         minx = faktorA * 0. + faktorC * 0. + CoordX;
         maxy = faktorB * 0. + faktorD * 0. + CoordY;
         maxx = faktorA * imgWidth + faktorC * imgHeight + CoordX;
         miny = faktorB * imgWidth + faktorD * imgHeight + CoordY;
-        
+        //-- [sstein] Feb.2009 -- so we move the final envelope by 0.5 pixel
+        double px05x = ((maxx-minx) / imgWidth)*0.5;
+        double px05y = ((maxy-miny) / imgHeight)*0.5; // I am using different params for x,y due to possible image transforms
+        minx = minx-px05x; maxx = maxx-px05x;
+        miny = miny+px05y; maxy = maxy+px05y;
+        //-- sstein:end
         return new Envelope(minx, maxx, miny, maxy);
     }
     
