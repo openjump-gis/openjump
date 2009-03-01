@@ -34,6 +34,7 @@ import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.GenericNames;
 
 /**
  * This PlugIn saves a RasterImages to disk with its geographical position.
@@ -89,10 +90,10 @@ public class SaveRasterImageAsImagePlugIn extends AbstractPlugIn {
             fis.close();
         } catch (FileNotFoundException e) {
             //SaveRasterImageAsImagePlugIn.logger.printDebug(e.getMessage());
-        	context.getWorkbenchFrame().warnUser(I18N.get("File-not-found"));
+        	context.getWorkbenchFrame().warnUser(I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.SaveRasterImageAsImagePlugIn.File-not-found"));
         } catch (IOException e) {
             //SaveRasterImageAsImagePlugIn.logger.printDebug(e.getMessage());
-        	context.getWorkbenchFrame().warnUser(I18N.get("Error"));
+        	context.getWorkbenchFrame().warnUser(GenericNames.ERROR);
         }
         
         if (this.lastPath != null){
@@ -160,7 +161,7 @@ public class SaveRasterImageAsImagePlugIn extends AbstractPlugIn {
      * @inheritDoc
      */
     public String getName() {
-        return I18N.get("Save-Raster-Image-As-Image");
+        return I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.SaveRasterImageAsImagePlugIn.Save-Raster-Image-As-Image");
     }
     
     /**

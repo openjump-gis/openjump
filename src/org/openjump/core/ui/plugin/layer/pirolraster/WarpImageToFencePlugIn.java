@@ -56,7 +56,7 @@ public class WarpImageToFencePlugIn extends AbstractPlugIn {
      * @inheritDoc
      */
     public String getName() {
-        return I18N.get("Warp-Image-To-Fence");
+        return I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.WarpImageToFencePlugIn.Warp-Image-To-Fence");
     }
     
     /**
@@ -66,7 +66,7 @@ public class WarpImageToFencePlugIn extends AbstractPlugIn {
         RasterImageLayer rLayer = (RasterImageLayer) LayerTools.getSelectedLayerable(context, RasterImageLayer.class);
         
         if (rLayer==null){
-            context.getWorkbenchFrame().warnUser(I18N.get("no-layer-selected")); //$NON-NLS-1$
+            context.getWorkbenchFrame().warnUser(I18N.get("pirol.plugIns.EditAttributeByFormulaPlugIn.no-layer-selected")); //$NON-NLS-1$
             return false;
         }
         

@@ -65,10 +65,10 @@ public class RasterImageWizardPanel extends JPanel implements WizardPanel, Actio
 
     private static final long serialVersionUID = -6644440388147608621L;   
     
-    public static final String MINX_KEY = I18N.get("minx"); //$NON-NLS-1$
-    public static final String MAXX_KEY = I18N.get("maxx"); //$NON-NLS-1$
-    public static final String MINY_KEY = I18N.get("miny"); //$NON-NLS-1$
-    public static final String MAXY_KEY = I18N.get("maxy"); //$NON-NLS-1$
+    public static final String MINX_KEY = I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.minx"); //$NON-NLS-1$
+    public static final String MAXX_KEY = I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.maxx"); //$NON-NLS-1$
+    public static final String MINY_KEY = I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.miny"); //$NON-NLS-1$
+    public static final String MAXY_KEY = I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.maxy"); //$NON-NLS-1$
 
     private InputChangedFirer inputChangedFirer = new InputChangedFirer();
     private Map dataMap;
@@ -87,10 +87,10 @@ public class RasterImageWizardPanel extends JPanel implements WizardPanel, Actio
     public RasterImageWizardPanel() {
         try {
             jbInit();
-            minxTextField.setText(I18N.get("west-coordinate")); //$NON-NLS-1$
-            maxxTextField.setText(I18N.get("east-coordinate")); //$NON-NLS-1$
-            minyTextField.setText(I18N.get("south-coordinate")); //$NON-NLS-1$
-            maxyTextField.setText(I18N.get("north-coordinate")); //$NON-NLS-1$
+            minxTextField.setText(I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.west-coordinate")); //$NON-NLS-1$
+            maxxTextField.setText(I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.east-coordinate")); //$NON-NLS-1$
+            minyTextField.setText(I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.south-coordinate")); //$NON-NLS-1$
+            maxyTextField.setText(I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.north-coordinate")); //$NON-NLS-1$
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -111,10 +111,10 @@ public class RasterImageWizardPanel extends JPanel implements WizardPanel, Actio
     */
     void jbInit() throws Exception {
 
-        minxLabel.setText(I18N.get("minx")); //$NON-NLS-1$
-	    maxxLabel.setText(I18N.get("maxx")); //$NON-NLS-1$
-	    minyLabel.setText(I18N.get("miny")); //$NON-NLS-1$
-	    maxyLabel.setText(I18N.get("maxy")); //$NON-NLS-1$
+        minxLabel.setText(I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.minx")); //$NON-NLS-1$
+	    maxxLabel.setText(I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.maxx")); //$NON-NLS-1$
+	    minyLabel.setText(I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.miny")); //$NON-NLS-1$
+	    maxyLabel.setText(I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.maxy")); //$NON-NLS-1$
 
         this.setLayout(gridBagLayout1);
         minxTextField.setPreferredSize(new Dimension(270, 21));
@@ -165,7 +165,7 @@ public class RasterImageWizardPanel extends JPanel implements WizardPanel, Actio
     }
 
     public String getInstructions() {
-        return I18N.get("please-enter-the-image-path"); //$NON-NLS-1$
+        return I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.please-enter-the-image-path"); //$NON-NLS-1$
     }
 
     /**
@@ -183,7 +183,7 @@ public class RasterImageWizardPanel extends JPanel implements WizardPanel, Actio
     }
     
     public String getTitle() {
-        return I18N.get("worldfile-dialog-title"); //$NON-NLS-1$
+        return I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.worldfile-dialog"); //$NON-NLS-1$
     }
 
     public String getID() {

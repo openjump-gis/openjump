@@ -109,6 +109,8 @@ public class PasteRasterImageLayersPlugIn extends LayerableClipboardPlugIn {
         EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
 
         return new MultiEnableCheck().add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck());
+        		//-- [sstein] 28.Feb.2009 -- commented this part to enable pasting 
+        		//                           without having a category selected
                                      /*.add(checkFactory.createExactlyNCategoriesMustBeSelectedCheck(
                 1)).add(new EnableCheck() {
                 public String check(JComponent component) {

@@ -54,12 +54,20 @@ public class ToggleRasterImageVisibility extends AbstractPlugIn implements Popup
     /**
      *@inheritDoc
      */
+    public String getName() {
+        return I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.ToggleRasterImageVisibility.Toggle-Raster-Image-Visibility");
+    }
+
+    
+    /**
+     *@inheritDoc
+     */
     public boolean execute(PlugInContext context) throws Exception {
         
         RasterImageLayer rLayer = (RasterImageLayer) LayerTools.getSelectedLayerable(context, RasterImageLayer.class);
         
         if (rLayer==null){
-            context.getWorkbenchFrame().warnUser(I18N.get("no-layer-selected")); //$NON-NLS-1$
+            context.getWorkbenchFrame().warnUser(I18N.get("pirol.plugIns.EditAttributeByFormulaPlugIn.no-layer-selected")); //$NON-NLS-1$
             return false;
         }
         
