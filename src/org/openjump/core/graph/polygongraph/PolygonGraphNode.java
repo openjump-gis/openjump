@@ -17,6 +17,9 @@ import java.util.Iterator;
 import org.openjump.core.geomutils.algorithm.GeometryConverter;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.BasicFeature;
 import com.vividsolutions.jump.feature.Feature;
@@ -82,12 +85,15 @@ public class PolygonGraphNode {
 			diff = this.geometry.getBoundary();
 		}
 		ArrayList<Geometry> explodedGeoms = GeometryConverter.explodeGeomsIfMultiG(diff);
-		//-- create the features
-		int count = 0;
+		//-- create the features		
+		int count = 0; GeometryFactory gf = new GeometryFactory();
 		for (Iterator iterator = explodedGeoms.iterator(); iterator.hasNext();) {
 			Geometry geom = (Geometry) iterator.next();
 			count++;
 			Feature fnew = new BasicFeature(PolygonGraphNode.getBoundaryFeatureSchema());
+			if (geom instanceof LinearRing){
+				geom = gf.createLineString(((LinearRing)geom).getCoordinateSequence());
+			}			
 			fnew.setGeometry(geom);
 			fnew.setAttribute("startNode", nodeId);
 			fnew.setAttribute("endNode", nodeId);
