@@ -307,19 +307,19 @@ public class IntersectPolygonLayersPlugIn extends ThreadedBasePlugIn {
 			AttributeType type = fs.getAttributeType(i); 
 			if (!type.equals(AttributeType.GEOMETRY)){
 				if(type.equals(AttributeType.DOUBLE)){
-					f.setAttribute(i, Double.NaN);
+					ftemp.setAttribute(i, Double.NaN);
 				}
 				if(type.equals(AttributeType.INTEGER)){
-					f.setAttribute(i, Double.NaN);
+					ftemp.setAttribute(i, Double.NaN);
 				}
 				if(type.equals(AttributeType.STRING)){
-					f.setAttribute(i, "NaN");
+					ftemp.setAttribute(i, "NaN");
 				}
 				if(type.equals(AttributeType.OBJECT)){
-					f.setAttribute(i, null);
+					ftemp.setAttribute(i, null);
 				}
 				if(type.equals(AttributeType.DATE)){
-					f.setAttribute(i, null);
+					ftemp.setAttribute(i, null);
 				}
 			}
 		}
