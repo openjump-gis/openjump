@@ -16,6 +16,7 @@ import com.vividsolutions.jts.index.SpatialIndex;
 import com.vividsolutions.jts.index.strtree.STRtree;
 import com.vividsolutions.jts.operation.polygonize.Polygonizer;
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.BasicFeature;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
@@ -46,6 +47,8 @@ import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
  * all geometric intersections between the polygons. Afterwards the attributes
  * are transferred. The later step assumes that a new created intersection
  * polygon has at max only one correspondent polygon per layer.
+ * 
+ * TODO: translate Error messages
  * 
  */
 
@@ -207,6 +210,7 @@ public class IntersectPolygonLayersPlugIn extends ThreadedBasePlugIn {
 		// -- add the features and do the attribute mapping
 		for (Iterator iterator = withoutIntersection.iterator(); iterator
 				.hasNext();) {
+			boolean errorInA = false; boolean errorInB = false;
 			Geometry geom = (Geometry) iterator.next();
 			Point pt = geom.getInteriorPoint();
 			Feature f = new BasicFeature(fd.getFeatureSchema());
@@ -224,9 +228,15 @@ public class IntersectPolygonLayersPlugIn extends ThreadedBasePlugIn {
 			}
 			if (foundCountA > 1) {
 				if (context != null) {
-					context.getWorkbenchFrame().warnUser(
-							I18N.get("org.openjump.plugin.tools.IntersectPolygonLayersPlugIn.Found-more-than-one-source-feature-in-Layer")
-							+ " " + GenericNames.LAYER_A);
+					errorInA = true;
+					String errorStrg = I18N.get("org.openjump.plugin.tools.IntersectPolygonLayersPlugIn.Found-more-than-one-source-feature-in-Layer");
+					context.getWorkbenchFrame().warnUser(errorStrg+ " " + GenericNames.LAYER_A);
+		            context.getWorkbenchFrame().getOutputFrame().createNewDocument();
+		            context.getWorkbenchFrame().getOutputFrame().addText("IntersectPolygonLayersPlugIn: " + errorStrg+ ": " + GenericNames.LAYER_A + 
+		            		". Reason: The Layer contains probably objects that overlay each other. Will set polygon values of item with FID: " + f.getID() + 
+		            		" to NaN. Use i)" + I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.Transfer-Attributes") + 
+		            		" or ii)" + I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.Join-Attributes-Spatially") + 
+		            		" functions to obtain atributes from " + GenericNames.LAYER_A);
 				}
 			} else if (foundCountA == 0) {
 				if (context != null) {
@@ -246,9 +256,15 @@ public class IntersectPolygonLayersPlugIn extends ThreadedBasePlugIn {
 			}
 			if (foundCountB > 1) {
 				if (context != null) {
-					context.getWorkbenchFrame().warnUser(
-						I18N.get("org.openjump.plugin.tools.IntersectPolygonLayersPlugIn.Found-more-than-one-source-feature-in-Layer")
-						+ " " + GenericNames.LAYER_B);
+					errorInB = true;
+					String errorStrg = I18N.get("org.openjump.plugin.tools.IntersectPolygonLayersPlugIn.Found-more-than-one-source-feature-in-Layer");
+					context.getWorkbenchFrame().warnUser(errorStrg+ " " + GenericNames.LAYER_B);
+		            context.getWorkbenchFrame().getOutputFrame().createNewDocument();
+		            context.getWorkbenchFrame().getOutputFrame().addText("IntersectPolygonLayersPlugIn: " + errorStrg+ ": " + GenericNames.LAYER_B + 
+		            		". Reason: The Layer contains probably objects that overlay each other. Will set polygon values of item with FID: " + f.getID() + 
+		            		" to NaN. Use " + I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.Transfer-Attributes") + 
+		            		" or " + I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.Join-Attributes-Spatially") + 
+		            		" functions to obtain atributes from " + GenericNames.LAYER_B);
 				}
 			} else if (foundCountB == 0) {
 				if (context != null) {
@@ -257,6 +273,13 @@ public class IntersectPolygonLayersPlugIn extends ThreadedBasePlugIn {
 				}
 			}
 			if ((foundCountA > 0) || (foundCountB > 0)){ 
+				// -- before mapping check and set for error values
+				if (errorInA){
+					featureA = resetFeatureValuesToNaN(featureA);
+				}
+				if (errorInB){
+					featureB = resetFeatureValuesToNaN(featureB);
+				}
 				// -- do mapping
 				mapping.transferAttributes(featureA, featureB, f);
 				// -- set Geometry
@@ -269,6 +292,38 @@ public class IntersectPolygonLayersPlugIn extends ThreadedBasePlugIn {
 		}
 		// --
 		return fd;
+	}
+	
+	/**
+	 * All values are set to NaN.
+	 * @param f
+	 * @return
+	 */
+	public static Feature resetFeatureValuesToNaN(Feature f){
+		//-- work only on a copy so the original feature isn't changed
+		Feature ftemp = f.clone(true);
+		FeatureSchema fs = ftemp.getSchema();
+		for (int i =0; i < fs.getAttributeCount(); i++){
+			AttributeType type = fs.getAttributeType(i); 
+			if (!type.equals(AttributeType.GEOMETRY)){
+				if(type.equals(AttributeType.DOUBLE)){
+					f.setAttribute(i, Double.NaN);
+				}
+				if(type.equals(AttributeType.INTEGER)){
+					f.setAttribute(i, Double.NaN);
+				}
+				if(type.equals(AttributeType.STRING)){
+					f.setAttribute(i, "NaN");
+				}
+				if(type.equals(AttributeType.OBJECT)){
+					f.setAttribute(i, null);
+				}
+				if(type.equals(AttributeType.DATE)){
+					f.setAttribute(i, null);
+				}
+			}
+		}
+		return ftemp;
 	}
 	
 	/**
