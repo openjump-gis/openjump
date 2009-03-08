@@ -1,3 +1,7 @@
+2009-03-08 mentaer <sstein@geo.uzh.ch>
+    Fixed bug 2660257 - enabled reading of LinearRing geometries 
+    from JML files.
+    
 2009-02-22 mentaer <sstein@geo.uzh.ch>
     Added layer context menus for Pirol/Sextante raster images.
     

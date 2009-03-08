@@ -409,7 +409,9 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
 
                     return;
                 }
-
+                //-- [sstein] 8.March.2009 
+                boolean usedLinearRing = false;
+                //-- sstein:end
                 //these correspond to <coord><X>0.0</X><Y>0.0</Y></coord>
                 if ((qName.compareToIgnoreCase("X") == 0) ||
                         (qName.compareToIgnoreCase("gml:X") == 0)) {
@@ -442,9 +444,11 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
                 } else if ((qName.compareToIgnoreCase("outerBoundaryIs") == 0) ||
                         (qName.compareToIgnoreCase("gml:outerBoundaryIs") == 0)) {
                     outerBoundary = linearRing;
+                    usedLinearRing = true;
                 } else if ((qName.compareToIgnoreCase("innerBoundaryIs") == 0) ||
                         (qName.compareToIgnoreCase("gml:innerBoundaryIs") == 0)) {
                     innerBoundaries.add(linearRing);
+                    usedLinearRing = true;
                 } else if ((qName.compareToIgnoreCase("polygon") == 0) ||
                         (qName.compareToIgnoreCase("gml:polygon") == 0)) {
                     //LinearRing[] lrs = new LinearRing[1];
@@ -467,6 +471,12 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
                                 0));
                     geometry.add(apoint);
                 }
+                //-- [sstein] 8.March.2009 
+                //   read LinearRings even if we don't have polygons
+                if ((linearRing != null) && (usedLinearRing == false)){
+                    geometry.add(linearRing);
+                }
+                //-- sstein:end
             } else if (STATE == STATE_GET_COLUMNS) {
                 if (qName.compareToIgnoreCase(GMLinput.featureTag) == 0) {
                     tagBody = new StringBuffer();
@@ -766,7 +776,7 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
             if ((STATE == STATE_GET_COLUMNS) &&
                     GMLinput.isGeometryElement(qName)) {
                 //found the geom tag
-                // System.out.println("found geom #"+currentGeometryNumb );
+                //System.out.println("found geom #"+currentGeometryNumb );
                 recursivegeometry = new ArrayList();
                 geometry = new ArrayList();
                 recursivegeometry.add(geometry);
@@ -865,7 +875,7 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
 				(s.compareToIgnoreCase("polygon") == 0) ||
                 (s.compareToIgnoreCase("linestring") == 0) ||
                 (s.compareToIgnoreCase("point") == 0)||
-                (s.compareToIgnoreCase("geometrycollection") == 0)
+                (s.compareToIgnoreCase("geometrycollection") == 0) 
 			)
         {
             return true;
