@@ -174,7 +174,7 @@ public class ScaleStylePanel extends JPanel implements StylePanel {
         gridBagConstraints1.gridx = 1;
         gridBagConstraints1.gridy = 4;
         smallestScaleLabel.setText(I18N.get("ui.style.ScaleStylePanel.smallest-scale"));
-        smallestScaleLabel.setToolTipText(I18N.get("ui.style.ScaleStylePanel.larger-units-pixel"));
+        //smallestScaleLabel.setToolTipText(I18N.get("ui.style.ScaleStylePanel.larger-units-pixel")); //[sstein] 8.Mar.2009 
         smallestScaleIconLabel.setIcon(MIN_SCALE_ICON);
         largestScaleIconLabel.setIcon(MAX_SCALE_ICON);
         gridBagConstraints5.gridx = 3;
@@ -228,7 +228,7 @@ public class ScaleStylePanel extends JPanel implements StylePanel {
         gridBagConstraints12.insets = new java.awt.Insets(2, 2, 2, 2);
         gridBagConstraints13.gridx = 4;
         gridBagConstraints13.gridy = 5;
-        unitsPerPixelLabel.setText(I18N.get("ui.style.ScaleStylePanel.units-pixel"));
+        //unitsPerPixelLabel.setText(I18N.get("ui.style.ScaleStylePanel.units-pixel")); //[sstein] 8.Mar.2009 
         gridBagConstraints14.gridx = 7;
         gridBagConstraints14.gridy = 6;
         gridBagConstraints14.insets = new java.awt.Insets(4, 4, 4, 4);
@@ -246,7 +246,7 @@ public class ScaleStylePanel extends JPanel implements StylePanel {
         GUIUtil.shrinkFont(getShowAtThisScaleButton());
         GUIUtil.shrinkFont(unitsPerPixelLabel);
         largestScaleLabel.setText(I18N.get("ui.style.ScaleStylePanel.largest-scale"));
-        largestScaleLabel.setToolTipText(I18N.get("ui.style.ScaleStylePanel.smaller-units-pixel"));
+        //largestScaleLabel.setToolTipText(I18N.get("ui.style.ScaleStylePanel.smaller-units-pixel")); //[sstein] 8.Mar.2009 
         gridBagConstraints2.gridx = 1;
         gridBagConstraints2.gridy = 6;
         gridBagConstraints31.gridx = 1;

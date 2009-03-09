@@ -1,5 +1,8 @@
 2009-03-08 mentaer <sstein@geo.uzh.ch>
-    Fixed bugs 2673544 - made Cut Polygon Tool undo-able.
+    Fixed bug 1779771  - removed confusing scale units / label.
+    
+2009-03-08 mentaer <sstein@geo.uzh.ch>
+    Fixed bug 2673544 - made Cut Polygon Tool undo-able.
     
 2009-03-08 mentaer <sstein@geo.uzh.ch>
     Fixed bugs 2628678 and 2514296 - Auto Complete Polygons is now 
