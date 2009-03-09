@@ -36,7 +36,12 @@ import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerEventType;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
+import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.EditTransaction;
+import com.vividsolutions.jump.workbench.ui.LayerNamePanelProxy;
+import com.vividsolutions.jump.workbench.ui.cursortool.CursorTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.PolygonTool;
+import com.vividsolutions.jump.workbench.ui.cursortool.editing.FeatureDrawingUtil;
 
 /*
  * @author Daniel K&uuml;mper
@@ -49,8 +54,13 @@ public class AutoCompletePolygonCursorTool extends PolygonTool {
    private static WorkbenchContext context;
    private EnableCheckFactory checkFactory;
 
+   private FeatureDrawingUtil featureDrawingUtil;
 
-
+   protected AutoCompletePolygonCursorTool(FeatureDrawingUtil featureDrawingUtil)
+   {
+       this.featureDrawingUtil = featureDrawingUtil;
+   }
+   
    @Override
    public String getName() {
       return sAutoComplete;
@@ -59,6 +69,16 @@ public class AutoCompletePolygonCursorTool extends PolygonTool {
    public AutoCompletePolygonCursorTool(EnableCheckFactory checkFactory) {
        this.checkFactory = checkFactory;
        allowSnapping();
+   }
+
+   public static CursorTool create(LayerNamePanelProxy layerNamePanelProxy)
+   {
+       FeatureDrawingUtil featureDrawingUtil =
+       new FeatureDrawingUtil(layerNamePanelProxy);
+       
+       return featureDrawingUtil.prepare(
+       new AutoCompletePolygonCursorTool(featureDrawingUtil),
+       true);
    }
    
    protected void gestureFinished() throws Exception {
@@ -69,13 +89,9 @@ public class AutoCompletePolygonCursorTool extends PolygonTool {
       }
 
       Layer lay = org.openjump.core.apitools.LayerTools.getSelectedLayer(context.createPlugInContext());
-      FeatureCollection fc = lay.getFeatureCollectionWrapper().getUltimateWrappee();
-      FeatureSchema fs = fc.getFeatureSchema();
 
       Feature[] featuresInFence = de.fho.jump.pirol.utilities.plugIns.StandardPirolPlugIn.getFeaturesInFenceOrInLayer(context.createPlugInContext(), lay);
-
-      BasicFeature newFeature = new BasicFeature(fs);
-
+		
       Polygon poly = this.getPolygon();
 
       Geometry newGeo = poly.getGeometryN(0);
@@ -86,11 +102,13 @@ public class AutoCompletePolygonCursorTool extends PolygonTool {
          for (int i = 0; i < featuresInFence.length; i++) {
             diffGeo = diffGeo.difference(featuresInFence[i].getGeometry());
          }
-         newFeature.setGeometry(diffGeo);
-         fc.add(newFeature);
-
-         context.getLayerManager().fireLayerChanged(lay, LayerEventType.APPEARANCE_CHANGED);
-
+         if (diffGeo instanceof Polygon){
+	         featureDrawingUtil.drawRing(
+	         (Polygon)diffGeo,
+	         isRollingBackInvalidEdits(),
+	         this,
+	         getPanel()); 
+         }
          //System.out.println("Polygon added");
       
       } catch (Exception e) {
