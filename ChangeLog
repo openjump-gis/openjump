@@ -1,5 +1,9 @@
 2009-03-08 mentaer <sstein@geo.uzh.ch>
-    Fixed bug 1779771  - removed confusing scale units / label.
+    Fixed issue (bugreport) 1786353  - improved Layer description for A/B, 
+    i.e. what source and what target layer is.
+    
+2009-03-08 mentaer <sstein@geo.uzh.ch>
+    Fixed issue (bugreport) 1779771  - removed confusing scale units / label.
     
 2009-03-08 mentaer <sstein@geo.uzh.ch>
     Fixed bug 2673544 - made Cut Polygon Tool undo-able.

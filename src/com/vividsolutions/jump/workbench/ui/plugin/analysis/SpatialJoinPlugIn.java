@@ -141,8 +141,8 @@ public class SpatialJoinPlugIn
     }
   }
 
-	private final static String LAYER_A = GenericNames.LAYER_A;
-	private final static String LAYER_B = GenericNames.LAYER_B;
+	private final static String LAYER_A = GenericNames.LAYER_A + " (" + GenericNames.TARGET_LAYER + ")";
+	private final static String LAYER_B = GenericNames.LAYER_B + " (" + GenericNames.SOURCE_LAYER + ")";
   private final static String PREDICATE = GenericNames.RELATION;
   private final static String PARAM = GenericNames.PARAMETER;
 
