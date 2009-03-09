@@ -1,4 +1,7 @@
 2009-03-08 mentaer <sstein@geo.uzh.ch>
+    Fixed bugs 2673544 - made Cut Polygon Tool undo-able.
+    
+2009-03-08 mentaer <sstein@geo.uzh.ch>
     Fixed bugs 2628678 and 2514296 - Auto Complete Polygons is now 
     undo-able and adds polygons only to an editable layer (i.e. the
     tool choses the next editable layer for drawing or creates
