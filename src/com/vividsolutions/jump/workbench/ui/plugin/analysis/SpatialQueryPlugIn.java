@@ -155,12 +155,20 @@ public class SpatialQueryPlugIn
     SpatialQueryExecuter executer = new SpatialQueryExecuter(maskFC, sourceFC);
     executer.setAllowDuplicates(allowDups);
     executer.setComplementResult(complementResult);
+    
+    // Code added by the Sunburned Surveyor to allow
+    // the creation of "normal" selections if a new
+    // layer isn't being created for the features
+    // selected as part of the spatial analysis.
+    executer.setCreateNewLayer(createLayer);
+    
     FeatureCollection resultFC = executer.getResultFC();
     executer.execute(monitor, functionToRun, params, resultFC);
 
     if (monitor.isCancelRequested()) return;
 
-    if (createLayer) {
+    if (createLayer) 
+    {
       String outputLayerName = LayerNameGenerator.generateOperationOnLayerName(
           funcNameToRun,
           srcLayer.getName());

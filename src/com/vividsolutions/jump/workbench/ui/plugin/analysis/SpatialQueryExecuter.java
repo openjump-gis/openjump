@@ -31,6 +31,8 @@ public class SpatialQueryExecuter
 
   private Geometry geoms[] = new Geometry[2];
   private Set resultSet = new HashSet();
+  
+  private boolean createNewLayer;
 
   public SpatialQueryExecuter(FeatureCollection maskFC, FeatureCollection sourceFC)
   {
@@ -196,8 +198,21 @@ public class SpatialQueryExecuter
 
   private void addToResult(Feature f, FeatureCollection resultFC)
   {
-    Feature fResult = f.clone(true);
-    resultFC.add(fResult);
+
+	  // Code modified by the Sunburned Surveyor to allow
+	  // the creation of "normal" selections if a new
+	  // layer isn't being created for the features
+	  // selected as part of the spatial analysis.
+	  if(this.createNewLayer == true)
+	  {
+		  Feature fResult = f.clone(true);
+		  resultFC.add(fResult);
+	  }
+	  
+	  else
+	  {
+		  resultFC.add(f);
+	  }
   }
 
   private boolean isTrue(GeometryPredicate func, Geometry geom0, Geometry geom1, double[] params)
@@ -212,5 +227,34 @@ public class SpatialQueryExecuter
     return false;
 
   }
-
+  
+  // Code added by the Sunburned Surveyor to allow
+  // the creation of "normal" selections if a new
+  // layer isn't being created for the features
+  // selected as part of the spatial analysis.
+  //
+  // This method is currently called by the SpatialQueryPlugIn object.
+  /**
+   * Sets a boolean flag that indicates if features selected as part of the
+   * spatial analysis should be placed on a new layer, or should be selected
+   * in the source layer.
+   */
+  public void setCreateNewLayer(boolean argCreateNewLayer)
+  {
+	  this.createNewLayer = argCreateNewLayer;
+  }
+  
+  // Code added by the Sunburned Surveyor to allow
+  // the creation of "normal" selections if a new
+  // layer isn't being created for the features
+  // selected as part of the spatial analysis.
+  /**
+   * Returns a boolean flag that indicates if features selected as part of the
+   * spatial analysis should be placed on a new layer, or should be selected
+   * in the source layer.
+   */
+  public boolean getCreateNewLayer()
+  {
+	  return this.createNewLayer;
+  }
 }

@@ -96,15 +96,15 @@ import java.util.*;
  *   </tr>
  *   <tr>
  *     <td>STRING</td>
- *     <td>Type 'C' – length is size of longest string in the FeatureCollection </td>
+ *     <td>Type 'C' length is size of longest string in the FeatureCollection </td>
  *   </tr>
  *   <tr>
  *     <td>DOUBLE</td>
- *     <td>Type 'N' – length is 33, with 16 digits right of the decimal</td>
+ *     <td>Type 'N' length is 33, with 16 digits right of the decimal</td>
  *   </tr>
  *   <tr>
  *     <td>INTEGER</td>
- *     <td>Type 'N' – length is 16, with 0 digits right of the decimal</td>
+ *     <td>Type 'N' length is 16, with 0 digits right of the decimal</td>
  *   </tr>
  * </table>
  *
@@ -201,7 +201,7 @@ import java.util.*;
  *
  * <p>
  *  Since JUMP and JTS do not currently support a M (measure)
- *  coordinate, it will always be set to –10E40 in the shape file
+ *  coordinate, it will always be set to ï¿½10E40 in the shape file
  *  (type 'xym' or 'xyzm').  This value represents the Measure "no
  *  data" value (page 2, ESRI Shapefile Technical Description).  Since
  *  the 'NaN' DOUBLE values for Z coordinates is invalid in a
