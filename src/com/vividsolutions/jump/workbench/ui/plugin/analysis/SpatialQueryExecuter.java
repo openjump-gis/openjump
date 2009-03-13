@@ -32,7 +32,7 @@ public class SpatialQueryExecuter
   private Geometry geoms[] = new Geometry[2];
   private Set resultSet = new HashSet();
   
-  private boolean createNewLayer;
+  private boolean createNewLayer = true;
 
   public SpatialQueryExecuter(FeatureCollection maskFC, FeatureCollection sourceFC)
   {
