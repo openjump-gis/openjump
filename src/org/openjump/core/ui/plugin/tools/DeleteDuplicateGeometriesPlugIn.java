@@ -95,7 +95,7 @@ public class DeleteDuplicateGeometriesPlugIn extends AbstractPlugIn implements T
 	        this.sName = I18N.get("org.openjump.core.ui.plugin.tools.DeleteDuplicateGeometriesPlugIn.Delete-Duplicate-Geometries");
 	        this.sChecked = I18N.get("org.openjump.core.ui.plugin.tools.DeleteDuplicateGeometriesPlugIn.checked");
 	        this.sCleaned = I18N.get("org.openjump.core.ui.plugin.tools.DeleteDuplicateGeometriesPlugIn.cleaned");
-        
+	        /*//-- no need to be in mouse menu
 		    context.getFeatureInstaller().addPopupMenuItem(
 		    		LayerViewPanel.popupMenu(),
 					this,
@@ -103,7 +103,7 @@ public class DeleteDuplicateGeometriesPlugIn extends AbstractPlugIn implements T
 					false, 
 					null,
                     createEnableCheck(context.getWorkbenchContext()));
-			
+			*/
 	        FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
 	    	featureInstaller.addMainMenuItem(
 	    	        this,								//exe
