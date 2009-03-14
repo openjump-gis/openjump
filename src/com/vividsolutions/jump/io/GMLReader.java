@@ -457,6 +457,7 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
                     lrs = (LinearRing[]) innerBoundaries.toArray(lrs);
                     polygon = geometryFactory.createPolygon(outerBoundary, lrs);
                     geometry.add(polygon);
+                    usedLinearRing = true;
                 } else if ((qName.compareToIgnoreCase("linestring") == 0) ||
                         (qName.compareToIgnoreCase("gml:linestring") == 0)) {
                     Coordinate[] c = new Coordinate[0];
@@ -473,9 +474,13 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
                 }
                 //-- [sstein] 8.March.2009 
                 //   read LinearRings even if we don't have polygons
+                //-- [sstein] 13.March.2009 undo
+                //   since for polygons the linear ring is still used and we get a geom collection                
+                /*
                 if ((linearRing != null) && (usedLinearRing == false)){
-                    geometry.add(linearRing);
+                    geometry.add(linearRing);                  
                 }
+                */
                 //-- sstein:end
             } else if (STATE == STATE_GET_COLUMNS) {
                 if (qName.compareToIgnoreCase(GMLinput.featureTag) == 0) {
