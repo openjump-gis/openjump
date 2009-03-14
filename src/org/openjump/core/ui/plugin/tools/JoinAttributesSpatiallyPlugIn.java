@@ -109,7 +109,7 @@ public class JoinAttributesSpatiallyPlugIn extends ThreadedBasePlugIn{
 	}
 	
 	public String getName(){
-		return I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.Join-Attributes-Spatially");
+		return I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.Join-Attributes-Spatially") + "...";
 	}
 	
 	public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
@@ -160,7 +160,7 @@ public class JoinAttributesSpatiallyPlugIn extends ThreadedBasePlugIn{
 		        						this.attrName, this.attributeOperation, 
 		        						this.spatialOperation, this.bradius, monitor);
 		if(results.size() > 0){
-			context.addLayer(StandardCategoryNames.WORKING, joinresult, results);
+			context.addLayer(StandardCategoryNames.RESULT, joinresult, results);
 		}
 		else{
 			context.getWorkbenchFrame().warnUser(notimplemented);			
