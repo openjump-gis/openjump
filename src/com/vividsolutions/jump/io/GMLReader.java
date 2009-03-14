@@ -401,6 +401,12 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
                   tagBody = new StringBuffer();
                     STATE = STATE_GET_COLUMNS;
 
+                    //-- [sstein] 14.March.2009 
+                    //   read LinearRings even if we don't have polygons              
+                    if ((linearRing != null) && (polygon == null)){
+                        geometry.add(linearRing);                  
+                    }
+                    //-- sstein:end
                     finalGeometry = geometryFactory.buildGeometry(geometry);
 
                     //System.out.println("end geom: "+finalGeometry.toString() );
@@ -409,9 +415,7 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
 
                     return;
                 }
-                //-- [sstein] 8.March.2009 
-                boolean usedLinearRing = false;
-                //-- sstein:end
+                //System.out.println("geom-element: " + qName);
                 //these correspond to <coord><X>0.0</X><Y>0.0</Y></coord>
                 if ((qName.compareToIgnoreCase("X") == 0) ||
                         (qName.compareToIgnoreCase("gml:X") == 0)) {
@@ -444,20 +448,16 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
                 } else if ((qName.compareToIgnoreCase("outerBoundaryIs") == 0) ||
                         (qName.compareToIgnoreCase("gml:outerBoundaryIs") == 0)) {
                     outerBoundary = linearRing;
-                    usedLinearRing = true;
                 } else if ((qName.compareToIgnoreCase("innerBoundaryIs") == 0) ||
                         (qName.compareToIgnoreCase("gml:innerBoundaryIs") == 0)) {
                     innerBoundaries.add(linearRing);
-                    usedLinearRing = true;
                 } else if ((qName.compareToIgnoreCase("polygon") == 0) ||
                         (qName.compareToIgnoreCase("gml:polygon") == 0)) {
                     //LinearRing[] lrs = new LinearRing[1];
                     LinearRing[] lrs = new LinearRing[0];
-
                     lrs = (LinearRing[]) innerBoundaries.toArray(lrs);
                     polygon = geometryFactory.createPolygon(outerBoundary, lrs);
                     geometry.add(polygon);
-                    usedLinearRing = true;
                 } else if ((qName.compareToIgnoreCase("linestring") == 0) ||
                         (qName.compareToIgnoreCase("gml:linestring") == 0)) {
                     Coordinate[] c = new Coordinate[0];
@@ -472,16 +472,6 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
                                 0));
                     geometry.add(apoint);
                 }
-                //-- [sstein] 8.March.2009 
-                //   read LinearRings even if we don't have polygons
-                //-- [sstein] 13.March.2009 undo
-                //   since for polygons the linear ring is still used and we get a geom collection                
-                /*
-                if ((linearRing != null) && (usedLinearRing == false)){
-                    geometry.add(linearRing);                  
-                }
-                */
-                //-- sstein:end
             } else if (STATE == STATE_GET_COLUMNS) {
                 if (qName.compareToIgnoreCase(GMLinput.featureTag) == 0) {
                     tagBody = new StringBuffer();
