@@ -1,3 +1,12 @@
+2009-03-15 mentaer <sstein@geo.uzh.ch>
+    Fixed issue (bugreport) 2660283 for Jython console - the button added
+    by RoadTool.py is now shown right of the textfield and not below.
+    (However, the bug report contains some more comments)
+    
+2009-03-12 javamap <sunburned.surveyor@gmail.com>
+    Fixed issue/feature request 1938020  - selections generated with
+    the spatial query function can now be deleted
+    
 2009-03-08 mentaer <sstein@geo.uzh.ch>
     Fixed issue (bugreport) 1786353  - improved Layer description for A/B, 
     i.e. what source and what target layer is.
