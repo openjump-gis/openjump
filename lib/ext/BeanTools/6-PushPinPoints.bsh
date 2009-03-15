@@ -1,5 +1,6 @@
 {
-filenameOrURL = new URL("http://www.techsoup.org/fb/fxforums/images/pushpin.gif");
+//filenameOrURL = new URL("http://www.techsoup.org/fb/fxforums/images/pushpin.gif");
+filenameOrURL = new URL("http://openclipart.org/people/jean_victor_balin/jean_victor_balin_icon_host.png");
 //filenameOrURL = "c:/junk/Arrow.jpg";
 image = Toolkit.getDefaultToolkit().getImage(filenameOrURL);
 import java.awt.geom.Point2D;
