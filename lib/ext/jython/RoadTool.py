@@ -205,12 +205,13 @@ class ToolListenerDeActivation(DrawCustomTool.DeActivationListener):
 
 class ToolListenerActivation(DrawCustomTool.ActivationListener):
     def handleActivation(self, event):
-        global _label1, _button1, _doBackup, _isActive      
+        global _label1, _button1, _doBackup, _isActive, _toolbox      
         _label1.text = "Lane Width"
         if not _isActive:
             _button1 = swing.JButton("Backup")
             _panel.add("East",_button1)
             _button1.actionPerformed = _backup
+            _toolbox.pack()
         _isActive = 1
         _doBackup = 0
   
