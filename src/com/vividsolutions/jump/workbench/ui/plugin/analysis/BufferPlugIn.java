@@ -149,7 +149,7 @@ public class BufferPlugIn
 	  endCapStyles.add(CAP_STYLE_SQUARE);
 	  endCapStyles.add(CAP_STYLE_BUTT);
 	  endCapStyle = CAP_STYLE_ROUND;
-	  ATTRIBUTE = I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Attribute");
+	  ATTRIBUTE = I18N.get("ui.plugin.analysis.BufferPlugIn.attribute-to-use");
 	  FROMATTRIBUTE = I18N.get("ui.plugin.analysis.BufferPlugIn.Get-distance-from-attribute-value");
 	  
 	  dialog = new MultiInputDialog(context.getWorkbenchFrame(), getName(), true);
