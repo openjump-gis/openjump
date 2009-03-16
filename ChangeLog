@@ -3,6 +3,9 @@
     by RoadTool.py is now shown right of the textfield and not below.
     (However, the bug report contains some more comments)
     
+2009-03-15 michaudm <michael.michaud@free.fr>
+    Add, remove and fix three small scripts in the BeanTools script directory
+    
 2009-03-12 javamap <sunburned.surveyor@gmail.com>
     Fixed issue/feature request 1938020  - selections generated with
     the spatial query function can now be deleted
@@ -34,7 +37,7 @@
     Created new "statistics" menu in tools. Moved feature-, layer-, 
     and attribute statistics functions into the menu.
     
-2009-02-20 mmichaud <michael.michaud@free.fr>
+2009-02-20 michaudm <michael.michaud@free.fr>
 	Newly created layers are marked with featureCollectionModified=true.
 	So when OpenJUMP is closed, it should ask for saving the data.
     
@@ -111,7 +114,7 @@
     added:
     org.openjump.core.ui.plugin.tools.DeleteDuplicateGeometriesPlugIn
     
-2009-01-01 mmichaud <michael.michaud@free.fr>
+2009-01-01 michaudm <michael.michaud@free.fr>
     * fixed bug 1821235 : I had to change a lot of code in 
     ECWImage class (maybe more than needed, but at least, it seems to work...)
     changed:
@@ -164,11 +167,11 @@
     Make the original JUMP NoteTool available as a PlugIn.     
     org.openjump.core.ui.plugin.edittoolbox.NoteToolPlugIn
     
-2008-11-13 mmichaud <michael.michaud@free.fr>
+2008-11-13 michaudm <michael.michaud@free.fr>
     * fix the size of combo boxes in the simple query editor
     to prevent the query dialog panel to become too large
     
-2008-11-12 mmichaud <michael.michaud@free.fr>
+2008-11-12 michaudm <michael.michaud@free.fr>
     * applied a patch from Hisaji Ono to write 2 bytes character
     correctly in dbf files
     
@@ -509,7 +512,7 @@
           mod:  org.openjump.OpenJumpConfiguration.java
                         language files
 
-2008-04-06 mmichaud <michael.michaud@free.fr>
+2008-04-06 michaudm <michael.michaud@free.fr>
         * Added two plugins and updated language files
           com.vividsolutions.jump.workbench.JUMPConfiguration
              -> remove a MenuSeparator
@@ -1140,7 +1143,7 @@
             com.vividsolutions.jump.workbench.ui.images.Square-union.gif
             com.vividsolutions.jump.workbench.ui.images.Square.gif
 
-2007-08-28 mmichaud <michael.michaud@free.fr>
+2007-08-28 michaudm <michael.michaud@free.fr>
 
         * Added a VertexZValue style and internationalized the
           VertexXYLineSegment style
@@ -1158,7 +1161,7 @@
             * Added some getting methods to FileDataSourceQueryChooser for the
               new load dialog implementation.
 
-2007-08-25 mmichaud <michael.michaud@free.fr>
+2007-08-25 michaudm <michael.michaud@free.fr>
 
         * SchemaPanel height set to 20 to have a readable combo box
           with the MetalLookAndFeel
@@ -1182,7 +1185,7 @@
 
         * added 1.2D release files
 
-2007-08-22 mmichaud <michael.michaud@free.fr>
+2007-08-22 michaudm <michael.michaud@free.fr>
 
         * Put resulting layer in standard Result category,
           and added a listener to update comboboxes when
@@ -1240,7 +1243,7 @@
           popup menu item.  It was totally nonfunctional.
           org.openjump.core.ui.plugin.layer.ToggleVisiblityPlugIn.java
 
-2007-08-16 mmichaud <michael.michaud@free.fr>
+2007-08-16 michaudm <michael.michaud@free.fr>
 
         * Make snap points to the grid or to vertices possible
           (note that Jon Aquino disabled this option, I'm not sure
@@ -1287,7 +1290,7 @@
                 (preparation for new release witout image display problems and
                 PlanarGraph bugfix by Michael and MouseWheel support by Larry)
 
-2007-08-12 mmichaud <michael.michaud@free.fr>
+2007-08-12 michaudm <michael.michaud@free.fr>
 
         * org.openjump.sigle.plugin.geoprocessing.oneLayer.topology.PlanarGraphPlugIn
           Fixed a bug (submitted by Hisaji Ono) where some edges had
@@ -1301,7 +1304,7 @@
 
         * OpenJUMP 1.2 C release
 
-2007-08-10 mmichaud <michael.michaud@free.fr>
+2007-08-10 michaudm <michael.michaud@free.fr>
 
         * org.openjump.core.ui.plugin.queries.QueryDialog
           org.openjump.core.ui.plugin.queries.Condition
@@ -1405,7 +1408,7 @@
           contain the org.jmat packages. Additionally the start-up scripts (.sh, .bat) have
           been updated
 
-2007-07-13 mmichaud <michael.michaud@free.fr>
+2007-07-13 michaudm <michael.michaud@free.fr>
 
         * Fixed a bug in LabelStyle : added trim() to avoid labels to be ex-centered
 
@@ -1424,7 +1427,7 @@
         * scripts/openjump.sh: Added improved startup script for Unix from
               Paul Austin.
 
-2007-07-08 mmichaud <michael.michaud@free.fr>
+2007-07-08 michaudm <michael.michaud@free.fr>
 
         * Add UnionByAttributePlugIn in the Tool/Analysis menu
 
@@ -1435,7 +1438,7 @@
         * Add automatic file extension in the main SaveDatasetAsPlugIn
           and put the format chooser at the bottom of the dialog (as in SkyJUMP)
 
-2007-07-03 mmichaud <michael.michaud@free.fr>
+2007-07-03 michaudm <michael.michaud@free.fr>
 
         * Simple query PlugIn : add some keys in the language property files
           in order to replace gnof, bnof, snof and nnof by an empty string in
@@ -1448,7 +1451,7 @@
           SLD Size element is now next to the Mark element and not underneath it.
           XSLUtility is now checking for null while constructing background.
 
-2007-06-29 mmichaud <michael.michaud@free.fr>
+2007-06-29 michaudm <michael.michaud@free.fr>
 
         * src/com/vividsolutions/jump/workbench/ui/plugin/CloneWindowPlugIn.java
           The problem with CloneWindowPlugIn has been fixed on 2007-06-02, but
@@ -1858,7 +1861,7 @@
 2007-03-24  michaudm <michael.michaud@free.fr>
 
         * src/org/openjump/core/ui/plugin/: customize.zip,
-          customize/BeanToolsPlugIn.java: mmichaud 2007-03-24 : adds
+          customize/BeanToolsPlugIn.java: michaudm 2007-03-24 : adds
           BeanToolsPlugIn to the customize menu
 
 2007-03-24  mentaer <sstein@geo.unizh.ch>
@@ -1870,41 +1873,41 @@
         * src/language/: jump.properties, jump_de.properties,
           jump_en.properties, jump_es.properties, jump_fi.properties,
           jump_fr.properties, jump_pt_BR.properties, jump_zh_CN.properties,
-          jump_pt.properties: mmichaud 2007-03-24 : change property files
+          jump_pt.properties: michaudm 2007-03-24 : change property files
           to include the new 'Customize' menu
 
 2007-03-24  michaudm <michael.michaud@free.fr>
 
         * src/de/latlon/deejump/plugin/manager/ExtensionManagerPlugIn.java:
-          mmichaud 2007-03-24 : move the plugin to Customize menu
+          michaudm 2007-03-24 : move the plugin to Customize menu
 
 2007-03-24  michaudm <michael.michaud@free.fr>
 
-        * src/com/vividsolutions/jump/workbench/ui/MenuNames.java: mmichaud
+        * src/com/vividsolutions/jump/workbench/ui/MenuNames.java: michaudm
           2007-03-24 : adds a Customize menu for plugins manager and
           scripting
 
 2007-03-24  michaudm <michael.michaud@free.fr>
 
         * src/com/vividsolutions/jump/workbench/ui/plugin/BeanShellPlugIn.java:
-          mmichaud 2007-03-24 : move BeanShellPlugIn to Customize menu
+          michaudm 2007-03-24 : move BeanShellPlugIn to Customize menu
 
 2007-03-24  michaudm <michael.michaud@free.fr>
 
         * lib/ext/BeanTools/: 0-Help.bsh, 1-HelloWorld.bsh, 2-NewLayer.bsh,
           3-Populate.bsh, 4-AddAttribute.bsh, 5-ChangeAttributeValue.bsh,
-          RefreshScriptsMenu.bsh: mmichaud 2007-03-24 : add sample scripts
+          RefreshScriptsMenu.bsh: michaudm 2007-03-24 : add sample scripts
           in the ext/BeanTools directory for BeanToolsPlugIn
 
 2007-03-24  michaudm <michael.michaud@free.fr>
 
-        * etc/build.xml: mmichaud 2007-03-24 : reformat the build.xml and
+        * etc/build.xml: michaudm 2007-03-24 : reformat the build.xml and
           change the date (=20060430, date of the last public release)
 
 2007-03-24  michaudm <michael.michaud@free.fr>
 
         * src/com/vividsolutions/jump/workbench/JUMPConfiguration.java:
-          mmichaud 2007-03-24 : move BeanShellPlugIn into the Customize
+          michaudm 2007-03-24 : move BeanShellPlugIn into the Customize
           menu
 
 2007-03-24  mentaer <sstein@geo.unizh.ch>
@@ -1915,13 +1918,13 @@
 
 2007-03-24  michaudm <michael.michaud@free.fr>
 
-        * src/com/vividsolutions/jump/I18N.java: mmichaud 2007-03-24 :
+        * src/com/vividsolutions/jump/I18N.java: michaudm 2007-03-24 :
           returns last part of the resource key instead of an exception
           when no resource is found
 
 2007-03-24  michaudm <michael.michaud@free.fr>
 
-        * src/org/openjump/OpenJumpConfiguration.java: mmichaud 2007-03-24
+        * src/org/openjump/OpenJumpConfiguration.java: michaudm 2007-03-24
           : adds BeanToolsPlugIn and Customize menu
 
 2007-03-24  mentaer <sstein@geo.unizh.ch>
