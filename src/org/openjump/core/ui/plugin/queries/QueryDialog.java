@@ -190,6 +190,19 @@ public class QueryDialog extends BDialog {
         LayoutInfo centerH3 =
             new LayoutInfo(LayoutInfo.CENTER, LayoutInfo.HORIZONTAL,
                         new java.awt.Insets(3,3,3,3), new java.awt.Dimension());
+        LayoutInfo centerBoth =
+            new LayoutInfo(LayoutInfo.CENTER, LayoutInfo.BOTH,
+                        new java.awt.Insets(3,3,3,3), new java.awt.Dimension());
+            
+        LayoutInfo rightAlign =
+            new LayoutInfo(LayoutInfo.EAST, LayoutInfo.HORIZONTAL,
+                        new java.awt.Insets(3,3,3,3), new java.awt.Dimension());
+        LayoutInfo leftAlign =
+            new LayoutInfo(LayoutInfo.WEST, LayoutInfo.HORIZONTAL,
+                        new java.awt.Insets(3,3,3,3), new java.awt.Dimension());
+        LayoutInfo leftAlignShort =
+            new LayoutInfo(LayoutInfo.WEST, LayoutInfo.NONE,
+                        new java.awt.Insets(3,3,3,3), new java.awt.Dimension());
                         
         Border border = BorderFactory.createLineBorder(java.awt.Color.BLACK);
         Border border2 = BorderFactory.createLineBorder(java.awt.Color.BLACK, 2);
@@ -225,7 +238,8 @@ public class QueryDialog extends BDialog {
                                   BorderFactory.createTitledBorder(border,
                                 		  I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.results")));
                 // QUERY CONSTRUCTOR
-                FormContainer queryConstructorPanel = new FormContainer(5,3);
+                //FormContainer queryConstructorPanel = new FormContainer(5,3);
+                FormContainer queryConstructorPanel = new FormContainer(2,7);
                 queryConstructorPanel.setBackground(Color.decode(
                 		I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.color1")
                 ));
@@ -269,44 +283,45 @@ public class QueryDialog extends BDialog {
             resultPanel.add(create, 0, 2);
         
         // SET THE COMBO BOXES
-        BLabel layerLabel = new BLabel(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.layer"));
-            queryConstructorPanel.add(layerLabel, 0, 0, centerNone3);
-        BLabel attributeLabel = new BLabel(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.attribute"));
-            queryConstructorPanel.add(attributeLabel, 1, 0, centerNone3);
-        BLabel functionLabel = new BLabel(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.function"));
-            queryConstructorPanel.add(functionLabel, 2, 0, centerNone3);
-        BLabel operatorLabel = new BLabel(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.operator"));
-            queryConstructorPanel.add(operatorLabel, 3, 0, centerNone3);
-        BLabel valueLabel = new BLabel(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.value"));
-            queryConstructorPanel.add(valueLabel, 4, 0, centerNone3);
+        BLabel layerLabel = new BLabel(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.layer"), BLabel.EAST);
+            queryConstructorPanel.add(layerLabel, 0, 0, rightAlign);
+        BLabel attributeLabel = new BLabel(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.attribute"), BLabel.EAST);
+            queryConstructorPanel.add(attributeLabel, 0, 1, rightAlign);
+        BLabel functionLabel = new BLabel(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.function"), BLabel.EAST);
+            queryConstructorPanel.add(functionLabel, 0, 2, rightAlign);
+        BLabel operatorLabel = new BLabel(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.operator"), BLabel.EAST);
+            queryConstructorPanel.add(operatorLabel, 0, 3, rightAlign);
+        BLabel valueLabel = new BLabel(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.value"), BLabel.EAST);
+            queryConstructorPanel.add(valueLabel, 0, 4, rightAlign);
             
         layerCB = new BComboBox();
             layerCB.addEventLink(ValueChangedEvent.class, this, "layerChanged");
-            queryConstructorPanel.add(layerCB, 0, 1);
+            queryConstructorPanel.add(layerCB, 1, 0, leftAlign);
             // mmichaud 2008-11-13 limit the width to about 40 chars
             ((javax.swing.JComboBox)layerCB.getComponent())
                 .setPrototypeDisplayValue("012345678901234567890123456789O1");
         attributeCB = new BComboBox();
             attributeCB.addEventLink(ValueChangedEvent.class, this, "attributeChanged");
-            queryConstructorPanel.add(attributeCB, 1, 1);
+            queryConstructorPanel.add(attributeCB, 1, 1, leftAlign);
             // mmichaud 2008-11-13 limit the width to about 40 chars
             ((javax.swing.JComboBox)attributeCB.getComponent())
                 .setPrototypeDisplayValue("01234567890123456789012345678901");
         functionCB = new BComboBox();
             functionCB.addEventLink(ValueChangedEvent.class, this, "functionChanged");
-            queryConstructorPanel.add(functionCB, 2, 1);
+            queryConstructorPanel.add(functionCB, 1, 2, leftAlignShort);
+        
         operatorCB = new BComboBox();
             operatorCB.addEventLink(ValueChangedEvent.class, this, "operatorChanged");
-            queryConstructorPanel.add(operatorCB, 3, 1);
+            queryConstructorPanel.add(operatorCB, 1, 3, leftAlignShort);
         valueCB = new BComboBox();
             valueCB.addEventLink(ValueChangedEvent.class, this, "valueChanged");
-            queryConstructorPanel.add(valueCB, 4, 1);
+            queryConstructorPanel.add(valueCB, 1, 4, leftAlign);
             // mmichaud 2008-11-13 limit the width to about 40 chars
             ((javax.swing.JComboBox)valueCB.getComponent())
                 .setPrototypeDisplayValue("012345678901234567890123456789012345678901234567");
             
-        comments = new BLabel(" ");
-            queryConstructorPanel.add(comments, 0, 2, 5, 1, centerH3);
+        comments = new BLabel("<html>&nbsp;<br>&nbsp;</html>");
+            queryConstructorPanel.add(comments, 0, 5, 2, 2, centerBoth);
             
         // PROGRESS BAR PANEL
         progressBarTitle = new BLabel(" ");
@@ -819,11 +834,11 @@ public class QueryDialog extends BDialog {
                 // New condition
                 Condition condition = new Condition(queryDialog, context);
                 
-                comments.setText(
-                		I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.select-from") +
+                comments.setText("<html>" +
+                    I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.select-from") +
                     " \"" + layerCB.getSelectedValue() + "\" " + 
                     I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.features-where") + " " +
-                    condition + "..."
+                    condition + "...</html>"
                 );
                 
                 // The FeatureSelection before the query
@@ -954,12 +969,12 @@ public class QueryDialog extends BDialog {
                 progressBarTitle.setText(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.result-display"));
                 progressBar.setIndeterminate(true);
                 
-                comments.setText(
+                comments.setText("<html>" +
                 		I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.select-from") +
                     " \"" + layerCB.getSelectedValue() + "\" " + 
                     I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.features-where") + " " +
                     condition + " : " + featuresfound + " " +
-                    I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.features-found")
+                    I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.features-found") + "</html>"
                 );
                 
                 // update the selection attribute
