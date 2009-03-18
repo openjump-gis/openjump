@@ -1,3 +1,6 @@
+2009-03-18 stranger <schmitz@lat-lon.de>
+    Encoding layer names and format properly.
+
 2009-03-15 mentaer <sstein@geo.uzh.ch>
     Fixed issue (bugreport) 2660283 for Jython console - the button added
     by RoadTool.py is now shown right of the textfield and not below.
