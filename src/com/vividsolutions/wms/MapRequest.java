@@ -36,8 +36,11 @@
 
 package com.vividsolutions.wms;
 
+import static java.net.URLEncoder.encode;
+
 import java.awt.Image;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -49,9 +52,9 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import sun.misc.BASE64Encoder;
-
 import org.apache.log4j.Logger;
+
+import sun.misc.BASE64Encoder;
 
 /**
  * Represents all of the parameters of a getMap request from a WMS server.
@@ -273,12 +276,20 @@ public class MapRequest {
           ver = "REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1";
       }
       urlBuf.append( service.getCapabilities().getGetMapURL() + ver + "&WIDTH=" + imgWidth + "&HEIGHT=" + imgHeight );
-      urlBuf.append( "&LAYERS=" + listToString( layerList ) );
+      try {
+        urlBuf.append( "&LAYERS=" + encode(listToString( layerList ), "UTF-8") );
+    } catch (UnsupportedEncodingException e1) {
+        LOG.debug("UTF8 not supported by Java version", e1);
+    }
       if( transparent ) {
         urlBuf.append( "&TRANSPARENT=TRUE" );
       }
       if( format != null ) {
-        urlBuf.append( "&FORMAT=" + format );
+        try {
+            urlBuf.append( "&FORMAT=" + encode(format, "UTF-8") );
+        } catch (UnsupportedEncodingException e) {
+            LOG.debug("UTF8 not supported by Java version", e);
+        }
       }
       if( bbox != null ) {
         urlBuf.append( "&BBOX=" + bbox.getMinX() + "," + bbox.getMinY()
