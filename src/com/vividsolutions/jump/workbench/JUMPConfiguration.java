@@ -608,10 +608,13 @@ public class JUMPConfiguration implements Setup {
         featureInstaller.addPopupMenuItem(popupMenu, zoomToClickPlugIn,
                 I18N.get("JUMPConfiguration.zoom-out"), false, null, null);
         popupMenu.addSeparator(); // ===================
+        /*//[sstein] 23Mar2009 -- remove from layer view context menu to get space
+        //                      but is still to be found in >edit>selection> 
         featureInstaller.addPopupMenuItem(popupMenu,
                 selectFeaturesInFencePlugIn, selectFeaturesInFencePlugIn
                         .getName(), false, null, SelectFeaturesInFencePlugIn
                         .createEnableCheck(workbenchContext));
+        */
         featureInstaller.addPopupMenuItem(popupMenu, cutSelectedItemsPlugIn,
                 cutSelectedItemsPlugIn.getName(), false, CutSelectedItemsPlugIn.ICON,
                 cutSelectedItemsPlugIn.createEnableCheck(workbenchContext));

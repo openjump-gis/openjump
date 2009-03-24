@@ -31,10 +31,9 @@
  * (850)862-7321
  */
 
-package org.openjump.core.ui.plugin.mousemenu;
+package org.openjump.core.ui.plugin.edit;
 
 import java.util.Collection;
-import javax.swing.JPopupMenu;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -43,8 +42,8 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
+import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.TreeLayerNamePanel;
-import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.model.Layer;
 
 public class SelectLayersWithSelectedItemsPlugIn extends AbstractPlugIn {
@@ -53,12 +52,20 @@ public class SelectLayersWithSelectedItemsPlugIn extends AbstractPlugIn {
    public void initialize(PlugInContext context) throws Exception
     {     
         WorkbenchContext workbenchContext = context.getWorkbenchContext();
+        context.getFeatureInstaller().addMainMenuItemWithJava14Fix(this, 
+        		new String[] { MenuNames.EDIT, MenuNames.SELECTION }, 
+        		sSelectLayersWithSelectedItems, 
+				false, 
+				null, 
+				this.createEnableCheck(workbenchContext));
+        /*//[sstein] 23.Mar.2009 disabled - now in >edit>selection menu
         FeatureInstaller featureInstaller = new FeatureInstaller(workbenchContext);
         JPopupMenu popupMenu = LayerViewPanel.popupMenu();
         featureInstaller.addPopupMenuItem(popupMenu,
             this, sSelectLayersWithSelectedItems,
             false, null,
-            this.createEnableCheck(workbenchContext)); 
+            this.createEnableCheck(workbenchContext));
+        */ 
     }
     
     public boolean execute(final PlugInContext context) throws Exception
