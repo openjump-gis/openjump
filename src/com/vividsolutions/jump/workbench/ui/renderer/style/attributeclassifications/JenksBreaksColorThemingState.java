@@ -103,11 +103,12 @@ public class JenksBreaksColorThemingState implements ColorThemingStylePanel.Stat
     	int classCount = getRangeCount();
 
         double[] data = new double[attributeValues.size()];
-        int i=0;
+        int i=0; boolean isInteger=false;
         for (Iterator iterator = attributeValues.iterator(); iterator.hasNext();) {
 			Object val = (Object) iterator.next();
 			if (val instanceof Integer){
 				data[i] = (Integer)val;
+				isInteger = true;
 			}
 			else if (val instanceof Double){
 				data[i] = (Double)val;
@@ -120,11 +121,20 @@ public class JenksBreaksColorThemingState implements ColorThemingStylePanel.Stat
         double[] breaks = Classifier1D.classifyNaturalBreaks(data, classCount);
         double minVal = org.math.array.DoubleArray.min(data);
         Collection filteredValues = new ArrayList();
-        filteredValues.add(new Double(minVal));
+        if(isInteger){
+            filteredValues.add(new Integer((int)minVal));
+        }
+        else{
+            filteredValues.add(new Double(minVal));
+        }	
         for (int j = 0; j < breaks.length; j++) {
-			filteredValues.add(new Double(breaks[j]));
+            if(isInteger){
+            	filteredValues.add(new Integer((int)breaks[j]));
+            }
+            else{
+            	filteredValues.add(new Double(breaks[j]));
+            }
 		}
-        int x = 1+1;
         return filteredValues;
     }
 

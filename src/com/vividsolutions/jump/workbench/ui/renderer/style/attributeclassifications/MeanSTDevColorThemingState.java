@@ -103,11 +103,12 @@ public class MeanSTDevColorThemingState implements ColorThemingStylePanel.State 
     	int classCount = getRangeCount();
 
         double[] data = new double[attributeValues.size()];
-        int i=0;
+        int i=0; boolean isInteger = false;
         for (Iterator iterator = attributeValues.iterator(); iterator.hasNext();) {
 			Object val = (Object) iterator.next();
 			if (val instanceof Integer){
 				data[i] = (Integer)val;
+				isInteger = true;
 			}
 			else if (val instanceof Double){
 				data[i] = (Double)val;
@@ -120,11 +121,23 @@ public class MeanSTDevColorThemingState implements ColorThemingStylePanel.State 
         double[] breaks = Classifier1D.classifyMeanStandardDeviation(data, classCount);
         double minVal = org.math.array.DoubleArray.min(data);
         Collection filteredValues = new ArrayList();
-        filteredValues.add(new Double(minVal));
+        //add minVal only if it is smaller than smallest class break
+        if(minVal < breaks[0]){
+            if(isInteger){
+            	filteredValues.add(new Integer((int)minVal));
+            }
+            else{
+            	filteredValues.add(new Double(minVal));
+            }	
+        }
         for (int j = 0; j < breaks.length; j++) {
-			filteredValues.add(new Double(breaks[j]));
+            if(isInteger){
+            	filteredValues.add(new Integer((int)breaks[j]));
+            }
+            else{
+            	filteredValues.add(new Double(breaks[j]));
+            }
 		}
-        int x = 1+1;
         return filteredValues;
     }
 

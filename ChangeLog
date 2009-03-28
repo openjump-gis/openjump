@@ -1,3 +1,7 @@
+2009-03-28 mentaer <sstein@geo.uzh.ch>
+    Fixed issue (bugreport) 2716198 for color theming. New classification 
+    methods work now with integer attributes too.
+    
 2009-03-18 stranger <schmitz@lat-lon.de>
     Encoding layer names and format properly.
 
