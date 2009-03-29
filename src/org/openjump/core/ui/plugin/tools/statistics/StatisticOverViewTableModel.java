@@ -12,6 +12,7 @@ package org.openjump.core.ui.plugin.tools.statistics;
 import org.openjump.core.apitools.FeatureCollectionTools;
 import org.openjump.core.apitools.comparisonandsorting.ObjectComparator;
 import org.openjump.core.apitools.tables.StandardPirolTableModel;
+import org.openjump.core.attributeoperations.AttributeOp;
 import org.openjump.core.attributeoperations.statistics.CorrelationCoefficients;
 
 import com.vividsolutions.jump.I18N;
@@ -37,7 +38,7 @@ public class StatisticOverViewTableModel  extends StandardPirolTableModel {
     
     private static final long serialVersionUID = -4961732734422876267L;
     
-    protected Class[] colClasses = new Class[]{String.class, String.class, Double.class, String.class, Double.class, Double.class};
+    protected Class[] colClasses = new Class[]{String.class, String.class, Double.class, String.class, Double.class, Double.class, Double.class};
     protected Feature[] features = null;
 
     public StatisticOverViewTableModel(Feature[] features) {
@@ -47,7 +48,8 @@ public class StatisticOverViewTableModel  extends StandardPirolTableModel {
         		I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.minimum"), 
         		I18N.get("org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewTableModel.mean-mode"), 
         		I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.maximum"), 
-        		I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.standard-dev") });
+        		I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.standard-dev"),
+        		I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.sum")});
         this.features = features;
         
         this.setupTable();
@@ -72,7 +74,7 @@ public class StatisticOverViewTableModel  extends StandardPirolTableModel {
         
         Object[] meansModes = FeatureCollectionTools.getMeanOrModeForAttributes(features, attrToWorkWith);
         double[] minMax;
-        double deviation;
+        double deviation, sum;
         saveAttrIndex = 0;
         
         for (int i=0; i<attrInfos.length; i++){
@@ -81,18 +83,20 @@ public class StatisticOverViewTableModel  extends StandardPirolTableModel {
                 // numeric
                 minMax = FeatureCollectionTools.getMinMaxAttributeValue(this.features, fs, attrInfos[i].getAttributeName());
                 deviation = CorrelationCoefficients.getDeviation(this.features, attrInfos[i].getAttributeName(), ObjectComparator.getDoubleValue(meansModes[saveAttrIndex]));
-                this.addRow(attrInfos[i].getAttributeName(), attrInfos[i].getAttributeType(), new Double(minMax[0]), meansModes[saveAttrIndex], new Double(minMax[1]), new Double(deviation) );
+                //sum = FeatureCollectionTools.getSumAttributeValue(this.features, fs, attrInfos[i].getAttributeName());
+                sum = AttributeOp.evaluateAttributes(AttributeOp.SUM, this.features, attrInfos[i].getAttributeName());
+                this.addRow(attrInfos[i].getAttributeName(), attrInfos[i].getAttributeType(), new Double(minMax[0]), meansModes[saveAttrIndex], new Double(minMax[1]), new Double(deviation), new Double(sum) );
             } else {
                 // non numeric
-                this.addRow(attrInfos[i].getAttributeName(), attrInfos[i].getAttributeType(), null, meansModes[saveAttrIndex], null, null );
+                this.addRow(attrInfos[i].getAttributeName(), attrInfos[i].getAttributeType(), null, meansModes[saveAttrIndex], null, null, null );
             }
             saveAttrIndex++;
         }
 
     }
 
-    protected void addRow(String attrName, AttributeType type, Double minVal, Object mean, Double maxVal, Double deviation){
-        this.addRow(new Object[]{attrName, type, minVal, mean, maxVal, deviation});
+    protected void addRow(String attrName, AttributeType type, Double minVal, Object mean, Double maxVal, Double deviation, Double sum){
+        this.addRow(new Object[]{attrName, type, minVal, mean, maxVal, deviation, sum});
     }
     
 

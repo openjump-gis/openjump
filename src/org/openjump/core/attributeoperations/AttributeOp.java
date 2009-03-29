@@ -100,6 +100,14 @@ public class AttributeOp {
         }                                        
         return retval; 
     }
+  
+    public static double evaluateAttributes(int attributeOp, Feature[] features, String attributeName){
+    	ArrayList<Feature> featureL = new ArrayList<Feature>();
+    	for (int i = 0; i < features.length; i++) {
+			featureL.add(features[i]);
+		}
+    	return AttributeOp.evaluateAttributes(attributeOp, featureL, attributeName);
+    }
     
     public static double evaluateAttributes(int attributeOp, List features, String attributeName){
         double result= Double.NaN;

@@ -879,6 +879,29 @@ public class FeatureCollectionTools extends ToolToMakeYourLifeEasier {
         return minmax;
     }
     
+    
+    public static double getSumAttributeValue( Feature[] featArray, FeatureSchema fs, String attr ){
+        double sum = 0;
+        
+        if (fs.getAttributeType(attr) == AttributeType.INTEGER || fs.getAttributeType(attr) == AttributeType.DOUBLE){
+            Feature feat;
+            double value;
+            
+            for ( int i=featArray.length-1; i>=0; i-- ){
+                feat = featArray[i];
+                
+                if (feat.getAttribute(attr) != null){
+	                value = ObjectComparator.getDoubleValue(feat.getAttribute(attr));
+	                sum = sum + value;
+                } else {
+                    FeatureCollectionTools.logger.printMinorError("skipped value (NULL), when checking sum values for Attribute " + attr);
+                }
+            }
+        }
+        
+        return sum;
+    }
+    
     public static double[] getMinMaxAttributeValue( FeatureCollection features, String attr ){
         return FeatureCollectionTools.getMinMaxAttributeValue(FeatureCollectionTools.FeatureCollection2FeatureArray(features), features.getFeatureSchema(), attr);
     }

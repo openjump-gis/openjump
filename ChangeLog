@@ -1,3 +1,11 @@
+2009-03-29 mentaer <sstein@geo.uzh.ch>
+    Extended layer attribute statistics table by entry that holds
+    the sum value. (closed Feature request 2716204)
+    changed:
+    org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewTableModel
+    org.openjump.core.apitools.FeatureCollectionTools (extended by getSum...)
+    org.openjump.core.attributeoperations.AttributeOp (extended to accept Feature[])
+    
 2009-03-28 mentaer <sstein@geo.uzh.ch>
     Fixed issue (bugreport) 2716198 for color theming. New classification 
     methods work now with integer attributes too.
