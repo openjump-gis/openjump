@@ -17,6 +17,7 @@
           <include>**/*.png</include>
           <include>**/*.gif</include>
           <include>**/*.jpg</include>
+          <include>**/*.JPG</include>          
           <include>**/*.java2xml</include>
           <include>**/*.html</include>
           <include>**/*.xml</include>
