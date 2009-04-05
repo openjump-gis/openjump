@@ -103,7 +103,9 @@ public class AddDataStoreLayerWizard extends AbstractWizardGroup {
     layer.setDataSourceQuery(dsq);
 
     CoordinateSystemRegistry crsRegistry = CoordinateSystemRegistry.instance(workbenchContext.getBlackboard());
+    layerManager.setFiringEvents(false); // added by michaudm on 2009-04-05
     load(layer, crsRegistry, monitor);
+    layerManager.setFiringEvents(true); // added by michaudm on 2009-04-05
     return layer;
   }
 
