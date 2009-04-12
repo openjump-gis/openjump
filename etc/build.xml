@@ -15,7 +15,7 @@
     <property name="name" value="openjump"/>
     <property name="Name" value="OpenJUMP"/>
     <!--property name="version" value="20050728"/-->
-    <property name="version" value="20060430"/>
+    <property name="version" value="1.3.X"/>
     <!-- The recommended setting for debug is "on", so that line numbers are included in stack traces. [Jon Aquino 2005-04-06] -->
     <property name="debug" value="on"/>
     <property name="deprecation" value="off"/>
@@ -30,9 +30,9 @@
     <property name="build.dir" value="build"/>
     <property name="build.classes" value="${build.dir}/classes"/>
     <property name="javadoc.dir" value="${build.dir}/javadoc"/>
-        <property name="workbench.jar.name" value="jump-workbench-${version}.jar" />
+        <property name="workbench.jar.name" value="openjump-workbench-${version}.jar" />
     <property name="workbench.jar" value="${build.dir}/${workbench.jar.name}"/>
-        <property name="api.jar.name" value="jump-api-${version}.jar" />
+        <property name="api.jar.name" value="openjump-api-${version}.jar" />
     <property name="api.jar" value="${build.dir}/${api.jar.name}"/>
     <property name="dist.dir" value="dist"/>
     <property name="archive.dir" value="${dist.dir}/${name}-${version}"/>
