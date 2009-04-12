@@ -1,8 +1,8 @@
 OpenJUMP readme file
 --------------------
-Version 1.2 (Release F)
+Version 1.3
 
-April 5th, 2008
+April 11th, 2009
 
 Contents
 --------
@@ -38,7 +38,7 @@ c:/OpenJUMP/lib
 3. Running OpenJUMP
 -------------------
 Run the startup scripts contained in the /bin folder:
-- For windows, double-click on "openjump.bat"
+- For windows, double-click on "openjump.bat" or "oj.exe"
 - For Linux/Unix, launch openjump.sh
 - For Mac, launch openjump.sh
 
@@ -65,9 +65,12 @@ Java VM options (a complete list can be found in the Java VM documentation)
   -Dlog4j.configuration for defining the configuration file for Log4j. Normally:
      Dlog4j.configuration=file:./log4j.xml
      
-OpenJUMP command lines
+OpenJUMP command line options
+-default plugins: specifies the name of the file that loads adavanced OpenJUMP functions.
+ I.e. almost all functions of the "Tools" menu.
+ Default is "-default-plugins bin\default-plugins.xml"
 -properties filename : specifies the name of the file where OpenJUMP properties are stored.
- Default is -properties workbench-properties.xml
+ Default is "-properties bin\workbench-properties.xml"
 -plug-in-directory path : defines the location of the plugin directory. 
  Default is %LIB%/ext where %LIB% is defined earlier in the startup script.
 -i18n locale : defines the locale (language, etc.) used by OpenJUMP. For example:
@@ -93,7 +96,7 @@ by Vividsolutions and released in 2003.
 During 2004, some enthusiastic developers joined together to enhance further the 
 features of JUMP. They launched an independent development branch called OpenJUMP.
 This name gives credit to the original JUMP development, and at the same time 
-describes the particularity of this project to be fully open to anyone wanting
+describes the objectives of this project to be fully open to anyone wanting
 to contribute.
 Since May 2005 a complete development source is available at:
 www.sourceforge.net/projects/jump-pilot
@@ -108,31 +111,35 @@ Original development team of JUMP was:
 - Martin Davis, Jon Aquino, Alan Chang from Vividsolutions (www.vividsolutions.com)
 - David Blasby and Paul Ramsey from Refractions Research Inc (www.refractions.net) 
 
-OpenJUMP regular (*and past) contributors are (non exaustive list!):
+OpenJUMP regular (*and past) contributors are (non exhaustive list!):
 - Jonathan Aquino*,
-- Guiseppe Aruta, 
+- Giuseppe Aruta, 
 - Paul Austin,
 - Larry Becker,
 - Landon Blake (Sunburned Surveyor),
-- Erwan Bocher,
+- John Clark
 - Uwe Dallüge,
 - Martin Davis,
 - Joe Desbonet,
-- Stephan Holl
 - Eric Lemesre
-- Michael Michaud,
+- Michaël Michaud,
+- Hisaiji Ono,
+- Jukka Rahkonen,
+- Paolo Rizzi,
 - Andreas Schmitz,
+- Edgar Soldin,
 - Stefan Steiniger,
-- Sascha Teichmann
 
 * past contributors
+- Erwan Bocher*,
+- Basile Chandesris*,
+- Stephan Holl*
+- Ezequias Rodrigues da Rocha*,
 - Axel Orth*,
 - Ole Rahn*,
-- Basile Chandesris*,
-- Ezequias Rodrigues da Rocha*,
 - Steve Tanner*,
 - Ugo Taddei* 
-
+- Sascha Teichmann*
 
 Projects and Companies
 - Larry Becker and Robert Littlefield (SkyJUMP team)
@@ -161,5 +168,5 @@ Translation contributors are:
 - English: Landon Blake
 
 others:
-- L. Paul Chew for providing the Delauney triangulation algorithm to create the Voronoi edges
+- L. Paul Chew for providing the Delauney triangulation algorithm to create Voronoi diagrams
 
