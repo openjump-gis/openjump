@@ -108,7 +108,8 @@ public class JUMPVersion {
    */
   public String toString()
   {
-    String ver = "orig. JUMP " + MAJOR + "." + MINOR + "." + PATCH;
+    //String ver = "OpenJUMP " + MAJOR + "." + MINOR + "." + PATCH;
+    String ver = "OpenJUMP " + I18N.get("JUMPWorkbench.version.number");
     if (releaseInfo != null && releaseInfo.length() > 0)
       return ver + " " + releaseInfo;
     return ver;
