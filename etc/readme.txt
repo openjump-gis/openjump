@@ -22,7 +22,8 @@ OpenJUMP uses the BATIK libraries to write svg format. The BATIK libraries are
 used under the terms of the APACHE license, which can be found in the "apache.txt" 
 file or on www.apache.org. We use also a math library called JMath. JMath and its 
 successor projects JMathTools (IO,Plot,Array) are distributed under BSD license, 
-to be found in "jmathlicense.txt".
+to be found in "jmathlicense.txt". Jython is distributed under Jython license that 
+can be found in the file: jython_license.txt
 
 
 2. Installation instructions
