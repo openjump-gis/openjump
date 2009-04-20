@@ -156,16 +156,8 @@ public class TaskMonitorManager {
                 // but timer keeps on running until dialog is closed . . .
                 // [Jon Aquino 2004-09-07]
                 
-                // sleep while dialog is not yet active to avoid dangling dialogs
-                // (else the setVisible does not have an effect)
-                while ( !dialog.isActive() ) {
-                    try {
-                        Thread.sleep( 100 );
-                    } catch ( InterruptedException e ) {
-                        break;
-                    }
-                }
                 dialog.setVisible( false );
+                dialog.dispose();
 
                 if (throwable != null) {
                     context.getErrorHandler().handleThrowable(throwable);

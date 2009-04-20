@@ -1,3 +1,6 @@
+2009-04-20 Andreas Schmitz <schmitz@lat-lon.de>
+	Fixed proper disposal of progress dialog.
+
 2009-04-11 mentaer <sstein@geo.unizh.ch>
 
            **** release of OpenJUMP 1.3 ****
