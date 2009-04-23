@@ -43,10 +43,12 @@ public class AddDatastoreLayerPlugIn extends AbstractAddDatastoreLayerPlugIn {
         DataSourceQuery dsq = new DataSourceQuery(ds, null, panel.getDatasetName());
 
         layer.setDataSourceQuery(dsq);
-
+        
+        context.getLayerManager().setFiringEvents(false); // added by michaudm on 2009-04-23
         OpenProjectPlugIn.load( layer,
                                 CoordinateSystemRegistry.instance(context.getWorkbenchContext().getBlackboard()),
                                 new DummyTaskMonitor());
+        context.getLayerManager().setFiringEvents(true); // added by michaudm on 2009-04-23
         return layer;
     }
 
