@@ -83,6 +83,7 @@ public class AddSIDLayerPlugIn extends AbstractPlugIn
         TMP_PATH = WORKING_DIR + "etc" + sep + "tmp" + sep;
         MRSIDDECODE = ETC_PATH + "mrsidgeodecode.exe";
         MRSIDINFO = ETC_PATH + "mrsidgeoinfo.exe";
+        System.out.println("search for MrSid:" + ETC_PATH);
     }
     
     public boolean execute(final PlugInContext context) throws Exception
