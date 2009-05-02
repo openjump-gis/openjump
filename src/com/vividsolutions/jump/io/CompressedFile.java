@@ -181,7 +181,7 @@ public class CompressedFile {
      *  compressedFile ends in ".gz"  - opens the compressed .gz file.
      *  </p>
      */
-    static InputStream openFile(String fname, String compressedFile)
+    public static InputStream openFile(String fname, String compressedFile)
         throws Exception {
         String extension;
 
