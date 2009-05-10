@@ -180,7 +180,7 @@ public class PolygonHandler implements ShapeHandler{
         
         if ((shells.size()>1) && (holes.size()== 0)) {
         	//some shells may be CW holes - esri tolerates this
-        	holes = findCWHoles(shells);  //find all rings contained in others
+        	holes = findCWHoles(shells, geometryFactory);  //find all rings contained in others
         	if (holes.size() > 0) {
         		shells.removeAll(holes);   
         		ArrayList ccwHoles = new ArrayList(holes.size());
@@ -265,8 +265,9 @@ public class PolygonHandler implements ShapeHandler{
         return result;        
     }
     
-    ArrayList findCWHoles(ArrayList shells) {
+    ArrayList findCWHoles(ArrayList shells, GeometryFactory geometryFactory) {
         ArrayList holesCW = new ArrayList(shells.size());
+        LinearRing[] noHole = new LinearRing[0];
         for (int i = 0; i < shells.size(); i++) {
     		LinearRing iRing = (LinearRing) shells.get(i);
     		Envelope iEnv = iRing.getEnvelopeInternal();
@@ -279,9 +280,13 @@ public class PolygonHandler implements ShapeHandler{
         		Coordinate jPt = jRing.getCoordinateN(0);
         		Coordinate jPt2 = jRing.getCoordinateN(1);
 				if ( iEnv.contains(jEnv) 
-						&& (CGAlgorithms.isPointInRing(jPt, coordList) || pointInList(jPt, coordList))
-						&& (CGAlgorithms.isPointInRing(jPt2, coordList) || pointInList(jPt2, coordList))) {
-					if (!holesCW.contains(jRing)) holesCW.add(jRing);
+						//&& (CGAlgorithms.isPointInRing(jPt, coordList) || pointInList(jPt, coordList))
+						//&& (CGAlgorithms.isPointInRing(jPt2, coordList) || pointInList(jPt2, coordList))) {
+                        && (CGAlgorithms.isPointInRing(jPt, coordList))
+                        && (CGAlgorithms.isPointInRing(jPt2, coordList))) {
+                    Polygon iPoly = geometryFactory.createPolygon(iRing,noHole);
+                    Polygon jPoly = geometryFactory.createPolygon(jRing,noHole);
+					if (!holesCW.contains(jRing) && iPoly.contains(jPoly)) holesCW.add(jRing);
 				}
     		}
     	}
@@ -490,6 +495,10 @@ public class PolygonHandler implements ShapeHandler{
 
 /*
  * $Log$
+ * Revision 1.7  2009/05/10 michaudm
+ * Fix a bug in findCWHoles. Could create a 'outer hole' because the test to
+ * check if a ring contains another ring was a quick and dirty test.
+ *
  * Revision 1.6  2008/04/22 20:55:36  beckerl
  * Restored the original inline code in read() and added the CW hole detection.  The new geotools routines always created Multipolygons.
  *

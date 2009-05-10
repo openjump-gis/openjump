@@ -1,4 +1,8 @@
 2009-04-23 michaudm <michael.michaud@free.fr>
+    Fix a bug in findCWHoles. Could create a 'outer hole' because the test to
+    check if a ring contains another ring was a quick and dirty test.
+
+2009-04-23 michaudm <michael.michaud@free.fr>
     Fixed issue related to "Newly created layers are marked with
     featureCollectionModified=true" (see 2009-02-20) :
     need to set layerManager.setFiringEvents(false) during layer loading in
@@ -7,7 +11,7 @@
     AddDataStoreLayerWizard (see issue fixed on 2009-04-05)
 
 2009-04-20 Andreas Schmitz <schmitz@lat-lon.de>
-	Fixed proper disposal of progress dialog.
+    Fixed proper disposal of progress dialog.
 
 2009-04-11 mentaer <sstein@geo.unizh.ch>
 
