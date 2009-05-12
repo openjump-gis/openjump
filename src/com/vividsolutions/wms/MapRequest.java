@@ -246,14 +246,6 @@ public class MapRequest {
     StringBuffer buf = new StringBuffer();
     while( it.hasNext() ) {
       String layer = (String)it.next();
-      //Unfortunately we can't use the new two-parameter constructor because
-      //that was introduced in JDK 1.4, and JUMP is supposed to support 1.3. [Jon Aquino]
-      layer = URLEncoder.encode( layer );
-//      try {
-//        layer = URLEncoder.encode( layer, "UTF-8" );
-//      } catch( UnsupportedEncodingException uee ) {
-//        // ok then, we just won't bother to encode at all...
-//      }
       buf.append( layer );
       if( it.hasNext() ) {
         buf.append( "," );
