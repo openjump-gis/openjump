@@ -197,8 +197,28 @@ public class FeatureDataset implements FeatureCollection, Serializable {
         }
     }
 
-    public void removeAll(Collection features) {
+    /*public void removeAll(Collection features) {
+        System.out.println("debut removeAll:"+System.currentTimeMillis());
         this.features.removeAll(features);
+        invalidateEnvelope();
+        System.out.println("  fin removeAll:"+System.currentTimeMillis());
+    }*/
+    
+    // [michaudm 2009-05-16] creating a map on the fly improves dramatically
+    // the removeAll performance if c is large
+    // note that the semantic is slightly changed as the FID is used to identify 
+    // features to remove rather than object Equality
+    public void removeAll(Collection c) {
+        java.util.Map<Integer,Feature> map = new java.util.HashMap<Integer,Feature>();
+        for (Iterator i = features.iterator(); i.hasNext(); ) {
+            Feature f = (Feature)i.next();
+            map.put(f.getID(), f);
+        }
+        for (Iterator i = c.iterator(); i.hasNext(); ) {
+            map.remove(((Feature)i.next()).getID());
+        }
+        features = new ArrayList();
+        features.addAll(map.values());
         invalidateEnvelope();
     }
 }

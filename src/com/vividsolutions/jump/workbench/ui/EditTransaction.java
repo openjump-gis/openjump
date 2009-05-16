@@ -199,9 +199,19 @@ public class EditTransaction {
     }
 
     public void setGeometries(Map featureToGeometryMap) {
+        // [michaudm 2009-05-16] using an index improves dramatically
+        // performances for big transactions
+        Map index = new HashMap();
+        int pos = 0;
+        for (Iterator i = features.iterator() ; i.hasNext() ; ) {
+            index.put(i.next(), pos++);
+        }
         for (Iterator i = featureToGeometryMap.keySet().iterator(); i.hasNext();) {
             Feature feature = (Feature) i.next();
-            setGeometry(feature, (Geometry) featureToGeometryMap.get(feature));
+            //setGeometry(feature, (Geometry) featureToGeometryMap.get(feature));
+            // [michaudm 2009-05-16] use index
+            proposedGeometries.set(((Integer)index.get(feature)).intValue(),
+                editor.removeRepeatedPoints((Geometry) featureToGeometryMap.get(feature)));
         }
     }
 
