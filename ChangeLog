@@ -1,3 +1,6 @@
+2009-05-16 michaudm <michael.michaud@free.fr>
+    Reformatting and cleaning of shapefile.PolygonHandler
+
 2009-05-12 stranger <schmitz@lat-lon.de>
         Fixed accidental double encoding of layer names.
 
