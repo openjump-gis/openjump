@@ -170,6 +170,11 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
         layer.setFeatureCollection(new FeatureDataset(originalFeatures,
                 newSchema));
         layer.fireLayerChanged(LayerEventType.METADATA_CHANGED);
+        // [mmichaud 2009-05-16] update originalIndexes after a modification
+        for (int i = 0; i < panel.getModel().getRowCount(); i++) {
+            panel.getModel().get(i).setOriginalIndex(i);
+        }
+        // -end
         panel.markAsUnmodified();
     }
 
