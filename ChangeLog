@@ -1,3 +1,8 @@
+2009-05-17 mentaer <sstein@geo.unizh.ch>
+	Added Patch to remove compiling dependence to the proprietary 
+	ermapper.jar by Sascha Teichman. However, the change will allow
+	to use the ermapper jar and dlls during OJ runtime. 
+
 2009-05-16 michaudm <michael.michaud@free.fr>
     Optimization for large selection deletion :
         * optimize FeatureDataset.removeAll, using FID for removeAll method
