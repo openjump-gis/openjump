@@ -68,7 +68,9 @@ public class ECWImageFactory implements ReferencedImageFactory {
 	public boolean isAvailable(WorkbenchContext context) {
 		Class c = null;
 		try{
-			c = this.getClass().getClassLoader().loadClass("com.ermapper.ecw.JNCSRenderer");
+			c = this.getClass().getClassLoader().loadClass(
+                JNCSRendererProxy.RENDERER_CLASS);
+
 		}catch(ClassNotFoundException e){
 			// eat it
 			return false;

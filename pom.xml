@@ -199,12 +199,6 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>com.ermapper</groupId>
-      <artifactId>ermapper</artifactId>
-      <version>UNKNOWN</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>3.8</version>
