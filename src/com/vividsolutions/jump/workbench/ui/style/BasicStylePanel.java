@@ -227,6 +227,7 @@ public class BasicStylePanel extends JPanel {
         {
             setMaximumRowCount(24);
             setEditable(false);
+            this.setToolTipText(I18N.get("ui.style.RenderingStylePanel.tip-after-selecting-a-pattern-use-your-keyboard"));
             addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     updateControls();
@@ -414,7 +415,7 @@ public class BasicStylePanel extends JPanel {
         add(palettePanel, new GridBagConstraints(2, 1, 1, 1, 0, 1, GridBagConstraints.WEST,
                 GridBagConstraints.VERTICAL, new Insets(0, 30, 0, 0), 0, 0));
         centerPanel.setLayout(new GridBagLayout());
-        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        setBorder(BorderFactory.createEmptyBorder(3, 10, 3, 10));
         fillColorChooserPanel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 fillColorChooserPanel_actionPerformed(e);

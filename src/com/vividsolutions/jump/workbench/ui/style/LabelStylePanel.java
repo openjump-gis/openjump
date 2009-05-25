@@ -198,6 +198,7 @@ public class LabelStylePanel extends JPanel implements StylePanel {
     private JComboBox horizontalAlignmentComboBox = new JComboBox();
 
     private JCheckBox showOutlineCheckBox = new JCheckBox();
+    private JPanel hideAtScaleButtonPanel = new JPanel();
     private JCheckBox hideAtScaleCheckBox = new JCheckBox();
     private JLabel hideAtScaleLabel = new JLabel();
     private ValidatingTextField hideAtScaleField = new 
@@ -441,15 +442,15 @@ public class LabelStylePanel extends JPanel implements StylePanel {
     }
     
     void jbInit() throws Exception {
-        border1 = BorderFactory.createEmptyBorder(10, 10, 10, 10);
+        border1 = BorderFactory.createEmptyBorder(2, 10, 2, 5);
         this.setLayout(borderLayout1);
         setLayout(gridBagLayout6);
         attributeLabel.setText(LABEL_ATTRIBUTE);
         previewPanel.setBackground(Color.white);
         previewPanel.setBorder(BorderFactory.createLoweredBevelBorder());
-        previewPanel.setMaximumSize(new Dimension(200, 40));
-        previewPanel.setMinimumSize(new Dimension(200, 40));
-        previewPanel.setPreferredSize(new Dimension(200, 40));
+        previewPanel.setMaximumSize(new Dimension(200, 38));
+        previewPanel.setMinimumSize(new Dimension(200, 38));
+        previewPanel.setPreferredSize(new Dimension(200, 38));
         scaleCheckBox.setText(SCALE_LABELS_WITH_THE_ZOOM_LEVEL);
         scaleCheckBox.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(ActionEvent e) {
@@ -545,7 +546,7 @@ public class LabelStylePanel extends JPanel implements StylePanel {
                 new Insets(0, 0, 0, 0), 0, 0));
         add(attributeComboBox,
             new GridBagConstraints(1, row++, 1, 1, 0.0, 0.0,
-                GridBagConstraints.WEST, GridBagConstraints.NONE,
+                GridBagConstraints.EAST, GridBagConstraints.NONE,
                 new Insets(2, 4, 2, 0), 0, 0));
         this.add(verticalAlignmentLabel,
             new GridBagConstraints(0, row, 1, 1, 0.0, 0.0,
@@ -554,22 +555,22 @@ public class LabelStylePanel extends JPanel implements StylePanel {
         this.add(verticalAlignmentComboBox,
             new GridBagConstraints(1, row++, 1, 1, 0.0, 0.0,
                 GridBagConstraints.WEST, GridBagConstraints.NONE,
-                new Insets(2, 4, 2, 0), 0, 0));
+                new Insets(0, 4, 2, 0), 0, 0));
         this.add(horizontalAlignmentLabel,
 		    new GridBagConstraints(0, row, 1, 1, 0.0, 0.0,
 		        GridBagConstraints.WEST, GridBagConstraints.NONE,
 		        new Insets(0, 0, 0, 0), 0, 0));
 		this.add(horizontalAlignmentComboBox,
 		    new GridBagConstraints(1, row++, 1, 1, 0.0, 0.0,
-		        GridBagConstraints.WEST, GridBagConstraints.NONE,
-		        new Insets(2, 4, 2, 0), 0, 0));
+		        GridBagConstraints.EAST, GridBagConstraints.NONE,
+		        new Insets(0, 4, 2, 0), 0, 0));
         this.add(angleLabel,
             new GridBagConstraints(0, row, 1, 1, 0.0, 0.0,
                 GridBagConstraints.WEST, GridBagConstraints.NONE,
                 new Insets(0, 0, 0, 0), 0, 0));
         this.add(angleAttributeComboBox,
             new GridBagConstraints(1, row++, 1, 1, 0.0, 0.0,
-                GridBagConstraints.WEST, GridBagConstraints.NONE,
+                GridBagConstraints.EAST, GridBagConstraints.NONE,
                 new Insets(0, 4, 2, 0), 0, 0));
         this.add(heightAttributeLabel,
             new GridBagConstraints(0, row, 1, 1, 0.0, 0.0,
@@ -577,11 +578,11 @@ public class LabelStylePanel extends JPanel implements StylePanel {
                 new Insets(0, 0, 0, 0), 0, 0));
         this.add(heightAttributeComboBox,
             new GridBagConstraints(1, row++, 1, 1, 0.0, 0.0,
-	            GridBagConstraints.WEST, GridBagConstraints.NONE, 
-	            new Insets(2, 4, 2, 0), 0, 0));
+	            GridBagConstraints.EAST, GridBagConstraints.NONE, 
+	            new Insets(0, 4, 2, 0), 0, 0));
         this.add(heightTextField,
             new GridBagConstraints(1, row, 1, 1, 0.0, 0.0,
-            	GridBagConstraints.WEST, GridBagConstraints.NONE, 
+            	GridBagConstraints.EAST, GridBagConstraints.NONE, 
             	new Insets(0, 4, 0, 0), 0, 0));
         this.add(heightLabel,
             new GridBagConstraints(0, row++, 1, 1, 0.0, 0.0,
@@ -591,67 +592,79 @@ public class LabelStylePanel extends JPanel implements StylePanel {
             new GridBagConstraints(0, row++, 2, 1, 0.0, 0.0,
                 GridBagConstraints.WEST, GridBagConstraints.NONE,
                 new Insets(0, 0, 0, 0), 0, 0));
-        this.add(hideAtScaleCheckBox,
-            new GridBagConstraints(0, row++, 2, 1, 0.0, 0.0,
-                    GridBagConstraints.WEST, GridBagConstraints.NONE,
-                    new Insets(0, 0, 0, 0), 0, 0));
-        this.add(hideAtScaleField,
-            new GridBagConstraints(1, row, 1, 1, 0.0, 0.0,
-                GridBagConstraints.WEST, GridBagConstraints.NONE, 
-                new Insets(0, 4, 0, 0), 0, 0));
-        this.add(hideAtScaleLabel,
-            new GridBagConstraints(0, row++, 1, 1, 0.0, 0.0,
-                GridBagConstraints.EAST, GridBagConstraints.NONE,
-                new Insets(0, 0, 0, 0), 0, 0));
+        
+        hideAtScaleButtonPanel.setLayout(gridBagLayout2);
+        this.add(hideAtScaleButtonPanel,
+        		new GridBagConstraints(0, row++, 4, 1, 0.0, 0.0,
+        				GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        				new Insets(0, 0, 0, 0), 0, 0));
+        hideAtScaleButtonPanel.add(hideAtScaleCheckBox,
+        		new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
+        				GridBagConstraints.WEST, GridBagConstraints.NONE,
+        				new Insets(0, 0, 0, 0), 0, 0));
+        hideAtScaleButtonPanel.add(hideAtScaleLabel,
+        		new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0,
+        				GridBagConstraints.EAST, GridBagConstraints.NONE,
+        				new Insets(0, 0, 0, 0), 0, 0));
+        hideAtScaleButtonPanel.add(hideAtScaleField,
+        		new GridBagConstraints(3, 0, 1, 1, 0.0, 0.0,
+        				GridBagConstraints.WEST, GridBagConstraints.NONE, 
+        				new Insets(0, 4, 0, 0), 0, 0));
+        hideAtScaleButtonPanel.add(new JPanel(),
+        		new GridBagConstraints(4, 0, 1, 1, 1.0, 0.0,
+        				GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+        				new Insets(0, 0, 0, 0), 0, 0));
+
         this.add(hideOverlappingLabelsCheckBox,
             new GridBagConstraints(0, row++, 2, 1, 0.0, 0.0,
-                GridBagConstraints.WEST, GridBagConstraints.NONE,
-                new Insets(0, 0, 0, 0), 0, 0));
-        this.add(buttonPanel,
-            new GridBagConstraints(0, row++, 3, 1, 0.0, 0.0,
                 GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
                 new Insets(0, 0, 0, 0), 0, 0));
-    	        buttonPanel.add(colorButton,
-    	            new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
-    	                GridBagConstraints.CENTER, GridBagConstraints.NONE,
-    	                new Insets(2, 2, 2, 2), 0, 0));
-    	        buttonPanel.add(fontButton,
-    	            new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0,
-    	                GridBagConstraints.CENTER, GridBagConstraints.NONE,
-    	                new Insets(2, 2, 2, 2), 0, 0));
-    	        buttonPanel.add(jPanel3,
-    	            new GridBagConstraints(3, 0, 1, 1, 1.0, 0.0,
-    	                GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
-    	                new Insets(0, 0, 0, 0), 0, 0));
+        this.add(buttonPanel,
+        		new GridBagConstraints(0, row++, 3, 1, 0.0, 0.0,
+        				GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        				new Insets(0, 0, 0, 0), 0, 0));
+        buttonPanel.add(colorButton,
+        		new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
+        				GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        				new Insets(2, 2, 2, 2), 0, 0));
+        buttonPanel.add(fontButton,
+        		new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0,
+        				GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        				new Insets(2, 2, 2, 2), 0, 0));
+        buttonPanel.add(jPanel3,
+        		new GridBagConstraints(3, 0, 1, 1, 1.0, 0.0,
+        				GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+        				new Insets(0, 0, 0, 0), 0, 0));
        
         this.add(showOutlineCheckBox,
             new GridBagConstraints(0, row++, 2, 1, 0.0, 0.0,
                 GridBagConstraints.WEST, GridBagConstraints.NONE,
                 new Insets(0, 0, 0, 0), 0, 0));
-        this.add(outlineWidthField,
-            new GridBagConstraints(1, row, 1, 1, 0.0, 0.0,
-                GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 4, 0, 0), 0, 0));
-        this.add(outlineLabel,
-            new GridBagConstraints(0, row++, 1, 1, 0.0, 0.0,
-                GridBagConstraints.WEST, GridBagConstraints.NONE,
-                new Insets(0, 0, 0, 0), 0, 0));
         this.add(outlineButtonPanel,
-            new GridBagConstraints(0, row++, 3, 1, 0.0, 0.0,
-                GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-                new Insets(0, 0, 0, 0), 0, 0));
-	        outlineButtonPanel.add(outlineColorButton,
-                new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
-                    GridBagConstraints.CENTER, GridBagConstraints.NONE,
-                    new Insets(2, 2, 2, 2), 0, 0));
+        		new GridBagConstraints(0, row++, 3, 1, 0.0, 0.0,
+        				GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        				new Insets(0, 0, 0, 0), 0, 0));
+        outlineButtonPanel.add(outlineColorButton,
+        		new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
+        				GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        				new Insets(0, 2, 0, 2), 0, 0));
+        outlineButtonPanel.add(outlineLabel,
+        		new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0,
+        				GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        				new Insets(2, 2, 2, 2), 0, 0));
+        outlineButtonPanel.add(outlineWidthField,
+        		new GridBagConstraints(3, 0, 1, 1, 0.0, 0.0,
+        				GridBagConstraints.EAST, GridBagConstraints.NONE, 
+        				new Insets(0, 4, 0, 0), 0, 0));
 
         this.add(previewLabel,
             new GridBagConstraints(0, row++, 2, 1, 0.0, 0.0,
                 GridBagConstraints.WEST, GridBagConstraints.NONE,
-                new Insets(10, 0, 0, 0), 0, 0));
+                new Insets(0, 0, 0, 0), 0, 0));
         this.add(previewPanel,
             new GridBagConstraints(0, row++, 2, 1, 0.0, 0.0,
                 GridBagConstraints.WEST, GridBagConstraints.NONE,
-                new Insets(0, 10, 4, 4), 0, 0));
+                new Insets(0, 10, 0, 4), 0, 0));
         this.add(fillerPanel,
             new GridBagConstraints(98, 104, 1, 1, 1.0, 1.0,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,

@@ -65,7 +65,7 @@ import javax.swing.event.ChangeListener;
 
 public class RenderingStylePanel extends BasicStylePanel implements StylePanel {
     private Layer layer;
-    private JTextArea fillPatternTipLabel = new JTextArea();    
+    //private JTextArea fillPatternTipLabel = new JTextArea();    
     private JCheckBox vertexCheckBox = new JCheckBox();
     private JSlider vertexSlider = new JSlider() {
 
@@ -83,9 +83,9 @@ public class RenderingStylePanel extends BasicStylePanel implements StylePanel {
             {
                 setBackground(Color.white);
                 setBorder(BorderFactory.createLoweredBevelBorder());
-                setMaximumSize(new Dimension(200, 40));
-                setMinimumSize(new Dimension(200, 40));
-                setPreferredSize(new Dimension(200, 40));
+                setMaximumSize(new Dimension(200, 38));
+                setMinimumSize(new Dimension(200, 38));
+                setPreferredSize(new Dimension(200, 38));
             }
 
             private LayerViewPanel dummyLayerViewPanel = new LayerViewPanel(new LayerManager(),
@@ -252,12 +252,12 @@ public class RenderingStylePanel extends BasicStylePanel implements StylePanel {
         vertexSlider.setMaximum(20);
         vertexSlider.setSnapToTicks(true);
         vertexSlider.setPreferredSize(SLIDER_DIMENSION);
-        fillPatternTipLabel.setFont(new java.awt.Font("SansSerif", 2, 10));
-        fillPatternTipLabel.setOpaque(false);
-        fillPatternTipLabel.setEditable(false);
-        fillPatternTipLabel.setText(I18N.get("ui.style.RenderingStylePanel.tip-after-selecting-a-pattern-use-your-keyboard"));
-        fillPatternTipLabel.setLineWrap(true);
-        fillPatternTipLabel.setWrapStyleWord(true);
+//        fillPatternTipLabel.setFont(new java.awt.Font("SansSerif", 2, 10));
+//        fillPatternTipLabel.setOpaque(false);
+//        fillPatternTipLabel.setEditable(false);
+//        fillPatternTipLabel.setText(I18N.get("ui.style.RenderingStylePanel.tip-after-selecting-a-pattern-use-your-keyboard"));
+//        fillPatternTipLabel.setLineWrap(true);
+//        fillPatternTipLabel.setWrapStyleWord(true);
         
         centerPanel.add(vertexSlider,
             new GridBagConstraints(1, 35, 1, 1, 0.0, 0.0,
@@ -278,9 +278,9 @@ public class RenderingStylePanel extends BasicStylePanel implements StylePanel {
         centerPanel.add(previewPanel,
             new GridBagConstraints(0, 45, 3, 1, 0.0, 0.0,
                 GridBagConstraints.WEST, GridBagConstraints.NONE,
-                new Insets(0, 10, 2, 2), 0, 0));
-        centerPanel.add(fillPatternTipLabel,     new GridBagConstraints(0, 8, 3, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));                
+                new Insets(0, 10, 0, 2), 0, 0));
+//        centerPanel.add(fillPatternTipLabel,     new GridBagConstraints(0, 8, 3, 1, 0.0, 0.0
+//            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));                
     }
 
     public VertexStyle getVertexStyle() {

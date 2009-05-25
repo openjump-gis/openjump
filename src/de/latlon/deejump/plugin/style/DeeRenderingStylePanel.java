@@ -104,7 +104,7 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
 
     private Layer layer;
 
-    private JTextArea fillPatternTipLabel = new JTextArea();
+//    private JTextArea fillPatternTipLabel = new JTextArea();
 
     JCheckBox vertexCheckBox = new JCheckBox();
 
@@ -343,13 +343,13 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
         vertexSlider.setMaximum(20);
         vertexSlider.setSnapToTicks(true);
         vertexSlider.setPreferredSize(SLIDER_DIMENSION);
-        fillPatternTipLabel.setFont(new java.awt.Font("SansSerif", 2, 10));
-        fillPatternTipLabel.setOpaque(false);
-        fillPatternTipLabel.setEditable(false);
-        fillPatternTipLabel.setText(I18N
-                .get("ui.style.RenderingStylePanel.tip-after-selecting-a-pattern-use-your-keyboard"));
-        fillPatternTipLabel.setLineWrap(true);
-        fillPatternTipLabel.setWrapStyleWord(true);
+//        fillPatternTipLabel.setFont(new java.awt.Font("SansSerif", 2, 10));
+//        fillPatternTipLabel.setOpaque(false);
+//        fillPatternTipLabel.setEditable(false);
+//        fillPatternTipLabel.setText(I18N
+//                .get("ui.style.RenderingStylePanel.tip-after-selecting-a-pattern-use-your-keyboard"));
+//        fillPatternTipLabel.setLineWrap(true);
+//        fillPatternTipLabel.setWrapStyleWord(true);
 
         centerPanel.add(vertexSlider, new GridBagConstraints(1, 35, 1, 1, 0.0, 0.0, WEST, NONE, new Insets(2, 2, 2, 2),
                 0, 0));
@@ -374,8 +374,8 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
             }
         });
 
-        centerPanel.add(fillPatternTipLabel, new GridBagConstraints(0, 8, 3, 1, 0.0, 0.0, CENTER, BOTH, new Insets(0,
-                0, 0, 0), 0, 0));
+//        centerPanel.add(fillPatternTipLabel, new GridBagConstraints(0, 8, 3, 1, 0.0, 0.0, CENTER, BOTH, new Insets(0,
+//                0, 0, 0), 0, 0));
 
         vertexStyleChooser.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
