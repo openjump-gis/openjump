@@ -44,6 +44,8 @@ public class BasicFeature extends AbstractBasicFeature implements Serializable {
     private static final long serialVersionUID = -7891137208054228529L;
     
     private Object[] attributes;
+    private short modCount = 0;
+    private boolean modified = false;
 
     /**
      * Constructs a BasicFeature with the given FeatureSchema specifying the
@@ -59,7 +61,18 @@ public class BasicFeature extends AbstractBasicFeature implements Serializable {
      * A low-level accessor that is not normally used. It is called by ViewSchemaPlugIn.
      */
     public void setAttributes(Object[] attributes) {
-        this.attributes = attributes;
+    	Object[] attributesOld = this.attributes;
+    	this.attributes = attributes;
+    	if (attributes != null)
+    		if (attributesOld.length != attributes.length) 
+    			modified = true;
+    		else {
+    			for (int i=0; i<attributes.length; i++) {
+    				if ( attributesOld[i] != null && attributesOld[i] != attributes[i]) {
+    					modified = true;
+    				}	        	                                  
+    			}
+    		}
     }
 
     /**
@@ -69,6 +82,10 @@ public class BasicFeature extends AbstractBasicFeature implements Serializable {
      *@param  newAttribute    the new attribute
      */
     public void setAttribute(int attributeIndex, Object newAttribute) {
+    	modCount++;
+    	if (attributes[attributeIndex] != null || modCount > attributes.length) {
+    		modified = true;
+    	}	        	                                  
         attributes[attributeIndex] = newAttribute;
     }
 
@@ -91,5 +108,20 @@ public class BasicFeature extends AbstractBasicFeature implements Serializable {
         return attributes;
     }
 
-
-}
+    /**
+     * @return true if any attribute of this Feature (including Geometry) has been set more
+     * than once.
+     */
+    public boolean isModified() { 
+    	return modified;
+    }
+    
+    /**
+     * @param modified - allows the modified flag to be set or reset
+     */
+    public void setModified(boolean modified) {
+    	this.modified = modified;
+    	modCount = 0;
+    }
+    
+ }

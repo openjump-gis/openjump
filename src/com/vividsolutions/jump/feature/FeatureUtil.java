@@ -54,8 +54,9 @@ public class FeatureUtil {
 	 * attributes
 	 */
 	public static Feature toFeature(Geometry g, FeatureSchema schema) {
-	    Feature feature = new BasicFeature(schema);
+		BasicFeature feature = new BasicFeature(schema);
 	    feature.setGeometry(g);
+	    feature.setModified(true);
 	    return feature;
 	}
 
