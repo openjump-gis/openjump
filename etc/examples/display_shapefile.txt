@@ -86,7 +86,9 @@ public class Jump {
                 frame.add(view, BorderLayout.CENTER); 
                 frame.setVisible(true); 
 
-
+				//Note: it may be necessary to set LayerRenderer.setMaxFeatures(10000)
+				//since not all objects may be drawn otherwise 
+				
                 // Pan and zoom to extent of features 
                 try{ view.getViewport().zoomToFullExtent(); } 
                 catch(Exception e){ e.printStackTrace(); } 
