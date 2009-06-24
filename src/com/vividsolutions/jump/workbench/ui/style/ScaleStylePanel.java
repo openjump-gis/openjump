@@ -251,8 +251,8 @@ public class ScaleStylePanel extends JPanel implements StylePanel {
         gridBagConstraints2.gridy = 6;
         gridBagConstraints31.gridx = 1;
         gridBagConstraints31.gridy = 8;
-        gridBagConstraints2.insets = new java.awt.Insets(5, 40, 5, 0);
-        gridBagConstraints31.insets = new java.awt.Insets(5, 40, 5, 0);
+        gridBagConstraints2.insets = new java.awt.Insets(5, 10, 5, 0);
+        gridBagConstraints31.insets = new java.awt.Insets(5, 10, 5, 0);
         gridBagConstraints18.gridx = 2;
         gridBagConstraints18.gridy = 3;
         gridBagConstraints21.gridx = 7;
