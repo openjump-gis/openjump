@@ -1,13 +1,17 @@
+2009-06-25 stranger <schmitz@lat-lon.de>
+        Workaround to get correct namespace bindings in SLD output documents
+        using recent Java versions.
+
 2009-05-17 mentaer <sstein@geo.unizh.ch>
-	Added Patch to remove compiling dependence to the proprietary 
-	ermapper.jar by Sascha Teichman. However, the change will allow
-	to use the ermapper jar and dlls during OJ runtime. 
+        Added Patch to remove compiling dependence to the proprietary
+        ermapper.jar by Sascha Teichman. However, the change will allow
+        to use the ermapper jar and dlls during OJ runtime.
 
 2009-05-16 michaudm <michael.michaud@free.fr>
     Optimization for large selection deletion :
         * optimize FeatureDataset.removeAll, using FID for removeAll method
         * optimize EditTransaction.setGeometries(), creating an index on the fly
-    Fixed an issue throwing IndexOutOfBoundException in ViewSchemaPlugIn 
+    Fixed an issue throwing IndexOutOfBoundException in ViewSchemaPlugIn
     Reformatting and cleaning of shapefile.PolygonHandler
 
 2009-05-12 stranger <schmitz@lat-lon.de>

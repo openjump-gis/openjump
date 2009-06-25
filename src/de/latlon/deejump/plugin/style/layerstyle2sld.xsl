@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:deegreewfs="http://www.deegree.org/wfs" xmlns:java="java" xmlns:xslutil="de.latlon.deejump.plugin.style.XSLUtility" xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" version="1.0">
   <xsl:param name="defaultFillColor" select="xslutil:toHexColor(/layer/styles/style[1]/fill/color)"/>
   <xsl:param name="defaultStrokeColor" select="xslutil:toHexColor(/layer/styles/style[1]/line/color)"/>
@@ -17,10 +17,7 @@
 
   <xsl:template match="/">
     <sld:StyledLayerDescriptor xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd" xmlns="http://www.opengis.net/sld" xmlns:sld="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:wfs="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0.0">
-      <xsl:variable name="tmp">xmlns:<xsl:value-of select="$NamespacePrefixWithoutColon"/></xsl:variable>
-      <xsl:attribute name="{$tmp}">
-        <xsl:value-of select="$Namespace"/>
-      </xsl:attribute>
+		<xsl:attribute name="{ $NamespacePrefixWithoutColon }:dummy" namespace="{ $Namespace }"/>
       <xsl:apply-templates select="layer"/>
     </sld:StyledLayerDescriptor>
   </xsl:template>
