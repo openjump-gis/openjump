@@ -415,7 +415,7 @@ public class BasicStylePanel extends JPanel {
         add(palettePanel, new GridBagConstraints(2, 1, 1, 1, 0, 1, GridBagConstraints.WEST,
                 GridBagConstraints.VERTICAL, new Insets(0, 30, 0, 0), 0, 0));
         centerPanel.setLayout(new GridBagLayout());
-        setBorder(BorderFactory.createEmptyBorder(3, 10, 3, 10));
+        setBorder(BorderFactory.createEmptyBorder(3, 5, 3, 5));
         fillColorChooserPanel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 fillColorChooserPanel_actionPerformed(e);
