@@ -72,9 +72,12 @@ public class AddDataStoreLayerWizard extends AbstractWizardGroup {
           if (!selectedCategories.isEmpty()) {
             categoryName = selectedCategories.iterator().next().getName();
           }
+          try {workbenchContext.getLayerViewPanel().getViewport().update();
+          } catch(Exception e) {}
           layerManager.addLayerable(categoryName, layer);
         }
       });
+      workbenchContext.getLayerViewPanel().getViewport().update();
     } catch (Exception e) {
       monitor.report(e);
     }
