@@ -91,6 +91,7 @@ public class TaskMonitorManager {
                     // the close button for the second time.
                     // [Jon Aquino 2005-03-14]
                     progressDialog.setVisible(false);
+                    progressDialog.dispose();
                 }
                 thread.stop();                
             }
@@ -112,6 +113,7 @@ public class TaskMonitorManager {
             progressDialog.setVisible(true);
         } finally {
             timer.stop();
+            progressDialog.dispose();
         }
     }
 
