@@ -59,7 +59,9 @@ public class CheckBoxFieldComponentFactory implements FieldComponentFactory {
     public Object getValue(final JComponent component) {
         if (component instanceof CheckBoxComponentPanel) {
             CheckBoxComponentPanel checkBoxComponentPanel = (CheckBoxComponentPanel)component;
-            return new Boolean(checkBoxComponentPanel.isSelected());
+            if (checkBoxComponentPanel == null) return null;
+            else if (checkBoxComponentPanel.isSelected()) return Boolean.TRUE;
+            else return Boolean.FALSE;
         }
         return null;
     }
@@ -70,7 +72,9 @@ public class CheckBoxFieldComponentFactory implements FieldComponentFactory {
             if (value != null && value == Boolean.TRUE) {
                 checkBoxComponentPanel.getCheckBox().setSelected(true);
             }
-            else checkBoxComponentPanel.getCheckBox().setSelected(false);
+            else if (value != null && value == Boolean.FALSE) {
+                checkBoxComponentPanel.getCheckBox().setSelected(false);
+            }
         }
     }
 
@@ -78,7 +82,6 @@ public class CheckBoxFieldComponentFactory implements FieldComponentFactory {
         CheckBoxComponentPanel checkBoxComponentPanel = new CheckBoxComponentPanel(
             option,
             workbenchContext.getErrorHandler());
-        //checkBoxComponentPanel.getCheckBox().setSelected(false);
         return checkBoxComponentPanel;
     }
 
@@ -92,7 +95,6 @@ public class CheckBoxFieldComponentFactory implements FieldComponentFactory {
                 listener.valueChanged(new ValueChangeEvent(checkBoxComponentPanel, value));
             }
         });
-        //checkBoxComponentPanel.getCheckBox().setSelected(false);
         return checkBoxComponentPanel;
     }
 

@@ -89,6 +89,19 @@ public abstract class AbstractFileLayerLoader implements FileLayerLoader {
   public void addOption(String name, String type, boolean required) {
     optionMetadata.add(new Option(name, type, required));
   }
+  
+  /**
+   * Add an option.
+   * 
+   * @param name The name of the option.
+   * @param type The type of the option.
+   * @param defaultValue The defaultValue of the option.
+   * @param required True if a value for the option is required.
+   * @see Option
+   */
+  public void addOption(String name, String type, Object defaultValue, boolean required) {
+    optionMetadata.add(new Option(name, type, defaultValue, required));
+  }
 
   /**
    * Get the list of Options supported by the plug-in.

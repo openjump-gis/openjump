@@ -33,10 +33,20 @@ public class Option {
 
   private boolean required;
 
+  private Object defaultValue = null;
+
   public Option(final String name, final String type, final boolean required) {
     super();
     this.name = name;
     this.type = type;
+    this.required = required;
+  }
+  
+  public Option(final String name, final String type, final Object defaultValue, final boolean required) {
+    super();
+    this.name = name;
+    this.type = type;
+    this.defaultValue = defaultValue;
     this.required = required;
   }
 
@@ -46,6 +56,10 @@ public class Option {
 
   public String getType() {
     return type;
+  }
+
+  public Object getDefault() {
+    return defaultValue;
   }
 
   public boolean isRequired() {

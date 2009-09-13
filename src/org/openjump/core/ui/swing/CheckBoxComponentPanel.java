@@ -61,7 +61,7 @@ public class CheckBoxComponentPanel extends JPanel {
     }
 
     public boolean isSelected() {
-        return checkBox==null?null:checkBox.isSelected();
+        return checkBox==null?false:checkBox.isSelected();
     }
 
 }

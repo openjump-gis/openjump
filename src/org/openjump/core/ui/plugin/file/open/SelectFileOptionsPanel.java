@@ -179,11 +179,15 @@ public class SelectFileOptionsPanel extends JPanel implements WizardPanel {
         };
         JComponent field = factory.createComponent(fieldListener);
         factory.setValue(field, options.get(name));
-        filePanel.add(field);
-        // [mmichaud 2009-09-05] initialize option with component default value
-        // otherwise, a NPE is thrown until the component field is changed
-        state.setOption(file, name, factory.getValue(field));
+        // [mmichaud 2009-09-13]
+        // init field component and wizard state with the option's defaultValue
+        // the defaultValue may be null
+        if (option.getDefault() != null) {
+            factory.setValue(field, option.getDefault());
+            state.setOption(file, name, factory.getValue(field));
+        }
         // end
+        filePanel.add(field);
         SpringUtilities.makeCompactGrid(filePanel,
           filePanel.getComponentCount() / 2, 2, 5, 5, 5, 5);
 
