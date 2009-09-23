@@ -62,7 +62,7 @@ public class SearchAllAttributes extends AbstractPlugIn
 	private final static String CASESENSITIVE = I18N.get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.case-sensitive");
 	private final static String WHOLEWORD = I18N.get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.whole-word");
 	private final static String SIDEBARTEXT = I18N.get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.search-for-text-in-any-attribute");
-	private final static String REGULAREXPRESSIONS = I18N.get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.Regular-Expressions"); 
+	private final static String REGULAREXPRESSIONS = I18N.get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.regular-expressions"); 
 //		+" and select matching map objects.\n\n"
 //		+"Uses Java Pattern matcher which supports:\n"
 //		+". - Match any character\n"
