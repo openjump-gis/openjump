@@ -10,9 +10,13 @@
 package org.openjump.core.apitools;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.vividsolutions.jump.feature.AttributeType;
+import com.vividsolutions.jump.feature.BasicFeature;
+import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.workbench.model.Layer;
 
 import de.fho.jump.pirol.utilities.attributes.AttributeInfo;
 
@@ -91,4 +95,71 @@ public class FeatureSchemaTools extends ToolToMakeYourLifeEasier {
         return false;
     }
 
+    /**
+     * copy/clone the input featureSchema since it is not proper implemented in Jump 
+     * @param oldSchema
+     * @return
+     */
+    public static FeatureSchema copyFeatureSchema(FeatureSchema oldSchema){
+        FeatureSchema fs = new FeatureSchema();
+        for (int i = 0; i < oldSchema.getAttributeCount(); i++) {
+            AttributeType at = oldSchema.getAttributeType(i);
+            String aname = oldSchema.getAttributeName(i);
+            fs.addAttribute(aname,at);
+            fs.setCoordinateSystem(oldSchema.getCoordinateSystem());            
+        }       
+        return fs;
+    }
+    
+    /**
+     * copy the input feature to a new Schema whereby the new 
+     * Feature Schema must be an extended or shortened one 
+     * @param oldSchema
+     * @return Feature
+     */
+    public static Feature copyFeature(Feature feature, FeatureSchema newSchema){
+        FeatureSchema oldSchema = feature.getSchema();
+        Feature newF = new BasicFeature(newSchema);
+        int n = 0;
+        if (oldSchema.getAttributeCount() > newSchema.getAttributeCount()){
+            //for schema shortening
+            n = newSchema.getAttributeCount();
+        }
+        else{
+            //for schema extension
+            n = oldSchema.getAttributeCount();
+        }
+        for (int i = 0; i < n; i++) {           
+            String aname = oldSchema.getAttributeName(i);
+            Object value = feature.getAttribute(aname);         
+            newF.setAttribute(aname,value);                     
+        }       
+        return newF;
+    }
+    
+    public static List getFieldsFromLayerWithoutGeometryAndString(Layer lyr) {
+        List fields = new ArrayList();
+        FeatureSchema schema = lyr.getFeatureCollectionWrapper().getFeatureSchema();
+        for (int i = 0 ; i < schema.getAttributeCount() ; i++) {
+            if ((schema.getAttributeType(i) != AttributeType.GEOMETRY) &&
+                    (schema.getAttributeType(i) != AttributeType.STRING))
+            {
+                fields.add(schema.getAttributeName(i));  
+           }
+        }
+        return fields;
+    }
+    
+    public static List getFieldsFromLayerWithoutGeometry(Layer lyr) {
+        List fields = new ArrayList();
+        FeatureSchema schema = lyr.getFeatureCollectionWrapper().getFeatureSchema();
+        for (int i = 0 ; i < schema.getAttributeCount() ; i++) {
+            if (schema.getAttributeType(i) != AttributeType.GEOMETRY)
+            {
+                fields.add(schema.getAttributeName(i));  
+           }
+        }
+        return fields;
+    }
+    
 }
