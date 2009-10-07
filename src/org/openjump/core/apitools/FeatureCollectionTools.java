@@ -1028,4 +1028,30 @@ public class FeatureCollectionTools extends ToolToMakeYourLifeEasier {
 		returnObject[0] = objectsInClass;
 		return returnObject;
 	}
+	
+	/**
+	 * gets the value of an attribute; it checks if the attribute is of double or int type, otherwise NaN is returned. 
+	 * @param f
+	 * @param attributeName
+	 * @return value as double
+	 */
+	public static double getNumericalAttributeValue(Feature f, String attributeName){
+    	AttributeType atype = f.getSchema().getAttributeType(attributeName);
+		if ((atype == AttributeType.DOUBLE) || (atype == AttributeType.INTEGER)){
+			double value = 0;
+	    	if (atype == AttributeType.DOUBLE){
+				Double val = (Double)f.getAttribute(attributeName);
+				value = val.doubleValue();
+	    	}
+	    	else if(atype == AttributeType.INTEGER){
+				Integer val = (Integer)f.getAttribute(attributeName);
+				value = val.doubleValue();
+	    	}	
+			return value;
+		}
+		else{
+			return Double.NaN;	
+		}
+	}
+	
 }
