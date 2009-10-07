@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -47,7 +48,7 @@ import de.fho.jump.pirol.utilities.debugOutput.PersonalLogger;
  * Most functions can be used in a static way, but on the other hand for each FeatureCollection a instance of this class can be invoked.
  * This might be more convenient, if there is more than one thing to do with the same feature collection. 
  * 
- * @author Ole Rahn
+ * @author Ole Rahn, Stefan Steiniger
  * <br>
  * <br>FH Osnabr&uuml;ck - University of Applied Sciences Osnabr&uuml;ck,
  * <br>Project: PIROL (2005),
@@ -952,4 +953,79 @@ public class FeatureCollectionTools extends ToolToMakeYourLifeEasier {
     	return points;
     }
     
+	/**
+     * Sorts features according to unique attribute values into different lists (on list for each unique attribute). 
+     * TODO: enable sorting for String values
+     * @param features
+     * @param idAttribute (must be Double or Integer)
+     * @return Object[0]: an Array of ArrayLists containing features, Object[1]: an Array of int values containing the unique values 
+     * 			used for sorting. Can return null if wrong AttributeType.
+     */
+	public static Object[] sortFeaturesIntoListsByAttributeValue(FeatureCollection features,
+			String idAttribute) {
+		Object[] returnObject = new Object[2];
+		ArrayList<Feature>[] objectsInClass = null;
+		AttributeType atype = features.getFeatureSchema().getAttributeType(idAttribute);
+		//-- only proceed if Id attribute has correct datatype
+		if ((atype == AttributeType.DOUBLE) || (atype == AttributeType.INTEGER)){
+			Feature[] fArray = FeatureCollectionTools.FeatureCollection2FeatureArray(features); 
+			//-- retrieve the set of different individuals
+			Set individuals = FeatureCollectionTools.getSetOfDifferentAttributeValues(fArray, idAttribute);
+			int[] individualValues = new int[individuals.size()];
+			//System.out.print("unique values: ");
+			int i=0;
+			for (Iterator iterator = individuals.iterator(); iterator.hasNext();) {
+				Object object = (Object) iterator.next();
+				int idval = -9998;
+				if (atype == AttributeType.DOUBLE){
+					idval = ((Double)object).intValue();
+				}
+				else if (atype == AttributeType.INTEGER){
+					idval = ((Integer)object).intValue();
+				}
+				individualValues[i] = idval;
+				i++;
+				//System.out.print(idval + ", ");
+			}
+			System.out.println();
+			returnObject[1] = individualValues;
+			objectsInClass = new ArrayList[individuals.size()]; 
+			//-- create the lists
+			for (int j = 0; j < objectsInClass.length; j++) {
+				objectsInClass[j] = new ArrayList<Feature>();
+			}
+			//-- sort all objects f
+			for (Iterator iterator = features.iterator(); iterator.hasNext();) {
+				Feature f = (Feature) iterator.next();
+					int  id = -9999;
+					if (atype == AttributeType.DOUBLE){
+						Double val = (Double)f.getAttribute(idAttribute);
+						id = val.intValue();
+					}
+					else if (atype == AttributeType.INTEGER){
+						Integer val = (Integer)f.getAttribute(idAttribute);
+						id = val.intValue();
+					}
+					//-- search if the ID fits to one of the values
+					boolean found = false; int j =0;
+					while(found == false){
+						if(id == individualValues[j]){
+							objectsInClass[j].add(f.clone(true));
+							found = true;
+						}
+						//-- stop if all values have been compared
+						j++;
+						if((j == individualValues.length) && (found == false)){
+							found = true;
+							System.out.println("sortFeaturesIntoListsByAttributeValue: could not assign value to class; value: " + id);
+						}
+					}
+			}
+		}
+		else{
+			System.out.println("sortFeaturesIntoListsByAttributeValue: id AttributeType neither double nor int");
+		}
+		returnObject[0] = objectsInClass;
+		return returnObject;
+	}
 }
