@@ -1054,4 +1054,61 @@ public class FeatureCollectionTools extends ToolToMakeYourLifeEasier {
 		}
 	}
 	
+    /**
+     * Sorts a list of features according to the values of a attribute. If values are similar the feature
+     * are ordered the same way as in the input list.
+     * TODO: this method has been tested only briefly (not exhaustively)
+     * @param features
+     * @param attributeNameForSorting, attribute needs to be either Integer or Double 
+     * @return list of sorted features; the smallest value will be first in the list.
+     */
+    public static ArrayList<Feature> sortFeatureListByAttributeBeginWithSmallest(
+			List<Feature> features, String attributeNameForSorting) {
+    	ArrayList<Feature> sortedFeatureList = new ArrayList<Feature>();
+    	ArrayList<Double> sortedValueList = new ArrayList<Double>(); // used to speed up sorting so attribute values 
+    																 // need not to be derived every time
+    	int i = 0;
+    	boolean first = true; 
+    	for (Iterator iterator = features.iterator(); iterator.hasNext();) {
+			Feature f = (Feature) iterator.next();
+			if(first){
+				//-- just add the first feature
+				sortedFeatureList.add(f.clone(true));
+				double valuef = FeatureCollectionTools.getNumericalAttributeValue(f, attributeNameForSorting);
+				sortedValueList.add(valuef);
+				first = false;
+			}
+			else{
+				//-- get value
+				double valuef = FeatureCollectionTools.getNumericalAttributeValue(f, attributeNameForSorting);
+				//-- parse the existing list
+				boolean isLarger = true;
+				int j = 0;
+				while(isLarger){
+					//-- to speed up things (i.e. avoid cumbersome value derivation), use the sortedValueList instead
+					double valueFtemp = sortedValueList.get(j);
+					if(valuef >= valueFtemp){
+						//-- everything is fine, keep searching
+					}
+					else{
+						//-- valuef is now smaller, squeeze it in right before ftemp (i.e. the same position)
+						sortedFeatureList.add(j,f.clone(true));
+						sortedValueList.add(j,valuef);
+						//-- end the search, and sort the next item from "features"
+						isLarger = false;
+					}
+					//-- if we are already at the end, then we need to insert the feature too
+					if ( j+1 == sortedFeatureList.size()){
+						sortedFeatureList.add(f.clone(true));
+						sortedValueList.add(valuef);
+						//-- end the search, and sort the next item from "features"
+						isLarger = false;
+					}
+					j++;
+				}//-- end while
+			}
+			i++;
+		}//-- end for
+		return sortedFeatureList;
+	}
 }
