@@ -35,6 +35,8 @@ package com.vividsolutions.jump.workbench.plugin;
 
 import javax.swing.JInternalFrame;
 
+import org.openjump.core.rasterimage.RasterImageLayer;
+
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -153,6 +155,12 @@ public class PlugInContext implements LayerManagerProxy {
         return getLayerManager().addLayer(categoryName, layerName, featureCollection);
     }
 
+    public void addLayerSextanteRaster(
+            String categoryName,
+            RasterImageLayer raster) {
+            getLayerManager().addLayerable(categoryName, raster);
+        }
+    
     public HTMLFrame getOutputFrame() {
         return workbenchContext.getWorkbench().getFrame().getOutputFrame();
     }
