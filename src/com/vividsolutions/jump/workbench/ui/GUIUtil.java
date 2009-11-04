@@ -692,7 +692,7 @@ public class GUIUtil {
 
     public static ImageIcon resize(ImageIcon icon, int extent) {
         return new ImageIcon(icon.getImage().getScaledInstance(extent, extent,
-                Image.SCALE_SMOOTH));
+                Image.SCALE_FAST));
     }
 
     /**
