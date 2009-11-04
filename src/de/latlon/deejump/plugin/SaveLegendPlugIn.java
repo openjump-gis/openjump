@@ -26,7 +26,7 @@
 
  Andreas Poth
  lat/lon GmbH
- Aennchenstraße 19
+ Aennchenstrasse 19
  53177 Bonn
  Germany
  E-Mail: poth@lat-lon.de

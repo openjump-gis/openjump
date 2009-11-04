@@ -234,7 +234,7 @@ public class CorrelationCoefficients {
             errorX = x - this.means[0];
             errorY = y - this.means[1];
             
-            // zähler
+            // zaehler
             sumErrorProducts += (errorX*errorY);
             
             // nenner

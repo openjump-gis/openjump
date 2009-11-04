@@ -1,7 +1,7 @@
 package org.openjump.core.ui.plugin.edittoolbox.cursortools;
 
 /*
- * Copyright (C) 2007 Leibniz Universität Hannover  Institute of Environmetal Planning
+ * Copyright (C) 2007 Leibniz Universitaet Hannover  Institute of Environmetal Planning
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License

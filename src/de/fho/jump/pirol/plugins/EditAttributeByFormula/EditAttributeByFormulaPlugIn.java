@@ -59,7 +59,7 @@
  *  besseres Fehler-Feedback bei der Formeleingabe
  *
  *  Revision 1.6  2005/06/30 08:37:40  orahn
- *  misslungene Formel beschädigt nicht mehr das Layer
+ *  misslungene Formel beschaedigt nicht mehr das Layer
  *
  *  Revision 1.5  2005/06/29 16:03:57  orahn
  *  aufgemotzt

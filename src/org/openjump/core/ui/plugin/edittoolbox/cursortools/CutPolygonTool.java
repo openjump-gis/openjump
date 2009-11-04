@@ -38,7 +38,7 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 /**
 * This cursor tool is installed by CutPoygonSIGLEPlugIn
 * To use it, select one or several Polygon a in layer A, draw a Polygon b by
-* hand, every selected polygon a will be changed into¨a - b.
+* hand, every selected polygon a will be changed into a - b.
 *
 * @author ERWAN BOCHER Laboratoire RESO UMR CNRS 6590 et Olivier Bonnefont
 * @see <a href="http://url www.projet-sigle.org">projet-sigle</a>
