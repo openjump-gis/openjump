@@ -1,7 +1,24 @@
 ##
 ## OpenJUMP TODO
-## file is a stub .. need to use
 ##
+
+2009-Nov-22 sstein <sstein@geo.uzh.ch>
+	some stuff I collected that should be done:
+	from 2006/2007
+	- ask Paul: "freedesktop" file for Jump - howTo
+	- remove old postgis lib? / add import postgis layer script to beanshell stuff (wiki help): internal datastore
+	- add MoveVertexTool from kosmo (larry16.03.-17:11)
+	- ascii point/cvs import (see also Pirol tool)
+	- item info (Cadcorp like)
+	and (probably from 2007):
+	- PostGIS plugin (emails 19.05.), I guess this was about the icon for the new file dialog
+	- set drawing line color
+	- Pauls Docking-Design
+	- add WorkbenchContext.getMenuNames()? Larry
+	- make new styling report (mm: 16.Aug 2007)
+	- add requests by Guiseppe Aruta (30. Aug - see answers - by Larry - first)
+		a) svg:scale:nope? b) twf: yes c) labels: yes?
+	
 
 2007-07-08 mmichaud <michael.michaud@free.fr>
 
@@ -32,15 +49,11 @@
 
 - see also wiki (TODO section)
 
- - Javadoc (last but not least!)
-
 ---------------------------------------
 
 ##
-## Further Ideas for OpenJUMP
+## Further stuff for OpenJUMP
 ##
- 
- - blabla
 
 2007-08-14 Larry Becker <becker.larry@gmail.com>
 
