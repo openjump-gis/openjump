@@ -1,4 +1,4 @@
-2009-05-16 michaudm <michael.michaud@free.fr>
+2009-11-22 michaudm <michael.michaud@free.fr>
     com.vividsolutions.jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel
     com.vividsolutions.jump.workbench.ui.plugin.datastore.RunDatastoreQueryPlugIn
         * now possible to add a ${view} or ${fence} parameter to limit the query
