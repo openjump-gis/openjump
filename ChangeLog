@@ -1,3 +1,9 @@
+2009-05-16 michaudm <michael.michaud@free.fr>
+    com.vividsolutions.jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel
+    com.vividsolutions.jump.workbench.ui.plugin.datastore.RunDatastoreQueryPlugIn
+        * now possible to add a ${view} or ${fence} parameter to limit the query
+          to the wiew or to the fence
+
 2009-07-07 stranger <schmitz@lat-lon.de>
         Fixed yet another dangling progress window.
 
