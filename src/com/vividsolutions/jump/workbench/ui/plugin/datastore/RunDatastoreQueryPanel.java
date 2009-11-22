@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 
+import javax.swing.JButton;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -63,12 +65,27 @@ public class RunDatastoreQueryPanel
     }
 
     private void initialize() {
+        JButton jbView = new JButton("View");
+        jbView.addActionListener(new ActionListener() {
+            public void actionPerformed( ActionEvent e ) {
+                queryTextArea.insert("${view}", queryTextArea.getCaretPosition());
+            }
+        });
+        JButton jbFence = new JButton("Fence");
+        jbFence.addActionListener(new ActionListener() {
+            public void actionPerformed( ActionEvent e ) {
+                queryTextArea.insert("${fence}", queryTextArea.getCaretPosition());
+            }
+        });
+        JPanel jpButtons = new JPanel(new java.awt.GridLayout(2,1));
+        jpButtons.add(jbView);
+        jpButtons.add(jbFence);
         addRow(I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.Max-Features"), getMaxFeaturesTextField(), null, false);
         addRow(I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.Query"), new JScrollPane(getQueryTextArea()) {
             {
                 setPreferredSize(new Dimension(MAIN_COLUMN_WIDTH, 100));
             }
-        }, null, true);
+        }, jpButtons, true);
 
         //
         // We are not using addRow becaus we want the widgets centered over the

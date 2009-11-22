@@ -1,5 +1,8 @@
 package com.vividsolutions.jump.workbench.ui.plugin.datastore;
 
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Geometry;
+
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.datastore.AdhocQuery;
 import com.vividsolutions.jump.feature.FeatureDataset;
@@ -42,10 +45,18 @@ public class RunDatastoreQueryPlugIn extends
 
         int maxFeatures = ( ( Integer ) LangUtil.ifNull( panel.getMaxFeatures(),
             new Integer( Integer.MAX_VALUE ) ) ).intValue();
+        // added by Michael Michaud on 2009-11-22 to use aliases representing
+        // view rectangle or selection in a query
+        String driver = panel.getConnectionDescriptor().getDataStoreDriverClassName();
+        String query = panel.getQuery();
+        if (driver.contains("Postgis") && query.matches("(?s).*\\$\\{[^\\{\\}]*\\}.*")) {
+            query = expandQuery(query, context);
+        }
+        // end
         FeatureInputStream featureInputStream = ConnectionManager.instance(
             context.getWorkbenchContext() )
             .getOpenConnection( panel.getConnectionDescriptor() ).execute(
-            new AdhocQuery( panel.getQuery() ) );
+            new AdhocQuery( /*panel.getQuery()*/query ) );
         try {
             FeatureDataset featureDataset = new FeatureDataset(
                 featureInputStream.getFeatureSchema() );
@@ -72,4 +83,14 @@ public class RunDatastoreQueryPlugIn extends
             featureInputStream.close();
         }
     }
+    
+    private String expandQuery(String query, PlugInContext context) {
+        GeometryFactory gf = new GeometryFactory();
+        Geometry viewG = gf.toGeometry(context.getLayerViewPanel().getViewport().getEnvelopeInModelCoordinates());
+        Geometry fenceG = context.getLayerViewPanel().getFence();
+        if (viewG != null) query = query.replaceAll("\\$\\{view\\}", "ST_GeomFromText('" + viewG.toText() + "')");
+        if (fenceG != null) query = query.replaceAll("\\$\\{fence\\}", "ST_GeomFromText('" + fenceG.toText() + "')");
+        return query;
+    }
+    
 }
