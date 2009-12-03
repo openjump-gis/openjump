@@ -105,6 +105,13 @@ public class WorldFileHandler implements HandlerToMakeYourLifeEasier{
             faktorD = (miny - maxy) / imgHeight;
             CoordX = minx;
             CoordY = maxy;
+            //-- [sstein] Dec.2009 -- we need to move corner coordinates toward the pixel center
+            //   by 0.5 pixel, since thats what the specifications say
+            double px05x = ((maxx-minx) / imgWidth)*0.5;
+            double px05y = ((maxy-miny) / imgHeight)*0.5;
+            CoordX = CoordX + px05x;
+            CoordY = CoordY - px05y;
+            //-- [sstein] end
             worldfileWriter.write(Double.toString(faktorA) + "\n");
             worldfileWriter.write(Double.toString(faktorB) + "\n");
             worldfileWriter.write(Double.toString(faktorC) + "\n");

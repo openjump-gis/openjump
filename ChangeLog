@@ -1,3 +1,8 @@
+2009-05-17 mentaer <sstein@geo.unizh.ch>
+        Fixed problem with Pirol world file writer. Tiff images were shifted by
+        0.5 pixel since the coords have been taken directly from the envelope
+        and not adjusted for the pixel center. 
+        
 2009-11-22 michaudm <michael.michaud@free.fr>
     com.vividsolutions.jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel
     com.vividsolutions.jump.workbench.ui.plugin.datastore.RunDatastoreQueryPlugIn
