@@ -1,4 +1,7 @@
-2009-05-17 mentaer <sstein@geo.unizh.ch>
+2009-12-04 mentaer <sstein@geo.unizh.ch>
+        changed OJ Version to 1.3.1 to prepare new release
+        
+2009-12-03 mentaer <sstein@geo.unizh.ch>
         Fixed problem with Pirol world file writer. Tiff images were shifted by
         0.5 pixel since the coords have been taken directly from the envelope
         and not adjusted for the pixel center. 
