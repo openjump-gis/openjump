@@ -68,13 +68,13 @@ public class RunDatastoreQueryPanel
         JButton jbView = new JButton("View");
         jbView.addActionListener(new ActionListener() {
             public void actionPerformed( ActionEvent e ) {
-                queryTextArea.insert("${view}", queryTextArea.getCaretPosition());
+                queryTextArea.insert("${view:-1}", queryTextArea.getCaretPosition());
             }
         });
         JButton jbFence = new JButton("Fence");
         jbFence.addActionListener(new ActionListener() {
             public void actionPerformed( ActionEvent e ) {
-                queryTextArea.insert("${fence}", queryTextArea.getCaretPosition());
+                queryTextArea.insert("${fence:-1}", queryTextArea.getCaretPosition());
             }
         });
         JPanel jpButtons = new JPanel(new java.awt.GridLayout(2,1));
