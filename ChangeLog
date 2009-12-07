@@ -1,4 +1,8 @@
-2009-11-22 michaudm <michael.michaud@free.fr>
+2009-12-06 mentaer <sstein@geo.unizh.ch>
+
+           **** release of OpenJUMP 1.3.1 ****
+           
+2009-12-05 michaudm <michael.michaud@free.fr>
 	   * srid parameter for the view or the fence
        com.vividsolutions.jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel
        com.vividsolutions.jump.workbench.ui.plugin.datastore.RunDatastoreQueryPlugIn
