@@ -48,6 +48,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.MenuElement;
 import javax.swing.SwingUtilities;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
@@ -65,6 +67,7 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugIn;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
 
@@ -91,6 +94,10 @@ public class FeatureInstaller {
   private TaskMonitorManager taskMonitorManager = new TaskMonitorManager();
 
   private EnableCheckFactory checkFactory;
+
+  private static Map plugin_EnableCheckMap = new HashMap();
+  private static Map repeatMenuItemMap = new HashMap();
+  private static RepeatableMenuItem[] RepeatableMenuItemArray = {null, null, null};
 
   public FeatureInstaller(WorkbenchContext workbenchContext) {
     this.workbenchContext = workbenchContext;
@@ -602,5 +609,164 @@ public class FeatureInstaller {
 
   public JMenuItem addMainMenuItem(String[] menuPath, AbstractUiPlugIn plugIn) {
     return addMainMenuItem(menuPath, plugIn, -1);
+  }
+  
+  public void associateWithRepeat(PlugIn executable)
+  {
+  	JPopupMenu popupMenu = LayerViewPanel.popupMenu();
+  	
+  	if (! plugin_EnableCheckMap.containsKey(executable)) return;
+  	
+		//if this executable already associated with a repeat menu then nothing to do
+		for (int i = 0; i < RepeatableMenuItemArray.length; i++)
+		{
+			if (RepeatableMenuItemArray[i] != null)
+				if (RepeatableMenuItemArray[i].isSetTo(executable)) return; 
+		}
+		
+		//we are going to be moving executables to different repeatMenuItems
+		//so remove all menuListeners
+		for (int i = 0; i < RepeatableMenuItemArray.length; i++)
+		{
+			if (RepeatableMenuItemArray[i] == null) break;
+  		PopupMenuListener menuListener = RepeatableMenuItemArray[i].getMenuListener();
+  		if (menuListener != null)
+  			popupMenu.removePopupMenuListener(menuListener);
+		}
+		
+		//this plugin not on list of repeats
+		//so pull down existing repeats and add this to top
+		
+		for (int i = RepeatableMenuItemArray.length - 1; i > 0 ; i--)
+		{
+			if (RepeatableMenuItemArray[i - 1] == null) //nothing to move
+				continue;
+			
+			//at this point we have one above to pull down
+			PlugIn prevExec = RepeatableMenuItemArray[i - 1].getExecutable();
+			EnableCheck prevEnableCheck = (EnableCheck)plugin_EnableCheckMap.get(prevExec);
+			
+			if (RepeatableMenuItemArray[i] == null)
+			{
+				RepeatableMenuItem repeatMenuItem = new RepeatableMenuItem(prevExec, prevEnableCheck); 
+	            popupMenu.insert(repeatMenuItem.getMenuItem(), i + 3);
+	    		RepeatableMenuItemArray[i] = repeatMenuItem;
+			}
+			else
+			{
+				RepeatableMenuItemArray[i].setExecutable(prevExec, prevEnableCheck);
+			}
+		}
+		
+		EnableCheck enableCheck = (EnableCheck)plugin_EnableCheckMap.get(executable);
+		
+		if (RepeatableMenuItemArray[0] == null)
+		{
+			RepeatableMenuItem repeatMenuItem = new RepeatableMenuItem(executable, enableCheck); 
+          popupMenu.insert(repeatMenuItem.getMenuItem(), 2);
+          popupMenu.insert(new JPopupMenu.Separator(), 2);
+  		RepeatableMenuItemArray[0] = repeatMenuItem;
+		}
+		else
+		{
+			RepeatableMenuItemArray[0].setExecutable(executable, enableCheck);
+		}
+		
+		//now add all listeners to popupMenu
+		for (int i = 0; i < RepeatableMenuItemArray.length; i++)
+		{
+			if (RepeatableMenuItemArray[i] == null) break;
+  		PopupMenuListener menuListener = RepeatableMenuItemArray[i].getMenuListener();
+  		if (menuListener != null)
+  			popupMenu.addPopupMenuListener(menuListener);
+		} 
+  }
+  
+  private class RepeatableMenuItem
+  {
+  	private PlugIn executable = null;
+  	private JMenuItem menuItem = null;
+  	private PopupMenuListener menuListener = null;
+  	
+  	public RepeatableMenuItem(PlugIn executable, 
+  			                  final EnableCheck enableCheck)
+  	{
+  		this.menuItem = new JMenuItem("Repeat");
+  		setExecutable(executable, enableCheck);
+  	}
+  	
+  	public void setExecutable(PlugIn executable, 
+  			              final EnableCheck enableCheck)
+  	{
+  		this.executable = executable;
+  		ActionListener[] al = menuItem.getActionListeners();
+  		
+  		for (int i = 0; i < al.length; i++)
+  			menuItem.removeActionListener(al[0]);
+  		
+  		menuItem.addActionListener(AbstractPlugIn.toActionListener(executable,
+                  workbenchContext, taskMonitorManager));
+
+  		this.menuItem.setText("Repeat: " + executable.getName());
+  		
+  		if (enableCheck == null)
+  		{
+  			this.menuListener = null;
+  		}
+  		else
+  		{
+	    		 this.menuListener = new PopupMenuListener() {
+	                public void popupMenuWillBecomeVisible(PopupMenuEvent e) 
+	                {
+	                    toMenuItemShownListener(enableCheck).menuItemShown(menuItem);
+	                }
+	                public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {}
+	                public void popupMenuCanceled(PopupMenuEvent e) {}
+	            };
+  		}
+  	}
+  	
+  	JMenuItem getMenuItem()
+  	{
+  		return menuItem;
+  	}
+  	
+  	PlugIn getExecutable()
+  	{
+  		return executable;
+  	}
+  	
+  	PopupMenuListener getMenuListener()
+  	{
+  		return menuListener;
+  	}
+  	
+  	boolean isSetTo(PlugIn executable)
+  	{
+  		return this.executable == executable;
+  	}
+  }
+  
+  /**
+   * @author Larry Becker
+   * Needed this class to be not anonymous so it's type could be determined at runtime.
+   */
+  public class JumpMenuListener implements MenuListener {
+  	MenuItemShownListener menuItemShownListener;
+  	JMenuItem menuItem;    	
+		public JumpMenuListener(MenuItemShownListener menuItemShownListener,
+				JMenuItem menuItem) {
+			super();
+			this.menuItemShownListener = menuItemShownListener;
+			this.menuItem = menuItem;
+		}
+     public void menuSelected(MenuEvent e) {
+          menuItemShownListener.menuItemShown(menuItem);
+      }
+		public void menuCanceled(MenuEvent e) {
+		}
+		public void menuDeselected(MenuEvent e) {
+		}
+  	
   }
 }
