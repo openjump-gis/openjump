@@ -39,11 +39,11 @@ import java.util.Iterator;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPopupMenu;
+
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateFilter;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.geom.CoordUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
@@ -146,7 +146,9 @@ public class MoveAlongAnglePlugIn extends AbstractPlugIn {
     private void move(Geometry geometry, final Coordinate displacement) {
         geometry.apply(new CoordinateFilter() {
             public void filter(Coordinate coordinate) {
-                coordinate.setCoordinate(CoordUtil.add(coordinate, displacement));
+                //coordinate.setCoordinate(CoordUtil.add(coordinate, displacement));
+                coordinate.x += displacement.x;
+                coordinate.y += displacement.y;
             }
         });
     }

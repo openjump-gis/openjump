@@ -110,8 +110,10 @@ public class PasteItemsAtPlugIn extends PasteItemsPlugIn {
     private void move(Geometry geometry, final Coordinate displacement) {
         geometry.apply(new CoordinateFilter() {
             public void filter(Coordinate coordinate) {
-                coordinate.setCoordinate(CoordUtil.add(coordinate, displacement));
-            }
+                //coordinate.setCoordinate(CoordUtil.add(coordinate, displacement));
+                coordinate.x += displacement.x;
+                coordinate.y += displacement.y;
+           }
         });
     }
     
