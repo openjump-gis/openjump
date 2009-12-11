@@ -74,7 +74,7 @@ public class EasyButtonsPlugin extends ToolboxPlugIn {
 		EasyPanel buttonPanel = new EasyPanel(toolbox);
 		toolbox.getCenterPanel().add(buttonPanel, BorderLayout.CENTER);
 		toolbox.setInitialLocation(new GUIUtil.Location(10, true, 270, false));   
-		toolbox.setIconImage(((ImageIcon)getIcon()).getImage());
+//		toolbox.setIconImage(((ImageIcon)getIcon()).getImage());
 	}
 
 	private void add(
