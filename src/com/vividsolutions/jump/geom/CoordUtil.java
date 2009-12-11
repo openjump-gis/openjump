@@ -53,7 +53,11 @@ public class CoordUtil {
      * @return a new Coordinate with the average x and average y
      */
     public static Coordinate average(Coordinate c1, Coordinate c2) {
-        return new Coordinate(MathUtil.avg(c1.x, c2.x), MathUtil.avg(c1.y, c2.y));
+    	if (Double.isNaN(c1.z) || Double.isNaN(c2.z))
+    		return new Coordinate(MathUtil.avg(c1.x, c2.x), MathUtil.avg(c1.y, c2.y));
+    	else
+    		return new Coordinate(MathUtil.avg(c1.x, c2.x), MathUtil.avg(c1.y, c2.y),
+    				MathUtil.avg(c1.z, c2.z));
     }
 
     /**
@@ -64,15 +68,24 @@ public class CoordUtil {
 
         double xSum = 0;
         double ySum = 0;
-
+        double zSum = 0;
+        boolean zNanFound = false;
+        
         for (Iterator i = coordinates.iterator(); i.hasNext();) {
             Coordinate coordinate = (Coordinate) i.next();
             xSum += coordinate.x;
             ySum += coordinate.y;
-        }
-
-        return new Coordinate(xSum / coordinates.size(),
-            ySum / coordinates.size());
+        	if (!Double.isNaN(coordinate.z))
+        		zSum += coordinate.z;
+        	else
+        		zNanFound = true;
+       }
+        if (zNanFound)
+	        return new Coordinate(xSum / coordinates.size(),
+	            ySum / coordinates.size());
+        else
+        	return new Coordinate(xSum / coordinates.size(),
+    	            ySum / coordinates.size(),  zSum / coordinates.size());
     }
 
     /**
@@ -101,7 +114,10 @@ public class CoordUtil {
      * @return a new coordinate: c1 + c2
      */
     public static Coordinate add(Coordinate c1, Coordinate c2) {
-        return new Coordinate(c1.x + c2.x, c1.y + c2.y);
+    	if (Double.isNaN(c1.z) || Double.isNaN(c2.z))
+    		return new Coordinate(c1.x + c2.x, c1.y + c2.y);
+    	else
+    		return new Coordinate(c1.x + c2.x, c1.y + c2.y, c1.z + c2.z);
     }
 
     /**
@@ -111,8 +127,11 @@ public class CoordUtil {
      * @return a new coordinate: c1 - c2
      */
     public static Coordinate subtract(Coordinate c1, Coordinate c2) {
-        return new Coordinate(c1.x - c2.x, c1.y - c2.y);
-    }
+    	if (Double.isNaN(c1.z) || Double.isNaN(c2.z))
+    		return new Coordinate(c1.x - c2.x, c1.y - c2.y);
+    	else
+    		return new Coordinate(c1.x - c2.x, c1.y - c2.y, c1.z - c2.z);
+   }
 
     /**
      * Multiplies a scalar and a coordinate.
@@ -121,7 +140,10 @@ public class CoordUtil {
      * @return a new coordinate: d * c
      */
     public static Coordinate multiply(double d, Coordinate c) {
-        return new Coordinate(d * c.x, d * c.y);
+       	if (Double.isNaN(c.z))
+       		return new Coordinate(d * c.x, d * c.y);
+       	else
+       		return new Coordinate(d * c.x, d * c.y, d * c.z);
     }
 
     /**
@@ -131,7 +153,10 @@ public class CoordUtil {
      * @return a new coordinate: c / d
      */
     public static Coordinate divide(Coordinate c, double d) {
-        return new Coordinate(c.x / d, c.y / d);
+       	if (Double.isNaN(c.z))
+       		return new Coordinate(c.x / d, c.y / d);
+       	else
+       		return new Coordinate(c.x / d, c.y / d, c.z / d);
     }
 
     public static Coordinate toCoordinate(Point2D point) {
