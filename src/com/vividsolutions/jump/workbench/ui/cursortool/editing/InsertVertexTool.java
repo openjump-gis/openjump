@@ -33,12 +33,21 @@ package com.vividsolutions.jump.workbench.ui.cursortool.editing;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.geom.NoninvertibleTransformException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import javax.swing.Icon;
 
-import org.openjump.core.geomutils.GeoUtils;
-
-import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineSegment;
+import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
@@ -107,9 +116,7 @@ public class InsertVertexTool extends NClickTool {
 		return closest;
 	}
 	private Coordinate newVertex(LineSegment segment, Coordinate target) {
-		//Coordinate closestPoint = segment.closestPoint(target);
-		Coordinate closestPoint = GeoUtils.getClosestPointOnSegment( target,  
-				segment.p0,  segment.p1);
+		Coordinate closestPoint = segment.closestPoint(target);
 		if (!closestPoint.equals(segment.p0)
 				&& !closestPoint.equals(segment.p1)) {
 		   	if (Double.isNaN(segment.p0.z) || Double.isNaN(segment.p1.z))
