@@ -35,6 +35,9 @@ import java.awt.Cursor;
 import java.awt.geom.NoninvertibleTransformException;
 import java.util.*;
 import javax.swing.Icon;
+
+import org.openjump.core.geomutils.GeoUtils;
+
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
@@ -104,10 +107,15 @@ public class InsertVertexTool extends NClickTool {
 		return closest;
 	}
 	private Coordinate newVertex(LineSegment segment, Coordinate target) {
-		Coordinate closestPoint = segment.closestPoint(target);
+		//Coordinate closestPoint = segment.closestPoint(target);
+		Coordinate closestPoint = GeoUtils.getClosestPointOnSegment( target,  
+				segment.p0,  segment.p1);
 		if (!closestPoint.equals(segment.p0)
 				&& !closestPoint.equals(segment.p1)) {
-			return closestPoint;
+		   	if (Double.isNaN(segment.p0.z) || Double.isNaN(segment.p1.z))
+		   	 			return closestPoint;
+			closestPoint.z = (segment.p0.z + segment.p1.z) / 2d;
+
 		}
 		//No good to make the new vertex one of the endpoints. If the segment
 		// is
