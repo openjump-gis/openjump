@@ -21,6 +21,8 @@ import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
+import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
+import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.ThreadedPlugIn;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
@@ -49,7 +51,11 @@ public class ClipToFencePlugIn extends AbstractPlugIn implements ThreadedPlugIn 
 		workbenchContext = context.getWorkbenchContext();
         context.getFeatureInstaller().addMainMenuItem(this,
         	      new String[] {MenuNames.EDIT}, getName()+ "...", 
-        	      		false, null, fenceLayerMustBePresent());
+        	      		false, null,
+        	      		new MultiEnableCheck()
+        	      		    .add(new EnableCheckFactory(context.getWorkbenchContext())
+        	      		        .createTaskWindowMustBeActiveCheck())
+        	      		    .add(fenceLayerMustBePresent()));
         
         DIALOGWARNING=I18N.get("org.openjump.core.ui.plugin.edit.ClipToFencePlugIn.This-operation-is-not-undoable");
         VISIBLEONLY = I18N.get("org.openjump.core.ui.plugin.edit.ClipToFencePlugIn.Visible-Only-(-see-Warning-)");
