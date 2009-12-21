@@ -7,7 +7,6 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.I18N;
 
 PlugInContext pc = wc.createPlugInContext();
-Envelope destEnv = pc.getLayerViewPanel().getFence().getEnvelopeInternal();
 Dimension fDim = pc.getWorkbenchFrame().getActiveInternalFrame().getSize();
 int fWidth = fDim.width;
 int fHeight = fDim.height;
