@@ -5,6 +5,8 @@ import java.awt.Dimension;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.ui.MenuNames;
+import org.openjump.core.ui.plugin.customize.BeanToolsPlugIn;
 
 PlugInContext pc = wc.createPlugInContext();
 Dimension fDim = pc.getWorkbenchFrame().getActiveInternalFrame().getSize();
@@ -43,4 +45,15 @@ bshFile.write("modelEnv.init(left, right, bottom, top);\n");
 bshFile.write("wc.createPlugInContext().getWorkbenchFrame().getActiveInternalFrame().setSize( fWidth, fHeight);\n");
 bshFile.write("wc.getLayerViewPanel().getViewport().zoom(modelEnv);\n");
 bshFile.close();
+
+// Remove the BeanTools menu
+context = wc.createPlugInContext();
+featureInstaller = context.getFeatureInstaller();
+menu = featureInstaller.menuBarMenu(I18N.get(MenuNames.CUSTOMIZE));
+item = featureInstaller.childMenuItem(I18N.get("ui.plugin.BeanToolsPlugIn.BeanTools"), menu);
+menu.remove(item);
+
+// Reinitialize the plugin
+plugin = new BeanToolsPlugIn();
+plugin.initialize(context);
 }
