@@ -51,7 +51,7 @@ public class NorthArrowRenderer extends SimpleRenderer {
 	public final static String CONTENT_ID = "NORTH_ARROW";
 	private final static String ENABLED_KEY = NorthArrowRenderer.class +" - ENABLED";
 
-	private int ARROW_SIZE = 80;
+	private int ARROW_SIZE = 100;
 	private Color FILL2 = Color.white;
 	private Color FILL1 = new Color(255, 204, 204);
 	private int HORIZONTAL_MARGIN = 8;
@@ -105,17 +105,25 @@ public class NorthArrowRenderer extends SimpleRenderer {
 			y2 = arrowBottom();	
 			x3 = (int) (x1 + 0.5*(x2 - x1));
 			y3 = (int) (y1 + 0.5*(y2 - y1));
-			int width = ARROW_SIZE / 8;
+			int width = ARROW_SIZE / 10;
 			int x4 = x3 - width;
 			int x5 = x3 + width;
 			int y4 = y3 - width;
 			int y5 = y3 + width;
+			//draw drop shadow
+			int s = 4;
+			int xPoints0[] = {x3+s, x4+s, x1+s, x4+s, x3+s, x5+s, x2+s, x5+s, x3+s}; 
+			int yPoints0[] = {y2+s, y5+s, y3+s, y4+s, y1+s, y4+s, y3+s, y5+s, y2+s};
+			drawShape(g, Color.LIGHT_GRAY, Color.LIGHT_GRAY, xPoints0, yPoints0, true, false);
+			//draw black filled part
 			int xPoints[] = {x3, x4, x3, x1, x4, x3, x3, x5, x3, x2, x5, x3, x3}; 
 			int yPoints[] = {y2, y5, y3, y3, y4, y3, y1, y4, y3, y3, y5, y3, y2};
 			drawShape(g, Color.black, LINE_COLOR, xPoints, yPoints, true, false);
+			//draw white filled part
 			int xPoints2[] = {x3, x3, x4, x1, x3, x4, x3, x3, x5, x2, x3, x5, x3}; 
 			int yPoints2[] = {y2, y3, y5, y3, y3, y4, y1, y3, y4, y3, y3, y5, y2};
 			drawShape(g, Color.white, LINE_COLOR, xPoints2, yPoints2, true, false);
+			//draw black outline
 			int xPoints3[] = {x3, x4, x1, x4, x3, x5, x2, x5, x3}; 
 			int yPoints3[] = {y2, y5, y3, y4, y1, y4, y3, y5, y2};
 			drawShape(g, Color.white, LINE_COLOR, xPoints3, yPoints3, false, true);
