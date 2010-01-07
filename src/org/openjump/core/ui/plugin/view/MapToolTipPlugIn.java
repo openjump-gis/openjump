@@ -100,6 +100,8 @@ public class MapToolTipPlugIn extends AbstractPlugIn
 	final static String sNoData =I18N.get("org.openjump.core.ui.plugin.view.MapToolTipPlugIn.No-Data");
 	final static String sArea =I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.area");
 	
+	final static String pictureSuffix = "_p";
+	
     private MouseMotionAdapter mouseMotionAdapter =
     new MouseMotionAdapter()
     {
@@ -203,6 +205,9 @@ public class MapToolTipPlugIn extends AbstractPlugIn
                         {
                             String name = featureSchema.getAttributeName(num);
                             String data = feature.getString(name).trim();
+                            if (name.endsWith(pictureSuffix)) {
+                            	data = "<img src=\"file:///" + data + "\">";
+                            }
                             if ((!data.equals("")) && (NumLinesOfData < maxLinesOfData))
                             {
                                 dataText += "<br>" + name + ": " + data;
