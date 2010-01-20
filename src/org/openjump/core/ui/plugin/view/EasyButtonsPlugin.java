@@ -63,7 +63,7 @@ public class EasyButtonsPlugin extends ToolboxPlugIn {
 	}
 
 	public String getName() {
-		return TOOLBOX_NAME;
+		return TOOLBOX_NAME + "{pos:1}";
 	}
 	
     public Icon getIcon() {
