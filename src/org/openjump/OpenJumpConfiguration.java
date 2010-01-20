@@ -57,6 +57,7 @@ import org.openjump.core.ui.plugin.mousemenu.category.MoveCategoryToTop;
 import org.openjump.core.ui.plugin.mousemenu.category.SetCategoryVisibilityPlugIn;
 import org.openjump.core.ui.plugin.style.ImportArcMapStylePlugIn;
 import org.openjump.core.ui.plugin.style.ImportSLDPlugIn;
+import org.openjump.core.ui.plugin.view.EasyButtonsPlugin;
 import org.openjump.core.ui.plugin.view.MapToolTipPlugIn;
 import org.openjump.core.ui.plugin.view.ShowFullPathPlugIn;
 import org.openjump.core.ui.plugin.view.ShowScalePlugIn;
@@ -189,6 +190,10 @@ public class OpenJumpConfiguration {
     /*
     new CopyBBoxPlugin().initialize(new PlugInContext(workbenchContext, null, null, null, null));
     */
+    EasyButtonsPlugin myEasyButtonsPlugIn = new EasyButtonsPlugin();
+    myEasyButtonsPlugIn.initialize(new PlugInContext(workbenchContext, null,
+    	      null, null, null));
+    
     ZoomToWMSPlugIn myZoomToWMSPlugIn = new ZoomToWMSPlugIn();
     myZoomToWMSPlugIn.initialize(new PlugInContext(workbenchContext, null,
       null, null, null));
