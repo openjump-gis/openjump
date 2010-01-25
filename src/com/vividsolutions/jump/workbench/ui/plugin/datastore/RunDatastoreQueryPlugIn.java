@@ -5,6 +5,7 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.datastore.AdhocQuery;
+import com.vividsolutions.jump.datastore.postgis.PostgisFeatureInputStream;
 import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.io.FeatureInputStream;
 import com.vividsolutions.jump.task.TaskMonitor;
@@ -79,6 +80,11 @@ public class RunDatastoreQueryPlugIn extends
             return new Layer( name, context.getLayerManager()
                 .generateLayerFillColor(), featureDataset, context.getLayerManager() );
         } finally {
+            if (featureInputStream instanceof com.vividsolutions.jump.datastore.postgis.PostgisFeatureInputStream) {
+                java.sql.Statement stmt = 
+                ((com.vividsolutions.jump.datastore.postgis.PostgisFeatureInputStream)featureInputStream).getStatement();
+                if (stmt != null) stmt.cancel();
+            }
             featureInputStream.close();
         }
     }

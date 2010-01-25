@@ -21,7 +21,7 @@ public class PostgisDataStoreDriver
 
   public static final String PARAM_Server = "Server";
   public static final String PARAM_Port = "Port";
-  public static final String PARAM_Instance = "Instance";
+  public static final String PARAM_Instance = "Database";
   public static final String PARAM_User = "User";
   public static final String PARAM_Password = "Password";
 

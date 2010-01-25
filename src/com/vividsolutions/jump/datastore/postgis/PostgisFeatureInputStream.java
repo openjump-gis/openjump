@@ -9,7 +9,7 @@ import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.io.BaseFeatureInputStream;
 
 /**
- * Reads features from an Oracle database.
+ * Reads features from a PostgreSQL/PostGIS database.
  */
 public class PostgisFeatureInputStream
     extends BaseFeatureInputStream
@@ -35,6 +35,12 @@ public class PostgisFeatureInputStream
    * @return The underlaying {@link Connection}.
    */
   public Connection getConnection(){return conn;}
+  
+  /**
+   * @return The underlaying {@link Statement}.
+   * Useful to cancel the query on the server if the PlugIn is interrupted 
+   */
+  public Statement getStatement(){return stmt;}
 
   private void init()
       throws SQLException
