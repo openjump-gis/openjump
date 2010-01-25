@@ -1,3 +1,38 @@
+2010-01-25 michaudm <michael.michaud@free.fr>
+    com.vividsolutions.jump.workbench.ui.plugin.datastore.RunDataStoreQueryPlugIn
+    cancel the current query if the thread is interrupted
+
+2010-01-07 beckerl <becker.larry@gmail.com>
+    core.ui.plugin.view.MapToolTipPlugIn
+    Added support for _p attribute name suffix that assumes the string is an
+    image file path.
+    
+2010-01-05 mentaer <sstein@geo.unizh.ch>
+    fixed bug 2926111: "select all layer items" function considers the
+    visibility of layer now
+    
+2009-12-23 beckerl <becker.larry@gmail.com>
+    core.ui.plugin.view.NorthArrowPlugIn
+    North Arrow is a View menu option.  There is no GIU, but you can set
+    alignment and style options with Beanshell.
+    
+2009-12-14 beckerl <becker.larry@gmail.com>
+    core.ui.plugin.customize.CmdRunner
+    Class adds support for running external programs, reading their output, and
+    setting envirnment variables.
+
+2009-12-11 beckerl <becker.larry@gmail.com>
+    com.vividsolutions.jump.geom.CoordUtil now interpolating Z values
+    org.openjump.core.ui.plugin.mousemenu.MoveAlongAnglePlugIn
+    and org.openjump.core.ui.plugin.mousemenu.PasteItemsAtPlugIn
+    do not drop Z any more
+    
+2009-12-09 beckerl <becker.larry@gmail.com>
+    core.ui.plugin.view.EasyButtonsPlugin
+    The EZ Buttons plugin adds to the View menu an option to display a button
+    panel that can be programed with existing menu options and activated with
+    both the buttons and Function Keys F1-10
+
 2009-12-06 mentaer <sstein@geo.unizh.ch>
 
            **** release of OpenJUMP 1.3.1 ****
