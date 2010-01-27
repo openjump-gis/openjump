@@ -14,6 +14,7 @@ import javax.swing.BorderFactory;
 import javax.swing.border.Border;
 import javax.swing.JDialog;
 import javax.swing.WindowConstants;
+import java.text.SimpleDateFormat;
 
 import buoy.event.*;
 import buoy.widget.*;
@@ -52,6 +53,8 @@ public class QueryDialog extends BDialog {
     public static final int ALL_LAYERS = 0;
     public static final int SELECTION = 1;
     public static final int SELECTED_LAYERS = 2;
+    
+    public static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat();
     
     private PlugInContext context;
     
@@ -455,7 +458,7 @@ public class QueryDialog extends BDialog {
         else if (type==AttributeType.STRING && charFilter.getState()) return true;
         else if (type==AttributeType.INTEGER && numFilter.getState()) return true;
         else if (type==AttributeType.DOUBLE && numFilter.getState()) return true;
-        else if (type==AttributeType.DATE) return true;
+        else if (type==AttributeType.DATE && numFilter.getState()) return true;
         /* Special MM attributes, to add if mmpatch is added to the core
         else if (mmpatch && type==AttributeType.LONG && numFilter.getState()) return true;
         else if (mmpatch && type==AttributeType.BOOLEAN && numFilter.getState()) return true;
@@ -518,6 +521,7 @@ public class QueryDialog extends BDialog {
         char newat = 'S';
         //if (mmpatch && attType.equals("BOOLEAN")) newat = 'B';
         if (attType.equals("INTEGER")) newat = 'N';
+        else if (attType.equals("DATE")) newat = 'D';
         //else if (mmpatch && attType.equals("LONG")) newat = 'N';
         else if (attType.equals("DOUBLE")) newat = 'N';
         //else if (mmpatch && attType.equals("DECIMAL")) newat = 'N';
@@ -527,7 +531,9 @@ public class QueryDialog extends BDialog {
         else if (attType.equals("GEOMETRY")) newat = 'G';
         else;
         // No type change
-        if (newat==attributeType) {if (newat=='E' || newat=='S') updateValues();}
+        if (newat==attributeType) {
+            if (newat=='S') updateValues();
+        }
         else {
             attributeType = newat;
             updateFunctions();
@@ -543,6 +549,9 @@ public class QueryDialog extends BDialog {
                 break;
             case 'N' :
                 functionCB.setContents(Function.NUMERIC_FUNCTIONS);
+                break;
+            case 'D' :
+                functionCB.setContents(Function.DATE_FUNCTIONS);
                 break;
             case 'S' :
                 functionCB.setContents(Function.STRING_FUNCTIONS);
@@ -600,6 +609,7 @@ public class QueryDialog extends BDialog {
                 operatorCB.setContents(Operator.BOOLEAN_OP);
                 break;
             case 'N' :
+            case 'D' :
                 operatorCB.setContents(Operator.NUMERIC_OP);
                 break;
             case 'G' :
@@ -610,12 +620,20 @@ public class QueryDialog extends BDialog {
     }
     
     public void operatorChanged() {
-        String op = operatorCB.getSelectedValue().toString();
+        Operator newop = (Operator)operatorCB.getSelectedValue();
         try {
-            if(((Operator)operatorCB.getSelectedValue()).type!=operator.type) {
+            if(newop.type!=operator.type) {
                 updateValues();
             }
-            operator = (Operator)operatorCB.getSelectedValue();
+            if (operator!=Operator.MATC && operator!=Operator.FIND &&
+                (newop==Operator.MATC || newop==Operator.FIND)) {
+                updateValues();
+            }
+            if ((operator==Operator.MATC || operator==Operator.FIND) &&
+                (newop!=Operator.MATC && newop!=Operator.FIND)) {
+                updateValues();
+            }
+            operator = newop;
         }
         catch(Exception e) {System.out.println(e);}
         if (operator==Operator.WDIST) {
@@ -631,8 +649,7 @@ public class QueryDialog extends BDialog {
     * Update the possible values list (may be editable or not)
     */
     private void updateValues() {
-        if(function==Function.EMPT || function==Function.SIMP ||
-           function==Function.VALI || function==Function.BNOF) {
+        if(function.type == 'B') {
                valueCB.setContents(new String[]{
             		   I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.true"),
             		   I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.false")
@@ -651,6 +668,9 @@ public class QueryDialog extends BDialog {
                 valueCB.setContents(new Object[]{"0"});
             }
             valueCB.setEditable(true);
+        }
+        else if (attributeType=='D') {
+            valueCB.setContents(new Object[]{DATE_FORMATTER.format(new Date())});
         }
         else if (attributeType=='S') {
             valueCB.setContents(availableStrings(attribute, 12));
@@ -691,7 +711,9 @@ public class QueryDialog extends BDialog {
             if (!fc.getFeatureSchema().hasAttribute(attribute)) continue;
             Iterator it = fc.iterator();
             while (it.hasNext() && set.size()<maxsize) {
-                set.add(((Feature)it.next()).getAttribute(attribute));
+                Feature f = (Feature)it.next();
+                Object val = f.getAttribute(attribute);
+                if (val != null) set.add(val);
             }
         }
         return set;
@@ -935,7 +957,7 @@ public class QueryDialog extends BDialog {
                         progressBar.setProgressText(""+count+"/"+total);
                         progressBar.setValue(count);
                     }
-                    catch(Exception e) {}
+                    catch(Exception e) {e.printStackTrace();}
                     if (cancelQuery) break;
                     
                     if (okFeatures.size()==0) continue;

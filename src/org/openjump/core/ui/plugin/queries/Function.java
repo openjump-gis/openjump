@@ -11,13 +11,28 @@ import com.vividsolutions.jump.I18N;
  */
 
 public class Function {
+    /** Function key is fully internationalized*/
     private String key;
-    public char type;  // B=boolean, N=numeric, S=string, E=enumeration, G=geometric
-    public int[] args; // arguments for the substring function
+    
+    /** Returned type : B=boolean, N=numeric, S=string, E=enumeration, G=geometric*/
+    public char type;
+    
+    /** Option function arguments (used for substring)*/
+    public int[] args;
+    
+    /** Optional function double argument (used for buffer)*/ 
     public double arg; // argument for the buffer function
+    
+    // IS NULL FUNCTION (AVAILABLE FOR ANY TYPE BUT GEOMETRY)
+    public final static Function ISNULL = new Function("isnull", 'B');
     
     // BOOLEAN FUNCTION
     public final static Function BNOF = new Function("bnof", 'B');
+    
+    // DATE FUNCTION
+    public final static Function DDAY = new Function("dday", 'D');
+    public final static Function DYEA = new Function("dyea", 'D');
+    public final static Function DNOF = new Function("dnof", 'D');
     
     // NUMERIC FUNCTION
     public final static Function NNOF = new Function("nnof", 'N');
@@ -41,14 +56,21 @@ public class Function {
     public final static Function SIMP = new Function("simp", 'B');
     public final static Function VALI = new Function("vali", 'B');
     
-    public static Function[] BOOLEAN_FUNCTIONS = new Function[] {BNOF};
+    /** Functions to be applied to Boolean attributes (currently not possible)*/
+    public static Function[] BOOLEAN_FUNCTIONS = new Function[] {BNOF, ISNULL};
     
-    public static Function[] NUMERIC_FUNCTIONS = new Function[] {NNOF};
+    /** Functions to be applied to Date attributes (currently not possible)*/
+    public static Function[] DATE_FUNCTIONS = new Function[] {DNOF, DDAY, DYEA, ISNULL};
     
+    /** Functions to be applied to numeric attributes*/
+    public static Function[] NUMERIC_FUNCTIONS = new Function[] {NNOF, ISNULL};
+    
+    /** Functions to be applied to String attributes*/ 
     public static Function[] STRING_FUNCTIONS = new Function[] {
-            SNOF, TRIM, SUBS, LENG
+            SNOF, TRIM, SUBS, LENG, ISNULL
     };
-            
+    
+    /** Functions to be applied to Geometry attributes*/
     public static Function[] GEOMETRIC_FUNCTIONS = new Function[] {
             GNOF, LENG, AREA, NBPT, NBPA, BUFF, CENT, EMPT, SIMP, VALI
     };    

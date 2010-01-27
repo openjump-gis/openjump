@@ -4,7 +4,7 @@ import com.vividsolutions.jump.I18N;
 
 /**
  * Operator contains the definition of common operators.
- * @author Michaël MICHAUD
+ * @author Micha&euml;l MICHAUD
  * @version 0.2 (16 Oct 2005)
  */
 public class Operator {
