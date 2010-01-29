@@ -384,6 +384,50 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
                     return oldValue;
                 }
             }
+            
+            // [mmichaud 2010-01-29] AttributeType.OBJECT case added
+            if (oldType == AttributeType.OBJECT) {
+                if (newType == AttributeType.STRING) {
+                    return oldValue.toString();
+                }
+
+                if (newType == AttributeType.INTEGER) {
+                    if (oldValue instanceof Number) {
+                        return new Integer(((Number)oldValue).intValue());
+                    }
+                    throw new ConversionException(
+                    		I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-integer")+" \"" +
+                        limitLength(oldValue.toString()) + "\" (" + name + ")");
+                }
+
+                if (newType == AttributeType.DOUBLE) {
+                    if (oldValue instanceof Number) {
+                        return new Double(((Number)oldValue).doubleValue());
+                    }
+                    throw new ConversionException(
+                    		I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-double")+" \"" +
+                        limitLength(oldValue.toString()) + "\" (" + name + ")");
+                }
+
+                if (newType == AttributeType.GEOMETRY) {
+                    if (oldValue instanceof Geometry) return oldValue;
+                    throw new ConversionException(
+                    	I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-geometry")+" \"" +
+                        limitLength(oldValue.toString()) + "\" (" + name + ")");
+                }
+
+                if (newType == AttributeType.DATE) {
+                    if (oldValue instanceof Date) return oldValue;
+                    throw new ConversionException(
+                    	I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-date")+" \"" +
+                        limitLength(oldValue.toString()) + "\" (" + name + ")");
+                }
+            }
+            
+            if (newType == AttributeType.OBJECT) {
+                return oldValue;
+            }
+            // end mmichaud
 
             Assert.shouldNeverReachHere(newType.toString());
 

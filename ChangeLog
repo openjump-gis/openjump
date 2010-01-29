@@ -1,3 +1,7 @@
+2010-01-29 michaudm <michael.michaud@free.fr>
+    com.vividsolutions.jump.workbench.ui.plugin.ViewSchemaPlugIn
+    can process AttributeType.OBJECT
+
 2010-01-25 michaudm <michael.michaud@free.fr>
     com.vividsolutions.jump.workbench.ui.plugin.datastore.RunDataStoreQueryPlugIn
     cancel the current query if the thread is interrupted
