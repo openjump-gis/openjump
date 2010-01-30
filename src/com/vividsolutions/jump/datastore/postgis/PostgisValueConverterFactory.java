@@ -57,9 +57,8 @@ public class PostgisValueConverterFactory
         throws IOException, SQLException, ParseException
     {
       Object valObj = rs.getObject(columnIndex);
-      String s = valObj.toString();
-      Geometry geom = wktReader.read(s);
-      return geom;
+      if (valObj == null) return wktReader.read("GEOMETRYCOLLECTION EMPTY");
+      else return wktReader.read(valObj.toString());
     }
   }
 
@@ -69,11 +68,9 @@ public class PostgisValueConverterFactory
     public Object getValue(ResultSet rs, int columnIndex)
         throws IOException, SQLException, ParseException
     {
-      //Object obj = rs.getObject(columnIndex);
-      //byte[] bytes = (byte[]) obj;
       byte[] bytes = rs.getBytes(columnIndex);
-      Geometry geom = wkbReader.read(bytes);
-      return geom;
+      if (bytes == null) return wktReader.read("GEOMETRYCOLLECTION EMPTY");
+      else return wkbReader.read(bytes);
     }
   }
 }
