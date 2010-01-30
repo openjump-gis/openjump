@@ -196,7 +196,7 @@ public class FeatureCollectionTools extends ToolToMakeYourLifeEasier {
     
     /**
      * Method to calculate means (or modes) for the attributes given. If means or modes 
-     * are calulated depends on the attribute type of each given given attribute.
+     * are calulated depends on the attribute type of each given attribute.
      * This method is hopefully faster, than calculation each mean (mode) in an extra loop,
      * if there are more means (modes) to calculate than one...
      *@param features list of features to calculate mean/modes for
@@ -240,15 +240,15 @@ public class FeatureCollectionTools extends ToolToMakeYourLifeEasier {
         for (int i=0; i<featArray.length; i++){
             currFeat = featArray[i];
             for (int j=0; j<numAttrs; j++){
-                if (atIsNumeric[j]){
+                if (currFeat.getAttribute(attrs[j]) == null){
+                    // value is skipped
+                    FeatureCollectionTools.logger.printMinorError("skipped a value (NULL), when calculating mean for " + attrs[j]);
+                }
+                else if (atIsNumeric[j]){
                     sum = ((Double)sumsOrMaps[j]);
-                    if (currFeat.getAttribute(attrs[j]) != null){
-                        sumsOrMaps[j] = new Double(sum.doubleValue() + ObjectComparator.getDoubleValue(currFeat.getAttribute(attrs[j])));
-                    } else {
-                        // value is skipped
-                        FeatureCollectionTools.logger.printMinorError("skipped a value (NULL), when calculating mean for " + attrs[j]);
-                    }
-                } else {
+                    sumsOrMaps[j] = new Double(sum.doubleValue() + ObjectComparator.getDoubleValue(currFeat.getAttribute(attrs[j])));
+                }
+                else {
                     value = currFeat.getAttribute(attrs[j]);
                     
                     if (value.getClass().equals(String.class)){

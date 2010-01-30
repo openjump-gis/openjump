@@ -4,6 +4,8 @@
     and DATE to Date (only TimeStamp were converted to Date before)
     * com.vividsolutions.jump.datastore.postgis.PostgisValueConverterFactory
     now returns GEOMETRYCOLLECTION EMPTY for null values
+    * org.openjump.core.apitools.FeatureCollectionTools
+    fix bug throwing NPE in the case of null non-numeric attribute values 
 
 2010-01-29 michaudm <michael.michaud@free.fr>
     com.vividsolutions.jump.workbench.ui.plugin.ViewSchemaPlugIn
