@@ -66,7 +66,7 @@ public abstract class AbstractZoomTool extends DragTool {
 	protected Image origImage;
 	protected Image auxImage = null;
 	protected double scale = 1d;
-	protected int mouseWheelCount = 1;
+	protected int mouseWheelCount = 0;
 	protected Point2D.Double zoomTo = new Point2D.Double(0,0);
     private boolean isAnimatingZoom = false;  //deafult to no zoom animation
 	private Timer mouseWheelUpdateTimer = null;
@@ -92,24 +92,31 @@ public abstract class AbstractZoomTool extends DragTool {
     }
         
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		int nclicks = e.getWheelRotation() * mouseWheelCount;  //negative is up/away
+		int nclicks = e.getWheelRotation();  //negative is up/away
+		mouseWheelCount = mouseWheelCount + nclicks;
+		if (mouseWheelCount == 0)
+			scale = 1d;
+		else if (mouseWheelCount > 0)
+			scale = mouseWheelCount*WHEEL_ZOOM_IN_FACTOR;
+		else
+			scale = 1 / (-mouseWheelCount*WHEEL_ZOOM_IN_FACTOR);
         try {
-			scale = (nclicks > 0)
-                ? (1 / (Math.abs(nclicks)*WHEEL_ZOOM_IN_FACTOR)) : 
-                	(Math.abs(nclicks)*WHEEL_ZOOM_IN_FACTOR);
+//			scale = (mouseWheelCount > 0)
+//			? 1 / mouseWheelCount*WHEEL_ZOOM_IN_FACTOR : 
+//				mouseWheelCount*WHEEL_ZOOM_IN_FACTOR;
 //			zoomAt(e.getPoint(), zoomFactor, false); //zoom to cursor
 			
 			if (mouseWheelUpdateTimer == null) {
 				RenderingManager renderManager = getPanel().getRenderingManager();
 				renderManager.setPaintingEnabled(false);
-				mouseWheelUpdateTimer = new Timer(500,
+				mouseWheelUpdateTimer = new Timer(700,
 						new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						try {
 							zoomAt(getCentre(), scale, false);
 							mouseWheelUpdateTimer.stop();
 							mouseWheelUpdateTimer = null;
-							mouseWheelCount = 1;
+							mouseWheelCount = 0;
 							origImage = null;
 							RenderingManager renderManager = getPanel().getRenderingManager();
 							renderManager.setPaintingEnabled(true);
@@ -119,11 +126,11 @@ public abstract class AbstractZoomTool extends DragTool {
 					}
 				});
 				mouseWheelUpdateTimer.start();
-				mouseWheelUpdateTimer.setCoalesce(true);
+				mouseWheelUpdateTimer.setRepeats(false);
 				cacheImage();
 				scaleImageAtCentre(scale);
 			} else {
-				mouseWheelCount++;
+				mouseWheelUpdateTimer.restart();
 				scaleImageAtCentre(scale);
 			}
         } catch (Throwable t) {
