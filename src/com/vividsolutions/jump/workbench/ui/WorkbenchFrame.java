@@ -35,6 +35,7 @@ import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -80,11 +81,13 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
+import org.openjump.core.ui.plugin.view.EasyPanel;
 import org.openjump.swing.factory.component.ComponentFactory;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.util.Block;
 import com.vividsolutions.jump.util.CollectionUtil;
 import com.vividsolutions.jump.util.StringUtil;
@@ -107,6 +110,7 @@ import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
+import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ChoosableStyle;
 import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
 
@@ -1188,6 +1192,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
         getLayersWithModifiedFeatureCollections())) {
         // PersistentBlackboardPlugIn listens for when the workbench is
         // hidden [Jon Aquino]
+    	saveWindowState();
         setVisible(false);
         // Invoke System#exit after all pending GUI events have been
         // fired
@@ -1298,4 +1303,56 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
     this.taskFrameFactory = taskFrameFactory;
   }
   
+  public final static String MAXIMIZED_KEY = WorkbenchFrame.class.getName()+" - MAXIMIZED_KEY";
+  public final static String HORIZONTAL_KEY = WorkbenchFrame.class.getName()+" - HORIZONTAL_KEY";
+  public final static String VERTICAL_KEY = WorkbenchFrame.class.getName()+" - VERTICAL_KEY";
+  public final static String WIDTH_KEY = WorkbenchFrame.class.getName()+" - WIDTH_KEY";
+  public final static String HEIGHT_KEY = WorkbenchFrame.class.getName()+" - HEIGHT_KEY";
+
+  public void saveWindowState() {
+	  boolean maximized = (this.getExtendedState() == MAXIMIZED_BOTH);
+	  Blackboard blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
+	  blackboard.put(MAXIMIZED_KEY, maximized);	  
+	  Point p = this.getLocation(null);
+	  blackboard.put(HORIZONTAL_KEY, p.x);	    
+	  blackboard.put(VERTICAL_KEY, p.y);	 
+	  Dimension d = this.getSize();
+	  blackboard.put(WIDTH_KEY, d.width);	    
+	  blackboard.put(HEIGHT_KEY, d.height);	 
+  }
+
+  public boolean recallMaximizedState() {
+	  Blackboard blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
+	  boolean maximized = false;
+	  if (blackboard.get(MAXIMIZED_KEY) == null) {
+		  blackboard.put(MAXIMIZED_KEY, maximized);
+	  }
+	  maximized = ((Boolean) blackboard.get(MAXIMIZED_KEY)).booleanValue();
+	  return maximized; 
+  }
+
+  public Point recallWindowLocation() {
+	  Blackboard blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
+	  Point p = new Point(0,0);
+	  if (blackboard.get(HORIZONTAL_KEY) == null) {
+		  blackboard.put(HORIZONTAL_KEY, p.x);
+		  blackboard.put(VERTICAL_KEY, p.y);
+	  }
+	  p.x = ((Integer) blackboard.get(HORIZONTAL_KEY)).intValue();
+	  p.y = ((Integer) blackboard.get(VERTICAL_KEY)).intValue();
+	  return p; 
+  }
+
+  public Dimension recallWindowSize() {
+	  Blackboard blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
+	  Dimension d = new Dimension(900, 665);
+	  if (blackboard.get(WIDTH_KEY) == null) {
+		  blackboard.put(WIDTH_KEY, d.width);
+		  blackboard.put(HEIGHT_KEY, d.height);
+	  }
+	  d.width = ((Integer) blackboard.get(WIDTH_KEY)).intValue();
+	  d.height = ((Integer) blackboard.get(HEIGHT_KEY)).intValue();
+	  return d; 
+  }
+
 }

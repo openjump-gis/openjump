@@ -286,6 +286,12 @@ public class JUMPWorkbench {
 					splashWindow, taskMonitor);
 
 			setup.setup(workbench.context);
+			//must wait until after setup initializes the persistent blackboard to recall settings			
+			WorkbenchFrame frame = workbench.getFrame();
+			frame.setLocation(frame.recallWindowLocation());
+			frame.setSize(frame.recallWindowSize());
+			if (frame.recallMaximizedState())
+				frame.setExtendedState(Frame.MAXIMIZED_BOTH);
 
 			workbench.context.getWorkbench().getPlugInManager().load();
       OpenJumpConfiguration.postExtensionInitialization(workbench.context);
