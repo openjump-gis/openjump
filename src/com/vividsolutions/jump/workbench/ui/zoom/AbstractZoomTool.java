@@ -59,7 +59,7 @@ import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
 
 public abstract class AbstractZoomTool extends DragTool {
 
-    static final double WHEEL_ZOOM_IN_FACTOR = 1.25;
+    static final double WHEEL_ZOOM_IN_FACTOR = 1.15;
     static final int BOX_TOLERANCE = 4;
     static final double ZOOM_IN_FACTOR = 2;
     
