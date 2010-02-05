@@ -55,6 +55,7 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
 import com.vividsolutions.jump.workbench.ui.renderer.ThreadQueue;
+import com.vividsolutions.jump.workbench.ui.zoom.AbstractZoomTool;
 /**
  * Zooms the image in the current task window.
  * Uses raster scaling operations.
@@ -62,18 +63,12 @@ import com.vividsolutions.jump.workbench.ui.renderer.ThreadQueue;
  * @author Larry Becker
  * @version 1.01
  */
-public class ZoomRealtimeTool extends DragTool
+public class ZoomRealtimeTool extends AbstractZoomTool
 {
   private static final double ZOOM_FACTOR = 5d;
   private static final double ZOOM_OUT_LIMIT = 0.1d;
   private boolean dragging = false;
-  private Image origImage;
-  private Image auxImage = null;
-  private double scale = 1d;
-  private Point2D.Double zoomTo = new Point2D.Double(0,0);
   private boolean rightMouse = false;
-//  private RenderThreadListener renderThreadListener = new RenderThreadListener();
-  
   private static final String sName = I18N.get("org.openjump.core.ui.plugin.tools.ZoomRealtimeTool.Zoom-Realtime");
 
   public ZoomRealtimeTool() {
@@ -85,7 +80,6 @@ public class ZoomRealtimeTool extends DragTool
 
   public Icon getIcon() {
     return IconLoader.icon("Magnify3.gif");
-	//return IconLoaderFamFam.icon("map_magnify.png");
   }
 
   public boolean isRightMouseButtonUsed() {                              
@@ -156,12 +150,6 @@ public class ZoomRealtimeTool extends DragTool
 			});
    }
 
-  private void cacheImage() {
-	origImage = createImageIfNeeded(origImage);
-    getPanel().paint(origImage.getGraphics());
-    
-  }
-
   private void drawImage(Point p) throws NoninvertibleTransformException {
 	double xdrag = p.getX() - getViewSource().getX(); 
 	double ydrag = p.getY() - getViewSource().getY(); 
@@ -190,36 +178,8 @@ public class ZoomRealtimeTool extends DragTool
 		dy += ydrag;
 	else
 		dx += xdrag;		
-    auxImage = createImageIfNeeded(auxImage);
-    Graphics2D g = (Graphics2D)auxImage.getGraphics();
-    RenderingHints rh = new RenderingHints(RenderingHints.KEY_INTERPOLATION, 
-    		RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-    g.setRenderingHints(rh);
-    g.setComposite(AlphaComposite.Src);
-    g.setColor(Color.WHITE);
-    g.fillRect(0, 0, auxImage.getWidth(getPanel()), auxImage.getHeight(getPanel()));
-    g.drawImage(origImage,(int) dx,(int) dy,(int) w2,(int) h2, getPanel());
-    getPanel().getGraphics().drawImage(auxImage, 0, 0, getPanel());
-  }
   
-  /*
-   * Creates a new BufferedImage if the given image doesn't exist
-   * or is the wrong size for the panel.
-   * @param currImage an image buffer
-   * @return a new image, or the existing one if it's compatible
-   */
-  private Image createImageIfNeeded(Image currImage)
-  {
-	if (currImage == null
-			|| currImage.getHeight(null) != getPanel().getHeight()
-			|| currImage.getWidth(null) != getPanel().getWidth()) {
-	    Graphics2D g = (Graphics2D) getPanel().getGraphics();
-	    Image img = g.getDeviceConfiguration().createCompatibleImage(
-	    		getPanel().getWidth(), getPanel().getHeight(), Transparency.OPAQUE);
-	    return img;
-
+	 drawImage((int) dx, (int) dy, scale);
 	}
-    	//return getPanel().createBlankPanelImage();
-	return currImage;
-  }
+
 }
