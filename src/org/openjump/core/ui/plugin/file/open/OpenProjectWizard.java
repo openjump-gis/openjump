@@ -1,5 +1,7 @@
 package org.openjump.core.ui.plugin.file.open;
 
+import java.awt.Dimension;
+import java.awt.Point;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -9,11 +11,13 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import org.openjump.core.ui.plugin.file.FindFile;
 import org.openjump.core.ui.plugin.file.OpenRecentPlugIn;
 import org.openjump.core.ui.swing.wizard.AbstractWizardGroup;
 
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.coordsys.CoordinateSystemRegistry;
 import com.vividsolutions.jump.feature.FeatureCollection;
@@ -31,6 +35,7 @@ import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.model.Task;
 import com.vividsolutions.jump.workbench.plugin.PlugInManager;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.TaskFrame;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.WorkbenchContextReference;
@@ -50,6 +55,8 @@ public class OpenProjectWizard extends AbstractWizardGroup {
   private Task newTask;
 
   private File[] files;
+
+  private Envelope savedTaskEnvelope = null;
 
   /**
    * Construct a new OpenFileWizard.
@@ -115,8 +122,25 @@ public class OpenProjectWizard extends AbstractWizardGroup {
         newTask.setName(GUIUtil.nameWithoutExtension(file));
         newTask.setProjectFile(file);
         newTask.setProperties(sourceTask.getProperties());
+        
+        newTask.setTaskWindowLocation(sourceTask.getTaskWindowLocation());
+        newTask.setTaskWindowSize(sourceTask.getTaskWindowSize());
+        newTask.setMaximized(sourceTask.getMaximized());
+        newTask.setSavedViewEnvelope(sourceTask.getSavedViewEnvelope());
 
-        workbenchFrame.addTaskFrame(newTask);
+        TaskFrame frame = workbenchFrame.addTaskFrame(newTask);
+        Dimension size = newTask.getTaskWindowSize();
+        if (size != null)
+        	frame.setSize(size);
+        Point location = newTask.getTaskWindowLocation();
+        if ( (location != null)
+        		&& (location.x < workbenchFrame.getSize().width)
+        		&& (location.y < workbenchFrame.getSize().height))
+        	frame.setLocation(location);
+        if (newTask.getMaximized())
+			frame.setMaximum(true);
+        savedTaskEnvelope = newTask.getSavedViewEnvelope();
+
         LayerManager sourceLayerManager = sourceTask.getLayerManager();
         LayerManager newLayerManager = newTask.getLayerManager();
         CoordinateSystemRegistry crsRegistry = CoordinateSystemRegistry.instance(workbenchContext.getBlackboard());
@@ -153,6 +177,7 @@ public class OpenProjectWizard extends AbstractWizardGroup {
     FindFile findFile = new FindFile(workbenchFrame);
     boolean displayDialog = true;
 
+    try {				
     List<Category> categories = sourceLayerManager.getCategories();
     for (Category sourceLayerCategory : categories) {
       newLayerManager.addCategory(sourceLayerCategory.getName());
@@ -209,6 +234,22 @@ public class OpenProjectWizard extends AbstractWizardGroup {
         newLayerManager.addLayerable(sourceLayerCategory.getName(), layerable);
       }
     }
+	} finally {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					if (savedTaskEnvelope == null)
+					workbenchContext.getLayerViewPanel().getViewport()
+							.zoomToFullExtent();
+					else
+						workbenchContext.getLayerViewPanel().getViewport().zoom(savedTaskEnvelope);
+					workbenchContext = null;  //don't keep reference
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
+	}
   }
 
   public static void load(Layer layer, CoordinateSystemRegistry registry,

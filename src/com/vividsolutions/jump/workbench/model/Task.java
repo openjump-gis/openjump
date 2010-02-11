@@ -32,6 +32,8 @@
 
 package com.vividsolutions.jump.workbench.model;
 
+import java.awt.Dimension;
+import java.awt.Point;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,6 +44,8 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import com.vividsolutions.jts.geom.Envelope;
+
 /**
  * Whatever the user needs to do a particular task. Currently a thin wrapper
  * around a LayerManager.
@@ -49,6 +53,10 @@ import javax.xml.namespace.QName;
 // I wonder if this class should be named "Project" instead. [Jon Aquino]
 public class Task implements LayerManagerProxy {
   private String name = "";
+	private Point taskWindowLocation = null;
+	private Dimension taskWindowSize = null;
+	private boolean maximized = false;
+	private Envelope savedViewEnvelope = null;
 
   private LayerManager layerManager;
 
@@ -180,5 +188,126 @@ public class Task implements LayerManagerProxy {
   public static interface NameListener {
     public void taskNameChanged(String name);
   }
+
+	/*
+	 * The following getters and setters are for use by Java2XML to convert to and from XML
+	 */
+  
+	public Point getTaskWindowLocation() {
+		return taskWindowLocation;
+	}
+
+	public int getTaskWindowLocationX() {
+		return taskWindowLocation.x;
+	}
+
+	public int getTaskWindowLocationY() {
+		return taskWindowLocation.y;
+	}
+
+	public void setTaskWindowLocation(Point taskWindowLocation) {
+		this.taskWindowLocation = taskWindowLocation;
+	}
+
+	public void setTaskWindowLocationX(String x) {
+		if (taskWindowLocation == null)
+			taskWindowLocation = new Point();
+		this.taskWindowLocation.x = Integer.valueOf(x);
+	}
+	
+	public void setTaskWindowLocationY(String y) {
+		if (taskWindowLocation == null)
+			taskWindowLocation = new Point();
+		this.taskWindowLocation.y = Integer.valueOf(y);
+	}
+
+	public Dimension getTaskWindowSize() {
+		return taskWindowSize;
+	}
+
+	public int getTaskWindowSizeWidth() {
+		return taskWindowSize.width;
+	}
+
+	public int getTaskWindowSizeHeight() {
+		return taskWindowSize.height;
+	}
+
+	public void setTaskWindowSize(Dimension taskWindowSize) {
+		this.taskWindowSize = taskWindowSize;
+	}
+	
+	public void setTaskWindowSizeWidth(String width) {
+		if (taskWindowSize == null)
+			taskWindowSize = new Dimension();
+		taskWindowSize.width = Integer.valueOf(width);
+	}
+	
+	public void setTaskWindowSizeHeight(String height) {
+		if (taskWindowSize == null)
+			taskWindowSize = new Dimension();
+		this.taskWindowSize.height = Integer.valueOf(height);
+	}
+
+	public boolean getMaximized() {
+		return maximized;
+	}
+
+	public void setMaximized(boolean isMaximized) {
+		this.maximized = isMaximized;
+	}
+
+	public Envelope getSavedViewEnvelope() {
+		return savedViewEnvelope;
+	}
+	
+	public double getTaskWindowZoomLeft() {
+		return savedViewEnvelope.getMinX();
+	}
+
+	public double getTaskWindowZoomRight() {
+		return savedViewEnvelope.getMaxX();
+	}
+
+	public double getTaskWindowZoomBottom() {
+		return savedViewEnvelope.getMinY();
+	}
+
+	public double getTaskWindowZoomTop() {
+		return savedViewEnvelope.getMaxY();
+	}
+
+
+	public void setSavedViewEnvelope(Envelope savedViewEnvelope) {
+		this.savedViewEnvelope = savedViewEnvelope;
+	}
+	
+	private double left = 0d;
+	private double right = 0d;
+	private double bottom = 0d;
+	private double top = 0d;
+	
+	public void setTaskWindowZoomLeft(String left) {
+		this.left =Double.valueOf(left);
+	}
+
+	public void setTaskWindowZoomRight(String right) {
+		this.right =Double.valueOf(right);
+	}
+
+	public void setTaskWindowZoomBottom(String bottom) {
+		this.bottom =Double.valueOf(bottom);
+	}
+
+	/**
+	 * This method must be called after all three previous have been done.
+	 * Java2XML does this.  This is necessary because all parameters must be known
+	 * before an Envelope can be created (unlike Point and Dimension).
+	 * @param top
+	 */
+	public void setTaskWindowZoomTop(String top) {
+		this. top =Double.valueOf(top);
+		savedViewEnvelope = new Envelope(this.left, this.right, this.top, this.bottom);
+	}
 
 }

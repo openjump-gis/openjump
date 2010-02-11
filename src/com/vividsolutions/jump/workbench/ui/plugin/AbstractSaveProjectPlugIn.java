@@ -32,11 +32,16 @@
 
 package com.vividsolutions.jump.workbench.ui.plugin;
 
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.io.File;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+
+import javax.swing.JInternalFrame;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.FileUtil;
@@ -59,6 +64,19 @@ public abstract class AbstractSaveProjectPlugIn extends AbstractPlugIn {
         //First use StringWriter to make sure no errors occur before we touch the
         //original file -- we don't want to damage the original if an error occurs.
         //[Jon Aquino]
+    	JInternalFrame taskWindow = frame.getActiveInternalFrame();
+        task.setMaximized(taskWindow.isMaximum());
+        if (taskWindow.isMaximum()) {  //save the rectangle that it would be restored to
+        	Rectangle normalBounds = taskWindow.getNormalBounds();
+        	task.setTaskWindowLocation(new Point(normalBounds.x,normalBounds.y));
+        	task.setTaskWindowSize(new Dimension(normalBounds.width,normalBounds.height));
+        } else {
+        	task.setTaskWindowLocation(taskWindow.getLocation());
+        	task.setTaskWindowSize(taskWindow.getSize());
+        }
+        task.setSavedViewEnvelope(frame.getContext().getLayerViewPanel()
+            	.getViewport().getEnvelopeInModelCoordinates());
+
         StringWriter stringWriter = new StringWriter();
 
         try {
