@@ -96,10 +96,10 @@ public abstract class AbstractZoomTool extends DragTool {
 		mouseWheelCount = mouseWheelCount + nclicks;
 		if (mouseWheelCount == 0)
 			scale = 1d;
-		else if (mouseWheelCount > 0)
-			scale = mouseWheelCount*WHEEL_ZOOM_IN_FACTOR;
+		else if (mouseWheelCount < 0)
+			scale = Math.abs(mouseWheelCount)*WHEEL_ZOOM_IN_FACTOR;
 		else
-			scale = 1 / (-mouseWheelCount*WHEEL_ZOOM_IN_FACTOR);
+			scale = 1 / (mouseWheelCount*WHEEL_ZOOM_IN_FACTOR);
         try {
 //			scale = (mouseWheelCount > 0)
 //			? 1 / mouseWheelCount*WHEEL_ZOOM_IN_FACTOR : 
