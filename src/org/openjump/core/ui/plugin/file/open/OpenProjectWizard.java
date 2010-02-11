@@ -238,12 +238,8 @@ public class OpenProjectWizard extends AbstractWizardGroup {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					if (savedTaskEnvelope == null)
-					workbenchContext.getLayerViewPanel().getViewport()
-							.zoomToFullExtent();
-					else
+					if (savedTaskEnvelope != null)
 						workbenchContext.getLayerViewPanel().getViewport().zoom(savedTaskEnvelope);
-					workbenchContext = null;  //don't keep reference
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
