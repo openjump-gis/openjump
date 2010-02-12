@@ -45,36 +45,36 @@ import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.renderer.SimpleRenderer;
 
 public class ScaleBarRenderer extends SimpleRenderer {
-    public final static String CONTENT_ID = "SCALE_BAR";
+    public static String CONTENT_ID = "SCALE_BAR";
     /**
      *  Height of the increment boxes, in view-space units.
      */
-    private final static int BAR_HEIGHT = 10;
-    private final static Color FILL2 = new Color(255, 204, 204);
-    private final static Color FILL1 = Color.white;
+    private static int BAR_HEIGHT = 10;
+    private static Color FILL2 = new Color(255, 204, 204);
+    private static Color FILL1 = Color.white;
 
     /**
      *  Distance from the right edge, in view-space units.
      */
-    private final static int HORIZONTAL_MARGIN = 3;
+    private static int HORIZONTAL_MARGIN = 3;
 
     /**
      *  In view-space units; the actual increment may be a bit larger or smaller
      *  than this amount.
      */
-    private final static int IDEAL_INCREMENT = 75;
-    private final static Color LINE_COLOR = Color.black;
-    private final static int TEXT_BOTTOM_MARGIN = 1;
-    private final static int UNIT_TEXT_BOTTOM_MARGIN = 1;
-    private final static Color TEXT_COLOR = Color.black;
-    private final static Color UNIT_TEXT_COLOR = Color.blue;
+    private static int IDEAL_INCREMENT = 75;
+    private static Color LINE_COLOR = Color.black;
+    private static int TEXT_BOTTOM_MARGIN = 1;
+    private static int UNIT_TEXT_BOTTOM_MARGIN = 1;
+    private static Color TEXT_COLOR = Color.black;
+    private static Color UNIT_TEXT_COLOR = Color.blue;
 
     /**
      *  Distance from the bottom edge, in view-space units.
      */
-    private final static int VERTICAL_MARGIN = 3;
-    private final static String ENABLED_KEY = ScaleBarRenderer.class +" - ENABLED";
-    private final static int INCREMENT_COUNT = 5;
+    private static int VERTICAL_MARGIN = 3;
+    private static String ENABLED_KEY = ScaleBarRenderer.class +" - ENABLED";
+    private static int INCREMENT_COUNT = 5;
     private Font FONT = new Font("Dialog", Font.PLAIN, 10);
     private Font UNIT_FONT = new Font("Dialog", Font.BOLD, 11);
 
@@ -172,4 +172,84 @@ public class ScaleBarRenderer extends SimpleRenderer {
     private double x(int i, RoundQuantity increment, int incrementCount, double scale) {
         return HORIZONTAL_MARGIN + (i * increment.getModelValue() * scale);
     }
+
+	public static int getBAR_HEIGHT() {
+		return BAR_HEIGHT;
+	}
+
+	public static void setBAR_HEIGHT(int bar_height) {
+		BAR_HEIGHT = bar_height;
+	}
+
+	public static Color getFILL1() {
+		return FILL1;
+	}
+
+	public static void setFILL1(Color fill1) {
+		FILL1 = fill1;
+	}
+
+	public static Color getFILL2() {
+		return FILL2;
+	}
+
+	public static void setFILL2(Color fill2) {
+		FILL2 = fill2;
+	}
+
+	public static int getHORIZONTAL_MARGIN() {
+		return HORIZONTAL_MARGIN;
+	}
+
+	public static void setHORIZONTAL_MARGIN(int horizontal_margin) {
+		HORIZONTAL_MARGIN = horizontal_margin;
+	}
+
+	public static Color getLINE_COLOR() {
+		return LINE_COLOR;
+	}
+
+	public static void setLINE_COLOR(Color line_color) {
+		LINE_COLOR = line_color;
+	}
+
+	public static int getTEXT_BOTTOM_MARGIN() {
+		return TEXT_BOTTOM_MARGIN;
+	}
+
+	public static void setTEXT_BOTTOM_MARGIN(int text_bottom_margin) {
+		TEXT_BOTTOM_MARGIN = text_bottom_margin;
+	}
+
+	public static Color getTEXT_COLOR() {
+		return TEXT_COLOR;
+	}
+
+	public static void setTEXT_COLOR(Color text_color) {
+		TEXT_COLOR = text_color;
+	}
+
+	public static int getUNIT_TEXT_BOTTOM_MARGIN() {
+		return UNIT_TEXT_BOTTOM_MARGIN;
+	}
+
+	public static void setUNIT_TEXT_BOTTOM_MARGIN(int unit_text_bottom_margin) {
+		UNIT_TEXT_BOTTOM_MARGIN = unit_text_bottom_margin;
+	}
+
+	public static Color getUNIT_TEXT_COLOR() {
+		return UNIT_TEXT_COLOR;
+	}
+
+	public static void setUNIT_TEXT_COLOR(Color unit_text_color) {
+		UNIT_TEXT_COLOR = unit_text_color;
+	}
+
+	public static int getVERTICAL_MARGIN() {
+		return VERTICAL_MARGIN;
+	}
+
+	public static void setVERTICAL_MARGIN(int vertical_margin) {
+		VERTICAL_MARGIN = vertical_margin;
+	}
 }
