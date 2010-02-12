@@ -85,6 +85,10 @@ public class XML2Java extends XMLBinder {
         visit(specElements, new SpecVisitor() {
             private void fillerTagSpecFound(String xmlName,
                     List specChildElements) throws Exception {
+                if (tag.getChildren(xmlName).size() == 0) {
+                	System.err.println("WARNING: Expected 1 <" + xmlName + "> tag but found None");
+                	return;
+                }
                 if (tag.getChildren(xmlName).size() != 1) {
                     throw new XMLBinderException("Expected 1 <" + xmlName
                             + "> tag but found "
