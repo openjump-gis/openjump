@@ -144,7 +144,12 @@ public class OpenProjectWizard extends AbstractWizardGroup {
         LayerManager sourceLayerManager = sourceTask.getLayerManager();
         LayerManager newLayerManager = newTask.getLayerManager();
         CoordinateSystemRegistry crsRegistry = CoordinateSystemRegistry.instance(workbenchContext.getBlackboard());
+        
+        workbenchContext.getLayerViewPanel().setDeferLayerEvents(true);
+        
         loadLayers(sourceLayerManager, newLayerManager, crsRegistry, monitor);
+
+        workbenchContext.getLayerViewPanel().setDeferLayerEvents(false);
 
         OpenRecentPlugIn.get(workbenchContext).addRecentProject(file);
 
@@ -238,7 +243,9 @@ public class OpenProjectWizard extends AbstractWizardGroup {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					if (savedTaskEnvelope != null)
+					if (savedTaskEnvelope == null)
+						workbenchContext.getLayerViewPanel().getViewport().zoomToFullExtent();
+					else
 						workbenchContext.getLayerViewPanel().getViewport().zoom(savedTaskEnvelope);
 				} catch (Exception ex) {
 					ex.printStackTrace();
