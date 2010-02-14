@@ -40,6 +40,7 @@ import javax.swing.JComponent;
 import javax.swing.JMenuBar;
 import javax.swing.JPopupMenu;
 
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
@@ -51,7 +52,7 @@ import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxPlugIn;
 
 public class EasyButtonsPlugin extends ToolboxPlugIn {
 
-	private String TOOLBOX_NAME = "EZ Buttons";
+	private String TOOLBOX_NAME = I18N.get("org.openjump.core.ui.plugin.view.EasyButtonsPlugin.EZ-Buttons");
 	
 	private JPopupMenu popup = new JPopupMenu();
 

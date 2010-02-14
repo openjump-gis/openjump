@@ -55,6 +55,7 @@ import javax.swing.event.MenuListener;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
@@ -70,9 +71,12 @@ public class EasyPanel extends JPanel {
 
     public final static String EZ_LIST_KEY = EasyPanel.class.getName()+"EZ_LIST_KEY";
 
-    private final String UNUSED_BUTTON_NAME = "Right Click to Assign Button F";
-    private final String RIGHT_CLICK_MENU = "Map Right Click";
+    //private final String UNUSED_BUTTON_NAME = "Right Click to Assign Button F";
+    //private final String RIGHT_CLICK_MENU = "Map Right Click";
 
+    private String UNUSED_BUTTON_NAME = I18N.get("org.openjump.core.ui.plugin.view.EasyPanel.Right-Click-to-Assign-Button-F");
+    private String RIGHT_CLICK_MENU = I18N.get("org.openjump.core.ui.plugin.view.EasyPanel.Map-Right-Click");
+    
     private JPanel buttonPanel = new JPanel();
     private GridLayout gridLayout1 = new GridLayout();
     private final int MAX_BUTTONS = 10;
