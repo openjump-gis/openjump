@@ -1,3 +1,29 @@
+2010-02-12 beckerl <becker.larry@gmail.com>
+	Scalebar can now be modified with BeanShellScripts since getters/setters have been added.
+	jump.workbench.ui.plugin.scalebar.ScaleBarRenderer
+	
+2010-02-12 beckerl <becker.larry@gmail.com>
+	Added optimization to stop drawing while loading layers.  
+	This significantly speeds up loading of large tasks. 
+	core.ui.plugin.file.open.OpenProjectWizard
+	
+2010-02-04 beckerl <becker.larry@gmail.com>
+	OJ now remembers the window location, size, and maximized state in 
+	the workbench-state.xml file and the project files (improved until 10 Feb 2010)
+    jump.workbench.JUMPWorkbench
+    jump.workbench.ui.WorkbenchFrame
+    jump.workbench.ui.plugin.AbstractSaveProjectPlugin
+    jump.workbench.model.Task
+    jump.workbench.model.Task.java2xml
+    jump.util.java2xml.XML2Java
+	core.ui.plugin.file.open.OpenProjectWizard
+    
+2010-02-03 beckerl <becker.larry@gmail.com>
+    core.ui.zoom.AbstractZoomTool
+    core.ui.plugin.tools.ZoomRealtimeTool (2 Feb 2010)
+    mouse wheel image stretch modification, which delays request of 
+    data after 0.7 seconds of mouse wheel operation
+
 2010-01-30 michaudm <michael.michaud@free.fr>
     * com.vividsolutions.jump.datastore.jdbc.ValueConverterFactory
     now converts SQL NULL to java null for Integer and Double
@@ -9,8 +35,15 @@
 
 2010-01-29 michaudm <michael.michaud@free.fr>
     com.vividsolutions.jump.workbench.ui.plugin.ViewSchemaPlugIn
-    can process AttributeType.OBJECT
+    View Schema can process AttributeType.OBJECT
 
+2010-01-27 michaudm <michael.michaud@free.fr>
+    better handling of null attributes and date attributes in queries
+    ui.plugin.queries.Condition
+    ui.plugin.queries.Function
+    ui.plugin.queries.Operator
+    ui.plugin.queries.QueryDialog
+    
 2010-01-25 michaudm <michael.michaud@free.fr>
     com.vividsolutions.jump.workbench.ui.plugin.datastore.RunDataStoreQueryPlugIn
     cancel the current query if the thread is interrupted
@@ -32,13 +65,17 @@
 2009-12-14 beckerl <becker.larry@gmail.com>
     core.ui.plugin.customize.CmdRunner
     Class adds support for running external programs, reading their output, and
-    setting envirnment variables.
+    setting environment variables.
 
+2010-12-11 michaudm <michael.michaud@free.fr>
+    fixed a bug by adding createTaskWindowMustBeActiveCheck with ClipToFencePlugin
+    
 2009-12-11 beckerl <becker.larry@gmail.com>
-    com.vividsolutions.jump.geom.CoordUtil now interpolating Z values
+    com.vividsolutions.jump.geom.CoordUtil
     org.openjump.core.ui.plugin.mousemenu.MoveAlongAnglePlugIn
     and org.openjump.core.ui.plugin.mousemenu.PasteItemsAtPlugIn
     do not drop Z any more
+    now interpolating Z values for normal cases
     
 2009-12-09 beckerl <becker.larry@gmail.com>
     core.ui.plugin.view.EasyButtonsPlugin
