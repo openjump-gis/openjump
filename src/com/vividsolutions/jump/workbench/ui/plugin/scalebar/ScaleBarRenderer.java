@@ -75,8 +75,8 @@ public class ScaleBarRenderer extends SimpleRenderer {
     private static int VERTICAL_MARGIN = 3;
     private static String ENABLED_KEY = ScaleBarRenderer.class +" - ENABLED";
     private static int INCREMENT_COUNT = 5;
-    private Font FONT = new Font("Dialog", Font.PLAIN, 10);
-    private Font UNIT_FONT = new Font("Dialog", Font.BOLD, 11);
+    private static Font FONT = new Font("Dialog", Font.PLAIN, 10);
+    private static Font UNIT_FONT = new Font("Dialog", Font.BOLD, 11);
 
     public ScaleBarRenderer(LayerViewPanel panel) {
         super(CONTENT_ID, panel);
@@ -253,19 +253,19 @@ public class ScaleBarRenderer extends SimpleRenderer {
 		VERTICAL_MARGIN = vertical_margin;
 	}
 
-	public Font getFONT() {
+	public static Font getFONT() {
 		return FONT;
 	}
 
-	public void setFONT(Font font) {
+	public static void setFONT(Font font) {
 		FONT = font;
 	}
 
-	public Font getUNIT_FONT() {
+	public static Font getUNIT_FONT() {
 		return UNIT_FONT;
 	}
 
-	public void setUNIT_FONT(Font unit_font) {
+	public static void setUNIT_FONT(Font unit_font) {
 		UNIT_FONT = unit_font;
 	}
 }
