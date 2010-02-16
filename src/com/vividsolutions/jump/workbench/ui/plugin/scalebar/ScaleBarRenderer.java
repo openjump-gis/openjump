@@ -252,4 +252,20 @@ public class ScaleBarRenderer extends SimpleRenderer {
 	public static void setVERTICAL_MARGIN(int vertical_margin) {
 		VERTICAL_MARGIN = vertical_margin;
 	}
+
+	public Font getFONT() {
+		return FONT;
+	}
+
+	public void setFONT(Font font) {
+		FONT = font;
+	}
+
+	public Font getUNIT_FONT() {
+		return UNIT_FONT;
+	}
+
+	public void setUNIT_FONT(Font unit_font) {
+		UNIT_FONT = unit_font;
+	}
 }
