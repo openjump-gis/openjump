@@ -119,9 +119,11 @@ public abstract class AbstractSelectionRenderer extends FeatureCollectionRendere
 
     public void paint(Geometry geometry, Graphics2D g, Viewport viewport)
         throws NoninvertibleTransformException {
+    	if (!viewport.getEnvelopeInModelCoordinates().intersects(geometry.getEnvelopeInternal()))
+    		return;
         Coordinate[] modelCoordinates = geometry.getCoordinates();
-        if ((geometry.getDimension() > 0) || (!paintingHandles)) {  //points will be obscurred by handles anyway
-        StyleUtil.paint(
+        if ((geometry.getDimension() > 0) || (!paintingHandles)) {  //points will be obscurred by handles anyway      
+        	StyleUtil.paint(
             geometry,
             g,
             viewport,
@@ -136,10 +138,13 @@ public abstract class AbstractSelectionRenderer extends FeatureCollectionRendere
            //paintHandles(g, coordinates, handleStroke, handleFillColor, handleLineColor, panel.getViewport());
            // LDB: the above method is very slow.  The following code is aproximately equivalent
            //      although it draws a different style of handle (overlapping vs. hollow)
-        	Rectangle2D viewRectangle = viewport.toViewRectangle( 
-        								viewport.getEnvelopeInModelCoordinates());
             Coordinate[] viewCoordinates = viewport.getJava2DConverter().toViewCoordinates(modelCoordinates);
             g.setStroke(handleStroke);
+            g.setColor(handleFillColor);
+            g.fill(handle);
+            g.setColor(handleLineColor);
+        	Rectangle2D viewRectangle = viewport.toViewRectangle( 
+    				viewport.getEnvelopeInModelCoordinates());
            for (int i = 0; i < viewCoordinates.length; i++) {
             	Coordinate p = viewCoordinates[i];
             	double x = p.x;
@@ -150,9 +155,6 @@ public abstract class AbstractSelectionRenderer extends FeatureCollectionRendere
                 }
                 handle.x = x - (HANDLE_WIDTH / 2);
                 handle.y = y - (HANDLE_WIDTH / 2);
-                g.setColor(handleFillColor);
-                g.fill(handle);
-                g.setColor(handleLineColor);
                 g.draw(handle);                		 
             }
         }
