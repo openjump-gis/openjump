@@ -140,9 +140,6 @@ public abstract class AbstractSelectionRenderer extends FeatureCollectionRendere
            //      although it draws a different style of handle (overlapping vs. hollow)
             Coordinate[] viewCoordinates = viewport.getJava2DConverter().toViewCoordinates(modelCoordinates);
             g.setStroke(handleStroke);
-            g.setColor(handleFillColor);
-            g.fill(handle);
-            g.setColor(handleLineColor);
         	Rectangle2D viewRectangle = viewport.toViewRectangle( 
     				viewport.getEnvelopeInModelCoordinates());
            for (int i = 0; i < viewCoordinates.length; i++) {
@@ -155,6 +152,9 @@ public abstract class AbstractSelectionRenderer extends FeatureCollectionRendere
                 }
                 handle.x = x - (HANDLE_WIDTH / 2);
                 handle.y = y - (HANDLE_WIDTH / 2);
+                g.setColor(handleFillColor);
+                g.fill(handle);
+                g.setColor(handleLineColor);
                 g.draw(handle);                		 
             }
         }
