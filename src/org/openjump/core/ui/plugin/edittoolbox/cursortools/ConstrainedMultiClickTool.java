@@ -330,22 +330,27 @@ public abstract class ConstrainedMultiClickTool extends AbstractCursorTool
     
     private KeyListener keyListener = new KeyListener() 
     {
-        public void keyTyped(KeyEvent e) 
-        {
-        }
+    	public void keyTyped(KeyEvent e) 
+    	{
+    	}
 
-        public void keyPressed(KeyEvent e) 
-        {
-        }
+    	public void keyPressed(KeyEvent e) 
+    	{
+    	}
 
-        public void keyReleased(KeyEvent e) 
-        {
-        	if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE)
-        	{
-        		if (coordinates.size() > 1)
-        			coordinates.remove(coordinates.size() - 1);
-        		panel.repaint();
-        	}
-        }
+    	public void keyReleased(KeyEvent e) 
+    	{
+    		if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE)
+    		{
+    			if (coordinates.size() > 1)
+    				coordinates.remove(coordinates.size() - 1);
+    			panel.repaint();
+    		} else if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
+    			try {
+    				finishGesture();
+    			}catch (Exception ex) {
+    				getPanel().getContext().handleThrowable(ex);
+    			};
+    	}
     };
 }
