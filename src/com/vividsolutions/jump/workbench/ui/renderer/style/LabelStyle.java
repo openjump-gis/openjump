@@ -123,6 +123,16 @@ public class LabelStyle implements Style {
         Object attribute = getAttributeValue(f);
         // added .trim() 2007-07-13 [mmichaud]
         if ((attribute == null) || (attribute.toString().trim().length() == 0)) {
+            return;   //LDB formerly toString().length() == 0
+        }
+        
+        if (isHidingAtScale()){
+        	double scale = height / getFont().getSize2D();
+        	if (isScaling()) {
+        		scale *= viewport.getScale();
+        	}
+        	double realScale = ScreenScale.getHorizontalMapScale(viewport);            	
+        	if (realScale > scaleToHideAt)
             return;
         }
         Geometry viewportIntersection = intersection(f.getGeometry(), viewport);
@@ -257,11 +267,12 @@ public class LabelStyle implements Style {
             if (isScaling()) {
                 scale *= viewportScale;
             }
-            if (isHidingAtScale()){
-        		double realScale = ScreenScale.getHorizontalMapScale(viewport);            	
-            	if (realScale > scaleToHideAt)
-            	return;
-            }
+            //LDB: this is taken care of at a higher level now
+//            if (isHidingAtScale()){
+//        		double realScale = ScreenScale.getHorizontalMapScale(viewport);            	
+//            	if (realScale > scaleToHideAt)
+//            	return;
+//            }
             //g.setColor(getColor());
             TextLayout layout = new TextLayout(text, getFont(), g.getFontRenderContext());
             AffineTransform transform = g.getTransform();
