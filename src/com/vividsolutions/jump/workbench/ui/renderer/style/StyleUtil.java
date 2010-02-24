@@ -34,6 +34,8 @@ package com.vividsolutions.jump.workbench.ui.renderer.style;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.TopologyException;
 import com.vividsolutions.jts.util.AssertionFailedException;
 
@@ -104,7 +106,8 @@ public class StyleUtil {
            * So don't use following "optimization"
            */
           //if (isRatioLarge(bufferedEnvelope, geomEnv, 2)) {
-            actualGeometry = clipGeometry(geometry, bufferedEnvelope);
+        	if (!((geometry instanceof LineString) || (geometry instanceof MultiLineString)))
+        		actualGeometry = clipGeometry(geometry, bufferedEnvelope);
             //System.out.println("cl");
           //}
         }
