@@ -38,6 +38,7 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Transparency;
 import java.awt.event.ActionEvent;
@@ -45,6 +46,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 
 import javax.swing.Icon;
 import javax.swing.Timer;
@@ -59,7 +61,7 @@ import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
 
 public abstract class AbstractZoomTool extends DragTool {
 
-    static final double WHEEL_ZOOM_IN_FACTOR = 1.15;
+    static final double WHEEL_ZOOM_IN_FACTOR = 2; //1.15;
     static final int BOX_TOLERANCE = 4;
     static final double ZOOM_IN_FACTOR = 2;
     
@@ -90,6 +92,8 @@ public abstract class AbstractZoomTool extends DragTool {
 
     protected void gestureFinished() throws NoninvertibleTransformException {                   
     }
+    
+    private Point2D cursor = null;
         
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		int nclicks = e.getWheelRotation();  //negative is up/away
@@ -101,11 +105,7 @@ public abstract class AbstractZoomTool extends DragTool {
 		else
 			scale = 1 / (mouseWheelCount*WHEEL_ZOOM_IN_FACTOR);
         try {
-//			scale = (mouseWheelCount > 0)
-//			? 1 / mouseWheelCount*WHEEL_ZOOM_IN_FACTOR : 
-//				mouseWheelCount*WHEEL_ZOOM_IN_FACTOR;
-//			zoomAt(e.getPoint(), zoomFactor, false); //zoom to cursor
-			
+			cursor = e.getPoint();
 			if (mouseWheelUpdateTimer == null) {
 				RenderingManager renderManager = getPanel().getRenderingManager();
 				renderManager.setPaintingEnabled(false);
@@ -113,7 +113,8 @@ public abstract class AbstractZoomTool extends DragTool {
 						new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						try {
-							zoomAt(getCentre(), scale, false);
+							//zoomAt(getCentre(), scale, false);
+							zoomAt(cursor, scale, false);
 							mouseWheelUpdateTimer.stop();
 							mouseWheelUpdateTimer = null;
 							mouseWheelCount = 0;
@@ -128,10 +129,12 @@ public abstract class AbstractZoomTool extends DragTool {
 				mouseWheelUpdateTimer.start();
 				mouseWheelUpdateTimer.setRepeats(false);
 				cacheImage();
-				scaleImageAtCentre(scale);
+				//scaleImageAtCentre(scale);
+				scaleImageAtPoint(cursor, scale);
 			} else {
 				mouseWheelUpdateTimer.restart();
-				scaleImageAtCentre(scale);
+				//scaleImageAtCentre(scale);
+				scaleImageAtPoint(cursor, scale);
 			}
         } catch (Throwable t) {
             getPanel().getContext().handleThrowable(t);
@@ -145,6 +148,26 @@ public abstract class AbstractZoomTool extends DragTool {
 	    double dy = (h - (h * zoomFactor)) / 2;
 		drawImage((int) dx, (int) dy,  zoomFactor);		
 	}
+	
+	protected void scaleImageAtPoint(Point2D p, double zoomFactor) {
+	    double w = getPanel().getWidth();
+	    double h = getPanel().getHeight();
+	    double dx = (w - (w * zoomFactor)) / 2;
+	    double dy = (h - (h * zoomFactor)) / 2;
+	    
+	    double cx = w/2;
+	    double cy = h/2;
+	    double x1 = p.getX() - cx;
+	    double y1 = p.getY() - cy;
+	    double x2 = x1/zoomFactor;
+	    double y2 = y1/zoomFactor;
+	    double x3 = -(x1 - x2) * zoomFactor;
+	    double y3 = -(y1 - y2) * zoomFactor;
+	    dx += x3;
+	    dy += y3;
+		drawImage((int) dx, (int) dy,  zoomFactor);		
+	}
+
 	/**
 	 * Creates a new Image if currImage doesn't exist
 	 * or is the wrong size for the panel.
