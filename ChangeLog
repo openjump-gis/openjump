@@ -1,3 +1,7 @@
+2010-03-04 sstein  <sstein@geo.uzh.ch>
+	added JTS 1.11
+	changed Maven pom script
+	
 2010-02-12 beckerl <becker.larry@gmail.com>
 	Scalebar can now be modified with BeanShellScripts since getters/setters have been added.
 	jump.workbench.ui.plugin.scalebar.ScaleBarRenderer
