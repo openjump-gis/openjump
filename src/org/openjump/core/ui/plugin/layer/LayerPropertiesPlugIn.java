@@ -202,7 +202,9 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
         		}
         	}       	
         }
-        
+        if ( !styleChanged /*existing variable of this class*/){
+            reportNothingToUndoYet(context);
+        }
         return true;
     }
 
