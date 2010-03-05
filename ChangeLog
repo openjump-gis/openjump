@@ -1,4 +1,7 @@
 2010-03-04 sstein  <sstein@geo.uzh.ch>
+	added Sextante Raster interface classes, so we can process rasters now in OJ
+	
+2010-03-04 sstein  <sstein@geo.uzh.ch>
 	added JTS 1.11
 	changed Maven pom script
 	
