@@ -34,6 +34,7 @@ public class CopyStylesPlugIn extends AbstractPlugIn {
   }
 
   public boolean execute(PlugInContext context) throws Exception {
+  	reportNothingToUndoYet(context);
     final Layer layer = context.getSelectedLayer(0);
     stylesBuffer = layer.cloneStyles();
     return true;

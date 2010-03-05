@@ -53,7 +53,7 @@ public class DrawConstrainedLineStringTool extends ConstrainedMultiClickTool {
     final static String drawConstrainedLineString =I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawConstrainedLineStringTool.Draw-Constrained-LineString");
     final static String TheLinestringMustHaveAtLeast2Points =I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawConstrainedLineStringTool.The-linestring-must-have-at-least-2-points");
     
-    private DrawConstrainedLineStringTool(FeatureDrawingUtil featureDrawingUtil) {
+    protected DrawConstrainedLineStringTool(FeatureDrawingUtil featureDrawingUtil) {
         drawClosed = false;
         this.featureDrawingUtil = featureDrawingUtil;
     }

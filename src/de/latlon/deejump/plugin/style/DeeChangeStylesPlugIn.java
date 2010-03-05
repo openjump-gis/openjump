@@ -185,6 +185,8 @@ public class DeeChangeStylesPlugIn extends AbstractPlugIn {
                 }
             }, context);
             return true;
+        }else{
+        	reportNothingToUndoYet(context);
         }
 
         return false;
