@@ -1,3 +1,8 @@
+2010-03-13 michaudm <michael.michaud@free.fr>
+    Fix a bug in com.vividsolutions.jump.workbench.ui.EditTransaction
+    Point(null,null,0) in deleteFeature method throwed exception with JTS-1.11
+    replaced by an empty GeometryCollection
+
 2010-03-04 sstein  <sstein@geo.uzh.ch>
 	added Sextante Raster interface classes, so we can process rasters now in OJ
 	
