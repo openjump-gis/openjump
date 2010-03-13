@@ -338,8 +338,7 @@ public abstract class GeometryFunction
       Polygonizer polygonizer = new Polygonizer();
       polygonizer.add(geom[0]);
       Collection polyColl = polygonizer.getPolygons();
-      Geometry[] polys = GeometryFactory.toGeometryArray(polyColl);
-      return geom[0].getFactory().createGeometryCollection(polys);
+      return geom[0].getFactory().buildGeometry(polyColl);
     }
   }
   
