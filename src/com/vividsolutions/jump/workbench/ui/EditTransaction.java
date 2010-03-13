@@ -408,7 +408,7 @@ public class EditTransaction {
         Assert.isTrue(!features.contains(feature));
         features.add(feature);
         originalGeometries.add(feature.getGeometry().clone());
-        proposedGeometries.add(new Point(null, null, 0));
+        proposedGeometries.add(feature.getGeometry().getFactory().createGeometryCollection(new Geometry[0]));
     }
     public Layer getLayer() {
         return layer;
