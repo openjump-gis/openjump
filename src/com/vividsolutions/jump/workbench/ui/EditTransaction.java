@@ -397,7 +397,7 @@ public class EditTransaction {
         Assert.isTrue(allowAddingAndRemovingFeatures);
         Assert.isTrue(!features.contains(feature));
         features.add(feature);
-        originalGeometries.add(new Point(null, null, 0));
+        originalGeometries.add(feature.getGeometry().getFactory().createGeometryCollection(new Geometry[0]));
         proposedGeometries.add(feature.getGeometry().clone());
     }
     /**
