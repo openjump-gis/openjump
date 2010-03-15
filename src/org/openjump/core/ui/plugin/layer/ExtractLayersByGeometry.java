@@ -143,50 +143,17 @@ public class ExtractLayersByGeometry extends AbstractPlugIn {
     {
     	ArrayList newLayers = new ArrayList();
     	
-    	if (!CompatibleFeatures(layer))
-    	{
-            ArrayList emptyFeatures = new ArrayList();
             ArrayList pointFeatures = new ArrayList();
             ArrayList lineFeatures = new ArrayList();
             ArrayList polyFeatures = new ArrayList();
-            ArrayList groupFeatures = new ArrayList();
             
     		FeatureCollectionWrapper featureCollection = layer.getFeatureCollectionWrapper();
             List featureList = featureCollection.getFeatures();
             FeatureSchema featureSchema = layer.getFeatureCollectionWrapper().getFeatureSchema();
-            
-            //first find and handle all empty geometries and GeometryCollections
-            for (Iterator i = featureList.iterator(); i.hasNext();)
-            {
-                Feature feature = (Feature) i.next();
-                Geometry geometry = feature.getGeometry();
-                
-                if (geometry.isEmpty()) //going to delete it
-                	emptyFeatures.add(feature);
-                else if ((geometry instanceof GeometryCollection) &&
-                		(!(geometry instanceof MultiPoint)) &&
-                		(!(geometry instanceof MultiLineString)) &&
-                		(!(geometry instanceof MultiPolygon))) //mixed geometry; going to explode it
-                	groupFeatures.add(feature.clone(true));
-            }   
-            
-//			for (int i = 0; i < emptyFeatures.size(); i++) //delete empty geometries
-//            {
-//            	featureCollection.remove((Feature) emptyFeatures.get(i));
-//            }
-
-			for (int i = 0; i < groupFeatures.size(); i++) //process GeometryCollections
-            {
-				Feature feature = (Feature) groupFeatures.get(i);
-				GeometryCollection geometry = (GeometryCollection) feature.getGeometry();
-				explodeGeometryCollection(featureSchema, pointFeatures, lineFeatures, polyFeatures, geometry, feature);
-//            	featureCollection.remove(feature);
-            }
-			          
+            			          
             featureCollection = layer.getFeatureCollectionWrapper();
             featureList = layer.getFeatureCollectionWrapper().getFeatures();
 
-			boolean wasFiringEvents = context.getLayerManager().isFiringEvents();
             Collection selectedCategories = context.getLayerNamePanel().getSelectedCategories();
             
             for (Iterator i = featureList.iterator(); i.hasNext();)
@@ -195,78 +162,54 @@ public class ExtractLayersByGeometry extends AbstractPlugIn {
             	Geometry geo = feature.getGeometry();
             	BitSet currFeatureBit = new BitSet();
             	currFeatureBit = setBit(currFeatureBit, geo);
-            	
-            	if  (currFeatureBit.get(pointBit))
+            	if (geo instanceof GeometryCollection) {
+            		explodeGeometryCollection(featureSchema, pointFeatures, lineFeatures, 
+            				polyFeatures, (GeometryCollection) geo, feature);
+            	} else if  (currFeatureBit.get(pointBit)) {
             		pointFeatures.add(feature.clone(true));
-            	
-            	if  (currFeatureBit.get(lineBit))
+            	} else if  (currFeatureBit.get(lineBit)) {
             		lineFeatures.add(feature.clone(true));
-            	
-            	if (currFeatureBit.get(polyBit))
+            	} else if (currFeatureBit.get(polyBit)) {
             		polyFeatures.add(feature.clone(true));
+            	}
             }
             
             if (pointFeatures.size() > 0)
             {
 		        Layer pointLayer = context.addLayer(selectedCategories.isEmpty()
-		        ? StandardCategoryNames.WORKING
+		        ? StandardCategoryNames.RESULT
 		        : selectedCategories.iterator().next().toString(), layer.getName() + "_" + POINT,
 		        new FeatureDataset(featureSchema));
-		        pointLayer.setStyles(layer.cloneStyles());
-		        
+		        pointLayer.setStyles(layer.cloneStyles());		        
 		        FeatureCollectionWrapper pointFeatureCollection = pointLayer.getFeatureCollectionWrapper();
-		        newLayers.add(pointLayer);
-	           
-				context.getLayerManager().setFiringEvents(false);
-				for (int i = 0; i < pointFeatures.size(); i++)
-	            {
-	            	Feature feature = (Feature) pointFeatures.get(i);
-	            	pointFeatureCollection.add(feature);
-	            }
+		        newLayers.add(pointLayer);	           
+	            pointFeatureCollection.addAll(pointFeatures);
            }
             
             if (lineFeatures.size() > 0)
             {
-    			context.getLayerManager().setFiringEvents(true);
-		        Layer lineLayer = context.addLayer(selectedCategories.isEmpty()
-				? StandardCategoryNames.WORKING
+ 		        Layer lineLayer = context.addLayer(selectedCategories.isEmpty()
+				? StandardCategoryNames.RESULT
 				: selectedCategories.iterator().next().toString(), layer.getName() + "_" + LINE,
 				new FeatureDataset(featureSchema));
-				lineLayer.setStyles(layer.cloneStyles());
-				
+				lineLayer.setStyles(layer.cloneStyles());				
 		        FeatureCollectionWrapper lineFeatureCollection = lineLayer.getFeatureCollectionWrapper();
-		        newLayers.add(lineLayer);
-	           
-				context.getLayerManager().setFiringEvents(false);
-				for (int i = 0; i < lineFeatures.size(); i++)
-	            {
-	            	Feature feature = (Feature) lineFeatures.get(i);
-	            	lineFeatureCollection.add(feature);
-	            }
+		        newLayers.add(lineLayer);	           
+				lineFeatureCollection.addAll(lineFeatures);
            }
             
             if (polyFeatures.size() > 0)
             {
-    			context.getLayerManager().setFiringEvents(true);
-		        Layer polyLayer = context.addLayer(selectedCategories.isEmpty()
-				? StandardCategoryNames.WORKING
+ 		        Layer polyLayer = context.addLayer(selectedCategories.isEmpty()
+				? StandardCategoryNames.RESULT
 				: selectedCategories.iterator().next().toString(), layer.getName() + "_" + AREA,
 				new FeatureDataset(featureSchema));
-		        polyLayer.setStyles(layer.cloneStyles());
-				        
+		        polyLayer.setStyles(layer.cloneStyles());				        
 		        FeatureCollectionWrapper polyFeatureCollection = polyLayer.getFeatureCollectionWrapper();
-		        newLayers.add(polyLayer);
-	           
-				context.getLayerManager().setFiringEvents(false);
-				for (int i = 0; i < polyFeatures.size(); i++)
-	            {
-	            	Feature feature = (Feature) polyFeatures.get(i);
-	            	polyFeatureCollection.add(feature);
-	            }
+		        newLayers.add(polyLayer);	           
+		        polyFeatureCollection.addAll(polyFeatures);
            }
-    		context.getLayerManager().setFiringEvents(wasFiringEvents);
-    		context.getLayerViewPanel().repaint();
-    	}
+     		context.getLayerViewPanel().repaint();
     	return newLayers;
     }
 
@@ -275,7 +218,8 @@ public class ExtractLayersByGeometry extends AbstractPlugIn {
 	static final int lineBit = 2;
 	static final int polyBit = 3;
 	
-    private void explodeGeometryCollection(FeatureSchema fs, ArrayList pointFeatures, ArrayList lineFeatures, ArrayList polyFeatures, GeometryCollection geometryCollection, Feature feature)
+    private void explodeGeometryCollection(FeatureSchema fs, ArrayList pointFeatures, ArrayList lineFeatures, 
+    		ArrayList polyFeatures, GeometryCollection geometryCollection, Feature feature)
     {
     	for (int i = 0; i < geometryCollection.getNumGeometries(); i++)
     	{
@@ -283,18 +227,22 @@ public class ExtractLayersByGeometry extends AbstractPlugIn {
     		
     		if (geometry instanceof GeometryCollection)
     		{
-    			explodeGeometryCollection(fs, pointFeatures, lineFeatures, polyFeatures, (GeometryCollection) geometry, feature);
+    			explodeGeometryCollection(fs, pointFeatures, lineFeatures, polyFeatures, 
+    					(GeometryCollection) geometry, feature);
     		}
     		else
     		{
-    			//Feature newFeature = new BasicFeature(fs);
-    			Feature newFeature = feature.clone(true);
-    			newFeature.setGeometry(geometry);
+    			Feature newFeature = feature.clone(false);
+    			newFeature.setGeometry((Geometry) geometry.clone());
     			BitSet featureBit = new BitSet();
     			featureBit = setBit(featureBit, geometry);
-    			if (featureBit.get(pointBit)) pointFeatures.add(newFeature);
-    			if (featureBit.get(lineBit)) lineFeatures.add(newFeature);
-    			if (featureBit.get(polyBit)) polyFeatures.add(newFeature);
+    			if (featureBit.get(pointBit)) {
+    				pointFeatures.add(newFeature);
+    			} else if (featureBit.get(lineBit)) { 
+    				lineFeatures.add(newFeature);
+    			} else if (featureBit.get(polyBit)) {
+    				polyFeatures.add(newFeature);
+    			}
     		}
     	}
     }
