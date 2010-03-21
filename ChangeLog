@@ -1,3 +1,12 @@
+2010-03-21 michaudm <michael.michaud@free.fr>
+    org.geotools.shapefile.PolygonHandler
+    Keep invalid linear rings in userData so that they can be retrieved
+    Add a BeanTool to retrieve invalid shapefile rings
+
+2010-03-15 beckerl <becker.larry@gmail.com>
+    org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry
+    Fixed so that it works with GeometryCollection
+
 2010-03-13 michaudm <michael.michaud@free.fr>
     Geometry Function Polygonize now returns Polygon or MultiPolygon
     instead of GeometryCollection

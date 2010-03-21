@@ -29,25 +29,6 @@ public class PolygonHandler implements ShapeHandler{
         myShapeType = type;
     }
     
-    //returns true if testPoint is a point in the pointList list.
-    /*boolean pointInList(Coordinate testPoint, Coordinate[] pointList) {
-        int t, numpoints;
-        Coordinate  p;
-        
-        numpoints = Array.getLength( pointList) ;
-        for (t=0;t<numpoints; t++)
-        {
-            p = pointList[t];
-            if ( (testPoint.x == p.x) && (testPoint.y == p.y) &&
-                    ((testPoint.z == p.z) || (!(testPoint.z == testPoint.z))  )  //nan test; x!=x iff x is nan
-                    )
-            {
-                return true;
-            }
-        }
-        return false;
-    }*/
-    
     public Geometry read(EndianDataInputStream file ,
                          GeometryFactory geometryFactory,
                          int contentLength) throws IOException, InvalidShapefileException {
@@ -87,8 +68,11 @@ public class PolygonHandler implements ShapeHandler{
         }
 
         //LinearRing[] rings = new LinearRing[numParts];
-        ArrayList shells = new ArrayList();
-        ArrayList holes = new ArrayList();
+        ArrayList<LinearRing> shells = new ArrayList<LinearRing>();
+        ArrayList<LinearRing> holes  = new ArrayList<LinearRing>();
+        //Bad rings are CCW rings not nested in another ring
+        //and rings with more than 0 and less than 4 points
+        ArrayList<LineString> badRings = new ArrayList<LineString>();
         Coordinate[] coords = new Coordinate[numPoints];
 
         for(int t=0;t<numPoints;t++) {
@@ -159,6 +143,10 @@ public class PolygonHandler implements ShapeHandler{
                     shells.add(ring);
                 }
             }
+            else {
+                LineString ring = geometryFactory.createLineString(points);
+                badRings.add(ring);
+            }
         }
         
         if ((shells.size()>1) && (holes.size()== 0)) {
@@ -198,7 +186,6 @@ public class PolygonHandler implements ShapeHandler{
                 Coordinate[] coordList = tryRing.getCoordinates() ;
 
                 if (tryEnv.contains(testEnv) && (cga.isPointInRing(testPt,coordList )))
-                        //&& (cga.isPointInRing(testPt,coordList ) || (pointInList(testPt, coordList))))
                     isContained = true;
                     // check if this new containing ring is smaller than the current minimum ring
                     if (isContained) {
@@ -222,7 +209,8 @@ public class PolygonHandler implements ShapeHandler{
         }
 
         for (int i=0;i<holesWithoutShells.size();i++) {
-            polygons[shells.size() + i]=geometryFactory.createPolygon((LinearRing)holesWithoutShells.get(i), null);        	
+            polygons[shells.size() + i]=geometryFactory.createPolygon((LinearRing)holesWithoutShells.get(i), null);
+            badRings.add((LinearRing)holesWithoutShells.get(i));
         }
 
         if(polygons.length==1) {
@@ -236,6 +224,10 @@ public class PolygonHandler implements ShapeHandler{
 
         //its a multi part
         Geometry result =  geometryFactory.createMultiPolygon(polygons);
+        //add bad rings as Geometry userData so that advanced users can retrieve them
+        if (badRings.size() > 0) {
+            result.setUserData(geometryFactory.createMultiLineString(badRings.toArray(new LineString[0])));
+        }
         return result;
     }
 

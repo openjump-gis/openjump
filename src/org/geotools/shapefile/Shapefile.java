@@ -38,8 +38,8 @@ public class Shapefile  {
     
     public static final int    NULL = 0;
     public static final int    POINT = 1;
-      public static final int    POINTZ = 11;
-        public static final int    POINTM = 21;
+    public static final int    POINTZ = 11;
+    public static final int    POINTM = 21;
     public static final int    ARC = 3;
     public static final int    ARCM = 23;
     public static final int    ARCZ = 13;
