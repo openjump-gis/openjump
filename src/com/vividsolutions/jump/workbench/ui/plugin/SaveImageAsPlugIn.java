@@ -178,8 +178,9 @@ public class SaveImageAsPlugIn extends ExportImagePlugIn {
         	LayerPrinter2 layerPrinter = new LayerPrinter2();
  			if (fenceFound)
 			{
- 				envelope = fence.getEnvelopeInternal(); 		            
- 				Layer fenceLayer = workbenchContext.getLayerNamePanel().getLayerManager().getLayer("Fence");
+ 				envelope = fence.getEnvelopeInternal(); 
+ 				String fenceLayerName = I18N.get("model.FenceLayerFinder.fence");
+ 				Layer fenceLayer = workbenchContext.getLayerNamePanel().getLayerManager().getLayer(fenceLayerName);
 				fenceLayer.setVisible(false);
 			}
 			else {
