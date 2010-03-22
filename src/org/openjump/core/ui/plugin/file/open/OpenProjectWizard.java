@@ -13,6 +13,8 @@ import java.util.Map;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import org.openjump.core.model.TaskEvent;
+import org.openjump.core.model.TaskListener;
 import org.openjump.core.ui.plugin.file.FindFile;
 import org.openjump.core.ui.plugin.file.OpenRecentPlugIn;
 import org.openjump.core.ui.swing.wizard.AbstractWizardGroup;
@@ -239,6 +241,12 @@ public class OpenProjectWizard extends AbstractWizardGroup {
         newLayerManager.addLayerable(sourceLayerCategory.getName(), layerable);
       }
     }
+	// fire TaskListener's
+	  Object[] listeners =  workbenchFrame.getTaskListeners().toArray();
+	  for (int i = 0; i < listeners.length; i++) {
+		  TaskListener l = (TaskListener) listeners[i];
+		  l.taskLoaded(new TaskEvent(this, newLayerManager.getTask()));
+	  }
 	} finally {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {

@@ -81,7 +81,8 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
-import org.openjump.core.ui.plugin.view.EasyPanel;
+import org.openjump.core.model.TaskEvent;
+import org.openjump.core.model.TaskListener;
 import org.openjump.swing.factory.component.ComponentFactory;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -300,6 +301,8 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
   private JLabel wmsLabel = new JLabel();
 
   private ArrayList easyKeyListeners = new ArrayList();
+
+  private ArrayList<TaskListener> taskListeners = new ArrayList<TaskListener>();
 
   private Map nodeClassToLayerNamePopupMenuMap = CollectionUtil.createMap(new Object[] {
     Layer.class, layerNamePopupMenu, WMSLayer.class, wmsLayerNamePopupMenu,
@@ -762,6 +765,12 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
           log(I18N.get("ui.WorkbenchFrame.undo-history-was-truncated"));
         }
       });
+	  // fire TaskListener's
+	  Object[] listeners =  getTaskListeners().toArray();
+	  for (int i = 0; i < listeners.length; i++) {
+		  TaskListener l = (TaskListener) listeners[i];
+		  l.taskAdded(new TaskEvent(this, taskFrame.getTask()));
+	  }
     return taskFrame;
   }
 
@@ -1355,4 +1364,32 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
 	  return d; 
   }
 
-}
+
+	/**
+	 * @return the taskListeners
+	 */
+	public ArrayList<TaskListener> getTaskListeners() {
+		return taskListeners;
+	}
+
+  /**
+   * Add's a TaskListener, wich will be fired if a Task was added
+   * via the WorkbenchFrame.addTaskFrame(TaskFrame taskFrame) or
+   * the a Task was loaded completly with all his layers.
+   *
+   * @param l - The TaskListener to add.
+   */
+  public void addTaskListener(TaskListener l) {
+	  	getTaskListeners().add(l);
+  }
+
+  /**
+   * Remove's a TaskListener.
+   *
+   * @param l - The TaskListener to add.
+   */
+  public void removeTaskListener(TaskListener l) {
+	  	getTaskListeners().remove(l);
+  }
+
+	}
