@@ -312,6 +312,9 @@ public class EditTransaction {
     public boolean proposedGeometriesValid() {
         for (int i = 0; i < proposedGeometries.size(); i++) {
             Geometry proposedGeometry = (Geometry) proposedGeometries.get(i);
+            // workaround pending a fix in JTS 1.11.1
+            if (proposedGeometry.getCoordinate()==null) { return true; }
+            // end of workaround
             if (! proposedGeometry.isValid()) { return false; }
         }
         return true;
