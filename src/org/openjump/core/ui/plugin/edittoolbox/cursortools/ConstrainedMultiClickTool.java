@@ -72,7 +72,7 @@ public abstract class ConstrainedMultiClickTool extends AbstractCursorTool
     protected Coordinate tentativeCoordinate;
     protected boolean drawClosed = true;
     private ConstraintManager constraintManager;
-    private LayerViewPanel panel;
+//    private LayerViewPanel panel;
     private WorkbenchFrame frame;
         
     public ConstrainedMultiClickTool()

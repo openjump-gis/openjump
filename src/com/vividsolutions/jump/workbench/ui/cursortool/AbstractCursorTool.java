@@ -132,7 +132,7 @@ public abstract class AbstractCursorTool implements CursorTool {
 
 	private Stroke originalStroke;
 
-	private LayerViewPanel panel;
+	protected LayerViewPanel panel;
 
 	private boolean shapeOnScreen = false;
 
