@@ -202,6 +202,7 @@ public class Condition  {
                 if (op==Operator.INTER && g.intersects(p)) return true;
                 else if (op==Operator.CONTA && g.contains(p)) return true;
                 else if (op==Operator.WITHI && g.within(p)) return true;
+                else if (op==Operator.WSTRI && g.relate(p, "TFFTFF***")) return true;
                 else if (op==Operator.WDIST && g.distance(p)<op.arg) return true;
                 else if (op==Operator.TOUCH && g.touches(p)) return true;
                 else if (op==Operator.CROSS && g.crosses(p)) return true;
@@ -221,6 +222,7 @@ public class Condition  {
                     if (op==Operator.INTER && g.intersects(p)) return true;
                     else if (op==Operator.CONTA && g.contains(p)) return true;
                     else if (op==Operator.WITHI && g.within(p)) return true;
+                    else if (op==Operator.WSTRI && g.relate(p, "TFFTFF***")) return true;
                     else if (op==Operator.WDIST && g.distance(p)<op.arg) return true;
                     else if (op==Operator.TOUCH && g.touches(p)) return true;
                     else if (op==Operator.CROSS && g.crosses(p)) return true;
@@ -241,6 +243,7 @@ public class Condition  {
                     if (op==Operator.INTER && g.intersects(p)) return true;
                     else if (op==Operator.CONTA && g.contains(p)) return true;
                     else if (op==Operator.WITHI && g.within(p)) return true;
+                    else if (op==Operator.WSTRI && g.relate(p, "TFFTFF***")) return true;
                     else if (op==Operator.WDIST && g.distance(p)<op.arg) return true;
                     else if (op==Operator.TOUCH && g.touches(p)) return true;
                     else if (op==Operator.CROSS && g.crosses(p)) return true;
@@ -259,6 +262,7 @@ public class Condition  {
                 if (op==Operator.INTER && g.intersects(p)) return true;
                 else if (op==Operator.CONTA && g.contains(p)) return true;
                 else if (op==Operator.WITHI && g.within(p)) return true;
+                else if (op==Operator.WSTRI && g.relate(p, "TFFTFF***")) return true;
                 else if (op==Operator.WDIST && g.distance(p)<op.arg) return true;
                 else if (op==Operator.TOUCH && g.touches(p)) return true;
                 else if (op==Operator.CROSS && g.crosses(p)) return true;
@@ -296,7 +300,7 @@ public class Condition  {
         //System.out.println("geometric function");
         if (ft==Function.GNOF) return g;
         else if (ft==Function.CENT) return g.getInteriorPoint();
-        else if (ft==Function.BUFF) return g.buffer(ft.args[0]);
+        else if (ft==Function.BUFF) return g.buffer(ft.arg);
         else return g;
     }
     

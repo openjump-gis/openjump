@@ -1,4 +1,8 @@
 2010-03-21 michaudm <michael.michaud@free.fr>
+    SimpleQueryPlugIn : added geometric op for strict inclusion ("TFFTFF***")
+    and fixed a bug in buffer function
+
+2010-03-21 michaudm <michael.michaud@free.fr>
     org.geotools.shapefile.PolygonHandler
     Keep invalid linear rings in userData so that they can be retrieved
     Add a BeanTool to retrieve invalid shapefile rings
