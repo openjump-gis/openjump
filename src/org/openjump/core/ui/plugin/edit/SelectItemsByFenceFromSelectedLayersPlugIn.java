@@ -64,7 +64,7 @@ public class SelectItemsByFenceFromSelectedLayersPlugIn extends AbstractPlugIn{
 		    context.getFeatureInstaller().addMainMenuItemWithJava14Fix(this,
 		        new String[]
 				{MenuNames.EDIT, MenuNames.SELECTION},
-				I18N.get("org.openjump.core.ui.plugin.edit.SelectItemsByFenceFromSelectedLayersPlugIn.select-items-by-fence-from-selected-layers")+"{pos:6}", 
+				I18N.get("org.openjump.core.ui.plugin.edit.SelectItemsByFenceFromSelectedLayersPlugIn.select-items-by-fence-from-selected-layers"), 
 				false, 
 				null, 
 				createEnableCheck(context.getWorkbenchContext()));

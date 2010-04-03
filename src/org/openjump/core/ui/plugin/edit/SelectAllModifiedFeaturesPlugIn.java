@@ -62,7 +62,7 @@ public class SelectAllModifiedFeaturesPlugIn extends AbstractPlugIn {
 	    context.getFeatureInstaller().addMainMenuItemWithJava14Fix(this,
 		        new String[]
 				{MenuNames.EDIT, MenuNames.SELECTION},
-				I18N.get("org.openjump.core.ui.plugin.edit.SelectAllModifiedFeaturesPlugIn.select-all-modified-features")+"{pos:8}", 
+				I18N.get("org.openjump.core.ui.plugin.edit.SelectAllModifiedFeaturesPlugIn.select-all-modified-features"), 
 				false, 
 				null, 
 				createEnableCheck(context.getWorkbenchContext())); //enable check
