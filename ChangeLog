@@ -1,3 +1,7 @@
+2010-04-03 michaudm <michael.michaud@free.fr>
+    add InvertSelectionPlugIn
+    add Larry's SelectAllModifiedFeaturesPlugIn in the default-plugin.xml
+
 2010-03-21 michaudm <michael.michaud@free.fr>
     SimpleQueryPlugIn : added geometric op for strict inclusion ("TFFTFF***")
     and fixed a bug in buffer function
