@@ -275,7 +275,9 @@ public class LayerTableModel extends ColumnBasedTableModel {
 
     public void addAll(Collection newFeatures) {
         int originalFeaturesSize = features.size();
-        features.addAll(newFeatures);
+        Collection newFeaturesOnly = new ArrayList(newFeatures);
+        newFeaturesOnly.removeAll(features);
+        features.addAll(newFeaturesOnly);
 
         if (sortedColumnName != null) {
             sort(sortedColumnName, sortAscending);
