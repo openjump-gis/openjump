@@ -1,3 +1,8 @@
+2010-04-07 michaudm <michael.michaud@free.fr>
+    improved ExplodeSelectedFeatures performance avoiding to clone many
+    coordinates uselessly (where many means, for each GeometryCollection, total
+    number of coord x number of single geometries)
+
 2010-04-03 michaudm <michael.michaud@free.fr>
     add InvertSelectionPlugIn
     add Larry's SelectAllModifiedFeaturesPlugIn in the default-plugin.xml
