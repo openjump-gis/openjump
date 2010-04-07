@@ -38,6 +38,7 @@ import java.util.List;
 
 import javax.swing.JComponent;
 
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.util.StringUtil;
@@ -117,6 +118,7 @@ public class ExplodeSelectedFeaturesPlugIn extends AbstractPlugIn {
         for (Iterator i = features.iterator(); i.hasNext();) {
             Feature feature = (Feature) i.next();
             GeometryCollection collection = (GeometryCollection) feature.getGeometry();
+            feature.setGeometry(collection.getFactory().createGeometryCollection(new Geometry[0]));
             for (int j = 0; j < collection.getNumGeometries(); j++) {
                 Feature explodedFeature = (Feature) feature.clone();
                 explodedFeature.setGeometry(collection.getGeometryN(j));
