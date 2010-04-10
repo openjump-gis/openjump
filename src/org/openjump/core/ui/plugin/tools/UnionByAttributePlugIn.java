@@ -41,14 +41,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 
 import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.geom.util.*;
 import com.vividsolutions.jts.operation.linemerge.LineMerger;
 import com.vividsolutions.jts.operation.union.UnaryUnionOp;
 
@@ -58,7 +56,6 @@ import com.vividsolutions.jump.feature.BasicFeature;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureDataset;
-import com.vividsolutions.jump.feature.FeatureDatasetFactory;
 import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.model.Layer;
@@ -74,11 +71,15 @@ import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 /**
- * UnionByAttribute plugin is used to perform selective unions based on attribute values.
- * All the features having a same attribute value are unioned together.<br>
- * An option can be used to eliminate null or empty attribute values. Useful to merge,
- * for example, all named rivers, but not unnamed one, even if they are in the same layer.<br>
- * An other option makes it possible to total numeric fields of unioned features.<br>
+ * UnionByAttribute plugin is used to union features having the same attribute
+ * value together.
+ * <br>
+ * There are three options available :
+ * <ul>
+ * <li>Features with empty values can be discarded</li>
+ * <li>LineStrings can be merged (union do not merge by default)</li>
+ * <li>Values of numeric attributes can be added up</li>
+ * </ul>
  */
 public class UnionByAttributePlugIn extends AbstractPlugIn implements ThreadedPlugIn {
     
@@ -90,12 +91,14 @@ public class UnionByAttributePlugIn extends AbstractPlugIn implements ThreadedPl
     
     private MultiInputDialog dialog;
     
-    private GeometryFactory fact;
+    private GeometryFactory factory;
     
     public UnionByAttributePlugIn() {}
     
+    @Override
     public String getName() {return I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.union-by-attribute");}
     
+    @Override
     public void initialize(PlugInContext context) throws Exception {
         context.getFeatureInstaller().addMainMenuItem(
             this,
@@ -111,6 +114,7 @@ public class UnionByAttributePlugIn extends AbstractPlugIn implements ThreadedPl
     }
     
     
+    @Override
     public boolean execute(PlugInContext context) throws Exception {
     
         initDialog(context);
@@ -175,8 +179,16 @@ public class UnionByAttributePlugIn extends AbstractPlugIn implements ThreadedPl
         boolean total_numeric_fields = dialog.getBoolean(TOTAL_NUMERIC_FIELDS);
         
         if (fc.getFeatures().size() > 0 &&
-            ((Feature)fc.getFeatures().get(0)).getGeometry()!=null) {
-            fact = ((Feature)fc.getFeatures().get(0)).getGeometry().getFactory();
+            ((Feature)fc.getFeatures().get(0)).getGeometry() != null) {
+            factory = ((Feature)fc.getFeatures().get(0)).getGeometry().getFactory();
+            context.getOutputFrame().createNewDocument();
+            context.getOutputFrame().append("<h1>Union by attribute</h1>");
+            context.getOutputFrame().addText("Processed layer      : " + layer.getName());
+            context.getOutputFrame().addText("Aggregator attribute : " + att);
+            context.getOutputFrame().addText("Empty values         : " + (ignore_empty?"ignored":"processed"));
+            context.getOutputFrame().addText("LineStrings          : " + (merge_lines?"merged":"unioned but not merged"));
+            context.getOutputFrame().addText("Numeric fields       : " + (total_numeric_fields?"added up":"discarded"));
+            context.getOutputFrame().append("<h3>Warnings :</h3>");
         }
         else {
             context.getWorkbenchFrame().warnUser(I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.no-data-to-be-unioned"));
@@ -189,6 +201,7 @@ public class UnionByAttributePlugIn extends AbstractPlugIn implements ThreadedPl
         //newSchema.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
         newSchema.addAttribute(schema.getAttributeName(schema.getGeometryIndex()), AttributeType.GEOMETRY);
         newSchema.addAttribute(att, schema.getAttributeType(att));
+        // if total_numeric_fields is true, add numeric fields to the result layer
         if (total_numeric_fields) {
             for (int i = 0, max = schema.getAttributeCount() ; i < max ; i++) {
                 if (schema.getAttributeType(i) == AttributeType.INTEGER ||
@@ -201,7 +214,6 @@ public class UnionByAttributePlugIn extends AbstractPlugIn implements ThreadedPl
         // Order features by attribute value in a map
         Map map = new HashMap();
         monitor.report(I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.union-by-attribute"));
-        //monitor.report(-1, -1, I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.sorting"));
         for (Iterator i = fc.iterator() ; i.hasNext() ; ) {
             Feature f = (Feature)i.next();
             Object key = f.getAttribute(att);
@@ -238,14 +250,12 @@ public class UnionByAttributePlugIn extends AbstractPlugIn implements ThreadedPl
         }
         context.getLayerManager().addCategory(StandardCategoryNames.RESULT);
         context.addLayer(StandardCategoryNames.RESULT, layer.getName() + "-" + att + " (union)", resultfc);
+        context.getOutputFrame().append("<h3>End of process</h3>");
     }
     
    /**
-    * New method for union. Instead of the naive algorithm looping over the features and
-    * unioning each time, this one union small groups of features which are closed to each
-    * other, then iterates over the result.
-    * The difference is not so important for small datasets, but for large datasets, the
-    * difference may of 5 minutes versus 5 hours.
+    * New method for union. Uses new UnaryUnionOp which is much more
+    * efficient for large datasets.
     */
     private Feature union(PlugInContext context, TaskMonitor monitor,
                     FeatureCollection fc, boolean merge_lines, boolean total) {
@@ -255,7 +265,13 @@ public class UnionByAttributePlugIn extends AbstractPlugIn implements ThreadedPl
         Collection geoms       = new ArrayList();
         for (Iterator it = fc.iterator() ; it.hasNext() ; ) {
             Geometry g = (Geometry)((Feature) it.next()).getGeometry();
-            if (g instanceof Point) points.add(g);
+            if (!g.isValid()) {
+                context.getWorkbenchFrame().warnUser("Invalid geometries have been excluded !");
+                context.getOutputFrame().addText("Invalid geometry found at " + g.getCoordinate().toString());
+                continue;
+            }
+            else if (g.isEmpty()) continue;
+            else if (g instanceof Point) points.add(g);
             else if (g instanceof LineString) lineStrings.add(g);
             else if (g instanceof Polygon) polygons.add(g);
             else if (g instanceof GeometryCollection) {
@@ -279,7 +295,6 @@ public class UnionByAttributePlugIn extends AbstractPlugIn implements ThreadedPl
             geoms.addAll(merger.getMergedLineStrings());
         }
         else if (lineStrings.size()>0) {
-            context.getOutputFrame().addText("merge_lines = true");
             gp = UnaryUnionOp.union(lineStrings);
             if (gp != null) geoms.add(gp);
         }
@@ -290,7 +305,7 @@ public class UnionByAttributePlugIn extends AbstractPlugIn implements ThreadedPl
         FeatureSchema schema = fc.getFeatureSchema();
         Feature feature = new BasicFeature(schema);
         if (geoms.size()==0) {
-            feature.setGeometry(fact.createGeometryCollection(new Geometry[]{}));
+            feature.setGeometry(factory.createGeometryCollection(new Geometry[]{}));
         }
         else {
             feature.setGeometry(UnaryUnionOp.union(geoms));
@@ -326,14 +341,6 @@ public class UnionByAttributePlugIn extends AbstractPlugIn implements ThreadedPl
         return feature;
     }
     
-    private Geometry mergeLines(Geometry g) {
-        List linesList = new ArrayList();
-        LinearComponentExtracter lineFilter = new LinearComponentExtracter(linesList);
-        g.apply(lineFilter);
-        LineMerger merger = new LineMerger();
-        merger.add(linesList);
-        return fact.buildGeometry(merger.getMergedLineStrings());
-    }
     
     private List getFieldsFromLayerWithoutGeometry(Layer lyr) {
         List fields = new ArrayList();
