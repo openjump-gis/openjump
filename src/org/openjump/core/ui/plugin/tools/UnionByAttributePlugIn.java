@@ -264,10 +264,11 @@ public class UnionByAttributePlugIn extends AbstractPlugIn implements ThreadedPl
         Collection polygons    = new ArrayList();
         Collection geoms       = new ArrayList();
         for (Iterator it = fc.iterator() ; it.hasNext() ; ) {
-            Geometry g = (Geometry)((Feature) it.next()).getGeometry();
+            Feature f = (Feature) it.next();
+            Geometry g = f.getGeometry();
             if (!g.isValid()) {
                 context.getWorkbenchFrame().warnUser("Invalid geometries have been excluded !");
-                context.getOutputFrame().addText("Invalid geometry found at " + g.getCoordinate().toString());
+                context.getOutputFrame().addText("Feature " + f.getID() + " has invalid geometry : it has been excluded from union");
                 continue;
             }
             else if (g.isEmpty()) continue;
