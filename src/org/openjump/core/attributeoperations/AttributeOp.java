@@ -174,7 +174,7 @@ public class AttributeOp {
 		            else if(attributeOp == AttributeOp.MEDIAN){
 		        	    double[] sortvals = DoubleArray.sort(vals);
 		        	    int index = (int)Math.ceil(vals.length/2.0);	                
-		            	result = vals[index-1]; 
+		            	result = sortvals[index-1]; 
 		            }
 		            else if(attributeOp == AttributeOp.SUM){
 		            	result = DoubleArray.sum(vals); 
