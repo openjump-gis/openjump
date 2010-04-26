@@ -1,3 +1,7 @@
+2010-04-26 sstein <sstein@geo.uzh.ch>
+    fixed error in median calculation of
+    org.openjump.core.attributeoperations.AttributeOp 
+    
 2010-04-10 michaudm <michael.michaud@free.fr>
     improved UnionByAttribute adding better warnings and output messages if
     invalid geometries are found (may slow down the whole process)
