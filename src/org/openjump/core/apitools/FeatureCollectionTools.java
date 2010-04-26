@@ -959,7 +959,10 @@ public class FeatureCollectionTools extends ToolToMakeYourLifeEasier {
      * @param features
      * @param idAttribute (must be Double or Integer)
      * @return Object[0]: an Array of ArrayLists containing features, Object[1]: an Array of int values containing the unique values 
-     * 			used for sorting. Can return null if wrong AttributeType.
+     * 			used for sorting. Can return null if wrong AttributeType. E.g. use<br>
+     * 			Object[] myReturns = FeatureCollectionTools.sortFeaturesIntoListsByAttributeValue(pointFeatures, idAttribute); <br>
+	 *		    individualPts = (ArrayList[])myReturns[0]; <br>
+	 *		    int[] uniqueValues = (int[])myReturns[1]; <br>
      */
 	public static Object[] sortFeaturesIntoListsByAttributeValue(FeatureCollection features,
 			String idAttribute) {
