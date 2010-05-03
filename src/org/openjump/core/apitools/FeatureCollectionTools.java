@@ -963,6 +963,7 @@ public class FeatureCollectionTools extends ToolToMakeYourLifeEasier {
      * 			Object[] myReturns = FeatureCollectionTools.sortFeaturesIntoListsByAttributeValue(pointFeatures, idAttribute); <br>
 	 *		    individualPts = (ArrayList[])myReturns[0]; <br>
 	 *		    int[] uniqueValues = (int[])myReturns[1]; <br>
+	 *		    Note that the order in which the lists are returned is not sorted!
      */
 	public static Object[] sortFeaturesIntoListsByAttributeValue(FeatureCollection features,
 			String idAttribute) {
