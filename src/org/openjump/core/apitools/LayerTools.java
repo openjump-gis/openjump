@@ -28,6 +28,7 @@ import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Category;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.Layerable;
@@ -240,6 +241,22 @@ public class LayerTools extends ToolToMakeYourLifeEasier {
      * @return one selected Layer, null if no Layers are selected
      */
     public static Layerable getSelectedLayerable(PlugInContext context, Class layerableClass){
+        
+        Collection selLayers = context.getLayerNamePanel().selectedNodes(layerableClass);
+        
+        if (selLayers==null || selLayers.size() == 0){
+            return null;
+        }
+        
+        return ((Layerable[])selLayers.toArray(new Layerable[0]))[0];
+    }
+    
+    /**
+     * get one Layer that is selected
+     * @param context the current WorkbenchContext
+     * @return one selected Layer, null if no Layers are selected
+     */
+    public static Layerable getSelectedLayerable(WorkbenchContext context, Class layerableClass){
         
         Collection selLayers = context.getLayerNamePanel().selectedNodes(layerableClass);
         
