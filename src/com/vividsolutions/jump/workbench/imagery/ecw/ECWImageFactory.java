@@ -31,6 +31,7 @@ package com.vividsolutions.jump.workbench.imagery.ecw;
  * (250)385-6040
  * www.vividsolutions.com
  */
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.JUMPException;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImage;
@@ -41,6 +42,7 @@ import com.vividsolutions.jump.workbench.imagery.ReferencedImageFactory;
 public class ECWImageFactory implements ReferencedImageFactory {
 
     public static final String TYPE_NAME = "ECW";
+	final static String sNotInstalled=I18N.get("org.openjump.core.ui.plugin.layer.AddSIDLayerPlugIn.not-installed");
 
     public ECWImageFactory() {
     }
@@ -73,9 +75,10 @@ public class ECWImageFactory implements ReferencedImageFactory {
 
 		}catch(ClassNotFoundException e){
 			// eat it
+			System.out.println("ECW loader class " + c.toString() + " " + sNotInstalled);
 			return false;
 		}
-		
+		System.out.println("found ECW loader class");
 		return c != null;
 	}
 

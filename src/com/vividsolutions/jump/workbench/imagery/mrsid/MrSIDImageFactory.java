@@ -98,7 +98,7 @@ public class MrSIDImageFactory implements ReferencedImageFactory {
             	//-- error messages can not be send, as the workbench does not exist yet 
                 //context.getWorkbench().getFrame().warnUser(sErrorSeeOutputWindow);                
                 //context.getWorkbench().getFrame().getOutputFrame().addText(MRSIDDECODE + " " + sNotInstalled);
-            	//System.out.println(MRSIDDECODE + " " + sNotInstalled);
+            	System.out.println(MRSIDDECODE + " " + sNotInstalled);
                 return false;
             }
             
@@ -107,10 +107,10 @@ public class MrSIDImageFactory implements ReferencedImageFactory {
             	//-- error messages can not be send, as the workbench does not exist yet
                 //context.getWorkbench().getFrame().warnUser(sErrorSeeOutputWindow);                
                 //context.getWorkbench().getFrame().getOutputFrame().addText(MRSIDINFO + " " + sNotInstalled);
-            	//System.out.println(MRSIDINFO + " " + sNotInstalled);
+            	System.out.println(MRSIDINFO + " " + sNotInstalled);
                 return false;
             }
-         //System.out.println("found Mrsid decode files");
+         System.out.println("found Mrsid decode files");
          return true;
         //-- end new stuff   
 //		}catch(IOException e){
