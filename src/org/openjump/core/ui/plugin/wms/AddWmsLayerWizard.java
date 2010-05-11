@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.openjump.core.ui.plugin.AbstractUiPlugIn;
 import org.openjump.core.ui.plugin.file.open.ChooseProjectPanel;
 import org.openjump.core.ui.swing.wizard.AbstractWizardGroup;
 
@@ -15,20 +14,15 @@ import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Category;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
-import com.vividsolutions.jump.workbench.model.UndoableCommand;
-import com.vividsolutions.jump.workbench.model.UndoableEditReceiver;
 import com.vividsolutions.jump.workbench.model.WMSLayer;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.plugin.ThreadedPlugIn;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanel;
-import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.wms.MapLayerWizardPanel;
 import com.vividsolutions.jump.workbench.ui.plugin.wms.OneSRSWizardPanel;
 import com.vividsolutions.jump.workbench.ui.plugin.wms.SRSWizardPanel;
 import com.vividsolutions.jump.workbench.ui.plugin.wms.URLWizardPanel;
-import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
 import com.vividsolutions.wms.MapLayer;
 import com.vividsolutions.wms.WMService;
@@ -41,8 +35,9 @@ public class AddWmsLayerWizard extends AbstractWizardGroup {
   private WorkbenchContext workbenchContext;
 
   private String[] cachedURLs = new String[] {
-	"http://openaerialmap.org/wms/",
-    "http://demo.deegree.org/deegree-wms/services"  
+    "http://wms.jpl.nasa.gov/wms.cgi",
+    "http://demo.deegree.org/deegree-wms/services",
+	"http://openaerialmap.org/wms/"
   };
 
   private String lastWMSVersion = WMService.WMS_1_1_1;
