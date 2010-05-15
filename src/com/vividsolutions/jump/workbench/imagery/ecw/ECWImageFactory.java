@@ -75,7 +75,7 @@ public class ECWImageFactory implements ReferencedImageFactory {
 
 		}catch(ClassNotFoundException e){
 			// eat it
-			System.out.println("ECW loader class " + c.toString() + " " + sNotInstalled);
+			System.out.println("ECW loader class " + JNCSRendererProxy.RENDERER_CLASS + " " + sNotInstalled);
 			return false;
 		}
 		System.out.println("found ECW loader class");
