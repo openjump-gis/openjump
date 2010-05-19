@@ -56,7 +56,7 @@ public class RunDatastoreQueryPlugIn extends
         FeatureInputStream featureInputStream = ConnectionManager.instance(
             context.getWorkbenchContext() )
             .getOpenConnection( panel.getConnectionDescriptor() ).execute(
-            new AdhocQuery( /*panel.getQuery()*/query ) );
+            new AdhocQuery(query) );
         try {
             FeatureDataset featureDataset = new FeatureDataset(
                 featureInputStream.getFeatureSchema() );
@@ -79,12 +79,16 @@ public class RunDatastoreQueryPlugIn extends
             }
             return new Layer( name, context.getLayerManager()
                 .generateLayerFillColor(), featureDataset, context.getLayerManager() );
-        } finally {
-            if (featureInputStream instanceof com.vividsolutions.jump.datastore.postgis.PostgisFeatureInputStream) {
-                java.sql.Statement stmt = 
-                ((com.vividsolutions.jump.datastore.postgis.PostgisFeatureInputStream)featureInputStream).getStatement();
-                if (stmt != null) stmt.cancel();
-            }
+        }
+        finally {
+            // This code had been added as an attempt to cancel a long running query
+            // but it has a side effect on the connection which is closed
+            // This peace of code is removed until a better solution is found 
+            //if (featureInputStream instanceof com.vividsolutions.jump.datastore.postgis.PostgisFeatureInputStream) {
+            //    java.sql.Statement stmt = 
+            //    ((com.vividsolutions.jump.datastore.postgis.PostgisFeatureInputStream)featureInputStream).getStatement();
+            //    if (stmt != null) stmt.cancel();
+            //}
             featureInputStream.close();
         }
     }
