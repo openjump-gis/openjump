@@ -150,6 +150,19 @@ public class MultiInputDialog extends JDialog {
     private JPanel strutPanel = new JPanel();
     private JPanel currentMainPanel = innerMainPanel;
     private JPanel verticalSeparatorPanel = new JPanel();
+    
+    public JPanel getCurrentMainPanel() {
+        return currentMainPanel;
+    }
+    
+    public void setCurrentMainPanel(JPanel panel) {
+        currentMainPanel = panel;
+    }
+    
+    public void setRightPanelVisibility(boolean visible) {
+        innerMainPanel2.setVisible(visible);
+    }
+    
     /**
      * @param frame the frame on which to make this dialog modal and centred
      */
