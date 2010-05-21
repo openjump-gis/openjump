@@ -375,7 +375,7 @@ public class ShapefileWriter implements JUMPWriter {
             String columnName = fs.getAttributeName(t);
 
             if (columnType == AttributeType.INTEGER) {
-                fields[f] = new DbfFieldDef(columnName, 'N', 16, 0);
+                fields[f] = new DbfFieldDef(columnName, 'N', 11, 0);  //LDB: previously 16
                 f++;
             } else if (columnType == AttributeType.DOUBLE) {
                 fields[f] = new DbfFieldDef(columnName, 'N', 33, 16);
