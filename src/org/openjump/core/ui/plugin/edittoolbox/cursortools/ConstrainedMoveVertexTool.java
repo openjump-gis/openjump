@@ -105,30 +105,36 @@ public class ConstrainedMoveVertexTool extends ConstrainedDragTool {
     }
 
     public void mousePressed(final MouseEvent e) {
-        try {
-            if (!check(checkFactory.createAtLeastNLayersMustBeEditableCheck(1))) {
-                return;
-            }
-            if (!check(checkFactory.createExactlyNItemsMustBeSelectedCheck(1))) {
-                return;
-            }
-            if (!check(new EnableCheck() {
-                public String check(JComponent component) {
-                    try {
-                        return !nearSelectionHandle(e.getPoint())
-                            ? noEditableSelectionHandlesHere
-                            : null;
-                            } catch (Exception e) {
-                        return e.toString(); }
-                }
+    	try {
+    		if (!check(checkFactory.createAtLeastNLayersMustBeEditableCheck(1))) {
+    			return;
+    		}
+    		if (e.isControlDown() || e.isShiftDown()) {
+    			if (!check(checkFactory.createExactlyNItemsMustBeSelectedCheck(1))) {
+    				return;
+    			}
+    		} else {
+    			if (!check(checkFactory.createAtLeastNItemsMustBeSelectedCheck(1))) {
+    				return;
+    			}
+    		}
+    		if (!check(new EnableCheck() {
+    			public String check(JComponent component) {
+    				try {
+    					return !nearSelectionHandle(e.getPoint())
+    					? noEditableSelectionHandlesHere
+    							: null;
+    				} catch (Exception e) {
+    					return e.toString(); }
+    			}
 
-            })) {
-                return;
-            }
-            super.mousePressed(e);
-        } catch (Throwable t) {
-            getPanel().getContext().handleThrowable(t);
-        }
+    		})) {
+    			return;
+    		}
+    		super.mousePressed(e);
+    	} catch (Throwable t) {
+    		getPanel().getContext().handleThrowable(t);
+    	}
     }
 
     private boolean nearSelectionHandle(Point2D p) throws NoninvertibleTransformException {
