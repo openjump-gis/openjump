@@ -31,10 +31,10 @@ public class PostgisSQLBuilder
     qs.append("SELECT ");
     qs.append(getColumnListSpecifier(colNames, query.getGeometryAttributeName()));
     qs.append(" FROM ");
-    qs.append(query.getDatasetName());
+    // fixed by mmichaud on 2010-05-27 for mixed case dataset names
+    qs.append("\"" + query.getDatasetName().replaceAll("\\.","\".\"") + "\"");
     qs.append(" t WHERE ");
-    // srid = 1042102
-        qs.append(buildBoxFilter(query.getGeometryAttributeName(), query.getSRSName(), query.getFilterGeometry()));
+    qs.append(buildBoxFilter(query.getGeometryAttributeName(), query.getSRSName(), query.getFilterGeometry()));
 
     String whereCond = query.getCondition();
     if (whereCond != null) {
@@ -51,7 +51,8 @@ public class PostgisSQLBuilder
 
     // Example of Postgis SQL: GEOM && SetSRID('BOX3D(191232 243117,191232 243119)'::box3d,-1);
     StringBuffer buf = new StringBuffer();
-    buf.append(geometryColName + " && SetSRID('BOX3D(");
+    // fixed by mmichaud on 2010-05-27 for mixed case geometryColName names
+    buf.append("\"" + geometryColName + "\" && SetSRID('BOX3D(");
     buf.append(env.getMinX()
                + " " + env.getMinY()
                + "," + env.getMaxX()

@@ -99,8 +99,13 @@ public class PostgisDSMetadata implements DataStoreMetadata {
   private String querySRID(String tableName, String colName)
   {
     final StringBuffer srid = new StringBuffer();
-    String sql = "SELECT getsrid(" + colName + ") FROM " + tableName + " LIMIT 1";
-
+    // Changed by Michael Michaud 2010-05-26 (throwed exception for empty tableName)
+    // String sql = "SELECT getsrid(" + colName + ") FROM " + tableName + " LIMIT 1";
+    String[] tokens = tableName.split("\\.", 2);
+    String schema = tokens.length==2?tokens[0]:"public";
+    String table = tokens.length==2?tokens[1]:tableName;
+    String sql = "SELECT srid FROM geometry_columns where (f_table_schema = '" + schema + "' and f_table_name = '" + table + "')";
+    // End of the fix
     JDBCUtil.execute(conn.getConnection(), sql, new ResultSetBlock() {
       public void yield(ResultSet resultSet) throws SQLException {
         if (resultSet.next()) {
