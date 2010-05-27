@@ -120,7 +120,7 @@ public abstract class GeoReferencedRaster
   }
 
   /**
-   * @return
+   * @return coordinate of left-top corner in the model coordinate system
    */
   public Coordinate getCoorModel_tiepointLT()
   {
@@ -128,7 +128,7 @@ public abstract class GeoReferencedRaster
   }
 
   /**
-   * @return
+   * @return coordinate of left-top corner in the raster coordinate system
    */
   public Coordinate getCoorRasterTiff_tiepointLT()
   {
@@ -136,7 +136,7 @@ public abstract class GeoReferencedRaster
   }
 
   /**
-   * @return
+   * @return number of model units per raster unit along X axis
    */
   public double getDblModelUnitsPerRasterUnit_X()
   {
@@ -144,7 +144,7 @@ public abstract class GeoReferencedRaster
   }
 
   /**
-   * @return
+   * @return number of model units per raster unit along Y axis
    */
   public double getDblModelUnitsPerRasterUnit_Y()
   {
