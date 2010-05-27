@@ -219,7 +219,8 @@ public class FeatureInstaller {
    *          do not already exist
    * @param menuItemName name of the menu item
    * @param checkBox whether to create a JCheckBoxMenuItem or a JMenuItem
-   * @return the created JMenuItem
+   * @param icon an Icon or null
+   * @param enableCheck conditions to make the plugin available to the user  
    * @see GUIUtil#toSmallIcon
    */
   public void addMainMenuItem(PlugIn executable, String[] menuPath,

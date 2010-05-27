@@ -69,7 +69,7 @@ public class RenderingManager {
   // default in FeatureCollectionRenderer is 100 features.
 
   /**
-   * @see multiRendererThreadQueue
+   * @see ThreadQueue
    */
   public static final String USE_MULTI_RENDERING_THREAD_QUEUE_KEY = RenderingManager.class.getName()
     + " - USE MULTI RENDERING THREAD QUEUE";
