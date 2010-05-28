@@ -173,7 +173,7 @@ public class AttributeMapping {
      * feature, using the mappings specified in the constructor. The third feature's
      * schema must be able to accomodate the attributes being transferred.
      * @param aFeature a feature from feature-collection A
-     * @param bFeature a feature from feature-collection B
+     * @param bFeature a feature from feature-collection B (can be null)
      * @param cFeature the feature to transfer the A and B attributes to
      */
     public void transferAttributes(Feature aFeature, Feature bFeature,

@@ -1,4 +1,8 @@
 2010-04-26 sstein <sstein@geo.uzh.ch>
+    added function to intersect polygons of one layer (in Tools>Analysis>One Layer)
+    org.openjump.core.ui.plugin.tools.analysis.onelayer.IntersectPolygonsOneLayerPlugIn
+    
+2010-04-26 sstein <sstein@geo.uzh.ch>
     fixed error in median calculation of
     org.openjump.core.attributeoperations.AttributeOp 
     
