@@ -121,7 +121,7 @@ public class SimplifyPolygonCoveragePlugIn extends AbstractPlugIn implements Thr
 	    	featureInstaller.addMainMenuItem(
 	    	        this,								//exe
 	                new String[] {MenuNames.TOOLS, MenuNames.TOOLS_GENERALIZATION}, 	//menu path
-	                this.sName,
+	                this.sName + "...",
 	                false,			//checkbox
 	                null,			//icon
 	                createEnableCheck(context.getWorkbenchContext())); //enable check

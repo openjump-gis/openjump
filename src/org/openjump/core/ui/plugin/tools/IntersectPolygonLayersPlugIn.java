@@ -62,7 +62,8 @@ public class IntersectPolygonLayersPlugIn extends ThreadedBasePlugIn {
 	private final static String sAccurracy = "Set calculation accuray in map units";
 	// -- reset in execute to correct language
 	private MultiInputDialog dialog;
-	private Layer layer1, layer2;
+	private Layer layer1 = null; 
+	private Layer layer2 = null;
 	private String methodNameToRun;
 	private boolean exceptionThrown = false;
 	private PlugInContext context = null;
@@ -89,6 +90,10 @@ public class IntersectPolygonLayersPlugIn extends ThreadedBasePlugIn {
 	public boolean execute(PlugInContext context) throws Exception {
 		MultiInputDialog dialog = new MultiInputDialog(context
 				.getWorkbenchFrame(), getName(), true);
+		if(layer1 == null){
+			layer1 = context.getCandidateLayer(0);
+			layer2 = context.getCandidateLayer(0);
+		}
 		setDialogValues(dialog, context);
 		GUIUtil.centreOnWindow(dialog);
 		dialog.setVisible(true);
@@ -101,7 +106,7 @@ public class IntersectPolygonLayersPlugIn extends ThreadedBasePlugIn {
 
 	public String getName() {
 		return I18N
-				.get("org.openjump.plugin.tools.IntersectPolygonLayersPlugIn.Intersect-Polygon-Layers");
+				.get("org.openjump.plugin.tools.IntersectPolygonLayersPlugIn.Intersect-Polygon-Layers") + "...";
 	}
 
 	public void run(TaskMonitor monitor, PlugInContext context)

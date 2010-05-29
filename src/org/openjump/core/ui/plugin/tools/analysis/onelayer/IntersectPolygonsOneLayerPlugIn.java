@@ -54,9 +54,9 @@ public class IntersectPolygonsOneLayerPlugIn extends ThreadedBasePlugIn {
 	private final static String LAYER1 = GenericNames.LAYER_A;
 	private final static String sTRANSFER = I18N.get("org.openjump.plugin.tools.IntersectPolygonLayersPlugIn.Transfer-attributes");
 	private String sDescription = "Intersects all polygon geometries in a layer. Regions that can be " +
-			"mapped to two polygons will not contain attributes. Note: The Planar Graph function provides similar functionality.";
+			"mapped to two source polygons will not contain attributes. Note: The Planar Graph function provides similar functionality.";
 	private PlugInContext context;
-	private Layer layer1;
+	private Layer layer1 = null;
 	private boolean exceptionThrown = false;
 	private boolean transferAtt = true;
 	
@@ -64,7 +64,7 @@ public class IntersectPolygonsOneLayerPlugIn extends ThreadedBasePlugIn {
 		context.getFeatureInstaller().addMainMenuItem(
 				this,
 				new String[] { MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS, MenuNames.ONELAYER },
-				this.getName(),
+				this.getName() + "...",
 				false,
 				null,
 				new MultiEnableCheck().add(
@@ -79,6 +79,9 @@ public class IntersectPolygonsOneLayerPlugIn extends ThreadedBasePlugIn {
 	public boolean execute(PlugInContext context) throws Exception {
 		MultiInputDialog dialog = new MultiInputDialog(context
 				.getWorkbenchFrame(), getName(), true);
+		if(layer1 == null){
+			layer1 = context.getCandidateLayer(0);
+		}
 		setDialogValues(dialog, context);
 		GUIUtil.centreOnWindow(dialog);
 		dialog.setVisible(true);

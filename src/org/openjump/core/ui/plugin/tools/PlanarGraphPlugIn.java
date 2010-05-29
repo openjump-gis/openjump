@@ -223,7 +223,7 @@ public class PlanarGraphPlugIn extends ThreadedBasePlugIn {
     }
 
     public String getName(){
-    	return I18N.get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Planar-Graph");	
+    	return I18N.get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Planar-Graph") + "...";	
     }
     
     private void initDialog(PlugInContext context) {

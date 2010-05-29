@@ -93,7 +93,7 @@ public class ExtractCommonBoundaryBetweenPolysPlugIn extends AbstractPlugIn impl
 	    	featureInstaller.addMainMenuItem(
 	    	        this,								//exe
 	                new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY, MenuNames.CONVERT}, 	//menu path
-	                this.sName,
+	                this.sName + "...",
 	                false,			//checkbox
 	                null,			//icon
 	                createEnableCheck(context.getWorkbenchContext())); //enable check
