@@ -194,8 +194,33 @@ public class LabelStyle implements Style {
         if ( geometry.getDimension() == 0) { //LDB: treat points as linear to justify them
         	return new ModelSpaceLabelSpec(geometry.getCoordinate(), 0d, true); 
         }
+        
+        if ((verticalAlignment.equals(ABOVE_LINE)) 
+        		|| (verticalAlignment.equals(BELOW_LINE))) {
+        	return new ModelSpaceLabelSpec(findPoint(geometry), 0, true);
+        }
         return new ModelSpaceLabelSpec(interiorPointFinder.findPoint(geometry), 0, false);
     }
+    
+    public Coordinate findPoint(Geometry geometry) {
+        if (geometry.isEmpty())
+            return new Coordinate(0, 0);
+        Envelope envelope = geometry.getEnvelopeInternal();
+        double x = (envelope.getMinX() + envelope.getMaxX()) / 2d;
+        double y = (envelope.getMinY() + envelope.getMaxY()) / 2d;
+        
+        if (verticalAlignment.equals(ABOVE_LINE))
+        	y = envelope.getMaxY();
+        else if (verticalAlignment.equals(BELOW_LINE))
+        	y = envelope.getMinY();
+        if (horizontalAlignment == JUSTIFY_LEFT)
+        	x = envelope.getMinX();
+        else if (horizontalAlignment == JUSTIFY_RIGHT)
+        	x = envelope.getMaxX();
+        return new Coordinate(x, y);
+    }
+
+    
     private ModelSpaceLabelSpec modelSpaceLabelSpec1D(Geometry geometry) {
         LineSegment longestSegment = longestSegment(geometry);
         return new ModelSpaceLabelSpec( 
@@ -267,13 +292,6 @@ public class LabelStyle implements Style {
             if (isScaling()) {
                 scale *= viewportScale;
             }
-            //LDB: this is taken care of at a higher level now
-//            if (isHidingAtScale()){
-//        		double realScale = ScreenScale.getHorizontalMapScale(viewport);            	
-//            	if (realScale > scaleToHideAt)
-//            	return;
-//            }
-            //g.setColor(getColor());
             TextLayout layout = new TextLayout(text, getFont(), g.getFontRenderContext());
             AffineTransform transform = g.getTransform();
             configureTransform(transform, viewCentre, scale, layout, angle, linear);
@@ -427,6 +445,18 @@ public class LabelStyle implements Style {
         return 0;
     }
     
+    /**
+     * @return approximate alignment offset for estimation
+     */
+    public double getVerticalAlignmentOffset() {
+    	return verticalAlignmentOffset(getHeight()) - getHeight()/2;
+    }
+    /**
+     * @return approximate alignment offset for estimation
+     */
+    public double getHorizontalAlignmentOffset(String text) {
+    	return horizontalAlignmentOffset(text.length() * getHeight() * 0.6);
+    }
     public String getAttribute() {
         return attribute;
     }
