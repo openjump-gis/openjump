@@ -1,3 +1,14 @@
+2010-06-06 sstein <sstein@geo.uzh.ch>
+    added function to merge selected polygons with neighbor polygons - choosing either 
+    the one with the largest area of all neighbors, or the polygon with the longest
+    shared edge. (in Tools>Analysis>One Layer) The function is similar to 
+    ArcGIS "eliminate".
+    org.openjump.core.ui.plugin.tools.analysis.onelayer.MergeSelectedPolygonsWithNeighbourPlugIn
+
+2010-06-04 beckerl <becker.larry@gmail.com>
+	Changed Label Style so that vertical alignment works for polygons. Default is now Above.
+    com.vividsolutions.jump.workbench.ui.renderer.style.LabelStyle.java
+    
 2010-05-27 sstein <sstein@geo.uzh.ch>
     added function to intersect polygons of one layer (in Tools>Analysis>One Layer)
     org.openjump.core.ui.plugin.tools.analysis.onelayer.IntersectPolygonsOneLayerPlugIn

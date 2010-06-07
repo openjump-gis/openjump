@@ -31,10 +31,10 @@
  * last modified:  	
  * 
  * description: 
- *  Merges selected polygons with neighboring polygons either with the one that is
- *  largest of all neighbors or the one whit which it has the longest common boundary.
- *  
- *  TODO: the latter option - using the polygon graph - hasn't been tested yet.
+ *  Merges selected polygons with neighboring polygons, either with the one that is
+ *  largest of all neighbors, or the one wiht which it has the longest common boundary.
+ *  Note, the function may return multi-polygons if the polygons to merge have only 
+ *  one point in common.
  *****************************************************/
 
 package org.openjump.core.ui.plugin.tools.analysis.onelayer;
@@ -43,6 +43,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.swing.JRadioButton;
 
 import org.openjump.core.apitools.FeatureCollectionTools;
 import org.openjump.core.apitools.objecttyperoles.PirolFeatureCollection;
@@ -57,6 +59,7 @@ import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureDataset;
+import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
@@ -65,6 +68,7 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.ThreadedBasePlugIn;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
@@ -73,10 +77,8 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 /**
  * @author sstein
  * 
- * ToDos: (i) add dialog to chose between merge by i) area and ii) longest edge, 
- * (ii) test longest edge implementation, 
- * (iii) remove additionally created attributes, 
- * (iv) check if cascading merge works
+ * ToDos:  
+ * (i) translate 
  **/
 public class MergeSelectedPolygonsWithNeighbourPlugIn extends ThreadedBasePlugIn{
 
@@ -84,9 +86,23 @@ public class MergeSelectedPolygonsWithNeighbourPlugIn extends ThreadedBasePlugIn
 	//private String sMergeTwoPolys = I18N.get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Merge-Selected-Polygon-with-Neighbour");
 	private String sMergeTwoPolys = "Merge Selected Polygons with Neighbours";
 	private String sFeaturesFromDifferentLayer = "features from different layers";
+	private String sSidebar = " Merges selected polygons with neighboring polygons, either with the one that is largest of " +
+			"all neighbors, or the one with which it has " +
+			"the longest common boundary. Note, the function may return multi-polygons if " +
+			"the polygons to merge have only one point in common.";
 	boolean useArea = true;
+	boolean useBorder = false;
+	String sUseArea = "merge with neighbor that has the largest area";
+	String sUseBoder = "merge with neighbor with the longest common edge";
+	String sChoseMergeMethod = "Please chose the merge method:";
+	String sMerged ="merged";
+	String sSearchingForMergeCandidates = "Searching For Merge Candidates";
+	String sMergingPolygons = "Merging Polygons";
+	final static String sMERGEMETHOD = "MERGE METHOD";
 	
     private MultiInputDialog dialog;
+    private JRadioButton buttonSelectMergeTypeUseArea = null;
+    private JRadioButton buttonSelectMergeTypeUseBorder = null;
 	
     public void initialize(PlugInContext context) throws Exception {
         FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
@@ -112,24 +128,37 @@ public class MergeSelectedPolygonsWithNeighbourPlugIn extends ThreadedBasePlugIn
     }
     
 	public boolean execute(PlugInContext context) throws Exception{
-        //Unlike ValidatePlugIn, here we always call #initDialog because we want
-        //to update the layer comboboxes.
-		/*
+		
         initDialog(context);
         dialog.setVisible(true);
         if (!dialog.wasOKPressed()) {
             return false;
         }
         else{
-        	this.input =  dialog.getLayer(this.LAYERREGIONS);
-        	this.regions = this.input.getFeatureCollectionWrapper();        	
+        	this.getDialogValues(dialog); 
         }
-        */
-        return true;	    
+        return true;    
 	}
+    
+	private void initDialog(PlugInContext context) {
+    	
+        dialog = new MultiInputDialog(context.getWorkbenchFrame(), this.getName(), true);
+        dialog.setSideBarDescription(sSidebar);
+        final String METHODGROUP = sMERGEMETHOD;
+        dialog.addLabel(sChoseMergeMethod);
+        buttonSelectMergeTypeUseArea = dialog.addRadioButton(sUseArea, METHODGROUP, this.useArea, sUseArea);
+        buttonSelectMergeTypeUseBorder = dialog.addRadioButton(sUseBoder, METHODGROUP, this.useBorder, sUseBoder);
+        GUIUtil.centreOnWindow(dialog);
+    }	    
+  
+    private void getDialogValues(MultiInputDialog dialog) {
+    	this.useArea = dialog.getBoolean(this.sUseArea);
+    	this.useBorder = dialog.getBoolean(this.sUseBoder);
+      }
     
     public void run(TaskMonitor monitor, PlugInContext context) throws Exception{             
     	
+    	monitor.allowCancellationRequests();
 		// get the selected features
 	    Collection<Feature> features = context.getWorkbenchContext().getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems();
 	    // get the layers
@@ -150,10 +179,12 @@ public class MergeSelectedPolygonsWithNeighbourPlugIn extends ThreadedBasePlugIn
 	    	Layer firstLayer = (Layer)iter.next();
 	    	//make a copy of the FC first
 	    	FeatureCollection input = FeatureCollectionTools.cloneFeatureCollection(firstLayer.getFeatureCollectionWrapper());
+	    	FeatureSchema originalFeatureSchema = input.getFeatureSchema();
 	    	PirolFeatureCollection fcN = FeatureCollectionTools.addAttributeToFeatureCollection(input, "mergeid", AttributeType.INTEGER, new Integer(0));
 	    	fcN = FeatureCollectionTools.addAttributeToFeatureCollection(fcN, "selected", AttributeType.INTEGER, new Integer(0));
 	    	fcN = FeatureCollectionTools.addAttributeToFeatureCollection(fcN, "toMergeWithFID", AttributeType.INTEGER, new Integer(0));
 			FeatureDataset fcAssigned = new FeatureDataset(fcN.getFeatureSchema());
+			
 	    	// put all features in a tree for faster search and set the mergeID attributes, as well as mark the which should be merged
 	    	int i = 0; int fcount = 88888888;
 	    	Quadtree qTree = new Quadtree(); 
@@ -183,13 +214,22 @@ public class MergeSelectedPolygonsWithNeighbourPlugIn extends ThreadedBasePlugIn
 				ftemp.getGeometry().setUserData(null);
 			}
 	    	// find the polygons to merge with
+	    	int sizeS = selectedF.size(); int counterS = 0;
 	    	for (Iterator iterator = selectedF.iterator(); iterator.hasNext();) {
+				
+	    		monitor.report(counterS, sizeS, sSearchingForMergeCandidates);
+	    		if(monitor.isCancelRequested()){
+	    			return;
+	    		}
+				
 				Feature ftemp = (Feature) iterator.next();
 				Geometry gtemp = ftemp.getGeometry();
 				Collection candidates = qTree.query(gtemp.getEnvelopeInternal());
 				if(this.useArea){
-					// we are interested in the polygon with the biggest area
-					// hence a normal intersection test should be ok
+					/*********************************************************
+					 * we are interested in the polygon with the biggest area
+					 * hence a normal intersection test should be ok
+					 ********************************************************/
 					double area = -1.0; 
 					Feature f2merge = null;
 					for (Iterator iterator2 = candidates.iterator(); iterator2.hasNext();) {
@@ -206,7 +246,15 @@ public class MergeSelectedPolygonsWithNeighbourPlugIn extends ThreadedBasePlugIn
 					//   it has already a merge candidate
 					int val = (Integer)f2merge.getAttribute("toMergeWithFID");
 					if(val != 0){//it has already a merge candidate, so set value to be negative
-						f2merge.setAttribute("toMergeWithFID", new Integer(-1));
+						int selectedVal = (Integer)ftemp.getAttribute("selected");
+						if(selectedVal >0){
+							//if it is one of the selected ones
+							//then we leave the original mergeid value in the field
+						}
+						else{
+							//otherwise we set
+							f2merge.setAttribute("toMergeWithFID", new Integer(-1));
+						}
 					}
 					else{//set the polygon to merge with
 						f2merge.setAttribute("toMergeWithFID", (Integer)ftemp.getAttribute("selected"));
@@ -214,10 +262,10 @@ public class MergeSelectedPolygonsWithNeighbourPlugIn extends ThreadedBasePlugIn
 					ftemp.setAttribute("toMergeWithFID", (Integer)f2merge.getAttribute("mergeid"));
 				}//end (useArea)
 				else{
-					/************************************
-					 * TODO: this code below is untested
-					 ************************************/
-					// we are interested in the polygon with the longest common boundary
+					/*******************************************************************
+					 * we are interested in the polygon with the longest common boundary
+					 * hence we use the polygon graph
+					 ******************************************************************/
 					PolygonGraph pg = new PolygonGraph(candidates, null);
 					PolygonGraphEdge longestEdge = null; double maxlength = -1;
 					for (Iterator iterator2 = pg.nodes.iterator(); iterator2.hasNext();) {
@@ -227,6 +275,7 @@ public class MergeSelectedPolygonsWithNeighbourPlugIn extends ThreadedBasePlugIn
 							//-- get the the poly with the longest common edge
 							for (Iterator iterator3 = node.edges.iterator(); iterator3.hasNext();) {
 								PolygonGraphEdge tedge = (PolygonGraphEdge) iterator3.next();
+								//we may have several lines for the case that another polygon is in between...
 								ArrayList<Geometry> lines = tedge.getBoundaries();
 								double length = 0;
 								for (Iterator iterator4 = lines.iterator(); iterator4.hasNext();) {
@@ -248,24 +297,37 @@ public class MergeSelectedPolygonsWithNeighbourPlugIn extends ThreadedBasePlugIn
 					else{
 						fToMerge = longestEdge.node1.realWorldObject;
 					}
-					//-- now set the with which Feature it should be merged, but check first if
+					//-- now set with which Feature it should be merged, but check first if
 					//   it has already a merge candidate
 					int val = (Integer)fToMerge.getAttribute("toMergeWithFID");
 					if(val != 0){//it has already a merge candidate, so set value to be negative
-						fToMerge.setAttribute("toMergeWithFID", new Integer(-1));
+						int selectedVal = (Integer)ftemp.getAttribute("selected");
+						if(selectedVal >0){
+							//if it is one of the selected ones
+							//then we leave the original mergeid value in the field
+						}
+						else{
+							//otherwise we set
+							fToMerge.setAttribute("toMergeWithFID", new Integer(-1));
+						}
 					}
 					else{//set the polygon to merge with
 						fToMerge.setAttribute("toMergeWithFID", (Integer)ftemp.getAttribute("selected"));
 					}
 					ftemp.setAttribute("toMergeWithFID", (Integer)fToMerge.getAttribute("mergeid"));
 				}
+				counterS++;
 			}// end loop over all selected features to find the ones to merge
+	    	
 			//-- so, we figured who has to be merged with whom - but we also should be able
 			// to identify those ones polygons that are to be merged with a polygon that
 			// needs to be merged too - here some output first
+	    	
 			List allfeat = qTree.queryAll();
 			fcAssigned.addAll(allfeat); 
-			context.addLayer(StandardCategoryNames.RESULT, firstLayer.getName() + "_featuresWithAssigments", fcAssigned);
+			//-- un-comment line below for debugging
+			//context.addLayer(StandardCategoryNames.RESULT, firstLayer.getName() + "_featuresWithAssigments", fcAssigned);
+			
 			//-- sorting things out, and do a copy so we do not mess up things
 			FeatureDataset resultFList = new FeatureDataset(fcAssigned.getFeatureSchema());
 			FeatureDataset selectedFList = new FeatureDataset(fcAssigned.getFeatureSchema());
@@ -280,7 +342,7 @@ public class MergeSelectedPolygonsWithNeighbourPlugIn extends ThreadedBasePlugIn
 				}
 				else if(selectedVal > 0){
 					selectedFList.add(ft);
-					//add them also to the merge list (since they selected may be a merge target too)
+					//add them also to the merge list (since the selected features may be a merge target too)
 					mergeFList.add(ft);
 				}
 				else{
@@ -288,8 +350,15 @@ public class MergeSelectedPolygonsWithNeighbourPlugIn extends ThreadedBasePlugIn
 				}
 			}
 			//-- do the merge
+			int size = selectedFList.size(); int counter = 0;
 	    	for (Iterator iterator = selectedFList.iterator(); iterator.hasNext();) {
-				Feature ftemp = (Feature) iterator.next();
+				
+	    		monitor.report(counter, size, sMergingPolygons);
+	    		if(monitor.isCancelRequested()){
+	    			return;
+	    		}
+				
+	    		Feature ftemp = (Feature) iterator.next();
 				int toMergeWithVal = (Integer)ftemp.getAttribute("toMergeWithFID");
 				Feature mpoly = getPolyToMerge(toMergeWithVal, mergeFList);
 				if (mpoly != null){
@@ -309,11 +378,20 @@ public class MergeSelectedPolygonsWithNeighbourPlugIn extends ThreadedBasePlugIn
 					resultFList.add(ftemp);
 					mergeFList = removeFromList(mergeFList, ftemp);
 				}
+	    		counter++;
 	    	}
 	    	//add the remaining merged polygons
 	    	resultFList.addAll(mergeFList.getFeatures());
-	    	//TODO: remove the additional attributes
-			context.addLayer(StandardCategoryNames.RESULT, firstLayer.getName() + "_merged", resultFList);
+	    	{// remove the additional attributes
+		    	FeatureDataset removedAttrFc = new FeatureDataset(originalFeatureSchema);
+		    	for (Iterator iterator = resultFList.iterator(); iterator.hasNext();) {
+					Feature ftemp = (Feature) iterator.next();
+					Feature fnew = FeatureCollectionTools.copyFeatureAndSetFeatureSchema(ftemp, originalFeatureSchema);
+					removedAttrFc.add(fnew);
+		    	}
+		    	resultFList = removedAttrFc;
+	    	}
+			context.addLayer(StandardCategoryNames.RESULT, firstLayer.getName() + "_" + sMerged, resultFList);
 			
 	    }//end else - layer size
     	//context.getWorkbenchContext().getLayerViewPanel().getSelectionManager().clear();
@@ -355,19 +433,5 @@ public class MergeSelectedPolygonsWithNeighbourPlugIn extends ThreadedBasePlugIn
 		
 		return fdnew;
 	}
-	
-	private void initDialog(PlugInContext context) {
-    	/*
-        dialog = new MultiInputDialog(context.getWorkbenchFrame(), this.sName, true);
-        dialog.setSideBarDescription(sSidebar);
-        try {
-        	JComboBox addLayerComboBoxRegions = dialog.addLayerComboBox(this.LAYERREGIONS, context.getCandidateLayer(0), null, context.getLayerManager());
-        }
-        catch (IndexOutOfBoundsException e) {
-        	//eat it
-        }
-        GUIUtil.centreOnWindow(dialog);
-        */
-    }	    
-  
+    
 }
