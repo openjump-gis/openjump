@@ -576,7 +576,9 @@ public class FeatureCollectionTools extends ToolToMakeYourLifeEasier {
     }
     
     /**
-     * "deep copys" the given Feature and thereby sets the given feature schema
+     * "deep copys" the given Feature and thereby sets the given feature schema.
+     * The new FeatureSchema should have the same attribute names for copying. 
+     * The new FeatureSchmema can have less or more attributes. 
      *@param feat the feature to be copied
      *@param newFs the new feature schema
      *@return copy of the feature
@@ -589,7 +591,10 @@ public class FeatureCollectionTools extends ToolToMakeYourLifeEasier {
         int numAttr = feat.getSchema().getAttributeCount();
         
         for ( int i=0; i<numAttr; i++ ){
-            newFeat.setAttribute( fs.getAttributeName(i), feat.getAttribute(fs.getAttributeName(i)) );
+        	String attrName = fs.getAttributeName(i);
+        	if (newFs.hasAttribute(attrName)){
+        		newFeat.setAttribute( fs.getAttributeName(i), feat.getAttribute(fs.getAttributeName(i)) );
+        	}           
         }
         
         newFeat.setGeometry((Geometry)feat.getGeometry());
