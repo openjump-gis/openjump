@@ -177,7 +177,8 @@ public class MultiRingBufferSelectedPlugIn
 	  if (enableLabeling)
 	  {
 		  LabelStyle labelStyle = layer.getLabelStyle();
-		  labelStyle.setAttribute(attributeName);	
+		  labelStyle.setAttribute(attributeName);
+		  labelStyle.setVerticalAlignment(LabelStyle.ON_LINE);
 		  labelStyle.setEnabled(true);
 	  }
 	  
