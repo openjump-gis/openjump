@@ -55,6 +55,7 @@ import org.openjump.core.graph.polygongraph.PolygonGraphNode;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.index.quadtree.Quadtree;
 import com.vividsolutions.jts.operation.union.UnaryUnionOp;
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
@@ -77,16 +78,13 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 /**
  * @author sstein
  * 
- * ToDos:  
- * (i) translate 
  **/
 public class MergeSelectedPolygonsWithNeighbourPlugIn extends ThreadedBasePlugIn{
 
 
-	//private String sMergeTwoPolys = I18N.get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Merge-Selected-Polygon-with-Neighbour");
 	private String sMergeTwoPolys = "Merge Selected Polygons with Neighbours";
-	private String sFeaturesFromDifferentLayer = "features from different layers";
-	private String sSidebar = " Merges selected polygons with neighboring polygons, either with the one that is largest of " +
+	private String sFeaturesFromDifferentLayer = "Error: Features from different layers!";
+	private String sSidebar = "Merges selected polygons with neighboring polygons, either with the one that is largest of " +
 			"all neighbors, or the one with which it has " +
 			"the longest common boundary. Note, the function may return multi-polygons if " +
 			"the polygons to merge have only one point in common.";
@@ -96,8 +94,8 @@ public class MergeSelectedPolygonsWithNeighbourPlugIn extends ThreadedBasePlugIn
 	String sUseBoder = "merge with neighbor with the longest common edge";
 	String sChoseMergeMethod = "Please chose the merge method:";
 	String sMerged ="merged";
-	String sSearchingForMergeCandidates = "Searching For Merge Candidates";
-	String sMergingPolygons = "Merging Polygons";
+	String sSearchingForMergeCandidates = "Searching for merge candidates...";
+	String sMergingPolygons = "Merging polygons...";
 	final static String sMERGEMETHOD = "MERGE METHOD";
 	
     private MultiInputDialog dialog;
@@ -105,6 +103,17 @@ public class MergeSelectedPolygonsWithNeighbourPlugIn extends ThreadedBasePlugIn
     private JRadioButton buttonSelectMergeTypeUseBorder = null;
 	
     public void initialize(PlugInContext context) throws Exception {
+    	
+    	sMergeTwoPolys = I18N.get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Merge-Selected-Polygons-with-Neighbours");
+    	sFeaturesFromDifferentLayer = I18N.get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.features-from-different-layers");
+    	sSidebar = I18N.get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.description");
+    	sUseArea = I18N.get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.merge-with-neighbor-that-has-the-largest-area");
+    	sUseBoder = I18N.get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.merge-with-neighbor-with-the-longest-common-edge");
+    	sChoseMergeMethod = I18N.get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Please-chose-the-merge-method");
+    	sMerged = I18N.get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.merged");
+    	sSearchingForMergeCandidates = I18N.get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Searching-for-merge-candidates");
+    	sMergingPolygons = I18N.get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Merging-polygons");
+    	
         FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
     	featureInstaller.addMainMenuItem(
     	        this,								//exe
