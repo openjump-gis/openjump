@@ -1,3 +1,6 @@
+2010-06-16 mmichaud <michael.michaud@free.fr>
+    While readind a dbf character field, it now gets rid of trailing 0x00 bytes 
+
 2010-06-06 sstein <sstein@geo.uzh.ch>
     added function to merge selected polygons with neighbor polygons - choosing either 
     the one with the largest area of all neighbors, or the polygon with the longest
