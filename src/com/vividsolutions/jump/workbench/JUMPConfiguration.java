@@ -892,10 +892,10 @@ public class JUMPConfiguration implements Setup {
        /*
         featureInstaller.addLayerViewMenuItem(addWMSQueryPlugIn, MENU_LAYER,
                 addWMSQueryPlugIn.getName() + "...");
-      
+      	*/
         featureInstaller.addLayerViewMenuItem(addImageLayerPlugIn, MENU_LAYER,
                 addImageLayerPlugIn.getName() + "...");
-      
+        /*
         featureInstaller.addMainMenuItem(addNewCategoryPlugIn, MENU_LAYER,
                 addNewCategoryPlugIn.getName(), null, addNewCategoryPlugIn
                         .createEnableCheck(workbenchContext));

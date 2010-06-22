@@ -32,7 +32,6 @@ package com.vividsolutions.jump.workbench.imagery.mrsid;
  * www.vividsolutions.com
  */
 import java.io.File;
-import java.io.IOException;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.JUMPException;
@@ -87,7 +86,12 @@ public class MrSIDImageFactory implements ReferencedImageFactory {
 			//-- new
 			File empty = new File("");
 			String sep = File.separator;
-		    WORKING_DIR = context.getWorkbench().getPlugInManager().getPlugInDirectory() + sep;
+			try{
+				WORKING_DIR = context.getWorkbench().getPlugInManager().getPlugInDirectory() + sep;
+			}
+			catch(Exception e){//eat it (the PlugInDirectory may be "null")
+				return false;
+			}
 		    ETC_PATH = WORKING_DIR + "etc" + sep;
 		    TMP_PATH = WORKING_DIR + "etc" + sep + "tmp" + sep;
 	        MRSIDDECODE = ETC_PATH + MRSIDDECODEFILE;
