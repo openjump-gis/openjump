@@ -127,16 +127,27 @@ public class GridRenderer extends SimpleRenderer {
         double maxModelY)
         throws NoninvertibleTransformException {
         g.setStroke(stroke);
+        // Long dashed lines are very long to draw [bug ]
+        // Don't draw it out of the panel [mmichaud 2010-06-22] 
+        Point2D minXY = panel.getViewport().toViewPoint(new Coordinate(minModelX, minModelY));
+        Point2D maxXY = panel.getViewport().toViewPoint(new Coordinate(maxModelX, maxModelY));
+        int minViewX = Math.max(-1, (int)minXY.getX());
+        int maxViewX = Math.min(panel.getWidth() + 1, (int)maxXY.getX());
+        // Second Math.min is there because min view coordinate = max model coordinate
+        int minViewY = Math.max(-1, (int)Math.min(minXY.getY(), maxXY.getY()));
+        // Second Math.max is there because max view coordinate = min model coordinate
+        int maxViewY = Math.min(panel.getHeight() + 1, (int)Math.max(minXY.getY(), maxXY.getY()));
+        
         for (double x = minModelX; x < maxModelX; x += gridSize) {
-            Point2D min = panel.getViewport().toViewPoint(new Coordinate(x, minModelY));
-            Point2D max = panel.getViewport().toViewPoint(new Coordinate(x, maxModelY));
-            g.drawLine((int) min.getX(), (int) min.getY(), (int) max.getX(), (int) max.getY());
+            int viewX = (int)panel.getViewport().toViewPoint(new Coordinate(x, minModelY)).getX();
+            if (viewX < 0 || viewX > panel.getWidth()) continue;
+            g.drawLine(viewX, minViewY, viewX, maxViewY);
         }
 
         for (double y = minModelY; y < maxModelY; y += gridSize) {
-            Point2D min = panel.getViewport().toViewPoint(new Coordinate(minModelX, y));
-            Point2D max = panel.getViewport().toViewPoint(new Coordinate(maxModelX, y));
-            g.drawLine((int) min.getX(), (int) min.getY(), (int) max.getX(), (int) max.getY());
+            int viewY = (int)panel.getViewport().toViewPoint(new Coordinate(minModelX, y)).getY();
+            if (viewY < 0 || viewY > panel.getHeight()) continue;
+            g.drawLine(minViewX, viewY, maxViewX, viewY);
         }
     }
 }

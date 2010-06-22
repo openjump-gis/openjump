@@ -1,3 +1,7 @@
+2010-06-22 mmichaud <michael.michaud@free.fr>
+    Fix bug ID: 1775915 in GridRenderer. When grid option was on (with dashed
+    lines), drawing dashed line could be very long at high zoom level.
+
 2010-06-16 mmichaud <michael.michaud@free.fr>
     While readind a dbf character field, it now gets rid of trailing 0x00 bytes 
 
