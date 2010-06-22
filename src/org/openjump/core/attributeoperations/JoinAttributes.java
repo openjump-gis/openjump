@@ -152,9 +152,9 @@ public class JoinAttributes {
 	  
     
 	/**
-	 * copy/clone the input featureSchema since it is not proper implemented in Jump 
+	 * Copy/clone the input featureSchema since it is not proper implemented in Jump 
 	 * @param oldSchema
-	 * @return
+	 * @return a clone of oldSchema
 	 */
 	public static FeatureSchema copyFeatureSchema(FeatureSchema oldSchema){
 		FeatureSchema fs = new FeatureSchema();
@@ -168,10 +168,11 @@ public class JoinAttributes {
 	}
 	 
 	/**
-	 * copy the input feature to a new Schema whereby the new 
-	 * Feature Schema musst be an extended or shortened one 
-	 * @param oldSchema
-	 * @return Feature
+	 * Copy the input feature to a new Schema whereby the new 
+	 * Feature Schema must be an extended or shortened one 
+	 * @param feature
+	 * @param newSchema
+	 * @return a new Feature with newSchema as Schema and feature values
 	 */
 	public static Feature copyFeature(Feature feature, FeatureSchema newSchema){
 		FeatureSchema oldSchema = feature.getSchema();

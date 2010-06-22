@@ -117,7 +117,7 @@ public class SpatialRelationOp {
 	       	for (Iterator iter = candidates.iterator(); iter.hasNext();) {
 	            Feature candidate = (Feature) iter.next();
 	            Geometry geom = buffer.intersection(candidate.getGeometry());
-	            if(geom.getArea() > 0){
+	            if(geom.getLength() > 0){
 	                foundItems.add(candidate);
 	            }
 	        } 

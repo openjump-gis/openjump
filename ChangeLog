@@ -1,4 +1,8 @@
 2010-06-22 mmichaud <michael.michaud@free.fr>
+    Fix bug ID: 2716210 in JoinAttributesSpatiallyPlugIn (SpatialRelationOp).
+    Can now collect attributes from LineStrings intersecting a polygon.
+
+2010-06-22 mmichaud <michael.michaud@free.fr>
     Fix bug ID: 1775915 in GridRenderer. When grid option was on (with dashed
     lines), drawing dashed line could be very long at high zoom level.
 
