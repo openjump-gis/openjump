@@ -352,6 +352,8 @@ public class ShapefileWriter implements JUMPWriter {
      * Write a dbf file with the information from the featureCollection.
      * @param featureCollection column data from collection
      * @param fname name of the dbf file to write to
+     * July 2, 2010 - modified by beckerl to read existing dbf file header
+     * and use the existing numeric field definitions.
      */
     void writeDbf(FeatureCollection featureCollection, String fname)
         throws Exception {
@@ -362,6 +364,18 @@ public class ShapefileWriter implements JUMPWriter {
         int u;
         int num;
 
+        HashMap fieldMap = null;
+        if (new File(fname).exists()){
+        	DbfFile dbfFile = new DbfFile(fname);
+        	int numFields = dbfFile.getNumFields();
+        	fieldMap = new HashMap(numFields);
+        	for (int i = 0; i<numFields; i++) {
+        		String fieldName = dbfFile.getFieldName(i);
+        		fieldMap.put(fieldName, dbfFile.fielddef[i]);
+        	}
+        	dbfFile.close();
+        }
+        
         fs = featureCollection.getFeatureSchema();
 
         // -1 because one of the columns is geometry
@@ -376,10 +390,12 @@ public class ShapefileWriter implements JUMPWriter {
 
             if (columnType == AttributeType.INTEGER) {
                 fields[f] = new DbfFieldDef(columnName, 'N', 11, 0);  //LDB: previously 16
-                f++;
+                fields[f] = overrideWithExistingCompatibleDbfFieldDef(fields[f], fieldMap);
+               f++;
             } else if (columnType == AttributeType.DOUBLE) {
                 fields[f] = new DbfFieldDef(columnName, 'N', 33, 16);
-                f++;
+                fields[f] = overrideWithExistingCompatibleDbfFieldDef(fields[f], fieldMap);
+               f++;
             } else if (columnType == AttributeType.STRING) {
                 int maxlength = findMaxStringLength(featureCollection, t);
 
@@ -389,7 +405,8 @@ public class ShapefileWriter implements JUMPWriter {
                 }
 
                 fields[f] = new DbfFieldDef(columnName, 'C', maxlength, 0);
-                f++;
+                //fields[f] = overrideWithExistingCompatibleDbfFieldDef(fields[f], fieldMap);
+               f++;
             } else if (columnType == AttributeType.DATE) {
                 fields[f] = new DbfFieldDef(columnName, 'D', 8, 0);
                 f++;                
@@ -462,6 +479,32 @@ public class ShapefileWriter implements JUMPWriter {
         }
 
         dbf.close();
+    }
+
+    private DbfFieldDef overrideWithExistingCompatibleDbfFieldDef(DbfFieldDef field, Map columnMap) {
+    	String fieldname = field.fieldname.toString().trim();
+    	if ((columnMap != null) && (columnMap.containsKey(fieldname))) {
+    		DbfFieldDef dbfFieldDef = (DbfFieldDef) columnMap.get(fieldname);
+    		dbfFieldDef.fieldname = field.fieldname;    //must have null padded version to work
+    		switch(dbfFieldDef.fieldtype){
+    		case 'C': case 'c':  //character case not working yet
+    			if (field.fieldtype == 'C')
+    				if (field.fieldlen > dbfFieldDef.fieldlen)  //allow string expansion if needed
+    					return field;
+    				else {
+    					dbfFieldDef.fieldtype = field.fieldtype;
+    					return dbfFieldDef; 
+    				}
+    			break;
+    		case 'N': case 'n': case 'F': case 'f':
+    			if (field.fieldtype == 'N') {
+    				dbfFieldDef.fieldtype = field.fieldtype;
+    				return dbfFieldDef;   
+    			}
+    			break;
+    		}   		
+    	}
+    	return field;
     }
 
     /**
