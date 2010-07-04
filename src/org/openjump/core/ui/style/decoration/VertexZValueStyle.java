@@ -60,6 +60,7 @@ public class VertexZValueStyle extends LineStringVertexStyle
 {
   public final static int FONT_BASE_SIZE = 10;
   private Font font = new Font("Dialog", Font.PLAIN, FONT_BASE_SIZE);
+  private Font font2 = new Font("Dialog", Font.BOLD, FONT_BASE_SIZE+2);
 
   public VertexZValueStyle(String name, String iconFile) {
     super(name, IconLoader.icon(iconFile));
@@ -71,9 +72,43 @@ public class VertexZValueStyle extends LineStringVertexStyle
     String text = Double.toString(line.getCoordinates()[index].z);
     g.setColor(Color.BLACK);
     g.setStroke(stroke);
+    
+    // draw a small dot on each vertex
+    g.drawLine((int)p.getX(), (int)p.getY(), 1+(int)p.getX(), 1+(int)p.getY());
+    // draw a small circle around the dot on first and last point
+    if (index == 0 || index == line.getNumPoints()-1) {
+        g.drawOval((int)p.getX()-2, (int)p.getY()-2, 5, 5);
+    }
 
-    TextLayout layout = new TextLayout(text, font, g.getFontRenderContext());
-    layout.draw(g, (float) p.getX(), (float) p.getY());
+    // For first and last point, write the label along the first (last) segment
+    // so that the altitude is more readable
+    // First and last altitude are also written in a bold font of size 12
+    if (index == 0) {
+        TextLayout layout = new TextLayout(text, font2, g.getFontRenderContext());
+        Coordinate c0 = line.getCoordinates()[0];
+        Coordinate c1 = line.getCoordinates()[1];
+        float vx = (float)(c1.x-c0.x);
+        float vy = (float)(c1.y-c0.y);
+        float d = (float)Math.sqrt(vx*vx+vy*vy);
+        float dx = vx >= 0 ? 10f*vx/d : 52f*vx/d;
+        float dy = vy >= 0 ? -10f*vy/d : -20f*vy/d;
+        layout.draw(g, dx + (float)p.getX(), dy + (float)p.getY());
+    }
+    else if (index == line.getNumPoints()-1) {
+        TextLayout layout = new TextLayout(text, font2, g.getFontRenderContext());
+        Coordinate c0 = line.getCoordinates()[line.getNumPoints()-1];
+        Coordinate c1 = line.getCoordinates()[line.getNumPoints()-2];
+        float vx = (float)(c1.x-c0.x);
+        float vy = (float)(c1.y-c0.y);
+        float d = (float)Math.sqrt(vx*vx+vy*vy);
+        float dx = vx >= 0 ? 10f*vx/d : 52f*vx/d;
+        float dy = vy >= 0 ? -10f*vy/d : -20f*vy/d;
+        layout.draw(g, dx + (float)p.getX(), dy + (float)p.getY());
+    }
+    else {
+        TextLayout layout = new TextLayout(text, font, g.getFontRenderContext());
+        layout.draw(g, 1f+(float)p.getX(), -1f+(float)p.getY());
+    }
   }
 
   public static class VertexZValue extends VertexZValueStyle {
