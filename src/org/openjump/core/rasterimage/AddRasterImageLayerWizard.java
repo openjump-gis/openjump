@@ -287,6 +287,16 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
                   env = new Envelope(upperLeft, lowerRight);
               }
               
+          }else if(fileName.toLowerCase().endsWith(".flt")){
+                isGeoTiff = true;
+                GridFloat gf = new GridFloat(fileName);
+
+                Coordinate upperLeft = new Coordinate(gf.getXllCorner(), gf.getYllCorner() + gf.getnRows() * gf.getCellSize());
+                Coordinate lowerRight = new Coordinate(gf.getXllCorner() + gf.getnCols() * gf.getCellSize(), gf.getYllCorner());
+
+
+                env = new Envelope(upperLeft, lowerRight);
+
           }
           
           if (!isGeoTiff || env==null){

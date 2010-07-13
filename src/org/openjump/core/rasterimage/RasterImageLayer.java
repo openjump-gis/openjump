@@ -18,6 +18,7 @@ import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
+import java.awt.image.DataBuffer;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.ParameterBlock;
 import java.io.File;
@@ -26,6 +27,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
+import javax.media.jai.RenderedOp;
 
 import org.openjump.util.metaData.MetaDataMap;
 import org.openjump.util.metaData.ObjectContainingMetaInformation;
@@ -114,6 +116,7 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
     protected Color transparentColor = null;
     protected boolean transparencyColorNeedsToBeApplied = false;
 
+    private static double[][] dataArray = null;
 
     /**
      * for java2xml
@@ -481,7 +484,7 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
      */
     public static Point getImageDimensions(WorkbenchContext context, String filenameOrURL) {
         
-        if (!filenameOrURL.toLowerCase().endsWith(".jpg")){
+        if (!filenameOrURL.toLowerCase().endsWith(".jpg") && !filenameOrURL.toLowerCase().endsWith(".flt")){
             try {
                 // JAI required!!
                 javax.media.jai.PlanarImage pImage = javax.media.jai.JAI.create("fileload", filenameOrURL);
@@ -496,6 +499,27 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
                 	context.getWorkbench().getFrame().warnUser("problems-loading-image"+ e.getMessage());
                 }
             }
+        }else if(filenameOrURL.toLowerCase().endsWith(".flt")){
+
+            try{
+
+                GridFloat gf = new GridFloat(filenameOrURL);
+                gf.readGrid();
+
+                javax.media.jai.PlanarImage pImage = gf.getPlanarImage();
+                if (pImage != null) {
+                    return new Point(pImage.getWidth(), pImage.getHeight());
+                }
+                
+            }catch(Throwable e){
+                //logger.printError(e.getLocalizedMessage());
+                if (e.getMessage().indexOf("Error in FLT file") > -1) {
+                	context.getWorkbench().getFrame().warnUser("unsupported-flt");
+                } else {
+                	context.getWorkbench().getFrame().warnUser("problems-loading-image"+ e.getMessage());
+                }
+            }
+
         } else {
             
             BufferedImage image = null;
@@ -541,6 +565,59 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
              
              return PlanarImage.wrapRenderedImage(image);
 
+         } else if (filenameOrURL.toLowerCase().endsWith(".flt")){
+
+            try{
+
+                GridFloat gf = new GridFloat(filenameOrURL);
+                gf.readGrid();
+
+                dataArray = gf.getRas();
+
+                javax.media.jai.PlanarImage pImage = gf.getPlanarImage();
+
+                // This returns a planaimage with actual pixel values
+//                if (pImage != null) {
+//                    return pImage;
+//                }
+
+                // This rescales values
+                // See http://www.lac.inpe.br/JIPCookbook/2200-display-surrogate.jsp
+
+                ParameterBlock pbMaxMin = new ParameterBlock();
+                pbMaxMin.addSource(pImage);
+                RenderedOp extrema = JAI.create("extrema", pbMaxMin);
+                double minValue = gf.getMinVal();
+                double maxValue = gf.getMaxVal();
+
+                double[] subtractThis = new double[1]; subtractThis[0] = minValue;
+                double[] multiplyBy   = new double[1]; multiplyBy[0]   = 255./(maxValue-minValue);
+
+                ParameterBlock pbSub = new ParameterBlock();
+                pbSub.addSource(pImage);
+                pbSub.add(subtractThis);
+                PlanarImage surrogateImage = (PlanarImage)JAI.create("subtractconst",pbSub,null);
+                ParameterBlock pbMult = new ParameterBlock();
+                pbMult.addSource(surrogateImage);
+                pbMult.add(multiplyBy);
+                surrogateImage = (PlanarImage)JAI.create("multiplyconst",pbMult,null);
+                ParameterBlock pbConvert = new ParameterBlock();
+                pbConvert.addSource(surrogateImage);
+                pbConvert.add(DataBuffer.TYPE_BYTE);
+                surrogateImage = JAI.create("format", pbConvert);
+
+
+
+                return(surrogateImage);
+
+            }catch(Throwable e){
+                //logger.printError(e.getLocalizedMessage());
+                if (e.getMessage().indexOf("Error in FLT file") > -1) {
+                	context.getWorkbench().getFrame().warnUser("unsupported-flt");
+                } else {
+                	context.getWorkbench().getFrame().warnUser("problems-loading-image"+ e.getMessage());
+                }
+            }
          }
          //logger.printError("unsupported image format"); 
          return null;
@@ -1215,4 +1292,10 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
         this.metaInformation = metaInformation;
     }
     
+    // OKKIO
+    public double[][] getDataArray(){return dataArray;}
+
+    public void setDataArray(double[][] dataArray){
+        this.dataArray = dataArray;
+    }
 }
