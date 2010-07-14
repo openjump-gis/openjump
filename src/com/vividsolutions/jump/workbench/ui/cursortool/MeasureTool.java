@@ -55,6 +55,7 @@ public class MeasureTool
   public MeasureTool() {
     allowSnapping();
     setMetricsDisplay(new CoordinateListMetrics());
+    setCloseRing(true);
   }
 
   public Icon getIcon() {
