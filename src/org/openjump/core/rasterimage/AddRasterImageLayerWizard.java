@@ -150,7 +150,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
 
       int layersAsideImage = context.getLayerManager().getLayerables(Layerable.class).size();
       
-      RasterImageLayer rLayer = new RasterImageLayer(newLayerName, context.getLayerManager(), this.imageFileName, null, envelope);
+      RasterImageLayer rLayer = new RasterImageLayer(newLayerName, context.getLayerManager(), this.imageFileName, null, null, envelope);
       
       // #################################
       

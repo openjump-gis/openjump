@@ -47,7 +47,6 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
-import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
 
@@ -101,7 +100,7 @@ public class LoadSextanteRasterImagePlugIn extends AbstractPlugIn {
 
         int layersAsideImage = context.getLayerManager().getLayerables(Layerable.class).size();
         
-        RasterImageLayer rLayer = new RasterImageLayer(newLayerName, context.getLayerManager(), this.imageFileName, null, envelope);
+        RasterImageLayer rLayer = new RasterImageLayer(newLayerName, context.getLayerManager(), this.imageFileName, null, null, envelope);
         
         // #################################
         

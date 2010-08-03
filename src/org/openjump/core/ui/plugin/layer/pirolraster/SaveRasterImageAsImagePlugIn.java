@@ -10,6 +10,10 @@
 package org.openjump.core.ui.plugin.layer.pirolraster;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.Raster;
+import java.awt.image.SampleModel;
+import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -17,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+import javax.media.jai.PlanarImage;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
@@ -117,7 +122,13 @@ public class SaveRasterImageAsImagePlugIn extends AbstractPlugIn {
 			
 			/* save tif image: */
             RasterImageLayer rLayer = (RasterImageLayer) LayerTools.getSelectedLayerable(context, RasterImageLayer.class); 
-			image = rLayer.getImage().getAsBufferedImage();
+			//-- [sstein 2 Aug 2010] replace to save raster and not the image that may be adjusted for display
+            //image = rLayer.getImageForDisplay().getAsBufferedImage();
+            Raster r = rLayer.getRasterData();
+            SampleModel sm = r.getSampleModel();
+    		ColorModel colorModel = PlanarImage.createColorModel(sm);
+    		image = new BufferedImage(colorModel, (WritableRaster) rLayer.getRasterData(), false, null);
+    		//-- end
 			TIFFEncodeParam param = new TIFFEncodeParam();
 			param.setCompression(TIFFEncodeParam.COMPRESSION_NONE);
 			TIFFImageEncoder encoder = (TIFFImageEncoder) TIFFCodec.createImageEncoder("tiff", tifOut, param);

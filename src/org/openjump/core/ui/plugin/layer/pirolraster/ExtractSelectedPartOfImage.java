@@ -10,6 +10,7 @@
 package org.openjump.core.ui.plugin.layer.pirolraster;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.Raster;
 
 import org.openjump.core.apitools.LayerTools;
 import org.openjump.core.apitools.PlugInContextTools;
@@ -77,23 +78,24 @@ public class ExtractSelectedPartOfImage extends AbstractPlugIn {
         Envelope envWanted = fence.getEnvelopeInternal();
         
         BufferedImage partOfImageWanted = rLayer.getTileAsImage(envWanted);
+        Raster partOfRasterWanted = rLayer.getTileAsRaster(envWanted); //[sstein 2 Aug 2010] need to add as we have now the image for display plus the data
         
         if (partOfImageWanted==null){
             context.getWorkbenchFrame().warnUser(I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage.fence-in-wrong-region"));
             return false;
         }
         
-        boolean returnVal = this.putImageIntoMap(partOfImageWanted, envWanted, rLayer, context);
+        boolean returnVal = this.putImageIntoMap(partOfImageWanted, partOfRasterWanted, envWanted, rLayer, context);
         
         return returnVal;
     }
     
-    protected boolean putImageIntoMap(BufferedImage image, Envelope envelope, RasterImageLayer rLayer, PlugInContext context){
-		if (image==null) return false;
+    protected boolean putImageIntoMap(BufferedImage partOfImage, Raster partOfRaster, Envelope envelope, RasterImageLayer rLayer, PlugInContext context){
+		if (partOfImage==null) return false;
 	
 		String newLayerName = context.getLayerManager().uniqueLayerName(I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage.part-of") + rLayer.getName());
         
-        RasterImageLayer newRasterLayer = new RasterImageLayer(newLayerName, context.getLayerManager(), image, envelope);
+        RasterImageLayer newRasterLayer = new RasterImageLayer(newLayerName, context.getLayerManager(), partOfImage, partOfRaster, envelope);
 		
 		String catName = StandardCategoryNames.WORKING;
 		

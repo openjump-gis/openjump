@@ -1,3 +1,28 @@
+2010-08-02 sstein <sstein@geo.uzh.ch>
+	changed access for Pirols RasterImageLayer class, since we need to store the image
+	and the data separately. This way we can adjust the image values without changing
+	the data. To scale image grey values for a better display a function was added to the
+	RasterImageLayer class (e.g. while previously very small values -> 0 have been displayed
+	as black pixels, they are now grey).
+	
+	I removed/renamed the function RasterImageLayer.getImage() to getImageForDisplay()
+	to avoid that other programs work with the stretched/modified image. Hence, I also
+	changed the access in the Sextante classes (e.g.: OpenJUMPSextanteRasterLayer).
+	I tested Loading, Saving and ExtractSelectedPart briefly - so I hope it works.
+	
+	changed classes:
+	org.openjump.core.rasterimage.RasterImageLayer
+	org.openjump.core.rasterimage.AddRasterImageLayerWizard
+	org.openjump.core.ui.plugin.layer.pirolraster.LoadSextanteRasterImagePlugIn
+	org.openjump.core.ui.plugin.layer.pirolraster.SaveRasterImageAsImagePlugIn
+	org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage
+	
+	org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer
+	note, the corresponding class needs also to be changed in the Sextante repository.
+	
+	Note, in general it is recommended to use OpenJUMPSextanteRasterLayer to do raster
+	operations and not the RasterImageLayer class.
+	
 2010-06-22 mmichaud <michael.michaud@free.fr>
     Fix bug ID: 2716210 in JoinAttributesSpatiallyPlugIn (SpatialRelationOp).
     Can now collect attributes from LineStrings intersecting a polygon.

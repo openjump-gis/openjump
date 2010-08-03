@@ -34,7 +34,10 @@ public class OpenJUMPSextanteRasterLayer extends AbstractSextanteRasterLayer{
 	public void create(RasterImageLayer layer){
 
 		m_BaseDataObject = layer;
-		m_Raster = layer.getImage().getData();
+		//[sstein 2 Aug 2010], changed so we work now with the raster and not the image, which may be scaled for display. 
+		//m_Raster = layer.getImage().getData();
+		m_Raster = layer.getRasterData();
+		//-- end
 		m_sName = layer.getName();
 		m_sFilename = layer.getImageFileName();
 		Envelope env = layer.getEnvelope();
@@ -62,6 +65,7 @@ public class OpenJUMPSextanteRasterLayer extends AbstractSextanteRasterLayer{
 												layerManager,
 												filename,
 												pimage,
+												m_Raster,
 												envelope);
 		m_sName = name;
 		m_sFilename = filename;
@@ -93,6 +97,7 @@ public class OpenJUMPSextanteRasterLayer extends AbstractSextanteRasterLayer{
 				layerManager,
 				m_sFilename,
 				pimage,
+				m_Raster,
 				envelope);
 
 		m_Raster = raster;
@@ -213,7 +218,11 @@ public class OpenJUMPSextanteRasterLayer extends AbstractSextanteRasterLayer{
 			TIFFEncodeParam param = new TIFFEncodeParam();
 			param.setCompression(TIFFEncodeParam.COMPRESSION_NONE);
 			TIFFImageEncoder encoder = (TIFFImageEncoder) TIFFCodec.createImageEncoder("tiff", tifOut, param);
-			BufferedImage image = layer.getImage().getAsBufferedImage();
+			//-- [sstein 2 Aug 2010]
+			//BufferedImage image = layer.getImage().getAsBufferedImage();
+			ColorModel colorModel = PlanarImage.createColorModel(m_Raster.getSampleModel());
+			BufferedImage image = new BufferedImage(colorModel, (WritableRaster) m_Raster, false, null);
+			//-- end
 			encoder.encode(image);
 			tifOut.close();
 
