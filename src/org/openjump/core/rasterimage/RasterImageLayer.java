@@ -612,6 +612,11 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
                 dataArray = gf.getRas();
 
                 javax.media.jai.PlanarImage pImage = gf.getPlanarImage();
+                //-- [sstein 3 Aug 2010] 
+                //   dealing now with an Image that will be modified for better dislay 
+       		 	Raster rData = pImage.copyData();  //copy data so we do not get a ref
+                rasterData = rData;
+                //-- sstein end
 
                 // This returns a planaimage with actual pixel values
 //                if (pImage != null) {
