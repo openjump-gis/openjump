@@ -89,7 +89,10 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
     protected static long availRAM = Runtime.getRuntime().maxMemory();
     protected static double freeRamFactor = 0.5;
     protected static double minRamToKeepFree = availRAM * freeRamFactor;
-    protected static int maxPixelsForFastDisplayMode = 250000;
+    //[sstein 9.Aug.2010]
+    // The value below is set dynamically based on available memory
+    //       now its 200x200px as min (originally it was 500x500)
+    protected static int maxPixelsForFastDisplayMode = 40000;
 
     protected String imageFileName = null;
     protected int origImageWidth, origImageHeight;
@@ -154,6 +157,15 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
             this.setImage(javax.media.jai.PlanarImage.wrapRenderedImage(imageToDisplay));
         if (newRaster != null)
         	this.setRasterData(newRaster);
+        //[sstein 9.Aug.2010]
+        long avram = getAvailRAM();
+        if(avram > 256000000){
+        	maxPixelsForFastDisplayMode = 250000; //500x500 px
+        }
+        if(avram > 750000000){
+        	maxPixelsForFastDisplayMode = 563500; //750x750 px
+        }
+        //[sstein end]
     }
     
     
@@ -185,6 +197,15 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
         else{
             //logger.printError("given raster is NULL");
         }
+        //[sstein 9.Aug.2010]
+        long avram = getAvailRAM();
+        if(avram > 256000000){
+        	maxPixelsForFastDisplayMode = 250000; //500x500 px
+        }
+        if(avram > 750000000){
+        	maxPixelsForFastDisplayMode = 563500; //750x750 px
+        }
+        //[sstein end]
     }
 
     /**
@@ -300,13 +321,24 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
                 this.visibleEnv = newVisibleEnv;
                 
                 if ( (this.origImageWidth * this.origImageHeight) < RasterImageLayer.getMaxPixelsForFastDisplayMode() ){
-                    
-                    // faster display (uses more RAM) for small images
+                    //int pixels = this.origImageWidth * this.origImageHeight;
+                	//int maxpixels = RasterImageLayer.getMaxPixelsForFastDisplayMode();
+                    //-- faster display (uses more RAM) for small images
                     this.setImageProcessingMode(RasterImageLayer.MODE_FASTDISPLAY);
                     
                     if (this.isImageNull()){
                         this.reLoadImage();
                     }
+                    //[sstein 9.Aug.2010]
+                    long totalMem = Runtime.getRuntime().totalMemory();
+                    long freeMem = Runtime.getRuntime().freeMemory();
+                    long committedMemory = totalMem - freeMem;
+                    double maxMemoryToCommit = availRAM - minRamToKeepFree;
+                    boolean needFreeRAM = (committedMemory > maxMemoryToCommit);
+                    if(needFreeRAM == false){
+                    	this.setNeedToKeepImage(true); //so small images are not reloaded every time
+                    }
+                    //[sstein end]
                     
                     this.imagePart = this.getVisibleImageCoordinatesOfImage( this.origImageWidth, this.origImageHeight, this.visibleEnv, this.getEnvelope() );
                     
@@ -443,11 +475,14 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
     }
     
     /**
-     * deletes image from RAM (if it is not to be keeped and if the RAM consumption is high)
+     * deletes image from RAM (if it is not to be kept and if the RAM consumption is high)
      * and calls the garbage collector, if the <code>garbageCollect</code> is true.
      *@param garbageCollect if true the garbage collector will be called (this parameter may be overridden, if there is not enough RAM available...)
      */
     public boolean clearImageAndRaster(boolean garbageCollect){
+    	//TODO: [sstein 9.Aug.2010] not sure if below condition is correct, since it 
+    	//       does not account for Xmx (max memory), only for the actual memory
+    	//       Hence we should work with committed memory as I did above??? 
         boolean reallyNeedToFreeRAM = (Runtime.getRuntime().freeMemory() < minRamToKeepFree);
         if (!this.needToKeepImage && reallyNeedToFreeRAM ){
             this.image = null;
