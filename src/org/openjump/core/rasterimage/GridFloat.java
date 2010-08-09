@@ -1,9 +1,8 @@
 package org.openjump.core.rasterimage;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import java.awt.image.ColorModel;
 import java.awt.image.DataBuffer;
-import java.awt.image.IndexColorModel;
+import java.awt.image.DataBufferFloat;
+import java.awt.image.Raster;
 import java.awt.image.SampleModel;
 import java.awt.image.WritableRaster;
 import java.io.BufferedReader;
@@ -30,13 +29,6 @@ public class GridFloat {
         hdrFullFileName = fltFullFileName.substring(0, fltFullFileName.lastIndexOf(".")) + ".hdr";
         readHdr();
 
-        ras = new double[nCols+2][nRows+2];
-        for(int r=0; r<nRows+2; r++){
-            for(int c=0; c<nCols+2; c++){
-                ras[c][r] = noData;
-            }
-        }
-
     }
 
     public GridFloat(String fltFullFileName, GridFloat gridFloat2){
@@ -44,17 +36,18 @@ public class GridFloat {
         this.fltFullFileName = fltFullFileName;
         hdrFullFileName = fltFullFileName.substring(0, fltFullFileName.lastIndexOf(".")) + ".hdr";
 
-        this.setHeaderEqualTo(gridFloat2);
-        ras = new double[nCols+2][nRows+2];
-        for(int r=0; r<nRows+2; r++){
-            for(int c=0; c<nCols+2; c++){
-                ras[c][r] = noData;
-            }
-        }
+        this.nCols = gridFloat2.getnCols();
+        this.nRows = gridFloat2.getnRows();
+        this.xllCorner = gridFloat2.getXllCorner();
+        this.yllCorner = gridFloat2.getYllCorner();
+        this.cellSize = gridFloat2.getCellSize();
+        this.noData = gridFloat2.getNoData();
+        this.byteOrder = gridFloat2.getByteOrder();
 
     }
 
-    public GridFloat(String fltFullFileName, int nCols, int nRows, boolean origCorner, double xllOrig, double yllOrig, double cellSize, double noData, String byteOrder){
+    public GridFloat(String fltFullFileName, int nCols, int nRows, boolean origCorner,
+            double xllOrig, double yllOrig, double cellSize, double noData, String byteOrder){
 
         this.fltFullFileName = fltFullFileName;
         hdrFullFileName = fltFullFileName.substring(0, fltFullFileName.lastIndexOf(".")) + ".hdr";
@@ -66,8 +59,8 @@ public class GridFloat {
             this.xllCorner = xllOrig;
             this.yllCorner = yllOrig;
         }else{
-            this.xllCenter = xllOrig;
-            this.yllCenter = yllOrig;
+            this.xllCorner = xllOrig - 0.5*cellSize;
+            this.xllCorner = yllOrig - 0.5*cellSize;
         }
         this.cellSize = cellSize;
         this.noData = noData;
@@ -76,13 +69,6 @@ public class GridFloat {
             this.byteOrder = "LSBFIRST";
         }else{
             this.byteOrder = byteOrder;
-        }
-
-        ras = new double[nCols+2][nRows+2];
-        for(int r=0; r<nRows+2; r++){
-            for(int c=0; c<nCols+2; c++){
-                ras[c][r] = noData;
-            }
         }
         
     }
@@ -104,10 +90,10 @@ public class GridFloat {
                 }else if(lines[0].toLowerCase().equals("yllcorner")){
                     yllCorner = Double.parseDouble(lines[1].toString());
                 }else if(lines[0].toLowerCase().equals("xllcenter")){
-                    xllCenter = Double.parseDouble(lines[1].toString());
+                    xllCorner = Double.parseDouble(lines[1].toString());
                     origCorner = false;
                 }else if(lines[0].toLowerCase().equals("yllcenter")){
-                    yllCenter = Double.parseDouble(lines[1].toString());
+                    yllCorner = Double.parseDouble(lines[1].toString());
                 }else if(lines[0].toLowerCase().equals("cellsize")){
                     cellSize = Double.parseDouble(lines[1].toString());
                 }else if(lines[0].toLowerCase().equals("nodata_value")){
@@ -118,6 +104,11 @@ public class GridFloat {
             }
             buffRead.close();
             buffRead = null;
+
+            if(!origCorner){
+                xllCorner =- 0.5*cellSize;
+                yllCorner =- 0.5*cellSize;
+            }
 
             return 0;
         }catch(IOException Ex){
@@ -149,10 +140,10 @@ public class GridFloat {
 
             }else{
 
-                buffWrite.write("xllcenter" + " " + xllCenter);
+                buffWrite.write("xllcenter" + " " + xllCorner + 0.5*cellSize);
                 buffWrite.newLine();
 
-                buffWrite.write("yllcenter" + " " + yllCenter);
+                buffWrite.write("yllcenter" + " " + yllCorner + 0.5*cellSize);
                 buffWrite.newLine();
 
             }
@@ -204,25 +195,32 @@ public class GridFloat {
             fileInStream.close();
 
             int i = 0;
-            for(int r=1; r<=nRows; r++){
-                for(int c=1; c<=nCols; c++){
-                    ras[c][r] = mbb.getFloat(i);
-                    if(ras[c][r] != noData) {
-                        valSum += ras[c][r];
-                        valSumSquare += (ras[c][r] * ras[c][r]);
-                        cellCount++;
-                        if(ras[c][r] < minVal){minVal = ras[c][r];}
-                        if(ras[c][r] > maxVal){maxVal = ras[c][r];}
-                        if((int)ras[c][r] != ras[c][r]) isInteger = false;
-                    }
-                    i = i + 4;
+            dataArray = new float[nCols*nRows];
+            for(int c=0; c<nCols*nRows; c++){
+                dataArray[c] = mbb.getFloat(i);
+                if(dataArray[c] != noData) {
+                    valSum += dataArray[c];
+                    valSumSquare += (dataArray[c] * dataArray[c]);
+                    cellCount++;
+                    if(dataArray[c] < minVal){minVal = dataArray[c];}
+                    if(dataArray[c] > maxVal){maxVal = dataArray[c];}
+                    if((int)dataArray[c] != dataArray[c]) isInteger = false;
                 }
+                i+=4;
             }
 
             meanVal = valSum / cellCount;
             stDevVal = Math.sqrt(valSumSquare/cellCount - meanVal*meanVal);
 
             mbb=null;
+
+            // Create raster
+            SampleModel sampleModel = RasterFactory.createBandedSampleModel(DataBuffer.TYPE_FLOAT, nCols, nRows, 1);
+            DataBuffer db = new DataBufferFloat(dataArray, nCols*nRows);
+            java.awt.Point point = new java.awt.Point();
+            point.setLocation(xllCorner, yllCorner);
+            raster = RasterFactory.createRaster(sampleModel, db, point);
+
             return 0;
         }catch(Exception ex){
             JOptionPane.showMessageDialog(null, "Error while reading the flt file: " + ex, "Error", JOptionPane.ERROR_MESSAGE);
@@ -235,8 +233,14 @@ public class GridFloat {
 
         try{
 
-            if(ras == null){
-                ras = new double[nCols+2][nRows+2];
+            if(raster == null){
+                // Create raster
+                SampleModel sampleModel = RasterFactory.createBandedSampleModel(DataBuffer.TYPE_FLOAT, nCols, nRows, 1);
+                dataArray = new float[nCols*nRows];
+                DataBuffer db = new DataBufferFloat(dataArray, nCols*nRows);
+                java.awt.Point point = new java.awt.Point();
+                point.setLocation(xllCorner, yllCorner);
+                raster = RasterFactory.createRaster(sampleModel, db, point);
             }
 
             if(writeHdr() != 0) return -1;
@@ -249,17 +253,15 @@ public class GridFloat {
             ByteBuffer bb = ByteBuffer.allocateDirect(nCols * 4);
             bb.order(ByteOrder.LITTLE_ENDIAN);
 
-            for(int r=1; r<=nRows; r++){
-                for(int c=1; c<=nCols; c++){
+            for(int r=0; r<nRows; r++){
+                for(int c=0; c<nCols; c++){
                     if(bb.hasRemaining()){
-
-                        bb.putFloat((float)ras[c][r]);
+                        bb.putFloat(raster.getSampleFloat(c, r, 0));
                     }else{
                         c--;
                         bb.compact();
                         fileChannelOut.write(bb);
                         bb.clear();
-
                     }
                 }
             }
@@ -276,82 +278,7 @@ public class GridFloat {
         }
 
     }
-
-    public double readCellVal(Coordinate coord){
-
-        try{
-
-            if(coord.x - xllCorner < 0 || coord.y - yllCorner <0 ||
-                    coord.x >= xllCorner + nCols * cellSize || coord.y >= yllCorner + nRows * cellSize){
-                return noData;
-            }
-
-            int col = (int)((coord.x - xllCorner) / cellSize) + 1;
-            int row = (int)((coord.y - yllCorner) / cellSize) + 1;
-            row = nRows - row + 1;
-
-            long offset = ((row - 1) * nCols + col - 1) * 4;
-
-            File fileFlt = new File(fltFullFileName);
-            FileInputStream fileInStream = new FileInputStream(fileFlt);
-            FileChannel fileChannel = fileInStream.getChannel();
-            long length = 4;
-            MappedByteBuffer mbb;
-            mbb = fileChannel.map(
-                    FileChannel.MapMode.READ_ONLY,
-                    offset,
-                    length
-                    );
-            mbb.order(ByteOrder.LITTLE_ENDIAN);
-            fileChannel.close();
-            fileInStream.close();
-
-            return (double)mbb.getFloat();
-
-        }catch(Exception ex){
-            System.out.println(ex);
-            return noData;
-        }
-
-    }
-
-    public void toOrigCenter(){
-
-        if(origCorner){
-            xllCenter = xllCorner + 0.5 * cellSize;
-            yllCenter = yllCorner + 0.5 * cellSize;
-            origCorner = false;
-        }
-        
-    }
-
-    public void toOrigCorner(){
-
-        if(!origCorner){
-            xllCorner = xllCenter - 0.5 * cellSize;
-            yllCorner = yllCenter - 0.5 * cellSize;
-            origCorner = true;
-        }
-
-    }
-
-    public void setHeaderEqualTo(GridFloat gridFlt){
-
-        this.nCols = gridFlt.getnCols();
-        this.nRows = gridFlt.getnRows();
-        if(origCorner){
-            this.xllCorner = gridFlt.getXllCorner();
-            this.yllCorner = gridFlt.getYllCorner();
-        }else{
-            this.xllCenter = gridFlt.getXllCenter();
-            this.yllCenter = gridFlt.getYllCenter();
-        }
-        this.cellSize = gridFlt.getCellSize();
-        this.noData = gridFlt.getNoData();
-        this.byteOrder = gridFlt.getByteOrder();
-
-    }
-
+    
     public void setFltFullFileName(String fltFullFileName){
         this.fltFullFileName = fltFullFileName;
         hdrFullFileName = fltFullFileName.substring(0, fltFullFileName.lastIndexOf(".")) + ".hdr";
@@ -363,13 +290,8 @@ public class GridFloat {
         if(nCols != gridFloat2.getnCols()) isEqual = false;
         if(nRows != gridFloat2.getnRows()) isEqual = false;
         if(origCorner != gridFloat2.getOrigCorner()) isEqual = false;
-        if(origCorner){
-            if(xllCorner != gridFloat2.getXllCorner()) isEqual = false;
-            if(yllCorner != gridFloat2.getYllCorner()) isEqual = false;
-        }else{
-            if(xllCorner != gridFloat2.getXllCorner()) isEqual = false;
-            if(yllCorner != gridFloat2.getYllCorner()) isEqual = false;
-        }
+        if(xllCorner != gridFloat2.getXllCorner()) isEqual = false;
+        if(yllCorner != gridFloat2.getYllCorner()) isEqual = false;
         if(cellSize != gridFloat2.getCellSize()) isEqual = false;
         if(noData != gridFloat2.getNoData()) isEqual = false;
         if(!byteOrder.equals(gridFloat2.getByteOrder())) isEqual = false;
@@ -382,30 +304,20 @@ public class GridFloat {
 
         try{
 
-            // Data array
-            float[] dataArray = new float[nCols*nRows];
-            int aPos = 0;
-            for(int r=1; r<=nRows; r++){
-                for(int c=1; c<=nCols; c++){
-                    dataArray[aPos] = (float)ras[c][r];
-                    aPos++;
-                }
-            }
-
             // Create sample model
             SampleModel sampleModel = RasterFactory.createBandedSampleModel(DataBuffer.TYPE_FLOAT, nCols, nRows, 1);
 
             // Create tiled image
-            TiledImage tiledImage = new TiledImage(0,0,nCols,nRows,0,0,sampleModel,null);
+            TiledImage tiledImage = new TiledImage(0, 0, nCols, nRows, 0, 0, sampleModel, null);
 
             // Create writebaleraster
-            WritableRaster raster = tiledImage.getWritableTile(0,0);
+            WritableRaster wraster = tiledImage.getWritableTile(0,0);
 
             // Set raster data
-            raster.setPixels(0, 0, nCols, nRows, dataArray);
+            wraster.setPixels(0, 0, nCols, nRows, dataArray);
 
             // Set image raster
-            tiledImage.setData(raster);
+            tiledImage.setData(wraster);
 
 
             return tiledImage;
@@ -413,34 +325,6 @@ public class GridFloat {
             System.out.println(ex);
             return null;
         }
-    }
-
-
-      private ColorModel generateColorModel() {
-        // Generate 16-color model
-        byte[] r = new byte[16];
-        byte[] g = new byte[16];
-        byte[] b = new byte[16];
-
-        r[0] = 0; g[0] = 0; b[0] = 0;
-        r[1] = 0; g[1] = 0; b[1] = (byte)192;
-        r[2] = 0; g[2] = 0; b[2] = (byte)255;
-        r[3] = 0; g[3] = (byte)192; b[3] = 0;
-        r[4] = 0; g[4] = (byte)255; b[4] = 0;
-        r[5] = 0; g[5] = (byte)192; b[5] = (byte)192;
-        r[6] = 0; g[6] = (byte)255; b[6] = (byte)255;
-        r[7] = (byte)192; g[7] = 0; b[7] = 0;
-        r[8] = (byte)255; g[8] = 0; b[8] = 0;
-        r[9] = (byte)192; g[9] = 0; b[9] = (byte)192;
-        r[10] = (byte)255; g[10] = 0; b[10] = (byte)255;
-        r[11] = (byte)192; g[11] = (byte)192; b[11] = 0;
-        r[12] = (byte)255; g[12] = (byte)255; b[12] = 0;
-        r[13] = (byte)80; g[13] = (byte)80; b[13] = (byte)80;
-        r[14] = (byte)192; g[14] = (byte)192; b[14] = (byte)192;
-        r[15] = (byte)255; g[15] = (byte)255; b[15] = (byte)255;
-
-        ColorModel colorModel = new IndexColorModel(4, 16, r, g, b);
-        return colorModel;
     }
 
     public int getnCols() {
@@ -459,28 +343,12 @@ public class GridFloat {
         this.nRows = nRows;
     }
 
-    public double getXllCenter() {
-        return xllCenter;
-    }
-
-    public void setXllCenter(double xllCenter) {
-        this.xllCenter = xllCenter;
-    }
-
     public double getXllCorner() {
         return xllCorner;
     }
 
     public void setXllCorner(double xllCorner) {
         this.xllCorner = xllCorner;
-    }
-
-    public double getYllCenter() {
-        return yllCenter;
-    }
-
-    public void setYllCenter(double yllCenter) {
-        this.yllCenter = yllCenter;
     }
 
     public double getYllCorner() {
@@ -523,20 +391,18 @@ public class GridFloat {
         this.byteOrder = byteOrder;
     }
 
-    public double[][] getRas(){
-        return ras;
+    public Raster getRaster(){
+        return raster;
     }
 
-    public void setRas(double[][] ras){
-        this.ras = ras;
+    public void setRas(Raster raster){
+        this.raster = raster;
 
         cellCount = 0;
-        for(int r=1; r<=nRows; r++){
-            for(int c=1; c<=nCols; c++){
-                if(ras[c][r] != noData){
-                    cellCount++;
-                }
-            }
+
+        DataBuffer db = raster.getDataBuffer();
+        for(int e=0; e<db.getSize(); e++){
+            if(db.getElemFloat(e) != noData) cellCount++;
         }
     }
 
@@ -571,15 +437,17 @@ public class GridFloat {
     private int nRows = 0;
     private double xllCorner = 0;
     private double yllCorner = 0;
-    private double xllCenter = 0;
-    private double yllCenter = 0;
+//    private double xllCenter = 0;
+//    private double yllCenter = 0;
     private double cellSize = 0;
     private double noData = -9999;
     private String byteOrder = "LSBFIRST";
 
     private boolean origCorner = true;
 
-    private double[][] ras = null;
+//    private double[][] ras = null;
+    private float[] dataArray = null;
+    private Raster raster = null;
 
     private long   cellCount = 0;
     private double minVal = Double.MAX_VALUE;
