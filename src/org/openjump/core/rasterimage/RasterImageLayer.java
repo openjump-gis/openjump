@@ -161,7 +161,7 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
         	maxPixelsForFastDisplayMode = 250000; //500x500 px
         }
         if(avram > 750000000){
-        	maxPixelsForFastDisplayMode = 563500; //750x750 px
+        	maxPixelsForFastDisplayMode = 4000000; //2000x2000 px
         }
         //[sstein end]
     }
