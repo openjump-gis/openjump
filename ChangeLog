@@ -1,4 +1,16 @@
 2010-08-09 sstein <sstein@geo.uzh.ch>
+	ESRI ASCII grids can now be read in as Sextante Raster. Alberto did send me the code
+	for the changes (see JPP devel list)   
+	
+	changed classes:
+	org.openjump.core.rasterimage.RasterImageLayer
+	org.openjump.core.rasterimage.AddRasterImageLayerWizard
+	org.openjump.core.rasterimage.SelectRasterImageFilesPanel
+	
+	new classes
+	org.openjump.core.rasterimage.GridAscii	
+	
+2010-08-09 sstein <sstein@geo.uzh.ch>
 	tried to implement dynamic loading of images which decides based on used memory
 	and size of the image/raster if the image is load into memory or just read from
 	file each time pan/zoom is done.

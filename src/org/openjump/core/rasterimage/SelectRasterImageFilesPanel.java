@@ -77,7 +77,7 @@ public class SelectRasterImageFilesPanel extends JFileChooser implements WizardP
     addChoosableFileFilter(PNG_FILE_FILTER);
     */
     FileFilter JAI_IMAGE_FILE_FILTER = GUIUtil.createFileFilter(I18N.get("org.openjump.core.rasterimage.SelectRasterImageFilesPanel.supported-raster-image-formats"), 
-    		new String[]{ "tif", "tiff", "gif", "jpg", "png", "flt" });
+    		new String[]{ "tif", "tiff", "gif", "jpg", "png", "flt", "asc" });
     addChoosableFileFilter(JAI_IMAGE_FILE_FILTER);
     addChoosableFileFilter(GUIUtil.ALL_FILES_FILTER);
     
