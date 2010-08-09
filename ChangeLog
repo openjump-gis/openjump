@@ -1,3 +1,13 @@
+2010-08-09 sstein <sstein@geo.uzh.ch>
+	tried to implement dynamic loading of images which decides based on used memory
+	and size of the image/raster if the image is load into memory or just read from
+	file each time pan/zoom is done.
+
+	However, this needs more testing
+	
+	changed classes:
+	org.openjump.core.rasterimage.RasterImageLayer
+	
 2010-08-02 sstein <sstein@geo.uzh.ch>
 	changed access for Pirols RasterImageLayer class, since we need to store the image
 	and the data separately. This way we can adjust the image values without changing
