@@ -89,10 +89,7 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
     protected static long availRAM = Runtime.getRuntime().maxMemory();
     protected static double freeRamFactor = 0.5;
     protected static double minRamToKeepFree = availRAM * freeRamFactor;
-    //[sstein 9.Aug.2010]
-    // The value below is set dynamically based on available memory
-    //       now its 200x200px as min (originally it was 500x500)
-    protected static int maxPixelsForFastDisplayMode = 40000;
+    protected static int maxPixelsForFastDisplayMode = 250000;
 
     protected String imageFileName = null;
     protected int origImageWidth, origImageHeight;
@@ -155,15 +152,6 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
             this.setImage(javax.media.jai.PlanarImage.wrapRenderedImage(imageToDisplay));
         if (newRaster != null)
         	this.setRasterData(newRaster);
-        //[sstein 9.Aug.2010]
-        long avram = getAvailRAM();
-        if(avram > 256000000){
-        	maxPixelsForFastDisplayMode = 250000; //500x500 px
-        }
-        if(avram > 750000000){
-        	maxPixelsForFastDisplayMode = 4000000; //2000x2000 px
-        }
-        //[sstein end]
     }
     
     
@@ -195,15 +183,6 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
         else{
             //logger.printError("given raster is NULL");
         }
-        //[sstein 9.Aug.2010]
-        long avram = getAvailRAM();
-        if(avram > 256000000){
-        	maxPixelsForFastDisplayMode = 250000; //500x500 px
-        }
-        if(avram > 750000000){
-        	maxPixelsForFastDisplayMode = 563500; //750x750 px
-        }
-        //[sstein end]
     }
 
     /**
@@ -319,24 +298,13 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
                 this.visibleEnv = newVisibleEnv;
                 
                 if ( (this.origImageWidth * this.origImageHeight) < RasterImageLayer.getMaxPixelsForFastDisplayMode() ){
-                    //int pixels = this.origImageWidth * this.origImageHeight;
-                	//int maxpixels = RasterImageLayer.getMaxPixelsForFastDisplayMode();
-                    //-- faster display (uses more RAM) for small images
+                    
+                    // faster display (uses more RAM) for small images
                     this.setImageProcessingMode(RasterImageLayer.MODE_FASTDISPLAY);
                     
                     if (this.isImageNull()){
                         this.reLoadImage();
                     }
-                    //[sstein 9.Aug.2010]
-                    long totalMem = Runtime.getRuntime().totalMemory();
-                    long freeMem = Runtime.getRuntime().freeMemory();
-                    long committedMemory = totalMem - freeMem;
-                    double maxMemoryToCommit = availRAM - minRamToKeepFree;
-                    boolean needFreeRAM = (committedMemory > maxMemoryToCommit);
-                    if(needFreeRAM == false){
-                    	this.setNeedToKeepImage(true); //so small images are not reloaded every time
-                    }
-                    //[sstein end]
                     
                     this.imagePart = this.getVisibleImageCoordinatesOfImage( this.origImageWidth, this.origImageHeight, this.visibleEnv, this.getEnvelope() );
                     
@@ -473,14 +441,11 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
     }
     
     /**
-     * deletes image from RAM (if it is not to be kept and if the RAM consumption is high)
+     * deletes image from RAM (if it is not to be keeped and if the RAM consumption is high)
      * and calls the garbage collector, if the <code>garbageCollect</code> is true.
      *@param garbageCollect if true the garbage collector will be called (this parameter may be overridden, if there is not enough RAM available...)
      */
     public boolean clearImageAndRaster(boolean garbageCollect){
-    	//TODO: [sstein 9.Aug.2010] not sure if below condition is correct, since it 
-    	//       does not account for Xmx (max memory), only for the actual memory
-    	//       Hence we should work with committed memory as I did above??? 
         boolean reallyNeedToFreeRAM = (Runtime.getRuntime().freeMemory() < minRamToKeepFree);
         if (!this.needToKeepImage && reallyNeedToFreeRAM ){
             this.image = null;
@@ -534,8 +499,7 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
      */
     public static Point getImageDimensions(WorkbenchContext context, String filenameOrURL) {
         
-        if (!filenameOrURL.toLowerCase().endsWith(".jpg") && !filenameOrURL.toLowerCase().endsWith(".flt") &&
-                !filenameOrURL.toLowerCase().endsWith(".asc")){
+        if (!filenameOrURL.toLowerCase().endsWith(".jpg") && !filenameOrURL.toLowerCase().endsWith(".flt")){
             try {
                 // JAI required!!
                 javax.media.jai.PlanarImage pImage = javax.media.jai.JAI.create("fileload", filenameOrURL);
@@ -555,28 +519,16 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
             try{
 
                 GridFloat gf = new GridFloat(filenameOrURL);
+                gf.readGrid();
 
-                return new Point(gf.getnCols(), gf.getnRows());
-
+                javax.media.jai.PlanarImage pImage = gf.getPlanarImage();
+                if (pImage != null) {
+                    return new Point(pImage.getWidth(), pImage.getHeight());
+                }
+                
             }catch(Throwable e){
                 //logger.printError(e.getLocalizedMessage());
                 if (e.getMessage().indexOf("Error in FLT file") > -1) {
-                	context.getWorkbench().getFrame().warnUser("unsupported-flt");
-                } else {
-                	context.getWorkbench().getFrame().warnUser("problems-loading-image"+ e.getMessage());
-                }
-            }
-
-        }else if(filenameOrURL.toLowerCase().endsWith(".asc")){
-
-            try{
-
-                GridAscii ga = new GridAscii(filenameOrURL);
-                return new Point(ga.getnCols(), ga.getnRows());
-
-            }catch(Throwable e){
-                //logger.printError(e.getLocalizedMessage());
-                if (e.getMessage().indexOf("Error in Grid Ascii file") > -1) {
                 	context.getWorkbench().getFrame().warnUser("unsupported-flt");
                 } else {
                 	context.getWorkbench().getFrame().warnUser("problems-loading-image"+ e.getMessage());
@@ -655,12 +607,9 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
                 GridFloat gf = new GridFloat(filenameOrURL);
                 gf.readGrid();
 
+                rasterData = gf.getRaster();
+
                 javax.media.jai.PlanarImage pImage = gf.getPlanarImage();
-                //-- [sstein 3 Aug 2010] 
-                //   dealing now with an Image that will be modified for better dislay 
-       		 	Raster rData = pImage.copyData();  //copy data so we do not get a ref
-                rasterData = rData;
-                //-- sstein end
 
                 // This returns a planaimage with actual pixel values
 //                if (pImage != null) {
@@ -704,64 +653,6 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
                 	context.getWorkbench().getFrame().warnUser("problems-loading-image"+ e.getMessage());
                 }
             }
-
-         } else if (filenameOrURL.toLowerCase().endsWith(".asc")){
-
-            try{
-
-                GridAscii ga = new GridAscii(filenameOrURL);
-                ga.readGrid();
-
-                javax.media.jai.PlanarImage pImage = ga.getPlanarImage();
-                //-- [sstein 3 Aug 2010]
-                //   dealing now with an Image that will be modified for better dislay
-       		 	Raster rData = pImage.copyData();  //copy data so we do not get a ref
-                rasterData = rData;
-                //-- sstein end
-
-                // This returns a planaimage with actual pixel values
-//                if (pImage != null) {
-//                    return pImage;
-//                }
-
-                // This rescales values
-                // See http://www.lac.inpe.br/JIPCookbook/2200-display-surrogate.jsp
-
-                ParameterBlock pbMaxMin = new ParameterBlock();
-                pbMaxMin.addSource(pImage);
-                RenderedOp extrema = JAI.create("extrema", pbMaxMin);
-                double minValue = ga.getMinVal();
-                double maxValue = ga.getMaxVal();
-
-                double[] subtractThis = new double[1]; subtractThis[0] = minValue;
-                double[] multiplyBy   = new double[1]; multiplyBy[0]   = 255./(maxValue-minValue);
-
-                ParameterBlock pbSub = new ParameterBlock();
-                pbSub.addSource(pImage);
-                pbSub.add(subtractThis);
-                PlanarImage surrogateImage = (PlanarImage)JAI.create("subtractconst",pbSub,null);
-                ParameterBlock pbMult = new ParameterBlock();
-                pbMult.addSource(surrogateImage);
-                pbMult.add(multiplyBy);
-                surrogateImage = (PlanarImage)JAI.create("multiplyconst",pbMult,null);
-                ParameterBlock pbConvert = new ParameterBlock();
-                pbConvert.addSource(surrogateImage);
-                pbConvert.add(DataBuffer.TYPE_BYTE);
-                surrogateImage = JAI.create("format", pbConvert);
-
-
-
-                return(surrogateImage);
-
-            }catch(Throwable e){
-                //logger.printError(e.getLocalizedMessage());
-                if (e.getMessage().indexOf("Error in FLT file") > -1) {
-                	context.getWorkbench().getFrame().warnUser("unsupported-flt");
-                } else {
-                	context.getWorkbench().getFrame().warnUser("problems-loading-image"+ e.getMessage());
-                }
-            }
-
          }
          //logger.printError("unsupported image format"); 
          return null;
