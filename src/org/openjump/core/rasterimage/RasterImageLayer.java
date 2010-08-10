@@ -499,7 +499,8 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
      */
     public static Point getImageDimensions(WorkbenchContext context, String filenameOrURL) {
         
-        if (!filenameOrURL.toLowerCase().endsWith(".jpg") && !filenameOrURL.toLowerCase().endsWith(".flt")){
+        if (!filenameOrURL.toLowerCase().endsWith(".jpg") && !filenameOrURL.toLowerCase().endsWith(".flt") &&
+                !filenameOrURL.toLowerCase().endsWith(".asc")){
             try {
                 // JAI required!!
                 javax.media.jai.PlanarImage pImage = javax.media.jai.JAI.create("fileload", filenameOrURL);
@@ -519,16 +520,28 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
             try{
 
                 GridFloat gf = new GridFloat(filenameOrURL);
-                gf.readGrid();
 
-                javax.media.jai.PlanarImage pImage = gf.getPlanarImage();
-                if (pImage != null) {
-                    return new Point(pImage.getWidth(), pImage.getHeight());
-                }
-                
+                return new Point(gf.getnCols(), gf.getnRows());
+
             }catch(Throwable e){
                 //logger.printError(e.getLocalizedMessage());
                 if (e.getMessage().indexOf("Error in FLT file") > -1) {
+                	context.getWorkbench().getFrame().warnUser("unsupported-flt");
+                } else {
+                	context.getWorkbench().getFrame().warnUser("problems-loading-image"+ e.getMessage());
+                }
+            }
+
+        }else if(filenameOrURL.toLowerCase().endsWith(".asc")){
+
+            try{
+
+                GridAscii ga = new GridAscii(filenameOrURL);
+                return new Point(ga.getnCols(), ga.getnRows());
+
+            }catch(Throwable e){
+                //logger.printError(e.getLocalizedMessage());
+                if (e.getMessage().indexOf("Error in Grid Ascii file") > -1) {
                 	context.getWorkbench().getFrame().warnUser("unsupported-flt");
                 } else {
                 	context.getWorkbench().getFrame().warnUser("problems-loading-image"+ e.getMessage());
@@ -607,9 +620,12 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
                 GridFloat gf = new GridFloat(filenameOrURL);
                 gf.readGrid();
 
-                rasterData = gf.getRaster();
-
                 javax.media.jai.PlanarImage pImage = gf.getPlanarImage();
+                //-- [sstein 3 Aug 2010] 
+                //   dealing now with an Image that will be modified for better dislay 
+       		 	Raster rData = pImage.copyData();  //copy data so we do not get a ref
+                rasterData = rData;
+                //-- sstein end
 
                 // This returns a planaimage with actual pixel values
 //                if (pImage != null) {
@@ -653,6 +669,64 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
                 	context.getWorkbench().getFrame().warnUser("problems-loading-image"+ e.getMessage());
                 }
             }
+
+         } else if (filenameOrURL.toLowerCase().endsWith(".asc")){
+
+            try{
+
+                GridAscii ga = new GridAscii(filenameOrURL);
+                ga.readGrid();
+
+                javax.media.jai.PlanarImage pImage = ga.getPlanarImage();
+                //-- [sstein 3 Aug 2010]
+                //   dealing now with an Image that will be modified for better dislay
+       		 	Raster rData = pImage.copyData();  //copy data so we do not get a ref
+                rasterData = rData;
+                //-- sstein end
+
+                // This returns a planaimage with actual pixel values
+//                if (pImage != null) {
+//                    return pImage;
+//                }
+
+                // This rescales values
+                // See http://www.lac.inpe.br/JIPCookbook/2200-display-surrogate.jsp
+
+                ParameterBlock pbMaxMin = new ParameterBlock();
+                pbMaxMin.addSource(pImage);
+                RenderedOp extrema = JAI.create("extrema", pbMaxMin);
+                double minValue = ga.getMinVal();
+                double maxValue = ga.getMaxVal();
+
+                double[] subtractThis = new double[1]; subtractThis[0] = minValue;
+                double[] multiplyBy   = new double[1]; multiplyBy[0]   = 255./(maxValue-minValue);
+
+                ParameterBlock pbSub = new ParameterBlock();
+                pbSub.addSource(pImage);
+                pbSub.add(subtractThis);
+                PlanarImage surrogateImage = (PlanarImage)JAI.create("subtractconst",pbSub,null);
+                ParameterBlock pbMult = new ParameterBlock();
+                pbMult.addSource(surrogateImage);
+                pbMult.add(multiplyBy);
+                surrogateImage = (PlanarImage)JAI.create("multiplyconst",pbMult,null);
+                ParameterBlock pbConvert = new ParameterBlock();
+                pbConvert.addSource(surrogateImage);
+                pbConvert.add(DataBuffer.TYPE_BYTE);
+                surrogateImage = JAI.create("format", pbConvert);
+
+
+
+                return(surrogateImage);
+
+            }catch(Throwable e){
+                //logger.printError(e.getLocalizedMessage());
+                if (e.getMessage().indexOf("Error in ASCII file") > -1) {
+                	context.getWorkbench().getFrame().warnUser("unsupported-ascii");
+                } else {
+                	context.getWorkbench().getFrame().warnUser("problems-loading-image"+ e.getMessage());
+                }
+            }
+
          }
          //logger.printError("unsupported image format"); 
          return null;
