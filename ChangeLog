@@ -11,7 +11,8 @@
 	org.openjump.core.rasterimage.GridAscii	
 	
 2010-08-09 sstein <sstein@geo.uzh.ch>
-	needed to revert the following change [sstein 9.Aug.2010 6.35pm MT]
+	needed to revert the following change on 9.Aug.2010 6.35pm MT but 
+	added back on Aug.10:
 	tried to implement dynamic loading of images which decides based on used memory
 	and size of the image/raster if the image is load into memory or just read from
 	file each time pan/zoom is done.
