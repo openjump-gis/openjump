@@ -490,6 +490,17 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
     }
     
     /**
+     * use this to assign the raster data again
+     * the method is called from  getRasterData();
+     */
+    public void reLoadImageButKeepImageForDisplay(){
+       WorkbenchContext context = this.getWorkbenchContext();
+       PlanarImage pi = this.getImageForDisplay();
+       PlanarImage dontNeedThisImage = RasterImageLayer.loadImage( context, imageFileName);
+       this.setImage(pi);
+    }
+    
+    /**
      * Returns the dimensions (width and height in px) of the image as a <code>Point</code> object.
      * The clue is that only the image file's header is read to get this information, so it's quite
      * fast, because the image was not entirely read.  
@@ -542,7 +553,7 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
             }catch(Throwable e){
                 //logger.printError(e.getLocalizedMessage());
                 if (e.getMessage().indexOf("Error in Grid Ascii file") > -1) {
-                	context.getWorkbench().getFrame().warnUser("unsupported-flt");
+                	context.getWorkbench().getFrame().warnUser("unsupported-asc");
                 } else {
                 	context.getWorkbench().getFrame().warnUser("problems-loading-image"+ e.getMessage());
                 }
@@ -1538,8 +1549,9 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
 	 * @return the rasterData
 	 */
 	public Raster getRasterData() {
-        if (rasterData == null)
-            this.reLoadImage();
+        //if (rasterData == null)
+		//-- [sstein Aug9th 2010] now reload every time but keep Style
+        this.reLoadImageButKeepImageForDisplay();
 		return rasterData;
 	}
 
