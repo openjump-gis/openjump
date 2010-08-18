@@ -31,34 +31,33 @@
  */
 package com.vividsolutions.jump.workbench.model;
 
+import java.awt.Color;
+import java.awt.geom.Line2D;
+import java.lang.ref.WeakReference;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.swing.JInternalFrame;
+
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.util.Assert;
-
 import com.vividsolutions.jump.coordsys.CoordinateSystem;
 import com.vividsolutions.jump.coordsys.Reprojector;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.util.Blackboard;
-import com.vividsolutions.jump.util.Block;
-import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
-import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanelProxy;
+import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
 import com.vividsolutions.jump.workbench.ui.style.AbstractPalettePanel;
-
-import java.awt.Color;
-import java.awt.geom.Line2D;
-
-import java.lang.ref.WeakReference;
-import java.lang.reflect.InvocationTargetException;
-
-import java.util.*;
-
-import javax.swing.JInternalFrame;
 
 /**
  * Registry of Layers in a Task.
@@ -759,6 +758,19 @@ public class LayerManager {
         return layersWithModifiedFeatureCollections;
     }
 
+    public LinkedList getLayersWithNullDataSource(){
+        LinkedList list = new LinkedList();
+        
+        for (Iterator i = iterator(); i.hasNext();) {
+            Layer layer = (Layer) i.next();
+            if(layer.getDataSourceQuery() == null) {
+                list.add(layer);
+            }
+        }
+        
+        return list;
+    }
+    
     public void setCoordinateSystem(CoordinateSystem coordinateSystem) {
         this.coordinateSystem = coordinateSystem;
 

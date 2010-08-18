@@ -963,6 +963,15 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
     return layersWithModifiedFeatureCollections;
   }
 
+  private Collection getGeneratedLayers() {
+      ArrayList list = new ArrayList();
+      for (Iterator i = getLayerManagers().iterator(); i.hasNext();) {
+        LayerManager layerManager = (LayerManager)i.next();
+        list.addAll(layerManager.getLayersWithNullDataSource());
+      }
+      return list;
+    }
+
   private Collection getLayerManagers() {
     // Multiple windows may point to the same LayerManager, so use
     // a Set. [Jon Aquino]
@@ -1198,7 +1207,8 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
   private class DefaultApplicationExitHandler implements ApplicationExitHandler {
     public void exitApplication(JFrame mainFrame) {
       if (confirmClose(I18N.get("ui.WorkbenchFrame.exit-jump"),
-        getLayersWithModifiedFeatureCollections())) {
+        getLayersWithModifiedFeatureCollections(),
+        getGeneratedLayers())) {
         // PersistentBlackboardPlugIn listens for when the workbench is
         // hidden [Jon Aquino]
     	saveWindowState();
@@ -1224,7 +1234,8 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
     boolean lastTaskFrame = getTaskFramesAssociatedWith(layerManager).size() == 1;
     if (lastTaskFrame) {
       Collection modifiedItems = layerManager.getLayersWithModifiedFeatureCollections();
-      if (confirmClose(I18N.get("ui.WorkbenchFrame.close-task"), modifiedItems)) {
+      Collection generatedItems = layerManager.getLayersWithNullDataSource();
+      if (confirmClose(I18N.get("ui.WorkbenchFrame.close-task"), modifiedItems, generatedItems)) {
         // There are other internal frames associated with this task
         if (associatedFrames.size() != 0) {
           // Confirm you want to close them first
@@ -1269,10 +1280,19 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
     }
   }
 
-  private boolean confirmClose(String action, Collection modifiedLayers) {
-    if (modifiedLayers.isEmpty()) {
-      return true;
-    }
+  private boolean confirmClose(String action, Collection modifiedLayers, Collection generatedLayers) {
+        if (modifiedLayers.isEmpty()) {
+            if(generatedLayers.isEmpty()){
+                return true;
+            }
+            JOptionPane pane = new JOptionPane(I18N.getMessage("ui.WorkbenchFrame.do-you-really-want-to-close-openjump-generated-layers-not-saved", new Object[]{Integer.valueOf(generatedLayers.size())}),
+                    JOptionPane.QUESTION_MESSAGE);
+            pane.setOptions(new String[] {
+                    action, I18N.get("ui.WorkbenchFrame.cancel")
+                  });
+            pane.createDialog(this, "JUMP").setVisible(true);
+            return pane.getValue().equals(action);
+        }
     JOptionPane pane = new JOptionPane(
       StringUtil.split(
         modifiedLayers.size()

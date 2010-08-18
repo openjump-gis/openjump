@@ -1,52 +1,56 @@
-2010-08-09 sstein <sstein@geo.uzh.ch>
-	ESRI ASCII grids can now be read in as Sextante Raster. Alberto did send me the code
-	for the changes (see JPP devel list)   
-	
-	changed classes:
-	org.openjump.core.rasterimage.RasterImageLayer
-	org.openjump.core.rasterimage.AddRasterImageLayerWizard
-	org.openjump.core.rasterimage.SelectRasterImageFilesPanel
-	
-	new classes
-	org.openjump.core.rasterimage.GridAscii	
-	
-2010-08-09 sstein <sstein@geo.uzh.ch>
-	needed to revert the following change on 9.Aug.2010 6.35pm MT but 
-	added back on Aug.10:
-	tried to implement dynamic loading of images which decides based on used memory
-	and size of the image/raster if the image is load into memory or just read from
-	file each time pan/zoom is done.
+2010-08-18 aschmitz <schmitz@lat-lon.de>
+        Changed closing behaviour as discussed on JPP devel. The user is now asked in case
+        there are unsaved generated layers.
 
-	However, this needs more testing
-	
-	changed classes:
-	org.openjump.core.rasterimage.RasterImageLayer
-	
+2010-08-09 sstein <sstein@geo.uzh.ch>
+        ESRI ASCII grids can now be read in as Sextante Raster. Alberto did send me the code
+        for the changes (see JPP devel list)
+
+        changed classes:
+        org.openjump.core.rasterimage.RasterImageLayer
+        org.openjump.core.rasterimage.AddRasterImageLayerWizard
+        org.openjump.core.rasterimage.SelectRasterImageFilesPanel
+
+        new classes
+        org.openjump.core.rasterimage.GridAscii
+
+2010-08-09 sstein <sstein@geo.uzh.ch>
+        needed to revert the following change on 9.Aug.2010 6.35pm MT but
+        added back on Aug.10:
+        tried to implement dynamic loading of images which decides based on used memory
+        and size of the image/raster if the image is load into memory or just read from
+        file each time pan/zoom is done.
+
+        However, this needs more testing
+
+        changed classes:
+        org.openjump.core.rasterimage.RasterImageLayer
+
 2010-08-02 sstein <sstein@geo.uzh.ch>
-	changed access for Pirols RasterImageLayer class, since we need to store the image
-	and the data separately. This way we can adjust the image values without changing
-	the data. To scale image grey values for a better display a function was added to the
-	RasterImageLayer class (e.g. while previously very small values -> 0 have been displayed
-	as black pixels, they are now grey).
-	
-	I removed/renamed the function RasterImageLayer.getImage() to getImageForDisplay()
-	to avoid that other programs work with the stretched/modified image. Hence, I also
-	changed the access in the Sextante classes (e.g.: OpenJUMPSextanteRasterLayer).
-	I tested Loading, Saving and ExtractSelectedPart briefly - so I hope it works.
-	
-	changed classes:
-	org.openjump.core.rasterimage.RasterImageLayer
-	org.openjump.core.rasterimage.AddRasterImageLayerWizard
-	org.openjump.core.ui.plugin.layer.pirolraster.LoadSextanteRasterImagePlugIn
-	org.openjump.core.ui.plugin.layer.pirolraster.SaveRasterImageAsImagePlugIn
-	org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage
-	
-	org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer
-	note, the corresponding class needs also to be changed in the Sextante repository.
-	
-	Note, in general it is recommended to use OpenJUMPSextanteRasterLayer to do raster
-	operations and not the RasterImageLayer class.
-	
+        changed access for Pirols RasterImageLayer class, since we need to store the image
+        and the data separately. This way we can adjust the image values without changing
+        the data. To scale image grey values for a better display a function was added to the
+        RasterImageLayer class (e.g. while previously very small values -> 0 have been displayed
+        as black pixels, they are now grey).
+
+        I removed/renamed the function RasterImageLayer.getImage() to getImageForDisplay()
+        to avoid that other programs work with the stretched/modified image. Hence, I also
+        changed the access in the Sextante classes (e.g.: OpenJUMPSextanteRasterLayer).
+        I tested Loading, Saving and ExtractSelectedPart briefly - so I hope it works.
+
+        changed classes:
+        org.openjump.core.rasterimage.RasterImageLayer
+        org.openjump.core.rasterimage.AddRasterImageLayerWizard
+        org.openjump.core.ui.plugin.layer.pirolraster.LoadSextanteRasterImagePlugIn
+        org.openjump.core.ui.plugin.layer.pirolraster.SaveRasterImageAsImagePlugIn
+        org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage
+
+        org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer
+        note, the corresponding class needs also to be changed in the Sextante repository.
+
+        Note, in general it is recommended to use OpenJUMPSextanteRasterLayer to do raster
+        operations and not the RasterImageLayer class.
+
 2010-06-22 mmichaud <michael.michaud@free.fr>
     Fix bug ID: 2716210 in JoinAttributesSpatiallyPlugIn (SpatialRelationOp).
     Can now collect attributes from LineStrings intersecting a polygon.
@@ -56,31 +60,31 @@
     lines), drawing dashed line could be very long at high zoom level.
 
 2010-06-16 mmichaud <michael.michaud@free.fr>
-    While readind a dbf character field, it now gets rid of trailing 0x00 bytes 
+    While readind a dbf character field, it now gets rid of trailing 0x00 bytes
 
 2010-06-06 sstein <sstein@geo.uzh.ch>
-    added function to merge selected polygons with neighbor polygons - choosing either 
+    added function to merge selected polygons with neighbor polygons - choosing either
     the one with the largest area of all neighbors, or the polygon with the longest
-    shared edge. (in Tools>Analysis>One Layer) The function is similar to 
+    shared edge. (in Tools>Analysis>One Layer) The function is similar to
     ArcGIS "eliminate".
     org.openjump.core.ui.plugin.tools.analysis.onelayer.MergeSelectedPolygonsWithNeighbourPlugIn
 
 2010-06-04 beckerl <becker.larry@gmail.com>
-	Changed Label Style so that vertical alignment works for polygons. Default is now Above.
+        Changed Label Style so that vertical alignment works for polygons. Default is now Above.
     com.vividsolutions.jump.workbench.ui.renderer.style.LabelStyle.java
-    
+
 2010-05-27 sstein <sstein@geo.uzh.ch>
     added function to intersect polygons of one layer (in Tools>Analysis>One Layer)
     org.openjump.core.ui.plugin.tools.analysis.onelayer.IntersectPolygonsOneLayerPlugIn
-    
+
 2010-05-27 michaudm <michael.michaud@free.fr>
     fixed bug ID:3007431 (loading empty postgis tables)
     improved mixed-case schema/table/column name management
-    
+
 2010-04-26 sstein <sstein@geo.uzh.ch>
     fixed error in median calculation of
-    org.openjump.core.attributeoperations.AttributeOp 
-    
+    org.openjump.core.attributeoperations.AttributeOp
+
 2010-04-10 michaudm <michael.michaud@free.fr>
     improved UnionByAttribute adding better warnings and output messages if
     invalid geometries are found (may slow down the whole process)
@@ -117,36 +121,36 @@
     replaced by an empty GeometryCollection
 
 2010-03-04 sstein  <sstein@geo.uzh.ch>
-	added Sextante Raster interface classes, so we can process rasters now in OJ
-	
+        added Sextante Raster interface classes, so we can process rasters now in OJ
+
 2010-03-04 sstein  <sstein@geo.uzh.ch>
-	added JTS 1.11
-	changed Maven pom script
-	
+        added JTS 1.11
+        changed Maven pom script
+
 2010-02-12 beckerl <becker.larry@gmail.com>
-	Scalebar can now be modified with BeanShellScripts since getters/setters have been added.
-	jump.workbench.ui.plugin.scalebar.ScaleBarRenderer
-	
+        Scalebar can now be modified with BeanShellScripts since getters/setters have been added.
+        jump.workbench.ui.plugin.scalebar.ScaleBarRenderer
+
 2010-02-12 beckerl <becker.larry@gmail.com>
-	Added optimization to stop drawing while loading layers.  
-	This significantly speeds up loading of large tasks. 
-	core.ui.plugin.file.open.OpenProjectWizard
-	
+        Added optimization to stop drawing while loading layers.
+        This significantly speeds up loading of large tasks.
+        core.ui.plugin.file.open.OpenProjectWizard
+
 2010-02-04 beckerl <becker.larry@gmail.com>
-	OJ now remembers the window location, size, and maximized state in 
-	the workbench-state.xml file and the project files (improved until 10 Feb 2010)
+        OJ now remembers the window location, size, and maximized state in
+        the workbench-state.xml file and the project files (improved until 10 Feb 2010)
     jump.workbench.JUMPWorkbench
     jump.workbench.ui.WorkbenchFrame
     jump.workbench.ui.plugin.AbstractSaveProjectPlugin
     jump.workbench.model.Task
     jump.workbench.model.Task.java2xml
     jump.util.java2xml.XML2Java
-	core.ui.plugin.file.open.OpenProjectWizard
-    
+        core.ui.plugin.file.open.OpenProjectWizard
+
 2010-02-03 beckerl <becker.larry@gmail.com>
     core.ui.zoom.AbstractZoomTool
     core.ui.plugin.tools.ZoomRealtimeTool (2 Feb 2010)
-    mouse wheel image stretch modification, which delays request of 
+    mouse wheel image stretch modification, which delays request of
     data after 0.7 seconds of mouse wheel operation
 
 2010-01-30 michaudm <michael.michaud@free.fr>
@@ -156,7 +160,7 @@
     * com.vividsolutions.jump.datastore.postgis.PostgisValueConverterFactory
     now returns GEOMETRYCOLLECTION EMPTY for null values
     * org.openjump.core.apitools.FeatureCollectionTools
-    fix bug throwing NPE in the case of null non-numeric attribute values 
+    fix bug throwing NPE in the case of null non-numeric attribute values
 
 2010-01-29 michaudm <michael.michaud@free.fr>
     com.vividsolutions.jump.workbench.ui.plugin.ViewSchemaPlugIn
@@ -168,7 +172,7 @@
     ui.plugin.queries.Function
     ui.plugin.queries.Operator
     ui.plugin.queries.QueryDialog
-    
+
 2010-01-25 michaudm <michael.michaud@free.fr>
     com.vividsolutions.jump.workbench.ui.plugin.datastore.RunDataStoreQueryPlugIn
     cancel the current query if the thread is interrupted
@@ -177,16 +181,16 @@
     core.ui.plugin.view.MapToolTipPlugIn
     Added support for _p attribute name suffix that assumes the string is an
     image file path.
-    
+
 2010-01-05 mentaer <sstein@geo.unizh.ch>
     fixed bug 2926111: "select all layer items" function considers the
     visibility of layer now
-    
+
 2009-12-23 beckerl <becker.larry@gmail.com>
     core.ui.plugin.view.NorthArrowPlugIn
     North Arrow is a View menu option.  There is no GIU, but you can set
     alignment and style options with Beanshell.
-    
+
 2009-12-14 beckerl <becker.larry@gmail.com>
     core.ui.plugin.customize.CmdRunner
     Class adds support for running external programs, reading their output, and
@@ -194,14 +198,14 @@
 
 2010-12-11 michaudm <michael.michaud@free.fr>
     fixed a bug by adding createTaskWindowMustBeActiveCheck with ClipToFencePlugin
-    
+
 2009-12-11 beckerl <becker.larry@gmail.com>
     com.vividsolutions.jump.geom.CoordUtil
     org.openjump.core.ui.plugin.mousemenu.MoveAlongAnglePlugIn
     and org.openjump.core.ui.plugin.mousemenu.PasteItemsAtPlugIn
     do not drop Z any more
     now interpolating Z values for normal cases
-    
+
 2009-12-09 beckerl <becker.larry@gmail.com>
     core.ui.plugin.view.EasyButtonsPlugin
     The EZ Buttons plugin adds to the View menu an option to display a button
@@ -211,25 +215,25 @@
 2009-12-06 mentaer <sstein@geo.unizh.ch>
 
            **** release of OpenJUMP 1.3.1 ****
-           
+
 2009-12-05 michaudm <michael.michaud@free.fr>
-	   * srid parameter for the view or the fence
+           * srid parameter for the view or the fence
        com.vividsolutions.jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel
        com.vividsolutions.jump.workbench.ui.plugin.datastore.RunDatastoreQueryPlugIn
-          
+
 2009-12-04 mentaer <sstein@geo.unizh.ch>
         changed OJ Version to 1.3.1 to prepare new release
-        
+
 2009-12-03 mentaer <sstein@geo.unizh.ch>
         Fixed problem with Pirol world file writer. Tiff images were shifted by
         0.5 pixel since the coords have been taken directly from the envelope
-        and not adjusted for the pixel center. 
-        
+        and not adjusted for the pixel center.
+
 2009-11-22 michaudm <michael.michaud@free.fr>
         * now possible to add a ${view} or ${fence} parameter to limit the query
           to the wiew or to the fence
         com.vividsolutions.jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel
-    	com.vividsolutions.jump.workbench.ui.plugin.datastore.RunDatastoreQueryPlugIn
+        com.vividsolutions.jump.workbench.ui.plugin.datastore.RunDatastoreQueryPlugIn
 
 2009-07-07 stranger <schmitz@lat-lon.de>
         Fixed yet another dangling progress window.

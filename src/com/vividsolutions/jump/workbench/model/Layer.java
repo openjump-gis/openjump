@@ -115,9 +115,6 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy {
 		getBasicStyle().setLineColor(defaultLineColor(fillColor));
 		getBasicStyle().setAlpha(150);
 		setFeatureCollection(featureCollection);
-		// michaelm [2009-02-20] consider that a new layer is modified
-		// so that a confirmation is asked before application closing
-		featureCollectionModified = true;
 	}
 
 	/**
