@@ -60,7 +60,7 @@ public class GridFloat {
             this.yllCorner = yllOrig;
         }else{
             this.xllCorner = xllOrig - 0.5*cellSize;
-            this.xllCorner = yllOrig - 0.5*cellSize;
+            this.yllCorner = yllOrig - 0.5*cellSize;
         }
         this.cellSize = cellSize;
         this.noData = noData;

@@ -44,7 +44,7 @@ public class GridAscii {
             this.yllCorner = yllOrig;
         }else{
             this.xllCorner = xllOrig - 0.5*cellSize;
-            this.xllCorner = yllOrig - 0.5*cellSize;
+            this.yllCorner = yllOrig - 0.5*cellSize;
         }
         this.cellSize = cellSize;
         this.noData = noData;
@@ -53,7 +53,7 @@ public class GridAscii {
 
     public final int readHeader(){
         try{
-            boolean origCenter = false;
+
             BufferedReader buffRead = new BufferedReader(new FileReader(ascFullFileName));
 
             String line = null;
@@ -80,25 +80,25 @@ public class GridAscii {
 
                 if(lines[0].trim().toLowerCase().equals("xllcorner")){
                     header[2] = lines[1];
-                    origCenter = false;
+                    origCorner = true;
 
                     nDecimalsXll = lines[1].length() - lines[1].lastIndexOf(".") - 1;
                 }
                 if(lines[0].trim().toLowerCase().equals("yllcorner")){
                     header[3] = lines[1];
-                    origCenter = false;
+                    origCorner = true;
 
                     nDecimalsYll = lines[1].length() - lines[1].lastIndexOf(".") - 1;
                 }
                 if(lines[0].trim().toLowerCase().equals("xllcenter")){
                     header[2] = lines[1];
-                    origCenter = true;
+                    origCorner = false;
 
                     nDecimalsXll = lines[1].length() - lines[1].lastIndexOf(".") - 1;
                 }
                 if(lines[0].trim().toLowerCase().equals("yllcenter")){
                     header[3] = lines[1];
-                    origCenter = true;
+                    origCorner = false;
 
                     nDecimalsYll = lines[1].length() - lines[1].lastIndexOf(".") - 1;
                 }
@@ -124,9 +124,9 @@ public class GridAscii {
 
 
             // From corner to center, if needed
-            if(origCenter == true){
+            if(!origCorner){
                 xllCorner = xllCorner + 0.5 * cellSize;
-                yllCorner = xllCorner + 0.5 * cellSize;
+                yllCorner = yllCorner + 0.5 * cellSize;
             }
 
             return 0;
