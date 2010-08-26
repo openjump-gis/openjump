@@ -186,7 +186,7 @@ public class EditSelectedSideDialog extends JDialog
     private int direction;
     private JSpinner sideSpinner;
     private DecimalFormat df2 = new DecimalFormat("##0.0#");
-    private DecimalFormat df3 = new DecimalFormat("###,###,##0.0##");
+    private DecimalFormat df3 = new DecimalFormat("########0.0##");
     private int currSide;
     private boolean isClockwise;
     private boolean isLineString;
@@ -454,11 +454,6 @@ public class EditSelectedSideDialog extends JDialog
         this(null, "", false);
     }
     
-    private String removeGroupingSeparators(String numberString) {
-    	char comma = df3.getDecimalFormatSymbols().getGroupingSeparator();
-    	return numberString.replaceAll(""+comma, "");
-    }
-
     public void init()//(PlugInContext context)//, Layer selectedSideLayer, Layer editLayer, Layer activeLayer, Collection selectedFeatures)//, ArrayList transactions, EditTransaction transaction)
     {
         SelectionManager selectionManager = context.getLayerViewPanel().getSelectionManager();
@@ -866,7 +861,7 @@ public class EditSelectedSideDialog extends JDialog
             {
                 try
                 {
-                    double length = Double.parseDouble(removeGroupingSeparators(lengthTextField.getText().trim()));
+                    double length = Double.parseDouble(lengthTextField.getText().trim());
                     if (length <= 0)
                     {
                         reportValidationError(sLengthMustBeGreaterThanZero);
