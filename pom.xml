@@ -192,6 +192,12 @@
       <version>20070905</version>
       <scope>compile</scope>
     </dependency>
+        <dependency>
+      <groupId>org.math</groupId>
+      <artifactId>jmathplot</artifactId>
+      <version>20070905</version>
+      <scope>compile</scope>
+    </dependency>
     <dependency>
       <groupId>jama</groupId>
       <artifactId>jama</artifactId>
