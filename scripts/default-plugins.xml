@@ -95,6 +95,13 @@
 	<!--- =========  other ====================  /-->
 	<plug-in>org.openjump.core.ui.plugin.tools.MeasureM_FPlugIn</plug-in>
 	<!---  ======================================== /-->
+	<!--  		 	RASTER 					        /-->
+	<!--- ========================================= /-->
+	<plug-in> org.openjump.core.ui.plugin.raster.CreateLatticeFromSelectedImageLayerPlugIn</plug-in>
+ 	<plug-in> org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn</plug-in>
+ 	<plug-in> org.openjump.core.ui.plugin.raster.ProfileGraphPlugIn</plug-in>
+ 	<plug-in> org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn</plug-in>
+	<!---  ======================================== /-->
 	<!--  			CUSTOMIZE 						/-->
 	<!--- ========================================= /-->
 	<plug-in>de.latlon.deejump.plugin.manager.ExtensionManagerPlugIn</plug-in>	
