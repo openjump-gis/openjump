@@ -1,4 +1,7 @@
 2010-08-29 sstein <sstein@geo.uzh.ch>
+	set OJ version to 1.4
+	
+2010-08-29 sstein <sstein@geo.uzh.ch>
 	removed log4j 1.2.8 and added log4j 1.2.16
 	
 2010-08-26 sstein <sstein@geo.uzh.ch>

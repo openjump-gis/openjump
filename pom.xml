@@ -4,7 +4,7 @@
   <groupId>org.openjump</groupId>
   <artifactId>openjump-core</artifactId>
   <name>Open JUMP libraries</name>
-  <version>1.3.2-SNAPSHOT</version>
+  <version>1.4-SNAPSHOT</version>
   <url>http://www.revolsys.com</url>
   <build>
     <sourceDirectory>src/</sourceDirectory>
