@@ -153,7 +153,7 @@ public class ProfileGraphTool extends MultiClickTool
         //-- [sstein] now all the raster profile stuff
         RasterImageLayer rLayer = (RasterImageLayer) LayerTools.getSelectedLayerable(this.getWorkbench().getContext(), RasterImageLayer.class);        
         if (rLayer==null){
-            getPanel().getContext().warnUser("no layer selected");
+            getPanel().getContext().warnUser(I18N.get("pirol.plugIns.EditAttributeByFormulaPlugIn.no-layer-selected"));
             return;
         }
 		this.rstLayer = new OpenJUMPSextanteRasterLayer();
@@ -226,7 +226,7 @@ public class ProfileGraphTool extends MultiClickTool
 		this.processLine(line);
 		PlugInContext pc = context.createPlugInContext();
 		if((this.resultFC != null) && (this.resultFC.size()>0)){
-			pc.addLayer(StandardCategoryNames.RESULT, "profile-pts", this.resultFC);
+			pc.addLayer(StandardCategoryNames.RESULT, I18N.get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.profile-pts"), this.resultFC);
 		}
 		//-- graph stuff
 		ShowProfile myScorePlot = new ShowProfile(this.resultFC);
@@ -235,7 +235,7 @@ public class ProfileGraphTool extends MultiClickTool
     	
 	        // FrameView fv = new FrameView(plot);
 	        // -- replace the upper line by:
-	        JInternalFrame frame = new JInternalFrame("profile plot");
+	        JInternalFrame frame = new JInternalFrame(I18N.get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.Profile-Plot"));
 	        frame.setLayout(new BorderLayout());
 	        frame.add(plot, BorderLayout.CENTER);
 	        frame.setClosable(true);
@@ -367,8 +367,8 @@ public class ProfileGraphTool extends MultiClickTool
     		plot2dA.addLinePlot("graph",datas1);
     		//plot2dA.addScatterPlot("pts",datas1);
     		//====================
-    		plot2dA.setAxisLabel(0,"2d-distance");
-    		plot2dA.setAxisLabel(1,"values");
+    		plot2dA.setAxisLabel(0,I18N.get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.2d-distance"));
+    		plot2dA.setAxisLabel(1,I18N.get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.values"));
     		// Display a Frame containing the plot panel
     		//new FrameView(plot2dA);		
     		this.plot = plot2dA;

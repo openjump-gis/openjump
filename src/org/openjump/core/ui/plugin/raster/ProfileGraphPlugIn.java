@@ -53,15 +53,18 @@ public class ProfileGraphPlugIn extends AbstractPlugIn
 {
     ProfileGraphTool profileTool;    
     private final static String sErrorSeeOutputWindow= I18N.get("org.openjump.core.ui.plugin.tools.MeasureM_FPlugIn.Error-see-output-window");
-
+    private String sName = "Create Thiessen Polygons";
+    
     public void initialize(PlugInContext context) throws Exception
     {    
-        
+    
+   		this.sName = I18N.get("org.openjump.core.ui.plugin.raster.ProfileGraphPlugIn.Profile-Graph");
+
         //context.getWorkbenchContext().getWorkbench().getFrame().getToolBar().addPlugIn(getIcon(), this, new MultiEnableCheck(), context.getWorkbenchContext());
         context.getFeatureInstaller().addMainMenuItemWithJava14Fix(
         		this, 
 				new String[] {MenuNames.RASTER}, 
-				"Profile Graph", 
+				this.sName + "...", 
 				false, 
 				null,
 				createEnableCheck(context.getWorkbenchContext()));

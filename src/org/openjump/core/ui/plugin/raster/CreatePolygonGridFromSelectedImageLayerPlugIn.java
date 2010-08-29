@@ -40,15 +40,8 @@
 
 package org.openjump.core.ui.plugin.raster;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.geom.Point2D;
-import java.util.List;
 
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
-
-import org.openjump.core.apitools.FeatureSchemaTools;
 import org.openjump.core.apitools.LayerTools;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer;
@@ -58,6 +51,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.BasicFeature;
 import com.vividsolutions.jump.feature.Feature;
@@ -91,26 +85,40 @@ public class CreatePolygonGridFromSelectedImageLayerPlugIn extends AbstractPlugI
     private PlugInContext context = null;
     private MultiInputDialog dialog;
     
-    private String sSidebar ="Create Polygon Grid from Image";
+    private String sSidebar ="Creates a polygon grid from the selected raster.";
 	public String sRemoveZeroCells = "remove cells with values =< 0";
 	public String sMaxCellsToDisplay = "max cells to display";
+	private String sName = "Create Polygon Grid from Raster";
+	private String sCreatingPolygons = "Creating polygons...";
+	private String sGrid = "grid";
+	private String sToManyPolygons = "To many polygons to generate";
+	private String sBand = "band";
 	
     GeometryFactory gfactory = new GeometryFactory();
 	public int maxCells = 200000;
 	public boolean removeZeroCells = false;
 	
         
-    public void initialize(PlugInContext context) throws Exception {
-    				
-	        FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-	    	featureInstaller.addMainMenuItem(
-	    	        this,								//exe
-	                new String[] {MenuNames.RASTER}, 	//menu path
-	                "Create Polygon Grid from Image", 
-	                false,			//checkbox
-	                null,			//icon
-	                createEnableCheck(context.getWorkbenchContext())); //enable check
-    }
+	public void initialize(PlugInContext context) throws Exception {
+
+		this.sName = I18N.get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.Create-Polygon-Grid-from-Raster");
+		this.sRemoveZeroCells = I18N.get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.remove-cells-with-values") + " =< 0"; 
+		this.sSidebar = I18N.get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.Creates-a-polygon-grid-from-the-selected-raster.");
+		this.sMaxCellsToDisplay = I18N.get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.max-cells-to-display");
+		this.sCreatingPolygons = I18N.get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.Creating-polygons") + "...";
+		this.sGrid = I18N.get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.grid");
+		this.sToManyPolygons = I18N.get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.To-many-polygons-to-generate");
+		this.sBand = I18N.get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.band");
+			
+		FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
+		featureInstaller.addMainMenuItem(
+				this,								//exe
+				new String[] {MenuNames.RASTER}, 	//menu path
+				this.sName + "...", 
+				false,			//checkbox
+				null,			//icon
+				createEnableCheck(context.getWorkbenchContext())); //enable check
+	}
 
     public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
         EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
@@ -149,7 +157,7 @@ public class CreatePolygonGridFromSelectedImageLayerPlugIn extends AbstractPlugI
         RasterImageLayer rLayer = (RasterImageLayer) LayerTools.getSelectedLayerable(context, RasterImageLayer.class);
         
         if (rLayer==null){
-            context.getWorkbenchFrame().warnUser("no layer selected");
+            context.getWorkbenchFrame().warnUser(I18N.get("pirol.plugIns.EditAttributeByFormulaPlugIn.no-layer-selected"));
             return;
         }
 		
@@ -163,18 +171,18 @@ public class CreatePolygonGridFromSelectedImageLayerPlugIn extends AbstractPlugI
 		fs.addAttribute("geometry", AttributeType.GEOMETRY);
 		int numBands = rstLayer.getBandsCount();
 		for (int i = 0; i < numBands; i++) {
-			fs.addAttribute("band_" + i, AttributeType.DOUBLE);
+			fs.addAttribute( sBand + "_" + i, AttributeType.DOUBLE);
 		}
 		//-- create a new empty dataset
 		FeatureCollection fd = new FeatureDataset(fs);
 		//-- create points
-		monitor.report("creating polygons");
+		monitor.report(sCreatingPolygons);
 		int nx = rstLayer.getLayerGridExtent().getNX();
 		int ny = rstLayer.getLayerGridExtent().getNY();
 		double halfCellDim = 0.5 * rstLayer.getLayerGridExtent().getCellSize();
 		int numPoints = nx * ny;
 		if(numPoints > this.maxCells){
-			context.getWorkbenchFrame().warnUser("more than "+ this.maxCells+ " polys to generate - stopped! cells: " + numPoints );
+			context.getWorkbenchFrame().warnUser(sToManyPolygons + ": " + numPoints + " > " + this.maxCells);
 			return;
 		}
 		for (int x = 0; x < nx; x++) {//cols
@@ -196,7 +204,7 @@ public class CreatePolygonGridFromSelectedImageLayerPlugIn extends AbstractPlugI
 				double sumvalue = 0;
 				for (int i = 0; i < numBands; i++) {
 					double value = gwrapper.getCellValueAsDouble(x, y, i);
-					ftemp.setAttribute("band_" + i, value);
+					ftemp.setAttribute(sBand + "_" + i, value);
 					sumvalue = sumvalue + value;
 				}
 				//-- add the feature
@@ -211,7 +219,7 @@ public class CreatePolygonGridFromSelectedImageLayerPlugIn extends AbstractPlugI
 				//-- check if user wants to stop
 				if(monitor.isCancelRequested()){
 					if(fd.size() > 0){
-						context.addLayer(StandardCategoryNames.RESULT, rstLayer.getName() + "_cancel_grid", fd);
+						context.addLayer(StandardCategoryNames.RESULT, rstLayer.getName() + "_cancel_" + sGrid, fd);
 					}
 					return;
 				}
@@ -219,13 +227,13 @@ public class CreatePolygonGridFromSelectedImageLayerPlugIn extends AbstractPlugI
 		}
 		//-- output
 		if(fd.size() > 0){
-			context.addLayer(StandardCategoryNames.RESULT, rstLayer.getName() + "_grid", fd);
+			context.addLayer(StandardCategoryNames.RESULT, rstLayer.getName() + "_" +sGrid, fd);
 		}
 	}
     
 	private void initDialog(PlugInContext context) {
     	
-        dialog = new MultiInputDialog(context.getWorkbenchFrame(), "Convert", true);
+        dialog = new MultiInputDialog(context.getWorkbenchFrame(), this.sName, true);
         dialog.setSideBarDescription(sSidebar);
         dialog.addCheckBox(sRemoveZeroCells, removeZeroCells);
         dialog.addIntegerField(sMaxCellsToDisplay, this.maxCells, 10, this.sMaxCellsToDisplay);

@@ -3,6 +3,7 @@ package org.openjump.core.ui.plugin.raster.color;
 import org.openjump.core.apitools.LayerTools;
 import org.openjump.core.rasterimage.RasterImageLayer;
 
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
@@ -20,6 +21,8 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
  */
 public class RasterColorEditorPlugIn extends AbstractPlugIn {
 
+    private String sName = "Raster Color Editor";
+    
 	public RasterColorEditorPlugIn() {
 
 	}
@@ -28,12 +31,14 @@ public class RasterColorEditorPlugIn extends AbstractPlugIn {
 
 		super.initialize(context);
 
+		this.sName = I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Raster-Color-Editor");
+		
 		context
 		.getFeatureInstaller()
 		.addMainMenuItem(
 				this,
 				new String[] {MenuNames.RASTER},
-				"Raster Color Editor",
+				this.sName + "...", 
 				false,
 				null,
 

@@ -30,6 +30,7 @@ import javax.swing.border.Border;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer;
 
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.ColorChooserPanel;
 import com.vividsolutions.jump.workbench.ui.ColorPanel;
@@ -64,9 +65,15 @@ public class RasterColorEditorDialog extends JDialog {
 
     private JComboBox colorScaleChooser;
 
-    private String[] colorTableList = {"Green-Yellow-Red-default", "Blue-Green-Red", 
-            "Red-Blue", "Blue-Red", "Black-White", "White-Black",
-            "Rainbow"};
+    private String[] colorTableList = {
+    		I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Green-Yellow-Red-default"), 
+    		I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Blue-Green-Red"), 
+    		I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Red-Blue"), 
+    		I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Blue-Red"), 
+    		I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Black-White"), 
+    		I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.White-Black"),
+    		I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Rainbow")
+    		};
 
     private JPanel mainPanel = new JPanel();
 
@@ -92,11 +99,11 @@ public class RasterColorEditorDialog extends JDialog {
 
     private JButton NoDataColorButton = new JButton();
 
-    private JLabel NodataColor = new JLabel("No-data-Color [not working yet]"); //$NON-NLS-1$
+    private JLabel NodataColor = new JLabel(I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.No-data-color")); //$NON-NLS-1$
 
     private ColorPanel NoDataColorPanel = new ColorPanel();
 
-    private JCheckBox transparent = new JCheckBox("Transparent [not working yet]"); //$NON-NLS-1$
+    private JCheckBox transparent = new JCheckBox(I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Transparency")); //$NON-NLS-1$
 
     private int alpha = 255;
 
@@ -104,9 +111,20 @@ public class RasterColorEditorDialog extends JDialog {
 
     private boolean enabled = true;
 
+    private String sToolTip = I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Choose-a-color-range-It-will-be-automaticaly-expanded-between-the-2-values");
+    private String sColorRange = I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Color-range");
+    private String sFromValue = I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.From-value");
+    private String sToValue = I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.To-value");
+    private String sNoDataValueColor = I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.no-data-value-color");
+    private String sChange = I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.change");
+    private String sChoseOtherColor = I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Choose-other-color-for-no-data-values");
+    private String sToggleTransparency = I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Toggle-transparency-for-no-data-values");
+    private String sSelectColor = I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Select-color");
+    private String sLayerName = I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Selected-Layer");
+    
     public RasterColorEditorDialog(PlugInContext context,
             RasterImageLayer actualLayer) {
-        super(context.getWorkbenchFrame(), "Raster Color Editor", true); //$NON-NLS-1$
+        super(context.getWorkbenchFrame(), I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Raster-Color-Editor"), true); //$NON-NLS-1$
         plugInContext = context;
         setLayer(actualLayer);
 
@@ -150,7 +168,7 @@ public class RasterColorEditorDialog extends JDialog {
             }
         });
 
-        layerLabel = new JLabel(layer.getName());
+        layerLabel = new JLabel(sLayerName + ": " + layer.getName());
         layerLabel.setBorder(border);
         add(layerLabel, BorderLayout.NORTH);
 
@@ -163,15 +181,15 @@ public class RasterColorEditorDialog extends JDialog {
 
         colorScaleChooser = new JComboBox(colorTableList);
         colorScaleChooser.setSelectedIndex(0);
-        String fieldName = "Color-range"; //$NON-NLS-1$
+        String fieldName = sColorRange; //$NON-NLS-1$
         colorScaleChooser
-                .setToolTipText("Choose-a-color-range-It-will-be-automaticaly-expanded-between-the-2-values"); //$NON-NLS-1$
+                .setToolTipText(sToolTip); //$NON-NLS-1$
         colorScaleChooser.setBorder(borderRaised);
         mainPanel.add(colorScaleChooser, c);
         OpenJUMPSextanteRasterLayer ojraster = new OpenJUMPSextanteRasterLayer(); 
         ojraster.create(layer);
         fromValue = new JTextField(Double.toString(ojraster.getMinValue()), 15);
-        fromValueLabel = new JLabel("From value"); //$NON-NLS-1$
+        fromValueLabel = new JLabel(sFromValue); //$NON-NLS-1$
 
         fromValue.setCaretPosition(0);
         fromValue.selectAll();
@@ -179,17 +197,17 @@ public class RasterColorEditorDialog extends JDialog {
         toValue = new JTextField(Double.toString(ojraster.getMaxValue()), 15);
         toValue.setCaretPosition(0);
         fromValue.selectAll();
-        toValueLabel = new JLabel("to"); //$NON-NLS-1$
+        toValueLabel = new JLabel(sToValue); //$NON-NLS-1$
  
         panelSeparator.setSize(300, 50);
         NoDataColorPanel.setFillColor(Color.WHITE);
         NoDataColorPanel.setLineColor(Color.BLACK);
         NoDataColorPanel.setBorder(borderLowerered);
-        NoDataColorPanel.setToolTipText("no-data-value-color"); //$NON-NLS-1$
+        NoDataColorPanel.setToolTipText(sNoDataValueColor); //$NON-NLS-1$
 
-        NoDataColorButton.setText("change"); //$NON-NLS-1$
+        NoDataColorButton.setText(sChange); //$NON-NLS-1$
         NoDataColorButton
-                .setToolTipText("Choose-another-color-for-no-data-values"); //$NON-NLS-1$
+                .setToolTipText(sChoseOtherColor); //$NON-NLS-1$
         NoDataColorButton
                 .addActionListener(new java.awt.event.ActionListener() {
                     public void actionPerformed(ActionEvent e) {
@@ -197,7 +215,7 @@ public class RasterColorEditorDialog extends JDialog {
                     }
                 });
         
-        transparent.setToolTipText("Toggle-transparency-for-no-data-values"); //$NON-NLS-1$
+        transparent.setToolTipText(sToggleTransparency); //$NON-NLS-1$
 
         transparent.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -324,7 +342,7 @@ public class RasterColorEditorDialog extends JDialog {
     void changeButton_actionPerformed(ActionEvent e) {
 
         Color newColor = JColorChooser.showDialog(SwingUtilities
-                .windowForComponent(this), "choose-color", Color.WHITE); //$NON-NLS-1$
+                .windowForComponent(this), sSelectColor , Color.WHITE); //$NON-NLS-1$
 
         if (newColor == null) {
             return;

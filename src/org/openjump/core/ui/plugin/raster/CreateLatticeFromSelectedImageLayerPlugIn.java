@@ -50,6 +50,7 @@ import org.openjump.core.rasterimage.sextante.rasterWrappers.GridWrapperNotInter
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.BasicFeature;
 import com.vividsolutions.jump.feature.Feature;
@@ -81,17 +82,26 @@ public class CreateLatticeFromSelectedImageLayerPlugIn extends AbstractPlugIn im
     private PlugInContext context = null;
     
     GeometryFactory gfactory = new GeometryFactory();
+    private String sName = "Create Lattice from Raster";
+    private String sBand = "band";
+    private String sLattice = "lattice";
+    private String sCreatePoints = "creating points";
         
     public void initialize(PlugInContext context) throws Exception {
-    				
-	        FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-	    	featureInstaller.addMainMenuItem(
-	    	        this,								//exe
-	                new String[] {MenuNames.RASTER}, 	//menu path
-	                "Create Lattice from Image", 
-	                false,			//checkbox
-	                null,			//icon
-	                createEnableCheck(context.getWorkbenchContext())); //enable check
+
+    	this.sName = I18N.get("org.openjump.core.ui.plugin.raster.CreateLatticeFromSelectedImageLayerPlugIn.Create-Lattice-from-Raster");
+    	this.sBand = I18N.get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.band");
+        this.sLattice = I18N.get("org.openjump.core.ui.plugin.raster.CreateLatticeFromSelectedImageLayerPlugIn.lattice");
+        this.sCreatePoints = I18N.get("org.openjump.core.ui.plugin.raster.CreateLatticeFromSelectedImageLayerPlugIn.creating-points");
+        
+    	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
+    	featureInstaller.addMainMenuItem(
+    			this,								//exe
+    			new String[] {MenuNames.RASTER}, 	//menu path
+    			sName, 
+    			false,			//checkbox
+    			null,			//icon
+    			createEnableCheck(context.getWorkbenchContext())); //enable check
     }
 
     public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
@@ -123,7 +133,7 @@ public class CreateLatticeFromSelectedImageLayerPlugIn extends AbstractPlugIn im
         //System.out.println(rLayer);
         
         if (rLayer==null){
-            context.getWorkbenchFrame().warnUser("no layer selected");
+            context.getWorkbenchFrame().warnUser(I18N.get("pirol.plugIns.EditAttributeByFormulaPlugIn.no-layer-selected"));
             return;
         }
 		
@@ -139,12 +149,12 @@ public class CreateLatticeFromSelectedImageLayerPlugIn extends AbstractPlugIn im
 		fs.addAttribute("cellid_y", AttributeType.INTEGER);
 		int numBands = rstLayer.getBandsCount();
 		for (int i = 0; i < numBands; i++) {
-			fs.addAttribute("band_" + i, AttributeType.DOUBLE);
+			fs.addAttribute( sBand + "_" + i, AttributeType.DOUBLE);
 		}
 		//-- create a new empty dataset
 		FeatureCollection fd = new FeatureDataset(fs);
 		//-- create points
-		monitor.report("creating points");
+		monitor.report(sCreatePoints);
 		int nx = rstLayer.getLayerGridExtent().getNX();
 		int ny = rstLayer.getLayerGridExtent().getNY();
 		//int numPoints = nx * ny;
@@ -156,7 +166,7 @@ public class CreateLatticeFromSelectedImageLayerPlugIn extends AbstractPlugIn im
 				ftemp.setGeometry(centerPoint);
 				for (int i = 0; i < numBands; i++) {
 					double value = gwrapper.getCellValueAsDouble(x, y, i);
-					ftemp.setAttribute("band_" + i, value);
+					ftemp.setAttribute(sBand + "_" + i, value);
 				}
 				ftemp.setAttribute("cellid_x", x);
 				ftemp.setAttribute("cellid_y", y);
@@ -165,7 +175,7 @@ public class CreateLatticeFromSelectedImageLayerPlugIn extends AbstractPlugIn im
 				//-- check if user wants to stop
 				if(monitor.isCancelRequested()){
 					if(fd.size() > 0){
-						context.addLayer(StandardCategoryNames.RESULT, rstLayer.getName() + "_cancel_lattice", fd);
+						context.addLayer(StandardCategoryNames.RESULT, rstLayer.getName() + "_cancel_" + sLattice, fd);
 					}
 					return;
 				}
@@ -173,7 +183,7 @@ public class CreateLatticeFromSelectedImageLayerPlugIn extends AbstractPlugIn im
 		}
 		//-- output
 		if(fd.size() > 0){
-			context.addLayer(StandardCategoryNames.RESULT, rstLayer.getName() + "_lattice", fd);
+			context.addLayer(StandardCategoryNames.RESULT, rstLayer.getName() + "_" + sLattice, fd);
 		}
 	}
     
