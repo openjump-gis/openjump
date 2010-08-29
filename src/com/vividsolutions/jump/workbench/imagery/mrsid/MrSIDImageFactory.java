@@ -33,6 +33,8 @@ package com.vividsolutions.jump.workbench.imagery.mrsid;
  */
 import java.io.File;
 
+import org.apache.log4j.Logger;
+
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.JUMPException;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -40,6 +42,9 @@ import com.vividsolutions.jump.workbench.imagery.ReferencedImage;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageFactory;
 
 public class MrSIDImageFactory implements ReferencedImageFactory {
+
+	private Logger logger = Logger.getLogger(MrSIDImageFactory.class);
+			
 	//[sstein 19Apr2008] -- new
     public static String WORKING_DIR;
     public static String ETC_PATH;
@@ -102,7 +107,7 @@ public class MrSIDImageFactory implements ReferencedImageFactory {
             	//-- error messages can not be send, as the workbench does not exist yet 
                 //context.getWorkbench().getFrame().warnUser(sErrorSeeOutputWindow);                
                 //context.getWorkbench().getFrame().getOutputFrame().addText(MRSIDDECODE + " " + sNotInstalled);
-            	System.out.println(MRSIDDECODE + " " + sNotInstalled);
+            	logger.warn(MRSIDDECODE + " " + sNotInstalled);
                 return false;
             }
             
@@ -111,10 +116,10 @@ public class MrSIDImageFactory implements ReferencedImageFactory {
             	//-- error messages can not be send, as the workbench does not exist yet
                 //context.getWorkbench().getFrame().warnUser(sErrorSeeOutputWindow);                
                 //context.getWorkbench().getFrame().getOutputFrame().addText(MRSIDINFO + " " + sNotInstalled);
-            	System.out.println(MRSIDINFO + " " + sNotInstalled);
+            	logger.warn(MRSIDINFO + " " + sNotInstalled);
                 return false;
             }
-         System.out.println("found Mrsid decode files");
+         logger.trace("found Mrsid decode files");
          return true;
         //-- end new stuff   
 //		}catch(IOException e){

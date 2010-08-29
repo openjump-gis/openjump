@@ -37,10 +37,14 @@ import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImage;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageFactory;
 
+import org.apache.log4j.Logger;
+
 /**
  */
 public class ECWImageFactory implements ReferencedImageFactory {
 
+	private Logger logger = Logger.getLogger(ECWImageFactory.class);	
+	
     public static final String TYPE_NAME = "ECW";
 	final static String sNotInstalled=I18N.get("org.openjump.core.ui.plugin.layer.AddSIDLayerPlugIn.not-installed");
 
@@ -75,10 +79,10 @@ public class ECWImageFactory implements ReferencedImageFactory {
 
 		}catch(ClassNotFoundException e){
 			// eat it
-			System.out.println("ECW loader class " + JNCSRendererProxy.RENDERER_CLASS + " " + sNotInstalled);
+			logger.warn("ECW loader class " + JNCSRendererProxy.RENDERER_CLASS + " " + sNotInstalled);
 			return false;
 		}
-		System.out.println("found ECW loader class");
+		logger.trace("found ECW loader class");
 		return c != null;
 	}
 
