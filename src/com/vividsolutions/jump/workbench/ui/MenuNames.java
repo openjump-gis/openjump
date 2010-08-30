@@ -86,6 +86,7 @@ public interface MenuNames {
 	//public static String QA = I18N.get("ui.MenuNames.QA"); // see MenuNames.TOOLS_QA
 	public static String DELETE = I18N.get("ui.MenuNames.DELETE");
 	public static String DETECT = I18N.get("ui.MenuNames.DETECT");
+	public static String PLOT = I18N.get("ui.MenuNames.PLOT");
 		
 	//	erwan end 2005-12-01
 
