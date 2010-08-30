@@ -46,9 +46,15 @@
 	<plug-in>org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.tools.IntersectPolygonLayersPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.tools.UnionByAttributePlugIn</plug-in>
-	<plug-in>org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.tools.analysis.onelayer.IntersectPolygonsOneLayerPlugIn</plug-in>	
 	<plug-in>org.openjump.core.ui.plugin.tools.analysis.onelayer.MergeSelectedPolygonsWithNeighbourPlugIn</plug-in>
+	<!--- =========  Statistics ====================  /-->
+	<plug-in>org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.tools.statistics.CreateScatterPlotPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.tools.statistics.CreateHistogramPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.tools.statistics.CalcVarianceAndMeanPerClassPlugIn</plug-in>
 	<!--- =========  Generate ====================  /-->
 	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.BufferPlugIn</plug-in>
 	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.ConvexHullPlugIn</plug-in>

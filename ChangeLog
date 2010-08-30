@@ -1,4 +1,15 @@
 2010-08-29 sstein <sstein@geo.uzh.ch>
+	added 5 statistic functions:  
+	(i):   Create Bar Plot
+	(ii):  Create Histogram
+	(iii): Create Scatter Plot
+	(iv):  Classify Attributes
+	(v):   Calculate Mean and Variance per Class
+	
+	added all five new plugins/functions to the package
+	org.openjump.core.ui.plugin.tools.statistics
+	
+2010-08-29 sstein <sstein@geo.uzh.ch>
 	set OJ version to 1.4
 	
 2010-08-29 sstein <sstein@geo.uzh.ch>
