@@ -193,7 +193,7 @@
       <scope>compile</scope>
     </dependency>
         <dependency>
-      <groupId>org.math</groupId>
+      <groupId>org.math.plot</groupId>
       <artifactId>jmathplot</artifactId>
       <version>20070905</version>
       <scope>compile</scope>
