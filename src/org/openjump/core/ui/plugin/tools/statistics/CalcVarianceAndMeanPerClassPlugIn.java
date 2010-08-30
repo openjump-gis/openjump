@@ -48,6 +48,7 @@ import javax.swing.JComboBox;
 
 import org.openjump.core.apitools.FeatureSchemaTools;
 
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
@@ -63,6 +64,7 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.ThreadedPlugIn;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.GenericNames;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
@@ -80,7 +82,7 @@ public class CalcVarianceAndMeanPerClassPlugIn extends AbstractPlugIn implements
     private String selAttributeA = null;
     private String selAttributeB = null;
     
-    private String sName = "Calclate Mean and Variance Per Class";
+    private String sName = "Calculate Mean and Variance Per Class";
     private String sWrongDataType = "Wrong datatype of chosen attribute";
     private String sSearch = "reading data and search for complement";
     private String sCalcRatios = "calculating ratios";
@@ -91,16 +93,14 @@ public class CalcVarianceAndMeanPerClassPlugIn extends AbstractPlugIn implements
      */
     public void initialize(PlugInContext context) throws Exception {    	
     	
-    	/*
-        sidetext = I18N.get("Calculates mean and variance for a specified attribute in accordance with the classes, which need to be given");
-        OLAYER = "select origin layer";
-        ATTRIBUTEA = "Select attribute to calculate ratio from";
-        ATTRIBUTEB = "Select attribute with classification";
-        sName = "Calclate Mean and Variance Per Class";
-        sWrongDataType = "Wrong datatype of chosen attribute";
-        sSearch = "reading data and search for complement";
-        sCalcRatios = "calculating ratios";
-		*/
+        sidetext = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CalcVarianceAndMeanPerClassPlugIn.descriptiontext");
+        OLAYER = GenericNames.SELECT_LAYER;
+        ATTRIBUTEA = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CalcVarianceAndMeanPerClassPlugIn.Select-attribute-to-calculate-statistics-from");
+        ATTRIBUTEB = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CalcVarianceAndMeanPerClassPlugIn.Select-attribute-with-classification");
+        sName = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CalcVarianceAndMeanPerClassPlugIn.Calculate-Mean-and-Variance-Per-Class");
+        sWrongDataType = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn.Wrong-datatype-of-chosen-attribute");
+        sSearch = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CalcVarianceAndMeanPerClassPlugIn.reading-data-and-searching-for-complement");
+        sCalcRatios = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CalcVarianceAndMeanPerClassPlugIn.calculating-statistics");	
     	
     	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
     	featureInstaller.addMainMenuItem(
@@ -113,7 +113,7 @@ public class CalcVarianceAndMeanPerClassPlugIn extends AbstractPlugIn implements
     			createEnableCheck(context.getWorkbenchContext())); //enable check   
         	
     }
-        
+
     /**
      * This method is used to define when the menu entry is activated or
      * disabled. In this example we allow the menu entry to be usable only

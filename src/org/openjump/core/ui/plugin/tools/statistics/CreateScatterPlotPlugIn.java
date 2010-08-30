@@ -50,6 +50,7 @@ import javax.swing.JInternalFrame;
 import org.openjump.core.apitools.FeatureSchemaTools;
 import org.openjump.core.ui.plot.Plot2DPanelOJ;
 
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
@@ -63,6 +64,7 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.ThreadedPlugIn;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.GenericNames;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
@@ -89,14 +91,14 @@ public class CreateScatterPlotPlugIn extends AbstractPlugIn implements ThreadedP
      * We set here the menu entry for calling the function.
      */
 	public void initialize(PlugInContext context) throws Exception {
-		/*
-        ATTRIBUTEA = I18N.get("CreateScatterPlotPlugIn.Select-attribute-for-east-axis");
-        ATTRIBUTEB = I18N.get("CreateScatterPlotPlugIn.Select-attribute-for-north-axis");
-        CLAYER = I18N.get("ClassifyAttributesPlugin.Select-layer");
-        sScatterPlot = I18N.get("CreateScatterPlotPlugIn.Scatter-Plot");
-        sName = I18N.get("CreateBarPlotPlugIn.Create-Scatter-Plot");
-        sWrongDataType = I18N.get("ClassifyAttributesPlugin.Wrong-datatype-of-chosen-attribute");
-		*/
+		
+        ATTRIBUTEA = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CreateScatterPlotPlugIn.Select-attribute-for-east-axis");
+        ATTRIBUTEB = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CreateScatterPlotPlugIn.Select-attribute-for-north-axis");
+        CLAYER = GenericNames.SELECT_LAYER;
+        sScatterPlot = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CreateScatterPlotPlugIn.Scatter-Plot");
+        sName = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CreateScatterPlotPlugIn.Create-Scatter-Plot");
+        sWrongDataType = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn.Wrong-datatype-of-chosen-attribute");
+		
 		FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
 		featureInstaller.addMainMenuItem(
 				this,                               //exe

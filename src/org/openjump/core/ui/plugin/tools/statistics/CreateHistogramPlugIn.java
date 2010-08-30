@@ -50,6 +50,7 @@ import javax.swing.JInternalFrame;
 import org.openjump.core.apitools.FeatureSchemaTools;
 import org.openjump.core.ui.plot.Plot2DPanelOJ;
 
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
@@ -63,6 +64,7 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.ThreadedPlugIn;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.GenericNames;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
@@ -92,15 +94,14 @@ public class CreateHistogramPlugIn extends AbstractPlugIn implements ThreadedPlu
      */
     public void initialize(PlugInContext context) throws Exception {
        	
-    	/*
-        ATTRIBUTE = I18N.get("ClassifyAttributesPlugin.Select-attribute");
-        T2 = I18N.get("CreateHistogramPlugIn.Number-of-ranges");
-        CLAYER = I18N.get("ClassifyAttributesPlugin.Select-layer");
-        sHistogram = I18N.get("ClassifyAttributesPlugin.Histogram");
-        sCount = I18N.get("ClassifyAttributesPlugin.count");
-        sName = I18N.get("CreateBarPlotPlugIn.Create-Histogram-Plot");
-		sWrongDataType = I18N.get("ClassifyAttributesPlugin.Wrong-datatype-of-chosen-attribute");
-    	 */
+    	
+        ATTRIBUTE = GenericNames.SELECT_ATTRIBUTE;
+        T2 = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CreateHistogramPlugIn.Number-of-ranges");
+        CLAYER = GenericNames.SELECT_LAYER;
+        sHistogram = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CreateHistogramPlugIn.Histogram-Plot");
+        sCount = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CreateHistogramPlugIn.count");
+        sName = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CreateHistogramPlugIn.Create-Histogram-Plot");
+		sWrongDataType = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn.Wrong-datatype-of-chosen-attribute");	
     	
     	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
     	featureInstaller.addMainMenuItem(

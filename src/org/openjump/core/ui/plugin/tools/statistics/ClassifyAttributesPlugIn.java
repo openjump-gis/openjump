@@ -53,6 +53,7 @@ import org.openjump.core.apitools.FeatureSchemaTools;
 import org.openjump.core.attributeoperations.Classifier1D;
 import org.openjump.core.ui.plot.Plot2DPanelOJ;
 
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
@@ -69,6 +70,7 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.ThreadedPlugIn;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.GenericNames;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
@@ -115,25 +117,23 @@ public class ClassifyAttributesPlugIn extends AbstractPlugIn implements Threaded
      */
     public void initialize(PlugInContext context) throws Exception {
 
-    	/*
-        sideBarText = I18N.get("ClassifyAttributesPlugin.sidebartext");
-        CLASSIFIER = I18N.get("ClassifyAttributesPlugin.Select-classification-method");
-        T2 = I18N.get("ClassifyAttributesPlugin.Number-of-classes");
-        CLAYER = I18N.get("ClassifyAttributesPlugin.Select-layer");
-        ATTRIBUTE = I18N.get("ClassifyAttributesPlugin.Select-attribute");
-        OPTIMIZEWITHKMEANS = I18N.get("ClassifyAttributesPlugin.Optimize-with-k-means");
-        sClassbreaks = I18N.get("ClassifyAttributesPlugin.class-breaks");
-        sDatapoints = I18N.get("ClassifyAttributesPlugin.data-points");
-        sCount = I18N.get("ClassifyAttributesPlugin.count");
-        sHistogram = I18N.get("ClassifyAttributesPlugin.Histogram");
-        sCalculateBreaks = I18N.get("ClassifyAttributesPlugin.Calculate-Breaks");
-        sDisplayBreaks = I18N.get("ClassifyAttributesPlugin.Display-Breaks");
-        sClassifying = I18N.get("ClassifyAttributesPlugin.classifying");
-        sAddingField = I18N.get("ClassifyAttributesPlugin.adding-field");
-        sName = "Classify Attributes";
-        sWarning = "problems appeared";
-        sWrongDataType = "Wrong datatype of chosen attribute";
-		*/
+        sideBarText = I18N.get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.descriptiontext");
+        CLASSIFIER = I18N.get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Select-classification-method");
+        T2 = I18N.get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Number-of-classes");
+        CLAYER = GenericNames.SELECT_LAYER;
+        ATTRIBUTE = GenericNames.SELECT_ATTRIBUTE;
+        OPTIMIZEWITHKMEANS = I18N.get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Optimize-with-k-means");
+        sClassbreaks = I18N.get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.class-breaks");
+        sDatapoints = I18N.get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.data-points");
+        sCount = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CreateHistogramPlugIn.count");
+        sHistogram = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CreateHistogramPlugIn.Histogram-Plot");
+        sCalculateBreaks = I18N.get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Calculating-Breaks");
+        sDisplayBreaks = I18N.get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Displaying-Breaks");
+        sClassifying = I18N.get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.classifying");
+        sAddingField = I18N.get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.create-output-field");
+        sName = I18N.get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Classify-Attribute");
+        sWarning = I18N.get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Error-during-classification");
+        sWrongDataType = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn.Wrong-datatype-of-chosen-attribute");
         
     	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
     	featureInstaller.addMainMenuItem(

@@ -70,8 +70,8 @@ public interface GenericNames {
 	public static String CALCULATE_IN_PROGRESS=I18N.get("ui.GenericNames.CalculateInProgress");
 	public static String GLOBAL_BOX=I18N.get("ui.GenericNames.GlobalBox");
 	
-	public static String USE_SELECTED_FEATURES_ONLY=I18N.get("jump.plugin.edit.PolygonizerPlugIn.Use-selected-features-only");
-	public static String ATTRIBUTE=I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Attribute");
-	public static String SELECT_LAYER=I18N.get("org.openjump.core.ui.plugin.tools.DeleteDuplicateGeometriesPlugIn.select-layer");
-    
+	public static String USE_SELECTED_FEATURES_ONLY=I18N.get("ui.GenericNames.Use-selected-features-only");
+	public static String ATTRIBUTE=I18N.get("ui.GenericNames.Attribute");
+	public static String SELECT_LAYER=I18N.get("ui.GenericNames.select-layer");
+	public static String SELECT_ATTRIBUTE=I18N.get("ui.GenericNames.select-attribute");
 }

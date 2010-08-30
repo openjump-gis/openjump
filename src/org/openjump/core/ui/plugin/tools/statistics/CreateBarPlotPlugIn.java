@@ -65,6 +65,7 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.ThreadedPlugIn;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.GenericNames;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
@@ -91,14 +92,14 @@ public class CreateBarPlotPlugIn extends AbstractPlugIn implements ThreadedPlugI
      * We set here the menu entry for calling the function.
      */
 	public void initialize(PlugInContext context) throws Exception {
-		/*
-		ATTRIBUTE = I18N.get("ClassifyAttributesPlugin.Select-attribute");
-		CLAYER = I18N.get("ClassifyAttributesPlugin.Select-layer");
-		sBarPlot = I18N.get("CreateBarPlotPlugIn.Bar-Plot");
-		sNthfeature = I18N.get("CreateBarPlotPlugIn.n-th-feature");
-		sName = I18N.get("CreateBarPlotPlugIn.Create-Bar-Plot");
-		sWrongDataType = I18N.get("ClassifyAttributesPlugin.Wrong-datatype-of-chosen-attribute");
-		*/
+		
+		ATTRIBUTE = GenericNames.SELECT_ATTRIBUTE;
+		CLAYER = GenericNames.SELECT_LAYER;
+		sBarPlot = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn.Bar-Plot");
+		sNthfeature = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn.n-th-feature");
+		sName = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn.Create-Bar-Plot");
+		sWrongDataType = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn.Wrong-datatype-of-chosen-attribute");
+		
 		FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
 		featureInstaller.addMainMenuItem(
 				this,                               //exe

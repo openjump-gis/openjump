@@ -46,6 +46,8 @@ import java.util.List;
 import org.math.array.DoubleArray;
 import org.math.array.StatisticSample;
 
+import com.vividsolutions.jump.I18N;
+
 public class Classifier1D {
 
     private static String pluginname = "classifyplot";
@@ -61,21 +63,17 @@ public class Classifier1D {
 	public static  String KMEANS_OPTIMIZE = "Optimization with k-means";
 	
 	public static List getAvailableClassificationMethods(){
-
-		/*
-		I18NPlug.setPlugInRessource(pluginname, "org.openjump.core.resources.classifyplot");
-		
+	
 		//-- assign i18N strings
 		//   this shall work because this method should be called before
 		//   the class field strings are used for comparison
-		if (I18NPlug.jumpi18n == true){
-			Classifier1D.EQUAL_RANGE = I18NPlug.get(pluginname, "org.openjump.core.classify.Classifier1D.Equal-Range");
-			Classifier1D.EQUAL_NUMBER = I18NPlug.get(pluginname, "org.openjump.core.classify.Classifier1D.Equal-Number-/-Quantiles");
-			Classifier1D.MEAN_STDEV = I18NPlug.get(pluginname, "org.openjump.core.classify.Classifier1D.Mean-Standard-Deviation");
-			Classifier1D.MAX_BREAKS = I18NPlug.get(pluginname, "org.openjump.core.classify.Classifier1D.Maximal-Breaks");	
-			Classifier1D.JENKS_BREAKS = I18NPlug.get(pluginname, "org.openjump.core.classify.Classifier1D.Jenks-Breaks");	
-		}
-		*/
+
+			Classifier1D.EQUAL_RANGE = I18N.get("ui.renderer.style.ColorThemingStylePanel.Equal-Interval");
+			Classifier1D.EQUAL_NUMBER = I18N.get("ui.renderer.style.ColorThemingStylePanel.Quantile-Equal-Number");
+			Classifier1D.MEAN_STDEV = I18N.get( "ui.renderer.style.ColorThemingStylePanel.Mean-Standard-Deviation");
+			Classifier1D.MAX_BREAKS = I18N.get("ui.renderer.style.ColorThemingStylePanel.Maximal-Breaks");	
+			Classifier1D.JENKS_BREAKS = I18N.get("ui.renderer.style.ColorThemingStylePanel.Jenks-Optimal-Method");	
+
 		//-- make a list for the GUI
 		List classifierList = new ArrayList();
 		classifierList.add(Classifier1D.EQUAL_RANGE);
