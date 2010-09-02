@@ -245,6 +245,12 @@ public class LayerTableModel extends ColumnBasedTableModel {
             return false;
         }
 
+		FeatureSchema schema = 
+			layer.getFeatureCollectionWrapper().getFeatureSchema();
+		if (schema.isAttributeReadOnly(schema.getAttributeIndex(getColumn(
+				columnIndex).getName())))
+			return false;
+
         return true;
     }
 

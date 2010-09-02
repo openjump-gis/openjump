@@ -51,6 +51,7 @@ public class FeatureSchema implements Cloneable, Serializable {
     private int attributeCount = 0;
     private ArrayList attributeNames = new ArrayList();
     private ArrayList attributeTypes = new ArrayList();
+    private ArrayList<Boolean> attributeReadOnly = new ArrayList<Boolean>();
 
     //todo Deep-copy! [Jon Aquino]
     //deep copy done 25. Juli 2005 [sstein] 
@@ -61,7 +62,8 @@ public class FeatureSchema implements Cloneable, Serializable {
     			AttributeType at = (AttributeType)this.attributeTypes.get(i);
     			String aname = (String)this.attributeNames.get(i);
     			fs.addAttribute(aname,at);
-    			fs.setCoordinateSystem(this.coordinateSystem);			
+    			fs.setCoordinateSystem(this.coordinateSystem);		
+    			fs.setAttributeReadOnly(i, isAttributeReadOnly(i));
     		}		
     		return fs;
         } 
@@ -141,6 +143,9 @@ public class FeatureSchema implements Cloneable, Serializable {
         attributeNames.add(attributeName);
         attributeNameToIndexMap.put(attributeName, new Integer(attributeCount));
         attributeTypes.add(attributeType);
+        // default to current implementation - all attributes are editable 
+        // (not readonly)
+        attributeReadOnly.add(false); 
         attributeCount++;
     }
     /**
@@ -193,6 +198,45 @@ public class FeatureSchema implements Cloneable, Serializable {
      */
 	public CoordinateSystem getCoordinateSystem() {
 		return coordinateSystem;
+	}
+
+	/**
+	 * Returns the "readonly" status of the attribute specified by the
+	 * attributeIndex.<br>
+	 * <br>
+	 * A return result of <tt>TRUE</tt> means the a user will not be able to
+	 * edit the attribute in the layer's attribute table, even though the
+	 * layer's "editable" flag has been set to <tt>TRUE</tt>
+	 * 
+	 * @param attributeIndex
+	 *            The index of the attribute in question.
+	 * @return <tt>TRUE</tt> if the specified attribute has been previously set
+	 *         as readonly.
+	 * @see {@link #setAttributeReadOnly(int, boolean)}
+	 */
+	public boolean isAttributeReadOnly(int attributeIndex) {
+		return attributeReadOnly.get(attributeIndex);
+	}
+
+	/**
+	 * Sets the "readonly" status of the attribute specified by the
+	 * attributeIndex. <br>
+	 * <br>
+	 * Some schemas (like those that represent database tables) can have
+	 * attributes that should not be modified (like primary keys). Setting such
+	 * an attribute as readonly means a user will not be able to edit the
+	 * attribute in the layer's attribute table, even though the layer's
+	 * "editable" flag has been set to <tt>TRUE</tt>
+	 * 
+	 * @param attributeIndex
+	 *            The index of the attribute to set
+	 * @param isReadOnly
+	 *            A flag that indicates whether the specified attribute should
+	 *            be considered "readonly".
+	 * @see {@link #isAttributeReadOnly(int)}
+	 */
+	public void setAttributeReadOnly(int attributeIndex, boolean isReadOnly) {
+		attributeReadOnly.set(attributeIndex, isReadOnly);
 	}
 
 }

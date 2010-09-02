@@ -134,14 +134,20 @@ public class AttributeTablePanel extends JPanel {
             if (!isEditButtonColumn(column)) {
                 JComponent renderer = (JComponent) super.getCellRenderer(row,
                         column);
-                //If not editable, use row striping, as recommended in
-                //Java Look and Feel Design Guidelines: Advanced Topics [Jon
-                // Aquino]
-                renderer
-                        .setBackground((AttributeTablePanel.this.getModel()
-                                .getLayer().isEditable() || ((row % 2) == 0)) ? Color.white
-                                : LIGHT_GRAY);
-                return (TableCellRenderer) renderer;
+				if (AttributeTablePanel.this.getModel().getLayer().isEditable()
+						&& !AttributeTablePanel.this.getModel()
+							.isCellEditable(row, column))
+					// Shade readonly cells light gray
+					renderer.setBackground(LIGHT_GRAY);
+				else {
+					// If not editable, use row striping, as recommended in
+					// Java Look and Feel Design Guidelines: Advanced Topics
+					// [Jon Aquino]
+					renderer.setBackground((AttributeTablePanel.this.getModel()
+							.getLayer().isEditable() || ((row % 2) == 0)) ? Color.white
+							: LIGHT_GRAY);
+				}
+				return (TableCellRenderer) renderer;
             }
             return geomCellRenderer;
         }
