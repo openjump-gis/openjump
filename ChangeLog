@@ -1,4 +1,9 @@
 2010-09-03 Matthias Scholz <ms@jammerhund.de>
+	* com.vividsolutions.jump.io.ShapefileReader
+		* read() fix for loading a Shapefile from a project or with the legacy "Load Dataset" method
+		  in both cases the default CharSet is used
+
+2010-09-03 Matthias Scholz <ms@jammerhund.de>
 	* Possibility to select a charset for opening a ESRI Shape file (String attributes)
 	* language/jump_de.properties, language/jump_en.properties
 		* added key org.openjump.core.ui.plugin.file.charset
