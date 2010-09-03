@@ -33,11 +33,15 @@
 
 package com.vividsolutions.jump.workbench.ui.renderer;
 
+import com.vividsolutions.jump.util.Blackboard;
 import java.awt.Color;
 
 import com.vividsolutions.jump.util.CollectionMap;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
+import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
+import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
+import org.openjump.core.ui.SelectionStyllingOptionsPanel;
 
 //<<TODO:REFACTORING>> Refactor code common to SelectionHandleRenderer and
 //VertexRenderer [Jon Aquino]
@@ -46,6 +50,19 @@ public class FeatureSelectionRenderer extends AbstractSelectionRenderer {
 
     public FeatureSelectionRenderer(LayerViewPanel panel) {
         super(CONTENT_ID, panel, Color.yellow, true, true);
+		// get the persistent Blackboard for set the selectionstyle values [Matthias Scholz 3. Sept. 2010]
+		if (panel.getContext() instanceof WorkbenchFrame) {
+			Blackboard blackboard = ((WorkbenchFrame)panel.getContext()).getContext().getBlackboard();
+			blackboard = PersistentBlackboardPlugIn.get(blackboard);
+			// the Color
+			Object color = blackboard.get(SelectionStyllingOptionsPanel.BB_SELECTION_STYLE_COLOR, SelectionStyllingOptionsPanel.DEFAULT_SELECTION_STYLE_COLOR);
+			if (color instanceof Color) setSelectionLineColor((Color) color);
+			// the size
+			Object size = blackboard.get(SelectionStyllingOptionsPanel.BB_SELECTION_STYLE_POINT_SIZE, SelectionStyllingOptionsPanel.DEFAULT_SELECTION_STYLE_POINT_SIZE);
+			if (size instanceof Integer) setSelectionPointSize(((Integer) blackboard.get(SelectionStyllingOptionsPanel.BB_SELECTION_STYLE_POINT_SIZE, SelectionStyllingOptionsPanel.DEFAULT_SELECTION_STYLE_POINT_SIZE)).intValue());
+			// and the form
+			setSelectionPointForm((String) blackboard.get(SelectionStyllingOptionsPanel.BB_SELECTION_STYLE_POINT_FORM, SelectionStyllingOptionsPanel.DEFAULT_SELECTION_STYLE_POINT_FORM));
+		}
     }
     
     protected CollectionMap featureToSelectedItemsMap(Layer layer) {

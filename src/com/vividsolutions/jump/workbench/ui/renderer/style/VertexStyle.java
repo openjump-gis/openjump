@@ -184,13 +184,14 @@ public abstract class VertexStyle implements Style, SizedStrokeFillStyle {
         // UT was
         // g.fill(shape);
 
+		// [Matthias Scholz 3. Sept. 2010] outline draw and fill interchanged for right display
         // deeJUMP
-        g.setColor(strokeColor);
-        g.draw(shape);
         if (filling) {
             g.setColor(fillColor);
             g.fill(shape);
         }
+        g.setColor(strokeColor);
+        g.draw(shape);
     }
 
     public Object clone() {

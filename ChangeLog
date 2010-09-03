@@ -1,3 +1,21 @@
+2010-09-03 Matthias Scholz <ms@jammerhund.de>
+	* Patch for selectionstyling
+	* added org.openjump.core.ui.SelectionStyllingOptionsPanel class
+	* com.vividsolutions.jump.workbench.ui.plugin.initialize()
+		* SelectionStyllingOptionsPanel added
+	* com.vividsolutions.jump.workbench.ui.renderer.AbstractSelectionRenderer
+		* AbstractSelectionRenderer() changed
+		* paint(Geometry geometry, Graphics2D g, Viewport viewport) changed
+		* setSelectionLineColor() added
+		* setSelectionPointSize() added
+		* setSelectionPointForm() added
+	* com.vividsolutions.jump.workbench.ui.renderer.FeatureSelectionRenderer  changed
+	* com.vividsolutions.jump.workbench.ui.renderer.style.VertexStyle
+		* Bugfix render(Graphics2D g) - outline draw and fill interchanged for right display of the vertices
+	* language files
+		* com.vividsolutions.jump.jump.properties
+		* language.jump_de.properties
+
 2010-08-29 sstein <sstein@geo.uzh.ch>
 	added 5 statistic functions:  
 	(i):   Create Bar Plot
