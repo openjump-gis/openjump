@@ -46,6 +46,7 @@ import org.geotools.dbffile.DbfFile;
 import org.geotools.shapefile.Shapefile;
 
 import java.io.*;
+import java.nio.charset.Charset;
 
 /**
  * ShapefileReader is a {@link JUMPReader} specialized to read Shapefiles.
@@ -133,6 +134,7 @@ public class ShapefileReader implements JUMPReader {
         // install Shapefile and DbfFile
         Shapefile myshape = getShapefile(shpfileName, dp.getProperty(COMPRESSED_FILE_PROPERTY_KEY));
         DbfFile mydbf = getDbfFile(dbfFileName, dp.getProperty(COMPRESSED_FILE_PROPERTY_KEY));
+		mydbf.setCharSet(Charset.forName(dp.getProperty(I18N.get("org.openjump.core.ui.plugin.file.charset"))));
         GeometryFactory factory = new GeometryFactory();
         GeometryCollection collection = null;
         try {

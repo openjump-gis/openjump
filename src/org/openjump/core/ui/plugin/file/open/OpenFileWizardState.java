@@ -197,13 +197,13 @@ public class OpenFileWizardState {
   }
 
   public String getNextPanel(final String currentPanel) {
-    if (currentPanel == SelectFilesPanel.KEY) {
+    if (currentPanel.equals(SelectFilesPanel.KEY)) {
       if (fileLayerLoader == null && !multiLoaderFiles.isEmpty()) {
         return SelectFileLoaderPanel.class.getName();
       } else {
         return getNextPanel(SelectFileLoaderPanel.class.getName());
       }
-    } else if (currentPanel == SelectFileLoaderPanel.KEY) {
+    } else if (currentPanel.equals(SelectFileLoaderPanel.KEY)) {
       for (Entry<FileLayerLoader, Set<URI>> entries : fileLoaderFiles.entrySet()) {
         FileLayerLoader fileLayerLoader = entries.getKey();
         if (!entries.getValue().isEmpty()) {

@@ -3,6 +3,7 @@ package org.geotools.dbffile;
 import com.vividsolutions.jump.io.EndianDataInputStream;
 
 import java.io.*;
+import java.nio.charset.Charset;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -48,6 +49,8 @@ public class DbfFile implements DbfConsts {
             setLenient(true);
         }
     };
+
+	private Charset charset = Charset.defaultCharset();
 
     protected DbfFile() {
         //for testing.
@@ -258,7 +261,7 @@ public class DbfFile implements DbfConsts {
                    (rec[end-1] == ' ' ||    //[sstein 9.Sept.08]
                     rec[end-1] == 0))       //[mmichaud 16 june 2010]
                     end--;  //trim trailing spaces
-            s = new String(rec, start, end - start);  //[sstein 9.Sept.08]
+            s = new String(rec, start, end - start, charset);  //[sstein 9.Sept.08] + [Matthias Scholz 3. Sept.10] Charset added
             masterString = uniqueStrings.get(s);
             if (masterString!=null) return masterString;
             else {
@@ -620,6 +623,15 @@ public class DbfFile implements DbfConsts {
 
         return column;
     }
+
+	public Charset getchCharset() {
+		return charset;
+	}
+
+	public void setCharSet(Charset charset) {
+		this.charset = charset;
+	}
+
 
     public void close() throws IOException {
         dFile.close();

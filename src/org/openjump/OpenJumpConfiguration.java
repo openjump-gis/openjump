@@ -15,6 +15,7 @@
  */
 package org.openjump;
 
+import com.vividsolutions.jump.I18N;
 import static com.vividsolutions.jump.workbench.ui.MenuNames.LAYER;
 
 import java.util.Arrays;
@@ -95,6 +96,8 @@ import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
 
 import de.latlon.deejump.plugin.SaveLegendPlugIn;
 import de.latlon.deejump.plugin.style.LayerStyle2SLDPlugIn;
+import java.nio.charset.Charset;
+import org.openjump.core.ui.swing.factory.field.ComboBoxFieldComponentFactory;
 
 /**
  * This class loads all OpenJUMP plugins. The method
@@ -120,6 +123,9 @@ public class OpenJumpConfiguration {
      **************************************************************************/
     FieldComponentFactoryRegistry.setFactory(workbenchContext, "FileString",
       new FileFieldComponentFactory(workbenchContext));
+	FieldComponentFactoryRegistry.setFactory(workbenchContext, "CharSetComboBoxField",
+      new ComboBoxFieldComponentFactory(workbenchContext, null, Charset.availableCharsets().keySet().toArray()));
+
 
     /***************************************************************************
      * menu FILE
@@ -600,6 +606,9 @@ public class OpenJumpConfiguration {
             StandardReaderWriterFileDataSource.GML.INPUT_TEMPLATE_FILE_KEY,
             "FileString", true);
         }
+		if (dataSourceClass == StandardReaderWriterFileDataSource.Shapefile.class) {
+			fileLoader.addOption(I18N.get("org.openjump.core.ui.plugin.file.charset"), "CharSetComboBoxField", Charset.defaultCharset().displayName(), true);
+		}
         registry.createEntry(FileLayerLoader.KEY, fileLoader);
       }
     }

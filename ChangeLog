@@ -1,4 +1,19 @@
 2010-09-03 Matthias Scholz <ms@jammerhund.de>
+	* Possibility to select a charset for opening a ESRI Shape file (String attributes)
+	* language/jump_de.properties, language/jump_en.properties
+		* added key org.openjump.core.ui.plugin.file.charset
+	* org.openjump.OpenJumpConfiguration
+		* loadOpenJumpPlugIns() added Field Component Factory for "CharSetComboBoxField"
+		* postExtensionInitialization() added FileLoader option for shape files
+	* com.vividsolutions.jump.io.ShapefileReader
+		* read() added charset setting for DbfFile (mydbf)
+	* org.geotools.dbffile.DbfFile
+		* added private variable charset and getter/setter methods
+		* ParseRecordColumn(byte[] rec, int wantedCol) changed for creating returning String column with Charset
+	* org.openjump.core.ui.plugin.file.open.OpenFileWizardState
+		* getNextPanel() fixed wrong String comparison
+
+2010-09-03 Matthias Scholz <ms@jammerhund.de>
 	* Patch for selectionstyling
 	* added org.openjump.core.ui.SelectionStyllingOptionsPanel class
 	* com.vividsolutions.jump.workbench.ui.plugin.initialize()
