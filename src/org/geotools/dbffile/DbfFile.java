@@ -261,7 +261,7 @@ public class DbfFile implements DbfConsts {
                    (rec[end-1] == ' ' ||    //[sstein 9.Sept.08]
                     rec[end-1] == 0))       //[mmichaud 16 june 2010]
                     end--;  //trim trailing spaces
-            s = new String(rec, start, end - start, charset);  //[sstein 9.Sept.08] + [Matthias Scholz 3. Sept.10] Charset added
+            s = new String(rec, start, end - start, charset.name());  //[sstein 9.Sept.08] + [Matthias Scholz 3. Sept.10] Charset added
             masterString = uniqueStrings.get(s);
             if (masterString!=null) return masterString;
             else {
@@ -624,11 +624,11 @@ public class DbfFile implements DbfConsts {
         return column;
     }
 
-	public Charset getchCharset() {
+	public Charset getCharset() {
 		return charset;
 	}
 
-	public void setCharSet(Charset charset) {
+	public void setCharset(Charset charset) {
 		this.charset = charset;
 	}
 

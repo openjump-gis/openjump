@@ -167,7 +167,7 @@ public class ShapefileReader implements JUMPReader {
             
             String charsetName = dp.getProperty(I18N.get("org.openjump.core.ui.plugin.file.charset"));
             if (charsetName == null) charsetName = Charset.defaultCharset().displayName();
-            mydbf.setCharSet(Charset.forName(charsetName));
+            mydbf.setCharset(Charset.forName(charsetName));
 		
             int numfields = mydbf.getNumFields();
 
