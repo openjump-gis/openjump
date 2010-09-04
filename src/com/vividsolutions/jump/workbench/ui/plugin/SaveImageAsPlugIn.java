@@ -1,6 +1,8 @@
 package com.vividsolutions.jump.workbench.ui.plugin;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
@@ -8,6 +10,8 @@ import java.io.IOException;
 import java.util.*;
 
 import javax.imageio.ImageIO;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -51,7 +55,7 @@ public class SaveImageAsPlugIn extends ExportImagePlugIn {
     private JFileChooser fileChooser = null;
     private WorkbenchContext workbenchContext;
     private JCheckBox worldFileCheckBox = null;
-    private JLabel pixelSizeLabel = new JLabel("X");
+    private JLabel pixelSizeLabel = new JLabel(I18N.get("ui.plugin.SaveImageAsPlugIn.width-in-pixels"));
     private final ImageIcon icon = IconLoader.icon("Box.gif");
     private Geometry fence = null;
     private boolean fenceFound = false;
@@ -97,17 +101,23 @@ public class SaveImageAsPlugIn extends ExportImagePlugIn {
             fileChooser.setFileFilter((FileFilter) formatToFileFilterMap.get(
                     PersistentBlackboardPlugIn.get(workbenchContext)
                             .get(FORMAT_KEY, "png")));
-            JPanel jPanel = new JPanel();
+            
+            Box box = new Box(BoxLayout.Y_AXIS);
+            JPanel jPanelSize = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            JPanel jPanelWF   = new JPanel(new FlowLayout(FlowLayout.LEFT));
             worldFileCheckBox = new javax.swing.JCheckBox();
             worldFileCheckBox.setText(I18N.get("ui.plugin.SaveImageAsPlugIn.write-world-file"));
             if (fence != null){
             	JLabel fenceIcon = new JLabel(icon);
-            	jPanel.add(fenceIcon);
+            	jPanelSize.add(fenceIcon);
             }
-            jPanel.add(pixelSizeLabel);
-            jPanel.add(pixelSizeField);
-            jPanel.add(worldFileCheckBox);
-            fileChooser.add(jPanel,  BorderLayout.NORTH);
+            jPanelSize.add(pixelSizeLabel);
+            jPanelSize.add(pixelSizeField);
+            jPanelWF.add(worldFileCheckBox);
+            box.add(jPanelSize);
+            box.add(jPanelWF);
+            box.add(Box.createRigidArea(new Dimension(5,180)));
+            fileChooser.setAccessory(box);
         }
         return fileChooser;
     }

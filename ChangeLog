@@ -1,4 +1,10 @@
 2010-09-04 mmichaud <michael.michaud@free.fr>
+    * fixed a bug in the JFileChooser of SaveImageAsPlugIn
+      options did take the place of JFileChooser default options.
+      now, options are on the right side of JFileChooser
+      added also an I18N key for the image size option
+
+2010-09-04 mmichaud <michael.michaud@free.fr>
     * fixed a NPE in org.openjump.core.attributeoperations.AttributeOp
 
 2010-09-04 mmichaud <michael.michaud@free.fr>
