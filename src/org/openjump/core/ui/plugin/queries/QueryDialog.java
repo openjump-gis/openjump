@@ -47,6 +47,7 @@ import com.vividsolutions.jump.I18N;
  * version 0.1.1 (15 Jan 2005)
  * version 0.2 (16 Oct 2005)
  * version 0.2.1 (10 aug 2007)
+ * version 0.3.0 (04 sept 2010) complete rewrite of functionChenged and operatorChanged methods
  */ 
 public class QueryDialog extends BDialog {
     
@@ -567,35 +568,50 @@ public class QueryDialog extends BDialog {
     }
     
     public void functionChanged() {
+        // if function is edited to change the parameter value by hand (buffer),
+        // functionCB.getSelectedValue() class changes from Function to String
         String ft = functionCB.getSelectedValue().toString();
         try {
-            // added on 11/01/2005
-            if (((Function)functionCB.getSelectedValue()).type!=function.type) {
-                updateOperators();
-                operatorChanged();
-                updateValues();
+            if (functionCB.getSelectedValue() instanceof Function) {
+                Function newfunction = (Function)functionCB.getSelectedValue();
+                if (newfunction.type!=function.type) {
+                    updateOperators();
+                    operatorChanged();
+                    updateValues();
+                }
+                function = (Function)functionCB.getSelectedValue();
+                if (function == Function.SUBS || function == Function.BUFF) {
+                    functionCB.setEditable(true);
+                }
+                else functionCB.setEditable(false);
             }
-            function = (Function)functionCB.getSelectedValue();
-        } catch(Exception e) {}
-        // SET IF FUNCTION IS EDITABLE OR NOT
-        if(function==Function.SUBS) {
-            functionCB.setEditable(true);
-            String f = functionCB.getSelectedValue().toString();
-            String sub = f.substring(f.lastIndexOf('(')+1, f.lastIndexOf(')'));
-            String[] ss = sub.split(",");
-            Function.SUBS.args = new int[ss.length];
-            if (ss.length>0) Function.SUBS.args[0] = Integer.parseInt(ss[0]);
-            if (ss.length>1) Function.SUBS.args[1] = Integer.parseInt(ss[1]);
-            functionCB.setSelectedValue(Function.SUBS);
+            else if (functionCB.getSelectedValue() instanceof String) {
+                // SET IF FUNCTION IS EDITABLE OR NOT
+                if(function==Function.SUBS) {
+                    //functionCB.setEditable(true);
+                    String f = functionCB.getSelectedValue().toString();
+                    String sub = f.substring(f.lastIndexOf('(')+1, f.lastIndexOf(')'));
+                    String[] ss = sub.split(",");
+                    Function.SUBS.args = new int[ss.length];
+                    if (ss.length>0) Function.SUBS.args[0] = Integer.parseInt(ss[0]);
+                    if (ss.length>1) Function.SUBS.args[1] = Integer.parseInt(ss[1]);
+                    functionCB.setSelectedValue(Function.SUBS);
+                }
+                else if(function==Function.BUFF) {
+                    //functionCB.setEditable(true);
+                    String f = functionCB.getSelectedValue().toString();
+                    String sub = f.substring(f.lastIndexOf('(')+1, f.lastIndexOf(')'));
+                    Function.BUFF.arg = Double.parseDouble(sub);
+                    functionCB.setSelectedValue(Function.BUFF);
+                }
+                else {
+                    functionCB.setEditable(false);
+                    context.getWorkbenchFrame().warnUser("Cannot modify this function name");
+                }
+            }
+        } catch(Exception e) {
+            context.getWorkbenchFrame().toMessage(e);
         }
-        else if(function==Function.BUFF) {
-            functionCB.setEditable(true);
-            String f = functionCB.getSelectedValue().toString();
-            String sub = f.substring(f.lastIndexOf('(')+1, f.lastIndexOf(')'));
-            Function.BUFF.arg = Double.parseDouble(sub);
-            functionCB.setSelectedValue(Function.BUFF);
-        }
-        else {functionCB.setEditable(false);}
     }
     
     private void updateOperators() {
@@ -620,29 +636,48 @@ public class QueryDialog extends BDialog {
     }
     
     public void operatorChanged() {
-        Operator newop = (Operator)operatorCB.getSelectedValue();
+        //Operator newop = (Operator)operatorCB.getSelectedValue();
+        String newopstring = operatorCB.getSelectedValue().toString();
         try {
-            if(newop.type!=operator.type) {
-                updateValues();
+            if (operatorCB.getSelectedValue() instanceof Operator) {
+                Operator newop = (Operator)operatorCB.getSelectedValue();
+                if(newop.type!=operator.type) {
+                    updateValues();
+                }
+                if (operator!=Operator.MATC && operator!=Operator.FIND &&
+                    (newop==Operator.MATC || newop==Operator.FIND)) {
+                    updateValues();
+                }
+                if ((operator==Operator.MATC || operator==Operator.FIND) &&
+                    (newop!=Operator.MATC && newop!=Operator.FIND)) {
+                    updateValues();
+                }
+                operator = newop;
+                if (operator == Operator.WDIST) {
+                    operatorCB.setEditable(true);
+                }
+                else {
+                    operatorCB.setEditable(false);
+                }
             }
-            if (operator!=Operator.MATC && operator!=Operator.FIND &&
-                (newop==Operator.MATC || newop==Operator.FIND)) {
-                updateValues();
+            else if (operatorCB.getSelectedValue() instanceof String) {
+                if (operator==Operator.WDIST) {
+                    //operatorCB.setEditable(true); // added on 2007-07-02 (bug fix)
+                    String f = operatorCB.getSelectedValue().toString();
+                    String sub = f.substring(f.lastIndexOf('(')+1, f.lastIndexOf(')'));
+                    Operator.WDIST.arg = Double.parseDouble(sub);
+                    operatorCB.setSelectedValue(Operator.WDIST);
+                }
+                else {
+                    operatorCB.setEditable(false);
+                    context.getWorkbenchFrame().warnUser("Cannot modify this function name");
+                }
             }
-            if ((operator==Operator.MATC || operator==Operator.FIND) &&
-                (newop!=Operator.MATC && newop!=Operator.FIND)) {
-                updateValues();
-            }
-            operator = newop;
         }
-        catch(Exception e) {System.out.println(e);}
-        if (operator==Operator.WDIST) {
-            operatorCB.setEditable(true); // added on 2007-07-02 (bug fix)
-            String f = operatorCB.getSelectedValue().toString();
-            String sub = f.substring(f.lastIndexOf('(')+1, f.lastIndexOf(')'));
-            Operator.WDIST.arg = Double.parseDouble(sub);
-            operatorCB.setSelectedValue(Operator.WDIST);
+        catch(Exception e) {
+            context.getWorkbenchFrame().toMessage(e);
         }
+        
     }
     
    /**
@@ -892,8 +927,6 @@ public class QueryDialog extends BDialog {
                 if (operator.type=='G' && valueCB.getSelectedIndex() == SELECTION) {
                     selection = context.getLayerViewPanel().getSelectionManager().getSelectedItems();
                 }
-                
-                System.out.println(condition);
                 
                 // initialize the selection if the select option is true
                 if(select.getState()) {selectedFeatures.unselectItems();}

@@ -1,4 +1,7 @@
 2010-09-04 mmichaud <michael.michaud@free.fr>
+    * fixed bugs in editable function and operator of the simple query plugin
+    
+2010-09-04 mmichaud <michael.michaud@free.fr>
     * replaced peppe's OJ.exe file by a OpenJUMP.exe + OpenJUMP.ini file
       created with WinRun4J free software (http://winrun4j.sourceforge.net/)
       warning : I deactivated VERSION filter in "dist" target of build file,
