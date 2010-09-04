@@ -123,27 +123,24 @@ public class AttributeOp {
 		        int count=0;
 		        for (Iterator iter = features.iterator(); iter.hasNext();) {
 		            Feature f = (Feature) iter.next();
-		            if (at == AttributeType.DOUBLE){
-		                Double val = (Double)f.getAttribute(attributeName);
+		            Object value = f.getAttribute(attributeName);
+		            if (value == null) {
+		                // will be counted as 0
+		            }
+		            else if (at == AttributeType.DOUBLE){
+		                Double val = (Double)value;
 		                //mat.set(count,0, val.doubleValue());
 		                vals[count] = val.doubleValue();
 		            }
 		            else if(at == AttributeType.INTEGER){
-		                Integer val = (Integer)f.getAttribute(attributeName);
+		                Integer val = (Integer)value;
 		                //mat.set(count,0, val.doubleValue());	
 		                vals[count] = val.doubleValue();
 		            }
 		            else if(at == AttributeType.GEOMETRY){
 		                //-- simply set to one for count 
-		                Geometry geom = (Geometry)f.getAttribute(attributeName);
-		                if (geom != null){
-		                    //mat.set(count,0, 1);
-		                    vals[count] = 1;
-		                }
-		                else{
-		                    //mat.set(count,0, 0);
-		                    vals[count] = 0;
-		                }
+		                //mat.set(count,0, 1);
+		                vals[count] = 1;
 		            }		            
 		            else{
 		                System.out.println("AttributeOp: attribute type not supported");

@@ -1,4 +1,7 @@
 2010-09-04 mmichaud <michael.michaud@free.fr>
+    * fixed a NPE in org.openjump.core.attributeoperations.AttributeOp
+
+2010-09-04 mmichaud <michael.michaud@free.fr>
     * fixed bugs in editable function and operator of the simple query plugin
     
 2010-09-04 mmichaud <michael.michaud@free.fr>
