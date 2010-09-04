@@ -216,9 +216,9 @@ Main-Class: com.vividsolutions.jump.workbench.JUMPWorkbench
         <mkdir dir="${archive.dir}"/>
         <copy todir="${archive.dir}/bin">
             <fileset dir="${scripts.dir}"/>
-            <filterset>
+            <!--filterset>
                 <filter token="VERSION" value="${version}"/>
-            </filterset>
+            </filterset-->
         </copy>
         <copy file="etc/log4j.xml" todir="${archive.dir}/bin"/>
         <copy todir="${archive.dir}">
