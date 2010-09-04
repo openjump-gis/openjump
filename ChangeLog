@@ -1,4 +1,10 @@
-2010-09-05 mmichaud <michael.michaud@free.fr>
+2010-09-04 mmichaud <michael.michaud@free.fr>
+    * replaced peppe's OJ.exe file by a OpenJUMP.exe + OpenJUMP.ini file
+      created with WinRun4J free software (http://winrun4j.sourceforge.net/)
+      warning : I deactivated VERSION filter in "dist" target of build file,
+      because it did corrupt the .exe file (and seemed unused)
+
+2010-09-04 mmichaud <michael.michaud@free.fr>
     * fixed a NPE in ShapefileReader arising with shapefiles without dbf
     
 2010-09-03 Matthias Scholz <ms@jammerhund.de>
