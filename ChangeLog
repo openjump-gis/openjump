@@ -1,3 +1,6 @@
+2010-09-05 mmichaud <michael.michaud@free.fr>
+    * fixed a NPE in ShapefileReader arising with shapefiles without dbf
+    
 2010-09-03 Matthias Scholz <ms@jammerhund.de>
 	* com.vividsolutions.jump.io.ShapefileReader
 		* read() fix for loading a Shapefile from a project or with the legacy "Load Dataset" method
@@ -35,6 +38,11 @@
 	* language files
 		* com.vividsolutions.jump.jump.properties
 		* language.jump_de.properties
+		
+2010-09-02 kdneufeld <>
+    * Added isReadOnly property to FeatureSchema, and modified the code of
+      AttributeTablePanel and LayerTableModel to prevent user modification
+      of readonly attributes.
 
 2010-08-29 sstein <sstein@geo.uzh.ch>
 	added 5 statistic functions:  

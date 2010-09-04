@@ -134,9 +134,6 @@ public class ShapefileReader implements JUMPReader {
         // install Shapefile and DbfFile
         Shapefile myshape = getShapefile(shpfileName, dp.getProperty(COMPRESSED_FILE_PROPERTY_KEY));
         DbfFile mydbf = getDbfFile(dbfFileName, dp.getProperty(COMPRESSED_FILE_PROPERTY_KEY));
-		String charsetName = dp.getProperty(I18N.get("org.openjump.core.ui.plugin.file.charset"));
-		if (charsetName == null) charsetName = Charset.defaultCharset().displayName();
-		mydbf.setCharSet(Charset.forName(charsetName));
         GeometryFactory factory = new GeometryFactory();
         GeometryCollection collection = null;
         try {
@@ -165,8 +162,13 @@ public class ShapefileReader implements JUMPReader {
                 featureCollection.add(feature);
             }
         } else {
-            // There is a DBF file so we have to associate the attributes in
-            // the DBF file with the features.
+            // There is a DBF file so we have to set the Charset to use and
+            // to associate the attributes in the DBF file with the features.
+            
+            String charsetName = dp.getProperty(I18N.get("org.openjump.core.ui.plugin.file.charset"));
+            if (charsetName == null) charsetName = Charset.defaultCharset().displayName();
+            mydbf.setCharSet(Charset.forName(charsetName));
+		
             int numfields = mydbf.getNumFields();
 
             for (int j = 0; j < numfields; j++) {
