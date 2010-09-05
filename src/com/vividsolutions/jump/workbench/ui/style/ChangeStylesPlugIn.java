@@ -65,7 +65,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
-
+/**
+ * @deprecated  As of release 1.3, replaced by {@link de.latlon.deejump.plugin.style.DeeChangeStylesPlugIn}
+ */
 public class ChangeStylesPlugIn extends AbstractPlugIn {
     private final static String LAST_TAB_KEY = ChangeStylesPlugIn.class.getName() +
         " - LAST TAB";

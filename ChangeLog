@@ -1,3 +1,9 @@
+2010-09-05 mmichaud <michael.michaud@free.fr>
+    * setting vertex style on a layer without attribute don't remove basic
+      style anymore (bug report ID: 3043312).
+      class de.latlon.deejump.plugin.style.DeeRenderingStylePanel fixed
+      warning : RenderingStylePanel and ChangeStylesPlugIn are deprecated
+
 2010-09-04 mmichaud <michael.michaud@free.fr>
     * fixed a bug in the JFileChooser of SaveImageAsPlugIn
       options did take the place of JFileChooser default options.

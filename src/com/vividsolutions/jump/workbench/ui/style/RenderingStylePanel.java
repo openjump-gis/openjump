@@ -62,7 +62,9 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-
+/**
+ * @deprecated  As of release 1.3, replaced by {@link de.latlon.deejump.plugin.style.DeeRenderingStylePanel}
+ */
 public class RenderingStylePanel extends BasicStylePanel implements StylePanel {
     private Layer layer;
     //private JTextArea fillPatternTipLabel = new JTextArea();    
