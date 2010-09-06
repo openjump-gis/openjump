@@ -46,6 +46,7 @@ import org.geotools.shapefile.Shapefile;
 import java.io.*;
 
 import java.net.URL;
+import java.nio.charset.Charset;
 
 import java.util.*;
 
@@ -285,7 +286,9 @@ public class ShapefileWriter implements JUMPWriter {
         fname_withoutextention = fname.substring(0, loc); // ie. "hills.shp" -> "hills."
         dbffname = path + fname_withoutextention + ".dbf";
 
-        writeDbf(featureCollection, dbffname);
+		String charsetName = dp.getProperty("charset");
+		if (charsetName == null) charsetName = Charset.defaultCharset().name();
+        writeDbf(featureCollection, dbffname, Charset.forName(charsetName));
 
         // this gc will be a collection of either multi-points, multi-polygons, or multi-linestrings
         // polygons will have the rings in the correct order
@@ -348,6 +351,21 @@ public class ShapefileWriter implements JUMPWriter {
         return 2;
     }
 
+	/**
+	 * Write a dbf file with the information from the featureCollection.
+	 * For compatibilty reasons, this method is
+	 * is now a wrapper for the changed/new one with Charset functions.
+	 *
+	 * @see writeDbf(FeatureCollection featureCollection, String fname, Charset charset)
+	 *
+	 * @param featureCollection
+	 * @param fname
+	 * @throws Exception
+	 */
+	void writeDbf(FeatureCollection featureCollection, String fname) throws Exception {
+		writeDbf(featureCollection, fname, Charset.defaultCharset());
+	}
+
     /**
      * Write a dbf file with the information from the featureCollection.
      * @param featureCollection column data from collection
@@ -355,7 +373,7 @@ public class ShapefileWriter implements JUMPWriter {
      * July 2, 2010 - modified by beckerl to read existing dbf file header
      * and use the existing numeric field definitions.
      */
-    void writeDbf(FeatureCollection featureCollection, String fname)
+    void writeDbf(FeatureCollection featureCollection, String fname, Charset charset)
         throws Exception {
         DbfFileWriter dbf;
         FeatureSchema fs;
@@ -420,6 +438,7 @@ public class ShapefileWriter implements JUMPWriter {
 
         // write header
         dbf = new DbfFileWriter(fname);
+		dbf.setCharset(charset);
         dbf.writeHeader(fields, featureCollection.size());
 
         //write rows

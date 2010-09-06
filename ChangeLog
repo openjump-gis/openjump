@@ -1,3 +1,33 @@
+2010-09-06 Matthias Scholz <ms@jammerhund.de>
+	* Changes for save dataset as shapefile / fieldnames with charset settings
+		* org.geotools.dbffile.DbfFieldDef
+		* org.geotools.dbffile.DbfFile
+			* init()
+			* get/setCharset() removed, because Charset is set with the constructor
+		* org.geotools.dbffile.DbfFileWriter
+			* writeHeader()
+			* writeRecord()
+			* getCharset()/setCharset()
+		* com.vividsolutions.jump.workbench.datasource.InstallStandardDataSourceQueryChoosersPlugIn
+			* addFileDataSourceQueryChoosers(): added charset combobox for the save dataset as dialog
+		* com.vividsolutions.jump.io.ShapefileReader
+			* read()
+				* moved back the charset code outsite the "if ( mydbf == null )" brunch,
+				  for reading the fieldnames with charset
+			* getDbfFile() -> charset stuff
+		* com.vividsolutions.jump.io.ShapefileWriter
+			* write(), writeDbf()
+				* charset stuff
+	* org.openjump.OpenJumpConfiguration
+		* changed the key of the charset option; now we use a non localized key
+	* language fieles jump_de.properties and jump_en.properties (line 445)
+		* key "org.openjump.core.ui.plugin.file.charset" changed
+		  to "org.openjump.core.ui.io.file.DataSourceFileLayerLoader.charset"
+	* org.openjump.core.ui.plugin.file.open.SelectFileOptionsPanel
+		* addIndividualSettingsFields() -> translation of the option key activated (line 168)
+	* org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn
+		* shows the charset setting if we have a shapefile
+
 2010-09-05 mmichaud <michael.michaud@free.fr>
     * setting vertex style on a layer without attribute don't remove basic
       style anymore (bug report ID: 3043312).

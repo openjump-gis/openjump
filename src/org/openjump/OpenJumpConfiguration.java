@@ -607,7 +607,7 @@ public class OpenJumpConfiguration {
             "FileString", true);
         }
 		if (dataSourceClass == StandardReaderWriterFileDataSource.Shapefile.class) {
-			fileLoader.addOption(I18N.get("org.openjump.core.ui.plugin.file.charset"), "CharSetComboBoxField", Charset.defaultCharset().displayName(), true);
+			fileLoader.addOption("charset", "CharSetComboBoxField", Charset.defaultCharset().displayName(), true);
 		}
         registry.createEntry(FileLayerLoader.KEY, fileLoader);
       }

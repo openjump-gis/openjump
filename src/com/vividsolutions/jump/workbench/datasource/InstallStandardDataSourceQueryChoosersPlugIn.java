@@ -40,8 +40,17 @@ import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import java.awt.Component;
+import java.io.File;
+import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
+import javax.swing.JComponent;
 
 import javax.swing.JFileChooser;
+import org.openjump.core.ui.swing.ComboBoxComponentPanel;
+import org.openjump.core.ui.swing.factory.field.ComboBoxFieldComponentFactory;
+import org.openjump.swing.factory.field.FieldComponentFactory;
 
 /**
  * Adds to the JUMP Workbench the UIs for opening and saving files with the
@@ -53,7 +62,7 @@ public class InstallStandardDataSourceQueryChoosersPlugIn extends AbstractPlugIn
         JUMPReader reader,
         JUMPWriter writer,
         final String description,
-        WorkbenchContext context,
+        final WorkbenchContext context,
         Class readerWriterDataSourceClass) {
 
         DataSourceQueryChooserManager chooserManager = DataSourceQueryChooserManager.get(context.getBlackboard());
@@ -69,11 +78,42 @@ public class InstallStandardDataSourceQueryChoosersPlugIn extends AbstractPlugIn
                 }
             });
 
-        chooserManager.addSaveDataSourceQueryChooser(new SaveFileDataSourceQueryChooser(
-                readerWriterDataSourceClass,
-                description,
-                extensions(readerWriterDataSourceClass),
-                context));
+		if (readerWriterDataSourceClass != StandardReaderWriterFileDataSource.Shapefile.class) {
+			chooserManager.addSaveDataSourceQueryChooser(new SaveFileDataSourceQueryChooser(
+					readerWriterDataSourceClass,
+					description,
+					extensions(readerWriterDataSourceClass),
+					context));
+		} else {
+		// if we write ESRI Shapefiles, we add an option for the Charset
+			chooserManager.addSaveDataSourceQueryChooser(new SaveFileDataSourceQueryChooser(
+					readerWriterDataSourceClass,
+					description,
+					extensions(readerWriterDataSourceClass),
+					context) {
+
+				private JComponent comboboxFieldComponent;
+
+				protected Map toProperties(File file) {
+                    HashMap properties = new HashMap(super.toProperties(file));
+					String charsetName = Charset.defaultCharset().name();
+					if (comboboxFieldComponent instanceof ComboBoxComponentPanel) {
+						charsetName = (String) ((ComboBoxComponentPanel)comboboxFieldComponent).getSelectedItem();
+					}
+                    properties.put("charset", charsetName);
+
+                    return properties;
+                }
+
+				protected Component getSouthComponent1() {
+						FieldComponentFactory fieldComponentFactory = new ComboBoxFieldComponentFactory(context, I18N.get("org.openjump.core.ui.io.file.DataSourceFileLayerLoader.charset") + ":", Charset.availableCharsets().keySet().toArray());
+						comboboxFieldComponent = fieldComponentFactory.createComponent();
+						fieldComponentFactory.setValue(comboboxFieldComponent, Charset.defaultCharset().name());
+						return comboboxFieldComponent;
+				}
+			});
+
+		}
     }
 
 

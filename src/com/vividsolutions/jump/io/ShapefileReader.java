@@ -133,7 +133,9 @@ public class ShapefileReader implements JUMPReader {
         //okay, have .shp and .dbf file paths, lets start
         // install Shapefile and DbfFile
         Shapefile myshape = getShapefile(shpfileName, dp.getProperty(COMPRESSED_FILE_PROPERTY_KEY));
-        DbfFile mydbf = getDbfFile(dbfFileName, dp.getProperty(COMPRESSED_FILE_PROPERTY_KEY));
+		String charsetName = dp.getProperty("charset");
+		if (charsetName == null) charsetName = Charset.defaultCharset().name();
+        DbfFile mydbf = getDbfFile(dbfFileName, dp.getProperty(COMPRESSED_FILE_PROPERTY_KEY), Charset.forName(charsetName));
         GeometryFactory factory = new GeometryFactory();
         GeometryCollection collection = null;
         try {
@@ -165,9 +167,6 @@ public class ShapefileReader implements JUMPReader {
             // There is a DBF file so we have to set the Charset to use and
             // to associate the attributes in the DBF file with the features.
             
-            String charsetName = dp.getProperty(I18N.get("org.openjump.core.ui.plugin.file.charset"));
-            if (charsetName == null) charsetName = Charset.defaultCharset().displayName();
-            mydbf.setCharset(Charset.forName(charsetName));
 		
             int numfields = mydbf.getNumFields();
 
@@ -208,8 +207,22 @@ public class ShapefileReader implements JUMPReader {
         return myshape;
     }
 
-
+	/**
+	 * Get's a DbfFile.
+	 * For compatibilty reasons, this method is a wrapper to the new with
+	 * Charset functions.
+	 *
+	 * @param dbfFileName
+	 * @param compressedFname
+	 * @return
+	 * @throws Exception
+	 */
     protected DbfFile getDbfFile(String dbfFileName, String compressedFname)
+        throws Exception {
+		return getDbfFile(dbfFileName, compressedFname, Charset.defaultCharset());
+	}
+
+    protected DbfFile getDbfFile(String dbfFileName, String compressedFname, Charset charset)
         throws Exception {
 
         DbfFile mydbf = null;
@@ -238,13 +251,13 @@ public class ShapefileReader implements JUMPReader {
             in.close();
             out.close();
 
-            mydbf = new DbfFile(file.toString());
+            mydbf = new DbfFile(file.toString(), charset);
             delete_this_tmp_dbf = file; // to be deleted later on
         } else {
             File dbfFile = new File( dbfFileName );
 
             if ( dbfFile.exists() ) {
-                mydbf = new DbfFile(dbfFileName);
+                mydbf = new DbfFile(dbfFileName, charset);
             }
         }
 

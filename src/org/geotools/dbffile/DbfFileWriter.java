@@ -7,6 +7,7 @@ import java.util.*;
 import org.geotools.misc.FormatedString;
 
 import com.vividsolutions.jump.io.EndianDataOutputStream;
+import java.nio.charset.Charset;
 
 
 
@@ -34,6 +35,8 @@ public class DbfFileWriter implements DbfConsts{
     EndianDataOutputStream ls;
 
     private boolean header = false;
+
+	private Charset charset = Charset.defaultCharset();
 
     public DbfFileWriter(String file) throws IOException {
         if(DEBUG)System.out.println("---->uk.ac.leeds.ccg.dbffile.DbfFileWriter constructed. Will identify itself as "+DBC);
@@ -74,7 +77,7 @@ public class DbfFileWriter implements DbfConsts{
         // field descriptions
         for(int i=0;i<NoFields;i++){
             //patch from Hisaji Ono for Double byte characters
-            ls.write(fields[i].fieldname.toString().getBytes(), 0, 11 );
+            ls.write(fields[i].fieldname.toString().getBytes(charset.name()), 0, 11 ); // [Matthias Scholz 04.Sept.2010] Charset added
             ls.writeByteLE(fields[i].fieldtype);
             for(int j=0;j<4;j++) ls.writeByteLE(0); // junk
             ls.writeByteLE(fields[i].fieldlen);
@@ -133,7 +136,7 @@ public class DbfFileWriter implements DbfConsts{
                     tmps = new StringBuffer(ss);
                     tmps.setLength(fields[i].fieldlen);
                     //patch from Hisaji Ono for Double byte characters
-                    ls.write(tmps.toString().getBytes(), fields[i].fieldstart,fields[i].fieldlen);
+                    ls.write(tmps.toString().getBytes(charset.name()), fields[i].fieldstart,fields[i].fieldlen);  // [Matthias Scholz 04.Sept.2010] Charset added
                     break;
                 case 'N':
                 case 'n':
@@ -193,6 +196,20 @@ public class DbfFileWriter implements DbfConsts{
     }
 
     int dp = 2; // default number of decimals to write
+
+	/**
+	 * @return the charset
+	 */
+	public Charset getCharset() {
+		return charset;
+	}
+
+	/**
+	 * @param charset the charset to set
+	 */
+	public void setCharset(Charset charset) {
+		this.charset = charset;
+	}
 
 }
 

@@ -3,6 +3,7 @@ package org.geotools.dbffile;
 import java.io.IOException;
 
 import com.vividsolutions.jump.io.EndianDataInputStream;
+import java.nio.charset.Charset;
 /**
 * class to hold infomation about the fields in the file
 */
@@ -26,7 +27,31 @@ public class DbfFieldDef implements DbfConsts{
 		return new String(""+fieldname+" "+fieldtype+" "+fieldlen+
 			"."+fieldnumdec);
 	}
+
+  // [Matthias Scholz 04.Sept.2010] Charset changes
+  /**
+   * Sets up the Dbf field definition. For compatibilty reasons, this method is
+   * is now a wrapper for the changed/new one with Charset functions.
+   *
+   * @see setup(int pos, EndianDataInputStream dFile, Charset charset)
+   * 
+   * @param pos
+   * @param dFile
+   * @throws IOException
+   */
   public void setup(int pos, EndianDataInputStream dFile) throws IOException {
+	  setup(pos, dFile, Charset.defaultCharset());
+  }
+
+  /**
+   * Sets up the Dbf field definition with a specified Charset for the fieldnames.
+   *
+   * @param pos
+   * @param dFile
+   * @param charset
+   * @throws IOException
+   */
+  public void setup(int pos, EndianDataInputStream dFile, Charset charset) throws IOException {
 
   //two byte character modification thanks to Hisaji ONO
   byte[] strbuf = new byte[DBF_NAMELEN]; // <---- byte array buffer for storing string's byte data 
@@ -43,7 +68,7 @@ public class DbfFieldDef implements DbfConsts{
         strbuf[j] = b; // <---- read string's byte data
   } 
       if(term==-1) term=j;
-      String name = new String(strbuf, 0, term+1);
+      String name = new String(strbuf, 0, term+1, charset.name());
 
   fieldname.append(name.trim()); // <- append byte array to String Buffer 
 

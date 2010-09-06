@@ -53,6 +53,7 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -67,6 +68,7 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 import java.text.*;
+import java.util.Map;
 
 public class LayerPropertiesPlugIn extends AbstractPlugIn 
 {
@@ -110,6 +112,8 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
     	I18N.get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Styles");
     private final static String PROPORTIONAL_TRANSPARENCY_ADJUSTER = 
     	I18N.get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Proportional-Transparency-Adjustment");
+	private final static String CHARSET =
+		I18N.get("org.openjump.core.ui.io.file.DataSourceFileLayerLoader.charset");
    
     private WorkbenchContext workbenchContext;
     private InfoPanel infoPanel;
@@ -268,6 +272,7 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
         private JLabel label_GeoType_L = new JLabel();
         private JLabel label_NumAtts_L = new JLabel();
         private JLabel label_DSClass_L = new JLabel();
+		private JLabel label_Charset_L = new JLabel();
         private JLabel label_Path_L = new JLabel();
         
     	private JTextArea label_Name_R = new JTextArea();
@@ -276,6 +281,7 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
         private JLabel label_GeoType_R = new JLabel();
         private JLabel label_NumAtts_R = new JLabel();
         private JLabel label_DSClass_R = new JLabel();
+		private JLabel label_Charset_R = new JLabel();
         private JTextArea label_Path_R = new JTextArea();
 
         private InfoPanel() 
@@ -302,6 +308,7 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
             label_GeoType_L.setText(GEOMETRY_TYPE + ": ");
             label_NumAtts_L.setText(NUMBER_OF_ATTRIBUTES + ": ");
             label_DSClass_L.setText(DATASOURCE_CLASS + ": ");
+			label_Charset_L.setText(CHARSET + ": ");
             label_Path_L.setText(SOURCE_PATH + ": ");
             
         	setInfo(layers);
@@ -332,6 +339,13 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
             add(label_DSClass_L, new GridBagConstraints(0, row++, 1, 1, 0.0, 0.0,
                     GridBagConstraints.EAST, GridBagConstraints.NONE,
                     new Insets(0, 0, 0, 5), 0, 0));
+
+			// [Matthias Scholz 5.Sept.2010] Charset is only viewed if we have a Shapefile
+			if (layers.length == 1 && layers[0].getDataSourceQuery().getDataSource().getClass().getName().equals("com.vividsolutions.jump.io.datasource.StandardReaderWriterFileDataSource$Shapefile")) {
+				add(label_Charset_L, new GridBagConstraints(0, row++, 1, 1, 0.0, 0.0,
+						GridBagConstraints.EAST, GridBagConstraints.NONE,
+						new Insets(0, 0, 0, 5), 0, 0));
+			}
                 
             add(label_Path_L, new GridBagConstraints(0, row++, 1, 1, 0.0, 0.0,
                     GridBagConstraints.NORTHEAST, GridBagConstraints.NONE,
@@ -362,6 +376,13 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
             add(label_DSClass_R, new GridBagConstraints(1, row++, 1, 1, 0.0, 0.0,
                     GridBagConstraints.WEST, GridBagConstraints.NONE,
                     new Insets(0, 0, 0, 0), 0, 0));
+
+			// [Matthias Scholz 5.Sept.2010] Charset is only viewed if we have a Shapefile
+			if (layers.length == 1 && layers[0].getDataSourceQuery().getDataSource().getClass().getName().equals("com.vividsolutions.jump.io.datasource.StandardReaderWriterFileDataSource$Shapefile")) {
+				add(label_Charset_R, new GridBagConstraints(1, row++, 1, 1, 0.0, 0.0,
+						GridBagConstraints.WEST, GridBagConstraints.NONE,
+						new Insets(0, 0, 0, 0), 0, 0));
+				}
                 
             add(label_Path_R, new GridBagConstraints(1, row++, 1, 1, 0.0, 0.0,
                     GridBagConstraints.NORTHWEST, GridBagConstraints.NONE,
@@ -493,6 +514,16 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
         	}
          	
         	label_DSClass_R.setText(sourceClass);
+			// fetch the charset from the layer properties
+			Map properties = layers[0].getDataSourceQuery().getDataSource().getProperties();
+			String charsetName = (String) properties.get("charset");
+			// if the layer do not have the charset property, set with default charset
+			if (charsetName == null) {
+				charsetName = Charset.defaultCharset().displayName();
+				properties.put("charset", charsetName);
+			}
+			// and finaly set the text of the label
+			label_Charset_R.setText(charsetName);
         	label_Path_R.setText(sourcePath);
         	
         	if ((layers.length > 1) && (! sourcePath.equalsIgnoreCase(NOT_SAVED)))

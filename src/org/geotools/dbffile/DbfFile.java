@@ -56,13 +56,26 @@ public class DbfFile implements DbfConsts {
         //for testing.
     }
 
+	/**
+	 * For compatibilty reasons, this method is a wrapper to the new with
+	 * Charset functions.
+	 *
+	 * @param file
+	 * @throws java.io.IOException
+	 * @throws DbfFileException
+	 */
+    public DbfFile(String file) throws java.io.IOException, DbfFileException {
+		this(file, Charset.defaultCharset());
+	}
+
     /**
      * Constructor, opens the file and reads the header infomation.
      * @param file The file to be opened, includes path and .dbf
      * @exception java.io.IOException If the file can't be opened.
      * @exception DbfFileException If there is an error reading header.
      */
-    public DbfFile(String file) throws java.io.IOException, DbfFileException {
+    public DbfFile(String file, Charset charset) throws java.io.IOException, DbfFileException {
+		this.charset = charset;
         if (DEBUG) {
             System.out.println(
                 "---->uk.ac.leeds.ccg.dbffile.DbfFile constructed. Will identify itself as DbFi>");
@@ -176,7 +189,7 @@ public class DbfFile implements DbfConsts {
 
         for (int index = 0; index < numfields; index++) {
             fielddef[index] = new DbfFieldDef();
-            fielddef[index].setup(widthsofar, dFile);
+            fielddef[index].setup(widthsofar, dFile, charset);
             widthsofar += fielddef[index].fieldlen;
         }
 
@@ -623,15 +636,6 @@ public class DbfFile implements DbfConsts {
 
         return column;
     }
-
-	public Charset getCharset() {
-		return charset;
-	}
-
-	public void setCharset(Charset charset) {
-		this.charset = charset;
-	}
-
 
     public void close() throws IOException {
         dFile.close();
