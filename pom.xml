@@ -106,7 +106,7 @@
     <repository>
       <id>cam</id>
       <name>Cambridge Maven 2 Repository</name>
-      <url>http://wwmm.ch.cam.ac.uk/maven2/</url>
+      <url>http://maven.ch.cam.ac.uk/m2repo/</url>
     </repository>
     <repository>
       <id>openjump</id>
