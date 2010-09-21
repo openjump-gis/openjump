@@ -40,6 +40,7 @@ import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import java.awt.Component;
 import java.io.File;
 import java.nio.charset.Charset;
@@ -48,6 +49,7 @@ import java.util.Map;
 import javax.swing.JComponent;
 
 import javax.swing.JFileChooser;
+import org.openjump.core.ui.DatasetOptionsPanel;
 import org.openjump.core.ui.swing.ComboBoxComponentPanel;
 import org.openjump.core.ui.swing.factory.field.ComboBoxFieldComponentFactory;
 import org.openjump.swing.factory.field.FieldComponentFactory;
@@ -106,10 +108,19 @@ public class InstallStandardDataSourceQueryChoosersPlugIn extends AbstractPlugIn
                 }
 
 				protected Component getSouthComponent1() {
+						boolean showCharsetSelection = false;
+						Object showCharsetSelectionObject = PersistentBlackboardPlugIn.get(context.getBlackboard()).get(DatasetOptionsPanel.BB_DATASET_OPTIONS_SHOW_CHARSET_SELECTION);
+						if (showCharsetSelectionObject instanceof Boolean) {
+							showCharsetSelection = ((Boolean)showCharsetSelectionObject).booleanValue();
+						}
+						if (showCharsetSelection) {
 						FieldComponentFactory fieldComponentFactory = new ComboBoxFieldComponentFactory(context, I18N.get("org.openjump.core.ui.io.file.DataSourceFileLayerLoader.charset") + ":", Charset.availableCharsets().keySet().toArray());
 						comboboxFieldComponent = fieldComponentFactory.createComponent();
 						fieldComponentFactory.setValue(comboboxFieldComponent, Charset.defaultCharset().name());
 						return comboboxFieldComponent;
+						} else {
+							return new Component() {};
+						}
 				}
 			});
 

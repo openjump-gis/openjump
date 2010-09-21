@@ -1,3 +1,20 @@
+2010-09-21 Matthias Scholz <ms@jammerhund.de>
+	* Added OptionPanel for dataset options -> showing charset selection or not
+		* added org.openjump.core.ui.DatasetOptionsPanel
+		* com.vividsolutions.jump.workbench.ui.plugin.OptionsPlugIn
+			* added DatasetOptionsPanel
+		* org.openjump.OpenJumpConfiguration
+			* charset Option now depends on the settings in the options
+		* com.vividsolutions.jump.workbench.datasource.InstallStandardDataSourceQueryChoosersPlugIn
+			* changed getSouthComponent1()
+		* improved org.openjump.core.ui.io.file.AbstractFileLayerLoader
+			* added removeOption() methods
+		* org.openjump.core.ui.io.file.Option
+			* added/overwrite equals() method for org.openjump.core.ui.io.file.AbstractFileLayerLoader.removeOption()
+		* translation, keys added:
+			* ui.DatasetOptionsPanel.datasetOptions
+			* ui.DatasetOptionsPanel.ShowCharsetSelection
+
 2010-09-06 Matthias Scholz <ms@jammerhund.de>
 	* Changes for save dataset as shapefile / fieldnames with charset settings
 		* org.geotools.dbffile.DbfFieldDef

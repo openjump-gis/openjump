@@ -104,6 +104,32 @@ public abstract class AbstractFileLayerLoader implements FileLayerLoader {
   }
 
   /**
+   * Remove an option.
+   *
+   * @param name The name of the option.
+   * @param type The type of the option.
+   * @param required True if a value for the option is required.
+   * @return true if this list contained the specified option
+   * @see Option
+   */
+  public boolean removeOption(String name, String type, boolean required) {
+	  return optionMetadata.remove(new Option(name, type, required));
+  }
+
+  /**
+   * Remove an option.
+   *
+   * @param name The name of the option.
+   * @param type The type of the option.
+   * @param defaultValue The defaultValue of the option.
+   * @param required True if a value for the option is required.
+   * @see Option
+   */
+  public boolean removeOption(String name, String type, Object defaultValue, boolean required) {
+    return optionMetadata.remove(new Option(name, type, defaultValue, required));
+  }
+
+  /**
    * Get the list of Options supported by the plug-in.
    * 
    * @return The list of Options.

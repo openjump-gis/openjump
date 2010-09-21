@@ -65,4 +65,21 @@ public class Option {
   public boolean isRequired() {
     return required;
   }
+
+  /**
+   * Overwrite equals(), because the Object.equals works wrong for an Option
+   * instance. So we must compare each single value. This is especially
+   * important if we have some Options stored in a List and do a List.remove().
+   *
+   * @param obj
+   * @return true if both objects are equal.
+   */
+  public boolean equals(Object obj) {
+	  boolean equal = false;
+	  if (obj instanceof Option) {
+		  Option option = (Option) obj;
+		  equal = this.name.equals(option.getName()) && this.type.equals(option.getType()) && this.required == option.isRequired() && this.defaultValue == option.defaultValue;
+	  }
+	 return equal;
+  }
 }

@@ -97,6 +97,7 @@ import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
 import de.latlon.deejump.plugin.SaveLegendPlugIn;
 import de.latlon.deejump.plugin.style.LayerStyle2SLDPlugIn;
 import java.nio.charset.Charset;
+import org.openjump.core.ui.DatasetOptionsPanel;
 import org.openjump.core.ui.swing.factory.field.ComboBoxFieldComponentFactory;
 
 /**
@@ -606,8 +607,14 @@ public class OpenJumpConfiguration {
             StandardReaderWriterFileDataSource.GML.INPUT_TEMPLATE_FILE_KEY,
             "FileString", true);
         }
+		// for Shapefiles we check if we should show the charset selection
 		if (dataSourceClass == StandardReaderWriterFileDataSource.Shapefile.class) {
-			fileLoader.addOption("charset", "CharSetComboBoxField", Charset.defaultCharset().displayName(), true);
+			Object showCharsetSelection = PersistentBlackboardPlugIn.get(workbenchContext).get(DatasetOptionsPanel.BB_DATASET_OPTIONS_SHOW_CHARSET_SELECTION);
+			if (showCharsetSelection instanceof Boolean) {
+				if (((Boolean) showCharsetSelection).booleanValue()) {
+					fileLoader.addOption("charset", "CharSetComboBoxField", Charset.defaultCharset().displayName(), true);
+				}
+			}
 		}
         registry.createEntry(FileLayerLoader.KEY, fileLoader);
       }

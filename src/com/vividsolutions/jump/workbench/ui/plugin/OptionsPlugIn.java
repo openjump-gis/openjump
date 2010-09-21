@@ -44,6 +44,7 @@ import com.vividsolutions.jump.workbench.ui.OptionsDialog;
 import com.vividsolutions.jump.workbench.ui.SnapVerticesToolsOptionsPanel;
 import com.vividsolutions.jump.workbench.ui.snap.GridRenderer;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import org.openjump.core.ui.DatasetOptionsPanel;
 import org.openjump.core.ui.SelectionStyllingOptionsPanel;
 
 public class OptionsPlugIn extends AbstractPlugIn {
@@ -87,6 +88,10 @@ public class OptionsPlugIn extends AbstractPlugIn {
 		dialog(context)
                 .addTab(I18N.get("ui.plugin.OptionsPlugIn.selection-style"),
 						new SelectionStyllingOptionsPanel(context.getWorkbenchContext()));
+		// [Matthias Scholz 15. Sept 2010] DatasetOptionsPanel added
+		dialog(context)
+                .addTab(I18N.get("ui.DatasetOptionsPanel.datasetOptions"),
+						new DatasetOptionsPanel(context.getWorkbenchContext()));
     }
 
 }
