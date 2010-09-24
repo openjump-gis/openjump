@@ -542,7 +542,8 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
     public void reLoadImageButKeepImageForDisplay(){
        WorkbenchContext context = this.getWorkbenchContext();
        PlanarImage pi = this.getImageForDisplay();
-       PlanarImage dontNeedThisImage = RasterImageLayer.loadImage( context, imageFileName);
+       //[sstein 24.Sept.2010] commented out:
+       //PlanarImage dontNeedThisImage = RasterImageLayer.loadImage( context, imageFileName); //causes error for .clone()
        this.setImage(pi);
     }
     

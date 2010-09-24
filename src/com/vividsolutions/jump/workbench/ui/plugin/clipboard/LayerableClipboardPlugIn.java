@@ -34,6 +34,8 @@ package com.vividsolutions.jump.workbench.ui.plugin.clipboard;
 
 import java.util.Iterator;
 
+import org.openjump.core.rasterimage.RasterImageLayer;
+
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
@@ -57,6 +59,14 @@ public abstract class LayerableClipboardPlugIn extends AbstractPlugIn {
         if (layerable instanceof WMSLayer) {
             try {
                 return (Layerable) ((WMSLayer) layerable).clone();
+            } catch (CloneNotSupportedException e) {
+                Assert.shouldNeverReachHere();
+            }
+        }
+        
+        if (layerable instanceof RasterImageLayer) {
+            try {
+                return (Layerable) ((RasterImageLayer) layerable).clone();
             } catch (CloneNotSupportedException e) {
                 Assert.shouldNeverReachHere();
             }
