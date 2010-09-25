@@ -51,7 +51,7 @@
         <version>2.1</version>
         <configuration>
           <descriptors>
-            <descriptor>src/main/assembly/bin.xml</descriptor>
+            <descriptor>bin.xml</descriptor>
           </descriptors>
         </configuration>
         <executions>
