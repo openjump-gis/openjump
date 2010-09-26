@@ -6,7 +6,7 @@ set JUMP_HOME=%~dp0..%
 rem -- uncomment to manually set java home, don't use quotes --
 rem set JAVA_HOME=G:\_Programme\Coding\jdk1.5.0_22\bin
 rem -- uncomment to use 'java' for console output, defaults to 'javaw' for background jre  --
-set JAVA_BIN=java
+set JAVA_BIN=javaw
 rem -- set some java runtime options here, initialize empty --
 set JAVA_OPTS=
 rem --- uncomment and change your language/country here to overwrite OS locale setting ---
@@ -30,7 +30,7 @@ rem -- find java runtime --
  )
 
  rem --- java home definition overwrites all ---
- if NOT "%JAVA_HOME%"=="" set JAVA=%JAVA_HOME%\%JAVA_BIN%
+ if NOT "%JAVA_HOME%"=="" set JAVA=%JAVA_HOME%\bin\%JAVA_BIN%
 
 rem -- show java version (for debugging) --
 rem for %%F in ("%JAVA%") do set dirname=%%~dpF
