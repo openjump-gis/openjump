@@ -48,7 +48,7 @@
     </fileSet>
     <fileSet>
       <directory>etc</directory>
-      <outputDirectory>/conf</outputDirectory>
+      <outputDirectory>/bin</outputDirectory>
       <includes>
         <include>log4j.xml</include>
       </includes>
