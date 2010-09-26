@@ -112,26 +112,26 @@ Original development team of JUMP was:
 - Martin Davis, Jon Aquino, Alan Chang from Vividsolutions (www.vividsolutions.com)
 - David Blasby and Paul Ramsey from Refractions Research Inc (www.refractions.net) 
 
-OpenJUMP regular (*and past) contributors are (non exhaustive list!):
-- Andreas Schmitz,
+OpenJUMP regular contributors are (non exhaustive list!):
+- Alberto de Luca (geomaticaeambiente.it),
+- Andreas Schmitz (lat-lon.de),
 - Bing Ran,
 - Edgar Soldin,
 - Giuseppe Aruta, 
 - Hisaji Ono,
-- Joe Desbonet,
-- John Clark
 - Jukka Rahkonen,
 - Kevin Neufeld,
 - Landon Blake (Sunburned Surveyor),
-- Larry Becker,
-- Martin Davis,
-- Matthias Scholz,
+- Larry Becker (ISA.com),
+- Martin Davis (refractions.net),
+- Matthias Scholz (refractions.net),
 - Michaël Michaud,
 - Paolo Rizzi,
 - Stefan Steiniger,
+- Sascha Teichmann (intevation.de)*
 - Uwe Dallüge,
 
-* past contributors
+* past contributors:
 - Axel Orth*,
 - Basile Chandesris*,
 - Eric Lemesre*,
@@ -140,11 +140,12 @@ OpenJUMP regular (*and past) contributors are (non exhaustive list!):
 - Fco Lavin*,
 - Jaakko Ruutiainen*,
 - Jan Ruzicka*,
+- Joe Desbonet*,
+- John Clark*,
 - Jonathan Aquino*,
 - Ole Rahn*,
 - Paul Austin*,
 - Pedro Doria Meunier*,
-- Sascha Teichmann*
 - Stephan Holl*
 - Steve Tanner*,
 - Ugo Taddei* 
@@ -154,7 +155,7 @@ Projects and Companies
   partly at Integrated Systems Analysts, Inc.
   for providing their Jump ISA tools code and numerous other improvements
 - Pirol Project from University of Applied Sciences Osnabrück
-  for providing the attribute editor
+  for providing the attribute editor, note the project is finished now
   (contact: Arnd Kielhorn)
 - Lat/Lon GmbH (deeJUMP team)
   for providing some plugins and functionality (i.e. WFS and WMS Plugins)
@@ -164,7 +165,7 @@ Projects and Companies
   Martin Davis (now at Refractions Inc.)
   David Zwiers
 - Intevation GmbH
-  for collaborative PlugIn development (Print Layout PlugIn)
+  Nighlty Build process, collaborative PlugIn development (Print Layout PlugIn)
   contact: Jan Oliver Wagner/Stephan Holl
 
 Translation contributors are:
@@ -175,7 +176,7 @@ Translation contributors are:
 - Italian: Giuseppe Aruta
 - Japanese: Hisaji Ono
 - Portuguese (brazilian): Ezequias Rodrigues da Rocha, Cristiano das Neves Almeida
-- Spanish: Steve Tanner, Fco Lavin, Nacho Uve
+- Spanish: Giuseppe Aruta, Steve Tanner, Fco Lavin, Nacho Uve
 
 others:
 - L. Paul Chew for providing the Delauney triangulation algorithm to create Voronoi diagrams
