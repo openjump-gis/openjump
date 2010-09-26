@@ -1,8 +1,8 @@
 OpenJUMP readme file
 --------------------
-Version 1.3
+Version 1.4 beta
 
-April 11th, 2009
+September 26th, 2010
 
 Contents
 --------
@@ -39,9 +39,9 @@ c:/OpenJUMP/lib
 3. Running OpenJUMP
 -------------------
 Run the startup scripts contained in the /bin folder:
-- For windows, double-click on "openjump.bat" or "oj.exe"
-- For Linux/Unix, launch openjump.sh
-- For Mac, launch openjump.sh
+- For windows, double-click on "oj_windows.bat" or "openjump.exe"
+- For Linux/Unix, launch oj_linux.sh
+- For Mac, launch oj_mac.command
 
 Further notes can be found on our wiki: www.openjump.org
 
@@ -113,34 +113,41 @@ Original development team of JUMP was:
 - David Blasby and Paul Ramsey from Refractions Research Inc (www.refractions.net) 
 
 OpenJUMP regular (*and past) contributors are (non exhaustive list!):
-- Jonathan Aquino*,
-- Giuseppe Aruta, 
-- Paul Austin,
-- Larry Becker,
-- Landon Blake (Sunburned Surveyor),
-- John Clark
-- Uwe Dallüge,
-- Martin Davis,
-- Joe Desbonet,
-- Eric Lemesre
-- Michaël Michaud,
-- Hisaiji Ono,
-- Jukka Rahkonen,
-- Paolo Rizzi,
 - Andreas Schmitz,
+- Bing Ran,
 - Edgar Soldin,
+- Giuseppe Aruta, 
+- Hisaji Ono,
+- Joe Desbonet,
+- John Clark
+- Jukka Rahkonen,
+- Kevin Neufeld,
+- Landon Blake (Sunburned Surveyor),
+- Larry Becker,
+- Martin Davis,
+- Matthias Scholz,
+- Michaël Michaud,
+- Paolo Rizzi,
 - Stefan Steiniger,
+- Uwe Dallüge,
 
 * past contributors
-- Erwan Bocher*,
-- Basile Chandesris*,
-- Stephan Holl*
-- Ezequias Rodrigues da Rocha*,
 - Axel Orth*,
+- Basile Chandesris*,
+- Eric Lemesre*,
+- Erwan Bocher*,
+- Ezequias Rodrigues da Rocha*,
+- Fco Lavin*,
+- Jaakko Ruutiainen*,
+- Jan Ruzicka*,
+- Jonathan Aquino*,
 - Ole Rahn*,
+- Paul Austin*,
+- Pedro Doria Meunier*,
+- Sascha Teichmann*
+- Stephan Holl*
 - Steve Tanner*,
 - Ugo Taddei* 
-- Sascha Teichmann*
 
 Projects and Companies
 - Larry Becker and Robert Littlefield (SkyJUMP team)
@@ -161,12 +168,14 @@ Projects and Companies
   contact: Jan Oliver Wagner/Stephan Holl
 
 Translation contributors are:
-- French: Basile Chandesris, Erwan Bocher, Steve Tanner, Michaël Michaud
-- Spanish: Steve Tanner, Fco Lavin, Nacho Uve
-- German: Florian Rengers, Stefan Steiniger
-- Portuguese (brazilian): Ezequias Rodrigues da Rocha, Cristiano das Neves Almeida
-- Finnish: Jukka Rahkonnen
 - English: Landon Blake
+- Finnish: Jukka Rahkonnen
+- French: Basile Chandesris, Erwan Bocher, Steve Tanner, Michaël Michaud
+- German: Florian Rengers, Stefan Steiniger
+- Italian: Giuseppe Aruta
+- Japanese: Hisaji Ono
+- Portuguese (brazilian): Ezequias Rodrigues da Rocha, Cristiano das Neves Almeida
+- Spanish: Steve Tanner, Fco Lavin, Nacho Uve
 
 others:
 - L. Paul Chew for providing the Delauney triangulation algorithm to create Voronoi diagrams
