@@ -4,9 +4,9 @@ set OLD_DIR=%CD%
 set JUMP_HOME=%~dp0..%
 
 rem -- uncomment to manually set java home, don't use quotes --
-rem set JAVA_HOME=G:\_Programme\Coding\jdk1.5.0_22\bin
-rem -- uncomment to use 'java' for console output, defaults to 'javaw' for background jre  --
-set JAVA_BIN=javaw
+rem set JAVA_HOME=G:\path\to\a\specific\<jre|jdk>-1.<5|6>
+rem -- uncomment to use 'java' for console output, if unset defaults to 'javaw' for background jre  --
+rem set JAVA_BIN=java
 rem -- set some java runtime options here, initialize empty --
 set JAVA_OPTS=
 rem --- uncomment and change your language/country here to overwrite OS locale setting ---
