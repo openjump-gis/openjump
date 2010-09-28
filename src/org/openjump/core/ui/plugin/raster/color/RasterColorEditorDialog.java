@@ -254,6 +254,9 @@ public class RasterColorEditorDialog extends JDialog {
         c.ipady = 40;
         mainPanel.add(panelSeparator, c);
 
+        /*
+         * [sstein - 28.Sept.2010] since this stuff doesn't work yet we don't display it.
+         * 
         c.gridheight = 1;
         c.weightx = 0.5;
         c.gridy = 5;
@@ -270,6 +273,7 @@ public class RasterColorEditorDialog extends JDialog {
 
         c.gridx = 0;
         mainPanel.add(transparent, c);
+        */
 
         add(mainPanel, BorderLayout.CENTER);
 
