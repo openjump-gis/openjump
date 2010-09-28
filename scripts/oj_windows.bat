@@ -34,7 +34,7 @@ rem -- find java runtime --
 
 rem -- show java version (for debugging) --
 rem for %%F in ("%JAVA%") do set dirname=%%~dpF
-rem %dirname%\java -version
+rem %dirname%java -version
 
 rem -- Change to jump home dir --
 cd /D %JUMP_HOME%
