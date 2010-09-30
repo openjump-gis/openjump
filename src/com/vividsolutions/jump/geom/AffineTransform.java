@@ -42,6 +42,13 @@ import com.vividsolutions.jts.geom.*;
  * it should be cloned and the transform applied to the clone.
  *
  * <b>NOTE: INCOMPLETE IMPLEMENTATION</b>
+ * 
+ * @deprecated see wrap package (curently used by AffineTransformPlugIn) and
+ * com.vividsolutions.jts.geom.util.AffineTransformation in JTS library
+ * 
+ * AffineTransformPlugIn already use AffineTransform in the warp package [michaudm]
+ * Next step is to deprecate AffineTransform in the warp package and to use
+ * directly com.vividsolutions.jts.geom.util.AffineTransformation for AffineTransformPlugIn
  */
 public class AffineTransform implements CoordinateFilter {
     //There is an AffineTransform in the warp package. I wonder if it can be

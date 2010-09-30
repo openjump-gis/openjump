@@ -41,7 +41,8 @@ import javax.swing.*;
 import com.vividsolutions.jump.I18N;
 
 import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jump.geom.*;
+import com.vividsolutions.jts.geom.util.AffineTransformation;
+
 import com.vividsolutions.jump.util.ColorUtil;
 import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.task.*;
@@ -103,7 +104,6 @@ public class AffineTransformationPlugIn
     dialog.setVisible(true);
     if (! dialog.wasOKPressed()) { return false; }
     getDialogValues(dialog);
-    //perform(dialog, context);
     return true;
   }
 
@@ -119,7 +119,6 @@ public class AffineTransformationPlugIn
     if (scaleX != 1.0 || scaleY != 1.0) {
       AffineTransformation scaleTrans
         = AffineTransformation.scaleInstance(scaleX, scaleY);
-      //trans.compose(scaleTrans);
       trans.scale(scaleX, scaleY);
     }
     if (shearX != 0.0 || shearY != 0.0) {
@@ -128,7 +127,6 @@ public class AffineTransformationPlugIn
     if (rotationAngle != 0.0) {
       AffineTransformation rotTrans
         = AffineTransformation.rotationInstance(Math.toRadians(rotationAngle));
-//      trans.compose(rotTrans);
       trans.rotate(Math.toRadians(rotationAngle));
     }
 

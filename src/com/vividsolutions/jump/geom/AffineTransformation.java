@@ -46,6 +46,8 @@ import com.vividsolutions.jump.I18N;
  * 
  * @author Martin Davis
  *
+ * @deprecated see com.vividsolutions.jts.geom.util.AffineTransformation in JTS library
+ * // AffineTransformationPlugIn has already been updated, it does not use this class any more [michaudm]
  */
 public class AffineTransformation
 	implements Cloneable, CoordinateFilter
