@@ -1,3 +1,7 @@
+2010-09-30 mmichaud <michael.michaud@free.fr>
+    * Fixed a bug in AffineTransformationPlugIn due to french language file
+      Prepare migration from jump's AffineTransformation to JTS's
+
 2010-09-21 Matthias Scholz <ms@jammerhund.de>
 	* Added OptionPanel for dataset options -> showing charset selection or not
 		* added org.openjump.core.ui.DatasetOptionsPanel
