@@ -194,7 +194,7 @@ public class WorldFileHandler implements HandlerToMakeYourLifeEasier{
         
         List possibleWorldFileNames = new ArrayList();
         possibleWorldFileNames.add(worldFileName + "." + imageExtension.substring(0, 1) + imageExtension.substring(imageExtension.length() - 1) + "w");
-        possibleWorldFileNames.add((worldFileName + "." + imageExtension.substring(0, 1) + imageExtension.substring(imageExtension.length() - 1) + "w").toUpperCase());
+        possibleWorldFileNames.add((worldFileName + "." + imageExtension.substring(0, 1).toUpperCase() + imageExtension.substring(imageExtension.length() - 1) + "w").toUpperCase());
         possibleWorldFileNames.add(worldFileName + "." + imageExtension + "w");
         possibleWorldFileNames.add(worldFileName + "." + (imageExtension + "w").toUpperCase());
         

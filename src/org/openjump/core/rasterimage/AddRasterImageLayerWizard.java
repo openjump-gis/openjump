@@ -191,7 +191,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
    * @param allwaysLookForTFWExtension
    * @param imageDimensions
    * @param context
-   * @return
+   * @return the RasterImage Envelope
    * @throws IOException
    */
   protected Envelope getGeoReferencing(String fileName, boolean allwaysLookForTFWExtension, Point imageDimensions, WorkbenchContext context) throws IOException{
