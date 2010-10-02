@@ -341,7 +341,9 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
                     new Insets(0, 0, 0, 5), 0, 0));
 
 			// [Matthias Scholz 5.Sept.2010] Charset is only viewed if we have a Shapefile
-			if (layers.length == 1 && layers[0].getDataSourceQuery().getDataSource().getClass().getName().equals("com.vividsolutions.jump.io.datasource.StandardReaderWriterFileDataSource$Shapefile")) {
+			if (layers.length == 1 &&
+			    layers[0].getDataSourceQuery() != null &&
+			    layers[0].getDataSourceQuery().getDataSource().getClass().getName().equals("com.vividsolutions.jump.io.datasource.StandardReaderWriterFileDataSource$Shapefile")) {
 				add(label_Charset_L, new GridBagConstraints(0, row++, 1, 1, 0.0, 0.0,
 						GridBagConstraints.EAST, GridBagConstraints.NONE,
 						new Insets(0, 0, 0, 5), 0, 0));
@@ -378,7 +380,9 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
                     new Insets(0, 0, 0, 0), 0, 0));
 
 			// [Matthias Scholz 5.Sept.2010] Charset is only viewed if we have a Shapefile
-			if (layers.length == 1 && layers[0].getDataSourceQuery().getDataSource().getClass().getName().equals("com.vividsolutions.jump.io.datasource.StandardReaderWriterFileDataSource$Shapefile")) {
+			if (layers.length == 1 && 
+			    layers[0].getDataSourceQuery() != null &&
+			    layers[0].getDataSourceQuery().getDataSource().getClass().getName().equals("com.vividsolutions.jump.io.datasource.StandardReaderWriterFileDataSource$Shapefile")) {
 				add(label_Charset_R, new GridBagConstraints(1, row++, 1, 1, 0.0, 0.0,
 						GridBagConstraints.WEST, GridBagConstraints.NONE,
 						new Insets(0, 0, 0, 0), 0, 0));
@@ -515,12 +519,20 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
          	
         	label_DSClass_R.setText(sourceClass);
 			// fetch the charset from the layer properties
-			Map properties = layers[0].getDataSourceQuery().getDataSource().getProperties();
-			String charsetName = (String) properties.get("charset");
-			// if the layer do not have the charset property, set with default charset
-			if (charsetName == null) {
-				charsetName = Charset.defaultCharset().displayName();
-				properties.put("charset", charsetName);
+			String charsetName = null;
+			DataSourceQuery dsq = layers[0].getDataSourceQuery();
+			if (dsq != null) {
+			    Map properties = dsq.getDataSource().getProperties();
+			    charsetName = (String) properties.get("charset");
+			    // if the layer do not have the charset property, set with default charset
+			    if (charsetName == null) {
+				    charsetName = Charset.defaultCharset().displayName();
+				    properties.put("charset", charsetName);
+			    }
+			}
+			else {
+			    // if the layer does not come from a datasource
+			    charsetName = Charset.defaultCharset().displayName();
 			}
 			// and finaly set the text of the label
 			label_Charset_R.setText(charsetName);

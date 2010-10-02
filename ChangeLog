@@ -1,3 +1,6 @@
+2010-10-02 mmichaud <michael.michaud@free.fr>
+    * Fixed a bug in LayerPropertiesPlugIn introduced by charset handling
+
 2010-09-30 mmichaud <michael.michaud@free.fr>
     * Fixed a bug in AffineTransformationPlugIn due to french language file
       Prepare migration from jump's AffineTransformation to JTS's
