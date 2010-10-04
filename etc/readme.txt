@@ -177,6 +177,9 @@ Translation contributors are:
 - Japanese: Hisaji Ono
 - Portuguese (brazilian): Ezequias Rodrigues da Rocha, Cristiano das Neves Almeida
 - Spanish: Giuseppe Aruta, Steve Tanner, Fco Lavin, Nacho Uve
+- Hungarian: Zoltan Siki
+- Czech: Jan Ruzicka
+- Chinese: Elton Chan
 
 others:
 - L. Paul Chew for providing the Delauney triangulation algorithm to create Voronoi diagrams
