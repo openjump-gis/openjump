@@ -64,7 +64,11 @@ public class GraphicImageFactory implements ReferencedImageFactory {
 				public boolean accept(File dir, String name) {
 					String suffix = name.substring(name.indexOf(".")+1);
 					if(suffix!= null)
-						if(suffix.equalsIgnoreCase("jgw") || suffix.equalsIgnoreCase("tfw") || suffix.equalsIgnoreCase("gfw") || suffix.equalsIgnoreCase("bpw") )
+						if(suffix.equalsIgnoreCase("jgw") ||
+						   suffix.equalsIgnoreCase("tfw") ||
+					       suffix.equalsIgnoreCase("gfw") ||
+					       suffix.equalsIgnoreCase("bpw") ||
+					       suffix.equalsIgnoreCase("pgw"))
 							return name.startsWith(nm);
 					if(name!=null && name.equalsIgnoreCase(location+"w"))
 						return true;
