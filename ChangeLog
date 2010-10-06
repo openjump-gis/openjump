@@ -1,3 +1,6 @@
+2010-10-06 mmichaud <michael.michaud@free.fr>
+    * Improve speed of LayerTableModel#removeAll
+
 2010-10-02 mmichaud <michael.michaud@free.fr>
     * Fixed a bug in LayerPropertiesPlugIn introduced by charset handling
 
