@@ -1,11 +1,18 @@
 #!/bin/sh
 
-# uncomment and put the path to your jre here
+## uncomment and put the path to your jre here
 #JAVA_HOME="/home/ed/jre1.6.0_21"
-JAVA_OPTS=-Xmx256M
+
+## uncomment and change your memory configuration here 
+## Xms is initial size, Xmx is maximum size
+## values are ##M for ## Megabytes, ##G for ## Gigabytes
+#JAVA_MAXMEM="-Xmx512M"
+
+## set some defaults (as macosx.command uses this script, it might define other defaults)
 MAIN="com.vividsolutions.jump.workbench.JUMPWorkbench"
-JAVA_SAXDRIVER="org.apache.xerces.parsers.SAXParser"
-JAVA_LOOKANDFEEL="javax.swing.plaf.metal.MetalLookAndFeel"
+[ -z "$JAVA_SAXDRIVER" ] && JAVA_SAXDRIVER="org.apache.xerces.parsers.SAXParser"
+[ -z "$JAVA_LOOKANDFEEL" ] && JAVA_LOOKANDFEEL="javax.swing.plaf.metal.MetalLookAndFeel"
+[ -z "$JAVA_MAXMEM" ] && JAVA_MAXMEM="-Xmx512M"
 
 if(test -L $0) then
     	auxlink=`ls -l $0 | sed 's/^[^>]*-> //g'`
@@ -99,6 +106,7 @@ fi
 if ( test -d "$JUMP_STATE" || test -f "$JUMP_STATE") then
   JUMP_OPTS="$JUMP_OPTS -state $JUMP_STATE"
 fi
+JAVA_OPTS="$JAVA_MAXMEM"
 JAVA_OPTS="$JAVA_OPTS -Djump.home=$JUMP_HOME"
 JAVA_OPTS="$JAVA_OPTS -Dorg.xml.sax.driver=$JAVA_SAXDRIVER"
 JAVA_OPTS="$JAVA_OPTS -Dswing.defaultlaf=$JAVA_LOOKANDFEEL"
