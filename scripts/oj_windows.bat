@@ -13,7 +13,7 @@ rem --- uncomment and change your language/country here to overwrite OS locale s
 rem set JAVA_OPTS=%JAVA_OPTS% -Duser.language=de -Duser.country=DE
 rem --- change your memory configuration here - Xms is initial size, Xmx is maximum size, ---
 rem --- values are ##M for ## Megabytes, ##G for ## Gigabytes ---
-set JAVA_OPTS=%JAVA_OPTS% -Xms256M -Xmx256M
+set JAVA_OPTS=%JAVA_OPTS% -Xms64M -Xmx512M
 rem --- essential options, don't change unless you know what you're doing ---
 set JAVA_OPTS=%JAVA_OPTS% -Dlog4j.configuration="file:%JUMP_HOME%\bin\log4j.xml" -Djump.home="%JUMP_HOME%"
 
