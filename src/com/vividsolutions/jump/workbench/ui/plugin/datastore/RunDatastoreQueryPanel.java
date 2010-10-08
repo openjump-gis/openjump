@@ -65,13 +65,13 @@ public class RunDatastoreQueryPanel
     }
 
     private void initialize() {
-        JButton jbView = new JButton("View");
+        JButton jbView = new JButton(I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.View");
         jbView.addActionListener(new ActionListener() {
             public void actionPerformed( ActionEvent e ) {
                 queryTextArea.insert("${view:-1}", queryTextArea.getCaretPosition());
             }
         });
-        JButton jbFence = new JButton("Fence");
+        JButton jbFence = new JButton(I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.Fence");
         jbFence.addActionListener(new ActionListener() {
             public void actionPerformed( ActionEvent e ) {
                 queryTextArea.insert("${fence:-1}", queryTextArea.getCaretPosition());
