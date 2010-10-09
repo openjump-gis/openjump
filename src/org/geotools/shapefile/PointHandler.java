@@ -5,12 +5,12 @@ import java.io.IOException;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jump.io.EndianDataInputStream;
 import com.vividsolutions.jump.io.EndianDataOutputStream;
+
 /**
- * Wrapper for a Shapefile point.
- * 
- * getLength() modified by Micha&euml;l MICHAUD on 3 nov. 2004 to handle properly
- * Point, PointM and PointZ length
+ * Wrapper for a Shapefile Point.
  */
+// getLength() modified by Micha&euml;l MICHAUD on 3 nov. 2004 to handle
+// Point, PointM and PointZ length properly
 public class PointHandler implements ShapeHandler {
     
     int Ncoords=2; //2 = x,y ;  3= x,y,m ; 4 = x,y,z,m
@@ -30,8 +30,8 @@ public class PointHandler implements ShapeHandler {
     
     public Geometry read(EndianDataInputStream file,GeometryFactory geometryFactory,int contentLength) throws IOException,InvalidShapefileException
     {
-      //  file.setLittleEndianMode(true);
-	int actualReadWords = 0; //actual number of words read (word = 16bits)
+        //  file.setLittleEndianMode(true);
+	    int actualReadWords = 0; //actual number of words read (word = 16bits)
 	
         int shapeType = file.readIntLE();
 		actualReadWords += 2;
@@ -43,18 +43,7 @@ public class PointHandler implements ShapeHandler {
         double y = file.readDoubleLE();
         double m , z = Double.NaN;
 		actualReadWords += 8;
-        /*
-        if ( shapeType ==11 )
-        {
-            z= file.readDoubleLE();
-			actualReadWords += 4;
-        }
-        if ( shapeType >=11 )
-        {
-            m = file.readDoubleLE();
-			actualReadWords += 4;
-        }
-        */
+
         // added on march, 24 by michael michaud
         // to read shapefile containing PointZ without m value
         if ( shapeType ==21 ) {
@@ -69,20 +58,19 @@ public class PointHandler implements ShapeHandler {
                 actualReadWords += 8;
             }
         }
-
         
-	//verify that we have read everything we need
-	while (actualReadWords < contentLength)
-	{
-		  int junk2 = file.readShortBE();	
-		  actualReadWords += 1;
-	}
+        //verify that we have read everything we need
+        while (actualReadWords < contentLength)
+        {
+            int junk2 = file.readShortBE();	
+            actualReadWords += 1;
+        }
         
         return geometryFactory.createPoint(new Coordinate(x,y,z));
     }
     
     public void write(Geometry geometry,EndianDataOutputStream file)throws IOException{
-       // file.setLittleEndianMode(true);
+        // file.setLittleEndianMode(true);
         file.writeIntLE(getShapeType());
         Coordinate c = geometry.getCoordinates()[0];
         file.writeDoubleLE(c.x);

@@ -11,9 +11,9 @@ import com.vividsolutions.jump.io.EndianDataOutputStream;
 
 /**
  *
- * This class represnts an ESRI Shape file.<p>
+ * This class represents an ESRI Shape file.<p>
  * You construct it with a file name, and later
- * you can read the file's propertys, i.e. Sizes, Types, and the data itself.<p>
+ * you can read the file's properties, i.e. Sizes, Types, and the data itself.<p>
  * Copyright 1998 by James Macgill. <p>
  *
  * Version 1.0beta1.1 (added construct with inputstream)
@@ -32,7 +32,6 @@ import com.vividsolutions.jump.io.EndianDataOutputStream;
 
 public class Shapefile  {
 
-    
     static final int    SHAPEFILE_ID = 9994;
     static final int    VERSION = 1000;
     
@@ -63,35 +62,24 @@ public class Shapefile  {
         baseURL=url;
         myInputStream= null;
         try {
-         URLConnection uc = baseURL.openConnection();
-// From: Sheldon Young [mailto:syoung@forsite-sa.com] 
-// Sent: Thursday, February 05, 2004 2:49 PM
-// To: Martin Davis
-// Subject: Patch for JUMP
-// 
-// 
-// For Shapefile.java, using a 16 kb buffer instead of the 
-// default 2 kb buffer makes a 20% difference on my 15MB test case.
-         myInputStream = new BufferedInputStream(uc.getInputStream(), 16*1024);
+            URLConnection uc = baseURL.openConnection();
+            // a 16 kb buffer may be up to 20% faster than the default 2 kb buffer
+            myInputStream = new BufferedInputStream(uc.getInputStream(), 16*1024);
         }
-        catch (Exception e)
-        {
-        }
+        catch (Exception e){}
     }
     
-      public Shapefile(InputStream IS){
-       myInputStream = IS;
+    public Shapefile(InputStream IS){
+        myInputStream = IS;
     }
     
     public void close()
     {
-    	try
+        try
     	{
     		myInputStream.close();
     	}
-    	catch (IOException ex)
-    	{
-    	}
+    	catch (IOException ex){}
     }
     
     private EndianDataInputStream getInputStream() throws IOException
@@ -105,13 +93,6 @@ public class Shapefile  {
     }
     
     private EndianDataOutputStream getOutputStream() throws IOException{
-       // System.out.println(baseURL.getFile());
-        //URLConnection connection = baseURL.openConnection();
-        //connection.setUseCaches(false);
-       // connection.setDoInput(true);
-       // connection.setDoOutput(true);
-       // connection.connect();
-        //BufferedOutputStream in = new BufferedOutputStream(connection.getOutputStream());
         BufferedOutputStream in = new BufferedOutputStream(new FileOutputStream(baseURL.getFile()));
         EndianDataOutputStream sfile = new EndianDataOutputStream(in);
         return sfile;
@@ -120,33 +101,32 @@ public class Shapefile  {
     
     /**
      * Initialises a shapefile from disk.
-     * Use Shapefile(String) if you don't want to use LEDataInputStream directly (recomended)
+     * Use Shapefile(String) if you don't want to use LEDataInputStream directly (recommended)
      * @param geometryFactory the geometry factory to use to read the shapes
      */
-    public GeometryCollection read(GeometryFactory geometryFactory) throws IOException,ShapefileException,Exception{
-       EndianDataInputStream file = getInputStream();
-        if(file==null) throw new IOException("Failed connection or no content for "+baseURL);
+    public GeometryCollection read(GeometryFactory geometryFactory) throws IOException, ShapefileException, Exception{
+        EndianDataInputStream file = getInputStream();
+        if(file==null) throw new IOException("Failed connection or no content for " + baseURL);
         ShapefileHeader mainHeader = new ShapefileHeader(file);
         if(mainHeader.getVersion() < VERSION){System.err.println("Sf-->Warning, Shapefile format ("+mainHeader.getVersion()+") older that supported ("+VERSION+"), attempting to read anyway");}
         if(mainHeader.getVersion() > VERSION){System.err.println("Sf-->Warning, Shapefile format ("+mainHeader.getVersion()+") newer that supported ("+VERSION+"), attempting to read anyway");}
         
         Geometry body;
         ArrayList list = new ArrayList();
-        int type=mainHeader.getShapeType();
+        int type = mainHeader.getShapeType();
         ShapeHandler handler = getShapeHandler(type);
-        if(handler==null)throw new ShapeTypeNotSupportedException("Unsuported shape type:"+type);
+        if(handler==null)throw new ShapeTypeNotSupportedException("Unsuported shape type:" + type);
         
         int recordNumber=0;
         int contentLength=0;
         try{
             while(true){
-               // file.setLittleEndianMode(false);
                 recordNumber=file.readIntBE();
                 contentLength=file.readIntBE();
                 try{
                     body = handler.read(file,geometryFactory,contentLength); 
                     list.add(body);
-                   // System.out.println("Done record: " + recordNumber);
+                    // System.out.println("Done record: " + recordNumber);
                 }catch(IllegalArgumentException r2d2){
                     //System.out.println("Record " +recordNumber+ " has is NULL Shape");
                     list.add(new GeometryCollection(null,null,-1));
@@ -154,9 +134,9 @@ public class Shapefile  {
                     System.out.println("Error processing record (a):" +recordNumber);
                     System.out.println(c3p0.getMessage());
                     c3p0.printStackTrace();
-                    list.add(new GeometryCollection(null,null,-1));
+                    list.add(new GeometryCollection(null, null, -1));
                 }
-               // System.out.println("processing:" +recordNumber);
+                // System.out.println("processing:" +recordNumber);
             }
         }catch(EOFException e){
             
@@ -165,11 +145,10 @@ public class Shapefile  {
     }
     
     /**
-     * Saves a shapefile to and output stream.
+     * Saves a shapefile to an output stream.
      * @param geometries geometry collection to write
-     * @param ShapeFileDimentions shapefile dimension
+     * @param ShapeFileDimentions shapefile dimension (2=x,y ; 3=x,y,m ; 4=x,y,z,m)
      */
-       //ShapeFileDimentions =>    2=x,y ; 3=x,y,m ; 4=x,y,z,m
     public  void write(GeometryCollection geometries, int ShapeFileDimentions) throws IOException,Exception {
         EndianDataOutputStream file = getOutputStream();
         ShapefileHeader mainHeader = new ShapefileHeader(geometries,ShapeFileDimentions);
@@ -194,10 +173,8 @@ public class Shapefile  {
         
         for(int i=0;i<numShapes;i++){
             body = geometries.getGeometryN(i);
-            //file.setLittleEndianMode(false);
             file.writeIntBE(i+1);
             file.writeIntBE(handler.getLength(body));
-            // file.setLittleEndianMode(true);
             pos+=4; // length of header in WORDS
             handler.write(body,file);
             pos+=handler.getLength(body); // length of shape in WORDS
@@ -207,11 +184,16 @@ public class Shapefile  {
     }
   
   
-       //ShapeFileDimentions =>    2=x,y ; 3=x,y,m ; 4=x,y,z,m
-    public synchronized void writeIndex(GeometryCollection geometries,EndianDataOutputStream file,int ShapeFileDimentions) throws IOException,Exception
+    //ShapeFileDimentions =>    2=x,y ; 3=x,y,m ; 4=x,y,z,m
+    /**
+     * Saves a shapefile index (shx) to an output stream.
+     * @param geometries geometry collection to write
+     * @param file file to write to
+     * @param ShapeFileDimentions shapefile dimension (2=x,y ; 3=x,y,m ; 4=x,y,z,m)
+     */
+    public synchronized void writeIndex(GeometryCollection geometries, EndianDataOutputStream file, int ShapeFileDimentions) throws IOException, Exception
     {
-        Geometry    geom;
-        
+        Geometry geom;    
         
         ShapeHandler handler ;
         int nrecords = geometries.getNumGeometries();
@@ -226,14 +208,10 @@ public class Shapefile  {
                handler = Shapefile.getShapeHandler(geometries.getGeometryN(0),ShapeFileDimentions);
         }
         
-       // mainHeader.fileLength = 50 + 4*nrecords;
-        
         mainHeader.writeToIndex(file);
         int pos = 50;
         int len = 0;
        
-        //file.setLittleEndianMode(false);
-        
         for(int i=0;i<nrecords;i++){
             geom = geometries.getGeometryN(i);
             len = handler.getLength(geom);
@@ -245,16 +223,12 @@ public class Shapefile  {
         file.flush();
         file.close();
     }
-    
-    
-   
-  
    
     
     /**
-     * Returns a string for the shape type of index.
+     * Returns a string describing the shape type.
      * @param index An int coresponding to the shape type to be described
-     * @return A string descibing the shape type
+     * @return A string describing the shape type
      */
     public static String getShapeTypeDescription(int index){
         switch(index){
@@ -282,8 +256,6 @@ public class Shapefile  {
     
     public static ShapeHandler getShapeHandler(int type) throws Exception
     {
-     
-         
         switch(type){
             case Shapefile.POINT: return new PointHandler();
             case Shapefile.POINTZ: return new PointHandler(Shapefile.POINTZ);
@@ -301,16 +273,20 @@ public class Shapefile  {
         return null;
     }
     
-     //ShapeFileDimentions =>    2=x,y ; 3=x,y,m ; 4=x,y,z,m
+    /**
+     * Returns the Shape Type corresponding to geometry geom of dimension
+     * ShapeFileDimentions.
+     * @param geom the geom
+     * @param ShapeFileDimentions the dimension of the geom (2=x,y ; 3=x,y,m ; 4=x,y,z,m)
+     * @return A int representing the Shape Type
+     */
     public static int getShapeType(Geometry geom, int ShapeFileDimentions ) throws ShapefileException
     {
         
         if ( (ShapeFileDimentions !=2) && (ShapeFileDimentions !=3) && (ShapeFileDimentions !=4) )
         {
             throw new ShapefileException("invalid ShapeFileDimentions for getShapeType - expected 2,3,or 4 but got "+ShapeFileDimentions+"  (2=x,y ; 3=x,y,m ; 4=x,y,z,m)");
-            //ShapeFileDimentions = 2;
-        }
-         
+        } 
             
         if(geom instanceof Point) 
         {
@@ -353,26 +329,16 @@ public class Shapefile  {
     
     public synchronized void readIndex(InputStream is) throws IOException {
         EndianDataInputStream file = null;
-        try{
+        try {
             BufferedInputStream in = new BufferedInputStream(is);
             file = new EndianDataInputStream(in);
-        }catch(Exception e){System.err.println(e);}
+        }
+        catch(Exception e){
+            System.err.println(e);
+        }
         ShapefileHeader head = new ShapefileHeader(file);
-        
         int pos=0,len=0;
-        //file.setLittleEndianMode(false);
         file.close();
     }
 }
-
-
-
-
-
-
-
-
-
-
-
 

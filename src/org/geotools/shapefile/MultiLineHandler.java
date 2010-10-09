@@ -12,41 +12,38 @@ import com.vividsolutions.jump.io.EndianDataInputStream;
 import com.vividsolutions.jump.io.EndianDataOutputStream;
 
 /**
- * Wrapper for a Shapefile arc.
+ * Wrapper for a Shapefile PolyLine.
  */
 public class MultiLineHandler implements ShapeHandler{
     
-     int myShapeType= -1;
+    int myShapeType= -1;
      
     public MultiLineHandler()
     {
         myShapeType = 3;
     }
     
-     public MultiLineHandler(int type) throws InvalidShapefileException
-        {
-            if  ( (type != 3) &&  (type != 13) &&  (type != 23) )
-                throw new InvalidShapefileException("MultiLineHandler constructor - expected type to be 3,13 or 23");
+    public MultiLineHandler(int type) throws InvalidShapefileException
+    {
+        if  ( (type != 3) &&  (type != 13) &&  (type != 23) )
+            throw new InvalidShapefileException("MultiLineHandler constructor - expected type to be 3, 13 or 23");
             
-            myShapeType = type;
+        myShapeType = type;
     }
     
     
-    public Geometry read( EndianDataInputStream file , GeometryFactory geometryFactory, int contentLength) throws IOException,InvalidShapefileException 
+    public Geometry read(EndianDataInputStream file, GeometryFactory geometryFactory, int contentLength) throws IOException,InvalidShapefileException 
     {
         
         double junk;
-		int actualReadWords = 0; //actual number of words read (word = 16bits)
-       
-        
-        //file.setLittleEndianMode(true);
+		int actualReadWords = 0; //actual number of words read (word = 16bits)       
         
         int shapeType = file.readIntLE();
 		actualReadWords += 2;
         
-        if (shapeType ==0)
+        if (shapeType == 0)
         {
-             return new MultiLineString(null,new PrecisionModel(),0); //null shape
+             return new MultiLineString(null, new PrecisionModel(), 0); //null shape
         }
         
         if (shapeType != myShapeType)
@@ -54,22 +51,18 @@ public class MultiLineHandler implements ShapeHandler{
             throw new InvalidShapefileException("MultilineHandler.read()  - file says its type "+shapeType+" but i'm expecting type "+myShapeType);
         }
         
-            //read bounding box (not needed)
+        //read bounding box (not needed)
         junk = file.readDoubleLE();
         junk =file.readDoubleLE();
         junk =file.readDoubleLE();
         junk =file.readDoubleLE();
 		actualReadWords += 4*4;
   
-        
         int numParts = file.readIntLE();
-        int numPoints = file.readIntLE();//total number of points
-		actualReadWords += 4;
-        
+        int numPoints = file.readIntLE(); //total number of points
+		actualReadWords += 4;      
         
         int[] partOffsets = new int[numParts];
-        
-        //points = new Coordinate[numPoints];
         
         for ( int i = 0; i < numParts; i++ ){
             partOffsets[i]=file.readIntLE();
@@ -89,20 +82,20 @@ public class MultiLineHandler implements ShapeHandler{
         
         if (myShapeType ==13)
         {
-             junk =file.readDoubleLE();  //z min, max
-             junk =file.readDoubleLE();
-			 actualReadWords += 8;
+            junk =file.readDoubleLE();  //z min, max
+            junk =file.readDoubleLE();
+            actualReadWords += 8;
             
             for (int t =0;t<numPoints; t++)
             {
-              coords[t].z =   file.readDoubleLE(); //z value
-		   	  actualReadWords += 4;
+                coords[t].z =   file.readDoubleLE(); //z value
+		   	    actualReadWords += 4;
             }
         }
         
         if (myShapeType >=13)
         {
-          //  int fullLength =  22 + 2*numParts + (numPoints * 8) + 4+4+4*numPoints+ 4+4+4*numPoints;
+            //  int fullLength =  22 + 2*numParts + (numPoints * 8) + 4+4+4*numPoints+ 4+4+4*numPoints;
 		    int fullLength;
             if (myShapeType == 13)
             {
@@ -128,13 +121,12 @@ public class MultiLineHandler implements ShapeHandler{
             }
         }
         
-	//verify that we have read everything we need
-	while (actualReadWords < contentLength)
-	{
-		  int junk2 = file.readShortBE();	
-		  actualReadWords += 1;
-	}
-	
+	    //verify that we have read everything we need
+	    while (actualReadWords < contentLength)
+	    {
+		    int junk2 = file.readShortBE();	
+		    actualReadWords += 1;
+	    }
         
         int offset = 0;
         int start,finish,length;
@@ -142,7 +134,7 @@ public class MultiLineHandler implements ShapeHandler{
             start = partOffsets[part];
             if(part == numParts-1)
             {
-                    finish = numPoints;
+                finish = numPoints;
             }
             else {
                 finish=partOffsets[part+1];
@@ -162,7 +154,7 @@ public class MultiLineHandler implements ShapeHandler{
             return geometryFactory.createMultiLineString(lines);
     }
     
-    public void write(Geometry geometry,EndianDataOutputStream file)throws IOException{
+    public void write(Geometry geometry, EndianDataOutputStream file)throws IOException{
         MultiLineString multi = (MultiLineString)geometry;
         int npoints;
         
@@ -200,7 +192,7 @@ public class MultiLineHandler implements ShapeHandler{
         
         if (myShapeType == 13)
         {
-                //z
+            //z
             double[] zExtreame = zMinMax(multi);
             if (Double.isNaN(zExtreame[0] ))
             {
@@ -224,7 +216,7 @@ public class MultiLineHandler implements ShapeHandler{
         
         if (myShapeType >=13)
         {
-                //m
+            //m
             file.writeDoubleLE(-10E40);
             file.writeDoubleLE(-10E40);
             for(int t=0;t<npoints;t++)
@@ -236,7 +228,7 @@ public class MultiLineHandler implements ShapeHandler{
     }
     
     /**
-     * Get the type of shape stored (Shapefile.ARC)
+     * Get the type of shape stored (Shapefile.ARC, Shapefile.ARCM, Shapefile.ARCZ)
      */
     public int getShapeType(){
         return myShapeType;
@@ -258,14 +250,9 @@ public class MultiLineHandler implements ShapeHandler{
         {
              return 22 + 2*numlines + (numpoints * 8) + 4+4+4*numpoints;
         }
-    
      
-            return 22 + 2*numlines + (numpoints * 8) + 4+4+4*numpoints+ 4+4+4*numpoints;
-        
-        
-     //   return 22 + 2*numlines + (numpoints * 8);
-        
-        //return (44+(4*((GeometryCollection)geometry).getNumGeometries()));
+        return 22 + 2*numlines + (numpoints * 8) + 4+4+4*numpoints+ 4+4+4*numpoints;
+
     }
     
     

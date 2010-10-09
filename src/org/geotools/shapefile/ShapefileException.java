@@ -1,8 +1,7 @@
 package org.geotools.shapefile;
 
 /**
- * Thrown when an error relating to the shapefile
- * occures
+ * Thrown when an error relating to the shapefile occurs
  */
 public class ShapefileException extends Exception{
     public ShapefileException(){

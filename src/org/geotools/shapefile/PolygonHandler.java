@@ -11,7 +11,7 @@ import com.vividsolutions.jump.io.EndianDataInputStream;
 import com.vividsolutions.jump.io.EndianDataOutputStream;
 
 /**
- * Wrapper for a Shapefile polygon.
+ * Wrapper for a Shapefile Polygon.
  */
 public class PolygonHandler implements ShapeHandler{
 
@@ -282,7 +282,7 @@ public class PolygonHandler implements ShapeHandler{
         else {
             multi = new MultiPolygon(new Polygon[]{(Polygon)geometry},geometry.getPrecisionModel(),geometry.getSRID());
         }
-        //file.setLittleEndianMode(true);
+        
         file.writeIntLE(getShapeType());
         
         Envelope box = multi.getEnvelopeInternal();

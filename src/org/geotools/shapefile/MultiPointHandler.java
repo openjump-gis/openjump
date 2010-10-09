@@ -13,6 +13,7 @@ import com.vividsolutions.jump.io.EndianDataInputStream;
 import com.vividsolutions.jump.io.EndianDataOutputStream;
 
 /**
+ * Wrapper for a Shapefile MultiPoint.
  *
  * @author  dblasby
  */
@@ -24,10 +25,10 @@ public class MultiPointHandler  implements ShapeHandler  {
         myShapeType = 8;
     }
     
-        public MultiPointHandler(int type) throws InvalidShapefileException
-        {
-            if  ( (type != 8) &&  (type != 18) &&  (type != 28) )
-                throw new InvalidShapefileException("Multipointhandler constructor - expected type to be 8, 18, or 28");
+    public MultiPointHandler(int type) throws InvalidShapefileException
+    {
+        if  ( (type != 8) &&  (type != 18) &&  (type != 28) )
+            throw new InvalidShapefileException("Multipointhandler constructor - expected type to be 8, 18, or 28");
             
         myShapeType = type;
     }
@@ -82,7 +83,7 @@ public class MultiPointHandler  implements ShapeHandler  {
         
         if (myShapeType >= 18)
         {
-           // int fullLength = numpoints * 8 + 20 +8 +4*numpoints + 8 +4*numpoints;
+            // int fullLength = numpoints * 8 + 20 +8 +4*numpoints + 8 +4*numpoints;
 			int fullLength;
 			if (myShapeType == 18)
 			{
@@ -108,12 +109,12 @@ public class MultiPointHandler  implements ShapeHandler  {
             }
         }
         
-	//verify that we have read everything we need
-	while (actualReadWords < contentLength)
-	{
-		  int junk2 = file.readShortBE();	
-		  actualReadWords += 1;
-	}
+	    //verify that we have read everything we need
+	    while (actualReadWords < contentLength)
+	    {
+		    int junk2 = file.readShortBE();	
+		    actualReadWords += 1;
+	    }
 	
         return geometryFactory.createMultiPoint(coords);
     }
@@ -158,11 +159,9 @@ public class MultiPointHandler  implements ShapeHandler  {
     }
     
     
-    public void write(Geometry geometry,EndianDataOutputStream file)throws IOException{
+    public void write(Geometry geometry, EndianDataOutputStream file)throws IOException{
 
         MultiPoint mp = (MultiPoint) geometry;
-        
-        //file.setLittleEndianMode(true);
         
         file.writeIntLE(getShapeType());
         
@@ -174,7 +173,6 @@ public class MultiPointHandler  implements ShapeHandler  {
         
         int numParts = mp.getNumGeometries();
         file.writeIntLE(numParts);
-        
         
         for (int t=0;t<mp.getNumGeometries(); t++)
         {
@@ -207,12 +205,12 @@ public class MultiPointHandler  implements ShapeHandler  {
         }
         if (myShapeType >= 18)
         {
+            file.writeDoubleLE(-10E40);
+            file.writeDoubleLE(-10E40);
+            for (int t=0;t<mp.getNumGeometries(); t++)
+            {   
                 file.writeDoubleLE(-10E40);
-                file.writeDoubleLE(-10E40);
-                 for (int t=0;t<mp.getNumGeometries(); t++)
-                 {   
-                     file.writeDoubleLE(-10E40);
-                 }
+            }
         }
     }
     
@@ -225,9 +223,9 @@ public class MultiPointHandler  implements ShapeHandler  {
     }
     
     /**
-     * Calcuates the record length of this object.
+     * Calculates the record length of this object.
      * @return int The length of the record that this shapepoint will take up in a shapefile
-     **/
+     */
     public int getLength(Geometry geometry){
         MultiPoint mp = (MultiPoint) geometry;
     
