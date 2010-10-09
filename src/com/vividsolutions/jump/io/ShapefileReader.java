@@ -214,11 +214,10 @@ public class ShapefileReader implements JUMPReader {
 	 *
 	 * @param dbfFileName
 	 * @param compressedFname
-	 * @return
+	 * @return a DbfFile object for the dbf file named FileName
 	 * @throws Exception
 	 */
-    protected DbfFile getDbfFile(String dbfFileName, String compressedFname)
-        throws Exception {
+    protected DbfFile getDbfFile(String dbfFileName, String compressedFname) throws Exception {
 		return getDbfFile(dbfFileName, compressedFname, Charset.defaultCharset());
 	}
 

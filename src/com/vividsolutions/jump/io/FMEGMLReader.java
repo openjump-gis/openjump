@@ -56,8 +56,8 @@ import java.io.InputStreamReader;
  * This is implemented using the more general {@link GMLReader}.
  * It makes a {@link GMLInputTemplate} to pass to the GMLReader by examining
  * the schema specified in the input file.
- * @TODO :I18N
  */
+// TODO : I18N
 public class FMEGMLReader implements JUMPReader {
     /** Creates new FMEGMLReader */
     public FMEGMLReader() {

@@ -265,13 +265,10 @@ public class ShapefileWriter implements JUMPWriter {
         loc = shpfileName.lastIndexOf(File.separatorChar);
 
         if (loc == -1) {
-            // loc = 0; // no path - ie. "hills.shp"
-            // path = "";
-            // fname = shpfileName;
-            //probably using the wrong path separator character.
+            // probably using the wrong path separator character.
             throw new Exception("couldn't find the path separator character '" +
                 File.separatorChar +
-                "' in your shape file name. This you're probably using the unix (or dos) one.");
+                "' in your shape file name. This means you're probably using the unix (or dos) one.");
         } else {
             path = shpfileName.substring(0, loc + 1); // ie. "/data1/hills.shp" -> "/data1/"
             fname = shpfileName.substring(loc + 1); // ie. "/data1/hills.shp" -> "hills.shp"
@@ -311,11 +308,11 @@ public class ShapefileWriter implements JUMPWriter {
                 shapeType = 4;
             } else {
                 throw new IllegalParametersException(
-                    "ShapefileWriter.write() - dataproperties has a 'ShapeType' that isnt 'xy', 'xym', or 'xymz'");
+                    "ShapefileWriter.write() - dataproperties has a 'ShapeType' that isn't 'xy', 'xym', or 'xymz'");
             }
         } else {
             if (gc.getNumGeometries() > 0) {
-                shapeType = guessCoorinateDims(gc.getGeometryN(0));
+                shapeType = guessCoordinateDims(gc.getGeometryN(0));
             }
         }
 
@@ -333,13 +330,13 @@ public class ShapefileWriter implements JUMPWriter {
     }
 
     /**
-     *Returns: <br>
-    *2 for 2d (default) <br>
-    *4 for 3d  - one of the oordinates has a non-NaN z value <br>
-    *(3 is for x,y,m but thats not supported yet) <br>
-     *@param g geometry to test - looks at 1st coordinate
-     **/
-    public int guessCoorinateDims(Geometry g) {
+     * Returns: <br>
+     * 2 for 2d (default) <br>
+     * 4 for 3d  - one of the oordinates has a non-NaN z value <br>
+     * (3 is for x,y,m but thats not supported yet) <br>
+     * @param g geometry to test - looks at 1st coordinate
+     */
+    public int guessCoordinateDims(Geometry g) {
         Coordinate[] cs = g.getCoordinates();
 
         for (int t = 0; t < cs.length; t++) {
@@ -553,10 +550,10 @@ public class ShapefileWriter implements JUMPWriter {
      * Find the generic geometry type of the feature collection.
      * Simple method - find the 1st non null geometry and its type
      *  is the generic type.
-    * returns 0 - all empty/invalid <br>
-    *         1 - point <br>
-    *         2 - line <br>
-    *         3 - polygon <br>
+     * returns 0 - all empty/invalid <br>
+     *         1 - point <br>
+     *         2 - line <br>
+     *         3 - polygon <br>
      *@param fc feature collection containing tet geometries.
      **/
     int findBestGeometryType(FeatureCollection fc) {
@@ -607,7 +604,6 @@ public class ShapefileWriter implements JUMPWriter {
 	    Geometry firstGeom = null;
 		System.out.println("ShapeFileWriter: start mixed-geom-test");
 	    for (Iterator iter = featureCollection.iterator(); iter.hasNext();) {
-	    	//System.out.println("test");
 			Feature myf = (Feature) iter.next();
 			if (i==0){
 				firstClass = myf.getGeometry().getClass();
@@ -660,7 +656,7 @@ public class ShapefileWriter implements JUMPWriter {
     }
 
     /**
-    * make sure outer ring is CCW and holes are CW
+     * make sure outer ring is CCW and holes are CW
      *@param p polygon to check
      */
     Polygon makeGoodSHAPEPolygon(Polygon p) {
@@ -690,7 +686,7 @@ public class ShapefileWriter implements JUMPWriter {
     }
 
     /**
-    * make sure outer ring is CCW and holes are CW for all the polygons in the Geometry
+     * make sure outer ring is CCW and holes are CW for all the polygons in the Geometry
      *@param mp set of polygons to check
      */
     MultiPolygon makeGoodSHAPEMultiPolygon(MultiPolygon mp) {
@@ -712,7 +708,7 @@ public class ShapefileWriter implements JUMPWriter {
      *  result.GeometryN(i) = the i-th feature in the FeatureCollection<br>
      *   All the geometry types will be the same type (ie. all polygons) - or they will be set to<br>
      *     NULL geometries<br>
-     *<br>
+     * <br>
      * GeometryN(i) = {Multipoint,Multilinestring, or Multipolygon)<br>
      *
      *@param fc feature collection to make homogeneous

@@ -48,8 +48,9 @@ import java.util.zip.ZipInputStream;
  * Utility class for dealing with compressed (.zip, .gz) files.
  *
  * @author  dblasby
- * @TODO :I18N
+ *
  */
+//TODO :I18N
 public class CompressedFile {
 
     /** Creates a new CompressedFile */
