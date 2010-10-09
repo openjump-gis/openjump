@@ -13,7 +13,7 @@ import com.vividsolutions.jump.io.EndianDataOutputStream;
 /**
  * Wrapper for a Shapefile Polygon.
  */
-public class PolygonHandler implements ShapeHandler{
+public class PolygonHandler implements ShapeHandler {
 
     protected static CGAlgorithms cga = new RobustCGAlgorithms();
 
@@ -24,8 +24,9 @@ public class PolygonHandler implements ShapeHandler{
     }
     
     public PolygonHandler(int type) throws InvalidShapefileException {
-        if  ( (type != 5) &&  (type != 15) &&  (type != 25) )
+        if ((type != 5) && (type != 15) && (type != 25)) {
             throw new InvalidShapefileException("PolygonHandler constructor - expected type to be 5, 15, or 25.");
+        }
         myShapeType = type;
     }
     
@@ -39,12 +40,13 @@ public class PolygonHandler implements ShapeHandler{
         actualReadWords += 2;
         
         if (shapeType ==0) {
-             return new MultiPolygon(null,new PrecisionModel(),0); //null shape
+             return geometryFactory.createMultiPolygon(new Polygon[0]); //null shape
         }
         
         if ( shapeType != myShapeType ) {
-            throw new InvalidShapefileException
-            ("PolygonHandler.read() - got shape type "+shapeType+" but was expecting "+myShapeType);
+            throw new InvalidShapefileException(
+                "PolygonHandler.read() - got shape type " + shapeType + " but was expecting " + myShapeType
+            );
         }
         
         //bounds
@@ -273,14 +275,19 @@ public class PolygonHandler implements ShapeHandler{
         return new LinearRing(newCoords, new PrecisionModel(), 0);
     }
 
-     public void write(Geometry geometry,EndianDataOutputStream file)throws IOException{
+     public void write(Geometry geometry, EndianDataOutputStream file) throws IOException{
 
+        if (geometry.isEmpty()) {
+            file.writeIntLE(0);
+            return;
+        }
+        
         MultiPolygon multi;
         if(geometry instanceof MultiPolygon) {
             multi = (MultiPolygon)geometry;
         }
         else {
-            multi = new MultiPolygon(new Polygon[]{(Polygon)geometry},geometry.getPrecisionModel(),geometry.getSRID());
+            multi = new MultiPolygon(new Polygon[]{(Polygon)geometry}, geometry.getPrecisionModel(), geometry.getSRID());
         }
         
         file.writeIntLE(getShapeType());
@@ -365,6 +372,9 @@ public class PolygonHandler implements ShapeHandler{
     }
 
     public int getLength(Geometry geometry) {
+        
+        if (geometry.isEmpty())     return 2;
+        
         MultiPolygon multi;
         if(geometry instanceof MultiPolygon) {
             multi = (MultiPolygon)geometry;
@@ -389,13 +399,11 @@ public class PolygonHandler implements ShapeHandler{
     }
 
      double[] zMinMax(Geometry g) {
-        //double zmin,zmax;
-        boolean validZFound = false;
-        Coordinate[] cs = g.getCoordinates();
-        double[] result = new double[2];
-
+         
         double zmin = Double.NaN;
         double zmax = Double.NaN;
+        boolean validZFound = false;
+        Coordinate[] cs = g.getCoordinates();
         double z;
 
         for (int t=0 ; t<cs.length ; t++) {
@@ -412,9 +420,7 @@ public class PolygonHandler implements ShapeHandler{
                 }
             }
         }
-        result[0] = (zmin);
-        result[1] = (zmax);
-        return result;
+        return new double[]{zmin, zmax};
     }
 }
 

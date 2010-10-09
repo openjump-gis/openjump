@@ -660,6 +660,9 @@ public class ShapefileWriter implements JUMPWriter {
      *@param p polygon to check
      */
     Polygon makeGoodSHAPEPolygon(Polygon p) {
+        
+        if (p.isEmpty()) return p;
+        
         LinearRing outer;
         LinearRing[] holes = new LinearRing[p.getNumInteriorRing()];
         Coordinate[] coords;
@@ -674,7 +677,6 @@ public class ShapefileWriter implements JUMPWriter {
 
         for (int t = 0; t < p.getNumInteriorRing(); t++) {
             coords = p.getInteriorRingN(t).getCoordinates();
-
             if (!(cga.isCCW(coords))) {
                 holes[t] = reverseRing((LinearRing) p.getInteriorRingN(t));
             } else {

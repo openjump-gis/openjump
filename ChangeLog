@@ -1,3 +1,9 @@
+2010-10-09 mmichaud <michael.michaud@free.fr>
+    * slight change in the way ExtractLayerByGeometryType handle empty geometries
+    * better handling of empty geometries in shapefile reader/writer
+      (empty geometries were already read, except for Point geometries, but
+       were not correctly write)
+
 2010-10-06 mmichaud <michael.michaud@free.fr>
     * Improve speed of LayerTableModel#removeAll
 
