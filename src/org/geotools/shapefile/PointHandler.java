@@ -32,44 +32,48 @@ public class PointHandler implements ShapeHandler {
                          GeometryFactory geometryFactory,
                          int contentLength) throws IOException, InvalidShapefileException {
 
-	    int actualReadWords = 0; //actual number of words read (word = 16bits)
+	    int actualReadWords = 0; //actual number of 16 bits words
+	    Geometry geom = null;
 	
         int shapeType = file.readIntLE();
 		actualReadWords += 2;
 		
 		if (shapeType == 0) {
-		    return geometryFactory.createPoint(new CoordinateArraySequence(0));
+		    geom = geometryFactory.createPoint(new CoordinateArraySequence(0));
 		}
-       
-        if (shapeType != myShapeType) {
+        else if (shapeType != myShapeType) {
             throw new InvalidShapefileException("pointhandler.read() - handler's shapetype doesnt match file's");
         }
-        
-        double x = file.readDoubleLE();
-        double y = file.readDoubleLE();
-        double m , z = Double.NaN;
-		actualReadWords += 8;
-
-        if ( shapeType ==21 ) {
-            m= file.readDoubleLE();
-            actualReadWords += 4;
-        }
-        else if ( shapeType ==11 ) {
-            z = file.readDoubleLE();
-            actualReadWords += 4;
-            if (contentLength>actualReadWords) {
-                m = file.readDoubleLE();
-                actualReadWords += 8;
+        else {
+            double x = file.readDoubleLE();
+            double y = file.readDoubleLE();
+            double m , z = Double.NaN;
+		    actualReadWords += 8;
+            
+            if ( shapeType ==21 ) {
+                m= file.readDoubleLE();
+                actualReadWords += 4;
             }
+            
+            else if ( shapeType ==11 ) {
+                z = file.readDoubleLE();
+                actualReadWords += 4;
+                if (contentLength>actualReadWords) {
+                    m = file.readDoubleLE();
+                    actualReadWords += 8;
+                }
+            }
+            
+            geom = geometryFactory.createPoint(new Coordinate(x,y,z));
+            
         }
-        
         //verify that we have read everything we need
         while (actualReadWords < contentLength) {
             int junk2 = file.readShortBE();	
             actualReadWords += 1;
         }
         
-        return geometryFactory.createPoint(new Coordinate(x,y,z));
+        return geom;
     }
     
     public void write(Geometry geometry, EndianDataOutputStream file) throws IOException {
@@ -111,4 +115,11 @@ public class PointHandler implements ShapeHandler {
         else if (myShapeType == 21) return 14;
         else                        return 18;
     }
+    
+    /**
+     * Return a empty geometry.
+     */
+     public Geometry getEmptyGeometry(GeometryFactory factory) {
+         return factory.createPoint(new CoordinateArraySequence(0));
+     }
 }

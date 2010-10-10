@@ -52,6 +52,7 @@ public class Shapefile  {
     
     private URL baseURL;
     private InputStream myInputStream;
+    private int errors;
     
     /**
      * Creates and initialises a shapefile from a url
@@ -97,9 +98,11 @@ public class Shapefile  {
      * Use Shapefile(String) if you don't want to use LEDataInputStream directly (recommended)
      * @param geometryFactory the geometry factory to use to read the shapes
      */
-    public GeometryCollection read(GeometryFactory geometryFactory) throws IOException, ShapefileException, Exception{
+    public GeometryCollection read(GeometryFactory geometryFactory) throws IOException, ShapefileException, Exception {
+        
         EndianDataInputStream file = getInputStream();
         if(file==null) throw new IOException("Failed connection or no content for " + baseURL);
+        
         ShapefileHeader mainHeader = new ShapefileHeader(file);
         if(mainHeader.getVersion() < VERSION){System.err.println("Sf-->Warning, Shapefile format ("+mainHeader.getVersion()+") older that supported ("+VERSION+"), attempting to read anyway");}
         if(mainHeader.getVersion() > VERSION){System.err.println("Sf-->Warning, Shapefile format ("+mainHeader.getVersion()+") newer that supported ("+VERSION+"), attempting to read anyway");}
@@ -108,10 +111,11 @@ public class Shapefile  {
         ArrayList list = new ArrayList();
         int type = mainHeader.getShapeType();
         ShapeHandler handler = getShapeHandler(type);
-        if(handler==null)throw new ShapeTypeNotSupportedException("Unsuported shape type:" + type);
+        if(handler==null) throw new ShapeTypeNotSupportedException("Unsuported shape type:" + type);
         
         int recordNumber=0;
         int contentLength=0;
+        errors = 0;
         try{
             while(true){
                 recordNumber=file.readIntBE();
@@ -119,15 +123,20 @@ public class Shapefile  {
                 try{
                     body = handler.read(file,geometryFactory,contentLength); 
                     list.add(body);
+                    if (body.getUserData() != null) errors++;
                     // System.out.println("Done record: " + recordNumber);
                 } catch(IllegalArgumentException r2d2) {
-                    //System.out.println("Record " +recordNumber+ " has is NULL Shape");
-                    list.add(new GeometryCollection(null,null,-1));
+                    System.err.println("Error processing record " +recordNumber + " : " + r2d2.getMessage());
+                    System.err.println("   an empty Geometry has been returned");
+                    r2d2.printStackTrace();
+                    list.add(handler.getEmptyGeometry(geometryFactory));
+                    errors++;
                 } catch(Exception c3p0) {
-                    System.out.println("Error processing record (a):" +recordNumber);
-                    System.out.println(c3p0.getMessage());
+                    System.err.println("Error processing record " +recordNumber + " : " + c3p0.getMessage());
+                    System.err.println("   an empty Geometry has been returned");
                     c3p0.printStackTrace();
-                    list.add(new GeometryCollection(null, null, -1));
+                    list.add(handler.getEmptyGeometry(geometryFactory));
+                    errors++;
                 }
                 // System.out.println("processing:" +recordNumber);
             }
@@ -137,13 +146,18 @@ public class Shapefile  {
     }
     
     /**
+     * Get the number of errors found after a read.
+     */
+     public int getErrorNumber() {return errors;}
+    
+    /**
      * Saves a shapefile to an output stream.
      * @param geometries geometry collection to write
-     * @param ShapeFileDimentions shapefile dimension (2=x,y ; 3=x,y,m ; 4=x,y,z,m)
+     * @param ShapeFileDimension shapefile dimension (2=x,y ; 3=x,y,m ; 4=x,y,z,m)
      */
-    public  void write(GeometryCollection geometries, int ShapeFileDimentions) throws IOException,Exception {
+    public  void write(GeometryCollection geometries, int ShapeFileDimension) throws IOException,Exception {
         EndianDataOutputStream file = getOutputStream();
-        ShapefileHeader mainHeader = new ShapefileHeader(geometries,ShapeFileDimentions);
+        ShapefileHeader mainHeader = new ShapefileHeader(geometries,ShapeFileDimension);
         mainHeader.write(file);
         int pos = 50; // header length in WORDS
 
@@ -155,7 +169,7 @@ public class Shapefile  {
             handler = new PointHandler(); //default
         }
         else {
-            handler = Shapefile.getShapeHandler(geometries.getGeometryN(0), ShapeFileDimentions);
+            handler = Shapefile.getShapeHandler(geometries.getGeometryN(0), ShapeFileDimension);
         }
         
         for(int i=0 ; i<numShapes ; i++){
@@ -171,27 +185,27 @@ public class Shapefile  {
     }
   
   
-    //ShapeFileDimentions =>    2=x,y ; 3=x,y,m ; 4=x,y,z,m
+    //ShapeFileDimension =>    2=x,y ; 3=x,y,m ; 4=x,y,z,m
     /**
      * Saves a shapefile index (shx) to an output stream.
      * @param geometries geometry collection to write
      * @param file file to write to
-     * @param ShapeFileDimentions shapefile dimension (2=x,y ; 3=x,y,m ; 4=x,y,z,m)
+     * @param ShapeFileDimension shapefile dimension (2=x,y ; 3=x,y,m ; 4=x,y,z,m)
      */
     public synchronized void writeIndex(GeometryCollection geometries,
                                         EndianDataOutputStream file,
-                                        int ShapeFileDimentions) throws IOException, Exception {
+                                        int ShapeFileDimension) throws IOException, Exception {
         Geometry geom;    
         
         ShapeHandler handler ;
         int nrecords = geometries.getNumGeometries();
-        ShapefileHeader mainHeader = new ShapefileHeader(geometries,ShapeFileDimentions);
+        ShapefileHeader mainHeader = new ShapefileHeader(geometries,ShapeFileDimension);
         
         if (geometries.getNumGeometries() == 0) {
             handler = new PointHandler(); //default
         }
         else {
-               handler = Shapefile.getShapeHandler(geometries.getGeometryN(0), ShapeFileDimentions);
+               handler = Shapefile.getShapeHandler(geometries.getGeometryN(0), ShapeFileDimension);
         }
         
         mainHeader.writeToIndex(file);
@@ -201,7 +215,6 @@ public class Shapefile  {
         for(int i=0 ; i<nrecords ; i++){
             geom = geometries.getGeometryN(i);
             len = handler.getLength(geom);
-        
             file.writeIntBE(pos);
             file.writeIntBE(len);
             pos = pos+len+4;
@@ -218,29 +231,30 @@ public class Shapefile  {
      */
     public static String getShapeTypeDescription(int index){
         switch(index){
-            case(NULL):return ("Null");
-            case(POINT):return ("Points");
-            case(POINTZ):return ("Points Z");
-            case(POINTM):return ("Points M");
-            case(ARC):return ("Arcs");
-            case(ARCM):return ("ArcsM");
-            case(ARCZ):return ("ArcsM");
+            case(NULL):return ("Null Shape");
+            case(POINT):return ("Point");
+            case(POINTZ):return ("PointZ");
+            case(POINTM):return ("PointM");
+            case(ARC):return ("PolyLine");
+            case(ARCM):return ("PolyLineM");
+            case(ARCZ):return ("PolyLineZ");
             case(POLYGON):return ("Polygon");
             case(POLYGONM):return ("PolygonM");
             case(POLYGONZ):return ("PolygonZ");
-            case(MULTIPOINT):return ("Multipoint");
-            case(MULTIPOINTM):return ("MultipointM");
-            case(MULTIPOINTZ):return ("MultipointZ");
+            case(MULTIPOINT):return ("MultiPoint");
+            case(MULTIPOINTM):return ("MultiPointM");
+            case(MULTIPOINTZ):return ("MultiPointZ");
             default:return ("Undefined"); 
         }
     }
     
     public static ShapeHandler getShapeHandler(Geometry geom, int ShapeFileDimension) throws Exception {
-        return getShapeHandler(getShapeType(geom,ShapeFileDimension));
+        return getShapeHandler(getShapeType(geom, ShapeFileDimension));
     }
     
     public static ShapeHandler getShapeHandler(int type) throws Exception {
         switch(type){
+            case Shapefile.NULL: return new NullShapeHandler();
             case Shapefile.POINT: return new PointHandler();
             case Shapefile.POINTZ: return new PointHandler(Shapefile.POINTZ);
             case Shapefile.POINTM: return new PointHandler(Shapefile.POINTM);
@@ -259,20 +273,20 @@ public class Shapefile  {
     
     /**
      * Returns the Shape Type corresponding to geometry geom of dimension
-     * ShapeFileDimentions.
+     * ShapeFileDimension.
      * @param geom the geom
-     * @param ShapeFileDimentions the dimension of the geom (2=x,y ; 3=x,y,m ; 4=x,y,z,m)
+     * @param ShapeFileDimension the dimension of the geom (2=x,y ; 3=x,y,m ; 4=x,y,z,m)
      * @return A int representing the Shape Type
      */
     public static int getShapeType(Geometry geom, int ShapeFileDimension) throws ShapefileException {
         
         if ((ShapeFileDimension !=2) && (ShapeFileDimension !=3) && (ShapeFileDimension !=4)) {
             throw new ShapefileException(
-                "invalid ShapeFileDimentions for getShapeType - expected 2,3,or 4 but got "
+                "invalid ShapeFileDimension for getShapeType - expected 2,3,or 4 but got "
                 + ShapeFileDimension + "  (2=x,y ; 3=x,y,m ; 4=x,y,z,m)"
             );
-        } 
-            
+        }
+        
         if(geom instanceof Point) {
             switch (ShapeFileDimension) {
                 case 2: return Shapefile.POINT;
@@ -280,6 +294,7 @@ public class Shapefile  {
                 case 4: return Shapefile.POINTZ;    
             }
         }
+        
         if(geom instanceof MultiPoint) {
             switch (ShapeFileDimension) {
                 case 2: return Shapefile.MULTIPOINT;
@@ -287,6 +302,7 @@ public class Shapefile  {
                 case 4: return Shapefile.MULTIPOINTZ;    
             }
         }
+        
         if ((geom instanceof Polygon) || (geom instanceof MultiPolygon)) {
             switch (ShapeFileDimension) {
                 case 2: return Shapefile.POLYGON;
@@ -294,6 +310,7 @@ public class Shapefile  {
                 case 4: return Shapefile.POLYGONZ;    
             }
         }
+        
         if ((geom instanceof LineString) || (geom instanceof MultiLineString)) {
             switch (ShapeFileDimension) {
                 case 2: return Shapefile.ARC;
@@ -301,6 +318,11 @@ public class Shapefile  {
                 case 4: return Shapefile.ARCZ;    
             }
         }
+        
+        if ((geom instanceof GeometryCollection) && (geom.isEmpty())) {
+            return Shapefile.NULL;
+        }
+        
         return Shapefile.UNDEFINED;
     }
     

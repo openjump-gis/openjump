@@ -42,8 +42,8 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.*;
 
 import org.geotools.dbffile.DbfFile;
-
 import org.geotools.shapefile.Shapefile;
+import org.geotools.shapefile.ShapefileException;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -99,10 +99,11 @@ public class ShapefileReader implements JUMPReader {
     }
 
     /**
-     * Main method to read a shapefile.  Most of the work is done in the org.geotools.* package.
+     * Main method to read a shapefile.
+     * Most of the work is done in the org.geotools.* package.
      *
-     *@param dp 'InputFile' or 'DefaultValue' to specify output .shp file.
-     *
+     * @param dp 'InputFile' or 'DefaultValue' to specify output .shp file.
+     * @return a FeatureCollection created from .shp and .dbf (dbf is optional)
      */
     public FeatureCollection read(DriverProperties dp)
         throws IllegalParametersException, Exception {
@@ -130,8 +131,7 @@ public class ShapefileReader implements JUMPReader {
         String fnameWithoutExtention = fname.substring(0, loc); // ie. "hills.shp" -> "hills"
         String dbfFileName = path + fnameWithoutExtention + ".dbf";
 
-        //okay, have .shp and .dbf file paths, lets start
-        // install Shapefile and DbfFile
+        //okay, have .shp and .dbf file paths, lets create Shapefile and DbfFile
         Shapefile myshape = getShapefile(shpfileName, dp.getProperty(COMPRESSED_FILE_PROPERTY_KEY));
 		String charsetName = dp.getProperty("charset");
 		if (charsetName == null) charsetName = Charset.defaultCharset().name();
@@ -167,7 +167,9 @@ public class ShapefileReader implements JUMPReader {
             // There is a DBF file so we have to set the Charset to use and
             // to associate the attributes in the DBF file with the features.
             
-		
+            if (mydbf.getLastRec()-1 > collection.getNumGeometries()) {
+                throw new ShapefileException("Error : shp shape number does not match dbf record number");
+            }
             int numfields = mydbf.getNumFields();
 
             for (int j = 0; j < numfields; j++) {
@@ -194,7 +196,6 @@ public class ShapefileReader implements JUMPReader {
             mydbf.close();
             deleteTmpDbf(); // delete dbf file if it was decompressed
         }
-        //System.gc();
 
         return featureCollection;
     }

@@ -36,4 +36,9 @@ public interface ShapeHandler {
     public void write(Geometry geometry, EndianDataOutputStream file) throws IOException;
     
     public int getLength(Geometry geometry); //length in 16bit words
+    
+    /**
+     * Return a empty geometry.
+     */
+    public Geometry getEmptyGeometry(GeometryFactory factory);
 }

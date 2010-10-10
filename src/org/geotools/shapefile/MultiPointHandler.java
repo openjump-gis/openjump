@@ -37,65 +37,68 @@ public class MultiPointHandler  implements ShapeHandler  {
                          int contentLength) throws IOException, InvalidShapefileException {
 	
 		int actualReadWords = 0; //actual number of 16 bits words read
+		Geometry geom = null;
 	
         int shapeType = file.readIntLE();  
 		actualReadWords += 2;
         
         if (shapeType == 0) {
-            return geometryFactory.createMultiPoint(new Point[0]);
+            geom = geometryFactory.createMultiPoint(new Point[0]);
         }
-        
-        if (shapeType != myShapeType) {
+        else if (shapeType != myShapeType) {
             throw new InvalidShapefileException("Multipointhandler.read() - expected type code "+myShapeType+" but got "+shapeType);
         }
-        
-        //read bbox
-        file.readDoubleLE();
-        file.readDoubleLE();
-        file.readDoubleLE();
-        file.readDoubleLE();
-        
-		actualReadWords += 4*4;
-        
-        int numpoints = file.readIntLE(); 
-		actualReadWords += 2;
-	 
-        Coordinate[] coords = new Coordinate[numpoints];
-        for (int t=0;t<numpoints;t++) {
-            double x = file.readDoubleLE();
-            double y = file.readDoubleLE();
-			actualReadWords += 8;
-            coords[t] = new Coordinate(x,y);
-        }
-        
-        if (myShapeType == 18) {
-            file.readDoubleLE(); //z min/max
+        else {
+            //read bbox
             file.readDoubleLE();
-			actualReadWords += 8;
-            for (int t=0;t<numpoints;t++) { 
-                double z =  file.readDoubleLE();//z
-				actualReadWords += 4;
-                coords[t].z = z;
+            file.readDoubleLE();
+            file.readDoubleLE();
+            file.readDoubleLE();
+            
+		    actualReadWords += 4*4;
+            
+            int numpoints = file.readIntLE(); 
+		    actualReadWords += 2;
+	        
+            Coordinate[] coords = new Coordinate[numpoints];
+            for (int t=0 ; t<numpoints ; t++) {
+                double x = file.readDoubleLE();
+                double y = file.readDoubleLE();
+		    	actualReadWords += 8;
+                coords[t] = new Coordinate(x,y);
             }
-        }
-        
-        if (myShapeType >= 18) {
-			int fullLength;
-			if (myShapeType == 18) { //multipoint Z (with Z and M)
-				fullLength = 20 + (numpoints * 8)  +8 +4*numpoints + 8 +4*numpoints;
-			}
-			else { //multipoint M (with M)
-				fullLength = 20 + (numpoints * 8)  +8 +4*numpoints;
-			}
-            if (contentLength >= fullLength) { //is the M portion actually there?
-                file.readDoubleLE(); //m min/max
+            
+            if (myShapeType == 18) {
+                file.readDoubleLE(); //z min/max
                 file.readDoubleLE();
-				actualReadWords += 8;
-                for (int t=0;t<numpoints;t++) { 
-                    file.readDoubleLE();//m
-					actualReadWords += 4;
+		    	actualReadWords += 8;
+                for (int t=0 ; t<numpoints ; t++) { 
+                    double z =  file.readDoubleLE();//z
+		    		actualReadWords += 4;
+                    coords[t].z = z;
                 }
             }
+            
+            if (myShapeType >= 18) {
+		    	int fullLength;
+		    	if (myShapeType == 18) { //multipoint Z (with Z and M)
+		    		fullLength = 20 + (numpoints * 8)  +8 +4*numpoints + 8 +4*numpoints;
+		    	}
+		    	else { //multipoint M (with M)
+		    		fullLength = 20 + (numpoints * 8)  +8 +4*numpoints;
+		    	}
+                if (contentLength >= fullLength) { //is the M portion actually there?
+                    file.readDoubleLE(); //m min/max
+                    file.readDoubleLE();
+		    		actualReadWords += 8;
+                    for (int t=0 ; t<numpoints ; t++) { 
+                        file.readDoubleLE();//m
+		    			actualReadWords += 4;
+                    }
+                }
+            }
+            
+            geom = geometryFactory.createMultiPoint(coords);
         }
         
 	    //verify that we have read everything we need
@@ -104,7 +107,7 @@ public class MultiPointHandler  implements ShapeHandler  {
 		    actualReadWords += 1;
 	    }
 	
-        return geometryFactory.createMultiPoint(coords);
+        return geom;
     }
     
     double[] zMinMax(Geometry g) {
@@ -221,4 +224,11 @@ public class MultiPointHandler  implements ShapeHandler  {
             return mp.getNumGeometries() * 8 + 20 +8 +4*mp.getNumGeometries() + 8 +4*mp.getNumGeometries();
         }
     }
+    
+    /**
+     * Return a empty geometry.
+     */
+     public Geometry getEmptyGeometry(GeometryFactory factory) {
+         return factory.createMultiPoint(new Point[0]);
+     }
 }

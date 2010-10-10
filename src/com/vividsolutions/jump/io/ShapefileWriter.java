@@ -549,51 +549,59 @@ public class ShapefileWriter implements JUMPWriter {
     /**
      * Find the generic geometry type of the feature collection.
      * Simple method - find the 1st non null geometry and its type
-     *  is the generic type.
-     * returns 0 - all empty/invalid <br>
-     *         1 - point <br>
-     *         2 - line <br>
-     *         3 - polygon <br>
+     * is the generic type.
+     * returns  0 : only empty geometry collection <br>
+     *          1 : only single points<br>
+     *          3 : at least one line or multiline<br>
+     *          5 : at least one polygon or multipolygon <br>
+     *          8 : at least one multipoint<br>
+     *         31 : only non empty geometry collection<br>
      *@param fc feature collection containing tet geometries.
      **/
     int findBestGeometryType(FeatureCollection fc) {
         Geometry geom;
+        boolean onlyPoints = true;
+        boolean onlyEmptyGeometryCollection = true;
         // [mmichaud 2007-06-12] : add the type variable to test if
         // all geometries are single Point
         // maybe it would be clearer using shapefile types integer for type
-        int type = 0;
         
         for (Iterator i = fc.iterator(); i.hasNext();) {
             geom = ((Feature) i.next()).getGeometry();
 
-            if (geom instanceof Point) {
-                // [mmichaud 2007-06-12] type is -1 while geometries are Point
-                type = -1;
+            if (onlyPoints && !(geom instanceof Point)) {
+                onlyPoints = false;
+            }
+            
+            if (onlyEmptyGeometryCollection && !(geom.isEmpty())) {
+                onlyEmptyGeometryCollection = false;
             }
 
             if (geom instanceof MultiPoint) {
-                return 1;
+                return 8;
             }
 
             if (geom instanceof Polygon) {
-                return 3;
+                return 5;
             }
 
             if (geom instanceof MultiPolygon) {
-                return 3;
+                return 5;
             }
 
             if (geom instanceof LineString) {
-                return 2;
+                return 3;
             }
 
             if (geom instanceof MultiLineString) {
-                return 2;
+                return 3;
             }
         }
-
-        return type; // return  0 if all geometries are null
-                     // return -1 if all geometries are single point
+        
+        if (onlyPoints) return 1;
+        else if (onlyEmptyGeometryCollection) return 0;
+        else return 31;
+        
     }
 
     public void checkIfGeomsAreMixed(FeatureCollection featureCollection)
@@ -602,7 +610,7 @@ public class ShapefileWriter implements JUMPWriter {
 	    int i= 0;
 	    Class firstClass = null;
 	    Geometry firstGeom = null;
-		System.out.println("ShapeFileWriter: start mixed-geom-test");
+		//System.out.println("ShapeFileWriter: start mixed-geom-test");
 	    for (Iterator iter = featureCollection.iterator(); iter.hasNext();) {
 			Feature myf = (Feature) iter.next();
 			if (i==0){
@@ -642,7 +650,7 @@ public class ShapefileWriter implements JUMPWriter {
 	}
     
     /**
-     *  reverses the order of points in lr (is CW -> CCW or CCW->CW)
+     *  Reverses the order of points in lr (is CW -> CCW or CCW->CW)
      */
     LinearRing reverseRing(LinearRing lr) {
         int numPoints = lr.getNumPoints();
@@ -657,7 +665,7 @@ public class ShapefileWriter implements JUMPWriter {
 
     /**
      * make sure outer ring is CCW and holes are CW
-     *@param p polygon to check
+     * @param p polygon to check
      */
     Polygon makeGoodSHAPEPolygon(Polygon p) {
         
@@ -722,21 +730,25 @@ public class ShapefileWriter implements JUMPWriter {
         
         int geomtype = findBestGeometryType(fc);
 
-        if (geomtype == 0) {
+        if (geomtype == 31) {
             throw new Exception(
-                "Could not determine shapefile type - data is either all GeometryCollections or empty");
+                "Could not determine shapefile type - data is all GeometryCollections");
         }
 
         List features = fc.getFeatures();
 
         for (int t = 0; t < features.size(); t++) {
-            Geometry geom;
-            geom = ((Feature) features.get(t)).getGeometry();
+            
+            Geometry geom = ((Feature) features.get(t)).getGeometry();
 
             switch (geomtype) {
-            // 2007/06/12 : add -1 case for collections with only single points
-            // maybe it would be clearer using shapefile types integer for geomtype
-            case -1: //single point
+            
+            case 0: //empty geometry collection
+                // empty geometry collections are arbitrarily written in a Point shapefile
+                allGeoms[t] = geom.getFactory().createGeometryCollection(new Geometry[0]);
+                break;
+                
+            case 1: //single point
 
                 if ((geom instanceof Point)) {
                     allGeoms[t] = (Point) geom;
@@ -746,7 +758,7 @@ public class ShapefileWriter implements JUMPWriter {
 
                 break;
                 
-            case 1: //point
+            case 8: //point
 
                 if ((geom instanceof Point)) {
                     //good!
@@ -762,7 +774,7 @@ public class ShapefileWriter implements JUMPWriter {
 
                 break;
 
-            case 2: //line
+            case 3: //line
 
                 if ((geom instanceof LineString)) {
                     LineString[] l = new LineString[1];
@@ -778,7 +790,7 @@ public class ShapefileWriter implements JUMPWriter {
 
                 break;
 
-            case 3: //polygon
+            case 5: //polygon
 
                 if (geom instanceof Polygon) {
                     //good!
