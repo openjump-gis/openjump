@@ -2,7 +2,9 @@ package org.geotools.shapefile;
 
 import java.io.IOException;
 
-import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 import com.vividsolutions.jump.io.EndianDataInputStream;
 import com.vividsolutions.jump.io.EndianDataOutputStream;
 
@@ -67,5 +69,12 @@ public class NullShapeHandler implements ShapeHandler {
      **/
     public int getLength(Geometry geometry) {
         return 2;
+    }
+    
+    /**
+     * Return a empty geometry.
+     */
+    public Geometry getEmptyGeometry(GeometryFactory factory) {
+        return factory.createPoint(new CoordinateArraySequence(0));
     }
 }
