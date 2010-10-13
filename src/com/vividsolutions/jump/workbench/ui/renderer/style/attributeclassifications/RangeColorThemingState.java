@@ -91,11 +91,13 @@ public class RangeColorThemingState implements ColorThemingStylePanel.State {
         double range = max-min;
         for (int i = 0 ; i < maxFilteredSize ; i++) {
             double threshold = min + range*i/maxFilteredSize;
-            // round the threshold in order to keep about 8 significant digits
-            double factor = Math.pow(10.0, 7.0-Math.round(Math.log10(threshold)));
-            threshold = Math.round(factor*threshold)/factor;
-            if (attributeValues.first() instanceof Double) filteredValues.add(new Double(threshold));
-            else if (attributeValues.first() instanceof Integer) filteredValues.add(new Integer((int)threshold));
+            if (attributeValues.first() instanceof Double) {
+                filteredValues.add(attributeValues.tailSet(new Double(threshold)).first());
+            }
+            else if (attributeValues.first() instanceof Integer) {
+                filteredValues.add(attributeValues.tailSet(new Integer((int)threshold)).first());
+            }
+            else {}
         }
         //CollectionUtil.stretch(
         //    attributeValueList,

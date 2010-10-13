@@ -1,3 +1,7 @@
+2010-10-14 mmichaud <michael.michaud@free.fr>
+    * fixed the way RangeColorTheming works (it was something close to quantile,
+      it is now equal intervals).
+
 2010-10-09 mmichaud <michael.michaud@free.fr>
     * slight change in the way ExtractLayerByGeometryType handle empty geometries
     * better handling of empty geometries in shapefile reader/writer
