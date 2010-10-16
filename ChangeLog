@@ -1,3 +1,6 @@
+2010-10-16 mmichaud <michael.michaud@free.fr>
+    * try to fix bug 3085542. Needs to check if there is no side effects 
+
 2010-10-14 mmichaud <michael.michaud@free.fr>
     * fixed the way RangeColorTheming works (it was something close to quantile,
       it is now equal intervals).
