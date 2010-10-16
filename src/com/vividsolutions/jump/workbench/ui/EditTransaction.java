@@ -363,7 +363,10 @@ public class EditTransaction {
             } else if (
                 allowAddingAndRemovingFeatures
                     && newGeometry.isEmpty()
-                    && !oldGeometry.isEmpty()) {
+                    // the second condition was preventing empty geometries to be removed
+                    // now, it should remove a feature which new geometry is empty,
+                    // but it does not. Why ? [mmichaud 2010-10-16]
+                    /*&& !oldGeometry.isEmpty()*/) { 
                 featuresToRemove.add(feature);
             } else {
                 modifiedFeatures.add(feature);
