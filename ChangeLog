@@ -1,3 +1,6 @@
+2010-10-18 mmichaud <michael.michaud@free.fr>
+    * Fixed ChangeLayerableNamePlugIn always visible in Layer menu
+
 2010-10-16 mmichaud <michael.michaud@free.fr>
     * try to fix bug 3085542. Needs to check if there is no side effects 
 

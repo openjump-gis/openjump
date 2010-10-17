@@ -25,23 +25,29 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
  */
 public class ChangeLayerableNamePlugIn extends AbstractPlugIn {
 
-    private MultiEnableCheck enableCheck;
+    //private EnableCheck enableCheck;
 
     @Override
     public void initialize(PlugInContext context) throws Exception {
-	WorkbenchContext workbenchContext = context.getWorkbenchContext();
-	FeatureInstaller installer = new FeatureInstaller(workbenchContext);
-	installer.addMainMenuItemWithJava14Fix(this,
-		new String[] { MenuNames.LAYER }, getName() + "...", false,
-		null, enableCheck);
-	JPopupMenu popupMenu = workbenchContext.getWorkbench().getFrame()
-		.getLayerNamePopupMenu();
-	installer.addPopupMenuItem(popupMenu, this, getName() + "{pos:5}",
-		false, null, createEnableCheck(workbenchContext));
-	popupMenu = workbenchContext.getWorkbench().getFrame()
-		.getWMSLayerNamePopupMenu();
-	installer.addPopupMenuItem(popupMenu, this, getName() + "{pos:6}",
-		false, null, createEnableCheck(workbenchContext));
+	    WorkbenchContext workbenchContext = context.getWorkbenchContext();
+	    EnableCheck enableCheck = createEnableCheck(workbenchContext);
+	    
+	    // Install in main menu
+	    FeatureInstaller installer = new FeatureInstaller(workbenchContext);
+	    installer.addMainMenuItemWithJava14Fix(this,
+	        new String[] { MenuNames.LAYER }, getName() + "...", false, null, enableCheck);
+		
+		// Install in layerName popup menu
+	    JPopupMenu popupMenu = workbenchContext.getWorkbench().getFrame()
+	        .getLayerNamePopupMenu();
+	    installer.addPopupMenuItem(popupMenu, this, getName() + "{pos:5}",
+		    false, null, enableCheck);
+		
+		// INstall in WMSLayerName popup menu
+	    popupMenu = workbenchContext.getWorkbench().getFrame()
+		    .getWMSLayerNamePopupMenu();
+	    installer.addPopupMenuItem(popupMenu, this, getName() + "{pos:6}",
+		    false, null, enableCheck);
     }
 
     @Override
@@ -52,51 +58,41 @@ public class ChangeLayerableNamePlugIn extends AbstractPlugIn {
 
     @Override
     public boolean execute(PlugInContext context) throws Exception {
-	reportNothingToUndoYet(context);
-	final Layerable layer = (Layerable) context.getLayerNamePanel()
-		.selectedNodes(Layerable.class).iterator().next();
-	final String oldName = layer.getName();
-	final String newName = (String) JOptionPane
-		.showInputDialog(
-			context.getWorkbenchFrame(),
-			I18N
-				.get("org.openjump.core.ui.plugin.layer.ChangeLayerableName.Rename"),
-			getName(), JOptionPane.PLAIN_MESSAGE, null, null,
-			oldName);
-	if(newName != null) {
-	    execute(new UndoableCommand(getName()) {
-		@Override
-		public void execute() {
-		    layer.setName(newName);
-		}
-
-		@Override
-		public void unexecute() {
-		    layer.setName(oldName);
-		}
-	    }, context);
-	}
-	return true;
+	    reportNothingToUndoYet(context);
+	    final Layerable layer = (Layerable) context.getLayerNamePanel()
+		    .selectedNodes(Layerable.class).iterator().next();
+	    final String oldName = layer.getName();
+	    final String newName =
+	        (String)JOptionPane.showInputDialog(context.getWorkbenchFrame(),
+			    I18N.get("org.openjump.core.ui.plugin.layer.ChangeLayerableName.Rename"),
+			    getName(), JOptionPane.PLAIN_MESSAGE, null, null, oldName);
+	    if(newName != null) {
+	        execute(new UndoableCommand(getName()) {
+		        @Override
+		        public void execute() {
+		            layer.setName(newName);
+		        }
+		        @Override
+		        public void unexecute() {
+		            layer.setName(oldName);
+		        }
+	        }, context);
+	    }
+	    return true;
     }
 
     /**
-         * @param workbenchContext
-         * @return an enable check
-         */
+     * @param workbenchContext
+     * @return an enable check
+     */
     public EnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
-	if (enableCheck != null)
+	    //if (enableCheck != null) return enableCheck;
+	    EnableCheckFactory enableCheckFactory = new EnableCheckFactory(workbenchContext);
+	    MultiEnableCheck enableCheck = new MultiEnableCheck();
+	    enableCheck.add(enableCheckFactory.createWindowWithLayerManagerMustBeActiveCheck());
+	    enableCheck.add(enableCheckFactory.createExactlyNLayerablesMustBeSelectedCheck(1, Layerable.class));
+	    
 	    return enableCheck;
-
-	EnableCheckFactory enableCheckFactory = new EnableCheckFactory(
-		workbenchContext);
-	enableCheck = new MultiEnableCheck();
-	enableCheck.add(enableCheckFactory
-		.createWindowWithLayerManagerMustBeActiveCheck());
-	enableCheck
-		.add(enableCheckFactory
-			.createExactlyNLayerablesMustBeSelectedCheck(1,
-				Layerable.class));
-	return enableCheck;
     }
 
 }
