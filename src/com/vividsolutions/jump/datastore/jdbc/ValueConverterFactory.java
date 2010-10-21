@@ -51,7 +51,10 @@ public class ValueConverterFactory
         && precision == 10 && scale == 0))
         return INTEGER_MAPPER;
 
-    if (classname.equalsIgnoreCase("java.math.BigDecimal"))
+    if (classname.equalsIgnoreCase("java.math.BigDecimal")
+        || sqlType == Types.FLOAT
+        || sqlType == Types.REAL
+        || sqlType == Types.DOUBLE)
         return DOUBLE_MAPPER;
 
     if (classname.equalsIgnoreCase("java.sql.Timestamp")
