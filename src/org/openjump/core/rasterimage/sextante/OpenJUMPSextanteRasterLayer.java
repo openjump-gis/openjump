@@ -33,6 +33,13 @@ public class OpenJUMPSextanteRasterLayer extends AbstractSextanteRasterLayer{
 
 	public void create(RasterImageLayer layer){
 
+		/* [sstein 26 Oct. 2010] - don't use code below because
+		 * the raster data should be loaded new from file.
+		 * It happened in tests that with the code below data from
+		 * another raster, created last, was used instead. 
+		 * (e.g. calculated Point-KDE first, and then Line-KDE=> then getting the polygon grid from
+		 * the point-KDE raster delivered the Line-KDE raster as poly grid)
+		 * 
 		m_BaseDataObject = layer;
 		//[sstein 2 Aug 2010], changed so we work now with the raster and not the image, which may be scaled for display. 
 		//m_Raster = layer.getImage().getData();
@@ -47,9 +54,55 @@ public class OpenJUMPSextanteRasterLayer extends AbstractSextanteRasterLayer{
 		m_LayerExtent.setCellSize((env.getMaxX() - env.getMinX())
 							/ (double)m_Raster.getWidth());
 		m_dNoDataValue = DEFAULT_NO_DATA_VALUE;
-
+		*/
+		
+		//[sstein 26 Oct. 2010] using the new method instead
+		// so I do not need to change the code in all the cases 
+		// where #.create(layer) is used
+		create(layer, true);
 	}
 
+	public void create(RasterImageLayer layer, boolean loadFromFile){
+
+		if (loadFromFile == false){
+			m_BaseDataObject = layer;
+			//[sstein 2 Aug 2010], changed so we work now with the raster and not the image, which may be scaled for display. 
+			//m_Raster = layer.getImage().getData();
+			m_Raster = layer.getRasterData();
+			//-- end
+			m_sName = layer.getName();
+			m_sFilename = layer.getImageFileName();
+			Envelope env = layer.getEnvelope();
+			m_LayerExtent = new GridExtent();
+			m_LayerExtent.setXRange(env.getMinX(), env.getMaxX());
+			m_LayerExtent.setYRange(env.getMinY(), env.getMaxY());
+			m_LayerExtent.setCellSize((env.getMaxX() - env.getMinX())
+								/ (double)m_Raster.getWidth());
+			m_dNoDataValue = DEFAULT_NO_DATA_VALUE;
+		}
+		else{	
+			RasterImageLayer rasterLayer = new RasterImageLayer(layer.getName(),
+					layer.getLayerManager(),
+					layer.getImageFileName(),
+					null,
+					null,
+					layer.getEnvelope());
+			m_BaseDataObject = rasterLayer;
+			m_Raster = rasterLayer.getRasterData();
+			//-- end
+			m_sName = rasterLayer.getName();
+			m_sFilename = rasterLayer.getImageFileName();
+			Envelope env = rasterLayer.getEnvelope();
+			m_LayerExtent = new GridExtent();
+			m_LayerExtent.setXRange(env.getMinX(), env.getMaxX());
+			m_LayerExtent.setYRange(env.getMinY(), env.getMaxY());
+			m_LayerExtent.setCellSize((env.getMaxX() - env.getMinX())
+								/ (double)m_Raster.getWidth());
+			m_dNoDataValue = DEFAULT_NO_DATA_VALUE;
+		}
+
+	}
+	
 	public void create(String name, String filename, GridExtent ge,
 			int dataType, int numBands, Object crs, LayerManager layerManager) {
 
