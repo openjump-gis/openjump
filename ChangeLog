@@ -1,3 +1,13 @@
+2010-10-26 mentaer <sstein@geo.unizh.ch>
+
+           **** new release of OpenJUMP 1.4.0.1 ****
+           
+2010-10-26 mentaer <sstein@geo.unizh.ch>
+    * fixed raster-read bug, that occurs when several rasters are created with
+      Sextante, and then these rasters should be converted or displayed in
+      different colors. 
+      changed OJ version 1.4.0.1 to reflect change
+           
 2010-10-24 mentaer <sstein@geo.unizh.ch>
 
            **** release of OpenJUMP 1.4 ****
