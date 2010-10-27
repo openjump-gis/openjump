@@ -77,7 +77,7 @@ public class JUMPWorkbench {
 		return splashImage;
 	}
 
-	private static final ImageIcon APP_ICON = IconLoader.icon("app-icon.gif");
+	private static final ImageIcon APP_ICON = IconLoader.icon("app-icon.png");
 	public static final String VERSION_TEXT = I18N.get("JUMPWorkbench.version.number");
 	//-- dont change the following strings 
 	public final static String PROPERTIES_OPTION = "properties";
