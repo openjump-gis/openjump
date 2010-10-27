@@ -642,11 +642,13 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
                  
              } catch (Throwable e) {
                  //logger.printError(e.getMessage());
-                 if (e.getMessage().indexOf("Planar (band-sequential) format TIFF is not supported") > -1) {
-                	 context.getWorkbench().getFrame().warnUser(I18N.get("unsupported-tiff"));
-                 } else {
-                     context.getWorkbench().getFrame().warnUser(I18N.get("problems-loading-image")+ e.getMessage());
-                 }
+            	 if(context != null){
+	                 if (e.getMessage().indexOf("Planar (band-sequential) format TIFF is not supported") > -1) {
+	                	 context.getWorkbench().getFrame().warnUser(I18N.get("unsupported-tiff"));
+	                 } else {
+	                     context.getWorkbench().getFrame().warnUser(I18N.get("problems-loading-image")+ e.getMessage());
+	                 }
+            	 }
                  e.printStackTrace();
                  return null;
              }
