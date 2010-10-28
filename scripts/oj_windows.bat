@@ -42,6 +42,7 @@ rem for %%F in ("%JAVA%") do set dirname=%%~dpF
 rem %dirname%java -version
 
 rem -- Change to jump home dir --
+rem -- NOTE: mount UNC paths to a local drive for this --
 cd /D %JUMP_HOME%
 
 set LIB=lib
@@ -64,7 +65,8 @@ set PATH=%PATH%;%LIB%\ext
 set JUMP_OPTS=-default-plugins bin\default-plugins.xml -properties bin\workbench-properties.xml -plug-in-directory "%LIB%\ext"
 
 rem -- note: title is needed or start won't accept quoted path to java binary (enables spaces in path)
-start "OpenJUMP console" "%JAVA%" -cp "%CLASSPATH%" %JAVA_OPTS% com.vividsolutions.jump.workbench.JUMPWorkbench %JUMP_OPTS%
+if /i "%JAVA_BIN%"=="javaw" ( set START=start "OpenJUMP console" ) else ( set START= )
+%START% "%JAVA%" -cp "%CLASSPATH%" %JAVA_OPTS% com.vividsolutions.jump.workbench.JUMPWorkbench %JUMP_OPTS%
 
 cd /D %OLD_DIR%
 
