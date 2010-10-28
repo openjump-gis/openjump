@@ -77,7 +77,22 @@ public class JUMPWorkbench {
 		return splashImage;
 	}
 
-	private static final ImageIcon APP_ICON = IconLoader.icon("app-icon.png");
+	private static ArrayList<Image> appIcons(){
+		ArrayList iconlist = new ArrayList();
+	    iconlist.add(IconLoader.image("oj_16_Kplain2oj.png"));
+	    iconlist.add(IconLoader.image("oj_24.png"));
+	    iconlist.add(IconLoader.image("oj_32.png"));
+	    iconlist.add(IconLoader.image("oj_48.png"));
+	    iconlist.add(IconLoader.image("oj_256.png"));
+	    //java.util.Collections.reverse(iconlist);
+	    return iconlist;
+	}
+	
+	// for java 1.5-
+	public static final ImageIcon APP_ICON  = IconLoader.icon("app-icon.gif");
+	// for java 1.6+
+	public static final ArrayList APP_ICONS = appIcons();
+	
 	public static final String VERSION_TEXT = I18N.get("JUMPWorkbench.version.number");
 	//-- dont change the following strings 
 	public final static String PROPERTIES_OPTION = "properties";
@@ -126,11 +141,62 @@ public class JUMPWorkbench {
 	private Blackboard blackboard = new Blackboard();
 
 	/**
+	 * @param o
+	 *                  a window to decorate with icon
+	 */
+	public static void setIcon ( Object o ) {
+		// attach the right icon, depending on 
+		//  - availability of method setIconImages (java 1.5 vs. 1.6), several icons for different sizes
+		//  - underlying object type (JFrame, JInternalFrame, others? )
+		// let's go
+		if ( o instanceof JFrame ) {
+			JFrame f = (JFrame) o;
+
+			try{
+				// case java 1.6+
+			    Class[] types = {java.util.List.class};
+			    java.lang.reflect.Method method = 
+			        JFrame.class.getMethod("setIconImages",types);
+			
+			    Object[] params = {APP_ICONS};
+			    method.invoke( f,params );
+			    //System.out.println("jep");
+			
+			}catch( Exception e ) {
+				// case java 1.5-, is really bad with transparent pngs, so we stick with the old gif
+			    f.setIconImage((Image)APP_ICON.getImage());
+			    //System.out.println("noe");
+			}
+		}
+		else if ( o instanceof javax.swing.JInternalFrame ) {
+			//System.out.println("internal");
+			javax.swing.JInternalFrame f = (javax.swing.JInternalFrame) o;
+			f.setFrameIcon(getIcon());
+		}
+	}
+
+	private static ImageIcon icon ;
+	
+	public static ImageIcon getIcon(){
+		// java 1.5 is really bad with transparent pngs, so we stick with the old gif
+		if ( ! ( icon instanceof ImageIcon ) ) {
+			Double jre_version = Double.parseDouble( System.getProperty("java.version").substring(0,3) );
+			if ( jre_version < 1.6 ) {
+				icon = APP_ICON;
+			} else {
+				icon = new ImageIcon();
+				icon.setImage((Image)APP_ICONS.get(0));
+			}
+		}
+		return icon;
+	}
+	
+	/**
 	 * @param s
 	 *                  a visible SplashWindow to close when initialization is
 	 *                  complete and the WorkbenchFrame is opened
 	 */
-	public JUMPWorkbench(String title, String[] args, ImageIcon icon,
+	public JUMPWorkbench(String title, String[] args,
 			final JWindow s, TaskMonitor monitor) throws Exception {
 		parseCommandLine(args);
 		// load i18n specified in command line ( '-i18n translation' )
@@ -138,7 +204,7 @@ public class JUMPWorkbench {
 			I18N.loadFile(commandLine.getOption(I18N_FILE).getArg(0));
 			I18N_SETLOCALE = commandLine.getOption(I18N_FILE).getArg(0);
 		}
-		frame = new WorkbenchFrame(title, icon, context);
+		frame = new WorkbenchFrame(title, context);
 		frame.addWindowListener(new WindowAdapter() {
 			public void windowOpened(WindowEvent e) {
 				s.setVisible(false);
@@ -282,8 +348,7 @@ public class JUMPWorkbench {
 			SplashWindow splashWindow = new SplashWindow(splashComponent);
 			splashWindow.setVisible(true);
 
-			JUMPWorkbench workbench = new JUMPWorkbench(title, args, APP_ICON,
-					splashWindow, taskMonitor);
+			JUMPWorkbench workbench = new JUMPWorkbench(title, args, splashWindow, taskMonitor);
 
 			setup.setup(workbench.context);
 			//must wait until after setup initializes the persistent blackboard to recall settings			

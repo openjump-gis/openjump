@@ -34,6 +34,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Window;
@@ -92,6 +93,7 @@ import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.util.Block;
 import com.vividsolutions.jump.util.CollectionUtil;
 import com.vividsolutions.jump.util.StringUtil;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Category;
 import com.vividsolutions.jump.workbench.model.CategoryEvent;
@@ -118,32 +120,34 @@ import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
 /**
  * This class is responsible for the main window of the JUMP application.
  */
-public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
-  ViewportListener {
-  BorderLayout borderLayout1 = new BorderLayout();
+public class WorkbenchFrame extends JFrame 
+	implements LayerViewPanelContext, ViewportListener 
+	{
 
-  JLabel coordinateLabel = new JLabel();
+	BorderLayout borderLayout1 = new BorderLayout();
 
-  JMenuBar menuBar = new JMenuBar();
+	JLabel coordinateLabel = new JLabel();
 
-  JMenu fileMenu = (JMenu)FeatureInstaller.installMnemonic(new JMenu(
-    MenuNames.FILE), menuBar);
+	JMenuBar menuBar = new JMenuBar();
 
-  JMenuItem exitMenuItem = FeatureInstaller.installMnemonic(new JMenuItem(
-    I18N.get("ui.WorkbenchFrame.exit")), fileMenu);
+	JMenu fileMenu = (JMenu) FeatureInstaller.installMnemonic(new JMenu(
+			MenuNames.FILE), menuBar);
 
-  GridBagLayout gridBagLayout1 = new GridBagLayout();
+	JMenuItem exitMenuItem = FeatureInstaller.installMnemonic(new JMenuItem(
+			I18N.get("ui.WorkbenchFrame.exit")), fileMenu);
 
-  JLabel messageLabel = new JLabel();
+	GridBagLayout gridBagLayout1 = new GridBagLayout();
 
-  JPanel statusPanel = new JPanel();
+	JLabel messageLabel = new JLabel();
 
-  JLabel timeLabel = new JLabel();
+	JPanel statusPanel = new JPanel();
 
-  // <<TODO:FEATURE>> Before JUMP Workbench closes, prompt the user to save
-  // any
-  // unsaved layers [Jon Aquino]
-  WorkbenchToolBar toolBar;
+	JLabel timeLabel = new JLabel();
+
+	// <<TODO:FEATURE>> Before JUMP Workbench closes, prompt the user to save
+	// any
+	// unsaved layers [Jon Aquino]
+	WorkbenchToolBar toolBar;
 
   JMenu windowMenu = (JMenu)FeatureInstaller.installMnemonic(new JMenu(
     MenuNames.WINDOW), menuBar);
@@ -200,8 +204,6 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
       super.setTitle(I18N.get("ui.WorkbenchFrame.output"));
     }
   };
-
-  private ImageIcon icon;
 
   private TitledPopupMenu layerNamePopupMenu = new TitledPopupMenu() {
     {
@@ -317,8 +319,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
 
   private ComponentFactory<TaskFrame> taskFrameFactory;
 
-  public WorkbenchFrame(String title, ImageIcon icon,
-    final WorkbenchContext workbenchContext) throws Exception {
+  public WorkbenchFrame(String title, final WorkbenchContext workbenchContext) throws Exception {
     setTitle(title);
     new Timer(1000, new ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -330,7 +331,12 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
       }
     }).start();
     this.workbenchContext = workbenchContext;
-    this.icon = icon;
+	
+    // set icon for the app frame
+    JUMPWorkbench.setIcon(this);  
+    
+    //this.icon = new ImageIcon();
+	//this.icon.setImage(JUMPWorkbench.getIcon());
     toolBar = new WorkbenchToolBar(workbenchContext);
     toolBar.setTaskMonitorManager(new TaskMonitorManager());
     try {
@@ -552,7 +558,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
     // <<TODO:IMPROVE>> Listen for when the frame closes, and when it does,
     // activate the topmost frame. Because Swing does not seem to do this
     // automatically. [Jon Aquino]
-    internalFrame.setFrameIcon(icon);
+    JUMPWorkbench.setIcon( internalFrame );
     // Call JInternalFrame#setVisible before JDesktopPane#add; otherwise,
     // the
     // TreeLayerNamePanel starts too narrow (100 pixels or so) for some
@@ -996,7 +1002,10 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
 
   private void jbInit() throws Exception {
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-    this.setIconImage(icon.getImage());
+
+    // TODO: insert icon necessary?
+    //JUMPWorkbench.setIcon( this );
+    
     this.addComponentListener(new java.awt.event.ComponentAdapter() {
       public void componentShown(ComponentEvent e) {
         this_componentShown(e);
