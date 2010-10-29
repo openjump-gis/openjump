@@ -96,7 +96,7 @@ for libfile in "$JUMP_LIB/"*.{zip,jar}
 do
   CLASSPATH="$libfile":"$CLASSPATH";
 done
-CLASSPATH=./core/bin:.:./bin:./conf:$CLASSPATH
+CLASSPATH=.:./bin:./conf:$CLASSPATH
 export CLASSPATH;
 
 ## compile jump opts
