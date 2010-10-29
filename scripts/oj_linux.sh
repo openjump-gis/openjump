@@ -14,6 +14,17 @@ JAVA_SAXDRIVER=${JAVA_SAXDRIVER-org.apache.xerces.parsers.SAXParser}
 JAVA_LOOKANDFEEL=${JAVA_LOOKANDFEEL-javax.swing.plaf.metal.MetalLookAndFeel}
 JAVA_MAXMEM=${JAVA_MAXMEM--Xmx512M}
 
+## end function, delays closing of terminal
+end(){
+  # show error for some time to prohibit window closing on X
+  if [ "$ERROR" != "0" ]; then
+    sleep 15
+    exit 1
+  else
+    exit 0
+  fi
+}
+
 if(test -L "$0") then
     	auxlink=`ls -l "$0" | sed 's/^[^>]*-> //g'`
     	JUMP_HOME=`dirname "$auxlink"`/..
@@ -45,14 +56,19 @@ fi
 # java available
 [ -z "$JAVA" ] && \
  echo "Couldn't find java in your PATH ($PATH). Please install java or 
-add the location of java to your PATH environment variable." && ERROR=1
+add the location of java to your PATH environment variable." && ERROR=1 && end
 
-# java executable file?, disabled because relative links broke it
-#while [ -L "$JAVA" ]; do
-#  JAVA=$(readlink -n "$JAVA")
-#done
-#[ ! -x "$JAVA" ] && \
-# echo "The found java binary '$JAVA' is no executable file." && ERROR=1
+# resolve recursive links to java binary
+relPath(){ echo $1 | awk '/^\//{exit 1}'; }
+relPath "$JAVA" && JAVA="$(pwd)/$JAVA"
+while [ -L "${JAVA}" ]; do
+  JDIR=$(dirname "$JAVA")
+  JAVA=$(readlink -n "${JAVA}")
+  relPath "$JAVA" && JAVA="${JDIR}/${JAVA}"
+done
+# java executable file?
+[ ! -x "$JAVA" ] && \
+ echo "The found java binary '$JAVA' is no executable file." && ERROR=1 && end
 
 # java version check
 JAVA_VERSION=$("$JAVA" -version 2>&1 | awk -F'"' '/^java version/{print $2}' | awk -F'.' '{print $1"."$2}')
@@ -63,8 +79,8 @@ Please provide an at least version '$JAVA_NEEDED' java runtime."
   ERROR=1
 fi
 
-# always print java version info
-"$JAVA" -version
+# always print java infos
+echo "Running -> '${JAVA}'; " $("$JAVA" -version 2>&1|awk 'BEGIN{ORS=""}{print $0"; "}')
 
 JUMP_PROFILE=~/.jump/openjump.profile
 if [ -f "$JUMP_PROFILE" ]; then
@@ -92,7 +108,7 @@ if [ -d "$JUMP_STATE" ] || [ -f "$JUMP_STATE" ]; then
   JUMP_OPTS="$JUMP_OPTS -state $JUMP_STATE"
 fi
 
-for libfile in "$JUMP_LIB/"*.{zip,jar}
+for libfile in "$JUMP_LIB/"*.zip "$JUMP_LIB/"*.jar
 do
   CLASSPATH="$libfile":"$CLASSPATH";
 done
@@ -128,7 +144,5 @@ fi
 ## return to old working dir
 cd "$OLD_DIR"
 
-# show error for some time to prohibit window closing on X
-if [ "$ERROR" != "0" ]; then
-  sleep 15
-fi
+## run end function
+end
