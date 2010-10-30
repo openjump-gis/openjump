@@ -1,6 +1,6 @@
 2010-10-26 mmichaud <michael.michaud@free.fr>
     * small fixes on AddNewFeaturesPlugIn and EditSelectedSidePlugIn
-      and add a method in EnableChackFactory 
+      and add a method in EnableCheckFactory 
 
 2010-10-26 mentaer <sstein@geo.unizh.ch>
 
