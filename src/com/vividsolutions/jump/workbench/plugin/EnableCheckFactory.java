@@ -323,6 +323,20 @@ public class EnableCheckFactory {
             }
         };
     }
+    
+    public EnableCheck createExactlyOneSelectedLayerMustBeEditableCheck() {
+        return new EnableCheck() {
+            public String check(JComponent component) {
+                String msg = get("com.vividsolutions.jump.workbench.plugin.Exactly-one-selected-layer-must-be-editable");
+                Layer[] layers = workbenchContext.getLayerNamePanel().getSelectedLayers();
+                int countSelectedEditable = 0;
+                for (int i = 0 ; i < layers.length ; i++) {
+                    if (layers[i].isEditable()) countSelectedEditable++;
+                }
+                return 1 != countSelectedEditable ? msg : null;
+            }
+        };
+    }
 
     public EnableCheck createAtLeastNLayersMustExistCheck(final int n) {
         return new EnableCheck() {

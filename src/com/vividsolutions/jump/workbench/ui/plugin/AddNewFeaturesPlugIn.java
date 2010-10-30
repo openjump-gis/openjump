@@ -105,7 +105,7 @@ public class AddNewFeaturesPlugIn extends WKTPlugIn {
 
         return new MultiEnableCheck()
             .add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
-            .add(checkFactory.createAtLeastNLayersMustBeEditableCheck(1));
+            .add(checkFactory.createExactlyOneSelectedLayerMustBeEditableCheck());
     }
     
     public static final ImageIcon ICON = IconLoader.icon("add.png");
