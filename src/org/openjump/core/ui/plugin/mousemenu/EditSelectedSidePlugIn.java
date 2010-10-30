@@ -74,7 +74,7 @@ public class EditSelectedSidePlugIn extends AbstractPlugIn {
     public boolean execute(final PlugInContext context) throws Exception
     {
         reportNothingToUndoYet(context);
-        EditSelectedSideDialog dialog = new EditSelectedSideDialog(context, getName(), false);
+        EditSelectedSideDialog dialog = new EditSelectedSideDialog(context, sEditSelectedSide, false);
         dialog.setVisible(true);
         return true;
     }
