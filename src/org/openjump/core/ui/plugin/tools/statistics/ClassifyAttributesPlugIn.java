@@ -232,7 +232,10 @@ public class ClassifyAttributesPlugIn extends AbstractPlugIn implements Threaded
                     jcb_attribute.setModel(new DefaultComboBoxModel(new String[0]));
                     jcb_attribute.setEnabled(false);
                 }
-                jcb_attribute.setModel(new DefaultComboBoxModel(list.toArray(new String[0])));
+                else {
+                    jcb_attribute.setModel(new DefaultComboBoxModel(list.toArray(new String[0])));
+                    jcb_attribute.setEnabled(true);
+                }
             }
         });        
       }
