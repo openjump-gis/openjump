@@ -8,15 +8,25 @@ what you need to built OpenJUMP:
   or a checkout of the sources from the cvs
 - A installation of a JAVA SDK.
 
-If you have done the downloads and and installed ANT (it should be contained already in Eclipse), then you have to create an arbitrary folder. In Eclipse this might be done by creating a "simlpe" project.
+If you have done the downloads and and installed ANT
+(it should be contained already in Eclipse),
+then you have to create an arbitrary folder.
+In Eclipse this might be done by creating a "simlpe" project.
 This folder must contains the following subfolders:
-* \build => here the class files from the ant built will be stored (note: you may create the folder by yourself if not contained in the download)
-* \dist => after building you will find here you distribution files (note: you may create the folder by yourself if not contained in the download)
-* \docs => is currently empty but will later contain some pdf files (note: you may create the folder by yourself if not contained in the download)
-* \etc => this must contains several files including the built.xml file for ANT (take the folder from the download)
-* \lib => contains all the necessary libraries (including 2 subfolders: \Batik and \ext) (take the folder from the download)
-* \scripts => should contain the openJUMP start-up scripts for different OS (take the folder from the download)
-* \src => includes the Jump\OpenJUMP source files needed to built OpenJUMP. It shoudl contain at least 4 subfolders: 
+* \build => here the class files from the ant built will be stored
+           (note: you may create the folder by yourself if not contained in the download)
+* \dist => after building you will find here you distribution files
+           (note: you may create the folder by yourself if not contained in the download)
+* \docs => is currently empty but will later contain some pdf files
+           (note: you may create the folder by yourself if not contained in the download)
+* \etc => this must contains several files including the built.xml file for ANT
+           (take the folder from the download)
+* \lib => contains all the necessary libraries (including 2 subfolders: \Batik and \ext)
+           (take the folder from the download)
+* \scripts => should contain the openJUMP start-up scripts for different OS
+           (take the folder from the download)
+* \src => includes the Jump\OpenJUMP source files needed to built OpenJUMP.
+           It shoudl contain at least 4 subfolders: 
 	\src\com 
 	\src\org 
 	\src\de
