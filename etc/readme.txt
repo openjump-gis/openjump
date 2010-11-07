@@ -1,8 +1,8 @@
 OpenJUMP readme file
 --------------------
-Version 1.4
+Version 1.4.0.2
 
-October 24th, 2010
+November 7th, 2010
 
 Contents
 --------
@@ -44,8 +44,9 @@ Run the startup scripts contained in the /bin folder:
 - For Linux/Unix, launch oj_linux.sh
 - For Mac, launch oj_mac.command
 
-Further notes can be found on our wiki: http://sourceforge.net/apps/mediawiki/jump-pilot/index.php?title=Main_Page
-and on www.openjump.org
+Further notes can be found on our wiki:
+http://sourceforge.net/apps/mediawiki/jump-pilot/index.php?title=Main_Page
+and on http://www.openjump.org
 
 Users of the "looks" extension should place all the jar files from looks-extension 
 directly into /lib/ext.
@@ -53,16 +54,18 @@ directly into /lib/ext.
 
 Startup options
 -----------------
-Several startup options are available, either for the Java Virtual Machine, or for the
-OpenJUMP core. To change them, edit the startup script
-accordingly, editing the line beginning by "start javaw" or look for similar entries.
+Several startup options are available, either for the Java Virtual Machine, or
+for the OpenJUMP core. To change them, edit the startup script accordingly,
+editing the line beginning by "start javaw" or look for similar entries.
 
-Note, that Windows users that like to start OpenJUMP with the OpenJUMP.exe file will need to modify OpenJUMP.ini, or alternatively oj_windows.bat  
+Note, that Windows users that like to start OpenJUMP with the OpenJUMP.exe file
+will need to modify OpenJUMP.ini, or alternatively oj_windows.bat  
 
 Java VM options (a complete list can be found in the Java VM documentation)
--Xms defines the allocated memory for the virtual machine at startup. Example: -Xms256M
- will allocate 256M of memory for OpenJUMP
--Xmx defines the maximum allocated memory for the virtual machine. Example: -Xmx256M
+-Xms defines the allocated memory for the virtual machine at startup.
+Example: -Xms256M will allocate 256M of memory for OpenJUMP
+-Xmx defines the maximum allocated memory for the virtual machine.
+Example: -Xmx256M
 -Dproperty=value set a system property. For the moment, these properties are used:
   -Dswing.defaultlaf  for defining the OpenJUMP Look and Feel. Several possibilities:
      -Dswing.defaultlaf=javax.swing.plaf.metal.MetalLookAndFeel for the Metal L&F
@@ -90,13 +93,14 @@ General questions regarding OpenJUMP can be found in:
 - www.openjump.org the OpenJUMP home
 - jump-pilot.sourceforge.net the OpenJUMP developper site
 
-For commerical support, e.g. payed plugin development, see our www.openjump.org home.
+For commerical support, e.g. payed plugin development, see our
+www.openjump.org home.
 
 
 5. OpenJUMP history
 -------------------
-OpenJUMP is a "fork" of the JUMP "Java Unified Mapping Platform" software, developed
-by Vividsolutions and released in 2003.
+OpenJUMP is a "fork" of the JUMP "Java Unified Mapping Platform" software,
+developed by Vividsolutions and released in 2003.
 During 2004, some enthusiastic developers joined together to enhance further the 
 features of JUMP. They launched an independent development branch called OpenJUMP.
 This name gives credit to the original JUMP development, and at the same time 
@@ -184,5 +188,5 @@ Translation contributors are:
 - Chinese: Elton Chan
 
 others:
-- L. Paul Chew for providing the Delauney triangulation algorithm to create Voronoi diagrams
+- L. Paul Chew for providing the Delaunay triangulation algorithm to create Voronoi diagrams
 
