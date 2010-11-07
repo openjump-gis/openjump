@@ -15,7 +15,7 @@
     <property name="name" value="openjump"/>
     <property name="Name" value="OpenJUMP"/>
     <!--property name="version" value="20050728"/-->
-    <property name="version" value="1.4.0"/>
+    <property name="version" value="1.4.0.2"/>
     <!-- The recommended setting for debug is "on", so that line numbers are included in stack traces. [Jon Aquino 2005-04-06] -->
     <property name="debug" value="on"/>
     <property name="deprecation" value="off"/>
@@ -25,6 +25,7 @@
     <property name="src.dir" value="src"/>
     <property name="lib.dir" value="lib"/>
     <property name="etc.dir" value="etc"/>
+    <property name="licenses.dir" value="${etc.dir}/licenses"/>
     <property name="scripts.dir" value="scripts"/>
     <property name="docs.dir" value="doc"/>
     <property name="build.dir" value="build"/>
@@ -213,6 +214,7 @@ Main-Class: com.vividsolutions.jump.workbench.JUMPWorkbench
     <!--  Creates the distribution                                             -->
     <!--  ===================================================================  -->
     <target name="dist" depends="jar,javadocs">
+    <!--target name="dist" depends="jar"-->
         <mkdir dir="${archive.dir}"/>
         <copy todir="${archive.dir}/bin">
             <fileset dir="${scripts.dir}"/>
@@ -230,6 +232,16 @@ Main-Class: com.vividsolutions.jump.workbench.JUMPWorkbench
         </copy>
         <copy file="${workbench.jar}" todir="${archive.dir}/lib"/>
         <copy file="${api.jar}" todir="${archive.dir}/lib"/>
+        <mkdir dir="${archive.dir}/licenses"/>
+        <copy todir="${archive.dir}/licenses">
+            <fileset dir="${licenses.dir}">
+                <include name="*.txt"/>
+            </fileset>
+        </copy>
+        <copy file="etc/readme.txt" todir="${archive.dir}"/>
+        <copy file="Changes.txt" todir="${archive.dir}"/>
+        
+        <!-- and now the source zip-->
         <mkdir dir="${archive.src.dir}"/>
         <copy todir="${archive.src.dir}/javadoc">
             <fileset dir="${javadoc.dir}"/>
@@ -237,6 +249,12 @@ Main-Class: com.vividsolutions.jump.workbench.JUMPWorkbench
         <copy todir="${archive.src.dir}/src">
             <fileset dir="${src.dir}">
                 <selector refid="archive.src.selector"/>
+            </fileset>
+        </copy>
+        <mkdir dir="${archive.src.dir}/licenses"/>
+        <copy todir="${archive.src.dir}/licenses">
+            <fileset dir="${licenses.dir}">
+                <include name="*.txt"/>
             </fileset>
         </copy>
         <!-- [sstein] added begin : copy also all other stuff to src-->
@@ -249,6 +267,8 @@ Main-Class: com.vividsolutions.jump.workbench.JUMPWorkbench
                 <include name="${scripts.dir}/**"/>
             </fileset>
         </copy>
+        <copy file="etc/readme.txt" todir="${archive.src.dir}"/>
+        <copy file="Changes.txt" todir="${archive.src.dir}"/>
         <!-- [sstein] added end -->
     </target>
 
