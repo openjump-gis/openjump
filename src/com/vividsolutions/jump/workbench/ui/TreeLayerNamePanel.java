@@ -144,6 +144,8 @@ public class TreeLayerNamePanel extends JPanel
     private TreePath movingTreePath = null;
 
     private boolean firstTimeDragging = true;
+    
+    private int lastHoveringRow = -1;
 
     /**
      */
@@ -175,6 +177,7 @@ public class TreeLayerNamePanel extends JPanel
         setCellRenderer(additionalNodeClassToTreeCellRendererMap);
         tree.getSelectionModel().setSelectionMode(
                 TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
+        
         tree.addMouseListener(new MouseAdapter() {
 
             public void mouseClicked(MouseEvent e) {
@@ -183,20 +186,24 @@ public class TreeLayerNamePanel extends JPanel
 
             public void mousePressed(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1) {
-                    movingTreePath = tree
-                            .getPathForLocation(e.getX(), e.getY());
+                    movingTreePath = tree.getPathForLocation(e.getX(), e.getY());
                     // move only Layerables, not Categories
-                    if (movingTreePath != null
-                            && ! (movingTreePath.getLastPathComponent() instanceof Layerable))
+                    if (movingTreePath != null && ! (movingTreePath.getLastPathComponent() instanceof Layerable)) {
                         movingTreePath = null;
-                } else
+                    }
+                    else {
+                        lastHoveringRow = tree.getClosestRowForLocation(e.getX(), e.getY());
+                    }
+                } else {
                     movingTreePath = null;
+                }
             }
 
             public void mouseReleased(MouseEvent e) {
-                if (e.getButton() != MouseEvent.BUTTON1
-                        || movingTreePath == null)
+                
+                if (e.getButton() != MouseEvent.BUTTON1 || movingTreePath == null) {
                     return;
+                }
 
                 Object node = movingTreePath.getLastPathComponent();
                 TreePath tpDestination = tree.getClosestPathForLocation(e
@@ -206,8 +213,9 @@ public class TreeLayerNamePanel extends JPanel
                 // selecting a different layer, the last XOR placement of the
                 // dragbar would appear over the Category. Need to reset
                 // firstTimeDragging to true before returning.
-                movingTreePath = null;
+                //movingTreePath = null;
                 firstTimeDragging = true;
+                lastHoveringRow = -1;
 
                 if (tpDestination == null) {
                     return;
@@ -223,6 +231,10 @@ public class TreeLayerNamePanel extends JPanel
                     Layerable layerable = (Layerable) node;
                     int index = 0;
                     Category cat = null;
+                    
+                    int oldRow = tree.getRowForPath(movingTreePath);
+                    int newRow = tree.getRowForPath(tpDestination);
+                    Category oldCat = (Category)movingTreePath.getParentPath().getLastPathComponent();
 
                     if (tpDestination.getLastPathComponent() instanceof Layerable) {
 
@@ -234,55 +246,59 @@ public class TreeLayerNamePanel extends JPanel
                         }
 
                         cat = getLayerManager().getCategory(
-                                (Layerable) tpDestination
-                                        .getLastPathComponent());
+                                (Layerable) tpDestination.getLastPathComponent());
+                        
                         index = tree.getModel().getIndexOfChild(
-                                tpDestination.getParentPath()
-                                        .getLastPathComponent(),
+                                tpDestination.getParentPath().getLastPathComponent(),
                                 tpDestination.getLastPathComponent());
-                    } else if (tpDestination.getLastPathComponent() instanceof Category) {
+                        // adjust where the Layer will be drop exactly
+                        if (newRow < oldRow && cat.equals(oldCat)) index++;
+                        else if (!cat.equals(oldCat)) index++;
+                    }
+                    else if (tpDestination.getLastPathComponent() instanceof Category) {
                         cat = (Category) tpDestination.getLastPathComponent();
-
                         // Prevent unnecessary removals and re-additions
                         // [Jon Aquino 2004-03-11]
-                        if (cat.contains(layerable)) {
-                            return;
-                        }
-
-                    } else {
-                        // Can get here if the node is, for example, a LayerTreeModel.ColorThemingValue [Jon Aquino 2005-07-25]
+                        // if (cat.contains(layerable)) {
+                            //return;
+                        // }
+                    }
+                    else {
+                        // Can get here if the node is, for example,
+                        // a LayerTreeModel.ColorThemingValue [Jon Aquino 2005-07-25]
                         return;
                     }
-
                     getLayerManager().remove(layerable);
                     cat.add(index, layerable);
-                    getLayerManager().fireLayerChanged(layerable,
-                            LayerEventType.METADATA_CHANGED);
+                    getLayerManager().fireLayerChanged(layerable, LayerEventType.METADATA_CHANGED);
+                    movingTreePath = null;
                 }
             }
         });
+        
         tree.addMouseMotionListener(new MouseMotionAdapter() {
             int rowNew;
-
-            int rowOld = -1;
 
             Rectangle dragBar;
 
             public void mouseDragged(MouseEvent e) {
-                // return if mouse is dragged while not originating on a tree
-                // node
+                // return if mouse is dragged while not originating on a tree node
                 if (movingTreePath == null) {
                     firstTimeDragging = true;
                     return;
                 }
 
+                int rowOld = tree.getRowForPath(movingTreePath);
                 rowNew = tree.getClosestRowForLocation(e.getX(), e.getY());
-                rowOld = tree.getRowForPath(movingTreePath);
+                //rowOld = tree.getRowForPath(movingTreePath);
                 // if the dragging of a row hasn't moved outside of the bounds
                 // of the currently selected row, don't show the horizontal drag
                 // bar.
-                if (rowNew == rowOld)
+                if (rowNew == lastHoveringRow ||
+                    rowNew == rowOld-1 || rowNew == rowOld) {
                     return;
+                }
+                
                 if (!(tree.getPathForRow(rowNew).getLastPathComponent() instanceof Layer)) {
                     tree.expandRow(rowNew);
                 }
@@ -293,18 +309,16 @@ public class TreeLayerNamePanel extends JPanel
                 // if this is the first time moving the dragbar, draw the
                 // dragbar so XOR drawing works properly
                 if (firstTimeDragging) {
-                    rowOld = rowNew;
                     dragBar = new Rectangle(0, 0, tree.getWidth(), 3);
+                    dragBar.setLocation(0, tree.getRowBounds(lastHoveringRow).y + tree.getRowBounds(lastHoveringRow).height - 3);
                     g2.fill(dragBar);
                     firstTimeDragging = false;
                 }
-
                 // XOR drawing mode of horizontal drag bar
                 g2.fill(dragBar);
-                dragBar.setLocation(0, tree.getRowBounds(rowNew).y);
+                dragBar.setLocation(0, tree.getRowBounds(rowNew).y + tree.getRowBounds(rowNew).height - 3);
                 g2.fill(dragBar);
-
-                rowOld = rowNew;
+                lastHoveringRow = rowNew;
             }
         });
         tree.setCellEditor(cellEditor);
