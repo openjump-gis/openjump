@@ -1,3 +1,7 @@
+2010-11-15 mmichaud <michael.michaud@free.fr>
+    * Changed version number to 1.4.1alpha
+    * Fixed a NPE in ExtractLayersByAttribute
+
 2010-11-07 mmichaud <michael.michaud@free.fr>
 
            **** new release of OpenJUMP 1.4.0.2 ****

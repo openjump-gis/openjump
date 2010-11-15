@@ -74,6 +74,11 @@ public class ExtractLayersByAttribute extends AbstractPlugIn {
 		I18N.get("org.openjump.core.ui.plugin.layer.ExtractLayersByAttribute.TEXT");
 	private static final String EXTRACT = 
 		I18N.get("org.openjump.core.ui.plugin.layer.ExtractLayersByAttribute.Extract");
+	// NULL is not translated
+	private static final String NULL = 
+		I18N.get("org.openjump.core.ui.plugin.layer.ExtractLayersByAttribute._NULL_");
+    private static final String EMPTY = 
+		I18N.get("org.openjump.core.ui.plugin.layer.ExtractLayersByAttribute._EMPTY_");
 	
 	private Layer sourceLayer = null;
 	private JComboBox layerAttributeComboBox = null;
@@ -165,16 +170,18 @@ public class ExtractLayersByAttribute extends AbstractPlugIn {
         	Feature feature = (Feature) i.next();
 			// modified by michaelm on 2009-02-20 to handle null and empty strings
         	Object attributeValue = feature.getAttribute(attributeIndex);
-			if (attributeValue == null && !newLayerNameList.contains("NULL")) {
-				newLayerNameList.add("NULL");
+			if (attributeValue == null) {
+			    if (!newLayerNameList.contains(NULL)) {
+				    newLayerNameList.add(NULL);
+				}
 			}
 			else {
-				String attibuteString = attributeValue.toString();
-				if (attibuteString.length()== 0 && !newLayerNameList.contains("EMPTY STRING")) {
-				    newLayerNameList.add("EMPTY STRING");
+				String attributeString = attributeValue.toString();
+				if (attributeString.length()== 0 && !newLayerNameList.contains(EMPTY)) {
+				    newLayerNameList.add(EMPTY);
 				}
-        	    else if (!newLayerNameList.contains(attibuteString)) {
-        		    newLayerNameList.add(attibuteString);
+        	    else if (!newLayerNameList.contains(attributeString)) {
+        		    newLayerNameList.add(attributeString);
 				}
         	}
         }
@@ -202,14 +209,14 @@ public class ExtractLayersByAttribute extends AbstractPlugIn {
 				// modified by michaelm on 2009-02-20 to handle null and empty strings
 	        	Object attributeValue = feature.getAttribute(attributeIndex);
 				if (attributeValue == null) {
-					if (layerName.equals("NULL")) {
+					if (layerName.equals(NULL)) {
 						newFeatureCollection.add((Feature) feature.clone());
 					}
 				}
 				else {
 					String attributeString = attributeValue.toString();
 				    if (attributeString.length()== 0) {
-						if (layerName.equals("EMPTY STRING")) {
+						if (layerName.equals(EMPTY)) {
 							newFeatureCollection.add((Feature) feature.clone());
 						}
 					}
