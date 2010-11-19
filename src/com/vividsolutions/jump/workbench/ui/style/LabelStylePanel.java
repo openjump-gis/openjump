@@ -361,7 +361,11 @@ public class LabelStylePanel extends JPanel implements StylePanel {
         hideOverlappingLabelsCheckBox.setSelected(labelStyle.isHidingOverlappingLabels());
         heightTextField.setText(labelStyle.getHeight() + "");
         outlineWidthField.setText(labelStyle.getOutlineWidth() + "");
-        verticalAlignmentComboBox.setSelectedItem(labelStyle.getVerticalAlignment());
+        String va = labelStyle.getVerticalAlignment();
+        int index = 0;
+        for (index=LabelStyle.verticalAlignmentLookup.length-1; index > 0 && 
+        	(!va.equalsIgnoreCase(LabelStyle.verticalAlignmentLookup[index])); index--) ;
+        verticalAlignmentComboBox.setSelectedIndex(index);
         horizontalAlignmentComboBox.setSelectedIndex(labelStyle.getHorizontalAlignment());
     }
     
