@@ -78,7 +78,7 @@
             <configuration>
               <artifacts>
                 <artifact>
-                  <file>target/openjump-core-1.4-SNAPSHOT-bin.zip</file>
+                  <file>target/openjump-core-1.4.1-SNAPSHOT-bin.zip</file>
                   <type>zip</type>
                   <classifier>bin</classifier>
                 </artifact>
