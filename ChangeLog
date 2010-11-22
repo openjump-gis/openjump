@@ -1,3 +1,7 @@
+2010-11-22 Matthias Scholz <ms@jammerhund.de>
+	* WorkbenchFrame.jbInit():
+		*add a MouseListener to the messageLabel which is copying the text of the statusbar to the clipboard
+
 2010-11-15 mmichaud <michael.michaud@free.fr>
     * Changed version number to 1.4.1alpha
     * Fixed a NPE in ExtractLayersByAttribute
@@ -9,7 +13,7 @@
     * postgresql driver replaced by a newer one (for pgsql 9.0 compatibility)
     * openjump bundled with Sextante and postgis plugin fixed :
       (1) quick fix in linux/macos script (thanks to edgar soldin)
-      (2) postgis plugin made java5 compatible thanks to Uwe Dallüge
+      (2) postgis plugin made java5 compatible thanks to Uwe Dallï¿½ge
 
 2010-11-02 mmichaud <michael.michaud@free.fr>
     * small fix small fix in the ClassifyAttributesPlugIn UI

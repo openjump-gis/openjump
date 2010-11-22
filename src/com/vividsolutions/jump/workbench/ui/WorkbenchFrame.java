@@ -43,6 +43,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -116,6 +117,11 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ChoosableStyle;
 import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseListener;
 
 /**
  * This class is responsible for the main window of the JUMP application.
@@ -1057,6 +1063,21 @@ public class WorkbenchFrame extends JFrame
     statusPanel.setBorder(BorderFactory.createRaisedBevelBorder());
     messageLabel.setBorder(BorderFactory.createLoweredBevelBorder());
     messageLabel.setText(" ");
+	// [Matthias Scholz 22. Nov 2010] add a MouseListener for copy the text of the messageLabel to the clipboard
+	messageLabel.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				super.mouseClicked(e);
+				// copy if the user has made a doubleclick
+				if (e.getClickCount() == 2 && e.getSource() instanceof JLabel) {
+					Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+					StringSelection stringSelection = new StringSelection(((JLabel)e.getSource()).getText());
+					clipboard.setContents(stringSelection, stringSelection);
+				}
+			}
+
+	});
     timeLabel.setBorder(BorderFactory.createLoweredBevelBorder());
     timeLabel.setText(" ");
     memoryLabel.setBorder(BorderFactory.createLoweredBevelBorder());
