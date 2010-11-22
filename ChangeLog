@@ -1,3 +1,12 @@
+2010-11-23 mmichaud <michael.michaud@free.fr>
+	* Several bugs fixed in Simple query tool (QueryDialog.java)
+		* remove the useless cancel button
+		* stop the querying process if exit button is clicked (dialog was just
+		  hidden, but the query was going on)
+		* move Thread.yield so that process can be interrupted anytime, not
+		  just when a feature retained in the query is found
+		* deactivate refresh button while processing the query
+
 2010-11-22 Matthias Scholz <ms@jammerhund.de>
 	* WorkbenchFrame.jbInit():
 		*add a MouseListener to the messageLabel which is copying the text of the statusbar to the clipboard

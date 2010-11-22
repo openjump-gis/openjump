@@ -254,7 +254,7 @@ public class QueryDialog extends BDialog {
                 FormContainer progressBarPanel = new FormContainer(5,1);
                 
                 // SOUTH PANEL (OK/CANCEL BUTTONS)
-            FormContainer southPanel = new FormContainer(8,1);
+            FormContainer southPanel = new FormContainer(7,1);
         
         // SET THE MANAGER BUTTONS
         BButton openButton = new BButton(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.open"));
@@ -346,8 +346,8 @@ public class QueryDialog extends BDialog {
         // SET THE OK/CANCEL BUTTONS
         okButton = new BButton(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.ok"));
             okButton.addEventLink(CommandEvent.class, this, "ok");
-        cancelButton = new BButton(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.cancel"));
-            cancelButton.addEventLink(CommandEvent.class, this, "cancel");
+        //cancelButton = new BButton(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.cancel"));
+        //    cancelButton.addEventLink(CommandEvent.class, this, "cancel");
         stopButton = new BButton(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.stop"));
             stopButton.addEventLink(CommandEvent.class, this, "stop");
         refreshButton = new BButton(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.refresh"));
@@ -355,8 +355,8 @@ public class QueryDialog extends BDialog {
         
         southPanel.add(okButton, 2, 0);
         southPanel.add(refreshButton, 3, 0);
-        southPanel.add(cancelButton, 4, 0);
-        southPanel.add(stopButton, 5, 0);
+        //southPanel.add(cancelButton, 4, 0);
+        southPanel.add(stopButton, 4, 0);
         
         dialogContainer.add(northPanel, dialogContainer.NORTH);
         dialogContainer.add(centerPanel, dialogContainer.CENTER);
@@ -390,6 +390,7 @@ public class QueryDialog extends BDialog {
         progressBar.setIndeterminate(false);
         progressBar.setValue(0);
         progressBar.setProgressText("");
+        refreshButton.setEnabled(true);
     }
     
     void initComboBoxes() {
@@ -887,6 +888,7 @@ public class QueryDialog extends BDialog {
                 // runningQuery is set to true while the query is running
                 runningQuery=true;
                 cancelQuery=false;
+                refreshButton.setEnabled(false);
                 
                 // New condition
                 Condition condition = new Condition(queryDialog, context);
@@ -972,10 +974,14 @@ public class QueryDialog extends BDialog {
                     
                     // initialize a new list for the new selection
                     List okFeatures = new ArrayList();
+                    int mod = 1;
+                    if (total > 1000) mod = 10;
+                    if (total > 33000) mod = 100;
+                    if (total > 1000000) mod = 1000;
                     try {
                         for (Iterator it = features.iterator() ; it.hasNext() ; ) {
                             count++;
-                            if (count%10==0) {
+                            if (count%mod==0) {
                                 progressBar.setProgressText(""+count+"/"+total);
                                 progressBar.setValue(count);
                             }
@@ -983,9 +989,9 @@ public class QueryDialog extends BDialog {
                             if (condition.test(f)) {
                                 okFeatures.add(f);
                                 featuresfound++;
-                                if (cancelQuery) break;
-                                Thread.yield();
                             }
+                            Thread.yield();
+                            if (cancelQuery) break;
                         }
                         progressBar.setProgressText(""+count+"/"+total);
                         progressBar.setValue(count);
@@ -1061,12 +1067,15 @@ public class QueryDialog extends BDialog {
     
     private void ok() {executeQuery();}
     
-    private void cancel() {setVisible(false);}
+    //private void cancel() {setVisible(false);}
     
     private void stop() {if (runningQuery) cancelQuery = true;}
     
     private void refresh() {initComboBoxes();}
     
-    private void exit() {setVisible(false);}
+    private void exit() {
+        if (runningQuery) cancelQuery = true;
+        setVisible(false);
+    }
     
 }
