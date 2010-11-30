@@ -34,7 +34,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Window;
@@ -43,7 +42,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -61,7 +59,6 @@ import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultDesktopManager;
-import javax.swing.ImageIcon;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
@@ -117,11 +114,8 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ChoosableStyle;
 import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseListener;
+import javax.swing.JComponent;
+import javax.swing.JTextField;
 
 /**
  * This class is responsible for the main window of the JUMP application.
@@ -144,7 +138,7 @@ public class WorkbenchFrame extends JFrame
 
 	GridBagLayout gridBagLayout1 = new GridBagLayout();
 
-	JLabel messageLabel = new JLabel();
+	JTextField messageTextField = new JTextField();
 
 	JPanel statusPanel = new JPanel();
 
@@ -347,7 +341,7 @@ public class WorkbenchFrame extends JFrame
     toolBar.setTaskMonitorManager(new TaskMonitorManager());
     try {
       jbInit();
-      configureStatusLabel(messageLabel, 300);
+	  configureStatusLabel(messageTextField, 300);
       configureStatusLabel(coordinateLabel, 150);
       configureStatusLabel(timeLabel, 200);
       configureStatusLabel(wmsLabel, 100);
@@ -443,8 +437,7 @@ public class WorkbenchFrame extends JFrame
 
   private void setStatusBarText(String message) {
     // <<TODO:IMPROVE>> Treat null messages like "" [Jon Aquino]
-    messageLabel.setText((message == "") ? " " : message);
-    messageLabel.setToolTipText(message);
+    messageTextField.setText(message.equals("") ? " " : message);
     // Make message at least a space so that status bar won't collapse [Jon
     // Aquino]
   }
@@ -456,15 +449,15 @@ public class WorkbenchFrame extends JFrame
     // Use #coordinateLabel rather than (unattached) dummy label because
     // dummy label's background does not change when L&F changes. [Jon
     // Aquino]
-    messageLabel.setForeground(highlighted ? Color.black
+    messageTextField.setForeground(highlighted ? Color.black
       : coordinateLabel.getForeground());
-    messageLabel.setBackground(highlighted ? color
+    messageTextField.setBackground(highlighted ? color
       : coordinateLabel.getBackground());
   }
 
   public void setTimeMessage(String message) {
     // <<TODO:IMPROVE>> Treat null messages like "" [Jon Aquino]
-    timeLabel.setText((message == "") ? " " : message);
+    timeLabel.setText(message.equals("") ? " " : message);
 	timeLabel.setToolTipText(message);
     // Make message at least a space so that status bar won't collapse [Jon
     // Aquino]
@@ -997,12 +990,12 @@ public class WorkbenchFrame extends JFrame
     return layerManagers;
   }
 
-  private void configureStatusLabel(JLabel label, int width) {
-    label.setMinimumSize(new Dimension(width, (int)label.getMinimumSize()
+  private void configureStatusLabel(JComponent component, int width) {
+    component.setMinimumSize(new Dimension(width, (int)component.getMinimumSize()
       .getHeight()));
-    label.setMaximumSize(new Dimension(width, (int)label.getMaximumSize()
+    component.setMaximumSize(new Dimension(width, (int)component.getMaximumSize()
       .getHeight()));
-    label.setPreferredSize(new Dimension(width, (int)label.getPreferredSize()
+    component.setPreferredSize(new Dimension(width, (int)component.getPreferredSize()
       .getHeight()));
   }
 
@@ -1035,7 +1028,10 @@ public class WorkbenchFrame extends JFrame
     // (although it's supposed to be fixed in 1.4.2, which has not yet been
     // released). (see Sun Java Bug ID 4665237). [Jon Aquino]
     // desktopPane.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
-    messageLabel.setOpaque(true);
+	messageTextField.setOpaque(true);
+	messageTextField.setEditable(false);
+    messageTextField.setToolTipText(I18N.get("ui.WorkbenchFrame.copy-to-clipboard"));
+	messageTextField.setFont(coordinateLabel.getFont());
     memoryLabel.setText("jLabel1");
     wmsLabel.setHorizontalAlignment(SwingConstants.LEFT);
     wmsLabel.setText(" ");
@@ -1061,23 +1057,8 @@ public class WorkbenchFrame extends JFrame
     coordinateLabel.setText(" ");
     statusPanel.setLayout(gridBagLayout1);
     statusPanel.setBorder(BorderFactory.createRaisedBevelBorder());
-    messageLabel.setBorder(BorderFactory.createLoweredBevelBorder());
-    messageLabel.setText(" ");
-	// [Matthias Scholz 22. Nov 2010] add a MouseListener for copy the text of the messageLabel to the clipboard
-	messageLabel.addMouseListener(new MouseAdapter() {
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				super.mouseClicked(e);
-				// copy if the user has made a doubleclick
-				if (e.getClickCount() == 2 && e.getSource() instanceof JLabel) {
-					Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-					StringSelection stringSelection = new StringSelection(((JLabel)e.getSource()).getText());
-					clipboard.setContents(stringSelection, stringSelection);
-				}
-			}
-
-	});
+    messageTextField.setBorder(BorderFactory.createLoweredBevelBorder());
+    messageTextField.setText(" ");
     timeLabel.setBorder(BorderFactory.createLoweredBevelBorder());
     timeLabel.setText(" ");
     memoryLabel.setBorder(BorderFactory.createLoweredBevelBorder());
@@ -1094,7 +1075,7 @@ public class WorkbenchFrame extends JFrame
     statusPanel.add(timeLabel, new GridBagConstraints(2, 1, 1, 1, 1.0, 0.0,
       GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0,
         0, 0, 0), 0, 0));
-    statusPanel.add(messageLabel, new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0,
+    statusPanel.add(messageTextField, new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0,
       GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0,
         0, 0, 0), 0, 0));
     // Give memoryLabel the 1.0 weight. All the rest should have their

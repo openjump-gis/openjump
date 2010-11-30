@@ -1,3 +1,8 @@
+2010-11-30 Matthias Scholz <ms@jammerhund.de>
+	* WorkbenchFrame
+		* changed the messageLabel to a JTextfield for copy&paste the content
+	* added ui.WorkbenchFrame.copy-to-clipboard I18n key for the tooltip
+
 2010-11-23 mmichaud <michael.michaud@free.fr>
 	* Several bugs fixed in Simple query tool (QueryDialog.java)
 		* remove the useless cancel button
