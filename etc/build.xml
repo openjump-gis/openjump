@@ -213,7 +213,8 @@ Main-Class: com.vividsolutions.jump.workbench.JUMPWorkbench
     <!--  ===================================================================  -->
     <!--  Creates the distribution                                             -->
     <!--  ===================================================================  -->
-    <target name="dist" depends="jar,javadocs">
+    <!--target name="dist" depends="jar,javadocs"-->
+    <target name="dist" depends="jar">
     <!--target name="dist" depends="jar"-->
         <mkdir dir="${archive.dir}"/>
         <copy todir="${archive.dir}/bin">
