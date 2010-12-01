@@ -88,7 +88,7 @@ Section "MainSection" SEC01
   Call DownloadAndInstallJREIfNecessary
   SetOutPath "$INSTDIR"
 ;  SetOverwrite ifnewer
-  SetOutPath "$INSTDIR\bin"
+;  SetOutPath "$INSTDIR\bin"
   SetOverwrite try
   File "openjump-1.4.0.3forwin\bin\default-plugins.xml"
   File "openjump-1.4.0.3forwin\bin\log4j.xml"
@@ -179,7 +179,7 @@ Section "MainSection" SEC01
   File "openjump-1.4.0.3forwin\licenses\jython_license.txt"
   SetOutPath "$INSTDIR"
   File "openjump-1.4.0.3forwin\readme.txt"
-;  File "openjump-1.4.0.3forwin\workbench-state.xml"
+  File "openjump-1.4.0.3forwin\workbench-state.xml"
 SectionEnd
 
 Section -AdditionalIcons
