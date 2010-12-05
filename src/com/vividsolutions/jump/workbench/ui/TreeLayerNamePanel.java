@@ -188,7 +188,12 @@ public class TreeLayerNamePanel extends JPanel
                 if (e.getButton() == MouseEvent.BUTTON1) {
                     movingTreePath = tree.getPathForLocation(e.getX(), e.getY());
                     // move only Layerables, not Categories
-                    if (movingTreePath != null && ! (movingTreePath.getLastPathComponent() instanceof Layerable)) {
+                    if (movingTreePath != null &&
+                        !(movingTreePath.getLastPathComponent() instanceof Layerable)) {
+                        movingTreePath = null;
+                    }
+                    else if (movingTreePath != null &&
+                        !tree.isRowSelected(tree.getClosestRowForLocation(e.getX(), e.getY()))) {
                         movingTreePath = null;
                     }
                     else {
