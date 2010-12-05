@@ -54,107 +54,75 @@ public class JoinTableDataSourceCSV implements JoinTableDataSource {
 		return fieldTypes;
 	}
 		
-
-	
-	
 	public Hashtable buildTable (int keyIndex) {
-			FileReader fileReader;
-			BufferedReader bufferedReader;
-		
-			Hashtable table = new Hashtable();	
-			int nl=1;
-			int nbCol;
-			String s, line;
-			String[] valeurs, val, aux;
+		FileReader fileReader;
+		BufferedReader bufferedReader;
+
+		Hashtable table = new Hashtable();	
+		int nl=1;
+		int nbCol;
+		String s, line;
+		String[] valeurs, val;
 			
-			fieldTypes = new ArrayList();
+		fieldTypes = new ArrayList();
+		try {
+			fileReader = new FileReader(filePath);
+			FileInputStream fis = new FileInputStream(filePath);
+			bufferedReader = new BufferedReader(new InputStreamReader(fis));
+				
 			try {
-				fileReader = new FileReader(filePath);
-				FileInputStream fis = new FileInputStream(filePath);
-				bufferedReader = new BufferedReader(new InputStreamReader(fis));
-						
-				 
-				try {
-					// passage de la premiere ligne
-					line= bufferedReader.readLine();
-					nl++;
-					line= bufferedReader.readLine();
-					nl++;
-					if (line==null)
+				// passage de la premiere ligne
+				line= bufferedReader.readLine();
+				nl++;
+				line= bufferedReader.readLine();
+				nl++;
+				if (line==null)
 						throw (new Exception(I18N.get("org.openjump.sigle.plugin.joinTable.Empty_file")));
-					nl=1;
-					while (line!=null) {
-						// [OBEDEL]on encadre la chaine de la ligne pour que la fonction split 
-						// prenne en compte les champs vides en debut et en fin de ligne 
-						line = " " + DEFAULT_DELEM + line  + DEFAULT_DELEM + " ";
-						aux = line.split(DELIMITATEURS);
-						valeurs = new String[aux.length-2];
-						nbCol = valeurs.length;
-						
+				nl=1;
+				while (line!=null) {
+					if (line.trim().length() > 0) {
+						valeurs = line.split(DELIMITATEURS, -1);
 						// verification de la coherence du nombre de colonnes de l'entete et de la ligne 
-						if ((nbCol)!=fieldCount)
-						/*	// cas du delimitateur en fin de ligne
-							if (nbCol==fieldCount-1 && line.substring(nbCol-1).matches(DELIMITATEURS)) {
-								val = new String[fieldCount];
-								val[fieldCount-1] = "" ;
-								for (int i=0; i<fieldCount-1; i++)
-									val[i] = valeurs[i];
-								valeurs= val;  
-							}
-							else */
+						if ((valeurs.length)!=fieldCount)
 								throw (new Exception(I18N.get("org.openjump.sigle.plugin.joinTable.Field_problem_at_line") + nl));
-						
-						// on elimine les valeurs que l'on a rajoute en debut et en fin de ligne
-						for (int i=0;i<valeurs.length;i++)
-							valeurs[i]=aux[i+1];
-						
-						// analyse de la valeur de chaque colonne
-						for (int i=0; i<nbCol; i++) {
-							s = (String) valeurs[i]; 
-							// mise a jour du type du champ
-							if ((i+1)>fieldTypes.size())
-								fieldTypes.add(i,typeOfString(s));
-							else {
-								AttributeType newFieldType = typeOfString(s);
-								AttributeType fieldType = (AttributeType) fieldTypes.get(i);
-								if 	(newFieldType!=fieldType)
-								{
-									if (newFieldType == AttributeType.STRING)
-										fieldTypes.set(i,newFieldType);
-									else if (fieldType!= AttributeType.STRING && newFieldType==AttributeType.DOUBLE)
-										fieldTypes.set(i,newFieldType);
-								}
-							}
+						    
+						for (int i = 0 ; i < valeurs.length; i++) {
+						    s = (String) valeurs[i]; 
+						    // mise a jour du type du champ
+						    if ((i+1)>fieldTypes.size())
+						    		fieldTypes.add(i,typeOfString(s));
+						    else {
+						    	AttributeType newFieldType = typeOfString(s);
+						    	AttributeType fieldType = (AttributeType) fieldTypes.get(i);
+						    	if 	(newFieldType!=fieldType) {
+						    		if (newFieldType == AttributeType.STRING)
+						    			fieldTypes.set(i,newFieldType);
+						    		else if (fieldType!= AttributeType.STRING && newFieldType==AttributeType.DOUBLE)
+						    			fieldTypes.set(i,newFieldType);
+						    	}
+						    }
 						}
-						line= bufferedReader.readLine(); 
-						nl++;
 						//enregistrement de la ligne dans la table
 						table.put(valeurs[keyIndex], valeurs);
 					}
-				}
-				catch(Exception e) {
-					String msg = I18N.get("org.openjump.sigle.plugin.joinTable.Error_while_reading_file") + filePath +" (" + e.getMessage() + ").";
-					throw (new ParseException(msg));
-				}		
-				finally {
-					bufferedReader.close(); 
-					fileReader.close();
+					line= bufferedReader.readLine(); 
+					nl++;
 				}
 			}
-			catch (Exception e) {
-				throw new IllegalStateException(e.getMessage());
+			catch(Exception e) {
+				String msg = I18N.get("org.openjump.sigle.plugin.joinTable.Error_while_reading_file") + filePath +" (" + e.getMessage() + ").";
+				throw (new ParseException(msg));
+			}		
+			finally {
+				bufferedReader.close(); 
+				fileReader.close();
 			}
-//	  obedel debug		
-/*			AttributeType t;
-			System.out.println(fieldTypes.size());
-			for (int i=0; i<fieldTypes.size(); i++) {
-				t = (AttributeType) fieldTypes.get(i); 
-				System.out.println(t.toString() + " ");
-	
-		}*/	
-
-		return table;
 		}
+		catch (Exception e) {
+			throw new IllegalStateException(e.getMessage());
+		}
+		return table;
+	}
 
 	private void readHeader() {
 		FileReader fileReader;

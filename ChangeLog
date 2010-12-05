@@ -1,6 +1,8 @@
 2010-12-05 mmichaud <michael.michaud@free.fr>
     * Fixed a bug in TreeLayerNamePanel : now check if the layerable is selected
-      a deselected layer moved to another place could be deleted 
+      a deselected layer moved to another place could be deleted
+    * Fixed a bug in JoinTableDataSourceCSV. Now, empty lines are silently
+      skipped
 
 2010-12-02 mmichaud <michael.michaud@free.fr>
     * release a 1.4.0.3 version which is just a new windows installer with
