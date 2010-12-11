@@ -1,3 +1,10 @@
+2010-12-11 Matthias Scholz <ms@jammerhund.de>
+	* WorkbenchFrame
+		* changed contents of the statusPanel to JSplitPane's
+		* DividerLocation of the JSplitPane's will be automaticaly saved/restored
+			through the PersistentBlackboard
+	* update ui.WorkbenchFrame.copy-to-clipboard key in lang files for es, fi, fr, it
+
 2010-12-05 mmichaud <michael.michaud@free.fr>
     * Fixed a bug in TreeLayerNamePanel : now check if the layerable is selected
       a deselected layer moved to another place could be deleted

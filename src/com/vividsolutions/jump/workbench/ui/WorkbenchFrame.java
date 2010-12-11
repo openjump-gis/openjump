@@ -32,9 +32,7 @@ import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -115,6 +113,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ChoosableStyle;
 import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
 import javax.swing.JComponent;
+import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 
 /**
@@ -136,13 +135,17 @@ public class WorkbenchFrame extends JFrame
 	JMenuItem exitMenuItem = FeatureInstaller.installMnemonic(new JMenuItem(
 			I18N.get("ui.WorkbenchFrame.exit")), fileMenu);
 
-	GridBagLayout gridBagLayout1 = new GridBagLayout();
-
 	JTextField messageTextField = new JTextField();
 
 	JPanel statusPanel = new JPanel();
 
 	JLabel timeLabel = new JLabel();
+
+	// the four SplitPanes for the statusbar
+	private JSplitPane statusPanelSplitPane1;
+	private JSplitPane statusPanelSplitPane2;
+	private JSplitPane statusPanelSplitPane3;
+	private JSplitPane statusPanelSplitPane4;
 
 	// <<TODO:FEATURE>> Before JUMP Workbench closes, prompt the user to save
 	// any
@@ -1055,8 +1058,6 @@ public class WorkbenchFrame extends JFrame
     coordinateLabel.setBorder(BorderFactory.createLoweredBevelBorder());
     wmsLabel.setBorder(BorderFactory.createLoweredBevelBorder());
     coordinateLabel.setText(" ");
-    statusPanel.setLayout(gridBagLayout1);
-    statusPanel.setBorder(BorderFactory.createRaisedBevelBorder());
     messageTextField.setBorder(BorderFactory.createLoweredBevelBorder());
     messageTextField.setText(" ");
     timeLabel.setBorder(BorderFactory.createLoweredBevelBorder());
@@ -1069,25 +1070,20 @@ public class WorkbenchFrame extends JFrame
     getContentPane().add(desktopPane, BorderLayout.CENTER);
     fileMenu.addSeparator();
     fileMenu.add(exitMenuItem);
-    statusPanel.add(coordinateLabel, new GridBagConstraints(5, 1, 1, 1, 0.0,
-      0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(
-        0, 0, 0, 0), 0, 0));
-    statusPanel.add(timeLabel, new GridBagConstraints(2, 1, 1, 1, 1.0, 0.0,
-      GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0,
-        0, 0, 0), 0, 0));
-    statusPanel.add(messageTextField, new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0,
-      GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0,
-        0, 0, 0), 0, 0));
-    // Give memoryLabel the 1.0 weight. All the rest should have their
-    // sizes
-    // configured using #configureStatusLabel. [Jon Aquino]
-    statusPanel.add(memoryLabel, new GridBagConstraints(3, 1, 1, 1, 0.0, 0.0,
-      GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0,
-        0, 0, 0), 0, 0));
-	// GridBagConstraints.HORIZONTAL, as the other ones [michaelm 2009-02-20]
-    statusPanel.add(wmsLabel, new GridBagConstraints(4, 1, 1, 1, 1.0, 0.0,
-      GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0),
-      0, 0));
+	// [Matthias Scholz 11. Dec 2010] new resizable stausbar
+	statusPanel.setLayout(new BorderLayout());
+	int dividerSize = 4;
+	statusPanelSplitPane4 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, wmsLabel, coordinateLabel);
+	statusPanelSplitPane4.setDividerSize(dividerSize);
+	statusPanelSplitPane3 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, memoryLabel, statusPanelSplitPane4);
+	statusPanelSplitPane3.setDividerSize(dividerSize);
+	statusPanelSplitPane2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, timeLabel, statusPanelSplitPane3);
+	statusPanelSplitPane2.setDividerSize(dividerSize);
+	statusPanelSplitPane1 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, messageTextField, statusPanelSplitPane2);
+	statusPanelSplitPane1.setDividerSize(dividerSize);
+
+	statusPanel.add(statusPanelSplitPane1, BorderLayout.CENTER);
+
   }
 
   private void position(JInternalFrame internalFrame) {
@@ -1348,6 +1344,10 @@ public class WorkbenchFrame extends JFrame
   public final static String VERTICAL_KEY = WorkbenchFrame.class.getName()+" - VERTICAL_KEY";
   public final static String WIDTH_KEY = WorkbenchFrame.class.getName()+" - WIDTH_KEY";
   public final static String HEIGHT_KEY = WorkbenchFrame.class.getName()+" - HEIGHT_KEY";
+  public final static String STATUSPANEL_DIVIDER_LOCATION_1 = WorkbenchFrame.class.getName() + " - STATUSPANEL_DIVIDER_LOCATION_1";
+  public final static String STATUSPANEL_DIVIDER_LOCATION_2 = WorkbenchFrame.class.getName() + " - STATUSPANEL_DIVIDER_LOCATION_2";
+  public final static String STATUSPANEL_DIVIDER_LOCATION_3 = WorkbenchFrame.class.getName() + " - STATUSPANEL_DIVIDER_LOCATION_3";
+  public final static String STATUSPANEL_DIVIDER_LOCATION_4 = WorkbenchFrame.class.getName() + " - STATUSPANEL_DIVIDER_LOCATION_4";
 
   public void saveWindowState() {
 	  boolean maximized = (this.getExtendedState() == MAXIMIZED_BOTH);
@@ -1358,7 +1358,12 @@ public class WorkbenchFrame extends JFrame
 	  blackboard.put(VERTICAL_KEY, p.y);	 
 	  Dimension d = this.getSize();
 	  blackboard.put(WIDTH_KEY, d.width);	    
-	  blackboard.put(HEIGHT_KEY, d.height);	 
+	  blackboard.put(HEIGHT_KEY, d.height);
+	  // save the statuspanel divider locations
+	  blackboard.put(STATUSPANEL_DIVIDER_LOCATION_1, new Integer(statusPanelSplitPane1.getLastDividerLocation()));
+	  blackboard.put(STATUSPANEL_DIVIDER_LOCATION_2, new Integer(statusPanelSplitPane2.getLastDividerLocation()));
+	  blackboard.put(STATUSPANEL_DIVIDER_LOCATION_3, new Integer(statusPanelSplitPane3.getLastDividerLocation()));
+	  blackboard.put(STATUSPANEL_DIVIDER_LOCATION_4, new Integer(statusPanelSplitPane4.getLastDividerLocation()));
   }
 
   public boolean recallMaximizedState() {
@@ -1385,6 +1390,12 @@ public class WorkbenchFrame extends JFrame
 
   public Dimension recallWindowSize() {
 	  Blackboard blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
+	  // restore Statusbar divider loactions
+	  statusPanelSplitPane1.setDividerLocation(blackboard.get(STATUSPANEL_DIVIDER_LOCATION_1, 300));
+	  statusPanelSplitPane2.setDividerLocation(blackboard.get(STATUSPANEL_DIVIDER_LOCATION_2, 200));
+	  statusPanelSplitPane3.setDividerLocation(blackboard.get(STATUSPANEL_DIVIDER_LOCATION_3, 100));
+	  statusPanelSplitPane4.setDividerLocation(blackboard.get(STATUSPANEL_DIVIDER_LOCATION_4, 200));
+
 	  Dimension d = new Dimension(900, 665);
 	  if (blackboard.get(WIDTH_KEY) == null) {
 		  blackboard.put(WIDTH_KEY, d.width);
