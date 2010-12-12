@@ -139,18 +139,23 @@ public class FeatureStatisticsPlugIn extends AbstractPlugIn {
             double length = g.getLength();
 
             // these both need work - need to recurse into geometries
-            int comps = 1;
-
-            if (g instanceof GeometryCollection) {
-                comps = ((GeometryCollection) g).getNumGeometries();
-            }
+            // work done by mmichaud on 2010-12-12
+            //int comps = 0;
+            //int holes = 0;
+            int[] comps_and_holes = new int[]{0,0};
+            comps_and_holes = recurse(g, comps_and_holes);
+            int comps = comps_and_holes[0];
+            int holes = comps_and_holes[1];
+            //if (g instanceof GeometryCollection) {
+            //    comps = ((GeometryCollection) g).getNumGeometries();
+            //}
 
             Coordinate[] pts = g.getCoordinates();
-            int holes = 0;
-
-            if (g instanceof Polygon) {
-                holes = ((Polygon) g).getNumInteriorRing();
-            }
+            //int holes = 0;
+            //
+            //if (g instanceof Polygon) {
+            //    holes = ((Polygon) g).getNumInteriorRing();
+            //}
 
             Feature statsf = new BasicFeature(statsSchema);
 
@@ -170,5 +175,20 @@ public class FeatureStatisticsPlugIn extends AbstractPlugIn {
         Layer statsLayer = context.addLayer(StandardCategoryNames.QA,
                 "Statistics-" + layer.getName(), statsFC);
         statsLayer.setStyles(layer.cloneStyles());
+    }
+    
+    private int[] recurse(Geometry g, int[] comps_holes) {
+        if (g instanceof GeometryCollection) {
+            for (int i = 0 ; i < g.getNumGeometries() ; i++) {
+                comps_holes = recurse(g.getGeometryN(i), comps_holes);
+            }
+        }
+        else {
+            comps_holes[0]++;
+            if (g instanceof Polygon) {
+                comps_holes[1] += ((Polygon)g).getNumInteriorRing();
+            }
+        }
+        return comps_holes;
     }
 }

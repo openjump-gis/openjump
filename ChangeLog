@@ -1,3 +1,9 @@
+2010-12-12 mmichaud <michael.michaud@free.fr>
+    * Fixed bug#3130723 : Layer Statistics and Feature Statistics now recurse 
+      through GeometryCollection
+    * LayerStatistic now returns exact mean values instead of their floor()
+      equivalent for nbPoints, nbComponents and nbHoles
+
 2010-12-11 Matthias Scholz <ms@jammerhund.de>
 	* WorkbenchFrame
 		* changed contents of the statusPanel to JSplitPane's

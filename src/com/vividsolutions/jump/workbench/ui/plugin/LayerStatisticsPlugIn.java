@@ -123,24 +123,34 @@ public class LayerStatisticsPlugIn extends AbstractPlugIn {
             double length = g.getLength();
 
             // these both need work - need to recurse into geometries
-            int comps = 1;
-
-            if (g instanceof GeometryCollection) {
-                comps = ((GeometryCollection) g).getNumGeometries();
-            }
+            // work done by mmichaud on 2010-12-12
+            int[] comps_and_holes = new int[]{0,0};
+            comps_and_holes = recurse(g, comps_and_holes);
+            int comps = comps_and_holes[0];
+            int holes = comps_and_holes[1];
 
             Coordinate[] pts = g.getCoordinates();
-            int holes = 0;
-
-            if (g instanceof Polygon) {
-                holes = ((Polygon) g).getNumInteriorRing();
-            }
 
             ls.addFeature(pts.length, holes, comps, area, length);
             totalStats.addFeature(pts.length, holes, comps, area, length);
         }
 
         return ls;
+    }
+    
+    private int[] recurse(Geometry g, int[] comps_holes) {
+        if (g instanceof GeometryCollection) {
+            for (int i = 0 ; i < g.getNumGeometries() ; i++) {
+                comps_holes = recurse(g.getGeometryN(i), comps_holes);
+            }
+        }
+        else {
+            comps_holes[0]++;
+            if (g instanceof Polygon) {
+                comps_holes[1] += ((Polygon)g).getNumInteriorRing();
+            }
+        }
+        return comps_holes;
     }
 
     public void output(LayerStatistics ls, HTMLFrame out) {
@@ -251,15 +261,15 @@ public class LayerStatisticsPlugIn extends AbstractPlugIn {
         }
 
         public double avgCoord() {
-            return (featureCount == 0) ? 0.0 : (totalCoord / featureCount);
+            return (featureCount == 0) ? 0.0 : ((double)totalCoord / featureCount);
         }
 
         public double avgHoles() {
-            return (featureCount == 0) ? 0.0 : (totalHoles / featureCount);
+            return (featureCount == 0) ? 0.0 : ((double)totalHoles / featureCount);
         }
 
         public double avgComp() {
-            return (featureCount == 0) ? 0.0 : (totalComp / featureCount);
+            return (featureCount == 0) ? 0.0 : ((double)totalComp / featureCount);
         }
 
         public double avgArea() {
