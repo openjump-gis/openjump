@@ -1,3 +1,8 @@
+2010-12-14 mmichaud <michael.michaud@free.fr>
+    * Fixed a bug in IntersectPolygonLayersPlugIn. resetFeatureValuesToNaN
+      method was resetting integer attribute values to non integer value
+      Double.NaN. They are now set to null.
+
 2010-12-12 mmichaud <michael.michaud@free.fr>
     * Fixed bug#3130723 : Layer Statistics and Feature Statistics now recurse 
       through GeometryCollection

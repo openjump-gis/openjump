@@ -315,7 +315,7 @@ public class IntersectPolygonLayersPlugIn extends ThreadedBasePlugIn {
 					ftemp.setAttribute(i, Double.NaN);
 				}
 				if(type.equals(AttributeType.INTEGER)){
-					ftemp.setAttribute(i, Double.NaN);
+					ftemp.setAttribute(i, null);
 				}
 				if(type.equals(AttributeType.STRING)){
 					ftemp.setAttribute(i, "NaN");
