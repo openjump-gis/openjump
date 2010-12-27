@@ -1,3 +1,11 @@
+2010-12-27 Matthias Scholz <ms@jammerhund.de>
+	* Added some parts of org.openide.awt package from the NetBeans project
+		- now we have a DropDownbutton and a DropDownToogleButton
+		- this is a stripped down version of the original NB 6.9.1 source code,
+		   so we do not need many additional JAR's
+	* WorkbenchToolBar: added a addCursorTool() method for adding CursorTools
+		with an own JToggleButton implementation such as the DropDownToogleButton
+
 2010-12-14 mmichaud <michael.michaud@free.fr>
     * Fixed a bug in IntersectPolygonLayersPlugIn. resetFeatureValuesToNaN
       method was resetting integer attribute values to non integer value
