@@ -1,3 +1,9 @@
+2011-01-03 Matthias Scholz <ms@jammerhund.de>
+	* Added a new AdvancedMeasurePlugin in org.openjump.core.ui.plugin.tools
+		- added AdvancedMeasureTool, MeasureLayerFinder, MeasurementStyle
+		- can be activated in default-plugins.xml:
+			"<plug-in>org.openjump.core.ui.plugin.tools.AdvancedMeasurePlugin</plug-in>"
+
 2010-12-27 Matthias Scholz <ms@jammerhund.de>
 	* Added some parts of org.openide.awt package from the NetBeans project
 		- now we have a DropDownbutton and a DropDownToogleButton
