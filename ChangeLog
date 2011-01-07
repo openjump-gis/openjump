@@ -1,4 +1,13 @@
 2011-01-03 Matthias Scholz <ms@jammerhund.de>
+	* com.vividsolutions.jump.workbench.ui.FontChooser
+		* sample text i18n -> ui.FontChooser.sampletext
+		* possibilty to set the font size in the dialog introduced
+			* The GUI code was already present in jbinit(), but the components
+			  was not finaly added to the dialog.
+			* Added a new showDialog() and constructor with a flag for showing
+			  the fontsize components or not.
+
+2011-01-03 Matthias Scholz <ms@jammerhund.de>
 	* Added a new AdvancedMeasurePlugin in org.openjump.core.ui.plugin.tools
 		- added AdvancedMeasureTool, MeasureLayerFinder, MeasurementStyle
 		- can be activated in default-plugins.xml:

@@ -58,12 +58,13 @@ import com.vividsolutions.jump.I18N;
  *
 */
 public class FontChooser extends javax.swing.JDialog {
-    private String sampleText = "The quick brown fox jumped over the lazy dog.";
+    private String sampleText = I18N.get("ui.FontChooser.sampletext");
     String[] styleList = new String[] { "Plain", "Bold", "Italic" };
     String[] sizeList = new String[] {
             "2", "4", "6", "8", "10", "12", "14", "16", "18", "20", "22", "24",
             "30", "36", "48", "72"
         };
+	private boolean showSize = false;
     String currentFont = null;
     int currentStyle = -1;
     int currentSize = -1;
@@ -92,7 +93,12 @@ public class FontChooser extends javax.swing.JDialog {
 
     /* ------------------------------------------------------------- */
     private FontChooser(JDialog parent, boolean modal) {
+		this(parent, modal, false);
+	}
+
+    private FontChooser(JDialog parent, boolean modal, boolean showSize) {
         super(parent, modal);
+		this.showSize = showSize;
         jbInit();
         setListValues(jFontList,
             GraphicsEnvironment.getLocalGraphicsEnvironment()
@@ -104,7 +110,11 @@ public class FontChooser extends javax.swing.JDialog {
     }
 
     private FontChooser(JDialog parent, boolean modal, Font font) {
-        this(parent, modal);
+		this(parent, modal, font, false);
+	}
+
+    private FontChooser(JDialog parent, boolean modal, Font font, boolean showSize) {
+        this(parent, modal, showSize);
         setCurrentFont(font);
     }
 
@@ -176,7 +186,11 @@ public class FontChooser extends javax.swing.JDialog {
 
     /* ------------------------------------------------------------- */
     public static Font showDialog(JDialog parent, String title, Font font) {
-        FontChooser dialog = new FontChooser(parent, true, font);
+		return showDialog(parent, title, font, false);
+	}
+
+    public static Font showDialog(JDialog parent, String title, Font font, boolean showSize) {
+        FontChooser dialog = new FontChooser(parent, true, font, showSize);
 
         Point p1 = parent.getLocation();
         Dimension d1 = parent.getSize();
@@ -388,7 +402,10 @@ public class FontChooser extends javax.swing.JDialog {
         gridBagConstraints1.weightx = 0.125;
         gridBagConstraints1.weighty = 1.0;
 
-        //    getContentPane().add(jPanel5, gridBagConstraints1);
+		// should the font size components be shown?
+        if (showSize) {
+			getContentPane().add(jPanel5, gridBagConstraints1);
+		}
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
         java.awt.GridBagConstraints gridBagConstraints5;
