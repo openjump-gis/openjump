@@ -1,3 +1,8 @@
+2011-01-16 Matthias Scholz <ms@jammerhund.de>
+	* AdvancedMeasurePlugin
+		* styling for the AdvancedMeasureTool in the Option dialog added
+		* I18N for english and german
+
 2011-01-03 Matthias Scholz <ms@jammerhund.de>
 	* com.vividsolutions.jump.workbench.ui.FontChooser
 		* sample text i18n -> ui.FontChooser.sampletext

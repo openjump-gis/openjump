@@ -1,7 +1,9 @@
 package org.openjump.core.ui.plugin.tools;
 
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.OptionsDialog;
 
 /**
  * Plugin for the AdvancedMeasureTool.
@@ -19,6 +21,7 @@ public class AdvancedMeasurePlugin extends AbstractPlugIn {
 
 		advancedMeasureTool = new AdvancedMeasureTool(context.getWorkbenchContext());
 		context.getWorkbenchContext().getWorkbench().getFrame().getToolBar().addCursorTool(advancedMeasureTool, advancedMeasureTool.getToolbarButton());
+		OptionsDialog.instance(context.getWorkbenchContext().getWorkbench()).addTab(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasurePlugin.OptionPanelTitle"), new AdvancedMeasureOptionsPanel(context.getWorkbenchContext()));
 	}
 
 	@Override

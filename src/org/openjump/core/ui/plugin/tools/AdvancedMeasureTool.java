@@ -2,8 +2,11 @@ package org.openjump.core.ui.plugin.tools;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.MeasureLayerFinder;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.OptionsDialog;
 import com.vividsolutions.jump.workbench.ui.cursortool.CoordinateListMetrics;
 import com.vividsolutions.jump.workbench.ui.cursortool.PolygonTool;
 import java.awt.Cursor;
@@ -19,6 +22,7 @@ import java.awt.geom.NoninvertibleTransformException;
 import java.util.List;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.JTabbedPane;
 import javax.swing.JToggleButton;
 import org.openide.awt.DropDownButtonFactory;
 
@@ -31,10 +35,7 @@ import org.openide.awt.DropDownButtonFactory;
  */
 /*
  * TODO:
- *			- i18n
- *			- JavaDoc
  *			- Icons and Cursors
- *			- OptionDialog for Styling
  */
 public class AdvancedMeasureTool extends PolygonTool implements ActionListener {
 
@@ -46,31 +47,47 @@ public class AdvancedMeasureTool extends PolygonTool implements ActionListener {
 	 * Measure mode area.
 	 */
 	public static final int MEASURE_MODE_AREA = 2;
+
 	// the JPopupMenu of the DropDownToggleButton
 	JPopupMenu popupMenu;
-	// the two menuitems
+	// the menuitems
 	JMenuItem distanceMenuItem;
 	JMenuItem areaMenuItem;
+	JMenuItem optionsMenuItem;
+
 	// in which mode we are?
 	private int measureMode = MEASURE_MODE_DISTANCE;
+
 	// the JToggleButton in the WorkbenchToolBar
 	private JToggleButton toolbarButton = null;
+
 	WorkbenchContext context;
 	Point mousePosition = null;
 	Shape lastShape = null;
 
+	/**
+	 * Build a new AdvancedMeasureTool instance.
+	 *
+	 * @param context
+	 */
 	public AdvancedMeasureTool(WorkbenchContext context) {
 		this.context = context;
 		allowSnapping();
 		setMetricsDisplay(new CoordinateListMetrics());
 		setCloseRing(false); // distance mode
+
+		// build the popup menu
 		popupMenu = new JPopupMenu();
-		distanceMenuItem = new JMenuItem("Distance measuring", IconLoader.icon("Ruler.gif")); // TODO: i18n
+		distanceMenuItem = new JMenuItem(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureTool.distance-measuring"), IconLoader.icon("Ruler.gif"));
 		distanceMenuItem.addActionListener(this);
 		popupMenu.add(distanceMenuItem);
-		areaMenuItem = new JMenuItem("Area measuring", IconLoader.icon("Ruler_area.gif")); // TODO: i18n
+		areaMenuItem = new JMenuItem(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureTool.area-measuring"), IconLoader.icon("Ruler_area.gif"));
 		areaMenuItem.addActionListener(this);
 		popupMenu.add(areaMenuItem);
+		popupMenu.addSeparator();
+		optionsMenuItem  = new JMenuItem(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureTool.options"));
+		optionsMenuItem.addActionListener(this);
+		popupMenu.add(optionsMenuItem);
 
 		// the Button for the ToolBar
 		toolbarButton = DropDownButtonFactory.createDropDownToggleButton(getIcon(), getPopupMenu());
@@ -113,6 +130,11 @@ public class AdvancedMeasureTool extends PolygonTool implements ActionListener {
 		return createCursor(IconLoader.icon(cursorName).getImage());
 	}
 
+	/**
+	 * Handle mouse location changes.
+	 *
+	 * @param e
+	 */
 	@Override
 	public void mouseLocationChanged(MouseEvent e) {
 		mousePosition = e.getPoint();
@@ -136,8 +158,8 @@ public class AdvancedMeasureTool extends PolygonTool implements ActionListener {
 	@Override
 	public void mousePressed(MouseEvent e) {
 		super.mousePressed(e);
-		MeasureLayerFinder measureLayerFinder = new MeasureLayerFinder(getPanel());
-		if (measureLayerFinder.getMeasureLayer() != null) { // no Layer, no old measurment
+		MeasureLayerFinder measureLayerFinder = new MeasureLayerFinder(getPanel(), context);
+		if (measureLayerFinder.getLayer() != null) { // no Layer, no old measurment
 			if (measureLayerFinder.getMeasureLayer().getFeatureCollectionWrapper().getFeatures().size() > 0) { //only if we have an old measurment (Features on the Layer)
 				// clear only if this is the first click
 				if (getCoordinates().size() == 1) {
@@ -148,12 +170,21 @@ public class AdvancedMeasureTool extends PolygonTool implements ActionListener {
 	}
 
 
-
+	/**
+	 * Check if the user has a double click at the first.
+	 *
+	 * @return
+	 */
 	private boolean doubleClicked() {
         return getCoordinates().size() == 1;
     }
 
 
+	/**
+	 * Gesture is finished, now do the work, paint the measurement.
+	 *
+	 * @throws NoninvertibleTransformException
+	 */
 	protected void gestureFinished() throws NoninvertibleTransformException {
 		reportNothingToUndoYet();
 
@@ -161,9 +192,12 @@ public class AdvancedMeasureTool extends PolygonTool implements ActionListener {
 
 		Geometry measureGeometry = null;
 
+		// check if we have only one point
         if (doubleClicked()) {
+			// with one point measurement makes no sense!
             measureGeometry = null;
         } else {
+			// we have more than on points, so we can start to build the Geometry
 			if (measureMode == MEASURE_MODE_DISTANCE) {
 				List coordinates = getCoordinates();
 				measureGeometry = new GeometryFactory().createLineString(toArray(coordinates));
@@ -179,19 +213,28 @@ public class AdvancedMeasureTool extends PolygonTool implements ActionListener {
 			}
         }
 
-        MeasureLayerFinder measureLayerFinder = new MeasureLayerFinder(getPanel());
+		// add the Geometry to the measure layer
+        MeasureLayerFinder measureLayerFinder = new MeasureLayerFinder(getPanel(), context);
         measureLayerFinder.setMeasure(measureGeometry);
 
+		// and set it visible
         if (!measureLayerFinder.getLayer().isVisible()) {
             measureLayerFinder.getLayer().setVisible(true);
         }
 	}
 
+	/**
+	 * Returns the popup menu for this tool.
+	 *
+	 * @return the popup menu
+	 */
 	public JPopupMenu getPopupMenu() {
 		return popupMenu;
 	}
 
 	/**
+	 * Returns the toolbar button for this tool.
+	 *
 	 * @return the toolbarButton
 	 */
 	public JToggleButton getToolbarButton() {
@@ -211,7 +254,7 @@ public class AdvancedMeasureTool extends PolygonTool implements ActionListener {
 			measureMode = MEASURE_MODE_DISTANCE;
 			if (toolbarButton != null) {
 				toolbarButton.setIcon(IconLoader.icon("Ruler.gif"));
-				toolbarButton.setToolTipText("Distance measuring"); // TODO: i18n
+				toolbarButton.setToolTipText(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureTool.distance-measuring"));
 				// activate this tool
 				toolbarButton.setSelected(true);
 				context.getLayerViewPanel().setCurrentCursorTool(this);
@@ -221,12 +264,24 @@ public class AdvancedMeasureTool extends PolygonTool implements ActionListener {
 			measureMode = MEASURE_MODE_AREA;
 			if (toolbarButton != null) {
 				toolbarButton.setIcon(IconLoader.icon("Ruler_area.gif"));
-				toolbarButton.setToolTipText("Area measuring"); // TODO: i18n
+				toolbarButton.setToolTipText(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureTool.area-measuring"));
 				// activate this tool
 				toolbarButton.setSelected(true);
 				context.getLayerViewPanel().setCurrentCursorTool(this);
 			}
 			setCloseRing(true);
+		} else if (e.getSource() == optionsMenuItem) { // Options
+			// display the OptionsDialog with the right Tab!
+			OptionsDialog optionsDialog = OptionsDialog.instance(context.getWorkbench());
+			JTabbedPane tabbedPane = optionsDialog.getTabbedPane();
+			for (int i = 1; i <= tabbedPane.getTabCount(); i++) {
+				if (tabbedPane.getComponentAt(i) instanceof AdvancedMeasureOptionsPanel) {
+					tabbedPane.setSelectedIndex(i);
+					break;
+				}
+			}
+			GUIUtil.centreOnWindow(optionsDialog);
+			optionsDialog.setVisible(true);
 		}
 		context.getLayerViewPanel().setCursor(getCursor());
 	}

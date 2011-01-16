@@ -2,11 +2,14 @@ package org.openjump.core.ui.plugin.tools;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.util.Assert;
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.MeasureLayerFinder;
 import com.vividsolutions.jump.workbench.ui.Viewport;
 import com.vividsolutions.jump.workbench.ui.renderer.style.Style;
+import com.vividsolutions.jump.workbench.ui.renderer.style.VertexStyle;
+import de.latlon.deejump.plugin.style.VertexStylesFactory;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -27,58 +30,92 @@ public class MeasurementStyle implements Style {
 	private boolean enabled = false;
 	private String areaAttribute = MeasureLayerFinder.FEATURE_ATTRIBUTE_AREA;
 	private String lengthAttribute = MeasureLayerFinder.FEATURE_ATTRIBUTE_LENGTH;
-	private Font font1 = new Font("Dialog", Font.PLAIN, 24);
-	private Font font2 = new Font("Dialog", Font.PLAIN, 12);
+	// summary variables
+	private boolean paintSummary = AdvancedMeasureOptionsPanel.DEFAULT_SUMMARY_PAINT;
+	private Font summaryFont = AdvancedMeasureOptionsPanel.DEFAULT_SUMMARY_FONT;
+	private Color summaryColor = AdvancedMeasureOptionsPanel.DEFAULT_SUMMARY_COLOR;
+	// vertex variables
+	private boolean vertexPaintDistance = AdvancedMeasureOptionsPanel.DEFAULT_VERTEX_PAINT_DISTANCE;
+	private Font vertexFont = new Font("Dialog", Font.PLAIN, 12);
+	private Color vertexFontColor = AdvancedMeasureOptionsPanel.DEFAULT_VERTEX_FONT_COLOR;
+	private boolean vertexPaint = AdvancedMeasureOptionsPanel.DEFAULT_VERTEX_PAINT;
+	private Color vertexFirstColor = AdvancedMeasureOptionsPanel.DEFAULT_VERTEX_FIRST_COLOR;
+	private String vertexFirstForm = AdvancedMeasureOptionsPanel.DEFAULT_VERTEX_FIRST_FORM;
+	private int vertexFirstSize = AdvancedMeasureOptionsPanel.DEFAULT_VERTEX_FIRST_SIZE;
+	private Color vertexFollowingColor = AdvancedMeasureOptionsPanel.DEFAULT_VERTEX_FOLLOWING_COLOR;
+	private String vertexFollowingForm = AdvancedMeasureOptionsPanel.DEFAULT_VERTEX_FOLLOWING_FORM;
+	private int vertexFollowingSize = AdvancedMeasureOptionsPanel.DEFAULT_VERTEX_FOLLOWING_SIZE;
+	private VertexStyle vertexStyleFirst;
+	private VertexStyle vertexStyleFollowing;
+
+	public MeasurementStyle() {
+		// create the both VertexStyle's
+		vertexStyleFirst = VertexStylesFactory.createVertexStyle(vertexFirstForm);
+		vertexStyleFirst.setFillColor(vertexFirstColor);
+		vertexStyleFirst.setAlpha(255);
+		vertexStyleFirst.setSize(vertexFirstSize);
+		vertexStyleFollowing = VertexStylesFactory.createVertexStyle(vertexFollowingForm);
+		vertexStyleFollowing.setFillColor(vertexFollowingColor);
+		vertexStyleFollowing.setAlpha(255);
+		vertexStyleFollowing.setSize(vertexFollowingSize);
+	}
 
 	public void paint(Feature f, Graphics2D g, Viewport viewport) throws Exception {
 		Point2D centerPoint;
 		TextLayout layout;
-		// get and format area and length values
+		// formatting area and length values
+		DecimalFormat decimalFormat = (DecimalFormat) DecimalFormat.getInstance();
+		decimalFormat.applyPattern("#,##0.00");
+
+		// get area and length values
 		Double area = (Double) f.getAttribute(areaAttribute);
 		Double length = (Double) f.getAttribute(lengthAttribute);
-		DecimalFormat decimalFormat = (DecimalFormat) DecimalFormat.getInstance();
-		decimalFormat.applyPattern("#,##0.000");
-		// paint the area (if area measurement) and length
-		g.setColor(Color.black);
-		centerPoint = viewport.toViewPoint(f.getGeometry().getEnvelope().getCentroid().getCoordinate());
-		double x = centerPoint.getX();
-		double y = centerPoint.getY();
-		layout = new TextLayout("Distance: " + decimalFormat.format(length) + "m", font1, g.getFontRenderContext());
-		x -= layout.getAdvance() / 2;
-		layout.draw(g, (float) x, (float) y);
-		y += layout.getAscent();
-		if (area > 0) {
-			layout = new TextLayout("Area: " + decimalFormat.format(area) + "m²", font1, g.getFontRenderContext());
-			layout.draw(g, (float) x, (float) y);
-		} // TODO: i18n
 
 		// length per vertex and vertex himself
-		int vertexSize = 6;
 		Coordinate[] coordinates = f.getGeometry().getCoordinates();
 		double actualLength = 0;
-		for (int i = 0; i < coordinates.length; i++) {
+		// in area mode we do not paint the last vertex, because we paint only the first one (which is at the same coordinate)
+		int numberOfCoordinates = coordinates.length;
+		for (int i = 0; i < numberOfCoordinates; i++) {
+			centerPoint = viewport.toViewPoint(coordinates[i]);
 			if (i > 0) {
-				actualLength += coordinates[i].distance(coordinates[i-1]);
-				layout = new TextLayout(decimalFormat.format(actualLength) + "m", font2, g.getFontRenderContext());
-				centerPoint = viewport.toViewPoint(coordinates[i]);
-				g.setColor(Color.black);
-				layout.draw(g, (float) centerPoint.getX() - layout.getAdvance() / 2, (float) centerPoint.getY() - layout.getAscent());
-				g.setColor(Color.red);
-				g.fillRect((int) (centerPoint.getX() - vertexSize / 2), (int) (centerPoint.getY() - vertexSize / 2), vertexSize, vertexSize);
+				// paint the vertex only if vertexPaint is true AND ( in area mode it's not the last vertex OR in distance mode )
+				if (vertexPaint && (area > 0 && i < numberOfCoordinates - 1 || area == 0)) {
+					vertexStyleFollowing.paint(g, centerPoint);
+				}
+				if (vertexPaintDistance) {
+					actualLength += coordinates[i].distance(coordinates[i-1]);
+					layout = new TextLayout(decimalFormat.format(actualLength) + "m", vertexFont, g.getFontRenderContext());
+					g.setColor(vertexFontColor);
+					layout.draw(g, (float) centerPoint.getX() - layout.getAdvance() / 2, (float) centerPoint.getY() - layout.getAscent());
+				}
 			} else {
-				layout = new TextLayout(decimalFormat.format(actualLength) + "m", font2, g.getFontRenderContext());
-				centerPoint = viewport.toViewPoint(coordinates[i]);
-				g.setColor(Color.black);
-				layout.draw(g, (float) centerPoint.getX() - layout.getAdvance() / 2, (float) centerPoint.getY() + layout.getAscent() + 5);
-				g.setColor(Color.magenta);
-				g.fillRect((int) (centerPoint.getX() - vertexSize / 2), (int) (centerPoint.getY() - vertexSize / 2), vertexSize, vertexSize);
+				if (vertexPaint) {
+					vertexStyleFirst.paint(g, centerPoint);
+				}
+				if (vertexPaintDistance) {
+				layout = new TextLayout(decimalFormat.format(actualLength) + "m", vertexFont, g.getFontRenderContext());
+					g.setColor(vertexFontColor);
+					layout.draw(g, (float) centerPoint.getX() - layout.getAdvance() / 2, (float) centerPoint.getY() + layout.getAscent() + 5);
+				}
 			}
 		}
-		// if we are in area measurement mode, then paint the first vertex again, because it was overpainted by the last vertex
-		if (coordinates.length > 0 && area > 0) {
-			centerPoint = viewport.toViewPoint(coordinates[0]);
-			g.setColor(Color.magenta);
-			g.fillRect((int) (centerPoint.getX() - vertexSize / 2), (int) (centerPoint.getY() - vertexSize / 2), vertexSize, vertexSize);
+
+		// paint summary or not ;-)
+		if (paintSummary) {
+			// paint the area (if area measurement) and length
+			g.setColor(summaryColor);
+			centerPoint = viewport.toViewPoint(f.getGeometry().getEnvelope().getCentroid().getCoordinate());
+			double x = centerPoint.getX();
+			double y = centerPoint.getY();
+			layout = new TextLayout(I18N.get("org.openjump.core.ui.plugin.tools.MeasurementStyle.distance") + " " + decimalFormat.format(length) + "m", summaryFont, g.getFontRenderContext());
+			x -= layout.getAdvance() / 2;
+			layout.draw(g, (float) x, (float) y);
+			y += layout.getAscent();
+			if (area > 0) {
+				layout = new TextLayout(I18N.get("org.openjump.core.ui.plugin.tools.MeasurementStyle.area") + " " + decimalFormat.format(area) + "m²", summaryFont, g.getFontRenderContext());
+				layout.draw(g, (float) x, (float) y);
+			}
 		}
 	}
 
@@ -135,15 +172,195 @@ public class MeasurementStyle implements Style {
 	/**
 	 * @return the font
 	 */
-	public Font getFont() {
-		return font1;
+	public Font getSummaryFont() {
+		return summaryFont;
 	}
 
 	/**
 	 * @param font the font to set
 	 */
-	public void setFont(Font font) {
-		this.font1 = font;
+	public void setSummaryFont(Font font) {
+		this.summaryFont = font;
+	}
+
+	/**
+	 * @return the summaryColor
+	 */
+	public Color getSummaryColor() {
+		return summaryColor;
+	}
+
+	/**
+	 * @param summaryColor the summaryColor to set
+	 */
+	public void setSummaryColor(Color summaryColor) {
+		this.summaryColor = summaryColor;
+	}
+
+	/**
+	 * @return the paintSummary
+	 */
+	public boolean isPaintSummary() {
+		return paintSummary;
+	}
+
+	/**
+	 * @param paintSummary the paintSummary to set
+	 */
+	public void setPaintSummary(boolean paintSummary) {
+		this.paintSummary = paintSummary;
+	}
+
+	/**
+	 * @return the vertexFont
+	 */
+	public Font getVertexFont() {
+		return vertexFont;
+	}
+
+	/**
+	 * @param vertexFont the vertexFont to set
+	 */
+	public void setVertexFont(Font vertexFont) {
+		this.vertexFont = vertexFont;
+	}
+
+	/**
+	 * @return the vertexFontColor
+	 */
+	public Color getVertexFontColor() {
+		return vertexFontColor;
+	}
+
+	/**
+	 * @param vertexFontColor the vertexFontColor to set
+	 */
+	public void setVertexFontColor(Color vertexFontColor) {
+		this.vertexFontColor = vertexFontColor;
+	}
+
+	/**
+	 * @return the vertexPaintDistance
+	 */
+	public boolean isVertexPaintDistance() {
+		return vertexPaintDistance;
+	}
+
+	/**
+	 * @param vertexPaintDistance the vertexPaintDistance to set
+	 */
+	public void setVertexPaintDistance(boolean vertexPaintDistance) {
+		this.vertexPaintDistance = vertexPaintDistance;
+	}
+
+	/**
+	 * @return the vertexPaint
+	 */
+	public boolean isVertexPaint() {
+		return vertexPaint;
+	}
+
+	/**
+	 * @param vertexPaint the vertexPaint to set
+	 */
+	public void setVertexPaint(boolean vertexPaint) {
+		this.vertexPaint = vertexPaint;
+	}
+
+	/**
+	 * @return the vertexFirstColor
+	 */
+	public Color getVertexFirstColor() {
+		return vertexFirstColor;
+	}
+
+	/**
+	 * @param vertexFirstColor the vertexFirstColor to set
+	 */
+	public void setVertexFirstColor(Color vertexFirstColor) {
+		this.vertexFirstColor = vertexFirstColor;
+		vertexStyleFirst.setFillColor(vertexFirstColor);
+	}
+
+	/**
+	 * @return the vertexFirstForm
+	 */
+	public String getVertexFirstForm() {
+		return vertexFirstForm;
+	}
+
+	/**
+	 * @param vertexFirstForm the vertexFirstForm to set
+	 */
+	public void setVertexFirstForm(String vertexFirstForm) {
+		this.vertexFirstForm = vertexFirstForm;
+		vertexStyleFirst = VertexStylesFactory.createVertexStyle(vertexFirstForm);
+		vertexStyleFirst.setFillColor(vertexFirstColor);
+		vertexStyleFirst.setAlpha(255);
+		vertexStyleFirst.setSize(vertexFirstSize);
+	}
+
+	/**
+	 * @return the vertexFirstSize
+	 */
+	public int getVertexFirstSize() {
+		return vertexFirstSize;
+	}
+
+	/**
+	 * @param vertexFirstSize the vertexFirstSize to set
+	 */
+	public void setVertexFirstSize(int vertexFirstSize) {
+		this.vertexFirstSize = vertexFirstSize;
+		vertexStyleFirst.setSize(vertexFirstSize);
+	}
+
+	/**
+	 * @return the vertexFollowingColor
+	 */
+	public Color getVertexFollowingColor() {
+		return vertexFollowingColor;
+	}
+
+	/**
+	 * @param vertexFollowingColor the vertexFollowingColor to set
+	 */
+	public void setVertexFollowingColor(Color vertexFollowingColor) {
+		this.vertexFollowingColor = vertexFollowingColor;
+		vertexStyleFollowing.setFillColor(vertexFollowingColor);
+	}
+
+	/**
+	 * @return the vertexFollowingForm
+	 */
+	public String getVertexFollowingForm() {
+		return vertexFollowingForm;
+	}
+
+	/**
+	 * @param vertexFollowingForm the vertexFollowingForm to set
+	 */
+	public void setVertexFollowingForm(String vertexFollowingForm) {
+		this.vertexFollowingForm = vertexFollowingForm;
+		vertexStyleFollowing = VertexStylesFactory.createVertexStyle(vertexFollowingForm);
+		vertexStyleFollowing.setFillColor(vertexFollowingColor);
+		vertexStyleFollowing.setAlpha(255);
+		vertexStyleFollowing.setSize(vertexFollowingSize);
+	}
+
+	/**
+	 * @return the vertexFollowingSize
+	 */
+	public int getVertexFollowingSize() {
+		return vertexFollowingSize;
+	}
+
+	/**
+	 * @param vertexFollowingSize the vertexFollowingSize to set
+	 */
+	public void setVertexFollowingSize(int vertexFollowingSize) {
+		this.vertexFollowingSize = vertexFollowingSize;
+		vertexStyleFollowing.setSize(vertexFollowingSize);
 	}
 
 
