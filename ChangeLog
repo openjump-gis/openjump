@@ -1,4 +1,9 @@
 2011-01-16 Matthias Scholz <ms@jammerhund.de>
+	* MeasureLayerFinder.featuresChanged()
+		* Bugfix: the LayerListener now only works if the change was on
+			the measureLayer; all changes on other layers will be ignored
+
+2011-01-16 Matthias Scholz <ms@jammerhund.de>
 	* AdvancedMeasurePlugin
 		* styling for the AdvancedMeasureTool in the Option dialog added
 		* I18N for english and german

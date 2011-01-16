@@ -151,11 +151,14 @@ public class MeasureLayerFinder extends SystemLayerFinder {
 			@Override
 			public void featuresChanged(FeatureEvent e) {
 				super.featuresChanged(e);
-				Collection<Feature> features = e.getFeatures();
-				for (Feature feature : features) {
-					feature.setAttribute(FEATURE_ATTRIBUTE_LENGTH, feature.getGeometry().getLength());
-					feature.setAttribute(FEATURE_ATTRIBUTE_AREA, feature.getGeometry() instanceof Polygon ? feature.getGeometry().getArea() : 0);
-					feature.setAttribute(FEATURE_ATTRIBUTE_POINTS, feature.getGeometry().getNumPoints());
+				// we are only interested on the measureLayer
+				if (e.getLayer().equals(measureLayer)) {
+					Collection<Feature> features = e.getFeatures();
+					for (Feature feature : features) {
+						feature.setAttribute(FEATURE_ATTRIBUTE_LENGTH, feature.getGeometry().getLength());
+						feature.setAttribute(FEATURE_ATTRIBUTE_AREA, feature.getGeometry() instanceof Polygon ? feature.getGeometry().getArea() : 0);
+						feature.setAttribute(FEATURE_ATTRIBUTE_POINTS, feature.getGeometry().getNumPoints());
+					}
 				}
 			}
 
