@@ -113,7 +113,7 @@ public class MeasurementStyle implements Style {
 			layout.draw(g, (float) x, (float) y);
 			y += layout.getAscent();
 			if (area > 0) {
-				layout = new TextLayout(I18N.get("org.openjump.core.ui.plugin.tools.MeasurementStyle.area") + " " + decimalFormat.format(area) + "m²", summaryFont, g.getFontRenderContext());
+				layout = new TextLayout(I18N.get("org.openjump.core.ui.plugin.tools.MeasurementStyle.area") + " " + decimalFormat.format(area) + "m\u00B2", summaryFont, g.getFontRenderContext());
 				layout.draw(g, (float) x, (float) y);
 			}
 		}
