@@ -9,6 +9,7 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.OptionsDialog;
 import com.vividsolutions.jump.workbench.ui.cursortool.CoordinateListMetrics;
 import com.vividsolutions.jump.workbench.ui.cursortool.PolygonTool;
+import com.vividsolutions.jump.workbench.ui.cursortool.QuasimodeTool;
 import java.awt.Cursor;
 import java.awt.Shape;
 import java.awt.event.ActionEvent;
@@ -188,7 +189,7 @@ public class AdvancedMeasureTool extends PolygonTool implements ActionListener {
 	protected void gestureFinished() throws NoninvertibleTransformException {
 		reportNothingToUndoYet();
 
-		getMetrics().displayMetrics(getCoordinates(), getPanel());
+		getMetrics().displayMetrics(getCoordinates(), getPanel(), measureMode == MEASURE_MODE_AREA);
 
 		Geometry measureGeometry = null;
 
@@ -257,7 +258,7 @@ public class AdvancedMeasureTool extends PolygonTool implements ActionListener {
 				toolbarButton.setToolTipText(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureTool.distance-measuring"));
 				// activate this tool
 				toolbarButton.setSelected(true);
-				context.getLayerViewPanel().setCurrentCursorTool(this);
+				context.getLayerViewPanel().setCurrentCursorTool(QuasimodeTool.addStandardQuasimodes(this));
 			}
 			setCloseRing(false);
 		} else if (e.getSource() == areaMenuItem) { // Area
@@ -267,7 +268,7 @@ public class AdvancedMeasureTool extends PolygonTool implements ActionListener {
 				toolbarButton.setToolTipText(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureTool.area-measuring"));
 				// activate this tool
 				toolbarButton.setSelected(true);
-				context.getLayerViewPanel().setCurrentCursorTool(this);
+				context.getLayerViewPanel().setCurrentCursorTool(QuasimodeTool.addStandardQuasimodes(this));
 			}
 			setCloseRing(true);
 		} else if (e.getSource() == optionsMenuItem) { // Options

@@ -54,12 +54,38 @@ public class CoordinateListMetrics
 
   public void displayMetrics(List coordinates, LayerViewPanel panel)
   {
-    panel.getContext().setStatusMessage(getMetricsString(coordinates, panel));
+    displayMetrics(coordinates, panel, false);
+  }
+
+  /**
+   * Display the coordinates metrics with the option to compute the distance for
+   * a closed geometry.
+   *
+   * @param coordinates
+   * @param panel
+   * @param closedDistance
+   */
+  public void displayMetrics(List coordinates, LayerViewPanel panel, boolean closedDistance) {
+	panel.getContext().setStatusMessage(getMetricsString(coordinates, panel, closedDistance));
   }
 
   public String getMetricsString(List coordinates, LayerViewPanel panel)
   {
-    double dist = distance(coordinates);
+	return getMetricsString(coordinates, panel, false);
+  }
+
+  /**
+   * Get's the the coordinates metrics with the option to compute the distance for
+   * a closed geometry.
+   *
+   * @param coordinates
+   * @param panel
+   * @param closedDistance
+   * @return
+   */
+  public String getMetricsString(List coordinates, LayerViewPanel panel, boolean closedDistance)
+  {
+    double dist = distance(coordinates, closedDistance);
     String dispStr = sDistance + ": " + panel.format(dist);
 
     double angle = angle(coordinates);
@@ -72,13 +98,29 @@ public class CoordinateListMetrics
     return dispStr;
   }
 
-  public static double distance(List coordinates)
+  public static double distance(List coordinates) {
+	return distance(coordinates, false);
+  }
+
+  /**
+   * Computes the distance with the option to compute the distance for
+   * a closed geometry.
+   *
+   * @param coordinates
+   * @param closedDistance
+   * @return
+   */
+  public static double distance(List coordinates, boolean closedDistance)
   {
     double distance = 0;
     for (int i = 1; i < coordinates.size(); i++) {
       distance += ((Coordinate) coordinates.get(i - 1)).distance((Coordinate) coordinates.get(
       i));
     }
+	// compute the last distance part from the last coordinate to the first, if we are in closed mode
+	if (coordinates.size() > 2 && closedDistance) {
+		distance += ((Coordinate) coordinates.get(coordinates.size() - 1)).distance((Coordinate) coordinates.get(0));
+	}
     return distance;
   }
 

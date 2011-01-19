@@ -59,7 +59,8 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 
 	// Blackboard keys
 	// summary
-	public static final String BB_SUMMARY_PAINT = AdvancedMeasureOptionsPanel.class.getName() + " - SUMMARY_PAINT";
+	public static final String BB_SUMMARY_PAINT_LENGTH = AdvancedMeasureOptionsPanel.class.getName() + " - SUMMARY_PAINT_LENGTH";
+	public static final String BB_SUMMARY_PAINT_AREA = AdvancedMeasureOptionsPanel.class.getName() + " - SUMMARY_PAINT_AREA";
 	public static final String BB_SUMMARY_FONT = AdvancedMeasureOptionsPanel.class.getName() + " - SUMMARY_FONT";
 	public static final String BB_SUMMARY_FONT_COLOR = AdvancedMeasureOptionsPanel.class.getName() + " - SUMMARY_FONT_COLOR";
 	// vertex
@@ -83,7 +84,8 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 	// summary
 	public static final Font DEFAULT_SUMMARY_FONT = new Font("Dialog", Font.PLAIN, 24);
 	public static final Color DEFAULT_SUMMARY_COLOR = Color.black;
-	public static final boolean DEFAULT_SUMMARY_PAINT = true;
+	public static final boolean DEFAULT_SUMMARY_PAINT_LENGTH = true;
+	public static final boolean DEFAULT_SUMMARY_PAINT_AREA = true;
 	// vertex
 	public static final boolean DEFAULT_VERTEX_PAINT_DISTANCE = true;
 	public static final Font DEFAULT_VERTEX_FONT = new Font("Dialog", Font.PLAIN, 12);
@@ -108,7 +110,8 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 	// summary widgets
 	private JButton summaryFontButton;
 	private JButton summaryFontColorButton;
-	private JCheckBox paintSummaryCheckBox;
+	private JCheckBox paintSummaryLengthCheckBox;
+	private JCheckBox paintSummaryAreaCheckBox;
 
 	// vertex widgets
 	private JCheckBox paintVertexDistanceCheckBox;
@@ -167,27 +170,46 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 		summaryFontColorButton = new JButton(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.choose-color"));
 
 		// checkbox for paint the summary (distance and area)
-		paintSummaryCheckBox = new JCheckBox(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.paint-summary"));
-		paintSummaryCheckBox.addChangeListener(new ChangeListener() {
+		// length checkbox
+		paintSummaryLengthCheckBox = new JCheckBox(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.paint-summary-length"));
+		paintSummaryAreaCheckBox = new JCheckBox(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.paint-summary-area"));
+		paintSummaryLengthCheckBox.addChangeListener(new ChangeListener() {
 
 			public void stateChanged(ChangeEvent e) {
-				summaryFontButton.setEnabled(paintSummaryCheckBox.isSelected());
-				summaryFontColorButton.setEnabled(paintSummaryCheckBox.isSelected());
+				summaryFontButton.setEnabled(paintSummaryLengthCheckBox.isSelected() || paintSummaryAreaCheckBox.isSelected());
+				summaryFontColorButton.setEnabled(paintSummaryLengthCheckBox.isSelected() || paintSummaryAreaCheckBox.isSelected());
 			}
 		});
-		paintSummaryCheckBox.setSelected(DEFAULT_SUMMARY_PAINT);
+		paintSummaryLengthCheckBox.setSelected(DEFAULT_SUMMARY_PAINT_LENGTH);
 		gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
 		gridBagConstraints.gridwidth = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        summaryContentPanel.add(paintSummaryCheckBox, gridBagConstraints);
+        summaryContentPanel.add(paintSummaryLengthCheckBox, gridBagConstraints);
+
+		// area checkbox
+		paintSummaryAreaCheckBox.addChangeListener(new ChangeListener() {
+
+			public void stateChanged(ChangeEvent e) {
+				summaryFontButton.setEnabled(paintSummaryLengthCheckBox.isSelected() || paintSummaryAreaCheckBox.isSelected());
+				summaryFontColorButton.setEnabled(paintSummaryLengthCheckBox.isSelected() || paintSummaryAreaCheckBox.isSelected());
+			}
+		});
+		paintSummaryAreaCheckBox.setSelected(DEFAULT_SUMMARY_PAINT_AREA);
+		gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+		gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        summaryContentPanel.add(paintSummaryAreaCheckBox, gridBagConstraints);
+
 
 		// font label
 		JLabel summaryFontLabel = new JLabel(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.font"));
 		gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 26, 0, 0);
         summaryContentPanel.add(summaryFontLabel, gridBagConstraints);
@@ -195,12 +217,13 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 		summaryFontButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				summaryFont = FontChooser.showDialog(OptionsDialog.instance(context.getWorkbench()), I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.choose-font"), summaryFont, true);
+				Font newFont = FontChooser.showDialog(OptionsDialog.instance(context.getWorkbench()), I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.choose-font"), summaryFont, true);
+				if (newFont != null) summaryFont = newFont;
 			}
 		});
 		gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
 		gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 5, 10);
@@ -210,7 +233,7 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 		JLabel fontColorLabel = new JLabel(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.fontcolor"));
 		gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 26, 0, 0);
         summaryContentPanel.add(fontColorLabel, gridBagConstraints);
@@ -223,7 +246,7 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 		});
 		gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
 		gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 5, 10);
@@ -281,7 +304,8 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 		vertexFontButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				vertexFont = FontChooser.showDialog(OptionsDialog.instance(context.getWorkbench()), I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.choose-font"), vertexFont, true);
+				Font newFont = FontChooser.showDialog(OptionsDialog.instance(context.getWorkbench()), I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.choose-font"), vertexFont, true);
+				if (newFont != null) vertexFont = newFont;
 			}
 		});
 		gridBagConstraints = new java.awt.GridBagConstraints();
@@ -519,7 +543,8 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 		// summary
 		blackboard.put(BB_SUMMARY_FONT_COLOR, summaryFontColor);
 		blackboard.put(BB_SUMMARY_FONT, summaryFont);
-		blackboard.put(BB_SUMMARY_PAINT, paintSummaryCheckBox.isSelected());
+		blackboard.put(BB_SUMMARY_PAINT_LENGTH, paintSummaryLengthCheckBox.isSelected());
+		blackboard.put(BB_SUMMARY_PAINT_AREA, paintSummaryAreaCheckBox.isSelected());
 		// vertex
 		blackboard.put(BB_VERTEX_FONT, vertexFont);
 		blackboard.put(BB_VERTEX_FONT_COLOR, vertexFontColor);
@@ -547,7 +572,8 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 			// summary
 			style.setSummaryFont(summaryFont);
 			style.setSummaryColor(summaryFontColor);
-			style.setPaintSummary(paintSummaryCheckBox.isSelected());
+			style.setPaintSummaryLength(paintSummaryLengthCheckBox.isSelected());
+			style.setPaintSummaryArea(paintSummaryAreaCheckBox.isSelected());
 			// vertex labeling
 			style.setVertexFont(vertexFont);
 			style.setVertexFontColor(vertexFontColor);
@@ -577,7 +603,8 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 		Object color;
 		Object string;
 		// summary settings
-		paintSummaryCheckBox.setSelected(blackboard.get(BB_SUMMARY_PAINT, DEFAULT_SUMMARY_PAINT));
+		paintSummaryLengthCheckBox.setSelected(blackboard.get(BB_SUMMARY_PAINT_LENGTH, DEFAULT_SUMMARY_PAINT_LENGTH));
+		paintSummaryAreaCheckBox.setSelected(blackboard.get(BB_SUMMARY_PAINT_AREA, DEFAULT_SUMMARY_PAINT_AREA));
 		font = blackboard.get(BB_SUMMARY_FONT, DEFAULT_SUMMARY_FONT);
 		if (font instanceof Font) summaryFont = (Font) font;
 		color = blackboard.get(BB_SUMMARY_FONT_COLOR, DEFAULT_SUMMARY_COLOR);

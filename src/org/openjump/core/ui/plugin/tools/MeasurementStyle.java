@@ -31,7 +31,8 @@ public class MeasurementStyle implements Style {
 	private String areaAttribute = MeasureLayerFinder.FEATURE_ATTRIBUTE_AREA;
 	private String lengthAttribute = MeasureLayerFinder.FEATURE_ATTRIBUTE_LENGTH;
 	// summary variables
-	private boolean paintSummary = AdvancedMeasureOptionsPanel.DEFAULT_SUMMARY_PAINT;
+	private boolean paintSummaryLength = AdvancedMeasureOptionsPanel.DEFAULT_SUMMARY_PAINT_LENGTH;
+	private boolean paintSummaryArea = AdvancedMeasureOptionsPanel.DEFAULT_SUMMARY_PAINT_AREA;
 	private Font summaryFont = AdvancedMeasureOptionsPanel.DEFAULT_SUMMARY_FONT;
 	private Color summaryColor = AdvancedMeasureOptionsPanel.DEFAULT_SUMMARY_COLOR;
 	// vertex variables
@@ -63,14 +64,26 @@ public class MeasurementStyle implements Style {
 	public void paint(Feature f, Graphics2D g, Viewport viewport) throws Exception {
 		Point2D centerPoint;
 		TextLayout layout;
-		// formatting area and length values
-		DecimalFormat decimalFormat = (DecimalFormat) DecimalFormat.getInstance();
-		decimalFormat.applyPattern("#,##0.00");
 
 		// get area and length values
 		Double area = (Double) f.getAttribute(areaAttribute);
 		Double length = (Double) f.getAttribute(lengthAttribute);
 
+		// formatting area and length values
+		DecimalFormat decimalFormat = (DecimalFormat) DecimalFormat.getInstance();
+		String formatPattern = "#,##0.00";
+		// adaptive format pattern, thanks to Michaël Michaud for his idea!
+		if (length >= 10) {
+			formatPattern = "#,##0.00";
+		} else if (length >= 1) {
+			formatPattern = "#,##0.000";
+		} else if (length >= 0.1) {
+			formatPattern = "#,##0.0000";
+		} else if (length >= 0.01) {
+			formatPattern ="#,##0.00000";
+		} else formatPattern = "#,##0.000000";
+		decimalFormat.applyPattern(formatPattern);
+		
 		// length per vertex and vertex himself
 		Coordinate[] coordinates = f.getGeometry().getCoordinates();
 		double actualLength = 0;
@@ -102,20 +115,21 @@ public class MeasurementStyle implements Style {
 		}
 
 		// paint summary or not ;-)
-		if (paintSummary) {
-			// paint the area (if area measurement) and length
-			g.setColor(summaryColor);
-			centerPoint = viewport.toViewPoint(f.getGeometry().getEnvelope().getCentroid().getCoordinate());
-			double x = centerPoint.getX();
-			double y = centerPoint.getY();
+		// paint the area (if area measurement) and length
+		g.setColor(summaryColor);
+		centerPoint = viewport.toViewPoint(f.getGeometry().getEnvelope().getCentroid().getCoordinate());
+		double x = centerPoint.getX();
+		double y = centerPoint.getY();
+		if (paintSummaryLength) {
 			layout = new TextLayout(I18N.get("org.openjump.core.ui.plugin.tools.MeasurementStyle.distance") + " " + decimalFormat.format(length) + "m", summaryFont, g.getFontRenderContext());
 			x -= layout.getAdvance() / 2;
 			layout.draw(g, (float) x, (float) y);
 			y += layout.getAscent();
-			if (area > 0) {
-				layout = new TextLayout(I18N.get("org.openjump.core.ui.plugin.tools.MeasurementStyle.area") + " " + decimalFormat.format(area) + "m\u00B2", summaryFont, g.getFontRenderContext());
-				layout.draw(g, (float) x, (float) y);
-			}
+		}
+		if (area > 0 && paintSummaryArea) {
+			layout = new TextLayout(I18N.get("org.openjump.core.ui.plugin.tools.MeasurementStyle.area") + " " + decimalFormat.format(area) + "m\u00B2", summaryFont, g.getFontRenderContext());
+			if (!paintSummaryLength) x -= layout.getAdvance() / 2;
+			layout.draw(g, (float) x, (float) y);
 		}
 	}
 
@@ -200,15 +214,29 @@ public class MeasurementStyle implements Style {
 	/**
 	 * @return the paintSummary
 	 */
-	public boolean isPaintSummary() {
-		return paintSummary;
+	public boolean isPaintSummaryLength() {
+		return paintSummaryLength;
 	}
 
 	/**
 	 * @param paintSummary the paintSummary to set
 	 */
-	public void setPaintSummary(boolean paintSummary) {
-		this.paintSummary = paintSummary;
+	public void setPaintSummaryLength(boolean paintSummary) {
+		this.paintSummaryLength = paintSummary;
+	}
+
+	/**
+	 * @return the paintSummaryArea
+	 */
+	public boolean isPaintSummaryArea() {
+		return paintSummaryArea;
+	}
+
+	/**
+	 * @param paintSummaryArea the paintSummaryArea to set
+	 */
+	public void setPaintSummaryArea(boolean paintSummaryArea) {
+		this.paintSummaryArea = paintSummaryArea;
 	}
 
 	/**

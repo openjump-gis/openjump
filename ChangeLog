@@ -1,3 +1,19 @@
+2011-01-19 Matthias Scholz <ms@jammerhund.de>
+	* AdvancedMeasureOptionsPanel
+		* Bugfix: if you have the cancel button pressed in the FontChooser, then
+			an exception was thrown, because of a null-Font
+	* MeasurementStyle
+		* format pattern for area/length is now adaptive; thaks to Michaël for his idea
+	* AdvancedMeasureOptionsPanel, MeasurementStyle, MeasureLayerFinder
+		* now you can select individually if summary length and/or area should
+			be painted; thanks to Jukka Rahkonen for his idea
+	* AdvancedMeasureTool
+		* now you can pan and zoom during measurment
+	* CoordinateListMetrics
+		* now you can get the distance for a closed geometry
+		* this was the reason for different distance in the statusbar and while
+			area measurement mode in the AdvancedMeasureTool
+
 2011-01-16 Matthias Scholz <ms@jammerhund.de>
 	* MeasureLayerFinder.featuresChanged()
 		* Bugfix: the LayerListener now only works if the change was on

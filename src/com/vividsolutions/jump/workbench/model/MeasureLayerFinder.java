@@ -63,7 +63,8 @@ public class MeasureLayerFinder extends SystemLayerFinder {
 		MeasurementStyle measurementStyle = new MeasurementStyle();
 		measurementStyle.setEnabled(true);
 		// summary
-		measurementStyle.setPaintSummary(blackboard.get(AdvancedMeasureOptionsPanel.BB_SUMMARY_PAINT, AdvancedMeasureOptionsPanel.DEFAULT_SUMMARY_PAINT));
+		measurementStyle.setPaintSummaryLength(blackboard.get(AdvancedMeasureOptionsPanel.BB_SUMMARY_PAINT_LENGTH, AdvancedMeasureOptionsPanel.DEFAULT_SUMMARY_PAINT_LENGTH));
+		measurementStyle.setPaintSummaryArea(blackboard.get(AdvancedMeasureOptionsPanel.BB_SUMMARY_PAINT_AREA, AdvancedMeasureOptionsPanel.DEFAULT_SUMMARY_PAINT_AREA));
 		font = blackboard.get(AdvancedMeasureOptionsPanel.BB_SUMMARY_FONT, AdvancedMeasureOptionsPanel.DEFAULT_SUMMARY_FONT);
 		if (font instanceof Font) measurementStyle.setSummaryFont((Font) font);
 		color = blackboard.get(AdvancedMeasureOptionsPanel.BB_SUMMARY_FONT_COLOR, AdvancedMeasureOptionsPanel.DEFAULT_SUMMARY_COLOR);
