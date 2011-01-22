@@ -1,8 +1,10 @@
 package org.openjump.core.ui.plugin.tools;
 
+import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.feature.FeatureCollectionWrapper;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.MeasureLayerFinder;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
@@ -18,6 +20,7 @@ import java.util.ArrayList;
 import javax.swing.Icon;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.ActionListener;
 import java.awt.geom.NoninvertibleTransformException;
 import java.util.List;
@@ -25,6 +28,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTabbedPane;
 import javax.swing.JToggleButton;
+import javax.swing.Timer;
 import org.openide.awt.DropDownButtonFactory;
 
 /**
@@ -65,6 +69,9 @@ public class AdvancedMeasureTool extends PolygonTool implements ActionListener {
 	WorkbenchContext context;
 	Point mousePosition = null;
 	Shape lastShape = null;
+
+	// the Timer for checking a double click
+	private static Timer doubleClickTimer;
 
 	/**
 	 * Build a new AdvancedMeasureTool instance.
@@ -152,24 +159,66 @@ public class AdvancedMeasureTool extends PolygonTool implements ActionListener {
 	}
 
 	/**
-	 * With the first click we delete an old measurment from the screen.
+	 * Clickhandler for the measuretool. If the user starts a new measure with
+	 * a sinle click, then all old mesurements (features on the mesure layer)
+	 * will be deleted. But if the user starts with a double click, then this
+	 * measuremt will be added!
+	 * Because of the event behaviour during a double click, this code is a
+	 * little bit tricky. During a double click you get first a single click
+	 * (getClickCount()=1) and after them the double click (getClickCount()=2).
+	 * So we must check after the first click if later comes the double click.
+	 * This is done by a Timer. The maximum time to detect a double click we can
+	 * get through the desktop property "awt.multiClickInterval".
+	 * Second is the overridden method MultiClickTool.isFinishingRelease()
+	 * important.
 	 *
 	 * @param e
 	 */
 	@Override
-	public void mousePressed(MouseEvent e) {
-		super.mousePressed(e);
-		MeasureLayerFinder measureLayerFinder = new MeasureLayerFinder(getPanel(), context);
-		if (measureLayerFinder.getLayer() != null) { // no Layer, no old measurment
-			if (measureLayerFinder.getMeasureLayer().getFeatureCollectionWrapper().getFeatures().size() > 0) { //only if we have an old measurment (Features on the Layer)
-				// clear only if this is the first click
-				if (getCoordinates().size() == 1) {
-					measureLayerFinder.getMeasureLayer().getFeatureCollectionWrapper().clear();
-				}
+	public void mouseClicked(MouseEvent e) {
+		// only do some things if this is the first click in this gesture with the left mouse button
+		if (getCoordinates().size() == 1 && e.getButton() == MouseEvent.BUTTON1) {
+			final int clickCount = e.getClickCount();
+			if (clickCount == 1) {
+				// single click starts a Timer for checking a double click
+				int multiClickInterval = (Integer) Toolkit.getDefaultToolkit().getDesktopProperty("awt.multiClickInterval");
+				doubleClickTimer = new Timer(multiClickInterval, new ActionListener() {
+
+					// if Timer is done, then we have a single first click and delete all old mesasurements
+					public void actionPerformed(ActionEvent e) {
+						MeasureLayerFinder measureLayerFinder = new MeasureLayerFinder(getPanel(), context);
+						if (measureLayerFinder.getLayer() != null) { // no Layer, no old measurment
+							final FeatureCollectionWrapper featureCollectionWrapper = measureLayerFinder.getMeasureLayer().getFeatureCollectionWrapper();
+							if (featureCollectionWrapper.getFeatures().size() > 0) { //only if we have an old measurment (Features on the Layer)
+									featureCollectionWrapper.clear();
+							}
+						}
+					}
+				});
+				doubleClickTimer.setRepeats(false);
+				doubleClickTimer.start();
+			} else if (clickCount == 2) {
+				// a double click stops the Timer, so no deletion is done!
+				doubleClickTimer.stop();
 			}
+
 		}
+
 	}
 
+	/**
+	 * For the possibility to start a gesture (measurement) with a double click,
+	 * only finish, if we have more then one click previously done
+	 * (coordinates > 1). See mouseClicked() method.
+	 *
+	 * @param e
+	 * @return true if double clicked and more the one click
+	 */
+	@Override
+	protected boolean isFinishingRelease(MouseEvent e) {
+		boolean finishingRelease = super.isFinishingRelease(e);
+		return finishingRelease && getCoordinates().size() > 1;
+	}
 
 	/**
 	 * Check if the user has a double click at the first.

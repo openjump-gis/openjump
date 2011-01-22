@@ -122,7 +122,6 @@ public class MeasureLayerFinder extends SystemLayerFinder {
 		}
 
         if (measureGeometry != null) {
-            getLayer().getFeatureCollectionWrapper().clear();
             getLayer().getFeatureCollectionWrapper().add(toFeature(measureGeometry,
                     getLayer().getFeatureCollectionWrapper().getFeatureSchema()));
         }

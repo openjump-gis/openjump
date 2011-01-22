@@ -433,7 +433,7 @@ public class FontChooser extends javax.swing.JDialog {
         gridBagConstraints1.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints1.weightx = 1.0;
         getContentPane().add(jPanel1,
-            new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0,
+            new GridBagConstraints(0, 1, 3, 1, 0.0, 0.6,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(0, 3, 3, 3), 0, 0));
 

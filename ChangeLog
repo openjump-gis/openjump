@@ -1,3 +1,12 @@
+2011-01-22 Matthias Scholz <ms@jammerhund.de>
+	* small GUI fix in FontChooser, now the example text is better visible
+	* AdvancedMeasureTool enhancement:
+		If the user starts a measurement with a single click, all the old
+		measurements will be deleted. But if the user starts the measurement
+		with a double click, then nothing is deleted. So you can make multiple
+		measurements very easy without any additional menuitems and mouseclicks
+		in the menu.
+
 2011-01-19 Matthias Scholz <ms@jammerhund.de>
 	* AdvancedMeasureOptionsPanel
 		* Bugfix: if you have the cancel button pressed in the FontChooser, then
