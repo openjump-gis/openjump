@@ -98,12 +98,16 @@ public class JenksBreaksColorThemingState implements ColorThemingStylePanel.Stat
     public Collection filterAttributeValues(SortedSet attributeValues) {
         //-1 because one row in the table is reserved for "all other values". [Jon Aquino]
     	//int classCount = getRangeCount() - 1;
-
+    	Collection filteredValues = new ArrayList();
+    	if (attributeValues.size() == 0) {
+    	    return filteredValues;
+    	}
     	// obedel: -1 deleted because there will be no other values
     	int classCount = getRangeCount();
 
         double[] data = new double[attributeValues.size()];
-        int i=0; boolean isInteger=false;
+        int i = 0;
+        boolean isInteger = false;
         for (Iterator iterator = attributeValues.iterator(); iterator.hasNext();) {
 			Object val = (Object) iterator.next();
 			if (val instanceof Integer){
@@ -120,7 +124,7 @@ public class JenksBreaksColorThemingState implements ColorThemingStylePanel.Stat
 		}
         double[] breaks = Classifier1D.classifyNaturalBreaks(data, classCount);
         double minVal = org.math.array.DoubleArray.min(data);
-        Collection filteredValues = new ArrayList();
+        
         if(isInteger){
             filteredValues.add(new Integer((int)minVal));
         }

@@ -1,3 +1,14 @@
+2011-01-25 mmichaud <michael.michaud@free.fr>
+    * Bugfix in ColorThemingStyle : when a numeric attribute contains
+      only nulls, all classification methods fails and corrupt the plugin
+        * com.vividsolutions.jump.workbench.ui.renderer.style.attributeclassifications
+          JenksBreaksColorThemingState
+          MaximalBreaksColorThemingState
+          MeanSTDvColorThemingState
+          QuantileColorThemingState
+          RangeColorThemingState
+        * org.openjump.core.attributeoperations.Classifier1D
+
 2011-01-22 Matthias Scholz <ms@jammerhund.de>
 	* small GUI fix in FontChooser, now the example text is better visible
 	* AdvancedMeasureTool enhancement:

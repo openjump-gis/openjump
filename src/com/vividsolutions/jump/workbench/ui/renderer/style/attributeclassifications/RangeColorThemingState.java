@@ -84,8 +84,12 @@ public class RangeColorThemingState implements ColorThemingStylePanel.State {
         //-1 because one row in the table is reserved for "all other values". [Jon Aquino]
         int maxFilteredSize = getRangeCount() - 1;
         //Obtain even distribution. [Jon Aquino]
-        ArrayList attributeValueList = new ArrayList(attributeValues);
+        //disable attributeValueList (no more used in the method) - see below
+        //ArrayList attributeValueList = new ArrayList(attributeValues);
         Set filteredValues = new TreeSet();
+        if (attributeValues.size() == 0) {
+            return filteredValues;
+        }
         double min = ((Number)attributeValues.first()).doubleValue();
         double max = ((Number)attributeValues.last()).doubleValue();
         double range = max-min;

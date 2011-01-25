@@ -227,6 +227,7 @@ public class Classifier1D {
 		double[] orderedItems = DoubleArray.sort(data);
 
 		int numData = data.length;
+		if (numData == 0) return limits;
 
 		double[][] mat1 = new double[numData + 1][numberClasses + 1];
 		double[][] mat2 = new double[numData + 1][numberClasses + 1];

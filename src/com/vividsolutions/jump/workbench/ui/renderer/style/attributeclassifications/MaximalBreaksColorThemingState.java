@@ -98,7 +98,10 @@ public class MaximalBreaksColorThemingState implements ColorThemingStylePanel.St
     public Collection filterAttributeValues(SortedSet attributeValues) {
         //-1 because one row in the table is reserved for "all other values". [Jon Aquino]
     	//int classCount = getRangeCount() - 1;
-
+        Collection filteredValues = new ArrayList();
+        if (attributeValues.size() == 0) {
+    	    return filteredValues;
+    	}
     	// obedel: -1 deleted because there will be no other values
     	int classCount = getRangeCount();
 
@@ -120,7 +123,6 @@ public class MaximalBreaksColorThemingState implements ColorThemingStylePanel.St
 		}
         double[] breaks = Classifier1D.classifyMaxBreaks(data, classCount);
         double minVal = org.math.array.DoubleArray.min(data);
-        Collection filteredValues = new ArrayList();
         if(isInteger){
             filteredValues.add(new Integer((int)minVal));
         }
