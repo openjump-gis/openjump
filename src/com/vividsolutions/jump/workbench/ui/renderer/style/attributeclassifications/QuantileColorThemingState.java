@@ -131,7 +131,7 @@ public class QuantileColorThemingState implements ColorThemingStylePanel.State {
     	    return filteredValues;
     	}
     	// -1 deleted because class range is false
-    	int classCount = getRangeCount();
+    	int classCount = Math.min(getRangeCount(), attributeValues.size());
 
     	//-- [sstein 15.Feb. 2009] 
     	//   replaced O-Bedels code by own code to be consistent

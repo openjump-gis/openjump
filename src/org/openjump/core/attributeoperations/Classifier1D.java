@@ -223,6 +223,8 @@ public class Classifier1D {
 	 */
 	public static double[] classifyNaturalBreaks(double[] data, int numberClasses) {
 		double[] limits = new double[numberClasses - 1];
+		
+		if (limits.length == 0) return limits;
 
 		double[] orderedItems = DoubleArray.sort(data);
 

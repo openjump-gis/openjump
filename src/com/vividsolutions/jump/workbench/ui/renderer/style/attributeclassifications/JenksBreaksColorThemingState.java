@@ -103,7 +103,7 @@ public class JenksBreaksColorThemingState implements ColorThemingStylePanel.Stat
     	    return filteredValues;
     	}
     	// obedel: -1 deleted because there will be no other values
-    	int classCount = getRangeCount();
+    	int classCount = Math.min(getRangeCount(), attributeValues.size());
 
         double[] data = new double[attributeValues.size()];
         int i = 0;

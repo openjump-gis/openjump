@@ -103,7 +103,7 @@ public class MeanSTDevColorThemingState implements ColorThemingStylePanel.State 
     	    return filteredValues;
     	}
     	// obedel: -1 deleted because there will be no other values
-    	int classCount = getRangeCount();
+    	int classCount = Math.min(getRangeCount(), attributeValues.size());
 
         double[] data = new double[attributeValues.size()];
         int i=0; boolean isInteger = false;
@@ -124,7 +124,7 @@ public class MeanSTDevColorThemingState implements ColorThemingStylePanel.State 
         double[] breaks = Classifier1D.classifyMeanStandardDeviation(data, classCount);
         double minVal = org.math.array.DoubleArray.min(data);
         //add minVal only if it is smaller than smallest class break
-        if(minVal < breaks[0]){
+        if(breaks.length > 0 && minVal < breaks[0]){
             if(isInteger){
             	filteredValues.add(new Integer((int)minVal));
             }
