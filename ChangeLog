@@ -1,3 +1,8 @@
+2011-02-09 mmichaud <michael.michaud@free.fr> for mrashad
+    * org.openjump.core.rasterimage.AddRasterImageLayerWizard
+      Now load an image without worldfile. Default coordinates are used to
+      display the image and the corresponding worldfile is created.
+
 2011-01-25 mmichaud <michael.michaud@free.fr>
     * Bugfix in ColorThemingStyle : when a numeric attribute contains
       only nulls, or less values than breaks, classification methods fail and

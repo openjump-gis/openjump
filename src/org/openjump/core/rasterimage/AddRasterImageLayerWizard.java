@@ -1,6 +1,7 @@
 package org.openjump.core.rasterimage;
 
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.geom.NoninvertibleTransformException;
 import java.io.File;
 import java.io.IOException;
@@ -25,6 +26,7 @@ import com.vividsolutions.jump.workbench.model.Category;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.Viewport;
 import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
@@ -193,8 +195,9 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
    * @param context
    * @return the RasterImage Envelope
    * @throws IOException
+   * @throws NoninvertibleTransformException 
    */
-  protected Envelope getGeoReferencing(String fileName, boolean allwaysLookForTFWExtension, Point imageDimensions, WorkbenchContext context) throws IOException{
+  protected Envelope getGeoReferencing(String fileName, boolean allwaysLookForTFWExtension, Point imageDimensions, WorkbenchContext context) throws IOException, NoninvertibleTransformException{
       double minx, maxx, miny, maxy;
       Envelope env = null;
       
@@ -325,7 +328,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
                   //logger.printWarning("user canceled");
                   return null;
               }
-              
+              try {
               minx = Double.parseDouble((String) d
                      .getData(RasterImageWizardPanel.MINX_KEY));
               maxx = Double.parseDouble((String) d
@@ -336,7 +339,22 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
                      .getData(RasterImageWizardPanel.MAXY_KEY));
   
               env = new Envelope(minx, maxx, miny, maxy);
-          }
+              }
+              catch(java.lang.NumberFormatException e) {
+      		      Viewport viewport = context.getLayerViewPanel().getViewport();
+                  Rectangle visibleRect = viewport.getPanel().getVisibleRect();
+              
+                  int visibleX1 = visibleRect.x;
+                  int visibleY1 = visibleRect.y;
+                  int visibleX2 = visibleX1 + visibleRect.width;
+                  int visibleY2 = visibleY1 + visibleRect.height;
+     		      Coordinate upperLeftVisible = viewport.toModelCoordinate(new Point(0,0));
+                  Coordinate lowerRightVisible = viewport.toModelCoordinate(new Point(visibleX2, visibleY2)); 
+                  env = new Envelope(upperLeftVisible.x, lowerRightVisible.x, upperLeftVisible.y, lowerRightVisible.y);
+              }
+               
+           } 
+          
           // creating world file
           this.worldFileHandler = new WorldFileHandler(fileName, this.allwaysLookForTFWExtension);
           this.worldFileHandler.writeWorldFile(env, imageDimensions.x, imageDimensions.y);
