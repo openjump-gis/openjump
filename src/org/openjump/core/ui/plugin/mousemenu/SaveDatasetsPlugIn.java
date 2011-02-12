@@ -505,7 +505,11 @@ public class SaveDatasetsPlugIn extends AbstractPlugIn
     			if (!CompatibleFeatures(layer)) 
     				newLayers = splitLayer(context, layer);
     			
-    			(new ShapefileWriter()).write(layer.getFeatureCollectionWrapper(), dp);
+				// charset fix [Matthias Scholz 12. Feb 2011]
+				Object charsetName = dsq.getDataSource().getProperties().get("charset");
+				if (charsetName != null) dp.set("charset", charsetName.toString());
+
+				(new ShapefileWriter()).write(layer.getFeatureCollectionWrapper(), dp);
     			
     			for (int i = 0; i < newLayers.size(); i++)
     			{

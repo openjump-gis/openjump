@@ -1,3 +1,13 @@
+2011-02-12 Matthias Scholz <ms@jammerhund.de>
+	* org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn
+		Bugfix in WriteLayer(), the charset was not considered while saving an
+		existing layer into a shapefile. So it was possible that you get wrong
+		strings in the dbf file.
+	* org.openjump.core.ui.plugin.tools.AdvancedMeasureTool
+		Bugfix in actionPerformed() to viewing the right OptionTab
+	* com.vividsolutions.jump.workbench.JUMPConfiguration
+		switched from the old MeasureTool to the new AdvancedMeasureTool
+
 2011-02-09 mmichaud <michael.michaud@free.fr> for mrashad
     * org.openjump.core.rasterimage.AddRasterImageLayerWizard
       Now load an image without worldfile. Default coordinates are used to

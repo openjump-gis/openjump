@@ -1,6 +1,5 @@
 package org.openjump.core.ui.plugin.tools;
 
-import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jump.I18N;
@@ -324,7 +323,7 @@ public class AdvancedMeasureTool extends PolygonTool implements ActionListener {
 			// display the OptionsDialog with the right Tab!
 			OptionsDialog optionsDialog = OptionsDialog.instance(context.getWorkbench());
 			JTabbedPane tabbedPane = optionsDialog.getTabbedPane();
-			for (int i = 1; i <= tabbedPane.getTabCount(); i++) {
+			for (int i = 0; i < tabbedPane.getTabCount(); i++) {
 				if (tabbedPane.getComponentAt(i) instanceof AdvancedMeasureOptionsPanel) {
 					tabbedPane.setSelectedIndex(i);
 					break;

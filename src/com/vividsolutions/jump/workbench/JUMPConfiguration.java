@@ -68,6 +68,7 @@ import com.vividsolutions.jump.workbench.ui.CloneableInternalFrame;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
+import com.vividsolutions.jump.workbench.ui.OptionsDialog;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.cursortool.CursorTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.DrawPolygonFenceTool;
@@ -165,6 +166,9 @@ import com.vividsolutions.jump.workbench.ui.zoom.ZoomToSelectedItemsPlugIn;
 import com.vividsolutions.jump.workbench.ui.zoom.ZoomTool;
 
 import de.latlon.deejump.plugin.style.DeeChangeStylesPlugIn;
+import org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel;
+import org.openjump.core.ui.plugin.tools.AdvancedMeasurePlugin;
+import org.openjump.core.ui.plugin.tools.AdvancedMeasureTool;
 
 /**
  * Initializes the Workbench with various menus and cursor tools. Accesses the
@@ -1307,7 +1311,11 @@ public void configureDatastores(final WorkbenchContext context) throws Exception
         frame.getToolBar().addSeparator();
         configureEditingButton(workbenchContext);
         frame.getToolBar().addSeparator();
-        add(new MeasureTool(), workbenchContext);
+//        add(new MeasureTool(), workbenchContext);
+		AdvancedMeasureTool advancedMeasureTool = new AdvancedMeasureTool(workbenchContext);
+		workbenchContext.getWorkbench().getFrame().getToolBar().addCursorTool(advancedMeasureTool, advancedMeasureTool.getToolbarButton());
+		OptionsDialog.instance(workbenchContext.getWorkbench()).addTab(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasurePlugin.OptionPanelTitle"), new AdvancedMeasureOptionsPanel(workbenchContext));
+
         frame.getToolBar().addSeparator();
         frame.getToolBar().addPlugIn(undoPlugIn.getIcon(), undoPlugIn,
                 undoPlugIn.createEnableCheck(workbenchContext),
