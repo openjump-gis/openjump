@@ -46,6 +46,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStyle;
 import com.vividsolutions.jump.feature.FeatureCollectionWrapper;
 import com.vividsolutions.jump.feature.Feature;
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jump.io.datasource.*;
 import java.awt.Component;
@@ -59,12 +60,15 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Hashtable;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JSlider;
+import javax.swing.SwingConstants;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 import java.text.*;
@@ -114,11 +118,21 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
     	I18N.get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Proportional-Transparency-Adjustment");
 	private final static String CHARSET =
 		I18N.get("org.openjump.core.ui.io.file.DataSourceFileLayerLoader.charset");
-   
+	private final static String EXTENT =
+	    I18N.get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.extent");
+    private final static String XMIN =
+	    I18N.get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.xmin");
+	private final static String YMIN =
+	    I18N.get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.ymin");
+	private final static String XMAX =
+	    I18N.get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.xmax");
+	private final static String YMAX =
+	    I18N.get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.ymax");
     private WorkbenchContext workbenchContext;
     private InfoPanel infoPanel;
     private StylePanel stylePanel;
     private Layer[] layers;
+    private Envelope extent;
     private int[] currTransArray;
     private boolean styleChanged = false;
     
@@ -152,6 +166,7 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
     {
     	styleChanged = false;
     	layers = context.getSelectedLayers();
+    	extent = context.getSelectedLayerEnvelope();
     	currTransArray = new int[layers.length];
     	
         for (int i = 0; i < layers.length; i++)
@@ -169,12 +184,12 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
         stylePanel = new StylePanel();
         MultiInputDialog dialog = new MultiInputDialog(context.getWorkbenchFrame(),
         		LAYER_PROPERTIES, true);
-        dialog.setInset(0);
+        //dialog.setInset(0);
         final ArrayList propertyPanels = new ArrayList();
         propertyPanels.add(infoPanel);
         propertyPanels.add(stylePanel);
-        infoPanel.setPreferredSize(new Dimension(350, 200));
-        stylePanel.setPreferredSize(new Dimension(350, 200));
+        //infoPanel.setPreferredSize(new Dimension(350, 200));
+        //stylePanel.setPreferredSize(new Dimension(350, 200));
         JTabbedPane tabbedPane = new JTabbedPane();
 
         for (Iterator i = propertyPanels.iterator(); i.hasNext();) 
@@ -274,6 +289,7 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
         private JLabel label_DSClass_L = new JLabel();
 		private JLabel label_Charset_L = new JLabel();
         private JLabel label_Path_L = new JLabel();
+        private JLabel label_Extent_L = new JLabel();
         
     	private JTextArea label_Name_R = new JTextArea();
         private JLabel label_NumItems_R = new JLabel();
@@ -283,6 +299,7 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
         private JLabel label_DSClass_R = new JLabel();
 		private JLabel label_Charset_R = new JLabel();
         private JTextArea label_Path_R = new JTextArea();
+		private JTextArea label_Extent_R = new JTextArea();
 
         private InfoPanel() 
         {
@@ -297,9 +314,16 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
         	label_Path_R.setLineWrap(true);
         	label_Path_R.setBackground(this.getBackground());
         	label_Path_R.setSize(200,50);
+        	
+            label_Extent_R.setFont(this.getFont());
+            label_Extent_R.setLineWrap(true);
+            label_Extent_R.setBackground(this.getBackground());
+            label_Extent_R.setSize(200,50);
             
-            if (layers.length == 1)
+            if (layers.length == 1) {
             	label_Name_L.setText(LAYER_NAME + ": ");
+                label_Extent_L.setText(EXTENT + ": ");	
+            }
             else
             	label_Name_L.setText(NUMBER_OF_LAYERS + ": ");
             
@@ -310,6 +334,7 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
             label_DSClass_L.setText(DATASOURCE_CLASS + ": ");
 			label_Charset_L.setText(CHARSET + ": ");
             label_Path_L.setText(SOURCE_PATH + ": ");
+ 
             
         	setInfo(layers);
         	
@@ -341,6 +366,7 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
                     new Insets(0, 0, 0, 5), 0, 0));
 
 			// [Matthias Scholz 5.Sept.2010] Charset is only viewed if we have a Shapefile
+          
 			if (layers.length == 1 &&
 			    layers[0].getDataSourceQuery() != null &&
 			    layers[0].getDataSourceQuery().getDataSource().getClass().getName().equals("com.vividsolutions.jump.io.datasource.StandardReaderWriterFileDataSource$Shapefile")) {
@@ -348,10 +374,18 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
 						GridBagConstraints.EAST, GridBagConstraints.NONE,
 						new Insets(0, 0, 0, 5), 0, 0));
 			}
+			
+
                 
             add(label_Path_L, new GridBagConstraints(0, row++, 1, 1, 0.0, 0.0,
                     GridBagConstraints.NORTHEAST, GridBagConstraints.NONE,
                     new Insets(10, 0, 0, 5), 0, 0));
+            
+			if (layers.length == 1){
+				add(label_Extent_L, new GridBagConstraints(0, row++, 1, 1, 0.0, 0.0,
+						GridBagConstraints.EAST, GridBagConstraints.NONE,
+						new Insets(0, 0, 0, 5), 0, 0));
+			}
                 
             //column two info
             row = 0;
@@ -391,6 +425,12 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
             add(label_Path_R, new GridBagConstraints(1, row++, 1, 1, 0.0, 0.0,
                     GridBagConstraints.NORTHWEST, GridBagConstraints.NONE,
                     new Insets(10, 0, 0, 0), 0, 0));
+            
+			if (layers.length == 1){
+	            add(label_Extent_R, new GridBagConstraints(1, row++, 1, 1, 0.0, 0.0,
+	                    GridBagConstraints.NORTHWEST, GridBagConstraints.NONE,
+	                    new Insets(10, 0, 0, 0), 0, 0));
+			}
         }
 
         public String getTitle() 
@@ -541,6 +581,15 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
         	if ((layers.length > 1) && (! sourcePath.equalsIgnoreCase(NOT_SAVED)))
         		label_Path_R.setText(MULTIPLE_SOURCES);
         	
+        	if ((layers.length == 1)) {
+        		String ext = " " + XMIN + ":" + extent.getMinX() +
+        		           "\n " + YMIN + ":" + extent.getMinY() +
+        		           "\n " + XMAX + ":" + extent.getMaxX() +
+        		           "\n " + YMAX + ":" + extent.getMaxY();
+        		label_Extent_R.setText(ext);
+        		
+        	}
+        	
         }
     }
     
@@ -550,7 +599,11 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
 
     	private StylePanel() 
 	    {
-    		add(new JLabel(PROPORTIONAL_TRANSPARENCY_ADJUSTER));
+	        Box box = new Box(BoxLayout.Y_AXIS);
+	        JLabel transparencySliderLabel =
+	            new JLabel(PROPORTIONAL_TRANSPARENCY_ADJUSTER, SwingConstants.CENTER);
+	        transparencySliderLabel.setAlignmentX(CENTER_ALIGNMENT);
+    		box.add(transparencySliderLabel);
 	        Hashtable labelTable = new Hashtable();
 	        labelTable.put(new Integer(0), new JLabel("100"));
 	        labelTable.put(new Integer(10), new JLabel("80"));
@@ -571,8 +624,8 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
 	        transparencySlider.setMinimum(0);
 	        transparencySlider.setMaximum(100);
 	        transparencySlider.setValue(50);
-	        add(transparencySlider);
-
+	        box.add(transparencySlider);
+            add(box);
 	        transparencySlider.addChangeListener(new ChangeListener()
 	        {
 	            public void stateChanged(ChangeEvent e) 
