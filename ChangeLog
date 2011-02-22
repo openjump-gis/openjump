@@ -1,4 +1,12 @@
 2011-02-16 Matthias Scholz <ms@jammerhund.de>
+	* removed a sun proprietary code dependency in 
+	  com.vividsolutions.jump.workbench.imagery.graphic.GraphicImage
+	  note 1 : the code was supposed to set different rendering hints for gray
+	  jpg image and for other jpg image types, but I could not see any effect
+	  note 2 : Currently ImageGraphic does interpolation for image rendering
+	  while the new Sextante Raster framework does not.
+
+2011-02-16 Matthias Scholz <ms@jammerhund.de>
 	* updated german translation for LayerPropertiesPlugIn
 
 2011-02-09 mmichaud <michael.michaud@free.fr> for mrashad
