@@ -35,8 +35,6 @@ import javax.swing.SwingUtilities;
 
 import org.openjump.swing.util.InvokeMethodRunnable;
 
-import com.sun.corba.se.impl.protocol.giopmsgheaders.KeyAddr;
-
 /**
  * An ActionListener that invokes the method on the object when the action is
  * performed.

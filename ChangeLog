@@ -1,4 +1,5 @@
 2011-02-22 mmichaud <michael.michaud@free.fr>
+    * removed unused com.sun.corba.se.impl.protocol.giopmsgheaders.KeyAddr
     * removed unused com.sun.org.apache.xerces.internal.impl.dv.xs.DecimalDV
       in com.vividsolutions.jump.workbench.ui.plugin.clipboard.PasteItemsPlugIn
 	* removed a sun proprietary code dependency in 
