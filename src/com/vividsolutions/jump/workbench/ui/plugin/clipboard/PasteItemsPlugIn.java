@@ -45,7 +45,6 @@ import java.util.regex.Pattern;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 
-import com.sun.org.apache.xerces.internal.impl.dv.xs.DecimalDV;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
