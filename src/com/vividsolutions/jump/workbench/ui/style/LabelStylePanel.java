@@ -51,8 +51,10 @@ import com.vividsolutions.jump.workbench.ui.ErrorHandler;
 import com.vividsolutions.jump.workbench.ui.FontChooser;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.ValidatingTextField;
-import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.renderer.style.LabelStyle;
+import java.text.DateFormat;
+import java.text.NumberFormat;
+import java.util.Date;
 
 
 public class LabelStylePanel extends JPanel implements StylePanel {
@@ -328,19 +330,28 @@ public class LabelStylePanel extends JPanel implements StylePanel {
 
         Feature firstFeature = (Feature) layer.getFeatureCollectionWrapper().iterator()
                                               .next();
-        Object attribute = getLabelAttribute().equals(LabelStyle.FID_COLUMN)
+        Object attributeValue = getLabelAttribute().equals(LabelStyle.FID_COLUMN)
             ? (firstFeature.getID() + "")
             : firstFeature.getAttribute(getLabelAttribute());
 
-        if (attribute == null) {
+        if (attributeValue == null) {
             return sampleText;
         }
 
-        if (attribute.toString().trim().length() == 0) {
+		if (attributeValue instanceof Date) {
+			DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.DEFAULT);
+			attributeValue = dateFormat.format((Date) attributeValue);
+		} else if (attributeValue instanceof Double) {
+			NumberFormat numberFormat = NumberFormat.getNumberInstance();
+			attributeValue = numberFormat.format(((Double) attributeValue).doubleValue());
+		} else if (attributeValue instanceof Integer) {
+			NumberFormat numberFormat = NumberFormat.getIntegerInstance();
+			attributeValue = numberFormat.format(((Integer) attributeValue).intValue());
+		} else if (attributeValue.toString().trim().length() == 0) {
             return sampleText;
         }
 
-        return attribute.toString().trim();
+        return attributeValue.toString().trim();
     }
 
     private void setLayer(Layer layer) {

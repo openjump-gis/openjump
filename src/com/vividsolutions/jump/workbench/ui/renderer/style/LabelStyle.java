@@ -56,6 +56,9 @@ import com.vividsolutions.jump.util.CoordinateArrays;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.Viewport;
+import java.text.DateFormat;
+import java.text.NumberFormat;
+import java.util.Date;
 
 public class LabelStyle implements Style {
     public final static int FONT_BASE_SIZE = 12;
@@ -120,11 +123,22 @@ public class LabelStyle implements Style {
     }
     public void paint(Feature f, Graphics2D g, Viewport viewport)
         throws NoninvertibleTransformException {
-        Object attribute = getAttributeValue(f);
+        Object attributeValue = getAttributeValue(f);
         // added .trim() 2007-07-13 [mmichaud]
-        if ((attribute == null) || (attribute.toString().trim().length() == 0)) {
+        if ((attributeValue == null) || (attributeValue.toString().trim().length() == 0)) {
             return;   //LDB formerly toString().length() == 0
         }
+
+		if (attributeValue instanceof Date) {
+			DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.DEFAULT);
+			attributeValue = dateFormat.format((Date) attributeValue);
+		} else if (attributeValue instanceof Double) {
+			NumberFormat numberFormat = NumberFormat.getNumberInstance();
+			attributeValue = numberFormat.format(((Double) attributeValue).doubleValue());
+		} else if (attributeValue instanceof Integer) {
+			NumberFormat numberFormat = NumberFormat.getIntegerInstance();
+			attributeValue = numberFormat.format(((Integer) attributeValue).intValue());
+		}
         
         if (isHidingAtScale()){
         	double scale = height / getFont().getSize2D();
@@ -144,7 +158,7 @@ public class LabelStyle implements Style {
             viewport.toViewPoint(new Point2D.Double(spec.location.x, spec.location.y));
         paint(
             g,
-            attribute.toString().trim(),    // added .trim() 2007-07-13 [mmichaud]
+            attributeValue.toString().trim(),    // added .trim() 2007-07-13 [mmichaud]
             viewport,//.getScale(),
             labelCentreInViewSpace,
             angle(f, getAngleAttribute(), spec.angle),
