@@ -274,7 +274,9 @@ public class AttributePanel
         for (Iterator i = layerToTablePanelMap.values().iterator(); i.hasNext();) {
             AttributeTablePanel tablePanel = (AttributeTablePanel) i.next();
             if (tablePanel == panel) {
-                continue;
+                // this one liner prevents the feature being edited to be deleted (BUG#3178207)
+                if (tablePanel.getTable().isEditing()) tablePanel.getTable().clearSelection();
+                else continue;
             }
             tablePanel.getTable().clearSelection();
         }
