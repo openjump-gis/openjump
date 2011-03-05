@@ -202,7 +202,10 @@ public class Java2DConverter {
 		
 	}
 
-	private GeneralPath toShape(LineString lineString)
+	// Method rewritten by mmichaud on 2011-03-05
+	// to avoid drawing out of the viewport
+	/*
+	private GeneralPath toShape_(LineString lineString)
 		throws NoninvertibleTransformException {
         int numPoints = lineString.getNumPoints();
 		GeneralPath shape = new GeneralPath(GeneralPath.WIND_NON_ZERO, numPoints);
@@ -219,6 +222,42 @@ public class Java2DConverter {
 		//BasicFeatureRenderer expects LineStrings and MultiLineStrings to be
 		//converted to GeneralPaths. [Jon Aquino]
 		return shape;
+	}
+	*/
+	
+	// New toShape method for LineString [mmichaud 2011-03-05]
+	// This new method exclude all segments entirely out of the viewPort from
+	// the general path
+	private GeneralPath toShape(LineString lineString) 
+	                                    throws NoninvertibleTransformException {
+	    com.vividsolutions.jts.geom.GeometryFactory gf = lineString.getFactory();
+	    Coordinate[] cc = lineString.getCoordinates();
+	    GeneralPath shape = new GeneralPath(GeneralPath.WIND_NON_ZERO, cc.length);
+	    com.vividsolutions.jts.geom.CoordinateList list = new com.vividsolutions.jts.geom.CoordinateList();
+	    Envelope view = pointConverter.getEnvelopeInModelCoordinates();
+	    Coordinate c0 = cc[0];
+	    boolean start = true;
+	    for (int i = 1,  max = cc.length ; i < max ; i++) {
+	        Coordinate c1 = cc[i];
+	        if (view.intersects(new Envelope(c0, c1))) {
+	            if (start) list.add(c0);
+	            list.add(c1);
+	            start = false;
+	        }
+	        else if (!list.isEmpty()) {
+	            PathIterator pi = new LineStringPath(gf.createLineString(list.toCoordinateArray()), this);
+		        shape.append(pi,false);
+		        list.clear();
+		        start = true;
+	        }
+	        else {/**list empty, do nothing*/}
+	        if (i == max-1 && !list.isEmpty()) {
+	            PathIterator pi = new LineStringPath(gf.createLineString(list.toCoordinateArray()), this);
+		        shape.append(pi,false);
+	        }
+	        c0 = c1;
+	    }
+	    return shape;
 	}
 
 	private Shape toShape(Point point) throws NoninvertibleTransformException {
@@ -253,6 +292,7 @@ public class Java2DConverter {
 		public Point2D toViewPoint(Coordinate modelCoordinate)
 			throws NoninvertibleTransformException;
         public double getScale() throws NoninvertibleTransformException;
+        public Envelope getEnvelopeInModelCoordinates();
 	}
 
 	/**

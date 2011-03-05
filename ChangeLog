@@ -1,4 +1,8 @@
-2011-05-03 mmichaud <michael.michaud@free.fr>
+2011-03-05 mmichaud <michael.michaud@free.fr>
+    * com.vividsolutions.jump.workbench.ui.renderer.java2DJava2DConverter
+      optimisation of LineString drawing (skip segments out of the viewPort)
+
+2011-03-05 mmichaud <michael.michaud@free.fr>
     * added SaveDatasets plugin in the ToolBar (following Peppe's suggestion)
 
 2011-02-22 mmichaud <michael.michaud@free.fr>
