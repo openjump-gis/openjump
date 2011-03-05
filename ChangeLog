@@ -1,3 +1,6 @@
+2011-05-03 mmichaud <michael.michaud@free.fr>
+    * added SaveDatasets plugin in the ToolBar (following Peppe's suggestion)
+
 2011-02-22 mmichaud <michael.michaud@free.fr>
     * fixed bug 3178207, com.vividsolutions.jump.workbench.ui.AttributePanel
       delete key does not delete a feature being edited any more

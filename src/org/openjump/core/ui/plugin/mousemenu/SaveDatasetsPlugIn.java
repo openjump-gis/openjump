@@ -47,6 +47,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
@@ -84,6 +85,9 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
+import com.vividsolutions.jump.workbench.ui.WorkbenchToolBar;
+import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.plugin.SaveProjectAsPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.SaveProjectPlugIn;
@@ -121,6 +125,9 @@ public class SaveDatasetsPlugIn extends AbstractPlugIn
 	private static final String sHasReplaced = I18N.get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.The-read-only-layer-has-replaced-the-following-file(s)");
 	private static final String sNoOutputDir = I18N.get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.No-output-directory-designated-for-read-only-source-could-not-save-layer");
 	private static final String sNoOutputFileExt = I18N.get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.No-output-file-extension-designated-for-read-only-source-could-not-save-layer");
+	// With the new "modified-writable-layer-selected" enableCheck, we shouldn't need
+	// sCanNotSaveReadOnly
+	private static final String sNoModifiedWritableLayerSelected = I18N.get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.No-modified-writable-layer-selected");
 	
 	
 	private boolean saveAll = false;
@@ -132,15 +139,20 @@ public class SaveDatasetsPlugIn extends AbstractPlugIn
     public void initialize(PlugInContext context) throws Exception
     {     
     	WorkbenchContext workbenchContext = context.getWorkbenchContext();
+    	WorkbenchFrame frame = workbenchContext.getWorkbench().getFrame();
         FeatureInstaller featureInstaller = new FeatureInstaller(workbenchContext);
+        EnableCheck enableCheck = SaveDatasetsPlugIn.createEnableCheck(workbenchContext);
         
-        JPopupMenu layerNamePopupMenu = workbenchContext.getWorkbench()
-                                                        .getFrame()
-                                                        .getLayerNamePopupMenu();
+        JPopupMenu layerNamePopupMenu = frame.getLayerNamePopupMenu();
+        
+        // Add tool-bar Icon
+        WorkbenchToolBar toolBar = frame.getToolBar();
+        toolBar.addPlugIn(2, this, ICON, enableCheck, workbenchContext);
+        
         featureInstaller.addPopupMenuItem(layerNamePopupMenu,
             this, sSaveSelectedDatasets +"{pos:12}",
             false, ICON,
-            SaveDatasetsPlugIn.createEnableCheck(workbenchContext));
+            enableCheck);
     }
     
     public static final ImageIcon ICON = IconLoader.icon("disk_multiple.png");
@@ -451,13 +463,25 @@ public class SaveDatasetsPlugIn extends AbstractPlugIn
         }
     }
     
-    public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext)
+    public static MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext)
     {
         EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
         
         return new MultiEnableCheck()
         .add(checkFactory.createWindowWithSelectionManagerMustBeActiveCheck())
-        .add(checkFactory.createAtLeastNLayersMustBeSelectedCheck(1));
+        .add(checkFactory.createAtLeastNLayersMustBeSelectedCheck(1))
+        .add(new EnableCheck() {
+            public String check(JComponent component) {
+                Layer[] lyrs = workbenchContext.getLayerNamePanel().getSelectedLayers();
+                boolean changesToSave = false;
+                for (Layer lyr : lyrs) {
+                    if (!lyr.isReadonly() &&
+                        lyr.hasReadableDataSource() &&
+                        lyr.isFeatureCollectionModified()) return null;
+                }
+                return sNoModifiedWritableLayerSelected;
+            }
+        });
     }  
     
     public void setSaveAll()
