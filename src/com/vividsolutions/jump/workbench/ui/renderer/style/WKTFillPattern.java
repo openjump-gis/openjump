@@ -1,6 +1,7 @@
 package com.vividsolutions.jump.workbench.ui.renderer.style;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.util.Assert;
@@ -55,7 +56,7 @@ public class WKTFillPattern extends BasicFillPattern {
             -properties.getInt(EXTENT_KEY) / 2d);
         g.setColor((Color) properties.get(BasicFillPattern.COLOR_KEY));
         g.setStroke(new BasicStroke(properties.getInt(LINE_WIDTH_KEY)));
-
+        final double size = (double)properties.getInt(EXTENT_KEY);
         try {
             g.draw(new Java2DConverter(new Java2DConverter.PointConverter() {
                     public Point2D toViewPoint(Coordinate modelCoordinate) {
@@ -63,6 +64,9 @@ public class WKTFillPattern extends BasicFillPattern {
                                 modelCoordinate.y);
                     }
                     public double getScale() { return 1;}
+                    public Envelope getEnvelopeInModelCoordinates() {
+                        return new Envelope(0.0, size, 0.0, size);
+                    }
                 }).toShape(new WKTReader().read(
                         (String) properties.get(PATTERN_WKT_KEY))));
         } catch (NoninvertibleTransformException e) {

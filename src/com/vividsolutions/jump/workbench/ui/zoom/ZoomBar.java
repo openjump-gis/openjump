@@ -825,4 +825,9 @@ public class ZoomBar extends JPanel implements Java2DConverter.PointConverter {
         return affineTransform.transform(pt, pt);
     }
     
+    // Added to implement Java2DConverter.PointConverter modified on 2011-03-06 
+    public Envelope getEnvelopeInModelCoordinates() {
+        return lastGoodEnvelope;
+    }
+    
 }
