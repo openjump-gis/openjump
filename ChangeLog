@@ -1,3 +1,7 @@
+2011-03-07 mmichaud <michael.michaud@free.fr>
+    * org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugIn
+      fix bug ID 3104103 and add option to deal with null values
+
 2011-03-06 mmichaud <michael.michaud@free.fr>
     * com.vividsolutions.jump.workbench.ui.renderer.style.WKTRendererjava2DJava2DConverter
       com.vividsolutions.jump.workbench.ui.zoom.ZoomBar

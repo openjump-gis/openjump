@@ -89,6 +89,7 @@ public class ClassifyAttributesPlugIn extends AbstractPlugIn implements Threaded
     private String CLAYER = "select layer";
     private String ATTRIBUTE = "select attribute";
     private String OPTIMIZEWITHKMEANS = "optimize with k-means" ;
+    private String PROCESSNULLASZERO = "process null as zero";
     
     private String sClassbreaks = "class breaks";
     private String sDatapoints = "data points";
@@ -105,10 +106,12 @@ public class ClassifyAttributesPlugIn extends AbstractPlugIn implements Threaded
     private String selAttribute = null;
     private String selClassifier = null;
     private Boolean useKmeans = false;
+    private boolean nullAsZero = false;
     public LayerManager currentLM = null; 
     
     private String sName = "Classify Attributes";
 	private String sWarning = "problems appeared";
+	private String sNotEnoughValuesWarning = "valid values is not enough";
     private String sWrongDataType = "Wrong datatype of chosen attribute";
 	
     /**
@@ -123,6 +126,7 @@ public class ClassifyAttributesPlugIn extends AbstractPlugIn implements Threaded
         CLAYER = GenericNames.SELECT_LAYER;
         ATTRIBUTE = GenericNames.SELECT_ATTRIBUTE;
         OPTIMIZEWITHKMEANS = I18N.get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Optimize-with-k-means");
+        PROCESSNULLASZERO = I18N.get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Process-null-as-zero");
         sClassbreaks = I18N.get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.class-breaks");
         sDatapoints = I18N.get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.data-points");
         sCount = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CreateHistogramPlugIn.count");
@@ -133,6 +137,7 @@ public class ClassifyAttributesPlugIn extends AbstractPlugIn implements Threaded
         sAddingField = I18N.get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.create-output-field");
         sName = I18N.get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Classify-Attribute");
         sWarning = I18N.get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Error-during-classification");
+        sNotEnoughValuesWarning = I18N.get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Not-enough-values");
         sWrongDataType = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn.Wrong-datatype-of-chosen-attribute");
         
     	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
@@ -191,7 +196,10 @@ public class ClassifyAttributesPlugIn extends AbstractPlugIn implements Threaded
     	monitor.allowCancellationRequests();
 //		if (this.selLayer.isEditable() == true){
 			FeatureDataset result = classifyAndCreatePlot(monitor, context);
-			if(result.size() > 0){
+			if (result == null) {
+			    context.getWorkbenchFrame().warnUser(I18N.get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Not-enough-values"));			
+			}
+			else if(result.size() > 0){
 				String name = this.selAttribute + "_" + this.selClassifier;
 				this.currentLM.addLayer(StandardCategoryNames.WORKING, name, result);
 			}
@@ -225,6 +233,8 @@ public class ClassifyAttributesPlugIn extends AbstractPlugIn implements Threaded
         
         dialog.addCheckBox(this.OPTIMIZEWITHKMEANS, false);
         
+        dialog.addCheckBox(this.PROCESSNULLASZERO, false);
+        
         dialog.getComboBox(CLAYER).addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 List list = getFieldsFromLayerWithoutGeometryAndString();
@@ -247,6 +257,7 @@ public class ClassifyAttributesPlugIn extends AbstractPlugIn implements Threaded
         this.selAttribute = dialog.getText(ATTRIBUTE);
         this.selClassifier = dialog.getText(this.CLASSIFIER);
         this.useKmeans = dialog.getBoolean(this.OPTIMIZEWITHKMEANS);
+        this.nullAsZero = dialog.getBoolean(this.PROCESSNULLASZERO);
       }
     
     private FeatureDataset classifyAndCreatePlot(TaskMonitor monitor, final PlugInContext context) throws Exception {
@@ -266,20 +277,30 @@ public class ClassifyAttributesPlugIn extends AbstractPlugIn implements Threaded
             return null;
         }
         
-        double[] data = new double[this.fc.size()];
-        double[][] plotdata = new double[2][this.fc.size()]; //for drawing 1-D scatter plot
-        int[] fID = new int[this.fc.size()];
-        int i=0;
+        int size = getFeatureCollectionSize(this.fc, this.selAttribute, this.nullAsZero);
+        if (size < 3) {
+            return null;
+        }
+        this.ranges = Math.min(this.ranges, size);
+        
+        
+        double[] data = new double[size];
+        double[][] plotdata = new double[2][size]; //for drawing 1-D scatter plot
+        int[] fID = new int[size];
+        int i = 0;
         for (Iterator iter = fc.iterator(); iter.hasNext();) {
             Feature f = (Feature) iter.next();
+            if (f.getAttribute(this.selAttribute)==null && !nullAsZero) continue;
             fID[i] = f.getID();
             plotdata[1][i] = 1;
             Object val = f.getAttribute(this.selAttribute);
             if (type == AttributeType.DOUBLE){
-                data[i] = ((Double)val).doubleValue();
+                if (val == null) data[i] = 0.0;
+                else data[i] = ((Double)val).doubleValue();
             }
             else if (type == AttributeType.INTEGER){
-                data[i] = ((Integer)val).intValue();
+                if (val == null) data[i] = 0;
+                else data[i] = ((Integer)val).intValue();
             }               
             plotdata[0][i] = data[i];
             i++;
@@ -404,11 +425,14 @@ public class ClassifyAttributesPlugIn extends AbstractPlugIn implements Threaded
 	    Iterator iterp = fc.iterator();	    
 	    String attname = this.selAttribute + "_" + this.selClassifier;
 	    while(iterp.hasNext()){	    	
-	    	count=count+1;
+	    	//count=count+1;
 //	    	if(monitor != null){
 //	    	    monitor.report("item: " + count + " of " + size);
 //	    	}
 	    	Feature p = (Feature)iterp.next();
+	    	Object val = p.getAttribute(this.selAttribute);
+	    	if (val == null && !this.nullAsZero) continue;
+	    	else count++;
 	    	if (count == 1){
 	    	    FeatureSchema targetFs = p.getSchema();
 	    	    targetFSnew = FeatureSchemaTools.copyFeatureSchema(targetFs);
@@ -429,6 +453,15 @@ public class ClassifyAttributesPlugIn extends AbstractPlugIn implements Threaded
     	fd = new FeatureDataset(targetFSnew);  
     	fd.addAll(outData);	
         return fd;
+    }
+    
+    private int getFeatureCollectionSize(FeatureCollection fc, String attribute, boolean nullAsZero) {
+        int size = 0;
+        for (Iterator it = fc.iterator(); it.hasNext();) {
+            Feature f = (Feature) it.next();
+            if (nullAsZero || f.getAttribute(attribute)!=null) size++;
+        }
+        return size;
     }
     
     private List getFieldsFromLayerWithoutGeometryAndString() {
