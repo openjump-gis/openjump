@@ -113,6 +113,7 @@ public class ClassifyAttributesPlugIn extends AbstractPlugIn implements Threaded
 	private String sWarning = "problems appeared";
 	private String sNotEnoughValuesWarning = "valid values is not enough";
     private String sWrongDataType = "Wrong datatype of chosen attribute";
+    private String sNoAttributeChoosen = "No attribute choosen";
 	
     /**
      * this method is called on the startup by JUMP/OpenJUMP.
@@ -139,6 +140,7 @@ public class ClassifyAttributesPlugIn extends AbstractPlugIn implements Threaded
         sWarning = I18N.get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Error-during-classification");
         sNotEnoughValuesWarning = I18N.get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Not-enough-values");
         sWrongDataType = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn.Wrong-datatype-of-chosen-attribute");
+        sNoAttributeChoosen = I18N.get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.No-attribute-choosen");
         
     	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
     	featureInstaller.addMainMenuItem(
@@ -195,9 +197,13 @@ public class ClassifyAttributesPlugIn extends AbstractPlugIn implements Threaded
 		this.currentLM = context.getLayerManager();
     	monitor.allowCancellationRequests();
 //		if (this.selLayer.isEditable() == true){
+            if (this.selAttribute == null) {
+			    context.getWorkbenchFrame().warnUser(I18N.get(sNoAttributeChoosen));
+			    return;
+			}
 			FeatureDataset result = classifyAndCreatePlot(monitor, context);
 			if (result == null) {
-			    context.getWorkbenchFrame().warnUser(I18N.get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Not-enough-values"));			
+			    context.getWorkbenchFrame().warnUser(I18N.get(sNotEnoughValuesWarning));			
 			}
 			else if(result.size() > 0){
 				String name = this.selAttribute + "_" + this.selClassifier;
