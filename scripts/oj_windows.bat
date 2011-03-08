@@ -46,8 +46,7 @@ rem -- NOTE: mount UNC paths to a local drive for this --
 cd /D %JUMP_HOME%
 
 set LIB=lib
-set CLASSPATH=.;bin
-set CLASSPATH=conf;%CLASSPATH%
+set CLASSPATH=.;bin;conf
 
 for %%i in ("%LIB%\*.jar" "%LIB%\*.zip") do (
   set jarfile=%%i
@@ -73,7 +72,7 @@ cd /D %OLD_DIR%
 goto :eof
 
 :setclass
-set CLASSPATH=%jarfile%;%CLASSPATH%
+set CLASSPATH=%CLASSPATH%;%jarfile%
 set jarfile=
 goto :eof
 
