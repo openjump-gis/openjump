@@ -408,6 +408,9 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
                     enableColorThemingCheckBox.isSelected());
             layer.getBasicStyle().setEnabled(
                     !enableColorThemingCheckBox.isSelected());
+            // fix bug 3091363 and part of 3043312
+            layer.getVertexStyle().setEnabled(
+                    !enableColorThemingCheckBox.isSelected());
         } finally {
             layer.getLayerManager().setFiringEvents(firingEvents);
         }
