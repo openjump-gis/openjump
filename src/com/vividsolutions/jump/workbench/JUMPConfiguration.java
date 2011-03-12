@@ -169,6 +169,10 @@ import de.latlon.deejump.plugin.style.DeeChangeStylesPlugIn;
 import org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel;
 import org.openjump.core.ui.plugin.tools.AdvancedMeasurePlugin;
 import org.openjump.core.ui.plugin.tools.AdvancedMeasureTool;
+import org.openjump.core.ui.plugin.view.ShowScalePlugIn;
+import org.openjump.core.ui.plugin.view.helpclassescale.InstallShowScalePlugIn;
+import org.openjump.core.ui.plugin.view.helpclassescale.InstallShowScalePlugIn;
+import org.openjump.core.ui.plugin.view.helpclassescale.ShowScaleRenderer;
 
 /**
  * Initializes the Workbench with various menus and cursor tools. Accesses the
@@ -180,6 +184,9 @@ public class JUMPConfiguration implements Setup {
 	 * Built-in plugins must be defined as instance variables, since
 	 * they are located for iniatialization via reflection on this class
 	 */
+	
+	private InstallShowScalePlugIn installShowScalePlugIn = new InstallShowScalePlugIn();
+	
     private InstallScaleBarPlugIn installScaleBarPlugIn = new InstallScaleBarPlugIn();
 
     private InstallGridPlugIn installGridPlugIn = new InstallGridPlugIn();
@@ -272,6 +279,8 @@ public class JUMPConfiguration implements Setup {
             saveProjectAsPlugIn);
 
     private SelectFeaturesInFencePlugIn selectFeaturesInFencePlugIn = new SelectFeaturesInFencePlugIn();
+    
+    private ShowScalePlugIn showScalePlugIn = new ShowScalePlugIn();
 
     private ScaleBarPlugIn scaleBarPlugIn = new ScaleBarPlugIn();
 
@@ -794,23 +803,37 @@ public class JUMPConfiguration implements Setup {
         featureInstaller.addMenuSeparator(MenuNames.VIEW); // ===================
         featureInstaller
         	.addMainMenuItemWithJava14Fix(
+                        showScalePlugIn,
+                        new String[] {MenuNames.VIEW},
+                        showScalePlugIn.getName(),
+                        true,
+                        null,
+                        new MultiEnableCheck()
+                                .add(checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck())
+                                .add(new EnableCheck() {
+                                    public String check(JComponent component) {
+                                        ((JCheckBoxMenuItem) component)
+                                                .setSelected(ShowScaleRenderer
+                                                        .isEnabled(workbenchContext
+                                                                .getLayerViewPanel()));
+                                        return null;
+                                    }
+                                }));
+        featureInstaller
+        	.addMainMenuItemWithJava14Fix(
                         scaleBarPlugIn,
                         new String[] { MenuNames.VIEW},
                         scaleBarPlugIn.getName(),
                         true,
                         null,
                         new MultiEnableCheck()
-                                .add(
-                                        checkFactory
-                                                .createWindowWithLayerViewPanelMustBeActiveCheck())
+                                .add(checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck())
                                 .add(new EnableCheck() {
-
                                     public String check(JComponent component) {
                                         ((JCheckBoxMenuItem) component)
                                                 .setSelected(ScaleBarRenderer
                                                         .isEnabled(workbenchContext
                                                                 .getLayerViewPanel()));
-
                                         return null;
                                     }
                                 }));
