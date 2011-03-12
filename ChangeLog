@@ -5,6 +5,8 @@
       uses RenderingStylePanel settings.
     * ShowScale is now a toggle menu item just before ScaleBar, as proposed
       by M. Davis (Feature Request ID ID: 3201595)
+    * com.vividsolutions.jump.workbench.datasource.SaveFileDataSourceQueryChooser
+      fix bug id 3205694 : better detection/message if input file name is invalid
 
 2011-03-09 mmichaud <michael.michaud@free.fr>
     * com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStylePanel
