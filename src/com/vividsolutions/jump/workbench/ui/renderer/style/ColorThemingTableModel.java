@@ -50,6 +50,8 @@ import com.vividsolutions.jump.util.ImmutableFirstElementList;
 import com.vividsolutions.jump.workbench.ui.ColumnBasedTableModel;
 
 public class ColorThemingTableModel extends ColumnBasedTableModel {
+    
+    BasicStyle defaultStyle;
 
     public ColorThemingTableModel(
         BasicStyle defaultStyle,
@@ -58,6 +60,7 @@ public class ColorThemingTableModel extends ColumnBasedTableModel {
         Map attributeValueToLabelMap,
         FeatureSchema schema) {
         //Value doesn't matter. [Jon Aquino]
+        this.defaultStyle = defaultStyle;
         attributeMappings =
             new ImmutableFirstElementList(
                 new AttributeMapping(null, defaultStyle, null));
@@ -243,7 +246,14 @@ public class ColorThemingTableModel extends ColumnBasedTableModel {
             i.hasNext();
             ) {
             AttributeMapping attributeMapping = (AttributeMapping) i.next();
-            attributeMapping.setBasicStyle(new BasicStyle(colorScheme.next()));
+            BasicStyle newBasicStyle = new BasicStyle(colorScheme.next());
+            newBasicStyle.setLineWidth(defaultStyle.getLineWidth());
+            newBasicStyle.setRenderingLine(defaultStyle.isRenderingLine());
+            newBasicStyle.setLinePattern(defaultStyle.getLinePattern());
+            newBasicStyle.setRenderingFill(defaultStyle.isRenderingFill());
+            newBasicStyle.setFillPattern(defaultStyle.getFillPattern());
+            //newBasicStyle.setRenderingVertices(defaultStyle.getRenderingVertices());
+            attributeMapping.setBasicStyle(/*new BasicStyle(colorScheme.next())*/newBasicStyle);
         }
         fireTableChanged(new TableModelEvent(this));
     }
@@ -327,9 +337,16 @@ public class ColorThemingTableModel extends ColumnBasedTableModel {
      * @return row
      */
     public int insertAttributeValue(int row, ColorScheme colorScheme) {
+        BasicStyle newBasicStyle = new BasicStyle(colorScheme.next());
+        newBasicStyle.setLineWidth(defaultStyle.getLineWidth());
+        newBasicStyle.setRenderingLine(defaultStyle.isRenderingLine());
+        newBasicStyle.setLinePattern(defaultStyle.getLinePattern());
+        newBasicStyle.setRenderingFill(defaultStyle.isRenderingFill());
+        newBasicStyle.setFillPattern(defaultStyle.getFillPattern());
+        //newBasicStyle.setRenderingVertices(defaultStyle.getRenderingVertices());
         attributeMappings.add(
             row,
-            new AttributeMapping(null, new BasicStyle(colorScheme.next()), ""));
+            new AttributeMapping(null, /*new BasicStyle(colorScheme.next())*/newBasicStyle, ""));
         fireTableChanged(
             new TableModelEvent(
                 this,

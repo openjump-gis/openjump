@@ -213,7 +213,15 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
                                              .getColors().iterator();
                         i.hasNext();) {
                     Color color = (Color) i.next();
-                    comboBoxModel.addElement(new BasicStyle(color));
+                    BasicStyle bs = new BasicStyle(color);
+                    bs.setLineWidth(getLayer().getBasicStyle().getLineWidth());
+                    bs.setLineWidth(getLayer().getBasicStyle().getLineWidth());
+                    bs.setRenderingLine(getLayer().getBasicStyle().isRenderingLine());
+                    bs.setLinePattern(getLayer().getBasicStyle().getLinePattern());
+                    bs.setRenderingFill(getLayer().getBasicStyle().isRenderingFill());
+                    bs.setFillPattern(getLayer().getBasicStyle().getFillPattern());
+                    bs.setRenderingVertices(getLayer().getBasicStyle().getRenderingVertices());
+                    comboBoxModel.addElement(bs);
                 }
 
                 comboBoxModel.setSelectedItem(value);
@@ -410,6 +418,7 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
                     !enableColorThemingCheckBox.isSelected());
             // fix bug 3091363 and part of 3043312
             layer.getVertexStyle().setEnabled(
+                    layer.getVertexStyle().isEnabled() &&
                     !enableColorThemingCheckBox.isSelected());
         } finally {
             layer.getLayerManager().setFiringEvents(firingEvents);
@@ -579,8 +588,7 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
     }
 
     private void initTable(Layer layer) {
-        table.setModel(new ColorThemingTableModel(ColorThemingStyle.get(layer)
-                                                                   .getDefaultStyle(),
+        table.setModel(new ColorThemingTableModel(layer.getBasicStyle(),
                 ColorThemingStyle.get(layer).getAttributeName(),
                 attributeValueToBasicStyleMap(layer),
                 attributeValueToLabelMap(layer),                
@@ -648,7 +656,7 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
 
         int colorWidth = 10 +
             (int) basicStyleListCellRenderer.getListCellRendererComponent(new JList(),
-                new BasicStyle(), 0, false, false).getPreferredSize().getWidth();
+                layer.getBasicStyle(), 0, false, false).getPreferredSize().getWidth();
         table.getColumnModel().getColumn(colorColumn()).setPreferredWidth(colorWidth);
         table.getColumnModel().getColumn(colorColumn()).setMinWidth(colorWidth);
         table.getColumnModel().getColumn(colorColumn()).setMaxWidth(colorWidth);
@@ -952,7 +960,7 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         Map attributeValueToBasicStyleMap = new TreeMap();
         for (Iterator i = attributeValues.iterator(); i.hasNext();) {
             Object attributeValue = i.next();
-            attributeValueToBasicStyleMap.put(attributeValue, new BasicStyle());
+            attributeValueToBasicStyleMap.put(attributeValue, getLayer().getBasicStyle());
         }
         return attributeValueToBasicStyleMap;
     }    
