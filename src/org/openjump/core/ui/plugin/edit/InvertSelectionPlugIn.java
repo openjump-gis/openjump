@@ -54,9 +54,10 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.SelectionManager;
 
 /**
- * Selects all Features with the modified flag set
- * @author beckerl
+ * Selects all Features which were not selected in layers where at least one
+ * feature was selected.
  *
+ * @author beckerl
  */
 public class InvertSelectionPlugIn extends AbstractPlugIn {
 	
