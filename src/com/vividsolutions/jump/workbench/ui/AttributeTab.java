@@ -228,8 +228,22 @@ public class AttributeTab extends JPanel implements LayerNamePanel {
         toolBar
             .add(
                 new JButton(),
-                I18N.get("ui.AttributeTab.zoom-to-previous-row"),
+                I18N.get("ui.AttributeTab.pan-to-previous-row"),
                 IconLoader.icon("SmallUp.gif"),
+                new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    pan(panel.topSelectedRow().previousRow());
+                } catch (Throwable t) {
+                    errorHandler.handleThrowable(t);
+                }
+            }
+        }, new MultiEnableCheck().add(taskFrameEnableCheck).add(layersEnableCheck));
+        toolBar
+            .add(
+                new JButton(),
+                I18N.get("ui.AttributeTab.zoom-to-previous-row"),
+                IconLoader.icon("SmallMagnifyUp.gif"),
                 new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -243,11 +257,25 @@ public class AttributeTab extends JPanel implements LayerNamePanel {
             .add(
                 new JButton(),
                 I18N.get("ui.AttributeTab.zoom-to-next-row"),
-                IconLoader.icon("SmallDown.gif"),
+                IconLoader.icon("SmallMagnifyDown.gif"),
                 new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
                     zoom(panel.topSelectedRow().nextRow());
+                } catch (Throwable t) {
+                    errorHandler.handleThrowable(t);
+                }
+            }
+        }, new MultiEnableCheck().add(taskFrameEnableCheck).add(layersEnableCheck));
+        toolBar
+            .add(
+                new JButton(),
+                I18N.get("ui.AttributeTab.pan-to-next-row"),
+                IconLoader.icon("SmallDown.gif"),
+                new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    pan(panel.topSelectedRow().nextRow());
                 } catch (Throwable t) {
                     errorHandler.handleThrowable(t);
                 }
@@ -385,6 +413,29 @@ public class AttributeTab extends JPanel implements LayerNamePanel {
         ArrayList features = new ArrayList();
         features.add(row.getFeature());
         panel.zoom(features);
+    }
+    
+    private void pan(AttributePanel.Row row) throws NoninvertibleTransformException {
+        panel.clearSelection();
+        //fixed : if the layer don't have any feature, do nothing.
+        if (row.getPanel().getTable().getModel().getRowCount() == 0) {
+        	return;
+        }
+        row.getPanel().getTable().getSelectionModel().setSelectionInterval(
+            row.getIndex(),
+            row.getIndex());
+
+        Rectangle r = row.getPanel().getTable().getCellRect(row.getIndex(), 0, true);
+        row.getPanel().getTable().scrollRectToVisible(r);
+
+        if (row.isFirstRow()) {
+            //Make header visible [Jon Aquino]
+            row.getPanel().scrollRectToVisible(new Rectangle(0, 0, 1, 1));
+        }
+
+        ArrayList features = new ArrayList();
+        features.add(row.getFeature());
+        panel.pan(features);
     }
 
     public static TitledPopupMenu popupMenu(WorkbenchContext context) {

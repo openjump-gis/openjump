@@ -1,3 +1,8 @@
+2011-03-16 mmichaud <michael.michaud@free.fr>
+    * com.vividsolutions.jump.workbench.ui.AttributeTab
+      add panToNextRow and panToPreviousRow buttons, which do the same as
+      zoomToNextRow and zoomToPreviousRow buttons, but keep previous scale
+
 2011-03-12 mmichaud <michael.michaud@free.fr>
     * com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStylePanel
       com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStylePanel

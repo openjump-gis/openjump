@@ -53,6 +53,7 @@ import com.vividsolutions.jump.feature.FeatureUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
+import com.vividsolutions.jump.workbench.ui.zoom.PanToSelectedItemsPlugIn;
 import com.vividsolutions.jump.workbench.ui.zoom.ZoomToSelectedItemsPlugIn;
 
 /**
@@ -70,6 +71,8 @@ public class AttributePanel
     private WorkbenchContext workbenchContext;
     private ZoomToSelectedItemsPlugIn zoomToSelectedItemsPlugIn =
         new ZoomToSelectedItemsPlugIn();
+    private PanToSelectedItemsPlugIn panToSelectedItemsPlugIn =
+        new PanToSelectedItemsPlugIn();
     private Row nullRow = new Row() {
         public boolean isFirstRow() {
             return rowCount() == 0;
@@ -224,6 +227,11 @@ public class AttributePanel
     }
     public void zoom(Collection features) throws NoninvertibleTransformException {
         zoomToSelectedItemsPlugIn.zoom(
+            FeatureUtil.toGeometries(features),
+            taskFrame.getLayerViewPanel());
+    }
+    public void pan(Collection features) throws NoninvertibleTransformException {
+        panToSelectedItemsPlugIn.pan(
             FeatureUtil.toGeometries(features),
             taskFrame.getLayerViewPanel());
     }
