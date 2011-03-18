@@ -66,7 +66,8 @@ public class RasterColorEditorDialog extends JDialog {
     private JComboBox colorScaleChooser;
 
     private String[] colorTableList = {
-    		I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Green-Yellow-Red-default"), 
+            I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Default-colors"), 
+    		I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Green-Yellow-Red"), 
     		I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Blue-Green-Red"), 
     		I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Red-Blue"), 
     		I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Blue-Red"), 
@@ -288,32 +289,35 @@ public class RasterColorEditorDialog extends JDialog {
         if (okCancelPanel.wasOKPressed() && validateInput()) {
 
             switch (colorScaleChooser.getSelectedIndex()) {
-
             case 0: {
-                valuesColors = new Color[] { Color.GREEN, Color.YELLOW, Color.RED };
+                valuesColors = null;
                 break;
             }
             case 1: {
-                valuesColors = new Color[] { Color.BLUE, Color.GREEN, Color.RED };
+                valuesColors = new Color[] { Color.GREEN, Color.YELLOW, Color.RED };
                 break;
             }
             case 2: {
-                valuesColors = new Color[] { Color.RED, Color.BLUE };
+                valuesColors = new Color[] { Color.BLUE, Color.GREEN, Color.RED };
                 break;
             }
             case 3: {
-                valuesColors = new Color[] { Color.BLUE, Color.RED };
+                valuesColors = new Color[] { Color.RED, Color.BLUE };
                 break;
             }
             case 4: {
-                valuesColors = new Color[] { Color.WHITE, Color.BLACK };
+                valuesColors = new Color[] { Color.BLUE, Color.RED };
                 break;
             }
             case 5: {
-                valuesColors = new Color[] { Color.BLACK, Color.WHITE };
+                valuesColors = new Color[] { Color.WHITE, Color.BLACK };
                 break;
             }
             case 6: {
+                valuesColors = new Color[] { Color.BLACK, Color.WHITE };
+                break;
+            }
+            case 7: {
                 valuesColors = new Color[] { Color.decode("#9400D3"), //$NON-NLS-1$
                         Color.decode("#4B0082"), Color.BLUE, Color.GREEN, //$NON-NLS-1$
                         Color.YELLOW, Color.ORANGE, Color.RED };

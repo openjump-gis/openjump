@@ -1,4 +1,10 @@
 2011-03-16 mmichaud <michael.michaud@free.fr>
+    * org.openjump.core.ui.plugin.raster.color.RasterColorEditor
+      org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog
+      Fix bug id 3085727, image not refreshing after colors have been changed
+      Fix bug 3222067 : can now return to original colors
+
+2011-03-16 mmichaud <michael.michaud@free.fr>
     * com.vividsolutions.jump.workbench.ui.AttributeTab
       add panToNextRow and panToPreviousRow buttons, which do the same as
       zoomToNextRow and zoomToPreviousRow buttons, but keep previous scale

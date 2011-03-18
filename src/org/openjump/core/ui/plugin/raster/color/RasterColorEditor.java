@@ -11,6 +11,7 @@ import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.ui.color.ColorGenerator;
 
 import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jump.workbench.model.LayerEventType;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 
 /**
@@ -52,10 +53,16 @@ public class RasterColorEditor {
      */
     public void changeColors(WorkbenchContext context, Color[] colors,
             Color noDataColor, float min, float max) throws NoninvertibleTransformException {
-
+    
+        if (colors == null || colors.length == 0) {
+            layer.setNeedToKeepImage(false);
+            layer.flushImages(true);
+            layer.setEnvelope(layer.getEnvelope());
+            context.getLayerViewPanel().getViewport().update();
+            return;
+        }
     	colorGenerator = new ColorGenerator(35, colors);
         Raster raster = layer.getRasterData();
-        //System.out.println(layer);
         
         /**
          * TODO: make the stuff below work. Not sure how, becasue
@@ -141,14 +148,10 @@ public class RasterColorEditor {
         System.out.println("databuffer: " + newImage.getRaster().getDataBuffer()
                 + "samplemodel: " + newImage.getRaster().getSampleModel());
 		*/
+		layer.setNeedToKeepImage(true);
         layer.setImage(pimage);
-        layer.setNeedToKeepImage(true);
-        layer.fireAppearanceChanged(); // SEEMS NOT TO WORK
-
-        //		Need to repaint the rasterlayer
-
-        Envelope env = layer.getEnvelope();
-        context.getLayerViewPanel().getViewport().zoom(env);
+        layer.setEnvelope(layer.getEnvelope());
+        context.getLayerViewPanel().getViewport().update();
     }
 
 }
