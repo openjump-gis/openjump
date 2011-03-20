@@ -89,5 +89,8 @@ public interface MenuNames {
 	public static String PLOT = I18N.get("ui.MenuNames.PLOT");
 		
 	//	erwan end 2005-12-01
+	// Submenus for LayerName PopupMenu
+	public static String STYLE = I18N.get("ui.MenuNames.STYLE");
+	public static String DATASTORE = I18N.get("ui.MenuNames.DATASTORE");
 
 }

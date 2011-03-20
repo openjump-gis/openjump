@@ -459,13 +459,36 @@ public class FeatureInstaller {
     JMenuItem menuItem = installMnemonic(checkBox ? new JCheckBoxMenuItem(
       menuItemName) : new JMenuItem(menuItemName), popupMenu);
     menuItem.setIcon(icon);
-    addPopupMenuItem(popupMenu, executable, menuItem, properties, enableCheck);
+    addPopupMenuItem(popupMenu, executable, new String[0], menuItem, properties, enableCheck);
   }
-
+  
+  /**
+   * Add a menu item to a JPopupMenu with optional submenus defined by menuPath
+   * Added by mmichaud on 2011-03-20 to reorganize LayerNamePanel JPopupMenu
+   */
+  public void addPopupMenuItem(JPopupMenu popupMenu, PlugIn executable,
+    String[] menuPath, String menuItemName, boolean checkBox, Icon icon, EnableCheck enableCheck) {
+    Map properties = extractProperties(menuItemName);
+    menuItemName = removeProperties(menuItemName);
+    JMenuItem menuItem = installMnemonic(checkBox ? new JCheckBoxMenuItem(
+      menuItemName) : new JMenuItem(menuItemName), popupMenu);
+    menuItem.setIcon(icon);
+    addPopupMenuItem(popupMenu, executable, menuPath, menuItem, properties, enableCheck);
+  }
+  
   private void addPopupMenuItem(JPopupMenu popupMenu, final PlugIn executable,
-    final JMenuItem menuItem, Map properties, final EnableCheck enableCheck) {
+    final String[] menuPath, final JMenuItem menuItem, Map properties, final EnableCheck enableCheck) {
     associate(menuItem, executable);
-    insert(menuItem, createMenu(popupMenu), properties);
+    if (menuPath == null || menuPath.length == 0) {
+        insert(menuItem, createMenu(popupMenu), properties);
+    } else {
+        JMenu menu = popupMenu(popupMenu, menuPath[0]);
+        if (menu == null) {
+            menu = (JMenu)popupMenu.add(new JMenu(menuPath[0]));
+        }
+        JMenu parent = createMenusIfNecessary(menu, behead(menuPath));
+        insert(menuItem, createMenu(parent), properties);
+    }
     if (enableCheck != null) {
       popupMenu.addPopupMenuListener(new PopupMenuListener() {
         public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
@@ -479,6 +502,23 @@ public class FeatureInstaller {
         }
       });
     }
+  }
+  
+    /**
+   * @return the menu with the given name, or null if no such menu exists
+   */
+  public static JMenu popupMenu(JPopupMenu popupMenu, String childName) {
+    MenuElement[] subElements = popupMenu.getSubElements();
+    for (int i = 0; i < subElements.length; i++) {
+      if (!(subElements[i] instanceof JMenuItem)) {
+        continue;
+      }
+      JMenuItem menuItem = (JMenuItem)subElements[i];
+      if (menuItem.getText().equals(childName)) {
+        return (JMenu)menuItem;
+      }
+    }
+    return null;
   }
 
   private Menu createMenu(final JPopupMenu popupMenu) {
