@@ -148,6 +148,8 @@ public class DeeChangeStylesPlugIn extends AbstractPlugIn {
         String selectedTab = (String) blackboard.get(LAST_TAB_KEY, (stylePanels.iterator().next()).getTitle());
 
         tabbedPane.setSelectedComponent(find(stylePanels, selectedTab));
+        dialog.pack();
+        GUIUtil.centreOnWindow(dialog);
         dialog.setVisible(true);
         blackboard.put(LAST_TAB_KEY, ((StylePanel) tabbedPane.getSelectedComponent()).getTitle());
 
