@@ -496,20 +496,24 @@ public class JUMPConfiguration implements Setup {
         featureInstaller.addPopupMenuItem(layerNamePopupMenu, selectablePlugIn,
                 selectablePlugIn.getName(), true, selectablePlugIn.ICON, selectablePlugIn
                         .createEnableCheck(workbenchContext));
+        featureInstaller.addPopupMenuItem(layerNamePopupMenu,
+                removeSelectedLayersPlugIn, removeSelectedLayersPlugIn
+                        .getName(), false, RemoveSelectedLayersPlugIn.ICON, removeSelectedLayersPlugIn
+                        .createEnableCheck(workbenchContext));
 
         layerNamePopupMenu.addSeparator(); // ===================
         featureInstaller.addPopupMenuItem(layerNamePopupMenu,
                 zoomToLayerPlugIn, zoomToLayerPlugIn.getName(), false, ZoomToLayerPlugIn.ICON,
                 zoomToLayerPlugIn.createEnableCheck(workbenchContext));
         featureInstaller.addPopupMenuItem(layerNamePopupMenu,
-                changeStylesPlugIn, changeStylesPlugIn.getName() + "...",
+                changeStylesPlugIn, new String[]{MenuNames.STYLE}, changeStylesPlugIn.getName() + "...",
                 false, GUIUtil.toSmallIcon(changeStylesPlugIn.getIcon()),
                 changeStylesPlugIn.createEnableCheck(workbenchContext));
         featureInstaller.addPopupMenuItem(layerNamePopupMenu, copyStylesPlugIn,
-                copyStylesPlugIn.getName(), false, null,
+                new String[]{MenuNames.STYLE}, copyStylesPlugIn.getName(), false, null,
                 CopyStylesPlugIn.createEnableCheck(workbenchContext));
         featureInstaller.addPopupMenuItem(layerNamePopupMenu, pasteStylesPlugIn,
-                pasteStylesPlugIn.getName(), false, null,
+                new String[]{MenuNames.STYLE}, pasteStylesPlugIn.getName(), false, null,
                 PasteStylesPlugIn.createEnableCheck(workbenchContext));
 
         featureInstaller.addPopupMenuItem(layerNamePopupMenu,
@@ -525,9 +529,8 @@ public class JUMPConfiguration implements Setup {
                 ImageLayerManagerPlugIn.createEnableCheck(workbenchContext));
         
         featureInstaller.addPopupMenuItem(layerNamePopupMenu, refreshDataStoreLayerPlugin,
-        		refreshDataStoreLayerPlugin.getName() + "...", false, RefreshDataStoreLayerPlugin.ICON,
+            new String[]{MenuNames.DATASTORE}, refreshDataStoreLayerPlugin.getName() + "...", false, RefreshDataStoreLayerPlugin.ICON,
                 RefreshDataStoreLayerPlugin.createEnableCheck(workbenchContext));
-
 
         layerNamePopupMenu.addSeparator(); // ===================
         /*featureInstaller.addPopupMenuItem(layerNamePopupMenu,
@@ -556,10 +559,7 @@ public class JUMPConfiguration implements Setup {
                 copySelectedLayersPlugIn, copySelectedLayersPlugIn
                         .getNameWithMnemonic(), false, copySelectedLayersPlugIn.ICON,
                 copySelectedLayersPlugIn.createEnableCheck(workbenchContext));
-        featureInstaller.addPopupMenuItem(layerNamePopupMenu,
-                removeSelectedLayersPlugIn, removeSelectedLayersPlugIn
-                        .getName(), false, RemoveSelectedLayersPlugIn.ICON, removeSelectedLayersPlugIn
-                        .createEnableCheck(workbenchContext));
+        
 
         layerNamePopupMenu.addSeparator(); // ===================
         featureInstaller.addPopupMenuItem(layerNamePopupMenu,

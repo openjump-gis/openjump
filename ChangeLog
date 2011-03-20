@@ -1,4 +1,16 @@
 2011-03-16 mmichaud <michael.michaud@free.fr>
+    * com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller
+      add capability to insert submenus in the LayerNamePanel PopupMenu
+      put style-related menu-items in a single submenu
+      put datastore-related menu items in a single submenu
+    * com.vividsolutions.jump.workbench.ui.plugin.datastore.DataStoreQueryDataSource
+      org.openjump.core.ui.plugin.datastore.RefreshDataStoreQueryPlugIn
+      add a DataStoreQueryDataSource to persist layers issued from
+      database queries (feature request 3206932)
+      add a refresh plugin to run again a query if database has changed (or
+      if view or fence parameter have changed) 
+
+2011-03-16 mmichaud <michael.michaud@free.fr>
     * org.openjump.core.ui.plugin.raster.color.RasterColorEditor
       org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog
       Fix bug id 3085727, image not refreshing after colors have been changed

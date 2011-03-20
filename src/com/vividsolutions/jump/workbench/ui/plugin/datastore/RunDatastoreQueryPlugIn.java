@@ -15,7 +15,6 @@ import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 
-
 public class RunDatastoreQueryPlugIn extends
     AbstractAddDatastoreLayerPlugIn {
 
@@ -43,8 +42,8 @@ public class RunDatastoreQueryPlugIn extends
         monitor.allowCancellationRequests();
         monitor.report( I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPlugIn.Creating-layer") );
 
-        int maxFeatures = ( ( Integer ) LangUtil.ifNull( panel.getMaxFeatures(),
-            new Integer( Integer.MAX_VALUE ) ) ).intValue();
+        int maxFeatures = ((Integer)LangUtil.ifNull( panel.getMaxFeatures(),
+            new Integer(Integer.MAX_VALUE))).intValue();
         // added by Michael Michaud on 2009-11-22 to use aliases representing
         // view rectangle or selection in a query
         String driver = panel.getConnectionDescriptor().getDataStoreDriverClassName();
@@ -77,8 +76,21 @@ public class RunDatastoreQueryPlugIn extends
                     name.substring(0, Math.min(name.length(), 64)).trim()
                 );
             }
-            return new Layer( name, context.getLayerManager()
-                .generateLayerFillColor(), featureDataset, context.getLayerManager() );
+            Layer layer = new Layer(name,
+                context.getLayerManager().generateLayerFillColor(),
+                featureDataset, context.getLayerManager());
+            //Layer layer = new Layer();
+            //layer.setLayerManager(context.getLayerManager());
+            //layer.setFeatureCollection(featureDataset);
+            layer.setDataSourceQuery(new com.vividsolutions.jump.io.datasource.DataSourceQuery(
+                new DataStoreQueryDataSource(name,
+                    panel.getQuery(), panel.getConnectionDescriptor(),
+                    context.getWorkbenchContext()),
+                panel.getQuery(), name));
+            //layer.addStyle(new com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle(context.getLayerManager().generateLayerFillColor()));
+            return layer;
+            //return new Layer( name, context.getLayerManager()
+            //    .generateLayerFillColor(), featureDataset, context.getLayerManager() );
         }
         finally {
             // This code had been added as an attempt to cancel a long running query
