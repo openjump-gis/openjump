@@ -42,13 +42,12 @@ public class RefreshDataStoreQueryPlugIn extends AbstractPlugIn {
 	    JPopupMenu popupMenu = workbenchContext.getWorkbench().getFrame()
 	        .getLayerNamePopupMenu();
 	        installer.addPopupMenuItem(popupMenu, this, new String[]{MenuNames.DATASTORE},
-		     getName(), false, null, enableCheck);		
+		     getName(), false, ICON, enableCheck);		
     }
 
     @Override
     public String getName() {
-	return I18N
-		.get("org.openjump.core.ui.plugin.datastore.RefreshDataStoreQueryPlugIn.Refresh-datastore-query");
+	    return I18N.get("org.openjump.core.ui.plugin.datastore.RefreshDataStoreQueryPlugIn.Refresh-datastore-query");
     }
 
     @Override
