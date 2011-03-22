@@ -142,6 +142,10 @@ public class RunDatastoreQueryPanel
     public String getQuery() {
         return queryTextArea.getText().trim();
     }
+    
+    public void setQuery(String query) {
+        getQueryTextArea().setText(query);
+    }
 
 
     public void saveQuery() {

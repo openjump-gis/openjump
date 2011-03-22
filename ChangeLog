@@ -1,4 +1,9 @@
-2011-03-16 mmichaud <michael.michaud@free.fr>
+2011-03-22 mmichaud <michael.michaud@free.fr>
+    * org.openjump.core.ui.plugin.datastore.EditDataStoreQueryPlugIn
+      Add a new plugin to edit the query of a layer based on a datastore query
+      Fix some bugs on new DataStoreQuery persistence capability
+    
+2011-03-20 mmichaud <michael.michaud@free.fr>
     * com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller
       add capability to insert submenus in the LayerNamePanel PopupMenu
       put style-related menu-items in a single submenu

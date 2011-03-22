@@ -49,7 +49,7 @@ public abstract class AbstractAddDatastoreLayerPlugIn extends
     protected abstract Layerable createLayerable(ConnectionPanel panel,
             TaskMonitor monitor, PlugInContext context) throws Exception;
 
-    private OKCancelDialog getDialog(PlugInContext context) {
+    protected OKCancelDialog getDialog(PlugInContext context) {
         if (dialog == null) {
             // Cache the dialog between invocations of this menu item,
             // to preserve the dialog's useful cache of dataset names.

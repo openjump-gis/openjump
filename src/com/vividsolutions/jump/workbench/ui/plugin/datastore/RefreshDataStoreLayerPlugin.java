@@ -1,22 +1,21 @@
 package com.vividsolutions.jump.workbench.ui.plugin.datastore;
 
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-
-import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureCollectionWrapper;
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
-import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.model.cache.CachingFeatureCollection;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerEventType;
-import com.vividsolutions.jump.workbench.model.cache.CachingFeatureCollection;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 
 public class RefreshDataStoreLayerPlugin extends AbstractPlugIn {
 
@@ -26,7 +25,6 @@ public class RefreshDataStoreLayerPlugin extends AbstractPlugIn {
         super(I18N.get("ui.plugin.datastore.RefreshDataStoreLayerPlugin.Refresh-Layer"));
     }
     
-
     public static EnableCheck createEnableCheck(final WorkbenchContext context) {
         MultiEnableCheck mec = new MultiEnableCheck();
 
