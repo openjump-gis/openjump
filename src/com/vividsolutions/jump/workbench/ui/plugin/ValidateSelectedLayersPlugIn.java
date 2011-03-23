@@ -67,7 +67,7 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.ThreadedPlugIn;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
-import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
+import com.vividsolutions.jump.workbench.ui.DualPaneInputDialog;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.renderer.style.RingVertexStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.VertexStyle;
@@ -96,7 +96,7 @@ public class ValidateSelectedLayersPlugIn extends AbstractPlugIn
     private static final String ERROR = "ERROR";
     private static final String SOURCE_FID = "SOURCE_FID";
     private static final String GEOMETRY = "GEOMETRY";
-    private MultiInputDialog dialog;
+    private DualPaneInputDialog dialog;
     private FeatureSchema schema;
     private GeometryFactory geometryFactory = new GeometryFactory();
     private Color GOLD = new Color(255, 192, 0, 150);
@@ -350,7 +350,7 @@ public class ValidateSelectedLayersPlugIn extends AbstractPlugIn
     private void initDialog(PlugInContext context) {
     	
     	CHECK_BASIC_TOPOLOGY = I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.check-basic-topology");
-        dialog = new MultiInputDialog(context.getWorkbenchFrame(),
+        dialog = new DualPaneInputDialog(context.getWorkbenchFrame(),
         		I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.validate-selected-layers"), true);
         dialog.setSideBarImage(IconLoader.icon("Validate.gif"));
         dialog.setSideBarDescription(I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.tests-layers-against-various-criteria"));
@@ -371,7 +371,8 @@ public class ValidateSelectedLayersPlugIn extends AbstractPlugIn
             5);
         dialog.addCheckBox(CHECK_LINESTRINGS_SIMPLE, false,
         		I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.check-that-linestrings-are-simple"));
-        dialog.startNewColumn();
+        //dialog.startNewColumn();
+        dialog.setRightPane();
         dialog.addLabel("<HTML><STRONG>"+I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.geometry-types-validation")+"</STRONG></HTML>");
         dialog.addSeparator();
         dialog.addCheckBox(DISALLOW_POINTS, false);

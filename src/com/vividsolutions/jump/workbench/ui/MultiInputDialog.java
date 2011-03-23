@@ -30,138 +30,114 @@
  * www.vividsolutions.com
  */
 package com.vividsolutions.jump.workbench.ui;
+
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Frame;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
 import java.util.*;
 import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
+
 import com.vividsolutions.jts.util.Assert;
+import com.vividsolutions.jump.feature.AttributeType;
+import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.CollectionMap;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.LayerNameRenderer;
+import com.vividsolutions.jump.workbench.ui.OKCancelPanel;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
-import java.awt.*;
+
 
 /**
- *  Flexible generic dialog for prompting the user to type in several values.
+ * Flexible generic dialog for prompting the user to type in several values.
+ * This Dialog is a refactoring of the previous vividsolutions MultiInputDialog
  */
-public class MultiInputDialog extends JDialog {
-    public EnableCheck createDoubleCheck(final String fieldName) {
-        return new EnableCheck() {
-            public String check(JComponent component) {
-                try {
-                    Double.parseDouble(getText(fieldName).trim());
-                    return null;
-                } catch (NumberFormatException e) {
-                    return "\""
-                        + getText(fieldName).trim()
-                        + "\" "+I18N.get("ui.MultiInputDialog.is-an-invalid-double")+" ("
-                        + fieldName
-                        + ")";
-                }
-            }
-        };
+public class MultiInputDialog extends AbstractMultiInputDialog {
+    
+    // Main components of a MultiInputDialog
+    
+    //|------------------------------------------------------------------------|
+    //| this.contentPane (BorderLayout)                                        |
+    //| |--------------------------------------------------------------------| |
+    //| | CENTER dialogPanel (BorderLayout)                                  | |
+    //| | |----------------------------------------------------------------| | |
+    //| | | WEST:           | CENTER : mainComponent                       | | |
+    //| | | infoPanel       |                                              | | |
+    //| | | |-------------| | any container                                | | |
+    //| | | |label        | | - default is simple JPanel                   | | |
+    //| | | |-------------| | - option double left/right panel             | | |
+    //| | | |image        | | - JSplitPanel                                | | |
+    //| | | |             | | - JTabbedPane                                | | |
+    //| | | |-------------| | - Widget                                     | | |
+    //| | | |description  | |                                              | | |
+    //| | | |             | |                                              | | |
+    //| | | |------------ | |                                              | | |
+    //| | |----------------------------------------------------------------| | |
+    //| | | SOUTH : console                                                | | |
+    //| | |----------------------------------------------------------------| | |
+    //| |--------------------------------------------------------------------| |
+    //| | SOUTH : OKCancelPanel                                              | |
+    //| |                                                                    | |
+    //| |--------------------------------------------------------------------| |
+    //|------------------------------------------------------------------------|
+    
+    // dialogPanel contains everything but the OKCancelPanel
+    final private JPanel dialogPanel = new JPanel(new BorderLayout());
+        // imagePanel contains an image and a description
+        final private MultiInputDialogInfoPanel infoPanel = new MultiInputDialogInfoPanel();
+        // mainComponent contains all the components for user inputs
+        Container mainComponent;
+        JPanel currentPanel;
+        // consolePanel can show warnings or comments to help the user
+        final private MultiInputDialogConsole console = new MultiInputDialogConsole();
+    // This panel just contains the OK and the Cancel Buttons
+    final protected OKCancelPanel okCancelPanel = new OKCancelPanel();
+    private int inset = 0;
+    
+    protected void setMainComponent() {
+        mainComponent = new JPanel(new GridBagLayout());
+        currentPanel = (JPanel)mainComponent;
+        Border mainComponentBorder = BorderFactory.createCompoundBorder(
+            BorderFactory.createEtchedBorder(),
+            BorderFactory.createEmptyBorder(5+inset, 5+inset, 5+inset, 5+inset)
+        );
+        currentPanel.setBorder(mainComponentBorder);
     }
-    public EnableCheck createIntegerCheck(final String fieldName) {
-        return new EnableCheck() {
-            public String check(JComponent component) {
-                try {
-                    Integer.parseInt(getText(fieldName).trim());
-                    return null;
-                } catch (NumberFormatException e) {
-                    return "\""
-                        + getText(fieldName).trim()
-						+ "\" "+I18N.get("ui.MultiInputDialog.is-an-invalid-integer")+" ("
-                        + fieldName
-                        + ")";
-                }
-            }
-        };
+    
+    /**
+     * @return the JPanel where new Rows are added
+     */
+    public JPanel getCurrentPanel() {
+        return currentPanel;
     }
-    public EnableCheck createPositiveCheck(final String fieldName) {
-        return new EnableCheck() {
-            public String check(JComponent component) {
-                if (Double.parseDouble(getText(fieldName).trim()) > 0) {
-                    return null;
-                }
-                return "\""
-                    + getText(fieldName).trim()
-					+ "\" "+I18N.get("ui.MultiInputDialog.must-be")+" > 0 ("
-                    + fieldName
-                    + ")";
-            }
-        };
+    
+    /**
+     * @param panel the JPanel where new Rows are added
+     */
+    public void setCurrentPanel(JPanel panel) {
+        currentPanel = panel;
     }
-    public EnableCheck createNonNegativeCheck(final String fieldName) {
-        return new EnableCheck() {
-            public String check(JComponent component) {
-                if (Double.parseDouble(getText(fieldName).trim()) >= 0) {
-                    return null;
-                }
-                return "\""
-                    + getText(fieldName).trim()
-					+ "\" "+I18N.get("ui.MultiInputDialog.must-be")+" >= 0 ("
-                    + fieldName
-                    + ")";
-            }
-        };
+    
+    /**
+     * @return the MultiInputDialogConsole panel.
+     */ 
+    public MultiInputDialogConsole getConsole() {
+        return console;
     }
-    private final static int SIDEBAR_WIDTH = 150;
-    OKCancelPanel okCancelPanel = new OKCancelPanel();
-    GridBagLayout gridBagLayout2 = new GridBagLayout();
-    JPanel outerMainPanel = new JPanel();
-    private HashMap fieldNameToComponentMap = new HashMap();
-    private Map buttonGroupMap = new HashMap();
 
-    private JComponent getComponent(String fieldName) {
-        return (JComponent) fieldNameToComponentMap.get(fieldName);
-    }
-    public JComboBox getComboBox(String fieldName) {
-        return (JComboBox) getComponent(fieldName);
-    }
-    public JCheckBox getCheckBox(String fieldName) {
-        return (JCheckBox) getComponent(fieldName);
-    }
-    public JRadioButton getRadioButton(String fieldName) {
-        return (JRadioButton) getComponent(fieldName);
-    }
-    public JComponent getLabel(String fieldName) {
-        return (JComponent) fieldNameToLabelMap.get(fieldName);
-    }
-    private HashMap fieldNameToLabelMap = new HashMap();
     private int rowCount = 0;
-    private LayerNameRenderer layerListCellRenderer = new LayerNameRenderer();
-    private CollectionMap fieldNameToEnableCheckListMap = new CollectionMap();
-    private BorderLayout borderLayout2 = new BorderLayout();
-    private JPanel imagePanel = new JPanel();
-    private GridBagLayout gridBagLayout3 = new GridBagLayout();
-    private JLabel imageLabel = new JLabel();
-    private JPanel mainPanel = new JPanel();
-    private GridBagLayout mainPanelGridBagLayout = new GridBagLayout();
-    private JPanel innerMainPanel = new JPanel();
-    private JPanel innerMainPanel2 = new JPanel();
-    private GridBagLayout gridBagLayout5 = new GridBagLayout();
-    private GridBagLayout gridBagLayout7 = new GridBagLayout();
-    private GridBagLayout gridBagLayout6 = new GridBagLayout();
-    private JTextArea descriptionTextArea = new JTextArea();
-    private JPanel strutPanel = new JPanel();
-    private JPanel currentMainPanel = innerMainPanel;
-    private JPanel verticalSeparatorPanel = new JPanel();
     
-    public JPanel getCurrentMainPanel() {
-        return currentMainPanel;
-    }
-    
-    public void setCurrentMainPanel(JPanel panel) {
-        currentMainPanel = panel;
-    }
-    
-    public void setRightPanelVisibility(boolean visible) {
-        innerMainPanel2.setVisible(visible);
-    }
     
     /**
      * @param frame the frame on which to make this dialog modal and centred
@@ -173,457 +149,191 @@ public class MultiInputDialog extends JDialog {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        imagePanel.setVisible(false);
-        descriptionTextArea.setText("");
-        imageLabel.setText("");
-        innerMainPanel2.setVisible(false);
-        verticalSeparatorPanel.setVisible(false);
     }
+    
     public MultiInputDialog() {
         this(null, "", false);
     }
+    
+    /**
+     * @param visible if true, the MultiInputDialog will be visible.
+     */
     public void setVisible(boolean visible) {
-        //Workaround for Java bug  4446522 " JTextArea.getPreferredSize()
-        //incorrect when line wrapping is used": call #pack twice [Jon Aquino]
         pack();
-        pack();
-        GUIUtil.centreOnWindow(MultiInputDialog.this);
         super.setVisible(visible);
     }
-
+    
     /**
-     * Gets the string value of a control
-     * @param fieldName control to read
-     * @return the string value of the control
-     * @return null if the control is not in a valid state (e.g. not selected)
-     */
-    public String getText(String fieldName) {
-        if (fieldNameToComponentMap.get(fieldName) instanceof JTextField) {
-            return ((JTextField) fieldNameToComponentMap.get(fieldName)).getText();
-        }
-        if (fieldNameToComponentMap.get(fieldName) instanceof JComboBox) {
-          Object selObj = ((JComboBox) fieldNameToComponentMap.get(fieldName)).getSelectedItem();
-          if (selObj == null) return null;
-          return selObj.toString();
-        }
-        Assert.shouldNeverReachHere(fieldName);
-        return null;
+     * @return the MultiInputDialogInfoPanel.
+     */ 
+    public MultiInputDialogInfoPanel getDescriptionPanel() {
+        return infoPanel;
     }
-
-    /**
-     * Returns selected state for checkboxes, radio buttons.
-     *
-     * @param fieldName the name of the control to test
-     * @return the selected state of the control
-     */
-    public boolean getBoolean(String fieldName) {
-        AbstractButton button = (AbstractButton) fieldNameToComponentMap.get(fieldName);
-        return button.isSelected();
-    }
-    public double getDouble(String fieldName) {
-        return Double.parseDouble(getText(fieldName).trim());
-    }
-    public int getInteger(String fieldName) {
-        return Integer.parseInt(getText(fieldName).trim());
-    }
-    public Layer getLayer(String fieldName) {
-        JComboBox comboBox = (JComboBox) fieldNameToComponentMap.get(fieldName);
-        return (Layer) comboBox.getSelectedItem();
-    }
-    public JTextField addTextField(
-        String fieldName,
-        String initialValue,
-        int approxWidthInChars,
-        EnableCheck[] enableChecks,
-        String toolTipText) {
-        JTextField textField = new JTextField(initialValue, approxWidthInChars);
-        addRow(fieldName, new JLabel(fieldName), textField, enableChecks, toolTipText);
-        return textField;
-    }
-    public JComboBox addComboBox(
-        String fieldName,
-        Object selectedItem,
-        Collection items,
-        String toolTipText) {
-        JComboBox comboBox = new JComboBox(new Vector(items));
-        comboBox.setSelectedItem(selectedItem);
-        addRow(fieldName, new JLabel(fieldName), comboBox, null, toolTipText);
-        return comboBox;
-    }
-    public JLabel addLabel(String text) {
-      //Take advantage of #addRow's special rule for JLabels: they span all
-      //the columns of the GridBagLayout. [Jon Aquino]
-      JLabel lbl = new JLabel(text);
-      addRow(lbl);
-      return lbl;
-  }
-    public JButton addButton(String text) {
-      //Take advantage of #addRow's special rule for JLabels: they span all
-      //the columns of the GridBagLayout. [Jon Aquino]
-      JButton button = new JButton(text);
-      addRow(button);
-      return button;
-  }
-    public void addRow(JComponent c) {
-        addRow("DUMMY", new JLabel(""), c, null, null);
-    }
-    public void addSeparator() {
-        JPanel separator = new JPanel();
-        separator.setBackground(Color.black);
-        separator.setPreferredSize(new Dimension(1, 1));
-        addRow(separator);
-    }
-    private JTextField addNumericField(
-        String fieldName,
-        String initialValue,
-        int approxWidthInChars,
-        EnableCheck[] enableChecks,
-        String toolTipText) {
-        JTextField fld =
-            addTextField(
-                fieldName,
-                initialValue,
-                approxWidthInChars,
-                enableChecks,
-                toolTipText);
-        fld.setHorizontalAlignment(JTextField.RIGHT);
-        return fld;
-    }
-    public JTextField addIntegerField(
-        String fieldName,
-        int initialValue,
-        int approxWidthInChars,
-        String toolTipText) {
-        return addNumericField(
-            fieldName,
-            String.valueOf(initialValue),
-            approxWidthInChars,
-            new EnableCheck[] { createIntegerCheck(fieldName)},
-            toolTipText);
-    }
-    public JTextField addPositiveIntegerField(
-        String fieldName,
-        int initialValue,
-        int approxWidthInChars) {
-        return addNumericField(
-            fieldName,
-            String.valueOf(initialValue),
-            approxWidthInChars,
-            new EnableCheck[] {
-                createIntegerCheck(fieldName),
-                createPositiveCheck(fieldName)},
-            null);
-    }
-    public JTextField addDoubleField(
-        String fieldName,
-        double initialValue,
-        int approxWidthInChars) {
-        return addNumericField(
-            fieldName,
-            String.valueOf(initialValue),
-            approxWidthInChars,
-            new EnableCheck[] { createDoubleCheck(fieldName)},
-            null);
-    }
-    public JTextField addDoubleField(
-        String fieldName,
-        double initialValue,
-        int approxWidthInChars,
-        String toolTipText) {
-        return addNumericField(
-            fieldName,
-            String.valueOf(initialValue),
-            approxWidthInChars,
-            new EnableCheck[] { createDoubleCheck(fieldName)},
-            toolTipText);
-    }
-    public JTextField addPositiveDoubleField(
-        String fieldName,
-        double initialValue,
-        int approxWidthInChars) {
-        return addNumericField(
-            fieldName,
-            String.valueOf(initialValue),
-            approxWidthInChars,
-            new EnableCheck[] {
-                createDoubleCheck(fieldName),
-                createPositiveCheck(fieldName)},
-            null);
-    }
-    public JTextField addNonNegativeDoubleField(
-        String fieldName,
-        double initialValue,
-        int approxWidthInChars) {
-        return addNumericField(
-            fieldName,
-            String.valueOf(initialValue),
-            approxWidthInChars,
-            new EnableCheck[] {
-                createDoubleCheck(fieldName),
-                createNonNegativeCheck(fieldName)},
-            null);
-    }
-    public static void main(String[] args) {
-        MultiInputDialog d = new MultiInputDialog(null, "Title!", true);
-        d.addLabel("Yay!");
-        d.addLayerComboBox("LayerField", null, "ToolTip", new LayerManager());
-        d.setVisible(true);
-        System.out.println(d.getLayer("LayerField"));
-        System.exit(0);
-    }
-    public JComboBox addLayerComboBox(
-        String fieldName,
-        Layer initialValue,
-        LayerManager layerManager) {
-        return addLayerComboBox(fieldName, initialValue, null, layerManager);
-    }
-    public JComboBox addLayerComboBox(
-        String fieldName,
-        Layer initialValue,
-        String toolTipText,
-        LayerManager layerManager) {
-        return addLayerComboBox(
-            fieldName,
-            initialValue,
-            toolTipText,
-            layerManager.getLayers());
-    }
-    public JComboBox addEditableLayerComboBox(
-        String fieldName,
-        Layer initialValue,
-        String toolTipText,
-        LayerManager layerManager) {
-        return addLayerComboBox(
-            fieldName,
-            initialValue,
-            toolTipText,
-            layerManager.getEditableLayers());
-    }
-    public JComboBox addLayerComboBox(
-        String fieldName,
-        Layer initialValue,
-        String toolTipText,
-        Collection layers) {
-        addComboBox(fieldName, initialValue, layers, toolTipText);
-        getComboBox(fieldName).setRenderer(layerListCellRenderer);
-        return getComboBox(fieldName);
-    }
-    public JCheckBox addCheckBox(String fieldName, boolean initialValue) {
-        return addCheckBox(fieldName, initialValue, null);
-    }
-    public JCheckBox addCheckBox(
-        String fieldName,
-        boolean initialValue,
-        String toolTipText) {
-        JCheckBox checkBox = new JCheckBox(fieldName, initialValue);
-        addRow(fieldName, new JLabel(""), checkBox, null, toolTipText);
-        return checkBox;
-    }
-
-    public JRadioButton addRadioButton(
-        String fieldName,
-        String buttonGroupName,
-        boolean initialValue,
-        String toolTipText) {
-      JRadioButton radioButton = new JRadioButton(fieldName, initialValue);
-      addRow(fieldName, new JLabel(""), radioButton, null, toolTipText);
-
-      // add to button group, if specified (and create one if it doesn't exist)
-      if (buttonGroupName != null) {
-        ButtonGroup group = (ButtonGroup) buttonGroupMap.get(buttonGroupName);
-        if (group == null) {
-          group = new ButtonGroup();
-          buttonGroupMap.put(buttonGroupName, group);
-        }
-        group.add(radioButton);
-      }
-
-      return radioButton;
-    }
-
 
     public void setSideBarImage(Icon icon) {
-        //Add imageLabel only if #setSideBarImage is called. Otherwise the margin
-        //above the description will be too tall. [Jon Aquino]
-        imagePanel.add(
-            imageLabel,
-            new GridBagConstraints(
-                0,
-                0,
-                1,
-                1,
-                0.0,
-                0.0,
-                GridBagConstraints.NORTHWEST,
-                GridBagConstraints.HORIZONTAL,
-                new Insets(10, 10, 0, 10),
-                0,
-                0));
-        imagePanel.setVisible(true);
-        imageLabel.setIcon(icon);
+        infoPanel.setIcon(icon);
+        pack();
     }
+    
     public void setSideBarDescription(String description) {
-        imagePanel.setVisible(true);
-        descriptionTextArea.setText(description);
+        infoPanel.setDescription(description);
+        pack();
     }
+    
+    public void showConsole() {
+        console.setVisible(true);
+        pack();
+    }
+    
+    public void setCancelVisible(boolean cancelVisible) {
+        okCancelPanel.setCancelVisible(cancelVisible);
+    }
+    
     public boolean wasOKPressed() {
         return okCancelPanel.wasOKPressed();
     }
+    
     //Experience suggests that one should avoid using weights when using the
     //GridBagLayout. I find that nonzero weights can cause layout bugs that are
     //hard to track down. [Jon Aquino]
     void jbInit() throws Exception {
-        verticalSeparatorPanel.setBackground(Color.black);
-        imageLabel.setText(I18N.get("ui.MultiInputDialog.images-goes-here"));
-        descriptionTextArea.setOpaque(false);
-        okCancelPanel.addActionListener(new java.awt.event.ActionListener() {
+
+        okCancelPanel.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 okCancelPanel_actionPerformed(e);
             }
         });
         //LDB: set the default button for Enter to the OK for all
 		this.getRootPane().setDefaultButton(okCancelPanel.getButton("OK"));
+                
+        setMainComponent();
         
-        this.addComponentListener(new java.awt.event.ComponentAdapter() {
-            public void componentShown(ComponentEvent e) {
-                this_componentShown(e);
-            }
-        });
-        outerMainPanel.setLayout(gridBagLayout6);
-        outerMainPanel.setAlignmentX((float) 0.7);
         this.setResizable(true);
-        this.getContentPane().setLayout(borderLayout2);
-        imagePanel.setBorder(BorderFactory.createEtchedBorder());
-        imagePanel.setLayout(gridBagLayout3);
-        mainPanel.setLayout(mainPanelGridBagLayout);
-        innerMainPanel.setLayout(gridBagLayout5);
-        innerMainPanel2.setLayout(gridBagLayout7);
-        descriptionTextArea.setEnabled(false);
-        descriptionTextArea.setEditable(false);
-        descriptionTextArea.setText(I18N.get("ui.MultiInputDialog.description-goes-here"));
-        descriptionTextArea.setLineWrap(true);
-        descriptionTextArea.setWrapStyleWord(true);
-        strutPanel.setMaximumSize(new Dimension(SIDEBAR_WIDTH, 1));
-        strutPanel.setMinimumSize(new Dimension(SIDEBAR_WIDTH, 1));
-        strutPanel.setPreferredSize(new Dimension(SIDEBAR_WIDTH, 1));
-        verticalSeparatorPanel.setPreferredSize(new Dimension(1, 1));
+        this.getContentPane().add(dialogPanel, BorderLayout.CENTER);
+            dialogPanel.add(infoPanel, BorderLayout.WEST);
+            dialogPanel.add(mainComponent, BorderLayout.CENTER);
+            dialogPanel.add(console, BorderLayout.SOUTH);
+                console.setVisible(false);
         this.getContentPane().add(okCancelPanel, BorderLayout.SOUTH);
-        this.getContentPane().add(outerMainPanel, BorderLayout.CENTER);
-        imagePanel.add(
-            descriptionTextArea,
-            new GridBagConstraints(
-                0,
-                1,
-                1,
-                1,
-                0.0,
-                1.0,
-                GridBagConstraints.NORTHWEST,
-                GridBagConstraints.BOTH,
-                new Insets(10, 10, 10, 10),
-                0,
-                0));
-        imagePanel.add(
-            strutPanel,
-            new GridBagConstraints(
-                0,
-                3,
-                1,
-                1,
-                0.0,
-                0.0,
-                GridBagConstraints.CENTER,
-                GridBagConstraints.HORIZONTAL,
-                new Insets(0, 0, 0, 0),
-                0,
-                0));
-        outerMainPanel.add(
-            mainPanel,
-            new GridBagConstraints(
-                2,
-                0,
-                1,
-                1,
-                1.0,
-                1.0,
-                GridBagConstraints.NORTHWEST,
-                GridBagConstraints.BOTH,
-                new Insets(0, 0, 0, 0),
-                0,
-                0));
-        mainPanel.add(
-            innerMainPanel,
-            new GridBagConstraints(
-                1,
-                0,
-                1,
-                2,
-                1.0,
-                1.0,
-                GridBagConstraints.NORTHWEST,
-                GridBagConstraints.HORIZONTAL,
-                new Insets(10, 10, 10, 10),
-                0,
-                0));
-        mainPanel.add(
-            innerMainPanel2,
-            new GridBagConstraints(
-                3,
-                0,
-                1,
-                1,
-                1.0,
-                1.0,
-                GridBagConstraints.NORTHWEST,
-                GridBagConstraints.HORIZONTAL,
-                new Insets(10, 10, 10, 10),
-                0,
-                0));
-        mainPanel.add(
-            verticalSeparatorPanel,
-            new GridBagConstraints(
-                2,
-                0,
-                1,
-                1,
-                0.0,
-                1.0,
-                GridBagConstraints.CENTER,
-                GridBagConstraints.VERTICAL,
-                new Insets(0, 0, 0, 0),
-                0,
-                0));
-        outerMainPanel.add(
-            imagePanel,
-            new GridBagConstraints(
-                1,
-                0,
-                1,
-                1,
-                0.0,
-                0.0,
-                GridBagConstraints.NORTHWEST,
-                GridBagConstraints.BOTH,
-                new Insets(0, 0, 0, 0),
-                0,
-                0));
-        descriptionTextArea.setFont(imageLabel.getFont());
-        descriptionTextArea.setDisabledTextColor(imageLabel.getForeground());
     }
+    
     /**
-     * If the dialog contains a single tabbed panel, it looks better to have a 0
-     * inset.
+     * Add a row to the current JPanel.
+     * The GridBagLayout is used as follows :
+     * <ul>
+     * <li>For JCheckBox, JRadioButton and JLabel and JPanel the component spreads
+     * over 3 columns. Empty label is in the fourth column.</li>
+     * <li>For JComboBox and JTextField, label is in first column and component in
+     * second column. Third and fourth column or empty.</li>
+     * </ul>
+     * |---|------------------------|----------------------|-----|---| 
+     * | 0 |            1           |             2        |  3  | 4 |
+     * |---|-----------------------------------------------------|---|
+     * |   | JChekBox with label associated                      |   |
+     * |---|-----------------------------------------------------|---|
+     * |   | JRadioButton with label associated                  |   |
+     * |---|-----------------------------------------------------|---|
+     * |   | JLabel                                              |   |
+     * |---|-----------------------------------------------------|---|
+     * |   | JPanel                                              |   |
+     * |---|------------------------|----------------------------|---|
+     * |   | Label                  | JComboBox                  |   |
+     * |---|------------------------|----------------------------|---|
+     * |   | Label                  | JTextField                 |   |
+     * |---|------------------------|----------------------|-----|---|
+    
+    /**
+     * Adds a row (containing either a control or a label) to the Dialog.
+     *
+     * @param fieldName field name of the control (used as a key)
+     * @param label label of the control
+     * @param component the control itself (may also be a label or a separator)
+     * @param enableChecks checks to validate inputs
+     * @param toolTipText
      */
+    public void addRow(String fieldName,
+                          JComponent label,
+                          JComponent component,
+                          EnableCheck[] enableChecks,
+                          String toolTipText,
+                          int labelPos,
+                          int fillMode) {
+        if (toolTipText != null) {
+            label.setToolTipText(toolTipText);
+            component.setToolTipText(toolTipText);
+        }
+
+        fieldNameToLabelMap.put(fieldName, label);
+        fieldNameToComponentMap.put(fieldName, component);
+        
+        if (enableChecks != null) {
+            addEnableChecks(fieldName, Arrays.asList(enableChecks));
+        }
+        
+        if (labelPos == NO_LABEL) {
+            currentPanel.add(component,
+                new GridBagConstraints(1, rowCount, 3, 1, 1.0, 0.0,
+                GridBagConstraints.WEST, fillMode,
+                new Insets(5+inset, 2+inset, 2+inset, 2+inset), 0, 0));
+        }
+        else if (labelPos == LEFT_LABEL) {
+            currentPanel.add(label,
+                new GridBagConstraints(1, rowCount, 1, 1, 0.0, 0.0,
+                GridBagConstraints.WEST, GridBagConstraints.NONE,
+                new Insets(2+inset, 2+inset, 2+inset, 2+inset), 0, 0));
+            currentPanel.add(component,
+                new GridBagConstraints(2, rowCount, 2, 1, 0.0, 0.0,
+                GridBagConstraints.WEST, fillMode,
+                new Insets(2+inset, 2+inset, 2+inset, 2+inset), 0, 0));
+        }
+        else if (labelPos == RIGHT_LABEL) {
+            currentPanel.add(component,
+                new GridBagConstraints(1, rowCount, 2, 1, 1.0, 0.0,
+                GridBagConstraints.WEST, fillMode,
+                new Insets(2+inset, 2+inset, 2+inset, 2+inset), 0, 0));
+            currentPanel.add(label,
+                new GridBagConstraints(3, rowCount, 1, 1, 0.0, 0.0,
+                GridBagConstraints.WEST, GridBagConstraints.NONE,
+                new Insets(2+inset, 2+inset, 2+inset, 2+inset), 0, 0));
+        }
+        
+        rowCount++;
+    }
+    
+    // Add a row with a component without label (ex. subtitle, checkbox))
+    public void addRow(String fieldName, JComponent component, EnableCheck[] enableChecks, String toolTipText) {
+        addRow(fieldName, null, component, enableChecks, toolTipText, NO_LABEL, HORIZONTAL);
+    }
+    
+    // Add a row with a label on the left, and a component on the right (layer, textfield,...) 
+    public void addRow(String fieldName, JLabel label, JTextField component, EnableCheck[] enableChecks, String toolTipText) {
+        addRow(fieldName, label, component, enableChecks, toolTipText, LEFT_LABEL, NONE);
+    }
+    
+    // Add a row with a label on the left, and a component on the right (layer, textfield,...) 
+    public void addRow(String fieldName, JLabel label, JComponent component, EnableCheck[] enableChecks, String toolTipText) {
+        addRow(fieldName, label, component, enableChecks, toolTipText, LEFT_LABEL, NONE);
+    }
+    
+    public void addRow(JComponent component) {
+        addRow("DUMMY", new JLabel(""), component, null, "", NO_LABEL, HORIZONTAL);
+    }
+    
+    public void addRow() {
+        currentPanel.add(new JPanel(),
+                new GridBagConstraints(1, rowCount, 2, 1, 1.0, 1.0,
+                GridBagConstraints.WEST, BOTH, new Insets(2, 2, 2, 2), 0, 0));
+    }
+    
     public void setInset(int inset) {
-        setInset(inset, innerMainPanel);
-        setInset(inset, innerMainPanel2);
+        this.inset = inset;
+        try {
+            jbInit();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
-    private void setInset(int inset, JComponent component) {
-        GridBagLayout layout = (GridBagLayout) component.getParent().getLayout();
-        GridBagConstraints constraints = layout.getConstraints(component);
-        constraints.insets = new Insets(inset, inset, inset, inset);
-        layout.setConstraints(component, constraints);
-    }
+    
     void okCancelPanel_actionPerformed(ActionEvent e) {
         if (!okCancelPanel.wasOKPressed() || isInputValid()) {
             setVisible(false);
@@ -631,12 +341,15 @@ public class MultiInputDialog extends JDialog {
         }
         reportValidationError(firstValidationErrorMessage());
     }
+    
     void this_componentShown(ComponentEvent e) {
         okCancelPanel.setOKPressed(false);
     }
+    
     private boolean isInputValid() {
         return firstValidationErrorMessage() == null;
     }
+    
     private void reportValidationError(String errorMessage) {
         JOptionPane.showMessageDialog(
             this,
@@ -644,6 +357,7 @@ public class MultiInputDialog extends JDialog {
             "JUMP",
             JOptionPane.ERROR_MESSAGE);
     }
+    
     private String firstValidationErrorMessage() {
         for (Iterator i = fieldNameToEnableCheckListMap.keySet().iterator();
             i.hasNext();
@@ -662,93 +376,127 @@ public class MultiInputDialog extends JDialog {
         }
         return null;
     }
+    
+    
     /**
-     * This method can be called once only.
+     * Indent the label of a field with a MatteBorder having the width of
+     * a JCheckBox and the color of the component background.
+     * This helps to align JCheckBox label (text on the right of the CheckBox)
+     * with other component labels (text on the left of the component).
+     *
+     * @param fielName the field to indent
      */
-    public void startNewColumn() {
-        if (innerMainPanel2.isVisible()) {
-            Assert.shouldNeverReachHere("#startNewColumn can be called once only");
-        }
-        currentMainPanel = innerMainPanel2;
-        innerMainPanel2.setVisible(true);
-        verticalSeparatorPanel.setVisible(true);
-    }
-    public void addRow(
-        String fieldName,
-        JComponent label,
-        JComponent component,
-        EnableCheck[] enableChecks,
-        String toolTipText) {
-        if (toolTipText != null) {
-            label.setToolTipText(toolTipText);
-            component.setToolTipText(toolTipText);
-        }
-        fieldNameToLabelMap.put(fieldName, label);
-        fieldNameToComponentMap.put(fieldName, component);
-        if (enableChecks != null) {
-            addEnableChecks(fieldName, Arrays.asList(enableChecks));
-        }
-        int componentX;
-        int componentWidth;
-        int labelX;
-        int labelWidth;
-        if (component instanceof JCheckBox
-            || component instanceof JRadioButton
-            || component instanceof JLabel
-            || component instanceof JPanel) {
-            componentX = 1;
-            componentWidth = 3;
-            labelX = 4;
-            labelWidth = 1;
-        } else {
-            labelX = 1;
-            labelWidth = 1;
-            componentX = 2;
-            componentWidth = 1;
-        }
-        currentMainPanel.add(
-            label,
-            new GridBagConstraints(
-                labelX,
-                rowCount,
-                labelWidth,
-                1,
-                0.0,
-                0.0,
-                GridBagConstraints.WEST,
-                GridBagConstraints.NONE,
-                new Insets(0, 0, 5, 10),
-                0,
-                0));
-        //HORIZONTAL especially needed by separator. [Jon Aquino]
-        currentMainPanel.add(
-            component,
-            new GridBagConstraints(
-                componentX,
-                rowCount,
-                componentWidth,
-                1,
-                0,
-                0.0,
-                GridBagConstraints.WEST,
-                component instanceof JPanel
-                    ? GridBagConstraints.HORIZONTAL
-                    : GridBagConstraints.NONE,
-                new Insets(0, 0, 5, 0),
-                0,
-                0));
-        rowCount++;
-    }
-    public void addEnableChecks(String fieldName, Collection enableChecks) {
-        fieldNameToEnableCheckListMap.addItems(fieldName, enableChecks);
-    }
-    public void indentLabel(String comboBoxFieldName) {
-        getLabel(comboBoxFieldName).setBorder(
+    public void indentLabel(String fieldName) {
+        getLabel(fieldName).setBorder(
             BorderFactory.createMatteBorder(
                 0,
                 (int) new JCheckBox().getPreferredSize().getWidth(),
                 0,
                 0,
-                getLabel(comboBoxFieldName).getBackground()));
+                getLabel(fieldName).getBackground()));
+    }
+    
+    /**
+     * @deprecated
+     */
+    public void startNewColumn() {
+        JOptionPane.showMessageDialog(
+            this,
+            "MultiInputDialog.startNewColumn() is deprecated,\n" +
+            "if you want to layout widgets on two panels,\n " +
+            "please, use the new DualPaneInputDialog class instead",
+            "OpenJUMP",
+            JOptionPane.ERROR_MESSAGE);
+    }
+    
+    // Sample to test the class
+    public static void main(String[] args) {
+        final LayerManager lm = new LayerManager();
+        
+        // Schema containing a single Geometry attribute
+        FeatureSchema fs1 = new FeatureSchema();
+        fs1.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
+        com.vividsolutions.jump.feature.FeatureDataset ds1 =
+            new com.vividsolutions.jump.feature.FeatureDataset(fs1);
+        lm.addLayer("","LayerWithJustGeometry",ds1);
+        
+        // Schema containing a Geometry and a String attributes
+        FeatureSchema fs2 = new FeatureSchema();
+        fs2.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
+        fs2.addAttribute("Name", AttributeType.STRING);
+        com.vividsolutions.jump.feature.FeatureDataset ds2 =
+            new com.vividsolutions.jump.feature.FeatureDataset(fs2);
+        lm.addLayer("","LayerWithStringAttribute",ds2);
+        
+        // Schema containing a Geometry, a String and a Integer attributes
+        FeatureSchema fs3 = new FeatureSchema();
+        fs3.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
+        fs3.addAttribute("Name", AttributeType.STRING);
+        fs3.addAttribute("Age", AttributeType.INTEGER);
+        com.vividsolutions.jump.feature.FeatureDataset ds3 =
+            new com.vividsolutions.jump.feature.FeatureDataset(fs3);
+        lm.addLayer("","LayerWithNumericAttribute",ds3);
+        
+        
+        // MultiInputDialog usage demonstration
+        final MultiInputDialog d = new MultiInputDialog(null, "Title!", true);
+        d.setInset(2);
+        d.addSubTitle("Subtitle 1");
+        d.addLabel("This is just a label");
+        d.addTextField("Name", "", 24, null, "");
+        d.addPositiveIntegerField("Age", 0, 6, "");
+        d.addNonNegativeDoubleField("Salary", 0, 12, "");
+        d.addComboBox("Occupation", "Cadre", java.util.Arrays.asList("Manager","Developper","Technician","Secretary"), "");
+        d.indentLabel("Occupation");
+        d.addSubTitle("Layer and attribute selection");
+        AttributeTypeFilter STRING_FILTER = new AttributeTypeFilter(AttributeTypeFilter.STRING);
+        AttributeTypeFilter NUMERIC_FILTER = AttributeTypeFilter.NUMERIC_FILTER;
+        AttributeTypeFilter NOGEOM_FILTER = AttributeTypeFilter.NO_GEOMETRY_FILTER;
+        AttributeTypeFilter ALL_FILTER = AttributeTypeFilter.ALL_FILTER;
+        final JComboBox typeChooser = d.addComboBox("Choose Attribute Type", "ALL",
+                Arrays.asList(STRING_FILTER,NUMERIC_FILTER,ALL_FILTER,NOGEOM_FILTER), "");
+        final JComboBox layerChooser = d.addLayerComboBox("LayerField", null, "ToolTip", lm);
+        final JComboBox attributeChooser = d.addAttributeComboBox("Attribute field", "LayerField", NUMERIC_FILTER, "");
+        typeChooser.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                AttributeTypeFilter atf = (AttributeTypeFilter)typeChooser.getSelectedItem();
+                layerChooser.setModel(new DefaultComboBoxModel(atf.filter(lm).toArray(new Layer[0])));
+            }
+        });
+        
+        d.addSeparator();
+        final JCheckBox jcb = d.addCheckBox("Display icon", false, "");
+        JButton button = d.addButton("Switch image panel");
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (d.infoPanel.getDescription().equals("")) {
+                    d.infoPanel.setDescription("Description of the dialog box.\nThis description must be helpful for the user. I must give meaningful information about which parameters are mandatory, optional, what they represent and which value they can take.");
+                    d.getConsole().flashMessage("Add description");
+                }
+                else {
+                    d.infoPanel.setDescription("");
+                    d.getConsole().flashMessage("Remove description");
+                }
+                d.pack();
+            }
+        });
+        jcb.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (jcb.isSelected()) {
+                    d.infoPanel.setIcon(new ImageIcon(com.vividsolutions.jump.workbench.ui.images.IconLoader.class.getResource("Butt.gif")));
+                    d.getConsole().flashMessage("Add image");
+                }
+                else {
+                    d.infoPanel.setIcon(null);
+                    d.getConsole().flashMessage("Remove image");
+                }
+                d.pack();
+            }
+        });
+        JButton button2 = d.addButton("Second button", "OK", "");
+        GUIUtil.centreOnScreen(d);
+        d.setVisible(true);
+        System.out.println(d.getLayer("LayerField"));
+        System.exit(0);
     }
 }

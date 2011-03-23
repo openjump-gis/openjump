@@ -57,11 +57,9 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
  *
  * @author Martin Davis
  */
-public class AffineTransformationPlugIn
-  extends ThreadedBasePlugIn
-{
+public class AffineTransformationPlugIn extends ThreadedBasePlugIn {
 
-  private MultiInputDialog dialog;
+  private DualPaneInputDialog dialog;
   private Layer layer;
   private double originX = 0.0;
   private double originY = 0.0;
@@ -77,8 +75,7 @@ public class AffineTransformationPlugIn
 
   public String getName() { return I18N.get("jump.plugin.edit.AffineTransformationPlugIn.Affine-Transformation"); }
 
-  public void initialize(PlugInContext context) throws Exception
-  {
+  public void initialize(PlugInContext context) throws Exception {
       	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
   		featureInstaller.addMainMenuItem(
   	        this,								//exe
@@ -97,7 +94,7 @@ public class AffineTransformationPlugIn
   }
 
   public boolean execute(PlugInContext context) throws Exception {
-    dialog = new MultiInputDialog(
+    dialog = new DualPaneInputDialog(
         context.getWorkbenchFrame(), getName(), true);
     setDialogValues(dialog, context);
     GUIUtil.centreOnWindow(dialog);
@@ -107,9 +104,7 @@ public class AffineTransformationPlugIn
     return true;
   }
 
-  public void run(TaskMonitor monitor, PlugInContext context)
-       throws Exception
-  {
+  public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
     AffineTransformation trans = new AffineTransformation();
 
     AffineTransformation toOriginTrans
@@ -156,9 +151,7 @@ public class AffineTransformationPlugIn
   }
 
 
-  private void createLayers(PlugInContext context,
-                            FeatureCollection transFC)
-  {
+  private void createLayers(PlugInContext context, FeatureCollection transFC) {
     Layer lyr = context.addLayer(StandardCategoryNames.RESULT,
     		I18N.get("jump.plugin.edit.AffineTransformationPlugIn.Affine") + layer.getName(), transFC);
     lyr.fireAppearanceChanged();
@@ -193,7 +186,7 @@ public class AffineTransformationPlugIn
   private JTextField shearYField;
   private JTextField rotateAngleField;
 
-  private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
+  private void setDialogValues(DualPaneInputDialog dialog, PlugInContext context) {
   	
     String LAYER = GenericNames.LAYER;
     ORIGIN = I18N.get("jump.plugin.edit.AffineTransformationPlugIn.Anchor-Point");
@@ -249,7 +242,8 @@ public class AffineTransformationPlugIn
     transYField = dialog.addDoubleField(TRANS_DY, transY, 20,
     		I18N.get("jump.plugin.edit.AffineTransformationPlugIn.Translation-Y-value"));
 
-    dialog.startNewColumn();
+    //dialog.startNewColumn();
+    dialog.setRightPane();
     JButton setIdentityButton = dialog.addButton(I18N.get("jump.plugin.edit.AffineTransformationPlugIn.Set-to-Identity"));
     setIdentityButton.addActionListener(new SetIdentityListener());
     dialog.addSeparator();

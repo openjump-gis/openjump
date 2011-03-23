@@ -1,3 +1,13 @@
+2011-03-23 mmichaud <michael.michaud@free.fr>
+    * New MultiInputDialog :
+      com.vividsolutions.jump.workbench.ui.AbstractMultiInputDialog
+      com.vividsolutions.jump.workbench.ui.AttributeTypeFilter
+      com.vividsolutions.jump.workbench.ui.DualPanelInputDialog
+      com.vividsolutions.jump.workbench.ui.MultiInputDialog
+      com.vividsolutions.jump.workbench.ui.MultiInputDialogConsole
+      com.vividsolutions.jump.workbench.ui.MultiInputDialogInfoPanel
+      com.vividsolutions.jump.workbench.ui.MultiTabInputDialog
+    
 2011-03-22 mmichaud <michael.michaud@free.fr>
     * org.openjump.core.ui.plugin.datastore.EditDataStoreQueryPlugIn
       Add a new plugin to edit the query of a layer based on a datastore query
