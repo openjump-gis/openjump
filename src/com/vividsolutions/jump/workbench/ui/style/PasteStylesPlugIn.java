@@ -1,8 +1,5 @@
 package com.vividsolutions.jump.workbench.ui.style;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -11,9 +8,13 @@ import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.LabelStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.Style;
+import java.util.ArrayList;
+import java.util.Iterator;
+import javax.swing.ImageIcon;
 
 /**
  * Pastes the styles from the internal style paste buffer to a layer
@@ -36,6 +37,10 @@ public class PasteStylesPlugIn extends AbstractPlugIn {
 
   public String getName() {
   	return I18N.get("ui.style.PasteStylesPlugIn.paste-styles");
+  }
+  
+  public ImageIcon getIcon() {
+    return IconLoader.icon("Palette_out.gif");
   }
 
   public boolean execute(PlugInContext context) throws Exception
