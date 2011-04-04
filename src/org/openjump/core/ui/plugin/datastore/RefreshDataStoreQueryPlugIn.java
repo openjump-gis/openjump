@@ -1,27 +1,25 @@
 package org.openjump.core.ui.plugin.datastore;
 
-import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
-
+import com.vividsolutions.jump.coordsys.CoordinateSystemRegistry;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.task.DummyTaskMonitor;
-import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.model.LayerEventType;
-import com.vividsolutions.jump.workbench.model.UndoableCommand;
-import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.ui.LayerNamePanel;
+import com.vividsolutions.jump.workbench.plugin.ThreadedBasePlugIn;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
-import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.plugin.datastore.DataStoreQueryDataSource;
-
+import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
+import com.vividsolutions.jump.workbench.ui.plugin.OpenProjectPlugIn;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
+import javax.swing.ImageIcon;
+import javax.swing.JPopupMenu;
 import org.openjump.core.ui.images.IconLoader;
 
 /**
@@ -30,7 +28,7 @@ import org.openjump.core.ui.images.IconLoader;
  *
  * @author <a href="mailto:michael.michaud@free.fr">Michaël Michaud</a>
  */
-public class RefreshDataStoreQueryPlugIn extends AbstractPlugIn {
+public class RefreshDataStoreQueryPlugIn extends ThreadedBasePlugIn {
 
     public static final ImageIcon ICON = IconLoader.icon("arrow_refresh_sql.png");
 
@@ -52,17 +50,19 @@ public class RefreshDataStoreQueryPlugIn extends AbstractPlugIn {
 
     @Override
     public boolean execute(PlugInContext context) throws Exception {
-	    reportNothingToUndoYet(context);
-	    
-	    
-	    Layer[] selectedLayers = context.getSelectedLayers();
-	    for (Layer layer : selectedLayers) {
-	        DataSourceQuery dsq = layer.getDataSourceQuery();
-	        layer.setFeatureCollection(dsq.getDataSource().getConnection()
-	            .executeQuery(dsq.getQuery(), new DummyTaskMonitor()));
-	        context.getLayerManager().fireLayerChanged(layer, LayerEventType.APPEARANCE_CHANGED);
-	    }
 	    return true;
+    }
+    
+    public void run(TaskMonitor monitor, final PlugInContext context) throws Exception {
+        Layer[] selectedLayers = context.getSelectedLayers();
+	    for (Layer layer : selectedLayers) {
+	        OpenProjectPlugIn.load(layer,
+                CoordinateSystemRegistry.instance(context.getWorkbenchContext().getBlackboard()),
+                monitor);
+	    }
+	    for (Layer layer : selectedLayers) {
+	        layer.setFeatureCollectionModified(false);
+	    }
     }
 
     /**

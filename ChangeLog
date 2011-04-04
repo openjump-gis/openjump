@@ -1,3 +1,15 @@
+2011-04-04 mmichaud <michael.michaud@free.fr>
+    * org.openjump.core.ui.plugin.datastore.RefreshDataStoreQueryPlugIn
+      Fix bug 3261222 : refreshed DataStoreQueryLayer is no more tagged modified
+    
+2011-04-02 mmichaud <michael.michaud@free.fr>
+    * 2 icons from Giuseppe added to layerNamePanel context menu for copy
+      and paste style plugins
+
+2011-04-01 lreeder <>
+    * Updated WKBGeometryValueConverter to handle geometry types represented
+      by WKB hex string so that ST_AsBinary is optional
+
 2011-03-23 mmichaud <michael.michaud@free.fr>
     * New MultiInputDialog :
       com.vividsolutions.jump.workbench.ui.AbstractMultiInputDialog
