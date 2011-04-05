@@ -99,6 +99,11 @@ public class StatisticOverViewPlugIn extends AbstractPlugIn{
         	context.getWorkbenchFrame().warnUser(I18N.get("no-features-in-selection"));
         }
         */
+        // mmichaud fix bug 3229892 (2011-04-05)
+        if (features.length == 0) {
+            context.getWorkbenchFrame().warnUser(I18N.get("org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewPlugIn.Selected-layer-is-empty"));
+            return false;
+        }
         StatisticOverViewDialog dialog =  new StatisticOverViewDialog(context.getWorkbenchFrame(), this.getName(), false, features);
         
         dialog.setVisible(true);

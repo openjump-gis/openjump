@@ -96,6 +96,17 @@ public class StatisticOverViewTableModel  extends StandardPirolTableModel {
     }
 
     protected void addRow(String attrName, AttributeType type, Double minVal, Object mean, Double maxVal, Double deviation, Double sum){
+        // justification : if any value is non-null,
+        // then minValue != MAX_VALUE or maxValue != MIN_VALUE
+        // Consequently, attribute is Numeric (min!=null) and all values are null
+        if (minVal != null && minVal.doubleValue() == Double.MAX_VALUE
+            && maxVal != null && maxVal == -Double.MAX_VALUE) {
+            minVal = null;
+            maxVal = null;
+            sum = null;
+            deviation = null;
+            mean = null;
+        }
         this.addRow(new Object[]{attrName, type, minVal, mean, maxVal, deviation, sum});
     }
     
