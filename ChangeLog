@@ -1,4 +1,4 @@
-2011-04-04 mmichaud <michael.michaud@free.fr>
+2011-04-05 mmichaud <michael.michaud@free.fr>
     * org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewPlugIn
       Fix bug 3229892 throwing NPE while processing an empty layer
     * org.openjump.core.ui.plugin.tools.analysis.onelayer.MergeSelectedPolygonsWithNeighbourPlugIn
