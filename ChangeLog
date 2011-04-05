@@ -1,4 +1,11 @@
 2011-04-04 mmichaud <michael.michaud@free.fr>
+    * org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewPlugIn
+      Fix bug 3229892 throwing NPE while processing an empty layer
+    * org.openjump.core.ui.plugin.tools.analysis.onelayer.MergeSelectedPolygonsWithNeighbourPlugIn
+      Fix bug 3060942 : merge selected polygons with adjacent polygons having the
+      largest area was not working because it tried to merge polygons with themselves
+
+2011-04-04 mmichaud <michael.michaud@free.fr>
     * org.openjump.core.ui.plugin.datastore.RefreshDataStoreQueryPlugIn
       Fix bug 3261222 : refreshed DataStoreQueryLayer is no more tagged modified
     
