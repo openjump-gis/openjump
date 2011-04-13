@@ -510,10 +510,12 @@ public class JUMPConfiguration implements Setup {
                 false, GUIUtil.toSmallIcon(changeStylesPlugIn.getIcon()),
                 changeStylesPlugIn.createEnableCheck(workbenchContext));
         featureInstaller.addPopupMenuItem(layerNamePopupMenu, copyStylesPlugIn,
-                new String[]{MenuNames.STYLE}, copyStylesPlugIn.getName(), false, null,
+                new String[]{MenuNames.STYLE}, copyStylesPlugIn.getName(),
+                false, GUIUtil.toSmallIcon(changeStylesPlugIn.getIcon()),
                 CopyStylesPlugIn.createEnableCheck(workbenchContext));
         featureInstaller.addPopupMenuItem(layerNamePopupMenu, pasteStylesPlugIn,
-                new String[]{MenuNames.STYLE}, pasteStylesPlugIn.getName(), false, null,
+                new String[]{MenuNames.STYLE}, pasteStylesPlugIn.getName(),
+                false, GUIUtil.toSmallIcon(changeStylesPlugIn.getIcon()),
                 PasteStylesPlugIn.createEnableCheck(workbenchContext));
 
         featureInstaller.addPopupMenuItem(layerNamePopupMenu,
