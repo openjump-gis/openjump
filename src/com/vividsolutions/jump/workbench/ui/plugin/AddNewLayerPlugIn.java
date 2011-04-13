@@ -59,7 +59,7 @@ public class AddNewLayerPlugIn extends AbstractPlugIn {
                                                .getSelectedCategories();
         context.addLayer(selectedCategories.isEmpty()
             ? StandardCategoryNames.WORKING
-            : selectedCategories.iterator().next().toString(), I18N.get("ui.plugin.AddNewFLayerPlugIn.new"),
+            : selectedCategories.iterator().next().toString(), I18N.get("ui.plugin.AddNewLayerPlugIn.new"),
             createBlankFeatureCollection()).setFeatureCollectionModified(false)
                .setEditable(true);
         ((EditingPlugIn) context.getWorkbenchContext().getBlackboard().get(EditingPlugIn.KEY)).getToolbox(context.getWorkbenchContext())

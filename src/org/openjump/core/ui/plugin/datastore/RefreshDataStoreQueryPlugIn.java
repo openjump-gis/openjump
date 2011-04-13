@@ -2,12 +2,9 @@ package org.openjump.core.ui.plugin.datastore;
 
 import com.vividsolutions.jump.coordsys.CoordinateSystemRegistry;
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.io.datasource.DataSourceQuery;
-import com.vividsolutions.jump.task.DummyTaskMonitor;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.Layerable;
-import com.vividsolutions.jump.workbench.model.LayerEventType;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
@@ -20,6 +17,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.OpenProjectPlugIn;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import javax.swing.ImageIcon;
 import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
 import org.openjump.core.ui.images.IconLoader;
 
 /**
@@ -55,17 +53,23 @@ public class RefreshDataStoreQueryPlugIn extends ThreadedBasePlugIn {
     
     public void run(TaskMonitor monitor, final PlugInContext context) throws Exception {
         Layer[] selectedLayers = context.getSelectedLayers();
-	    for (Layer layer : selectedLayers) {
+	    for (final Layer layer : selectedLayers) {
 	        OpenProjectPlugIn.load(layer,
                 CoordinateSystemRegistry.instance(context.getWorkbenchContext().getBlackboard()),
                 monitor);
-	    }
-	    for (Layer layer : selectedLayers) {
-	        layer.setFeatureCollectionModified(false);
+            // setFeatureCollectionModified(false) must be set after fireFeaturesChanged
+            // As in Layer.setFeatureCollection method, fireFeaturesChanged is
+            // called in an invokeLater thread, setFeatureCollectionModified
+            // must also be called in an invokeLater clause.
+            SwingUtilities.invokeLater(new Runnable() {
+				public void run() {layer.setFeatureCollectionModified(false);}
+            });
 	    }
     }
 
     /**
+     * Creates an EnableCheck object to enable the plugin if a project is active
+     * and if only layers connected to a DataStoreQueryDataSource are selected.
      * @param workbenchContext
      * @return an enable check
      */

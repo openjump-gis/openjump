@@ -1,12 +1,9 @@
 package org.openjump.core.ui.plugin.datastore;
 
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.io.datasource.DataSourceQuery;
-import com.vividsolutions.jump.task.DummyTaskMonitor;
 import com.vividsolutions.jump.workbench.datastore.ConnectionDescriptor;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.Layerable;
-import com.vividsolutions.jump.workbench.model.LayerEventType;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
@@ -23,7 +20,6 @@ import java.util.Collection;
 import java.util.Map;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
-import javax.swing.JComboBox;
 import javax.swing.JPopupMenu;
 import org.openjump.core.ui.images.IconLoader;
 
@@ -31,7 +27,7 @@ import org.openjump.core.ui.images.IconLoader;
  * <code>EditDatastoreQueryPlugIn</code> load the query used to create a layer
  * in the RunDatastoreQueryPanel.
  *
- * @author <a href="mailto:michael.michaud@free.fr">Michaël Michaud</a>
+ * @author <a href="mailto:michael.michaud@free.fr">Micha&euml;l Michaud</a>
  */
 public class EditDataStoreQueryPlugIn extends RunDatastoreQueryPlugIn {
 
@@ -64,17 +60,19 @@ public class EditDataStoreQueryPlugIn extends RunDatastoreQueryPlugIn {
         RunDatastoreQueryPanel panel = (RunDatastoreQueryPanel)panel(context);
         panel.populateConnectionComboBox();
         panel.setQuery((String)properties.get(SQL_QUERY_KEY));
+        panel.setLayerName(context.getLayerManager().uniqueLayerName(layer.getName()));
         OKCancelDialog dlg = getDialog(context);
         dlg.setVisible(true);
         return dlg.wasOKPressed();
     }
     
-    protected ConnectionPanel createPanel(PlugInContext context) {
+    protected ConnectionPanel createPanel(final PlugInContext context) {
         
         final ConnectionDescriptor connectionDescriptor =
             (ConnectionDescriptor)properties.get(CONNECTION_DESCRIPTOR_KEY);
         
         RunDatastoreQueryPanel panel = new RunDatastoreQueryPanel(context.getWorkbenchContext()) {
+            
             public void populateConnectionComboBox() {
                 Collection descriptors = connectionDescriptors();
                 if (!descriptors.contains(connectionDescriptor)) {
@@ -83,10 +81,11 @@ public class EditDataStoreQueryPlugIn extends RunDatastoreQueryPlugIn {
                 getConnectionComboBox().setModel(new DefaultComboBoxModel(
                     sortByString(descriptors.toArray())));
                 getConnectionComboBox().setSelectedItem(connectionDescriptor);
-                setQuery((String)properties.get(SQL_QUERY_KEY));
+                //setQuery((String)properties.get(SQL_QUERY_KEY));
+                //setLayerName(context.getLayerManager().uniqueLayerName(
+                //    context.getLayerNamePanel().getSelectedLayers()[0].getName()));
             }
         };
-        //panel.setQuery((String)properties.get(SQL_QUERY_KEY));
         return panel;
     }
 

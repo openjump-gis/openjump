@@ -33,15 +33,16 @@ public class RefreshDataStoreLayerPlugin extends AbstractPlugIn {
             new EnableCheck() {
                 public String check(JComponent component) {
                     DataSourceQuery dsq =  context.getLayerNamePanel().getSelectedLayers()[0].getDataSourceQuery();
-                    if(dsq!=null){
-                    	return dsq.getDataSource() == null?I18N.get("ui.plugin.datastore.RefreshDataStoreLayerPlugin.Layer-must-have-a-Data-Source"):
+                    if(dsq != null){
+                    	return dsq.getDataSource() == null ?
+                    	    I18N.get("ui.plugin.datastore.RefreshDataStoreLayerPlugin.Layer-must-have-a-Data-Source"):
                     		dsq.getDataSource() instanceof DataStoreDataSource?null:I18N.get("ui.plugin.datastore.RefreshDataStoreLayerPlugin.Layer-must-be-a-DataStore");
                     }else{
                     	return I18N.get("ui.plugin.datastore.RefreshDataStoreLayerPlugin.Layer-must-have-a-Data-Source");
                     }
                 }
             }
-            );
+        );
         return mec;
     }
     
@@ -56,12 +57,10 @@ public class RefreshDataStoreLayerPlugin extends AbstractPlugIn {
     			fcw = (FeatureCollectionWrapper)fc;
     	}
     	
-    	
     	if(fcw != null){
     		// must be a cache
     		CachingFeatureCollection cfc = (CachingFeatureCollection)fcw;
     		cfc.emptyCache();
-    		
     		context.getLayerManager().fireLayerChanged(layer,LayerEventType.APPEARANCE_CHANGED);
     	}
     	
