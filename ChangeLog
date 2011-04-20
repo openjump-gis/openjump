@@ -6,6 +6,8 @@
     * Small improvements of RunDataStoreQueryPanel : remove the option to set
       Max Features (can be set with a limit SQL clause) and add a textField to
       input the Layer Name
+    * Can now persist editable, selectable and readonly attributes in the
+      project (bug id 2680312)
 
 2011-04-05 mmichaud <michael.michaud@free.fr>
     * org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewPlugIn
