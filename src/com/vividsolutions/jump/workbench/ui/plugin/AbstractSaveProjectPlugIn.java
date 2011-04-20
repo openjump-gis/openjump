@@ -98,7 +98,8 @@ public abstract class AbstractSaveProjectPlugIn extends AbstractPlugIn {
                 Layer ignoredLayer = (Layer) ignoredLayers.get(i);
 
                 if (i > 0) {
-                    warning += "; ";
+                    //warning += "; ";
+                    warning += "\n";
                 }
 
                 warning += ignoredLayer.getName();
@@ -106,11 +107,12 @@ public abstract class AbstractSaveProjectPlugIn extends AbstractPlugIn {
             
             warning += " ("+I18N.get("ui.plugin.AbstractSaveProjectPlugIn.data-source-is-write-only")+")";
 
-            frame.warnUser(warning);
+            //frame.warnUser(warning);
+            frame.log(warning);
         }
     }
 
-    private Collection ignoredLayers(Task task) {
+    protected Collection ignoredLayers(Task task) {
         ArrayList ignoredLayers = new ArrayList();
 
         for (Iterator i = task.getLayerManager().getLayers().iterator();
@@ -124,4 +126,5 @@ public abstract class AbstractSaveProjectPlugIn extends AbstractPlugIn {
 
         return ignoredLayers;
     }
+
 }

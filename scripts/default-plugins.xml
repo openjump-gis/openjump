@@ -3,6 +3,7 @@
 	<!--  			menu FILE 						/-->
 	<!--- ========================================= /-->	
 	<plug-in>org.openjump.core.ui.plugin.file.SaveImageAsSVGPlugIn</plug-in>
+	<!--plug-in>org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn</plug-in-->
 	<!---  ======================================== /-->
 	<!--  			menu EDIT 						/-->
 	<!--- ========================================= /-->

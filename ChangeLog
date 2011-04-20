@@ -1,3 +1,7 @@
+2011-04-20 mmichaud <michael.michaud@free.fr>
+    * added org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn
+      the plugin is deactivated by default but it is called by SaveProjectAsPlugIn
+      
 2011-04-13 mmichaud <michael.michaud@free.fr>
     * Small improvements of RunDataStoreQueryPanel : remove the option to set
       Max Features (can be set with a limit SQL clause) and add a textField to
