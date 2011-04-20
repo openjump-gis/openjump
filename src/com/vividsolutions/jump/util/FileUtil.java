@@ -204,5 +204,20 @@ public class FileUtil {
         path += extension;
         return new File(path);
     }
+    
+    public static File removeExtensionIfAny(File file) {
+        int i = file.getName().lastIndexOf('.');
+        if (i > 0) {
+            String path = file.getAbsolutePath();
+            path = path.substring(0, path.length()-file.getName().length()+i);
+            return new File(path);
+        }
+        else return file;
+    }
+    
+    public static String getFileNameFromLayerName(String layerName) {
+        return layerName.replaceAll("[/\\\\\\?%\\*:\\|\"<> ]+","_")
+                        .replaceAll("^_","").replaceAll("_$","");
+    }
 
 }
