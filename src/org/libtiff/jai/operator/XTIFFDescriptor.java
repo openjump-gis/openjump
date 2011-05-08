@@ -47,7 +47,7 @@ import javax.media.jai.JAI;
 /** XTIFFDescriptor: A single class that is both an OperationDescriptor and
  * a RenderedImageFactory for overriding the JAI "tiff" operation.
  * @see XTIFFDirectory
- * @see XTIFFTileCodecImpl
+ * @see org.libtiff.jai.codec.XTIFFTileCodecImpl
  */
 
 public class  XTIFFDescriptor extends OperationDescriptorImpl

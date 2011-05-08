@@ -33,7 +33,7 @@ public class DbfFieldDef implements DbfConsts{
    * Sets up the Dbf field definition. For compatibilty reasons, this method is
    * is now a wrapper for the changed/new one with Charset functions.
    *
-   * @see setup(int pos, EndianDataInputStream dFile, Charset charset)
+   * @see #setup(int pos, EndianDataInputStream dFile, Charset charset)
    * 
    * @param pos
    * @param dFile

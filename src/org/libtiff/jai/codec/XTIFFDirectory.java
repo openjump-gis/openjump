@@ -50,14 +50,13 @@ import com.sun.media.jai.codec.SeekableStream;
  * to survive as an instantiated property of the RenderedImage.
  *
  * @author Niles Ritter
- * @see XTIFFDescriptor
+ * @see org.libtiff.jai.operator.XTIFFDescriptor
  * @see XTIFFField
  * @see XTIFFTileCodec
  * @see XTIFFFactory
  */
-public class XTIFFDirectory extends Object 
-implements java.io.Serializable
-{
+public class XTIFFDirectory extends Object implements java.io.Serializable {
+    
     private int imageType;
 
 	/** default directory factory */
@@ -88,14 +87,13 @@ implements java.io.Serializable
 	 * If true this image uses TIFF 6.0 tiling
 	 */
     public boolean isTiled() {
-	return _isTiled;
+	    return _isTiled;
     }
 
 	/**
 	 * reads the TIFF header. Not likely to be overridden.
 	 */
-    protected void readHeader() throws IOException
-    {
+    protected void readHeader() throws IOException {
 
         // Read the TIFF header
         stream.seek(0L);
@@ -106,7 +104,7 @@ implements java.io.Serializable
         }
         isBigEndian = (endian == 0x4d4d);
 
-	// Verify that Douglas Addams still has influence in software:
+	    // Verify that Douglas Addams still has influence in software:
         int magic = readUnsignedShort(stream);
         if (magic != 42) {
             throw new 
@@ -132,7 +130,7 @@ implements java.io.Serializable
         long global_save_offset = stream.getFilePointer();
         long ifd_offset;
 
-	readHeader();
+	    readHeader();
 
         // Get the initial ifd offset as an unsigned int (using a long)
         ifd_offset = readUnsignedInt(stream);
@@ -170,7 +168,7 @@ implements java.io.Serializable
         this.stream = stream;
         long global_save_offset = stream.getFilePointer();
 
-	readHeader();
+	    readHeader();
 
         stream.seek(ifd_offset);
         initialize();
@@ -202,10 +200,8 @@ implements java.io.Serializable
 	 * @see XTIFFField
 	 * @see XTIFFFactory
 	 */
-    public int sizeOfType(int type) 
-       throws  ArrayIndexOutOfBoundsException 
-    {
-	return _sizeOfType[type];
+    public int sizeOfType(int type) throws  ArrayIndexOutOfBoundsException {
+        return _sizeOfType[type];
     }
 
 	/**
@@ -218,7 +214,7 @@ implements java.io.Serializable
 	 * @see XTIFF
 	 */
     public void addField(int tag,int type,int count,Object obj) {
-	addField( factory.createField(tag,type,count,obj));
+        addField( factory.createField(tag,type,count,obj));
     }
 	/**
 	 * Create a TIFF field 
@@ -229,13 +225,13 @@ implements java.io.Serializable
 	 * @see XTIFFField
 	 * @see XTIFF
 	 */
-    public static XTIFFField createField(int tag,int type,int count,Object obj){
+    public static XTIFFField createField(int tag, int type, int count, Object obj){
 	return factory.createField(tag,type,count,obj);
     }
 
 	/**
 	 * Add an existing TIFF field to this directory.
-	 * @param type the XTIFFField type code
+	 * @param field the XTIFFField type code
 	 * @see XTIFFField
 	 */
     public void addField( XTIFFField field ) {
@@ -246,7 +242,7 @@ implements java.io.Serializable
 	 * Initialize the directory from a stream
 	 */
     protected void initialize() throws IOException {
-	XTIFFField field;
+        XTIFFField field;
         long nextTagOffset;
 
         int numEntries = readUnsignedShort(stream);
@@ -872,10 +868,10 @@ implements java.io.Serializable
 	 * sample model to use. The types are enumerated in
 	 * the XTIFF class.
 	 * @see XTIFF
-	 * @see XTIFFImage
+	 * @see org.libtiff.jai.codecimpl.XTIFFImage
 	 * @see XTIFFTileCodec
 	 */
     public void setImageType(int image_type) {
-	imageType=image_type;
+        imageType=image_type;
     }
 }

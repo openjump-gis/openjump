@@ -1068,7 +1068,7 @@ public class FeatureCollectionTools extends ToolToMakeYourLifeEasier {
      * are ordered the same way as in the input list.
      * TODO: this method has been tested only briefly (not exhaustively)
      * @param features
-     * @param attributeNameForSorting, attribute needs to be either Integer or Double 
+     * @param attributeNameForSorting attribute needs to be either Integer or Double 
      * @return list of sorted features; the smallest value will be first in the list.
      */
     public static ArrayList<Feature> sortFeatureListByAttributeBeginWithSmallest(

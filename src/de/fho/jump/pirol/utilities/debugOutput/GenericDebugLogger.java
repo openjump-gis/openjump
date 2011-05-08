@@ -34,7 +34,7 @@ import de.fho.jump.pirol.utilities.settings.PirolPlugInSettings;
  * 
  * @version $Rev$
  * 
- * @see de.fho.jump.pirol.utilities.PirolPlugInSettings
+ * @see de.fho.jump.pirol.utilities.settings.PirolPlugInSettings
  * @see PersonalLogger
  */
 public final class GenericDebugLogger {

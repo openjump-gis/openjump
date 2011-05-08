@@ -46,9 +46,10 @@ import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 
 /**
  * 
- * @TODO :I18N
+ * TODO : I18N
  */
 public class TaskMonitorManager {
+    
 	public TaskMonitorManager() {
 	}
 
