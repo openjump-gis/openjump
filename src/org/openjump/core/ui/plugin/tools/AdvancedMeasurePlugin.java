@@ -12,7 +12,7 @@ import com.vividsolutions.jump.workbench.ui.OptionsDialog;
  * @version 0.1
  */
 public class AdvancedMeasurePlugin extends AbstractPlugIn {
-
+    
 	AdvancedMeasureTool advancedMeasureTool;
 
 	@Override

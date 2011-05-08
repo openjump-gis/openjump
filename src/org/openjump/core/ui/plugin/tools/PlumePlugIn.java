@@ -56,9 +56,9 @@ import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.SelectionManagerProxy;
 
 public class PlumePlugIn extends AbstractPlugIn {
+    
 	private WorkbenchContext workbenchContext;
 
-	private final static String sPlumeTool = I18N.get("org.openjump.core.ui.plugin.tools.PlumePlugIn.Plume");
 	private final static String sNew = I18N.get("org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn.New");
 	private final static String sTheradius = I18N.get("org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn.The-arc-radius");
 	private final static String selectLineStrings = I18N.get("ui.cursortool.SelectLineStringsTool.select-linestrings");
@@ -68,18 +68,12 @@ public class PlumePlugIn extends AbstractPlugIn {
 	private double radius1 = 5.0;
 	private double radius2 = 50.0;
 
-	public void initialize(PlugInContext context) throws Exception
-	{     
+	public void initialize(PlugInContext context) throws Exception {     
 		workbenchContext = context.getWorkbenchContext();
 		context.getFeatureInstaller().addMainMenuItemWithJava14Fix(this, new String[] { MenuNames.TOOLS, MenuNames.TOOLS_GENERATE }, getName()+"...", false, null, this.createEnableCheck(workbenchContext));
 	}
 
-	public String getName() {
-		return sPlumeTool;
-	}
-
-	public boolean execute(final PlugInContext context) throws Exception
-	{
+	public boolean execute(final PlugInContext context) throws Exception {
 		reportNothingToUndoYet(context);
 		Collection selectedFeatures = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems();
 
@@ -122,8 +116,7 @@ public class PlumePlugIn extends AbstractPlugIn {
 	}
 
 
-	private void setDialogValues(MultiInputDialog dialog, PlugInContext context)
-	{
+	private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
 		dialog.addDoubleField(RADIUS1, radius1, 6, sTheradius);
 		dialog.addDoubleField(RADIUS2, radius2, 6, sTheradius);
 	}
@@ -142,10 +135,10 @@ public class PlumePlugIn extends AbstractPlugIn {
 		.add(onlyOneLinestringMayBeSelected(workbenchContext));
 	}
 
-	  public EnableCheck onlyOneLinestringMayBeSelected(final WorkbenchContext workbenchContext) {
-	        return new EnableCheck() {
-	            public String check(JComponent component) {
-		           Collection selectedItems = ((SelectionManagerProxy) workbenchContext
+	public EnableCheck onlyOneLinestringMayBeSelected(final WorkbenchContext workbenchContext) {
+	    return new EnableCheck() {
+	        public String check(JComponent component) {
+		        Collection selectedItems = ((SelectionManagerProxy) workbenchContext
 	                            .getWorkbench()
 	                            .getFrame()
 	                            .getActiveInternalFrame())
@@ -153,8 +146,8 @@ public class PlumePlugIn extends AbstractPlugIn {
 	                            .getSelectedItems();	            
 	            if ((Geometry) selectedItems.iterator().next() instanceof LineString) return null;
 	            return selectLineStrings;
-	            }
-	        };
-	    }
+	        }
+	    };
+	}
 
 }

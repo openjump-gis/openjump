@@ -56,6 +56,7 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -79,6 +80,7 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.TreeLayerNamePanel;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
+import org.openjump.core.ui.images.IconLoader;
 
 /**
  * ... 
@@ -118,10 +120,15 @@ public class SaveLegendPlugIn extends AbstractPlugIn {
                         .createWindowWithLayerManagerMustBeActiveCheck()).add(
                 enableCheckFactory.createExactlyNLayersMustBeSelectedCheck(1));
         
-        new FeatureInstaller(context.getWorkbenchContext())
-        .addMainMenuItemWithJava14Fix(this, new String[]{MenuNames.LAYER},
-                this.getName() + "...", false, null, enableCheck);
-	}    
+        context.getFeatureInstaller().addPopupMenuItem(
+            context.getWorkbenchFrame().getLayerNamePopupMenu(),
+            this, new String[]{MenuNames.STYLE},
+            this.getName() + "...", false, getIcon(), enableCheck);
+	}
+	
+	public ImageIcon getIcon() {
+        return IconLoader.icon("save_legend.png");
+    }
 	
 	public boolean execute(PlugInContext context) throws Exception {
 		

@@ -102,8 +102,6 @@ public class AdvancedMeasureTool extends PolygonTool implements ActionListener {
 
 	/**
 	 * Returns the Icon depending on the measureMode.
-	 *
-	 * @return
 	 */
 	public Icon getIcon() {
 		String iconName = "Ruler.gif";

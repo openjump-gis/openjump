@@ -511,11 +511,11 @@ public class JUMPConfiguration implements Setup {
                 changeStylesPlugIn.createEnableCheck(workbenchContext));
         featureInstaller.addPopupMenuItem(layerNamePopupMenu, copyStylesPlugIn,
                 new String[]{MenuNames.STYLE}, copyStylesPlugIn.getName(),
-                false, GUIUtil.toSmallIcon(changeStylesPlugIn.getIcon()),
+                false, GUIUtil.toSmallIcon(copyStylesPlugIn.getIcon()),
                 CopyStylesPlugIn.createEnableCheck(workbenchContext));
         featureInstaller.addPopupMenuItem(layerNamePopupMenu, pasteStylesPlugIn,
                 new String[]{MenuNames.STYLE}, pasteStylesPlugIn.getName(),
-                false, GUIUtil.toSmallIcon(changeStylesPlugIn.getIcon()),
+                false, GUIUtil.toSmallIcon(pasteStylesPlugIn.getIcon()),
                 PasteStylesPlugIn.createEnableCheck(workbenchContext));
 
         featureInstaller.addPopupMenuItem(layerNamePopupMenu,
@@ -698,7 +698,7 @@ public class JUMPConfiguration implements Setup {
         		saveImageAsPlugIn, 
         	      new String[] {
         		          MenuNames.FILE, MenuNames.FILE_SAVEVIEW
-        		        }, saveImageAsPlugIn.getName(), 
+        		        }, saveImageAsPlugIn.getName() + "...", 
 				false,
 				null, 
 				SaveImageAsPlugIn.createEnableCheck(workbenchContext));    
@@ -751,7 +751,7 @@ public class JUMPConfiguration implements Setup {
 		//-- VIEW        
         editingPlugIn.createMainMenuItem(new String[] { MenuNames.VIEW}, GUIUtil
                 .toSmallIcon(EditingPlugIn.ICON), workbenchContext);
-        featureInstaller.addMainMenuItemWithJava14Fix(copyImagePlugIn, new String[]{MenuNames.VIEW},
+        featureInstaller.addMainMenuItemWithJava14Fix(copyImagePlugIn, new String[]{MenuNames.FILE},
                 copyImagePlugIn.getName(), false, copyImagePlugIn.ICON, CopyImagePlugIn
                         .createEnableCheck(workbenchContext));        
         featureInstaller.addMenuSeparator(MenuNames.VIEW); // ===================
