@@ -53,61 +53,58 @@ import com.vividsolutions.jts.geom.*;
  * @author Martin Davis
  * @version 1.0
  */
-public class MetricsLineStringSegmentStyle extends LineStringSegmentStyle
-{
-  public final static int FONT_BASE_SIZE = 10;
-  private Font font = new Font("Dialog", Font.PLAIN, FONT_BASE_SIZE);
+public class MetricsLineStringSegmentStyle extends LineStringSegmentStyle {
+    
+    public final static int FONT_BASE_SIZE = 10;
+    private Font font = new Font("Dialog", Font.PLAIN, FONT_BASE_SIZE);
 
-  /**
-   * @param finAngle degrees
-   * @param finLength pixels
-   */
-  public MetricsLineStringSegmentStyle(String name, String iconFile) {
-    super(name, IconLoader.icon(iconFile));
-  }
-
-  protected void paint(Coordinate p0, Coordinate p1, Viewport viewport,
-                       Graphics2D graphics) throws Exception
-  {
-    String lenStr = Double.toString(p0.distance(p1));
-    double ang = Math.toDegrees(
-        Math.atan2(p1.y - p0.y,
-        p1.x - p0.x));
-    String angStr = Double.toString(ang);
-    String text = lenStr + " / " + angStr;
-
-    paint(text,
-          viewport.toViewPoint(new Point2D.Double(p0.x, p0.y)),
-          viewport.toViewPoint(new Point2D.Double(p1.x, p1.y)), viewport,
-          graphics);
-  }
-
-  private void paint(String text, Point2D p0, Point2D p1, Viewport viewport,
-                       Graphics2D g) throws NoninvertibleTransformException {
-    if (p0.equals(p1)) {
-      return;
+    /**
+     * @param name style name
+     * @param iconFile style icon
+     */
+    public MetricsLineStringSegmentStyle(String name, String iconFile) {
+        super(name, IconLoader.icon(iconFile));
     }
 
-    Point2D mid = new Point2D.Float( (float) ((p0.getX() + p1.getX()) / 2),
-                                     (float) ((p0.getY() + p1.getY()) / 2) );
+    protected void paint(Coordinate p0, Coordinate p1, Viewport viewport,
+                         Graphics2D graphics) throws Exception {
+        String lenStr = Double.toString(p0.distance(p1));
+        double ang = Math.toDegrees(Math.atan2(p1.y - p0.y, p1.x - p0.x));
+        String angStr = Double.toString(ang);
+        String text = lenStr + " / " + angStr;
 
-    g.setColor(Color.BLACK);
-    g.setStroke(stroke);
-
-    TextLayout layout = new TextLayout(text, font, g.getFontRenderContext());
-    layout.draw(g, (float) mid.getX(), (float) mid.getY());
-  }
-
-  protected void paint(Point2D p0, Point2D p1, Viewport viewport,
-                       Graphics2D g) throws NoninvertibleTransformException {
-    throw new UnsupportedOperationException("This method should never be called");
-  }
-
-  public static class LengthAngle extends MetricsLineStringSegmentStyle {
-    public LengthAngle() {
-      super(I18N.get("ui.renderer.style.MetricsLineStringSegmentStyle.Segment-Metrics"), "LengthAngleDecorator.gif");
+        paint(text,
+              viewport.toViewPoint(new Point2D.Double(p0.x, p0.y)),
+              viewport.toViewPoint(new Point2D.Double(p1.x, p1.y)),
+              viewport,
+              graphics);
     }
-  }
 
+    private void paint(String text, Point2D p0, Point2D p1, Viewport viewport,
+                       Graphics2D g) throws NoninvertibleTransformException {
+        if (p0.equals(p1)) {
+            return;
+        }
+
+        Point2D mid = new Point2D.Float((float) ((p0.getX() + p1.getX()) / 2),
+                                        (float) ((p0.getY() + p1.getY()) / 2));
+
+        g.setColor(Color.BLACK);
+        g.setStroke(stroke);
+
+        TextLayout layout = new TextLayout(text, font, g.getFontRenderContext());
+        layout.draw(g, (float) mid.getX(), (float) mid.getY());
+    }
+
+    protected void paint(Point2D p0, Point2D p1, Viewport viewport,
+                         Graphics2D g) throws NoninvertibleTransformException {
+        throw new UnsupportedOperationException("This method should never be called");
+    }
+
+    public static class LengthAngle extends MetricsLineStringSegmentStyle {
+        public LengthAngle() {
+            super(I18N.get("ui.renderer.style.MetricsLineStringSegmentStyle.Segment-Metrics"), "LengthAngleDecorator.gif");
+        }
+    }
 
 }

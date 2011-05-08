@@ -122,9 +122,6 @@ public class WorkbenchToolBar extends EnableableToolBar {
 	 * This is useful, if you want to add CursorTool with an own JToggleButton
 	 * implementation, such a DropDownToggleButton.
 	 * 
-	 * @param cursorTool
-	 * @param button
-	 * @return
 	 */
 	public ToolConfig addCursorTool(final CursorTool cursorTool, JToggleButton button) {
 		button.setToolTipText(cursorTool.getName());

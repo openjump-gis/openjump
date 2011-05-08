@@ -384,7 +384,7 @@ public class MultiInputDialog extends AbstractMultiInputDialog {
      * This helps to align JCheckBox label (text on the right of the CheckBox)
      * with other component labels (text on the left of the component).
      *
-     * @param fielName the field to indent
+     * @param fieldName the field to indent
      */
     public void indentLabel(String fieldName) {
         getLabel(fieldName).setBorder(

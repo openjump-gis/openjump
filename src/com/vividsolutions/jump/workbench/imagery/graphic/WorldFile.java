@@ -61,7 +61,7 @@ public class WorldFile {
 	 * wld: universal
 	 * 
 	 * @param file
-	 * @return
+	 * @return a WorldFile
 	 */
 	public static WorldFile read(File file) throws IOException{
 

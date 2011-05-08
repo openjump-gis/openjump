@@ -508,7 +508,6 @@ public abstract class AbstractMultiInputDialog extends JDialog {
      * @param fieldName field name of the control
      * @param initialValue initial value of the control
      * @param approxWidthInChars approximative width of the control in characters
-     * @param toolTipText tool tip to help the user
      * @return the JTextField control added to this dialog
      */
     public JTextField addDoubleField(String fieldName,
@@ -684,11 +683,11 @@ public abstract class AbstractMultiInputDialog extends JDialog {
     }
     
     /**
-     * Add a JComboBox containing editable layers of a LayerManager.
+     * Add a JComboBox containing layers containing the specified AttributeType.
      * @param fieldName field name of the control
-     * @param initialValue default layer visible in the combo box
      * @param toolTipText tool tip text associated with this combo box
      * @param layerManager the LayerManager providing layers to the combo box 
+     * @param filter a filter to select layers with specified AttributeTypes
      * @return the JComboBox
      */
     public JComboBox addLayerComboBox(String fieldName,
@@ -828,12 +827,12 @@ public abstract class AbstractMultiInputDialog extends JDialog {
     public JTextArea addTextAreaField(String fieldName,
                                       String initialValue,
                                       int rowNumber,
-                                      int colomnNumber,
+                                      int columnNumber,
                                       boolean scrollable,
                                       EnableCheck[] enableChecks,
                                       String toolTipText) {
         JComponent component;
-        JTextArea textArea = new JTextArea(initialValue, rowNumber, colomnNumber);
+        JTextArea textArea = new JTextArea(initialValue, rowNumber, columnNumber);
         if (scrollable) component = new JScrollPane(textArea);
         else component = textArea;
         addRow(fieldName, new JLabel(fieldName), component, enableChecks, toolTipText, LEFT_LABEL, HORIZONTAL);

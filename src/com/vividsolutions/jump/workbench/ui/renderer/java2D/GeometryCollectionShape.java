@@ -45,7 +45,7 @@ import java.util.Iterator;
 import com.vividsolutions.jump.I18N;
 /**
  * 
- * @TODO :I18N to finish
+ * TODO : I18N to finish
  */
 
 public class GeometryCollectionShape implements Shape {
@@ -71,12 +71,10 @@ public class GeometryCollectionShape implements Shape {
             }
         }
         return rectangle;   	
-//        throw new java.lang.UnsupportedOperationException(
-//            "Method getBounds() not yet implemented.");
     }
 
     public Rectangle2D getBounds2D() {
-//    	 LDB: Implemented for printing interface
+    //  LDB: Implemented for printing interface
         Rectangle2D rectangle = null;
 
         for (Iterator i = shapes.iterator(); i.hasNext();) {

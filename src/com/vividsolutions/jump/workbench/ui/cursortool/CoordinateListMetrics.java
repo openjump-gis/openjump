@@ -75,13 +75,13 @@ public class CoordinateListMetrics
   }
 
   /**
-   * Get's the the coordinates metrics with the option to compute the distance for
-   * a closed geometry.
+   * Get's the the coordinates metrics with the option to compute the distance
+   * for a closed geometry.
    *
    * @param coordinates
    * @param panel
    * @param closedDistance
-   * @return
+   * @return the String representing the geometry metrics
    */
   public String getMetricsString(List coordinates, LayerViewPanel panel, boolean closedDistance)
   {
@@ -108,7 +108,7 @@ public class CoordinateListMetrics
    *
    * @param coordinates
    * @param closedDistance
-   * @return
+   * @return the sum of the distance between coordinates 
    */
   public static double distance(List coordinates, boolean closedDistance)
   {

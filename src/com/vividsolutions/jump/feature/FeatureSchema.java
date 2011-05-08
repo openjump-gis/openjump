@@ -212,7 +212,7 @@ public class FeatureSchema implements Cloneable, Serializable {
 	 *            The index of the attribute in question.
 	 * @return <tt>TRUE</tt> if the specified attribute has been previously set
 	 *         as readonly.
-	 * @see {@link #setAttributeReadOnly(int, boolean)}
+	 * @see #setAttributeReadOnly(int, boolean)
 	 */
 	public boolean isAttributeReadOnly(int attributeIndex) {
 		return attributeReadOnly.get(attributeIndex);
@@ -233,7 +233,7 @@ public class FeatureSchema implements Cloneable, Serializable {
 	 * @param isReadOnly
 	 *            A flag that indicates whether the specified attribute should
 	 *            be considered "readonly".
-	 * @see {@link #isAttributeReadOnly(int)}
+	 * @see #isAttributeReadOnly(int)
 	 */
 	public void setAttributeReadOnly(int attributeIndex, boolean isReadOnly) {
 		attributeReadOnly.set(attributeIndex, isReadOnly);
