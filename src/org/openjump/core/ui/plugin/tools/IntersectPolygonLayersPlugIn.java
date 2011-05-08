@@ -1,3 +1,36 @@
+/*
+ * The Unified Mapping Platform (JUMP) is an extensible, interactive GUI 
+ * for visualizing and manipulating spatial features with geometry and attributes.
+ *
+ * JUMP is Copyright (C) 2003 Vivid Solutions
+ *
+ * This program implements extensions to JUMP and is
+ * Copyright (C) 2004 Integrated Systems Analysts, Inc.
+ * 
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * 
+ * For more information, contact:
+ *
+ * Integrated Systems Analysts, Inc.
+ * 630C Anchors St., Suite 101
+ * Fort Walton Beach, Florida
+ * USA
+ *
+ * (850)862-7321
+ */
+
 package org.openjump.core.ui.plugin.tools;
 
 import java.util.ArrayList;
@@ -38,16 +71,13 @@ import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 
 /**
  * @author sstein
- * @url www.openjump.org
- * @curentdate 4 May 2008
- * @license GPL2
- * @todo abstract methods to be able to intersect not only two polygon layers
+ * @version 4 May 2008
  * 
  * Merges/Intersects two polygon layers into one layer. It therefore calculates
  * all geometric intersections between the polygons. Afterwards the attributes
  * are transferred. The later step assumes that a new created intersection
  * polygon has at max only one correspondent polygon per layer.
- * 
+ * TODO : abstract methods to be able to intersect not only two polygon layers
  * TODO: translate Error messages
  * 
  */
@@ -302,7 +332,6 @@ public class IntersectPolygonLayersPlugIn extends ThreadedBasePlugIn {
 	/**
 	 * All values are set to NaN.
 	 * @param f
-	 * @return
 	 */
 	public static Feature resetFeatureValuesToNaN(Feature f){
 		//-- work only on a copy so the original feature isn't changed

@@ -19,7 +19,7 @@ package org.openjump.core.ui.swing;
  * <br>Subproject: Daten- und Wissensmanagement
  * 
  * @version $Rev: 1559 $
- * @see de.fho.jump.pirol.ui.eventHandling.OKCancelListener
+ * @see org.openjump.core.ui.swing.listener.OKCancelListener
  * 
  */
 public interface ValueChecker {

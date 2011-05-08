@@ -20,9 +20,10 @@ package org.openjump.core.apitools.comparisonandsorting;
  * Project PIROL 2005
  * Daten- und Wissensmanagement
  * 
- * @see PirolPoint
+ * @see org.openjump.core.graph.pirolProject.PirolPoint
  */
 public abstract class Sortable implements Comparable {
+    
 	protected int sortFor = CoordinateComparator.SORTFOR_X;
     
     public abstract int getSortFor();

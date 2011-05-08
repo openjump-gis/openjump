@@ -293,7 +293,7 @@ public class Classifier1D {
      * can be classified into 2 classes. 
      * @param data
      * @param numberClasses
-     * @param initialLimitAlgorithm: 1: maxBreaks, 2: equalRange, 3: quantiles, 4: MeanStd-Dev 5: Jenks
+     * @param initialLimitAlgorithm 1: maxBreaks, 2: equalRange, 3: quantiles, 4: MeanStd-Dev 5: Jenks
      * @return break values for classes. E.g. for 4 ranges 3 breaks are returned. Min and Max Values are not returned.   
      */
     public static double[] classifyKMeansOnExistingBreaks(double[] data, int numberClasses, int initialLimitAlgorithm){
@@ -361,7 +361,7 @@ public class Classifier1D {
      * Stork 2000, p. 526).   
      * @param data (sortedData from min to max, e.g. use jmathtools DoubleArray.sort())
      * @param oldLimits
-     * @return
+     * @return a double array of adjusted limits
      */
     public static double[] adjustLimitsKMeans(double[] data, double[] oldLimits){
         double[] newLimits = new double[oldLimits.length];        
@@ -423,7 +423,7 @@ public class Classifier1D {
     /**
      * Classifies the given data according to the given limits. 
      * @param data
-     * @param limits: The break/decision values between the classes. Highest and lowest values
+     * @param limits The break/decision values between the classes. Highest and lowest values
      *          are not delivered. Example Limits are for instance delivered by the  
      *          Classifier1D.classifyEqualNumber() method.
      * @return array containg a class ID for every item.
@@ -472,7 +472,7 @@ public class Classifier1D {
      * @param val
      * @param lowerBound
      * @param upperBound
-     * @return
+     * @return true if val is included between lowerBound (included) and upperBound (included)
      */
     public static boolean isInClass(double val, double lowerBound, double upperBound){
         boolean isInClass = false;
@@ -489,7 +489,7 @@ public class Classifier1D {
      * alternatively look for T.A. Slocum (1999, p. 73). \n
      * Used for Optimal Breaks Method.
      * @param data
-     * @return
+     * @return the squared deviation from double array mean
      */
     public static double calcSDAM(double[] data){
         double meanAll =  StatisticSample.mean(data);
@@ -505,11 +505,11 @@ public class Classifier1D {
      * SDCM (squared deviations [from] class means): see B.D. Dent (1999, p. 148)
      * alternatively look for T.A. Slocum (1999, p. 73). \n
      * Used for Optimal Breaks Method.
+     * TODO : definition of SDCM (relative to SDAM)
      * @param data
-     * @param classes: the classes for every item of the data array
+     * @param classes the classes for every item of the data array
      * @param classMeans
      * @param numClasses
-     * @return
      */
     public static double calcSDCM(double[] data, int[] classes, double[] classMeans, int numClasses){
         
@@ -532,9 +532,9 @@ public class Classifier1D {
      * GVF (goodness of variance fit): see B.D. Dent (1999, p. 148)
      * alternatively look for T.A. Slocum (1999, p. 73). \n
      * Used for Optimal Breaks Method.
-     * @param SDAM: squared deviation [from] array mean
-     * @param SDCM: squared deviation [from] class mean
-     * @return
+     * @param SDAM squared deviation [from] array mean
+     * @param SDCM squared deviation [from] class mean
+     * @return the Goodness of Variant Fit for a particular SDAM and SDCM
      */
     public static double calcGVF(double SDAM, double SDCM){
         double gvf = (SDAM - SDCM) / SDAM;
@@ -546,11 +546,10 @@ public class Classifier1D {
      * alternatively look for T.A. Slocum (1999, p. 73). \n
      * Used for Optimal Breaks Method.
      * @param data
-     * @param limits: The break/decision values between the classes. Highest and lowest values
+     * @param limits The break/decision values between the classes. Highest and lowest values
      *          are not delivered. Example Limits are for instance delivered by the  
      *          Classifier1D.classifyEqualNumber() method.
-     * @param SDAM: squared deviation [from] array mean
-     * @return
+     * @param SDAM squared deviation [from] array mean
      */
     public static double calcGVF(double[] data, double[] limits, double SDAM){
         int numberClasses = limits.length+1;
@@ -567,10 +566,9 @@ public class Classifier1D {
 
     /**
      * 
-     * @param data
-     * @param classes: the vector containing the information on the class for an item
-     * @param numClasses: the number of classes
-     * @return
+     * @param data input data
+     * @param classes the vector containing the information on the class for an item
+     * @param numClasses the number of classes
      */
     public static double[] calcClassMeans(double[] data, int[] classes, int numClasses){
         

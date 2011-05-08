@@ -59,12 +59,11 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 /**
  * 
-* @author Erwan Bocher Laboratoire RESO UMR CNRS 6590
-* @see <a href="http://www.projet-sigle.org">projet-sigle</a>
-* curentdate 25 juil. 06
-* license Licence CeCILL http://www.cecill.info/
-*
-*/
+ * @author Erwan Bocher Laboratoire RESO UMR CNRS 6590
+ * @version 25 juil. 06
+ *
+ * license Licence CeCILL http://www.cecill.info/
+ */
 
 public class ReplaceValuePlugIn
     extends AbstractPlugIn

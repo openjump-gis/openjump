@@ -96,9 +96,11 @@ public class FeatureSchemaTools extends ToolToMakeYourLifeEasier {
     }
 
     /**
-     * copy/clone the input featureSchema since it is not proper implemented in Jump 
+     * copy/clone the input featureSchema since it is not proper implemented in Jump
+     * Note : FeatureSchema has now a proper deep clone implementation
+     * @deprecated
      * @param oldSchema
-     * @return
+     * @return a new FeatureSchema cloned from oldSchema
      */
     public static FeatureSchema copyFeatureSchema(FeatureSchema oldSchema){
         FeatureSchema fs = new FeatureSchema();
@@ -106,6 +108,7 @@ public class FeatureSchemaTools extends ToolToMakeYourLifeEasier {
             AttributeType at = oldSchema.getAttributeType(i);
             String aname = oldSchema.getAttributeName(i);
             fs.addAttribute(aname,at);
+            fs.setAttributeReadOnly(i, oldSchema.isAttributeReadOnly(i));
             fs.setCoordinateSystem(oldSchema.getCoordinateSystem());            
         }       
         return fs;
@@ -114,8 +117,9 @@ public class FeatureSchemaTools extends ToolToMakeYourLifeEasier {
     /**
      * copy the input feature to a new Schema whereby the new 
      * Feature Schema must be an extended or shortened one 
-     * @param oldSchema
-     * @return Feature
+     * @param feature the feature to copy from
+     * @param newSchema the schema to copy to
+     * @return a new feature which is a copy of feature in the new Schema
      */
     public static Feature copyFeature(Feature feature, FeatureSchema newSchema){
         FeatureSchema oldSchema = feature.getSchema();

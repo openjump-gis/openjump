@@ -103,7 +103,6 @@ public class VertexStylePanel extends JPanel implements ListCellRenderer {
 
 	/**
 	 * Sets the vertex color.
-	 * @param the color
 	 */
 	public void setVertexColor(Color color) {
 		vertexColorChooserPanel.setColor(color);
@@ -113,8 +112,6 @@ public class VertexStylePanel extends JPanel implements ListCellRenderer {
 	 * Sets the vertex form. For possible forms please see
 	 * {@linkplain de.latlon.deejump.plugin.style.VertexStylesFactory VertexStylesFactory}
 	 * constants.
-	 *
-	 * @param the form as String.
 	 */
 	public void setVertexForm(String form) {
 		// select the right item in the JCombobox
@@ -131,7 +128,6 @@ public class VertexStylePanel extends JPanel implements ListCellRenderer {
 
 	/**
 	 * Sets the vertex Size.
-	 * @param the size
 	 */
 	public void setVertexSize(int size) {
 		vertexSizeSlider.setValue(size);
@@ -293,7 +289,7 @@ public class VertexStylePanel extends JPanel implements ListCellRenderer {
 	 * @param index
 	 * @param isSelected
 	 * @param cellHasFocus
-	 * @return 
+	 * @return the label representing the first vertex style of the list
 	 */
 	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 		JLabel label = new JLabel(((String[]) value)[0]);

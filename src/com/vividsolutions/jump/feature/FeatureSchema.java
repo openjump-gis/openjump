@@ -62,9 +62,9 @@ public class FeatureSchema implements Cloneable, Serializable {
     			AttributeType at = (AttributeType)this.attributeTypes.get(i);
     			String aname = (String)this.attributeNames.get(i);
     			fs.addAttribute(aname,at);
-    			fs.setCoordinateSystem(this.coordinateSystem);		
     			fs.setAttributeReadOnly(i, isAttributeReadOnly(i));
-    		}		
+    		}
+    		fs.setCoordinateSystem(this.coordinateSystem);
     		return fs;
         } 
         catch (Exception ex) {
