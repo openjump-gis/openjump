@@ -58,13 +58,13 @@ public class EasyButtonsPlugin extends ToolboxPlugIn {
 
 	public void initialize(PlugInContext context) throws Exception {
 		createMainMenuItem(
-				new String[] { MenuNames.VIEW},
+				new String[] {MenuNames.CUSTOMIZE},
 				getIcon(),
 				context.getWorkbenchContext());
 	}
 
 	public String getName() {
-		return TOOLBOX_NAME + "{pos:1}";
+		return TOOLBOX_NAME;
 	}
 	
     public Icon getIcon() {

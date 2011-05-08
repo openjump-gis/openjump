@@ -1,3 +1,11 @@
+2011-05-08 mmichaud <michael.michaud@free.fr>
+    * added some I18N strings (tab Skin of Option menu, Tooltip for NoteTool,
+      Plume tool, AdvancedMeasureTool)
+    * Moved SaveLegendPlugIn from Layer main menu to LayerName popup menu
+    * Moved CopyImagePlugIn from View to File menu
+    * Moved EasyButtonsPlugIn from View to Customize
+    * Add Icon to SaveLegendPlugIn
+
 2011-04-20 mmichaud <michael.michaud@free.fr>
     * added org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn
       the plugin is deactivated by default but it is called by SaveProjectAsPlugIn

@@ -45,46 +45,41 @@ import com.vividsolutions.jump.workbench.ui.cursortool.NoteTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.editing.EditingPlugIn;
 import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxDialog;
 
-public class NoteToolPlugIn extends AbstractPlugIn
-{
+public class NoteToolPlugIn extends AbstractPlugIn {
+    
     private boolean noteToolButtonAdded = false;
     
-    public void initialize(final PlugInContext context) throws Exception
-    {
-      //add a listener so that when the toolbox dialog opens the constrained tools will be added
+    public void initialize(final PlugInContext context) throws Exception {
+        //add a listener so that when the toolbox dialog opens the constrained tools will be added
         //we can't just add the tools directly at this point since the toolbox isn't ready yet
         
         context.getWorkbenchContext().getWorkbench().getFrame().addComponentListener(
-        new ComponentAdapter()
-        { 
-            public void componentShown(ComponentEvent e)
-            {
-                final ToolboxDialog toolBox = ((EditingPlugIn) context.getWorkbenchContext().getBlackboard().get(EditingPlugIn.KEY)).getToolbox(context.getWorkbenchContext());
-                toolBox.addComponentListener(new ComponentAdapter()
-                {
+        new ComponentAdapter() { 
+            public void componentShown(ComponentEvent e) {
+                final ToolboxDialog toolBox =
+                    ((EditingPlugIn)context.getWorkbenchContext()
+                                           .getBlackboard()
+                                           .get(EditingPlugIn.KEY)).getToolbox(context.getWorkbenchContext());
+                
+                toolBox.addComponentListener(new ComponentAdapter() {
                     
-                    public void componentShown(ComponentEvent e)
-                    {
+                    public void componentShown(ComponentEvent e) {
                         addButton(context);
                     }
                     
-                    public void componentHidden(ComponentEvent e)
-                    {
+                    public void componentHidden(ComponentEvent e) {
                     }
                 });
             }
         });        
     }
   
-    public boolean execute(PlugInContext context) throws Exception
-    {
+    public boolean execute(PlugInContext context) throws Exception {
         return true;
     }
     
-    public void addButton(final PlugInContext context)
-    {
-        if (!noteToolButtonAdded)
-        {
+    public void addButton(final PlugInContext context) {
+        if (!noteToolButtonAdded) {
             final ToolboxDialog toolbox = ((EditingPlugIn) context.getWorkbenchContext().getBlackboard().get(EditingPlugIn.KEY)).getToolbox(context.getWorkbenchContext());
             toolbox.add(new NoteTool());
             toolbox.finishAddingComponents();

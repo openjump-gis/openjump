@@ -50,6 +50,12 @@ import com.vividsolutions.jump.workbench.ui.snap.SnapToFeaturesPolicy;
 //Notes layer can now be saved with a task [LDB 12-15-2005]
 
 public class NoteTool extends NClickTool {
+    
+    public static final String NOTES = I18N.get("ui.cursortool.NoteTool.notes");
+    
+    // Create DEFAULT_SCHEMA as a static attribute to be sure the schema is
+    // initialized from NoteStyle class with internationalized attributes
+    private static final FeatureSchema DEFAULT_SCHEMA = NoteStyle.createFeatureSchema();
 
     private LayerViewPanel panel;
     
@@ -160,6 +166,10 @@ public class NoteTool extends NClickTool {
                 	if (doit) getPanel().getLayerManager().getUndoableEditReceiver().stopReceiving();        }
             	}
         });
+    }
+    
+    public String getName() {
+        return I18N.get("ui.cursortool.NoteTool");
     }
 
     private JTextArea textArea;
@@ -279,13 +289,14 @@ public class NoteTool extends NClickTool {
         getPanel().setViewportInitialized(true);
     }
 
-     public Layer layer() {
+    public Layer layer() {
      	LayerManager layerManager = getPanel().getLayerManager();
-    	if (layerManager.getLayer(NoteStyle.NAME) != null) {
-    		return layerManager.getLayer(NoteStyle.NAME);
+    	if (layerManager.getLayer(NOTES) != null) {
+    		return layerManager.getLayer(NOTES);
     	}
-    	Layer noteLayer = new Layer(NoteStyle.NAME, Color.yellow.brighter().brighter(),
-    		new FeatureDataset(NoteStyle.createFeatureSchema()), layerManager);
+    	Layer noteLayer = new Layer(NOTES, Color.yellow.brighter().brighter(),
+    		//new FeatureDataset(NoteStyle.createFeatureSchema()), layerManager);
+    		new FeatureDataset(DEFAULT_SCHEMA), layerManager);
     	
 		boolean firingEvents = layerManager.isFiringEvents();
 		layerManager.setFiringEvents(false);

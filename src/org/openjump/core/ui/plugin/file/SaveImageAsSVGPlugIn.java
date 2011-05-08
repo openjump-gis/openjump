@@ -37,11 +37,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.DOMImplementation;
 
 /**
- * @description:
- * 	saves the actual map window as svg graphics
+ * Saves the actual map window as svg graphics
  * 
  * @author neun and sstein
- *
  */
 public class SaveImageAsSVGPlugIn extends AbstractPlugIn implements ThreadedPlugIn{
 
@@ -56,7 +54,7 @@ public class SaveImageAsSVGPlugIn extends AbstractPlugIn implements ThreadedPlug
       	      new String[] {
 		          MenuNames.FILE, MenuNames.FILE_SAVEVIEW
 		        }, 
-		        I18N.get("org.openjump.core.ui.plugin.file.SaveImageAsSVGPlugIn.save-image-in-svg-format") + "{pos:10}",
+		        I18N.get("org.openjump.core.ui.plugin.file.SaveImageAsSVGPlugIn.save-image-in-svg-format") + "..." + "{pos:10}",
 				false, 
 				null, 
                 createEnableCheck(context.getWorkbenchContext())); //enable check

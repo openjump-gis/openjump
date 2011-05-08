@@ -8,6 +8,7 @@ import javax.swing.JLabel;
 import javax.swing.JTextArea;
 
 import com.vividsolutions.jts.util.Assert;
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.ui.Viewport;
@@ -17,10 +18,9 @@ public class NoteStyle implements Style {
 	
 	public static final int WIDTH = 80;
 	public static final int HEIGHT = 30;
-	public static final String NAME = "Notes";
-	public static final String CREATED = "CREATED";
-	public static final String MODIFIED = "MODIFIED";
-	public static final String TEXT = "TEXT";
+	public static final String CREATED = I18N.get("ui.cursortool.NoteStyle.CREATED");
+	public static final String MODIFIED = I18N.get("ui.cursortool.NoteStyle.MODIFIED");
+	public static final String TEXT = I18N.get("ui.cursortool.NoteStyle.TEXT");
 	public static final String GEOMETRY = "GEOMETRY";
    	
 	private JTextArea myTextArea = createTextArea();
@@ -40,7 +40,6 @@ public class NoteStyle implements Style {
 		
     public static JTextArea createTextArea() {
         return new JTextArea() {
-
             {
                 setFont(new JLabel().getFont());
                 setLineWrap(true);
@@ -49,8 +48,8 @@ public class NoteStyle implements Style {
             }
         };
     }
-	public void paint(Feature f, Graphics2D g, Viewport viewport)
-	throws Exception {
+    
+	public void paint(Feature f, Graphics2D g, Viewport viewport) throws Exception {
 		paint(f, viewport.toViewPoint(f.getGeometry().getCoordinate()), g);
 	}
 	

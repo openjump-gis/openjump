@@ -38,6 +38,7 @@ import javax.swing.LookAndFeel;
 import javax.swing.UIManager;
 
 import com.vividsolutions.jts.util.Assert;
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.OptionsDialog;
@@ -49,6 +50,10 @@ import com.vividsolutions.jump.workbench.ui.OptionsDialog;
 */
 
 public class InstallSkinsPlugIn extends AbstractPlugIn {
+    
+    private static final String SKINS = I18N.get("ui.plugin.skin.InstallSkinsPlugIn.skins");
+    private static final String DEFAULT = I18N.get("ui.plugin.skin.InstallSkinsPlugIn.default");
+    
     private LookAndFeelProxy createProxy(final String name,
         final String lookAndFeelClassName) {
         return new LookAndFeelProxy() {
@@ -75,7 +80,7 @@ public class InstallSkinsPlugIn extends AbstractPlugIn {
 
     public void initialize(PlugInContext context) throws Exception {
         ArrayList skins = new ArrayList();
-        skins.add(createProxy("Default",
+        skins.add(createProxy(DEFAULT,
                 UIManager.getSystemLookAndFeelClassName()));
         skins.add(createProxy("Metal",
                 UIManager.getCrossPlatformLookAndFeelClassName()));
@@ -86,7 +91,7 @@ public class InstallSkinsPlugIn extends AbstractPlugIn {
         context.getWorkbenchContext().getWorkbench().getBlackboard().put(SkinOptionsPanel.SKINS_KEY,
             skins);
         OptionsDialog.instance(context.getWorkbenchContext().getWorkbench()).addTab(
-            "Skins",
+            SKINS,
             new SkinOptionsPanel(context.getWorkbenchContext().getWorkbench().getBlackboard(), context.getWorkbenchFrame()));                                    
     }
 }
