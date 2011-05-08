@@ -146,11 +146,11 @@ public class IntersectGeometries {
 	 * returns results where some polygons may contain spikes. For this reason it may be better to create an 
 	 * an intersection of Linestrings (derived from the Polygons) and then use the Polygonizer (see IntersectPolygonLayersPlugIn).  
 	 * 
-	 * @param geomList
-	 * @param this parameter is currently not used and replaced by the use of a fixed precision model
+	 * @param geomList list of geometries to process
+	 * @param accurracy this parameter is currently not used and replaced by the use of a fixed precision model
 	 * @param monitor can be null
 	 * @param context can be null
-	 * @return
+	 * @return an ArrayList of processed geometries
 	 */
 	public static ArrayList<Geometry> intersectPolygons(ArrayList<Geometry> geomList, double accurracy, TaskMonitor monitor, PlugInContext context){
 		ArrayList<Geometry> withoutIntersection = new ArrayList<Geometry>(); 
@@ -279,19 +279,23 @@ public class IntersectGeometries {
 	}
 	
 	/**
-	 * evaluates if two geometries intersect. E.g. for two polygons it evaluates if 
-	 * the intersection is an area and not just a line. \n
+	 * Evaluates if two geometries intersect. E.g. for two polygons it evaluates if 
+	 * the intersection is an area and not just a line.
+	 * <br>
 	 * This method is used since <i>area1.intersection(area2)</i> does return also a positive result
-	 * if the intersection is on the boundary (i.e. no intersection of the interior).\n
+	 * if the intersection is on the boundary (i.e. no intersection of the interior).
+	 * <br>
 	 * Note1: the order of how the geometries are provided matters! It tested such that 
-	 * <i>g1.SpatialCritearia(g2)</i>. NOTE 2: the function has not been checked for mixed
+	 * <i>g1.SpatialCritearia(g2)</i>.
+	 * <br>
+	 * NOTE 2: the function has not been checked for mixed
 	 * geometry types
 	 * 
-	 * @param g1
-	 * @param g2
+	 * @param g1 first geometry
+	 * @param g2 second geometry
 	 * @return true if more a geometry is split in at least 2 parts
 	 * 
-	 * @TODO: enable check of mixed geometries. 
+	 * TODO : enable check of mixed geometries. 
 	 */
 	public static boolean checkIntersectionByGeomTypeB(Geometry g1, Geometry g2){
 		//-- g1 is Polygon
@@ -412,19 +416,22 @@ public class IntersectGeometries {
 	}
 	
 	/**
-	 * evaluates if two polygon geometries intersect. E.g. for two polygons it evaluates if 
-	 * the intersection is an area and not just a line. \n
+	 * Evaluates if two polygon geometries intersect. E.g. for two polygons it evaluates if 
+	 * the intersection is an area and not just a line.
+	 * <br>
 	 * This method is used since <i>area1.intersection(area2)</i> does return also a positive result
-	 * if the intersection is on the boundary (i.e. no intersection of the interior).\n
+	 * if the intersection is on the boundary (i.e. no intersection of the interior).
+	 * <br>
 	 * Note1: the order of how the geometries are provided matters! It tested such that 
-	 * <i>g1.SpatialCritearia(g2)</i>. NOTE 2: the function has not been checked for mixed
-	 * geometry types
+	 * <i>g1.SpatialCritearia(g2)</i>.
+	 * <br>
+	 * NOTE 2: the function has not been checked for mixed geometry types
 	 * 
-	 * @param g1
-	 * @param g2
+	 * @param g1 first geometry
+	 * @param g2 second geometry
 	 * @return true if area(intersection) > 0 
 	 * 
-	 * @TODO: enable check of mixed geometries. 
+	 * TODO : enable check of mixed geometries. 
 	 */
 	public static boolean checkPolygonIntersection(Geometry g1, Geometry g2){
 		//-- g1 is Polygon

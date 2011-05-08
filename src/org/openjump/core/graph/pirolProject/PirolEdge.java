@@ -28,8 +28,7 @@ import com.vividsolutions.jts.geom.Envelope;
  * 
  * @version $Rev: 2509 $
  * 
- * @see de.fhOsnabrueck.jump.pirol.utilities.PirolPoint
- * @see de.fhOsnabrueck.jump.pirol.utilities.Data2LayerConnector
+ * @see PirolPoint
  * modified: [sstein]: 16.Feb.2009 changed logger-entries to comments
  */
 public class PirolEdge {

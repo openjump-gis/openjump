@@ -21,7 +21,7 @@ import org.openjump.core.graph.pirolProject.ScaleChanger;
  * Project: PIROL (2005),
  * Subproject: Daten- und Wissensmanagement
  * 
- * @see de.fhOsnabrueck.jump.pirol.utilities.statistics.CorrelationCoefficients
+ * @see CorrelationCoefficients
  * modified: [sstein]: 16.Feb.2009 changed logger-entries to comments
  */
 public class PunktScaler implements ScaleChanger {

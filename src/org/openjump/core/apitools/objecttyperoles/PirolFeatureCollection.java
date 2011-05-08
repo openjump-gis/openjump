@@ -36,7 +36,7 @@ import com.vividsolutions.jump.feature.FeatureSchema;
  * <br>Subproject: Daten- und Wissensmanagement
  * 
  * @version $Rev: 1654 $
- * @see de.fho.jump.pirol.utilities.metaData.MetaInformationHandler#createPirolFeatureCollection(FeatureCollection)
+ * @see org.openjump.util.metaData.MetaInformationHandler#createPirolFeatureCollection(FeatureCollection)
  *
  */
 public class PirolFeatureCollection implements FeatureCollection, ObjectContainingMetaInformation {
@@ -129,7 +129,7 @@ public class PirolFeatureCollection implements FeatureCollection, ObjectContaini
      *@param role the role to check for
      *@return the role if this FeatureCollection has a role like the given one, else null
      *
-     *@see PirolFeatureCollectionRoleTypes
+     *@see org.openjump.core.apitools.objecttyperoles.FeatureCollectionRoleTypes
      */
     public FeatureCollectionRole getRole(FeatureCollectionRole role) {
         for (int i=0; i<this.roles.length && this.roles[i]!=null; i++){
@@ -145,7 +145,7 @@ public class PirolFeatureCollection implements FeatureCollection, ObjectContaini
      *@param role the role to check for
      *@return the role if this FeatureCollection has a role like the given one, else null
      *
-     *@see PirolFeatureCollectionRoleTypes
+     *@see org.openjump.core.apitools.objecttyperoles.FeatureCollectionRoleTypes
      */
     public FeatureCollectionRole getRole(FeatureCollectionRoleTypes role) {
         for (int i=0; i<this.roles.length && this.roles[i]!=null; i++){
@@ -161,7 +161,7 @@ public class PirolFeatureCollection implements FeatureCollection, ObjectContaini
      *@param roleId id of the role type to check for
      *@return the role if this FeatureCollection has a role with the given ID, else null
      *
-     *@see PirolFeatureCollectionRoleTypes
+     *@see org.openjump.core.apitools.objecttyperoles.FeatureCollectionRoleTypes
      */
     public FeatureCollectionRole getRole(int roleId) {
         for (int i=0; i<this.roles.length && this.roles[i]!=null; i++){

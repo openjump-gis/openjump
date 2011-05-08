@@ -34,9 +34,7 @@ import com.vividsolutions.jts.geom.Coordinate;
  * 
  * @version $Rev: 2509 $
  * 
- * @see de.fhOsnabrueck.jump.pirol.utilities.PirolEdge
- * @see de.fhOsnabrueck.jump.pirol.utilities.Data2LayerConnector
- * 
+ * @see PirolEdge
  * modified: [sstein]: 16.Feb.2009 changed logger-entries to comments
  */
 public class PirolPoint extends Sortable {

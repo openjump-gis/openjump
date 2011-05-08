@@ -47,7 +47,7 @@ public class GeometryConverter {
 	/**
 	 * The method explodes a geometry, if it is a multi-geometry (Geometry Collection), into their parts. 
 	 * @param geom
-	 * @return
+	 * @return a list of geometries
 	 */
 	public static ArrayList<Geometry> explodeGeomsIfMultiG(Geometry geom){
 		ArrayList<Geometry> geoms = new ArrayList<Geometry>(); 

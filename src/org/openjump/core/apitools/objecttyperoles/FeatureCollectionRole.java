@@ -19,7 +19,7 @@ package org.openjump.core.apitools.objecttyperoles;
  * <br>Subproject: Daten- und Wissensmanagement
  * 
  * @version $Rev: 2434 $
- * @see de.fhOsnabrueck.jump.pirol.utilities.FeatureCollection.PirolFeatureCollection
+ * @see org.openjump.core.apitools.objecttyperoles.PirolFeatureCollection
  * [sstein] - 22.Feb.2009 - modified to work in OpenJUMP
  */
 public abstract class FeatureCollectionRole {
@@ -35,10 +35,9 @@ public abstract class FeatureCollectionRole {
     }
     
     /**
-     * 
-     *@return an integer that specifies the role type of the derived role object
+     * @return an integer that specifies the role type of the derived role object
      *
-     *@see PirolFeatureCollectionRoleTypes
+     * @see org.openjump.core.apitools.objecttyperoles.FeatureCollectionRoleTypes
      */
     public int getRoleId(){
         return this.type.getType();
@@ -79,8 +78,8 @@ public abstract class FeatureCollectionRole {
      * Check if this role is the same type of role as the given one.
      * Caution: If this role contains specific information (like RasterImage role), this information
      * is not checked for equality - Only the type of the role is checked!
-     *@param role role to check for type equality
-     *@return true if this role is the same type of role as the given one, else false
+     * @param roleType role to check for type equality
+     * @return true if this role is the same type of role as the given one, else false
      */
     public boolean equalsRole(FeatureCollectionRoleTypes roleType) {
         return this.getRoleId() == roleType.getType();
@@ -88,10 +87,10 @@ public abstract class FeatureCollectionRole {
     
     /**
      * Check if this role is the same type of role as the given role id.
-     *@param roleID id of the role type to check for type equality
-     *@return true if this role is the same type of role as the given ID, else false
+     * @param roleID id of the role type to check for type equality
+     * @return true if this role is the same type of role as the given ID, else false
      *
-     *@see PirolFeatureCollectionRoleTypes
+     * @see org.openjump.core.apitools.objecttyperoles.FeatureCollectionRoleTypes
      */
     public boolean equalsRole(int roleID) {
         return this.getRoleId() == roleID;
