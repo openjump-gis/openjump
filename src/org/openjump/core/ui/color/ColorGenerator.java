@@ -307,9 +307,10 @@ public class ColorGenerator {
     	this.inputColors.add(color);
     }
 	
-    /**For java2xml
+    /**
+     * For java2xml
      * 
-     * @return
+     * @return the number of steps to cross fade from color A to color C
      */
 	public int getStepsXML() {
 		return steps;

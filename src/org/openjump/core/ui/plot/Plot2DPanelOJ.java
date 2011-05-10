@@ -91,17 +91,15 @@ public class Plot2DPanelOJ extends PlotPanel {
     }
 
     /**
-     * [sstein] method for OJUMP
+     * [sstein] method for OpenJUMP
      * @param name
      * @param XY
      * @param fID
      * @param context
      * @param layer
-     * @return
      */
     public int addScatterPlotOJ(String name, double[][] XY, int[] fID, PlugInContext context, Layer layer) {
         return ((Plot2DCanvasOJ) plotCanvas).addScatterPlotOJ(name, getNewColor(), XY, fID, context, layer);
-        //return ((Plot2DCanvas) plotCanvas).addScatterPlot(name, getNewColor(), XY);
     }
 
     public int addScatterPlot(String name, double[] Y) {
@@ -131,8 +129,8 @@ public class Plot2DPanelOJ extends PlotPanel {
      * @return the index of the plot in the panel (int).
      * @see #addScatterPlot(String,Color,double[]...)
      * @see #addBarPlot(String, Color, double[]...)
-     * @see #addBoxPlot(String, Color, double[]... )
-     * @see #addHistogramPlot(String, Color, double[]...)
+     * @see #addBoxPlot(String, Color, double[][]...)
+     * @see #addHistogramPlot(String, Color, double[][]...)
      * @see #addStaircasePlot(String, Color, double[]...)
      */
     public int addLinePlot(String name, Color color, double[][] XY) {
@@ -178,8 +176,8 @@ public class Plot2DPanelOJ extends PlotPanel {
      * @return the index of the plot in the panel (int).
      * @see #addScatterPlot(String,Color,double[]...)
      * @see #addLinePlot(String, Color, double[]...)
-     * @see #addBoxPlot(String, Color, double[]... )
-     * @see #addHistogramPlot(String, Color, double[]...)
+     * @see #addBoxPlot(String, Color, double[][]...)
+     * @see #addHistogramPlot(String, Color, double[][]...)
      * @see #addStaircasePlot(String, Color, double[]...)
      */
     public int addBarPlot(String name, Color color, double[][] XY) {
@@ -374,10 +372,9 @@ public class Plot2DPanelOJ extends PlotPanel {
      * @param name
      * @param X
      * @param n
-     * @param fID
      * @param context
      * @param layer
-     * @return
+     * @param attrName
      */
     public int addHistogramPlotOJ(String name, double[] X, int n, PlugInContext context, Layer layer, String attrName) {
         return ((Plot2DCanvasOJ) plotCanvas).addHistogramPlotOJ(name, getNewColor(), X, n, context, layer, attrName);

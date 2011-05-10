@@ -100,7 +100,7 @@ public class ArrowLineStringMiddlepointStyle extends LineStringEndpointStyle {
     
     public static class NarrowSolidMiddle extends ArrowLineStringMiddlepointStyle {
         public NarrowSolidMiddle() {
-            super(I18N.get("ui.style.decoration.ArrowLineStringMiddlepointStyle.Middle-Arrow-Solid-Narrow"), false, "ArrowEndSolidNarrow.gif", //$NON-NLS-1$ //$NON-NLS-2$
+            super(I18N.get("ui.renderer.style.ArrowLineStringMiddlepointStyle.Middle-Arrow-Solid-Narrow"), false, "ArrowEndSolidNarrow.gif", //$NON-NLS-1$ //$NON-NLS-2$
                 SMALL_ANGLE, LARGE_LENGTH, true);
         }
     }

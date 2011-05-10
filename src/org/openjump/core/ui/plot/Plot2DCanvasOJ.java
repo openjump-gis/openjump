@@ -163,10 +163,9 @@ public class Plot2DCanvasOJ extends PlotCanvas {
      * @param c
      * @param X
      * @param n
-     * @param fID
      * @param context
      * @param layer
-     * @return
+     * @param attrName
      */
     public int addHistogramPlotOJ(String name, Color c, double[] X, int n, PlugInContext context, Layer layer, String attrName) {
         double[][] XY = histogram_classes(X, n);

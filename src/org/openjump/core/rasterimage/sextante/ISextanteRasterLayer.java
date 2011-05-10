@@ -12,7 +12,7 @@ import com.vividsolutions.jump.workbench.model.LayerManager;
  * to be able to be used by SEXTANTE algorithms.
  *
  * Instead of implementing this class directly, it is recommended to
- * extend {@link AbstractRasterLayer}, since it solves some
+ * extend {@link AbstractSextanteRasterLayer}, since it solves some
  * of the most complex methods, such as grid window definition and resampling
  * methods
  * @author Victor Olaya. volaya@unex.es
