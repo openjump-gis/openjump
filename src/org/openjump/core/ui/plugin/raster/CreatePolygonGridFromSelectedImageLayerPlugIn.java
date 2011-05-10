@@ -34,8 +34,7 @@
  * @author sstein
  * 
  * description:
- * 	
- *  
+ * 
  *****************************************************/
 
 package org.openjump.core.ui.plugin.raster;
@@ -72,8 +71,8 @@ import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 /**
- * @description: creates a polygon grid from the current selected raster image
- * @TODO: I was going todo this as a normal plugin, but this won't work since
+ * Creates a polygon grid from the current selected raster image
+ * TODO : I was going todo this as a normal plugin, but this won't work since
  * raster images are Layerables and not layer objects, so the drop down list doesn't
  * display them
  *	

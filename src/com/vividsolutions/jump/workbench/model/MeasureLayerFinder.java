@@ -18,7 +18,7 @@ import org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel;
 import org.openjump.core.ui.plugin.tools.MeasurementStyle;
 
 /**
- * A special LayerFinder for the AdvanncedMeasureTool.
+ * A special LayerFinder for the AdvancedMeasureTool.
  *
  * @author Matthias Scholz <ms@jammerhund.de>
  */
@@ -98,7 +98,7 @@ public class MeasureLayerFinder extends SystemLayerFinder {
 	 * 
 	 * @param measureGeometry
 	 * @param schema
-	 * @return
+	 * @return a new Feature having measureGeometry as Geometry and schema as FeatureSchema
 	 */
 	private Feature toFeature(Geometry measureGeometry, FeatureSchema schema) {
         Feature feature = new BasicFeature(schema);
@@ -131,7 +131,7 @@ public class MeasureLayerFinder extends SystemLayerFinder {
 	/**
 	 * Return the measurelayer. If not exists until now, create a new one.
 	 *
-	 * @return the measurelayer
+	 * @return the measure layer
 	 */
 	public Layer getMeasureLayer() {
 		if (getLayer() == null) {

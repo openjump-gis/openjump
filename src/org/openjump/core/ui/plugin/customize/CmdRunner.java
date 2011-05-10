@@ -85,11 +85,11 @@ public class CmdRunner {
 	/**
 	 * Run command line and do not wait for process to end
 	 * 
-	 * @param command - command to run - must be executable at system command line.
-	 * @param delmiter - character used to delimit parameters - must not occur inside parameters.
+	 * @param commandLine - command to run - must be executable at system command line.
+	 * @param delimiter - character used to delimit parameters - must not occur inside parameters.
 	 */
-	public void runLater(String commandLine, char delmiter) {
-		String regex = "" + delmiter;
+	public void runLater(String commandLine, char delimiter) {
+		String regex = "" + delimiter;
 		String [] runStr = commandLine.split(regex, 0);
 		run(runStr, false);
 	}
@@ -97,11 +97,11 @@ public class CmdRunner {
 	/**
 	 * Run command line, wait and catch exceptions
 	 * 
-	 * @param command - command to run - must be executable at system command line.
-	 * @param delmiter - character used to delimit parameters - must not occur inside parameters.
+	 * @param commandLine - command to run - must be executable at system command line.
+	 * @param delimiter - character used to delimit parameters - must not occur inside parameters.
 	 */
-	public void run(String commandLine, char delmiter) {
-		String regex = "" + delmiter;
+	public void run(String commandLine, char delimiter) {
+		String regex = "" + delimiter;
 		String [] runStr = commandLine.split(regex, 0);
 		run(runStr, true);
 	}
@@ -109,24 +109,24 @@ public class CmdRunner {
 	
 	/**
 	 * @param command - (full) command to run - must be executable at system command line.
-	 * @param delmiter - character used to delimit parameters - must not occur inside parameters.
+	 * @param delimiter - character used to delimit parameters - must not occur inside parameters.
 	 * @return output of commmand or null if no ouput produced.
 	 */
-	public String[] runAndGetOutput(String command, char delmiter) {
+	public String[] runAndGetOutput(String command, char delimiter) {
 		
 		ArrayList<String> lines = new ArrayList<String>();
 		try {
 			File file = File.createTempFile("Cmd", null);
 			String filePath = file.getCanonicalPath();
 			
-			String regex = "" + delmiter;
+			String regex = "" + delimiter;
 			String commandLine;
 			if (isWindows())
-				commandLine = "cmd" + delmiter + "/c" + delmiter;
+				commandLine = "cmd" + delimiter + "/c" + delimiter;
 			else
-				commandLine = "sh" + delmiter;
-			commandLine +=  command + delmiter + ">" + delmiter + filePath;  //> is redirect output
-			commandLine +=  delmiter + "2>&1";  //get error output too
+				commandLine = "sh" + delimiter;
+			commandLine +=  command + delimiter + ">" + delimiter + filePath;  //> is redirect output
+			commandLine +=  delimiter + "2>&1";  //get error output too
 			String [] runStr = commandLine.split(regex, 0);
 			run(runStr, true);
 			

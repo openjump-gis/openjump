@@ -69,8 +69,9 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 /**
- * @description: creates a lattice for the current selected raster image
- * @TODO: I was going todo this as a normal plugin, but this won't work since
+ * Creates a lattice for the current selected raster image
+ * 
+ * TODO : I was going todo this as a normal plugin, but this won't work since
  * raster images are Layerables and not layer objects, so the drop down list doesn't
  * display them
  *	

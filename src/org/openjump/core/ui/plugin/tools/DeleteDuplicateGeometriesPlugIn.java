@@ -69,12 +69,11 @@ import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 /**
- * @description:
- *		eliminates features that have exactly the same Geometry
+ * Eliminates features that have exactly the same Geometry
  *
  * @author sstein
  *
- * TODO: use STRtree for faster testing. Right now I just go through the complete list.
+ * TODO : use STRtree for faster testing. Right now I just go through the complete list.
  **/
 public class DeleteDuplicateGeometriesPlugIn extends AbstractPlugIn implements ThreadedPlugIn{
 
