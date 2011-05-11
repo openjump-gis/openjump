@@ -30,10 +30,6 @@
  * last modified:
  * 
  * @author sstein
- * 
- * description:
- *  Extracts points from polygon or line features and writes them to a new layer
- *
  *****************************************************/
 
 package org.openjump.core.ui.plugin.tools.geometrychange;
@@ -68,8 +64,7 @@ import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 /**
- * @description:
- *	 Extracts points from polygon or line features and writes them to a new layer
+ * Extracts points from polygon or line features and writes them to a new layer
  *  
  * @author sstein
  *

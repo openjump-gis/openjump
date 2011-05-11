@@ -28,13 +28,8 @@
 /*****************************************************
  * created:  		10.July.2008
  * last modified:   					
- * 					
  * 
  * @author sstein
- * 
- * description:
- * 	TODO
- *  
  *****************************************************/
 
 package org.openjump.core.ui.plugin.tools.geometrychange;
@@ -64,7 +59,7 @@ import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 /**
- * @description: Extracts the boundaries of a polygon layer distinguishing 
+ * Extracts the boundaries of a polygon layer distinguishing 
  * between shared and non-shared boundaries.
  *	
  * @author sstein

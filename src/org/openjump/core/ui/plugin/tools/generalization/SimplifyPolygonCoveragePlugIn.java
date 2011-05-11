@@ -31,10 +31,6 @@
  * 					
  * 
  * @author sstein
- * 
- * description:
- * 	TODO
- *  
  *****************************************************/
 
 package org.openjump.core.ui.plugin.tools.generalization;
@@ -79,9 +75,8 @@ import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 /**
- * @description: Extracts the boundaries of a polygon layer, simplifies them, and then 
+ * Extracts the boundaries of a polygon layer, simplifies them, and then 
  * uses the polygonizer to create polygons again.
- * 
  *	
  * @author sstein
  *

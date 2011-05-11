@@ -31,10 +31,6 @@
  * last modified: 	
  * 
  * author:			sstein
- * 
- * description:
- * 
- * 
  ***********************************************/
 package org.openjump.core.ui.plugin.tools.statistics;
 
@@ -158,8 +154,6 @@ public class ClassifyAttributesPlugIn extends AbstractPlugIn implements Threaded
      * This method is used to define when the menu entry is activated or
      * disabled. In this example we allow the menu entry to be usable only
      * if one layer exists.
-     * @param workbenchContext
-     * @return
      */
     public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
         EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
