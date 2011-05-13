@@ -50,8 +50,6 @@ public interface Style extends Cloneable {
 
     /**
      * Called before #paint is applied to each Feature.
-     * @return false if #paint should not be called e.g. because vertices are not
-     * shown. Don't need to check whether the layer is visible.
      */
     public void initialize(Layer layer);
 
@@ -59,6 +57,10 @@ public interface Style extends Cloneable {
 
     public void setEnabled(boolean enabled);
 
+    /**
+     * @return false if #paint should not be called e.g. because vertices are not
+     * shown. Don't need to check whether the layer is visible.
+     */
     public boolean isEnabled();
 
 }

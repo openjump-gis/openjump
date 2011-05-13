@@ -239,7 +239,7 @@ public class NorthArrowRenderer extends SimpleRenderer {
 	}
 
 	/**
-	 * @param alignment: BOTTOM_RIGHT = 0, TOP_RIGHT = 1, TOP_LEFT = 2, BOTTOM_LEFT = 3
+	 * @param alignment BOTTOM_RIGHT = 0, TOP_RIGHT = 1, TOP_LEFT = 2, BOTTOM_LEFT = 3
 	 */
 	public void setAlignment(int alignment) {
 		this.alignment = alignment;
@@ -290,7 +290,7 @@ public class NorthArrowRenderer extends SimpleRenderer {
 	}
 
 	/**
-	 * @param style: pass an int related to the ESRI North Arrow style.
+	 * @param style pass an int related to the ESRI North Arrow style.
 	 */
 	public void setStyle(int style) {
 		this.style = style;

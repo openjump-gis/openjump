@@ -27,7 +27,7 @@ public class ScreenScale {
 	 * note: The scale may differ for horizontal and vertical direction
 	 * due to the type of map projection.
 	 *  
-	 * @param context PlugInContext
+	 * @param port the viewport
 	 * @return actual scale 
 	 */
 	public static double getHorizontalMapScale(Viewport port){	
