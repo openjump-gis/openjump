@@ -62,6 +62,7 @@ import java.util.Hashtable;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -73,6 +74,8 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 import java.text.*;
 import java.util.Map;
+
+import org.openjump.core.ui.images.IconLoader;
 
 public class LayerPropertiesPlugIn extends AbstractPlugIn 
 {
@@ -145,12 +148,13 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
     	public String validateInput();
     }
     
-    public LayerPropertiesPlugIn() 
-    {
+    public LayerPropertiesPlugIn() {}
+    
+    public ImageIcon getIcon() {
+        return IconLoader.icon("info16_v.png");
     }
     
-    public void initialize(PlugInContext context) throws Exception
-    {
+    public void initialize(PlugInContext context) throws Exception {
         this.workbenchContext = context.getWorkbenchContext();
         FeatureInstaller featureInstaller = new FeatureInstaller(workbenchContext);
         JPopupMenu layerNamePopupMenu = workbenchContext.getWorkbench()
@@ -158,12 +162,11 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
                                                         .getLayerNamePopupMenu();
         featureInstaller.addPopupMenuItem(layerNamePopupMenu,
             this, LAYER_PROPERTIES + "..." + "{pos:4}",
-            false, null, 
+            false, getIcon(), 
             createEnableCheck(workbenchContext));        
     }
     
-    public boolean execute(PlugInContext context) throws Exception 
-    {
+    public boolean execute(PlugInContext context) throws Exception {
     	styleChanged = false;
     	layers = context.getSelectedLayers();
     	extent = context.getSelectedLayerEnvelope();
@@ -192,8 +195,7 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
         //stylePanel.setPreferredSize(new Dimension(350, 200));
         JTabbedPane tabbedPane = new JTabbedPane();
 
-        for (Iterator i = propertyPanels.iterator(); i.hasNext();) 
-        {
+        for (Iterator i = propertyPanels.iterator(); i.hasNext();) {
             final PropertyPanel propertyPanel = (PropertyPanel) i.next();
             tabbedPane.add((Component) propertyPanel, propertyPanel.getTitle());
         }
@@ -241,8 +243,7 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
         return null;
     }
 
-    public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext)
-    {
+    public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
         EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);        
         return new MultiEnableCheck()
            .add(checkFactory.createWindowWithSelectionManagerMustBeActiveCheck())
@@ -278,8 +279,7 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
     	if (cts != null) cts.setAlpha(alpha);
     }
 
-    private class InfoPanel extends JPanel implements PropertyPanel 
-    {
+    private class InfoPanel extends JPanel implements PropertyPanel {
     	//private BorderLayout borderLayout = new BorderLayout();
     	private JLabel label_Name_L = new JLabel();
         private JLabel label_NumItems_L = new JLabel();
@@ -301,8 +301,7 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
         private JTextArea label_Path_R = new JTextArea();
 		private JTextArea label_Extent_R = new JTextArea();
 
-        private InfoPanel() 
-        {
+        private InfoPanel() {
             super(new GridBagLayout());
             
             label_Name_R.setFont(this.getFont());
@@ -433,22 +432,18 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
 			}
         }
 
-        public String getTitle() 
-        {
+        public String getTitle() {
             return INFO;
         }
 
-        public void updateStyles() 
-        {
+        public void updateStyles() {
         }
 
-        public String validateInput() 
-        {
+        public String validateInput() {
             return null;
         }
         
-        private void setInfo(Layer[] layers)
-        {
+        private void setInfo(Layer[] layers) {
         	if (layers.length == 1)
         		label_Name_R.setText(layers[0].getName());
         	else
@@ -464,19 +459,16 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
         	boolean multipleGeoTypes = false;
         	boolean multipleSourceTypes = false;
         	
-        	for (int l = 0; l < layers.length; l++)
-        	{
+        	for (int l = 0; l < layers.length; l++) {
 	        	
 	        	FeatureCollectionWrapper fcw = layers[l].getFeatureCollectionWrapper();
 	        	numFeatures += fcw.size();
 	        	numAtts += fcw.getFeatureSchema().getAttributeCount() - 1;
 	        	
-	        	for (Iterator i = fcw.getFeatures().iterator(); i.hasNext();)
-	        	{
+	        	for (Iterator i = fcw.getFeatures().iterator(); i.hasNext();) {
 	        		geo = ((Feature)i.next()).getGeometry();
 	        		
-	        		if (geo != null)
-	        		{
+	        		if (geo != null) {
 	        			numPts += geo.getNumPoints();
 	        			
 	        			if (geoClass.equals(""))
@@ -488,8 +480,7 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
 	        		
 	        	DataSourceQuery dsq = layers[l].getDataSourceQuery();
 	        	
-	        	if (dsq != null)
-	        	{
+	        	if (dsq != null) {
 	        		String dsqSourceClass = dsq.getDataSource().getClass().getName();
         			
 	        		if (sourceClass.equals(""))
@@ -511,8 +502,7 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
         		geoClass = MULTIPLE_GEOMETRY_TYPES;
         	else if (geoClass.equals(""))
         		geoClass = NULL_GEOMETRIES;
-        	else
-        	{
+        	else {
 	        	int dotPos = geoClass.lastIndexOf(".");
 	        	
 	        	if (dotPos > 0)
@@ -524,8 +514,7 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
         		sourceClass = NOT_SAVED;
         	else if (multipleSourceTypes)
         		sourceClass = MULTIPLE_SOURCE_TYPES;
-        	else
-        	{
+        	else {
 	    		int dotPos = sourceClass.lastIndexOf(".");
 	    		
 	    		if (dotPos > 0)
@@ -539,14 +528,12 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
         	
         	label_GeoType_R.setText(geoClass);
         	
-        	if (layers.length == 1)
-        	{
+        	if (layers.length == 1) {
         		label_NumItems_R.setText("" + numFeatures);
         		label_NumPts_R.setText("" + numPts);
         		label_NumAtts_R.setText("" + numAtts);
         	}
-        	else
-        	{
+        	else {
         		DecimalFormat df = new DecimalFormat("0.0");
         		double numLayers = layers.length;
         		double avgNumFeatures = numFeatures / numLayers;
@@ -593,12 +580,10 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
         }
     }
     
-    private class StylePanel extends JPanel implements PropertyPanel 
-    {
+    private class StylePanel extends JPanel implements PropertyPanel {
     	private JSlider transparencySlider = new JSlider();
 
-    	private StylePanel() 
-	    {
+    	private StylePanel() {
 	        Box box = new Box(BoxLayout.Y_AXIS);
 	        JLabel transparencySliderLabel =
 	            new JLabel(PROPORTIONAL_TRANSPARENCY_ADJUSTER, SwingConstants.CENTER);
@@ -626,30 +611,24 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
 	        transparencySlider.setValue(50);
 	        box.add(transparencySlider);
             add(box);
-	        transparencySlider.addChangeListener(new ChangeListener()
-	        {
-	            public void stateChanged(ChangeEvent e) 
-	            {
+	        transparencySlider.addChangeListener(new ChangeListener() {
+	            public void stateChanged(ChangeEvent e) {
 	                JSlider source = (JSlider)e.getSource();
 	                
-	                if (!source.getValueIsAdjusting()) 
-	                {
+	                if (!source.getValueIsAdjusting()) {
 	                    int sliderVal = (int)source.getValue();
 	                    double percentChg;
 	                    
-		                for (int i = 0; i < layers.length; i++)
-		                {
+		                for (int i = 0; i < layers.length; i++) {
 			    	        Layer layer = layers[i];
 			                int currTrans = currTransArray[i];
 		                    double newTrans = currTrans;
 		                    
-		                    if (sliderVal < 50)
-		                    {
+		                    if (sliderVal < 50) {
 		                    	percentChg = ((50 - sliderVal) / 50d);
 		                    	newTrans = currTrans - (currTrans * percentChg);
 		                    }
-		                    else if (sliderVal > 50)
-		                    {
+		                    else if (sliderVal > 50) {
 		                    	percentChg = (sliderVal - 50) / 50d;
 		                    	newTrans = currTrans + ((255 - currTrans) * percentChg);
 		                    }
@@ -663,17 +642,14 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
 	        });
 	    }
 	    
-	    public String getTitle() 
-	    {
+	    public String getTitle() {
 	        return STYLES;
 	    }
 	
-	    public void updateStyles() 
-	    {
+	    public void updateStyles() {
 	    }
 	
-	    public String validateInput() 
-	    {
+	    public String validateInput() {
 	        return null;
 	    }
     }

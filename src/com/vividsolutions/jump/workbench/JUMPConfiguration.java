@@ -881,9 +881,9 @@ public class JUMPConfiguration implements Setup {
         configToolsAttributes(workbenchContext, checkFactory, featureInstaller);  
 		*/
         featureInstaller.addMainMenuItemWithJava14Fix(shortcutKeysPlugIn, new String[]{MenuNames.HELP},
-                shortcutKeysPlugIn.getName() + "...", false, null, null);
+                shortcutKeysPlugIn.getName() + "...", false, ShortcutKeysPlugIn.ICON, null);
         new FeatureInstaller(workbenchContext).addMainMenuItemWithJava14Fix(
-                new AboutPlugIn(), new String[]{MenuNames.HELP}, I18N.get("JUMPConfiguration.about"), false, null, null);
+                new AboutPlugIn(), new String[]{MenuNames.HELP}, I18N.get("JUMPConfiguration.about"), false, AboutPlugIn.ICON, null);
     
         //-- CUSTOMIZE
         //-- [sstein: 24.03.2007 new menu]

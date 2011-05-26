@@ -36,12 +36,16 @@ package com.vividsolutions.jump.workbench.ui.plugin;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.AboutDialog;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import javax.swing.ImageIcon;
 
 /**
 * Pops up an 'About... ' Dialog.
 */
 
 public class AboutPlugIn extends AbstractPlugIn {
+    
+    public static final ImageIcon ICON = IconLoader.icon("information.png");
 
     public boolean execute(PlugInContext context) throws Exception {
         reportNothingToUndoYet(context);                
