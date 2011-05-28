@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import org.openjump.core.ui.images.IconLoader;
 import org.openjump.core.ui.io.file.FileLayerLoader;
 import org.openjump.core.ui.plugin.file.OpenRecentPlugIn;
 import org.openjump.core.ui.swing.wizard.AbstractWizardGroup;
@@ -16,7 +17,6 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.registry.Registry;
-import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
 
@@ -46,7 +46,7 @@ public class OpenFileWizard extends AbstractWizardGroup {
    * @param workbenchContext The workbench context.
    */
   public OpenFileWizard(final WorkbenchContext workbenchContext) {
-    super(I18N.get(KEY), IconLoader.icon("Open.gif"), SelectFilesPanel.KEY);
+    super(I18N.get(KEY), IconLoader.icon("folder_page.png"), SelectFilesPanel.KEY);
     initPanels(workbenchContext);
   }
 

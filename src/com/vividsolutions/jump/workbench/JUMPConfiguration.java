@@ -42,7 +42,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
 
 import org.openjump.OpenJumpConfiguration;
-import org.openjump.core.ui.plugin.tools.ZoomRealtimeTool;
 
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
@@ -101,7 +100,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.InstallStandardFeatureTextWri
 import com.vividsolutions.jump.workbench.ui.plugin.MapToolTipsPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.MoveLayerablePlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.NewTaskPlugIn;
-import com.vividsolutions.jump.workbench.ui.plugin.OpenProjectPlugIn;
+//import com.vividsolutions.jump.workbench.ui.plugin.OpenProjectPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.OptionsPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.OutputWindowPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.RedoPlugIn;
@@ -169,6 +168,7 @@ import de.latlon.deejump.plugin.style.DeeChangeStylesPlugIn;
 import org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel;
 import org.openjump.core.ui.plugin.tools.AdvancedMeasurePlugin;
 import org.openjump.core.ui.plugin.tools.AdvancedMeasureTool;
+import org.openjump.core.ui.plugin.tools.ZoomRealtimeTool;
 import org.openjump.core.ui.plugin.view.ShowScalePlugIn;
 import org.openjump.core.ui.plugin.view.helpclassescale.InstallShowScalePlugIn;
 import org.openjump.core.ui.plugin.view.helpclassescale.InstallShowScalePlugIn;
@@ -258,7 +258,8 @@ public class JUMPConfiguration implements Setup {
 
     private NewTaskPlugIn newTaskPlugIn = new NewTaskPlugIn();
 
-    private OpenProjectPlugIn openProjectPlugIn = new OpenProjectPlugIn();
+    // Moved to OpenJUMPConfigurationPlugIn
+    //private OpenProjectPlugIn openProjectPlugIn = new OpenProjectPlugIn();
 
 
     private PasteItemsPlugIn pasteItemsPlugIn = new PasteItemsPlugIn();
@@ -500,11 +501,21 @@ public class JUMPConfiguration implements Setup {
                 removeSelectedLayersPlugIn, removeSelectedLayersPlugIn
                         .getName(), false, RemoveSelectedLayersPlugIn.ICON, removeSelectedLayersPlugIn
                         .createEnableCheck(workbenchContext));
-
+        
         layerNamePopupMenu.addSeparator(); // ===================
+        
         featureInstaller.addPopupMenuItem(layerNamePopupMenu,
                 zoomToLayerPlugIn, zoomToLayerPlugIn.getName(), false, ZoomToLayerPlugIn.ICON,
                 zoomToLayerPlugIn.createEnableCheck(workbenchContext));
+        
+        featureInstaller.addPopupMenuItem(layerNamePopupMenu,
+                viewAttributesPlugIn, viewAttributesPlugIn.getName(), false,
+                GUIUtil.toSmallIcon(viewAttributesPlugIn.getIcon()),
+                viewAttributesPlugIn.createEnableCheck(workbenchContext));
+        featureInstaller.addPopupMenuItem(layerNamePopupMenu, viewSchemaPlugIn,
+                viewSchemaPlugIn.getName(), false, ViewSchemaPlugIn.ICON,
+                ViewSchemaPlugIn.createEnableCheck(workbenchContext));
+        
         featureInstaller.addPopupMenuItem(layerNamePopupMenu,
                 changeStylesPlugIn, new String[]{MenuNames.STYLE}, changeStylesPlugIn.getName() + "...",
                 false, GUIUtil.toSmallIcon(changeStylesPlugIn.getIcon()),
@@ -518,23 +529,15 @@ public class JUMPConfiguration implements Setup {
                 false, GUIUtil.toSmallIcon(pasteStylesPlugIn.getIcon()),
                 PasteStylesPlugIn.createEnableCheck(workbenchContext));
 
-        featureInstaller.addPopupMenuItem(layerNamePopupMenu,
-                viewAttributesPlugIn, viewAttributesPlugIn.getName(), false,
-                GUIUtil.toSmallIcon(viewAttributesPlugIn.getIcon()),
-                viewAttributesPlugIn.createEnableCheck(workbenchContext));
-        featureInstaller.addPopupMenuItem(layerNamePopupMenu, viewSchemaPlugIn,
-                viewSchemaPlugIn.getName(), false, ViewSchemaPlugIn.ICON,
-                ViewSchemaPlugIn.createEnableCheck(workbenchContext));
-
-        featureInstaller.addPopupMenuItem(layerNamePopupMenu, imageLayerManagerPlugIn,
-                imageLayerManagerPlugIn.getName() + "...", false, null,
-                ImageLayerManagerPlugIn.createEnableCheck(workbenchContext));
-        
         featureInstaller.addPopupMenuItem(layerNamePopupMenu, refreshDataStoreLayerPlugin,
             new String[]{MenuNames.DATASTORE}, refreshDataStoreLayerPlugin.getName() + "...", false, RefreshDataStoreLayerPlugin.ICON,
                 RefreshDataStoreLayerPlugin.createEnableCheck(workbenchContext));
+        featureInstaller.addPopupMenuItem(layerNamePopupMenu, imageLayerManagerPlugIn,
+                imageLayerManagerPlugIn.getName() + "...", false, null,
+                ImageLayerManagerPlugIn.createEnableCheck(workbenchContext));
 
         layerNamePopupMenu.addSeparator(); // ===================
+        
         /*featureInstaller.addPopupMenuItem(layerNamePopupMenu,
                 saveDatasetAsFilePlugIn, saveDatasetAsFilePlugIn.getName() + "...",
                 false, null, AbstractSaveDatasetAsPlugIn
@@ -686,10 +689,10 @@ public class JUMPConfiguration implements Setup {
                 saveDatasetAsPlugIn.getName() + "...", false, SaveDatasetAsPlugIn.ICON,
                 SaveDatasetAsPlugIn.createEnableCheck(workbenchContext));  
         featureInstaller.addMainMenuItemWithJava14Fix(saveProjectPlugIn, new String[] {MenuNames.FILE},
-                saveProjectPlugIn.getName(), false, null, checkFactory
+                saveProjectPlugIn.getName(), false, SaveProjectPlugIn.ICON, checkFactory
                         .createTaskWindowMustBeActiveCheck());
         featureInstaller.addMainMenuItemWithJava14Fix(saveProjectAsPlugIn, new String[] {MenuNames.FILE},
-                saveProjectAsPlugIn.getName() + "...", false, null, checkFactory
+                saveProjectAsPlugIn.getName() + "...", false, SaveProjectAsPlugIn.ICON, checkFactory
                         .createTaskWindowMustBeActiveCheck());  
         FeatureInstaller.addMainMenu(featureInstaller, new String[] {
                 MenuNames.FILE

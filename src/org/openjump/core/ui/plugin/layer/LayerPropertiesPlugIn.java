@@ -161,7 +161,7 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
                                                         .getFrame()
                                                         .getLayerNamePopupMenu();
         featureInstaller.addPopupMenuItem(layerNamePopupMenu,
-            this, LAYER_PROPERTIES + "..." + "{pos:4}",
+            this, LAYER_PROPERTIES + "..." + "{pos:6}",
             false, getIcon(), 
             createEnableCheck(workbenchContext));        
     }

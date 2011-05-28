@@ -1,3 +1,14 @@
+2011-05-28 mmichaud <michael.michaud@free.fr>
+    * ui improvements : add/change icons from Giuseppe Aruta distribution (jefre)
+      File>SaveProject
+      File>SaveProjectAs
+      File>Open Wizard>Database
+      File>Open wizard>Open File : same icon as File>Open File
+      File>Open Wizard>Open Project : same icon as File>Open Project
+      Help>Keyboard
+      Help>Info
+      LayerPopup > LayerProperties
+      
 2011-05-08 mmichaud <michael.michaud@free.fr>
     * added some I18N strings (tab Skin of Option menu, Tooltip for NoteTool,
       Plume tool, AdvancedMeasureTool)

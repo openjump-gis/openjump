@@ -33,10 +33,14 @@
 package com.vividsolutions.jump.workbench.ui.plugin;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-
+import javax.swing.ImageIcon;
 
 public class SaveProjectPlugIn extends AbstractSaveProjectPlugIn {
+    
+    public static final ImageIcon ICON = IconLoader.icon("layout.png");
+    
     private SaveProjectAsPlugIn saveProjectAsPlugIn;
 
     public SaveProjectPlugIn(SaveProjectAsPlugIn saveProjectAsPlugIn) {

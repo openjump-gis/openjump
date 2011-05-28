@@ -15,6 +15,7 @@ import javax.swing.SwingUtilities;
 
 import org.openjump.core.model.TaskEvent;
 import org.openjump.core.model.TaskListener;
+import org.openjump.core.ui.images.IconLoader;
 import org.openjump.core.ui.plugin.file.FindFile;
 import org.openjump.core.ui.plugin.file.OpenRecentPlugIn;
 import org.openjump.core.ui.swing.wizard.AbstractWizardGroup;
@@ -39,7 +40,6 @@ import com.vividsolutions.jump.workbench.plugin.PlugInManager;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.TaskFrame;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
-import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.WorkbenchContextReference;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
 
@@ -66,7 +66,7 @@ public class OpenProjectWizard extends AbstractWizardGroup {
    * @param workbenchContext The workbench context.
    */
   public OpenProjectWizard(final WorkbenchContext workbenchContext) {
-    super(I18N.get(KEY), IconLoader.icon("Open.gif"),
+    super(I18N.get(KEY), IconLoader.icon("folder_layout_add.png"),
       SelectProjectFilesPanel.KEY);
     this.workbenchContext = workbenchContext;
     initPanels(workbenchContext);

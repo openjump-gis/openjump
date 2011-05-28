@@ -60,6 +60,9 @@ import com.vividsolutions.jump.workbench.plugin.ThreadedBasePlugIn;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 
+/**
+ * @deprecated replaced by org.openjump.core.ui.plugin.file.OpenProjectPlugIn
+ */
 public class OpenProjectPlugIn extends ThreadedBasePlugIn {
 	private final static String RECENT_MENU_LIST_KEY = 
 		OpenProjectPlugIn.class.getName() + " - RECENT_MENU_LIST";  //LDB: probably shouldn't internationalize keys

@@ -30,18 +30,16 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.FileUtil;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import java.io.File;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn;
 
 public class SaveProjectAsPlugIn extends AbstractSaveProjectPlugIn {
     
-    //public static final String LAYERS_WITHOUT_DATASOURCE = I18N.get("ui.plugin.SaveProjectAsPlugIn.layers-without-datasource-management");
-    //
-    //public static final String DONOTSAVE = I18N.get("ui.plugin.SaveProjectAsPlugIn.do-not-save");
-    //public static final String SAVEASJML = I18N.get("ui.plugin.SaveProjectAsPlugIn.save-as-jml");
-    //public static final String SAVEASSHP = I18N.get("ui.plugin.SaveProjectAsPlugIn.save-as-shp");
+    public static final ImageIcon ICON = IconLoader.icon("layout_save.png");
     
     public static final FileFilter JUMP_PROJECT_FILE_FILTER =
         GUIUtil.createFileFilter(I18N.get("ui.plugin.SaveProjectAsPlugIn.jump-project-files"),
