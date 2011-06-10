@@ -5,6 +5,7 @@ import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.ColorChooserPanel;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.OptionsPanel;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.renderer.AbstractSelectionRenderer;
@@ -219,11 +220,14 @@ public class SelectionStyllingOptionsPanel extends JPanel implements OptionsPane
 		blackboard.put(BB_SELECTION_STYLE_POINT_SIZE, pointSizeSlider.getValue());
 		blackboard.put(BB_SELECTION_STYLE_POINT_FORM, ((String[])pointStyleComboBox.getSelectedItem())[1]);
 		// second set the values for the AbstractSelectionRenderer, which is the "rootclass" of all SelectionRenderer's
-		AbstractSelectionRenderer renderer = (AbstractSelectionRenderer) context.getLayerViewPanel().getRenderingManager().getRenderer(FeatureSelectionRenderer.CONTENT_ID);
-		renderer.setSelectionLineColor(lineColorChooserPanel.getColor());
-		renderer.setSelectionPointSize(pointSizeSlider.getValue());
-		renderer.setSelectionPointForm(((String[])pointStyleComboBox.getSelectedItem())[1]);
-		context.getLayerViewPanel().repaint();
+		LayerViewPanel layerViewPanel = context.getLayerViewPanel();
+		if (layerViewPanel != null) { // if no project is there the LayerViewPanel is null
+			AbstractSelectionRenderer renderer = (AbstractSelectionRenderer) layerViewPanel.getRenderingManager().getRenderer(FeatureSelectionRenderer.CONTENT_ID);
+			renderer.setSelectionLineColor(lineColorChooserPanel.getColor());
+			renderer.setSelectionPointSize(pointSizeSlider.getValue());
+			renderer.setSelectionPointForm(((String[])pointStyleComboBox.getSelectedItem())[1]);
+			layerViewPanel.repaint();
+		}
 	}
 
 	public void init() {

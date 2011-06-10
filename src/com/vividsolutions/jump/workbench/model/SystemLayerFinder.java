@@ -102,15 +102,17 @@ public abstract class SystemLayerFinder {
      * @return the layer, or null if there is no layer
      */
     public Layer getLayer() {
-        Layer layer = layerManagerProxy.getLayerManager().getLayer(layerName);
+		// Don't automatically create the layer. For example, #getLayer may
+		// be called by an EnableCheck; we wouldn't want the layer to get
+		// created in this case. [Jon Aquino]
+		Layer layer = null;
+		// it is possible that the getLayerManager() can return a null value,
+		// we must avoid a NPE here
+		LayerManager layerManager = layerManagerProxy.getLayerManager();
+		if (layerManager != null) {
+			layer = layerManager.getLayer(layerName);
 
-        if (layer == null) {
-            // Don't automatically create the layer. For example, #getLayer may
-            // be called by an EnableCheck; we wouldn't want the layer to get
-            // created in this case. [Jon Aquino]
-            return null;
-        }
-
+		}
         return layer;
     }
 

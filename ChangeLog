@@ -1,3 +1,9 @@
+2011-06-10 Matthias Scholz <ms@jammerhund.de>
+	* Fix NullPointerException in SystemLayerFinder.getLayer() and 
+		SelectionStyllingOptionsPanel.okPressed(), if no active internal frame
+		is there.
+		The NPE's came when you press the OK button in the options dialog.
+
 2011-05-28 mmichaud <michael.michaud@free.fr>
     * ui improvements : add/change icons from Giuseppe Aruta distribution (jefre)
       File>SaveProject
