@@ -52,6 +52,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import com.vividsolutions.jts.util.Assert;
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.ui.OptionsPanel;
 import com.vividsolutions.jump.workbench.ui.TrackedPopupMenu;
@@ -93,7 +94,7 @@ public class SkinOptionsPanel extends JPanel implements OptionsPanel {
 
     void jbInit() throws Exception {
         this.setLayout(gridBagLayout1);
-        label.setText("Skin:");
+        label.setText(I18N.get("ui.plugin.skin.InstallSkinsPlugIn.skins") + ":");
         this.add(comboBox,
             new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE,

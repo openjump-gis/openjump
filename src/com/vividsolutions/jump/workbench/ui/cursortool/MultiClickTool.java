@@ -203,22 +203,28 @@ public abstract class MultiClickTool extends AbstractCursorTool {
     }
 
     protected Shape getShape() throws NoninvertibleTransformException {
-        Point2D firstPoint = getPanel().getViewport().toViewPoint((Coordinate)coordinates.get(0));
         GeneralPath path = new GeneralPath();
-        path.moveTo((float) firstPoint.getX(), (float) firstPoint.getY());
+		// sometimes the coordinates are empty and we get an IndexOutOfBoundsExeption!
+		// we get this if we use this tool, open a menu and then click with the
+		// open menu in the map. In this moment we do not get the mousePressed
+		// event and no coordinate will be added.
+		if (!coordinates.isEmpty()) {
+			Point2D firstPoint = getPanel().getViewport().toViewPoint((Coordinate)coordinates.get(0));
+			path.moveTo((float) firstPoint.getX(), (float) firstPoint.getY());
 
-        for (int i = 1; i < coordinates.size(); i++) { //start 1 [Jon Aquino]
+			for (int i = 1; i < coordinates.size(); i++) { //start 1 [Jon Aquino]
 
-            Coordinate nextCoordinate = (Coordinate) coordinates.get(i);
-            Point2D nextPoint = getPanel().getViewport().toViewPoint(nextCoordinate);
-            path.lineTo((int) nextPoint.getX(), (int) nextPoint.getY());
-        }
-        Point2D tentativePoint = getPanel().getViewport().toViewPoint(tentativeCoordinate);
-        path.lineTo((int) tentativePoint.getX(), (int) tentativePoint.getY());
-        // close path (for rings only)
-        if (closeRing)
-          path.lineTo((int) firstPoint.getX(), (int) firstPoint.getY());
+				Coordinate nextCoordinate = (Coordinate) coordinates.get(i);
+				Point2D nextPoint = getPanel().getViewport().toViewPoint(nextCoordinate);
+				path.lineTo((int) nextPoint.getX(), (int) nextPoint.getY());
+			}
+			Point2D tentativePoint = getPanel().getViewport().toViewPoint(tentativeCoordinate);
+			path.lineTo((int) tentativePoint.getX(), (int) tentativePoint.getY());
+			// close path (for rings only)
+			if (closeRing)
+			  path.lineTo((int) firstPoint.getX(), (int) firstPoint.getY());
 
+			}
         return path;
     }
 

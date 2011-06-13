@@ -42,6 +42,7 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.OptionsDialog;
+import javax.swing.UIManager.LookAndFeelInfo;
 
 /**
 * 
@@ -82,12 +83,9 @@ public class InstallSkinsPlugIn extends AbstractPlugIn {
         ArrayList skins = new ArrayList();
         skins.add(createProxy(DEFAULT,
                 UIManager.getSystemLookAndFeelClassName()));
-        skins.add(createProxy("Metal",
-                UIManager.getCrossPlatformLookAndFeelClassName()));
-        skins.add(createProxy("Windows",
-                "com.sun.java.swing.plaf.windows.WindowsLookAndFeel"));
-        skins.add(createProxy("Motif",
-                "com.sun.java.swing.plaf.motif.MotifLookAndFeel"));
+		for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+			skins.add(createProxy(info.getName(), info.getClassName()));
+		}
         context.getWorkbenchContext().getWorkbench().getBlackboard().put(SkinOptionsPanel.SKINS_KEY,
             skins);
         OptionsDialog.instance(context.getWorkbenchContext().getWorkbench()).addTab(

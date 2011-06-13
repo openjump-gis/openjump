@@ -1,3 +1,11 @@
+2011-06-13 Matthias Scholz <ms@jammerhund.de>
+	* InstallSkinsPlugIn.initialize(): change from hardcoded look and feel to 
+		retrieval of available look and feel's
+	* i18n of the word "Skin" in the SkinOptionsPanel
+	* Bugfix MultiClickTool.getShape():
+		* an IndexOutOfBoundsExeption occurs if you use a MultiClickTool and a
+			menu is open.
+
 2011-06-10 Matthias Scholz <ms@jammerhund.de>
 	* Fix NullPointerException in SystemLayerFinder.getLayer() and 
 		SelectionStyllingOptionsPanel.okPressed(), if no active internal frame
