@@ -1,3 +1,6 @@
+2011-06-17 Matthias Scholz <ms@jammerhund.de>
+	* update german translation
+
 2011-06-13 Matthias Scholz <ms@jammerhund.de>
 	* InstallSkinsPlugIn.initialize(): change from hardcoded look and feel to 
 		retrieval of available look and feel's
