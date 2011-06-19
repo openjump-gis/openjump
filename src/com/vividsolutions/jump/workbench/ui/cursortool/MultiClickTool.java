@@ -166,7 +166,7 @@ public abstract class MultiClickTool extends AbstractCursorTool {
       if (metrics == null) return;
       if (isShapeOnScreen()) {
         ArrayList currentCoordinates = new ArrayList(getCoordinates());
-        currentCoordinates.add(getPanel().getViewport().toModelCoordinate(e.getPoint()));
+        currentCoordinates.add(snap(getPanel().getViewport().toModelCoordinate(e.getPoint())));
         metrics.displayMetrics(currentCoordinates, getPanel());
       }
     }

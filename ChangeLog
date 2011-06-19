@@ -1,3 +1,7 @@
+2011-06-19 Matthias Scholz <ms@jammerhund.de>
+	* MultiClickTool.displayMetrics()
+		* Fix of bug 3034927 - Measure Tool Doesn't Comply With Snap
+
 2011-06-18 mmichaud <michael.michaud@free.fr>
     * Fix LayerStyle2SLDPlugin and the corresponding xsl
       so that it works without xalan.
