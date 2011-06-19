@@ -45,7 +45,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 
-import sun.misc.BASE64Encoder;
+import net.iharder.Base64;
 
 import javax.swing.JOptionPane;
 
@@ -116,7 +116,7 @@ public void initialize() throws IOException {
             URLConnection con = requestUrl.openConnection();
             if(requestUrl.getUserInfo() != null)
                 con.setRequestProperty("Authorization", "Basic " +
-                        new BASE64Encoder().encode(requestUrl.getUserInfo().getBytes()));
+                        Base64.encodeBytes(requestUrl.getUserInfo().getBytes()));
             Parser p = new Parser();
             cap = p.parseCapabilities( this, con.getInputStream() );
             String url1 = cap.getService().getServerUrl();

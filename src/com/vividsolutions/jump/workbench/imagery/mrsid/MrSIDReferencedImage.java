@@ -77,7 +77,6 @@ import javax.imageio.stream.FileImageInputStream;
 import javax.media.jai.RenderedOp;
 import javax.media.jai.operator.FileLoadDescriptor;
 
-import com.sun.image.codec.jpeg.JPEGDecodeParam;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.JUMPException;
 import com.vividsolutions.jump.feature.Feature;
@@ -292,12 +291,9 @@ public class MrSIDReferencedImage implements ReferencedImage{
 	                	//--- [sstein 3.Mai.2008] new stuff (note: the grey values are a bit different now: lighter)                    
 	                	RenderedOp image = FileLoadDescriptor.create(jpgFile.getPath(),null,null,null);
 	                	
-	                    int jpg_colorspace = image.getColorModel().getColorSpace().getType();
-	                    if (jpg_colorspace != JPEGDecodeParam.COLOR_ID_GRAY)
-	                    {
-	                        RenderingHints rh = new RenderingHints(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-	                        g.setRenderingHints(rh);
-	                    }
+                        RenderingHints rh = new RenderingHints(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                        g.setRenderingHints(rh);
+
 	                    Composite composite = g.getComposite();
 	                    g.setComposite(AlphaComposite.Src);
 	                    BufferedImage img = image.getAsBufferedImage();

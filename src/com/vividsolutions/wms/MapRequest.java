@@ -52,9 +52,9 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import org.apache.log4j.Logger;
+import net.iharder.Base64;
 
-import sun.misc.BASE64Encoder;
+import org.apache.log4j.Logger;
 
 /**
  * Represents all of the parameters of a getMap request from a WMS server.
@@ -308,7 +308,7 @@ public class MapRequest {
       URLConnection con = requestUrl.openConnection();
       if(requestUrl.getUserInfo() != null)
           con.setRequestProperty("Authorization", "Basic " +
-                  new BASE64Encoder().encode(requestUrl.getUserInfo().getBytes()));
+                  Base64.encodeBytes(requestUrl.getUserInfo().getBytes()));
       return ImageIO.read(con.getInputStream());
   }
   
