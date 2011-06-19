@@ -41,6 +41,7 @@ package org.openjump.core.ui.plugin.style;
 import static com.vividsolutions.jump.I18N.get;
 import static com.vividsolutions.jump.I18N.getMessage;
 import static com.vividsolutions.jump.workbench.ui.MenuNames.LAYER;
+import static com.vividsolutions.jump.workbench.ui.MenuNames.STYLE;
 import static com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn.get;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
@@ -64,18 +65,22 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.Vector;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
+import javax.swing.JPopupMenu;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.log4j.Logger;
+import org.openjump.core.ui.images.IconLoader;
 import org.openjump.core.ui.swing.SelectFromListPanel;
 import org.w3c.dom.Document;
 
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.util.Blackboard;
-import com.vividsolutions.jump.util.Range;
 import com.vividsolutions.jump.util.Range.RangeTreeMap;
+import com.vividsolutions.jump.util.Range;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
@@ -83,9 +88,10 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.OKCancelDialog.Validator;
 import com.vividsolutions.jump.workbench.ui.OKCancelDialog;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
-import com.vividsolutions.jump.workbench.ui.OKCancelDialog.Validator;
+import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.LabelStyle;
@@ -103,17 +109,22 @@ import com.vividsolutions.jump.workbench.ui.renderer.style.VertexStyle;
 public class ImportSLDPlugIn extends AbstractPlugIn {
 
     private static Logger LOG = getLogger(ImportSLDPlugIn.class);
+    
+    public static final ImageIcon ICON = IconLoader.icon("sld_in_16.png");
 
     @Override
     public void initialize(PlugInContext context) throws Exception {
-        EnableCheckFactory enableCheckFactory = new EnableCheckFactory(context.getWorkbenchContext());
-
-        EnableCheck enableCheck = new MultiEnableCheck().add(
-                enableCheckFactory.createWindowWithLayerManagerMustBeActiveCheck()).add(
-                enableCheckFactory.createExactlyNLayerablesMustBeSelectedCheck(1, Layerable.class));
-
-        context.getFeatureInstaller().addMainMenuItem(this, new String[] { LAYER },
-                get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.name"), false, null, enableCheck);
+        FeatureInstaller featureInstaller =
+            new FeatureInstaller(context.getWorkbenchContext());
+	    EnableCheck enableCheck =
+	        createEnableCheck(context.getWorkbenchContext());
+	    JPopupMenu popupMenu =
+	        context.getWorkbenchFrame().getLayerNamePopupMenu();
+	    featureInstaller.addPopupMenuItem(popupMenu, this, new String[]{STYLE},
+		    this.getName(), false, ICON, enableCheck);
+        featureInstaller.addMainMenuItem(this, new String[] {LAYER},
+            get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.name"),
+            false, ICON, enableCheck);
     }
 
     private static String fixAttribute(Layer l, WorkbenchFrame frame, String old) {
@@ -379,6 +390,18 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
     @Override
     public String getName() {
         return get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.name");
+    }
+    
+    /**
+     * @param workbenchContext
+     * @return the enable check
+     */
+    public EnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
+        EnableCheckFactory ecf = new EnableCheckFactory(workbenchContext);
+        MultiEnableCheck mec = new MultiEnableCheck()
+            .add(ecf.createWindowWithLayerNamePanelMustBeActiveCheck())
+            .add(ecf.createExactlyNLayerablesMustBeSelectedCheck(1, Layerable.class));
+        return mec;
     }
 
 }

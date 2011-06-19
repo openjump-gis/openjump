@@ -1,5 +1,12 @@
 <?xml version="1.0"?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:deegreewfs="http://www.deegree.org/wfs" xmlns:java="java" xmlns:xslutil="de.latlon.deejump.plugin.style.XSLUtility" xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" version="1.0">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:fo="http://www.w3.org/1999/XSL/Format"
+                xmlns:deegreewfs="http://www.deegree.org/wfs" 
+                xmlns:java="java" 
+                xmlns:xslutil="de.latlon.deejump.plugin.style.XSLUtility" 
+                xmlns:sld="http://www.opengis.net/sld" 
+                xmlns:ogc="http://www.opengis.net/ogc" 
+                version="1.0">
   <xsl:param name="defaultFillColor" select="xslutil:toHexColor(/layer/styles/style[1]/fill/color)"/>
   <xsl:param name="defaultStrokeColor" select="xslutil:toHexColor(/layer/styles/style[1]/line/color)"/>
   <xsl:param name="defaultStrokeWidth" select="/layer/styles/style[1]/line/@width"/>
@@ -11,13 +18,33 @@
   <xsl:param name="geoType" select="/layer/@geoType"/>
   <xsl:param name="minScale">0</xsl:param>
   <xsl:param name="maxScale">999999999999</xsl:param>
-  <xsl:param name="Namespace"/>
-  <xsl:param name="NamespacePrefixWithoutColon"/>
-  <xsl:param name="NamespacePrefix"/>
+  <xsl:param name="Namespace">http://sourceforge.net/projects/jump-pilot/</xsl:param>
+  <!--xsl:param name="NamespacePrefixWithoutColon">oj</xsl:param-->
+  <xsl:param name="NamespacePrefix">oj:</xsl:param>
 
   <xsl:template match="/">
-    <sld:StyledLayerDescriptor xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd" xmlns="http://www.opengis.net/sld" xmlns:sld="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:wfs="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0.0">
-		<xsl:attribute name="{ $NamespacePrefixWithoutColon }:dummy" namespace="{ $Namespace }"/>
+    <sld:StyledLayerDescriptor xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd"
+                               xmlns="http://www.opengis.net/sld"
+                               xmlns:sld="http://www.opengis.net/sld"
+                               xmlns:gml="http://www.opengis.net/gml"
+                               xmlns:wfs="http://www.opengis.net/wfs"
+                               xmlns:ogc="http://www.opengis.net/ogc"
+                               xmlns:xlink="http://www.w3.org/1999/xlink"
+                               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                               version="1.0.0">
+      
+      <!-- Creating a dummy attribute in this namespace is a way of adding
+           this namespace to the main StyledLayerDescriptor element.
+           Xalan makes it possible to define this attribute with NamespacePrefix
+           parameter as prefix and Namespace parameter as Namespace.
+           Unfortunately, java xslt processor does not. To get rid of xalan, I
+           fixed the prefix to oj (prefix is a pure convention) and let the user
+           define the namespace. -->
+           
+      <!-- This rule works only with xalan-->
+      <!--xsl:attribute name="{ $NamespacePrefixWithoutColon }:dummy" namespace="{ $Namespace }"/-->
+      <!-- This rule fix the prefix to oj and works with java xslt processor -->
+      <xsl:attribute name="oj:dummy" namespace="{$Namespace}"/>
       <xsl:apply-templates select="layer"/>
     </sld:StyledLayerDescriptor>
   </xsl:template>
@@ -53,7 +80,7 @@
             <sld:Rule>
               <ogc:Filter>
                 <ogc:PropertyIsInstanceOf>
-                  <ogc:PropertyName>app:geometry</ogc:PropertyName>
+                  <ogc:PropertyName><xsl:value-of select="$NamespacePrefix"/>geometry</ogc:PropertyName>
                   <ogc:Literal>gml:_Surface</ogc:Literal>
                 </ogc:PropertyIsInstanceOf>
               </ogc:Filter>
@@ -77,7 +104,7 @@
             <sld:Rule>
               <ogc:Filter>
                 <ogc:PropertyIsInstanceOf>
-                  <ogc:PropertyName>app:geometry</ogc:PropertyName>
+                  <ogc:PropertyName><xsl:value-of select="$NamespacePrefix"/>geometry</ogc:PropertyName>
                   <ogc:Literal>gml:_Curve</ogc:Literal>
                 </ogc:PropertyIsInstanceOf>
               </ogc:Filter>
@@ -100,7 +127,7 @@
             <sld:Rule>
               <ogc:Filter>
                 <ogc:PropertyIsInstanceOf>
-                  <ogc:PropertyName>app:geometry</ogc:PropertyName>
+                  <ogc:PropertyName><xsl:value-of select="$NamespacePrefix"/>geometry</ogc:PropertyName>
                   <ogc:Literal>gml:Point</ogc:Literal>
                 </ogc:PropertyIsInstanceOf>
               </ogc:Filter>
@@ -272,7 +299,7 @@
         <sld:Name><xsl:value-of select="./key"/></sld:Name>
         <ogc:Filter>
           <ogc:PropertyIsLike wildCard="*" singleChar="?" escape="\">
-            <ogc:PropertyName><xsl:value-of select="$NamespacePrefix"/><xsl:value-of select="../../attribute-name"/></ogc:PropertyName>
+            <ogc:PropertyName><xsl:value-of select="oj"/><xsl:value-of select="../../attribute-name"/></ogc:PropertyName>
             <ogc:Literal>
               <xsl:value-of select="./key"/>
             </ogc:Literal>

@@ -1,3 +1,11 @@
+2011-06-18 mmichaud <michael.michaud@free.fr>
+    * Fix LayerStyle2SLDPlugin and the corresponding xsl
+      so that it works without xalan.
+      To achieve that, the prefix of the user-defined namespace is now set to
+      "oj:", whatever the namespace is.
+    * Add LayerStyle2SLDPlugin and ImportSLDPlugIn in Layer>Style context menu
+      with an icon from Giuseppe
+
 2011-06-17 Matthias Scholz <ms@jammerhund.de>
 	* update german translation
 

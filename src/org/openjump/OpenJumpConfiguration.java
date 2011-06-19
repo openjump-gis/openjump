@@ -221,12 +221,12 @@ public class OpenJumpConfiguration {
     pluginContext.getFeatureInstaller().addMenuSeparator(LAYER);
 
     // -- deeJUMP function by LAT/LON [01.08.2006 sstein]
-    LayerStyle2SLDPlugIn mySytle2SLDplugIn = new LayerStyle2SLDPlugIn();
-    mySytle2SLDplugIn.initialize(new PlugInContext(workbenchContext, null,
-      null, null, null));
+    //LayerStyle2SLDPlugIn mySytle2SLDplugIn = new LayerStyle2SLDPlugIn();
+    //mySytle2SLDplugIn.initialize(new PlugInContext(workbenchContext, null,
+    //  null, null, null));
     
-    new ImportSLDPlugIn().initialize(pluginContext);
-    new ImportArcMapStylePlugIn().initialize(pluginContext);
+    //new ImportSLDPlugIn().initialize(pluginContext);
+    //new ImportArcMapStylePlugIn().initialize(pluginContext);
     
     pluginContext.getFeatureInstaller().addMenuSeparator(LAYER);
 
@@ -428,6 +428,11 @@ public class OpenJumpConfiguration {
     RefreshDataStoreQueryPlugIn refreshDataStoreQueryPlugIn = new RefreshDataStoreQueryPlugIn();
     refreshDataStoreQueryPlugIn.initialize(new PlugInContext(workbenchContext,
       null, null, null, null));
+    
+    // -- deeJUMP function by LAT/LON [01.08.2006 sstein]
+    new LayerStyle2SLDPlugIn().initialize(pluginContext);
+    new ImportSLDPlugIn().initialize(pluginContext);
+    new ImportArcMapStylePlugIn().initialize(pluginContext);
     
     //featureInstaller.addPopupMenuItem(layerNamePopupMenu, refreshDataStoreQueryPlugin,
     //        new String[]{MenuNames.DATASTORE}, refreshDataStoreQueryPlugin.getName() + "...", false, RefreshDataStoreQueryPlugin.ICON,
