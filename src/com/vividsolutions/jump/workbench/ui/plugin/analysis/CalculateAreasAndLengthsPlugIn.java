@@ -90,12 +90,12 @@ public class CalculateAreasAndLengthsPlugIn extends AbstractPlugIn {
     {
         	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
     		featureInstaller.addMainMenuItem(
-    	        this,								//exe
-  				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS, MenuNames.ONELAYER}, 	//menu path
-                this.getName() + "...", //name methode .getName recieved by AbstractPlugIn 
+    	        this,
+  				new String[] {MenuNames.TOOLS, MenuNames.STATISTICS},
+                this.getName() + "...",
                 false,			//checkbox
                 null,			//icon
-                createEnableCheck(context.getWorkbenchContext())); //enable check  
+                createEnableCheck(context.getWorkbenchContext())); 
     }
     
     public boolean execute(PlugInContext context) throws Exception {

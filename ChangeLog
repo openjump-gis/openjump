@@ -1,3 +1,19 @@
+2011-06-20 mmichaud <michael.michaud@free.fr>
+    * Change Tools>Analysis menu. Now contains the following plugins
+        - com.vividsolutions.jump.workbench.ui.plugin.analysis.BufferPlugIn
+	    - org.openjump.core.ui.plugin.tools.MultiRingBufferSelectedPlugIn
+	    - org.openjump.core.ui.plugin.tools.PlumePlugIn
+	    - com.vividsolutions.jump.workbench.ui.plugin.analysis.CalculateAreasAndLengthsPlugIn
+	    - com.vividsolutions.jump.workbench.ui.plugin.analysis.ConvexHullPlugIn
+	    - org.openjump.core.ui.plugin.tools.ConvexHullPlugIn
+	    - com.vividsolutions.jump.workbench.ui.plugin.analysis.GeometryFunctionPlugIn
+	    - com.vividsolutions.jump.workbench.ui.plugin.analysis.OverlayPlugIn
+	    - org.openjump.core.ui.plugin.tools.IntersectPolygonLayersPlugIn
+	    - com.vividsolutions.jump.workbench.ui.plugin.analysis.SpatialJoinPlugIn
+	    - org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn
+	    - com.vividsolutions.jump.workbench.ui.plugin.analysis.UnionPlugIn
+	    - org.openjump.core.ui.plugin.tools.UnionByAttributePlugIn
+
 2011-06-19 Matthias Scholz <ms@jammerhund.de>
 	* MultiClickTool.displayMetrics()
 		* Fix of bug 3034927 - Measure Tool Doesn't Comply With Snap

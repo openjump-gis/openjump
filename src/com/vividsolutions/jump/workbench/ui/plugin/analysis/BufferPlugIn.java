@@ -113,7 +113,7 @@ public class BufferPlugIn
       	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
   		featureInstaller.addMainMenuItem(
   	        this,								//exe
-				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_GENERATE}, 	//menu path
+				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS}, 	//menu path
               this.getName() + "...", //name methode .getName recieved by AbstractPlugIn 
               false,			//checkbox
               null,			//icon

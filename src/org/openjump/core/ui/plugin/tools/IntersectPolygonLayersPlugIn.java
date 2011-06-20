@@ -103,7 +103,7 @@ public class IntersectPolygonLayersPlugIn extends ThreadedBasePlugIn {
 	public void initialize(PlugInContext context) throws Exception {
 		context.getFeatureInstaller().addMainMenuItem(
 				this,
-				new String[] { MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS, MenuNames.TWOLAYERS },
+				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
 				this.getName(),
 				false,
 				null,
@@ -111,7 +111,7 @@ public class IntersectPolygonLayersPlugIn extends ThreadedBasePlugIn {
 						new EnableCheckFactory(context.getWorkbenchContext())
 								.createTaskWindowMustBeActiveCheck()).add(
 						new EnableCheckFactory(context.getWorkbenchContext())
-								.createAtLeastNLayersMustExistCheck(2)));
+								.createAtLeastNLayersMustExistCheck(1)));
 
 		this.sDescription = I18N
 				.get("org.openjump.plugin.tools.IntersectPolygonLayersPlugIn.sDescrition");

@@ -1,4 +1,3 @@
-
 /*
  * The Unified Mapping Platform (JUMP) is an extensible, interactive GUI
  * for visualizing and manipulating spatial features with geometry and attributes.
@@ -72,8 +71,6 @@ public class OverlayPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
     private MultiInputDialog dialog;
     private OverlayEngine overlayEngine;
 
-
-
     public OverlayPlugIn() {
     }
 
@@ -83,16 +80,15 @@ public class OverlayPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
         categoryName = value;
     }
     
-    public void initialize(PlugInContext context) throws Exception
-    {
-        	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-    		featureInstaller.addMainMenuItem(
-    	        this,								//exe
-  				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS, MenuNames.TWOLAYERS}, 	//menu path
-                this.getName() + "...", //name methode .getName recieved by AbstractPlugIn 
-                false,			//checkbox
-                null,			//icon
-                createEnableCheck(context.getWorkbenchContext())); //enable check  
+    public void initialize(PlugInContext context) throws Exception {
+        FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
+    	featureInstaller.addMainMenuItem(
+    	    this,
+  			new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
+            this.getName() + "...",
+            false,			//checkbox
+            null,			//icon
+            createEnableCheck(context.getWorkbenchContext()));
     }
     
     public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {

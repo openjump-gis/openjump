@@ -47,12 +47,13 @@ public interface MenuNames {
 	public static String VIEW = I18N.get("ui.MenuNames.VIEW");
 	public static String LAYER = I18N.get("ui.MenuNames.LAYER");
 	public static String TOOLS = I18N.get("ui.MenuNames.TOOLS");
-	public static String TOOLS_GENERATE = I18N.get("ui.MenuNames.TOOLS.GENERATE");
-	public static String TOOLS_WARP = I18N.get("ui.MenuNames.TOOLS.WARP");
+	public static String TOOLS_ADVANCED = I18N.get("ui.MenuNames.TOOLS.ADVANCED");
 	public static String TOOLS_ANALYSIS = I18N.get("ui.MenuNames.TOOLS.ANALYSIS");
-	public static String TOOLS_QA = I18N.get("ui.MenuNames.TOOLS.QA");
-	public static String TOOLS_JOIN = I18N.get("ui.MenuNames.TOOLS.JOIN");
 	public static String TOOLS_GENERALIZATION = I18N.get("ui.MenuNames.TOOLS.GENERALIZATION");
+	public static String TOOLS_GENERATE = I18N.get("ui.MenuNames.TOOLS.GENERATE");
+	public static String TOOLS_JOIN = I18N.get("ui.MenuNames.TOOLS.JOIN");
+	public static String TOOLS_QA = I18N.get("ui.MenuNames.TOOLS.QA");
+	public static String TOOLS_WARP = I18N.get("ui.MenuNames.TOOLS.WARP");
 	//public static String TOOLS_PROGRAMMING =I18N.get("ui.MenuNames.TOOLS.PROGRAMMING");
 	public static String TOOLS_QUERIES =I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.menu");
 	public static String WINDOW = I18N.get("ui.MenuNames.WINDOW");
@@ -78,6 +79,7 @@ public interface MenuNames {
 	//Submenu
 	public static String ONELAYER = I18N.get("ui.MenuNames.ONELAYER");
 	public static String TWOLAYERS = I18N.get("ui.MenuNames.TWOLAYERS");
+	
 	public static String CONVERT = I18N.get("ui.MenuNames.CONVERT");
 	public static String EXTRACT = I18N.get("ui.MenuNames.EXTRACT");
 	public static String MERGE = I18N.get("ui.MenuNames.MERGE");

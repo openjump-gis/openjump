@@ -62,7 +62,7 @@ public class IntersectPolygonsOneLayerPlugIn extends ThreadedBasePlugIn {
 	public void initialize(PlugInContext context) throws Exception {
 		context.getFeatureInstaller().addMainMenuItem(
 				this,
-				new String[] { MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS, MenuNames.ONELAYER },
+				new String[] { MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
 				this.getName() + "...",
 				false,
 				null,
@@ -70,7 +70,7 @@ public class IntersectPolygonsOneLayerPlugIn extends ThreadedBasePlugIn {
 						new EnableCheckFactory(context.getWorkbenchContext())
 								.createTaskWindowMustBeActiveCheck()).add(
 						new EnableCheckFactory(context.getWorkbenchContext())
-								.createAtLeastNLayersMustExistCheck(2)));
+								.createAtLeastNLayersMustExistCheck(1)));
 		// -- reset in execute to correct language
 		this.sDescription = I18N.get("org.openjump.plugin.tools.analysis.onelayer.IntersectPolygonsOneLayerPlugIn.sDescription");
 	}

@@ -125,12 +125,12 @@ public class GeometryFunctionPlugIn
   public void initialize(PlugInContext context) throws Exception {
     	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
   		featureInstaller.addMainMenuItem(
-  	        this,								//exe
-				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY}, 	//menu path
-              this.getName() + "...", //name methode .getName recieved by AbstractPlugIn 
-              false,			//checkbox
-              null,			//icon
-              createEnableCheck(context.getWorkbenchContext())); //enable check  
+  	        this,
+			new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
+            this.getName() + "...",
+            false,			//checkbox
+            null,			//icon
+            createEnableCheck(context.getWorkbenchContext()));
   		
     registerFunctions(context);
   }

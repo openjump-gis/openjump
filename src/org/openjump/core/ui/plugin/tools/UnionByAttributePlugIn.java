@@ -96,13 +96,15 @@ public class UnionByAttributePlugIn extends AbstractPlugIn implements ThreadedPl
     public UnionByAttributePlugIn() {}
     
     @Override
-    public String getName() {return I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.union-by-attribute") + "...";}
+    public String getName() {
+        return I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.union-by-attribute") + "...";
+    }
     
     @Override
     public void initialize(PlugInContext context) throws Exception {
         context.getFeatureInstaller().addMainMenuItem(
             this,
-            new String[] { MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS, MenuNames.ONELAYER },
+            new String[] { MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
             this.getName(),
             false,
             null,

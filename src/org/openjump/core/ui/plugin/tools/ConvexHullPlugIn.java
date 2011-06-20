@@ -70,7 +70,7 @@ public class ConvexHullPlugIn extends AbstractPlugIn {
     {     
         workbenchContext = context.getWorkbenchContext();
         context.getFeatureInstaller().addMainMenuItemWithJava14Fix(this,
-			new String[] {MenuNames.TOOLS, MenuNames.TOOLS_GENERATE },
+			new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
 			getName() /*+ "{pos:3}"*/,
 			false, null, this.createEnableCheck(workbenchContext));
     }

@@ -70,12 +70,12 @@ public class ConvexHullPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
     {
         	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
     		featureInstaller.addMainMenuItem(
-    	        this,								//exe
-  				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_GENERATE}, 	//menu path
-                this.getName() + "...", //name methode .getName recieved by AbstractPlugIn 
+    	        this,
+  				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
+                this.getName() + "...",
                 false,			//checkbox
                 null,			//icon
-                createEnableCheck(context.getWorkbenchContext())); //enable check  
+                createEnableCheck(context.getWorkbenchContext())); 
     }
     
     public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
