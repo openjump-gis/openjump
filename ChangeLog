@@ -13,6 +13,7 @@
 	    - org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn
 	    - com.vividsolutions.jump.workbench.ui.plugin.analysis.UnionPlugIn
 	    - org.openjump.core.ui.plugin.tools.UnionByAttributePlugIn
+	* Add icons to GenerateLogPlugIn and MosaicInternalFrame
 
 2011-06-19 Matthias Scholz <ms@jammerhund.de>
 	* MultiClickTool.displayMetrics()

@@ -38,22 +38,20 @@ import javax.swing.ImageIcon;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
-
+//import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 
 public class OutputWindowPlugIn extends AbstractPlugIn {
+    
     public OutputWindowPlugIn() {
     }
 
     public boolean execute(PlugInContext context) throws Exception {
         reportNothingToUndoYet(context);
         context.getWorkbenchFrame().getOutputFrame().surface();
-
         return true;
     }
 
     public ImageIcon getIcon() {
-        //return IconLoaderFamFam.icon("application_view_list.png");
         return IconLoader.icon("Frame.gif");
     }
 }

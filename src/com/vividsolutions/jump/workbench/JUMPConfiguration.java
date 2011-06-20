@@ -857,11 +857,14 @@ public class JUMPConfiguration implements Setup {
                 .getName()
                 + "...", false, null, null);
         */
-        featureInstaller.addMainMenuItemWithJava14Fix(outputWindowPlugIn, new String[] {MenuNames.WINDOW},
-                outputWindowPlugIn.getName(), false, GUIUtil
-                        .toSmallIcon(outputWindowPlugIn.getIcon()), null);        
-        featureInstaller.addMainMenuItemWithJava14Fix(generateLogPlugIn, new String[] {MenuNames.WINDOW},
-                generateLogPlugIn.getName() + "...", false, null, null);        
+        featureInstaller.addMainMenuItemWithJava14Fix(outputWindowPlugIn,
+                new String[] {MenuNames.WINDOW},
+                outputWindowPlugIn.getName(), false,
+                GUIUtil.toSmallIcon(outputWindowPlugIn.getIcon()), null);        
+        featureInstaller.addMainMenuItemWithJava14Fix(generateLogPlugIn,
+                new String[] {MenuNames.WINDOW},
+                generateLogPlugIn.getName(), false,
+                GUIUtil.toSmallIcon(generateLogPlugIn.getIcon()), null);
         featureInstaller.addMenuSeparator(MenuNames.WINDOW); // ===================
         
         featureInstaller.addMainMenuItemWithJava14Fix(cloneWindowPlugIn, new String[] {MenuNames.WINDOW},

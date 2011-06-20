@@ -28,6 +28,7 @@
 
 package org.openjump.core.ui.plugin.window;
 
+import org.openjump.core.ui.images.IconLoader;
 import org.openjump.core.ui.plugin.AbstractUiPlugIn;
 import org.openjump.core.ui.util.ScreenScale;
 
@@ -50,6 +51,7 @@ import com.vividsolutions.jump.workbench.ui.Viewport;
 import com.vividsolutions.jump.workbench.ui.ViewportListener;
 
 import java.awt.geom.Point2D;
+import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
@@ -66,9 +68,12 @@ import javax.swing.event.ChangeListener;
  * @since 1.2F
  */
 public class MosaicInternalFramesPlugIn extends AbstractUiPlugIn {
+    
+    public static final ImageIcon ICON = IconLoader.icon("application_mosaic.png");
 
     public MosaicInternalFramesPlugIn() {
-        super(I18N.get("org.openjump.core.ui.plugin.window.MosaicInternalFramesPlugIn.Mosaic"));
+        super(I18N.get("org.openjump.core.ui.plugin.window.MosaicInternalFramesPlugIn.Mosaic"),
+            ICON);
     }
 
     public void initialize(PlugInContext context) throws Exception {
