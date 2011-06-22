@@ -1,3 +1,6 @@
+2011-06-22 mmichaud <michael.michaud@free.fr>
+    * Add an icon for AddDatastoreLayerPlugIn (Category contextual menu)
+
 2011-06-20 mmichaud <michael.michaud@free.fr>
     * Change Tools>Analysis menu. Now contains the following plugins
         - com.vividsolutions.jump.workbench.ui.plugin.analysis.BufferPlugIn

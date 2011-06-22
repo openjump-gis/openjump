@@ -8,10 +8,15 @@ import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.AddNewLayerPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.OpenProjectPlugIn;
 
+import javax.swing.ImageIcon;
+
 public class AddDatastoreLayerPlugIn extends AbstractAddDatastoreLayerPlugIn {
+    
+    public static final ImageIcon ICON = IconLoader.icon("database_add.png");
 
     public boolean execute(final PlugInContext context) throws Exception {
         ((AddDatastoreLayerPanel) panel(context)).setCaching(true);

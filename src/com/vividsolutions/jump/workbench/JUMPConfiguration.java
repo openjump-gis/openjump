@@ -404,8 +404,8 @@ public class JUMPConfiguration implements Setup {
         //[sstein 2.June.2008] added back due to table list history (need to check other way?)
         featureInstaller.addPopupMenuItem(workbenchContext.getWorkbench()
                 .getFrame().getCategoryPopupMenu(), addDatastoreLayerPlugIn,
-                addDatastoreLayerPlugIn.getName() + "...", false, null,
-                null);
+                addDatastoreLayerPlugIn.getName() + "...",
+                false, addDatastoreLayerPlugIn.ICON, null);
         /* //[sstein 21.Mar.2008] removed since now contained in new open menu
         featureInstaller.addPopupMenuItem(workbenchContext.getWorkbench()
                 .getFrame().getCategoryPopupMenu(), addWMSQueryPlugIn,
@@ -904,10 +904,10 @@ public class JUMPConfiguration implements Setup {
     //================================
     //public static String MENU_LAYER = MenuNames.LAYER;
 
-        private AddDatastoreLayerPlugIn addDatastoreLayerPlugIn = new AddDatastoreLayerPlugIn();
-        private RunDatastoreQueryPlugIn runDatastoreQueryPlugIn = new RunDatastoreQueryPlugIn();
-        private InstallDatastoreLayerRendererHintsPlugIn installDatastoreLayerRendererHintsPlugIn = new InstallDatastoreLayerRendererHintsPlugIn();
-        private AddImageLayerPlugIn addImageLayerPlugIn = new AddImageLayerPlugIn();
+    private AddDatastoreLayerPlugIn addDatastoreLayerPlugIn = new AddDatastoreLayerPlugIn();
+    private RunDatastoreQueryPlugIn runDatastoreQueryPlugIn = new RunDatastoreQueryPlugIn();
+    private InstallDatastoreLayerRendererHintsPlugIn installDatastoreLayerRendererHintsPlugIn = new InstallDatastoreLayerRendererHintsPlugIn();
+    private AddImageLayerPlugIn addImageLayerPlugIn = new AddImageLayerPlugIn();
         
     private void configLayer(final WorkbenchContext workbenchContext,
                 final EnableCheckFactory checkFactory,
