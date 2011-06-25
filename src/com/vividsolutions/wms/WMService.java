@@ -130,7 +130,8 @@ public void initialize() throws IOException {
                         cap.setGetMapURL(url1);
                     }
                 } else {
-                    cap.setGetMapURL(url1);
+                    //changed 24.06.2011 (Wilfried Hornburg, LGLN) url1 --> url2; original: cap.setGetMapURL(url1);
+                    cap.setGetMapURL(url2);
                 }
             }
         } catch ( FileNotFoundException e ){
