@@ -91,7 +91,7 @@ public class CalculateAreasAndLengthsPlugIn extends AbstractPlugIn {
         	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
     		featureInstaller.addMainMenuItem(
     	        this,
-  				new String[] {MenuNames.TOOLS, MenuNames.STATISTICS},
+  				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_ATTRIBUTES},
                 this.getName() + "...",
                 false,			//checkbox
                 null,			//icon

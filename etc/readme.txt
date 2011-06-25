@@ -1,8 +1,8 @@
 OpenJUMP readme file
 --------------------
-Version 1.4.0.3
+Version 1.4.1
 
-December 2nd, 2010
+May 2nd, 2011
 
 Contents
 --------
@@ -121,10 +121,9 @@ Original development team of JUMP was:
 OpenJUMP regular contributors are (non exhaustive list!):
 - Alberto de Luca (geomaticaeambiente.it),
 - Andreas Schmitz (lat-lon.de),
-- Bing Ran,
 - Edgar Soldin,
+- Geoffrey G Roy
 - Giuseppe Aruta, 
-- Hisaji Ono,
 - Jukka Rahkonen,
 - Kevin Neufeld,
 - Landon Blake (Sunburned Surveyor),
@@ -134,16 +133,17 @@ OpenJUMP regular contributors are (non exhaustive list!):
 - Michaël Michaud,
 - Paolo Rizzi,
 - Stefan Steiniger,
-- Sascha Teichmann (intevation.de)*
 - Uwe Dallüge,
 
 * past contributors:
 - Axel Orth*,
 - Basile Chandesris*,
+- Bing Ran,
 - Eric Lemesre*,
 - Erwan Bocher*,
 - Ezequias Rodrigues da Rocha*,
 - Fco Lavin*,
+- Hisaji Ono,
 - Jaakko Ruutiainen*,
 - Jan Ruzicka*,
 - Joe Desbonet*,
@@ -152,6 +152,7 @@ OpenJUMP regular contributors are (non exhaustive list!):
 - Ole Rahn*,
 - Paul Austin*,
 - Pedro Doria Meunier*,
+- Sascha Teichmann (intevation.de)*
 - Stephan Holl*
 - Steve Tanner*,
 - Ugo Taddei* 
@@ -178,11 +179,11 @@ Translation contributors are:
 - English: Landon Blake
 - Finnish: Jukka Rahkonnen
 - French: Basile Chandesris, Erwan Bocher, Steve Tanner, Michaël Michaud
-- German: Florian Rengers, Stefan Steiniger
+- German: Florian Rengers, Stefan Steiniger, Edgar Soldin
 - Italian: Giuseppe Aruta
 - Japanese: Hisaji Ono
 - Portuguese (brazilian): Ezequias Rodrigues da Rocha, Cristiano das Neves Almeida
-- Spanish: Giuseppe Aruta, Steve Tanner, Fco Lavin, Nacho Uve
+- Spanish: Giuseppe Aruta, Steve Tanner, Fco Lavin, Nacho Uve, Agustin Diez-Castillo
 - Hungarian: Zoltan Siki
 - Czech: Jan Ruzicka
 - Chinese: Elton Chan

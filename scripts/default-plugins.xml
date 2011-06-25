@@ -44,9 +44,10 @@
 	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.BufferPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.tools.MultiRingBufferSelectedPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.tools.PlumePlugIn</plug-in>
-	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.CalculateAreasAndLengthsPlugIn</plug-in>
+	
 	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.ConvexHullPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.tools.ConvexHullPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.tools.UnionByAttributePlugIn</plug-in>
 	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.GeometryFunctionPlugIn</plug-in>
 	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.OverlayPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.tools.IntersectPolygonLayersPlugIn</plug-in>
@@ -54,7 +55,7 @@
 	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.SpatialJoinPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn</plug-in>
 	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.UnionPlugIn</plug-in>
-	<plug-in>org.openjump.core.ui.plugin.tools.UnionByAttributePlugIn</plug-in>
+	
 	<!--- =========  Statistics ====================  /-->
 	<plug-in>org.openjump.core.ui.plugin.tools.statistics.CreateScatterPlotPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn</plug-in>
@@ -93,6 +94,7 @@
 	<plug-in>org.openjump.core.ui.plugin.tools.SplitPolygonPlugIn</plug-in>	
 	<!--- =========  Edit Attributes ====================  /-->		
 	<!--plug-in>org.openjump.core.ui.plugin.tools.ReplaceValuePlugIn</plug-in-->
+	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.CalculateAreasAndLengthsPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn</plug-in>
 	<plug-in>de.fho.jump.pirol.plugins.EditAttributeByFormula.EditAttributeByFormulaPlugIn</plug-in>
 	<!--- =========  Generalization ====================  /-->	
