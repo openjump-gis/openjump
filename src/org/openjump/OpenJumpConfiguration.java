@@ -218,7 +218,6 @@ public class OpenJumpConfiguration {
     myMapTipPlugIn.initialize(new PlugInContext(workbenchContext, null, null,
       null, null));
 
-    pluginContext.getFeatureInstaller().addMenuSeparator(LAYER);
 
     // -- deeJUMP function by LAT/LON [01.08.2006 sstein]
     //LayerStyle2SLDPlugIn mySytle2SLDplugIn = new LayerStyle2SLDPlugIn();

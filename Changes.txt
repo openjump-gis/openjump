@@ -1,14 +1,60 @@
------------------------------------
+--------------------------------------------------------
+Version 1.4.1 - svn2291 (released on 27.June.2011)
 
-Version 1.4.0.3 (released on 02.December.2010)
+  New Features :
+  - Add DataStoreQueryDataSource to save a Layer based on an SQL query
+  - Add RefreshDataStoreQuery to refresh a layer based on an SQL query
+  - EditDataStoreQueryPlugIn to edit a SQL query associated to a Layer
+  - SaveDatasets : charset can now be choosen
+  - Adds a new AdvancedMeasurePlugin with more capabilities
+
+  Small improvements :
+  - InstallSkinsPlugIn : now find available l&f
+  - Improve user experience by adding new icons and reorganizings some menus
+  - ST_AsBinary(geom) is no more necessary to query the geometry of a PostGIS table  
+  - Add two navigation buttons in attribute panel (previous/next without zoom)
+  - ShowScale is now a toggle menu item
+  - Optimisation of LineString drawing
+  - Added SaveDatasets plugin in the ToolBar
+  - LabelStyle now use LocalSettings for a better presentation
+  - LayerPropertiesPlugIn display layer extent
+  - Better user experience with FontChooser 
+  - Improvement of the status bar (now uses JSplitPane)
+
+  API changes
+  - Add a new MultiInputDialog with more flexibility
+  - Added a DropDownbutton from Netbeans project
+  - WorkbenchToolBar: addCursorTool() can add a DropDownToogleButton to the Toolbar
+
+  Bug fixes :
+  - LayerStyle2SLDPlugin : fixes the namespace prefix in order to get rid of xalan
+  - MultiClickTool throwed a IndexOutOfBoundsExeption
+  - MergeSelectedPolygonsWithNeighbour : stop trying to merge a polygon with itself
+  - StatisticOverViewPlugIn : fix a NPE
+  - RasterColorEditor : enable refreshing and setting back original colors
+  - ColorTheming can now use RenderingStylePanel (BasicStyle) initialization
+  - SaveFileDataSourceQueryChooser can now catch bad file names
+  - ColorThemingStylePanel : improved vertex styles drawing (avoid duplicate)
+  - ClassifyAttributes : better null values handling
+  - AttributePanel : delete key could delete a feature accidentally 
+  - AddRasterImageLayerWizard : now load an image without worldfile
+  - ColorThemingStyle : did not work with attributes containing nulls
+  - IntersectPolygonLayersPlugIn : could set a double value (NaN) to an Integer attribute 
+  - Layer and feature statistics now recurse through GeometryCollections
+  - Layer statistic : mean of integer attributes (as #Points) is a double rather than int
+  - TreeLayerNamePanel : a layer could be deleted accidentally
+  - JoinTableDataSourceCSV : empty lines are now skipped silently 
+
+--------------------------------------------------------
+Version 1.4.0.3 - svn2178 (released on 02.December.2010)
 
   Bug fix release:
 
   - fixed a bug in the windows installer (.bat file and other bin resources
     were installed in OpenJUMP directory instead of OpenJUMP/bin)
+  - Improvement in status bar (enable copy/paste to clipboard)
     
------------------------------------
-
+--------------------------------------------------------
 Version 1.4.0.2 (released on 07.November.2010)
 
   Bug fix release:
@@ -20,7 +66,7 @@ Version 1.4.0.2 (released on 07.November.2010)
   - see other small fixes in the ChangeLog file at
     http://jump-pilot.svn.sourceforge.net/viewvc/jump-pilot/core/trunk/ChangeLog?sortby=date&view=log
 
------------------------------------
+--------------------------------------------------------
 
 Version 1.4.0.1 (released on 27.October.2010)
 
@@ -30,7 +76,7 @@ Version 1.4.0.1 (released on 27.October.2010)
     currently selected raster layer)
 
 
------------------------------------
+--------------------------------------------------------
 
 Version 1.4.0 (released on 24.October.2010)
 
@@ -64,7 +110,7 @@ Version 1.4.0 (released on 24.October.2010)
   http://jump-pilot.svn.sourceforge.net/viewvc/jump-pilot/core/trunk/ChangeLog?sortby=date&view=log
   
 
------------------------------------
+--------------------------------------------------------
 
 Version 1.3.1 (released on 6.December.2009)
 
@@ -74,7 +120,7 @@ Version 1.3.1 (released on 6.December.2009)
   problem with the tiff image file export. So there are is only one new feature
   for working with PostGIS queries, compared to version 1.3. 
 
------------------------------------
+--------------------------------------------------------
 
 Version 1.3.0 (released on 19.April.2009)
 
@@ -223,7 +269,7 @@ Version 1.3.0 (released on 19.April.2009)
   - New Synchronization menu that allows to make a mosaic of several map windows
     and to synchronize those map window when panning and zooming 
 
------------------------------------
+--------------------------------------------------------
 
 Version 1.2.0 F (released on 6.April.2008)
 
@@ -357,7 +403,7 @@ Version 1.2.0 F (released on 6.April.2008)
   - fixed a problem with the Toggle Visibility Layer Name
           popup menu item.  It was totally nonfunctional.
 
------------------------------------
+--------------------------------------------------------
 
 Version 1.2.0 D (16.Aug.2007)
 
@@ -456,7 +502,7 @@ Bugfixes and Improvements done since release of OpenJUMP 1.2 B:
 - update brazilian language file
 - Fix BeanTools NPE : don't  load BeanTools plugin if the plugin directory is missing
 
----------------------------------------
+--------------------------------------------------------
 
 Version 1.2.0 C (2007-08-11)
 
@@ -555,7 +601,7 @@ Version 1.2.0 C (2007-08-11)
   - Stefan Steiniger
 
 
-*******************************************************************************
+--------------------------------------------------------
 Version 1.2.0 Beta (2007-05-10)
 
   This release includes major bugfixes

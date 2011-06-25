@@ -38,7 +38,7 @@ package com.vividsolutions.jump;
  * An optional release status string may be present in the string version of
  * the version.
  *
- * @version 1.2
+ * @version 1.4.1
  */
 public class JUMPVersion {
 
@@ -55,30 +55,28 @@ public class JUMPVersion {
   /**
    * The minor version number.
    */
-  public static final int MINOR = 2;
+  public static final int MINOR = 4;
 
   /**
    * The patch version number.
    */
-  public static final int PATCH = 0;
+  public static final int PATCH = 1;
 
   /**
    * An optional string providing further release info (such as "alpha 1");
    */
-  private static final String releaseInfo = "";
+  private static final String releaseInfo = "rc1";
 
   /**
    * Prints the current JTS version to stdout.
    *
    * @param args the command-line arguments (none are required).
    */
-  public static void main(String[] args)
-  {
+  public static void main(String[] args) {
     System.out.println(CURRENT_VERSION);
   }
 
-  private JUMPVersion() {
-  }
+  private JUMPVersion() {}
 
   /**
    * Gets the major number of the release version.
@@ -106,9 +104,7 @@ public class JUMPVersion {
    *
    * @return the full version number, suitable for display.
    */
-  public String toString()
-  {
-    //String ver = "OpenJUMP " + MAJOR + "." + MINOR + "." + PATCH;
+  public String toString() {
     String ver = "OpenJUMP " + I18N.get("JUMPWorkbench.version.number");
     if (releaseInfo != null && releaseInfo.length() > 0)
       return ver + " " + releaseInfo;
