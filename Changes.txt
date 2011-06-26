@@ -4,13 +4,14 @@ Version 1.4.1 - svn2291 (released on 27.June.2011)
   New Features :
   - Add DataStoreQueryDataSource to save a Layer based on an SQL query
   - Add RefreshDataStoreQuery to refresh a layer based on an SQL query
-  - EditDataStoreQueryPlugIn to edit a SQL query associated to a Layer
-  - SaveDatasets : charset can now be choosen
-  - Adds a new AdvancedMeasurePlugin with more capabilities
+  - Add EditDataStoreQueryPlugIn to edit a SQL query associated to a Layer
+  - SaveLayersWithoutDataSourcePlugIn : while saving a project, in-memory layers
+    can be saved in shapefile or jml format
+  - Add new AdvancedMeasurePlugin with more capabilities
 
   Small improvements :
   - InstallSkinsPlugIn : now find available l&f
-  - Improve user experience by adding new icons and reorganizings some menus
+  - Improve user experience by adding new icons and reorganizing some menus
   - ST_AsBinary(geom) is no more necessary to query the geometry of a PostGIS table  
   - Add two navigation buttons in attribute panel (previous/next without zoom)
   - ShowScale is now a toggle menu item
@@ -22,6 +23,7 @@ Version 1.4.1 - svn2291 (released on 27.June.2011)
   - Improvement of the status bar (now uses JSplitPane)
 
   API changes
+  - now uses jts1.12
   - Add a new MultiInputDialog with more flexibility
   - Added a DropDownbutton from Netbeans project
   - WorkbenchToolBar: addCursorTool() can add a DropDownToogleButton to the Toolbar
