@@ -1,3 +1,12 @@
+2011-06-27 mmichaud <michael.michaud@free.fr>
+    * Include jts1.12 in OpenJUMP distribution
+    * removed the patch made for jts1.11 in EditTransaction
+      now that jts1.12 is released (see bug ID: 2975012)
+
+2011-06-26 mmichaud <michael.michaud@free.fr>
+    * changes "Union by attribute" name into Dissolve (english language)
+    * Moved "Calculate areas and length" into Edit Attribute menu
+    
 2011-06-25 mmichaud <michael.michaud@free.fr> for Wilfried Hornburg
     * fix WMS-getMapRequest incorrect - ID: 3327322
 
