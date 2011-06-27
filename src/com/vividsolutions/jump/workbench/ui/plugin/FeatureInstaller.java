@@ -504,6 +504,19 @@ public class FeatureInstaller {
     }
   }
   
+  public void addPopupMenuSeparator(JPopupMenu popupMenu, String[] menuPath) {
+    if (menuPath == null || menuPath.length == 0) {
+      popupMenu.addSeparator();
+    } else {
+      JMenu menu = popupMenu(popupMenu, menuPath[0]);
+      if (menu == null) {
+        menu = (JMenu) popupMenu.add(new JMenu(menuPath[0]));
+      }
+      JMenu parent = createMenusIfNecessary(menu, behead(menuPath));
+      parent.addSeparator();
+    }
+  }
+  
     /**
    * @return the menu with the given name, or null if no such menu exists
    */
