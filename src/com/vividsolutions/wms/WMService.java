@@ -123,7 +123,7 @@ public void initialize() throws IOException {
             String url2 = cap.getGetMapURL();
             if(!url1.equals(url2)){
                 //if the difference is only in credentials then use url1 else ask from user
-                if(alertDifferingURL && !new URL(url1).equals(new URL(url2))) {
+                if(!new URL(url1).equals(new URL(url2)) && alertDifferingURL) {
                     int resp = showConfirmDialog(null, I18N.getMessage("com.vididsolutions.wms.WMService.Other-GetMap-URL-Found",
                             new Object[]{url2}), null, YES_NO_OPTION);
                     if(resp == NO_OPTION) {
@@ -131,7 +131,8 @@ public void initialize() throws IOException {
                     }
                 } else {
                     //changed 24.06.2011 (Wilfried Hornburg, LGLN) url1 --> url2; original: cap.setGetMapURL(url1);
-                    cap.setGetMapURL(url2);
+                    //revert to url1, following Jukka's advice a discussion is on-going on JPP mailing list
+                    cap.setGetMapURL(url1);
                 }
             }
         } catch ( FileNotFoundException e ){
