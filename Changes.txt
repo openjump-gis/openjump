@@ -1,5 +1,5 @@
 --------------------------------------------------------
-Version 1.4.1 - svn2291 (released on 27.June.2011)
+Version 1.4.1 - svn2300 (released on 02.July.2011)
 
   New Features :
   - Add DataStoreQueryDataSource to save a Layer based on an SQL query

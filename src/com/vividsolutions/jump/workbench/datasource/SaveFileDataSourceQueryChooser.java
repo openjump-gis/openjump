@@ -58,7 +58,18 @@ public class SaveFileDataSourceQueryChooser extends FileDataSourceQueryChooser {
     public static final String FILE_CHOOSER_PANEL_KEY = SaveFileDataSourceQueryChooser.class.getName() +
             " - SAVE FILE CHOOSER PANEL";
 
-    private static final Pattern fileNameRegex = Pattern.compile("^([a-zA-Z]:|\\\\\\\\|\\.\\.|\\.)?([/\\\\]([^/\\\\\\?%\\*:\\|\"<>\\.]+|\\.\\.|\\.))*([^/\\\\\\?%\\*:\\|\"<>\\.]+)(\\.[^/\\\\\\?%\\*:\\|\"<>\\.]+)?$");
+    private static final Pattern fileNameRegex = Pattern.compile(
+        // Start of the path
+        "^" +
+        // Protocole (ex. file:) or machine name (\\machine) or parent directory (..) or current directory (.)
+        "([a-zA-Z]:|\\\\\\\\[^/\\\\\\?%\\*:\\|\"<>]+|\\.\\.|\\.)?" +
+        // directory names (/directory or \directory) name does not include /\?%*:|"<>
+        "([/\\\\]([^/\\\\\\?%\\*:\\|\"<>]+|\\.\\.|\\.))*" +
+        // file name (does not include /\?%*:|"<>)
+        "([^/\\\\\\?%\\*:\\|\"<>\\.]+)" +
+        // file name extension
+        "(\\.[^/\\\\\\?%\\*:\\|\"<>\\.]+)?" +
+        "$");
 
     private WorkbenchContext context;
 

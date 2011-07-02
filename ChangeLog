@@ -1,3 +1,18 @@
+    **** release of OpenJUMP 1.4.1 (svn 2300) ****
+
+2011-07-02 mmichaud <michael.michaud@free.fr>
+    * Fixex regex in SaveFileDataSourceQueryChooser to allow directory names
+      containing points
+    * Activate SaveLayersWithoutDataSourcePlugIn in default plugins
+
+2011-06-29 mmichaud <michael.michaud@free.fr>
+    * revert change made on WMS-getMapRequest (see ID: 3327322 and
+      Jukka's remark on the JPP developper list)
+
+2011-06-27 edgard soldin
+    * FeatureInstaller.addPopupMenuSeparator(JPopupMenu popupMenu, String[] menuPath)
+      allowing to conveniently add separators to popup menus
+
 2011-06-27 mmichaud <michael.michaud@free.fr>
     * Include jts1.12 in OpenJUMP distribution
     * removed the patch made for jts1.11 in EditTransaction

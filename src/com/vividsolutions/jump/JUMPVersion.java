@@ -65,7 +65,7 @@ public class JUMPVersion {
   /**
    * An optional string providing further release info (such as "alpha 1");
    */
-  private static final String releaseInfo = "rc2";
+  private static final String releaseInfo = "";
 
   /**
    * Prints the current JTS version to stdout.
