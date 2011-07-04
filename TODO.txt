@@ -2,6 +2,25 @@
 ## OpenJUMP TODO
 ##
 
+2011-jul-04 mmichaud <michael.michaud@free.fr>
+    Improve documentation
+    - update the wiki (which is does not fit 1.4.1 version any more)
+    - document jar dependencies for OpenJUMP core and OpenJUMP extensions
+    - improve javadoc
+    Improve svn usage
+    - include more plugins into svn
+    - update plugins in svn (michael's, plugin postgis132...)
+    Improve internationalization, specially for plugins
+    
+    Core improvements
+    - eliminate redundancies
+    - study docking framework
+    - improve plugin manager
+    - improve styling (see kosmo)
+    
+    Bug reports and feature requests
+    
+
 2009-Nov-22 sstein <sstein@geo.uzh.ch>
 	some stuff I collected that should be done:
 	from 2006/2007
