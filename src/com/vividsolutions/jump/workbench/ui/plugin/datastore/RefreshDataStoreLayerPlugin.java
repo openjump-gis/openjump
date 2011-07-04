@@ -22,7 +22,7 @@ public class RefreshDataStoreLayerPlugin extends AbstractPlugIn {
     public static final ImageIcon ICON = IconLoader.icon("arrow_refresh.png");
 
     public RefreshDataStoreLayerPlugin() {
-        super(I18N.get("ui.plugin.datastore.RefreshDataStoreLayerPlugin.Refresh-Layer"));
+        //super(I18N.get("ui.plugin.datastore.RefreshDataStoreLayerPlugin.Refresh-Layer"));
     }
     
     public static EnableCheck createEnableCheck(final WorkbenchContext context) {

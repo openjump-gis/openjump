@@ -133,6 +133,16 @@ public class XML2Java extends XMLBinder {
                     	System.out.println(msg);
                     	return; //return to avoid further messages
                     }
+                    // [mmichaud 2011-07-04] Following attributes were introduced in 1.4.1 release.
+                    // Skip them to keep compatibility with old project files
+                    if (tag.getName().equalsIgnoreCase("layer") && xmlName != null &&
+                        (xmlName.equalsIgnoreCase("editable")   || 
+                         xmlName.equalsIgnoreCase("selectable") ||
+                         xmlName.equalsIgnoreCase("read-only") ) ) {
+                    	LOG.warn(msg);
+                    	System.out.println(msg);
+                    	return; //return to avoid further messages
+                    }
                     else{
                     	throw new XMLBinderException(msg);
                     }

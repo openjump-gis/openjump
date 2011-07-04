@@ -63,9 +63,10 @@ public class JUMPVersion {
   public static final int PATCH = 1;
 
   /**
-   * An optional string providing further release info (such as "alpha 1");
+   * An optional string providing further release info (such as "alpha 1" or
+   * svn version);
    */
-  private static final String releaseInfo = "";
+  private static final String releaseInfo = "2313";
 
   /**
    * Prints the current JTS version to stdout.

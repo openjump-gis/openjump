@@ -1,4 +1,9 @@
-    **** release of OpenJUMP 1.4.1 (svn 2300) ****
+        **** release of OpenJUMP 1.4.1 (svn 2313) ****
+
+2011-07-04 mmichaud <michael.michaud@free.fr>
+    * Fix a bug preventing to read old project files
+
+        **** release of OpenJUMP 1.4.1 (svn 2300) ****
 
 2011-07-02 mmichaud <michael.michaud@free.fr>
     * Fixex regex in SaveFileDataSourceQueryChooser to allow directory names
@@ -449,7 +454,7 @@
 				* charset stuff
 	* org.openjump.OpenJumpConfiguration
 		* changed the key of the charset option; now we use a non localized key
-	* language fieles jump_de.properties and jump_en.properties (line 445)
+	* language files jump_de.properties and jump_en.properties (line 445)
 		* key "org.openjump.core.ui.plugin.file.charset" changed
 		  to "org.openjump.core.ui.io.file.DataSourceFileLayerLoader.charset"
 	* org.openjump.core.ui.plugin.file.open.SelectFileOptionsPanel

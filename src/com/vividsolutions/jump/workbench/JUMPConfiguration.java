@@ -530,7 +530,7 @@ public class JUMPConfiguration implements Setup {
                 PasteStylesPlugIn.createEnableCheck(workbenchContext));
 
         featureInstaller.addPopupMenuItem(layerNamePopupMenu, refreshDataStoreLayerPlugin,
-            new String[]{MenuNames.DATASTORE}, refreshDataStoreLayerPlugin.getName() + "...", false, RefreshDataStoreLayerPlugin.ICON,
+            new String[]{MenuNames.DATASTORE}, refreshDataStoreLayerPlugin.getName(), false, RefreshDataStoreLayerPlugin.ICON,
                 RefreshDataStoreLayerPlugin.createEnableCheck(workbenchContext));
         featureInstaller.addPopupMenuItem(layerNamePopupMenu, imageLayerManagerPlugIn,
                 imageLayerManagerPlugIn.getName() + "...", false, null,

@@ -12,7 +12,8 @@ Version 1.4.1 - svn2300 (released on 02.July.2011)
   Small improvements :
   - InstallSkinsPlugIn : now find available l&f
   - Improve user experience by adding new icons and reorganizing some menus
-  - ST_AsBinary(geom) is no more necessary to query the geometry of a PostGIS table  
+  - Can now persist editable, selectable and readonly attributes
+  - ST_AsBinary(geom) is no more necessary to query the geometry of a PostGIS table
   - Add two navigation buttons in attribute panel (previous/next without zoom)
   - ShowScale is now a toggle menu item
   - Optimisation of LineString drawing
