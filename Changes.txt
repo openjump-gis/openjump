@@ -1,3 +1,6 @@
+Version 1.4.1 - svn2313 (released on 04.July.2011)
+  - Fix a bug preventing to read old project files
+
 --------------------------------------------------------
 Version 1.4.1 - svn2300 (released on 02.July.2011)
 
