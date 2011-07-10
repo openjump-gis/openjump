@@ -1,3 +1,6 @@
+2011-07-10 mmichaud <michael.michaud@free.fr>
+    * Fixed a bug in the look and feel option panel [bug ID: 3354118]
+
         **** release of OpenJUMP 1.4.1 (svn 2313) ****
 
 2011-07-04 mmichaud <michael.michaud@free.fr>

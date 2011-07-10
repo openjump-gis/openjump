@@ -72,21 +72,17 @@ public class SkinOptionsPanel extends JPanel implements OptionsPanel {
     private JPanel fillerPanel = new JPanel();
     private JLabel label = new JLabel();
     private Blackboard blackboard;
-    //[UT] is not used, commented out
-//    private Window window;
     private boolean modified;
 
     public SkinOptionsPanel(Blackboard blackboard, Window window) {
-//        this.window = window;
         this.blackboard = blackboard;
         try {
             comboBox.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        modified = true;
-                    }
-                });
+                public void actionPerformed(ActionEvent e) {
+                    modified = true;
+                }
+            });
             jbInit();
-
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -107,7 +103,6 @@ public class SkinOptionsPanel extends JPanel implements OptionsPanel {
             new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE,
                 new Insets(10, 10, 10, 4), 0, 0));
-        
     }
 
     public void init() {
@@ -129,50 +124,49 @@ public class SkinOptionsPanel extends JPanel implements OptionsPanel {
         if (!modified) {
             return;
         }
-        
         blackboard.put(CURRENT_SKIN_KEY, comboBox.getSelectedItem());
-
         try {
-            UIManager.setLookAndFeel(((LookAndFeelProxy) comboBox.getSelectedItem()).getLookAndFeel());
+            UIManager.setLookAndFeel(((LookAndFeelProxy) comboBox.getSelectedItem()).getLookAndFeel());            
         } catch (UnsupportedLookAndFeelException e) {
             Assert.shouldNeverReachHere(e.toString());
         }
-
         updateFrames();
         updatePopupMenus();
     }
 
     private void updatePopupMenus() {
-        for (Iterator i = TrackedPopupMenu.trackedPopupMenus().iterator();
-                i.hasNext();) {
-            JPopupMenu menu = (JPopupMenu) i.next();
+        for (Iterator i = TrackedPopupMenu.trackedPopupMenus().iterator(); i.hasNext();) {
+            final JPopupMenu menu = (JPopupMenu) i.next();
             SwingUtilities.updateComponentTreeUI(menu);
         }
     }
 
     private void updateFrames() {
         Frame[] frames = Frame.getFrames();
-
+        
         for (int i = 0; i < frames.length; i++) {
-            SwingUtilities.updateComponentTreeUI(frames[i]);
-
             Window[] windows = frames[i].getOwnedWindows();
-
-            for (int j = 0; j < windows.length; j++)
+            for (int j = 0; j < windows.length; j++) {
                 updateWindow(windows[j]);
+            }
+            SwingUtilities.updateComponentTreeUI(frames[i]);
         }
     }
 
-    private void updateWindow(Window w) {
-        SwingUtilities.updateComponentTreeUI(w);
-
-//      [UT] 2005-10-26 bug fix for editing toolbox resize problem found by uwe dalluege  
-        w.pack ( ); 
-        
+    private void updateWindow(final Window w) {
+        // [mmichaud] 2011-07-10 dirty hack, because updating OptionsDialog
+        // throws an exception (may be caused by Options dialog ui being updated
+        // and closed in a concurrent way, but not sure...)
+        if (w instanceof com.vividsolutions.jump.workbench.ui.OptionsDialog) return;
+        // [UT] 2005-10-26 bug fix for editing toolbox resize problem found by uwe dalluege
+        // [mmichaud] 2011-07-10 pack moved after updateComponentTreeUI
+        //w.pack();        
         Window[] children = w.getOwnedWindows();
-
-        for (int i = 0; i < children.length; i++)
+        for (int i = 0; i < children.length; i++) {
             updateWindow(children[i]);
+        }
+        SwingUtilities.updateComponentTreeUI(w);
+        w.pack();
     }
 
     public String validateInput() {
