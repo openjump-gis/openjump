@@ -58,9 +58,9 @@ public class AddDataStoreLayerWizard extends AbstractWizardGroup {
     }
   }
   
-  public void run(WizardDialog dialog, TaskMonitor monitor) {
+  public void run(WizardDialog dialog, TaskMonitor monitor) throws Exception {
     chooseProjectPanel.activateSelectedProject();
-    try {
+    //try {
       AddDatastoreLayerPanel dataStorePanel = dataStoreWizardPanel.getDataStorePanel();
       final Layer layer = createLayer(dataStorePanel, monitor);
       SwingUtilities.invokeLater(new Runnable() {
@@ -78,9 +78,10 @@ public class AddDataStoreLayerWizard extends AbstractWizardGroup {
         }
       });
       workbenchContext.getLayerViewPanel().getViewport().update();
-    } catch (Exception e) {
-      monitor.report(e);
-    }
+    //} catch (Exception e) {
+    //  monitor.report(e);
+    //  throw e;
+    //}
   }
 
   private Layer createLayer(final AddDatastoreLayerPanel panel,
@@ -106,9 +107,12 @@ public class AddDataStoreLayerWizard extends AbstractWizardGroup {
     layer.setDataSourceQuery(dsq);
 
     CoordinateSystemRegistry crsRegistry = CoordinateSystemRegistry.instance(workbenchContext.getBlackboard());
-    layerManager.setFiringEvents(false); // added by michaudm on 2009-04-05
-    load(layer, crsRegistry, monitor);
-    layerManager.setFiringEvents(true); // added by michaudm on 2009-04-05
+    try {
+        layerManager.setFiringEvents(false); // added by michaudm on 2009-04-05
+        load(layer, crsRegistry, monitor);
+        layerManager.setFiringEvents(true); // added by michaudm on 2009-04-05
+    }
+    finally {layerManager.setFiringEvents(true);}
     return layer;
   }
 

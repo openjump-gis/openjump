@@ -20,5 +20,10 @@ public interface WizardGroup {
   
   public void initialize(WorkbenchContext workbenchContext, WizardDialog dialog);
   
-  public void run(WizardDialog dialog, TaskMonitor monitor);
+  // [mmichaud - 2011-07-14] let the TaskMonitorManager a chance to manage
+  // exceptions thrown by a plugin like OpenWizardPlugIn which is running a
+  // class implementing WizardGroup.
+  // There has been many arguments against the over-use of checked exception
+  // but it's better to follow the general design of legacy OpenJUMP code.
+  public void run(WizardDialog dialog, TaskMonitor monitor) throws Exception;
 }

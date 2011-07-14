@@ -38,7 +38,7 @@ package com.vividsolutions.jump;
  * An optional release status string may be present in the string version of
  * the version.
  *
- * @version 1.4.1
+ * @version 1.4.2
  */
 public class JUMPVersion {
 
@@ -60,13 +60,13 @@ public class JUMPVersion {
   /**
    * The patch version number.
    */
-  public static final int PATCH = 1;
+  public static final int PATCH = 2;
 
   /**
    * An optional string providing further release info (such as "alpha 1" or
    * svn version);
    */
-  private static final String releaseInfo = "2313";
+  private static final String releaseInfo = "alpha";
 
   /**
    * Prints the current JTS version to stdout.
