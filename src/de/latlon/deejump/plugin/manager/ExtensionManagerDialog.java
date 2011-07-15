@@ -63,15 +63,8 @@ public class ExtensionManagerDialog extends JDialog {
     private boolean okClicked = false;
 
     private final MouseListener descriptionDisplayListener = new MouseAdapter() {
-        /*public void mouseClicked(MouseEvent e) {
-            CatalogExtensionPanel cep = (CatalogExtensionPanel) e
-                    .getSource();
-            setDescriptionText(cep.getExtensionText());
-        }*/
-        
         public void mouseEntered(MouseEvent e) {
-            ExtensionPanel cep = (ExtensionPanel) e
-                .getSource();
+            ExtensionPanel cep = (ExtensionPanel) e.getSource();
             setDescriptionText(cep.getExtensionText());
         }
     };
@@ -90,19 +83,20 @@ public class ExtensionManagerDialog extends JDialog {
         setModal( true );
         addWindowListener(new WindowAdapter() {
             public void windowClosed(WindowEvent e) {
-                //
+                okClicked = false;
+                setVisible(false);
             }
         });
-        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        //setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
         this.workbenchContext = workbenchContext;
         this.manager = workbenchContext.getWorkbench().getPlugInManager();
         
         this.extensionSite = extensionSite;
-//FIXME remove extensionCatalogFile class memebr
+//FIXME remove extensionCatalogFile class member
         //TODO check if URL is valid...
         URL catalog = new URL( this.extensionSite + extensionCatalogFile ); 
-            //ExtensionManagerDialog.class.getResource( extensionCatalogFile );
+        //ExtensionManagerDialog.class.getResource( extensionCatalogFile );
 
         setRemoteExtensions( readCatalog(catalog));
         setInstalledExtensions( listInstalledExtensions() );
@@ -111,19 +105,20 @@ public class ExtensionManagerDialog extends JDialog {
 //        setVisible(true);
     }
 
+    // Used for testing out of the OJ Workbench - see static main(String[] args)
     private ExtensionManagerDialog(JFrame parent, List  fakeInstalledExtensions)
             throws HeadlessException {
         super(parent,  I18N.get("deejump.pluging.manager.ExtensionManagerDialog.Extension-Manager"));
         setSize(350, 500);
         addWindowListener(new WindowAdapter() {
             public void windowClosed(WindowEvent e) {
-                //
+                okClicked = false;
+                setVisible(false);
             }
         });
 //        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         extensionSite = "http://";
-        URL catalog = ExtensionManagerDialog.class
-                .getResource("plugincatalog.xml");
+        URL catalog = ExtensionManagerDialog.class.getResource("plugincatalog.xml");
 
         setRemoteExtensions( readCatalog(catalog) );
         setInstalledExtensions( fakeInstalledExtensions );
@@ -162,10 +157,7 @@ public class ExtensionManagerDialog extends JDialog {
         descripTextArea.setEditable(false);
         descripTextArea.setLineWrap(true);
         descripTextArea.setWrapStyleWord(false);
-        /*descripTextArea.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createEmptyBorder(5, 5, 5, 5), BorderFactory
-                        .createLineBorder(Color.DARK_GRAY)));
-*/
+
         JScrollPane pane = new JScrollPane(
                 descripTextArea, 
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -389,14 +381,13 @@ public class ExtensionManagerDialog extends JDialog {
         //install remote extensions
         for (Iterator iter = remoteExtensions.iterator(); iter.hasNext();) {
             ExtensionWrapper ext = (ExtensionWrapper) iter.next();
-            if ( ext.isInstalled() && !installedExtensions.contains( ext ) ) {//isInstalled means here: "is to be installed"
-
+            if ( ext.isInstalled() && !installedExtensions.contains( ext ) ) {
+                //isInstalled means here: "is to be installed"
                 ExtensionHelper.install( this, workbenchContext, ext, monitor );
                 recentlyAddedExtensions.add( ext );   
             }
         }
         installedExtensions.addAll( recentlyAddedExtensions );
-        
         
         //remove installed extensions
         for (Iterator iter = installedExtensions.iterator(); iter.hasNext();) {
@@ -421,7 +412,7 @@ public class ExtensionManagerDialog extends JDialog {
             System.out.println("listInstalledExtensions(): " + listInstalledExtensions());
 //            synchronizeExtensions();
             //FIXME
-            //there's a bug here making the installed and cataloge exts being wrongly clicked
+            //there's a bug here making the installed and catalog exts being wrongly clicked
             refreshExtensionsPanel( managePanel, installedExtensions, true);
             refreshExtensionsPanel( installPanel, remoteExtensions, false);
         } 
@@ -470,7 +461,6 @@ public class ExtensionManagerDialog extends JDialog {
             }
         });
         // managerDialog.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-
     }
 
     public String getExtensionSite() {

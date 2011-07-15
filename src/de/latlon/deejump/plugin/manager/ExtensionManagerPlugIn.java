@@ -22,17 +22,15 @@ public class ExtensionManagerPlugIn extends ThreadedBasePlugIn {
     }
     
     public boolean execute( PlugInContext context ) throws Exception {
-        if ( managerDialog == null ) {
+        if (managerDialog == null) {
             managerDialog = new ExtensionManagerDialog(
                     context.getWorkbenchFrame(), 
                     context.getWorkbenchContext(),
                     "http://jump-pilot.sourceforge.net/download/"
                     //"file:///e:/proj/openjump/plugins/"
-                    );
+            );
         }
-        
         managerDialog.setVisible( true );
-        
         return managerDialog.isOkClicked();
     }
 
@@ -41,21 +39,12 @@ public class ExtensionManagerPlugIn extends ThreadedBasePlugIn {
         context.getWorkbenchFrame().setStatusMessage( I18N.get("deejump.pluging.manager.ExtensionManagerPlugIn.Plug-ins-will-only-be-removed-after-next-start"));
     }
     
-    
     public void initialize(PlugInContext context) throws Exception {
         context.getFeatureInstaller().addMainMenuItem(
             // [Michael Michaud 2007-03-23] Change MenuNames.TOOLS to MenuNames.CUSTOMIZE
             this, MenuNames.CUSTOMIZE,
     		this.getName(), null,
     		null);
-    }
-    
-    /**
-     * @param args
-     */
-    public static void main(String[] args) {
-        // TODO Auto-generated method stub
-
     }
 
 }
