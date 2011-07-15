@@ -52,8 +52,8 @@ import javax.swing.UIManager.LookAndFeelInfo;
 
 public class InstallSkinsPlugIn extends AbstractPlugIn {
     
-    private static final String SKINS = I18N.get("ui.plugin.skin.InstallSkinsPlugIn.skins");
-    private static final String DEFAULT = I18N.get("ui.plugin.skin.InstallSkinsPlugIn.default");
+    private static String SKINS = I18N.get("ui.plugin.skin.InstallSkinsPlugIn.skins");
+    private static String DEFAULT = I18N.get("ui.plugin.skin.InstallSkinsPlugIn.default");
     
     private LookAndFeelProxy createProxy(final String name,
         final String lookAndFeelClassName) {
@@ -80,6 +80,8 @@ public class InstallSkinsPlugIn extends AbstractPlugIn {
     }
 
     public void initialize(PlugInContext context) throws Exception {
+        SKINS = I18N.get("ui.plugin.skin.InstallSkinsPlugIn.skins");
+        DEFAULT = I18N.get("ui.plugin.skin.InstallSkinsPlugIn.default");
         ArrayList skins = new ArrayList();
         skins.add(createProxy(DEFAULT,
                 UIManager.getSystemLookAndFeelClassName()));
