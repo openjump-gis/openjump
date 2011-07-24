@@ -1,3 +1,7 @@
+2011-07-24 mmichaud <michael.michaud@free.fr>
+    * Fixed a bug related to tables having same names in public schema and
+      another schema [ID 3303503]
+
 2011-07-14 mmichaud <michael.michaud@free.fr>
     * Better exception handling while using the new OpenWizard framework
     * Turn code to 1.4.2alpha

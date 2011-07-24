@@ -8,7 +8,6 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 
 import com.vividsolutions.jump.datastore.AdhocQuery;
 import com.vividsolutions.jump.datastore.FilterQuery;
-import com.vividsolutions.jump.datastore.postgis.PostgisFeatureInputStream;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.io.FeatureInputStream;

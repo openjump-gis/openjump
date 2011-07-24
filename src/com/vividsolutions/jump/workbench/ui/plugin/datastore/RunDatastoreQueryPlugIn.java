@@ -5,7 +5,6 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.datastore.AdhocQuery;
-import com.vividsolutions.jump.datastore.postgis.PostgisFeatureInputStream;
 import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.io.FeatureInputStream;
 import com.vividsolutions.jump.task.TaskMonitor;

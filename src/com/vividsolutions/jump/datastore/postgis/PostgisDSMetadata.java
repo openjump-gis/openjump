@@ -144,14 +144,17 @@ public class PostgisDSMetadata implements DataStoreMetadata {
 
 
   private String geomColumnMetadataWhereClause( String schemaCol, String tableCol, String tableName ) {
+    // [mmichaud 2011-07-24] Fixed a bug related to tables having common
+    // names in public schema and another schema
     int dotPos = tableName.indexOf( "." );
-    return dotPos == -1
-                  ? "WHERE lower(" + tableCol + ") = '" + tableName.toLowerCase() + "'"
-    : "WHERE lower(" + schemaCol + ") = '"
-                  + tableName.substring( 0, dotPos ).toLowerCase()
-                  + "' "
-                  + " AND lower(" + tableCol + ") = '"
-                  + tableName.substring( dotPos + 1 ).toLowerCase() + "'";
+    String schema = "public";
+    String table = tableName.toLowerCase();
+    if (dotPos != -1) {
+        schema = tableName.substring( 0, dotPos ).toLowerCase();
+        table = tableName.substring( dotPos + 1 ).toLowerCase();
+    }
+    return "WHERE lower(" + schemaCol + ") = '" + schema + "'"
+          + " AND lower(" + tableCol + ") = '" + table + "'";
   }
 
 
