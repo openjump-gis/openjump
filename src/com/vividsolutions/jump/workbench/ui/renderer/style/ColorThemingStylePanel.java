@@ -726,9 +726,13 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
             //Can get here if the only attribute is the geometry. [Jon Aquino]
             return;
         }
-
-        attributeNameComboBox.setSelectedItem(ColorThemingStyle.get(layer)
-                                                               .getAttributeName());
+        else if (ColorThemingStyle.get(layer).getAttributeName() == null) {
+            attributeNameComboBox.setSelectedIndex(0);
+        }
+        else {
+            attributeNameComboBox.setSelectedItem(
+                ColorThemingStyle.get(layer).getAttributeName());
+        }
     }
 
     private void jbInit() throws Exception {
