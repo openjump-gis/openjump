@@ -1,5 +1,6 @@
 2011-07-25 mmichaud <michael.michaud@free.fr>
     * Fixed a bug in ColorThemingStylePanel.
+    * Add an Icon for SaveLayersWithoutDataSourcePlugIn
 
 2011-07-24 mmichaud <michael.michaud@free.fr>
     * Fixed a bug related to tables having same names in public schema and

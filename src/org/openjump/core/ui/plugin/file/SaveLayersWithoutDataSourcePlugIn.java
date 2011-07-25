@@ -43,7 +43,6 @@ import com.vividsolutions.jump.io.DriverProperties;
 import com.vividsolutions.jump.io.datasource.DataSource;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.task.DummyTaskMonitor;
-//import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.util.FileUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
@@ -57,13 +56,16 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
+import org.openjump.core.ui.images.IconLoader;
 
 /**
 * Subclass this to implement a 'Save Project' plugin.
 */
 public class SaveLayersWithoutDataSourcePlugIn extends AbstractPlugIn {
     
-    public static final String SAVE_LAYERS_WITHOUT_DATASOURCE = I18N.get("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.save-layers-without-datasource");
+    private static final String KEY = SaveLayersWithoutDataSourcePlugIn.class.getName();
+    
+    //public static final String SAVE_LAYERS_WITHOUT_DATASOURCE = I18N.get("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.save-layers-without-datasource");
     public static final String LAYERS_WITHOUT_DATASOURCE = I18N.get("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.layers-without-datasource-management");
     
     public static final String DONOTSAVE = I18N.get("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.do-not-save");
@@ -77,10 +79,11 @@ public class SaveLayersWithoutDataSourcePlugIn extends AbstractPlugIn {
     
     private JFileChooser fileChooser;
     
-    public SaveLayersWithoutDataSourcePlugIn() {}
+    public SaveLayersWithoutDataSourcePlugIn() {
+    }
     
     public String getName() {
-        return SAVE_LAYERS_WITHOUT_DATASOURCE;
+        return I18N.get(KEY);
     }
     
     public void initialize(PlugInContext context) throws Exception {
@@ -93,7 +96,7 @@ public class SaveLayersWithoutDataSourcePlugIn extends AbstractPlugIn {
             new String[] {MenuNames.FILE},
             this.getName()+ "..." + "{pos:9}", //name methode .getName received by AbstractPlugIn 
             false,			          //checkbox
-            null,			          //icon
+            IconLoader.icon("disk_multiple.png"),			          //icon
             createEnableCheck(context.getWorkbenchContext())); //enable check
         
         fileChooser = new JFileChooser();
