@@ -36,6 +36,7 @@ package com.vividsolutions.jump.workbench.ui.plugin.analysis;
 import java.util.*;
 import com.vividsolutions.jts.algorithm.*;
 import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
 import com.vividsolutions.jts.simplify.*;
 import com.vividsolutions.jts.operation.linemerge.*;
 import com.vividsolutions.jts.operation.polygonize.*;
@@ -342,11 +343,8 @@ public abstract class GeometryFunction
     }
   }
   
-  /**
-   * added 3. March 2007
-   * @author finstef
-   *
-   */
+  // added 3. March 2007 by finstef
+  // fixed 26 July 2011 by mmichaud
   private static class ReverseLinestringFunction extends GeometryFunction {
 	  public ReverseLinestringFunction() {
 		  super(I18N.get("ui.plugin.analysis.GeometryFunction.Reverse-Line-Direction"), 1, 0);
@@ -354,33 +352,8 @@ public abstract class GeometryFunction
 
 	  public Geometry execute(Geometry[] geom, double[] param)
 	  {
-		  if (geom[0] instanceof LineString){
-			  Coordinate[] a = geom[0].getCoordinates();
-			  CoordinateArrays.reverse(a);
-			  Geometry invLine = new GeometryFactory().createLineString(a);
-			  return invLine;
-		  }
-		  else if(geom[0] instanceof Polygon){
-			  Polygon p = (Polygon)geom[0];
-			  Coordinate[] outer = p.getExteriorRing().getCoordinates();
-			  CoordinateArrays.reverse(outer);
-			  LinearRing outLine = new GeometryFactory().createLinearRing(outer);
-			  //-- do so as well for inner rings
-			  LinearRing[] innerR = null;
-			  if (p.getNumInteriorRing() > 0){
-				  innerR = new LinearRing[p.getNumInteriorRing()];
-				for(int i=0; i < p.getNumInteriorRing(); i++){
-					Coordinate[] inner = p.getInteriorRingN(i).getCoordinates();
-					CoordinateArrays.reverse(inner);
-					innerR[i] = new GeometryFactory().createLinearRing(inner);
-				}
-			  }			  
-			  Polygon pout = new GeometryFactory().createPolygon(outLine, innerR);
-			  return pout;
-		  }
-		  else{
-			  return geom[0];
-		  }
+	      Geometry clone = (Geometry)geom[0].clone();
+	      return clone.reverse();
 	  }
   }
 }
