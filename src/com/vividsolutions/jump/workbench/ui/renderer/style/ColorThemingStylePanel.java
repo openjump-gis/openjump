@@ -377,6 +377,10 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
             //Must set state early so that #initTable can call #fromExternalFormat. [Jon Aquino]
             state = colorThemingStyleHasRanges(getLayer()) ?
                 (State) rangeColorThemingState : discreteColorThemingState;
+            classificationComboBox.removeItemListener(classificationListener);
+            classificationComboBox.setSelectedIndex(
+                colorThemingStyleHasRanges(getLayer()) ? 1 : 0);
+            classificationComboBox.addItemListener(classificationListener);
 
             //Init the table before calling #setState, in which
             //RangeColorThemingState will add itself as a listener
