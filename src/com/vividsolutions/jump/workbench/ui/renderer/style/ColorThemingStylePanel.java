@@ -109,26 +109,60 @@ import com.vividsolutions.jump.workbench.ui.renderer.style.attributeclassificati
 import com.vividsolutions.jump.workbench.ui.style.BasicStylePanel;
 import com.vividsolutions.jump.workbench.ui.style.StylePanel;
 
-
+/**
+ * A panel to choose Color Theming options.
+ * The panel includes
+ * <ul>
+ * <li>a checkbox to enable Color Theming</li>
+ * <li>a combobox to choose Attribute</li>
+ * <li>a combobox to choose Classification Method plus additional parameters
+ * in case of range-based classification</li>
+ * <li>a combobox to choose a Color Scheme</li>
+ * <li>an table to display colors with two plugins to add/remove lines</li>
+ * <li>a slider to set the transparency</li>
+ * </ul>
+ *
+ * @author </p>jonathan aquino (original author)
+ * @author </p>obedel and ebocher (2005 - added Quantile Color Theming)
+ * @author </p>ssteiniger (2009 - added 3 more range-based classification methods)
+ * @author </p>mmichaud (2011 - debug, remove deprecated code and comments, give
+ *         priority to attribute value choice instead of classification choice)
+ */
 public class ColorThemingStylePanel extends JPanel implements StylePanel {
     private static final String CUSTOM_ENTRY = I18N.get("ui.renderer.style.ColorThemingPanel.custom");
     public static final String TITLE = I18N.get("ui.renderer.style.ColorThemingPanel.colour-theming");
     public static final String COLOR_SCHEME_KEY = ColorThemingStylePanel.class.getName() +
         " - COLOR SCHEME";
+    
     private WorkbenchContext workbenchContext;
     private Layer layer;
-    private GridBagLayout gridBagLayout1 = new GridBagLayout();
+    
+    // jPanel1 contains enable, attribute, classification and color scheme options
     private JPanel jPanel1 = new JPanel();
+    private JCheckBox enableColorThemingCheckBox = new JCheckBox();
+    
+    private JLabel attributeLabel = new JLabel();
+    private JComboBox attributeNameComboBox = new JComboBox();
+    private String lastAttributeName;
+    
+    private JLabel classificationLabel = new JLabel(I18N.get("ui.renderer.style.ColorThemingStylePanel.Classification-Method"));
+    private JComboBox classificationComboBox = new JComboBox();
+    
+	private JLabel colorSchemeLabel = new JLabel();
+    private JComboBox colorSchemeComboBox = new JComboBox();
+    
+    // jPanel2 contains the scrollPane (table, add/remove plugin and transparency slider)
+    private JPanel jPanel2 = new JPanel();
     private JScrollPane scrollPane = new JScrollPane();
     private DefaultTableCellRenderer allOtherValuesRenderer = new DefaultTableCellRenderer();
+    // main table displaying color theming
     private JTable table = new JTable() {
+        
             public TableCellRenderer getCellRenderer(int row, int column) {
                 TableCellRenderer renderer = getCellRendererProper(row, column);
-
                 if (renderer instanceof JComponent) {
                     updateBackground((JComponent) renderer);
                 }
-
                 return renderer;
             }
 
@@ -140,20 +174,13 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
                     return allOtherValuesRenderer;
                 }
                 TableCellRenderer renderer = super.getCellRenderer(row, column);
-
                 if (renderer instanceof JLabel) {
                     ((JLabel) renderer).setHorizontalAlignment(JLabel.LEFT);
                 }
-
                 return renderer;
             }
         };
 
-    private JPanel jPanel3 = new JPanel();
-    private GridBagLayout gridBagLayout2 = new GridBagLayout();
-    private GridBagLayout gridBagLayout4 = new GridBagLayout();
-    private JComboBox attributeNameComboBox = new JComboBox();
-    private JLabel attributeLabel = new JLabel();
     private JLabel statusLabel = new JLabel() {
             public void setText(String text) {
                 super.setText(text);
@@ -162,36 +189,30 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         };
 
     private EnableableToolBar toolBar = new EnableableToolBar();
-    private JPanel jPanel4 = new JPanel();
-    private GridBagLayout gridBagLayout5 = new GridBagLayout();
-    private JComboBox colorSchemeComboBox = new JComboBox();
-    private JLabel colorSchemeLabel = new JLabel();
+    
     private boolean updatingComponents = false;
     private boolean initializing = false;
     private BasicStyleListCellRenderer basicStyleListCellRenderer = new BasicStyleListCellRenderer();
     public BasicStylePanel basicStylePanel;
+    
     private TableCellEditor basicStyleTableCellEditor = new TableCellEditor() {
             private DefaultComboBoxModel comboBoxModel = new DefaultComboBoxModel();
             private BasicStyle originalStyle;
             private DefaultCellEditor editor;
             private JComboBox comboBox = new JComboBox(comboBoxModel) {
-                    public void setSelectedItem(Object anObject) {
-                        if (anObject != CUSTOM_ENTRY) {
-                            super.setSelectedItem(anObject);
-
-                            return;
-                        }
-
-                        BasicStyle style = promptBasicStyle(originalStyle);
-
-                        if (style == null) {
-                            return;
-                        }
-
-                        comboBox.addItem(style);
-                        super.setSelectedItem(style);
+                public void setSelectedItem(Object anObject) {
+                    if (anObject != CUSTOM_ENTRY) {
+                        super.setSelectedItem(anObject);
+                        return;
                     }
-                };
+                    BasicStyle style = promptBasicStyle(originalStyle);
+                    if (style == null) {
+                        return;
+                    }
+                    comboBox.addItem(style);
+                    super.setSelectedItem(style);
+                }
+            };
 
             {
                 comboBox.setRenderer(basicStyleListCellRenderer);
@@ -260,9 +281,8 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         };
 
     private DefaultComboBoxModel comboBoxModel = new DefaultComboBoxModel();
-    private JPanel fillerPanel = new JPanel();
-    private String lastAttributeName;
     private ColorScheme colorSchemeForInserts = null;
+    
     private MyPlugIn insertPlugIn = new MyPlugIn() {
             public String getName() {
                 return I18N.get("ui.renderer.style.ColorThemingPanel.insert-row");
@@ -315,55 +335,54 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
             }
         };
 
+    private JSlider transparencySlider = new JSlider();
+    
     //Maintain a blackboard for error messages instead of running all
     //validations whenever we need to check for messages -- some validations
     //may be expensive. [Jon Aquino]
     private HashSet errorMessages = new HashSet();
+    
     private DiscreteColorThemingState discreteColorThemingState = new DiscreteColorThemingState(table);
     private RangeColorThemingState rangeColorThemingState;
+	private QuantileColorThemingState quantileColorThemingState;
+	private MeanSTDevColorThemingState meanSTDevColorThemingState;
+	private MaximalBreaksColorThemingState maxBreaksColorThemingState;
+	private JenksBreaksColorThemingState jenksColorThemingState;
     private State state = discreteColorThemingState;
-    private JPanel jPanel5 = new JPanel();
-    private GridBagLayout gridBagLayout3 = new GridBagLayout();
-    private JCheckBox enableColorThemingCheckBox = new JCheckBox();
-    private JCheckBox byRangeCheckBox = new JCheckBox();
-    private JSlider transparencySlider = new JSlider();
-
+    
     public ColorThemingStylePanel(Layer layer, WorkbenchContext workbenchContext) {
         initializing = true;
 
         try {
-            basicStylePanel = new BasicStylePanel(workbenchContext.getWorkbench()
-                                                                  .getBlackboard(),
-                    ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+            basicStylePanel = new BasicStylePanel(
+                workbenchContext.getWorkbench().getBlackboard(),
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
             this.layer = layer;
             this.workbenchContext = workbenchContext;
-            // I - equal Range
+            // 0 - DiscreteColorThemingState (already initialized)
+            // 1 - Equal Range
             rangeColorThemingState = new RangeColorThemingState(this);
-
-            //-- obedel start (II - Quantile = equal number)
+            // 2 - Quantile or Equal Number (added by obedel)
             quantileColorThemingState = new QuantileColorThemingState(this);
-            //-- obedel end
-            //-- [sstein - 15.Feb.2009 - add further methods]
-            //   III - Mean-Standard-Deviation
-            //   IV  - Maximal Breaks
-            //    V   - Jenks Optimal
+            // 3 - Mean-Standard-Deviation (added by sstein)
             meanSTDevColorThemingState = new MeanSTDevColorThemingState(this);
+            // 4 - Maximal Breaks (added by sstein)
             maxBreaksColorThemingState = new MaximalBreaksColorThemingState(this);
+            // 5 - Jenks Optimal (added by sstein)
             jenksColorThemingState = new JenksBreaksColorThemingState(this);
-            //--
+            
+            initAttributeNameComboBox(layer);
             jbInit();
-            byRangeCheckBox.setSelected(colorThemingStyleHasRanges(layer));
-
+            
             //Must set state early so that #initTable can call #fromExternalFormat. [Jon Aquino]
-            state = byRangeCheckBox.isSelected()
-                ? (State) rangeColorThemingState : discreteColorThemingState;
+            state = colorThemingStyleHasRanges(getLayer()) ?
+                (State) rangeColorThemingState : discreteColorThemingState;
 
             //Init the table before calling #setState, in which
             //RangeColorThemingState will add itself as a listener
             //to the table model. [Jon Aquino]
             initTable(layer);
             setState(state);
-            initAttributeNameComboBox(layer);
             initColorSchemeComboBox(layer.getLayerManager());
             initTransparencySlider(layer);
             initToolBar();
@@ -428,6 +447,12 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
 
     private String getAttributeName() {
         return (String) attributeNameComboBox.getSelectedItem();
+    }
+    
+    private AttributeType getAttributeType() {
+        return layer.getFeatureCollectionWrapper()
+		            .getFeatureSchema()
+		            .getAttributeType(getAttributeName());
     }
 
     private void stopCellEditing() {
@@ -508,22 +533,25 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         try {
             attributeLabel.setEnabled(enableColorThemingCheckBox.isSelected());  //LDB: keep enabled always
             attributeNameComboBox.setEnabled(enableColorThemingCheckBox.isSelected());
-            state.getPanel().setEnabled(enableColorThemingCheckBox.isSelected() &&
+            state.getPanel().setEnabled(
+                enableColorThemingCheckBox.isSelected() &&
                 (attributeNameComboBox.getItemCount() > 0));
-            colorSchemeLabel.setEnabled(enableColorThemingCheckBox.isSelected() &&
+
+			classificationLabel.setEnabled(
+			        enableColorThemingCheckBox.isSelected() &&
+					(attributeNameComboBox.getItemCount() > 0) &&
+					(getAttributeType()==AttributeType.INTEGER || getAttributeType()==AttributeType.DOUBLE));
+			classificationComboBox.setEnabled(
+			        enableColorThemingCheckBox.isSelected() &&
+					(attributeNameComboBox.getItemCount() > 0) &&
+					(getAttributeType()==AttributeType.INTEGER || getAttributeType()==AttributeType.DOUBLE));
+            
+			colorSchemeLabel.setEnabled(
+                enableColorThemingCheckBox.isSelected() &&
                 (attributeNameComboBox.getItemCount() > 0));
-            //byRangeCheckBox.setEnabled(enableColorThemingCheckBox.isSelected() &&
-            //    (attributeNameComboBox.getItemCount() > 0));
-
-            //-- obedel start
-			classificationLabel.setEnabled(enableColorThemingCheckBox.isSelected() &&
-					(attributeNameComboBox.getItemCount() > 0));
-			classificationComboBox.setEnabled(enableColorThemingCheckBox.isSelected() &&
-					(attributeNameComboBox.getItemCount() > 0));
-			//-- obedel end
-
             colorSchemeComboBox.setEnabled(enableColorThemingCheckBox.isSelected() &&
                 (attributeNameComboBox.getItemCount() > 0));
+            
             table.setEnabled(enableColorThemingCheckBox.isSelected() &&
                 (attributeNameComboBox.getItemCount() > 0));
             scrollPane.setEnabled(enableColorThemingCheckBox.isSelected() &&
@@ -534,11 +562,11 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
             toolBar.updateEnabledState();
 
             //Give the "Cannot colour-theme layer" message priority. [Jon Aquino]
-            if (!setErrorMessage(
-                        new ErrorMessage(
-                                I18N.get("ui.renderer.style.ColorThemingPanel.cannot-colour-theme-layer-with-no-attributes")),
-                        attributeNameComboBox.getItemCount() == 0)) {
-                setErrorMessage(new ErrorMessage(I18N.get("ui.renderer.style.ColorThemingPanel.table-must-not-be-empty")),
+            if (!setErrorMessage(new ErrorMessage(
+                    I18N.get("ui.renderer.style.ColorThemingPanel.cannot-colour-theme-layer-with-no-attributes")),
+                    attributeNameComboBox.getItemCount() == 0)) {
+                setErrorMessage(new ErrorMessage(
+                    I18N.get("ui.renderer.style.ColorThemingPanel.table-must-not-be-empty")),
                     table.getRowCount() == 0);
             }
 
@@ -588,7 +616,11 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
     }
 
     private void initTable(Layer layer) {
-        table.setModel(new ColorThemingTableModel(layer.getBasicStyle(),
+        BasicStyle defaultStyle = colorThemingStyleHasRanges(getLayer()) ?
+            ColorThemingStyle.get(layer).getDefaultStyle():
+            layer.getBasicStyle();
+
+        table.setModel(new ColorThemingTableModel(defaultStyle,
                 ColorThemingStyle.get(layer).getAttributeName(),
                 attributeValueToBasicStyleMap(layer),
                 attributeValueToLabelMap(layer),                
@@ -669,6 +701,7 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         return state.fromExternalFormat(ColorThemingStyle.get(layer)
                                                          .getAttributeValueToBasicStyleMap());
     }
+    
     private Map attributeValueToLabelMap(Layer layer) {
         if (!colorThemingAttributeValid(layer)) {
             return new TreeMap();
@@ -676,6 +709,7 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         return state.fromExternalFormat(ColorThemingStyle.get(layer)
                                                          .getAttributeValueToLabelMap());
     }
+    
     private boolean colorThemingAttributeValid(Layer layer) {
         if (ColorThemingStyle.get(layer).getAttributeName() == null) { return false;}
         //Schema won't have attribute name if user has deleted the attribute.
@@ -707,7 +741,6 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
 
     private void initAttributeNameComboBox(Layer layer) {
         DefaultComboBoxModel model = new DefaultComboBoxModel();
-
         for (int i = 0;
                 i < layer.getFeatureCollectionWrapper().getFeatureSchema()
                              .getAttributeCount(); i++) {
@@ -715,34 +748,38 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
                               .getGeometryIndex()) {
                 continue;
             }
-
-            model.addElement(layer.getFeatureCollectionWrapper()
-                                  .getFeatureSchema().getAttributeName(i));
+            String attributeName = layer.getFeatureCollectionWrapper()
+                                        .getFeatureSchema()
+                                        .getAttributeName(i);
+            model.addElement(attributeName);
         }
-
         attributeNameComboBox.setModel(model);
-
         if (model.getSize() == 0) {
             //Can get here if the only attribute is the geometry. [Jon Aquino]
             return;
         }
+        else if (model.getIndexOf(lastAttributeName) >= 0) {
+            attributeNameComboBox.setSelectedItem(lastAttributeName);
+        }
         else if (ColorThemingStyle.get(layer).getAttributeName() == null) {
             attributeNameComboBox.setSelectedIndex(0);
+            lastAttributeName = getAttributeName();
         }
         else {
             attributeNameComboBox.setSelectedItem(
                 ColorThemingStyle.get(layer).getAttributeName());
+            lastAttributeName = getAttributeName();
         }
     }
 
     private void jbInit() throws Exception {
-        this.setLayout(gridBagLayout1);
-        jPanel1.setLayout(gridBagLayout2);
-        jPanel3.setLayout(gridBagLayout4);
+        this.setLayout(new GridBagLayout());
+        jPanel1.setLayout(new GridBagLayout());
+        jPanel2.setLayout(new GridBagLayout());
+        enableColorThemingCheckBox.setText(I18N.get("ui.renderer.style.ColorThemingPanel.enable-colour-theming"));
         attributeLabel.setText(I18N.get("ui.renderer.style.ColorThemingPanel.attribute")+" ");
         statusLabel.setBorder(BorderFactory.createLoweredBevelBorder());
         statusLabel.setText(" ");
-        jPanel4.setLayout(gridBagLayout5);
         colorSchemeLabel.setText(I18N.get("ui.renderer.style.ColorThemingPanel.colour-scheme")+" ");
         attributeNameComboBox.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(ActionEvent e) {
@@ -754,28 +791,13 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
                     colorSchemeComboBox_actionPerformed(e);
                 }
             });
-        jPanel5.setLayout(gridBagLayout3);
         enableColorThemingCheckBox.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     enableColorThemingCheckBox_actionPerformed(e);
                 }
             });
-        enableColorThemingCheckBox.setText(I18N.get("ui.renderer.style.ColorThemingPanel.enable-colour-theming"));
 
-        //-- obedel start
-		// byRangeCheckBox replaced by new classification combobox
-        /*
-        byRangeCheckBox.setText(I18N.get("ui.renderer.style.ColorThemingPanel.by-range"));
-        byRangeCheckBox.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    byRangeCheckBox_actionPerformed(e);
-                }
-            });
-            */
-		initClassificationComboBox();
-		//-- obedel end
-
-
+		initClassificationComboBox(getAttributeType());
         transparencySlider.setMaximum(255);
         transparencySlider.setPreferredSize(new Dimension(75, 24));
 
@@ -791,82 +813,64 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
             new GridBagConstraints(0, 2, 1, 1, 1.0, 0.0,
                 GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
                 new Insets(0, 0, 0, 0), 0, 0));
-        jPanel1.add(attributeNameComboBox,
-            new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
+        // add enableColorThemingCheckBox in row 0
+        jPanel1.add(enableColorThemingCheckBox,
+            new GridBagConstraints(0, 0, 4, 1, 0.0, 0.0,
                 GridBagConstraints.WEST, GridBagConstraints.NONE,
                 new Insets(2, 2, 2, 2), 0, 0));
         jPanel1.add(attributeLabel,
-            new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
-                GridBagConstraints.CENTER, GridBagConstraints.NONE,
+            new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0,
+                GridBagConstraints.WEST, GridBagConstraints.NONE,
                 new Insets(2, 2, 2, 2), 0, 0));
-        jPanel1.add(fillerPanel,
-            new GridBagConstraints(4, 0, 1, 1, 1, 0.0,
-                GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+        // add enableColorThemingCheckBox in row 1
+        jPanel1.add(attributeNameComboBox,
+            new GridBagConstraints(1, 1, 3, 1, 0.0, 0.0,
+                GridBagConstraints.WEST, GridBagConstraints.NONE,
                 new Insets(2, 2, 2, 2), 0, 0));
+        //jPanel1.add(fillerPanel,
+        //    new GridBagConstraints(3, 0, 1, 3, 1, 0.0,
+        //        GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+        //        new Insets(2, 2, 2, 2), 0, 0));
+        // add classification method in row 2
+        jPanel1.add(classificationLabel, 
+        		new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, 
+        		GridBagConstraints.WEST, GridBagConstraints.NONE, 
+        		new Insets(2, 2, 2, 2), 0, 0));  
+		jPanel1.add(classificationComboBox, 
+				new GridBagConstraints(1, 2, 3, 1, 0.0, 0.0, 
+				GridBagConstraints.WEST, GridBagConstraints.NONE, 
+				new Insets(2, 2, 2, 2), 0, 0));
+		// let row 3 for range count options in case of classification by range
+        // add enableColorThemingCheckBox in row 4
+        jPanel1.add(colorSchemeLabel,
+            new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0,
+                GridBagConstraints.WEST, GridBagConstraints.NONE,
+                new Insets(2, 2, 2, 2), 0, 0));
+        jPanel1.add(colorSchemeComboBox,
+            new GridBagConstraints(1, 4, 3, 1, 1.0, 0.0,
+                GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+                new Insets(2, 2, 2, 2), 0, 0));
+        
         this.add(scrollPane,
             new GridBagConstraints(0, 4, 1, 1, 1.0, 1.0,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(2, 2, 2, 2), 0, 0));
-        this.add(jPanel3,
+        this.add(jPanel2,
             new GridBagConstraints(0, 5, 1, 1, 1.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
                 new Insets(0, 0, 0, 0), 0, 0));
-        jPanel3.add(statusLabel,
+        jPanel2.add(statusLabel,
             new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
                 new Insets(0, 0, 0, 0), 0, 0));
-        jPanel3.add(toolBar,
+        jPanel2.add(toolBar,
             new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE,
                 new Insets(0, 0, 0, 0), 0, 0));
-        jPanel3.add(transparencySlider,
+        jPanel2.add(transparencySlider,
             new GridBagConstraints(3, 0, 1, 1, 0.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE,
                 new Insets(0, 0, 0, 0), 0, 0));
-        this.add(jPanel4,
-            new GridBagConstraints(0, 3, 1, 1, 1.0, 0.0,
-                GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
-                new Insets(0, 0, 0, 0), 0, 0));
-        jPanel4.add(colorSchemeComboBox,
-            new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0,
-                GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-                new Insets(2, 2, 2, 2), 0, 0));
-        jPanel4.add(colorSchemeLabel,
-            new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
-                GridBagConstraints.CENTER, GridBagConstraints.NONE,
-                new Insets(2, 2, 2, 2), 0, 0));
-        this.add(jPanel5,
-            new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
-                GridBagConstraints.WEST, GridBagConstraints.NONE,
-                new Insets(0, 0, 0, 0), 0, 0));
-        jPanel5.add(enableColorThemingCheckBox,
-            new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
-                GridBagConstraints.CENTER, GridBagConstraints.NONE,
-                new Insets(2, 2, 2, 2), 0, 0));
-
-        //-- obedel start
-        /*
-        jPanel5.add(byRangeCheckBox,
-            new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
-                GridBagConstraints.CENTER, GridBagConstraints.NONE,
-                new Insets(2, 2, 2, 2), 0, 0));
-        */
-//        jPanel5.add(classificationLabel, new GridBagConstraints(1, 0, 1, 1,
-//				0.0, 0.0, GridBagConstraints.WEST,
-//				GridBagConstraints.HORIZONTAL, new Insets(2, 2, 2, 2), 0, 0));   
-//		jPanel5.add(classificationComboBox, new GridBagConstraints(2, 0, 1, 1,
-//				0.0, 0.0, GridBagConstraints.WEST,
-//				GridBagConstraints.HORIZONTAL, new Insets(2, 2, 2, 2), 0, 0));
-        //-- sstein new:
-		jPanel5.add(classificationComboBox, 
-				new GridBagConstraints(1, 1, 1, 1,0.0, 0.0, 
-				GridBagConstraints.WEST, GridBagConstraints.NONE, 
-				new Insets(2, 2, 2, 2), 0, 0));
-        jPanel5.add(classificationLabel, 
-        		new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, 
-        		GridBagConstraints.EAST, GridBagConstraints.NONE, 
-        		new Insets(2, 2, 2, 2), 0, 0));  
-		//-- obedel end
 
         scrollPane.getViewport().add(table);
     }
@@ -876,7 +880,6 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
             //1 == just the "All other values" row. [Jon Aquino]
             populateTable();
         }
-
         updateComponents();
     }
 
@@ -885,16 +888,16 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
             if (initializing) {
                 return;
             }
-
             if (attributeNameComboBox.getItemCount() == 0) {
                 return;
             }
             Object selectedItem = attributeNameComboBox.getSelectedItem();
-            if ( selectedItem != null && selectedItem.equals( lastAttributeName ) ) {
+            if (selectedItem != null && selectedItem.equals(lastAttributeName)) {
                 //Don't want to clear the table if the attribute hasn't changed. [Jon Aquino]
                 return;
             }
-
+            initClassificationComboBox(getAttributeType());
+            updateComponents();
             stopCellEditing();
             populateTable();
         } finally {
@@ -903,7 +906,6 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
             // -- the table is populated; edit the table; click on attribute combo box but click
             //on the same attribute -- the table is repopulated! [Jon Aquino]
             lastAttributeName = getAttributeName();
-
             if (table.getModel() instanceof ColorThemingTableModel) {
                 //Model will be DefaultTableModel during early initialization. [Jon Aquino]
                 tableModel().setAttributeName(getAttributeName());
@@ -917,22 +919,19 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
 
     private SortedSet getNonNullAttributeValues() {
         TreeSet values = new TreeSet();
-
         for (Iterator i = layer.getFeatureCollectionWrapper().getFeatures()
                                .iterator(); i.hasNext();) {
             Feature feature = (Feature) i.next();
-
             if (feature.getAttribute(getAttributeName()) != null) {
                 values.add(ColorThemingStyle.trimIfString(feature.getAttribute(getAttributeName())));
             }
         }
-
         return values;
     }
 
     public void populateTable() {
-        if (!(enableColorThemingCheckBox.isSelected() && (attributeNameComboBox
-                .getItemCount() > 0))) {
+        if (!(enableColorThemingCheckBox.isSelected() &&
+             (attributeNameComboBox.getItemCount() > 0))) {
             return;
         }
         stopCellEditing();
@@ -947,6 +946,7 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
     private Collection filteredAttributeValues() {
         return state.filterAttributeValues(getNonNullAttributeValues());
     }
+    
     private Map toAttributeValueToLabelMap(Collection attributeValues) {
         Map attributeValueToAttributeValueMap = new TreeMap();
         for (Iterator i = attributeValues.iterator(); i.hasNext(); ) {
@@ -960,6 +960,7 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         }
         return attributeValueToLabelMap;
     }
+    
     private Map toAttributeValueToBasicStyleMap(Collection attributeValues) {
         Map attributeValueToBasicStyleMap = new TreeMap();
         for (Iterator i = attributeValues.iterator(); i.hasNext();) {
@@ -973,7 +974,6 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         if (initializing) {
             return;
         }
-
         stopCellEditing();
         layer.getLayerManager().getBlackboard().put(COLOR_SCHEME_KEY,
             colorSchemeComboBox.getSelectedItem());
@@ -1018,11 +1018,9 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         if (!enableColorThemingCheckBox.isSelected()) {
             return null;
         }
-
         if (errorMessages.isEmpty()) {
             return null;
         }
-
         return errorMessages.iterator().next().toString();
     }
 
@@ -1034,19 +1032,15 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         //ignored if the message already exists. Need to replace because the
         //"specific part" of the error message may be new. [Jon Aquino]
         errorMessages.remove(message);
-
         if (enabled) {
             errorMessages.add(message);
         }
-
         updateErrorDisplay();
-
         return enabled;
     }
 
     private void updateErrorDisplay() {
         String errorMessage = internalValidateInput();
-
         if (errorMessage != null) {
             statusLabel.setText(errorMessage);
             statusLabel.setIcon(GUIUtil.toSmallIcon(IconLoader.icon(
@@ -1065,15 +1059,15 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         //removed. [Jon Aquino]
         this.state = state;
         jPanel1.add(state.getPanel(),
-            new GridBagConstraints(3, 0, 1, 1, 0.0, 0.0,
-                GridBagConstraints.CENTER, GridBagConstraints.NONE,
+            new GridBagConstraints(0, 3, 4, 1, 0.0, 0.0,
+                GridBagConstraints.WEST, GridBagConstraints.NONE,
                 new Insets(2, 2, 2, 2), 0, 0));
         initializing = true;
 
         try {
             colorSchemeComboBox.setModel(new DefaultComboBoxModel(
                     new Vector(state.getColorSchemeNames())));
-
+            //colorSchemeComboBox.setPrototypeDisplayValue("01234567890123456789012345678901");
             //The colour scheme may not be present if it was taken from the
             //set of discrete colour schemes but the combo box currently contains
             //the range colour schemes. [Jon Aquino]
@@ -1087,12 +1081,6 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         updateComponents();
         this.state.activate();
         jPanel1.repaint();
-    }
-
-    void byRangeCheckBox_actionPerformed(ActionEvent e) {
-        setState(byRangeCheckBox.isSelected() ? (State) rangeColorThemingState
-                                              : discreteColorThemingState);
-        populateTable();
     }
 
     void transparencySlider_stateChanged(ChangeEvent e) {
@@ -1139,6 +1127,8 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         public abstract Icon getIcon();
     }
 
+    // TODO this class does not depend on this package, it couldbe moved to
+    // com.vividsolutions.jump.util
     private class ErrorMessage {
         private String commonPart;
         private String specificPart;
@@ -1169,8 +1159,6 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
     // return an ordered map (value -> count of corresponding features)
     // Erwan Bocher [20/01/2005]
     // Add button to calculate range and populateTable
-
-
     public SortedMap getAttributeValuesCount() {
         TreeMap values = new TreeMap();
 
@@ -1189,82 +1177,36 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         }
         return values;
     }
-
-    private void initAttributeNameComboBoxWithNumericValues(Layer layer) {
-		DefaultComboBoxModel model = new DefaultComboBoxModel();
-		attributeNameComboBox.removeAllItems();
-		FeatureSchema fs = layer.getFeatureCollectionWrapper().getFeatureSchema();
-		for (int i = 0; i < fs.getAttributeCount(); i++) {
-			AttributeType at = fs.getAttributeType(i);
-			if (at.equals(AttributeType.INTEGER) ||	at.equals(AttributeType.DOUBLE))
-					model.addElement(fs.getAttributeName(i));
-		}
-		attributeNameComboBox.setModel(model);
-
-		if (model.getSize() != 0)
-			attributeNameComboBox.setSelectedItem(attributeNameComboBox.getItemAt(0));
-	}
-
-    private JComboBox classificationComboBox = new JComboBox();
-
-	private JLabel classificationLabel = new JLabel(I18N.get("ui.renderer.style.ColorThemingStylePanel.Classification-Method"));
-
-	private QuantileColorThemingState quantileColorThemingState;
-	private MeanSTDevColorThemingState meanSTDevColorThemingState;
-	private MaximalBreaksColorThemingState maxBreaksColorThemingState;
-	private JenksBreaksColorThemingState jenksColorThemingState;
+    
 	
     private class ActionClassification implements ItemListener {
 		public void itemStateChanged(ItemEvent arg0) {
 			switch (classificationComboBox.getSelectedIndex()) {
 			case UNIQUE_VALUE:
 				setState(discreteColorThemingState);
-				initAttributeNameComboBox(layer);
 				break;
 			case EQUAL_INTERVAL:
-				initAttributeNameComboBoxWithNumericValues(layer);
-				if(attributeNameComboBox.getItemCount() != 0)
-					setState((State) rangeColorThemingState);
-				else
-				    classificationComboBox.setSelectedIndex(UNIQUE_VALUE);
+			    setState((State) rangeColorThemingState);
 				break;
 			case QUANTILE: //i.e. equal number
-				initAttributeNameComboBoxWithNumericValues(layer);
-				if(attributeNameComboBox.getItemCount() != 0)
 				    setState((State) quantileColorThemingState);
-				else
-				    classificationComboBox.setSelectedIndex(UNIQUE_VALUE);
 				break;
-			//[sstein 15.Feb.2009]
 			case MEAN_STDEV: 
-				initAttributeNameComboBoxWithNumericValues(layer);
-				if(attributeNameComboBox.getItemCount() != 0)
 				    setState((State) meanSTDevColorThemingState);
-				else
-				    classificationComboBox.setSelectedIndex(UNIQUE_VALUE);
 				break;
 			case MAX_BREAKS:
-				initAttributeNameComboBoxWithNumericValues(layer);
-				if(attributeNameComboBox.getItemCount() != 0)
 				    setState((State) maxBreaksColorThemingState);
-				else
-				    classificationComboBox.setSelectedIndex(UNIQUE_VALUE);
 				break;
 			case JENKS:
-				initAttributeNameComboBoxWithNumericValues(layer);
-				if(attributeNameComboBox.getItemCount() != 0)
 				    setState((State) jenksColorThemingState);
-				else
-				    classificationComboBox.setSelectedIndex(UNIQUE_VALUE);
 				break;
-			//-- end: sstein
 			}
-
-
-
-
+			populateTable();
+			applyColorScheme();
 		}
 	}
+	
+	private ActionClassification classificationListener = new ActionClassification();
 
 	private static final int UNIQUE_VALUE = 0;
 
@@ -1278,17 +1220,23 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
 	
 	private static final int JENKS = 5;
 
-	private void initClassificationComboBox() {
+	private void initClassificationComboBox(AttributeType type) {
+	    classificationComboBox.removeItemListener(classificationListener);
+	    classificationComboBox.removeAllItems();
 		classificationComboBox.addItem(I18N.get("ui.renderer.style.ColorThemingStylePanel.Unique-value"));
-		classificationComboBox.addItem(I18N.get("ui.renderer.style.ColorThemingStylePanel.Equal-Interval"));
-		classificationComboBox.addItem(I18N.get("ui.renderer.style.ColorThemingStylePanel.Quantile-Equal-Number"));
-		// -- [sstein 15.Feb.2009]
-		classificationComboBox.addItem(I18N.get("ui.renderer.style.ColorThemingStylePanel.Mean-Standard-Deviation"));
-		classificationComboBox.addItem(I18N.get("ui.renderer.style.ColorThemingStylePanel.Maximal-Breaks"));
-		classificationComboBox.addItem(I18N.get("ui.renderer.style.ColorThemingStylePanel.Jenks-Optimal-Method"));
-		// -- stein:end
-		classificationComboBox.addItemListener(new ActionClassification());
+		if (type == AttributeType.INTEGER || type == AttributeType.DOUBLE) {
+		    classificationComboBox.addItem(I18N.get("ui.renderer.style.ColorThemingStylePanel.Equal-Interval"));
+		    classificationComboBox.addItem(I18N.get("ui.renderer.style.ColorThemingStylePanel.Quantile-Equal-Number"));
+		    // -- [sstein 15.Feb.2009]
+		    classificationComboBox.addItem(I18N.get("ui.renderer.style.ColorThemingStylePanel.Mean-Standard-Deviation"));
+		    classificationComboBox.addItem(I18N.get("ui.renderer.style.ColorThemingStylePanel.Maximal-Breaks"));
+		    classificationComboBox.addItem(I18N.get("ui.renderer.style.ColorThemingStylePanel.Jenks-Optimal-Method"));
+		}
+		classificationComboBox.addItemListener(classificationListener);
+		if (classificationComboBox.getItemCount() == 1 &&
+		    (state != discreteColorThemingState)) {
+		    setState(discreteColorThemingState);
+		}
 	}
 
-	//-- obedel Erwan Bocher end
 }

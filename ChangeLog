@@ -1,3 +1,7 @@
+2011-07-31 mmichaud <michael.michaud@free.fr>
+    * Fix/improve ColorThemingStylePanel. The main option is now attribute
+      Attribute choice will decide which classification methods are allowed
+
 2011-07-25 mmichaud <michael.michaud@free.fr>
     * Fix/improve reverse function in GeometryFunctionPlugIn [ID 3360102]
       Now works on a clone without modifying source geometry and works on any
