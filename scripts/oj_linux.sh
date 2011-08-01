@@ -8,6 +8,10 @@
 ## values are ##M for ## Megabytes, ##G for ## Gigabytes
 #JAVA_MAXMEM="-Xmx512M"
 
+## uncomment and change your language/country here 
+## to overwrite OS default locale setting
+#JAVA_LANG="-Duser.language=de -Duser.country=DE"
+
 ## set some defaults (as macosx.command uses this script, it might define other defaults)
 MAIN="com.vividsolutions.jump.workbench.JUMPWorkbench"
 JAVA_SAXDRIVER=${JAVA_SAXDRIVER-org.apache.xerces.parsers.SAXParser}
@@ -128,7 +132,7 @@ fi
 
 ## compile jre opts, respect already set ones from e.g. mac
 JAVA_OPTS=""
-JAVA_OPTS="$JAVA_OPTS $JAVA_MAXMEM"
+JAVA_OPTS="$JAVA_OPTS $JAVA_MAXMEM $JAVA_LANG"
 JAVA_OPTS="$JAVA_OPTS -Djump.home=."
 [ -n "JAVA_SAXDRIVER"    ] && JAVA_OPTS="$JAVA_OPTS -Dorg.xml.sax.driver=$JAVA_SAXDRIVER"
 [ -n "$JAVA_LOOKANDFEEL" ] && JAVA_OPTS="$JAVA_OPTS -Dswing.defaultlaf=$JAVA_LOOKANDFEEL"

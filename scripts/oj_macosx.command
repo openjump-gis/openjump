@@ -1,4 +1,8 @@
 #/bin/sh
+##
+# See oj_linux.sh for some parameters you might want to tune
+# e.g. max memory, language, jre to use
+##
 CDIR=`dirname "$0"`
 ## define a default look&feel(laf)
 #  "" - empty for system default
