@@ -1,3 +1,11 @@
+2011-08-14 Matthias Scholz <ms@jammerhund.de>
+	* BlendLineStringsPlugIn
+		* some Enhancements: choice if the source linestrings are deleted and
+		  if a new layer with the reluts are created
+		* Bugfix: if the result was more then one blended linestring, then all
+		  linestrings had the attributes from the first selected linestring and
+		  not from the first blended
+
 2011-07-31 mmichaud <michael.michaud@free.fr>
     * Fix/improve ColorThemingStylePanel. The main option is now attribute
       Attribute choice will decide which classification methods are allowed

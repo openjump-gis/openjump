@@ -35,51 +35,57 @@ package org.openjump.core.ui.plugin.tools;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Vector;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateList;
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.ui.EditTransaction;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
+import java.util.ArrayList;
+import javax.swing.JCheckBox;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 public class BlendLineStringsPlugIn extends AbstractPlugIn {
     
 	private WorkbenchContext workbenchContext;
     
-	private String sToolTipText = "huhu!  :)";
-    private String sTheBlendTolerance = I18N.get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.The-blend-tolerance");
-    private String sNew = I18N.get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.New");
-    private String TOLERANCE = I18N.get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.Tolerance");
-    private String sName = I18N.get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.Blend-LineStrings");
+    private final String THE_BLEND_TOLERANCE_TOOLTIP = I18N.get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.The-blend-tolerance");
+    private final String NEW_LAYER = I18N.get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.New");
+    private final String TOLERANCE = I18N.get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.Tolerance");
+    private final String PLUGIN_NAME = I18N.get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.Blend-LineStrings");
+
+	private final String REMOVE_SOURCE_LINES = I18N.get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.remove-source-lines");
+	private final String REMOVE_SOURCE_LINES_TOOLTIP = I18N.get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.The-source-lines-will-be-removed");
+	private String CREATE_NEW_LAYER = I18N.get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.Create-a-new-layer-for-the-results");
+	private final String CREATE_NEW_LAYER_TOOLTIP = I18N.get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.A-new-layer-will-be-created-for-the-results");
     
     private double blendTolerance = 0.1;
+	private boolean removeSourceLines = false;
+	private boolean createNewLayer = false;
+	
+	private JCheckBox removeCheckBox = null;
+	private JCheckBox newLayerCheckBox = null;
 
     public void initialize(PlugInContext context) throws Exception
     {     
         workbenchContext = context.getWorkbenchContext();
-        context.getFeatureInstaller().addMainMenuItem(this, new String[] { MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY }, sName, false, null, this.createEnableCheck(workbenchContext));
+        context.getFeatureInstaller().addMainMenuItem(this, new String[] { MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY }, PLUGIN_NAME, false, null, this.createEnableCheck(workbenchContext));
     }
     
     public boolean execute(final PlugInContext context) throws Exception
     {
-		sToolTipText = "huhu!  :)";
-		sTheBlendTolerance = I18N.get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.The-blend-tolerance");
-		sNew = I18N.get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.New");
-		TOLERANCE = I18N.get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.Tolerance");
-		sName = I18N.get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.Blend-LineStrings");
     	
         reportNothingToUndoYet(context);
         
@@ -88,45 +94,49 @@ public class BlendLineStringsPlugIn extends AbstractPlugIn {
         dialog.setVisible(true);
         if (! dialog.wasOKPressed()) { return false; }
         getDialogValues(dialog);
-        //context.getLayerViewPanel().setToolTipText(sToolTipText);
         Collection selectedFeatures = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems(); 
         Feature currFeature = ((Feature) selectedFeatures.iterator().next());
         Collection selectedCategories = context.getLayerNamePanel().getSelectedCategories();
         LayerManager layerManager = context.getLayerManager();
         FeatureDataset newFeatures = new FeatureDataset(currFeature.getSchema());       
-        Vector inputLS = new Vector(selectedFeatures.size());
+        ArrayList<Feature> inputFeatures = new ArrayList(selectedFeatures.size());
+		Layer selectedLayer = (Layer) context.getLayerViewPanel().getSelectionManager().getLayersWithSelectedItems().iterator().next();
         
-        for (Iterator j = selectedFeatures.iterator(); j.hasNext();)
+		// get all LineString Features into the inputFeatures variable
+		Iterator<Feature> selectedFeaturesIterator = selectedFeatures.iterator();
+		while (selectedFeaturesIterator.hasNext())
         {
-            Feature f = (Feature) j.next();
-            Geometry geo = f.getGeometry();
-            
-            if (geo instanceof LineString)
+            Feature feature = selectedFeaturesIterator.next();            
+            if (feature.getGeometry() instanceof LineString)
             {
-                inputLS.add(geo);
+                inputFeatures.add(feature);
             }
         }
-        
-        Vector outputLS = new Vector(inputLS.size()); //contains all the blended linestrings
-        
-        while (inputLS.size() > 0)
+
+		// loop through all LineStrings
+        while (inputFeatures.size() > 0)
         {
             //start a new blended linestring
-            LineString ls = (LineString)inputLS.get(0);
-            CoordinateList blendedCoords = new CoordinateList(ls.getCoordinates());
-            inputLS.removeElementAt(0);
+			boolean blended = false;
+			Feature inputFeature = inputFeatures.get(0);
+			Feature blendedFeature = inputFeature.clone(false);
+            CoordinateList blendedCoords = new CoordinateList(inputFeature.getGeometry().getCoordinates());
+            Feature startFeature = inputFeatures.remove(0);
             //sequence through remaining input linestrings
             //and find those which can be added to either
             //the beginning or end of the current blended coordinate list
             int currIndex = 0; //index of current linestring in input vector
-            while (currIndex < inputLS.size())
+            while (currIndex < inputFeatures.size())
             {
-                ls = (LineString)inputLS.get(currIndex);
-                CoordinateList lsCoords = new CoordinateList(ls.getCoordinates());
+				inputFeature = inputFeatures.get(currIndex);
+                CoordinateList lsCoords = new CoordinateList(inputFeature.getGeometry().getCoordinates());
                 if (blended(blendedCoords, lsCoords))
                 {
-                    inputLS.removeElementAt(currIndex);
+                    inputFeatures.remove(currIndex);
                     currIndex = 0; //start at top since some that were rejected before might add to new string
+					blended = true;
+					// remove the original LineString if required
+					if (removeSourceLines && !createNewLayer) selectedLayer.getFeatureCollectionWrapper().remove(inputFeature);
                 }
                 else
                 {
@@ -134,24 +144,28 @@ public class BlendLineStringsPlugIn extends AbstractPlugIn {
                 }
             }
             
-            outputLS.add(new GeometryFactory().createLineString(blendedCoords.toCoordinateArray()));
+			// only if two or more LineStrings are blended, we delete the starting LineString and add the new blended  LineString to the selected or new Layer
+			if (blended) {
+				if (removeSourceLines && !createNewLayer) selectedLayer.getFeatureCollectionWrapper().remove(startFeature);
+				blendedFeature.setGeometry(new GeometryFactory().createLineString(blendedCoords.toCoordinateArray()));
+				if (createNewLayer) {
+					newFeatures.add(blendedFeature);
+				} else {
+					selectedLayer.getFeatureCollectionWrapper().add(blendedFeature);
+				}
+			}
         }
-                           
-        for (Iterator i = outputLS.iterator(); i.hasNext();)
-        {
-            Feature newFeature = (Feature) currFeature.clone();
-            newFeature.setGeometry((LineString) i.next());
-            newFeatures.add(newFeature);
-        }
+                                   
+		if(createNewLayer) {
+			layerManager.addLayer(selectedCategories.isEmpty()
+			? StandardCategoryNames.WORKING
+			: selectedCategories.iterator().next().toString(),
+			layerManager.uniqueLayerName(NEW_LAYER),
+			newFeatures);
+	        layerManager.getLayer(0).setFeatureCollectionModified(true);
+			layerManager.getLayer(0).setEditable(true);
+		}
         
-        layerManager.addLayer(selectedCategories.isEmpty()
-        ? StandardCategoryNames.WORKING
-        : selectedCategories.iterator().next().toString(),
-        layerManager.uniqueLayerName(sNew),
-        newFeatures);
-        
-        layerManager.getLayer(0).setFeatureCollectionModified(true);
-        layerManager.getLayer(0).setEditable(true);
         
         return true;
     }
@@ -199,11 +213,22 @@ public class BlendLineStringsPlugIn extends AbstractPlugIn {
     
       private void setDialogValues(MultiInputDialog dialog, PlugInContext context)
       {
-        dialog.addDoubleField(TOLERANCE, blendTolerance, 6, sTheBlendTolerance);
+        dialog.addDoubleField(TOLERANCE, blendTolerance, 6, THE_BLEND_TOLERANCE_TOOLTIP);
+		removeCheckBox = dialog.addCheckBox(REMOVE_SOURCE_LINES, removeSourceLines, REMOVE_SOURCE_LINES_TOOLTIP);
+		removeCheckBox.setEnabled(!createNewLayer);
+		newLayerCheckBox = dialog.addCheckBox(CREATE_NEW_LAYER, createNewLayer, CREATE_NEW_LAYER_TOOLTIP);
+		newLayerCheckBox.addChangeListener(new ChangeListener() {
+
+			public void stateChanged(ChangeEvent e) {
+				removeCheckBox.setEnabled(!((JCheckBox) e.getSource()).isSelected());
+			}
+		});
       }
 
       private void getDialogValues(MultiInputDialog dialog) {
         blendTolerance = dialog.getDouble(TOLERANCE);
+		removeSourceLines = dialog.getBoolean(REMOVE_SOURCE_LINES);
+		createNewLayer = dialog.getBoolean(CREATE_NEW_LAYER);
       }
 
     public MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
