@@ -158,7 +158,7 @@ public class ValidateSelectedLayersPlugIn extends AbstractPlugIn
         if (dialog == null) {
             initDialog(context);
         }
-
+        GUIUtil.centreOnWindow(dialog);
         dialog.setVisible(true);
 
         if (!dialog.wasOKPressed()) {
@@ -386,6 +386,5 @@ public class ValidateSelectedLayersPlugIn extends AbstractPlugIn
             false);
         dialog.addCheckBox(DISALLOW_GEOMETRYCOLLECTIONS,
             false, I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.geometry-collection-subtypes-are-not-disallowed"));
-        GUIUtil.centreOnWindow(dialog);
     }
 }

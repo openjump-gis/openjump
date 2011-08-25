@@ -349,11 +349,10 @@ public class GUIUtil {
             Component componentToCentreOn) {
         Dimension componentToCentreOnSize = componentToCentreOn.getSize();
         componentToMove.setLocation(
-                componentToCentreOn.getX()
-                        + ((componentToCentreOnSize.width - componentToMove
-                                .getWidth()) / 2), componentToCentreOn.getY()
-                        + ((componentToCentreOnSize.height - componentToMove
-                                .getHeight()) / 2));
+            componentToCentreOn.getX()
+                + ((componentToCentreOnSize.width - componentToMove.getWidth()) / 2), 
+            componentToCentreOn.getY()
+                + ((componentToCentreOnSize.height - componentToMove.getHeight()) / 2));
     }
 
     /**
@@ -378,6 +377,17 @@ public class GUIUtil {
     public static void centreOnWindow(Component componentToMove) {
         centre(componentToMove, SwingUtilities
                 .windowForComponent(componentToMove));
+    }
+    
+    /**
+     * Centrer the window on its parent window
+     * 
+     * @param windowToMove window to be centered on its parent window
+     */
+    public static void centreOnWindow(Window windowToMove) {
+        windowToMove.pack();
+        centre(windowToMove, SwingUtilities
+                .windowForComponent(windowToMove));
     }
 
     /**
