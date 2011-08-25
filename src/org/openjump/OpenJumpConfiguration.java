@@ -93,6 +93,8 @@ import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.datastore.RunDatastoreQueryPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.imagery.AddImageLayerPlugIn;
 import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
 
 import de.latlon.deejump.plugin.SaveLegendPlugIn;
@@ -140,6 +142,12 @@ public class OpenJumpConfiguration {
 
     OpenFilePlugIn openFile = new OpenFilePlugIn();
     openFile.initialize(pluginContext);
+    
+    RunDatastoreQueryPlugIn runDatastoreQueryPlugIn = new RunDatastoreQueryPlugIn();
+    runDatastoreQueryPlugIn.initialize(pluginContext);
+
+    AddImageLayerPlugIn addImageLayerPlugIn = new AddImageLayerPlugIn();
+    addImageLayerPlugIn.initialize(pluginContext);
 
     OpenProjectPlugIn openProject = new OpenProjectPlugIn();
     openProject.initialize(pluginContext);

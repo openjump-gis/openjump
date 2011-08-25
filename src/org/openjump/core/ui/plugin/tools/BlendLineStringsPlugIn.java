@@ -50,6 +50,7 @@ import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import java.util.ArrayList;
@@ -91,6 +92,7 @@ public class BlendLineStringsPlugIn extends AbstractPlugIn {
         
         MultiInputDialog dialog = new MultiInputDialog(context.getWorkbenchFrame(), getName(), true);
         setDialogValues(dialog, context);
+        GUIUtil.centreOnWindow(dialog);
         dialog.setVisible(true);
         if (! dialog.wasOKPressed()) { return false; }
         getDialogValues(dialog);

@@ -13,11 +13,20 @@ import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.MenuNames;
+
+import org.openjump.core.ui.plugin.AbstractUiPlugIn;
 
 
 
-public class AddImageLayerPlugIn extends AbstractPlugIn {
+public class AddImageLayerPlugIn extends AbstractUiPlugIn {
     private static int nameCounter = 1;
+    
+    public void initialize(final PlugInContext context) throws Exception {
+        super.initialize(context);
+        context.getFeatureInstaller()
+               .addMainMenuItem(new String[]{MenuNames.FILE},this,4);
+    }
 
     public String getName(){
     	return I18N.get("ui.plugin.imagery.AddImageLayerPlugIn.Add-Image-Layer");

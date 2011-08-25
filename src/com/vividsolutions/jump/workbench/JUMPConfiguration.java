@@ -127,8 +127,8 @@ import com.vividsolutions.jump.workbench.ui.plugin.clipboard.PasteLayersPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.datastore.AddDatastoreLayerPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.datastore.InstallDatastoreLayerRendererHintsPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.datastore.RefreshDataStoreLayerPlugin;
-import com.vividsolutions.jump.workbench.ui.plugin.datastore.RunDatastoreQueryPlugIn;
-import com.vividsolutions.jump.workbench.ui.plugin.imagery.AddImageLayerPlugIn;
+//import com.vividsolutions.jump.workbench.ui.plugin.datastore.RunDatastoreQueryPlugIn;
+//import com.vividsolutions.jump.workbench.ui.plugin.imagery.AddImageLayerPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.imagery.ImageLayerManagerPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.imagery.InstallReferencedImageFactoriesPlugin;
 import com.vividsolutions.jump.workbench.ui.plugin.scalebar.InstallScaleBarPlugIn;
@@ -905,9 +905,9 @@ public class JUMPConfiguration implements Setup {
     //public static String MENU_LAYER = MenuNames.LAYER;
 
     private AddDatastoreLayerPlugIn addDatastoreLayerPlugIn = new AddDatastoreLayerPlugIn();
-    private RunDatastoreQueryPlugIn runDatastoreQueryPlugIn = new RunDatastoreQueryPlugIn();
+    //private RunDatastoreQueryPlugIn runDatastoreQueryPlugIn = new RunDatastoreQueryPlugIn();
     private InstallDatastoreLayerRendererHintsPlugIn installDatastoreLayerRendererHintsPlugIn = new InstallDatastoreLayerRendererHintsPlugIn();
-    private AddImageLayerPlugIn addImageLayerPlugIn = new AddImageLayerPlugIn();
+    //private AddImageLayerPlugIn addImageLayerPlugIn = new AddImageLayerPlugIn();
         
     private void configLayer(final WorkbenchContext workbenchContext,
                 final EnableCheckFactory checkFactory,
@@ -920,23 +920,25 @@ public class JUMPConfiguration implements Setup {
                addNewLayerPlugIn.getName());
        featureInstaller.addLayerViewMenuItem(addDatastoreLayerPlugIn, MENU_LAYER,
               addDatastoreLayerPlugIn.getName() + "...");
-       */
+       
        featureInstaller.addLayerViewMenuItem(runDatastoreQueryPlugIn, MENU_LAYER,
               runDatastoreQueryPlugIn.getName() + "...");
+       */
        //--[sstein 21Mar2008] -- disabled because of new menu structure by Paul
        /*
         featureInstaller.addLayerViewMenuItem(addWMSQueryPlugIn, MENU_LAYER,
                 addWMSQueryPlugIn.getName() + "...");
-      	*/
+      	
         featureInstaller.addLayerViewMenuItem(addImageLayerPlugIn, MENU_LAYER,
                 addImageLayerPlugIn.getName() + "...");
+        */
         /*
         featureInstaller.addMainMenuItem(addNewCategoryPlugIn, MENU_LAYER,
                 addNewCategoryPlugIn.getName(), null, addNewCategoryPlugIn
                         .createEnableCheck(workbenchContext));
 		*/
         
-        featureInstaller.addMenuSeparator(MENU_LAYER); // ===================
+        //featureInstaller.addMenuSeparator(MENU_LAYER); // ===================
         featureInstaller.addMainMenuItem(cutSelectedLayersPlugIn, MENU_LAYER,
                 cutSelectedLayersPlugIn.getNameWithMnemonic(), cutSelectedLayersPlugIn.ICON,
                 cutSelectedLayersPlugIn.createEnableCheck(workbenchContext));

@@ -56,6 +56,7 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.AbstractSelection;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
@@ -101,6 +102,7 @@ public class SelectByTypePlugIn extends AbstractPlugIn
         MultiInputDialog dialog = new MultiInputDialog(
         context.getWorkbenchFrame(), getName(), true);
         setDialogValues(dialog, context);
+        GUIUtil.centreOnWindow(dialog);
         dialog.setVisible(true);
         
         if (! dialog.wasOKPressed()) {return false;}

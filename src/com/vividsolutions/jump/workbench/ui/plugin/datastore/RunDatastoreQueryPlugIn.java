@@ -13,6 +13,7 @@ import com.vividsolutions.jump.workbench.datastore.ConnectionManager;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.MenuNames;
 
 /**
  * This PlugIn runs a SQL query against a datastore and creates a Layer
@@ -22,6 +23,12 @@ public class RunDatastoreQueryPlugIn extends AbstractAddDatastoreLayerPlugIn {
 
     protected ConnectionPanel createPanel( PlugInContext context ) {
         return new RunDatastoreQueryPanel( context.getWorkbenchContext() );
+    }
+    
+    public void initialize(final PlugInContext context) throws Exception {
+        super.initialize(context);
+        context.getFeatureInstaller()
+               .addMainMenuItem(new String[]{MenuNames.FILE},this,3);
     }
 
     protected Layerable createLayerable(
