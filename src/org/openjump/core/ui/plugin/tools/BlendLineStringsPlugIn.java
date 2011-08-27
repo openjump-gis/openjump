@@ -69,11 +69,14 @@ public class BlendLineStringsPlugIn extends AbstractPlugIn {
 
 	private final String REMOVE_SOURCE_LINES = I18N.get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.remove-source-lines");
 	private final String REMOVE_SOURCE_LINES_TOOLTIP = I18N.get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.The-source-lines-will-be-removed");
+	private final String TRANSFER_FIRST_ATTRIBUTES_TO_ALL_RESULTING_LINE_STRINGS = I18N.get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.transfer-first-attributes-to-all-resulting-linesstrings");
+	private final String TRANSFER_FIRST_ATTRIBUTES_TO_ALL_RESULTING_LINE_STRINGS_TOOLTIP = I18N.get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.the-attributes-of-the-first-linestring-will-be-transfered");
 	private String CREATE_NEW_LAYER = I18N.get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.Create-a-new-layer-for-the-results");
 	private final String CREATE_NEW_LAYER_TOOLTIP = I18N.get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.A-new-layer-will-be-created-for-the-results");
     
     private double blendTolerance = 0.1;
 	private boolean removeSourceLines = false;
+	private boolean transferFirstAttributesToAllResultingLineStrings = false;
 	private boolean createNewLayer = false;
 	
 	private JCheckBox removeCheckBox = null;
@@ -121,7 +124,12 @@ public class BlendLineStringsPlugIn extends AbstractPlugIn {
             //start a new blended linestring
 			boolean blended = false;
 			Feature inputFeature = inputFeatures.get(0);
-			Feature blendedFeature = inputFeature.clone(false);
+			Feature blendedFeature;
+			if (transferFirstAttributesToAllResultingLineStrings) {
+				blendedFeature = currFeature.clone(false);
+			} else {
+				blendedFeature = inputFeature.clone(false);
+			}
             CoordinateList blendedCoords = new CoordinateList(inputFeature.getGeometry().getCoordinates());
             Feature startFeature = inputFeatures.remove(0);
             //sequence through remaining input linestrings
@@ -218,6 +226,7 @@ public class BlendLineStringsPlugIn extends AbstractPlugIn {
         dialog.addDoubleField(TOLERANCE, blendTolerance, 6, THE_BLEND_TOLERANCE_TOOLTIP);
 		removeCheckBox = dialog.addCheckBox(REMOVE_SOURCE_LINES, removeSourceLines, REMOVE_SOURCE_LINES_TOOLTIP);
 		removeCheckBox.setEnabled(!createNewLayer);
+		dialog.addCheckBox(TRANSFER_FIRST_ATTRIBUTES_TO_ALL_RESULTING_LINE_STRINGS, transferFirstAttributesToAllResultingLineStrings, TRANSFER_FIRST_ATTRIBUTES_TO_ALL_RESULTING_LINE_STRINGS_TOOLTIP);
 		newLayerCheckBox = dialog.addCheckBox(CREATE_NEW_LAYER, createNewLayer, CREATE_NEW_LAYER_TOOLTIP);
 		newLayerCheckBox.addChangeListener(new ChangeListener() {
 
@@ -230,6 +239,7 @@ public class BlendLineStringsPlugIn extends AbstractPlugIn {
       private void getDialogValues(MultiInputDialog dialog) {
         blendTolerance = dialog.getDouble(TOLERANCE);
 		removeSourceLines = dialog.getBoolean(REMOVE_SOURCE_LINES);
+		transferFirstAttributesToAllResultingLineStrings = dialog.getBoolean(TRANSFER_FIRST_ATTRIBUTES_TO_ALL_RESULTING_LINE_STRINGS);
 		createNewLayer = dialog.getBoolean(CREATE_NEW_LAYER);
       }
 

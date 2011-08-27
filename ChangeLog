@@ -1,3 +1,8 @@
+2011-08-27 Matthias Scholz <ms@jammerhund.de>
+	* BlendLineStringsPlugIn
+		* now the user have the choise which attributes will be transfered to
+		  the resulting lines
+
 2011-08-25 mmichaud <michael.michaud@free.fr>
     * Move AddImageLayerPlugIn to File menu
     * Move RunDatastoreQueryPlugIn to File menu
