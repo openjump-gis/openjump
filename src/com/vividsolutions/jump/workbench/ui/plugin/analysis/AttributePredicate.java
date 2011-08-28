@@ -163,7 +163,7 @@ public abstract class AttributePredicate
     return boolStr.equalsIgnoreCase("true")
         || boolStr.equalsIgnoreCase("yes")
         || boolStr.equalsIgnoreCase("1")
-    || boolStr.equalsIgnoreCase("y");
+        || boolStr.equalsIgnoreCase("y");
   }
 
   private static class EqualPredicate extends AttributePredicate {
@@ -209,12 +209,14 @@ public abstract class AttributePredicate
   private static class ContainsPredicate extends AttributePredicate {
     public ContainsPredicate() {  super(GenericNames.CONTAINS);  }
     public boolean isTrue(Object arg1, Object arg2) {
+      if (arg1 == null || arg2 == null) return false;
       return arg1.toString().indexOf(arg2.toString()) >= 0;
     }
   }
   private static class StartsWithPredicate extends AttributePredicate {
     public StartsWithPredicate() {  super(I18N.get("ui.plugin.analysis.AttributePredicate.starts-with"));  }
     public boolean isTrue(Object arg1, Object arg2) {
+      if (arg1 == null || arg2 == null) return false;
       return arg1.toString().startsWith(arg2.toString());
     }
   }

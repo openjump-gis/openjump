@@ -1,3 +1,9 @@
+2011-08-28 mmichaud <michael.michaud@free.fr>
+    * [ID 3397856] VertexZValueStyle now extends a new TextBasedVertexStyle
+      so that z of Points are displayed as well as z of Linestring vertices 
+    * [ID 3398100] Attribute query throws exception with Contains or StartsWith 
+      used with a null  
+
 2011-08-27 Matthias Scholz <ms@jammerhund.de>
 	* BlendLineStringsPlugIn
 		* now the user have the choise which attributes will be transfered to
@@ -6,8 +12,8 @@
 2011-08-25 mmichaud <michael.michaud@free.fr>
     * Move AddImageLayerPlugIn to File menu
     * Move RunDatastoreQueryPlugIn to File menu
-    * Center dialog box on OpenJUMP windows for following plugins (using
-      GUIUtil.centreOnWindow)
+    * [ID 3363920] Center dialog box on OpenJUMP windows for following plugins 
+      (using GUIUtil.centreOnWindow)
         * GUIUtil : adds a method to pack the dialog box before centering it 
         * Edit>Selection>Select by geometry type
         * Tools>Edit Geometry>Blend LineStrings
