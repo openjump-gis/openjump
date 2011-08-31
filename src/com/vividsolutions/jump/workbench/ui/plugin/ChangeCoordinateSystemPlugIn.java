@@ -14,8 +14,8 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
 
 /** 
- * Implements a {@link com.vividsolutions.jump.workbench.plugin.PlugIn
- * PlugIn} that allows the user to change coordinate systems.
+ * Implements a {@link com.vividsolutions.jump.workbench.plugin.PlugIn}
+ * that allows the user to change coordinate systems.
  *
  */
 public class ChangeCoordinateSystemPlugIn extends AbstractPlugIn {
