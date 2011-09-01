@@ -171,9 +171,9 @@ public class FeatureInstaller {
     return a2;
   }
 
-  public void addMainMenuItem(PlugIn executable, String menuName,
+  public JMenuItem addMainMenuItem(PlugIn executable, String menuName,
     String menuItemName, Icon icon, EnableCheck enableCheck) {
-    addMainMenuItem(executable, new String[] {
+    return addMainMenuItem(executable, new String[] {
       menuName
     }, menuItemName, false, icon, enableCheck);
   }
@@ -196,9 +196,9 @@ public class FeatureInstaller {
    * Add a menu item to the main menu that is enabled only if the active
    * internal frame is a LayerViewPanelProxy.
    */
-  public void addLayerViewMenuItem(PlugIn executable, String[] menuPath,
+  public JMenuItem addLayerViewMenuItem(PlugIn executable, String[] menuPath,
     String menuItemName) {
-    addMainMenuItem(executable, menuPath, menuItemName, false, null,
+    return addMainMenuItem(executable, menuPath, menuItemName, false, null,
       checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck());
   }
 
@@ -206,9 +206,9 @@ public class FeatureInstaller {
    * Add a menu item to the main menu that is enabled only if the active
    * internal frame is a LayerViewPanelProxy and a LayerNamePanelProxy.
    */
-  public void addLayerNameViewMenuItem(PlugIn executable, String[] menuPath,
+  public JMenuItem addLayerNameViewMenuItem(PlugIn executable, String[] menuPath,
     String menuItemName) {
-    addMainMenuItem(executable, menuPath, menuItemName, false, null,
+    return addMainMenuItem(executable, menuPath, menuItemName, false, null,
       new MultiEnableCheck().add(
         checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck()).add(
         checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck()));
@@ -223,7 +223,7 @@ public class FeatureInstaller {
    * @param enableCheck conditions to make the plugin available to the user  
    * @see GUIUtil#toSmallIcon
    */
-  public void addMainMenuItem(PlugIn executable, String[] menuPath,
+  public JMenuItem addMainMenuItem(PlugIn executable, String[] menuPath,
     String menuItemName, boolean checkBox, Icon icon, EnableCheck enableCheck) {
     Map properties = extractProperties(menuItemName);
     menuItemName = removeProperties(menuItemName);
@@ -242,6 +242,7 @@ public class FeatureInstaller {
     if (enableCheck != null) {
       addMenuItemShownListener(menuItem, toMenuItemShownListener(enableCheck));
     }
+    return menuItem;
   }
 
   public JMenuItem addMainMenuItem(final String[] menuPath,
