@@ -32,6 +32,8 @@
  */
 
 package com.vividsolutions.jump.workbench.ui.plugin;
+
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.StringReader;
@@ -85,7 +87,7 @@ public abstract class WKTPlugIn extends AbstractPlugIn {
     protected EnterWKTDialog createDialog(final PlugInContext context) {
         final EnterWKTDialog d =
             new EnterWKTDialog(context.getWorkbenchFrame(), I18N.get("ui.plugin.WKTPlugIn.enter-well-known-text"), true);
-        d.setSize(500, 400);
+        d.setPreferredSize(new Dimension(500, 400));
         d.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
