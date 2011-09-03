@@ -194,7 +194,9 @@ public class EnterWKTDialog extends JDialog {
         annotationScrollPane.setMinimumSize(annotationScrollPane.getPreferredSize());
         annotationTextArea.setMargin(new Insets(0, 5, 0, 0));
         annotationTextArea.setBackground(Color.lightGray);
-        annotationTextArea.setFont(new java.awt.Font("Monospaced", 1, 12));
+        //remove setFont so that the same one is used for textArea and annotationTextArea
+        //if you want to change the font, change it in both components
+        //annotationTextArea.setFont(new java.awt.Font("Monospaced", 1, 12));
         annotationTextArea.setEditable(false);
         textArea.setWrapStyleWord(false);
         textArea.setLineWrap(false);
