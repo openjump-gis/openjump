@@ -63,40 +63,6 @@
         </and>
     </selector>
     <!-- Create a single jar openjump.jar from version 1.4.2 -->
-    <!--selector id="api.jar.selector">
-        <and>
-            <or>
-                <filename name="**/*.class" casesensitive="no"/>
-                <selector refid="resource.selector"/>
-            </or>
-            <or>
-                <filename name="com/**" casesensitive="no"/>
-                <filename name="org/**" casesensitive="no"/>
-                <filename name="de/**" casesensitive="no"/>
-            </or>
-            <not>
-                <or>
-                    <filename name="com/vividsolutions/jump/workbench/**" casesensitive="no"/>
-                    <filename name="com/vividsolutions/jump/demo/**" casesensitive="no"/>
-                </or>
-            </not>
-        </and>
-    </selector-->
-    <!-- Create a single jar from version 1.4.2 -->
-    <!--selector id="workbench.jar.selector">
-        <and>
-            <or>
-                <filename name="**/*.class" casesensitive="no"/>
-                <selector refid="resource.selector"/>
-            </or>
-            <or>
-                <filename name="com/vividsolutions/jump/workbench/**" casesensitive="no"/>
-                <filename name="com/vividsolutions/jump/demo/**" casesensitive="no"/>
-                <filename name="language/**" casesensitive="no"/>
-                <filename name="versiondoc/**" casesensitive="no"/>
-            </or>
-        </and>
-    </selector-->
     <selector id="openjump.jar.selector">
         <and>
             <or>
@@ -162,7 +128,7 @@
     <!--  ===================================================================  -->
     <!-- [sstein] new property -->
     <property name="distpathprop" refid="base.classpath"/>
-
+    
     <target name="jar" depends="compile">
         <!-- [sstein] eliminate absolute paths from manifest file -->
         <!-- no more used...-->
@@ -174,35 +140,6 @@
         <manifestclasspath property="manifest.classpath" jarfile="lib/bogus.jar">
             <classpath refid="base.classpath" />
         </manifestclasspath>
-        <!-- Create a single jar from version 1.4.2 -->
-        <!--jar jarfile="${workbench.jar}">
-            <fileset dir="${build.classes}">
-                <selector refid="workbench.jar.selector"/>
-            </fileset>
-            <manifest>
-                <attribute name="Sealed" value="false" />
-                <attribute name="${Name}-Version" value="${version}" />
-                <attribute name="Build-Date" value="${TODAY}" />
-                <attribute name="Build-Time" value="${TSTAMP}" />
-                <attribute name="Class-Path" value="${manifest.classpath} ${workbench.jar.name} ${api.jar.name}" />
-                <attribute name="Main-Class" value="com.vividsolutions.jump.workbench.JUMPWorkbench" />
-            </manifest>
-        </jar-->
-        <!-- manifest="${build.dir}/info.txt" -->
-        <!-- Create a single jar from version 1.4.2 -->
-        <!--jar jarfile="${api.jar}">
-            <fileset dir="${build.classes}">
-                <selector refid="api.jar.selector"/>
-            </fileset>
-            <manifest>
-                <attribute name="Sealed" value="false" />
-                <attribute name="${Name}-Version" value="${version}" />
-                <attribute name="Build-Date" value="${TODAY}" />
-                <attribute name="Build-Time" value="${TSTAMP}" />
-                <attribute name="Class-Path" value="${manifest.classpath} ${workbench.jar.name} ${api.jar.name}" />
-                <attribute name="Main-Class" value="com.vividsolutions.jump.workbench.JUMPWorkbench" />
-            </manifest>
-        </jar-->
         <!-- Create a single jar from version 1.4.2 -->
         <jar jarfile="${openjump.jar}">
             <fileset dir="${build.classes}">

@@ -1,8 +1,8 @@
 OpenJUMP readme file
 --------------------
-Version 1.4.1
+Version 1.4.2
 
-July 2nd, 2011
+September 10th, 2011
 
 Contents
 --------
