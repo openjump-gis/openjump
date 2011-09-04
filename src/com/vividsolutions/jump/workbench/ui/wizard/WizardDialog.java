@@ -198,7 +198,7 @@ public class WizardDialog extends JDialog implements WizardContext,
     titlePanel.setForeground(Color.black);
     add(titlePanel, BorderLayout.NORTH);
 
-    titleLabel.setFont(new Font("Dialog", 1, 12));
+    titleLabel.setFont(titleLabel.getFont().deriveFont(1, 12));
     titleLabel.setBorder(BorderFactory.createEmptyBorder(3, 5, 3, 5));
     titleLabel.setOpaque(false);
     titleLabel.setText("Title");

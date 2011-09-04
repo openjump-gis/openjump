@@ -45,7 +45,7 @@ public class TitledPopupMenu extends TrackedPopupMenu {
     private JLabel titleLabel = new JLabel();
 
     public TitledPopupMenu() {
-        titleLabel.setFont(new java.awt.Font("Dialog", 3, 12));
+        titleLabel.setFont(titleLabel.getFont().deriveFont(3, 12));
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         add(titleLabel);
         addSeparator();

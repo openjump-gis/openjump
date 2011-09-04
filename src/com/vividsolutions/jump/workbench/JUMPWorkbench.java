@@ -31,6 +31,33 @@
  */
 package com.vividsolutions.jump.workbench;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.Frame;
+import java.awt.GridBagConstraints;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JWindow;
+import javax.swing.UIManager;
+import javax.swing.plaf.FontUIResource;
+
+import org.openjump.OpenJumpConfiguration;
+
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.util.Blackboard;
@@ -46,19 +73,6 @@ import com.vividsolutions.jump.workbench.ui.SplashWindow;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
-
-import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-
-import java.io.File;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.*;
-
-import org.openjump.OpenJumpConfiguration;
 
 /**
  * This class is responsible for setting up and displaying the main JUMP
@@ -306,11 +320,14 @@ public class JUMPWorkbench {
 			//Init the L&F before instantiating the progress monitor [Jon
 			// Aquino]
 			initLookAndFeel();
+			//setFont to switch fonts if defaults cannot display current language [ede]
+			setFont();
+			
 			ProgressMonitor progressMonitor = (ProgressMonitor) progressMonitorClass
 					.newInstance();
 			SplashPanel splashPanel = new SplashPanel(splashImage(), 
 									I18N.get("JUMPWorkbench.version")+" "
-									+ VERSION_TEXT /*+ JUMPVersion.CURRENT_VERSION*/); //[sstein] added but disabled JumpVersion
+									+ VERSION_TEXT );
 			splashPanel.add(progressMonitor, new GridBagConstraints(0, 10, 1,
 					1, 1, 0, GridBagConstraints.NORTHWEST,
 					GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 10), 0,
@@ -341,10 +358,11 @@ public class JUMPWorkbench {
 		try {
 			//I don't know if we still need to specify the SAX driver [Jon
 			// Aquino 10/30/2003]
-			System.setProperty("org.xml.sax.driver",
-					"org.apache.xerces.parsers.SAXParser");
-
-			initLookAndFeel();
+			// disabled by ede 09/2011
+			//System.setProperty("org.xml.sax.driver","org.apache.xerces.parsers.SAXParser");  	
+			
+			// already initialized in main() above [ede]
+			//initLookAndFeel();
 			SplashWindow splashWindow = new SplashWindow(splashComponent);
 			splashWindow.setVisible(true);
 
@@ -386,6 +404,77 @@ public class JUMPWorkbench {
 		UIManager.setLookAndFeel( laf );
 	}
 
+	// this is in preparation that we might want to support more fonts in the
+	// future
+	private static Font[] loadFonts() throws Exception {
+		Font font = Font.createFont(Font.TRUETYPE_FONT, Class.class.getClass()
+				.getResource("/language/fonts/code2000.ttf").openStream());
+		// since 1.6 we could register the font and use it by name
+		// but using the font directly makes us 1.5 compatible
+		// GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont( font
+		// );
+		return new Font[] { font };
+	}
+
+	private static boolean setFont() throws Exception {
+		String test = I18N.get("ui.MenuNames.FILE");
+		boolean replaced = false;
+		Font font = null;
+
+		java.util.Enumeration keys = UIManager.getDefaults().keys();
+		while (keys.hasMoreElements()) {
+			Object key = keys.nextElement();
+			Object value = UIManager.get(key);
+			// loop over fontuires entries
+			if (value instanceof javax.swing.plaf.FontUIResource) {
+				FontUIResource fold = ((javax.swing.plaf.FontUIResource) value);
+
+				// can default font display test sentence?
+				if (fold.canDisplayUpTo(test) != -1) {
+
+					// fetch replacement candidate
+					if (font == null)
+						font = loadFonts()[0];
+
+					// copy attributes
+					Map attrs = fold.getAttributes();
+					// remove family attribute
+					java.text.AttributedCharacterIterator.Attribute fam = null;
+					for (Iterator iterator = attrs.keySet().iterator(); iterator
+							.hasNext();) {
+						fam = (java.text.AttributedCharacterIterator.Attribute) iterator
+								.next();
+						if (fam.toString().equals(
+								"java.awt.font.TextAttribute(family)")) {
+							break;
+						}
+					}
+					if (fam != null)
+						attrs.remove(fam);
+					// create the new fontuires
+					FontUIResource fnew = new javax.swing.plaf.FontUIResource(
+							font.deriveFont(attrs));
+
+					// check if new font can display and set
+					if (fnew.canDisplayUpTo(test) == -1) {
+						UIManager.put(key, fnew);
+						replaced = true;
+					}
+				}
+			}
+
+		}
+
+		/*
+		 * // show all registered available fonts GraphicsEnvironment e =
+		 * GraphicsEnvironment.getLocalGraphicsEnvironment(); for (String foo :
+		 * e.getAvailableFontFamilyNames()){ System.out.println(foo); }
+		 */
+
+		// replaced any?
+		return replaced;
+	}
+	
 	public DriverManager getDriverManager() {
 		return driverManager;
 	}

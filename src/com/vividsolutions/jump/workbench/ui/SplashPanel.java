@@ -76,7 +76,7 @@ public class SplashPanel extends JPanel {
         CompoundBorder compoundBorder =
             new CompoundBorder(BorderFactory.createLineBorder(Color.black), border2);
         this.setLayout(gridBagLayout);
-        captionLabel.setFont(new java.awt.Font("Dialog", 1, 20));
+        captionLabel.setFont( captionLabel.getFont().deriveFont( java.awt.Font.BOLD, 20.0f ) );
         this.setBackground(Color.white);
         captionLabel.setForeground(Color.lightGray);
         captionLabel.setBorder(border1);

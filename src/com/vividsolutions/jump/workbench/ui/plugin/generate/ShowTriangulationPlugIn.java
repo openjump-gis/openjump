@@ -260,7 +260,7 @@ public class ShowTriangulationPlugIn extends AbstractPlugIn {
             layer.getVertexStyle().setSize(4);
             layer.getLabelStyle().setEnabled(true);
             layer.getLabelStyle().setColor(color);
-            layer.getLabelStyle().setFont(new Font("Dialog", Font.PLAIN, 12));
+            layer.getLabelStyle().setFont(layer.getLabelStyle().getFont().deriveFont(Font.PLAIN, 12));
             layer.getLabelStyle().setAttribute(WARP_ID_NAME);
             layer.getLabelStyle().setHeight(12);
             layer.getLabelStyle().setScaling(false);

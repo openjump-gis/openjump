@@ -34,6 +34,7 @@
 package com.vividsolutions.jump.workbench.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -46,12 +47,12 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.JUMPVersion;
-import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 
@@ -75,6 +76,8 @@ public class AboutDialog extends JDialog {
     private GridBagLayout gridBagLayout1 = new GridBagLayout();
     private JLabel jLabel3 = new JLabel();
     private JLabel jLabel4 = new JLabel();
+    private JLabel jLabel5 = new JLabel();
+    private JTextArea jLabel6 = new JTextArea();
     private JPanel logoPanel = new JPanel();
     private BorderLayout borderLayout1 = new BorderLayout();
     private JLabel jLabel9 = new JLabel();
@@ -131,31 +134,43 @@ public class AboutDialog extends JDialog {
         infoPanel.setLayout(borderLayout3);
         jLabel1.setToolTipText("");
         jLabel1.setText("Martin Davis");
-        jLabel2.setFont(new java.awt.Font("Dialog", 3, 12));
+        jLabel2.setFont(jLabel2.getFont().deriveFont( Font.ITALIC | Font.BOLD ));
         jLabel2.setToolTipText("");
         jLabel2.setText(I18N.get("ui.AboutDialog.development-team"));
         jPanel1.setLayout(gridBagLayout1);
         jLabel3.setText("David Zwiers");
         jLabel4.setText("Alan Chang");
+        jLabel5.setFont(jLabel2.getFont());
+        jLabel5.setToolTipText("");
+        // openjump team
+        jLabel5.setText(I18N.get("ui.AboutDialog.oj-development-team"));
+        jLabel6.setText("Michaël Michaud\n"
+        		+"Stefan Steiniger\n"
+        		+"Edgar Soldin\n"
+        		+"");
+        jLabel6.setEditable(false);
+        jLabel6.setBackground(jLabel5.getBackground());
+        jLabel6.setFont(jLabel4.getFont());
+        
         logoPanel.setLayout(borderLayout1);
-        jLabel9.setFont(new java.awt.Font("Dialog", 2, 12));
+        jLabel9.setFont(jLabel9.getFont().deriveFont( Font.ITALIC ));
         jLabel9.setText(I18N.get("ui.AboutDialog.free-memory"));
-        jLabel10.setFont(new java.awt.Font("Dialog", 2, 12));
+        jLabel10.setFont(jLabel9.getFont());
         jLabel10.setText(I18N.get("ui.AboutDialog.java-version"));
-        jLabel11.setFont(new java.awt.Font("Dialog", 3, 12));
+        jLabel11.setFont(jLabel2.getFont());
         jLabel11.setHorizontalAlignment(SwingConstants.LEFT);
         jLabel11.setText(I18N.get("ui.AboutDialog.system-info"));
         lblJavaVersion.setToolTipText("");
         lblJavaVersion.setText("x");
-        jLabel12.setFont(new java.awt.Font("Dialog", 2, 12));
+        jLabel12.setFont(jLabel9.getFont());
         jLabel12.setText(I18N.get("ui.AboutDialog.total-memory"));
         lblFreeMemory.setToolTipText("");
         lblFreeMemory.setText("x");
         lblTotalMemory.setText("x");
-        jLabel13.setFont(new java.awt.Font("Dialog", 2, 12));
+        jLabel13.setFont(jLabel9.getFont());
         jLabel13.setText(I18N.get("ui.AboutDialog.os"));
         lblOSVersion.setText("x");
-        jLabel14.setFont(new java.awt.Font("Dialog", 2, 12));
+        jLabel14.setFont(jLabel9.getFont());
         jLabel14.setText(I18N.get("ui.AboutDialog.comitted-memory"));
         lblCommittedMemory.setText("x");
         btnGC.setText(I18N.get("ui.AboutDialog.garbage-collect"));
@@ -229,6 +244,34 @@ public class AboutDialog extends JDialog {
                 0,
                 0));
         jPanel1.add(
+            jLabel5,
+            new GridBagConstraints(
+                0,
+                10,
+                2,
+                1,
+                0.0,
+                0.0,
+                GridBagConstraints.NORTHEAST,
+                GridBagConstraints.NONE,
+                new Insets(10, 0, 0, 20),
+                0,
+                0));
+        jPanel1.add(
+            jLabel6,
+            new GridBagConstraints(
+                2,
+                10,
+                1,
+                1,
+                0.0,
+                0.0,
+                GridBagConstraints.WEST,
+                GridBagConstraints.NONE,
+                new Insets(10, 0, 0, 00),
+                0,
+                0));
+        jPanel1.add(
             jLabel10,
             new GridBagConstraints(
                 2,
@@ -251,9 +294,9 @@ public class AboutDialog extends JDialog {
                 1,
                 0.0,
                 0.0,
-                GridBagConstraints.WEST,
+                GridBagConstraints.EAST,
                 GridBagConstraints.NONE,
-                new Insets(0, 0, 0, 0),
+                new Insets(0, 0, 0, 20),
                 0,
                 0));
         jPanel1.add(

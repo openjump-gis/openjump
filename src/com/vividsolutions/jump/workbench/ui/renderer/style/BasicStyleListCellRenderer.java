@@ -66,7 +66,7 @@ public class BasicStyleListCellRenderer implements ListCellRenderer {
                     index,
                     isSelected,
                     cellHasFocus);
-            label.setFont(new Font("Dialog", 0, 10));
+            label.setFont(label.getFont().deriveFont(0, 10));
             return label;
         }
     };
