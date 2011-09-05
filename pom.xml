@@ -12,18 +12,9 @@
     <resources>
       <resource>
         <directory>src</directory>
-        <includes>
-          <include>**/*.txt</include>
-          <include>**/*.png</include>
-          <include>**/*.gif</include>
-          <include>**/*.jpg</include>
-          <include>**/*.JPG</include>          
-          <include>**/*.java2xml</include>
-          <include>**/*.html</include>
-          <include>**/*.xml</include>
-          <include>**/*.xsl</include>
-          <include>**/*.properties</include>
-        </includes>
+        <!--excludes>
+          <exclude> **/*.java </exclude>
+        </excludes-->
       </resource>
     </resources>
     <plugins>
