@@ -35,14 +35,17 @@ package org.openjump.core.ui.plugin.layer;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
@@ -52,9 +55,11 @@ import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
+import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
@@ -74,7 +79,7 @@ public class ExtractLayersByAttribute extends AbstractPlugIn {
 		I18N.get("org.openjump.core.ui.plugin.layer.ExtractLayersByAttribute.TEXT");
 	private static final String EXTRACT = 
 		I18N.get("org.openjump.core.ui.plugin.layer.ExtractLayersByAttribute.Extract");
-	// NULL is not translated
+	// NULL has not to be translated
 	private static final String NULL = 
 		I18N.get("org.openjump.core.ui.plugin.layer.ExtractLayersByAttribute._NULL_");
     private static final String EMPTY = 
@@ -94,12 +99,26 @@ public class ExtractLayersByAttribute extends AbstractPlugIn {
 				createEnableCheck(context.getWorkbenchContext()));
 	}
 
-    public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext)
+    public static MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext)
     {
         EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);      
         return new MultiEnableCheck()
         .add(checkFactory.createWindowWithSelectionManagerMustBeActiveCheck())
-        .add(checkFactory.createExactlyNLayersMustBeSelectedCheck(1));
+        .add(checkFactory.createExactlyNLayersMustBeSelectedCheck(1))
+        .add(new EnableCheck() {
+                // At one point, this EnableCheck should be added to
+                // EnableCheckFactory with it's own I18N key string
+                public String check(JComponent component) {
+                    Layer[] lyrs = workbenchContext.getLayerNamePanel().getSelectedLayers();
+                    if (lyrs.length == 0) {
+                        return I18N.get("com.vividsolutions.jump.workbench.plugin.Exactly-one-layer-must-be-selected");
+                    }
+                    else if (lyrs[0].getFeatureCollectionWrapper().getFeatureSchema().getAttributeCount() < 2) {
+                        return I18N.get("ui.renderer.style.ColorThemingPanel.layer-must-have-at-least-1-attribute");
+                    }
+                    return null;
+                }
+             });
     }  
     
 
@@ -109,6 +128,7 @@ public class ExtractLayersByAttribute extends AbstractPlugIn {
 				getName(), true);
 		setDialogFields(dialog);
 
+		GUIUtil.centreOnWindow(dialog);
 		dialog.setVisible(true);
 		if (dialog.wasOKPressed()) {
 			String attrName = dialog.getText(LAYER_ATTRIBUTE);
@@ -134,6 +154,9 @@ public class ExtractLayersByAttribute extends AbstractPlugIn {
             }
         }
 		layerAttributeComboBox.setSelectedItem(layerName);
+		if (layerName == null && names.size() > 0) {
+		    layerAttributeComboBox.setSelectedIndex(0);
+		}
     }
 
     private List attributeNames() {
@@ -153,34 +176,28 @@ public class ExtractLayersByAttribute extends AbstractPlugIn {
 
     public static final ImageIcon ICON = IconLoader.icon("extract.gif");
 
-    private List extractLayers(PlugInContext context, Layer layer, String attributeName) {
-        ArrayList newLayes = new ArrayList();    	
+    private void extractLayers(PlugInContext context, Layer layer, String attributeName) {
  		FeatureCollectionWrapper featureCollection = layer.getFeatureCollectionWrapper();
         List featureList = featureCollection.getFeatures();
         FeatureSchema featureSchema = layer.getFeatureCollectionWrapper().getFeatureSchema();
         int attributeIndex = featureSchema.getAttributeIndex(attributeName);        
        			          
-        featureCollection = layer.getFeatureCollectionWrapper();
-        featureList = layer.getFeatureCollectionWrapper().getFeatures();
-
 		boolean wasFiringEvents = context.getLayerManager().isFiringEvents();
         
-       	ArrayList newLayerNameList = new ArrayList();    	
+       	Set newLayerNameList = new HashSet();
         for (Iterator i = featureList.iterator(); i.hasNext();) {
         	Feature feature = (Feature) i.next();
 			// modified by michaelm on 2009-02-20 to handle null and empty strings
         	Object attributeValue = feature.getAttribute(attributeIndex);
 			if (attributeValue == null) {
-			    if (!newLayerNameList.contains(NULL)) {
 				    newLayerNameList.add(NULL);
-				}
 			}
 			else {
-				String attributeString = attributeValue.toString();
-				if (attributeString.length()== 0 && !newLayerNameList.contains(EMPTY)) {
+				String attributeString = attributeValue.toString().trim();
+				if (attributeString.length() == 0) {
 				    newLayerNameList.add(EMPTY);
 				}
-        	    else if (!newLayerNameList.contains(attributeString)) {
+        	    else {
         		    newLayerNameList.add(attributeString);
 				}
         	}
@@ -202,7 +219,6 @@ public class ExtractLayersByAttribute extends AbstractPlugIn {
 			context.getLayerManager().setFiringEvents(false);
 	        
 	        FeatureCollectionWrapper newFeatureCollection = newLayer.getFeatureCollectionWrapper();
-	        newLayes.add(newLayer);
            
 	        for (Iterator j = featureList.iterator(); j.hasNext();) {
 	        	Feature feature = (Feature) j.next();
@@ -215,12 +231,12 @@ public class ExtractLayersByAttribute extends AbstractPlugIn {
 				}
 				else {
 					String attributeString = attributeValue.toString();
-				    if (attributeString.length()== 0) {
+				    if (attributeString.trim().length() == 0) {
 						if (layerName.equals(EMPTY)) {
 							newFeatureCollection.add((Feature) feature.clone());
 						}
 					}
-					else if (attributeString.equals(layerName)) {
+					else if (attributeString.trim().equals(layerName)) {
 		        	    newFeatureCollection.add((Feature) feature.clone());
 					}
 	        	}
@@ -229,8 +245,6 @@ public class ExtractLayersByAttribute extends AbstractPlugIn {
         
 		context.getLayerManager().setFiringEvents(wasFiringEvents);
 		context.getLayerViewPanel().repaint();
-
-    	return newLayes;
     }
 	    
 }
