@@ -124,7 +124,7 @@ public class JUMPWorkbench {
 	//<<TODO:REFACTORING>> Move images package under
 	// com.vividsolutions.jump.workbench
 	//to avoid naming conflicts with other libraries. [Jon Aquino]
-	private CommandLine commandLine;
+	private static CommandLine commandLine;
 	private WorkbenchContext context = new JUMPWorkbenchContext(this);
 	private WorkbenchFrame frame;
 	private DriverManager driverManager = new DriverManager(frame);
@@ -212,12 +212,7 @@ public class JUMPWorkbench {
 	 */
 	public JUMPWorkbench(String title, String[] args,
 			final JWindow s, TaskMonitor monitor) throws Exception {
-		parseCommandLine(args);
-		// load i18n specified in command line ( '-i18n translation' )
-		if (commandLine.hasOption(I18N_FILE)) {
-			I18N.loadFile(commandLine.getOption(I18N_FILE).getArg(0));
-			I18N_SETLOCALE = commandLine.getOption(I18N_FILE).getArg(0);
-		}
+
 		frame = new WorkbenchFrame(title, context);
 		frame.addWindowListener(new WindowAdapter() {
 			public void windowOpened(WindowEvent e) {
@@ -317,10 +312,19 @@ public class JUMPWorkbench {
 
 	public static void main(String[] args) {
 		try {
-			//Init the L&F before instantiating the progress monitor [Jon
-			// Aquino]
+			// first fetch parameters, locale might be changed with -i18n switch
+			parseCommandLine(args);
+			// load i18n specified in command line ( '-i18n translation' )
+			if (commandLine.hasOption(I18N_FILE)) {
+				I18N.loadFile(commandLine.getOption(I18N_FILE).getArg(0));
+				I18N_SETLOCALE = commandLine.getOption(I18N_FILE).getArg(0);
+			}
+			
+			// Init the L&F before instantiating the progress monitor [Jon Aquino]
 			initLookAndFeel();
-			//setFont to switch fonts if defaults cannot display current language [ede]
+			// setFont to switch fonts if defaults cannot display current language [ede]
+			// this changes the default font definition of the jre, first internationalized 
+			// string shown is 'JUMPWorkbench.version' on splashpanel
 			setFont();
 			
 			ProgressMonitor progressMonitor = (ProgressMonitor) progressMonitorClass
@@ -495,7 +499,7 @@ public class JUMPWorkbench {
 		return context;
 	}
 
-	private void parseCommandLine(String[] args) throws WorkbenchException {
+	private static void parseCommandLine(String[] args) throws WorkbenchException {
 		//<<TODO:QUESTION>> Notify MD: using CommandLine [Jon Aquino]
 		commandLine = new CommandLine('-');
 		commandLine.addOptionSpec(new OptionSpec(PROPERTIES_OPTION, 1));
