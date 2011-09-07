@@ -1058,7 +1058,7 @@ public class WorkbenchFrame extends JFrame
     coordinateLabel.setBorder(BorderFactory.createLoweredBevelBorder());
     wmsLabel.setBorder(BorderFactory.createLoweredBevelBorder());
     coordinateLabel.setText(" ");
-    messageTextField.setBorder(BorderFactory.createLoweredBevelBorder());
+    //messageTextField.setBorder(BorderFactory.createLoweredBevelBorder());
     messageTextField.setText(" ");
     timeLabel.setBorder(BorderFactory.createLoweredBevelBorder());
     timeLabel.setText(" ");
@@ -1081,9 +1081,12 @@ public class WorkbenchFrame extends JFrame
 	statusPanelSplitPane2.setDividerSize(dividerSize);
 	statusPanelSplitPane1 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, messageTextField, statusPanelSplitPane2);
 	statusPanelSplitPane1.setDividerSize(dividerSize);
-
+	// Workaround for java bug 4131528
+    statusPanelSplitPane1.setBorder(null);
+	statusPanelSplitPane2.setBorder(null);
+	statusPanelSplitPane3.setBorder(null);
+	statusPanelSplitPane4.setBorder(null);
 	statusPanel.add(statusPanelSplitPane1, BorderLayout.CENTER);
-
   }
 
   private void position(JInternalFrame internalFrame) {

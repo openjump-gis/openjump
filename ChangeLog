@@ -1,10 +1,15 @@
+2011-09-08 mmichaud <michael.michaud@free.fr>
+    * Try to fix bug 3404539 (borders with increasing width in statud bar)
+      with workaround described in sun java database - bug 4131528
+      (does not work with all look and feel)
+
 2011-09-06 ede
-  * added Geometry Converter Plugin to ojcore, available under
-     LayerViewContextMenu "Convert Selected Geometries/Layers" &
-     Main Menu "Tools->Edit Geometries->Convert Selected Geometries/Layers"
-  * added /language/fonts/Code2000.ttf, a gpl'd unicode font and
-    code in JUMPWorkbench to selectively switch to it if I18N.get("ui.MenuNames.FILE") 
-    cannot be displayed by current jre font but by Code2000
+    * added Geometry Converter Plugin to ojcore, available under
+      LayerViewContextMenu "Convert Selected Geometries/Layers" &
+      Main Menu "Tools->Edit Geometries->Convert Selected Geometries/Layers"
+    * added /language/fonts/Code2000.ttf, a gpl'd unicode font and
+      code in JUMPWorkbench to selectively switch to it if I18N.get("ui.MenuNames.FILE") 
+      cannot be displayed by current jre font but by Code2000
     
 2011-08-06 mmichaud <michael.michaud@free.fr>
     * small enhancments to ExtractLayersByAttribute
