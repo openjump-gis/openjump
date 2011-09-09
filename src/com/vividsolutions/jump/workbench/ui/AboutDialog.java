@@ -144,7 +144,7 @@ public class AboutDialog extends JDialog {
         jLabel5.setToolTipText("");
         // openjump team
         jLabel5.setText(I18N.get("ui.AboutDialog.oj-development-team"));
-        jLabel6.setText("Michaël Michaud\n"
+        jLabel6.setText("Micha\u00EBl Michaud\n"
         		+"Stefan Steiniger\n"
         		+"Edgar Soldin\n"
         		+"");
