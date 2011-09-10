@@ -1,43 +1,49 @@
 package org.openjump.core.ui.plugin.queries;
 
-import java.util.*;
 import java.awt.Color;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.Window;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.TreeSet;
+
 import javax.swing.BorderFactory;
 import javax.swing.border.Border;
-import javax.swing.JDialog;
-import javax.swing.WindowConstants;
-import java.text.SimpleDateFormat;
 
 import buoy.event.*;
 import buoy.widget.*;
 
-import com.vividsolutions.jump.feature.Feature;
-import com.vividsolutions.jump.feature.BasicFeature;
-import com.vividsolutions.jump.feature.FeatureCollection;
-import com.vividsolutions.jump.feature.FeatureSchema;
-import com.vividsolutions.jump.feature.FeatureDataset;
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
+import com.vividsolutions.jump.feature.BasicFeature;
+import com.vividsolutions.jump.feature.Feature;
+import com.vividsolutions.jump.feature.FeatureCollection;
+import com.vividsolutions.jump.feature.FeatureDataset;
+import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.util.CollectionMap;
-import com.vividsolutions.jump.workbench.ui.InfoFrame;
-import com.vividsolutions.jump.workbench.ui.FeatureSelection;
 import com.vividsolutions.jump.workbench.model.CategoryEvent;
 import com.vividsolutions.jump.workbench.model.FeatureEvent;
-import com.vividsolutions.jump.workbench.model.LayerEvent;
-import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
 import com.vividsolutions.jump.workbench.model.Layer;
+import com.vividsolutions.jump.workbench.model.LayerEvent;
 import com.vividsolutions.jump.workbench.model.LayerListener;
+import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
-import com.vividsolutions.jump.workbench.ui.TaskFrame;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.ui.FeatureSelection;
+import com.vividsolutions.jump.workbench.ui.InfoFrame;
+import com.vividsolutions.jump.workbench.ui.TaskFrame;
 
 
 /**

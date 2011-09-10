@@ -1,22 +1,21 @@
 package org.openjump.core.ui.plugin.queries;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.regex.Pattern;
-import java.util.Collection;
-import java.util.List;
 import java.util.Iterator;
-import java.math.BigDecimal;
-import com.vividsolutions.jump.feature.Feature;
-import com.vividsolutions.jump.feature.FeatureCollection;
+import java.util.List;
+import java.util.regex.Pattern;
+
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jump.feature.Feature;
+import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.util.FlexibleDateParser;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import buoy.widget.BComboBox;
 
 /**
  * Condition
