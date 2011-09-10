@@ -53,6 +53,7 @@
                 <filename name="**/*.txt" casesensitive="no"/>
                 <filename name="**/*.jpg" casesensitive="no"/>
                 <filename name="**/*.xsl" casesensitive="no"/>
+                <filename name="**/*.ttf" casesensitive="no"/>
             </or>
             <not>
                 <filename name="**/overview.html" casesensitive="no"/>
@@ -84,15 +85,6 @@
                 <filename name="**/*.java" casesensitive="no"/>
                 <filename name="language/**" casesensitive="no"/>
                 <selector refid="resource.selector"/>
-            </or>
-            <or>
-                <filename name="com/**" casesensitive="no"/>
-                <filename name="org/**" casesensitive="no"/>
-                <filename name="de/**" casesensitive="no"/>
-                <filename name="net/**" casesensitive="no"/>
-                <!-- [sstein] added -->
-                <filename name="language/**" casesensitive="no"/>
-                <filename name="versiondoc/**" casesensitive="no"/>
             </or>
             <not>
                 <filename name="jumptest/**" casesensitive="no"/>
@@ -139,6 +131,13 @@
     <property name="distpathprop" refid="base.classpath"/>
     
     <target name="jar" depends="compile">
+        <!-- [sstein] eliminate absolute paths from manifest file -->
+        <!-- no more used...-->
+        <!--replaceregexp file="${build.dir}/info.txt" match=":\\" replace="" flags="gs"/>
+        <replaceregexp file="${build.dir}/info.txt" match=":[^:;]*lib" replace=": lib" flags="gs"/>
+        <replaceregexp file="${build.dir}/info.txt" match=";[^:;]*lib" replace=" lib" flags="gs"/-->
+        <!-- manifest="${build.dir}/info.txt" -->
+
         <manifestclasspath property="manifest.classpath" jarfile="lib/bogus.jar">
             <classpath refid="base.classpath" />
         </manifestclasspath>
@@ -166,12 +165,9 @@
         <javadoc destdir="${javadoc.dir}" use="true">
             <classpath refid="base.classpath"/>
             <packageset dir="${src.dir}">
-                <!-- include name="com/vividsolutions/**"/-->
-                <!-- [sstein 16 Jan 07] new: -->
-                <include name="com/**"/>
-                <include name="org/**"/>
-                <include name="de/**"/>
-                <include name="net/**"/>
+                <exclude name="jumptest/**"/>
+                <exclude name="language/**"/>
+                <exclude name="versiondoc/**"/>
             </packageset>
         </javadoc>
     </target>

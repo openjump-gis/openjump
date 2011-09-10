@@ -133,23 +133,21 @@ Original development team of JUMP was:
 - David Blasby and Paul Ramsey from Refractions Research Inc (www.refractions.net) 
 
 OpenJUMP regular contributors are (non exhaustive list!):
-- Alberto de Luca (geomaticaeambiente.it),
 - Andreas Schmitz (lat-lon.de),
 - Edgar Soldin,
 - Geoffrey G Roy
 - Giuseppe Aruta, 
 - Jukka Rahkonen,
-- Kevin Neufeld,
-- Landon Blake (Sunburned Surveyor),
 - Larry Becker (ISA.com),
-- Martin Davis (refractions.net),
+- Larry Reeder
 - Matthias Scholz (refractions.net),
 - Michaël Michaud,
-- Paolo Rizzi,
+- Mohammed rashad,
 - Stefan Steiniger,
 - Uwe Dallüge,
 
 * past contributors:
+- Alberto de Luca (geomaticaeambiente.it),
 - Axel Orth*,
 - Basile Chandesris*,
 - Bing Ran,
@@ -163,7 +161,10 @@ OpenJUMP regular contributors are (non exhaustive list!):
 - Joe Desbonet*,
 - John Clark*,
 - Jonathan Aquino*,
+- Kevin Neufeld,
+- Landon Blake (Sunburned Surveyor),
 - Ole Rahn*,
+- Paolo Rizzi,
 - Paul Austin*,
 - Pedro Doria Meunier*,
 - Sascha Teichmann (intevation.de)*
@@ -196,6 +197,7 @@ Translation contributors are:
 - German: Florian Rengers, Stefan Steiniger, Edgar Soldin
 - Italian: Giuseppe Aruta
 - Japanese: Hisaji Ono
+- Malayalam : Mohammed Rashad
 - Portuguese (brazilian): Ezequias Rodrigues da Rocha, Cristiano das Neves Almeida
 - Spanish: Giuseppe Aruta, Steve Tanner, Fco Lavin, Nacho Uve, Agustin Diez-Castillo
 - Hungarian: Zoltan Siki

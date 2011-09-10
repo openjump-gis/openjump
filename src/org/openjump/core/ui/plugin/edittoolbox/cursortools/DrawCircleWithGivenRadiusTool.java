@@ -54,7 +54,8 @@ import javax.swing.AbstractButton;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
-import org.openjump.core.ui.MultiInputDialogWithoutCancel;
+//import org.openjump.core.ui.MultiInputDialogWithoutCancel;
+import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -274,7 +275,9 @@ public class DrawCircleWithGivenRadiusTool extends NClickTool{
 	public boolean makeDialogThings(LayerViewPanel panel) throws Exception{
 		LayerViewPanelContext context = (LayerViewPanelContext)panel.getContext();
 		WorkbenchFrame fr = (WorkbenchFrame)(context);
-	    MultiInputDialogWithoutCancel dialog = new MultiInputDialogWithoutCancel(fr, getName(), true);
+	    //MultiInputDialogWithoutCancel dialog = new MultiInputDialogWithoutCancel(fr, getName(), true);
+	    MultiInputDialog dialog = new MultiInputDialog(fr, getName(), true);
+	    dialog.setCancelVisible(false);
 	        setDialogValues(dialog);
 	        GUIUtil.centreOnWindow(dialog);
 	        dialog.setVisible(true);
@@ -283,14 +286,16 @@ public class DrawCircleWithGivenRadiusTool extends NClickTool{
 	        return true;	
 	}
 	
-    private void setDialogValues(MultiInputDialogWithoutCancel dialog)
+    //private void setDialogValues(MultiInputDialogWithoutCancel dialog)
+    private void setDialogValues(MultiInputDialog dialog)
 	  {    	
 	    dialog.setSideBarDescription(this.sidebarstring);
 	    dialog.addDoubleField(T1,this.radius,7,T1); 
 	    dialog.addDoubleField(this.sAccuracy,this.tolerance, 7,this.sAccuracy);
 	  }
 
-	private void getDialogValues(MultiInputDialogWithoutCancel dialog) {
+	//private void getDialogValues(MultiInputDialogWithoutCancel dialog) {
+	private void getDialogValues(MultiInputDialog dialog) {
 	    this.radius = dialog.getDouble(T1);
 	    this.tolerance = dialog.getDouble(this.sAccuracy); 
 	  }
