@@ -20,7 +20,7 @@ rem --- values are ##M for ## Megabytes, ##G for ## Gigabytes ---
 set JAVA_OPTS=%JAVA_OPTS% -Xms64M -Xmx512M
 
 rem --- essential options, don't change unless you know what you're doing ---
-set JAVA_OPTS=%JAVA_OPTS% -Dlog4j.configuration="file:%JUMP_HOME%\bin\log4j.xml" -Djump.home="%JUMP_HOME%"
+set JAVA_OPTS=%JAVA_OPTS% -Dlog4j.configuration="bin\log4j.xml" -Djump.home="%JUMP_HOME%"
 
 rem -- find java runtime --
   rem --- default to javaw ---
