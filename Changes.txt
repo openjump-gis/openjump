@@ -1,4 +1,5 @@
-Version 1.4.2 - svn2380 (released on 11.Sept.2011)
+--------------------------------------------------------
+Version 1.4.2 - svn2383 (released on 11.Sept.2011)
 
   New Features
   - added a Geometry Conversion tool (callable from context menu or main menu)
