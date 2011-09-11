@@ -66,7 +66,7 @@ public class JUMPVersion {
    * An optional string providing further release info (such as "alpha 1" or
    * svn version);
    */
-  private static final String releaseInfo = "alpha";
+  private static final String releaseInfo = "";
 
   /**
    * Prints the current JTS version to stdout.

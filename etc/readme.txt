@@ -21,24 +21,23 @@ can be found in the "gpl2_license.txt" (GPL2) file in the "licenses" folder.
 
 OpenJUMP uses and distributes the following:
 BATIK libraries to write svg format are used under the terms of the 
-Apache License Version 2.0, found in the file "apache_LICENSE-2.0.txt".
+    Apache License Version 2.0, found in the file "apache_LICENSE-2.0.txt".
 BeanShell distributed under LGPL2.1 ("lgpl-2.1.txt").
 Buoy Framework as Public Domain software.
 Code2000 Unicode font licensed under GPL2.
-JAI, licensed under Java Advanced Imaging Distribution License 
-  ("jdl-jai.pdf").
+JAI, licensed under Java Advanced Imaging Distribution License ("jdl-jai.pdf").
 JAMA as Public Domain software.
 Jdom, licensed under Apache-style open source jdom license, with the 
-acknowledgment clause removed ("jdom_LICENSE.txt").
+    acknowledgment clause removed ("jdom_LICENSE.txt").
 JMath and its successor projects JMathTools (IO,Plot,Array) are distributed 
-under BSD license, to be found in "jmathlicense.txt".
+    under BSD license, to be found in "jmathlicense.txt".
 Javascript library RHINO licensed under GPL2.
 JTS Topology Suite licensed under LGPL2.
 Junit licensed under Common Public License - v 1.0 (CPL1) ("cpl-1.0.txt").
 Jython distributed under Jython license ("jython_license.txt").
 Log4J distributed under Apache License Version 2.0.
 Postgresql JDBC driver under the Postgresql BSD license 
-  ("postgresql-BSD_license.txt").
+    ("postgresql-BSD_license.txt").
 Xerces2 Java Parser under Apache License Version 2.0.
 
 
@@ -74,7 +73,7 @@ or for the OpenJUMP core. To change them, edit the startup script accordingly.
 The scripts contain documentation comments, don't be afraid.
 
 Note, that Windows users that like to start OpenJUMP with the OpenJUMP.exe 
-launcher will need to modify OpenJUMP.ini .  
+launcher will need to modify OpenJUMP.ini.  
 
 Java VM options (a complete list can be found in the Java VM documentation)
 -Xms defines the allocated memory for the virtual machine at startup.
@@ -242,8 +241,6 @@ Contributing projects and companies:
   Martin Davis (now at Refractions Inc.)
   David Zwiers
 
-
 others:
 - L. Paul Chew for providing the Delaunay triangulation algorithm to 
   create Voronoi diagrams
-

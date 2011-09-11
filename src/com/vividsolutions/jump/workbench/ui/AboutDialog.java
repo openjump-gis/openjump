@@ -48,6 +48,7 @@ import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.text.DecimalFormat;
 
 import javax.swing.BorderFactory;
@@ -217,14 +218,12 @@ public class AboutDialog extends JDialog {
         	URL url = ClassLoader.getSystemResource( "readme.txt" );
         	if (url == null)
         		throw new FileNotFoundException( "readme.txt missing in ojhome/." );
-            FileInputStream file = new FileInputStream ( url.getFile() );
+            FileInputStream file = new FileInputStream (URLDecoder.decode(url.getFile(), "utf-8"));
             DataInputStream in = new DataInputStream (file);
             byte[] b = new byte[in.available()];
             in.readFully (b);
             in.close ();
             result = new String (b, 0, b.length, "ISO-8859-1");
-
-            //System.out.println(result);
             }
           catch (Exception e) {
         	  // this is normal in development where readme.txt is
@@ -242,15 +241,16 @@ public class AboutDialog extends JDialog {
         readme.setAutoscrolls(false);
         
         aboutPanel.add(readme,new GridBagConstraints(0, 1, 1, 1, 0, 0, GridBagConstraints.CENTER,GridBagConstraints.NONE,
-                new Insets(20, 0, 0, 20), 0, 0));
+                new Insets(20, 0, 0, 0), 0, 0));
         
         aboutScroll = new JScrollPane();
         aboutScroll.getViewport().add(aboutPanel);
         aboutScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         aboutScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         // calculate initial height of biggest asset according to app window height
-        int app_h = wbc.getWorkbench().getFrame().getHeight() - 200;
-        aboutScroll.setPreferredSize(new Dimension (splashPanel.getPreferredSize().width+20, app_h));
+        //int app_h = wbc.getWorkbench().getFrame().getHeight() - 200;
+        int app_h = splashPanel.getPreferredSize().height + 180;
+        aboutScroll.setPreferredSize(new Dimension (splashPanel.getPreferredSize().width + 25, app_h));
         jTabbedPane1.add(aboutScroll, I18N.get("ui.AboutDialog.about"));
         
         jTabbedPane1.addTab(I18N.get("ui.AboutDialog.info"), infoPanel);
