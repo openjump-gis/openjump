@@ -41,7 +41,7 @@
 !insertmacro MUI_PAGE_WELCOME
 ; License page
 !define MUI_LICENSEPAGE_CHECKBOX
-!insertmacro MUI_PAGE_LICENSE "openjump-1.4.2forwin\licenses\gpl2_license.txt"
+!insertmacro MUI_PAGE_LICENSE "openjump-1.4.2forwin\licenses\gpl2.txt"
 ; Directory page
 !insertmacro MUI_PAGE_DIRECTORY
 ; Notification for JRE needs JREDyna.nsi
@@ -173,9 +173,13 @@ Section "MainSection" SEC01
   File "openjump-1.4.2forwin\lib\xml-apis.jar"
   SetOutPath "$INSTDIR\licenses"
   File "openjump-1.4.2forwin\licenses\apache_license.txt"
-  File "openjump-1.4.2forwin\licenses\gpl2_license.txt"
+  File "openjump-1.4.2forwin\licenses\cpl-1.0.txt"
+  File "openjump-1.4.2forwin\licenses\gpl2.txt"
+  File "openjump-1.4.2forwin\licenses\jdom_license.txt"
   File "openjump-1.4.2forwin\licenses\jmath_license.txt"
   File "openjump-1.4.2forwin\licenses\jython_license.txt"
+  File "openjump-1.4.2forwin\licenses\lgpl-2.1.txt"
+  File "openjump-1.4.2forwin\licenses\lgpl-3.0.txt"
   SetOutPath "$INSTDIR"
   File "openjump-1.4.2forwin\readme.txt"
 ;  File "openjump-1.4.2forwin\workbench-state.xml"
@@ -238,10 +242,14 @@ Section Uninstall
   Delete "$INSTDIR\uninst.exe"
   Delete "$INSTDIR\workbench-state.xml"
   Delete "$INSTDIR\readme.txt"
-  Delete "$INSTDIR\licenses\jython_license.txt"
-  Delete "$INSTDIR\licenses\jmath_license.txt"
-  Delete "$INSTDIR\licenses\gpl2_license.txt"
   Delete "$INSTDIR\licenses\apache_license.txt"
+  Delete "$INSTDIR\licenses\cpl-1.0.txt"
+  Delete "$INSTDIR\licenses\gpl2.txt"
+  Delete "$INSTDIR\licenses\jdom_license.txt"
+  Delete "$INSTDIR\licenses\jmath_license.txt"
+  Delete "$INSTDIR\licenses\jython_license.txt"
+  Delete "$INSTDIR\licenses\lgpl-2.1_license.txt"
+  Delete "$INSTDIR\licenses\lgpl-3.0_license.txt"
   Delete "$INSTDIR\lib\xml-apis.jar"
   Delete "$INSTDIR\lib\xml-apis-ext.jar"
   Delete "$INSTDIR\lib\xercesImpl.jar"

@@ -1,3 +1,27 @@
+Version 1.4.2 - svn2380 (released on 11.Sept.2011)
+
+  New Features
+  - added a Geometry Conversion tool (callable from context menu or main menu)
+  - added new options to the BlendLineStrings tool
+  
+  Small improvements
+  - Better internationalization
+  - Clean View menu : Move "Run SQL Query..." and "Add Image (Test, ECW...)" from Layer Menu to File menu.
+  - Readme file in the InfoPanel 
+  
+  API Changes
+  - Removed MultiInputDialogWithoutCancel (use MultiInputDialog instead)
+  - added net.iharder.Base64 (making OJ free of native java code)
+  
+  Bug Fixes
+  - Include net package in the distribution (used for encrypted WMS URL)
+  - Bug 3303503 : Faulty handling of schemas in OJ 1.4.0.3
+  - Bug 3354118 : Changing L&F throws NPE
+  - Bug 3360102 : Reverse line direction applied to source layer
+  - Bug 3397856 : Decoration / display z value not working with points
+  - Bug 3398100 : Attribute based query throws NPE with null values 
+  
+--------------------------------------------------------
 Version 1.4.1 - svn2313 (released on 04.July.2011)
   - Fix a bug preventing to read old project files
 
