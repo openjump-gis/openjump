@@ -45,6 +45,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.URL;
@@ -212,13 +213,22 @@ public class AboutDialog extends JDialog {
         
         aboutPanel.add(splashPanel,new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.CENTER,GridBagConstraints.NONE,
                 new Insets(0, 0, 0, 0), 0, 0));
-        
+
+/*
+        // print classpath for debugging
+        URL[] urls = ((java.net.URLClassLoader)ClassLoader.getSystemClassLoader()).getURLs();
+        for(int i=0; i< urls.length; i++)
+            System.out.println(urls[i]);
+*/
         String result;
+        String urlstring = "";
         try {
-        	URL url = ClassLoader.getSystemResource( "readme.txt" );
+        	URL url = ClassLoader.getSystemResource( "readme.txt" ); // "ÿ \u069e/test.txt"
         	if (url == null)
-        		throw new FileNotFoundException( "readme.txt missing in ojhome/." );
-            FileInputStream file = new FileInputStream (URLDecoder.decode(url.getFile(), "utf-8"));
+        		throw new FileNotFoundException( "readme.txt missing in ojhome/.");
+        	urlstring = URLDecoder.decode(url.toString(), "UTF8");
+        	//System.out.println(URLDecoder.decode(url.toString(), "UTF8") + "-> ÿ \u069e/test.txt");
+            FileInputStream file = new FileInputStream (new File(url.toURI()));
             DataInputStream in = new DataInputStream (file);
             byte[] b = new byte[in.available()];
             in.readFully (b);
@@ -235,7 +245,7 @@ public class AboutDialog extends JDialog {
         	  result = e +"\n\n" + buf;
           }
         
-        JTextArea readme = new JTextArea(result);
+        JTextArea readme = new JTextArea(/*urlstring +"\n\n"+*/ result ) ;
         readme.setFont((new JLabel()).getFont().deriveFont( 12f ));
         readme.setEditable(false);
         readme.setAutoscrolls(false);
@@ -245,12 +255,15 @@ public class AboutDialog extends JDialog {
         
         aboutScroll = new JScrollPane();
         aboutScroll.getViewport().add(aboutPanel);
-        aboutScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        aboutScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         aboutScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         // calculate initial height of biggest asset according to app window height
-        //int app_h = wbc.getWorkbench().getFrame().getHeight() - 200;
-        int app_h = splashPanel.getPreferredSize().height + 180;
-        aboutScroll.setPreferredSize(new Dimension (splashPanel.getPreferredSize().width + 25, app_h));
+        // unless it is smaller then splash height plus offset
+        int min_h = splashPanel.getPreferredSize().height + 60;
+        int pref_h = wbc.getWorkbench().getFrame().getHeight() - 200;
+        pref_h = pref_h < min_h ? min_h : pref_h;
+        // fixed width splash width + 25px for scrollbar
+        aboutScroll.setPreferredSize(new Dimension (splashPanel.getPreferredSize().width + 25, pref_h));
         jTabbedPane1.add(aboutScroll, I18N.get("ui.AboutDialog.about"));
         
         jTabbedPane1.addTab(I18N.get("ui.AboutDialog.info"), infoPanel);
@@ -268,7 +281,7 @@ public class AboutDialog extends JDialog {
         		( aboutScroll.getPreferredSize().width -
         		this.getContentPane().getWidth() );
         // set a minimumsize enforce by listener below
-        this.setMinimumSize(new Dimension ( w, 300));
+        this.setMinimumSize(new Dimension (w, 304));
 
     }
 
