@@ -341,8 +341,13 @@ public class AboutDialog extends JDialog {
 	class ResizeMe extends ComponentAdapter {
 		Dimension minSize = getMinimumSize();
 		Rectangle bounds = getBounds();
+		int last_x = getX();
+		int last_y = getY();
+		int last_w = getWidth();
+		int last_h = getHeight();
 
 		public void componentResized(ComponentEvent evt) {
+			//System.out.println( getX() + " cR " + getY());
 			/*
 			 * Let the user stretch the dialog vertically only. If the user is
 			 * dragging on the top or left border, the system counts it as a
@@ -350,10 +355,10 @@ public class AboutDialog extends JDialog {
 			 * origin position so that the user doesn't end up chasing the
 			 * dialog around the screen like a drop of mercury.
 			 */
-			int oldX = bounds.x;
-			int oldY = bounds.y;
-			int oldHeight = bounds.height;
-			int oldWidth = bounds.width;
+			int oldX = last_x;
+			int oldY = last_y;
+			int oldHeight = last_h;
+			int oldWidth = last_w;
 			int newX = getX();
 			int newY = getY();
 			int newWidth = getWidth();
@@ -364,27 +369,46 @@ public class AboutDialog extends JDialog {
 					newY -= diff;
 				}
 				newHeight += Math.max(0, diff);
-				setBounds(oldX, newY, oldWidth, newHeight);
+
+				// sanitize -0 locs, ignore locX changes to the right 
+				// (preserve wandering because width balances it out)
+				newX = (newX <= 0) ? 0 : (newX>oldX?oldX:newX);
+				newY = (newY <= 0) ? 0 : newY;
+				setBounds(newX, newY, oldWidth, newHeight);
 			}
-			bounds.setBounds(oldX, newY, oldWidth, newHeight);
+			// sanitize always (e.g. first show)
+			else{
+				// sanitize -0 locs
+				newX = (newX <= 0) ? 0 : newX;
+				newY = (newY <= 0) ? 0 : newY;				
+				setLocation(newX, newY);
+			}
+	
+			//System.out.println( oldX + "/" + oldY + " -> " + newX + "/"+newY);
 			
 			// resize readme field with scrollbars
-			Dimension scold = aboutScroll.getPreferredSize();
-			aboutScroll.setPreferredSize(new Dimension(scold.width, scold.height + (newHeight - oldHeight)));
+			Dimension scold = aboutScroll.getSize();
+			int new_sc_h = scold.height + (newHeight - oldHeight);
+			aboutScroll.setPreferredSize(new Dimension(scold.width, new_sc_h));
+			//System.out.println( scold.height + " h> " + new_sc_h + " diff " + (newHeight - oldHeight));
 			aboutScroll.revalidate();
+			//aboutScroll.repaint();
+			
+			validate();
+			
+			//System.out.println( getX() + " cR2 " + getY());
+			
+			// save current loc and dimension for next run
+			memorize();
+			
+			//System.out.println( last_x + "/" + last_y + " , " + last_w + "/" + last_h );
 		}
 
-		public void componentMoved(ComponentEvent evt) {
-			/*
-			 * Store the dialog's new location if the user moved it by dragging
-			 * the title bar, but not if the move event was a side effect of
-			 * resizing.
-			 */
-			if (getWidth() != bounds.width || getHeight() != bounds.height) {
-				setBounds(bounds);
-				return;
-			}
-			bounds.setLocation(getX(), getY());
+		private void memorize(){
+			last_x = getX();
+			last_y = getY();
+			last_w = getWidth();
+			last_h = getHeight();
 		}
 
 	}
