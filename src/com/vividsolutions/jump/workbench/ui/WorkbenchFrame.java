@@ -871,7 +871,7 @@ public class WorkbenchFrame extends JFrame
     } else {
       message = t.getLocalizedMessage();
     }
-    return message + " (" + StringUtil.toFriendlyName(t.getClass().getName())
+    return message + "\n\n (" + StringUtil.toFriendlyName(t.getClass().getName())
       + ")";
   }
 
