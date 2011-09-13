@@ -57,6 +57,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
@@ -68,6 +69,7 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.JUMPVersion;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.ui.plugin.AboutPlugIn;
 
 /**
  * Displays an About Dialog (Splash Screen).
@@ -78,6 +80,7 @@ import com.vividsolutions.jump.workbench.WorkbenchContext;
 public class AboutDialog extends JDialog {
     BorderLayout borderLayout2 = new BorderLayout();
 
+	private static AboutDialog aboutDialog;
     JPanel buttonPanel = new JPanel();
     JButton okButton = new JButton();
     private JTabbedPane jTabbedPane1 = new JTabbedPane();
@@ -95,19 +98,21 @@ public class AboutDialog extends JDialog {
     private WorkbenchContext wbc;
 
     public static AboutDialog instance(WorkbenchContext context) {
-        final String INSTANCE_KEY = AboutDialog.class.getName() + " - INSTANCE";
-        //if (context.getWorkbench().getBlackboard().get(INSTANCE_KEY) == null) {
-            AboutDialog aboutDialog = new AboutDialog(context.getWorkbench().getFrame());
+    	final String INSTANCE_KEY = AboutDialog.class.getName() + " - INSTANCE";
+        if (context.getWorkbench().getBlackboard().get(INSTANCE_KEY) == null) {
+            aboutDialog = new AboutDialog(context.getWorkbench().getFrame());
             context.getWorkbench().getBlackboard().put(INSTANCE_KEY, aboutDialog);
-            GUIUtil.centreOnWindow(aboutDialog);
-        //}
-        return (AboutDialog) context.getWorkbench().getBlackboard().get(INSTANCE_KEY);
+        }
+        aboutDialog = (AboutDialog) context.getWorkbench().getBlackboard().get(INSTANCE_KEY);
+        GUIUtil.centreOnWindow(aboutDialog);
+        return aboutDialog;
     }
 
     private ExtensionsAboutPanel extensionsAboutPanel = new ExtensionsAboutPanel();
 
     private AboutDialog(WorkbenchFrame frame) {
         super(frame, I18N.get("ui.AboutDialog.about-jump"), true);
+        setIconImage(AboutPlugIn.ICON.getImage());
         wbc = frame.getContext().getWorkbench().getContext();
 
         extensionsAboutPanel.setPlugInManager(frame.getContext().getWorkbench().getPlugInManager());
@@ -404,6 +409,18 @@ public class AboutDialog extends JDialog {
 			//System.out.println( last_x + "/" + last_y + " , " + last_w + "/" + last_h );
 		}
 
+	    public void componentShown(ComponentEvent e) {
+	    	// reset scrollpane on redisplay
+	        JScrollBar verticalScrollBar = aboutScroll.getVerticalScrollBar();
+	        JScrollBar horizontalScrollBar = aboutScroll.getHorizontalScrollBar();
+	        verticalScrollBar.setValue(verticalScrollBar.getMinimum());
+	        horizontalScrollBar.setValue(horizontalScrollBar.getMinimum());
+	        // resize and locate according to new workbench position
+	    	setPreferredSize( new Dimension( last_w, wbc.getWorkbench().getFrame().getHeight() - 200 ) );
+	    	pack();
+	    	GUIUtil.centreOnWindow(aboutDialog);
+	    }
+		
 		private void memorize(){
 			last_x = getX();
 			last_y = getY();
