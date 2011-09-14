@@ -1,3 +1,14 @@
+2011-09-14 ede
+  * throw image loading errors up to calling code
+  * ReferencedImageFactoryFileLayerLoader does not create 
+     empty layers if image loading failed anymore
+  * OpenFileWizard now displays errors properly even when 
+     the taskmonitor closes early
+  * bugfix 3084927:
+      ecw libraries choke on accented and other non ascii chars in loading path
+      ECWImageFactory now checks if loading path is ascii only
+       and throws a describing error if not
+
 2011-09-11 ede
   * reworked about dialog
      now vertically resizable
