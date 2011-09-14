@@ -120,7 +120,7 @@ import javax.swing.JTextField;
  * This class is responsible for the main window of the JUMP application.
  */
 public class WorkbenchFrame extends JFrame 
-	implements LayerViewPanelContext, ViewportListener 
+	implements LayerViewPanelContext, ViewportListener, ErrorHandlerV2
 	{
 
 	BorderLayout borderLayout1 = new BorderLayout();
@@ -841,7 +841,11 @@ public class WorkbenchFrame extends JFrame
     handleThrowable(t, parent);
   }
 
-  public static void handleThrowable(final Throwable t, final Component parent) {
+  public void handleThrowable(final Throwable t, final Component parent) {
+	  showThrowable(t, parent);
+  }
+  
+  public static void showThrowable(final Throwable t, final Component parent) {
     t.printStackTrace(System.err);
     SwingUtilities.invokeLater(new Runnable() {
       public void run() {

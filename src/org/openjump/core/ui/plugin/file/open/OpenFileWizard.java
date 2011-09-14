@@ -5,8 +5,8 @@ import java.net.URI;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.openjump.core.ui.images.IconLoader;
 import org.openjump.core.ui.io.file.FileLayerLoader;
@@ -17,8 +17,8 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.registry.Registry;
+import com.vividsolutions.jump.workbench.ui.ErrorHandlerV2;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
-import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
 
 public class OpenFileWizard extends AbstractWizardGroup {
   /** The key for the wizard. */
@@ -117,7 +117,7 @@ public class OpenFileWizard extends AbstractWizardGroup {
    * 
    * @param monitor The task monitor.
    */
-  public void run(WizardDialog dialog, TaskMonitor monitor) {
+  public void run(WizardDialog dialog, TaskMonitor monitor) throws Exception {
     chooseProjectPanel.activateSelectedProject();
     Set<File> openedFiles = new LinkedHashSet<File>();
     try {
@@ -135,9 +135,11 @@ public class OpenFileWizard extends AbstractWizardGroup {
               openedFiles.add(new File(uri));
             }
           }
-        } catch (Exception e) {
-          monitor.report(e);
-        }
+		} catch (final Exception e) {
+			((ErrorHandlerV2) workbenchContext.getErrorHandler())
+					.handleThrowable(e, dialog);
+
+		}
       }
     } finally {
       state = null;

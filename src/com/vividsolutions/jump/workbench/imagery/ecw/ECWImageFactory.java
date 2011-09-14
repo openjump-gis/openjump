@@ -31,6 +31,8 @@ package com.vividsolutions.jump.workbench.imagery.ecw;
  * (250)385-6040
  * www.vividsolutions.com
  */
+import java.nio.charset.Charset;
+
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.JUMPException;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -55,8 +57,14 @@ public class ECWImageFactory implements ReferencedImageFactory {
         return TYPE_NAME;
     }
 
-    public ReferencedImage createImage(String location) throws JUMPException {
-        return new ECWImage(location);
+    public ReferencedImage createImage(String location) throws Exception {
+    	// hprevent a weird bug of the ecw libs not being able to handle accented and extended chars in general
+    	if (!Charset.forName("US-ASCII").newEncoder().canEncode(location)) {
+    		String hint = location.replaceAll("[^\\p{ASCII}]", "?");
+    		throw new ECWLoadException( I18N.getMessage( "com.vividsolutions.jump.workbench.imagery.ecw.path-contains-nonascii-chars", new Object[]{ hint } ) );
+    	}
+    	
+    	return new ECWImage(location);
     }
 
     public String getDescription() {

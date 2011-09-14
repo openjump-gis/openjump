@@ -34,12 +34,12 @@ package com.vividsolutions.jump.workbench.imagery;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureSchema;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
 
 public class ImageryLayerDataset {
     public static final String ATTR_GEOMETRY = "GEOMETRY";
@@ -65,12 +65,13 @@ public class ImageryLayerDataset {
         return SCHEMA;
     }
 
-    public void createImage(Feature feature) {
+    public void createImage(Feature feature) throws Exception{
         String factoryClassPath = (String) feature.getString(ATTR_FACTORY);
         String imageFilePath = (String) feature.getString(ATTR_FILE);
         GeometryFactory geometryFactory = new GeometryFactory();
 
-        try {
+        // experimental change, handle errors further up [ede] 12.09.2011 
+        //try {
             ReferencedImageFactory imageFactory = ( ReferencedImageFactory )
                         Class.forName( factoryClassPath ).newInstance();
             ReferencedImage referencedImage = imageFactory.createImage(imageFilePath);
@@ -81,13 +82,16 @@ public class ImageryLayerDataset {
             feature.setGeometry(boundingBox);
             
             feature.setAttribute(ATTR_TYPE,referencedImage.getType());
-        } catch (Exception e) {
-            feature.setAttribute(ATTR_ERROR, e.toString());
-            e.printStackTrace();
-        }
+        //}catch (Exception e) {
+        //  always throw ECWLoadExceptions as they are fatal
+        //	if ( e instanceof ECWLoadException )
+        //		throw e;
+        //    feature.setAttribute(ATTR_ERROR, e.toString());
+        //   e.printStackTrace();
+        //}
     }
 
-    public ReferencedImage referencedImage(Feature feature) {
+    public ReferencedImage referencedImage(Feature feature) throws Exception{
         if (!(feature.getString(ATTR_ERROR) == null
                 || feature.getString(ATTR_ERROR).equals(""))) {
             return null;

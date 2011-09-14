@@ -75,8 +75,9 @@ public interface FileLayerLoader {
    * @param uri The URI to the file to load.
    * @param options The map of options.
    * @return True if the file could be loaded false otherwise.
+ * @throws Exception 
    */
-  boolean open(TaskMonitor monitor, URI uri, Map<String, Object> options);
+  boolean open(TaskMonitor monitor, URI uri, Map<String, Object> options) throws Exception;
 
   /**
    * Get the list of Options supported by the plug-in.

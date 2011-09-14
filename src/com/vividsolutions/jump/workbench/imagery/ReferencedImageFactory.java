@@ -43,7 +43,7 @@ public interface ReferencedImageFactory {
 
     String getTypeName();
 
-    ReferencedImage createImage(String location) throws JUMPException;
+    ReferencedImage createImage(String location) throws Exception;
 
     public String getDescription();
 

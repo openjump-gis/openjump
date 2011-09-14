@@ -11,12 +11,15 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.JUMPException;
 import com.vividsolutions.jump.feature.BasicFeature;
 import com.vividsolutions.jump.feature.Feature;
+import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.util.Block;
 import com.vividsolutions.jump.util.CollectionUtil;
 import com.vividsolutions.jump.util.FileUtil;
 import com.vividsolutions.jump.util.OrderedMap;
+import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.imagery.ImageryLayerDataset;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImage;
@@ -25,9 +28,8 @@ import com.vividsolutions.jump.workbench.imagery.ReferencedImageStyle;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
-import com.vividsolutions.jump.workbench.ui.GenericNames;
+import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
-import com.vividsolutions.jump.util.Blackboard;
 
 
 
@@ -81,6 +83,15 @@ public class ImageFeatureCreator {
 	                        rif,
 	                        selectedFiles,
 	                        getImageryLayerDataset( layer ) );
+	                // check for errors and tell
+	                for (Iterator iterator = selectedFeatures.iterator(); iterator
+							.hasNext();) {
+	                	Feature feat = (Feature) iterator.next();
+	                	if ( feat.getAttribute(ImageryLayerDataset.ATTR_ERROR) != null ){
+	                		context.getErrorHandler().handleThrowable(new JUMPException(I18N.get( "com.vividsolutions.jump.workbench.ui.plugin.imagery.ImageFeatureCreator.there-were-errors" )));
+	                		break;
+	                	}	
+					}
             	}else{
             		Object[] options = { "OK" };
             		JOptionPane.showOptionDialog(null, I18N.get("ui.plugin.imagery.ImageFeatureCreator.The-driver-for")+" "+rif.getTypeName()+" "+ I18N.get("ui.plugin.imagery.ImageFeatureCreator.is-not-available-Please-check-your-configuration"), 
@@ -150,8 +161,8 @@ public class ImageFeatureCreator {
             new Block() {
                 public Object yield( Object file ) {
                     return createFeature( referencedImageFactory,
-                                    ( File ) file,
-                                    imageryLayerDataset );
+                                          ( File ) file,
+                                          imageryLayerDataset );
                 }
             } );
     }
@@ -172,7 +183,16 @@ public class ImageFeatureCreator {
         // the Geometry is actually set. [Jon Aquino 2005-04-12]
         feature.setGeometry( new GeometryFactory().createPoint( ( Coordinate ) null ) );
         // Set the Geometry. [Jon Aquino 2005-04-12]
-        imageryLayerDataset.createImage( feature );
+        try {
+            imageryLayerDataset.createImage( feature );			
+		
+        // or set error message as feat attrib
+        } catch (Exception e) {
+			feature.setAttribute(ImageryLayerDataset.ATTR_ERROR,  
+					WorkbenchFrame.toMessage(e) + "\n\n" + StringUtil.stackTrace(e));
+	        e.printStackTrace();
+		}
+
         return feature;
     }
 

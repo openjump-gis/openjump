@@ -340,7 +340,7 @@ public class JUMPWorkbench {
 			main(args, I18N.get("JUMPWorkbench.jump"), new JUMPConfiguration(), splashPanel,
 					progressMonitor);
 		} catch (Throwable t) {
-			WorkbenchFrame.handleThrowable(t, null);
+			WorkbenchFrame.showThrowable(t, null);
 		}
 	}
 
@@ -384,7 +384,7 @@ public class JUMPWorkbench {
       OpenJumpConfiguration.postExtensionInitialization(workbench.context);
 			workbench.getFrame().setVisible(true);
 		} catch (Throwable t) {
-			WorkbenchFrame.handleThrowable(t, null);
+			WorkbenchFrame.showThrowable(t, null);
 		}
 	}
 

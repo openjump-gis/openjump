@@ -53,6 +53,7 @@ import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.imagery.ImageryLayerDataset;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageFactory;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageStyle;
+import com.vividsolutions.jump.workbench.imagery.ecw.ECWLoadException;
 import com.vividsolutions.jump.workbench.model.Category;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManager;
@@ -77,7 +78,7 @@ public class ReferencedImageFactoryFileLayerLoader extends
     this.supportFileExtensions = supportFileExtensions;
   }
 
-  public boolean open(TaskMonitor monitor, URI uri, Map<String, Object> options) {
+  public boolean open(TaskMonitor monitor, URI uri, Map<String, Object> options) throws Exception{
     File file;
     if (uri.getScheme().equals("zip")) {
       try {
@@ -106,16 +107,33 @@ public class ReferencedImageFactoryFileLayerLoader extends
     } else {
       file = new File(uri);
     }
+
     LayerManager layerManager = workbenchContext.getLayerManager();
 
     layerManager.setFiringEvents(false);
     Layer layer = createLayer(layerManager, file);
     layerManager.setFiringEvents(true);
+    
+    Feature feature;
+    // THIS did not work here because the message never reached the user
+    // it was printed to STDOUT and shown but instantly closed when
+    // the task was finished and the parent dialog was closed
+    //try {
+        feature = createFeature(imageFactory, file,
+        	      getImageryLayerDataset(layer));		
+	/*
+  	} catch (Exception e) {
+		// always throw ECWLoadExceptions as they are fatal
+    	if ( e instanceof ECWLoadException )
+    		throw e;
+        monitor.report(e);
+        return false;
+	}*/
 
+    // only add layer if no exception occured
     Category category = TaskUtil.getSelectedCategoryName(workbenchContext);
     category.add(0, layer);
-    Feature feature = createFeature(imageFactory, file,
-      getImageryLayerDataset(layer));
+        
     layer.getFeatureCollectionWrapper().add(feature);
     String imageFilePath = (String)feature.getAttribute(ImageryLayerDataset.ATTR_FILE);
     if (imageFactory.isEditableImage(imageFilePath)) {
@@ -193,7 +211,7 @@ public class ReferencedImageFactoryFileLayerLoader extends
   }
 
   private Feature createFeature(ReferencedImageFactory referencedImageFactory,
-    File file, ImageryLayerDataset imageryLayerDataset) {
+    File file, ImageryLayerDataset imageryLayerDataset) throws Exception {
 
     Feature feature = new BasicFeature(ImageryLayerDataset.getSchema());
     feature.setAttribute(ImageryLayerDataset.ATTR_FILE, file.getPath());
