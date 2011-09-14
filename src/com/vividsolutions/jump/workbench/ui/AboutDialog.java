@@ -286,7 +286,7 @@ public class AboutDialog extends JDialog {
         		( aboutScroll.getPreferredSize().width -
         		this.getContentPane().getWidth() );
         // set a minimumsize enforce by listener below
-        this.setMinimumSize(new Dimension (w, 304));
+        this.setMinimumSize(new Dimension (w, 364));
 
     }
 
@@ -409,6 +409,12 @@ public class AboutDialog extends JDialog {
 			//System.out.println( last_x + "/" + last_y + " , " + last_w + "/" + last_h );
 		}
 
+		public void componentMoved(ComponentEvent evt) {
+			// do not move if resized vertically to the left
+			if (getWidth() != last_w)
+				setLocation(last_x, getY());
+		}
+		
 	    public void componentShown(ComponentEvent e) {
 	    	// reset scrollpane on redisplay
 	        JScrollBar verticalScrollBar = aboutScroll.getVerticalScrollBar();
