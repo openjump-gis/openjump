@@ -171,11 +171,13 @@ public class FeatureInstaller {
     return a2;
   }
 
+  /**
+   * @deprecated
+   */
   public void addMainMenuItem(PlugIn executable, String menuName,
     String menuItemName, Icon icon, EnableCheck enableCheck) {
-    addMainMenuItem(executable, new String[] {
-      menuName
-    }, menuItemName, false, icon, enableCheck);
+    addMainMenuItem(executable, new String[] {menuName}, menuItemName,
+        false, icon, enableCheck);
   }
 
   public void addLayerViewMenuItem(PlugIn executable, String menuName,
@@ -222,12 +224,17 @@ public class FeatureInstaller {
    * @param icon an Icon or null
    * @param enableCheck conditions to make the plugin available to the user  
    * @see GUIUtil#toSmallIcon
+   * @deprecated
    */
   public void addMainMenuItem(PlugIn executable, String[] menuPath,
     String menuItemName, boolean checkBox, Icon icon, EnableCheck enableCheck) {
     Map properties = extractProperties(menuItemName);
     menuItemName = removeProperties(menuItemName);
-    JMenu menu = menuBarMenu(menuPath[0]);
+    final JMenuItem menuItem = checkBox ? 
+        new JCheckBoxMenuItem(menuItemName) : 
+        new JMenuItem(menuItemName);
+    addMainMenuItem(executable, menuPath, menuItem, enableCheck, -1);
+    /*JMenu menu = menuBarMenu(menuPath[0]);
     if (menu == null) {
       menu = (JMenu)installMnemonic(new JMenu(menuPath[0]), menuBar());
       addToMenuBar(menu);
@@ -241,12 +248,15 @@ public class FeatureInstaller {
     insert(menuItem, createMenu(parent), properties);
     if (enableCheck != null) {
       addMenuItemShownListener(menuItem, toMenuItemShownListener(enableCheck));
-    }
+    }*/
   }
 
   public JMenuItem addMainMenuItem(final String[] menuPath,
     final AbstractUiPlugIn plugin, final int index) {
-    String menuItemName = plugin.getName();
+    final JMenuItem menuItem = new JMenuItem(plugin.getName());
+    addMainMenuItem(plugin, menuPath, menuItem, null, -1);
+    return menuItem;
+    /*String menuItemName = plugin.getName();
     JMenu menu = menuBarMenu(menuPath[0]);
     if (menu == null) {
       menu = (JMenu)installMnemonic(new JMenu(menuPath[0]), menuBar());
@@ -270,7 +280,7 @@ public class FeatureInstaller {
       addMenuItemShownListener(menuItem, new EnableCheckMenuItemShownListener(
         workbenchContext, enableCheck, plugin.getToolTip()));
     }
-    return menuItem;
+    return menuItem;*/
   }
 
   /**
@@ -284,7 +294,9 @@ public class FeatureInstaller {
   //This method makes it possible to add any subclasses of JMenuItem
   public JMenuItem addMainMenuItem(final String[] menuPath,
     final AbstractUiPlugIn plugin, final JMenuItem menuItem, final int index) {
-    String menuItemName = plugin.getName();
+    addMainMenuItem(plugin, menuPath, menuItem, null, -1);
+    return menuItem;
+    /*String menuItemName = plugin.getName();
     JMenu menu = menuBarMenu(menuPath[0]);
     if (menu == null) {
       menu = (JMenu)installMnemonic(new JMenu(menuPath[0]), menuBar());
@@ -307,8 +319,49 @@ public class FeatureInstaller {
       addMenuItemShownListener(menuItem, new EnableCheckMenuItemShownListener(
         workbenchContext, enableCheck, plugin.getToolTip()));
     }
-    return menuItem;
+    return menuItem;*/
   }
+  
+    /**
+     * New generic addMainMenuItem method.
+     * @param plugin the plugin to execute with this item
+     * @param menuPath the menu path made of the menu and submenu names
+     * @param menuItem the JMenuItem (or JCheckBoxMenuItem or 
+              JRadioButtonMenuItem) to the parent menu
+     * @param enableCheck defining when the item should be visible
+     * @param pos defines the position of the menu item in the menu
+     *        -1 adds the menu item at the end except for FILE menu where
+     *        -1 adds the menu item before the separator preceding exit menu item
+     */
+    // [mmichaud 2011-09-13]
+    public JMenuItem addMainMenuItem(PlugIn plugin, String[] menuPath,
+                         JMenuItem menuItem, EnableCheck enableCheck, int pos) {
+        //String menuItemName = plugin.getName();
+        JMenu menu = menuBarMenu(menuPath[0]);
+        if (menu == null) {
+            menu = (JMenu)installMnemonic(new JMenu(menuPath[0]), menuBar());
+            addToMenuBar(menu);
+        }
+        JMenu parent = createMenusIfNecessary(menu, behead(menuPath));
+        if (menuItem.getText().trim().length() == 0) {
+            menuItem.setText(plugin.getName());                                  
+        }
+        installMnemonic(menuItem, parent);
+        associate(menuItem, plugin);
+        //insert(menuItem, createMenu(parent), properties);
+        if (pos >= 0) {
+            parent.insert(menuItem, pos);
+        } else if (parent.getText().equals(MenuNames.FILE)) {
+            // In File menu, insert new items before the separator before Exit [Jon Aquino]
+            parent.insert(menuItem, parent.getItemCount() - 2);
+        } else {
+            parent.add(menuItem);
+        }
+        if (enableCheck != null) {
+            addMenuItemShownListener(menuItem, toMenuItemShownListener(enableCheck));
+        }
+        return menuItem;
+    }
 
   private Menu createMenu(final JMenu menu) {
     return new Menu() {
