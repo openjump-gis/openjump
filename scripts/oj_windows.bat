@@ -69,6 +69,9 @@ if /i "%JAVA_BIN%"=="javaw" ( set START=start "OpenJUMP console" ) else ( set ST
 
 cd /D %OLD_DIR%
 
+rem -- give user a chance to see console output if we are in console mode but the app finished already
+if /i NOT "%JAVA_BIN%"=="javaw" pause
+
 goto :eof
 
 :setclass
