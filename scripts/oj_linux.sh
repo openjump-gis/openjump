@@ -130,13 +130,16 @@ if [ -d "$JUMP_STATE" ] || [ -f "$JUMP_STATE" ]; then
   JUMP_OPTS="$JUMP_OPTS -state $JUMP_STATE"
 fi
 
-## compile jre opts, respect already set ones from e.g. mac
+# compile jre opts, respect already set ones from e.g. mac
 JAVA_OPTS=""
 JAVA_OPTS="$JAVA_OPTS $JAVA_MAXMEM $JAVA_LANG"
 JAVA_OPTS="$JAVA_OPTS -Djump.home=."
 [ -n "JAVA_SAXDRIVER"    ] && JAVA_OPTS="$JAVA_OPTS -Dorg.xml.sax.driver=$JAVA_SAXDRIVER"
 [ -n "$JAVA_LOOKANDFEEL" ] && JAVA_OPTS="$JAVA_OPTS -Dswing.defaultlaf=$JAVA_LOOKANDFEEL"
 JAVA_OPTS="$JAVA_OPTS $JAVA_OPTS_OVERRIDE"
+
+# allow jre to find native libraries in lib/ext 
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$JUMP_HOME/lib/ext"
 
 # try to start if no errors so far
 if [ -z "$ERROR" ]; then
