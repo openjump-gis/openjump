@@ -80,7 +80,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.AboutPlugIn;
 public class AboutDialog extends JDialog {
     BorderLayout borderLayout2 = new BorderLayout();
 
-	private static AboutDialog aboutDialog;
+    private static AboutDialog aboutDialog;
     JPanel buttonPanel = new JPanel();
     JButton okButton = new JButton();
     private JTabbedPane jTabbedPane1 = new JTabbedPane();
@@ -112,7 +112,12 @@ public class AboutDialog extends JDialog {
 
     private AboutDialog(WorkbenchFrame frame) {
         super(frame, I18N.get("ui.AboutDialog.about-jump"), true);
-        setIconImage(AboutPlugIn.ICON.getImage());
+        try {
+            setIconImage(AboutPlugIn.ICON.getImage());
+        } catch (NoSuchMethodError e) {
+            // IGNORE: this is 1.5 missing setIconImage()
+        }
+
         wbc = frame.getContext().getWorkbench().getContext();
 
         extensionsAboutPanel.setPlugInManager(frame.getContext().getWorkbench().getPlugInManager());
@@ -228,27 +233,28 @@ public class AboutDialog extends JDialog {
         String result;
         String urlstring = "";
         try {
-        	URL url = ClassLoader.getSystemResource( "readme.txt" ); // "ÿ \u069e/test.txt"
-        	if (url == null)
-        		throw new FileNotFoundException( "readme.txt missing in ojhome/.");
-        	urlstring = URLDecoder.decode(url.toString(), "UTF8");
-        	//System.out.println(URLDecoder.decode(url.toString(), "UTF8") + "-> ÿ \u069e/test.txt");
-            FileInputStream file = new FileInputStream (new File(url.toURI()));
-            DataInputStream in = new DataInputStream (file);
+            URL url = ClassLoader.getSystemResource("readme.txt"); // "ÿ \u069e/test.txt"
+            if (url == null)
+                throw new FileNotFoundException(
+                        "readme.txt missing in ojhome/.");
+            urlstring = URLDecoder.decode(url.toString(), "UTF8");
+            // System.out.println(URLDecoder.decode(url.toString(), "UTF8") +
+            // "-> ÿ \u069e/test.txt");
+            FileInputStream file = new FileInputStream(new File(url.toURI()));
+            DataInputStream in = new DataInputStream(file);
             byte[] b = new byte[in.available()];
-            in.readFully (b);
-            in.close ();
-            result = new String (b, 0, b.length, "ISO-8859-1");
-            }
-          catch (Exception e) {
-        	  // this is normal in development where readme.txt is
-        	  // located in /etc/readme.txt
-        	  StringBuffer buf = new StringBuffer();
-        	  for (int i = 0; i < e.getStackTrace().length; i++) 
-				buf.append( e.getStackTrace()[i] + "\n" );
-			
-        	  result = e +"\n\n" + buf;
-          }
+            in.readFully(b);
+            in.close();
+            result = new String(b, 0, b.length, "ISO-8859-1");
+        } catch (Exception e) {
+            // this is normal in development where readme.txt is
+            // located in /etc/readme.txt
+            StringBuffer buf = new StringBuffer();
+            for (int i = 0; i < e.getStackTrace().length; i++)
+                buf.append(e.getStackTrace()[i] + "\n");
+
+            result = e + "\n\n" + buf;
+        }
         
         JTextArea readme = new JTextArea(/*urlstring +"\n\n"+*/ result ) ;
         readme.setFont((new JLabel()).getFont().deriveFont( 12f ));
@@ -343,97 +349,102 @@ public class AboutDialog extends JDialog {
     }
 
 
-	class ResizeMe extends ComponentAdapter {
-		Dimension minSize = getMinimumSize();
-		Rectangle bounds = getBounds();
-		int last_x = getX();
-		int last_y = getY();
-		int last_w = getWidth();
-		int last_h = getHeight();
+    class ResizeMe extends ComponentAdapter {
+        Dimension minSize = getMinimumSize();
+        Rectangle bounds = getBounds();
+        int last_x = getX();
+        int last_y = getY();
+        int last_w = getWidth();
+        int last_h = getHeight();
 
-		public void componentResized(ComponentEvent evt) {
-			//System.out.println( getX() + " cR " + getY());
-			/*
-			 * Let the user stretch the dialog vertically only. If the user is
-			 * dragging on the top or left border, the system counts it as a
-			 * move as well as a resize; we have to explicitly restore the
-			 * origin position so that the user doesn't end up chasing the
-			 * dialog around the screen like a drop of mercury.
-			 */
-			int oldX = last_x;
-			int oldY = last_y;
-			int oldHeight = last_h;
-			int oldWidth = last_w;
-			int newX = getX();
-			int newY = getY();
-			int newWidth = getWidth();
-			int newHeight = getHeight();
-			if (newHeight < minSize.height || getWidth() != oldWidth) {
-				int diff = minSize.height - newHeight;
-				if (diff > 0 && newY != oldY) {
-					newY -= diff;
-				}
-				newHeight += Math.max(0, diff);
+        public void componentResized(ComponentEvent evt) {
+            // System.out.println( getX() + " cR " + getY());
+            /*
+             * Let the user stretch the dialog vertically only. If the user is
+             * dragging on the top or left border, the system counts it as a
+             * move as well as a resize; we have to explicitly restore the
+             * origin position so that the user doesn't end up chasing the
+             * dialog around the screen like a drop of mercury.
+             */
+            int oldX = last_x;
+            int oldY = last_y;
+            int oldHeight = last_h;
+            int oldWidth = last_w;
+            int newX = getX();
+            int newY = getY();
+            int newWidth = getWidth();
+            int newHeight = getHeight();
+            if (newHeight < minSize.height || getWidth() != oldWidth) {
+                int diff = minSize.height - newHeight;
+                if (diff > 0 && newY != oldY) {
+                    newY -= diff;
+                }
+                newHeight += Math.max(0, diff);
 
-				// sanitize -0 locs, ignore locX changes to the right 
-				// (preserve wandering because width balances it out)
-				newX = (newX <= 0) ? 0 : (newX>oldX?oldX:newX);
-				newY = (newY <= 0) ? 0 : newY;
-				setBounds(newX, newY, oldWidth, newHeight);
-			}
-			// sanitize always (e.g. first show)
-			else{
-				// sanitize -0 locs
-				newX = (newX <= 0) ? 0 : newX;
-				newY = (newY <= 0) ? 0 : newY;				
-				setLocation(newX, newY);
-			}
-	
-			//System.out.println( oldX + "/" + oldY + " -> " + newX + "/"+newY);
-			
-			// resize readme field with scrollbars
-			Dimension scold = aboutScroll.getSize();
-			int new_sc_h = scold.height + (newHeight - oldHeight);
-			aboutScroll.setPreferredSize(new Dimension(scold.width, new_sc_h));
-			//System.out.println( scold.height + " h> " + new_sc_h + " diff " + (newHeight - oldHeight));
-			aboutScroll.revalidate();
-			//aboutScroll.repaint();
-			
-			validate();
-			
-			//System.out.println( getX() + " cR2 " + getY());
-			
-			// save current loc and dimension for next run
-			memorize();
-			
-			//System.out.println( last_x + "/" + last_y + " , " + last_w + "/" + last_h );
-		}
+                // sanitize -0 locs, ignore locX changes to the right
+                // (preserve wandering because width balances it out)
+                newX = (newX <= 0) ? 0 : (newX > oldX ? oldX : newX);
+                newY = (newY <= 0) ? 0 : newY;
+                setBounds(newX, newY, oldWidth, newHeight);
+            }
+            // sanitize always (e.g. first show)
+            else {
+                // sanitize -0 locs
+                newX = (newX <= 0) ? 0 : newX;
+                newY = (newY <= 0) ? 0 : newY;
+                setLocation(newX, newY);
+            }
 
-		public void componentMoved(ComponentEvent evt) {
-			// do not move if resized vertically to the left
-			if (getWidth() != last_w)
-				setLocation(last_x, getY());
-		}
-		
-	    public void componentShown(ComponentEvent e) {
-	    	// reset scrollpane on redisplay
-	        JScrollBar verticalScrollBar = aboutScroll.getVerticalScrollBar();
-	        JScrollBar horizontalScrollBar = aboutScroll.getHorizontalScrollBar();
-	        verticalScrollBar.setValue(verticalScrollBar.getMinimum());
-	        horizontalScrollBar.setValue(horizontalScrollBar.getMinimum());
-	        // resize and locate according to new workbench position
-	    	setPreferredSize( new Dimension( last_w, wbc.getWorkbench().getFrame().getHeight() - 200 ) );
-	    	pack();
-	    	GUIUtil.centreOnWindow(aboutDialog);
-	    }
-		
-		private void memorize(){
-			last_x = getX();
-			last_y = getY();
-			last_w = getWidth();
-			last_h = getHeight();
-		}
+            // System.out.println( oldX + "/" + oldY + " -> " + newX +
+            // "/"+newY);
 
-	}
+            // resize readme field with scrollbars
+            Dimension scold = aboutScroll.getSize();
+            int new_sc_h = scold.height + (newHeight - oldHeight);
+            aboutScroll.setPreferredSize(new Dimension(scold.width, new_sc_h));
+            // System.out.println( scold.height + " h> " + new_sc_h + " diff " +
+            // (newHeight - oldHeight));
+            aboutScroll.revalidate();
+            // aboutScroll.repaint();
+
+            validate();
+
+            // System.out.println( getX() + " cR2 " + getY());
+
+            // save current loc and dimension for next run
+            memorize();
+
+            // System.out.println( last_x + "/" + last_y + " , " + last_w + "/"
+            // + last_h );
+        }
+
+        public void componentMoved(ComponentEvent evt) {
+            // do not move if resized vertically to the left
+            if (getWidth() != last_w)
+                setLocation(last_x, getY());
+        }
+
+        public void componentShown(ComponentEvent e) {
+            // reset scrollpane on redisplay
+            JScrollBar verticalScrollBar = aboutScroll.getVerticalScrollBar();
+            JScrollBar horizontalScrollBar = aboutScroll
+                    .getHorizontalScrollBar();
+            verticalScrollBar.setValue(verticalScrollBar.getMinimum());
+            horizontalScrollBar.setValue(horizontalScrollBar.getMinimum());
+            // resize and locate according to new workbench position
+            setPreferredSize(new Dimension(last_w, wbc.getWorkbench()
+                    .getFrame().getHeight() - 200));
+            pack();
+            GUIUtil.centreOnWindow(aboutDialog);
+        }
+
+        private void memorize() {
+            last_x = getX();
+            last_y = getY();
+            last_w = getWidth();
+            last_h = getHeight();
+        }
+
+    }
 
 }
