@@ -53,6 +53,7 @@ import java.net.URLDecoder;
 import java.text.DecimalFormat;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -121,12 +122,11 @@ public class AboutDialog extends JDialog {
         wbc = frame.getContext().getWorkbench().getContext();
 
         extensionsAboutPanel.setPlugInManager(frame.getContext().getWorkbench().getPlugInManager());
-        this.splashPanel =
-            new SplashPanel(JUMPWorkbench.splashImage(), I18N.get("ui.AboutDialog.version")+" " + JUMPVersion.CURRENT_VERSION);
 
         try {
             jbInit();
             pack();
+            GUIUtil.centreOnWindow(this);
             this.addComponentListener(new ResizeMe());
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -221,6 +221,9 @@ public class AboutDialog extends JDialog {
 
         aboutPanel.setLayout(new GridBagLayout());
         
+        ImageIcon splash = JUMPWorkbench.splashImage();
+        this.splashPanel =
+                new SplashPanel(splash, I18N.get("ui.AboutDialog.version")+" " + JUMPVersion.CURRENT_VERSION);
         aboutPanel.add(splashPanel,new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.CENTER,GridBagConstraints.NONE,
                 new Insets(0, 0, 0, 0), 0, 0));
 
@@ -259,7 +262,9 @@ public class AboutDialog extends JDialog {
         JTextArea readme = new JTextArea(/*urlstring +"\n\n"+*/ result ) ;
         readme.setFont((new JLabel()).getFont().deriveFont( 12f ));
         readme.setEditable(false);
-        readme.setAutoscrolls(false);
+        //readme.setAutoscrolls(false);
+        // pad text away from the border
+        readme.setBorder( BorderFactory.createEmptyBorder(10,10,10,10) );
         
         aboutPanel.add(readme,new GridBagConstraints(0, 1, 1, 1, 0, 0, GridBagConstraints.CENTER,GridBagConstraints.NONE,
                 new Insets(20, 0, 0, 0), 0, 0));
@@ -274,8 +279,8 @@ public class AboutDialog extends JDialog {
         int pref_h = wbc.getWorkbench().getFrame().getHeight() - 200;
         pref_h = pref_h < min_h ? min_h : pref_h;
         // fixed width splash width + 25px for scrollbar
-        aboutScroll.setPreferredSize(new Dimension (splashPanel.getPreferredSize().width + 25, pref_h));
-        jTabbedPane1.add(aboutScroll, I18N.get("ui.AboutDialog.about"));
+        aboutScroll.setPreferredSize(new Dimension (splash.getIconWidth() + 25, pref_h));
+        jTabbedPane1.add (I18N.get("ui.AboutDialog.about"), aboutScroll);
         
         jTabbedPane1.addTab(I18N.get("ui.AboutDialog.info"), infoPanel);
         jTabbedPane1.addTab(I18N.get("ui.AboutDialog.Extensions"), extensionsAboutPanel);
@@ -288,9 +293,7 @@ public class AboutDialog extends JDialog {
         buttonPanel.add(okButton, null);
         jTabbedPane1.setBounds(0, 0, 0, 0);
         
-        int w = this.getContentPane().getWidth() + 
-        		( aboutScroll.getPreferredSize().width -
-        		this.getContentPane().getWidth() );
+        int w = splash.getIconWidth() + 50;
         // set a minimumsize enforce by listener below
         this.setMinimumSize(new Dimension (w, 364));
 
@@ -356,6 +359,8 @@ public class AboutDialog extends JDialog {
         int last_y = getY();
         int last_w = getWidth();
         int last_h = getHeight();
+        // calculate h offset between scroll and dialog for dynamic resizing above
+        int h_off = getHeight() - aboutScroll.getPreferredSize().height;
 
         public void componentResized(ComponentEvent evt) {
             // System.out.println( getX() + " cR " + getY());
@@ -369,7 +374,7 @@ public class AboutDialog extends JDialog {
             int oldX = last_x;
             int oldY = last_y;
             int oldHeight = last_h;
-            int oldWidth = last_w;
+            int oldWidth = getMinimumSize().width; //last_w;
             int newX = getX();
             int newY = getY();
             int newWidth = getWidth();
@@ -383,9 +388,9 @@ public class AboutDialog extends JDialog {
 
                 // sanitize -0 locs, ignore locX changes to the right
                 // (preserve wandering because width balances it out)
-                newX = (newX <= 0) ? 0 : (newX > oldX ? oldX : newX);
-                newY = (newY <= 0) ? 0 : newY;
-                setBounds(newX, newY, oldWidth, newHeight);
+                newX = (newX < 0) ? 0 : (oldX > 0 ? oldX : newX);
+                newY = (newY < 0) ? 0 : newY;
+                setBounds(oldX, newY, oldWidth, newHeight);
             }
             // sanitize always (e.g. first show)
             else {
@@ -400,7 +405,7 @@ public class AboutDialog extends JDialog {
 
             // resize readme field with scrollbars
             Dimension scold = aboutScroll.getSize();
-            int new_sc_h = scold.height + (newHeight - oldHeight);
+            int new_sc_h = getHeight() - h_off;//scold.height + (newHeight - oldHeight);
             aboutScroll.setPreferredSize(new Dimension(scold.width, new_sc_h));
             // System.out.println( scold.height + " h> " + new_sc_h + " diff " +
             // (newHeight - oldHeight));
@@ -419,12 +424,16 @@ public class AboutDialog extends JDialog {
         }
 
         public void componentMoved(ComponentEvent evt) {
+            //if (evt.equals(last_e)) return;
             // do not move if resized vertically to the left
             if (getWidth() != last_w)
                 setLocation(last_x, getY());
+            
+            memorize();
         }
 
         public void componentShown(ComponentEvent e) {
+
             // reset scrollpane on redisplay
             JScrollBar verticalScrollBar = aboutScroll.getVerticalScrollBar();
             JScrollBar horizontalScrollBar = aboutScroll
@@ -436,6 +445,8 @@ public class AboutDialog extends JDialog {
                     .getFrame().getHeight() - 200));
             pack();
             GUIUtil.centreOnWindow(aboutDialog);
+            
+            memorize();
         }
 
         private void memorize() {
