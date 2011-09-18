@@ -99,8 +99,12 @@ public class FeatureDrawingUtil {
         Assert.isTrue(hole.getNumInteriorRing() == 0);
         EditTransaction transaction =
             new EditTransaction(features, transactionName, layer, rollingBackInvalidEdits, false, panel);
-        for (int i = 0; i < transaction.size(); i++) {
-            transaction.setGeometry(i, transaction.getGeometry(i).difference(hole));
+        //for (int i = 0; i < transaction.size(); i++) {
+        //    transaction.setGeometry(i, transaction.getGeometry(i).difference(hole));
+        //}
+        for (Iterator<Feature> i = transaction.getFeatures().iterator() ; i.hasNext() ; ) {
+            Feature f = i.next();
+            transaction.setGeometry(f, transaction.getGeometry(f).difference(hole));
         }
         transaction.commit();
     }

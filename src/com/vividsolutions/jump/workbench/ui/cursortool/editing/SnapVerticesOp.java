@@ -191,8 +191,11 @@ public class SnapVerticesOp {
         boolean geometryChanged = false;
         for (Iterator i = transactions.iterator(); i.hasNext();) {
             EditTransaction transaction = (EditTransaction) i.next();
-            for (int j = 0; j < transaction.size(); j++) {
-                Geometry proposedGeometry = (Geometry) transaction.getGeometry(j);
+            //for (int j = 0; j < transaction.size(); j++) {
+            for (Iterator<Feature> j = transaction.getFeatures().iterator() ; j.hasNext() ;) {
+                //Geometry proposedGeometry = (Geometry) transaction.getGeometry(j);
+                Feature feature = j.next();
+                Geometry proposedGeometry = transaction.getGeometry(feature);
                 move(
                     VerticesInFencePlugIn
                         .verticesInFence(proposedGeometry, fence, false)
@@ -212,7 +215,8 @@ public class SnapVerticesOp {
                             proposedGeometry.getPrecisionModel(),
                             proposedGeometry.getSRID());
                 }
-                transaction.setGeometry(j, proposedGeometry);
+                //transaction.setGeometry(j, proposedGeometry);
+                transaction.setGeometry(feature, proposedGeometry);
             }
             //Brute force check to see whether we should skip showing the animated
             //indicator [Jon Aquino]
@@ -237,9 +241,12 @@ public class SnapVerticesOp {
     }
 
     private boolean coordinatesEqual(EditTransaction transaction, Geometry fence) {
-        for (int i = 0; i < transaction.size(); i++) {
-            Feature originalFeature = transaction.getFeature(i);
-            Geometry newGeometry = transaction.getGeometry(i);
+        //for (int i = 0; i < transaction.size(); i++) {
+        for (Iterator<Feature> i = transaction.getFeatures().iterator() ; i.hasNext() ; ) {
+            Feature originalFeature = i.next();
+            //Feature originalFeature = transaction.getFeature(i);
+            //Geometry newGeometry = transaction.getGeometry(i);
+            Geometry newGeometry = transaction.getGeometry(originalFeature);
 
             if (!coordinatesEqual(VerticesInFencePlugIn
                 .verticesInFence(originalFeature.getGeometry(), fence, true)
@@ -299,17 +306,15 @@ public class SnapVerticesOp {
         //Trick: Wrap count in array to avoid "must be declared final" warnings. [Jon Aquino]
         final int[] verticesInserted = new int[] { 0 };
 
-        for (int i = 0; i < transaction.size(); i++) {
+        //for (int i = 0; i < transaction.size(); i++) {
+        for (Iterator<Feature> i = transaction.getFeatures().iterator() ; i.hasNext(); ) {
             //GeometryEditor is being used in two ways here. GeometryEditor#edit 
             //recurses through GeometryCollection/Polygon elements (if any). 
             //GeometryEditor#insertVertex does the vertex insertion on each
             //Geometry or GeometryCollection/Polygon element. [Jon Aquino]
-            transaction
-                .setGeometry(
-                    i,
-                    geometryEditor
-                        .edit(
-                            transaction.getGeometry(i),
+            Feature feature = i.next();
+            transaction.setGeometry(feature, geometryEditor.edit(
+                            transaction.getGeometry(feature),
                             new GeometryEditor.GeometryEditorOperation() {
                 public Geometry edit(Geometry geometry) {
                     if (geometry instanceof Polygon) {

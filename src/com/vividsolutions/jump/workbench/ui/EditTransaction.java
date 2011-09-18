@@ -35,6 +35,7 @@ package com.vividsolutions.jump.workbench.ui;
 import java.util.*;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
@@ -55,18 +56,39 @@ import com.vividsolutions.jump.workbench.model.UndoableCommand;
  * </UL></p>
  */
 public class EditTransaction {
-    private List features;
-    private List originalGeometries;
-    private List proposedGeometries;
+
+    // [mmichaud 2011-09-17] change List to Set
+    // several parts of the code used to check object unicity in the feature
+    // collection using "!features.contains(Feature)" which is very inefficient 
+    // with a list.
+    private Set features;
+    // Maps a feature id to its old geometry [mmichaud 2011-09-17 : List->Map]
+    private Map<Integer,Geometry> originalGeometries;
+    // Maps a feature id to its new geometry [mmichaud 2011-09-17 : List->Map]
+    private Map<Integer,Geometry> proposedGeometries;
     private Layer layer;
     private String name;
     private boolean rollingBackInvalidEdits;
 
     public static final String ROLLING_BACK_INVALID_EDITS_KEY =
         EditTransaction.class.getName() + " - ROLLING_BACK_INVALID_EDITS";
+        
+    // Empty Geometry is used for not yet created or deleted features
+    private static final Geometry EMPTY_GEOMETRY = new GeometryFactory().createGeometryCollection(new Geometry[0]);
 
     private LayerViewPanelContext layerViewPanelContext;
 
+    /**
+     * Creates a new EditTransaction modifying features.
+     * @param features features to be modified
+     * @param name display name for undo. Use PlugIn#getName or CursorTool#getName.
+     * @param layer the layer to which the features belong
+     * @param rollingBackInvalidEdits is true if we want to roll back transaction
+     * in case of invalid edits
+     * @param allowAddingAndRemovingFeatures whether to treat empty
+     * geometries as indications to add/remove features or as in fact empty geometries
+     * @param layerViewPanel the view where editing operations take place.
+     */
     public EditTransaction(
         Collection features,
         String name,
@@ -88,10 +110,14 @@ public class EditTransaction {
      * the features parameter, set allowAddingAndRemovingFeatures to true,
      * then call #setGeometry(feature, empty geometry); or (2) not include the feature in
      * the features parameter, instead using #deleteFeature
-     * @param name Display name for undo. Use PlugIn#getName or CursorTool#getName.
+     * @param features features to be modified
+     * @param name display name for undo. Use PlugIn#getName or CursorTool#getName.
      * @param layer the layer to which the features belong
+     * @param rollingBackInvalidEdits is true if we want to roll back transaction
+     * in case of invalid edits
      * @param allowAddingAndRemovingFeatures whether to treat empty
      * geometries as indications to add/remove features or as in fact empty geometries
+     * @param layerViewPanelContext the view where editing operations take place.
      */
     public EditTransaction(
         Collection features,
@@ -105,14 +131,23 @@ public class EditTransaction {
         this.rollingBackInvalidEdits = rollingBackInvalidEdits;
         this.allowAddingAndRemovingFeatures = allowAddingAndRemovingFeatures;
         this.name = name;
-        this.features = new ArrayList(features);
-
-        //Clone the Geometries, and don't commit it until we're sure that no errors
-        //occurred. [Jon Aquino]
+        
+        // [mmichaud 2011-09-17]
+        // Uses a LinkedHashSet instead of HashSet, because it makes
+        // implementation of "getGeometry(integer)" and "getFeature(integer)"
+        // (which are kept for compatibility reasons) more efficient.
+        this.features = new LinkedHashSet(features);
+        //Clone the Geometries, and don't commit it until we're sure that no 
+        //errors occurred. [Jon Aquino]
         originalGeometries = geometryClones(features);
         proposedGeometries = geometryClones(features);
     }
 
+    /**
+     * A utility class creating a transaction able to rollback selected
+     * features after they have been edited according to the SelectionEditor 
+     * definition.
+     */
     public static EditTransaction createTransactionOnSelection(
         SelectionEditor editor,
         SelectionManagerProxy selectionManagerProxy,
@@ -134,31 +169,33 @@ public class EditTransaction {
         return transaction;
     }
 
+    /**
+     * Utility method to create a map between features and there modified 
+     * geometry.
+     */
     public static Map featureToNewGeometryMap(
         SelectionEditor editor,
         SelectionManagerProxy selectionManagerProxy,
         Layer layer) {
         Map featureToNewGeometryMap = new HashMap();
-        for (Iterator i =
-            selectionManagerProxy
+        for (Iterator i = selectionManagerProxy
                 .getSelectionManager()
                 .getFeaturesWithSelectedItems(layer)
-                .iterator();
-            i.hasNext();
-            ) {
+                .iterator(); i.hasNext(); ) {
             Feature feature = (Feature) i.next();
             Geometry newGeometry = (Geometry) feature.getGeometry().clone();
             ArrayList selectedItems = new ArrayList();
-            for (Iterator j =
-                selectionManagerProxy.getSelectionManager().getSelections().iterator();
-                j.hasNext();
-                ) {
+            for (Iterator j = selectionManagerProxy
+                              .getSelectionManager()
+                              .getSelections()
+                              .iterator(); j.hasNext(); ) {
                 AbstractSelection selection = (AbstractSelection) j.next();
                 //Use #getSelectedItemIndices rather than #getSelectedItems, because
                 //we want the selected items from newGeometry, not the original
                 //Geometry (so that editor can freely modify them). [Jon Aquino]
                 selectedItems.addAll(
-                    selection.items(newGeometry, selection.getSelectedItemIndices(layer, feature)));
+                    selection.items(newGeometry, selection.getSelectedItemIndices(layer, feature))
+                );
             }
             newGeometry = editor.edit(newGeometry, selectedItems);
             featureToNewGeometryMap.put(feature, newGeometry);
@@ -186,37 +223,40 @@ public class EditTransaction {
         public Geometry edit(Geometry geometryWithSelectedItems, Collection selectedItems);
     }
 
+    /**
+     * Returns the geometry of element i of the transaction.
+     * This method is deprecated, now that transaction features are held in a 
+     * This method is deprecated. Use getGeometry(Feature) instead.
+     * @deprecated
+     */
     public Geometry getGeometry(int i) {
-        return (Geometry) proposedGeometries.get(i);
+        Feature f = (Feature)features.toArray()[i];
+        return (Geometry)proposedGeometries.get(f.getID());
     }
 
     public Geometry getGeometry(Feature feature) {
-        return getGeometry(features.indexOf(feature));
+        return proposedGeometries.get(feature.getID());
     }
 
     public void setGeometry(Feature feature, Geometry geometry) {
-        setGeometry(features.indexOf(feature), geometry);
+        proposedGeometries.put(feature.getID(), geometry);
     }
 
     public void setGeometries(Map featureToGeometryMap) {
-        // [michaudm 2009-05-16] using an index improves dramatically
-        // performances for big transactions
-        Map index = new HashMap();
-        int pos = 0;
-        for (Iterator i = features.iterator() ; i.hasNext() ; ) {
-            index.put(i.next(), pos++);
-        }
         for (Iterator i = featureToGeometryMap.keySet().iterator(); i.hasNext();) {
             Feature feature = (Feature) i.next();
-            //setGeometry(feature, (Geometry) featureToGeometryMap.get(feature));
-            // [michaudm 2009-05-16] use index
-            proposedGeometries.set(((Integer)index.get(feature)).intValue(),
-                editor.removeRepeatedPoints((Geometry) featureToGeometryMap.get(feature)));
+            proposedGeometries.put(feature.getID(),
+                editor.removeRepeatedPoints((Geometry)featureToGeometryMap.get(feature)));
         }
     }
 
+   /**
+    * This method is deprecated. Use getGeometry(Feature) instead.
+    * @deprecated
+    */
     public void setGeometry(int i, Geometry geometry) {
-        proposedGeometries.set(i, editor.removeRepeatedPoints(geometry));
+        Feature f = (Feature)features.toArray()[i];
+        proposedGeometries.put(f.getID(), editor.removeRepeatedPoints(geometry));
     }
 
     private GeometryEditor editor = new GeometryEditor();
@@ -301,8 +341,8 @@ public class EditTransaction {
     }
 
     public void clearEnvelopeCaches() {
-        for (int i = 0; i < proposedGeometries.size(); i++) {
-            Geometry proposedGeometry = (Geometry) proposedGeometries.get(i);
+        for (Iterator i = proposedGeometries.values().iterator(); i.hasNext() ; ) {
+            Geometry proposedGeometry = (Geometry)i.next();
             //Because the proposedGeometry is a clone, its cached envelope is old.
             //Invalidate the envelope. [Jon Aquino]
             proposedGeometry.geometryChanged();
@@ -310,9 +350,11 @@ public class EditTransaction {
     }
 
     public boolean proposedGeometriesValid() {
-        for (int i = 0; i < proposedGeometries.size(); i++) {
-            Geometry proposedGeometry = (Geometry) proposedGeometries.get(i);
-            if (! proposedGeometry.isValid()) { return false; }
+        for (Iterator i = proposedGeometries.values().iterator(); i.hasNext() ; ) {
+            Geometry proposedGeometry = (Geometry) i.next();
+            if (!proposedGeometry.isValid()) {
+                return false; 
+            }
         }
         return true;
     }
@@ -330,29 +372,37 @@ public class EditTransaction {
         return command;
     }
 
-    private List geometryClones(Collection features) {
-        ArrayList geometryClones = new ArrayList();
-
+    private Map<Integer,Geometry> geometryClones(Collection features) {
+        Map<Integer,Geometry> geometryClones = new HashMap<Integer,Geometry>();
         for (Iterator i = features.iterator(); i.hasNext();) {
             Feature feature = (Feature) i.next();
-            geometryClones.add(feature.getGeometry().clone());
+            // [mmichaud 2011-09-17] Tried to get rid of clone, but some
+            // transactions need that (ex. SnapVerticesOp)
+            geometryClones.put(feature.getID(), (Geometry)feature.getGeometry().clone());
+            //geometryClones.put(feature.getID(), feature.getGeometry());
         }
-
         return geometryClones;
     }
 
     /**
-     * @param oldGeometries an empty geometry indicates that we should be re-adding the feature to the layer
+     * Switch features between old geometries and new Geometries
+     * @param newGeometries an empty geometry indicates that we should remove 
+     * the feature to the layer
+     * @param oldGeometries an empty geometry indicates that we should add
+     * the feature to the layer
+     * @param layer the layer where edit operations take place
      */
-    private void changeGeometries(List newGeometries, List oldGeometries, Layer layer) {
+    private void changeGeometries(Map<Integer,Geometry> newGeometries, 
+                                  Map<Integer,Geometry> oldGeometries, 
+                                  Layer layer) {
         ArrayList modifiedFeatures = new ArrayList();
         ArrayList modifiedFeaturesOldClones = new ArrayList();
         ArrayList featuresToAdd = new ArrayList();
         ArrayList featuresToRemove = new ArrayList();
-        for (int i = 0; i < size(); i++) {
-            Feature feature = (Feature) features.get(i);
-            Geometry oldGeometry = (Geometry) oldGeometries.get(i);
-            Geometry newGeometry = (Geometry) newGeometries.get(i);
+        for (Iterator it = features.iterator() ; it.hasNext() ; ) {
+            Feature feature = (Feature) it.next();
+            Geometry oldGeometry = oldGeometries.get(feature.getID());
+            Geometry newGeometry = newGeometries.get(feature.getID());
             if (allowAddingAndRemovingFeatures
                 && oldGeometry.isEmpty()
                 && !newGeometry.isEmpty()) {
@@ -393,29 +443,56 @@ public class EditTransaction {
     public int size() {
         return features.size();
     }
+    
+    /**
+     * Returns the feature of element i of the transaction.
+     * This method is deprecated, use getFeatures() to iterate over the whole
+     * set of features.
+     * @deprecated
+     */
     public Feature getFeature(int i) {
-        return (Feature) features.get(i);
+        return (Feature)features.toArray()[i];
     }
+    
+    /**
+     * Returns the features modified by this transaction [mmichaud 2011-09-17]
+     */
+    public Collection<Feature> getFeatures() {
+        return java.util.Collections.unmodifiableSet(features);
+    }
+    
     public void createFeature(Feature feature) {
         Assert.isTrue(allowAddingAndRemovingFeatures);
-        Assert.isTrue(!features.contains(feature));
+        //Assert.isTrue(!features.contains(feature));
         features.add(feature);
-        originalGeometries.add(feature.getGeometry().getFactory().createGeometryCollection(new Geometry[0]));
-        proposedGeometries.add(feature.getGeometry().clone());
+        //originalGeometries.put(feature.getID(), feature.getGeometry().getFactory().createGeometryCollection(new Geometry[0]));
+        originalGeometries.put(feature.getID(), EMPTY_GEOMETRY);
+        // [mmichaud 2011-09-18] Do not clone in the case of feature deletion :
+        // It can save time and memory for large transactions like explode features
+        // Hopefully, it is never required
+        //proposedGeometries.put(feature.getID(), (Geometry)feature.getGeometry().clone());
+        proposedGeometries.put(feature.getID(), feature.getGeometry());
     }
     /**
      * @param feature must not have been passed into the constructor
      */
     public void deleteFeature(Feature feature) {
         Assert.isTrue(allowAddingAndRemovingFeatures);
-        Assert.isTrue(!features.contains(feature));
+        //Assert.isTrue(!features.contains(feature));
         features.add(feature);
-        originalGeometries.add(feature.getGeometry().clone());
-        proposedGeometries.add(feature.getGeometry().getFactory().createGeometryCollection(new Geometry[0]));
+        // [mmichaud 2011-09-18] Do not clone in the case of feature deletion :
+        // It can save time and memory for large transactions like explode features
+        // Hopefully, it is never required
+        //originalGeometries.put(feature.getID(), (Geometry)feature.getGeometry().clone());
+        originalGeometries.put(feature.getID(), feature.getGeometry());
+        //proposedGeometries.put(feature.getID(), feature.getGeometry().getFactory().createGeometryCollection(new Geometry[0]));
+        proposedGeometries.put(feature.getID(), EMPTY_GEOMETRY);
     }
+    
     public Layer getLayer() {
         return layer;
     }
+    
     public static int emptyGeometryCount(Collection transactions) {
         int count = 0;
         for (Iterator i = transactions.iterator(); i.hasNext(); ) {
@@ -427,8 +504,9 @@ public class EditTransaction {
 
     private int getEmptyGeometryCount() {
         int count = 0;
-        for (int i = 0; i < size(); i++) {
-            if (getGeometry(i).isEmpty()) {
+        for (Iterator it = features.iterator() ; it.hasNext() ; ) {
+            Geometry geometry = ((Feature)it.next()).getGeometry();
+            if (geometry.isEmpty()) {
                 count++;
             }
         }

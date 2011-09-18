@@ -218,7 +218,8 @@ public class InsertVertexTool extends NClickTool {
 				.asList(new Feature[]{segment.getFeature()}), getName(),
 				segment.getLayer(), isRollingBackInvalidEdits(), false,
 				getPanel());
-		transaction.setGeometry(0, newGeometry);
+		//transaction.setGeometry(0, newGeometry);
+		transaction.setGeometry(segment.getFeature(), newGeometry);
 		transaction.commit(new EditTransaction.SuccessAction() {
 			public void run() {
 				try {

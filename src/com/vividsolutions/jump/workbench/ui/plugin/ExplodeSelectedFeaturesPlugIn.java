@@ -50,17 +50,20 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
+
+/**
+ * Explodes features based on a GeometryCollection into several features.
+ * Resulting feature's geometries are the component of the GeometryCollection.
+ * Other attributes are the same as the original one. 
+ */
 public class ExplodeSelectedFeaturesPlugIn extends AbstractPlugIn {
+    
     public boolean execute(final PlugInContext context) throws Exception {
         final ArrayList transactions = new ArrayList();
-        for (Iterator i =
-            context
-                .getLayerViewPanel()
-                .getSelectionManager()
-                .getLayersWithSelectedItems()
-                .iterator();
-            i.hasNext();
-            ) {
+        for (Iterator i = context.getLayerViewPanel()
+                                 .getSelectionManager()
+                                 .getLayersWithSelectedItems()
+                                 .iterator(); i.hasNext(); ) {
             Layer layerWithSelectedItems = (Layer) i.next();
             transactions.add(createTransaction(layerWithSelectedItems, context));
         }
@@ -73,22 +76,25 @@ public class ExplodeSelectedFeaturesPlugIn extends AbstractPlugIn {
                         .getLayerViewPanel()
                         .getSelectionManager()
                         .getFeatureSelection()
-                        .selectItems(
-                        transaction.getLayer(),
-                        newFeatures(transaction));
+                        .selectItems(transaction.getLayer(), newFeatures(transaction));
                 }
             }
-
         });
     }
 
     private Collection newFeatures(EditTransaction transaction) {
         ArrayList newFeatures = new ArrayList();
-        for (int i = 0; i < transaction.size(); i++) {
-            if (!transaction.getGeometry(i).isEmpty()) {
-                newFeatures.add(transaction.getFeature(i));
+        for (java.util.Iterator<Feature> i = transaction.getFeatures().iterator() ; i.hasNext() ; ) {
+            Feature f = i.next();
+            if (!transaction.getGeometry(f).isEmpty()) {
+                newFeatures.add(f);
             }
         }
+        //for (int i = 0; i < transaction.size(); i++) {
+        //    if (!transaction.getGeometry(i).isEmpty()) {
+        //        newFeatures.add(transaction.getFeature(i));
+        //    }
+        //}
         return newFeatures;
     }
 
@@ -118,9 +124,12 @@ public class ExplodeSelectedFeaturesPlugIn extends AbstractPlugIn {
         for (Iterator i = features.iterator(); i.hasNext();) {
             Feature feature = (Feature) i.next();
             GeometryCollection collection = (GeometryCollection) feature.getGeometry();
-            feature.setGeometry(collection.getFactory().createGeometryCollection(new Geometry[0]));
+            // clone the feature and nullify its geometry before 
+            //feature = (Object)feature.clone();
+            //feature.setGeometry(collection.getFactory().createGeometryCollection(new Geometry[0]));
+            //feature.setGeometry(null);
             for (int j = 0; j < collection.getNumGeometries(); j++) {
-                Feature explodedFeature = (Feature) feature.clone();
+                Feature explodedFeature = (Feature) feature.clone(false);
                 explodedFeature.setGeometry(collection.getGeometryN(j));
                 explodedFeatures.add(explodedFeature);
             }
