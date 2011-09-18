@@ -42,10 +42,6 @@
 
 package org.openjump.core.ui.plugin.tools;
 
-/*
-import mapgen.algorithms.jtssimplify.DouglasPeuckerSimplifier;
-import mapgen.algorithms.jtssimplify.TopologyPreservingSimplifier;
-*/
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Polygon;
@@ -148,7 +144,7 @@ public class LineSimplifyJTS15AlgorithmPlugIn extends AbstractPlugIn implements 
 
 	private boolean simplify(PlugInContext context, double maxDisp, TaskMonitor monitor) throws Exception{
 	    
-	    System.gc(); //flush garbage collector
+	    //System.gc(); //flush garbage collector
 	    // --------------------------	    
 	    //-- get selected items
 	    final Collection features = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems();
@@ -156,7 +152,9 @@ public class LineSimplifyJTS15AlgorithmPlugIn extends AbstractPlugIn implements 
 		EditTransaction transaction = new EditTransaction(features, this.getName(), layer(context),
 						this.isRollingBackInvalidEdits(context), false, context.getWorkbenchFrame());
 	    
-	    int count=0; int noItems = features.size(); Geometry resultgeom = null;
+	    int count=0; 
+	    int noItems = features.size(); 
+	    Geometry resultgeom = null;
 	    //--get single object in selection to analyse
       	for (Iterator iter = features.iterator(); iter.hasNext();) {
       		count++;
@@ -192,7 +190,8 @@ public class LineSimplifyJTS15AlgorithmPlugIn extends AbstractPlugIn implements 
 			    //context.getWorkbenchFrame().setStatusMessage(mytext);
 			    monitor.report(mytext);
 			    //-- commit changes to undo history
-				transaction.setGeometry(count-1, resultgeom);
+				//transaction.setGeometry(count-1, resultgeom);
+				transaction.setGeometry(f, resultgeom);
 	       	}//end if : polygon or linestring
       	} //end for loop over selected objects 
 		transaction.commit();

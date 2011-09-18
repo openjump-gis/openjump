@@ -107,7 +107,8 @@ public class EditSelectedFeaturePlugIn extends WKTPlugIn {
         //Can't simply pass the LayerViewPanel to the transaction because if there is
         //an attribute viewer up and its TaskFrame has been closed, the LayerViewPanel's
         //LayerManager will be null. [Jon Aquino]
-        transaction.setGeometry(0, ((Feature) c.iterator().next()).getGeometry());
+        Feature feature = (Feature) c.iterator().next();
+        transaction.setGeometry(feature, feature.getGeometry());
         transaction.commit();
     }
 

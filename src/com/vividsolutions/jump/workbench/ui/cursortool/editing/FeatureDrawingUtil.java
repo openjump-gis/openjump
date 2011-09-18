@@ -285,16 +285,20 @@ public class FeatureDrawingUtil {
     				createAddCommand(newLineString, rollingBackInvalidEdits, panel, tool), panel);
     	} else {
     		LineString oldLineString = null;
-    		Iterator iter=matchingLineStringFeatures.iterator();
+    		Iterator iter = matchingLineStringFeatures.iterator();
      		EditTransaction transaction = new EditTransaction(matchingLineStringFeatures, 
     					tool.getName(), layer(panel), rollingBackInvalidEdits, true, panel);
-     		Geometry empty = new GeometryFactory().createLineString(new Coordinate[0]);
-            for (int i = 0; i < transaction.size(); i++) {
-            	oldLineString = (LineString) ((Feature) iter.next()).getGeometry();
+     		//Geometry empty = new GeometryFactory().createLineString(new Coordinate[0]);
+            //for (int i = 0; i < transaction.size(); i++) {
+            int count = 0;
+            for (Iterator<Feature> i = transaction.getFeatures().iterator() ; i.hasNext() ; ) {
+            	Feature feature = i.next();
+                oldLineString = (LineString) ((Feature) iter.next()).getGeometry();
             	newLineString = mergeLineStrings(oldLineString, newLineString);
-            	if (i > 0) transaction.setGeometry(transaction.getFeature(i), empty);
+            	if (count > 0) transaction.setGeometry(feature, transaction.EMPTY_GEOMETRY);
+            	count++;
              }
-            transaction.setGeometry(0, newLineString );
+            transaction.setGeometry(transaction.getFeatures().iterator().next(), newLineString);
     		transaction.commit();
     	}
     }

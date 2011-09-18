@@ -8,6 +8,7 @@ import javax.swing.JOptionPane;
 import com.vividsolutions.jump.coordsys.CoordinateSystem;
 import com.vividsolutions.jump.coordsys.CoordinateSystemRegistry;
 import com.vividsolutions.jump.coordsys.Reprojector;
+import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
@@ -57,8 +58,10 @@ public class ChangeCoordinateSystemPlugIn extends AbstractPlugIn {
                         getName(), layer, isRollingBackInvalidEdits(context),
                         false, context.getLayerViewPanel());
 
-                for (int j = 0; j < transaction.size(); j++) {
-                    Reprojector.instance().reproject(transaction.getGeometry(j),
+                //for (int j = 0; j < transaction.size(); j++) {
+                for (Iterator<Feature> j = transaction.getFeatures().iterator() ; j.hasNext(); ) {
+                    Feature feature = j.next();
+                    Reprojector.instance().reproject(transaction.getGeometry(feature),
                         context.getLayerManager().getCoordinateSystem(),
                         destination);
                 }
