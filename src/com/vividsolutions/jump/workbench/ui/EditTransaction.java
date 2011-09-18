@@ -74,7 +74,7 @@ public class EditTransaction {
         EditTransaction.class.getName() + " - ROLLING_BACK_INVALID_EDITS";
         
     // Empty Geometry is used for not yet created or deleted features
-    private static final Geometry EMPTY_GEOMETRY = new GeometryFactory().createGeometryCollection(new Geometry[0]);
+    public static final Geometry EMPTY_GEOMETRY = new GeometryFactory().createGeometryCollection(new Geometry[0]);
 
     private LayerViewPanelContext layerViewPanelContext;
 
