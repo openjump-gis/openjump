@@ -26,8 +26,7 @@
  ******************************************************************************/
 package org.openjump.core.ui.plugin.file.open;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -65,6 +64,8 @@ public class SelectFilesPanel extends JFileChooser implements WizardPanel {
   public static final String INSTRUCTIONS = I18N.get(KEY + ".instructions");
 
   public static final String ALL_FILES = I18N.get(KEY + ".all-files");
+  
+  public static final String ALL_SUPPORTED_FILES = I18N.get(KEY + ".all-supported-files");
 
   private Set<InputChangedListener> listeners = new LinkedHashSet<InputChangedListener>();
 
@@ -117,6 +118,7 @@ public class SelectFilesPanel extends JFileChooser implements WizardPanel {
     Set<String> allExtensions = new TreeSet<String>();
     allExtensions.add("zip");
     allExtensions.add("gz");
+
     Map<String, FileFilter> filters = new TreeMap<String, FileFilter>();
     for (Object loader : loaders) {
       final FileLayerLoader fileLayerLoader = (FileLayerLoader)loader;
@@ -125,13 +127,17 @@ public class SelectFilesPanel extends JFileChooser implements WizardPanel {
       filters.put(filter.getDescription(), filter);
     }
 
-    FileFilter allFilter = new FileNameExtensionFilter(ALL_FILES,
+    FileFilter filterNone = new FileNameExtensionFilter(ALL_FILES, new String[]{} );
+    addChoosableFileFilter(filterNone);
+    
+    FileFilter allFilter = new FileNameExtensionFilter(ALL_SUPPORTED_FILES,
       allExtensions.toArray(new String[0]));
     addChoosableFileFilter(allFilter);
+    
     for (FileFilter filter : filters.values()) {
       addChoosableFileFilter(filter);
-
     }
+    
     setFileFilter(allFilter);
 
     setControlButtonsAreShown(false);
