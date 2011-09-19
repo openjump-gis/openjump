@@ -7,7 +7,7 @@
   <dependencySets>
     <dependencySet>
       <outputFileNameMapping>${artifactId}-${version}.${extension}</outputFileNameMapping>
-      <outputDirectory>${zipfolder}/lib</outputDirectory>
+      <outputDirectory>${snapId}/lib</outputDirectory>
       <unpack>false</unpack>
       <scope>runtime</scope>
     </dependencySet>
@@ -15,7 +15,7 @@
   <fileSets>
     <fileSet>
       <directory>scripts</directory>
-      <outputDirectory>${zipfolder}/bin</outputDirectory>
+      <outputDirectory>${snapId}/bin</outputDirectory>
       <fileMode>755</fileMode>
       <includes>
         <include>**</include>
@@ -26,21 +26,21 @@
     </fileSet>
     <fileSet>
       <directory>scripts</directory>
-      <outputDirectory>${zipfolder}/bin</outputDirectory>
+      <outputDirectory>${snapId}/bin</outputDirectory>
       <includes>
         <include>*.xml</include>
       </includes>
     </fileSet>
     <fileSet>
       <directory>etc</directory>
-      <outputDirectory>${zipfolder}/bin</outputDirectory>
+      <outputDirectory>${snapId}/bin</outputDirectory>
       <includes>
         <include>log4j.xml</include>
       </includes>
     </fileSet>
     <fileSet>
       <directory>lib</directory>
-      <outputDirectory>${zipfolder}/lib</outputDirectory>
+      <outputDirectory>${snapId}/lib</outputDirectory>
     </fileSet>
 <!--
     <fileSet>
@@ -48,12 +48,12 @@
       <excludes>
         <exclude>**/*.doc</exclude>
       </excludes>
-      <outputDirectory>${zipfolder}/docs</outputDirectory>
+      <outputDirectory>${snapId}/docs</outputDirectory>
     </fileSet>
 -->
     <fileSet>
       <directory>etc</directory>
-      <outputDirectory>${zipfolder}/</outputDirectory>
+      <outputDirectory>${snapId}/</outputDirectory>
       <includes>
         <include>readme.txt</include>
         <include>licenses/*</include>

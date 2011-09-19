@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <properties>
+    <maven.build.timestamp.format>yyyyMMdd</maven.build.timestamp.format>
+  </properties>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.openjump</groupId>
   <artifactId>openjump-core</artifactId>
   <name>Open JUMP libraries</name>
-  <version>1.4.3-SNAPSHOT</version>
+  <version>1.4.3-SNAPSHOT${maven.build.timestamp}</version>
   <url>http://www.revolsys.com</url>
-  <zipfolder>${artifactId}-${version}</zipfolder>
+  <snapId>${artifactId}-${version}</snapId>
   <build>
     <sourceDirectory>src/</sourceDirectory>
     <outputDirectory>target/classes</outputDirectory>
@@ -70,7 +73,7 @@
             <configuration>
               <artifacts>
                 <artifact>
-                  <file>target/openjump-core-1.4.3-SNAPSHOT-bin.zip</file>
+                  <file>target/${snapId}-bin.zip</file>
                   <type>zip</type>
                   <classifier>bin</classifier>
                 </artifact>
