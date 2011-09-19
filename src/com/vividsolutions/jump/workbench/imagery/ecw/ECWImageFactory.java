@@ -47,8 +47,10 @@ public class ECWImageFactory implements ReferencedImageFactory {
 
 	private Logger logger = Logger.getLogger(ECWImageFactory.class);	
 	
-    public static final String TYPE_NAME = "ECW";
-	final static String sNotInstalled=I18N.get("org.openjump.core.ui.plugin.layer.AddSIDLayerPlugIn.not-installed");
+    private static final String TYPE_NAME = "ECW";
+    private static final String DESCRIPTION = "Enhanced Compressed Wavelet";
+    private static final String[] EXTENSIONS = new String[]{ "ecw" };
+    final static String sNotInstalled=I18N.get("org.openjump.core.ui.plugin.layer.AddSIDLayerPlugIn.not-installed");
 
     public ECWImageFactory() {
     }
@@ -72,11 +74,11 @@ public class ECWImageFactory implements ReferencedImageFactory {
     }
 
     public String getDescription() {
-        return "Enhanced Compressed Wavelet";
+        return DESCRIPTION;
     }
 
     public String[] getExtensions() {
-        return new String[] { "ecw" };
+        return EXTENSIONS;
     }
 
     public boolean isEditableImage(String location) {

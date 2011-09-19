@@ -83,6 +83,7 @@ import com.vividsolutions.jump.workbench.datasource.DataSourceQueryChooserManage
 import com.vividsolutions.jump.workbench.datasource.FileDataSourceQueryChooser;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageFactory;
 import com.vividsolutions.jump.workbench.imagery.ecw.ECWImageFactory;
+import com.vividsolutions.jump.workbench.imagery.ecw.JPEG2000ImageFactory;
 import com.vividsolutions.jump.workbench.imagery.geotiff.GeoTIFFImageFactory;
 import com.vividsolutions.jump.workbench.imagery.graphic.GraphicImageFactory;
 import com.vividsolutions.jump.workbench.imagery.mrsid.MrSIDImageFactory;
@@ -645,6 +646,7 @@ public class OpenJumpConfiguration {
         "wld", "bpw", "jpw", "gfw"
       });
     addFactory(workbenchContext, registry, new ECWImageFactory(), null);
+    addFactory(workbenchContext, registry, new JPEG2000ImageFactory(), null);
     addFactory(workbenchContext, registry, new GeoTIFFImageFactory(),
       new String[] {
         "tfw"
