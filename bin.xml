@@ -56,7 +56,7 @@
       <outputDirectory>/</outputDirectory>
       <includes>
         <include>readme.txt</include>
-        <include>licenses</include>
+        <include>licenses/*</include>
       </includes>
     </fileSet>
   </fileSets>
