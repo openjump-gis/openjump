@@ -55,9 +55,7 @@ public abstract class AbstractFileLayerLoader implements FileLayerLoader {
   public AbstractFileLayerLoader(final String description,
     final List<String> extensions) {
     this.description = description;
-    for (String extension : extensions) {
-      this.extensions.add(extension.toLowerCase());
-    }
+    addFileExtensions( extensions );
   }
 
   /**
@@ -76,6 +74,16 @@ public abstract class AbstractFileLayerLoader implements FileLayerLoader {
    */
   public Collection<String> getFileExtensions() {
     return extensions;
+  }
+
+  /**
+   * Add to the list of file extensions supported by the plug-in.
+   * 
+   * @param list of extensions
+   * @return true on success
+   */
+  public boolean addFileExtensions(final List<String> newexts) {
+      return extensions.addAll(newexts);
   }
 
   /**
