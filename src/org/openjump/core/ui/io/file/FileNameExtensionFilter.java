@@ -34,12 +34,12 @@ import javax.swing.filechooser.FileFilter;
 public class FileNameExtensionFilter extends FileFilter {
   // Description of this filter.
   private final String description;
-
   // Known extensions.
   private final String[] extensions;
-
   // Cached ext
   private final String[] lowerCaseExtensions;
+  // switch
+  private boolean filter = true;
 
   public FileNameExtensionFilter(String description, String extension) {
     this(description, new String[] {
@@ -49,8 +49,8 @@ public class FileNameExtensionFilter extends FileFilter {
 
   public FileNameExtensionFilter(String description, String[] extensions) {
     if (extensions == null || extensions.length == 0) {
-      throw new IllegalArgumentException(
-        "Extensions must be non-null and not empty");
+        // empty exts list disables filtering altogether
+        filter = false;
     }
     this.description = description;
     this.extensions = new String[extensions.length];
@@ -75,6 +75,10 @@ public class FileNameExtensionFilter extends FileFilter {
    */
   public boolean accept(File f) {
     if (f != null) {
+      // nothing to filter here
+      if ( !filter )
+          return true;
+      
       if (f.isDirectory()) {
         return true;
       }
