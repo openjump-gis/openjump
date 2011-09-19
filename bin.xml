@@ -7,7 +7,7 @@
   <dependencySets>
     <dependencySet>
       <outputFileNameMapping>${artifactId}-${version}.${extension}</outputFileNameMapping>
-      <outputDirectory>lib</outputDirectory>
+      <outputDirectory>${zipfolder}/lib</outputDirectory>
       <unpack>false</unpack>
       <scope>runtime</scope>
     </dependencySet>
@@ -15,7 +15,7 @@
   <fileSets>
     <fileSet>
       <directory>scripts</directory>
-      <outputDirectory>/bin</outputDirectory>
+      <outputDirectory>${zipfolder}/bin</outputDirectory>
       <fileMode>755</fileMode>
       <includes>
         <include>**</include>
@@ -26,21 +26,21 @@
     </fileSet>
     <fileSet>
       <directory>scripts</directory>
-      <outputDirectory>/bin</outputDirectory>
+      <outputDirectory>${zipfolder}/bin</outputDirectory>
       <includes>
         <include>*.xml</include>
       </includes>
     </fileSet>
     <fileSet>
       <directory>etc</directory>
-      <outputDirectory>/bin</outputDirectory>
+      <outputDirectory>${zipfolder}/bin</outputDirectory>
       <includes>
         <include>log4j.xml</include>
       </includes>
     </fileSet>
     <fileSet>
       <directory>lib</directory>
-      <outputDirectory>/lib</outputDirectory>
+      <outputDirectory>${zipfolder}/lib</outputDirectory>
     </fileSet>
 <!--
     <fileSet>
@@ -48,12 +48,12 @@
       <excludes>
         <exclude>**/*.doc</exclude>
       </excludes>
-      <outputDirectory>/docs</outputDirectory>
+      <outputDirectory>${zipfolder}/docs</outputDirectory>
     </fileSet>
 -->
     <fileSet>
       <directory>etc</directory>
-      <outputDirectory>/</outputDirectory>
+      <outputDirectory>${zipfolder}/</outputDirectory>
       <includes>
         <include>readme.txt</include>
         <include>licenses/*</include>

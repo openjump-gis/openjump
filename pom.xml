@@ -6,6 +6,7 @@
   <name>Open JUMP libraries</name>
   <version>1.4.3-SNAPSHOT</version>
   <url>http://www.revolsys.com</url>
+  <zipfolder>${artifactId}-${version}</zipfolder>
   <build>
     <sourceDirectory>src/</sourceDirectory>
     <outputDirectory>target/classes</outputDirectory>
