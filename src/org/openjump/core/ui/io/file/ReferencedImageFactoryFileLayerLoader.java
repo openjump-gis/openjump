@@ -35,8 +35,7 @@ import java.net.URI;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
-import java.util.Arrays;
-import java.util.Map;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -53,29 +52,32 @@ import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.imagery.ImageryLayerDataset;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageFactory;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageStyle;
-import com.vividsolutions.jump.workbench.imagery.ecw.ECWLoadException;
 import com.vividsolutions.jump.workbench.model.Category;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 
 public class ReferencedImageFactoryFileLayerLoader extends
   AbstractFileLayerLoader {
-  private Class dataSourceClass;
 
   private WorkbenchContext workbenchContext;
 
   private ReferencedImageFactory imageFactory;
 
-  private String[] supportFileExtensions;
-
+  // supportFileExtensions are added to the end of the list of the extension listed by
+  // ReferencedImageFactory.getExtensions() double entries removed
   public ReferencedImageFactoryFileLayerLoader(
     WorkbenchContext workbenchContext, ReferencedImageFactory imageFactory,
     String[] supportFileExtensions) {
-    super(imageFactory.getDescription(),
-      Arrays.asList(imageFactory.getExtensions()));
+    // create with empty exts list set later
+    super( imageFactory.getDescription(),
+            new ArrayList() );
     this.imageFactory = imageFactory;
     this.workbenchContext = workbenchContext;
-    this.supportFileExtensions = supportFileExtensions;
+    // remove double entries; factory exts first, delivered after
+    HashSet exts = new HashSet(Arrays.asList( imageFactory.getExtensions() ));
+    if ( supportFileExtensions instanceof String[] ) 
+        exts.addAll(Arrays.asList( supportFileExtensions ));
+    this.addFileExtensions( new ArrayList(exts) );
   }
 
   public boolean open(TaskMonitor monitor, URI uri, Map<String, Object> options) throws Exception{
@@ -90,8 +92,8 @@ public class ReferencedImageFactoryFileLayerLoader extends
         try {
           monitor.report("Decompressing: " + entryFileName);
           file = unzip(zipFile, entryPath, entryFileName);
-          if (supportFileExtensions != null) {
-            for (String extension : supportFileExtensions) {
+          if (getFileExtensions() != null) {
+            for (String extension : getFileExtensions()) {
               monitor.report("Decompressing: " + entryBaseName + "."
                 + extension);
               unzip(zipFile, entryPath, entryBaseName + "." + extension);
@@ -115,20 +117,8 @@ public class ReferencedImageFactoryFileLayerLoader extends
     layerManager.setFiringEvents(true);
     
     Feature feature;
-    // THIS did not work here because the message never reached the user
-    // it was printed to STDOUT and shown but instantly closed when
-    // the task was finished and the parent dialog was closed
-    //try {
-        feature = createFeature(imageFactory, file,
-        	      getImageryLayerDataset(layer));		
-	/*
-  	} catch (Exception e) {
-		// always throw ECWLoadExceptions as they are fatal
-    	if ( e instanceof ECWLoadException )
-    		throw e;
-        monitor.report(e);
-        return false;
-	}*/
+    feature = createFeature(imageFactory, file,
+            getImageryLayerDataset(layer));
 
     // only add layer if no exception occured
     Category category = TaskUtil.getSelectedCategoryName(workbenchContext);
