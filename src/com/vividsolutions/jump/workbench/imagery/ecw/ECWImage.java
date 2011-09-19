@@ -66,11 +66,11 @@ public class ECWImage
   // debugging only
   // int count = 0;
 
-  public ECWImage(String location) throws JUMPException {
+  public ECWImage(String location) throws Exception {
       init(location);
   }
 
-  private void init(String location) throws JUMPException {
+  private void init(String location) throws Exception {
       try {
           renderer = new JNCSRendererProxy(location, false);
           double xm = renderer.getOriginX();
@@ -89,7 +89,7 @@ public class ECWImage
           }
       }
       catch (Exception e) {
-          throw new JUMPException(e.getMessage());
+          throw e; //new JUMPException(e.getMessage());
       }
   }
 

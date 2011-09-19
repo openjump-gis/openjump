@@ -38,17 +38,40 @@ rem -- find java runtime --
   if NOT "%JAVA_HOME%"=="" set JAVA=%JAVA_HOME%\bin\%JAVA_BIN%
 
 rem -- show java version (for debugging) --
-rem for %%F in ("%JAVA%") do set dirname=%%~dpF
-rem %dirname%java -version
+for %%F in ("%JAVA%") do set dirname=%%~dpF
+"%dirname%java" -version
 
 rem -- Change to jump home dir --
 rem -- NOTE: mount UNC paths to a local drive for this --
 cd /D %JUMP_HOME%
 
 set LIB=lib
+
+rem -- setup native lib paths
+set NATIVE=%LIB%\native
+if DEFINED ProgramFiles(x86) set X64=64
+rem --- XP Version 5.x ---
+for /f "delims=" %%v in ('ver^|findstr /C:"Version 5"') do (
+  set "ID=xp"
+)
+rem --- Vista Version 6.0 ---
+for /f "delims=" %%v in ('ver^|findstr /C:"Version 6.0"') do (
+  set "ID=vista"
+)
+rem --- 7 Version 6.1 ---
+for /f "delims=" %%v in ('ver^|findstr /C:"Version 6.1"') do (
+  set "ID=seven"
+)
+rem --- add native as fallthrough and lib\ext the legacy value ---
+set "NATIVEPATH=%NATIVE%\%ID%%X64%;%NATIVE%\%ID%;%NATIVE%"
+set "PATH=%PATH%;%NATIVEPATH%;%LIB%\ext"
+
+echo %PATH%
+
+rem -- set classpath --
 set CLASSPATH=.;bin;conf
 
-for %%i in ("%LIB%\*.jar" "%LIB%\*.zip") do (
+for %%i in ("%LIB%\*.jar" "%LIB%\*.zip" "%NATIVE%\%ID%%X64%\*.jar" "%NATIVE%\%ID%\*.jar" "%NATIVE%\*.jar") do (
   set jarfile=%%i
 
   rem If we append to a variable inside the for, only the last entry will
@@ -57,10 +80,11 @@ for %%i in ("%LIB%\*.jar" "%LIB%\*.zip") do (
   rem [Jon Aquino]
 
   call :setclass
-) 
+)
 
-set PATH=%PATH%;%LIB%\ext
+echo %CLASSPATH%
 
+rem -- set default app options --
 set JUMP_OPTS=-default-plugins bin\default-plugins.xml -properties bin\workbench-properties.xml -plug-in-directory "%LIB%\ext"
 
 rem -- note: title is needed or start won't accept quoted path to java binary (enables spaces in path)

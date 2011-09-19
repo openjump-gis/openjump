@@ -58,13 +58,17 @@ public class ECWImageFactory implements ReferencedImageFactory {
     }
 
     public ReferencedImage createImage(String location) throws Exception {
-    	// hprevent a weird bug of the ecw libs not being able to handle accented and extended chars in general
-    	if (!Charset.forName("US-ASCII").newEncoder().canEncode(location)) {
-    		String hint = location.replaceAll("[^\\p{ASCII}]", "?");
-    		throw new ECWLoadException( I18N.getMessage( "com.vividsolutions.jump.workbench.imagery.ecw.path-contains-nonascii-chars", new Object[]{ hint } ) );
-    	}
-    	
-    	return new ECWImage(location);
+        // prevent a weird bug of the ecw libs not being able to handle accented
+        // and extended chars in general
+        if (!Charset.forName("ISO-8859-1").newEncoder().canEncode(location)) {
+            String hint = location.replaceAll("[^\\u0000-\\u00FF]", "?");
+            throw new ECWLoadException(
+                    I18N.getMessage(
+                            "com.vividsolutions.jump.workbench.imagery.ecw.path-contains-nonansi-chars",
+                            new Object[] { hint }));
+        }
+
+        return new ECWImage(location);
     }
 
     public String getDescription() {
