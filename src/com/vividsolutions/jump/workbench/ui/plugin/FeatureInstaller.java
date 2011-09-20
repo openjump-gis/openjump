@@ -229,11 +229,16 @@ public class FeatureInstaller {
   public void addMainMenuItem(PlugIn executable, String[] menuPath,
     String menuItemName, boolean checkBox, Icon icon, EnableCheck enableCheck) {
     Map properties = extractProperties(menuItemName);
+    int pos = -1;
+    if (properties.get("pos") != null) {
+      pos = Integer.parseInt((String)properties.get("pos"));
+    }
     menuItemName = removeProperties(menuItemName);
     final JMenuItem menuItem = checkBox ? 
         new JCheckBoxMenuItem(menuItemName) : 
         new JMenuItem(menuItemName);
-    addMainMenuItem(executable, menuPath, menuItem, enableCheck, -1);
+    addMainMenuItem(executable, menuPath, menuItem, enableCheck, pos);
+    menuItem.setIcon(icon);
     /*JMenu menu = menuBarMenu(menuPath[0]);
     if (menu == null) {
       menu = (JMenu)installMnemonic(new JMenu(menuPath[0]), menuBar());
@@ -254,7 +259,8 @@ public class FeatureInstaller {
   public JMenuItem addMainMenuItem(final String[] menuPath,
     final AbstractUiPlugIn plugin, final int index) {
     final JMenuItem menuItem = new JMenuItem(plugin.getName());
-    addMainMenuItem(plugin, menuPath, menuItem, null, -1);
+    addMainMenuItem(plugin, menuPath, menuItem, null, index);
+    menuItem.setIcon(plugin.getIcon());
     return menuItem;
     /*String menuItemName = plugin.getName();
     JMenu menu = menuBarMenu(menuPath[0]);
