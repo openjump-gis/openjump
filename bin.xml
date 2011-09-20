@@ -59,5 +59,12 @@
         <include>licenses/*</include>
       </includes>
     </fileSet>
+    <fileSet>
+      <directory>.</directory>
+      <outputDirectory>/</outputDirectory>
+      <includes>
+        <include>ChangeLog</include>
+      </includes>
+    </fileSet>
   </fileSets>
 </assembly>

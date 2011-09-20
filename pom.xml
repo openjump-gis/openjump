@@ -31,37 +31,38 @@
           <target>1.5</target>
         </configuration>
       </plugin>
-          <plugin>
-      <groupId>org.codehaus.mojo</groupId>
-      <artifactId>buildnumber-maven-plugin</artifactId>
-    <executions>
-        <execution>
+      <!-- execute buildnumber plugin two times because it can't get date AND rev in one go -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>buildnumber-maven-plugin</artifactId>
+        <executions>
+          <execution>
             <id>generate-buildnumber</id>
-                <phase>validate</phase>
+            <phase>validate</phase>
             <goals>
-                <goal>create</goal>
+              <goal>create</goal>
             </goals>
             <configuration>
-                <useLastCommittedRevision>true</useLastCommittedRevision>
-                <buildNumberPropertyName>buildRev</buildNumberPropertyName>
+              <useLastCommittedRevision>true</useLastCommittedRevision>
+              <buildNumberPropertyName>buildRev</buildNumberPropertyName>
             </configuration>
-        </execution>
-        <execution>
+          </execution>
+          <execution>
             <id>generate-timestamp</id>
             <phase>validate</phase>
             <goals>
                 <goal>create</goal>
             </goals>
             <configuration>
-                <format>{0,date,yyyyMMdd}</format>
-                <items>
-                    <item>timestamp</item>
-                </items>
-                <buildNumberPropertyName>buildDate</buildNumberPropertyName>
+              <format>{0,date,yyyyMMdd}</format>
+              <items>
+                <item>timestamp</item>
+              </items>
+              <buildNumberPropertyName>buildDate</buildNumberPropertyName>
             </configuration>
-        </execution>
-    </executions>
-    </plugin>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
