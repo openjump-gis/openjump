@@ -9,7 +9,9 @@
   <name>Open JUMP libraries</name>
   <version>1.4.3-SNAPSHOT${maven.build.timestamp}</version>
   <url>http://www.revolsys.com</url>
-  <snapId>${artifactId}-${version}</snapId>
+  <properties>
+    <snapId>${artifactId}-${version}</snapId>
+  </properties>
   <build>
     <sourceDirectory>src/</sourceDirectory>
     <outputDirectory>target/classes</outputDirectory>
