@@ -3,11 +3,11 @@
   <formats>
     <format>zip</format>
   </formats>
-  <includeBaseDirectory>false</includeBaseDirectory>
+  <includeBaseDirectory>true</includeBaseDirectory>
   <dependencySets>
     <dependencySet>
       <outputFileNameMapping>${artifactId}-${version}.${extension}</outputFileNameMapping>
-      <outputDirectory>${snapId}/lib</outputDirectory>
+      <outputDirectory>/lib</outputDirectory>
       <unpack>false</unpack>
       <scope>runtime</scope>
     </dependencySet>
@@ -15,7 +15,7 @@
   <fileSets>
     <fileSet>
       <directory>scripts</directory>
-      <outputDirectory>${snapId}/bin</outputDirectory>
+      <outputDirectory>/bin</outputDirectory>
       <fileMode>755</fileMode>
       <includes>
         <include>**</include>
@@ -26,21 +26,21 @@
     </fileSet>
     <fileSet>
       <directory>scripts</directory>
-      <outputDirectory>${snapId}/bin</outputDirectory>
+      <outputDirectory>/bin</outputDirectory>
       <includes>
         <include>*.xml</include>
       </includes>
     </fileSet>
     <fileSet>
       <directory>etc</directory>
-      <outputDirectory>${snapId}/bin</outputDirectory>
+      <outputDirectory>/bin</outputDirectory>
       <includes>
         <include>log4j.xml</include>
       </includes>
     </fileSet>
     <fileSet>
       <directory>lib</directory>
-      <outputDirectory>${snapId}/lib</outputDirectory>
+      <outputDirectory>/lib</outputDirectory>
     </fileSet>
 <!--
     <fileSet>
@@ -48,12 +48,12 @@
       <excludes>
         <exclude>**/*.doc</exclude>
       </excludes>
-      <outputDirectory>${snapId}/docs</outputDirectory>
+      <outputDirectory>/docs</outputDirectory>
     </fileSet>
 -->
     <fileSet>
       <directory>etc</directory>
-      <outputDirectory>${snapId}/</outputDirectory>
+      <outputDirectory>/</outputDirectory>
       <includes>
         <include>readme.txt</include>
         <include>licenses/*</include>
