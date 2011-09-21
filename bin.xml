@@ -5,11 +5,26 @@
   </formats>
   <includeBaseDirectory>true</includeBaseDirectory>
   <dependencySets>
-    <dependencySet>
+      <dependencySet>
+      <!-- all dependency jars except oj -->
       <outputFileNameMapping>${artifactId}-${version}.${extension}</outputFileNameMapping>
       <outputDirectory>/lib</outputDirectory>
       <unpack>false</unpack>
       <scope>runtime</scope>
+      <excludes>
+        <exclude>org.openjump:OpenJUMP</exclude>
+      </excludes>
+    </dependencySet>
+    <dependencySet>
+      <!-- resort to rebuild ${project.build.finalName} manually as maven does not seem to
+           resolve variables in variables at this point or project.build.finalName -->
+      <outputFileNameMapping>${artifactId}-${buildDate}-r${buildRev}.${extension}</outputFileNameMapping>
+      <outputDirectory>/lib</outputDirectory>
+      <unpack>false</unpack>
+      <scope>runtime</scope>
+      <includes>
+        <include>org.openjump:OpenJUMP</include>
+      </includes>
     </dependencySet>
   </dependencySets>
   <fileSets>
@@ -41,6 +56,10 @@
     <fileSet>
       <directory>lib</directory>
       <outputDirectory>/lib</outputDirectory>
+      <excludes>
+        <!-- are delivered by depends above -->
+        <exclude>*.jar</exclude>
+      </excludes>
     </fileSet>
 <!--
     <fileSet>

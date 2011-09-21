@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.openjump</groupId>
   <artifactId>OpenJUMP</artifactId>
-  <version>${buildDate}-r${buildRev}</version>
+  <version>snapshot</version>
   <name>OpenJUMP nightly build</name>
   <scm>
     <connection>scm:svn:https://jump-pilot.svn.sourceforge.net/svnroot/jump-pilot/core/trunk</connection>
@@ -12,7 +12,7 @@
     <url>http://jump-pilot.svn.sourceforge.net/viewvc/jump-pilot/core/trunk/</url>
   </scm>
   <build>
-    <finalName>${artifactId}-${version}</finalName>
+    <finalName>${artifactId}-${buildDate}-r${buildRev}</finalName>
     <sourceDirectory>src/</sourceDirectory>
     <outputDirectory>target/classes</outputDirectory>
     <resources>
@@ -93,6 +93,7 @@
           </execution>
         </executions>
       </plugin>
+<!-- remove redundant copy command
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
@@ -107,7 +108,7 @@
             <configuration>
               <artifacts>
                 <artifact>
-                  <file>target/${snapId}-bin.zip</file>
+                  <file>target/openjump-core-1.4.3-SNAPSHOT-bin.zip</file>
                   <type>zip</type>
                   <classifier>bin</classifier>
                 </artifact>
@@ -116,6 +117,7 @@
           </execution>
         </executions>
       </plugin>
+-->
     </plugins>
   </build>
   <repositories>
