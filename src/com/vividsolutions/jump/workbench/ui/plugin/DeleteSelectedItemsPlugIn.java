@@ -33,32 +33,29 @@
 
 package com.vividsolutions.jump.workbench.ui.plugin;
 
-import java.awt.Event;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-
-import javax.swing.ImageIcon;
-
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jump.util.StringUtil;
-import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
-import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
 import com.vividsolutions.jump.workbench.ui.GeometryEditor;
-import com.vividsolutions.jump.workbench.ui.SelectionManagerProxy;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.SelectionManager;
+import com.vividsolutions.jump.workbench.ui.SelectionManagerProxy;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
+
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import javax.swing.ImageIcon;
 
 //Say "delete" for features but "remove" for layers; otherwise, "delete layers" may
 //sound to a user that we're actually deleting the file from the disk. [Jon Aquino]
 public class DeleteSelectedItemsPlugIn extends AbstractPlugIn {
+    
     public DeleteSelectedItemsPlugIn() {}
 
     private GeometryEditor geometryEditor = new GeometryEditor();
@@ -66,47 +63,41 @@ public class DeleteSelectedItemsPlugIn extends AbstractPlugIn {
     public boolean execute(final PlugInContext context) throws Exception {
         reportNothingToUndoYet(context);
         ArrayList transactions = new ArrayList();
-        for (Iterator i =
-            ((SelectionManagerProxy) context.getActiveInternalFrame())
-                .getSelectionManager()
-                .getLayersWithSelectedItems()
-                .iterator();
-            i.hasNext();
-            ) {
-            Layer layerWithSelectedItems = (Layer) i.next();
-            transactions
-                .add(
-                    EditTransaction
-                    .createTransactionOnSelection(new EditTransaction.SelectionEditor() {
-                public Geometry edit(
-                    Geometry geometryWithSelectedItems,
-                    Collection selectedItems) {
-                    Geometry g = geometryWithSelectedItems;
-                    for (Iterator i = selectedItems.iterator(); i.hasNext();) {
-                        Geometry selectedItem = (Geometry) i.next();
-                        g = geometryEditor.remove(g, selectedItem);
+        final SelectionManager selectionManager = 
+            ((SelectionManagerProxy)context.getActiveInternalFrame()).getSelectionManager();
+        
+        for (final Layer layer : selectionManager.getLayersWithSelectedItems()) {
+            transactions.add(EditTransaction.createTransactionOnSelection(
+                new EditTransaction.SelectionEditor() {
+                    public Geometry edit(Geometry geometryWithSelectedItems,
+                                         Collection selectedItems) {
+                        Geometry g = geometryWithSelectedItems;
+                        for (Iterator i = selectedItems.iterator(); i.hasNext();) {
+                            Geometry selectedItem = (Geometry) i.next();
+                            g = geometryEditor.remove(g, selectedItem);
+                        }
+                        return g;
                     }
-                    return g;
-                }
-            },
-                ((SelectionManagerProxy) context.getActiveInternalFrame()),
+                },
+                ((SelectionManagerProxy)context.getActiveInternalFrame()),
                 context.getWorkbenchFrame(),
                 getName(),
-                layerWithSelectedItems,
+                layer,
                 isRollingBackInvalidEdits(context),
-                true));
+                true)
+            );
         }
         return EditTransaction.commit(transactions);
     }
 
     public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
         EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
-
         return new MultiEnableCheck()
             .add(checkFactory.createWindowWithSelectionManagerMustBeActiveCheck())
             .add(checkFactory.createAtLeastNItemsMustBeSelectedCheck(1))
             .add(checkFactory.createSelectedItemsLayersMustBeEditableCheck());
     }
+    
     public void initialize(PlugInContext context) throws Exception {
         super.initialize(context);
         registerDeleteKey(context.getWorkbenchContext());

@@ -32,11 +32,14 @@
 
 package com.vividsolutions.jump.workbench.ui.renderer;
 
-import java.awt.Color;
-
-import com.vividsolutions.jump.util.CollectionMap;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
+
+import java.awt.Color;
+import java.util.List;
+import java.util.Map;
 
 public class PartSelectionRenderer extends AbstractSelectionRenderer {
 
@@ -46,8 +49,10 @@ public class PartSelectionRenderer extends AbstractSelectionRenderer {
         super(CONTENT_ID, panel, Color.red, true, false);
     }
     
-    protected CollectionMap featureToSelectedItemsMap(Layer layer) {
-        return panel.getSelectionManager().getPartSelection().getFeatureToSelectedItemCollectionMap(layer);
+    protected Map<Feature,List<Geometry>> featureToSelectedItemsMap(Layer layer) {
+        return panel.getSelectionManager()
+                    .getPartSelection()
+                    .getFeatureToSelectedItemCollectionMap(layer);
     }    
 
 }

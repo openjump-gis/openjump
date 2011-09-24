@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.util.Assert;
@@ -39,30 +40,41 @@ import com.vividsolutions.jump.workbench.ui.renderer.FeatureSelectionRenderer;
  * A collection of selected {@link Feature Features}
  */
 public class FeatureSelection extends AbstractSelection {
-    public List items(Geometry geometry) {
-        ArrayList items = new ArrayList();
+    
+    /**
+     * Returns a list containing the geometry itself.
+     */
+    public List<Geometry> items(Geometry geometry) {
+        List<Geometry> items = new ArrayList<Geometry>(1);
         items.add(geometry);
         return items;
     }
+    
     public FeatureSelection(SelectionManager selectionManager) {
         super(selectionManager);
     }
-    public Collection indices(Geometry geometry, Collection items) {
+    
+    /**
+     * Returns indices of items in geometry.
+     */
+    public Set<Integer> indices(Geometry geometry, Collection items) {
         //An enhancement to allow selection to work with datasets not stored in
         //memory. In collaboration with Michael Michaud
         //[michael.michaud@free.fr].        
         //[Jon Aquino 2004-04-27]
         Assert.isTrue(items.size() == 1 || items.isEmpty());
-        return items.isEmpty() ? Collections.EMPTY_SET : Collections.singleton(new Integer(0));
+        return items.isEmpty() ? Collections.EMPTY_SET : Collections.singleton(0);
     }
+    
     public String getRendererContentID() {
         return FeatureSelectionRenderer.CONTENT_ID;
     }
-    protected boolean selectedInAncestors(Layer layer, Feature feature,
-            Geometry item) {
+    
+    protected boolean selectedInAncestors(Layer layer, Feature feature, Geometry item) {
         Assert.isTrue(getParent() == null);
         return false;
     }
+    
     protected void unselectInDescendants(Layer layer, Feature feature,
             Collection items) {
         Assert.isTrue(getChild() instanceof PartSelection);

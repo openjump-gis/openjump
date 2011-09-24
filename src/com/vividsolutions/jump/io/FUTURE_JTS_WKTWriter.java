@@ -21,6 +21,8 @@ import java.text.DecimalFormatSymbols;
  * A non-standard "LINEARRING" tag is used for LinearRings. The WKT spec does
  * not define a special tag for LinearRings. The standard tag to use is
  * "LINESTRING".
+ *
+ * @deprecated
  * 
  * @version 1.4
  */
@@ -29,6 +31,10 @@ import java.text.DecimalFormatSymbols;
 public class FUTURE_JTS_WKTWriter {
 
 	private static int INDENT = 2;
+	
+	private static final DecimalFormatSymbols SYMBOLS = new DecimalFormatSymbols(java.util.Locale.ENGLISH);
+		//symbols.setDecimalSeparator('.');
+	private static final DecimalFormat FORMATTER = new DecimalFormat("#.###", SYMBOLS);
 
 	/**
 	 * Creates the <code>DecimalFormat</code> used to write
@@ -40,17 +46,17 @@ public class FUTURE_JTS_WKTWriter {
 	 * @return a <code>DecimalFormat</code> that write <code>double</code> s
 	 *         without scientific notation.
 	 */
-	private static DecimalFormat createFormatter(PrecisionModel precisionModel) {
-		// the default number of decimal places is 16, which is sufficient
-		// to accomodate the maximum precision of a double.
-		int decimalPlaces = precisionModel.getMaximumSignificantDigits();
-		// specify decimal separator explicitly to avoid problems in other
-		// locales
-		DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-		symbols.setDecimalSeparator('.');
-		return new DecimalFormat("#" + (decimalPlaces > 0 ? "." : "")
-				+ stringOfChar('#', decimalPlaces), symbols);
-	}
+	//private static DecimalFormat createFormatter(PrecisionModel precisionModel) {
+	//	// the default number of decimal places is 16, which is sufficient
+	//	// to accomodate the maximum precision of a double.
+	//	int decimalPlaces = precisionModel.getMaximumSignificantDigits();
+	//	// specify decimal separator explicitly to avoid problems in other
+	//	// locales
+	//	DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+	//	symbols.setDecimalSeparator('.');
+	//	return new DecimalFormat("#" + (decimalPlaces > 0 ? "." : "")
+	//			+ stringOfChar('#', decimalPlaces), symbols);
+	//}
 
 	/**
 	 * Returns a <code>String</code> of repeated characters.
@@ -69,7 +75,7 @@ public class FUTURE_JTS_WKTWriter {
 		return buf.toString();
 	}
 
-	private DecimalFormat formatter;
+	//private DecimalFormat formatter;
 
 	private boolean isFormatted = false;
 
@@ -152,7 +158,8 @@ public class FUTURE_JTS_WKTWriter {
 	private void writeFormatted(Geometry geometry, boolean isFormatted,
 			Writer writer) throws IOException {
 		this.isFormatted = isFormatted;
-		formatter = createFormatter(geometry.getPrecisionModel());
+		//formatter = createFormatter(geometry.getPrecisionModel());
+		FORMATTER.setMaximumFractionDigits(geometry.getPrecisionModel().getMaximumSignificantDigits());
 		appendGeometryTaggedText(geometry, 0, writer);
 	}
 
@@ -374,7 +381,8 @@ public class FUTURE_JTS_WKTWriter {
 	 *         scientific notation
 	 */
 	private String writeNumber(double d) {
-		return formatter.format(d);
+		//return formatter.format(d);
+		return FORMATTER.format(d);
 	}
 
 	/**

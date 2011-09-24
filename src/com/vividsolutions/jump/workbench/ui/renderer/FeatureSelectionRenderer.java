@@ -33,19 +33,24 @@
 
 package com.vividsolutions.jump.workbench.ui.renderer;
 
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.util.Blackboard;
-import java.awt.Color;
-
-import com.vividsolutions.jump.util.CollectionMap;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
-import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
+import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
+
+import java.awt.Color;
+import java.util.List;
+import java.util.Map;
+
 import org.openjump.core.ui.SelectionStyllingOptionsPanel;
 
 //<<TODO:REFACTORING>> Refactor code common to SelectionHandleRenderer and
 //VertexRenderer [Jon Aquino]
 public class FeatureSelectionRenderer extends AbstractSelectionRenderer {
+    
     public final static String CONTENT_ID = "SELECTED_FEATURES";
 
     public FeatureSelectionRenderer(LayerViewPanel panel) {
@@ -65,8 +70,10 @@ public class FeatureSelectionRenderer extends AbstractSelectionRenderer {
 		}
     }
     
-    protected CollectionMap featureToSelectedItemsMap(Layer layer) {
-        return panel.getSelectionManager().getFeatureSelection().getFeatureToSelectedItemCollectionMap(layer);
+    protected Map<Feature,List<Geometry>> featureToSelectedItemsMap(Layer layer) {
+        return panel.getSelectionManager()
+                    .getFeatureSelection()
+                    .getFeatureToSelectedItemCollectionMap(layer);
     }    
 
 }

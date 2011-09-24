@@ -52,17 +52,20 @@ import com.vividsolutions.jump.workbench.ui.renderer.PartSelectionRenderer;
 
 public class PartSelection extends AbstractSelection {
 
-    public List items(Geometry geometry) {
-        ArrayList items = new ArrayList();
-
-        if (geometry instanceof GeometryCollection) {
-            for (int i = 0; i < ((GeometryCollection)geometry).getNumGeometries(); i++) {
-                items.addAll(items(((GeometryCollection)geometry).getGeometryN(i)));
+    /**
+     * Returns a list containing geometry components of this geometry.
+     */
+    public List<Geometry> items(Geometry geometry) {
+        int partNumber = geometry.getNumGeometries();
+        List<Geometry> items = new ArrayList<Geometry>(partNumber);
+        if (partNumber > 1) {
+            for (int i = 0; i < partNumber; i++) {
+                items.addAll(items(geometry.getGeometryN(i)));
             }
-       }
-       else {
-        items.add(geometry);
-       }
+        }
+        else {
+            items.add(geometry);
+        }
         return items;
     }    
     

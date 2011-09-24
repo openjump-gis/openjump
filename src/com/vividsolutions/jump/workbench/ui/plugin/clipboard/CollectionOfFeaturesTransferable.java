@@ -38,27 +38,37 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
+import com.vividsolutions.jts.io.WKTWriter;
 import com.vividsolutions.jump.feature.Feature;
-import com.vividsolutions.jump.io.FUTURE_JTS_WKTWriter;
+
 public class CollectionOfFeaturesTransferable extends AbstractTransferable {
+    
     /** A java.util.Collection, not a FeatureCollection */
     public static final DataFlavor COLLECTION_OF_FEATURES_FLAVOR =
         new DataFlavor(Collection.class, "Collection of Features") {
         public boolean equals(DataFlavor that) {
-                //Needed so #equals will return false for COLLECTION_OF_LAYERS_FLAVOR. [Jon Aquino]
-    return super.equals(that)
-        && getHumanPresentableName().equals(that.getHumanPresentableName());
+            //Needed so #equals will return false for COLLECTION_OF_LAYERS_FLAVOR. [Jon Aquino]
+            return super.equals(that) && 
+                   getHumanPresentableName().equals(that.getHumanPresentableName());
         }
     };
-    private static final DataFlavor[] flavors = { DataFlavor.stringFlavor,        //plainTextFlavor is deprecated, but JDK 1.3 needs it to paste to
+    
+    private static final DataFlavor[] flavors = {
+        DataFlavor.stringFlavor,
+        //plainTextFlavor is deprecated, but JDK 1.3 needs it to paste to
         //non-Java apps (like Notepad). [Jon Aquino]
-        DataFlavor.plainTextFlavor, COLLECTION_OF_FEATURES_FLAVOR };
+        //DataFlavor.plainTextFlavor,
+        COLLECTION_OF_FEATURES_FLAVOR };
+    
     private Collection features;
-    private FUTURE_JTS_WKTWriter writer = new FUTURE_JTS_WKTWriter();
+    
+    private WKTWriter writer = new WKTWriter(3);
+    
     public CollectionOfFeaturesTransferable(Collection features) {
         super(flavors);
         this.features = new ArrayList(features);
     }
+    
     public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
         if (flavor.equals(COLLECTION_OF_FEATURES_FLAVOR)) {
             return Collections.unmodifiableCollection(features);
@@ -66,11 +76,12 @@ public class CollectionOfFeaturesTransferable extends AbstractTransferable {
         if (flavor.equals(DataFlavor.stringFlavor)) {
             return toString(features);
         }
-        if (flavor.equals(DataFlavor.plainTextFlavor)) {
-            return new StringReader(toString(features));
-        }
+        //if (flavor.equals(DataFlavor.plainTextFlavor)) {
+        //    return new StringReader(toString(features));
+        //}
         throw new UnsupportedFlavorException(flavor);
     }
+    
     private String toString(Collection features) {
         StringBuffer b = new StringBuffer();
         for (Iterator i = features.iterator(); i.hasNext();) {

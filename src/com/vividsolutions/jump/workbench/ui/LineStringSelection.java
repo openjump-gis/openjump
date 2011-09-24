@@ -51,8 +51,12 @@ import com.vividsolutions.jump.workbench.ui.renderer.LineStringSelectionRenderer
 */
 
 public class LineStringSelection extends AbstractSelection {
-    public List items(Geometry geometry) {
-        ArrayList items = new ArrayList();
+    
+    /**
+     * Returns a list of LineString items contained in this geometry.
+     */
+    public List<Geometry> items(Geometry geometry) {
+        List<Geometry> items = new ArrayList<Geometry>(1);
 
         if (geometry instanceof LineString) {
             items.add(geometry);
@@ -61,7 +65,6 @@ public class LineStringSelection extends AbstractSelection {
         if (geometry instanceof Polygon) {
             Polygon polygon = (Polygon) geometry;
             items.add(polygon.getExteriorRing());
-
             for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
                 items.add(polygon.getInteriorRingN(i));
             }
@@ -69,10 +72,8 @@ public class LineStringSelection extends AbstractSelection {
 
         if (geometry instanceof GeometryCollection) {
             GeometryCollection geometryCollection = (GeometryCollection) geometry;
-
             for (int i = 0; i < geometryCollection.getNumGeometries(); i++) {
-                items.addAll(items(geometryCollection.getGeometryN(
-                            i)));
+                items.addAll(items(geometryCollection.getGeometryN(i)));
             }
         }
 

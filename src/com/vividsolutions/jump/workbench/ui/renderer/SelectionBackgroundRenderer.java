@@ -33,9 +33,15 @@
 package com.vividsolutions.jump.workbench.ui.renderer;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.util.CollectionMap;
 import com.vividsolutions.jump.workbench.model.Layer;
@@ -49,17 +55,22 @@ public class SelectionBackgroundRenderer extends AbstractSelectionRenderer {
         super(CONTENT_ID, panel, Color.yellow, false, true);
     }
 
-    protected CollectionMap featureToSelectedItemsMap(Layer layer) {
+    protected Map<Feature,List<Geometry>> featureToSelectedItemsMap(Layer layer) {
         //Use Set because PartSelection and LineStringSelection may share features. [Jon Aquino]
-        HashSet featuresNeedingBackground = new HashSet();
+        Set featuresNeedingBackground = new HashSet();
         featuresNeedingBackground.addAll(panel.getSelectionManager().getPartSelection().getFeaturesWithSelectedItems(layer));
         featuresNeedingBackground.addAll(panel.getSelectionManager().getLineStringSelection().getFeaturesWithSelectedItems(layer));                
         //Don't need to remove FeatureSelection features, because if a feature were
         //selected, its parts and linestrings would not be selected. [Jon Aquino]
-        CollectionMap map = new CollectionMap();
+        Map<Feature,List<Geometry>> map = new HashMap<Feature,List<Geometry>>();
         for (Iterator i = featuresNeedingBackground.iterator(); i.hasNext(); ) {
             Feature feature = (Feature) i.next();
-            map.addItem(feature, feature.getGeometry());
+            List<Geometry> list = map.get(feature);
+            if (list == null) {
+                list = new ArrayList<Geometry>(1);
+                map.put(feature, list);
+            }
+            list.add(feature.getGeometry());
         }
         return map;
     }

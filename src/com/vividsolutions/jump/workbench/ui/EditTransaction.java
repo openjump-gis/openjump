@@ -42,6 +42,7 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.UndoableCommand;
+import com.vividsolutions.jump.workbench.ui.SelectionManager;
 
 /**
  * Takes care of "rollback" (if any geometries are invalid) and undo,
@@ -157,14 +158,13 @@ public class EditTransaction {
         boolean rollingBackInvalidEdits,
         boolean allowAddingAndRemovingFeatures) {
         Map featureToNewGeometryMap = featureToNewGeometryMap(editor, selectionManagerProxy, layer);
-        EditTransaction transaction =
-            new EditTransaction(
-                featureToNewGeometryMap.keySet(),
-                name,
-                layer,
-                rollingBackInvalidEdits,
-                allowAddingAndRemovingFeatures,
-                layerViewPanelContext);
+        EditTransaction transaction = new EditTransaction(
+            featureToNewGeometryMap.keySet(),
+            name,
+            layer,
+            rollingBackInvalidEdits,
+            allowAddingAndRemovingFeatures,
+            layerViewPanelContext);
         transaction.setGeometries(featureToNewGeometryMap);
         return transaction;
     }
@@ -178,17 +178,13 @@ public class EditTransaction {
         SelectionManagerProxy selectionManagerProxy,
         Layer layer) {
         Map featureToNewGeometryMap = new HashMap();
-        for (Iterator i = selectionManagerProxy
-                .getSelectionManager()
-                .getFeaturesWithSelectedItems(layer)
-                .iterator(); i.hasNext(); ) {
+        SelectionManager selectionManager = selectionManagerProxy.getSelectionManager();
+        for (Iterator i = selectionManager.getFeaturesWithSelectedItems(layer)
+                                                   .iterator(); i.hasNext(); ) {
             Feature feature = (Feature) i.next();
             Geometry newGeometry = (Geometry) feature.getGeometry().clone();
             ArrayList selectedItems = new ArrayList();
-            for (Iterator j = selectionManagerProxy
-                              .getSelectionManager()
-                              .getSelections()
-                              .iterator(); j.hasNext(); ) {
+            for (Iterator j = selectionManager.getSelections().iterator(); j.hasNext(); ) {
                 AbstractSelection selection = (AbstractSelection) j.next();
                 //Use #getSelectedItemIndices rather than #getSelectedItems, because
                 //we want the selected items from newGeometry, not the original

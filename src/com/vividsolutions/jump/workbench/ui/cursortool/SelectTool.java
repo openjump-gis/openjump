@@ -32,25 +32,26 @@
 
 package com.vividsolutions.jump.workbench.ui.cursortool;
 
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jump.feature.Feature;
+import com.vividsolutions.jump.geom.EnvelopeUtil;
+import com.vividsolutions.jump.workbench.model.FenceLayerFinder;
+import com.vividsolutions.jump.workbench.model.Layer;
+import com.vividsolutions.jump.workbench.ui.AbstractSelection;
+import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
+
 import java.awt.Cursor;
 import java.awt.event.MouseEvent;
 import java.awt.geom.NoninvertibleTransformException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-
 import javax.swing.Icon;
-
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jump.feature.Feature;
-import com.vividsolutions.jump.geom.EnvelopeUtil;
-import com.vividsolutions.jump.util.CollectionMap;
-import com.vividsolutions.jump.workbench.model.FenceLayerFinder;
-import com.vividsolutions.jump.workbench.model.Layer;
-import com.vividsolutions.jump.workbench.ui.AbstractSelection;
-import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 
 public abstract class SelectTool extends DragTool {
     
@@ -97,12 +98,12 @@ public abstract class SelectTool extends DragTool {
                 getPanel().getSelectionManager().arePanelUpdatesEnabled();
             getPanel().getSelectionManager().setPanelUpdatesEnabled(false);
             try {
-                CollectionMap featureToItemsToSelectMap =
+                Map<Feature,List<Geometry>> featureToItemsToSelectMap =
                     featureToItemsInFenceMap(
                         (Collection) layerToFeaturesInFenceMap.get(layer),
                         layer,
                         false);
-                CollectionMap featureToItemsToUnselectMap =
+                Map<Feature,List<Geometry>> featureToItemsToUnselectMap =
                     featureToItemsInFenceMap(
                         (Collection) layerToFeaturesInFenceMap.get(layer),
                         layer,
@@ -125,6 +126,7 @@ public abstract class SelectTool extends DragTool {
     }
 
     private String rendererID;
+    
     protected SelectTool(String rendererID) {
         this.rendererID = rendererID;
     }
@@ -134,18 +136,18 @@ public abstract class SelectTool extends DragTool {
     /**
      * @param selected whether to return selected items or deselected items
      */
-    private CollectionMap featureToItemsInFenceMap(
-        Collection features,
-        Layer layer,
-        boolean selected)
-        throws NoninvertibleTransformException {
-        CollectionMap featureToSelectedItemsMap =
+    private Map<Feature,List<Geometry>> featureToItemsInFenceMap(
+            Collection features, Layer layer, boolean selected)
+                                        throws NoninvertibleTransformException {
+        Map<Feature,List<Geometry>> featureToSelectedItemsMap =
             selection.getFeatureToSelectedItemCollectionMap(layer);
-        CollectionMap featureToItemsInFenceMap = new CollectionMap();
+        Map<Feature,List<Geometry>> featureToItemsInFenceMap = 
+            new HashMap<Feature,List<Geometry>>();
         for (Iterator i = features.iterator(); i.hasNext();) {
             Feature feature = (Feature) i.next();
-            Collection selectedItems = featureToSelectedItemsMap.getItems(feature);
-            Collection itemsToReturn = itemsInFence(feature);
+            List<Geometry> selectedItems = featureToSelectedItemsMap.get(feature);
+            if (selectedItems == null) selectedItems = Collections.EMPTY_LIST;
+            List<Geometry> itemsToReturn = itemsInFence(feature);
             if (selected) {
                 itemsToReturn.retainAll(selectedItems);
             } else {
@@ -153,22 +155,17 @@ public abstract class SelectTool extends DragTool {
             }
             featureToItemsInFenceMap.put(feature, itemsToReturn);
         }
-
         return featureToItemsInFenceMap;
     }
 
-    private Collection itemsInFence(Feature feature) throws NoninvertibleTransformException {
-        ArrayList itemsInFence = new ArrayList();
+    private List<Geometry> itemsInFence(Feature feature) throws NoninvertibleTransformException {
+        List<Geometry> itemsInFence = new ArrayList<Geometry>(1);
         Geometry fence = EnvelopeUtil.toGeometry(getBoxInModelCoordinates());
-
-        for (Iterator i = selection.items(feature.getGeometry()).iterator(); i.hasNext();) {
-            Geometry selectedItem = (Geometry) i.next();
-
+        for (Geometry selectedItem : selection.items(feature.getGeometry())) {
             if (LayerViewPanel.intersects(selectedItem, fence)) {
                 itemsInFence.add(selectedItem);
             }
         }
-
         return itemsInFence;
     }
 

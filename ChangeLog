@@ -1,3 +1,29 @@
+2011-09-24 mmichaud <michael.michaud@free.fr>
+  * Refactoring of Selection package : 
+    - use generics in selection related classes instead of OpenJUMP CollectionMap
+    - improve memory usage (initialize all lists with an array of size 1 instead
+      of the default array size)
+    - fix old bug 2792806
+    
+    Changed classes are :
+    -com.vividsolutions.jump.workbench.ui.SelectionManager
+    -com.vividsolutions.jump.workbench.ui.AbstractSelection
+    -com.vividsolutions.jump.workbench.ui.FeatureSelection
+    -com.vividsolutions.jump.workbench.ui.PartSelection
+    -com.vividsolutions.jump.workbench.ui.LineStringSelection
+    -com.vividsolutions.jump.workbench.ui.EditTransaction
+    -com.vividsolutions.jump.workbench.ui.AbstractSelection
+    -com.vividsolutions.jump.workbench.ui.renderer.AbstractSelectionRenderer
+    -com.vividsolutions.jump.workbench.ui.renderer.FeatureCollectionRenderer
+    -com.vividsolutions.jump.workbench.ui.renderer.FeatureSelectionRenderer
+    -com.vividsolutions.jump.workbench.ui.renderer.PartSelectionRenderer
+    -com.vividsolutions.jump.workbench.ui.renderer.LineStringSelectionRenderer
+    -com.vividsolutions.jump.workbench.ui.renderer.SelectionBackgroundRenderer
+    -com.vividsolutions.jump.workbench.ui.cursortool.SelectTool
+    -com.vividsolutions.jump.workbench.ui.plugin.clipboard.CollectionOfFeaturesTransferable
+    -com.vividsolutions.jump.workbench.ui.plugin.DeleteSelectedItemsPlugIn
+    
+
 2011-09-18 mmichaud <michael.michaud@free.fr>
   * Refactoring of EditTransaction class :
     - use Set instead of List to avoid time-consuming "if (!list.contains())" 

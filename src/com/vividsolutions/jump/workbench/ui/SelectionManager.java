@@ -32,14 +32,6 @@
 
 package com.vividsolutions.jump.workbench.ui;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.model.CategoryEvent;
@@ -52,6 +44,15 @@ import com.vividsolutions.jump.workbench.model.LayerListener;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
 import com.vividsolutions.jump.workbench.ui.renderer.SelectionBackgroundRenderer;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Provides aggregate information for selected features, parts, and linestrings.
@@ -70,6 +71,7 @@ import com.vividsolutions.jump.workbench.ui.renderer.SelectionBackgroundRenderer
  * Yes there is a way to listen for selection events: LayerViewPanel#addListener.
  */
 public class SelectionManager {
+    
     private FeatureSelection featureSelection;
     private PartSelection partSelection;
     private LineStringSelection lineStringSelection;
@@ -80,13 +82,12 @@ public class SelectionManager {
     protected int selectedItems = 0;
 
     /**
-     * A feature may get split into two or more -- for example, if two linestrings of a feature
-     * are selected. 
+     * A feature may get split into two or more -- for example, if two
+     * linestrings of a feature are selected. 
      */
     public Collection createFeaturesFromSelectedItems() {
-        ArrayList newFeatures = new ArrayList();
-        for (Iterator i = getLayersWithSelectedItems().iterator(); i.hasNext();) {
-            Layer layer = (Layer) i.next();
+        List newFeatures = new ArrayList();
+        for (Layer layer : getLayersWithSelectedItems()) {
             newFeatures.addAll(createFeaturesFromSelectedItems(layer));
         }
         return newFeatures;
@@ -98,7 +99,8 @@ public class SelectionManager {
             Feature feature = (Feature) i.next();
             for (Iterator j = getSelectedItems(layer, feature).iterator(); j.hasNext();) {
                 Geometry item = (Geometry) j.next();
-                Feature newFeature = (Feature) feature.clone();
+                // Geometry is changed just after, no need to clone it
+                Feature newFeature = (Feature) feature.clone(false);
                 newFeature.setGeometry(item);
                 newFeatures.add(newFeature);
             }
@@ -112,25 +114,33 @@ public class SelectionManager {
         this.panel = panel;
         this.layerManagerProxy = layerManagerProxy;
         featureSelection = new FeatureSelection(this);
-        lineStringSelection = new LineStringSelection(this);
         partSelection = new PartSelection(this);
+        lineStringSelection = new LineStringSelection(this);
         featureSelection.setParent(null);
         featureSelection.setChild(partSelection);
         partSelection.setParent(featureSelection);
         partSelection.setChild(lineStringSelection);
         lineStringSelection.setParent(partSelection);
         lineStringSelection.setChild(null);
-        selections =
-            Collections.unmodifiableList(
-                Arrays.asList(
-                    new Object[] { featureSelection, partSelection, lineStringSelection }));
+        selections = Collections.unmodifiableList(Arrays.asList(
+            new AbstractSelection[] {featureSelection, partSelection, lineStringSelection}
+        ));
         addLayerListenerTo(layerManagerProxy.getLayerManager());
     }
 
     private LayerListener layerListener = new LayerListener() {
         public void featuresChanged(FeatureEvent e) {
             if (e.getType() == FeatureEventType.DELETED) {
-                unselectItems(e.getLayer(), e.getFeatures());
+                // [mmichaud 2011-09-24 : fix 2792806]
+                // note that updatePanel() has been removed from 
+                // unselectItems(Layer,Feature) and added here after
+                //unselectItems(e.getLayer(), e.getFeatures());
+                for (Object feature : e.getFeatures()) {
+                    featureSelection.unselectItems(e.getLayer(), (Feature)feature);
+                    partSelection.unselectItems(e.getLayer(), (Feature)feature);
+                    lineStringSelection.unselectItems(e.getLayer(), (Feature)feature);
+                }
+                updatePanel();
             }
             if (e.getType() == FeatureEventType.GEOMETRY_MODIFIED) {
                 unselectFromFeaturesWithModifiedItemCounts(
@@ -161,8 +171,7 @@ public class SelectionManager {
         boolean originalPanelUpdatesEnabled = arePanelUpdatesEnabled();
         setPanelUpdatesEnabled(false);
         try {
-            for (Iterator i = selections.iterator(); i.hasNext();) {
-                AbstractSelection selection = (AbstractSelection) i.next();
+            for (AbstractSelection selection : selections) {
                 selection.unselectItems();
             }
         } finally {
@@ -182,11 +191,11 @@ public class SelectionManager {
     /**
      * @return AbstractSelections
      */
-    public Collection getSelections() {
+    public Collection<AbstractSelection> getSelections() {
         return selections;
     }
 
-    private List selections;
+    private List<AbstractSelection> selections;
     
     /**
      * "items" rather than "geometries" because the user may have selected a part
@@ -195,8 +204,7 @@ public class SelectionManager {
      */
     public Collection getSelectedItems() {
         ArrayList selectedItems = new ArrayList();
-        for (Iterator i = selections.iterator(); i.hasNext();) {
-            AbstractSelection selection = (AbstractSelection) i.next();
+        for (AbstractSelection selection : selections) {
             selectedItems.addAll(selection.getSelectedItems());
         }
         return selectedItems;
@@ -207,18 +215,16 @@ public class SelectionManager {
     }
 
     public Collection getSelectedItems(Layer layer) {
-        ArrayList selectedItems = new ArrayList();
-        for (Iterator i = selections.iterator(); i.hasNext();) {
-            AbstractSelection selection = (AbstractSelection) i.next();
+        List selectedItems = new ArrayList();
+        for (AbstractSelection selection : selections) {
             selectedItems.addAll(selection.getSelectedItems(layer));
         }
         return selectedItems;
     }
 
     public Collection getSelectedItems(Layer layer, Feature feature) {
-        ArrayList selectedItems = new ArrayList();
-        for (Iterator i = selections.iterator(); i.hasNext();) {
-            AbstractSelection selection = (AbstractSelection) i.next();
+        List selectedItems = new ArrayList();
+        for (AbstractSelection selection : selections) {
             selectedItems.addAll(selection.getSelectedItems(layer, feature));
         }
         return selectedItems;
@@ -231,17 +237,15 @@ public class SelectionManager {
      */
     public Collection getSelectedItems(Layer layer, Feature feature, Geometry geometry) {
         ArrayList selectedItems = new ArrayList();
-        for (Iterator i = selections.iterator(); i.hasNext();) {
-            AbstractSelection selection = (AbstractSelection) i.next();
+        for (AbstractSelection selection : selections) {
             selectedItems.addAll(selection.getSelectedItems(layer, feature, geometry));
         }
         return selectedItems;
     }
 
-    public Collection getLayersWithSelectedItems() {
-        HashSet layersWithSelectedItems = new HashSet();
-        for (Iterator i = selections.iterator(); i.hasNext();) {
-            AbstractSelection selection = (AbstractSelection) i.next();
+    public Collection<Layer> getLayersWithSelectedItems() {
+        Set<Layer> layersWithSelectedItems = new HashSet<Layer>();
+        for (AbstractSelection selection : selections) {
             layersWithSelectedItems.addAll(selection.getLayersWithSelectedItems());
         }
         return layersWithSelectedItems;
@@ -260,8 +264,7 @@ public class SelectionManager {
 
         panel.fireSelectionChanged();
         panel.getRenderingManager().render(SelectionBackgroundRenderer.CONTENT_ID);
-        for (Iterator i = selections.iterator(); i.hasNext();) {
-            AbstractSelection selection = (AbstractSelection) i.next();
+        for (AbstractSelection selection : selections) {
             panel.getRenderingManager().render(selection.getRendererContentID());
         }
     }
@@ -272,8 +275,7 @@ public class SelectionManager {
 
     public Collection getFeaturesWithSelectedItems(Layer layer) {
         HashSet featuresWithSelectedItems = new HashSet();
-        for (Iterator i = selections.iterator(); i.hasNext();) {
-            AbstractSelection selection = (AbstractSelection) i.next();
+        for (AbstractSelection selection : selections) {
             featuresWithSelectedItems.addAll(selection.getFeaturesWithSelectedItems(layer));
         }
         return featuresWithSelectedItems;
@@ -283,8 +285,7 @@ public class SelectionManager {
         boolean originalPanelUpdatesEnabled = arePanelUpdatesEnabled();
         setPanelUpdatesEnabled(false);
         try {
-            for (Iterator i = selections.iterator(); i.hasNext();) {
-                AbstractSelection selection = (AbstractSelection) i.next();
+            for (AbstractSelection selection : selections) {
                 selection.unselectItems(layer);
             }
         } finally {
@@ -297,8 +298,7 @@ public class SelectionManager {
         boolean originalPanelUpdatesEnabled = arePanelUpdatesEnabled();
         setPanelUpdatesEnabled(false);
         try {
-            for (Iterator i = selections.iterator(); i.hasNext();) {
-                AbstractSelection selection = (AbstractSelection) i.next();
+            for (AbstractSelection selection : selections) {
                 selection.unselectItems(layer, features);
             }
         } finally {
@@ -314,8 +314,7 @@ public class SelectionManager {
         boolean originalPanelUpdatesEnabled = arePanelUpdatesEnabled();
         setPanelUpdatesEnabled(false);
         try {
-            for (Iterator i = selections.iterator(); i.hasNext();) {
-                AbstractSelection selection = (AbstractSelection) i.next();
+            for (AbstractSelection selection : selections) {
                 selection.unselectFromFeaturesWithModifiedItemCounts(
                     layer,
                     features,
@@ -329,8 +328,7 @@ public class SelectionManager {
 
     public Collection getFeaturesWithSelectedItems() {
         ArrayList featuresWithSelectedItems = new ArrayList();
-        for (Iterator i = getLayersWithSelectedItems().iterator(); i.hasNext();) {
-            Layer layer = (Layer) i.next();
+        for (Layer layer : getLayersWithSelectedItems()) {
             featuresWithSelectedItems.addAll(getFeaturesWithSelectedItems(layer));
         }
         return featuresWithSelectedItems;
