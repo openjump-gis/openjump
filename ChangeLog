@@ -1,3 +1,10 @@
+2011-09-24 ede
+  bugfix 2728360: Layer operations break the Undo Chain
+  at least AddNewLayerPlugIn should now work as expected
+  added reportNothingToUndoYet(context) to addlayer execute
+  should be fixed in svn 2430
+  couldn't find an occurrence of a general addlayer == undoreset 
+
 2011-09-24 mmichaud <michael.michaud@free.fr>
   * Refactoring of Selection package : 
     - use generics in selection related classes instead of OpenJUMP CollectionMap
@@ -24,7 +31,6 @@
     -com.vividsolutions.jump.workbench.ui.plugin.DeleteSelectedItemsPlugIn
   * Deprecate com.vividsolutions.jump.io.WKTWriter an use
     com.vividsolutions.jts.io.WKTWriter instead
-    
 
 2011-09-18 mmichaud <michael.michaud@free.fr>
   * Refactoring of EditTransaction class :
