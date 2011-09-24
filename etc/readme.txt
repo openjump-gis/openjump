@@ -17,28 +17,29 @@ Contents
 1. Licensing
 ------------
 OpenJUMP is distributed under the GPL2 license. A description of this license
-can be found in the "gpl2_license.txt" (GPL2) file in the "licenses" folder.
+can be found in the "gpl2_license.txt" (GPL2) file in the "licenses/" folder.
 
-OpenJUMP uses and distributes the following:
-BATIK libraries to write svg format are used under the terms of the 
-    Apache License Version 2.0, found in the file "apache_license.txt".
-BeanShell distributed under LGPL2.1 ("lgpl-2.1.txt").
-Buoy Framework as Public Domain software.
-Code2000 Unicode font licensed under GPL2.
-JAI, licensed under Java Advanced Imaging Distribution License ("jdl-jai.pdf").
-JAMA as Public Domain software.
-Jdom, licensed under Apache-style open source jdom license, with the 
-    acknowledgment clause removed ("jdom_license.txt").
-JMath and its successor projects JMathTools (IO,Plot,Array) are distributed 
-    under BSD license, to be found in "jmath_license.txt".
-Javascript library RHINO licensed under GPL2 (gpl2.txt).
-JTS Topology Suite licensed under LGPL2 (lgpl-2.1.txt).
-Junit licensed under Common Public License - v 1.0 (CPL1) ("cpl-1.0.txt").
-Jython distributed under Jython license ("jython_license.txt").
-Log4J distributed under Apache License Version 2.0 (apache_license.txt).
-Postgresql JDBC driver under the Postgresql BSD license 
-    ("postgresql-BSD_license.txt").
-Xerces2 Java Parser under Apache License Version 2.0 (apache_license).
+OpenJUMP uses and distributes the following (in alphabetical order) formatted
+as follows:
+Library name - License name - License file in "licenses/" folder
+BATIK - Apache License Version 2.0 - apache_license-2.0.txt
+BeanShell - LGPL2.1 - lgpl-2.1.txt
+Buoy Framework - Public Domain
+Code2000 Unicode font - GPL2 - gpl-2.txt
+ECW SDK 3.3 native libraries - ERDAS ECW JPEG2000 SDK license - ecw license.txt
+JAI - Java Advanced Imaging Distribution License - jdl-jai.pdf
+JAMA - Public Domain
+Jdom - Apache-style open source jdom license, with the acknowledgment clause removed 
+     - jdom_license.txt
+JMath and its successor projects JMathTools (IO,Plot,Array) - BSD license 
+     - jmath_license.txt
+Javascript library RHINO - GPL2 - gpl2.txt
+JTS Topology Suite - LGPL2 - lgpl-2.1.txt
+Junit - Common Public License v1.0 (CPL1) - cpl-1.0.txt
+Jython - Jython license - jython_license.txt
+Log4J - Apache License Version 2.0 - apache_license-2.0.txt
+Postgresql JDBC driver - Postgresql BSD license - postgresql-BSD_license.txt
+Xerces2 Java Parser - Apache License Version 2.0 - apache_license-2.0.txt
 
 
 2. Installation instructions
@@ -56,9 +57,9 @@ c:/OpenJUMP/licenses
 3. Running OpenJUMP
 -------------------
 Run the startup scripts contained in the /bin folder:
-- For windows, double-click on "oj_windows.bat" or "OpenJUMP.exe"
-- For Linux/Unix, launch oj_linux.sh
-- For Mac, launch oj_mac.command
+- On windows, double-click on oj_windows.bat or OpenJUMP.exe
+- On Linux/Unix, launch oj_linux.sh
+- On Mac OSX, launch oj_mac.command or OpenJUMP.app
 
 Further notes can be found on our wiki:
 http://sourceforge.net/apps/mediawiki/jump-pilot/
@@ -91,7 +92,7 @@ At the moment, the following properties are used:
   -Dlog4j.configuration for defining the configuration file for Log4j. 
     e.g. by default:
      Dlog4j.configuration=file:./log4j.xml
-     
+
 OpenJUMP command line options
 -default-plugins <file.xml>
   Specifies the configuration file of a standard set of functions realized
