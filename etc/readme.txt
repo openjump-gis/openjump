@@ -1,4 +1,4 @@
-OpenJUMP readme file
+OpenJUMP ReadMe file
 --------------------
 Version 1.4.2
 
@@ -6,7 +6,7 @@ September 11th, 2011
 
 Contents
 --------
-1. License
+1. Licensing
 2. Installation instructions
 3. Running OpenJUMP
 4. Support
