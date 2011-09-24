@@ -55,6 +55,7 @@ public class AddNewLayerPlugIn extends AbstractPlugIn {
     }
 
     public boolean execute(PlugInContext context) throws Exception {
+        reportNothingToUndoYet(context);
         Collection selectedCategories = context.getLayerNamePanel()
                                                .getSelectedCategories();
         context.addLayer(selectedCategories.isEmpty()
