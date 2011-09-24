@@ -91,10 +91,11 @@ if [ -f "$JUMP_PROFILE" ]; then
   source $JUMP_PROFILE
 fi
 
+# setup some lib paths
 if [ -z "$JUMP_LIB" ]; then
   JUMP_LIB="./lib"
 fi
-
+JUMP_NATIVE_DIR="$JUMP_LIB/native"
 JUMP_PLUGIN_DIR="${JUMP_PLUGIN_DIR:=$JUMP_LIB/ext}"
 
 if [ -z "$JUMP_PROPERTIES" ] || [ ! -f "$JUMP_PROPERTIES" ]; then
@@ -112,7 +113,8 @@ if [ -d "$JUMP_STATE" ] || [ -f "$JUMP_STATE" ]; then
   JUMP_OPTS="$JUMP_OPTS -state $JUMP_STATE"
 fi
 
-for libfile in "$JUMP_LIB/"*.zip "$JUMP_LIB/"*.jar
+# include every jar/zip in lib and native dir
+for libfile in "$JUMP_LIB/"*.zip "$JUMP_LIB/"*.jar "$JUMP_NATIVE_DIR/"*.jar
 do
   CLASSPATH="$libfile":"$CLASSPATH";
 done
@@ -138,8 +140,8 @@ JAVA_OPTS="$JAVA_OPTS -Djump.home=."
 [ -n "$JAVA_LOOKANDFEEL" ] && JAVA_OPTS="$JAVA_OPTS -Dswing.defaultlaf=$JAVA_LOOKANDFEEL"
 JAVA_OPTS="$JAVA_OPTS $JAVA_OPTS_OVERRIDE"
 
-# allow jre to find native libraries in lib/ext 
-export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$JUMP_HOME/lib/ext"
+# allow jre to find native libraries in native dir, lib/ext (backwards compatibility)
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$JUMP_NATIVE_DIR:$JUMP_HOME/lib/ext"
 
 # try to start if no errors so far
 if [ -z "$ERROR" ]; then
