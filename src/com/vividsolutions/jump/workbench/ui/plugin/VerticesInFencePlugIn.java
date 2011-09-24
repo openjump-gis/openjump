@@ -30,6 +30,7 @@
  * www.vividsolutions.com
  */
 package com.vividsolutions.jump.workbench.ui.plugin;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -39,7 +40,6 @@ import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.WKTWriter;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
-import com.vividsolutions.jump.io.FUTURE_JTS_WKTWriter;
 import com.vividsolutions.jump.util.Fmt;
 import com.vividsolutions.jump.workbench.model.FenceLayerFinder;
 import com.vividsolutions.jump.workbench.model.Layer;
@@ -47,10 +47,14 @@ import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.TextFrame;
+
 public class VerticesInFencePlugIn extends AbstractPlugIn {
-    private FUTURE_JTS_WKTWriter wktWriter = new FUTURE_JTS_WKTWriter();
+    
+    private WKTWriter wktWriter = new WKTWriter(3);
     private GeometryFactory factory = new GeometryFactory();
+    
     public VerticesInFencePlugIn() {}
+    
     public boolean execute(PlugInContext context) throws Exception {
         reportNothingToUndoYet(context);
         TextFrame textFrame = new TextFrame(context.getWorkbenchFrame());
@@ -182,7 +186,9 @@ public class VerticesInFencePlugIn extends AbstractPlugIn {
         description += "</table>";
         return foundVertices ? description : "";
     }
+    
     private WKTDisplayHelper helper = new WKTDisplayHelper();
+    
     private String description(VerticesInFence verticesInFence, Geometry geometry) {
         StringBuffer description = new StringBuffer();
         //<<TODO:FEATURE>> Perhaps we should change these \n's to the line separators

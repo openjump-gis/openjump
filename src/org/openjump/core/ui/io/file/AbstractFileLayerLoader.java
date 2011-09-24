@@ -79,7 +79,7 @@ public abstract class AbstractFileLayerLoader implements FileLayerLoader {
   /**
    * Add to the list of file extensions supported by the plug-in.
    * 
-   * @param list of extensions
+   * @param newexts list of extensions
    * @return true on success
    */
   public boolean addFileExtensions(final List<String> newexts) {

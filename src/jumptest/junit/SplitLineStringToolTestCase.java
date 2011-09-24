@@ -7,7 +7,6 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
-import com.vividsolutions.jump.io.FUTURE_JTS_WKTWriter;
 import com.vividsolutions.jump.workbench.ui.cursortool.SplitLineStringTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.SplitLineStringsOp;
 

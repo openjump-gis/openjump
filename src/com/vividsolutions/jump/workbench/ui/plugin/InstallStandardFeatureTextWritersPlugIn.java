@@ -3,7 +3,6 @@ package com.vividsolutions.jump.workbench.ui.plugin;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.io.WKTWriter;
 import com.vividsolutions.jump.feature.Feature;
-import com.vividsolutions.jump.io.FUTURE_JTS_WKTWriter;
 import com.vividsolutions.jump.io.GMLGeometryWriter;
 import com.vividsolutions.jump.util.Fmt;
 import com.vividsolutions.jump.util.StringUtil;
@@ -53,6 +52,6 @@ public class InstallStandardFeatureTextWritersPlugIn extends AbstractPlugIn {
             return wktWriter.write(feature.getGeometry()).trim();
         }
 
-        private FUTURE_JTS_WKTWriter wktWriter = new FUTURE_JTS_WKTWriter();
+        private WKTWriter wktWriter = new WKTWriter();
     };
 }

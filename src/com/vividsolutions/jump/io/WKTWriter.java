@@ -40,7 +40,6 @@ import java.util.Iterator;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 
-
 /**
  * WKTWriter is a {@link JUMPWriter} specialized to write WTK (Well Known Text) files.
  *
@@ -64,7 +63,8 @@ import com.vividsolutions.jump.feature.FeatureCollection;
  * </p>
  */
 public class WKTWriter implements JUMPWriter {
-    private FUTURE_JTS_WKTWriter wktWriter = new FUTURE_JTS_WKTWriter();
+    private com.vividsolutions.jts.io.WKTWriter wktWriter = 
+        new com.vividsolutions.jts.io.WKTWriter(3);
 
     /**constuctor*/
     public WKTWriter() {

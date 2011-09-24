@@ -22,6 +22,8 @@
     -com.vividsolutions.jump.workbench.ui.cursortool.SelectTool
     -com.vividsolutions.jump.workbench.ui.plugin.clipboard.CollectionOfFeaturesTransferable
     -com.vividsolutions.jump.workbench.ui.plugin.DeleteSelectedItemsPlugIn
+  * Deprecate com.vividsolutions.jump.io.WKTWriter an use
+    com.vividsolutions.jts.io.WKTWriter instead
     
 
 2011-09-18 mmichaud <michael.michaud@free.fr>

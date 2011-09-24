@@ -30,11 +30,12 @@
  * www.vividsolutions.com
  */
 package com.vividsolutions.jump.workbench.ui.plugin;
+
 import java.util.Arrays;
+import com.vividsolutions.jts.io.WKTWriter;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
-import com.vividsolutions.jump.io.FUTURE_JTS_WKTWriter;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.WorkbenchException;
 import com.vividsolutions.jump.workbench.model.Layer;
@@ -45,6 +46,7 @@ import com.vividsolutions.jump.workbench.ui.EditTransaction;
 import com.vividsolutions.jump.workbench.ui.EnterWKTDialog;
 
 public class EditSelectedFeaturePlugIn extends WKTPlugIn {
+    
 	private Feature feature;
 
 	public EditSelectedFeaturePlugIn() {}
@@ -122,7 +124,7 @@ public class EditSelectedFeaturePlugIn extends WKTPlugIn {
                 + layer
                 + (layer(context).isEditable() ? "" : " ("+I18N.get("ui.plugin.EditSelectedFeaturePlugIn.layer-is-uneditable")+")"));
         d.setEditable(layer(context).isEditable());
-		d.setText(helper.format(new FUTURE_JTS_WKTWriter().write(feature
+		d.setText(helper.format(new WKTWriter(3).write(feature
 				.getGeometry())));
 		return d;
 	}
