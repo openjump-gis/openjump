@@ -721,7 +721,9 @@ public abstract class AbstractMultiInputDialog extends JDialog {
         
         final JComboBox attributeComboBox = addComboBox(fieldName, null, new ArrayList(), toolTipText);
         
-        final ComboBoxModel DEFAULT = new DefaultComboBoxModel(new String[]{"NO ATTRIBUTE AVAILABLE"});
+        final ComboBoxModel DEFAULT = new DefaultComboBoxModel(new String[]{
+            I18N.get("ui.MultiInputDialog.no-attribute-available")
+        });
         
         Layer layer = (Layer)layerComboBox.getSelectedItem();
         if (layer != null) {
@@ -862,5 +864,10 @@ public abstract class AbstractMultiInputDialog extends JDialog {
     protected abstract void addRow(JComponent c);
     
     protected abstract void addRow();
+    
+    public void setFieldEnabled(String fieldName, boolean enable) {
+        JComponent component = getComponent(fieldName);
+        if (component != null) component.setEnabled(enable);
+    }
     
 }

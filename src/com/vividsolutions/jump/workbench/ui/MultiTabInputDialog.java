@@ -82,7 +82,7 @@ public class MultiTabInputDialog extends MultiInputDialog {
         return tabbedPane;
     }
     
-    public void setEnabled(String tabTitle, boolean enable) {
+    public void setTabEnabled(String tabTitle, boolean enable) {
         tabbedPane.setEnabledAt(tabbedPane.indexOfTab(tabTitle), enable);
     }
     
@@ -98,7 +98,7 @@ public class MultiTabInputDialog extends MultiInputDialog {
         
         d.addPane("2nd pane");
         d.addLabel("Yay!");
-        d.setEnabled("1st pane", false);
+        d.setTabEnabled("1st pane", false);
         //d.addLayerComboBox("LayerField", null, "ToolTip", new LayerManager());
         d.setVisible(true);
         //System.out.println(d.getLayer("LayerField"));
