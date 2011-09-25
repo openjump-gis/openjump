@@ -1,9 +1,9 @@
-2011-09-24 ede
+2011-09-25 ede
   bugfix 2728360: Layer operations break the Undo Chain
-  at least AddNewLayerPlugIn should now work as expected
-  added reportNothingToUndoYet(context) to addlayer execute
-  should be fixed in svn 2430
-  couldn't find an occurrence of a general addlayer == undoreset 
+  actually all plugins based on AbstractPlugIn have that behaviour if the do
+    not reportNothingToUndoYet()
+  disabled this in UndoableEditReceiver, now these plugins are simply ignored
+    by undo
 
 2011-09-24 mmichaud <michael.michaud@free.fr>
   * Refactoring of Selection package : 

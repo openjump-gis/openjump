@@ -97,7 +97,10 @@ public class UndoableEditReceiver {
     public void stopReceiving() {
         transactions--;
         try {
-            if ((newUndoableEdits.isEmpty() && !wasNothingToUndoReported()) ||
+            // disabled for further testing, before a plugin had to explicitly call 
+            // reportNothingToUndoYet to _not_ reset the undo queue. now we are just ignoring
+            // it so that in undo queue this event never existed
+            if (/*(newUndoableEdits.isEmpty() && !wasNothingToUndoReported()) ||*/
                     irreversibleChangeReported) {
                 undoManager.discardAllEdits();
 
