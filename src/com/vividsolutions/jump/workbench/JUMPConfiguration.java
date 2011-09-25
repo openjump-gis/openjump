@@ -333,8 +333,9 @@ public class JUMPConfiguration implements Setup {
     private ExplodeSelectedFeaturesPlugIn explodeSelectedFeaturesPlugIn = new ExplodeSelectedFeaturesPlugIn();
     
     private InstallSkinsPlugIn installSkinsPlugIn = new InstallSkinsPlugIn(); 
-  	
-    private InstallReferencedImageFactoriesPlugin installReferencedImageFactoriesPlugin = new InstallReferencedImageFactoriesPlugin();
+
+    // superseded by org/openjump/OpenJumpConfiguration.java
+    //private InstallReferencedImageFactoriesPlugin installReferencedImageFactoriesPlugin = new InstallReferencedImageFactoriesPlugin();
 
     private ImageLayerManagerPlugIn imageLayerManagerPlugIn = new ImageLayerManagerPlugIn();
 

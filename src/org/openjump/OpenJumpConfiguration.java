@@ -641,17 +641,19 @@ public class OpenJumpConfiguration {
         registry.createEntry(FileLayerLoader.KEY, fileLoader);
       }
     }
-    addFactory(workbenchContext, registry, new GraphicImageFactory(),
+    // supersedes com.vividsolutions.jump.workbench.ui.plugin.imagery.InstallReferencedImageFactoriesPlugin
+    // register layerloader with worldfile support and plain factories for imagelayermanager
+    addImageFactory(workbenchContext, registry, new GraphicImageFactory(),
       new String[] {
         "wld", "bpw", "jpw", "gfw"
       });
-    addFactory(workbenchContext, registry, new ECWImageFactory(), null);
-    addFactory(workbenchContext, registry, new JPEG2000ImageFactory(), null);
-    addFactory(workbenchContext, registry, new GeoTIFFImageFactory(),
+    addImageFactory(workbenchContext, registry, new ECWImageFactory(), null);
+    addImageFactory(workbenchContext, registry, new JPEG2000ImageFactory(), null);
+    addImageFactory(workbenchContext, registry, new GeoTIFFImageFactory(),
       new String[] {
         "tfw"
       });
-    addFactory(workbenchContext, registry, new MrSIDImageFactory(), null);
+    addImageFactory(workbenchContext, registry, new MrSIDImageFactory(), null);
 
     //
     DataSourceQueryChooserManager manager = DataSourceQueryChooserManager.get(workbenchContext.getWorkbench()
@@ -666,13 +668,16 @@ public class OpenJumpConfiguration {
 
   }
 
-  private static void addFactory(WorkbenchContext workbenchContext,
+  private static void addImageFactory(WorkbenchContext workbenchContext,
     Registry registry, ReferencedImageFactory factory,
     String[] supportFileExtensions) {
     if (factory.isAvailable(workbenchContext)) {
       ReferencedImageFactoryFileLayerLoader loader = new ReferencedImageFactoryFileLayerLoader(
         workbenchContext, factory, supportFileExtensions);
+      // add registry entry as FileLayerLoader 
       registry.createEntry(FileLayerLoader.KEY, loader);
+      // register as imagefactory (Imagelayermanager)
+      registry.createEntry( ReferencedImageFactory.REGISTRY_CLASSIFICATION, factory );
     }
   }
 }
