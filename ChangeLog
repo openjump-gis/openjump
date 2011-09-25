@@ -1,3 +1,9 @@
+2011-09-25 mmichaud <michael.michaud@free.fr>
+    * In MultiInputDialog showing Layer list in a JComboBox, selected
+      layer was unreadable (black foreground and dard background)
+      This should be fixed (may be due to a workaround Larry did to solve an old
+      JRE problem)
+
 2011-09-25 ede
   bugfix 2728360: Layer operations break the Undo Chain
   actually all plugins based on AbstractPlugIn have that behaviour if the do

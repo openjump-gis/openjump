@@ -181,8 +181,8 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
         else tooltip = layerable.getName();
         setToolTipText(tooltip);
 		if (isSelected) {
-			label.setForeground(list.getForeground());            //LDB: use this instead of following
-//			label.setForeground(list.getSelectionForeground());   //LDB: causes Vista render problem
+			//label.setForeground(list.getForeground());            //LDB: use this instead of following
+			label.setForeground(list.getSelectionForeground());   //LDB: causes Vista render problem
 			label.setBackground(list.getSelectionBackground());
 			setForeground(list.getSelectionForeground());
 			setBackground(list.getSelectionBackground());
