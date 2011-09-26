@@ -11,6 +11,9 @@
     <tag>HEAD</tag>
     <url>http://jump-pilot.svn.sourceforge.net/viewvc/jump-pilot/core/trunk/</url>
   </scm>
+  <properties>
+    <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+  </properties>
   <build>
     <finalName>${artifactId}-${buildDate}-r${buildRev}</finalName>
     <sourceDirectory>src/</sourceDirectory>
