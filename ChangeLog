@@ -1,5 +1,8 @@
-2011-09-25 mmichaud <michael.michaud@free.fr>
+2011-09-27 mmichaud <michael.michaud@free.fr>
     * New BufferPlugIn exposing all the parameters of JTS 1.12 library
+      Uses classes and methods of the new MultiInputDialog framework
+    * Add a patch to QueryDialog and LayerNameRenderer to get the Layer Color
+      in the Simple Query tool
 
 2011-09-25 mmichaud <michael.michaud@free.fr>
     * In MultiInputDialog showing Layer list in a JComboBox, selected

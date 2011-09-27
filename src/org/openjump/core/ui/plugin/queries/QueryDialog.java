@@ -401,6 +401,8 @@ public class QueryDialog extends BDialog {
     
     void initComboBoxes() {
         // INIT layerCB and attributeCB
+        com.vividsolutions.jump.workbench.ui.LayerNameRenderer layerListCellRenderer = new com.vividsolutions.jump.workbench.ui.LayerNameRenderer();
+        
         layerCB.removeAll();
         layerCB.add(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.all-layers"));
         layerCB.add(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.selection"));
@@ -409,9 +411,10 @@ public class QueryDialog extends BDialog {
         List layers = context.getLayerManager().getLayers();
         for (int i = 0 ; i < layers.size() ; i++) {
             Layer layer = (Layer)layers.get(i);
-            layerCB.add(layer.getName());
+            //layerCB.add(layer.getName());
+            layerCB.add(layer);
         }
-        
+        ((javax.swing.JComboBox)layerCB.getComponent()).setRenderer(layerListCellRenderer);
         this.layers = layers;
         this.attributes = authorizedAttributes(layers);
         attributeType = 'G';
@@ -453,7 +456,8 @@ public class QueryDialog extends BDialog {
         }
         // selected layer
         else {
-            layers.add(context.getLayerManager().getLayer((String)layerCB.getSelectedValue()));
+            //layers.add(context.getLayerManager().getLayer((String)layerCB.getSelectedValue()));
+            layers.add(layerCB.getSelectedValue());
         }
         attributes.addAll(authorizedAttributes(layers));
         attributeCB.setContents(attributes);

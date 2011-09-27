@@ -151,6 +151,31 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
 		super.setBounds(x, y, w, h);
 		validate();
 	}
+	
+	/**
+	 * Special getListCellRendererComponent to render simple Strings.
+	 * It is not the normal use, but it makes it possible to pass special 
+	 * values as "All Layers" or "Selected Layers" (used in QueryDialog).
+	 * [mmichaud 2011-09-27]
+	 */
+	public Component getListCellRendererComponent(JList list, String value,
+			int index, boolean isSelected, boolean cellHasFocus) {
+	    label.setText((String)value);
+		wmsIconLabel.setVisible(false);
+		colorPanel.setVisible(false);
+		if (isSelected) {
+			label.setForeground(list.getSelectionForeground());
+			label.setBackground(list.getSelectionBackground());
+			setForeground(list.getSelectionForeground());
+			setBackground(list.getSelectionBackground());
+		} else {
+			label.setForeground(list.getForeground());
+			label.setBackground(list.getBackground());
+			setForeground(list.getForeground());
+			setBackground(list.getBackground());
+		}
+		return this;
+    }
 
 	public Component getListCellRendererComponent(JList list, Object value,
 			int index, boolean isSelected, boolean cellHasFocus) {
@@ -158,6 +183,13 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
 			return defaultListCellRenderer.getListCellRendererComponent(list,
 					value, index, isSelected, cellHasFocus);
 		}
+		// Accepting String is not the normal use, but it makes it possible 
+		// to pass special values as "All Layers" or "Selected Layers" (used in
+		// QueryDialog).
+		if (value instanceof String) {
+		    return getListCellRendererComponent(list, (String)value, index, isSelected, cellHasFocus);
+		}
+		// end of 
 		Layerable layerable = (Layerable) value;
 		label.setText(layerable.getName());
 		/*setToolTipText(layerable.getName()
@@ -180,6 +212,7 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
         }
         else tooltip = layerable.getName();
         setToolTipText(tooltip);
+
 		if (isSelected) {
 			//label.setForeground(list.getForeground());            //LDB: use this instead of following
 			label.setForeground(list.getSelectionForeground());   //LDB: causes Vista render problem
@@ -192,6 +225,7 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
 			setForeground(list.getForeground());
 			setBackground(list.getBackground());
 		}
+		
 		colorPanel.setVisible(layerable instanceof Layer);
 		checkBox.setSelected(layerable.isVisible());
 		if (indicatingEditability && layerable instanceof Layer) {
