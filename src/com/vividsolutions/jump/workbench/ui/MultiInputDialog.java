@@ -314,9 +314,12 @@ public class MultiInputDialog extends AbstractMultiInputDialog {
     public void addRow(String fieldName, JLabel label, JComponent component, EnableCheck[] enableChecks, String toolTipText) {
         addRow(fieldName, label, component, enableChecks, toolTipText, LEFT_LABEL, NONE);
     }
-    
+        
     public void addRow(JComponent component) {
-        addRow("DUMMY", new JLabel(""), component, null, "", NO_LABEL, HORIZONTAL);
+        if (component instanceof JLabel) {
+            addRow(((JLabel)component).getText(), new JLabel(""), component, null, "", NO_LABEL, HORIZONTAL);
+        }
+        else addRow("DUMMY", new JLabel(""), component, null, "", NO_LABEL, HORIZONTAL);
     }
     
     public void addRow() {

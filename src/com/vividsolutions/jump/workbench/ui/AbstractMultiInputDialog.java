@@ -870,4 +870,9 @@ public abstract class AbstractMultiInputDialog extends JDialog {
         if (component != null) component.setEnabled(enable);
     }
     
+    public void setFieldVisible(String fieldName, boolean visible) {
+        if (getComponent(fieldName) != null) getComponent(fieldName).setVisible(visible);
+        if (getLabel(fieldName) != null) getLabel(fieldName).setVisible(visible);
+    }
+    
 }

@@ -1,4 +1,7 @@
 2011-09-25 mmichaud <michael.michaud@free.fr>
+    * New BufferPlugIn exposing all the parameters of JTS 1.12 library
+
+2011-09-25 mmichaud <michael.michaud@free.fr>
     * In MultiInputDialog showing Layer list in a JComboBox, selected
       layer was unreadable (black foreground and dard background)
       This should be fixed (may be due to a workaround Larry did to solve an old
