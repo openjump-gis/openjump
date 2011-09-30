@@ -1,8 +1,9 @@
 2011-09-30 mmichaud <michael.michaud@free.fr>
     * ShapefileWriter now prompt the user to accept or not to truncate fields
       with more than 255 characters.
-      A timestamp is used to avoid prompting the user if he has already accept
-      to truncate for less than 30 s (useful for shapefile writing batches)
+      A timestamp is used to avoid prompting the user if he has already accepted
+      to truncate for less than 30 s (useful for batching shapefile outputs)
+    * Fixed bug 3415409 : NoteStyle could not be deserialized
     
 2011-09-27 mmichaud <michael.michaud@free.fr>
     * New BufferPlugIn exposing all the parameters of JTS 1.12 library

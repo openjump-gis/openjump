@@ -27,6 +27,9 @@ public class NoteStyle implements Style {
 	
 	private Layer layer;
 	
+	public NoteStyle() {
+	}
+	
 	public static FeatureSchema createFeatureSchema() {
 		return new FeatureSchema() {   				
 			{
@@ -88,8 +91,10 @@ public class NoteStyle implements Style {
 	}
 	
 	public void setEnabled(boolean enabled) {
-		throw new UnsupportedOperationException();
-	}
+	    // [mmichaud 2011-09-30] fix bug 3415409
+	    // java2xml serialization needs this method
+		//throw new UnsupportedOperationException();
+    }
 	
 	public boolean isEnabled() {
 		return true;
