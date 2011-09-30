@@ -494,10 +494,9 @@ public class GUIUtil {
             if (selectedFile.exists() ||
         	    (ext != null && (!selectedFile.toString().endsWith(ext)) &&
         		    new File(selectedFile.toString() + "." + ext).exists())) {
-                int response = JOptionPane.showConfirmDialog(this, "The file "
-                        + selectedFile.getName() + " already exists. Do you "
-                        + "want to replace the existing file?", "JUMP",
-                        JOptionPane.YES_NO_OPTION);
+        	int response = JOptionPane.showConfirmDialog(this, 
+        	    I18N.getMessage("ui.GUIUtil.overwrite-prompting", new Object[]{selectedFile.getName()}), 
+        	    "JUMP", JOptionPane.YES_NO_OPTION);
 
                 if (response != JOptionPane.YES_OPTION) {
                     return;

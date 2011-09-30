@@ -35,7 +35,9 @@ import com.vividsolutions.jts.algorithm.CGAlgorithms;
 import com.vividsolutions.jts.algorithm.RobustCGAlgorithms;
 import com.vividsolutions.jts.geom.*;
 
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.*;
+import com.vividsolutions.jump.workbench.ui.OKCancelDialog;
 
 import org.geotools.dbffile.DbfFieldDef;
 import org.geotools.dbffile.DbfFile;
@@ -49,6 +51,9 @@ import java.net.URL;
 import java.nio.charset.Charset;
 
 import java.util.*;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 
 /**
@@ -222,6 +227,8 @@ public class ShapefileWriter implements JUMPWriter {
 	public static final String FILE_PROPERTY_KEY = "File";
 	public static final String DEFAULT_VALUE_PROPERTY_KEY = "DefaultValue";
 	public static final String SHAPE_TYPE_PROPERTY_KEY = "ShapeType";
+	public static boolean truncate = false;
+	private static long lastTimeTruncate = new Date(0).getTime();
 	
     protected static CGAlgorithms cga = new RobustCGAlgorithms();
 
@@ -259,16 +266,16 @@ public class ShapefileWriter implements JUMPWriter {
         }
 
         if (shpfileName == null) {
-            throw new IllegalParametersException("no output filename specified");
+            throw new IllegalParametersException(I18N.get("io.ShapefileWriter.no-output-filename-specified"));
         }
 
         loc = shpfileName.lastIndexOf(File.separatorChar);
 
         if (loc == -1) {
             // probably using the wrong path separator character.
-            throw new Exception("couldn't find the path separator character '" +
-                File.separatorChar +
-                "' in your shape file name. This means you're probably using the unix (or dos) one.");
+            throw new Exception(
+                I18N.getMessage("io.ShapefileWriter.path-separator-not-found", 
+                                new Object[]{File.separatorChar}));
         } else {
             path = shpfileName.substring(0, loc + 1); // ie. "/data1/hills.shp" -> "/data1/"
             fname = shpfileName.substring(loc + 1); // ie. "/data1/hills.shp" -> "hills.shp"
@@ -277,7 +284,7 @@ public class ShapefileWriter implements JUMPWriter {
         loc = fname.lastIndexOf(".");
 
         if (loc == -1) {
-            throw new IllegalParametersException("Filename must end in '.shp'");
+            throw new IllegalParametersException(I18N.get("io.ShapefileWriter.filename-must-end-in-shp"));
         }
 
         fname_withoutextention = fname.substring(0, loc); // ie. "hills.shp" -> "hills."
@@ -308,7 +315,7 @@ public class ShapefileWriter implements JUMPWriter {
                 shapeType = 4;
             } else {
                 throw new IllegalParametersException(
-                    "ShapefileWriter.write() - dataproperties has a 'ShapeType' that isn't 'xy', 'xym', or 'xymz'");
+                    I18N.get("io.ShapefileWriter.unknown-type"));
             }
         } else {
             if (gc.getNumGeometries() > 0) {
@@ -327,6 +334,10 @@ public class ShapefileWriter implements JUMPWriter {
         EndianDataOutputStream sfile = new EndianDataOutputStream(in);
 
         myshape.writeIndex(gc, sfile, shapeType);
+        //If long fields have been truncated, remember the end process timestamp
+        if (truncate) {
+            lastTimeTruncate = new Date().getTime();
+        }
     }
 
     /**
@@ -415,8 +426,26 @@ public class ShapefileWriter implements JUMPWriter {
                 int maxlength = findMaxStringLength(featureCollection, t);
 
                 if (maxlength > 255) {
-                    throw new Exception(
-                        "ShapefileWriter does not support strings longer than 255 characters");
+                    // If truncate option has been applied for less than 30 s
+                    // automatically switch to truncate option
+                    if ((new Date().getTime() - lastTimeTruncate) < 30000) {
+                        maxlength = 255;
+                    }
+                    else {
+                        OKCancelDialog okCancelDialog = getLongFieldManagementDialogBox();
+                        okCancelDialog.setLocationRelativeTo(null);
+                        okCancelDialog.setVisible(true);
+                        if (okCancelDialog.wasOKPressed()) {
+                            maxlength = 255;
+                            truncate = true;
+                        }
+                        else {
+                            truncate = false;
+                            throw new Exception(
+                                I18N.get("io.ShapefileWriter.export-cancelled") + " " +
+                                I18N.get("io.ShapefileWriter.more-than-255-characters-field-found"));
+                        }
+                    }
                 }
 
                 fields[f] = new DbfFieldDef(columnName, 'C', maxlength, 0);
@@ -428,8 +457,7 @@ public class ShapefileWriter implements JUMPWriter {
             } else if (columnType == AttributeType.GEOMETRY) {
                 //do nothing - the .shp file handles this
             } else {
-                throw new Exception(
-                    "Shapewriter: unsupported AttributeType found in featurecollection.");
+                throw new Exception(I18N.get("io.ShapefileWriter.unsupported-attribute-type"));
             }
         }
 
@@ -639,9 +667,8 @@ public class ShapefileWriter implements JUMPWriter {
 						//everything is ok
 					}
 					else{
-			          System.out.println("test completely failed - throw exception");
 			           throw new IllegalParametersException(
-			            "mixed geometry types found, please separate Polygons from Lines and Points when saving to *.shp");
+			               I18N.get("io.ShapefileWriter.unsupported-mixed-geometry-type"));
 			        }
 				}
 			}
@@ -732,7 +759,7 @@ public class ShapefileWriter implements JUMPWriter {
 
         if (geomtype == 31) {
             throw new Exception(
-                "Could not determine shapefile type - data is all GeometryCollections");
+                I18N.get("io.ShapefileWriter.unsupported-geometry-collection"));
         }
 
         List features = fc.getFeatures();
@@ -812,5 +839,15 @@ public class ShapefileWriter implements JUMPWriter {
         result = new GeometryCollection(allGeoms, new PrecisionModel(), 0);
 
         return result;
+    }
+    
+    private OKCancelDialog getLongFieldManagementDialogBox() {
+        return new OKCancelDialog((JFrame)null, I18N.get("io.ShapefileWriter.fields-too-long"), true, 
+            new JLabel(
+                "<html><br/>" +
+                I18N.get("io.ShapefileWriter.more-than-255-characters-field-found") +
+                "<br/><br/>" +
+                I18N.get("io.ShapefileWriter.truncate-option") +
+                "<br/></html>"), null);
     }
 }
