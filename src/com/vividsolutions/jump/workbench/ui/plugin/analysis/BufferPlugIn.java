@@ -60,14 +60,13 @@ import com.vividsolutions.jump.workbench.ui.*;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.plugin.clipboard.PasteItemsPlugIn;
+import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 
 
-public class BufferPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
+public class BufferPlugIn extends AbstractThreadedUiPlugIn {
 	
-  public static final ImageIcon ICON = IconLoader.icon("buffer.gif");
-
   private String MAIN_OPTIONS;
-  private String DATASET;
+  private String PROCESSED_DATA;
   private String LAYER;
   private String SELECTION;
   private String SELECTION_HELP;
@@ -101,7 +100,6 @@ public class BufferPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
   private List endCapStyles;
   private List joinStyles;
 
-  private MultiTabInputDialog dialog;
   private Layer layer;
   private double bufferDistance   = 1.0;
   private int endCapStyleCode     = BufferParameters.CAP_ROUND;
@@ -118,6 +116,10 @@ public class BufferPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
   private int attributeIndex      = 0;
 
     public BufferPlugIn() {
+        super(
+            I18N.get("ui.plugin.analysis.BufferPlugIn") + "...",
+            IconLoader.icon("buffer.gif")
+        );
     }
 
     private String categoryName = StandardCategoryNames.RESULT;
@@ -127,14 +129,19 @@ public class BufferPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
     }
   
     public void initialize(PlugInContext context) throws Exception {
-      	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-  		featureInstaller.addMainMenuItem(
-  	        this,					//exe
-            new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS}, 	//menu path
-            this.getName() + "...", //name methode .getName received by AbstractPlugIn 
-            false,			        //checkbox
-            ICON,			        //icon
-            createEnableCheck(context.getWorkbenchContext()));
+        context.getFeatureInstaller().addMainMenuItem(
+            new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
+            this,
+            createEnableCheck(context.getWorkbenchContext())
+        );
+      	//FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
+  		//featureInstaller.addMainMenuItem(
+  	    //    this,					//exe
+        //    new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS}, 	//menu path
+        //    this.getName() + "...", //name methode .getName received by AbstractPlugIn 
+        //    false,			        //checkbox
+        //    ICON,			        //icon
+        //    createEnableCheck(context.getWorkbenchContext()));
     }
   
     public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
@@ -150,7 +157,7 @@ public class BufferPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
   	    //[sstein, 16.07.2006] set again to obtain correct language
 	    //[LDB: 31.08.2007] moved all initialization of strings here
 	    MAIN_OPTIONS = I18N.get("ui.plugin.analysis.BufferPlugIn.main-options");
-	    DATASET = I18N.get("ui.plugin.analysis.BufferPlugIn.dataset");
+	    PROCESSED_DATA = I18N.get("ui.plugin.analysis.BufferPlugIn.processed-data");
 	    LAYER = I18N.get("ui.plugin.analysis.BufferPlugIn.layer");
         SELECTION = I18N.get("ui.plugin.analysis.BufferPlugIn.selection");
         SELECTION_HELP = I18N.get("ui.plugin.analysis.BufferPlugIn.selection-help");
@@ -193,7 +200,8 @@ public class BufferPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
 	    joinStyles.add(JOIN_MITRE);
 	    joinStyles.add(JOIN_ROUND);    
 	  
-	    dialog = new MultiTabInputDialog(context.getWorkbenchFrame(), getName(), MAIN_OPTIONS, true);
+	    MultiTabInputDialog dialog = new MultiTabInputDialog(
+	        context.getWorkbenchFrame(), getName(), MAIN_OPTIONS, true);
 	    int n = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems().size();
 	    useSelected = (n > 0);
 	    if (useSelected) {
@@ -203,7 +211,7 @@ public class BufferPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
 		  sideBarText = I18N.get("ui.plugin.analysis.BufferPlugIn.buffers-all-geometries-in-the-input-layer");
 		}
 	    setDialogValues(dialog, context);
-	    updateControls();
+	    updateControls(dialog);
 	    GUIUtil.centreOnWindow(dialog);
 	    dialog.setVisible(true);
 	    if (! dialog.wasOKPressed()) { return false; }
@@ -326,11 +334,11 @@ public class BufferPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
         dialog.setSideBarDescription(sideBarText);
 	    
         try{
-	    	updateIcon();
+	    	updateIcon(dialog);
         }
         catch (Exception ex){}
         
-        dialog.addSubTitle(DATASET);
+        dialog.addSubTitle(PROCESSED_DATA);
         final JComboBox layerComboBox = dialog.addLayerComboBox(LAYER, context.getCandidateLayer(0), context.getLayerManager());
         dialog.addLabel(SELECTION);
         dialog.addLabel(SELECTION_HELP);
@@ -369,7 +377,7 @@ public class BufferPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
         endCapComboBox.setEnabled(!singleSided);
         copyAttributesCheckBox.setEnabled(!unionResult);
         
-        updateIcon();
+        updateIcon(dialog);
         
         layerComboBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -377,32 +385,32 @@ public class BufferPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
                     // execute other ActionListener methods before this one
                     if (listener != this) listener.actionPerformed(e);
                 }
-                updateControls();
+                updateControls(dialog);
             }
         });
         fromAttributeCheckBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                updateControls();
+                updateControls(dialog);
             }
         });
         unionCheckBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                updateControls();
+                updateControls(dialog);
             }
         });
         endCapComboBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                updateControls();
+                updateControls(dialog);
             }
         });
         joinStyleComboBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                updateControls();
+                updateControls(dialog);
             }
         });
         singleSidedCheckBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                updateControls();
+                updateControls(dialog);
             }
         });
         
@@ -469,9 +477,9 @@ public class BufferPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
         return feature;
     }
 
-    protected void updateControls() {
+    protected void updateControls(final MultiInputDialog dialog) {
 	    getDialogValues(dialog);
-	    updateIcon();
+	    updateIcon(dialog);
 	    boolean hasNumericAttributes = !useSelected && AttributeTypeFilter.NUMERIC_FILTER
 	        .filter(layer.getFeatureCollectionWrapper().getFeatureSchema()).size() > 0;
 	    dialog.setFieldVisible(LAYER, !useSelected);
@@ -489,7 +497,7 @@ public class BufferPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
         dialog.setFieldEnabled(END_CAP_STYLE, !singleSided);
     }
     
-    private void updateIcon() {
+    private void updateIcon(MultiInputDialog dialog) {
         StringBuffer fileName = new StringBuffer("Buffer");
         if (unionResult) fileName.append("Union");
         if (singleSided) fileName.append("SingleSided");

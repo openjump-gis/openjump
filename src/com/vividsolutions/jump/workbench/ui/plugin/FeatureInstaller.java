@@ -255,78 +255,102 @@ public class FeatureInstaller {
       addMenuItemShownListener(menuItem, toMenuItemShownListener(enableCheck));
     }*/
   }
+  
+    /**
+     * Add a Plugin as a JMenuItem with enableCheck conditions.
+     * @param menuPath path from the main menu to the menu item
+     * @param plugin the plugin associated to this menu item
+     */
+    public JMenuItem addMainMenuItem(String[] menuPath, AbstractUiPlugIn plugin) {
+        JMenuItem menuItem = new JMenuItem(plugin.getName());
+        return addMainMenuItem(menuPath, plugin, menuItem, null, -1);
+    }
 
-  public JMenuItem addMainMenuItem(final String[] menuPath,
-    final AbstractUiPlugIn plugin, final int index) {
-    final JMenuItem menuItem = new JMenuItem(plugin.getName());
-    addMainMenuItem(plugin, menuPath, menuItem, null, index);
-    menuItem.setIcon(plugin.getIcon());
-    return menuItem;
-    /*String menuItemName = plugin.getName();
-    JMenu menu = menuBarMenu(menuPath[0]);
-    if (menu == null) {
-      menu = (JMenu)installMnemonic(new JMenu(menuPath[0]), menuBar());
-      addToMenuBar(menu);
+    /**
+     * Add a Plugin as a JMenuItem with enableCheck conditions.
+     * @param menuPath path from the main menu to the menu item
+     * @param plugin the plugin associated to this menu item
+     * @param pos defines the position of the menu item in the menu
+     *        -1 adds the menu item at the end except for FILE menu where
+     *        -1 adds the menu item before the separator preceding exit menu item
+     */
+    public JMenuItem addMainMenuItem(final String[] menuPath,
+                                     final AbstractUiPlugIn plugin, 
+                                     final int pos) {
+        JMenuItem menuItem = new JMenuItem(plugin.getName());
+        return addMainMenuItem(menuPath, plugin, menuItem, null, pos);
     }
-    JMenu parent = createMenusIfNecessary(menu, behead(menuPath));
-    final JMenuItem menuItem = new JMenuItem(menuItemName);
-    installMnemonic(menuItem, parent);
-    menuItem.setIcon(plugin.getIcon());
-    menuItem.addActionListener(plugin);
-    if (index == Integer.MAX_VALUE) {
-      parent.add(menuItem);
-    } else if (index < 0) {
-      int endIndex = parent.getMenuComponentCount() + index + 1;
-      parent.add(menuItem, endIndex);
-    } else {
-      parent.add(menuItem, index);
+  
+    /**
+     * Add a Plugin as a JMenuItem with enableCheck conditions.
+     * @param menuPath path from the main menu to the menu item
+     * @param plugin the plugin associated to this menu item
+     * @param enableCheck conditions making the plugin enabled
+     */
+    public JMenuItem addMainMenuItem(final String[] menuPath,
+                                     final AbstractUiPlugIn plugin, 
+                                     final EnableCheck enableCheck) {
+        JMenuItem menuItem = new JMenuItem(plugin.getName());
+        return addMainMenuItem(menuPath, plugin, menuItem, enableCheck, -1);
     }
-    EnableCheck enableCheck = plugin.getEnableCheck();
-    if (enableCheck != null) {
-      addMenuItemShownListener(menuItem, new EnableCheckMenuItemShownListener(
-        workbenchContext, enableCheck, plugin.getToolTip()));
+  
+    /**
+     * Add a Plugin as a JMenuItem with enableCheck
+     * @param menuPath path from the main menu to the menu item
+     * @param plugin the plugin associated to this menu item
+     * @param enableCheck conditions making the plugin enabled
+     * @param pos defines the position of the menu item in the menu
+     *        -1 adds the menu item at the end except for FILE menu where
+     *        -1 adds the menu item before the separator preceding exit menu item
+     */
+    public JMenuItem addMainMenuItem(final String[] menuPath,
+                                     final AbstractUiPlugIn plugin, 
+                                     final EnableCheck enableCheck, 
+                                     final int pos) {
+        JMenuItem menuItem = new JMenuItem(plugin.getName());
+        return addMainMenuItem(menuPath, plugin, menuItem, enableCheck, pos);
     }
-    return menuItem;*/
-  }
 
-  /**
-   * Add a Plugin as a JMenuItem or a subclass of JMenuItem to the main menu
-   * @param menuPath path from the main menu to the menu item
-   * @param plugin the plugin associated to this menu item
-   * @param menuItem the menu item (JMenuItem, JCheckBoxMenuItem, JMenu, JRadioButtonMenuItem)
-   * @param index the index of the menu item in its parent menu
-   */
-  //Added by Michael Michaud on 2008-04-06
-  //This method makes it possible to add any subclasses of JMenuItem
-  public JMenuItem addMainMenuItem(final String[] menuPath,
-    final AbstractUiPlugIn plugin, final JMenuItem menuItem, final int index) {
-    addMainMenuItem(plugin, menuPath, menuItem, null, -1);
-    return menuItem;
-    /*String menuItemName = plugin.getName();
-    JMenu menu = menuBarMenu(menuPath[0]);
-    if (menu == null) {
-      menu = (JMenu)installMnemonic(new JMenu(menuPath[0]), menuBar());
-      addToMenuBar(menu);
+    /**
+     * Add a Plugin as a JMenuItem or a subclass of JMenuItem to the main menu
+     * @param menuPath path from the main menu to the menu item
+     * @param plugin the plugin associated to this menu item
+     * @param menuItem the menu item (JMenuItem, JCheckBoxMenuItem, JMenu, JRadioButtonMenuItem)
+     * @param pos defines the position of the menu item in the menu
+     *        -1 adds the menu item at the end except for FILE menu where
+     *        -1 adds the menu item before the separator preceding exit menu item
+     */
+    //Added by Michael Michaud on 2008-04-06
+    //This method makes it possible to add any subclasses of JMenuItem
+    public JMenuItem addMainMenuItem(final String[] menuPath,
+                                     final AbstractUiPlugIn plugin, 
+                                     final JMenuItem menuItem, 
+                                     final int pos) {
+        return addMainMenuItem(menuPath, plugin, menuItem, null, pos);
     }
-    JMenu parent = createMenusIfNecessary(menu, behead(menuPath));
-    installMnemonic(menuItem, parent);
-    menuItem.setIcon(plugin.getIcon());
-    menuItem.addActionListener(plugin);
-    if (index == Integer.MAX_VALUE) {
-      parent.add(menuItem);
-    } else if (index < 0) {
-      int endIndex = parent.getMenuComponentCount() + index + 1;
-      parent.add(menuItem, endIndex);
-    } else {
-      parent.add(menuItem, index);
+  
+    /**
+     * New generic addMainMenuItem method using AbstractUiPlugIn.
+     * @param menuPath the menu path made of the menu and submenu names
+     * @param plugin the plugin to execute with this item
+     * @param menuItem the JMenuItem (or JCheckBoxMenuItem or 
+              JRadioButtonMenuItem) to the parent menu
+     * @param enableCheck conditions making the plugin enabled
+     * @param pos defines the position of the menu item in the menu
+     *        -1 adds the menu item at the end except for FILE menu where
+     *        -1 adds the menu item before the separator preceding exit menu item
+     */
+    // [mmichaud 2011-10-01]
+    public JMenuItem addMainMenuItem(final String[] menuPath, 
+                                     final AbstractUiPlugIn plugin,
+                                     final JMenuItem menuItem, 
+                                     final EnableCheck enableCheck, 
+                                     final int pos) {
+        JMenuItem item = addMainMenuItem(plugin, menuPath, menuItem, enableCheck, pos);
+        item.setText(plugin.getName());
+        item.setIcon(plugin.getIcon());
+        return item;
     }
-    EnableCheck enableCheck = plugin.getEnableCheck();
-    if (enableCheck != null) {
-      addMenuItemShownListener(menuItem, new EnableCheckMenuItemShownListener(
-        workbenchContext, enableCheck, plugin.getToolTip()));
-    }
-    return menuItem;*/
-  }
   
     /**
      * New generic addMainMenuItem method.
@@ -334,7 +358,7 @@ public class FeatureInstaller {
      * @param menuPath the menu path made of the menu and submenu names
      * @param menuItem the JMenuItem (or JCheckBoxMenuItem or 
               JRadioButtonMenuItem) to the parent menu
-     * @param enableCheck defining when the item should be visible
+     * @param enableCheck conditions making the plugin enabled
      * @param pos defines the position of the menu item in the menu
      *        -1 adds the menu item at the end except for FILE menu where
      *        -1 adds the menu item before the separator preceding exit menu item
@@ -718,10 +742,6 @@ public class FeatureInstaller {
       featureInstaller.behead(menuPath));
     parent.insert(menu, index);
     return menu;
-  }
-
-  public JMenuItem addMainMenuItem(String[] menuPath, AbstractUiPlugIn plugIn) {
-    return addMainMenuItem(menuPath, plugIn, -1);
   }
   
   public void associateWithRepeat(PlugIn executable)

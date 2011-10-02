@@ -76,6 +76,10 @@ public class AttributeTypeFilter {
     /** Attribute filter includes NUMERIC attributes.*/
     public static final AttributeTypeFilter NUMERIC_FILTER 
            = new AttributeTypeFilter(INTEGER + DOUBLE);
+           
+    /** Attribute filter includes NUMERIC and STRING attributes.*/
+    public static final AttributeTypeFilter NUMSTRING_FILTER 
+           = new AttributeTypeFilter(INTEGER + DOUBLE + STRING);
     
     /** Attribute filter includes NUMERIC attributes.*/
     public static final AttributeTypeFilter ALL_FILTER      = new AttributeTypeFilter(63);
@@ -132,6 +136,7 @@ public class AttributeTypeFilter {
         if (filterType == 4) return "Integer filter";
         if (filterType == 8) return "Double filter";
         if (filterType == 12) return "Numeric filter";
+        if (filterType == 14) return "String or Numeric filter";
         if (filterType == 16) return "Date filter";
         if (filterType == 28) return "Numeric or Date filter";
         if (filterType == 30) return "String, Numeric or Date filter";

@@ -85,6 +85,9 @@ public abstract class AbstractMultiInputDialog extends JDialog {
     /** Flag indicating that the main component will always use its preferred size.*/
     public static final int NONE = 0;
     
+    /** Attribute combobox message displayed if no valid attribute is available.*/
+    public static final String NO_VALID_ATTRIBUTE = I18N.get("ui.MultiInputDialog.no-valid-attribute");
+    
     
     private LayerNameRenderer layerListCellRenderer = new LayerNameRenderer();
     
@@ -722,7 +725,7 @@ public abstract class AbstractMultiInputDialog extends JDialog {
         final JComboBox attributeComboBox = addComboBox(fieldName, null, new ArrayList(), toolTipText);
         
         final ComboBoxModel DEFAULT = new DefaultComboBoxModel(new String[]{
-            I18N.get("ui.MultiInputDialog.no-attribute-available")
+            NO_VALID_ATTRIBUTE
         });
         
         Layer layer = (Layer)layerComboBox.getSelectedItem();
