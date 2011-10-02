@@ -1,3 +1,7 @@
+2011-10-02 mmichaud <michael.michaud@free.fr>
+    * Improved UnionByAttribute to include Union, Dissolve and Merge function
+      (+ use of new FeatureInstaller and MultiInputDialog function + more icons)
+
 2011-09-30 mmichaud <michael.michaud@free.fr>
     * ShapefileWriter now prompt the user to accept or not to truncate fields
       with more than 255 characters.

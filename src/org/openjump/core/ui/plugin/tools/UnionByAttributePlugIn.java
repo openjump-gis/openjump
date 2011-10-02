@@ -32,43 +32,44 @@
 
 package org.openjump.core.ui.plugin.tools;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.operation.linemerge.LineMerger;
 import com.vividsolutions.jts.operation.union.UnaryUnionOp;
-
-import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.BasicFeature;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
-import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.plugin.ThreadedPlugIn;
+import com.vividsolutions.jump.workbench.ui.AttributeTypeFilter;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
-import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.plugin.clipboard.PasteItemsPlugIn;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 
 /**
  * UnionByAttribute plugin is used to union features having the same attribute
@@ -81,119 +82,196 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
  * <li>Values of numeric attributes can be added up</li>
  * </ul>
  */
-public class UnionByAttributePlugIn extends AbstractPlugIn implements ThreadedPlugIn {
+public class UnionByAttributePlugIn extends AbstractThreadedUiPlugIn {
     
-    private final static String LAYER = I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.layer");
-    private final static String ATTRIBUTE = I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.attribute");
-    private final static String IGNORE_EMPTY = I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.ignore-empty");
-    private final static String MERGE_LINES = I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.merge-lines");
-    private final static String TOTAL_NUMERIC_FIELDS = I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.total-numeric-fields");
+	private final static String LAYER             = I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.layer");
+	private final static String SELECTION         = I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.selection");
+	private final static String SELECTION_HELP    = I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.selection-help");
     
-    private MultiInputDialog dialog;
+    private final static String USE_ATTRIBUTE     = I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.use-attribute");
+    private final static String ATTRIBUTE         = I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.attribute");
+    private final static String IGNORE_EMPTY      = I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.ignore-empty");
+    private final static String MERGE_LINESTRINGS = I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.merge-linestrings");
+    private final static String AGG_UNUSED_FIELDS = I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.aggregate-unused-fields");
+    
+    private Layer layer;
+    private boolean use_selection           = false;
+    private boolean use_attribute           = false;
+    private String attribute;
+    private boolean ignore_empty            = false;
+    private boolean merge_linestrings       = true;
+    private boolean aggregate_unused_fields = false;
     
     private GeometryFactory factory;
     
-    public UnionByAttributePlugIn() {}
-    
-    @Override
-    public String getName() {
-        return I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.union-by-attribute") + "...";
+    public UnionByAttributePlugIn() {
+        super(
+            I18N.get("ui.plugin.analysis.UnionByAttributePlugIn") + "...",
+            IconLoader.icon("union_layer_icon.gif")
+        );
     }
     
     @Override
     public void initialize(PlugInContext context) throws Exception {
         context.getFeatureInstaller().addMainMenuItem(
-            this,
             new String[] { MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
-            this.getName(),
-            false,
-            null,
-            new MultiEnableCheck()
-                .add(new EnableCheckFactory(context.getWorkbenchContext())
-                    .createTaskWindowMustBeActiveCheck())
-                .add(new EnableCheckFactory(context.getWorkbenchContext())
-                    .createAtLeastNLayersMustExistCheck(1)));
+            this,
+            createEnableCheck(context.getWorkbenchContext()));
+    }
+    
+    public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
+        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+        return new MultiEnableCheck()
+            .add(checkFactory.createTaskWindowMustBeActiveCheck())
+            .add(checkFactory.createAtLeastNLayersMustExistCheck(1));
     }
     
     
     @Override
     public boolean execute(PlugInContext context) throws Exception {
-    
-        initDialog(context);
+        MultiInputDialog dialog = new MultiInputDialog(context.getWorkbenchFrame(),
+            I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.union-by-attribute"), true);
+        int n = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems().size();
+	    use_selection = (n > 0);
+        initDialog(dialog, context);
         dialog.setVisible(true);
         if (!dialog.wasOKPressed()) {
             return false;
         }
+        getDialogValues(dialog);
         return true;
     }
     
-    private void initDialog(PlugInContext context) {
+    private void initDialog(final MultiInputDialog dialog, PlugInContext context) {
         
-        dialog = new MultiInputDialog(context.getWorkbenchFrame(),
-            I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.union-by-attribute"), true);
+        dialog.setSideBarImage(IconLoader.icon("union_layer.png"));
+        dialog.setSideBarDescription("");
         
-        dialog.setSideBarImage(IconLoader.icon("UnionByAttribute.gif"));
-        
-        dialog.setSideBarDescription(
-            I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.creates-a-new-layer-containing-the-unions-of-features-having-a-common-attribute-value"));
-        
-        dialog.addLayerComboBox(LAYER, context.getCandidateLayer(0), context.getLayerManager());
-        
-        List list = getFieldsFromLayerWithoutGeometry(context.getCandidateLayer(0));
-        Object val = list.size()>0?list.iterator().next():null;
-        final JComboBox jcb_attribute = dialog.addComboBox(ATTRIBUTE, val, list,
-            I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.select-attribute"));
-        if (list.size() == 0) jcb_attribute.setEnabled(false);
-        
-        final JCheckBox jcb_ignore_empty = dialog.addCheckBox(IGNORE_EMPTY, true);
-        if (list.size() == 0) jcb_ignore_empty.setEnabled(false);
+        final JLabel processedDataLabel = dialog.addSubTitle(
+            I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.processed-data"));
+        final JLabel selectionLabel = dialog.addLabel(SELECTION);
+        final JLabel selectionHelpLabel = dialog.addLabel(SELECTION_HELP);
+        final JComboBox layerComboBox = dialog.addLayerComboBox(LAYER, context.getCandidateLayer(0), context.getLayerManager());
+        final JCheckBox useAttributeCheckBox = dialog.addCheckBox(USE_ATTRIBUTE, false, "");
+        final JComboBox attributeComboBox = dialog.addAttributeComboBox(ATTRIBUTE, LAYER, AttributeTypeFilter.NO_GEOMETRY_FILTER, null);
+        final JCheckBox ignoreEmptyCheckBox = dialog.addCheckBox(IGNORE_EMPTY, true);
         
         dialog.addSeparator();
-        final JCheckBox jcb_merge_lines = dialog.addCheckBox(MERGE_LINES, true);
-        final JCheckBox jcb_total_numeric_fields = dialog.addCheckBox(TOTAL_NUMERIC_FIELDS, true);
         
-        dialog.getComboBox(LAYER).addActionListener(new ActionListener() {
+        final JCheckBox mergeLineStringsCheckBox = dialog.addCheckBox(MERGE_LINESTRINGS, merge_linestrings, 
+            I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.merge-linestrings-tooltip"));
+        final JCheckBox aggUnusedFieldsCheckBox = dialog.addCheckBox(AGG_UNUSED_FIELDS, aggregate_unused_fields,
+            I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.aggregation-tooltip"));
+        
+        updateControls(dialog);
+        
+        useAttributeCheckBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                List list = getFieldsFromLayerWithoutGeometry();
-                if (list.size() == 0) {
-                    jcb_attribute.setModel(new DefaultComboBoxModel(new String[0]));
-                    jcb_attribute.setEnabled(false);
-                    jcb_ignore_empty.setEnabled(false);
+                updateControls(dialog);
+            }
+        });
+        layerComboBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                for (ActionListener listener : layerComboBox.getActionListeners()) {
+                    // execute other ActionListener methods before this one
+                    if (listener != this) listener.actionPerformed(e);
                 }
-                jcb_attribute.setModel(new DefaultComboBoxModel(list.toArray(new String[0])));
+                updateControls(dialog);
+            }
+        });
+        mergeLineStringsCheckBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                updateControls(dialog);
             }
         });
         
+        // Give the dialog box a minimum height of 250, so that the description
+        // of the infoPanel is always visible.
+        dialog.setPreferredSize(new java.awt.Dimension(
+            (int)dialog.getPreferredSize().getWidth(), 280));
         GUIUtil.centreOnWindow(dialog);
+    }
+    
+    private void getDialogValues(MultiInputDialog dialog) {
+		layer = dialog.getLayer(LAYER);
+		use_attribute = dialog.getBoolean(USE_ATTRIBUTE);
+        attribute = dialog.getText(ATTRIBUTE);
+        ignore_empty = dialog.getBoolean(IGNORE_EMPTY) && use_attribute;
+        merge_linestrings = dialog.getBoolean(MERGE_LINESTRINGS);
+        aggregate_unused_fields = dialog.getBoolean(AGG_UNUSED_FIELDS);
+    }
+    
+    private void updateControls(MultiInputDialog dialog) {
+        getDialogValues(dialog);
+        FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
+        boolean has_attributes = 
+            !AttributeTypeFilter.NO_GEOMETRY_FILTER.filter(schema).isEmpty();
+        int other_fields =
+            AttributeTypeFilter.NUMSTRING_FILTER.filter(schema).size();
+        if (use_attribute) other_fields--; 
+        
+        dialog.setFieldVisible(SELECTION, use_selection);
+        dialog.setFieldVisible(SELECTION_HELP, use_selection);
+        dialog.setFieldVisible(LAYER, !use_selection);
+        dialog.setFieldVisible(USE_ATTRIBUTE, has_attributes && !use_selection);
+	    dialog.setFieldVisible(ATTRIBUTE, has_attributes && !use_selection);
+	    dialog.setFieldVisible(IGNORE_EMPTY, has_attributes && !use_selection);
+	    dialog.setFieldVisible(AGG_UNUSED_FIELDS, has_attributes && !use_selection);
+	    
+        dialog.setFieldEnabled(USE_ATTRIBUTE, has_attributes);
+        dialog.setFieldEnabled(ATTRIBUTE, has_attributes && use_attribute);
+        dialog.setFieldEnabled(IGNORE_EMPTY, has_attributes && use_attribute);
+        dialog.setFieldEnabled(AGG_UNUSED_FIELDS, other_fields>0);
+        
+        if (use_selection) {
+            dialog.setSideBarDescription(
+            I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.union-selection-description"));
+            if (merge_linestrings) dialog.setSideBarImage(IconLoader.icon("union_selection_merge.png"));
+            else dialog.setSideBarImage(IconLoader.icon("union_selection_no_merge.png"));
+        }
+        else if (!use_attribute) {
+            dialog.setSideBarDescription(I18N.getMessage(
+                "ui.plugin.analysis.UnionByAttributePlugIn.union-layer-description", 
+                new Object[]{layer.getName()}
+            ));
+            if (merge_linestrings) dialog.setSideBarImage(IconLoader.icon("union_layer_merge.png"));
+            else dialog.setSideBarImage(IconLoader.icon("union_layer_no_merge.png"));
+        }
+        else {
+            dialog.setSideBarDescription(I18N.getMessage(
+                "ui.plugin.analysis.UnionByAttributePlugIn.union-layer-by-attribute-description",
+                new Object[]{layer.getName(), attribute}
+            ));
+            if (merge_linestrings) dialog.setSideBarImage(IconLoader.icon("dissolve_layer_merge.png"));
+            else dialog.setSideBarImage(IconLoader.icon("dissolve_layer_no_merge.png"));
+        }
     }
 
     public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
         
         monitor.allowCancellationRequests();
         
-        // Get options from the dialog
-        Layer layer = dialog.getLayer(LAYER);
-        FeatureCollection fc = layer.getFeatureCollectionWrapper();
-        FeatureSchema schema = fc.getFeatureSchema();
-        String att = dialog.getText(ATTRIBUTE);
-        boolean ignore_empty = dialog.getBoolean(IGNORE_EMPTY);
-        boolean merge_lines = dialog.getBoolean(MERGE_LINES);
-        boolean total_numeric_fields = dialog.getBoolean(TOTAL_NUMERIC_FIELDS);
+        Collection inputC = null;
+        FeatureSchema schema = null;
+        if (use_selection) {
+        	inputC = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems();
+        	Feature feature = (Feature) inputC.iterator().next();
+        	schema = feature.getSchema();
+        	inputC = PasteItemsPlugIn.conform(inputC, schema);
+        } else {
+        	inputC = layer.getFeatureCollectionWrapper().getFeatures();
+        	schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
+        }
+        FeatureDataset inputFC = new FeatureDataset(inputC, schema);
         
-        if (fc.getFeatures().size() > 0 &&
-            ((Feature)fc.getFeatures().get(0)).getGeometry() != null) {
-            factory = ((Feature)fc.getFeatures().get(0)).getGeometry().getFactory();
-            context.getOutputFrame().createNewDocument();
-            context.getOutputFrame().append("<h1>Union by attribute</h1>");
-            context.getOutputFrame().addText("Processed layer      : " + layer.getName());
-            context.getOutputFrame().addText("Aggregator attribute : " + att);
-            context.getOutputFrame().addText("Empty values         : " + (ignore_empty?"ignored":"processed"));
-            context.getOutputFrame().addText("LineStrings          : " + (merge_lines?"merged":"unioned but not merged"));
-            context.getOutputFrame().addText("Numeric fields       : " + (total_numeric_fields?"added up":"discarded"));
-            context.getOutputFrame().append("<h3>Warnings :</h3>");
+        if (inputFC.getFeatures().size() > 1 &&
+            ((Feature)inputFC.getFeatures().get(0)).getGeometry() != null) {
+            factory = ((Feature)inputFC.getFeatures().get(0)).getGeometry().getFactory();
+            writeReport(context);
         }
         else {
-            context.getWorkbenchFrame().warnUser(I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.no-data-to-be-unioned"));
+            context.getWorkbenchFrame().warnUser(
+                I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.needs-two-features-or-more"));
             return;
         }
         
@@ -202,12 +280,15 @@ public class UnionByAttributePlugIn extends AbstractPlugIn implements ThreadedPl
         //fix bug on 2007-09-17 : must take the geometry name of the source layer
         //newSchema.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
         newSchema.addAttribute(schema.getAttributeName(schema.getGeometryIndex()), AttributeType.GEOMETRY);
-        newSchema.addAttribute(att, schema.getAttributeType(att));
+        if (use_attribute && !attribute.equals(MultiInputDialog.NO_VALID_ATTRIBUTE)) {
+            newSchema.addAttribute(attribute, schema.getAttributeType(attribute));
+        }
         // if total_numeric_fields is true, add numeric fields to the result layer
-        if (total_numeric_fields) {
+        if (aggregate_unused_fields) {
             for (int i = 0, max = schema.getAttributeCount() ; i < max ; i++) {
                 if (schema.getAttributeType(i) == AttributeType.INTEGER ||
-                    schema.getAttributeType(i) == AttributeType.DOUBLE)
+                    schema.getAttributeType(i) == AttributeType.DOUBLE ||
+                    schema.getAttributeType(i) == AttributeType.STRING)
                     newSchema.addAttribute(schema.getAttributeName(i),
                                            schema.getAttributeType(i));
             }
@@ -215,15 +296,15 @@ public class UnionByAttributePlugIn extends AbstractPlugIn implements ThreadedPl
         
         // Order features by attribute value in a map
         Map map = new HashMap();
-        monitor.report(I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.union-by-attribute"));
-        for (Iterator i = fc.iterator() ; i.hasNext() ; ) {
+        monitor.report(I18N.get("ui.plugin.analysis.UnionByAttributePlugIn"));
+        for (Iterator i = inputFC.iterator() ; i.hasNext() ; ) {
             Feature f = (Feature)i.next();
-            Object key = f.getAttribute(att);
+            Object key = use_attribute ? f.getAttribute(attribute) : null;
             if (ignore_empty && (key == null || key.toString().trim().length() == 0)) {
                 continue;
             }
             else if (!map.containsKey(key)) {
-                FeatureCollection fd = new FeatureDataset(fc.getFeatureSchema());
+                FeatureCollection fd = new FeatureDataset(inputFC.getFeatureSchema());
                 fd.add(f);
                 map.put(key, fd);
             }
@@ -236,12 +317,12 @@ public class UnionByAttributePlugIn extends AbstractPlugIn implements ThreadedPl
         int count = 1;
         FeatureCollection resultfc = new FeatureDataset(newSchema);
         for (Iterator i = map.keySet().iterator() ; i.hasNext() ; ) {
-            monitor.report(I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.union-by-attribute") + " (" + count++ + "/" + map.size() + ")");
+            monitor.report(I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.computing-union") + " (" + count++ + "/" + map.size() + ")");
             Object key = i.next();
             FeatureCollection fca = (FeatureCollection)map.get(key);
             if (fca.size() > 0) {
-                Feature feature = union(context, monitor, fca, merge_lines, total_numeric_fields);
-                feature.setAttribute(att, key);
+                Feature feature = union(context, monitor, fca);
+                if (use_attribute) feature.setAttribute(attribute, key);
                 Feature newFeature = new BasicFeature(newSchema);
                 // Copy feature attributes in newFeature
                 for (int j = 0, max = newSchema.getAttributeCount() ; j < max ; j++) {
@@ -251,16 +332,19 @@ public class UnionByAttributePlugIn extends AbstractPlugIn implements ThreadedPl
             }
         }
         context.getLayerManager().addCategory(StandardCategoryNames.RESULT);
-        context.addLayer(StandardCategoryNames.RESULT, layer.getName() + "-" + att + " (union)", resultfc);
-        context.getOutputFrame().append("<h3>End of process</h3>");
+        String newLayerName = layer.getName() +
+            (use_attribute ? ("-" + attribute + " (dissolve)") : " (union)");
+        context.addLayer(StandardCategoryNames.RESULT, newLayerName, resultfc);
+        context.getOutputFrame().append("<h3>"+
+            I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.end-of-process") + " " +
+            I18N.get("ui.plugin.analysis.UnionByAttributePlugIn") + "</h3>");
     }
     
    /**
     * New method for union. Uses new UnaryUnionOp which is much more
     * efficient for large datasets.
     */
-    private Feature union(PlugInContext context, TaskMonitor monitor,
-                    FeatureCollection fc, boolean merge_lines, boolean total) {
+    private Feature union(PlugInContext context, TaskMonitor monitor, FeatureCollection fc) {
         Collection points      = new ArrayList();
         Collection lineStrings = new ArrayList();
         Collection polygons    = new ArrayList();
@@ -269,8 +353,10 @@ public class UnionByAttributePlugIn extends AbstractPlugIn implements ThreadedPl
             Feature f = (Feature) it.next();
             Geometry g = f.getGeometry();
             if (!g.isValid()) {
-                context.getWorkbenchFrame().warnUser("Invalid geometries have been excluded !");
-                context.getOutputFrame().addText("Feature " + f.getID() + " has invalid geometry : it has been excluded from union");
+                context.getWorkbenchFrame().warnUser(
+                    I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.invalid-geometry-excluded"));
+                context.getOutputFrame().addText(
+                    I18N.getMessage("ui.plugin.analysis.UnionByAttributePlugIn.exclusion", new Object[]{f.getID()}));
                 continue;
             }
             else if (g.isEmpty()) continue;
@@ -292,7 +378,7 @@ public class UnionByAttributePlugIn extends AbstractPlugIn implements ThreadedPl
         if (points.size()>0 && null != (gp = UnaryUnionOp.union(points))) {
             geoms.add(gp);
         }
-        if (merge_lines && lineStrings.size()>0) {
+        if (merge_linestrings && lineStrings.size()>0) {
             LineMerger merger = new LineMerger();
             merger.add(lineStrings);
             geoms.addAll(merger.getMergedLineStrings());
@@ -313,51 +399,72 @@ public class UnionByAttributePlugIn extends AbstractPlugIn implements ThreadedPl
         else {
             feature.setGeometry(UnaryUnionOp.union(geoms));
         }
-        if (total) {
-            feature = totalNumericValues(fc, feature);
+        if (aggregate_unused_fields) {
+            feature = aggregateValues(context, fc, feature);
         }
         return feature;
     }
     
-    // Set the sum of fc collection numeric attribute values into feature numeric attributes.
-    private Feature totalNumericValues(FeatureCollection fc, Feature feature) {
+    private Feature aggregateValues(PlugInContext context, FeatureCollection fc, Feature feature) {
         FeatureSchema schema = fc.getFeatureSchema();
-        for (Iterator it = fc.iterator() ; it.hasNext() ; ) {
-            Feature f = (Feature)it.next();
-            for (int i = 0, max = schema.getAttributeCount() ; i < max ; i++) {
-                if (schema.getAttributeType(i) == AttributeType.INTEGER) {
-                    Object val = feature.getAttribute(i);
-                    int val1 = (val ==  null)? 0 : ((Integer)val).intValue();
-                    val = f.getAttribute(i);
-                    val1 = (val == null)? val1 : val1 + ((Integer)val).intValue();
-                    feature.setAttribute(i, new Integer(val1));
+        for (int i = 0, max = schema.getAttributeCount() ; i < max ; i++) {
+            if (schema.getAttributeType(i) == AttributeType.INTEGER) {
+                int total = 0;
+                for (Iterator it = fc.iterator() ; it.hasNext() ; ) {
+                    Object val = ((Feature)it.next()).getAttribute(i);
+                    if (val != null) total += ((Integer)val).intValue();
                 }
-                else if (schema.getAttributeType(i) == AttributeType.DOUBLE) {
-                    Object val = feature.getAttribute(i);
-                    double val1 = (val ==  null)? 0 : ((Double)val).doubleValue();
-                    val = f.getAttribute(i);
-                    val1 = (val == null)? val1 : val1 + ((Double)val).doubleValue();
-                    feature.setAttribute(i, new Double(val1));
+                feature.setAttribute(i, new Integer(total));
+            }
+            else if (schema.getAttributeType(i) == AttributeType.DOUBLE) {
+                double total = 0;
+                for (Iterator it = fc.iterator() ; it.hasNext() ; ) {
+                    Object val = ((Feature)it.next()).getAttribute(i);
+                    if (val != null) total += ((Double)val).doubleValue();
                 }
+                feature.setAttribute(i, new Double(total));
+            }
+            else if (schema.getAttributeType(i) == AttributeType.STRING) {
+                java.util.Set set = new java.util.TreeSet();
+                for (Iterator it = fc.iterator() ; it.hasNext() ; ) {
+                    Object val = ((Feature)it.next()).getAttribute(i);
+                    if (val != null) set.add(val);
+                }
+                feature.setAttribute(i, java.util.Arrays.toString(set.toArray()));
+            }
+            else if (schema.getAttributeType(i) != AttributeType.GEOMETRY) {
+                context.getOutputFrame().addText(
+                    I18N.getMessage("ui.plugin.analysis.UnionByAttributePlugIn.cannot-be-aggregated", 
+                    new Object[]{schema.getAttributeName(i), schema.getAttributeType(i)}));
             }
         }
         return feature;
     }
     
-    
-    private List getFieldsFromLayerWithoutGeometry(Layer lyr) {
-        List fields = new ArrayList();
-        FeatureSchema schema = lyr.getFeatureCollectionWrapper().getFeatureSchema();
-        for (int i = 0 ; i < schema.getAttributeCount() ; i++) {
-        	if (schema.getAttributeType(i) != AttributeType.GEOMETRY) {
-        	    fields.add(schema.getAttributeName(i));  
-           }
-        }
-        return fields;
-    }
-    
-    private List getFieldsFromLayerWithoutGeometry() {
-        return getFieldsFromLayerWithoutGeometry(dialog.getLayer(LAYER));
+    private void writeReport(PlugInContext context) {
+        context.getOutputFrame().createNewDocument();
+        context.getOutputFrame().append(
+            "<h1>" + I18N.get("ui.plugin.analysis.UnionByAttributePlugIn") + "</h1>");
+        context.getOutputFrame().addText(
+            I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.processed-data") + " : " +
+            (use_selection ? I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.selection") : layer.getName()));
+        context.getOutputFrame().addText(
+            I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.use-attribute") + " : " +
+            (use_attribute ? attribute : I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.no-attribute-used")));
+        context.getOutputFrame().addText(
+            I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.empty-values") + " : " +
+            (ignore_empty ? I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.ignore") : 
+                            I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.process")));
+        context.getOutputFrame().addText(
+            I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.merge-linestrings") + " : " +
+            (merge_linestrings ? I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.yes") : 
+                                 I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.no")));
+        context.getOutputFrame().addText(
+            I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.aggregate-unused-fields") + " : " +
+            (aggregate_unused_fields ? I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.yes") : 
+                                 I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.no")));
+        context.getOutputFrame().append("<h3>" + 
+            I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.warnings") + "</h3>");
     }
     
 }
