@@ -144,8 +144,8 @@ public class UnionByAttributePlugIn extends AbstractThreadedUiPlugIn {
     
     private void initDialog(final MultiInputDialog dialog, PlugInContext context) {
         
-        dialog.setSideBarImage(IconLoader.icon("union_layer.png"));
-        dialog.setSideBarDescription("");
+        //dialog.setSideBarImage(IconLoader.icon("union_layer.png"));
+        //dialog.setSideBarDescription("");
         
         final JLabel processedDataLabel = dialog.addSubTitle(
             I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.processed-data"));

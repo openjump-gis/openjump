@@ -172,7 +172,7 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
 	    OTHER_OPTIONS = I18N.get("ui.plugin.analysis.BufferPlugIn.other-options");
         QUADRANT_SEGMENTS = I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawCircleWithGivenRadiusTool.Number-of-segments-per-circle-quarter");
 	    UNION_RESULT = I18N.get("ui.plugin.analysis.UnionPlugIn.union");
-	    COPY_ATTRIBUTES = I18N.get("ui.plugin.analysis.UnionPlugIn.keep-attributes");
+	    COPY_ATTRIBUTES = I18N.get("ui.plugin.analysis.BufferPlugIn.preserve-attributes");
 	    
 	    ADVANCED_OPTIONS = I18N.get("ui.plugin.analysis.BufferPlugIn.advanced-options");
 	    END_CAP_STYLE = I18N.get("ui.plugin.analysis.BufferPlugIn.end-cap-style");
