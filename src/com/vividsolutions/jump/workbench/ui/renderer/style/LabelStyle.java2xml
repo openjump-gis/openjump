@@ -16,4 +16,5 @@
   <element xml-name="hideAtScale" java-name="hideAtScale"/>
   <element xml-name="scaleToHideAt" java-name="scaleToHideAt"/>
   <element xml-name="horizontalAlignment" java-name="horizontalAlignment"/>
+  <element xml-name="horizontalPosition" java-name="horizontalPosition"/>
 </root>

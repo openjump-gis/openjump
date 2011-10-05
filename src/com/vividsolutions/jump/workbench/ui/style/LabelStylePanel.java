@@ -82,10 +82,12 @@ public class LabelStylePanel extends JPanel implements StylePanel {
     	I18N.get("ui.style.LabelStylePanel.outline-width"); 
     private static final String PREVIEW_AT_CURRENT_ZOOM_LEVEL = 
     	I18N.get("ui.style.LabelStylePanel.preview-at-current-zoom-level");
-    private static final String VERTICAL_ALIGNMENT_FOR_POINTS_AND_LINES = 
-    	I18N.get("ui.style.LabelStylePanel.vertical-alignment-for-lines");  
-    private static final String HORIZONTAL_ALIGNMENT_FOR_POINTS_AND_LINES = 
-    	I18N.get("ui.style.LabelStylePanel.horizontal-alignment-for-points_and_lines");
+    private static final String VERTICAL_ALIGNMENT = 
+    	I18N.get("ui.style.LabelStylePanel.vertical-alignment");
+    private static final String HORIZONTAL_POSITION = 
+    	I18N.get("ui.style.LabelStylePanel.horizontal-position");
+    private static final String HORIZONTAL_ALIGNMENT = 
+    	I18N.get("ui.style.LabelStylePanel.horizontal-alignment");
     private static final String CHANGE_FONT = 
     	I18N.get("ui.style.LabelStylePanel.change-font");
     private static final String CHANGE_COLOUR = 
@@ -113,27 +115,27 @@ public class LabelStylePanel extends JPanel implements StylePanel {
     }
 
     private JPanel previewPanel = new JPanel() {
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-
-        LabelStyle labelStyle = createLabelStyle(layer.getLabelStyle());
-
-        if (!labelStyle.isEnabled()) {
-            return;
-        }
-
-        labelStyle.initialize(layer);
-        labelStyle.paint((Graphics2D) g, sampleText(),
-            layerViewPanel.getViewport(),//.getScale(),
-            new Point2D.Double(getWidth() / 2d, getHeight() / 2d),
-            layer.getFeatureCollectionWrapper().isEmpty() ? 0
-                                                   : LabelStyle.angle(
-                (Feature) layer.getFeatureCollectionWrapper().iterator().next(),
-                getAngleAttribute(), 0),
-            layer.getFeatureCollectionWrapper().isEmpty() ? getLabelHeight()
-                                                   : LabelStyle.height(
-                (Feature) layer.getFeatureCollectionWrapper().iterator().next(),
-                getHeightAttribute(), getLabelHeight()), false);
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            
+            LabelStyle labelStyle = createLabelStyle(layer.getLabelStyle());
+            
+            if (!labelStyle.isEnabled()) {
+                return;
+            }
+            
+            labelStyle.initialize(layer);
+            labelStyle.paint((Graphics2D) g, sampleText(),
+                layerViewPanel.getViewport(),//.getScale(),
+                new Point2D.Double(getWidth() / 2d, getHeight() / 2d),
+                layer.getFeatureCollectionWrapper().isEmpty() ? 0
+                                                       : LabelStyle.angle(
+                    (Feature) layer.getFeatureCollectionWrapper().iterator().next(),
+                    getAngleAttribute(), 0),
+                layer.getFeatureCollectionWrapper().isEmpty() ? getLabelHeight()
+                                                       : LabelStyle.height(
+                    (Feature) layer.getFeatureCollectionWrapper().iterator().next(),
+                    getHeightAttribute(), getLabelHeight()), 0);
 	    }
 	};
 
@@ -181,7 +183,7 @@ public class LabelStylePanel extends JPanel implements StylePanel {
             });
     private JLabel heightLabel = new JLabel();
     private JLabel outlineLabel = new JLabel();
-     private JLabel previewLabel = new JLabel();
+    private JLabel previewLabel = new JLabel();
     private JPanel fillerPanel = new JPanel();
     private JPanel buttonPanel = new JPanel();
     private GridBagLayout gridBagLayout2 = new GridBagLayout();
@@ -196,6 +198,8 @@ public class LabelStylePanel extends JPanel implements StylePanel {
     private JCheckBox hideOverlappingLabelsCheckBox = new JCheckBox();
     private JLabel heightAttributeLabel = new JLabel();
     private JComboBox heightAttributeComboBox = new JComboBox();
+    private JLabel horizontalPositionLabel = new JLabel();
+    private JComboBox horizontalPositionComboBox = new JComboBox();
     private JLabel horizontalAlignmentLabel = new JLabel();
     private JComboBox horizontalAlignmentComboBox = new JComboBox();
 
@@ -227,9 +231,14 @@ public class LabelStylePanel extends JPanel implements StylePanel {
 
             //Populate verticalAlignmentComboBox before calling #setLayer so that
             //initially selected item can be properly set. [Jon Aquino]
-            verticalAlignmentComboBox.addItem(LabelStyle.ABOVE_LINE_TEXT);
-            verticalAlignmentComboBox.addItem(LabelStyle.ON_LINE_TEXT);
-            verticalAlignmentComboBox.addItem(LabelStyle.BELOW_LINE_TEXT);
+            verticalAlignmentComboBox.addItem(LabelStyle.ABOVE_TEXT);
+            verticalAlignmentComboBox.addItem(LabelStyle.MIDDLE_TEXT);
+            verticalAlignmentComboBox.addItem(LabelStyle.BELOW_TEXT);
+            verticalAlignmentComboBox.addItem(LabelStyle.DEFAULT_TEXT);
+            
+            horizontalPositionComboBox.addItem(LabelStyle.LEFT_SIDE_TEXT);
+            horizontalPositionComboBox.addItem(LabelStyle.CENTER_TEXT);
+            horizontalPositionComboBox.addItem(LabelStyle.RIGHT_SIDE_TEXT);
 
             horizontalAlignmentComboBox.addItem(LabelStyle.JUSTIFY_CENTER_TEXT);
             horizontalAlignmentComboBox.addItem(LabelStyle.JUSTIFY_LEFT_TEXT);
@@ -294,28 +303,6 @@ public class LabelStylePanel extends JPanel implements StylePanel {
             outlineColorButton.setToolTipText(BROWSE);
             fontButton.setToolTipText(BROWSE);
             updateControls();
-            // Disabled image in ComboBox and replaced with existing I18N text [LDB 2007-08-27]
-//            verticalAlignmentComboBox.setRenderer(new ListCellRenderer() {
-//                    private Icon aboveIcon = IconLoader.icon(
-//                            "BigLabelAbove.gif");
-//                    private Icon onIcon = IconLoader.icon("BigLabelOn.gif");
-//                    private Icon belowIcon = IconLoader.icon(
-//                            "BigLabelBelow.gif");
-//                    private DefaultListCellRenderer renderer = new DefaultListCellRenderer();
-//
-//                    public Component getListCellRendererComponent(JList list,
-//                        Object value, int index, boolean isSelected,
-//                        boolean cellHasFocus) {
-//                        JLabel label = (JLabel) renderer.getListCellRendererComponent(list,
-//                                "", index, isSelected, cellHasFocus);
-//                        label.setIcon(value.equals(LabelStyle.ABOVE_LINE)
-//                            ? aboveIcon
-//                            : (value.equals(LabelStyle.ON_LINE) ? onIcon
-//                                                                : belowIcon));
-//
-//                        return label;
-//                    }
-//                });
         } catch (Throwable t) {
             errorHandler.handleThrowable(t);
         }
@@ -377,6 +364,11 @@ public class LabelStylePanel extends JPanel implements StylePanel {
         for (index=LabelStyle.verticalAlignmentLookup.length-1; index > 0 && 
         	(!va.equalsIgnoreCase(LabelStyle.verticalAlignmentLookup[index])); index--) ;
         verticalAlignmentComboBox.setSelectedIndex(index);
+        String hp = labelStyle.getHorizontalPosition();
+        index = 0;
+        for (index=LabelStyle.horizontalPositionLookup.length-1; index > 0 && 
+        	(!hp.equalsIgnoreCase(LabelStyle.horizontalPositionLookup[index])); index--) ;
+        horizontalPositionComboBox.setSelectedIndex(index);
         horizontalAlignmentComboBox.setSelectedIndex(labelStyle.getHorizontalAlignment());
     }
     
@@ -525,13 +517,19 @@ public class LabelStylePanel extends JPanel implements StylePanel {
                     fontButton_actionPerformed(e);
                 }
             });
-        verticalAlignmentLabel.setText(VERTICAL_ALIGNMENT_FOR_POINTS_AND_LINES);
+        verticalAlignmentLabel.setText(VERTICAL_ALIGNMENT);
         verticalAlignmentComboBox.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     verticalAlignmentComboBox_actionPerformed(e);
                 }
             });
-        horizontalAlignmentLabel.setText(HORIZONTAL_ALIGNMENT_FOR_POINTS_AND_LINES);
+        horizontalPositionLabel.setText(HORIZONTAL_POSITION);
+        horizontalPositionComboBox.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    horizontalPositionComboBox_actionPerformed(e);
+                }
+            });
+        horizontalAlignmentLabel.setText(HORIZONTAL_ALIGNMENT);
         horizontalAlignmentComboBox.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                 	horizontalAlignmentComboBox_actionPerformed(e);
@@ -569,7 +567,15 @@ public class LabelStylePanel extends JPanel implements StylePanel {
                 new Insets(0, 0, 0, 0), 0, 0));
         this.add(verticalAlignmentComboBox,
             new GridBagConstraints(1, row++, 1, 1, 0.0, 0.0,
-                GridBagConstraints.WEST, GridBagConstraints.NONE,
+                GridBagConstraints.EAST, GridBagConstraints.NONE,
+                new Insets(0, 4, 2, 0), 0, 0));
+        this.add(horizontalPositionLabel,
+		    new GridBagConstraints(0, row, 1, 1, 0.0, 0.0,
+		        GridBagConstraints.WEST, GridBagConstraints.NONE,
+		        new Insets(0, 0, 0, 0), 0, 0));
+		this.add(horizontalPositionComboBox,
+            new GridBagConstraints(1, row++, 1, 1, 0.0, 0.0,
+                GridBagConstraints.EAST, GridBagConstraints.NONE,
                 new Insets(0, 4, 2, 0), 0, 0));
         this.add(horizontalAlignmentLabel,
 		    new GridBagConstraints(0, row, 1, 1, 0.0, 0.0,
@@ -741,6 +747,7 @@ public class LabelStylePanel extends JPanel implements StylePanel {
         labelStyle.setScaleToHideAt(getScaleToHideAt());
         //labelStyle.setVerticalAlignment((String) verticalAlignmentComboBox.getSelectedItem());
         labelStyle.setVerticalAlignment(LabelStyle.verticalAlignmentLookup[verticalAlignmentComboBox.getSelectedIndex()]);
+        labelStyle.setHorizontalPosition(LabelStyle.horizontalPositionLookup[horizontalPositionComboBox.getSelectedIndex()]);
         labelStyle.setHorizontalAlignment(horizontalAlignmentComboBox.getSelectedIndex());
 
         return labelStyle;
@@ -797,6 +804,8 @@ public class LabelStylePanel extends JPanel implements StylePanel {
         previewPanel.setEnabled(labellingCheckBox.isSelected());
         verticalAlignmentLabel.setEnabled(labellingCheckBox.isSelected());
         verticalAlignmentComboBox.setEnabled(labellingCheckBox.isSelected());
+        horizontalPositionLabel.setEnabled(labellingCheckBox.isSelected());
+        horizontalPositionComboBox.setEnabled(labellingCheckBox.isSelected());
         horizontalAlignmentLabel.setEnabled(labellingCheckBox.isSelected());
         horizontalAlignmentComboBox.setEnabled(labellingCheckBox.isSelected());
     }
@@ -833,21 +842,23 @@ public class LabelStylePanel extends JPanel implements StylePanel {
     void enableLabellingCheckBox_actionPerformed(ActionEvent e) {
         updateControls();
     }
-
+    
     void attributeComboBox_actionPerformed(ActionEvent e) {
         updateControls();
     }
-
+    
     void angleAttributeComboBox_actionPerformed(ActionEvent e) {
         updateControls();
     }
-
+    
     void scaleCheckBox_actionPerformed(ActionEvent e) {
        updateControls();
     }
+    
     void hideAtScaleCheckBox_actionPerformed(ActionEvent e) {
         updateControls();
     }
+    
     void showOutlineCheckBox_actionPerformed(ActionEvent e) {
         updateControls();
     }
@@ -856,14 +867,18 @@ public class LabelStylePanel extends JPanel implements StylePanel {
         updateControls();
     }
     
+    void horizontalPositionComboBox_actionPerformed(ActionEvent e) {
+        updateControls();
+    }
+    
     void horizontalAlignmentComboBox_actionPerformed(ActionEvent e) {
         updateControls();
     }
-
+    
     void hideOverlappingLabelsCheckBox_actionPerformed(ActionEvent e) {
         updateControls();
     }
-
+    
     void heightAttributeComboBox_actionPerformed(ActionEvent e) {
         updateControls();
     }

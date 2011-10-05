@@ -1,4 +1,28 @@
 2011-10-02 mmichaud <michael.michaud@free.fr>
+    * Improved LabelStyle : adds a default value for vertical alignment
+      (default is middle for areas and above for lines and points)
+      and a horizontal position attribute distinct from horizontal alignment.
+      Now behaviour should be the following :
+      Area
+         vertical alignment is above, below or middle of the bounding box
+         horizontal position is on the left, right or middle of the bounding box
+         horizontal alignment can be left, right of centered
+             it is relative to the position
+      LineString
+         vertical is above, below or on the line
+         horizontal position is leftmost segment, rightmost segment or longest segment
+             leftmost/rightmost is one of the end segment
+         horizontal alignment is left-aligned, centered or right-aligned on the
+             first point, the last point or the longest segment
+         text follow the segment orientation except text located on the left-side
+             of line and right-aligned, and the text on the right-side of the 
+             line and left aligned (these text are written horizontally)
+      Points
+         vertical is above, below or on the point
+         horizontal position is on the left, right or middle of the point
+         horizontal alignment is ignored
+
+2011-10-02 mmichaud <michael.michaud@free.fr>
     * Improved UnionByAttribute to include Union, Dissolve and Merge function
       (+ use of new FeatureInstaller and MultiInputDialog function + more icons)
 
