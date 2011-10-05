@@ -4,23 +4,24 @@
       and a horizontal position attribute distinct from horizontal alignment.
       Now behaviour should be the following :
       Area
-         vertical alignment is above, below or middle of the bounding box
-         horizontal position is on the left, right or middle of the bounding box
-         horizontal alignment can be left, right of centered
-             it is relative to the position
+         Vertical alignment means above, below or middle of the bounding box
+         Horizontal position means on the left, right or center of the bounding box
+         Horizontal alignment can center, left-align or right-align the text.
+             It is relative to the horizontal position.
       LineString
-         vertical is above, below or on the line
-         horizontal position is leftmost segment, rightmost segment or longest segment
-             leftmost/rightmost is one of the end segment
-         horizontal alignment is left-aligned, centered or right-aligned on the
+         Vertical alignment means above, below or on the line
+         Horizontal position means endpoint of leftmost segment,
+             endpoint of rightmost segment or longest segment
+             leftmost/rightmost segments are end segments
+         Horizontal alignment is left-aligned, centered or right-aligned on the
              first point, the last point or the longest segment
-         text follow the segment orientation except text located on the left-side
-             of line and right-aligned, and the text on the right-side of the 
-             line and left aligned (these text are written horizontally)
+         Texts follow segment orientation except texts which are right-aligned
+             on the left of the LineString or left-aligned on the right of the 
+             LineString (these last texts are written horizontally)
       Points
-         vertical is above, below or on the point
-         horizontal position is on the left, right or middle of the point
-         horizontal alignment is ignored
+         Vertical is above, below or on the point
+         Horizontal position is on the left, right or middle of the point
+         Horizontal alignment is ignored
 
 2011-10-02 mmichaud <michael.michaud@free.fr>
     * Improved UnionByAttribute to include Union, Dissolve and Merge function
