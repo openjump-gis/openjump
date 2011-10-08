@@ -44,6 +44,7 @@ import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
 
@@ -60,74 +61,92 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.AttributeTypeFilter;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.GenericNames;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanelProxy;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 
+import org.openjump.core.ui.plugin.AbstractUiPlugIn;
+
 /**
 * Based on CalculateAreasAndLengthsPlugIn.
 *
 */
-public class AutoAssignAttributePlugIn extends AbstractPlugIn {
-		//TODO: translation
-	    private static String LAYER_COMBO_BOX = GenericNames.LAYER;
-	    private static String DEST_COMBO_BOX = "Destination attribute";
-	    private static String SOURCE_COMBO_BOX = "Source attribute";
-	    private static String FROM_SOURCE_CHECK_BOX = "Assign from other attribute";
-	    private static final String A_CHECK_BOX = "invisible checkbox";
-	    private static String AUTOINC_CHECK_BOX = "Auto-increment";
-	    private static String INC_VALUE_EDIT_BOX = "Increment by";
-	    private static String SELECTED_CHECK_BOX = "Selected features only";
-	    private static String ASSIGN_VALUE_TEXT_BOX = "Assign this value";
-	    private static String SELECTONLYONONELAYER = "Select features on only one layer";
-        private static String DESCRIPTION = "Assign a value from another attribute, " +
-                       "a value, an auto-increment number or a combination of a value " +
-                       "and an auto-increment number";
-	    //private static String DESCRIPTION = I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Description");
-	    private int autoInc;
-	    private Layer destinationLayer;
-	    private FeatureSchema schema;
-	    private String attributeName;
-	    private String sourceAttributeName;
-	    private int destinationAttributeIndex;
-	    private int sourceAttributeIndex;
-	    private AttributeType attributeType;
-	    private boolean autoIncrement;
-	    private int incValue;
-	    private boolean assignFromSource;
-	    private boolean selectedFeaturesOnly;
-	    private String textToAssign;
-	    private String numeric;
-        private JTextField incfield = null;
-
-	public void initialize(PlugInContext context) throws Exception
-	{     
-	      context.getFeatureInstaller().addMainMenuItem(this,
-	    	      new String[] { MenuNames.TOOLS, MenuNames.TOOLS_EDIT_ATTRIBUTES}, 
-	    	      this.getName() + "...", false, null, 
-	    	      this.createEnableCheck(context.getWorkbenchContext()));
+public class AutoAssignAttributePlugIn extends AbstractUiPlugIn {
+    
+    private static String LAYER_COMBO_BOX = GenericNames.LAYER;
+    private static String SELECTED_CHECK_BOX;
+    private static String SELECT_ONLY_ON_ONE_LAYER;
+    private static String TARGET_ATTRIBUTE_COMBO_BOX;
+    
+    private static String AUTOINC_CHECK_BOX;
+    private static String INC_VALUE_EDIT_BOX;
+    private static String AUTOINC_PATTERN_BOX;
+    private static String AUTOINC_DESCRIPTION_1;
+    private static String AUTOINC_DESCRIPTION_2;
+    
+    private static String FROM_SOURCE_CHECK_BOX;
+    private static String SOURCE_COMBO_BOX;
+    private static String FROM_SOURCE_DESCRIPTION;
+    
+    private static String ASSIGN_VALUE_CHECK_BOX;
+    private static String ASSIGN_VALUE_TEXT_BOX;
+    private static String ASSIGN_VALUE_DESCRIPTION;
+    
+    private static String DESCRIPTION;
+    
+    private Layer layer;
+    private boolean selectedFeaturesOnly = true;
+    private String targetAttribute;
+    private AttributeType destinationAttributeType;
+    
+    private boolean autoIncrement = false;
+    private String pattern = "0";
+    private int autoInc = 1;
+    private int incValue;
+    
+    private String numeric;
+    
+    private boolean assignFromSource = false;
+    private String sourceAttribute;
+    
+    private boolean assignValue = false;
+    private String textToAssign;
+	    
+	public void initialize(PlugInContext context) throws Exception {
+	    
+	    context.getFeatureInstaller().addMainMenuItem(
+	    	  new String[] { MenuNames.TOOLS, MenuNames.TOOLS_EDIT_ATTRIBUTES}, 
+	    	  this,
+	    	  createEnableCheck(context.getWorkbenchContext()));
 	      
-		    DEST_COMBO_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Destination-attribute");
-		    SOURCE_COMBO_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Source-attribute");
-		    FROM_SOURCE_CHECK_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Assign-from-other-attribute");
-		    //A_CHECK_BOX = "invisible checkbox";
-		    AUTOINC_CHECK_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Auto-increment");
-		    INC_VALUE_EDIT_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Increment-by");
-		    SELECTED_CHECK_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Selected-features-only");
-		    ASSIGN_VALUE_TEXT_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Assign-this-value");
-		    SELECTONLYONONELAYER = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Select-features-on-only-one-layer");
-			DESCRIPTION = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Description");
-            //DESCRIPTION = I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Description");
-	}
-
-	public String getName(){
-		return I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Auto-Assign-Attribute");
+        SELECTED_CHECK_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Selected-features-only");
+        TARGET_ATTRIBUTE_COMBO_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Target-attribute");
+        
+        SOURCE_COMBO_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Source-attribute");
+        FROM_SOURCE_CHECK_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Assign-from-other-attribute");
+        FROM_SOURCE_DESCRIPTION = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.From-source-description");
+        
+        AUTOINC_CHECK_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Auto-increment");
+        AUTOINC_PATTERN_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Auto-increment-pattern");
+        INC_VALUE_EDIT_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Increment-by");
+        AUTOINC_DESCRIPTION_1 = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Auto-increment-description-1");
+        AUTOINC_DESCRIPTION_2 = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Auto-increment-description-2");
+        
+        ASSIGN_VALUE_CHECK_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Assign-fixed-value");
+        ASSIGN_VALUE_TEXT_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Assign-value");
+        ASSIGN_VALUE_DESCRIPTION = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Assign-value-description");
+        
+        SELECT_ONLY_ON_ONE_LAYER = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Select-features-on-only-one-layer");
+        DESCRIPTION = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Description");
 	}
 	
 	public boolean execute(PlugInContext context) throws Exception {
 		MultiInputDialog dialog = prompt(context);
+		GUIUtil.centreOnWindow(dialog);
+		dialog.setVisible(true);
 		if (!dialog.wasOKPressed()) {
 			return false;
 		}
@@ -137,61 +156,120 @@ public class AutoAssignAttributePlugIn extends AbstractPlugIn {
 	}
 	
     private MultiInputDialog prompt(PlugInContext context) {
+        
         final MultiInputDialog dialog =
             new MultiInputDialog(context.getWorkbenchFrame(), getName(), true);
-    	dialog.setSideBarDescription(DESCRIPTION);  
-        dialog.addEditableLayerComboBox(
-            LAYER_COMBO_BOX,
-            null,
-            null,
-            context.getLayerManager());
-        initComboFields(dialog, A_CHECK_BOX, DEST_COMBO_BOX, 0);
-        dialog.addCheckBox(AUTOINC_CHECK_BOX, true);
-        incfield = dialog.addIntegerField(INC_VALUE_EDIT_BOX, 1, 4, "Auto-increment number by this value");
-        dialog.indentLabel(INC_VALUE_EDIT_BOX);
-        initComboFields(dialog, FROM_SOURCE_CHECK_BOX, SOURCE_COMBO_BOX, 1);
-        dialog.getCheckBox(FROM_SOURCE_CHECK_BOX).addActionListener(new ActionListener() {
+    	dialog.setSideBarDescription(DESCRIPTION);
+        
+    	// Source layer and target attribute
+    	final JComboBox layerComboBox = dialog.addEditableLayerComboBox(
+                        LAYER_COMBO_BOX, 
+                        context.getLayerNamePanel().chooseEditableLayer(), 
+                        null, context.getLayerManager());
+        boolean selectionExists = context.getLayerViewPanel()
+                                         .getSelectionManager()
+                                         .getFeaturesWithSelectedItems()
+                                         .size() > 0;
+        if (!selectionExists) selectedFeaturesOnly = false;
+        final JCheckBox selectedFeaturesOnlyCheckBox = 
+            dialog.addCheckBox(SELECTED_CHECK_BOX, selectedFeaturesOnly);
+        dialog.setFieldVisible(SELECTED_CHECK_BOX, selectionExists);
+        final JComboBox targetAttributeComboBox = 
+            dialog.addAttributeComboBox(TARGET_ATTRIBUTE_COMBO_BOX, LAYER_COMBO_BOX,
+                                        AttributeTypeFilter.NUMSTRING_FILTER, 
+                                        "");
+        for (int i = 0 ; i < targetAttributeComboBox.getModel().getSize() ; i++) {
+            Object item = targetAttributeComboBox.getModel().getElementAt(i);
+            if (item.equals(targetAttribute)) targetAttributeComboBox.setSelectedIndex(i);
+        }
+        
+        // Auto-increment options
+        dialog.addSeparator();
+        final JCheckBox autoIncCheckBox = dialog.addCheckBox(AUTOINC_CHECK_BOX, autoIncrement);
+        final JTextField autoIncPatternField = dialog.addTextField(AUTOINC_PATTERN_BOX, pattern, 4, null, AUTOINC_DESCRIPTION_2);
+        final JTextField incField = dialog.addIntegerField(INC_VALUE_EDIT_BOX, 1, 4, "");
+        
+        // From other attribute option
+        dialog.addSeparator();
+        final JCheckBox fromSourceCheckBox = dialog.addCheckBox(FROM_SOURCE_CHECK_BOX, assignFromSource);
+        final JComboBox sourceAttributeComboBox = 
+            dialog.addAttributeComboBox(SOURCE_COMBO_BOX, LAYER_COMBO_BOX,
+                                        AttributeTypeFilter.ALL_FILTER, 
+                                        "");
+        for (int i = 0 ; i < sourceAttributeComboBox.getModel().getSize() ; i++) {
+            Object item = sourceAttributeComboBox.getModel().getElementAt(i);
+            if (item.equals(sourceAttribute)) sourceAttributeComboBox.setSelectedIndex(i);
+        }
+
+        initEnableChecks(dialog);
+        
+        dialog.addSeparator();
+        final JCheckBox assignValueCheckBox = dialog.addCheckBox(ASSIGN_VALUE_CHECK_BOX, assignValue);
+        dialog.addTextField(ASSIGN_VALUE_TEXT_BOX, "", 15, null, "");
+        
+        updateControls(dialog);
+        
+        autoIncCheckBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                dialog.getComboBox(SOURCE_COMBO_BOX).setEnabled(
-                    dialog.getCheckBox(FROM_SOURCE_CHECK_BOX).isSelected());
-                boolean fromSelected = dialog.getCheckBox(FROM_SOURCE_CHECK_BOX).isSelected();
-                dialog.getLabel(SOURCE_COMBO_BOX).setEnabled(fromSelected);
-                JCheckBox checkbox = dialog.getCheckBox(AUTOINC_CHECK_BOX);
-                checkbox.setEnabled(!fromSelected);
-                incfield.setEnabled(!fromSelected);
-                if (fromSelected)
-                	checkbox.setSelected(false);
+                updateControls(dialog);
+            }
+        });
+        fromSourceCheckBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                updateControls(dialog);
+            }
+        });
+        assignValueCheckBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                updateControls(dialog);
             }
         });
 
-        initEnableChecks(dialog);
-        boolean selectionExists = context.getLayerViewPanel().getSelectionManager()
-        	.getFeatureSelection().getSelectedItems().size() > 0;
-        dialog.addCheckBox(SELECTED_CHECK_BOX, selectionExists);
-        dialog.addTextField(ASSIGN_VALUE_TEXT_BOX, "", 15, null, 
-        		"Enter value to assign. Numeric portion used as start value.");
-        loadValues(dialog, context);
-        dialog.getCheckBox(A_CHECK_BOX).setVisible(false); //*LDB
-        dialog.setVisible(true);
-        if (dialog.wasOKPressed()) {
-            saveValues(dialog, context);
-        }
         return dialog;
     }
     
+    private void updateControls(MultiInputDialog dialog) {
+        assignFromSource = dialog.getCheckBox(FROM_SOURCE_CHECK_BOX).isSelected();
+        autoIncrement = dialog.getBoolean(AUTOINC_CHECK_BOX);
+        assignValue = dialog.getBoolean(ASSIGN_VALUE_CHECK_BOX);
+        layer = dialog.getLayer(LAYER_COMBO_BOX);
+        FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
+        boolean fromAttributeValid = schema.getAttributeCount() > 2;
+        
+        dialog.setFieldEnabled(AUTOINC_CHECK_BOX, !assignFromSource && !assignValue);
+        dialog.setFieldEnabled(AUTOINC_PATTERN_BOX, autoIncrement && !assignFromSource && !assignValue);
+        dialog.setFieldEnabled(INC_VALUE_EDIT_BOX, autoIncrement && !assignFromSource && !assignValue);
+        
+        dialog.setFieldEnabled(FROM_SOURCE_CHECK_BOX, !autoIncrement && !assignValue && fromAttributeValid);
+        dialog.setFieldEnabled(SOURCE_COMBO_BOX, assignFromSource && !autoIncrement && !assignValue && fromAttributeValid);
+        
+        dialog.setFieldEnabled(ASSIGN_VALUE_CHECK_BOX, !assignFromSource && !autoIncrement);
+        dialog.setFieldEnabled(ASSIGN_VALUE_TEXT_BOX, assignValue && !assignFromSource && !autoIncrement);
+        
+        if (assignValue) dialog.setSideBarDescription(ASSIGN_VALUE_DESCRIPTION);
+        else if (autoIncrement) dialog.setSideBarDescription(AUTOINC_DESCRIPTION_1 + "\n\n" + AUTOINC_DESCRIPTION_2);
+        else if (assignFromSource) dialog.setSideBarDescription(FROM_SOURCE_DESCRIPTION);
+        else dialog.setSideBarDescription(DESCRIPTION);
+    }
+    
     private void getDialogValues(MultiInputDialog dialog) {
-		destinationLayer = dialog.getLayer(LAYER_COMBO_BOX);
-		attributeName = dialog.getText(DEST_COMBO_BOX);
-		sourceAttributeName = dialog.getText(SOURCE_COMBO_BOX);
-		schema = destinationLayer.getFeatureCollectionWrapper().getFeatureSchema();
-		destinationAttributeIndex = schema.getAttributeIndex(attributeName);
-		sourceAttributeIndex = schema.getAttributeIndex(sourceAttributeName);
-        attributeType = schema.getAttributeType(destinationAttributeIndex);
-	    autoIncrement = dialog.getBoolean(AUTOINC_CHECK_BOX);
-	    incValue = dialog.getInteger(INC_VALUE_EDIT_BOX);
-	    selectedFeaturesOnly = dialog.getBoolean(SELECTED_CHECK_BOX);
+		layer = dialog.getLayer(LAYER_COMBO_BOX);
+		selectedFeaturesOnly = dialog.getBoolean(SELECTED_CHECK_BOX);
+		FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
+		targetAttribute = dialog.getText(TARGET_ATTRIBUTE_COMBO_BOX);
+		destinationAttributeType = schema.getAttributeType(schema.getAttributeIndex(targetAttribute));
+		
+		autoIncrement = dialog.getBoolean(AUTOINC_CHECK_BOX);
+		incValue = dialog.getInteger(INC_VALUE_EDIT_BOX);
+	    pattern = dialog.getText(AUTOINC_PATTERN_BOX);
+	    numeric = parseNumber(pattern);
+	    
+	    assignFromSource = dialog.getBoolean(FROM_SOURCE_CHECK_BOX);
+		sourceAttribute = dialog.getText(SOURCE_COMBO_BOX);
+        
+	    assignValue = dialog.getBoolean(ASSIGN_VALUE_CHECK_BOX);
 		textToAssign = dialog.getText(ASSIGN_VALUE_TEXT_BOX);
-		numeric = parseNumber(textToAssign);
+		
 		if (autoIncrement) {
 			if (numeric.length() == 0)
 				autoInc = 0;
@@ -199,63 +277,17 @@ public class AutoAssignAttributePlugIn extends AbstractPlugIn {
 				autoInc = new Integer(numeric).intValue();
 		} else
 	    	autoInc = 0;
-		assignFromSource = dialog.getBoolean(FROM_SOURCE_CHECK_BOX);   	
-    }
-    
-    private void saveValues(MultiInputDialog dialog, PlugInContext context) {
-        Blackboard blackboard = context.getLayerManager().getBlackboard();
-        blackboard.put(namespace() + LAYER_COMBO_BOX, dialog.getLayer(LAYER_COMBO_BOX));
-        blackboard.put(
-            namespace() + FROM_SOURCE_CHECK_BOX,
-            dialog.getCheckBox(FROM_SOURCE_CHECK_BOX).isSelected());
-        blackboard.put(
-            namespace() + DEST_COMBO_BOX,
-            dialog.getComboBox(DEST_COMBO_BOX).getSelectedItem());
-        blackboard.put(
-            namespace() + SOURCE_COMBO_BOX,
-            dialog.getComboBox(SOURCE_COMBO_BOX).getSelectedItem());
-    }
-    
-    private void loadValues(MultiInputDialog dialog, PlugInContext context) {
-        Blackboard blackboard = context.getLayerManager().getBlackboard();
-        dialog.getComboBox(LAYER_COMBO_BOX).setSelectedItem(
-            CollectionUtil.ifNotIn(
-                blackboard.get(namespace() + LAYER_COMBO_BOX),
-                GUIUtil.items(dialog.getComboBox(LAYER_COMBO_BOX)),
-                candidateLayer(context)));
-        GUIUtil.setSelectedWithClick(
-            dialog.getCheckBox(FROM_SOURCE_CHECK_BOX),
-            blackboard.get(namespace() + FROM_SOURCE_CHECK_BOX, false));
-        dialog.getComboBox(DEST_COMBO_BOX).setSelectedItem(
-            CollectionUtil.ifNotIn(
-                blackboard.get(namespace() + DEST_COMBO_BOX),
-                GUIUtil.items(dialog.getComboBox(DEST_COMBO_BOX)),
-                dialog.getComboBox(DEST_COMBO_BOX).getSelectedItem()));
-        dialog.getComboBox(SOURCE_COMBO_BOX).setSelectedItem(
-            CollectionUtil.ifNotIn(
-                blackboard.get(namespace() + SOURCE_COMBO_BOX),
-                GUIUtil.items(dialog.getComboBox(SOURCE_COMBO_BOX)),
-                dialog.getComboBox(SOURCE_COMBO_BOX).getSelectedItem()));
-    }
-    
-    private String namespace() {
-        return getClass().getName() + " - ";
     }
     
     private void initEnableChecks(final MultiInputDialog dialog) {
-        dialog
-            .addEnableChecks(
-                SOURCE_COMBO_BOX,
-                Arrays
-                    .asList(
-                        new Object[] {
-                            new EnableCheck() {
-                                public String check(JComponent component) {
-                                return dialog.getBoolean(FROM_SOURCE_CHECK_BOX)
-                                    && dialog.getText(DEST_COMBO_BOX).equals(
-                                        dialog.getText(SOURCE_COMBO_BOX))
-                                        ? "Source and destination attributes must be different"
-                                        : null;
+        dialog.addEnableChecks(SOURCE_COMBO_BOX,
+            Arrays.asList(new Object[] {new EnableCheck() {
+                public String check(JComponent component) {
+                    return assignFromSource && 
+                           dialog.getText(TARGET_ATTRIBUTE_COMBO_BOX)
+                                 .equals(dialog.getText(SOURCE_COMBO_BOX)) ? 
+                                 "Source and destination attributes must be different" : 
+                                 null;
                 }
             }
         }));
@@ -264,52 +296,6 @@ public class AutoAssignAttributePlugIn extends AbstractPlugIn {
     private String attributeName(List attributeNames, int preferredIndex) {
         return (String) attributeNames.get(
             attributeNames.size() > preferredIndex ? preferredIndex : 0);
-    }
-    
-    private void initComboFields(
-        final MultiInputDialog dialog,
-        final String checkBoxFieldName,
-        final String comboBoxFieldName,
-        final int preferredCandidateAttributeIndex) {
-        dialog.addCheckBox(checkBoxFieldName, true);
-        dialog.addComboBox(comboBoxFieldName, null, new ArrayList(), null);
-        dialog.getComboBox(LAYER_COMBO_BOX).addActionListener(new ActionListener() {
-            private Layer lastLayer = null;
-            public void actionPerformed(ActionEvent e) {
-                Layer newLayer =
-                    (Layer) dialog.getComboBox(LAYER_COMBO_BOX).getSelectedItem();
-                if (lastLayer == newLayer) {
-                    return;
-                }
-                lastLayer = newLayer;
-                dialog.getComboBox(comboBoxFieldName).setModel(
-                    new DefaultComboBoxModel(
-                        new Vector(candidateAttributeNames(newLayer))));
-                if (!candidateAttributeNames(newLayer).isEmpty()) {
-                    dialog.getComboBox(comboBoxFieldName).setSelectedItem(
-                        attributeName(
-                            candidateAttributeNames(newLayer),
-                            preferredCandidateAttributeIndex));
-                }
-            }
-        });
-        dialog
-            .addEnableChecks(
-                comboBoxFieldName,
-                Arrays
-                    .asList(
-                        new Object[] {
-                            new EnableCheck() {
-                                public String check(JComponent component) {
-                                return dialog.getBoolean(checkBoxFieldName)
-                                    && dialog.getComboBox(comboBoxFieldName).getItemCount()
-                                        == 0
-                                        ? "Layer has no string, integer, or double attributes"
-                                        : null;
-                }
-            }
-        }));
-        dialog.indentLabel(comboBoxFieldName);
     }
     
     private Layer candidateLayer(PlugInContext context) {
@@ -337,6 +323,7 @@ public class AutoAssignAttributePlugIn extends AbstractPlugIn {
             });
             put(AttributeType.INTEGER, new Converter() {
                 public Object convert(String d) {
+                    if (d==null) return null;
                 	String s = parseNumber(d);
                 	if (s.length() == 0) 
                 		return new Integer(0);
@@ -345,6 +332,7 @@ public class AutoAssignAttributePlugIn extends AbstractPlugIn {
             });
             put(AttributeType.DOUBLE, new Converter() {
                 public Object convert(String d) {
+                    if (d==null) return null;
                 	String s = parseNumber(d);
                 	if (s.length() == 0) 
                 		return new Double(0);
@@ -353,26 +341,15 @@ public class AutoAssignAttributePlugIn extends AbstractPlugIn {
             });
         }
     };
-    
-    private List candidateAttributeNames(Layer layer) {
-        ArrayList candidateAttributeNames = new ArrayList();
-        FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
-        for (int i = 0; i < schema.getAttributeCount(); i++) {
-            if (typeToConverterMap.keySet().contains(schema.getAttributeType(i))) {
-                candidateAttributeNames.add(schema.getAttributeName(i));
-            }
-        }
-        return candidateAttributeNames;
-    }
  
-    private String parseNumber(String assignText) {
+    private String parseNumber(String text) {
         int b=0; int e=0;
-    	for (int i=0; i<assignText.length(); i++) {
-    		if ( Character.isDigit(assignText.charAt(i)) ) {
+    	for (int i=0; i<text.length(); i++) {
+    		if (Character.isDigit(text.charAt(i))) {
 		        b=i; e=i;
-		   		while ( e < assignText.length() && Character.isDigit(assignText.charAt(e)) ) 
+		   		while ( e < text.length() && Character.isDigit(text.charAt(e))) 
 		   			e++;
-		   		return assignText.substring(b, e);
+		   		return text.substring(b, e);
     		}
     	}
     	return "";
@@ -384,32 +361,31 @@ public class AutoAssignAttributePlugIn extends AbstractPlugIn {
     		Collection layers = context.getLayerViewPanel().getSelectionManager()
     		.getLayersWithSelectedItems();
     		if (layers.size() > 1) {
-    			context.getWorkbenchFrame().warnUser(SELECTONLYONONELAYER);
+    			context.getWorkbenchFrame().warnUser(SELECT_ONLY_ON_ONE_LAYER);
     		}
     		iterator = context.getLayerViewPanel().getSelectionManager()
     		.getFeaturesWithSelectedItems().iterator();
     	} else {
-    		iterator = destinationLayer.getFeatureCollectionWrapper().getFeatures().iterator();
+    		iterator = layer.getFeatureCollectionWrapper().getFeatures().iterator();
     	}
     	for (Iterator i = iterator; i.hasNext(); ) {
     		Feature feature = (Feature) i.next();
     		String s = textToAssign;
     		if (autoIncrement) {
+    		    s = pattern;
     			String value = "" + autoInc;
     			autoInc += incValue;
     			if (numeric.length() == 0)
     				s = value;
     			else
-    				s = textToAssign.replaceFirst(numeric, value);
-    		} else {
-    			if (assignFromSource) {
-    				s = feature.getAttribute(sourceAttributeIndex).toString();
-    	   			if (numeric.length() > 0)
-         				s = textToAssign.replaceFirst(numeric, s);
-        			}
-    		}
-    		Object object = ((Converter) typeToConverterMap.get(attributeType)).convert(s);
-    		feature.setAttribute( destinationAttributeIndex, object);
+    				s = pattern.replaceFirst(numeric, value);
+    		} else if (assignFromSource) {
+                s = feature.getAttribute(sourceAttribute).toString();
+            } else {
+                s = textToAssign;
+            }
+    		Object object = ((Converter) typeToConverterMap.get(destinationAttributeType)).convert(s);
+    		feature.setAttribute(targetAttribute, object);
 
     	}
     }

@@ -1,7 +1,11 @@
+2011-10-08 mmichaud <michael.michaud@free.fr>
+    * Clean and improve AutoAssignAttributePlugIn
+
 2011-10-02 mmichaud <michael.michaud@free.fr>
     * Improved LabelStyle : adds a default value for vertical alignment
       (default is middle for areas and above for lines and points)
       and a horizontal position attribute distinct from horizontal alignment.
+      See also Feature Request 3407229
       Now behaviour should be the following :
       Area
          Vertical alignment means above, below or middle of the bounding box
