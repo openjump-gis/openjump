@@ -239,21 +239,6 @@ public class FeatureInstaller {
         new JMenuItem(menuItemName);
     addMainMenuItem(executable, menuPath, menuItem, enableCheck, pos);
     menuItem.setIcon(icon);
-    /*JMenu menu = menuBarMenu(menuPath[0]);
-    if (menu == null) {
-      menu = (JMenu)installMnemonic(new JMenu(menuPath[0]), menuBar());
-      addToMenuBar(menu);
-    }
-    JMenu parent = createMenusIfNecessary(menu, behead(menuPath));
-    final JMenuItem menuItem = installMnemonic(
-      checkBox ? new JCheckBoxMenuItem(menuItemName) : new JMenuItem(
-        menuItemName), parent);
-    menuItem.setIcon(icon);
-    associate(menuItem, executable);
-    insert(menuItem, createMenu(parent), properties);
-    if (enableCheck != null) {
-      addMenuItemShownListener(menuItem, toMenuItemShownListener(enableCheck));
-    }*/
   }
   
     /**
@@ -346,10 +331,10 @@ public class FeatureInstaller {
                                      final JMenuItem menuItem, 
                                      final EnableCheck enableCheck, 
                                      final int pos) {
-        JMenuItem item = addMainMenuItem(plugin, menuPath, menuItem, enableCheck, pos);
-        item.setText(plugin.getName());
-        item.setIcon(plugin.getIcon());
-        return item;
+        if (menuItem.getIcon() == null) {
+            menuItem.setIcon(plugin.getIcon());
+        }
+        return addMainMenuItem(plugin, menuPath, menuItem, enableCheck, pos);
     }
   
     /**
@@ -366,7 +351,6 @@ public class FeatureInstaller {
     // [mmichaud 2011-09-13]
     public JMenuItem addMainMenuItem(PlugIn plugin, String[] menuPath,
                          JMenuItem menuItem, EnableCheck enableCheck, int pos) {
-        //String menuItemName = plugin.getName();
         JMenu menu = menuBarMenu(menuPath[0]);
         if (menu == null) {
             menu = (JMenu)installMnemonic(new JMenu(menuPath[0]), menuBar());
