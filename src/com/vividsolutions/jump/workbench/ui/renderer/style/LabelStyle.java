@@ -220,6 +220,9 @@ public class LabelStyle implements Style {
         if ( geometry.getDimension() == 0) { //LDB: treat points as linear to justify them
         	return new ModelSpaceLabelSpec(geometry.getCoordinate(), 0d, 0); 
         }
+        if (verticalAlignment.equals(ON_LINE) || verticalAlignment.equals(DEFAULT)) {
+            return new ModelSpaceLabelSpec(interiorPointFinder.findPoint(geometry), 0, 2); 	 
+        }
         return new ModelSpaceLabelSpec(findPoint(geometry), 0, 2);
     }
     
