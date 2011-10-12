@@ -59,6 +59,7 @@ import javax.swing.plaf.FontUIResource;
 import org.openjump.OpenJumpConfiguration;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.JUMPVersion;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.util.LangUtil;
@@ -107,7 +108,7 @@ public class JUMPWorkbench {
 	// for java 1.6+
 	public static final ArrayList APP_ICONS = appIcons();
 	
-	public static final String VERSION_TEXT = I18N.get("JUMPWorkbench.version.number");
+	//public static final String VERSION_TEXT = I18N.get("JUMPWorkbench.version.number");
 	//-- dont change the following strings 
 	public final static String PROPERTIES_OPTION = "properties";
 	public final static String DEFAULT_PLUGINS = "default-plugins";
@@ -330,8 +331,7 @@ public class JUMPWorkbench {
 			ProgressMonitor progressMonitor = (ProgressMonitor) progressMonitorClass
 					.newInstance();
 			SplashPanel splashPanel = new SplashPanel(splashImage(), 
-									I18N.get("JUMPWorkbench.version")+" "
-									+ VERSION_TEXT );
+			        I18N.get("ui.AboutDialog.version")+" " + JUMPVersion.CURRENT_VERSION );
 			splashPanel.add(progressMonitor, new GridBagConstraints(0, 10, 1,
 					1, 1, 0, GridBagConstraints.NORTHWEST,
 					GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 10), 0,

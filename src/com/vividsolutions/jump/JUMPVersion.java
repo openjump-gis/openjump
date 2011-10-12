@@ -50,55 +50,55 @@ public class JUMPVersion {
   /**
    * The major version number.
    */
-  public static final int MAJOR = 1;
+  //public static final int MAJOR = 1;
 
   /**
    * The minor version number.
    */
-  public static final int MINOR = 4;
+  //public static final int MINOR = 4;
 
   /**
    * The patch version number.
    */
-  public static final int PATCH = 3;
+  //public static final int PATCH = 3;
 
   /**
    * An optional string providing further release info (such as "alpha 1" or
    * svn version);
    */
-  private static final String releaseInfo = "alpha";
+  //private static final String releaseInfo = "alpha";
 
   /**
    * Prints the current JTS version to stdout.
    *
    * @param args the command-line arguments (none are required).
    */
-  public static void main(String[] args) {
+  /*public static void main(String[] args) {
     System.out.println(CURRENT_VERSION);
   }
 
   private JUMPVersion() {}
-
+*/
   /**
    * Gets the major number of the release version.
    *
    * @return the major number of the release version.
    */
-  public int getMajor() { return MAJOR; }
+  //public int getMajor() { return MAJOR; }
 
   /**
    * Gets the minor number of the release version.
    *
    * @return the minor number of the release version.
    */
-  public int getMinor() { return MINOR; }
+  //public int getMinor() { return MINOR; }
 
   /**
    * Gets the patch number of the release version.
    *
    * @return the patch number of the release version.
    */
-  public int getPatch() { return PATCH; }
+  //public int getPatch() { return PATCH; }
 
   /**
    * Gets the full version number, suitable for display.
@@ -106,7 +106,8 @@ public class JUMPVersion {
    * @return the full version number, suitable for display.
    */
   public String toString() {
-    String ver = "OpenJUMP " + I18N.get("JUMPWorkbench.version.number");
+    String ver = I18N.get("JUMPWorkbench.version.number");
+    String releaseInfo = I18N.get("JUMPWorkbench.version.release");
     if (releaseInfo != null && releaseInfo.length() > 0)
       return ver + " " + releaseInfo;
     return ver;
