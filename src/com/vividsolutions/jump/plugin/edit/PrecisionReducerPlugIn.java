@@ -50,10 +50,9 @@ import com.vividsolutions.jump.workbench.model.*;
 import com.vividsolutions.jump.workbench.plugin.*;
 import com.vividsolutions.jump.workbench.ui.*;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
+import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 
-public class PrecisionReducerPlugIn
-    extends ThreadedBasePlugIn
-{
+public class PrecisionReducerPlugIn extends AbstractThreadedUiPlugIn {
 
   private static final double EXAMPLE_VALUE = 1234567.123123123123;
 
@@ -61,7 +60,6 @@ public class PrecisionReducerPlugIn
   private final static String DECIMAL_PLACES = I18N.get("ui.plugin.edit.PrecisionReducerPlugIn.Decimal-Places");
   private final static String SCALE_FACTOR = I18N.get("ui.plugin.edit.PrecisionReducerPlugIn.Scale-Factor");
 
-  private MultiInputDialog dialog;
   private JTextField decimalPlacesField;
   private JTextField scaleFactorField;
   private JLabel exampleLabel;
@@ -75,18 +73,16 @@ public class PrecisionReducerPlugIn
    * Returns a very brief description of this task.
    * @return the name of this task
    */
-  public String getName() { return I18N.get("ui.plugin.edit.PrecisionReducerPlugIn.Precision-Reducer"); }
+  public String getName() { 
+      return I18N.get("ui.plugin.edit.PrecisionReducerPlugIn.Precision-Reducer"); 
+  }
 
-  public void initialize(PlugInContext context) throws Exception
-  {
+  public void initialize(PlugInContext context) throws Exception {
       	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
   		featureInstaller.addMainMenuItem(
-  	        this,								//exe
-				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY}, 	//menu path
-              this.getName() + "...", //name methode .getName recieved by AbstractPlugIn 
-              false,			//checkbox
-              null,			//icon
-              createEnableCheck(context.getWorkbenchContext())); //enable check  
+            new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY},
+            this, new JMenuItem(getName() + "..."),
+            createEnableCheck(context.getWorkbenchContext()), -1);  
   }
   
   public EnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
@@ -98,7 +94,7 @@ public class PrecisionReducerPlugIn
   }
 
   public boolean execute(PlugInContext context) throws Exception {
-    dialog = new MultiInputDialog(
+    MultiInputDialog dialog = new MultiInputDialog(
         context.getWorkbenchFrame(), getName(), true);
     setDialogValues(dialog, context);
     GUIUtil.centreOnWindow(dialog);
@@ -108,14 +104,11 @@ public class PrecisionReducerPlugIn
     return true;
   }
 
-  public void run(TaskMonitor monitor, PlugInContext context)
-       throws Exception
-  {
+  public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
     monitor.allowCancellationRequests();
-
     monitor.report(I18N.get("ui.plugin.edit.PrecisionReducerPlugIn.Reducing-Precision") + "...");
 
-    Layer layer = dialog.getLayer(LAYER);
+    Layer layer = context.getLayerManager().getLayer(layerName);
     FeatureCollection fc = layer.getFeatureCollectionWrapper();
 
     List[] bad = reducePrecision(fc, monitor);
@@ -137,8 +130,7 @@ public class PrecisionReducerPlugIn
     }
   }
 
-  private NumberPrecisionReducer createNumberPrecisionReducer()
-  {
+  private NumberPrecisionReducer createNumberPrecisionReducer() {
     double sf = scaleFactor;
     // scaleFactor and decimalPlaces should be in synch, but if they are not use decimalPlaces
     if (scaleFactor != NumberPrecisionReducer.scaleFactorForDecimalPlaces(decimalPlaces))
@@ -152,8 +144,7 @@ public class PrecisionReducerPlugIn
    * The first contains the geometries which reduced to invalid geometries.
    * The second contains the invalid geometries created
    */
-  private List[] reducePrecision(FeatureCollection fc, TaskMonitor monitor)
-  {
+  private List[] reducePrecision(FeatureCollection fc, TaskMonitor monitor) {
     List[] bad = { new ArrayList(), new ArrayList() };
     int total = fc.size();
     int count = 0;
@@ -178,8 +169,7 @@ public class PrecisionReducerPlugIn
 
   private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
     dialog.setSideBarImage(new ImageIcon(getClass().getResource("PrecisionReducer.png")));
-    dialog.setSideBarDescription(I18N.get("ui.plugin.edit.PrecisionReducerPlugIn.Reduces-the-precision-of-the-coordinates-in-a-layer")
-    );
+    dialog.setSideBarDescription(I18N.get("ui.plugin.edit.PrecisionReducerPlugIn.Reduces-the-precision-of-the-coordinates-in-a-layer"));
     String fieldName = LAYER;
     JComboBox addLayerComboBox = dialog.addLayerComboBox(fieldName, context.getCandidateLayer(0), null, context.getLayerManager());
 
@@ -198,8 +188,7 @@ public class PrecisionReducerPlugIn
     updateExample();
   }
 
-  private int parseValidInt(String text)
-  {
+  private int parseValidInt(String text) {
     int i = 0;
     try {
       i = Integer.parseInt(text);
@@ -209,24 +198,22 @@ public class PrecisionReducerPlugIn
     }
     return i;
   }
-  private void decimalPlacesChanged()
-  {
+  
+  private void decimalPlacesChanged() {
     decimalPlaces = parseValidInt(decimalPlacesField.getText());
     double sf = NumberPrecisionReducer.scaleFactorForDecimalPlaces(decimalPlaces);
     scaleFactorField.setText("" + (int) sf);
     updateExample();
   }
 
-  private void scaleFactorChanged()
-  {
+  private void scaleFactorChanged() {
     scaleFactor = parseValidInt(scaleFactorField.getText());
     // can't update decimalPlaces because it will cause an event cycle
     //decimalPlacesField.setText("");
     updateExample();
   }
 
-  private void updateExample()
-  {
+  private void updateExample() {
     NumberPrecisionReducer cpr = new NumberPrecisionReducer(scaleFactor);
     double exampleOutput = cpr.reducePrecision(EXAMPLE_VALUE);
     exampleLabel.setText("      ==>  " + exampleOutput);

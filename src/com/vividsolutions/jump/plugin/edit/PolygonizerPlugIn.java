@@ -35,6 +35,7 @@ package com.vividsolutions.jump.plugin.edit;
 import java.awt.Color;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
+import javax.swing.JMenuItem;
 
 import java.util.*;
 
@@ -53,14 +54,15 @@ import com.vividsolutions.jts.operation.polygonize.*;
 import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
 import com.vividsolutions.jump.task.*;
 import com.vividsolutions.jump.workbench.ui.*;
+import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 
-public class PolygonizerPlugIn
-    extends ThreadedBasePlugIn
-{
+public class PolygonizerPlugIn extends AbstractThreadedUiPlugIn {
+    
+  private final static String SRC_LAYER = I18N.get("jump.plugin.edit.PolygonizerPlugIn.Line-Layer");
+  private final static String NODE_INPUT = I18N.get("jump.plugin.edit.PolygonizerPlugIn.Node-input-before-polygonizing");
+  private final static String SELECTED_ONLY = GenericNames.USE_SELECTED_FEATURES_ONLY;
+    
   private boolean useSelected = false;
-
-
-  private MultiInputDialog dialog;
   private String layerName;
   private boolean splitLineStrings = false;
   private boolean nodeInputLines = false;
@@ -77,18 +79,19 @@ public class PolygonizerPlugIn
    * Returns a very brief description of this task.
    * @return the name of this task
    */
-  public String getName() { return I18N.get("jump.plugin.edit.PolygonizerPlugIn.Polygonize"); }
+  public String getName() { 
+      return I18N.get("jump.plugin.edit.PolygonizerPlugIn.Polygonize"); 
+  }
 
-  public void initialize(PlugInContext context) throws Exception
-  {
+  public void initialize(PlugInContext context) throws Exception {
+      
       	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
   		featureInstaller.addMainMenuItem(
-  	        this,								//exe
-				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY, MenuNames.CONVERT}, 	//menu path
-              this.getName() + "...", //name methode .getName recieved by AbstractPlugIn 
-              false,			//checkbox
-              null,			//icon
-              createEnableCheck(context.getWorkbenchContext())); //enable check  
+            new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY, MenuNames.CONVERT},
+            this,
+            new JMenuItem(getName() + "..."), 
+            createEnableCheck(context.getWorkbenchContext()),
+            -1); 
   }
   
   public EnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
@@ -99,8 +102,9 @@ public class PolygonizerPlugIn
   }
 
   public boolean execute(PlugInContext context) throws Exception {
-    dialog = new MultiInputDialog(
-        context.getWorkbenchFrame(), I18N.get("jump.plugin.edit.PolygonizerPlugIn.Polygonize"), true);
+    MultiInputDialog dialog = new MultiInputDialog(
+        context.getWorkbenchFrame(), 
+        I18N.get("jump.plugin.edit.PolygonizerPlugIn.Polygonize"), true);
     setDialogValues(dialog, context);
     GUIUtil.centreOnWindow(dialog);
     dialog.setVisible(true);
@@ -109,23 +113,17 @@ public class PolygonizerPlugIn
     return true;
   }
 
-  public void run(TaskMonitor monitor, PlugInContext context)
-       throws Exception
-  {
+  public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
     monitor.allowCancellationRequests();
 
     Polygonizer polygonizer = new Polygonizer();
-//    polygonizer.setSplitLineStrings(splitLineStrings);
-
     monitor.report(I18N.get("jump.plugin.edit.PolygonizerPlugIn.Polygonizing"));
 
-    Layer layer = dialog.getLayer(SRC_LAYER);
-
+    Layer layer = context.getLayerManager().getLayer(layerName);
     Collection inputFeatures = getFeaturesToProcess(layer, context);
     inputEdgeCount = inputFeatures.size();
 
     Collection lines = getLines(inputFeatures);
-
     Collection nodedLines = lines;
     if (nodeInputLines) {
       monitor.report(I18N.get("jump.plugin.edit.PolygonizerPlugIn.Noding-input-lines"));
@@ -147,8 +145,7 @@ public class PolygonizerPlugIn
     return lyr.getFeatureCollectionWrapper().getFeatures();
   }
 
-  private Collection getLines(Collection inputFeatures)
-  {
+  private Collection getLines(Collection inputFeatures) {
     List linesList = new ArrayList();
     LinearComponentExtracter lineFilter = new LinearComponentExtracter(linesList);
     for (Iterator i = inputFeatures.iterator(); i.hasNext(); ) {
@@ -167,8 +164,7 @@ public class PolygonizerPlugIn
    * @param lines the linear geometries to node
    * @return a collection of linear geometries, noded together
    */
-  private Collection nodeLines(Collection lines)
-  {
+  private Collection nodeLines(Collection lines) {
     Geometry linesGeom = fact.createMultiLineString(fact.toLineStringArray(lines));
 
     Geometry unionInput  = fact.createMultiLineString(null);
@@ -183,8 +179,7 @@ public class PolygonizerPlugIn
     return nodedList;
   }
 
-  private Geometry extractPoint(Collection lines)
-  {
+  private Geometry extractPoint(Collection lines) {
     int minPts = Integer.MAX_VALUE;
     Geometry point = null;
     // extract first point from first non-empty geometry
@@ -198,9 +193,8 @@ public class PolygonizerPlugIn
     return point;
   }
 
-  private void createLayers(PlugInContext context, Polygonizer polygonizer)
-         throws Exception
-  {
+  private void createLayers(PlugInContext context, 
+                            Polygonizer polygonizer) throws Exception {
     FeatureCollection dangleFC = FeatureDatasetFactory.createFromGeometry(polygonizer.getDangles());
     dangleCount = dangleFC.size();
     if (dangleFC.size() > 0) {
@@ -246,9 +240,7 @@ public class PolygonizerPlugIn
 
   }
 
-  private void createOutput(PlugInContext context,
-      FeatureCollection polyFC)
-  {
+  private void createOutput(PlugInContext context, FeatureCollection polyFC) {
     context.getOutputFrame().createNewDocument();
     context.getOutputFrame().addHeader(1,
     		I18N.get("jump.plugin.edit.PolygonizerPlugIn.Polygonization"));
@@ -268,10 +260,7 @@ public class PolygonizerPlugIn
     		I18N.get("jump.plugin.edit.PolygonizerPlugIn.Number-of-invalid-rings-found"), "" + invalidRingCount);
   }
 
-  private final static String SRC_LAYER = I18N.get("jump.plugin.edit.PolygonizerPlugIn.Line-Layer");
-  private final static String NODE_INPUT = I18N.get("jump.plugin.edit.PolygonizerPlugIn.Node-input-before-polygonizing");
-//  private final static String SPLIT_LINESTRINGS = "Split linestrings into segments";
-  private final static String SELECTED_ONLY = GenericNames.USE_SELECTED_FEATURES_ONLY;
+
 
   private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
     dialog.setSideBarImage(new ImageIcon(getClass().getResource("Polygonize.png")));
@@ -284,8 +273,6 @@ public class PolygonizerPlugIn
     JComboBox addLayerComboBox = dialog.addLayerComboBox(fieldName, context.getCandidateLayer(0), null, context.getLayerManager());
     dialog.addCheckBox(SELECTED_ONLY, useSelected);
     dialog.addCheckBox(NODE_INPUT, nodeInputLines, NODE_INPUT);
-//    dialog.addCheckBox(SPLIT_LINESTRINGS, splitLineStrings, "If lines are noded at vertices rather than endpoints "
-//       + "this options allows input linestrings to be split into separate line segments.");
   }
 
   private void getDialogValues(MultiInputDialog dialog) {
@@ -293,6 +280,5 @@ public class PolygonizerPlugIn
     layerName = layer.getName();
     useSelected = dialog.getBoolean(SELECTED_ONLY);
     nodeInputLines = dialog.getBoolean(NODE_INPUT);
-//    splitLineStrings = dialog.getBoolean(SPLIT_LINESTRINGS);
   }
 }

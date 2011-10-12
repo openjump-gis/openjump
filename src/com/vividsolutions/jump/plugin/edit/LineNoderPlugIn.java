@@ -35,6 +35,7 @@ package com.vividsolutions.jump.plugin.edit;
 import java.awt.Color;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
+import javax.swing.JMenuItem;
 
 import java.util.*;
 
@@ -53,15 +54,15 @@ import com.vividsolutions.jts.operation.polygonize.*;
 import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
 import com.vividsolutions.jump.task.*;
 import com.vividsolutions.jump.workbench.ui.*;
+import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 
-public class LineNoderPlugIn
-    extends ThreadedBasePlugIn
-{
+public class LineNoderPlugIn extends AbstractThreadedUiPlugIn {
+    
+  private final static String SRC_LAYER = I18N.get("jump.plugin.edit.LineNoderPlugIn.Line-Layer");
+  private final static String SELECTED_ONLY = GenericNames.USE_SELECTED_FEATURES_ONLY;
+  
   private boolean useSelected = false;
-
-  private MultiInputDialog dialog;
   private String layerName;
-
   private GeometryFactory fact = new GeometryFactory();
 
   public LineNoderPlugIn() { }
@@ -70,18 +71,16 @@ public class LineNoderPlugIn
    * Returns a very brief description of this task.
    * @return the name of this task
    */  
-  public String getName() { return I18N.get("jump.plugin.edit.LineNoderPlugIn.Node-Lines"); }
+  public String getName() { 
+      return I18N.get("jump.plugin.edit.LineNoderPlugIn.Node-Lines");
+  }
   
-  public void initialize(PlugInContext context) throws Exception
-  {
+  public void initialize(PlugInContext context) throws Exception {
       	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
   		featureInstaller.addMainMenuItem(
-  	        this,								//exe
-				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY}, 	//menu path
-              this.getName() + "...", //name methode .getName recieved by AbstractPlugIn 
-              false,			//checkbox
-              null,			//icon
-              createEnableCheck(context.getWorkbenchContext())); //enable check  
+            new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY},
+            this, new JMenuItem(getName() + "..."),
+            createEnableCheck(context.getWorkbenchContext()), -1);  
   }
   
   public EnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
@@ -92,7 +91,7 @@ public class LineNoderPlugIn
   }
 
   public boolean execute(PlugInContext context) throws Exception {
-    dialog = new MultiInputDialog(
+    MultiInputDialog dialog = new MultiInputDialog(
         context.getWorkbenchFrame(), getName(), true);
     setDialogValues(dialog, context);
     GUIUtil.centreOnWindow(dialog);
@@ -102,18 +101,12 @@ public class LineNoderPlugIn
     return true;
   }
 
-  public void run(TaskMonitor monitor, PlugInContext context)
-       throws Exception
-  {
+  public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
     monitor.allowCancellationRequests();
-
-    Polygonizer polygonizer = new Polygonizer();
-//    polygonizer.setSplitLineStrings(splitLineStrings);
-
     monitor.report(I18N.get("jump.plugin.edit.LineNoderPlugIn.Noding"));
 
-    Layer layer = dialog.getLayer(SRC_LAYER);
-
+    Layer layer = context.getLayerManager().getLayer(layerName);
+    
     Collection inputFeatures = getFeaturesToProcess(layer, context);
 
     Collection lines = getLines(inputFeatures);
@@ -133,8 +126,7 @@ public class LineNoderPlugIn
     return lyr.getFeatureCollectionWrapper().getFeatures();
   }
 
-  private Collection getLines(Collection inputFeatures)
-  {
+  private Collection getLines(Collection inputFeatures) {
     List linesList = new ArrayList();
     LinearComponentExtracter lineFilter = new LinearComponentExtracter(linesList);
     for (Iterator i = inputFeatures.iterator(); i.hasNext(); ) {
@@ -153,8 +145,7 @@ public class LineNoderPlugIn
    * @param lines the linear geometries to node
    * @return a collection of linear geometries, noded together
    */
-  private Geometry nodeLines(Collection lines)
-  {
+  private Geometry nodeLines(Collection lines) {
     Geometry linesGeom = fact.createMultiLineString(fact.toLineStringArray(lines));
 
     Geometry unionInput  = fact.createMultiLineString(null);
@@ -167,16 +158,14 @@ public class LineNoderPlugIn
     return noded;
   }
 
-  private static List toLines(Geometry geom)
-  {
+  private static List toLines(Geometry geom) {
     List linesList = new ArrayList();
     LinearComponentExtracter lineFilter = new LinearComponentExtracter(linesList);
     geom.apply(lineFilter);
     return linesList;
   }
 
-  private Geometry extractPoint(Collection lines)
-  {
+  private Geometry extractPoint(Collection lines) {
     int minPts = Integer.MAX_VALUE;
     Geometry point = null;
     // extract first point from first non-empty geometry
@@ -191,8 +180,7 @@ public class LineNoderPlugIn
   }
 
   private void createLayer(PlugInContext context, Collection nodedLines)
-         throws Exception
-  {
+                                                              throws Exception {
     FeatureCollection polyFC = FeatureDatasetFactory.createFromGeometry(nodedLines);
     context.addLayer(
         StandardCategoryNames.RESULT,
@@ -200,8 +188,7 @@ public class LineNoderPlugIn
         polyFC);
   }
 
-  private final static String SRC_LAYER = I18N.get("jump.plugin.edit.LineNoderPlugIn.Line-Layer");
-  private final static String SELECTED_ONLY = GenericNames.USE_SELECTED_FEATURES_ONLY;
+  
   private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
     dialog.setSideBarImage(new ImageIcon(getClass().getResource("Polygonize.png")));
     dialog.setSideBarDescription(I18N.get("jump.plugin.edit.LineNoderPlugIn.Nodes-the-lines-in-a-layer"));
@@ -215,4 +202,5 @@ public class LineNoderPlugIn
     layerName = layer.getName();
     useSelected = dialog.getBoolean(SELECTED_ONLY);
   }
+  
 }
