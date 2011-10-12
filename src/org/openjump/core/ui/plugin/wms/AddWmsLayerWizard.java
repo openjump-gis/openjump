@@ -28,6 +28,7 @@ import com.vividsolutions.wms.MapLayer;
 import com.vividsolutions.wms.WMService;
 
 public class AddWmsLayerWizard extends AbstractWizardGroup {
+    
   private static final String CACHED_URL = "AddWMSQueryPlugin.CACHED_URL";
 
   public static final String KEY = AddWmsLayerWizard.class.getName();
@@ -35,6 +36,7 @@ public class AddWmsLayerWizard extends AbstractWizardGroup {
   private WorkbenchContext workbenchContext;
 
   private String[] cachedURLs = new String[] {
+    "http://wms.latlon.org/?",
     "http://wms.jpl.nasa.gov/wms.cgi",
     "http://demo.deegree.org/deegree-wms/services",
 	"http://openaerialmap.org/wms/"
