@@ -3,7 +3,7 @@ Instructions for generating a win32 installer for OpenJUMP
 
 needed a compiled version of OpenJUMP with Ant (using build.xml)
 the input:
-an OpenJUMP folder that constains the folders
+an OpenJUMP folder that contains the folders
  
 /bin	   contains OJ start files
 /lib       contains the jar files (should also contain the openjump jars)
@@ -33,6 +33,3 @@ The following steps are used:
 4. Launch the NSIS program and execute "openjump-installer-script.nsi"
 
 5. Test the newly created setup file.
-
-
-   
