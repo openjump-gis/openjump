@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.openjump</groupId>
   <artifactId>OpenJUMP</artifactId>
-  <version>snapshot</version>
-  <name>OpenJUMP nightly build</name>
+  <version>${buildDate}-r${buildRev}</version>
+  <name>OpenJUMP svn snapshot</name>
   <scm>
     <connection>scm:svn:https://jump-pilot.svn.sourceforge.net/svnroot/jump-pilot/core/trunk</connection>
     <developerConnection>scm:svn:https://jump-pilot.svn.sourceforge.net/svnroot/jump-pilot/core/trunk</developerConnection>
@@ -13,17 +14,79 @@
   </scm>
   <properties>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+    <assembly_descriptor>bin_zip-core.xml</assembly_descriptor>
   </properties>
+  <profiles>
+    <profile>
+      <id>core</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <release>CORE</release>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <!-- do not use 2.1! it does not resolve buildNum/Rev in component.xml -->
+            <!--version>2.1</version -->
+            <executions>
+              <execution>
+                <id>make-core</id>
+                <phase>package</phase>
+                <configuration>
+                  <appendAssemblyId>false</appendAssemblyId>
+                  <finalName>${artifactId}-${version}-CORE</finalName>
+                  <descriptors>
+                    <descriptor>bin_zip-core.xml</descriptor>
+                  </descriptors>
+                </configuration>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>plus</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <!--version>2.1</version -->
+            <executions>
+              <execution>
+                <id>make-plus</id>
+                <phase>package</phase>
+                <configuration>
+                  <appendAssemblyId>false</appendAssemblyId>
+                  <finalName>${artifactId}-${version}-PLUS</finalName>
+                  <descriptors>
+                    <descriptor>bin_zip-ext.xml</descriptor>
+                  </descriptors>
+                </configuration>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
   <build>
-    <finalName>${artifactId}-${buildDate}-r${buildRev}</finalName>
+    <!--finalName>${artifactId}-${version}-${release}</finalName -->
     <sourceDirectory>src/</sourceDirectory>
     <outputDirectory>target/classes</outputDirectory>
     <resources>
       <resource>
         <directory>src</directory>
-        <!--excludes>
-          <exclude> **/*.java </exclude>
-        </excludes-->
+        <!--excludes> <exclude> **/*.java </exclude> </excludes -->
       </resource>
     </resources>
     <plugins>
@@ -34,8 +97,10 @@
           <target>1.5</target>
         </configuration>
       </plugin>
-      <!-- execute buildnumber plugin two times because it can't get date AND rev in one go -->
+      <!-- execute buildnumber plugin two times because it can't get date 
+        AND rev in one go -->
       <plugin>
+        <inherited>true</inherited>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>buildnumber-maven-plugin</artifactId>
         <executions>
@@ -54,7 +119,7 @@
             <id>generate-timestamp</id>
             <phase>validate</phase>
             <goals>
-                <goal>create</goal>
+              <goal>create</goal>
             </goals>
             <configuration>
               <format>{0,date,yyyyMMdd}</format>
@@ -65,6 +130,28 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.google.code.maven-replacer-plugin</groupId>
+        <artifactId>maven-replacer-plugin</artifactId>
+        <version>1.3.9</version>
+        <executions>
+          <execution>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>replace</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <file>target/classes/language/jump.properties</file>
+          <replacements>
+            <replacement>
+              <token>JUMPWorkbench.version.release.*</token>
+              <value>JUMPWorkbench.version.release = ${version}</value>
+            </replacement>
+          </replacements>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -78,49 +165,13 @@
           </archive>
         </configuration>
       </plugin>
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.1</version>
-        <configuration>
-          <descriptors>
-            <descriptor>bin.xml</descriptor>
-          </descriptors>
-        </configuration>
-        <executions>
-          <execution>
-            <id>make-assembly</id>
-            <phase>package</phase>
-            <goals>
-              <goal>attached</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-<!-- remove redundant copy command
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <version>1.5</version>
-        <executions>
-          <execution>
-            <id>attach-artifacts</id>
-            <phase>package</phase>
-            <goals>
-              <goal>attach-artifact</goal>
-            </goals>
-            <configuration>
-              <artifacts>
-                <artifact>
-                  <file>target/openjump-core-1.4.3-SNAPSHOT-bin.zip</file>
-                  <type>zip</type>
-                  <classifier>bin</classifier>
-                </artifact>
-              </artifacts>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
--->
+      <!-- remove redundant copy command <plugin> <groupId>org.codehaus.mojo</groupId> 
+        <artifactId>build-helper-maven-plugin</artifactId> <version>1.5</version> 
+        <executions> <execution> <id>attach-artifacts</id> <phase>package</phase> 
+        <goals> <goal>attach-artifact</goal> </goals> <configuration> <artifacts> 
+        <artifact> <file>target/openjump-core-1.4.3-SNAPSHOT-bin.zip</file> <type>zip</type> 
+        <classifier>bin</classifier> </artifact> </artifacts> </configuration> </execution> 
+        </executions> </plugin> -->
     </plugins>
   </build>
   <repositories>
@@ -227,7 +278,7 @@
       <version>20070905</version>
       <scope>compile</scope>
     </dependency>
-        <dependency>
+    <dependency>
       <groupId>org.math.plot</groupId>
       <artifactId>jmathplot</artifactId>
       <version>20070905</version>
@@ -245,7 +296,7 @@
       <version>3.8</version>
       <scope>compile</scope>
     </dependency>
-	<dependency>
+    <dependency>
       <groupId>org.python</groupId>
       <artifactId>jython</artifactId>
       <version>2.2</version>

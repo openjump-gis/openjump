@@ -1,0 +1,67 @@
+<component
+  xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/component/1.1.2"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/component/1.1.2 http://maven.apache.org/xsd/component-1.1.2.xsd">
+  <dependencySets>
+    <dependencySet>
+      <!-- all dependency jars (except oj disabled, cause ${extension} was not resolved) -->
+      <!--outputFileNameMapping>${artifactId}-${version}.${extension}</outputFileNameMapping -->
+      <outputDirectory>/lib</outputDirectory>
+      <unpack>false</unpack>
+      <scope>runtime</scope>
+      <!--excludes> <exclude>org.openjump:OpenJUMP</exclude> </excludes -->
+    </dependencySet>
+    <!--dependencySet -->
+    <!-- resort to rebuild ${project.build.finalName} manually as maven does 
+      not seem to resolve variables in variables at this point or project.build.finalName -->
+    <!--outputFileNameMapping>${artifact.artifactId}-${version}.${extension}</outputFileNameMapping -->
+    <!--outputDirectory>/lib</outputDirectory> <unpack>false</unpack> <scope>runtime</scope> 
+      <includes> <include>org.openjump:OpenJUMP</include> </includes> </dependencySet -->
+  </dependencySets>
+  <fileSets>
+    <fileSet>
+      <directory>scripts</directory>
+      <outputDirectory>/bin</outputDirectory>
+      <fileMode>755</fileMode>
+      <includes>
+        <include>**</include>
+      </includes>
+      <excludes>
+        <exclude>*.xml</exclude>
+      </excludes>
+    </fileSet>
+    <fileSet>
+      <directory>scripts</directory>
+      <outputDirectory>/bin</outputDirectory>
+      <includes>
+        <include>*.xml</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>etc</directory>
+      <outputDirectory>/bin</outputDirectory>
+      <includes>
+        <include>log4j.xml</include>
+      </includes>
+    </fileSet>
+    <!-- <fileSet> <directory>docs</directory> <excludes> <exclude>**/*.doc</exclude> 
+      </excludes> <outputDirectory>/docs</outputDirectory> </fileSet> -->
+    <fileSet>
+      <directory>etc</directory>
+      <outputDirectory>/</outputDirectory>
+      <includes>
+        <include>readme.txt</include>
+        <include>licenses/*</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>.</directory>
+      <outputDirectory>/</outputDirectory>
+      <includes>
+        <include>ChangeLog</include>
+        <include>lib/ext/**</include>
+        <include>lib/native/readme.txt</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</component>
