@@ -51,16 +51,18 @@ import com.vividsolutions.jump.workbench.model.*;
 import com.vividsolutions.jump.workbench.plugin.*;
 import com.vividsolutions.jump.workbench.ui.*;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
+import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 
 /**
  * Applies an {@link AffineTransformation} to a layer.
  *
  * @author Martin Davis
  */
-public class AffineTransformationPlugIn extends ThreadedBasePlugIn {
+public class AffineTransformationPlugIn extends AbstractThreadedUiPlugIn {
 
   private DualPaneInputDialog dialog;
-  private Layer layer;
+  //private Layer layer;
+  private String layerName;
   private double originX = 0.0;
   private double originY = 0.0;
   private double transX = 0.0;
@@ -78,12 +80,11 @@ public class AffineTransformationPlugIn extends ThreadedBasePlugIn {
   public void initialize(PlugInContext context) throws Exception {
       	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
   		featureInstaller.addMainMenuItem(
-  	        this,								//exe
-				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_WARP}, 	//menu path
-              this.getName() + "...", //name methode .getName recieved by AbstractPlugIn 
-              false,			//checkbox
-              null,			//icon
-              createEnableCheck(context.getWorkbenchContext())); //enable check  
+            new String[] {MenuNames.TOOLS, MenuNames.TOOLS_WARP},
+            this,
+            new JMenuItem(getName() + "..."),
+            createEnableCheck(context.getWorkbenchContext()),
+            -1);
   }
   
   public EnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
@@ -135,7 +136,9 @@ public class AffineTransformationPlugIn extends ThreadedBasePlugIn {
       trans.compose(translateTrans);
     }
 
-    FeatureCollection fc = layer.getFeatureCollectionWrapper();
+    FeatureCollection fc = context.getLayerManager()
+                                  .getLayer(layerName)
+                                  .getFeatureCollectionWrapper();
 
     FeatureCollection resultFC = new FeatureDataset(fc.getFeatureSchema());
 
@@ -153,7 +156,7 @@ public class AffineTransformationPlugIn extends ThreadedBasePlugIn {
 
   private void createLayers(PlugInContext context, FeatureCollection transFC) {
     Layer lyr = context.addLayer(StandardCategoryNames.RESULT,
-    		I18N.get("jump.plugin.edit.AffineTransformationPlugIn.Affine") + layer.getName(), transFC);
+    		I18N.get("jump.plugin.edit.AffineTransformationPlugIn.Affine") + layerName, transFC);
     lyr.fireAppearanceChanged();
   }
 
@@ -255,11 +258,12 @@ public class AffineTransformationPlugIn extends ThreadedBasePlugIn {
         context.getLayerManager());
     JButton buttonParam = dialog.addButton(BASELINE_BUTTON);
     buttonParam.addActionListener(new UpdateParamListener());
+    dialog.addRow(new JPanel());
 
   }
 
   private void getDialogValues(MultiInputDialog dialog) {
-    layer = dialog.getLayer(LAYER);
+    layerName = dialog.getLayer(LAYER).getName();
     originX = dialog.getDouble(ORIGIN_X);
     originY = dialog.getDouble(ORIGIN_Y);
     transX = dialog.getDouble(TRANS_DX);
@@ -271,8 +275,7 @@ public class AffineTransformationPlugIn extends ThreadedBasePlugIn {
     rotationAngle = dialog.getDouble(ROTATE_ANGLE);
   }
 
-  private void updateOriginLL(boolean isLowerLeft)
-  {
+  private void updateOriginLL(boolean isLowerLeft) {
     Layer lyr = dialog.getLayer(LAYER);
     FeatureCollection fc = lyr.getFeatureCollectionWrapper();
     Envelope env = fc.getEnvelope();
@@ -288,8 +291,7 @@ public class AffineTransformationPlugIn extends ThreadedBasePlugIn {
     originYField.setText(y + "");
   }
 
-  private String updateParams()
-  {
+  private String updateParams() {
     Layer layerSrc = dialog.getLayer(SRC_BASE_LAYER);
     Layer layerDest = dialog.getLayer(DEST_BASE_LAYER);
 
@@ -321,41 +323,31 @@ public class AffineTransformationPlugIn extends ThreadedBasePlugIn {
     return null;
   }
 
-  private void updateParams(TransRotScaleBuilder trsBuilder)
-  {
+  private void updateParams(TransRotScaleBuilder trsBuilder) {
     originXField.setText(trsBuilder.getOriginX() + "");
     originYField.setText(trsBuilder.getOriginY() + "");
-
     scaleXField.setText(trsBuilder.getScaleX() + "");
     scaleYField.setText(trsBuilder.getScaleY() + "");
-
     transXField.setText(trsBuilder.getTranslateX() + "");
     transYField.setText(trsBuilder.getTranslateY() + "");
-
     rotateAngleField.setText(trsBuilder.getRotationAngle() + "");
   }
 
 
-  private void setToIdentity()
-  {
+  private void setToIdentity() {
     scaleXField.setText("1.0");
     scaleYField.setText("1.0");
-
     shearXField.setText("0.0");
     shearYField.setText("0.0");
-
     transXField.setText("0.0");
     transYField.setText("0.0");
-
     rotateAngleField.setText("0.0");
   }
 
-  private class OriginLLListener implements ActionListener
-  {
+  private class OriginLLListener implements ActionListener {
     private boolean isLowerLeft;
-
-    OriginLLListener(boolean isLowerLeft)
-    {
+    
+    OriginLLListener(boolean isLowerLeft) {
       this.isLowerLeft = isLowerLeft;
     }
 
@@ -363,14 +355,18 @@ public class AffineTransformationPlugIn extends ThreadedBasePlugIn {
       updateOriginLL(isLowerLeft);
     }
   }
+  
   private class UpdateParamListener implements ActionListener {
     public void actionPerformed(ActionEvent e) {
       String errMsg = updateParams();
       if (errMsg != null) {
-         JOptionPane.showMessageDialog(null, errMsg, I18N.get("jump.plugin.edit.AffineTransformationPlugIn.Control-Point-Error"), JOptionPane.ERROR_MESSAGE);
+         JOptionPane.showMessageDialog(null, errMsg, 
+             I18N.get("jump.plugin.edit.AffineTransformationPlugIn.Control-Point-Error"), 
+             JOptionPane.ERROR_MESSAGE);
       }
     }
   }
+  
   private class SetIdentityListener implements ActionListener {
     public void actionPerformed(ActionEvent e) {
       setToIdentity();

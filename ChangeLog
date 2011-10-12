@@ -5,6 +5,8 @@
       - LineNoderPlugIn
       - PolygonizerPlugIn
       - PrecisionReducerPlugIn
+      - ExtractSegmentsPlugIn
+      - AffineTransformationPlugIn
 
 2011-10-08 mmichaud <michael.michaud@free.fr>
     * Clean and improve AutoAssignAttributePlugIn

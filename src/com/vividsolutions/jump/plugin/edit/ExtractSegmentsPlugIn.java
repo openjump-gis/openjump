@@ -35,6 +35,7 @@ import java.awt.Color;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JMenuItem;
 
 import java.util.*;
 
@@ -50,13 +51,13 @@ import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.operation.linemerge.LineMerger;
 import com.vividsolutions.jump.geom.*;
 import com.vividsolutions.jump.task.*;
+import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 
-public class ExtractSegmentsPlugIn
-    extends ThreadedBasePlugIn
-{
+public class ExtractSegmentsPlugIn extends AbstractThreadedUiPlugIn {
+    
+  private final static String LAYER = I18N.get("ui.MenuNames.LAYER");
 
-  private static Collection toLineStrings(Collection segments)
-  {
+  private static Collection toLineStrings(Collection segments) {
     GeometryFactory fact = new GeometryFactory();
     List lineStringList = new ArrayList();
     for (Iterator i = segments.iterator(); i.hasNext();) {
@@ -67,8 +68,7 @@ public class ExtractSegmentsPlugIn
     return lineStringList;
   }
   
-  private static Collection toMergedLineStrings(Collection segments)
-  {
+  private static Collection toMergedLineStrings(Collection segments) {
     GeometryFactory fact = new GeometryFactory();
     LineMerger lineMerger = new LineMerger(); 
     for (Iterator i = segments.iterator(); i.hasNext();) {
@@ -78,7 +78,7 @@ public class ExtractSegmentsPlugIn
     return lineMerger.getMergedLineStrings();
   }
 
-  private MultiInputDialog dialog;
+  //private MultiInputDialog dialog;
   private String layerName;
   private boolean uniqueSegmentsOnly;
   private boolean mergeResultingSegments;
@@ -91,18 +91,18 @@ public class ExtractSegmentsPlugIn
    * Returns a very brief description of this task.
    * @return the name of this task
    */
-  public String getName() { return I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Extract-Segments"); }
+  public String getName() { 
+      return I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Extract-Segments"); 
+  }
 
-  public void initialize(PlugInContext context) throws Exception
-  {
+  public void initialize(PlugInContext context) throws Exception {
       	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
   		featureInstaller.addMainMenuItem(
-  	        this,								//exe
-				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY, MenuNames.CONVERT}, 	//menu path
-              this.getName() + "...", //name methode .getName recieved by AbstractPlugIn 
-              false,			//checkbox
-              null,			//icon
-              createEnableCheck(context.getWorkbenchContext())); //enable check  
+			new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY, MenuNames.CONVERT},
+            this, 
+            new JMenuItem(getName() + "..."),
+            createEnableCheck(context.getWorkbenchContext()),
+            -1);  
   }
   
   public EnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
@@ -113,7 +113,7 @@ public class ExtractSegmentsPlugIn
   }
 
   public boolean execute(PlugInContext context) throws Exception {
-    dialog = new MultiInputDialog(
+    MultiInputDialog dialog = new MultiInputDialog(
         context.getWorkbenchFrame(), getName(), true);
     setDialogValues(dialog, context);
     GUIUtil.centreOnWindow(dialog);
@@ -123,14 +123,13 @@ public class ExtractSegmentsPlugIn
     return true;
   }
 
-  public void run(TaskMonitor monitor, PlugInContext context)
-       throws Exception
-  {
+  public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
+    
     monitor.allowCancellationRequests();
 
     monitor.report(I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Extracting-Segments"));
 
-    Layer layer = dialog.getLayer(LAYER);
+    Layer layer = context.getLayerManager().getLayer(layerName);
     FeatureCollection lineFC = layer.getFeatureCollectionWrapper();
     inputEdgeCount = lineFC.size();
 
@@ -148,33 +147,26 @@ public class ExtractSegmentsPlugIn
   }
 
   private void createLayers(PlugInContext context, Collection linestringList)
-         throws Exception
-  {
-
+         throws Exception {
     FeatureCollection lineStringFC = FeatureDatasetFactory.createFromGeometry(linestringList);
     context.addLayer(
         StandardCategoryNames.RESULT,
         layerName + " " + I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Extracted-Segs"),
         lineStringFC);
-
     createOutput(context);
-
   }
 
-  private void createOutput(PlugInContext context)
-  {
+  private void createOutput(PlugInContext context) {
     context.getOutputFrame().createNewDocument();
     context.getOutputFrame().addHeader(1,
     		I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Extract-Segments"));
     context.getOutputFrame().addField(I18N.get("ui.MenuNames.LAYER")+ ":", layerName);
 
-
     context.getOutputFrame().addText(" ");
     context.getOutputFrame().addField(
-                                      I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Number-of-unique-segments-extracted"), "" + uniqueSegmentCount);
+        I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Number-of-unique-segments-extracted"), 
+        "" + uniqueSegmentCount);
   }
-
-  private final static String LAYER = I18N.get("ui.MenuNames.LAYER");
 
   private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
     dialog.setSideBarImage(new ImageIcon(getClass().getResource("ExtractSegments.png")));
