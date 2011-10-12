@@ -73,7 +73,10 @@ public class InteriorPointFinder {
         }
 
         if (geometry instanceof GeometryCollection) {
-            return findPoint(((GeometryCollection) geometry).getGeometryN(0));
+            if (geometry.getDimension() == 2) {
+                return findPoint(widestGeometry(geometry));
+            }
+            return findPoint(geometry.getGeometryN(0));
         }
 
         Geometry envelopeMiddle = envelopeMiddle(geometry);
@@ -106,9 +109,8 @@ public class InteriorPointFinder {
         Geometry widestGeometry = gc.getGeometryN(0);
 
         for (int i = 1; i < gc.getNumGeometries(); i++) { //Start at 1
-
-            if (gc.getGeometryN(i).getEnvelopeInternal().getWidth() > widestGeometry.getEnvelopeInternal()
-                                                                                        .getWidth()) {
+            if (gc.getGeometryN(i).getEnvelopeInternal().getWidth() > 
+                    widestGeometry.getEnvelopeInternal().getWidth()) {
                 widestGeometry = gc.getGeometryN(i);
             }
         }
