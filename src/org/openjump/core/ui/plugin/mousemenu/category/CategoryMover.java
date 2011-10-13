@@ -69,7 +69,10 @@ public class CategoryMover {
         
         int currentPos = categories.indexOf(cat);
         
-        if (pos < 0 || pos == currentPos) return;
+        if (pos < 0 || pos == currentPos) {
+            lm.setFiringEvents(true);
+            return;
+        }
         
         // remove layer & category
         List layers = cat.getLayerables();
@@ -100,6 +103,7 @@ public class CategoryMover {
      *@param cat category to move
      */
     public void moveCategoryToTop(Category cat){
+        if (this.context.getLayerManager().getCategories().size() < 2) return;
         this.moveCategoryToPosition(cat,0);
     }
     
@@ -110,6 +114,7 @@ public class CategoryMover {
      */
     public void moveCategoryToBottom(Category cat){
         List categories = this.context.getLayerManager().getCategories();
+        if (categories.size() < 2) return;
         this.moveCategoryToPosition(cat,categories.size()-1);
     }
     
@@ -120,6 +125,7 @@ public class CategoryMover {
      */
     public void moveCategoryOneUp(Category cat){
         List categories = this.context.getLayerManager().getCategories();
+        if (categories.size() < 2) return;
         int currentPos = categories.indexOf(cat);
         this.moveCategoryToPosition(cat, currentPos-1);        
     }
@@ -131,6 +137,7 @@ public class CategoryMover {
      */
     public void moveCategoryOneDown(Category cat){
         List categories = this.context.getLayerManager().getCategories();
+        if (categories.size() < 2) return;
         int currentPos = categories.indexOf(cat);
         this.moveCategoryToPosition(cat, currentPos+1);        
     }

@@ -1,4 +1,7 @@
 2011-10-12 mmichaud <michael.michaud@free.fr>
+    * Bug 3413619 : moving category up and down when there is only one
+
+2011-10-12 mmichaud <michael.michaud@free.fr>
     * Small improvement in LabelStyle (Label multipolygon on widest polygon)
     * Use new FeatureInstaller methods and exclude calls to MultiInputDialog
       in run method of plugins (see also feature request 3421958 & 3200485) :
