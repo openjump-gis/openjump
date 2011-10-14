@@ -18,5 +18,9 @@
         <include>lib/native/**</include>
       </includes>
     </fileSet>
+    <fileSet>
+      <directory>lib/plus</directory>
+      <outputDirectory>/lib/ext</outputDirectory>
+    </fileSet>
   </fileSets>
 </assembly>
