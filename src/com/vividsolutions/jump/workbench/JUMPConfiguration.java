@@ -87,6 +87,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.AddWMSDemoBoxEasterEggPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.ClearSelectionPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.CloneWindowPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.CombineSelectedFeaturesPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.CopySchemaPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.DeleteAllFeaturesPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.DeleteSelectedItemsPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.EditSelectedFeaturePlugIn;
@@ -100,9 +101,9 @@ import com.vividsolutions.jump.workbench.ui.plugin.InstallStandardFeatureTextWri
 import com.vividsolutions.jump.workbench.ui.plugin.MapToolTipsPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.MoveLayerablePlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.NewTaskPlugIn;
-//import com.vividsolutions.jump.workbench.ui.plugin.OpenProjectPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.OptionsPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.OutputWindowPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.PasteSchemaPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.RedoPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.RemoveSelectedCategoriesPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.RemoveSelectedLayersPlugIn;
@@ -295,9 +296,12 @@ public class JUMPConfiguration implements Setup {
 
     private ViewAttributesPlugIn viewAttributesPlugIn = new ViewAttributesPlugIn();
 
-    private ViewSchemaPlugIn viewSchemaPlugIn = new ViewSchemaPlugIn(
-            editingPlugIn);
-
+    private ViewSchemaPlugIn viewSchemaPlugIn = new ViewSchemaPlugIn(editingPlugIn);
+    
+    private CopySchemaPlugIn copySchemaPlugIn = new CopySchemaPlugIn();
+    
+    private PasteSchemaPlugIn pasteSchemaPlugIn = new PasteSchemaPlugIn();
+    
     private FeatureInfoPlugIn featureInfoPlugIn = new FeatureInfoPlugIn();
 
     private OutputWindowPlugIn outputWindowPlugIn = new OutputWindowPlugIn();
@@ -513,9 +517,10 @@ public class JUMPConfiguration implements Setup {
                 viewAttributesPlugIn, viewAttributesPlugIn.getName(), false,
                 GUIUtil.toSmallIcon(viewAttributesPlugIn.getIcon()),
                 viewAttributesPlugIn.createEnableCheck(workbenchContext));
-        featureInstaller.addPopupMenuItem(layerNamePopupMenu, viewSchemaPlugIn,
-                viewSchemaPlugIn.getName(), false, ViewSchemaPlugIn.ICON,
-                ViewSchemaPlugIn.createEnableCheck(workbenchContext));
+        featureInstaller.addPopupMenuItem(layerNamePopupMenu, 
+                viewSchemaPlugIn, new String[]{MenuNames.SCHEMA}, viewSchemaPlugIn.getName() + "...",
+                false, ViewSchemaPlugIn.ICON, ViewSchemaPlugIn.createEnableCheck(workbenchContext));
+        FeatureInstaller.childMenuItem(MenuNames.SCHEMA, layerNamePopupMenu).setIcon(ViewSchemaPlugIn.ICON);
         
         featureInstaller.addPopupMenuItem(layerNamePopupMenu,
                 changeStylesPlugIn, new String[]{MenuNames.STYLE}, changeStylesPlugIn.getName() + "...",
@@ -529,6 +534,8 @@ public class JUMPConfiguration implements Setup {
                 new String[]{MenuNames.STYLE}, pasteStylesPlugIn.getName(),
                 false, GUIUtil.toSmallIcon(pasteStylesPlugIn.getIcon()),
                 PasteStylesPlugIn.createEnableCheck(workbenchContext));
+        FeatureInstaller.childMenuItem(MenuNames.STYLE, layerNamePopupMenu)
+                        .setIcon(GUIUtil.toSmallIcon(pasteStylesPlugIn.getIcon()));
 
         featureInstaller.addPopupMenuItem(layerNamePopupMenu, refreshDataStoreLayerPlugin,
             new String[]{MenuNames.DATASTORE}, refreshDataStoreLayerPlugin.getName(), false, RefreshDataStoreLayerPlugin.ICON,
@@ -536,6 +543,7 @@ public class JUMPConfiguration implements Setup {
         featureInstaller.addPopupMenuItem(layerNamePopupMenu, imageLayerManagerPlugIn,
                 imageLayerManagerPlugIn.getName() + "...", false, null,
                 ImageLayerManagerPlugIn.createEnableCheck(workbenchContext));
+        FeatureInstaller.childMenuItem(MenuNames.DATASTORE, layerNamePopupMenu).setIcon(IconLoader.icon("database_gear.png"));
 
         layerNamePopupMenu.addSeparator(); // ===================
         
@@ -742,7 +750,7 @@ public class JUMPConfiguration implements Setup {
         featureInstaller.addMainMenuItem(pasteItemsPlugIn, new String[] {MenuNames.EDIT},
                 pasteItemsPlugIn.getNameWithMnemonic(), false, pasteItemsPlugIn.ICON, PasteItemsPlugIn
                         .createEnableCheck(workbenchContext));
-        //featureInstaller.addMenuSeparator(MenuNames.EDIT); // ===================
+        featureInstaller.addMenuSeparator(MenuNames.EDIT); // ===================
         featureInstaller.addMainMenuItemWithJava14Fix(deleteSelectedItemsPlugIn, new String[] {MenuNames.EDIT},
                 deleteSelectedItemsPlugIn.getName(), false, DeleteSelectedItemsPlugIn.ICON,
                 DeleteSelectedItemsPlugIn.createEnableCheck(workbenchContext));

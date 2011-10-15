@@ -1,3 +1,6 @@
+2011-10-15 mmichaud <michael.michaud@free.fr>
+    * Add CopySchemaPlugIn and PasteSchemaPlugIn from SkyJump
+
 2011-10-12 mmichaud <michael.michaud@free.fr>
     * Bug 3413619 : moving category up and down when there is only one
 
