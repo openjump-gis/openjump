@@ -1,5 +1,7 @@
-2011-10-15 mmichaud <michael.michaud@free.fr>
+2011-10-16 mmichaud <michael.michaud@free.fr>
     * Workaround for bug 3418067 in LayerNamePanel of cloned windows
+    * Add ReverseOrientationPlugIn (Feature Request 3277052) in LayerViewPanel 
+      right-click menu
 
 2011-10-15 mmichaud <michael.michaud@free.fr>
     * Add CopySchemaPlugIn and PasteSchemaPlugIn from SkyJump
