@@ -1,4 +1,7 @@
 2011-10-15 mmichaud <michael.michaud@free.fr>
+    * Workaround for bug 3418067 in LayerNamePanel of cloned windows
+
+2011-10-15 mmichaud <michael.michaud@free.fr>
     * Add CopySchemaPlugIn and PasteSchemaPlugIn from SkyJump
 
 2011-10-12 mmichaud <michael.michaud@free.fr>

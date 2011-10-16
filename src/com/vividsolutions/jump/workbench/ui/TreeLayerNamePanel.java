@@ -581,11 +581,14 @@ public class TreeLayerNamePanel extends JPanel
 
         if (e.getType() == LayerEventType.ADDED) {
             firableTreeModelWrapper.fireTreeNodesInserted(treeModelEvent);
-
-            // firableTreeModelWrapper.fireTreeStructureChanged(treeModelEvent);
-            if ((e.getType() == LayerEventType.ADDED)
-            		&& ((selectedNodes(Layerable.class)).size() == 0)
-                    && e.getLayerable() instanceof Layer) {
+            // firing TreeStructureChanged solve the problem ID 3418067
+            // But I did not find yet the true origin of the bug which is
+            // probably somewhere else.
+            // The strange thing is that the bug appears only in the cloned
+            // windows, not in the original one [mmichaud 2011-10-16]
+            firableTreeModelWrapper.fireTreeStructureChanged(treeModelEvent);
+            if ((selectedNodes(Layerable.class)).size() == 0 &&
+                e.getLayerable() instanceof Layer) {
                 addSelectedLayer((Layer) e.getLayerable());
             }
 
