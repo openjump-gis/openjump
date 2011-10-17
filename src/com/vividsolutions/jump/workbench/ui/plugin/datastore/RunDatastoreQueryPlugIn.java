@@ -13,7 +13,10 @@ import com.vividsolutions.jump.workbench.datastore.ConnectionManager;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
+
+import javax.swing.Icon;
 
 /**
  * This PlugIn runs a SQL query against a datastore and creates a Layer
@@ -40,6 +43,10 @@ public class RunDatastoreQueryPlugIn extends AbstractAddDatastoreLayerPlugIn {
 
     public String getName(){
     	return I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPlugIn.Run-Datastore-Query");
+    }
+    
+    public Icon getIcon(){
+    	return IconLoader.icon("sql.png");
     }
 
     private Layer createLayer( final RunDatastoreQueryPanel panel,
