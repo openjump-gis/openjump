@@ -3,7 +3,8 @@ Do not forget:
 1. set version and release in language/jump.properties
 2. test the build
 3. tag the revision in svn with version to release
-4. update and add links to website/wikipage
+4. set sf.net download button default (in sf.net file manager, info button on the right, default checkboxes)
+5. update and add links to website/wikipage
 
 Instructions for generating a win32 installer for OpenJUMP
 -------------------------------------------------------------------------------
