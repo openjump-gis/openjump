@@ -1,6 +1,6 @@
 OpenJUMP ReadMe file
 --------------------
-Version 1.4.2
+Version 1.4.3 development
 
 September 11th, 2011
 
@@ -17,11 +17,10 @@ Contents
 1. Licensing
 ------------
 OpenJUMP is distributed under the GPL2 license. A description of this license
-can be found in the "gpl2_license.txt" (GPL2) file in the "licenses/" folder.
+can be found in the "gpl-2.txt" (GPL2) file in the "licenses/" folder.
 
 OpenJUMP uses and distributes the following (in alphabetical order) formatted
-as follows:
- Library name - License name - License file in "licenses/" folder
+as ( Library name - License name - License file in "licenses/" folder )
  BATIK - Apache License Version 2.0 - apache_license-2.0.txt
  BeanShell - LGPL2.1 - lgpl-2.1.txt
  Buoy Framework - Public Domain
