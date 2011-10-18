@@ -21,25 +21,64 @@ can be found in the "gpl2_license.txt" (GPL2) file in the "licenses/" folder.
 
 OpenJUMP uses and distributes the following (in alphabetical order) formatted
 as follows:
-Library name - License name - License file in "licenses/" folder
-BATIK - Apache License Version 2.0 - apache_license-2.0.txt
-BeanShell - LGPL2.1 - lgpl-2.1.txt
-Buoy Framework - Public Domain
-Code2000 Unicode font - GPL2 - gpl-2.txt
-ECW SDK 3.3 native libraries - ERDAS ECW JPEG2000 SDK license - ecw license.txt
-JAI - Java Advanced Imaging Distribution License - jdl-jai.pdf
-JAMA - Public Domain
-Jdom - Apache-style open source jdom license, with the acknowledgment clause removed 
-     - jdom_license.txt
-JMath and its successor projects JMathTools (IO,Plot,Array) - BSD license 
+ Library name - License name - License file in "licenses/" folder
+ BATIK - Apache License Version 2.0 - apache_license-2.0.txt
+ BeanShell - LGPL2.1 - lgpl-2.1.txt
+ Buoy Framework - Public Domain
+ Code2000 Unicode font - GPL2 - gpl-2.txt
+ JAI - Java Advanced Imaging Distribution License - jdl-jai.pdf
+ JAMA - Public Domain
+ Jdom - Apache-style open source jdom license, 
+       with the acknowledgment clause removed - jdom_license.txt
+ JMath and its successor projects JMathTools (IO,Plot,Array) - BSD license 
      - jmath_license.txt
-Javascript library RHINO - GPL2 - gpl2.txt
-JTS Topology Suite - LGPL2 - lgpl-2.1.txt
-Junit - Common Public License v1.0 (CPL1) - cpl-1.0.txt
-Jython - Jython license - jython_license.txt
-Log4J - Apache License Version 2.0 - apache_license-2.0.txt
-Postgresql JDBC driver - Postgresql BSD license - postgresql-BSD_license.txt
-Xerces2 Java Parser - Apache License Version 2.0 - apache_license-2.0.txt
+ Javascript library RHINO - GPL2 - gpl-2.txt
+ JTS Topology Suite - LGPL2 - lgpl-2.1.txt
+ Junit - Common Public License v1.0 (CPL1) - cpl-1.0.txt
+ Jython - Jython license - jython_license.txt
+ Log4J - Apache License Version 2.0 - apache_license-2.0.txt
+ Postgresql JDBC driver - Postgresql BSD license - postgresql-BSD_license.txt
+ Xerces2 Java Parser - Apache License Version 2.0 - apache_license-2.0.txt
+
+Additionally PLUS distributions contain, formatting is
+( Component name - License name - License file in "licenses/" folder
+   list of files and dependencies with license if any )
+ Geoarbores Vertex Symbols Collection (Giuseppe Aruta) - GPL2 - gpl-2.txt
+  lib/ext/VertexImages/*.wkt
+ ECW and JPEG2000 Read Support based on ECW SDK 3.3 for windows x86/x64, 
+  linux x86 - ERDAS ECW JPEG2000 SDK license - ecw license.txt
+  lib/native/[os/]{jecw-*.jar,NCS*.dll,ermapper.jar}
+and the following plugins
+ Aggregation PlugIn (Michaël Michaud) - GPL2 - gpl-2.txt
+  aggregation-*.jar
+ BeanShell Editor (Michaël Michaud) - GPL2 - gpl-2.txt
+  bsheditor4jump-*.jar, buoy.jar(see above)
+ DXF driver (Michaël Michaud) - GPL2 - gpl-2.txt
+  driver-dxf-*.jar
+ Graph Extension (Michaël Michaud) - GPL2 - gpl-2.txt
+  graph-toolbox-*.jar, jump-jgrapht-*.jar, 
+  jgrapht-*.jar - LGPL2 - lgpl-2.1.txt
+ Jump Chart (com.cadplan.jump) - GPL2 - gpl-2.txt
+  JumpChart.jar
+ Printer (com.cadplan.jump) - GPL2 - gpl-2.txt
+  jumpPrinter.jar
+ Pirol Csv Dataset 
+  (de.fhOsnabrueck.jump.pirol.datasources.pirolCSV) - GPL2 - gpl-2.txt
+  PirolCsv.jar, pbaseClasses.jar
+ PostGIS Driver (Refractions Research/HCU Hamburg, RZCN/E. Lemesre)
+  - GPL2 - gpl-2.txt
+  PostGISPlugIn-*.jar
+ Sextante Tools (es.unex.sextante.openjump.extensions) - GPL3 - gpl-3.0.txt
+  sextante-binding-*.jar, sextante/*.* 
+  TableLayout-*.jar - Clearthought License - clearthought-2.0.txt
+  xbean-*.jar - Apache License Version 2.0 - apache_license-2.0.txt
+ Topology Extension (Michaël Michaud) - GPL2 - gpl-2.txt
+  topology-*.jar
+ Text Driver (Michaël Michaud) - GPL2 - gpl-2.txt
+  txt-driver-*.jar
+ Vertex Note (com.cadplan.jump) - GPL2 - gpl-2.txt
+ Vertex Symbols (com.cadplan.jump) - GPL2 - gpl-2.txt
+  VertexSymbols.jar, iText-2.1.5.jar
 
 
 2. Installation instructions
