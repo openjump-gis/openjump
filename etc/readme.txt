@@ -39,7 +39,7 @@ as ( Library name - License name - License file in "licenses/" folder )
  Postgresql JDBC driver - Postgresql BSD license - postgresql-BSD_license.txt
  Xerces2 Java Parser - Apache License Version 2.0 - apache_license-2.0.txt
 
-Additionally PLUS distributions contain, formatting is
+Additionally PLUS distributions contain
 ( Component name - License name - License file in "licenses/" folder
    list of files and dependencies with license if any )
  Geoarbores Vertex Symbols Collection (Giuseppe Aruta) - GPL2 - gpl-2.txt
@@ -77,7 +77,8 @@ and the following plugins
   txt-driver-*.jar
  Vertex Note (com.cadplan.jump) - GPL2 - gpl-2.txt
  Vertex Symbols (com.cadplan.jump) - GPL2 - gpl-2.txt
-  VertexSymbols.jar, iText-2.1.5.jar
+  VertexSymbols.jar
+  iText-2.1.5.jar - LGPL2.1 - lgpl-2.1.txt
 
 
 2. Installation instructions
