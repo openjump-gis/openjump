@@ -51,6 +51,7 @@ import com.vividsolutions.jump.datastore.postgis.PostgisDataStoreDriver;
 import com.vividsolutions.jump.workbench.datasource.AbstractSaveDatasetAsPlugIn;
 import com.vividsolutions.jump.workbench.datasource.InstallStandardDataSourceQueryChoosersPlugIn;
 import com.vividsolutions.jump.workbench.datasource.LoadDatasetPlugIn;
+import com.vividsolutions.jump.workbench.datasource.SaveDatasetAsFilePlugIn;
 import com.vividsolutions.jump.workbench.datasource.SaveDatasetAsPlugIn;
 import com.vividsolutions.jump.workbench.datastore.ConnectionManager;
 import com.vividsolutions.jump.workbench.model.Layer;
@@ -166,6 +167,8 @@ import com.vividsolutions.jump.workbench.ui.zoom.ZoomToSelectedItemsPlugIn;
 import com.vividsolutions.jump.workbench.ui.zoom.ZoomTool;
 
 import de.latlon.deejump.plugin.style.DeeChangeStylesPlugIn;
+
+import org.openjump.core.CheckOS;
 import org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel;
 import org.openjump.core.ui.plugin.tools.AdvancedMeasurePlugin;
 import org.openjump.core.ui.plugin.tools.AdvancedMeasureTool;
@@ -252,7 +255,7 @@ public class JUMPConfiguration implements Setup {
 
     private LoadDatasetPlugIn loadDatasetPlugIn = new LoadDatasetPlugIn();
     private SaveDatasetAsPlugIn saveDatasetAsPlugIn = new SaveDatasetAsPlugIn();
-    //private SaveDatasetAsFilePlugIn saveDatasetAsFilePlugIn = new SaveDatasetAsFilePlugIn();
+    private SaveDatasetAsFilePlugIn saveDatasetAsFilePlugIn = new SaveDatasetAsFilePlugIn();
     private SaveImageAsPlugIn saveImageAsPlugIn = new SaveImageAsPlugIn();
 
     private GenerateLogPlugIn generateLogPlugIn = new GenerateLogPlugIn();
@@ -549,15 +552,22 @@ public class JUMPConfiguration implements Setup {
 
         layerNamePopupMenu.addSeparator(); // ===================
         
-        /*featureInstaller.addPopupMenuItem(layerNamePopupMenu,
+        //[sstein 18.Oct.2011] re-added the saveDatasetAsFilePlugIn and the MacOSX check 
+        //        since under MacOSX the SaveDatasetAsPlugIn is missing a text field to
+        //        write the name of the new file. Hence, the dialog could only be used
+        //        for saving to an existing dataset.
+        if(CheckOS.isMacOsx()){
+        featureInstaller.addPopupMenuItem(layerNamePopupMenu,
                 saveDatasetAsFilePlugIn, saveDatasetAsFilePlugIn.getName() + "...",
-                false, null, AbstractSaveDatasetAsPlugIn
-                        .createEnableCheck(workbenchContext));*/
+                false, SaveDatasetAsPlugIn.ICON, AbstractSaveDatasetAsPlugIn
+                        .createEnableCheck(workbenchContext));
+        }
+
         featureInstaller.addPopupMenuItem(layerNamePopupMenu,
         		saveDatasetAsPlugIn, saveDatasetAsPlugIn.getName() + "...",
                 false, SaveDatasetAsPlugIn.ICON, AbstractSaveDatasetAsPlugIn
                         .createEnableCheck(workbenchContext));
-
+        
         layerNamePopupMenu.addSeparator(); // ===================
         featureInstaller.addPopupMenuItem(layerNamePopupMenu, moveUpPlugIn,
                 moveUpPlugIn.getName(), false, MoveLayerablePlugIn.UPICON, moveUpPlugIn

@@ -1,3 +1,15 @@
+2011-10-18 sstein <sstein@geo.uzh.ch>
+    * re-added the SaveDatasetAsFilePlugIn to be loaded in the layer context 
+      menu if the system is MacOSX. This was done since under MacOSX the 
+      SaveDatasetAsPlugIn is missing a text field to write the name of 
+      the new file. Hence, the dialog could only be used for saving to an 
+      existing dataset. Note, I did not replace one menu item with the other,
+      since SaveDataSetAs can also write to a database (e.g. PostGIS).
+      Changed:
+      com.vividsolutions.jump.workbench.JUMPConfiguration
+      Added:
+      com.vividsolutions.jump.workbench.datasource.SaveDatasetAsFilePlugIn
+
 2011-10-16 mmichaud <michael.michaud@free.fr>
     * Workaround for bug 3418067 in LayerNamePanel of cloned windows
     * Add ReverseOrientationPlugIn (Feature Request 3277052) in LayerViewPanel 
