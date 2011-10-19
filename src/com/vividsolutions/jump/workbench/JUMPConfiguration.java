@@ -502,6 +502,8 @@ public class JUMPConfiguration implements Setup {
         featureInstaller.addPopupMenuItem(layerNamePopupMenu, selectablePlugIn,
                 selectablePlugIn.getName(), true, selectablePlugIn.ICON, selectablePlugIn
                         .createEnableCheck(workbenchContext));
+        layerNamePopupMenu.addSeparator(); // ===================
+        
         featureInstaller.addPopupMenuItem(layerNamePopupMenu,
                 removeSelectedLayersPlugIn, removeSelectedLayersPlugIn
                         .getName(), false, RemoveSelectedLayersPlugIn.ICON, removeSelectedLayersPlugIn
