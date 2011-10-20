@@ -49,6 +49,8 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
@@ -86,16 +88,13 @@ public class CalculateAreasAndLengthsPlugIn extends AbstractPlugIn {
     private String LENGTH_CHECK_BOX = I18N.get("ui.plugin.analysis.CalculateAreasAndLengthsPlugIn.calculate-length");
     private String AREA_CHECK_BOX = I18N.get("ui.plugin.analysis.CalculateAreasAndLengthsPlugIn.calculate-area");
 
-    public void initialize(PlugInContext context) throws Exception
-    {
-        	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-    		featureInstaller.addMainMenuItem(
-    	        this,
-  				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_ATTRIBUTES},
-                this.getName() + "...",
-                false,			//checkbox
-                null,			//icon
-                createEnableCheck(context.getWorkbenchContext())); 
+    public void initialize(PlugInContext context) throws Exception {
+        FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
+        featureInstaller.addMainMenuItem(
+            this,
+            new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_ATTRIBUTES},
+            new JMenuItem(this.getName() + "..."),
+            createEnableCheck(context.getWorkbenchContext())); 
     }
     
     public boolean execute(PlugInContext context) throws Exception {

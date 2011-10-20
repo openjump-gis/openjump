@@ -1,4 +1,3 @@
-
 /*
 * The Unified Mapping Platform (JUMP) is an extensible, interactive GUI
 * for visualizing and manipulating spatial features with geometry and attributes.
@@ -43,6 +42,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+import javax.swing.JMenuItem;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jump.feature.Feature;
@@ -70,10 +70,8 @@ import com.vividsolutions.jump.I18N;
  *
  * @see GeometryFunction
  */
-public class GeometryFunctionPlugIn
-    extends AbstractPlugIn
-    implements ThreadedPlugIn
-{
+public class GeometryFunctionPlugIn extends AbstractPlugIn
+                                    implements ThreadedPlugIn {
   public static final String GEOMETRY_FUNCTION_REG_KEY = "Geometry Function Registry Key";
   
   //-- [sstein 15.02.2006]
@@ -106,9 +104,7 @@ public class GeometryFunctionPlugIn
   private Geometry geoms[] = new Geometry[2];
   private double[] params = new double[2];
 
-  public GeometryFunctionPlugIn()
-  {
-  }
+  public GeometryFunctionPlugIn() {}
 
   private String categoryName = StandardCategoryNames.RESULT;
 
@@ -125,14 +121,11 @@ public class GeometryFunctionPlugIn
   public void initialize(PlugInContext context) throws Exception {
     	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
   		featureInstaller.addMainMenuItem(
-  	        this,
-			new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
-            this.getName() + "...",
-            false,			//checkbox
-            null,			//icon
-            createEnableCheck(context.getWorkbenchContext()));
-  		
-    registerFunctions(context);
+  		    this,
+  		    new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
+  		    new JMenuItem(this.getName() + "..."),
+  		    createEnableCheck(context.getWorkbenchContext()));
+        registerFunctions(context);
   }
 
   private void registerFunctions(PlugInContext context){

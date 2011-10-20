@@ -41,6 +41,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import javax.swing.JComboBox;
+import javax.swing.JMenuItem;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -76,26 +77,14 @@ public class UnionPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
     
     public UnionPlugIn() {
     }
-
-    /*
-      public void initialize(PlugInContext context) throws Exception {
-        context.getFeatureInstaller().addMainMenuItem(
-            this, "Tools", "Find Unaligned Segments...", null, new MultiEnableCheck()
-          .add(context.getCheckFactory().createWindowWithLayerNamePanelMustBeActiveCheck())
-            .add(context.getCheckFactory().createAtLeastNLayersMustExistCheck(1)));
-      }
-    */
     
-    public void initialize(PlugInContext context) throws Exception
-    {
-        	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-    		featureInstaller.addMainMenuItem(
-    	        this,								//exe
-  				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
-                this.getName() + "...", 
-                false,			//checkbox
-                null,			//icon
-                createEnableCheck(context.getWorkbenchContext()));  
+    public void initialize(PlugInContext context) throws Exception {
+        FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
+        featureInstaller.addMainMenuItem(
+            this,
+            new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
+            new JMenuItem(this.getName() + "..."),
+            createEnableCheck(context.getWorkbenchContext()));  
     }
     
     public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {

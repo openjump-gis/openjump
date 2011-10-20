@@ -37,6 +37,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JComboBox;
+import javax.swing.JMenuItem;
 
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jump.I18N;
@@ -54,6 +55,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 
 public class ConvexHullPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
+    
     private String LAYER = I18N.get("ui.plugin.analysis.ConvexHullPlugIn.Source-Layer");
     private MultiInputDialog dialog;
 
@@ -66,16 +68,13 @@ public class ConvexHullPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
       categoryName = value;
     }
     
-    public void initialize(PlugInContext context) throws Exception
-    {
-        	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-    		featureInstaller.addMainMenuItem(
-    	        this,
-  				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
-                this.getName() + "...",
-                false,			//checkbox
-                null,			//icon
-                createEnableCheck(context.getWorkbenchContext())); 
+    public void initialize(PlugInContext context) throws Exception {
+        FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
+        featureInstaller.addMainMenuItem(
+            this,
+            new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
+            new JMenuItem(this.getName() + "..."),
+            createEnableCheck(context.getWorkbenchContext())); 
     }
     
     public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {

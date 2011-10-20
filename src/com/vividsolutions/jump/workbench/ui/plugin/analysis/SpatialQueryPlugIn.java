@@ -52,10 +52,7 @@ import com.vividsolutions.jump.I18N;
 /**
 * Queries a layer by a spatial predicate.
 */
-public class SpatialQueryPlugIn
-    extends AbstractPlugIn
-    implements ThreadedPlugIn
-{
+public class SpatialQueryPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
 
   private static String UPDATE_SRC = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Select-features-in-the-source-layer");
   private static String CREATE_LYR = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Create-a-new-layer-for-the-results");
@@ -96,16 +93,13 @@ public class SpatialQueryPlugIn
   	return I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Spatial-Query");
   }
 
-  public void initialize(PlugInContext context) throws Exception
-  {
+  public void initialize(PlugInContext context) throws Exception {
       FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-  	featureInstaller.addMainMenuItem(
-  	        this,								//exe
-				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_QUERIES}, 	//menu path
-              this.getName() + "..." , //name methode .getName received by AbstractPlugIn 
-              false,			//checkbox
-              null,			//icon
-              createEnableCheck(context.getWorkbenchContext())); //enable check  
+  	  featureInstaller.addMainMenuItem(
+  	      this,
+  	      new String[] {MenuNames.TOOLS, MenuNames.TOOLS_QUERIES},
+          new JMenuItem(this.getName() + "..."), 
+          createEnableCheck(context.getWorkbenchContext()));
   }
   
   public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {

@@ -51,6 +51,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 * Queries a layer by a spatial predicate.
 */
 public class SpatialJoinPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
+    
     private Layer srcLayerA;
     private Layer srcLayerB;
     private JTextField paramField;
@@ -83,9 +84,7 @@ public class SpatialJoinPlugIn extends AbstractPlugIn implements ThreadedPlugIn 
         featureInstaller.addMainMenuItem(
             this,
             new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
-            this.getName() + "...",
-            false,			//checkbox
-            null,			//icon
+            new JMenuItem(this.getName() + "..."),
             createEnableCheck(context.getWorkbenchContext())); 
     }
   

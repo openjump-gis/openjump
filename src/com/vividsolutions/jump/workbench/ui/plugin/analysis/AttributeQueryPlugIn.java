@@ -38,6 +38,7 @@ import java.util.*;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
+import javax.swing.JMenuItem;
 import javax.swing.JRadioButton;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -62,10 +63,9 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 /**
 * Queries a layer by a spatial predicate.
 */
-public class AttributeQueryPlugIn
-    extends AbstractPlugIn
-    implements ThreadedPlugIn
-{
+public class AttributeQueryPlugIn extends AbstractPlugIn 
+                                  implements ThreadedPlugIn {
+  
   private static String ATTR_GEOMETRY_AREA = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.Area");
   private static String ATTR_GEOMETRY_LENGTH = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.Length");
   private static String ATTR_GEOMETRY_NUMPOINTS = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.NumPoints");
@@ -74,7 +74,6 @@ public class AttributeQueryPlugIn
   private static String ATTR_GEOMETRY_ISSIMPLE = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.IsSimple");
   private static String ATTR_GEOMETRY_ISVALID = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.IsValid");
   private static String ATTR_GEOMETRY_TYPE = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.Type");
-
 
   // MD - could easily add this later
   //private final static String DIALOG_COMPLEMENT = "Complement Result";
@@ -101,16 +100,13 @@ public class AttributeQueryPlugIn
     categoryName = value;
   }
 
-  public void initialize(PlugInContext context) throws Exception
-  {
+  public void initialize(PlugInContext context) throws Exception {
       	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
   		featureInstaller.addMainMenuItem(
-  	        this,								//exe
-				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_QUERIES}, 	//menu path
-              this.getName() + "..." , //name methode .getName recieved by AbstractPlugIn 
-              false,			//checkbox
-              null,			//icon
-              createEnableCheck(context.getWorkbenchContext())); //enable check  
+  	        this,
+            new String[] {MenuNames.TOOLS, MenuNames.TOOLS_QUERIES},
+            new JMenuItem(this.getName() + "..."),
+            createEnableCheck(context.getWorkbenchContext()));
   }
   
   public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
@@ -182,7 +178,6 @@ public class AttributeQueryPlugIn
       context.getWorkbenchFrame().warnUser(I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Errors-found-while-executing-query"));
     }
   }
-
 
   private FeatureCollection executeQuery(
           FeatureCollection sourceFC,

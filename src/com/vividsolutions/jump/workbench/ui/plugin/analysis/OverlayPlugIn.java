@@ -33,6 +33,7 @@
 package com.vividsolutions.jump.workbench.ui.plugin.analysis;
 
 import javax.swing.JComboBox;
+import javax.swing.JMenuItem;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.FeatureCollection;
@@ -63,6 +64,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
  */
 
 public class OverlayPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
+    
     private String POLYGON_OUTPUT = I18N.get("ui.plugin.analysis.OverlayPlugIn.limit-output-to-polygons-only");
     private String FIRST_LAYER = I18N.get("ui.plugin.analysis.OverlayPlugIn.first-layer");
     private String SECOND_LAYER = I18N.get("ui.plugin.analysis.OverlayPlugIn.second-layer");
@@ -85,9 +87,7 @@ public class OverlayPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
     	featureInstaller.addMainMenuItem(
     	    this,
   			new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
-            this.getName() + "...",
-            false,			//checkbox
-            null,			//icon
+            new JMenuItem(this.getName() + "..."),
             createEnableCheck(context.getWorkbenchContext()));
     }
     
