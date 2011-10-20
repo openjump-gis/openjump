@@ -256,8 +256,8 @@ public class FeatureInstaller {
      * @param menuPath path from the main menu to the menu item
      * @param plugin the plugin associated to this menu item
      * @param pos defines the position of the menu item in the menu
-     *        -1 adds the menu item at the end except for FILE menu where
-     *        -1 adds the menu item before the separator preceding exit menu item
+     *        -1 adds menuItem at the end except for FILE menu where
+     *        -1 adds menuItem before the separator preceding exit menu item
      */
     public JMenuItem addMainMenuItem(final String[] menuPath,
                                      final AbstractUiPlugIn plugin, 
@@ -285,8 +285,8 @@ public class FeatureInstaller {
      * @param plugin the plugin associated to this menu item
      * @param enableCheck conditions making the plugin enabled
      * @param pos defines the position of the menu item in the menu
-     *        -1 adds the menu item at the end except for FILE menu where
-     *        -1 adds the menu item before the separator preceding exit menu item
+     *        -1 adds menuItem at the end except for FILE menu where
+     *        -1 adds menuItem before the separator preceding exit menu item
      */
     public JMenuItem addMainMenuItem(final String[] menuPath,
                                      final AbstractUiPlugIn plugin, 
@@ -302,8 +302,8 @@ public class FeatureInstaller {
      * @param plugin the plugin associated to this menu item
      * @param menuItem the menu item (JMenuItem, JCheckBoxMenuItem, JMenu, JRadioButtonMenuItem)
      * @param pos defines the position of the menu item in the menu
-     *        -1 adds the menu item at the end except for FILE menu where
-     *        -1 adds the menu item before the separator preceding exit menu item
+     *        -1 adds menuItem at the end except for FILE menu where
+     *        -1 adds menuItem before the separator preceding exit menu item
      */
     //Added by Michael Michaud on 2008-04-06
     //This method makes it possible to add any subclasses of JMenuItem
@@ -322,8 +322,8 @@ public class FeatureInstaller {
               JRadioButtonMenuItem) to the parent menu
      * @param enableCheck conditions making the plugin enabled
      * @param pos defines the position of the menu item in the menu
-     *        -1 adds the menu item at the end except for FILE menu where
-     *        -1 adds the menu item before the separator preceding exit menu item
+     *        -1 adds menuItem at the end except for FILE menu where
+     *        -1 adds menuItem before the separator preceding exit menu item
      */
     // [mmichaud 2011-10-01]
     public JMenuItem addMainMenuItem(final String[] menuPath, 
@@ -336,6 +336,22 @@ public class FeatureInstaller {
         }
         return addMainMenuItem(plugin, menuPath, menuItem, enableCheck, pos);
     }
+    
+    /**
+     * New generic addMainMenuItem method.
+     * Adds menuItem at the end of the menu except for FILE menu where
+     * menuItem is added before the separator preceding exit menu item
+     * @param plugin the plugin to execute with this item
+     * @param menuPath the menu path made of the menu and submenu names
+     * @param menuItem the JMenuItem (or JCheckBoxMenuItem or 
+              JRadioButtonMenuItem) to the parent menu
+     * @param enableCheck conditions making the plugin enabled
+     */
+    // [mmichaud 2011-10-20]
+    public JMenuItem addMainMenuItem(PlugIn plugin, String[] menuPath,
+                                  JMenuItem menuItem, EnableCheck enableCheck) {
+        return addMainMenuItem(plugin, menuPath, menuItem, enableCheck, -1);
+    }
   
     /**
      * New generic addMainMenuItem method.
@@ -344,9 +360,9 @@ public class FeatureInstaller {
      * @param menuItem the JMenuItem (or JCheckBoxMenuItem or 
               JRadioButtonMenuItem) to the parent menu
      * @param enableCheck conditions making the plugin enabled
-     * @param pos defines the position of the menu item in the menu
-     *        -1 adds the menu item at the end except for FILE menu where
-     *        -1 adds the menu item before the separator preceding exit menu item
+     * @param pos defines the position of menuItem in the menu
+     *        -1 adds menuItem at the end of the menu except for FILE menu where
+     *        -1 adds menuItem before the separator preceding exit menuItem
      */
     // [mmichaud 2011-09-13]
     public JMenuItem addMainMenuItem(PlugIn plugin, String[] menuPath,
