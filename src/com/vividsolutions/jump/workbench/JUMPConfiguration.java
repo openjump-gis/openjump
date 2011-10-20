@@ -38,6 +38,7 @@ import java.lang.reflect.Field;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
 
@@ -693,15 +694,13 @@ public class JUMPConfiguration implements Setup {
       featureInstaller.addMenuSeparator(new String[] {
         MenuNames.FILE, MenuNames.FILE_NEW
       }); // ===================
-      featureInstaller.addMainMenuItemWithJava14Fix(addNewLayerPlugIn,
-        new String[] {
-          MenuNames.FILE, MenuNames.FILE_NEW
-        }, I18N.get("com.vividsolutions.jump.workbench.ui.plugin.AddNewLayerPlugIn.name"), false, IconLoader.icon("layers.png"),
+      featureInstaller.addMainMenuItem(addNewLayerPlugIn,
+        new String[] {MenuNames.FILE, MenuNames.FILE_NEW}, 
+        new JMenuItem(I18N.get("com.vividsolutions.jump.workbench.ui.plugin.AddNewLayerPlugIn.name"), IconLoader.icon("layers.png")),
         checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck());
       featureInstaller.addMainMenuItem(addNewCategoryPlugIn,
-        new String[] {
-          MenuNames.FILE, MenuNames.FILE_NEW
-        }, I18N.get("com.vividsolutions.jump.workbench.ui.plugin.AddNewCategoryPlugIn.name"), false, IconLoader.icon("chart_organisation.png"),
+        new String[] {MenuNames.FILE, MenuNames.FILE_NEW}, 
+        new JMenuItem(I18N.get("com.vividsolutions.jump.workbench.ui.plugin.AddNewCategoryPlugIn.name"), IconLoader.icon("chart_organisation.png")),
         checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck());
 
       featureInstaller.addMenuSeparator(MenuNames.FILE); // ===================
@@ -741,14 +740,14 @@ public class JUMPConfiguration implements Setup {
         featureInstaller.addMainMenuItemWithJava14Fix(editSelectedFeaturePlugIn, new String[] {MenuNames.EDIT},
                 editSelectedFeaturePlugIn.getName(), false, null,
                 EditSelectedFeaturePlugIn.createEnableCheck(workbenchContext));
+        
         FeatureInstaller.addMainMenu(featureInstaller, new String[] {
                 MenuNames.EDIT
               }, MenuNames.SELECTION, 6);  
-        featureInstaller
-        	.addMainMenuItemWithJava14Fix(selectFeaturesInFencePlugIn, new String[] {MenuNames.EDIT, MenuNames.SELECTION},
-                        selectFeaturesInFencePlugIn.getName(), false, null,
-                        SelectFeaturesInFencePlugIn
-                                .createEnableCheck(workbenchContext));
+        featureInstaller.addMainMenuItemWithJava14Fix(selectFeaturesInFencePlugIn, 
+                new String[] {MenuNames.EDIT, MenuNames.SELECTION},
+                selectFeaturesInFencePlugIn.getName(), false, null,
+                SelectFeaturesInFencePlugIn.createEnableCheck(workbenchContext));
         featureInstaller.addMainMenuItemWithJava14Fix(clearSelectionPlugIn, new String[] {MenuNames.EDIT},
                 clearSelectionPlugIn.getName(),false, null, clearSelectionPlugIn
                         .createEnableCheck(workbenchContext));
@@ -757,11 +756,11 @@ public class JUMPConfiguration implements Setup {
                 cutSelectedItemsPlugIn.getName(), false, CutSelectedItemsPlugIn.ICON, cutSelectedItemsPlugIn
                         .createEnableCheck(workbenchContext));
         featureInstaller.addMainMenuItem(copySelectedItemsPlugIn, new String[] {MenuNames.EDIT},
-                copySelectedItemsPlugIn.getNameWithMnemonic(), false, copySelectedItemsPlugIn.ICON,
+                new JMenuItem(copySelectedItemsPlugIn.getNameWithMnemonic(), copySelectedItemsPlugIn.ICON),
                 CopySelectedItemsPlugIn.createEnableCheck(workbenchContext));
         featureInstaller.addMainMenuItem(pasteItemsPlugIn, new String[] {MenuNames.EDIT},
-                pasteItemsPlugIn.getNameWithMnemonic(), false, pasteItemsPlugIn.ICON, PasteItemsPlugIn
-                        .createEnableCheck(workbenchContext));
+                new JMenuItem(pasteItemsPlugIn.getNameWithMnemonic(), pasteItemsPlugIn.ICON), 
+                PasteItemsPlugIn.createEnableCheck(workbenchContext));
         featureInstaller.addMenuSeparator(MenuNames.EDIT); // ===================
         featureInstaller.addMainMenuItemWithJava14Fix(deleteSelectedItemsPlugIn, new String[] {MenuNames.EDIT},
                 deleteSelectedItemsPlugIn.getName(), false, DeleteSelectedItemsPlugIn.ICON,
@@ -960,25 +959,24 @@ public class JUMPConfiguration implements Setup {
 		*/
         
         //featureInstaller.addMenuSeparator(MENU_LAYER); // ===================
-        featureInstaller.addMainMenuItem(cutSelectedLayersPlugIn, MENU_LAYER,
-                cutSelectedLayersPlugIn.getNameWithMnemonic(), cutSelectedLayersPlugIn.ICON,
+        featureInstaller.addMainMenuItem(cutSelectedLayersPlugIn, new String[]{MENU_LAYER},
+                new JMenuItem(cutSelectedLayersPlugIn.getNameWithMnemonic(), cutSelectedLayersPlugIn.ICON),
                 cutSelectedLayersPlugIn.createEnableCheck(workbenchContext));
-        featureInstaller.addMainMenuItem(copySelectedLayersPlugIn, MENU_LAYER,
-                copySelectedLayersPlugIn.getNameWithMnemonic(), copySelectedLayersPlugIn.ICON,
+        featureInstaller.addMainMenuItem(copySelectedLayersPlugIn, new String[]{MENU_LAYER},
+                new JMenuItem(copySelectedLayersPlugIn.getNameWithMnemonic(), copySelectedLayersPlugIn.ICON),
                 copySelectedLayersPlugIn.createEnableCheck(workbenchContext));
-        featureInstaller.addMainMenuItem(pasteLayersPlugIn, MENU_LAYER,
-                pasteLayersPlugIn.getNameWithMnemonic(), null,
+        featureInstaller.addMainMenuItem(pasteLayersPlugIn, new String[]{MENU_LAYER},
+                new JMenuItem(pasteLayersPlugIn.getNameWithMnemonic()),
                 pasteLayersPlugIn.createEnableCheck(workbenchContext));
 
         featureInstaller.addMenuSeparator(MENU_LAYER); // ===================
-        featureInstaller.addMainMenuItem(removeSelectedLayersPlugIn, MENU_LAYER,
-                removeSelectedLayersPlugIn.getName(), RemoveSelectedLayersPlugIn.ICON,
+        featureInstaller.addMainMenuItem(removeSelectedLayersPlugIn, new String[]{MENU_LAYER},
+                new JMenuItem(removeSelectedLayersPlugIn.getName(), RemoveSelectedLayersPlugIn.ICON),
                 removeSelectedLayersPlugIn.createEnableCheck(workbenchContext));
-        featureInstaller.addMainMenuItem(removeSelectedCategoriesPlugIn,
-                MENU_LAYER, removeSelectedCategoriesPlugIn.getName(), null,
-                removeSelectedCategoriesPlugIn
-                        .createEnableCheck(workbenchContext));
-                }
+        featureInstaller.addMainMenuItem(removeSelectedCategoriesPlugIn, new String[]{MENU_LAYER},
+                new JMenuItem(removeSelectedCategoriesPlugIn.getName()),
+                removeSelectedCategoriesPlugIn.createEnableCheck(workbenchContext));
+    }
 
     // MD - following is proposed new pattern for defining built-in menus
 
