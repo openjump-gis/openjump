@@ -93,6 +93,8 @@ public class SaveFileDataSourceQueryChooser extends FileDataSourceQueryChooser {
         //are set once because setting them freezes the GUI for a few seconds. [Jon Aquino]
         if (blackboard().get(FILE_CHOOSER_PANEL_KEY) == null) {
             final JFileChooser fileChooser = GUIUtil.createJFileChooserWithOverwritePrompting();
+            // enforce the type to have mac java show the file name input field
+            fileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
             fileChooser.setMultiSelectionEnabled(false);
             fileChooser.setControlButtonsAreShown(false);
             blackboard().put(FILE_CHOOSER_PANEL_KEY,
