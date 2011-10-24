@@ -1,6 +1,6 @@
 Do not forget:
 -------------------------------------------------------------------------------
-1. set version and release in language/jump.properties
+1. set version and release in language/jump.properties AND etc/readme.txt
 2. test the build
 3. tag the revision in svn with version to release
 4. set sf.net download button default (in sf.net file manager, info button on the right, default checkboxes)
@@ -13,7 +13,7 @@ needed a compiled version of OpenJUMP with Ant (using build.xml)
 the input:
 an OpenJUMP folder that contains the folders
  
-/bin	   contains OJ start files
+/bin       contains OJ start files
 /lib       contains the jar files (should also contain the openjump jars)
 /licenses  contains the license files
 
