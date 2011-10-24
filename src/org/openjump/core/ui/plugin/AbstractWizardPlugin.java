@@ -9,6 +9,7 @@ import org.openjump.core.ui.swing.wizard.WizardGroup;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.registry.Registry;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
@@ -59,6 +60,7 @@ public class AbstractWizardPlugin extends AbstractThreadedUiPlugIn {
     dialog.init(panels);
     dialog.setCurrentWizardPanel(firstId);
     dialog.pack();
+    GUIUtil.centreOnWindow(dialog);
     dialog.setVisible(true);
     if (dialog.wasFinishPressed()) {
       return true;
