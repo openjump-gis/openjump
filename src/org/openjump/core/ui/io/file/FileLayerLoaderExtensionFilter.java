@@ -26,8 +26,6 @@
  ******************************************************************************/
 package org.openjump.core.ui.io.file;
 
-import java.util.Collection;
-import java.util.Iterator;
 
 public class FileLayerLoaderExtensionFilter extends FileNameExtensionFilter {
 
@@ -42,6 +40,7 @@ public class FileLayerLoaderExtensionFilter extends FileNameExtensionFilter {
     return fileLayerLoader;
   }
 
+/*
   private static String createDescription(final String description,
     Collection fileExtensions) {
     StringBuffer fullDescription = new StringBuffer(description);
@@ -54,13 +53,13 @@ public class FileLayerLoaderExtensionFilter extends FileNameExtensionFilter {
         fullDescription.append(",");
       }
     }
-    fullDescription.append(" )");
+    fullDescription.append(")");
     return fullDescription.toString();
   }
+*/
 
   private static String getDescription(FileLayerLoader fileLayerLoader) {
-    return createDescription(fileLayerLoader.getDescription(),
-      fileLayerLoader.getFileExtensions());
+    return fileLayerLoader.getDescription();
   }
 
   private static String[] getExtensionArray(FileLayerLoader fileLayerLoader) {

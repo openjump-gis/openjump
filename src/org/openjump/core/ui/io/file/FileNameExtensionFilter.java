@@ -27,6 +27,8 @@
 package org.openjump.core.ui.io.file;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Locale;
 
 import javax.swing.filechooser.FileFilter;
@@ -34,6 +36,7 @@ import javax.swing.filechooser.FileFilter;
 public class FileNameExtensionFilter extends FileFilter {
   // Description of this filter.
   private final String description;
+  private String fullDescription;
   // Known extensions.
   private final String[] extensions;
   // Cached ext
@@ -103,12 +106,12 @@ public class FileNameExtensionFilter extends FileFilter {
   }
 
   /**
-   * The description of this filter. For example: "JPG and GIF Images."
+   * The description of this filter. For example: "JPG and GIF Images (*.gif,*.jpg)"
    * 
    * @return the description of this filter
    */
   public String getDescription() {
-    return description;
+    return getFullDescription();
   }
 
   /**
@@ -132,5 +135,27 @@ public class FileNameExtensionFilter extends FileFilter {
   public String toString() {
     return super.toString() + "[description=" + getDescription()
       + " extensions=" + java.util.Arrays.asList(getExtensions()) + "]";
+  }
+  
+  public String getFullDescription() {
+    if (fullDescription != null)
+      return fullDescription.toString();
+
+    fullDescription = description;
+    // add extensions
+    StringBuffer extDescription = new StringBuffer();
+    for (Iterator extensions = Arrays.asList(this.extensions).iterator(); extensions
+          .hasNext();) {
+        String extension = (String) extensions.next();
+        extDescription.append("*.");
+        extDescription.append(extension);
+        if (extensions.hasNext()) {
+          extDescription.append(",");
+        }
+      }
+      if ( extDescription.length() > 0 )
+        fullDescription = fullDescription + " (" + extDescription + ")";
+
+    return fullDescription.toString();
   }
 }

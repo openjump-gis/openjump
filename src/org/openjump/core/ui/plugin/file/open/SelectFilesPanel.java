@@ -30,6 +30,7 @@ package org.openjump.core.ui.plugin.file.open;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +67,8 @@ public class SelectFilesPanel extends JFileChooser implements WizardPanel {
   public static final String ALL_FILES = I18N.get(KEY + ".all-files");
   
   public static final String ALL_SUPPORTED_FILES = I18N.get(KEY + ".all-supported-files");
+  
+  public static final String ARCHIVED_FILES = I18N.get(KEY + ".archived-files");
 
   private Set<InputChangedListener> listeners = new LinkedHashSet<InputChangedListener>();
 
@@ -116,10 +119,14 @@ public class SelectFilesPanel extends JFileChooser implements WizardPanel {
     setMultiSelectionEnabled(true);
     List loaders = registry.getEntries(FileLayerLoader.KEY);
     Set<String> allExtensions = new TreeSet<String>();
-    allExtensions.add("zip");
-    allExtensions.add("gz");
-
     Map<String, FileFilter> filters = new TreeMap<String, FileFilter>();
+    
+    // zip support is hardcoded in OpenFileWizard.run()
+    String[] zipExtensions = new String[]{ "zip", "gz" };
+    allExtensions.addAll( Arrays.asList(zipExtensions) );
+    FileFilter zipFilter = new FileNameExtensionFilter(ARCHIVED_FILES, zipExtensions );
+    filters.put(zipFilter.getDescription(), zipFilter);
+
     for (Object loader : loaders) {
       final FileLayerLoader fileLayerLoader = (FileLayerLoader)loader;
       FileFilter filter = new FileLayerLoaderExtensionFilter(fileLayerLoader);
@@ -127,13 +134,16 @@ public class SelectFilesPanel extends JFileChooser implements WizardPanel {
       filters.put(filter.getDescription(), filter);
     }
 
-    FileFilter filterNone = new FileNameExtensionFilter(ALL_FILES, new String[]{} );
-    addChoosableFileFilter(filterNone);
+    // ATTENTION: ALL and ALL_SUPPORTED have leading spaces so they get sorted to the 
+    //            beginning of the formats list regardless of translations first character ;) 
+    FileFilter filterNone = new FileNameExtensionFilter(" "+ALL_FILES, new String[]{} );
+    filters.put(filterNone.getDescription(), filterNone);
     
-    FileFilter allFilter = new FileNameExtensionFilter(ALL_SUPPORTED_FILES,
+    FileFilter allFilter = new FileNameExtensionFilter(" "+ALL_SUPPORTED_FILES,
       allExtensions.toArray(new String[0]));
-    addChoosableFileFilter(allFilter);
+    filters.put(allFilter.getDescription(), allFilter);
     
+    // add all filters from above
     for (FileFilter filter : filters.values()) {
       addChoosableFileFilter(filter);
     }
