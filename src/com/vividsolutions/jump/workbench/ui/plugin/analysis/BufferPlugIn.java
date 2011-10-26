@@ -117,7 +117,7 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
 
     public BufferPlugIn() {
         super(
-            I18N.get("ui.plugin.analysis.BufferPlugIn") + "...",
+            I18N.get("com.vividsolutions.jump.workbench.ui.plugin.analysis.BufferPlugIn") + "...",
             IconLoader.icon("buffer.gif")
         );
     }

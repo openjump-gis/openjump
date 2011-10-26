@@ -630,23 +630,20 @@ public class JUMPConfiguration implements Setup {
                                                 .createWindowWithLayerViewPanelMustBeActiveCheck())
                                 .add(checkFactory.createFenceMustBeDrawnCheck()));
         popupMenu.addSeparator(); // ===================
-        featureInstaller
-                .addPopupMenuItem(
-                        popupMenu,
-                        zoomToFencePlugIn,
-                        I18N.get("JUMPConfiguration.fence"),
-                        false,
-                        GUIUtil.toSmallIcon(zoomToFencePlugIn.getIcon()),
-                        new MultiEnableCheck()
-                                .add(checkFactory
-                                                .createWindowWithLayerViewPanelMustBeActiveCheck())
-                                .add(checkFactory.createFenceMustBeDrawnCheck()));
+        featureInstaller.addPopupMenuItem(popupMenu, zoomToFencePlugIn,
+            new String[] {I18N.get("ui.MenuNames.ZOOM")},
+            I18N.get("JUMPConfiguration.fence"), false,
+            GUIUtil.toSmallIcon(zoomToFencePlugIn.getIcon()),
+            new MultiEnableCheck()
+                .add(checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck())
+                .add(checkFactory.createFenceMustBeDrawnCheck()));
         featureInstaller.addPopupMenuItem(popupMenu, zoomToSelectedItemsPlugIn,
-                zoomToSelectedItemsPlugIn.getName(), false, GUIUtil
-                        .toSmallIcon(zoomToSelectedItemsPlugIn.getIcon()),
+            new String[] {I18N.get("ui.MenuNames.ZOOM")},
+            zoomToSelectedItemsPlugIn.getName(), false, 
+            GUIUtil.toSmallIcon(zoomToSelectedItemsPlugIn.getIcon()),
                 ZoomToSelectedItemsPlugIn.createEnableCheck(workbenchContext));
-        featureInstaller.addPopupMenuItem(popupMenu, zoomToClickPlugIn,
-                I18N.get("JUMPConfiguration.zoom-out"), false, null, null);
+        //featureInstaller.addPopupMenuItem(popupMenu, zoomToClickPlugIn,
+        //        I18N.get("JUMPConfiguration.zoom-out"), false, null, null);
         popupMenu.addSeparator(); // ===================
         /*//[sstein] 23Mar2009 -- remove from layer view context menu to get space
         //                      but is still to be found in >edit>selection> 

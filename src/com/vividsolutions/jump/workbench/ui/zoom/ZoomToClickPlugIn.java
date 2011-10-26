@@ -36,7 +36,9 @@ package com.vividsolutions.jump.workbench.ui.zoom;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 
-
+// Replaced on 2011-10-27 by 
+// org.openjump.core.ui.plugin.mousemenu.ZoomInPlugIn and
+// org.openjump.core.ui.plugin.mousemenu.ZoomOutPlugIn
 public class ZoomToClickPlugIn extends AbstractPlugIn {
     private double zoomFactor;
 
