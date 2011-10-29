@@ -9,19 +9,16 @@ import com.vividsolutions.jump.datastore.SpatialReferenceSystemID;
 /**
  * Creates SQL query strings for a PostGIS database
  */
-public class PostgisSQLBuilder
-{
+public class PostgisSQLBuilder {
   private SpatialReferenceSystemID defaultSRID = null;
   private String[] colNames = null;
 
-  public PostgisSQLBuilder(SpatialReferenceSystemID defaultSRID,
-                           String[] colNames) {
+  public PostgisSQLBuilder(SpatialReferenceSystemID defaultSRID, String[] colNames) {
     this.defaultSRID = defaultSRID;
     this.colNames = colNames;
   }
 
-  public String getSQL(FilterQuery query)
-  {
+  public String getSQL(FilterQuery query) {
     return buildQueryString(query);
   }
 
@@ -40,6 +37,10 @@ public class PostgisSQLBuilder
     if (whereCond != null) {
       qs.append(" AND ");
       qs.append(whereCond);
+    }
+    int limit = query.getLimit();
+    if (limit != 0) {
+      qs.append(" LIMIT " + limit);
     }
     //System.out.println(qs);
     return qs.toString();
