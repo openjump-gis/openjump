@@ -60,28 +60,34 @@ public class AddDataStoreLayerWizard extends AbstractWizardGroup {
   
   public void run(WizardDialog dialog, TaskMonitor monitor) throws Exception {
     chooseProjectPanel.activateSelectedProject();
-    //try {
+    try {
       AddDatastoreLayerPanel dataStorePanel = dataStoreWizardPanel.getDataStorePanel();
-      final Layer layer = createLayer(dataStorePanel, monitor);
-      SwingUtilities.invokeLater(new Runnable() {
-        public void run() {
-          Collection<Category> selectedCategories = workbenchContext.getLayerNamePanel()
-            .getSelectedCategories();
-          LayerManager layerManager = workbenchContext.getLayerManager();
-          String categoryName = StandardCategoryNames.WORKING;
-          if (!selectedCategories.isEmpty()) {
-            categoryName = selectedCategories.iterator().next().getName();
+      if (dataStorePanel.validateInput() == null) {
+        final Layer layer = createLayer(dataStorePanel, monitor);
+        SwingUtilities.invokeLater(new Runnable() {
+          public void run() {
+            Collection<Category> selectedCategories = workbenchContext.getLayerNamePanel()
+              .getSelectedCategories();
+            LayerManager layerManager = workbenchContext.getLayerManager();
+            String categoryName = StandardCategoryNames.WORKING;
+            if (!selectedCategories.isEmpty()) {
+              categoryName = selectedCategories.iterator().next().getName();
+            }
+            try {
+                workbenchContext.getLayerViewPanel().getViewport().update();
+            } catch(Exception e) {
+                //throw NoninvertibleTransformationException;
+            }
+            layerManager.addLayerable(categoryName, layer);
           }
-          try {workbenchContext.getLayerViewPanel().getViewport().update();
-          } catch(Exception e) {}
-          layerManager.addLayerable(categoryName, layer);
-        }
-      });
-      workbenchContext.getLayerViewPanel().getViewport().update();
-    //} catch (Exception e) {
-    //  monitor.report(e);
-    //  throw e;
-    //}
+        });
+        workbenchContext.getLayerViewPanel().getViewport().update();
+      }
+      else throw new Exception(dataStorePanel.validateInput());
+    } catch (Exception e) {
+      monitor.report(e);
+      throw e;
+    }
   }
 
   private Layer createLayer(final AddDatastoreLayerPanel panel,
@@ -96,10 +102,11 @@ public class AddDataStoreLayerWizard extends AbstractWizardGroup {
 
     String geometryAttributeName = panel.getGeometryAttributeName();
     String whereClause = panel.getWhereClause();
+    int limit = panel.getMaxFeatures();
     ConnectionDescriptor connectionDescriptor = panel.getConnectionDescriptor();
     boolean caching = panel.isCaching();
     DataStoreDataSource ds = new DataStoreDataSource(datasetName,
-      geometryAttributeName, whereClause, connectionDescriptor, caching,
+      geometryAttributeName, whereClause, limit, connectionDescriptor, caching,
       workbenchContext);
 
     DataSourceQuery dsq = new DataSourceQuery(ds, null, datasetName);

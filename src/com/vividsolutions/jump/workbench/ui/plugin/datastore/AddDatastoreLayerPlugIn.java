@@ -41,6 +41,7 @@ public class AddDatastoreLayerPlugIn extends AbstractAddDatastoreLayerPlugIn {
                 panel.getDatasetName(),
                 panel.getGeometryAttributeName(),
                 panel.getWhereClause(),
+                panel.getMaxFeatures(),
                 panel.getConnectionDescriptor(),
                 panel.isCaching(),
                 context.getWorkbenchContext());

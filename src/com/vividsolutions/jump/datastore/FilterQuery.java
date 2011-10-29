@@ -5,14 +5,13 @@ import com.vividsolutions.jts.geom.*;
 /**
  * A spatial filter {@link Query} on a {@link DataStoreConnection}.
  */
-public class FilterQuery
-    implements Query
-{
+public class FilterQuery implements Query {
 
   private String datasetName;
   private String[] propertyNames;
   private Geometry geom;
   private String condition;
+  private int limit;
   /**
    * Not all query processors need this.
    */
@@ -33,6 +32,8 @@ public class FilterQuery
   public Geometry getFilterGeometry() { return geom; }
   public void setCondition(String condition) { this.condition = condition; }
   public String getCondition() { return condition; }
+  public void setLimit(int limit) { this.limit = limit; }
+  public int getLimit() { return limit; }
 
   public void setGeometryAttributeName(String geomAttrName) { this.geomAttrName = geomAttrName; }
   public String getGeometryAttributeName() { return geomAttrName; }

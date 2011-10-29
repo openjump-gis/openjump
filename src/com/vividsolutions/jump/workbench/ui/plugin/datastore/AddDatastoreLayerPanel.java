@@ -11,6 +11,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
@@ -24,18 +25,18 @@ import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.ThreadedBasePlugIn;
 import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
+import com.vividsolutions.jump.workbench.ui.ValidatingTextField;
 
 
 public class AddDatastoreLayerPanel extends ConnectionPanel {
 
-    private JTextArea whereTextArea = null;
-
-    private JComboBox geometryAttributeComboBox = null;
-
-    private JComboBox datasetComboBox = null;
-
+    
     private Map connectionDescriptorToDatasetNamesMap = new HashMap();
 
+    private JComboBox datasetComboBox = null;
+    private JComboBox geometryAttributeComboBox = null;
+    private JTextField maxFeaturesTextField = null;
+    private JTextArea whereTextArea = null;
     private JCheckBox cachingCheckBox = null;
 
     // dummy constructor for JBuilder - do not use!!!
@@ -46,12 +47,11 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
     public AddDatastoreLayerPanel( WorkbenchContext context ) {
         super( context );
         initialize();
-        getConnectionComboBox().addActionListener(
-            new ActionListener() {
-                public void actionPerformed( ActionEvent e ) {
-                    getDatasetComboBox().setSelectedItem( null );
-                }
-            } );
+        getConnectionComboBox().addActionListener(new ActionListener() {
+            public void actionPerformed( ActionEvent e ) {
+                getDatasetComboBox().setSelectedItem( null );
+            }
+        });
     }
 
     public static Object runInKillableThread( final String description,
@@ -80,19 +80,28 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
     }
 
     public String getDatasetName() {
-        return datasetComboBox.getSelectedItem() != null ? ( ( String ) datasetComboBox.getSelectedItem() ).trim()
-             : null;
+        return datasetComboBox.getSelectedItem() != null ?
+            ((String)datasetComboBox.getSelectedItem()).trim() : null;
     }
 
     public String getGeometryAttributeName() {
-        return geometryAttributeComboBox.getSelectedItem() != null ? ( ( String ) geometryAttributeComboBox.getSelectedItem() ).trim()
-             : null;
+        return geometryAttributeComboBox.getSelectedItem() != null ?
+            ((String)geometryAttributeComboBox.getSelectedItem()).trim() : null;
     }
+    
+    /**
+ 	 * @return null if the user has left the Max Features text field blank.
+ 	 */
+ 	public Integer getMaxFeatures() {
+ 	    if (maxFeaturesTextField.getText() == null) return Integer.MAX_VALUE;
+ 	    if (maxFeaturesTextField.getText().trim().length() == 0) return Integer.MAX_VALUE;
+ 	    if (maxFeaturesTextField.getText().trim().equals("-")) return Integer.MAX_VALUE;
+        return new Integer(maxFeaturesTextField.getText().trim());
+ 	}
 
     public String getWhereClause() {
-        return getWhereClauseProper().toLowerCase().startsWith( "where" ) ? getWhereClauseProper()
-            .substring( "where".length() ).trim()
-             : getWhereClauseProper();
+        return getWhereClauseProper().toLowerCase().startsWith("where") ? 
+            getWhereClauseProper().substring("where".length()).trim() : getWhereClauseProper();
     }
 
     public String getWhereClauseProper() {
@@ -111,10 +120,10 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
         if ( super.validateInput() != null ) {
             return super.validateInput();
         }
-        if ( ( ( String ) LangUtil.ifNull( getDatasetName(), "" ) ).length() == 0 ) {
+        if (((String)LangUtil.ifNull(getDatasetName(), "")).length() == 0) {
             return I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Required-field-missing-Dataset");
         }
-        if ( ( ( String ) LangUtil.ifNull( getGeometryAttributeName(), "" ) ).length() == 0 ) {
+        if (((String)LangUtil.ifNull(getGeometryAttributeName(), "")).length() == 0) {
             return I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Required-field-missing-Geometry");
         }
         return null;
@@ -144,7 +153,7 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
                 } );
             // Populate the dataset combobox only if the user pushes the
             // drop-down button, as it requires a time-consuming query.
-            // The user can also simply type in the datset name. If they
+            // The user can also simply type in the dataset name. If they
             // inadvertently press the drop-down button, they can press
             // the X button on the progress dialog to kill the thread.
             // [Jon Aquino 2005-03-14]
@@ -174,6 +183,14 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
                 } );
         }
         return geometryAttributeComboBox;
+    }
+    
+    private JTextField getMaxFeaturesTextField() {
+        if (maxFeaturesTextField == null) {
+            maxFeaturesTextField = new ValidatingTextField("", 10,
+                new ValidatingTextField.BoundedIntValidator(1, Integer.MAX_VALUE));
+        }
+        return maxFeaturesTextField;
     }
 
     private JCheckBox getCachingCheckBox() {
@@ -287,10 +304,11 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
         JScrollPane sp = new JScrollPane( getWhereTextArea() );
         sp.setPreferredSize( new Dimension( MAIN_COLUMN_WIDTH, 100 ) );
 
-        addRow( I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Dataset"), getDatasetComboBox(), null, false );
-        addRow( I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Geometry"), getGeometryAttributeComboBox(), null, false );
-        addRow( I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Where"), sp, null, true );
-        addRow( I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Caching"), getCachingCheckBox(), null, false );
+        addRow(I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Dataset"), getDatasetComboBox(), null, false );
+        addRow(I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Geometry"), getGeometryAttributeComboBox(), null, false );
+        addRow(I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Max-Features"), getMaxFeaturesTextField(), null, false);
+        addRow(I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Where"), sp, null, true );
+        addRow(I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Caching"), getCachingCheckBox(), null, false );
     }
 
     /**
@@ -340,4 +358,5 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
     public static interface Block {
         public Object yield() throws Exception;
     }
-}//  @jve:decl-index=0:visual-constraint="10,10"
+    
+}

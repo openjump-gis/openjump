@@ -56,6 +56,7 @@ public class AddDataStoreLayerWizardPanel extends JPanel implements WizardPanel 
 
   public boolean isInputValid() {
     return true;
+    //return validateInput() == nulldataStorePanel.isValid();
   }
 
   public void remove(InputChangedListener listener) {

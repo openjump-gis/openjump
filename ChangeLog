@@ -1,3 +1,7 @@
+2011-10-29 mmichaud <michael.michaud@free.fr>
+    * Add a limit parameter (max number of features) in the addDataStore PlugIn
+      as requested in Feature Request 3422848
+
 2011-10-26 mmichaud <michael.michaud@free.fr>
     * Add 3 Zoom Plugins from LayerView context menu : Zoom in, zoom out, 
       zoom center (prepared by Peppe)

@@ -26,7 +26,7 @@ public class DataStoreDataSource extends DataSource implements
     public static final String DATASET_NAME_KEY = "Dataset Name";
 
     public static final String GEOMETRY_ATTRIBUTE_NAME_KEY = "Geometry Attribute Name";
-
+    public static final String MAX_FEATURES_KEY = "Max Features";
     public static final String WHERE_CLAUSE_KEY = "Where Clause";
 
     public static final String CACHING_KEY = "Caching";
@@ -40,14 +40,19 @@ public class DataStoreDataSource extends DataSource implements
     }
 
     public DataStoreDataSource(String datasetName,
-            String geometryAttributeName, String whereClause,
-            ConnectionDescriptor connectionDescriptor, boolean caching,
-            WorkbenchContext context) {
-        setProperties(CollectionUtil.createMap(new Object[] { DATASET_NAME_KEY,
-                datasetName, GEOMETRY_ATTRIBUTE_NAME_KEY,
-                geometryAttributeName, WHERE_CLAUSE_KEY, whereClause,
-                CONNECTION_DESCRIPTOR_KEY, connectionDescriptor, CACHING_KEY,
-                Boolean.valueOf(caching) }));
+                               String geometryAttributeName, 
+                               String whereClause,
+                               int maxFeatures,
+                               ConnectionDescriptor connectionDescriptor, 
+                               boolean caching,
+                               WorkbenchContext context) {
+        setProperties(CollectionUtil.createMap(new Object[] {
+            DATASET_NAME_KEY, datasetName,
+            GEOMETRY_ATTRIBUTE_NAME_KEY, geometryAttributeName,
+            WHERE_CLAUSE_KEY, whereClause,
+            MAX_FEATURES_KEY, maxFeatures,
+            CONNECTION_DESCRIPTOR_KEY, connectionDescriptor, 
+            CACHING_KEY, Boolean.valueOf(caching) }));
         setWorkbenchContext(context);
     }
 
@@ -94,12 +99,15 @@ public class DataStoreDataSource extends DataSource implements
 
     private FeatureCollection createFeatureCollection() {
         FilterQuery query = new FilterQuery();
-        query.setDatasetName((String) getProperties().get(DATASET_NAME_KEY));
-        query.setGeometryAttributeName((String) getProperties().get(
+        query.setDatasetName((String)getProperties().get(DATASET_NAME_KEY));
+        query.setGeometryAttributeName((String)getProperties().get(
                 GEOMETRY_ATTRIBUTE_NAME_KEY));
-        if (((String) getProperties().get(WHERE_CLAUSE_KEY)).length() > 0) {
+        if (((String)getProperties().get(WHERE_CLAUSE_KEY)).length() > 0) {
             query.setCondition((String) getProperties().get(WHERE_CLAUSE_KEY));
         }
+        //if ((getProperties().get(MAX_FEATURES_KEY)).length() > 0) {
+        query.setLimit((Integer)getProperties().get(MAX_FEATURES_KEY));
+        //}
         return new CachingFeatureCollection(new DynamicFeatureCollection(
                 (ConnectionDescriptor) getProperties().get(
                         CONNECTION_DESCRIPTOR_KEY), ConnectionManager
