@@ -11,7 +11,7 @@ public class FilterQuery implements Query {
   private String[] propertyNames;
   private Geometry geom;
   private String condition;
-  private int limit;
+  private int limit = Integer.MAX_VALUE;
   /**
    * Not all query processors need this.
    */

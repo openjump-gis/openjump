@@ -38,6 +38,21 @@ public class DataStoreDataSource extends DataSource implements
     public DataStoreDataSource() {
         // Called by Java2XML [Jon Aquino 2005-03-16]
     }
+    
+    public DataStoreDataSource(String datasetName,
+                               String geometryAttributeName, 
+                               String whereClause,
+                               ConnectionDescriptor connectionDescriptor, 
+                               boolean caching,
+                               WorkbenchContext context) {
+        setProperties(CollectionUtil.createMap(new Object[] {
+            DATASET_NAME_KEY, datasetName,
+            GEOMETRY_ATTRIBUTE_NAME_KEY, geometryAttributeName,
+            WHERE_CLAUSE_KEY, whereClause,
+            CONNECTION_DESCRIPTOR_KEY, connectionDescriptor, 
+            CACHING_KEY, Boolean.valueOf(caching) }));
+        setWorkbenchContext(context);
+    }
 
     public DataStoreDataSource(String datasetName,
                                String geometryAttributeName, 
@@ -105,9 +120,9 @@ public class DataStoreDataSource extends DataSource implements
         if (((String)getProperties().get(WHERE_CLAUSE_KEY)).length() > 0) {
             query.setCondition((String) getProperties().get(WHERE_CLAUSE_KEY));
         }
-        //if ((getProperties().get(MAX_FEATURES_KEY)).length() > 0) {
-        query.setLimit((Integer)getProperties().get(MAX_FEATURES_KEY));
-        //}
+        if (getProperties().get(MAX_FEATURES_KEY) != null) {
+            query.setLimit((Integer)getProperties().get(MAX_FEATURES_KEY));
+        }
         return new CachingFeatureCollection(new DynamicFeatureCollection(
                 (ConnectionDescriptor) getProperties().get(
                         CONNECTION_DESCRIPTOR_KEY), ConnectionManager
