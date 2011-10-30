@@ -55,14 +55,18 @@ public class PostgisDSMetadata implements DataStoreMetadata {
     final Envelope[] e = new Envelope[]{null};
     //
     // Use find_extent - sometimes estimated_extent was returning null
+    // [mmichaud 2011-10-30] try ST_Estimated_Extent again, hope find_extent bug
+    // is solved. On big tables, find extents may be much sloooower
     //    
     String sql = "";
     //find_extent needs schema and table as separate arguments or it fails with "relation does not exist"
     if(datasetName.indexOf('.') != -1) {
         String[] parts = datasetName.split("\\.", 2);
-        sql = "SELECT AsBinary(find_extent( '" + parts[0] + "', '" + parts[1] +"', '" + attributeName + "' ))";
+        //sql = "SELECT AsBinary(find_extent( '" + parts[0] + "', '" + parts[1] +"', '" + attributeName + "' ))";
+        sql = "SELECT AsBinary(ST_Estimated_Extent( '" + parts[0] + "', '" + parts[1] +"', '" + attributeName + "' ))";
     } else {
-        sql = "SELECT AsBinary(find_extent( '" + datasetName + "', '" + attributeName + "' ))";
+        //sql = "SELECT AsBinary(find_extent( '" + datasetName + "', '" + attributeName + "' ))";
+        sql = "SELECT AsBinary(ST_Estimated_Extent( '" + datasetName + "', '" + attributeName + "' ))";
     }
 
     JDBCUtil.execute(
