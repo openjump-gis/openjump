@@ -1,3 +1,11 @@
+2011-10-31 mmichaud <michael.michaud@free.fr>
+    * New plugin com.vividsolutions.jump.plugin.edit.NoderPlugIn
+      to replace LineNoderPlugIn (see also request 2333409). The new PlugIn :
+      - preserve attributes
+      - can process LineStrings AND polygons
+      - can node OR split geometries
+      - can interpolate z values on intersections
+      
 2011-10-29 mmichaud <michael.michaud@free.fr>
     * Add a limit parameter (max number of features) in the addDataStore PlugIn
       as requested in Feature Request 3422848
