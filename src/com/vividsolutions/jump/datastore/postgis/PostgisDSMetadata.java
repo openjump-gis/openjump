@@ -59,32 +59,52 @@ public class PostgisDSMetadata implements DataStoreMetadata {
     // is solved. On big tables, find extents may be much sloooower
     //    
     String sql = "";
+    String sql2 = "";
     //find_extent needs schema and table as separate arguments or it fails with "relation does not exist"
     if(datasetName.indexOf('.') != -1) {
         String[] parts = datasetName.split("\\.", 2);
         //sql = "SELECT AsBinary(find_extent( '" + parts[0] + "', '" + parts[1] +"', '" + attributeName + "' ))";
         sql = "SELECT AsBinary(ST_Estimated_Extent( '" + parts[0] + "', '" + parts[1] +"', '" + attributeName + "' ))";
+        sql2 = "SELECT AsBinary(find_extent( '" + parts[0] + "', '" + parts[1] +"', '" + attributeName + "' ))";
     } else {
         //sql = "SELECT AsBinary(find_extent( '" + datasetName + "', '" + attributeName + "' ))";
         sql = "SELECT AsBinary(ST_Estimated_Extent( '" + datasetName + "', '" + attributeName + "' ))";
+        sql2 = "SELECT AsBinary(find_extent( '" + datasetName + "', '" + attributeName + "' ))";
     }
-
-    JDBCUtil.execute(
-        conn.getConnection(), sql,
-        new ResultSetBlock() {
-      public void yield( ResultSet resultSet ) throws Exception {
-        if ( resultSet.next() ) {
-          byte[] bytes = ( byte[] ) resultSet.getObject( 1 );
-          if ( bytes != null ) {
-            Geometry geom = reader.read( bytes );
-            if ( geom != null ) {
-              e[0] = geom.getEnvelopeInternal();
+    final ResultSetBlock resultSetBlock = new ResultSetBlock() {
+        public void yield( ResultSet resultSet ) throws Exception {
+            if ( resultSet.next() ) {
+                byte[] bytes = ( byte[] ) resultSet.getObject( 1 );
+                if ( bytes != null ) {
+                    Geometry geom = reader.read( bytes );
+                    if ( geom != null ) {
+                        e[0] = geom.getEnvelopeInternal();
+                    }
+                }
             }
-          }
         }
-      }
-    } );
-        return e[0];
+    };
+    try {
+        JDBCUtil.execute(conn.getConnection(), sql,
+            resultSetBlock
+            //new ResultSetBlock() {
+            //    public void yield( ResultSet resultSet ) throws Exception {
+            //        if ( resultSet.next() ) {
+            //            byte[] bytes = ( byte[] ) resultSet.getObject( 1 );
+            //            if ( bytes != null ) {
+            //                Geometry geom = reader.read( bytes );
+            //                if ( geom != null ) {
+            //                    e[0] = geom.getEnvelopeInternal();
+            //                }
+            //            }
+            //        }
+            //    }
+            //} 
+        );
+    } catch (Exception ex) {
+        JDBCUtil.execute(conn.getConnection(), sql2, resultSetBlock);
+    }
+    return e[0];
   }
 
   public SpatialReferenceSystemID getSRID(String tableName, String colName)
