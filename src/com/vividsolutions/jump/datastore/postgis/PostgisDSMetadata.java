@@ -16,7 +16,6 @@ import com.vividsolutions.jump.datastore.jdbc.JDBCUtil;
 import com.vividsolutions.jump.datastore.jdbc.ResultSetBlock;
 
 
-
 public class PostgisDSMetadata implements DataStoreMetadata {
 
   private final WKBReader reader = new WKBReader();
@@ -56,18 +55,15 @@ public class PostgisDSMetadata implements DataStoreMetadata {
     //
     // Use find_extent - sometimes estimated_extent was returning null
     // [mmichaud 2011-10-30] try ST_Estimated_Extent again, hope find_extent bug
-    // is solved. On big tables, find extents may be much sloooower
+    // is solved. On big tables, find extents is much sloooower
     //    
     String sql = "";
     String sql2 = "";
-    //find_extent needs schema and table as separate arguments or it fails with "relation does not exist"
     if(datasetName.indexOf('.') != -1) {
         String[] parts = datasetName.split("\\.", 2);
-        //sql = "SELECT AsBinary(find_extent( '" + parts[0] + "', '" + parts[1] +"', '" + attributeName + "' ))";
         sql = "SELECT AsBinary(ST_Estimated_Extent( '" + parts[0] + "', '" + parts[1] +"', '" + attributeName + "' ))";
         sql2 = "SELECT AsBinary(find_extent( '" + parts[0] + "', '" + parts[1] +"', '" + attributeName + "' ))";
     } else {
-        //sql = "SELECT AsBinary(find_extent( '" + datasetName + "', '" + attributeName + "' ))";
         sql = "SELECT AsBinary(ST_Estimated_Extent( '" + datasetName + "', '" + attributeName + "' ))";
         sql2 = "SELECT AsBinary(find_extent( '" + datasetName + "', '" + attributeName + "' ))";
     }
@@ -85,21 +81,7 @@ public class PostgisDSMetadata implements DataStoreMetadata {
         }
     };
     try {
-        JDBCUtil.execute(conn.getConnection(), sql,
-            resultSetBlock
-            //new ResultSetBlock() {
-            //    public void yield( ResultSet resultSet ) throws Exception {
-            //        if ( resultSet.next() ) {
-            //            byte[] bytes = ( byte[] ) resultSet.getObject( 1 );
-            //            if ( bytes != null ) {
-            //                Geometry geom = reader.read( bytes );
-            //                if ( geom != null ) {
-            //                    e[0] = geom.getEnvelopeInternal();
-            //                }
-            //            }
-            //        }
-            //    }
-            //} 
+        JDBCUtil.execute(conn.getConnection(), sql, resultSetBlock
         );
     } catch (Exception ex) {
         JDBCUtil.execute(conn.getConnection(), sql2, resultSetBlock);
@@ -181,7 +163,6 @@ public class PostgisDSMetadata implements DataStoreMetadata {
           + " AND lower(" + tableCol + ") = '" + table + "'";
   }
 
-
   private static class ColumnNameBlock implements ResultSetBlock {
     List colList = new ArrayList();
     String[] colName;
@@ -193,4 +174,5 @@ public class PostgisDSMetadata implements DataStoreMetadata {
       colName = ( String[] ) colList.toArray( new String[0] );
     }
   }
+  
 }
