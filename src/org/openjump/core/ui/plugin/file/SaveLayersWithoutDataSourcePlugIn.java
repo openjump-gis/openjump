@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import javax.swing.JFileChooser;
+import javax.swing.JMenuItem;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.io.DriverProperties;
@@ -92,12 +93,9 @@ public class SaveLayersWithoutDataSourcePlugIn extends AbstractPlugIn {
 	    EnableCheck enableCheck = createEnableCheck(workbenchContext);
 	    FeatureInstaller installer = new FeatureInstaller(workbenchContext);
 	    installer.addMainMenuItem(
-            this,
-            new String[] {MenuNames.FILE},
-            this.getName()+ "..." + "{pos:9}", //name methode .getName received by AbstractPlugIn 
-            false,			          //checkbox
-            IconLoader.icon("disk_multiple.png"),			          //icon
-            createEnableCheck(context.getWorkbenchContext())); //enable check
+            this, new String[] {MenuNames.FILE},
+            new JMenuItem(getName(), IconLoader.icon("disk_multiple.png")),
+            createEnableCheck(context.getWorkbenchContext()), 9);
         
         fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -168,6 +166,9 @@ public class SaveLayersWithoutDataSourcePlugIn extends AbstractPlugIn {
     
     private void saveLayer(Layer layer, File dir, DataSource dataSource, String ext) throws Exception {
         String name = FileUtil.getFileNameFromLayerName(layer.getName());
+        // remove extension if any (ex. for layer image.png, will remove png
+        int dotPos = name.indexOf(".");
+        if (dotPos > 0) name = name.substring(0, dotPos);
         File fileName = FileUtil.addExtensionIfNone(new File(name), ext);
         String path = new File(dir, fileName.getName()).getAbsolutePath();
         

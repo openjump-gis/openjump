@@ -763,12 +763,6 @@ public class LayerManager {
         
         for (Iterator i = iterator(); i.hasNext();) {
             Layer layer = (Layer) i.next();
-            // This is the only workaround I found to solve BUG ID: 3424399.
-            // Not very clean, but the old image framework use normal Layers 
-            // and do not use DataSourceQuery.
-            if (layer.getStyle(com.vividsolutions.jump.workbench.imagery.ReferencedImageStyle.class) != null) {
-                continue;
-            }
             if(layer.getDataSourceQuery() == null) {
                 list.add(layer);
             }

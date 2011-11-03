@@ -1,11 +1,10 @@
 2011-11-03 mmichaud <michael.michaud@free.fr>
-    * Fixed bug id 3424399 by 
-      - setting loaded image layer to featureCollectionModified = false AND 
-      - skipping layers using Referenced ImageStyle in the 
-        getLayersWithNullDataSource method of LayerManager (which is only a 
-        workaround)
-    * Fixed bug id 3413805 by changing validateTree to validate in 
-      LayerNameRenderer (don't understand why :-()
+    * Fixed bug id 3413805 by changing validateTree() to validate() in 
+      LayerNameRenderer (don't understand why, though)
+    * Fixed SaveDatasetsPlugin (throws a nullPointerException is the project
+      includes a Datastore)
+    * Small fix in SaveLayersWithoutDataSourcesPlugIn (change layerName.png
+      to layerName.jml whe saving the layer as jml along with the project 
 
 2011-10-31 mmichaud <michael.michaud@free.fr>
     * New plugin com.vividsolutions.jump.plugin.edit.NoderPlugIn
