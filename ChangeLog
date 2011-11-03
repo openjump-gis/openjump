@@ -4,6 +4,8 @@
       - skipping layers using Referenced ImageStyle in the 
         getLayersWithNullDataSource method of LayerManager (which is only a 
         workaround)
+    * Fixed bug id 3413805 by changing validateTree to validate in 
+      LayerNameRenderer (don't understand why :-()
 
 2011-10-31 mmichaud <michael.michaud@free.fr>
     * New plugin com.vividsolutions.jump.plugin.edit.NoderPlugIn

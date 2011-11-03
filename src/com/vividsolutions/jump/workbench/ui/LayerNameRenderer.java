@@ -130,12 +130,12 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
 	 *            zero-based
 	 */
 	protected int getColumnWidth(int i) {
-		validateTree();
+		validate();
 		return gridBagLayout.getLayoutDimensions()[0][i];
 	}
 
 	protected int getRowHeight() {
-		validateTree();
+		validate();
 		return gridBagLayout.getLayoutDimensions()[1][0];
 	}
 
