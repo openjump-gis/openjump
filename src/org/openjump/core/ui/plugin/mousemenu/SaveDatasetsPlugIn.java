@@ -457,6 +457,7 @@ public class SaveDatasetsPlugIn extends AbstractPlugIn
         }
         catch (Exception e)
         {
+            e.printStackTrace();
             context.getWorkbenchFrame().warnUser(sErrorSeeOutputWindow);
             context.getWorkbenchFrame().getOutputFrame().addText("SaveDatasetsPlugIn Exception:" + e.toString());
             return false;
@@ -849,8 +850,9 @@ public class SaveDatasetsPlugIn extends AbstractPlugIn
 	{	//per LDB projection files only associated with .shp files; confirmed 8/16/05
     	DataSourceQuery dsqOut = outputLayer.getDataSourceQuery();
     	
-    	if (dsqOut != null) //file exists; not a new layer
-    	{
+    	//file exists; not a new layer
+    	if (dsqOut != null &&
+    	    dsqOut.getDataSource().getProperties().get("File") != null) {
     		String outputFileName = dsqOut.getDataSource().getProperties().get("File").toString();
     		if ((outputFileName.toLowerCase()).endsWith(".shp"))
     		{
