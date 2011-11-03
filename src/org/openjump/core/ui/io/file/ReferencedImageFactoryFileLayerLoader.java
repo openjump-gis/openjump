@@ -125,6 +125,8 @@ public class ReferencedImageFactoryFileLayerLoader extends
     category.add(0, layer);
         
     layer.getFeatureCollectionWrapper().add(feature);
+    // setFeatureCollectionModified(false) to solve BUG ID: 3424399
+    layer.setFeatureCollectionModified(false);
     String imageFilePath = (String)feature.getAttribute(ImageryLayerDataset.ATTR_FILE);
     if (imageFactory.isEditableImage(imageFilePath)) {
       layer.setSelectable(true);
