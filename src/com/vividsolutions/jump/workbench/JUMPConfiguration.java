@@ -599,7 +599,7 @@ public class JUMPConfiguration implements Setup {
         //logic. This logic should simply be moved to the individual PlugIns.
         // [Jon Aquino]
         featureInstaller.addPopupMenuItem(layerNamePopupMenu, pasteItemsPlugIn,
-                pasteItemsPlugIn.getNameWithMnemonic(), false, pasteItemsPlugIn.ICON,
+                pasteItemsPlugIn.getNameWithMnemonic(), false, pasteItemsPlugIn.getIcon(),
                 PasteItemsPlugIn.createEnableCheck(workbenchContext));
 
         featureInstaller.addPopupMenuItem(layerNamePopupMenu,
@@ -656,25 +656,25 @@ public class JUMPConfiguration implements Setup {
                 cutSelectedItemsPlugIn.getName(), false, CutSelectedItemsPlugIn.ICON,
                 cutSelectedItemsPlugIn.createEnableCheck(workbenchContext));
         featureInstaller.addPopupMenuItem(popupMenu, copySelectedItemsPlugIn,
-                copySelectedItemsPlugIn.getNameWithMnemonic(), false, null,
+                copySelectedItemsPlugIn.getNameWithMnemonic(), false, copySelectedItemsPlugIn.getIcon(),
                 CopySelectedItemsPlugIn.createEnableCheck(workbenchContext));
         featureInstaller.addPopupMenuItem(popupMenu, copyThisCoordinatePlugIn,
                 copyThisCoordinatePlugIn.getName(), false, null,
                 CopyThisCoordinatePlugIn.createEnableCheck(workbenchContext));
         featureInstaller.addPopupMenuItem(popupMenu, editSelectedFeaturePlugIn,
-                editSelectedFeaturePlugIn.getName(), false, null,
+                editSelectedFeaturePlugIn.getName(), false, editSelectedFeaturePlugIn.getIcon(),
                 EditSelectedFeaturePlugIn.createEnableCheck(workbenchContext));
         featureInstaller.addPopupMenuItem(popupMenu, deleteSelectedItemsPlugIn,
-                deleteSelectedItemsPlugIn.getName(), false, DeleteSelectedItemsPlugIn.ICON,
+                deleteSelectedItemsPlugIn.getName(), false, deleteSelectedItemsPlugIn.getIcon(),
                 DeleteSelectedItemsPlugIn.createEnableCheck(workbenchContext));
         featureInstaller.addPopupMenuItem(popupMenu,
                 combineSelectedFeaturesPlugIn, combineSelectedFeaturesPlugIn
-                        .getName(), false, null, combineSelectedFeaturesPlugIn
-                        .createEnableCheck(workbenchContext));
+                        .getName(), false, combineSelectedFeaturesPlugIn.getIcon(), 
+                combineSelectedFeaturesPlugIn.createEnableCheck(workbenchContext));
         featureInstaller.addPopupMenuItem(popupMenu,
                 explodeSelectedFeaturesPlugIn, explodeSelectedFeaturesPlugIn
-                        .getName(), false, null, explodeSelectedFeaturesPlugIn
-                        .createEnableCheck(workbenchContext));
+                        .getName(), false, explodeSelectedFeaturesPlugIn.getIcon(), 
+                explodeSelectedFeaturesPlugIn.createEnableCheck(workbenchContext));
     }
 
 
@@ -735,7 +735,7 @@ public class JUMPConfiguration implements Setup {
                 addNewFeaturesPlugIn.getName() + "...", false, AddNewFeaturesPlugIn.ICON,
                 AddNewFeaturesPlugIn.createEnableCheck(workbenchContext));
         featureInstaller.addMainMenuItemWithJava14Fix(editSelectedFeaturePlugIn, new String[] {MenuNames.EDIT},
-                editSelectedFeaturePlugIn.getName(), false, null,
+                editSelectedFeaturePlugIn.getName(), false, editSelectedFeaturePlugIn.getIcon(),
                 EditSelectedFeaturePlugIn.createEnableCheck(workbenchContext));
         
         FeatureInstaller.addMainMenu(featureInstaller, new String[] {

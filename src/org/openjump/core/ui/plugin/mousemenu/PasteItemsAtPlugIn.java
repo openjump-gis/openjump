@@ -4,37 +4,36 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import javax.swing.ImageIcon;
 import javax.swing.JPopupMenu;
+
+import org.openjump.core.ui.images.IconLoader;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateFilter;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
-import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.geom.CoordUtil;
 import com.vividsolutions.jump.io.WKTReader;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.UndoableCommand;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.ui.EditTransaction;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.SelectionManager;
-import com.vividsolutions.jump.workbench.ui.cursortool.editing.EditingPlugIn;
-import com.vividsolutions.jump.workbench.ui.cursortool.editing.MoveSelectedItemsTool;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.plugin.clipboard.CollectionOfFeaturesTransferable;
 import com.vividsolutions.jump.workbench.ui.plugin.clipboard.PasteItemsPlugIn;
-import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxDialog;
 
 public class PasteItemsAtPlugIn extends PasteItemsPlugIn {
 
+	public static ImageIcon ICON = IconLoader.icon("shape_paste_point.png");	
+	
     WKTReader reader = new WKTReader();
 	private static final String PASTE_ITEMS_AT_POINT = I18N.get("org.openjump.core.ui.plugin.mousemenu.PasteItemsAtPlugIn.Paste-Items-At-Point");
 	
@@ -45,7 +44,7 @@ public class PasteItemsAtPlugIn extends PasteItemsPlugIn {
 	        JPopupMenu popupMenu = LayerViewPanel.popupMenu();
 	        featureInstaller.addPopupMenuItem(popupMenu,
 	            this, getNameWithMnemonic() + "{pos:10}",
-	            false, null,  //to do: add icon
+	            false, this.getIcon(),
 	            this.createEnableCheck(workbenchContext));
 	    }
     
@@ -117,5 +116,8 @@ public class PasteItemsAtPlugIn extends PasteItemsPlugIn {
         });
     }
     
+    public ImageIcon getIcon() {
+        return ICON;
+    }
 
 }

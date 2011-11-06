@@ -35,6 +35,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import javax.swing.ImageIcon;
+
+import org.openjump.core.ui.images.IconLoader;
+
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -53,7 +57,12 @@ import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+
+
 public class CombineSelectedFeaturesPlugIn extends AbstractPlugIn {
+	
+	public static ImageIcon ICON = IconLoader.icon("features_combine.png");	
+	
     public boolean execute(final PlugInContext context) throws Exception {
         final ArrayList originalFeatures =
             new ArrayList(
@@ -144,4 +153,9 @@ public class CombineSelectedFeaturesPlugIn extends AbstractPlugIn {
         }
         return GeometryCollection.class;
     }
+    
+    public ImageIcon getIcon() {
+        return ICON;
+    }
+    
 }

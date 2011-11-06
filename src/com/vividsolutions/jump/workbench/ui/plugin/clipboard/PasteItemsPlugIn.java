@@ -37,13 +37,14 @@ import java.awt.datatransfer.Transferable;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
+
+import org.openjump.core.ui.images.IconLoader;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -65,13 +66,15 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
-import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 
 /**
  * Lets user paste items from the clipboard.
  */
 
 public class PasteItemsPlugIn extends AbstractPlugIn {
+	
+  public static ImageIcon ICON = IconLoader.icon("items_paste.png");
+	
   private WKTReader reader = new WKTReader();
 
   private static final String DECIMAL_PATTERN = "\\d+(?:\\.\\d+)?";
@@ -91,8 +94,6 @@ public class PasteItemsPlugIn extends AbstractPlugIn {
   // so she is free to modify the first copy then hit Paste again. [Jon Aquino]
   public PasteItemsPlugIn() {
   }
-
-  public static final ImageIcon ICON = IconLoaderFamFam.icon("paste_plain.png");
   
   public String getNameWithMnemonic() {
     return StringUtil.replace(getName(), "P", "&P", false);
@@ -251,5 +252,9 @@ public class PasteItemsPlugIn extends AbstractPlugIn {
           }
         }
       });
+  }
+  
+  public ImageIcon getIcon() {
+      return ICON;
   }
 }

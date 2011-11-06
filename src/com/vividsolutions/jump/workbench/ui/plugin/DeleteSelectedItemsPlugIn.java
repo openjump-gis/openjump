@@ -41,7 +41,6 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
 import com.vividsolutions.jump.workbench.ui.GeometryEditor;
-import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.SelectionManager;
 import com.vividsolutions.jump.workbench.ui.SelectionManagerProxy;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -52,10 +51,14 @@ import java.util.Collection;
 import java.util.Iterator;
 import javax.swing.ImageIcon;
 
+import org.openjump.core.ui.images.IconLoader;
+
 //Say "delete" for features but "remove" for layers; otherwise, "delete layers" may
 //sound to a user that we're actually deleting the file from the disk. [Jon Aquino]
 public class DeleteSelectedItemsPlugIn extends AbstractPlugIn {
     
+	public static ImageIcon ICON = IconLoader.icon("item_delete.png");	
+	
     public DeleteSelectedItemsPlugIn() {}
 
     private GeometryEditor geometryEditor = new GeometryEditor();
@@ -108,6 +111,7 @@ public class DeleteSelectedItemsPlugIn extends AbstractPlugIn {
             0, this, createEnableCheck(context));
     }
 
-    public static final ImageIcon ICON = IconLoader.icon("delete.png");
-
+    public ImageIcon getIcon() {
+        return ICON;
+    }
 }

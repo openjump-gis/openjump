@@ -64,7 +64,11 @@ import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 
 import java.util.Collection;
+
+import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
+
+import org.openjump.core.ui.images.IconLoader;
 
 
 /**
@@ -75,6 +79,7 @@ import javax.swing.JComboBox;
  **/
 public class ReplicateSelectedItemsPlugIn extends AbstractPlugIn implements ThreadedPlugIn{
 
+	public static ImageIcon ICON = IconLoader.icon("shape_replicate.png");	
     private String T1 ="Replicate to new layer?";
     private String CLAYER = "otherwise select layer";    
     boolean newLayer = true;
@@ -89,7 +94,7 @@ public class ReplicateSelectedItemsPlugIn extends AbstractPlugIn implements Thre
 					this,
 					I18N.get("org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn.replicate-selected-items"),
 					false, 
-					null,
+					this.getIcon(),
                     createEnableCheck(context.getWorkbenchContext()));
 
 		    context.getFeatureInstaller().addMainMenuItemWithJava14Fix(this,
@@ -97,7 +102,7 @@ public class ReplicateSelectedItemsPlugIn extends AbstractPlugIn implements Thre
 				{MenuNames.EDIT},
 				I18N.get("org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn.replicate-selected-items")+"{pos:16}", 
 				false, 
-				null, 
+				this.getIcon(), 
 				createEnableCheck(context.getWorkbenchContext()));
 		    
 		this.T1 = I18N.get("org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn.replicate-to-new-layer");		
@@ -238,4 +243,7 @@ public class ReplicateSelectedItemsPlugIn extends AbstractPlugIn implements Thre
 
 	}
 	
+    public ImageIcon getIcon() {
+        return ICON;
+    }
 }

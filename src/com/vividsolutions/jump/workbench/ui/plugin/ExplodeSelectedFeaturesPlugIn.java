@@ -36,9 +36,11 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.openjump.core.ui.images.IconLoader;
+
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.util.StringUtil;
@@ -58,6 +60,8 @@ import com.vividsolutions.jump.workbench.ui.EditTransaction;
  */
 public class ExplodeSelectedFeaturesPlugIn extends AbstractPlugIn {
     
+	public static ImageIcon ICON = IconLoader.icon("features_explode.png");	
+	
     public boolean execute(final PlugInContext context) throws Exception {
         final ArrayList transactions = new ArrayList();
         for (Iterator i = context.getLayerViewPanel()
@@ -161,5 +165,9 @@ public class ExplodeSelectedFeaturesPlugIn extends AbstractPlugIn {
                 return null;
             }
         });
+    }
+    
+    public ImageIcon getIcon() {
+        return ICON;
     }
 }

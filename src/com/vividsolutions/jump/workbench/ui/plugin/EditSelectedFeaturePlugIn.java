@@ -32,6 +32,11 @@
 package com.vividsolutions.jump.workbench.ui.plugin;
 
 import java.util.Arrays;
+
+import javax.swing.ImageIcon;
+
+import org.openjump.core.ui.images.IconLoader;
+
 import com.vividsolutions.jts.io.WKTWriter;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
@@ -47,6 +52,8 @@ import com.vividsolutions.jump.workbench.ui.EnterWKTDialog;
 
 public class EditSelectedFeaturePlugIn extends WKTPlugIn {
     
+	public static ImageIcon ICON = IconLoader.icon("view_edit_geometry.png");
+	
 	private Feature feature;
 
 	public EditSelectedFeaturePlugIn() {}
@@ -130,4 +137,8 @@ public class EditSelectedFeaturePlugIn extends WKTPlugIn {
 	}
 
 	private WKTDisplayHelper helper = new WKTDisplayHelper();
+	
+    public ImageIcon getIcon() {
+        return ICON;
+    }
 }
