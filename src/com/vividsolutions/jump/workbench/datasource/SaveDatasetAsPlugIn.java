@@ -81,8 +81,9 @@ public class SaveDatasetAsPlugIn extends AbstractSaveDatasetAsPlugIn {
                             getContext().getWorkbench().getFrame(), getName(),
                             true));
         }
-        return (DataSourceQueryChooserDialog) getContext().getWorkbench()
-                .getBlackboard().get(KEY);
+        DataSourceQueryChooserDialog dialog = (DataSourceQueryChooserDialog) getContext().getWorkbench().getBlackboard().get(KEY);
+        dialog.setDialogTask(DataSourceQueryChooserDialog.SAVEDIALOG);
+        return dialog;
     }
     
     public static final ImageIcon ICON = IconLoader.icon("disk.png");

@@ -31,15 +31,27 @@
  */
 package com.vividsolutions.jump.workbench.datasource;
 
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.io.File;
-import java.util.*;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Vector;
 
-import javax.swing.*;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.filechooser.FileFilter;
-import javax.swing.plaf.basic.BasicFileChooserUI;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.coordsys.CoordinateSystem;
@@ -47,9 +59,9 @@ import com.vividsolutions.jump.coordsys.CoordinateSystemRegistry;
 import com.vividsolutions.jump.io.datasource.DataSource;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.util.Blackboard;
+import com.vividsolutions.jump.util.CollectionUtil;
 import com.vividsolutions.jump.util.LangUtil;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
-import com.vividsolutions.jump.util.CollectionUtil;
 
 /**
  * UI for picking datasets stored in files. Generates two properties: the filename
@@ -81,6 +93,8 @@ public abstract class FileDataSourceQueryChooser
     }
 
     public boolean isInputValid() {
+    	//[sstein 6 Nov 2011] replace the code below as it does not work for MacOSX
+    	/*
         //Trick to allow inner class to modify an outside variable:
         //stick the variable in an array. [Jon Aquino]
         final Boolean[] actionPerformed = new Boolean[] { Boolean.FALSE };
@@ -106,6 +120,21 @@ public abstract class FileDataSourceQueryChooser
         }
 
         return actionPerformed[0] == Boolean.TRUE;
+        */
+        //[sstein 6 Nov 2011] the previous does not work for MacOSX, but I found the code below here:
+        //                    http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4528663
+    	boolean gotFileName = true;
+        try {
+        	JFileChooser chooser = getFileChooserPanel().getChooser();
+        	Method getFileName = chooser.getUI().getClass().getDeclaredMethod("getFileName", new Class[]{});
+        	String fn = (String)getFileName.invoke(chooser.getUI(), new Object[]{});
+                chooser.setSelectedFile(new File(chooser.getCurrentDirectory(), fn));
+            } 
+        catch (Exception e) { 
+            	/* log warning */ 
+            	gotFileName = false;
+            }
+        return gotFileName;
     }
 
     public Collection getDataSourceQueries() {

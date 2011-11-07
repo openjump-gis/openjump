@@ -32,6 +32,7 @@
 package com.vividsolutions.jump.workbench.datasource;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.datasource.FileDataSourceQueryChooser.FileChooserPanel;
 import com.vividsolutions.jump.workbench.ui.OKCancelPanel;
 
 import java.awt.*;
@@ -71,6 +72,10 @@ public class DataSourceQueryChooserDialog extends JDialog {
 
     private HashMap componentToNameMap = new HashMap();
     private OKCancelPanel okCancelPanel = new OKCancelPanel();
+    
+    public static int  LOADDIALOG = 1;
+    public static int SAVEDIALOG = 2;
+    private int dialogTask = 0;
 
     public DataSourceQueryChooserDialog(Collection dataSourceQueryChoosers,
         Frame frame, String title, boolean modal) {
@@ -182,17 +187,36 @@ public class DataSourceQueryChooserDialog extends JDialog {
     }
 
     void okCancelPanel_actionPerformed(ActionEvent e) {
+    	/*
         if (!okCancelPanel.wasOKPressed() ||
                 getCurrentChooser().isInputValid()) {
             setVisible(false);
         }
-        // sstein: added else-if to fix MAC-OSX-bug 
-        else if((okCancelPanel.wasOKPressed()) && (CheckOS.isMacOsx())) {
-        	//--sstein: leave out validation - because it returns always "false" on Mac-OSX ?
-        	//System.out.println("validate input:" + getCurrentChooser().isInputValid());
-        	//System.out.println("i am inside");
-        	okCancelPanel.setOKPressed(true);
-        	setVisible(false);
+        */
+        if (!okCancelPanel.wasOKPressed()) { //cancel case
+            setVisible(false);
+        }
+        else{ 
+        	if(this.getDialogTask() == DataSourceQueryChooserDialog.LOADDIALOG){
+	    		//--sstein: leave out validation - because it returns always "false" on Mac-OSX ?
+	        	//          because the getCurrentChooser() returns has a null pointer
+	    		//System.out.println("validate input:" + getCurrentChooser().isInputValid());
+	        	if ((okCancelPanel.wasOKPressed()) && (CheckOS.isMacOsx())){
+	        		//System.out.println("this is a mac and we load data");
+	        		okCancelPanel.setOKPressed(true);
+	        		setVisible(false);
+	        	}
+	        	else{ 
+	        		if (getCurrentChooser().isInputValid()) {
+	        			setVisible(false);
+	        		}
+	        	}
+        	}
+        	else{ //Now we use the dialog for saving
+        		if (getCurrentChooser().isInputValid()) {
+        			setVisible(false);
+        		}
+        	}
         }
     }
     
@@ -210,4 +234,12 @@ public class DataSourceQueryChooserDialog extends JDialog {
             }
         }
     }
+
+	public int getDialogTask() {
+		return dialogTask;
+	}
+
+	public void setDialogTask(int dialogTask) {
+		this.dialogTask = dialogTask;
+	}
 }

@@ -130,8 +130,11 @@ public class SaveFileDataSourceQueryChooser extends FileDataSourceQueryChooser {
         return super.getDataSourceQueries();
     }
     
-    public boolean isInputValid() {
+    public boolean isInputValid() { 
         boolean isInputValid = super.isInputValid();
+        
+        //String path = getFileChooserPanel().getChooser().getSelectedFile().getPath();
+        //System.out.println("whould be writing to this location: " + path);
         if (!fileNameRegex.matcher(getFileChooserPanel().getChooser().getSelectedFile().getPath()).matches()) {
             context.getWorkbench()
                    .getFrame()

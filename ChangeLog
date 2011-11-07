@@ -1,3 +1,12 @@
+2011-11-6 sstein <sstein@geo.uzh.ch>
+    * Should have fixed the SaveDatasetAs bug for MacOSX.
+      Now the input is accepted and, hence, a file is written.
+      But testing in Non-OSX systems is required.
+      Note, the solution itself is done by replacing Non-OSX workaround code
+      for the Java bug 4528663 in FileDataSourceQueryChooser only 
+      - changing the other classes was more or less for convenience
+      and code readability.
+      
 2011-11-5 sstein <sstein@geo.uzh.ch>
     * Added icons by Peppe for the following functions: 
       EditSelectedFeaturePlugIn, DeleteSelectedItemsPlugIN, 

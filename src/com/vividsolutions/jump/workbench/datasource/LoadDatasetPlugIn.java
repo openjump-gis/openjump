@@ -103,7 +103,7 @@ public class LoadDatasetPlugIn extends ThreadedBasePlugIn {
                 chooser.addActionListener(new DoubleClickActionListener(dlg));
             }
         }
-
+        ((DataSourceQueryChooserDialog) blackboard.get(KEY)).setDialogTask(DataSourceQueryChooserDialog.LOADDIALOG);
         return (DataSourceQueryChooserDialog) blackboard.get(KEY);
     }
 
