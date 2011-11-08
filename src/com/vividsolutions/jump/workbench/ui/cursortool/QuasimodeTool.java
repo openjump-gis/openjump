@@ -38,14 +38,12 @@ import com.vividsolutions.jump.workbench.ui.zoom.ZoomTool;
 
 import java.awt.Cursor;
 import java.awt.event.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
 
 import java.util.HashMap;
 
 import javax.swing.SwingUtilities;
+
+import org.openjump.core.CheckOS;
 
 
 /**
@@ -257,9 +255,14 @@ public class QuasimodeTool extends DelegatingTool {
                 return false;
             }
         };
+        //using Shift we can actually add to the selction or deselct
         quasimodeTool.add(new ModifierKeySpec(true, false, false), selectFeaturesTool);
         quasimodeTool.add(new ModifierKeySpec(true, true, false), selectFeaturesTool);
-        quasimodeTool.add(new ModifierKeySpec(true, false, true), new FeatureInfoTool());
+        //[sstein 7.Nov.2011] we do not want the tool on MacOSX as the mouse pointer change
+        //    	 interferes with the Edit Feature Context menu
+        if(CheckOS.isMacOsx() == false){
+        	quasimodeTool.add(new ModifierKeySpec(true, false, true), new FeatureInfoTool());
+        }
         return quasimodeTool;
     }
 
