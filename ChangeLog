@@ -1,4 +1,8 @@
-2011-11-6 sstein <sstein@geo.uzh.ch>
+2011-11-07 mmichaud <michael.michaud@free.fr>
+    * Fixed AutoAssignPlugin [ID 3434648] and changed slightly its semantic
+      unparsable number returns null instead of 0 for Integer or Double type
+
+2011-11-06 sstein <sstein@geo.uzh.ch>
     * Should have fixed the SaveDatasetAs bug for MacOSX.
       Now the input is accepted and, hence, a file is written.
       But testing in Non-OSX systems is required.
@@ -7,7 +11,7 @@
       - changing the other classes was more or less for convenience
       and code readability.
       
-2011-11-5 sstein <sstein@geo.uzh.ch>
+2011-11-05 sstein <sstein@geo.uzh.ch>
     * Added icons by Peppe for the following functions: 
       EditSelectedFeaturePlugIn, DeleteSelectedItemsPlugIN, 
       CombineSelectedFeaturesPlugIn, ExplodeSelectedFeaturesPlugIn,

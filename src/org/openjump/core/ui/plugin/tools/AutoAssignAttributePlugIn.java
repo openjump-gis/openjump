@@ -324,19 +324,29 @@ public class AutoAssignAttributePlugIn extends AbstractUiPlugIn {
             put(AttributeType.INTEGER, new Converter() {
                 public Object convert(String d) {
                     if (d==null) return null;
-                	String s = parseNumber(d);
-                	if (s.length() == 0) 
-                		return new Integer(0);
-                    return new Integer(s);
+                    try {
+                        return new Integer(d);
+                    } catch(NumberFormatException nfe) {
+                        return null;
+                    }
+                	//String s = parseNumber(d);
+                	//if (s.length() == 0) 
+                	//	return new Integer(0);
+                    //return new Integer(s);
                 }
             });
             put(AttributeType.DOUBLE, new Converter() {
                 public Object convert(String d) {
                     if (d==null) return null;
-                	String s = parseNumber(d);
-                	if (s.length() == 0) 
-                		return new Double(0);
-                    return new Double(parseNumber(d));
+                    try {
+                        return new Double(d);
+                    } catch(NumberFormatException nfe) {
+                        return null;
+                    }
+                	//String s = parseNumber(d);
+                	//if (s.length() == 0) 
+                	//	return new Double(0);
+                    //return new Double(parseNumber(d));
                 }
             });
         }
