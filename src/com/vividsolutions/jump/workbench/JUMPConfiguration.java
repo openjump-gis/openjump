@@ -256,7 +256,8 @@ public class JUMPConfiguration implements Setup {
 
     private LoadDatasetPlugIn loadDatasetPlugIn = new LoadDatasetPlugIn();
     private SaveDatasetAsPlugIn saveDatasetAsPlugIn = new SaveDatasetAsPlugIn();
-    private SaveDatasetAsFilePlugIn saveDatasetAsFilePlugIn = new SaveDatasetAsFilePlugIn();
+    //[sstein 18.Oct.2011] Not needed anymore after fix for MacOSX bug 3428076
+    //private SaveDatasetAsFilePlugIn saveDatasetAsFilePlugIn = new SaveDatasetAsFilePlugIn();
     private SaveImageAsPlugIn saveImageAsPlugIn = new SaveImageAsPlugIn();
 
     private GenerateLogPlugIn generateLogPlugIn = new GenerateLogPlugIn();
@@ -557,13 +558,15 @@ public class JUMPConfiguration implements Setup {
         //        since under MacOSX the SaveDatasetAsPlugIn is missing a text field to
         //        write the name of the new file. Hence, the dialog could only be used
         //        for saving to an existing dataset.
+        //[sstein 7.Nov.2011] not needed anymore as the bug 3428076 could be fixed
+        /*
         if(CheckOS.isMacOsx()){
         featureInstaller.addPopupMenuItem(layerNamePopupMenu,
                 saveDatasetAsFilePlugIn, saveDatasetAsFilePlugIn.getName() + "...",
                 false, SaveDatasetAsPlugIn.ICON, AbstractSaveDatasetAsPlugIn
                         .createEnableCheck(workbenchContext));
         }
-
+		*/
         featureInstaller.addPopupMenuItem(layerNamePopupMenu,
         		saveDatasetAsPlugIn, saveDatasetAsPlugIn.getName() + "...",
                 false, SaveDatasetAsPlugIn.ICON, AbstractSaveDatasetAsPlugIn

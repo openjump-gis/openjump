@@ -3,13 +3,14 @@
       unparsable number returns null instead of 0 for Integer or Double type
 
 2011-11-06 sstein <sstein@geo.uzh.ch>
-    * Should have fixed the SaveDatasetAs bug for MacOSX.
+    * Fixed the SaveDatasetAs bug for MacOSX [ID 3428076].
       Now the input is accepted and, hence, a file is written.
-      But testing in Non-OSX systems is required.
+      Testing fix on Windows on 7.Nov.2011 was positive. So I removed the 
+      MacOSX specific function call for "SaveDatasetAsFile" that was used 
+      as work around.
       Note, the solution itself is done by replacing Non-OSX workaround code
-      for the Java bug 4528663 in FileDataSourceQueryChooser only 
-      - changing the other classes was more or less for convenience
-      and code readability.
+      for the Java bug 4528663 in FileDataSourceQueryChooser only. Changes in 
+      other classes were for testing and code readability.
       
 2011-11-05 sstein <sstein@geo.uzh.ch>
     * Added icons by Peppe for the following functions: 
