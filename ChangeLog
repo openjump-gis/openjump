@@ -3,6 +3,7 @@
       org.openjump.core.ui.plugin.file.open.SelectProjectFilesPanel
       org.openjump.core.ui.plugin.file.open.OpenProjectWizard
       com.vividsolutions.jump.workbench.ui.plugin.SaveProjectAsPlugIn
+    * Internationalization of PasteItemsPlugIn and PasteLayerPlugIn
 
 2011-11-07 mmichaud <michael.michaud@free.fr>
     * Fixed AutoAssignPlugin [ID 3434648] and changed slightly its semantic

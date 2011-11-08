@@ -31,6 +31,7 @@
  */
 package com.vividsolutions.jump.workbench.ui.plugin.clipboard;
 
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Category;
@@ -56,6 +57,10 @@ import javax.swing.JComponent;
 */
 
 public class PasteLayersPlugIn extends LayerableClipboardPlugIn {
+    
+    public static final String MUST_NOT_BE_EMPTY = I18N.get("ui.plugin.PasteLayersPlugIn.clipboard-must-not-be-empty");
+    public static final String MUST_BE_LAYERS = I18N.get("ui.plugin.PasteLayersPlugIn.clipboard-must-contain-layers");
+  
     //Note: Need to copy the data twice: once when the user hits Copy, so she is
     //free to modify the original afterwards, and again when the user hits Paste,
     //so she is free to modify the first copy then hit Paste again. [Jon Aquino]
@@ -97,22 +102,20 @@ public class PasteLayersPlugIn extends LayerableClipboardPlugIn {
     public MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
         EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
 
-        return new MultiEnableCheck().add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
-                                     .add(checkFactory.createExactlyNCategoriesMustBeSelectedCheck(
-                1)).add(new EnableCheck() {
+        return new MultiEnableCheck()
+            .add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
+            .add(checkFactory.createExactlyNCategoriesMustBeSelectedCheck(1))
+            .add(new EnableCheck() {
                 public String check(JComponent component) {
-                    Transferable transferable = GUIUtil.getContents(Toolkit.getDefaultToolkit()
-                                                                           .getSystemClipboard());
-
+                    Transferable transferable = GUIUtil.getContents(
+                        Toolkit.getDefaultToolkit().getSystemClipboard());
                     if (transferable == null) {
-                        return "Clipboard must not be empty";
+                        return MUST_NOT_BE_EMPTY;
                     }
-
                     if (!transferable.isDataFlavorSupported(
                                 CollectionOfLayerablesTransferable.COLLECTION_OF_LAYERABLES_FLAVOR)) {
-                        return "Clipboard contents must be layers";
+                        return MUST_BE_LAYERS;
                     }
-
                     return null;
                 }
             });

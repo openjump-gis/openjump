@@ -50,6 +50,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.coordsys.Reprojector;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.BasicFeature;
@@ -74,8 +75,9 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
 public class PasteItemsPlugIn extends AbstractPlugIn {
 	
   public static ImageIcon ICON = IconLoader.icon("items_paste.png");
-	
-  private WKTReader reader = new WKTReader();
+  
+  public static final String MUST_NOT_BE_EMPTY = I18N.get("ui.plugin.PasteItemsPlugIn.clipboard-must-not-be-empty");
+  public static final String MUST_CONTAIN_GEOMETRY = I18N.get("ui.plugin.PasteItemsPlugIn.clipboard-must-contain-geometries-or-wkt");
 
   private static final String DECIMAL_PATTERN = "\\d+(?:\\.\\d+)?";
 
@@ -88,6 +90,8 @@ public class PasteItemsPlugIn extends AbstractPlugIn {
     + "("
     + DECIMAL_PATTERN
     + ")(?:" + WHITESPACE_OR_COMMA + "(" + DECIMAL_PATTERN + "))?\\s*\\)?\\s*");
+  
+  private WKTReader reader = new WKTReader();
 
   // Note: Need to copy the data twice: once when the user hits Copy, so she is
   // free to modify the original afterwards, and again when the user hits Paste,
@@ -122,7 +126,7 @@ public class PasteItemsPlugIn extends AbstractPlugIn {
     final Layer layer = context.getSelectedLayer(0);
     final Collection featureCopies = conform(features,
       layer.getFeatureCollectionWrapper().getFeatureSchema());
-    execute(new UndoableCommand(getName()) {
+      execute(new UndoableCommand(getName()) {
       public void execute() {
         layer.getFeatureCollectionWrapper().addAll(featureCopies);
       }
@@ -217,7 +221,7 @@ public class PasteItemsPlugIn extends AbstractPlugIn {
             .getSystemClipboard());
 
           if (transferable == null) {
-            return "Clipboard must not be empty";
+            return MUST_NOT_BE_EMPTY;
           }
 
           if (transferable.isDataFlavorSupported(CollectionOfFeaturesTransferable.COLLECTION_OF_FEATURES_FLAVOR)) {
@@ -235,7 +239,7 @@ public class PasteItemsPlugIn extends AbstractPlugIn {
             workbenchContext.getErrorHandler().handleThrowable(e);
           }
 
-          return "Clipboard must contain geometries or Well-Known Text";
+          return MUST_CONTAIN_GEOMETRY;
         }
 
         private boolean isCoordinates(String value) {
