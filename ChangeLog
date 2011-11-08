@@ -1,3 +1,9 @@
+2011-11-08 mmichaud <michael.michaud@free.fr>
+    * Fixed persistence of OpenProject / SaveProjectAs [ID 3434161]
+      org.openjump.core.ui.plugin.file.open.SelectProjectFilesPanel
+      org.openjump.core.ui.plugin.file.open.OpenProjectWizard
+      com.vividsolutions.jump.workbench.ui.plugin.SaveProjectAsPlugIn
+
 2011-11-07 mmichaud <michael.michaud@free.fr>
     * Fixed AutoAssignPlugin [ID 3434648] and changed slightly its semantic
       unparsable number returns null instead of 0 for Integer or Double type

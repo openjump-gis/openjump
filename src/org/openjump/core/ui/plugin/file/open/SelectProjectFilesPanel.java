@@ -29,6 +29,7 @@ package org.openjump.core.ui.plugin.file.open;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -42,6 +43,7 @@ import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.InputChangedListener;
+import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.SaveProjectAsPlugIn;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
@@ -69,6 +71,10 @@ public class SelectProjectFilesPanel extends JFileChooser implements WizardPanel
     addChoosableFileFilter(SaveProjectAsPlugIn.JUMP_PROJECT_FILE_FILTER);
     addChoosableFileFilter(GUIUtil.ALL_FILES_FILTER);
     setFileFilter(SaveProjectAsPlugIn.JUMP_PROJECT_FILE_FILTER);
+    // [mmichaud 2011-11-08] start with last used directory 
+    Blackboard blackboard = PersistentBlackboardPlugIn.get(context);
+    String dir = (String)blackboard.get(OpenProjectWizard.FILE_CHOOSER_DIRECTORY_KEY);
+    if (dir != null) setCurrentDirectory(new File(dir));
 
     setControlButtonsAreShown(false);
 

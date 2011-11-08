@@ -27,10 +27,12 @@
 package com.vividsolutions.jump.workbench.ui.plugin;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.util.FileUtil;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import java.io.File;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.ImageIcon;
@@ -40,6 +42,9 @@ import org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn;
 public class SaveProjectAsPlugIn extends AbstractSaveProjectPlugIn {
     
     public static final ImageIcon ICON = IconLoader.icon("layout_save.png");
+    
+    public static final String FILE_CHOOSER_DIRECTORY_KEY = 
+        SaveProjectAsPlugIn.class.getName() + " - FILE CHOOSER DIRECTORY";
     
     public static final FileFilter JUMP_PROJECT_FILE_FILTER =
         GUIUtil.createFileFilter(I18N.get("ui.plugin.SaveProjectAsPlugIn.jump-project-files"),
@@ -74,6 +79,11 @@ public class SaveProjectAsPlugIn extends AbstractSaveProjectPlugIn {
         fileChooser.addChoosableFileFilter(JUMP_PROJECT_FILE_FILTER);
         fileChooser.addChoosableFileFilter(GUIUtil.ALL_FILES_FILTER);
         fileChooser.setFileFilter(JUMP_PROJECT_FILE_FILTER);
+        Blackboard blackboard = PersistentBlackboardPlugIn.get(context.getWorkbenchContext());
+        String dir = (String)blackboard.get(FILE_CHOOSER_DIRECTORY_KEY);
+        if (dir != null) {
+            fileChooser.setCurrentDirectory(new File(dir));
+        }
     }
     
     public String getName() {
@@ -103,6 +113,14 @@ public class SaveProjectAsPlugIn extends AbstractSaveProjectPlugIn {
         
         file = FileUtil.addExtensionIfNone(file, "jmp");
         save(context.getTask(), file, context.getWorkbenchFrame());
+        // Session-based persistence
+        context.getWorkbenchContext()
+               .getBlackboard()
+               .put(FILE_CHOOSER_DIRECTORY_KEY, file.getAbsoluteFile().getParent());
+        // File-based persistence
+        PersistentBlackboardPlugIn.get(context.getWorkbenchContext())
+                                  .put(FILE_CHOOSER_DIRECTORY_KEY, 
+                                       file.getAbsoluteFile().getParent());
         return true;
     }
     

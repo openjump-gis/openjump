@@ -28,6 +28,7 @@ import com.vividsolutions.jump.io.datasource.Connection;
 import com.vividsolutions.jump.io.datasource.DataSource;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.task.TaskMonitor;
+import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.util.java2xml.XML2Java;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -40,12 +41,16 @@ import com.vividsolutions.jump.workbench.plugin.PlugInManager;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.TaskFrame;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
+import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.WorkbenchContextReference;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
 
 public class OpenProjectWizard extends AbstractWizardGroup {
   /** The key for the wizard. */
   public static final String KEY = OpenProjectWizard.class.getName();
+  
+  public static final String FILE_CHOOSER_DIRECTORY_KEY = 
+        OpenProjectWizard.class.getName() + " - FILE CHOOSER DIRECTORY";
 
   /** The workbench context. */
   private WorkbenchContext workbenchContext;
@@ -95,6 +100,9 @@ public class OpenProjectWizard extends AbstractWizardGroup {
    */
   public void run(WizardDialog dialog, TaskMonitor monitor) {
     if (files == null) {
+      //Blackboard blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
+      //String dir = (String)blackboard.get(FILE_CHOOSER_DIRECTORY_KEY);
+      //if (dir != null) selectProjectPanel.setCurrentDirectory(new File(dir));
       File[] selectedFiles = selectProjectPanel.getSelectedFiles();
       open(selectedFiles, monitor);
     } else {
@@ -105,6 +113,16 @@ public class OpenProjectWizard extends AbstractWizardGroup {
   private void open(File[] files, TaskMonitor monitor) {
     for (File file : files) {
       open(file, monitor);
+    }
+    // [mmichaud 2011-11-08] persist last used directory in workbench-state.xml
+    if (files != null && files.length>0) {
+       File file = files[0];
+       try {
+           Blackboard blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
+           blackboard.put(FILE_CHOOSER_DIRECTORY_KEY, file.getAbsoluteFile().getParent());
+       } catch(Exception e) {
+           e.printStackTrace();
+       }
     }
   }
 
