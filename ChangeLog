@@ -1,3 +1,7 @@
+2011-11-09
+    * Fixed EditSelectedFeaturePlugIn : the geometry change made in the
+      WKT editor had no effect on the geometry after validation.
+
 2011-11-08 mmichaud <michael.michaud@free.fr>
     * Fixed persistence of OpenProject / SaveProjectAs [ID 3434161]
       org.openjump.core.ui.plugin.file.open.SelectProjectFilesPanel
