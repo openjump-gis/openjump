@@ -72,14 +72,14 @@ import javax.swing.JMenuItem;
 import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 
 /**
- * UnionByAttribute plugin is used to union features having the same attribute
- * value together.
+ * UnionByAttribute plugin is used to union features in a Layer or to Dissolve
+ * features using an attribute. It can optionnaly merge unioned LineStrings
+ * (union just create MultiLineStrings by default).
  * <br>
  * There are three options available :
  * <ul>
  * <li>Features with empty values can be discarded</li>
- * <li>LineStrings can be merged (union do not merge by default)</li>
- * <li>Values of numeric attributes can be added up</li>
+ * <li>Attribute values can be added up (numeric) or concatened (strings)</li>
  * </ul>
  */
 public class UnionByAttributePlugIn extends AbstractThreadedUiPlugIn {
@@ -105,10 +105,15 @@ public class UnionByAttributePlugIn extends AbstractThreadedUiPlugIn {
     private GeometryFactory factory;
     
     public UnionByAttributePlugIn() {
-        super(
-            I18N.get("ui.plugin.analysis.UnionByAttributePlugIn") + "...",
-            IconLoader.icon("union_layer_icon.gif")
-        );
+        //super(
+        //    //I18N.get("ui.plugin.analysis.UnionByAttributePlugIn") + "...",
+        //    getName() + "...",
+        //    IconLoader.icon("union_layer_icon.gif")
+        //);
+    }
+    
+    public String getName() {
+        return I18N.get("ui.plugin.analysis.UnionByAttributePlugIn");
     }
     
     @Override
@@ -116,7 +121,8 @@ public class UnionByAttributePlugIn extends AbstractThreadedUiPlugIn {
         context.getFeatureInstaller().addMainMenuItem(
             new String[] { MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
             this,
-            createEnableCheck(context.getWorkbenchContext()));
+            new JMenuItem(getName()+"...", IconLoader.icon("union_layer_icon.gif")),
+            createEnableCheck(context.getWorkbenchContext()), -1);
     }
     
     public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
@@ -129,8 +135,8 @@ public class UnionByAttributePlugIn extends AbstractThreadedUiPlugIn {
     
     @Override
     public boolean execute(PlugInContext context) throws Exception {
-        MultiInputDialog dialog = new MultiInputDialog(context.getWorkbenchFrame(),
-            I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.union-by-attribute"), true);
+        MultiInputDialog dialog = new MultiInputDialog(
+            context.getWorkbenchFrame(), getName(), true);
         int n = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems().size();
 	    use_selection = (n > 0);
         initDialog(dialog, context);
@@ -213,10 +219,10 @@ public class UnionByAttributePlugIn extends AbstractThreadedUiPlugIn {
         dialog.setFieldVisible(SELECTION, use_selection);
         dialog.setFieldVisible(SELECTION_HELP, use_selection);
         dialog.setFieldVisible(LAYER, !use_selection);
-        dialog.setFieldVisible(USE_ATTRIBUTE, has_attributes && !use_selection);
-	    dialog.setFieldVisible(ATTRIBUTE, has_attributes && !use_selection);
-	    dialog.setFieldVisible(IGNORE_EMPTY, has_attributes && !use_selection);
-	    dialog.setFieldVisible(AGG_UNUSED_FIELDS, has_attributes && !use_selection);
+        dialog.setFieldEnabled(USE_ATTRIBUTE, has_attributes && !use_selection);
+	    dialog.setFieldEnabled(ATTRIBUTE, has_attributes && !use_selection);
+	    dialog.setFieldEnabled(IGNORE_EMPTY, has_attributes && !use_selection);
+	    dialog.setFieldEnabled(AGG_UNUSED_FIELDS, has_attributes && !use_selection);
 	    
         dialog.setFieldEnabled(USE_ATTRIBUTE, has_attributes);
         dialog.setFieldEnabled(ATTRIBUTE, has_attributes && use_attribute);
