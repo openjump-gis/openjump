@@ -50,6 +50,12 @@ import com.vividsolutions.jump.workbench.WorkbenchContext;
  */
 public class PlugInManager {
 	private static Logger LOG = Logger.getLogger(PlugInManager.class);
+	private static final String NOT_INITIALIZED = 
+	    I18N.get("com.vividsolutions.jump.workbench.plugin.PlugInManager.could-not-be-initialized");
+	private static final String LOADING = 
+	    I18N.get("com.vividsolutions.jump.workbench.plugin.PlugInManager.loading");
+	private static final String LOADING_ERROR = 
+	    I18N.get("com.vividsolutions.jump.workbench.plugin.PlugInManager.throwable-encountered-loading");
     private TaskMonitor monitor;
     private WorkbenchContext context;
     private Collection configurations = new ArrayList();
@@ -117,11 +123,11 @@ public class PlugInManager {
             if (!Configuration.class.isAssignableFrom(c)) {
                 continue;
             }
-            LOG.debug("Loading " + c.getName());
-            System.out.println("Loading " + c.getName());
+            LOG.debug(LOADING + " " + c.getName());
+            System.out.println(LOADING + " " + c.getName());
             Configuration configuration = (Configuration) c.newInstance();
             configurations.add(configuration);
-            monitor.report("Loading " + name(configuration) + " "
+            monitor.report(LOADING + " " + name(configuration) + " "
                     + version(configuration));
         }
         return configurations;
@@ -129,10 +135,16 @@ public class PlugInManager {
 
     private void loadPlugInClasses(List plugInClasses) throws Exception {
         for (Iterator i = plugInClasses.iterator(); i.hasNext();) {
-            Class plugInClass = (Class) i.next();
-            PlugIn plugIn = (PlugIn) plugInClass.newInstance();
-            plugIn.initialize(new PlugInContext(context, null, null, null,
-                            null));
+            Class plugInClass = null;
+            try {
+                plugInClass = (Class) i.next();
+                PlugIn plugIn = (PlugIn) plugInClass.newInstance();
+                plugIn.initialize(new PlugInContext(context, null, null, null, null));
+            } catch (NoClassDefFoundError e) {
+                LOG.warn(plugInClass + " " + NOT_INITIALIZED);
+                LOG.info(e.getCause().toString());
+                System.out.println(plugInClass + " " + NOT_INITIALIZED);
+            }
         }
     }
 
@@ -228,8 +240,7 @@ public class PlugInManager {
                     + ". Refine class name algorithm.");
             return null;
         } catch (Throwable t) {
-            LOG.error("Throwable encountered loading " + className
-                    + ":");
+            LOG.error(LOADING_ERROR + " " + className + ":");
             //e.g. java.lang.VerifyError: class
             // org.apache.xml.serialize.XML11Serializer
             //overrides final method [Jon Aquino]
