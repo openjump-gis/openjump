@@ -9,7 +9,11 @@
       <outputDirectory>/lib</outputDirectory>
       <unpack>false</unpack>
       <scope>runtime</scope>
-      <!--excludes> <exclude>org.openjump:OpenJUMP</exclude> </excludes -->
+      <excludes>
+        <!--exclude>org.openjump:OpenJUMP</exclude-->
+        <!-- exclude batik from CORE build -->
+        <exclude>batik:*</exclude>
+      </excludes>
     </dependencySet>
     <!--dependencySet -->
     <!-- resort to rebuild ${project.build.finalName} manually as maven does 

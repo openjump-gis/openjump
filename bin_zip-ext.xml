@@ -10,6 +10,15 @@
   <componentDescriptors>
     <componentDescriptor>bin_core.xml</componentDescriptor>
   </componentDescriptors>
+  <dependencySets>
+    <dependencySet>
+      <outputDirectory>/lib</outputDirectory>
+      <!-- include batik only in PLUS build -->
+      <includes>
+        <include>batik:*</include>
+      </includes>
+    </dependencySet>
+  </dependencySets>
   <fileSets>
     <fileSet>
       <directory>.</directory>
