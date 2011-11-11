@@ -21,7 +21,6 @@ can be found in the "gpl-2.txt" (GPL2) file in the "licenses/" folder.
 
 OpenJUMP uses and distributes the following (in alphabetical order) formatted
 as ( Library name - License name - License file in "licenses/" folder )
- BATIK - Apache License Version 2.0 - apache_license-2.0.txt
  BeanShell - LGPL2.1 - lgpl-2.1.txt
  Buoy Framework - Public Domain
  Code2000 Unicode font - GPL2 - gpl-2.txt
@@ -42,11 +41,13 @@ as ( Library name - License name - License file in "licenses/" folder )
 Additionally PLUS distributions contain
 ( Component name - License name - License file in "licenses/" folder
    list of files and dependencies with license if any )
+ BATIK - Apache License Version 2.0 - apache_license-2.0.txt
  Geoarbores Vertex Symbols Collection (Giuseppe Aruta) - GPL2 - gpl-2.txt
   lib/ext/VertexImages/*.wkt
  ECW and JPEG2000 Read Support based on ECW SDK 3.3 for windows x86/x64, 
   linux x86 - ERDAS ECW JPEG2000 SDK license - ecw license.txt
   lib/native/[os/]{jecw-*.jar,NCS*.dll,ermapper.jar}
+  
 and the following plugins
  Aggregation PlugIn (Michaël Michaud) - GPL2 - gpl-2.txt
   aggregation-*.jar
@@ -59,6 +60,8 @@ and the following plugins
   jgrapht-*.jar - LGPL2 - lgpl-2.1.txt
  Jump Chart (com.cadplan.jump) - GPL2 - gpl-2.txt
   JumpChart.jar
+ Jump Fill Pattern (com.cadplan.jump) - GPL2 - gpl-2.txt
+  JumpFillPattern.jar
  Printer (com.cadplan.jump) - GPL2 - gpl-2.txt
   jumpPrinter.jar
  Pirol Csv Dataset 
