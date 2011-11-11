@@ -5,8 +5,11 @@ import java.awt.event.ComponentEvent;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.util.java2xml.Java2XML;
@@ -61,10 +64,10 @@ public class PersistentBlackboardPlugIn extends AbstractPlugIn {
     private void restoreState(WorkbenchContext workbenchContext) {
         if (!new File(getFilePath()).exists()) { return; }
         try {
-            FileReader fileReader = new FileReader(getFilePath());
-
+            FileInputStream fis = new FileInputStream(getFilePath());
+            InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
             try {
-                BufferedReader bufferedReader = new BufferedReader(fileReader);
+                BufferedReader bufferedReader = new BufferedReader(isr);
 
                 try {
                     get(workbenchContext).putAll(
@@ -76,7 +79,7 @@ public class PersistentBlackboardPlugIn extends AbstractPlugIn {
                     bufferedReader.close();
                 }
             } finally {
-                fileReader.close();
+                fis.close();
             }
         } catch (Exception e) {
             // Before we just ate exceptions. But this is confusing when
@@ -88,21 +91,21 @@ public class PersistentBlackboardPlugIn extends AbstractPlugIn {
 
     private void saveState(WorkbenchContext workbenchContext) {
         try {
-            FileWriter fileWriter = new FileWriter(getFilePath(), false);
-
+            FileOutputStream fos = new FileOutputStream(getFilePath(), false);
+            OutputStreamWriter osw = new OutputStreamWriter(fos , Charset.forName("UTF-8"));
             try {
-                BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+                BufferedWriter bufferedWriter = new BufferedWriter(osw);
 
                 try {
                     new Java2XML().write(get(workbenchContext),
                             "workbench-state", bufferedWriter);
                     bufferedWriter.flush();
-                    fileWriter.flush();
+                    fos.flush();
                 } finally {
                     bufferedWriter.close();
                 }
             } finally {
-                fileWriter.close();
+                fos.close();
             }
         } catch (Exception e) {
             e.printStackTrace(System.err);
