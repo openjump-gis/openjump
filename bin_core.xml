@@ -4,13 +4,17 @@
   xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/component/1.1.2 http://maven.apache.org/xsd/component-1.1.2.xsd">
   <dependencySets>
     <dependencySet>
-      <!-- all dependency jars (except oj disabled, cause ${extension} was not resolved) -->
+      <!-- all dependency jars (except oj disabled, cause ${extension} was 
+        not resolved) -->
       <!--outputFileNameMapping>${artifactId}-${version}.${extension}</outputFileNameMapping -->
       <outputDirectory>/lib</outputDirectory>
       <unpack>false</unpack>
       <scope>runtime</scope>
       <excludes>
-        <!--exclude>org.openjump:OpenJUMP</exclude-->
+        <!-- exclude ojcore here because it contains language/**
+             which is added per fileset (for translator convenience)
+             we add oj-nolang.jar to lib/ per fileset below -->
+        <exclude>org.openjump:OpenJUMP</exclude>
         <!-- exclude batik from CORE build -->
         <exclude>batik:*</exclude>
       </excludes>
@@ -65,6 +69,22 @@
         <include>ChangeLog</include>
         <include>lib/ext/**</include>
         <include>lib/native/readme.txt</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <!-- we add the version patched language files from target/classes -->
+      <directory>${project.build.outputDirectory}</directory>
+      <outputDirectory>/</outputDirectory>
+      <includes>
+        <include>language/**</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <!-- add the language/** stripped version of oj-core.jar -->
+      <directory>${project.build.directory}/nolang</directory>
+      <outputDirectory>/lib</outputDirectory>
+      <includes>
+        <include>${artifactId}-${version}-nolang.jar</include>
       </includes>
     </fileSet>
   </fileSets>

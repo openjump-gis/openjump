@@ -14,7 +14,7 @@
   </scm>
   <properties>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-    <assembly_descriptor>bin_zip-core.xml</assembly_descriptor>
+    <!--assembly_descriptor>bin_zip-core.xml</assembly_descriptor-->
   </properties>
   <profiles>
     <profile>
@@ -86,6 +86,7 @@
     <resources>
       <resource>
         <directory>src</directory>
+        <!-- we copy _everything_ to target/classes and filter during packaging -->
         <!--excludes> <exclude> **/*.java </exclude> </excludes -->
       </resource>
     </resources>
@@ -156,14 +157,29 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
-        <configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/nolang/</outputDirectory>
+              <classifier>nolang</classifier>
+              <excludes>
+                <exclude>language/**</exclude>
+              </excludes>
+            </configuration>
+          </execution>
+        </executions>
+        <!--configuration>
           <archive>
             <manifest>
               <mainClass>com.vividsolutions.jump.workbench.JUMPWorkbench</mainClass>
               <addClasspath>true</addClasspath>
             </manifest>
           </archive>
-        </configuration>
+        </configuration-->
       </plugin>
       <!-- remove redundant copy command <plugin> <groupId>org.codehaus.mojo</groupId> 
         <artifactId>build-helper-maven-plugin</artifactId> <version>1.5</version> 
