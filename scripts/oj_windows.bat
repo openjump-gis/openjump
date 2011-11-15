@@ -3,6 +3,10 @@ rem -- Detect current dir and OJ home --
 set OLD_DIR=%CD%
 set JUMP_HOME=%~dp0..%
 
+rem -- uncomment to save settings and log to user profile, quote if env vars might contain spaces --
+rem -- if unset defaults to JUMP_HOME/bin/ --
+rem set SETTINGS_HOME="%HOMEDRIVE%%HOMEPATH%"\openjump
+
 rem -- uncomment to manually set java home, don't use quotes --
 rem set JAVA_HOME=G:\path\to\a\specific\<jre|jdk>-1.<5|6>
 
@@ -18,9 +22,6 @@ rem set JAVA_OPTS=%JAVA_OPTS% -Duser.language=de -Duser.country=DE
 rem --- change your memory configuration here - Xms is initial size, Xmx is maximum size, ---
 rem --- values are ##M for ## Megabytes, ##G for ## Gigabytes ---
 set JAVA_OPTS=%JAVA_OPTS% -Xms64M -Xmx512M
-
-rem --- essential options, don't change unless you know what you're doing ---
-set JAVA_OPTS=%JAVA_OPTS% -Dlog4j.configuration="bin\log4j.xml" -Djump.home="%JUMP_HOME%"
 
 rem -- find java runtime --
   rem --- default to javaw ---
@@ -84,8 +85,14 @@ for %%i in ("%LIB%\*.jar" "%LIB%\*.zip" "%NATIVE%\%ID%%X64%\*.jar" "%NATIVE%\%ID
 
 echo %CLASSPATH%
 
+rem --- set settings home if none given ---
+if "%SETTINGS_HOME%"=="" set SETTINGS_HOME=.\bin
+
+rem --- essential options, don't change unless you know what you're doing ---
+set JAVA_OPTS=%JAVA_OPTS% -Dlog4j.configuration=%SETTINGS_HOME%\log4j.xml -Djump.home="%JUMP_HOME%"
+
 rem -- set default app options --
-set JUMP_OPTS=-default-plugins bin\default-plugins.xml -properties bin\workbench-properties.xml -plug-in-directory "%LIB%\ext"
+set JUMP_OPTS=-default-plugins bin\default-plugins.xml -properties %SETTINGS_HOME%\workbench-properties.xml -plug-in-directory "%LIB%\ext"
 
 rem -- note: title is needed or start won't accept quoted path to java binary (enables spaces in path)
 if /i "%JAVA_BIN%"=="javaw" ( set START=start "OpenJUMP console" ) else ( set START= )
