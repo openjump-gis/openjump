@@ -63,7 +63,7 @@ rem --- 7 Version 6.1 ---
 for /f "delims=" %%v in ('ver^|findstr /C:"Version 6.1"') do (
   set "ID=seven"
 )
-rem --- add native as fallthrough and lib\ext the legacy value ---
+rem -- add native as fallthrough and lib\ext the legacy value --
 set "NATIVEPATH=%NATIVE%\%ID%%X64%;%NATIVE%\%ID%;%NATIVE%"
 set "PATH=%PATH%;%NATIVEPATH%;%LIB%\ext"
 
@@ -85,17 +85,18 @@ for %%i in ("%LIB%\*.jar" "%LIB%\*.zip" "%NATIVE%\%ID%%X64%\*.jar" "%NATIVE%\%ID
 
 echo %CLASSPATH%
 
-rem --- set settings home if none given ---
+rem -- set settings home if none given --
 if "%SETTINGS_HOME%"=="" set SETTINGS_HOME=.\bin
 
-rem --- essential options, don't change unless you know what you're doing ---
+rem -- essential options, don't change unless you know what you're doing --
 set JAVA_OPTS=%JAVA_OPTS% -Dlog4j.configuration=%SETTINGS_HOME%\log4j.xml -Djump.home="%JUMP_HOME%"
 
 rem -- set default app options --
 set JUMP_OPTS=-default-plugins bin\default-plugins.xml -properties %SETTINGS_HOME%\workbench-properties.xml -plug-in-directory "%LIB%\ext"
 
-rem -- note: title is needed or start won't accept quoted path to java binary (enables spaces in path)
-if /i "%JAVA_BIN%"=="javaw" ( set START=start "OpenJUMP console" ) else ( set START= )
+rem -- disconnect javaw from console by using start --
+rem -- note: title is needed or start won't accept quoted path to java binary (protect spaces in javapath) --
+if /i "%JAVA_BIN%"=="javaw" ( set START=start "" ) else ( set START= )
 %START% "%JAVA%" -cp "%CLASSPATH%" %JAVA_OPTS% com.vividsolutions.jump.workbench.JUMPWorkbench %JUMP_OPTS%
 
 cd /D %OLD_DIR%
