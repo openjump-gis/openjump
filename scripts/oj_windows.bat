@@ -85,8 +85,8 @@ for %%i in ("%LIB%\*.jar" "%LIB%\*.zip" "%NATIVE%\%ID%%X64%\*.jar" "%NATIVE%\%ID
 
 echo %CLASSPATH%
 
-rem -- set settings home if none given --
-if "%SETTINGS_HOME%"=="" set SETTINGS_HOME=.\bin
+rem -- set settings home if none given, use [] for if to survive quotes in env var --
+if [%SETTINGS_HOME%]==[] set SETTINGS_HOME=.\bin
 
 rem -- essential options, don't change unless you know what you're doing --
 set JAVA_OPTS=%JAVA_OPTS% -Dlog4j.configuration=%SETTINGS_HOME%\log4j.xml -Djump.home="%JUMP_HOME%"
