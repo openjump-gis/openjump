@@ -99,9 +99,11 @@ public class FormulaParser {
                     }
                         
                 } else if (operation[0].trim().startsWith(FormulaParser.KEY_SQRT)){
-                    theValue = new SquareRootOperation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_SQRT.length()+1).trim(), featSchema));
+                    //theValue = new SquareRootOperation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_SQRT.length()+1).trim(), featSchema));
+                    theValue = new SquareRootOperation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_SQRT.length()).trim(), featSchema));
                 } else if (operation[0].trim().startsWith(FormulaParser.KEY_POW)){
-                    String theTwoValuesStr = operation[0].trim().substring(FormulaParser.KEY_POW.length()+1).trim();
+                    //String theTwoValuesStr = operation[0].trim().substring(FormulaParser.KEY_POW.length()+1).trim();
+                    String theTwoValuesStr = operation[0].trim().substring(FormulaParser.KEY_POW.length()).trim();
                     
                     if (theTwoValuesStr.indexOf(",") < 0){
                         logger.printError("damaged power of operation, can not determine exponent: >" + operation[0] + "<");
@@ -235,8 +237,10 @@ public class FormulaParser {
             }
 
             firstLevelOperation[0] = formula.substring(0, operatorIndex).trim();
-            firstLevelOperation[1] = formula.substring(operatorIndex, Math.min(operatorIndex + 2, formula.length())).trim();
-            firstLevelOperation[2] = formula.substring(Math.min(operatorIndex + 2, formula.length())).trim();
+            //firstLevelOperation[1] = formula.substring(operatorIndex, Math.min(operatorIndex + 2, formula.length())).trim();
+            firstLevelOperation[1] = formula.substring(operatorIndex, Math.min(operatorIndex + 1, formula.length())).trim();
+            //firstLevelOperation[2] = formula.substring(Math.min(operatorIndex + 2, formula.length())).trim();
+            firstLevelOperation[2] = formula.substring(Math.min(operatorIndex + 1, formula.length())).trim();
             
             logger.printDebug("----");
             logger.printDebug(firstLevelOperation[0] +"; " + firstLevelOperation[1] + "; " + firstLevelOperation[2]);

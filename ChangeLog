@@ -1,3 +1,7 @@
+2011-11-20 mmichaud <michael.michaud@free.fr>
+    * Fixed bug 3440346 in AttributeCalculator. The plugin is now more robust
+      if whitespace are omitted.
+
 2011-11-11 mmichaud <michael.michaud@free.fr>
     * PersistentBlackboard now uses UTF-8 instead of local charset to read/write
       into the utf-8 workbench-state.xml file.
