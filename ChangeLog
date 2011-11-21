@@ -1,3 +1,6 @@
+2011-11-21 mmichaud <michael.michaud@free.fr>
+    * Remove FillPatterns from src directory
+    
 2011-11-20 mmichaud <michael.michaud@free.fr>
     * Fixed bug 3440346 in AttributeCalculator. The plugin is now more robust
       if whitespace are omitted.
