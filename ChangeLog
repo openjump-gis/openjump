@@ -1,3 +1,7 @@
+2011-11-23 garuta <giuseppe_aruta@yahoo.it>
+	* Add small icons (16x16) to NewTaskPlugIn and SaveDatasetsPlugIn
+	  in the top/context menus
+
 2011-11-23 mmichaud <michael.michaud@free.fr>
     * Replaced 3 first icons in the toolbar thanks to Peppe (previous one
       did not have the regular 20x20 size.

@@ -151,11 +151,13 @@ public class SaveDatasetsPlugIn extends AbstractPlugIn
         
         featureInstaller.addPopupMenuItem(layerNamePopupMenu,
             this, sSaveSelectedDatasets +"{pos:12}",
-            false, ICON,
+            false, ICON2,
             enableCheck);
     }
     
     public static final ImageIcon ICON = IconLoader.icon("disk_multiple.png");
+    
+    public static final ImageIcon ICON2 = IconLoader.icon("disk_multiple_small.png");
     
     public boolean execute(PlugInContext context) throws Exception
     {

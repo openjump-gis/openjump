@@ -62,4 +62,9 @@ public class NewTaskPlugIn extends AbstractPlugIn {
     public static ImageIcon getIcon() {
             return IconLoader.icon("layout_add.png");
     }
+    
+    //garuta 02.12.2011 added for file menu
+    public static ImageIcon getIcon2() {
+        return IconLoader.icon("layout_add_small.png");
+}
 }

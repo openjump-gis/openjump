@@ -690,7 +690,7 @@ public class JUMPConfiguration implements Setup {
       }, MenuNames.FILE_NEW, 0);
       featureInstaller.addMainMenuItemWithJava14Fix(newTaskPlugIn, new String[] {
         MenuNames.FILE, MenuNames.FILE_NEW
-      }, newTaskPlugIn.getName(), false, newTaskPlugIn.getIcon(), null);
+      }, newTaskPlugIn.getName(), false, newTaskPlugIn.getIcon2(), null);
       featureInstaller.addMenuSeparator(new String[] {
         MenuNames.FILE, MenuNames.FILE_NEW
       }); // ===================
