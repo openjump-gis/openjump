@@ -1,4 +1,9 @@
-2011-12-23 garuta <giuseppe_aruta@yahoo.it>
+2011-12-04 mmichaud <michael.michaud@free.fr>
+    * Now accept a zipped shapefile without dbf file
+    * SimpleQueryPlugIn : fixed bug 3442147 (plugin could show wrong layer list 
+      when two projects were opened).
+
+2011-12-02 garuta <giuseppe_aruta@yahoo.it>
 	* Add small icons (16x16) to NewTaskPlugIn and SaveDatasetsPlugIn
 	  in the top/context menus
 

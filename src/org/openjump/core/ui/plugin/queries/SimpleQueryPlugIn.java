@@ -34,7 +34,11 @@ public class SimpleQueryPlugIn extends AbstractPlugIn {
         if (queryDialog==null) {
             queryDialog = new QueryDialog(context);
         }
-        else {queryDialog.setVisible(true);}
+        else {
+            queryDialog.setVisible(true);
+            // Refresh layer list in case the user switched to another project
+            queryDialog.initComboBoxes();
+        }
         return false;
     }
     
