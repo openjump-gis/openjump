@@ -235,24 +235,28 @@ public class ShapefileReader implements JUMPReader {
             // copy the file then use that copy
             File file = File.createTempFile("dbf", ".dbf");
             FileOutputStream out = new FileOutputStream(file);
+            
+            try {
+                InputStream in = CompressedFile.openFile(dbfFileName,compressedFname);
 
-            InputStream in = CompressedFile.openFile(dbfFileName,compressedFname);
-
-            while (keepGoing) {
-                len = in.read(b);
-
-                if (len > 0) {
-                    out.write(b, 0, len);
+                while (keepGoing) {
+                    len = in.read(b);
+                
+                    if (len > 0) {
+                        out.write(b, 0, len);
+                    }
+                
+                    keepGoing = (len != -1);
                 }
-
-                keepGoing = (len != -1);
+                
+                in.close();
+                out.close();
+                
+                mydbf = new DbfFile(file.toString(), charset);
+                delete_this_tmp_dbf = file; // to be deleted later on
+            } catch (Exception e) {
+                return mydbf;
             }
-
-            in.close();
-            out.close();
-
-            mydbf = new DbfFile(file.toString(), charset);
-            delete_this_tmp_dbf = file; // to be deleted later on
         } else {
             File dbfFile = new File( dbfFileName );
 
