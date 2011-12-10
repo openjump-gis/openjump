@@ -1,3 +1,7 @@
+2011-12-10 garuta <giuseppe_aruta@yahoo.it>
+    * Add extra Classes to handle additions within a formula
+    in de.fho.jump.pirol.utilities.FormulaParsing.Operations folder
+
 2011-12-04 mmichaud <michael.michaud@free.fr>
     * Now accept a zipped shapefile without dbf file
     * SimpleQueryPlugIn : fixed bug 3442147 (plugin could show wrong layer list 
