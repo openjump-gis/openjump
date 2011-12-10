@@ -319,6 +319,7 @@ public class AttributeTablePanel extends JPanel {
                 public void mouseClicked(MouseEvent e) {
                     try {
                         int column = table.columnAtPoint(e.getPoint());
+                        if (column < 0) { return; }
                         if (isEditButtonColumn(column)) { return; }
                         if (SwingUtilities.isLeftMouseButton(e)) {
                             model.sort(table.getColumnName(column));

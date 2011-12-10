@@ -1,3 +1,7 @@
+2011-12-10 mmichaud <michael.michaud@free.fr>
+    * Fixed bug 3456437 throwing a IndexOutOfBoundException in
+      ViewAttributesPlugIn and FeatureInfoPlugIn
+
 2011-12-10 garuta <giuseppe_aruta@yahoo.it>
     * Add extra Classes to handle additions within a formula
     in de.fho.jump.pirol.utilities.FormulaParsing.Operations folder
