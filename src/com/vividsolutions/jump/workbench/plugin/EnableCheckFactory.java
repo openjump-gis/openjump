@@ -432,13 +432,10 @@ public class EnableCheckFactory {
                 JInternalFrame iFrame = workbenchContext.getWorkbench()
                 	.getFrame().getActiveInternalFrame();
                 int selected = 0;
-                try{//sstein [13. Aug. 2006]: 
-                	selected = ((SelectionManagerProxy)iFrame).getSelectionManager().getSelectedItemsCount();
-                	//sstein [13. Mar. 2008]: added since getSelectedItemsCount is not aware of selection in AttributeTable 
-                	//                        maybe we need to change SelectionManager.getSelectedItemsCount() or SelectionManager.updatePanel();
-                	if (iFrame instanceof ViewAttributesFrame){
-                		selected = ((SelectionManagerProxy)iFrame).getSelectionManager().getSelectedItems().size();
-                	}      
+                try{
+                    // Modified bu sstein [13. Aug. 2006], [13. Mar. 2008] mmichaud [11. Dec. 2011]
+                    // It should now works homogeneously for ViewPnale, ViewAttributes and InfoPanel
+                    selected = ((SelectionManagerProxy)iFrame).getSelectionManager().getSelectedItems().size();
                 }
                 catch(Exception e){
                 	//-- sstein:

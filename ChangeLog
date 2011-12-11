@@ -1,3 +1,7 @@
+2011-12-11 mmichaud <michael.michaud@free.fr>
+    * Fixed bug 3441486 : popupMenu did not show the same plugins in InfoFrame
+      and in ViewAttributes. Now works in a more consistent way.
+
 2011-12-10 mmichaud <michael.michaud@free.fr>
     * Fixed bug 3456437 throwing a IndexOutOfBoundException in
       ViewAttributesPlugIn and FeatureInfoPlugIn

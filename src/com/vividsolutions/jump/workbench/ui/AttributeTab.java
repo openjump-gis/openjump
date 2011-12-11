@@ -350,7 +350,11 @@ public class AttributeTab extends JPanel implements LayerNamePanel {
             featureInfoPlugIn.getName(),
             GUIUtil.toSmallIcon(FeatureInfoTool.ICON),
             FeatureInfoPlugIn.toActionListener(featureInfoPlugIn, workbenchContext, null),
-            FeatureInfoPlugIn.createEnableCheck(workbenchContext));
+            //FeatureInfoPlugIn.createEnableCheck(workbenchContext));
+            // Fix BUG ID: 3441486
+            new MultiEnableCheck().add(taskFrameEnableCheck)
+                                  .add(layersEnableCheck)
+                                  .add(rowsSelectedEnableCheck));
         
         //-- [sstein 4 nov 2006] added replace value
         /* but is not yet activated since problems appear:

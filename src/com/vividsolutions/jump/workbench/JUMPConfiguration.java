@@ -474,13 +474,13 @@ public class JUMPConfiguration implements Setup {
         AttributeTab.addPopupMenuItem(workbenchContext, editablePlugIn,
                 editablePlugIn.getName(), true, EditablePlugIn.ICON, editablePlugIn
                         .createEnableCheck(workbenchContext));
-        AttributeTab.addPopupMenuItem(workbenchContext, featureInfoPlugIn,
-                featureInfoPlugIn.getName(), false, GUIUtil
-                        .toSmallIcon(FeatureInfoTool.ICON), FeatureInfoPlugIn
-                        .createEnableCheck(workbenchContext));
         AttributeTab.addPopupMenuItem(workbenchContext, viewSchemaPlugIn,
                 viewSchemaPlugIn.getName(), false, ViewSchemaPlugIn.ICON,
                 ViewSchemaPlugIn.createEnableCheck(workbenchContext));
+        AttributeTab.addPopupMenuItem(workbenchContext, featureInfoPlugIn,
+                featureInfoPlugIn.getName(), false, GUIUtil
+                        .toSmallIcon(FeatureInfoTool.ICON),
+                FeatureInfoPlugIn.createEnableCheck(workbenchContext));
         AttributeTab.addPopupMenuItem(workbenchContext, cutSelectedItemsPlugIn,
                 cutSelectedItemsPlugIn.getName(), false,CutSelectedItemsPlugIn.ICON,
                 cutSelectedItemsPlugIn.createEnableCheck(workbenchContext));
@@ -490,8 +490,8 @@ public class JUMPConfiguration implements Setup {
                 CopySelectedItemsPlugIn.createEnableCheck(workbenchContext));
         AttributeTab.addPopupMenuItem(workbenchContext,
                 deleteSelectedItemsPlugIn, deleteSelectedItemsPlugIn.getName(),
-                false, DeleteSelectedItemsPlugIn.ICON, DeleteSelectedItemsPlugIn
-                        .createEnableCheck(workbenchContext));
+                false, DeleteSelectedItemsPlugIn.ICON, 
+                DeleteSelectedItemsPlugIn.createEnableCheck(workbenchContext));
     }
 
     private void configureLayerPopupMenu(
