@@ -37,25 +37,33 @@ import java.io.File;
 
 import org.apache.log4j.Logger;
 
-import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.WorkbenchException;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
+import java.awt.event.ActionEvent;
+import org.openjump.core.ui.plugin.file.OpenProjectPlugIn;
+
 /**
  * Opens a TaskFrame when the Workbench starts up
  */
-public class FirstTaskFramePlugIn extends OpenProjectPlugIn {//AbstractPlugIn {
+public class FirstTaskFramePlugIn extends AbstractPlugIn {//AbstractPlugIn {
     
     private static Logger LOG = Logger.getLogger( FirstTaskFramePlugIn.class );
-    
+	
     public FirstTaskFramePlugIn() {
     }
+	
     private ComponentListener componentListener;
+	
+	@Override
     public void initialize(final PlugInContext context) throws Exception {
+		
+		final WorkbenchContext workbenchContext = context.getWorkbenchContext();
 
         componentListener = new ComponentAdapter() {
+			@Override
             public void componentShown(ComponentEvent e) {
                 //Two reasons wait until the frame is shown before adding the task frame:
                 //(1) Otherwise the task frame won't be selected (2) Otherwise GUIUtil.setLocation
@@ -73,9 +81,9 @@ public class FirstTaskFramePlugIn extends OpenProjectPlugIn {//AbstractPlugIn {
                     File f = new File( filename );
                     
 	        		try {
-	                    open( f, context.getWorkbenchFrame());
-	                    initialize(context);
-	                    run(null, context);
+						// switch to new OpenProjectPlugIn [Matthias Scholz 11. Dec. 2011]
+						OpenProjectPlugIn openProjectPlugIn = new OpenProjectPlugIn(workbenchContext, f);
+						AbstractPlugIn.toActionListener(openProjectPlugIn, workbenchContext, new TaskMonitorManager()).actionPerformed(new ActionEvent(this, 0, ""));
 	                } catch (Exception ex) {
 	                    String mesg = "Could not load initial file";
 	                    LOG.error( mesg );

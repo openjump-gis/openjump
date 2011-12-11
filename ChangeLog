@@ -1,3 +1,10 @@
+2011-12-11 Matthias Scholz <ms@jammerhund.de>
+	* com.vividsolutions.jump.workbench.ui.plugin.FirstTaskFramePlugIn
+		* If we start OJ with a project file, now this is done with the new
+		  OpenProjectPlugIn. So the user can see what OJ are doing.
+	* com.vividsolutions.jump.workbench.ui.plugin.imagery.AddImageLayerPlugIn
+		* Added an enablecheck. This prevets a NPE if no projectwindow is open.
+
 2011-12-11 mmichaud <michael.michaud@free.fr>
     * Fixed bug 3441486 : popupMenu did not show the same plugins in InfoFrame
       and in ViewAttributes. Now works in a more consistent way.

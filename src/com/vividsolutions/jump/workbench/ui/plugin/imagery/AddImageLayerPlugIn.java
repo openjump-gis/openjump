@@ -6,12 +6,14 @@ import java.util.Collection;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.FeatureDataset;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.imagery.ImageryLayerDataset;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageStyle;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
-import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
+import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
+import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 
@@ -22,16 +24,19 @@ import org.openjump.core.ui.plugin.AbstractUiPlugIn;
 public class AddImageLayerPlugIn extends AbstractUiPlugIn {
     private static int nameCounter = 1;
     
+	@Override
     public void initialize(final PlugInContext context) throws Exception {
         super.initialize(context);
         context.getFeatureInstaller()
-               .addMainMenuItem(new String[]{MenuNames.FILE},this,4);
+               .addMainMenuItem(new String[]{MenuNames.FILE},this,createEnableCheck(workbenchContext), 4);
     }
 
+	@Override
     public String getName(){
     	return I18N.get("ui.plugin.imagery.AddImageLayerPlugIn.Add-Image-Layer");
     }
 
+	@Override
     public boolean execute(PlugInContext context) throws Exception {
         LayerManager lm = context.getLayerManager();
         ImageFeatureCreator ifc = new ImageFeatureCreator();
@@ -74,4 +79,12 @@ public class AddImageLayerPlugIn extends AbstractUiPlugIn {
         return layer;
     }
 
+    public MultiEnableCheck createEnableCheck(
+        final WorkbenchContext workbenchContext) {
+        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+
+        return new MultiEnableCheck().add(checkFactory.createWindowWithLayerManagerMustBeActiveCheck());
+    }
+	
+	
 }
