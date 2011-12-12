@@ -58,6 +58,7 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 
@@ -94,9 +95,11 @@ public class JoinWithArcPlugIn extends AbstractPlugIn {
         MultiInputDialog dialog = new MultiInputDialog(
         context.getWorkbenchFrame(), getName(), true);
         setDialogValues(dialog, context);
+        GUIUtil.centreOnWindow(dialog);
         dialog.setVisible(true);
-        if (! dialog.wasOKPressed())
-        { return false; }
+        if (! dialog.wasOKPressed()) {
+            return false;
+        }
         getDialogValues(dialog);
         
         Geometry fillet = null;

@@ -102,14 +102,14 @@ public class JoinAttributesSpatiallyPlugIn extends ThreadedBasePlugIn{
 		featureInstaller.addMainMenuItem(
 				this,				
 				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
-				this.getName(),
+				this.getName() + "...",
 				false,			//checkbox
 				null,			//icon
 				createEnableCheck(context.getWorkbenchContext()));     
 	}
 	
 	public String getName(){
-		return I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.Join-Attributes-Spatially") + "...";
+		return I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.Join-Attributes-Spatially");
 	}
 	
 	public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {

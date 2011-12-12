@@ -30,7 +30,7 @@ public class OpenWizardPlugIn extends AbstractThreadedUiPlugIn {
   private WizardGroup lastWizard;
 
   public OpenWizardPlugIn() {
-    super(I18N.get(KEY), IconLoader.icon("folder_add.png"));
+    super(I18N.get(KEY), IconLoader.icon("folder_add_small.png"));
   }
 
   public static void addWizard(final WorkbenchContext workbenchContext,
@@ -48,13 +48,11 @@ public class OpenWizardPlugIn extends AbstractThreadedUiPlugIn {
     String name = getName();
 
     FeatureInstaller featureInstaller = new FeatureInstaller(workbenchContext);
-    featureInstaller.addMainMenuItem(new String[] {
-      MenuNames.FILE
-    }, this, 1);
+    featureInstaller.addMainMenuItem(new String[] {MenuNames.FILE}, this, 1);
 
     // Add tool-bar Icon
     WorkbenchToolBar toolBar = frame.getToolBar();
-    toolBar.addPlugIn(1, this, icon, enableCheck, workbenchContext);
+    toolBar.addPlugIn(1, this, IconLoader.icon("folder_add.png"), enableCheck, workbenchContext);
 
     // Add layer pop-up menu
     featureInstaller.addPopupMenuItem(frame.getCategoryPopupMenu(), this, name

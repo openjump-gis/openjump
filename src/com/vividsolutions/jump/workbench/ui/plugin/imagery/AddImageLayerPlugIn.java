@@ -2,7 +2,7 @@ package com.vividsolutions.jump.workbench.ui.plugin.imagery;
 
 import java.awt.Color;
 import java.util.Collection;
-
+import javax.swing.Icon;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.FeatureDataset;
@@ -16,6 +16,7 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
+import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 
 import org.openjump.core.ui.plugin.AbstractUiPlugIn;
 
@@ -34,6 +35,11 @@ public class AddImageLayerPlugIn extends AbstractUiPlugIn {
 	@Override
     public String getName(){
     	return I18N.get("ui.plugin.imagery.AddImageLayerPlugIn.Add-Image-Layer");
+    }
+    
+    @Override
+    public Icon getIcon() {
+        return IconLoaderFamFam.icon("image_add.png");
     }
 
 	@Override

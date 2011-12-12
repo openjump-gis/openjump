@@ -137,6 +137,7 @@ public class CalculateAreasAndLengthsPlugIn extends AbstractPlugIn {
         initFields(dialog, LENGTH_CHECK_BOX, LENGTH_COMBO_BOX, 1);
         initEnableChecks(dialog);
         loadValues(dialog, context);
+        GUIUtil.centreOnWindow(dialog);
         dialog.setVisible(true);
         if (dialog.wasOKPressed()) {
             saveValues(dialog, context);
