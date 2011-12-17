@@ -129,7 +129,7 @@ public class FormulaEditingPanel extends JPanel implements ActionListener, Value
         formulaAndOperators.add(this.formulaField, BorderLayout.CENTER);
         
         JPanel mathSignsButtonPanel = new JPanel();
-        int gridColumns = FormulaEditingPanel.mathSigns.length/2;
+        int gridColumns = FormulaEditingPanel.mathSigns.length/5;
         mathSignsButtonPanel.setLayout(new GridLayout((FormulaEditingPanel.mathSigns.length/gridColumns), gridColumns));
         JButton button;
         
