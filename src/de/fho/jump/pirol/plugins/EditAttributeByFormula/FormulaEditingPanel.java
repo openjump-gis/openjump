@@ -68,7 +68,8 @@ public class FormulaEditingPanel extends JPanel implements ActionListener, Value
     protected JTextField numberInputField = null;
     protected JComboBox storedFormulasDropDown = new JComboBox(); 
     
-    protected static final String[] mathSigns = new String[]{"+", "-", "*", "/", "(", ")", FormulaParser.KEY_SQRT, FormulaParser.KEY_POW};
+    protected static final String[] mathSigns = new String[]{"+", "-", "*", "/", "(", ")",FormulaParser.KEY_SQRT, FormulaParser.KEY_POW, FormulaParser.KEY_PI,FormulaParser.KEY_LOG10,FormulaParser.KEY_LOG,  FormulaParser.KEY_EXP, 
+    	FormulaParser.KEY_SIN, FormulaParser.KEY_COS, FormulaParser.KEY_TAN, FormulaParser.KEY_ASIN, FormulaParser.KEY_ACOS, FormulaParser.KEY_ATAN, FormulaParser.KEY_TODEG, FormulaParser.KEY_TORAD};
     private PropertiesHandler storedFormulas;
     private NewAttributePanel newAttributePanel;
     

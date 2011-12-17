@@ -18,12 +18,25 @@ import de.fho.jump.pirol.utilities.FormulaParsing.Operations.MultiplicationOpera
 import de.fho.jump.pirol.utilities.FormulaParsing.Operations.PowerOfOperation;
 import de.fho.jump.pirol.utilities.FormulaParsing.Operations.SquareRootOperation;
 import de.fho.jump.pirol.utilities.FormulaParsing.Operations.SubtractionOperation;
+import de.fho.jump.pirol.utilities.FormulaParsing.Operations.AsinOperation;
+import de.fho.jump.pirol.utilities.FormulaParsing.Operations.AcosOperation;
+import de.fho.jump.pirol.utilities.FormulaParsing.Operations.AtnaOperation;
+import de.fho.jump.pirol.utilities.FormulaParsing.Operations.CosOperation;
+import de.fho.jump.pirol.utilities.FormulaParsing.Operations.ExpOperation;
+import de.fho.jump.pirol.utilities.FormulaParsing.Operations.CosOperation;
+import de.fho.jump.pirol.utilities.FormulaParsing.Operations.Log10Operation;
+import de.fho.jump.pirol.utilities.FormulaParsing.Operations.LogarithmOperation;
+import de.fho.jump.pirol.utilities.FormulaParsing.Operations.SinOperation;
+import de.fho.jump.pirol.utilities.FormulaParsing.Operations.TanOperation;
+import de.fho.jump.pirol.utilities.FormulaParsing.Operations.ToDegreesOperation;
+import de.fho.jump.pirol.utilities.FormulaParsing.Operations.ToRadiansOperation;
 import de.fho.jump.pirol.utilities.FormulaParsing.Values.AttributeValue;
 import de.fho.jump.pirol.utilities.FormulaParsing.Values.ConstantValue;
 import de.fho.jump.pirol.utilities.attributes.AttributeInfo;
 import de.fho.jump.pirol.utilities.debugOutput.DebugUserIds;
 import de.fho.jump.pirol.utilities.debugOutput.PersonalLogger;
 import de.fho.jump.pirol.utilities.i18n.PirolPlugInMessages;
+import de.fho.jump.pirol.utilities.FormulaParsing.Values.PiValue;
 
 /**
  * This class is a utility to parse formulas, that describe how an additional attribute value is to be calculated on a by feature basis. 
@@ -40,7 +53,7 @@ import de.fho.jump.pirol.utilities.i18n.PirolPlugInMessages;
  * 
  * @version $Rev$
  * 
- * @see org.openjump.core.apitools.FeatureCollectionTools#applyFormulaToFeatureCollection(FeatureCollection, AttributeInfo, FormulaValue, boolean)
+ * @see de.fho.jump.pirol.utilities.FeatureCollectionTools#applyFormulaToFeatureCollection(FeatureCollection, AttributeInfo, FormulaValue, boolean)
  * 
  */
 public class FormulaParser {
@@ -48,6 +61,19 @@ public class FormulaParser {
     protected static PersonalLogger logger = new PersonalLogger(DebugUserIds.ALL);
     public static final String KEY_SQRT = "sqrt:";
     public static final String KEY_POW = "power:";
+    public static final String KEY_PI = "\u03C0";
+    public static final String KEY_LOG = "ln:";
+    public static final String KEY_SIN = "sin:";
+    public static final String KEY_COS = "cos:";
+    public static final String KEY_TAN = "tan:";
+    public static final String KEY_EXP = "root:";
+    public static final String KEY_ASIN = "asin:";
+    public static final String KEY_ACOS = "acos:";
+    public static final String KEY_ATAN = "atan:";
+    public static final String KEY_LOG10 = "log:";
+    public static final String KEY_TODEG = "ra>de:";
+    public static final String KEY_TORAD = "de>ra:";
+   
     
     /**
      * Recursively parses a given (sub-) formula into a FormulaValue, which can be an operation with
@@ -99,11 +125,35 @@ public class FormulaParser {
                     }
                         
                 } else if (operation[0].trim().startsWith(FormulaParser.KEY_SQRT)){
-                    //theValue = new SquareRootOperation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_SQRT.length()+1).trim(), featSchema));
-                    theValue = new SquareRootOperation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_SQRT.length()).trim(), featSchema));
+                    theValue = new SquareRootOperation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_SQRT.length()+1).trim(), featSchema));
+                } else if (operation[0].trim().startsWith(FormulaParser.KEY_LOG)){
+                    theValue = new LogarithmOperation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_LOG.length()+1).trim(), featSchema));
+                } else if (operation[0].trim().startsWith(FormulaParser.KEY_LOG10)){
+                    theValue = new Log10Operation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_LOG10.length()+1).trim(), featSchema));
+                } else if (operation[0].trim().startsWith(FormulaParser.KEY_SIN)){
+                    theValue = new SinOperation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_SIN.length()+1).trim(), featSchema));
+                } else if (operation[0].trim().startsWith(FormulaParser.KEY_COS)){
+                    theValue = new CosOperation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_COS.length()+1).trim(), featSchema));
+                } else if (operation[0].trim().startsWith(FormulaParser.KEY_TAN)){
+                    theValue = new TanOperation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_TAN.length()+1).trim(), featSchema));
+                } else if (operation[0].trim().startsWith(FormulaParser.KEY_ASIN)){
+                    theValue = new AsinOperation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_ASIN.length()+1).trim(), featSchema));
+                } else if (operation[0].trim().startsWith(FormulaParser.KEY_ACOS)){
+                    theValue = new AcosOperation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_ACOS.length()+1).trim(), featSchema));
+                } else if (operation[0].trim().startsWith(FormulaParser.KEY_ATAN)){
+                    theValue = new AtnaOperation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_ATAN.length()+1).trim(), featSchema));
+                } else if (operation[0].trim().startsWith(FormulaParser.KEY_EXP)){
+                    theValue = new ExpOperation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_EXP.length()+1).trim(), featSchema));
+                } else if (operation[0].trim().startsWith(FormulaParser.KEY_TODEG)){
+                    theValue = new ToDegreesOperation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_TODEG.length()+1).trim(), featSchema));
+                } else if (operation[0].trim().startsWith(FormulaParser.KEY_TORAD)){
+                    theValue = new ToRadiansOperation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_TORAD.length()+1).trim(), featSchema));
+                } else if (operation[0].trim().startsWith(FormulaParser.KEY_PI)){
+                    theValue = new PiValue(Math.PI);
+                
                 } else if (operation[0].trim().startsWith(FormulaParser.KEY_POW)){
-                    //String theTwoValuesStr = operation[0].trim().substring(FormulaParser.KEY_POW.length()+1).trim();
-                    String theTwoValuesStr = operation[0].trim().substring(FormulaParser.KEY_POW.length()).trim();
+                    String theTwoValuesStr = operation[0].trim().substring(FormulaParser.KEY_POW.length()+1).trim();
+               
                     
                     if (theTwoValuesStr.indexOf(",") < 0){
                         logger.printError("damaged power of operation, can not determine exponent: >" + operation[0] + "<");
@@ -237,10 +287,8 @@ public class FormulaParser {
             }
 
             firstLevelOperation[0] = formula.substring(0, operatorIndex).trim();
-            //firstLevelOperation[1] = formula.substring(operatorIndex, Math.min(operatorIndex + 2, formula.length())).trim();
-            firstLevelOperation[1] = formula.substring(operatorIndex, Math.min(operatorIndex + 1, formula.length())).trim();
-            //firstLevelOperation[2] = formula.substring(Math.min(operatorIndex + 2, formula.length())).trim();
-            firstLevelOperation[2] = formula.substring(Math.min(operatorIndex + 1, formula.length())).trim();
+            firstLevelOperation[1] = formula.substring(operatorIndex, Math.min(operatorIndex + 2, formula.length())).trim();
+            firstLevelOperation[2] = formula.substring(Math.min(operatorIndex + 2, formula.length())).trim();
             
             logger.printDebug("----");
             logger.printDebug(firstLevelOperation[0] +"; " + firstLevelOperation[1] + "; " + firstLevelOperation[2]);

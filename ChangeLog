@@ -1,3 +1,9 @@
+2011-12-17 Giuseppe Aruta <giuseppe_aruta@yahoo.it>
+    * Extended Pirol Attribute Calculator
+    - Add Greek P value, common and natural logarithms, 
+      root, trigonometric functions (sin, cos, tan, asin, acos, atan), 
+      conversion between radiant and degrees /ra>de and de>ra)
+
 2011-12-12 mmichaud <michael.michaud@free.fr>
     * Small improvements in the user interface
       - back to small icons for Open wizard in File menu and layer context menu
