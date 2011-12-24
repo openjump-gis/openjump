@@ -54,7 +54,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn;
 import org.openjump.core.ui.plugin.tools.ReplaceValuePlugIn;
+import org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewPlugIn;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -68,13 +70,18 @@ import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
+import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.cursortool.FeatureInfoTool;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInfoPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
+import com.vividsolutions.jump.workbench.ui.plugin.RedoPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.UndoPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.ViewSchemaPlugIn;
 
 /**
  * Implements an Attribute Tab.
@@ -85,7 +92,7 @@ public class AttributeTab extends JPanel implements LayerNamePanel {
     private ErrorHandler errorHandler;
     private TaskFrame taskFrame;
     private LayerManagerProxy layerManagerProxy;
-
+    private static final String sNoModifiedWritableLayerSelected = I18N.get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.No-modified-writable-layer-selected");
     //The String values returned by these EnableChecks are not used.
     //The only thing checked is whether they are null or not. [Jon Aquino]
     private EnableCheck taskFrameEnableCheck = new EnableCheck() {
@@ -225,7 +232,65 @@ public class AttributeTab extends JPanel implements LayerNamePanel {
     }
 
     private void installToolBarButtons(final WorkbenchContext workbenchContext, final TaskFrame taskFrame) {
-        toolBar
+    	 
+    	EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+    	
+    	  SaveDatasetsPlugIn saveDatasetsPlugIn = new SaveDatasetsPlugIn();
+          toolBar.add(
+              new JButton(),
+              saveDatasetsPlugIn.getName(),
+              GUIUtil.toSmallIcon(SaveDatasetsPlugIn.ICON),
+              SaveDatasetsPlugIn.toActionListener(saveDatasetsPlugIn, workbenchContext, null),
+              new MultiEnableCheck()
+              //.add(taskFrameEnableCheck).add(layersEnableCheck)
+                 .add(checkFactory.createWindowWithSelectionManagerMustBeActiveCheck())
+                  .add(checkFactory.createAtLeastNLayersMustBeSelectedCheck(1))  
+                  .add(new EnableCheck() {
+              public String check(JComponent component) {
+                  Layer[] lyrs = workbenchContext.getLayerNamePanel().getSelectedLayers();
+                  boolean changesToSave = false;
+                  for (Layer lyr : lyrs) {
+                      if (!lyr.isReadonly() &&
+                          lyr.hasReadableDataSource() &&
+                          lyr.isFeatureCollectionModified()) return null;
+                  }
+                  return sNoModifiedWritableLayerSelected;
+              }
+          })
+               );
+          toolBar.addSeparator();
+          
+          UndoPlugIn undoPlugIn = new UndoPlugIn();
+          toolBar.add(
+              new JButton(),
+              undoPlugIn.getName(),
+              GUIUtil.toSmallIcon(undoPlugIn.getIcon()),
+              UndoPlugIn.toActionListener(undoPlugIn, workbenchContext, null),
+              undoPlugIn.createEnableCheck(workbenchContext));
+     
+      RedoPlugIn redoPlugIn = new RedoPlugIn();
+      toolBar.add(
+          new JButton(),
+          redoPlugIn.getName(),
+          GUIUtil.toSmallIcon(redoPlugIn.getIcon()),
+          RedoPlugIn.toActionListener(redoPlugIn, workbenchContext, null),
+          redoPlugIn.createEnableCheck(workbenchContext));    
+         
+                
+          
+          toolBar.addSeparator();
+          
+          ViewSchemaPlugIn viewSchemaPlugIn = new ViewSchemaPlugIn(null);
+          toolBar.add(
+              new JButton(),
+              viewSchemaPlugIn.getName(),
+              GUIUtil.toSmallIcon(ViewSchemaPlugIn.ICON),
+              ViewSchemaPlugIn.toActionListener(viewSchemaPlugIn, workbenchContext, null),
+              new MultiEnableCheck().add(taskFrameEnableCheck).add(layersEnableCheck));
+      	
+          toolBar.addSeparator();   	
+    	
+    	toolBar
             .add(
                 new JButton(),
                 I18N.get("ui.AttributeTab.pan-to-previous-row"),
@@ -370,6 +435,22 @@ public class AttributeTab extends JPanel implements LayerNamePanel {
                 ReplaceValuePlugIn.toActionListener(myReplacePlugIn, workbenchContext, null),
                 ReplaceValuePlugIn.createEnableCheck(workbenchContext));
          **/
+        
+            toolBar.addSeparator();
+        
+        StatisticOverViewPlugIn statisticOverViewPlugIn = new StatisticOverViewPlugIn();
+        toolBar.add(
+            new JButton(),
+            statisticOverViewPlugIn.getName(),
+            GUIUtil.toSmallIcon(IconLoader.icon("statistics.png")),
+            StatisticOverViewPlugIn.toActionListener(statisticOverViewPlugIn, workbenchContext, null),
+            new MultiEnableCheck().add(taskFrameEnableCheck).add(layersEnableCheck));
+        
+        
+        
+        
+        
+        
     }
 
     public TaskFrame getTaskFrame() {
@@ -386,10 +467,10 @@ public class AttributeTab extends JPanel implements LayerNamePanel {
 
     void jbInit() throws Exception {
         this.setLayout(borderLayout1);
-        toolBar.setOrientation(JToolBar.VERTICAL);
+        toolBar.setOrientation(JToolBar.HORIZONTAL);
         scrollPane.getViewport().add(panel, null);
         this.add(scrollPane, BorderLayout.CENTER);
-        this.add(toolBar, BorderLayout.WEST);
+        this.add(toolBar, BorderLayout.NORTH);
     }
 
     private void initScrollPane() {
