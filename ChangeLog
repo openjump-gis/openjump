@@ -1,3 +1,9 @@
+2011-12-24 Giuseppe Aruta <giuseppe_aruta@yahoo.it>
+    * Modified Toolbar of Attribute Window
+    The Attribute window toolbar is shown on the top of the window. 
+    Add to this toolbar new plugins: Save datasets, Undo, Redo, 
+    Show Schema view and Attribute statistics
+
 2011-12-17 Giuseppe Aruta <giuseppe_aruta@yahoo.it>
     * Extended Pirol Attribute Calculator
     - Add Greek P value, common and natural logarithms, 
