@@ -26,8 +26,6 @@
  */
 package com.vividsolutions.jump.workbench.ui;
 
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -43,20 +41,17 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.border.Border;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableColumnModelEvent;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jts.geom.*;
@@ -69,12 +64,13 @@ import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerEvent;
 import com.vividsolutions.jump.workbench.model.LayerEventType;
 import com.vividsolutions.jump.workbench.model.LayerListener;
-import com.vividsolutions.jump.workbench.plugin.PlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.ui.ColumnBasedTableModel.Column;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.EditSelectedFeaturePlugIn;
 import java.awt.*;
+import java.util.HashMap;
+import javax.swing.event.TableColumnModelListener;
+import javax.swing.table.TableColumnModel;
 
 /**
  * Implements an AttributeTable panel. Table-size changes are absorbed by the
@@ -82,6 +78,11 @@ import java.awt.*;
  */
 
 public class AttributeTablePanel extends JPanel {
+	
+	/**
+	 * The property name of the columns width map in the project file (resides in the data-source subtree).
+	 */
+	public static final String ATTRIBUTE_COLUMNS_WIDTH_MAP = "AttributeColumnsWidthMap";
 
     public static interface FeatureEditor {
 
@@ -96,6 +97,7 @@ public class AttributeTablePanel extends JPanel {
                 throws Exception {
             new EditSelectedFeaturePlugIn() {
 
+				@Override
                 protected Layer layer(PlugInContext context) {
                     //Hopefully nobody will ever delete or rename the
                     // superclass' #layer method.
@@ -130,6 +132,7 @@ public class AttributeTablePanel extends JPanel {
 
         private GeometryCellRenderer geomCellRenderer = new GeometryCellRenderer();
         
+		@Override
         public TableCellRenderer getCellRenderer(int row, int column) {
             if (!isEditButtonColumn(column)) {
                 JComponent renderer = (JComponent) super.getCellRenderer(row,
@@ -253,7 +256,7 @@ public class AttributeTablePanel extends JPanel {
             this.add(scrollPane, new GridBagConstraints(0, 2, 1, 1, 1, 1,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(
                             0, 0, 0, 0), 0, 0));
-        }
+		}
         updateGrid(model.getLayer());
         model.getLayer().getLayerManager().addLayerListener(
                 new LayerListener() {
@@ -316,6 +319,7 @@ public class AttributeTablePanel extends JPanel {
                     new FeatureInfoWriter().sidebarColor(model.getLayer())));
             table.getTableHeader().addMouseListener(new MouseAdapter() {
 
+				@Override
                 public void mouseClicked(MouseEvent e) {
                     try {
                         int column = table.columnAtPoint(e.getPoint());
@@ -331,6 +335,7 @@ public class AttributeTablePanel extends JPanel {
             });
             table.addMouseListener(new MouseAdapter() {
 
+				@Override
                 public void mouseClicked(MouseEvent e) {
                     try {
                         int column = table.columnAtPoint(e.getPoint());
@@ -411,11 +416,9 @@ public class AttributeTablePanel extends JPanel {
         this.add(table.getTableHeader(), new GridBagConstraints(0, 1, 1, 1, 0,
                 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
                 new Insets(0, 0, 0, 0), 0, 0));
-        //Pad table on the right with 200 pixels so that user has some space
-        //in which to resize last column. [Jon Aquino]
-        this.add(table, new GridBagConstraints(0, 2, 1, 1, 0, 0,
+         this.add(table, new GridBagConstraints(0, 2, 1, 1, 0, 0,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(
-                        0, 0, 0, 200), 0, 0));                  
+                        0, 0, 0, 0), 0, 0)); 
     }
 
     private void initColumnWidths() {
@@ -424,12 +427,68 @@ public class AttributeTablePanel extends JPanel {
         table.getColumnModel().getColumn(0).setMinWidth(editButtonWidth);
         table.getColumnModel().getColumn(0).setMaxWidth(editButtonWidth);
         table.getColumnModel().getColumn(0).setPreferredWidth(editButtonWidth);
+		
+		// check if we have previoisly saved columns witdh
+		HashMap columnsWithMap = (HashMap) workbenchContext.getTask().getLayerManager().getLayer(getModel().getLayer().getName()).getDataSourceQuery().getDataSource().getProperties().get(ATTRIBUTE_COLUMNS_WIDTH_MAP);
+		if (columnsWithMap != null) {
+			for (int i = 0; i < table.getColumnModel().getColumnCount(); i++) {
+				Integer columnWidth = (Integer) columnsWithMap.get(table.getColumnModel().getColumn(i).getHeaderValue());
+				if (columnWidth != null) table.getColumnModel().getColumn(i).setPreferredWidth(columnWidth);
+			}
+			
+		}
+		
+		// add the Listener for changes
+		table.getColumnModel().addColumnModelListener(new TableColumnModelListener() {
+
+			public void columnAdded(TableColumnModelEvent e) {
+				handleColumnModelChanges((TableColumnModel)e.getSource());
+			}
+
+			public void columnRemoved(TableColumnModelEvent e) {
+				handleColumnModelChanges((TableColumnModel)e.getSource());
+			}
+
+			public void columnMoved(TableColumnModelEvent e) {
+				handleColumnModelChanges((TableColumnModel)e.getSource());
+			}
+
+			public void columnMarginChanged(ChangeEvent e) {
+				handleColumnModelChanges((TableColumnModel)e.getSource());
+			}
+
+			public void columnSelectionChanged(ListSelectionEvent e) {
+				// do nothing
+			}
+		});
+		
         columnWidthsInitialized = true;
     }
+	
+	/**
+	 * This method handle the changes on the TableColumnModel. 
+	 * The width of all columns will be stored in the datasource properties.
+	 * Later this can be saved within the projectfile.
+	 * 
+	 * @param columnModel 
+	 */
+	private void handleColumnModelChanges(TableColumnModel columnModel) {
+		int columns = columnModel.getColumnCount();
+		HashMap columnsWithMap = new HashMap(columns);
+		// loop over all columns in this table
+		for (int i = 0; i < columns; i++) {
+			// we map the headername of a column to his width, because in the case
+			// of changing the column order we have a problem if we use the index!
+			columnsWithMap.put(columnModel.getColumn(i).getHeaderValue(), columnModel.getColumn(i).getWidth());
+		}
+		// and finaly add the map to the projects properties
+		workbenchContext.getTask().getLayerManager().getLayer(getModel().getLayer().getName()).getDataSourceQuery().getDataSource().getProperties().put(ATTRIBUTE_COLUMNS_WIDTH_MAP, columnsWithMap);
+	}
 
     private void setToolTips() {
         table.addMouseMotionListener(new MouseMotionAdapter() {
 
+			@Override
             public void mouseMoved(MouseEvent e) {
                 int column = table.columnAtPoint(e.getPoint());
                 if (column == -1) { return; }

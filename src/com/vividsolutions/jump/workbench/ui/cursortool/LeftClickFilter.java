@@ -77,19 +77,19 @@ public class LeftClickFilter implements CursorTool {
     }
 
     public void mouseClicked(MouseEvent e) {
-        if (isOnlyLeftMouseButton(e)) {
+        if (isOnlyLeftMouseButton(e) || isRightMouseButtonUsed()) {
             wrappee.mouseClicked(e);
         }
     }
 
     public void mousePressed(MouseEvent e) {
-        if (isOnlyLeftMouseButton(e)) {
+        if (isOnlyLeftMouseButton(e) || isRightMouseButtonUsed()) {
             wrappee.mousePressed(e);
         }
     }
 
     public void mouseReleased(MouseEvent e) {
-        if (isOnlyLeftMouseButton(e)) {
+        if (isOnlyLeftMouseButton(e) || isRightMouseButtonUsed()) {
             wrappee.mouseReleased(e);
         }
     }
@@ -103,7 +103,7 @@ public class LeftClickFilter implements CursorTool {
     }
 
     public void mouseDragged(MouseEvent e) {
-        if (isOnlyLeftMouseButton(e)) {
+        if (isOnlyLeftMouseButton(e) || isRightMouseButtonUsed()) {
             wrappee.mouseDragged(e);
         }
     }
@@ -113,7 +113,11 @@ public class LeftClickFilter implements CursorTool {
     }
 
     public boolean isRightMouseButtonUsed() {
-        return false;
+		boolean rightMouseButtonUsed = false;
+		if (wrappee instanceof AbstractCursorTool) {
+			rightMouseButtonUsed = ((AbstractCursorTool) wrappee).isRightMouseButtonUsed();
+		}
+        return rightMouseButtonUsed;
     }
 
     public boolean isGestureInProgress() {

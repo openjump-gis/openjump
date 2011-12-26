@@ -1,3 +1,15 @@
+2011-12-26 Matthias Scholz <ms@jammerhund.de>
+	* Fixed readme.txt, because I'm not an employee of refractions.net
+	* com.vividsolutions.jump.workbench.ui.AttributePanel
+		* Changes for a better layout. the tables now are allways on top.
+	* com.vividsolutions.jump.workbench.ui.AttributeTablePanel
+		* Changes for a better layout. the tables now are allways on top.
+		* Any changes of a table column width will be saved and later restored.
+		  The column width will be saved within the project file.
+	* com.vividsolutions.jump.workbench.ui.cursortool.LeftClickFilter
+		* implement and applied the isRightMouseButtonUsed() method for 
+		  mouseClicked, mousePressed, mouseReleased and mouseDragged events.
+
 2011-12-24 Giuseppe Aruta <giuseppe_aruta@yahoo.it>
     * Modified Toolbar of Attribute Window
     The Attribute window toolbar is shown on the top of the window. 

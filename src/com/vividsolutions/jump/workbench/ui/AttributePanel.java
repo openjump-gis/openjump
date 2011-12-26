@@ -31,7 +31,6 @@
  */
 package com.vividsolutions.jump.workbench.ui;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -42,12 +41,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import com.vividsolutions.jts.util.Assert;
-import com.vividsolutions.jump.feature.BasicFeature;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -143,6 +140,16 @@ public class AttributePanel
     }
     void jbInit() throws Exception {
         setLayout(gridBagLayout1);
+		// add fillpanel for nice Layout but only if we havn't a scrollpane, because on a scrollpane there are no needs for that
+		if (!addScrollPanesToChildren) {
+			JPanel fillPanel = new JPanel();
+			GridBagConstraints gridBagConstraints = new java.awt.GridBagConstraints();
+			gridBagConstraints.gridx = 0;
+			gridBagConstraints.gridy = 999; // quick'n dirty because this fillpanel is the first and i don't know here how many comes
+			gridBagConstraints.weightx = 0.0;
+			gridBagConstraints.weighty = 0.5;
+			add(fillPanel, gridBagConstraints);
+		}
     }
     private void removeTablePanel(LayerTableModel layerTableModel) {
         Assert.isTrue(layerToTablePanelMap.containsKey(layerTableModel.getLayer()));
@@ -158,6 +165,7 @@ public class AttributePanel
             new AttributeTablePanel(layerTableModel, addScrollPanesToChildren, workbenchContext);
         tablePanel.addListener(this);
         layerToTablePanelMap.put(layerTableModel.getLayer(), tablePanel);
+		int topInset = layerToTablePanelMap.size() > 1 ? 10 : 0; // a small space on top for 2. and following panel
         add(
             tablePanel,
             new GridBagConstraints(
@@ -166,15 +174,16 @@ public class AttributePanel
                 1,
                 1,
                 1.0,
-                1.0,
+                addScrollPanesToChildren ? 1.0 : 0.0,
                 GridBagConstraints.CENTER,
                 GridBagConstraints.BOTH,
-                new Insets(0, 0, 0, 0),
+                new Insets(topInset, 0, 0, 0),
                 0,
                 0));
         revalidate();
         repaint();
         tablePanel.getTable().addMouseListener(new MouseAdapter() {
+			@Override
             public void mouseClicked(MouseEvent e) {
                 try {
                     int row = tablePanel.getTable().rowAtPoint(e.getPoint());

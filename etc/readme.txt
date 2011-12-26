@@ -216,7 +216,7 @@ OpenJUMP regular contributors are (non exhaustive list!):
   Jukka Rahkonen
   Larry Becker (ISA.com)
   Larry Reeder
-  Matthias Scholz (refractions.net)
+  Matthias Scholz
   Michaël Michaud
   Mohammed Rashad
   Stefan Steiniger
