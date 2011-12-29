@@ -87,6 +87,6 @@ public class RedoPlugIn extends AbstractPlugIn {
     
     @Override
     public String getName() {
-    	return (sName + "123");
+    	return sName;
     }
 }
