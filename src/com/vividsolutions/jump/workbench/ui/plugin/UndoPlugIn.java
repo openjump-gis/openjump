@@ -35,6 +35,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.undo.UndoManager;
 
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
@@ -43,10 +44,13 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
+
 public class UndoPlugIn extends AbstractPlugIn {
     public UndoPlugIn() {}
-    public void initialize(PlugInContext context) throws Exception {}
+    private String sName = "undo";
+    public void initialize(PlugInContext context) throws Exception {
+    	sName = I18N.get("com.vividsolutions.jump.workbench.ui.plugin.UndoPlugIn");
+    }
     public boolean execute(PlugInContext context) throws Exception {
         ((LayerManagerProxy) context.getWorkbenchContext()
                         .getWorkbench()
@@ -79,5 +83,9 @@ public class UndoPlugIn extends AbstractPlugIn {
     public ImageIcon getIcon() {
         //return IconLoaderFamFam.icon("arrow_undo.png");
         return IconLoader.icon("Undo.gif");
+    }
+    @Override
+    public String getName() {
+    	return (sName + "123");
     }
 }
