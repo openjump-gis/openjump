@@ -32,7 +32,7 @@
  * @author sstein
  * 
  * description:
- *  created voronoi regions/thiessen polygons from a set of points.
+ *  creates voronoi regions/thiessen polygons from a set of points.
  * The Delauney algorithm used for the triangulation is by L. Paul Chew and
  * his free demonstration java-applet.<p>
  * @see <a href="http://www.cs.cornell.edu/Info/People/chew/Delaunay.html">chew</a>
@@ -62,7 +62,6 @@ import com.vividsolutions.jump.feature.BasicFeature;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureDataset;
-import com.vividsolutions.jump.feature.FeatureDatasetFactory;
 import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.tools.AttributeMapping;
@@ -130,7 +129,7 @@ public class CreateThiessenPolygonsPlugIn extends AbstractPlugIn implements Thre
 	        FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
 	    	featureInstaller.addMainMenuItem(
 	    	        this,								//exe
-	                new String[] {MenuNames.TOOLS, MenuNames.TOOLS_GENERATE}, 	//menu path
+	                new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS}, 	//menu path
 	                this.sName + "..." /*+ "{pos:2}"*/, //name methode .getName received by AbstractPlugIn
 	                false,			//checkbox
 	                null,			//icon
