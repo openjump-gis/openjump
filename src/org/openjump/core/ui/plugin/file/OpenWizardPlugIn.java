@@ -16,6 +16,7 @@ import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.registry.Registry;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.WorkbenchToolBar;
@@ -78,6 +79,8 @@ public class OpenWizardPlugIn extends AbstractThreadedUiPlugIn {
 
     }
     dialog.setSelectedWizard(lastWizard);
+    dialog.pack();
+    GUIUtil.centreOnWindow(dialog);
     dialog.setVisible(true);
     lastWizard = dialog.getSelectedWizard();
     if (dialog.wasFinishPressed()) {

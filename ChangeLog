@@ -1,14 +1,21 @@
+# for display continuity sake please use 2 spaces instead of tabs
+
+2011-12-30 ede
+  - bugfix 3439132: File dialog item for all supported files is too long
+  - OpenWizard is now also centered on main window similar to other Wizards
+  - added hint to not use tabs in ChangeLog, replaced sneaked in tabs with double spaces
+
 2011-12-26 Matthias Scholz <ms@jammerhund.de>
-	* Fixed readme.txt, because I'm not an employee of refractions.net
-	* com.vividsolutions.jump.workbench.ui.AttributePanel
-		* Changes for a better layout. the tables now are allways on top.
-	* com.vividsolutions.jump.workbench.ui.AttributeTablePanel
-		* Changes for a better layout. the tables now are allways on top.
-		* Any changes of a table column width will be saved and later restored.
-		  The column width will be saved within the project file.
-	* com.vividsolutions.jump.workbench.ui.cursortool.LeftClickFilter
-		* implement and applied the isRightMouseButtonUsed() method for 
-		  mouseClicked, mousePressed, mouseReleased and mouseDragged events.
+  * Fixed readme.txt, because I'm not an employee of refractions.net
+  * com.vividsolutions.jump.workbench.ui.AttributePanel
+    * Changes for a better layout. the tables now are allways on top.
+  * com.vividsolutions.jump.workbench.ui.AttributeTablePanel
+    * Changes for a better layout. the tables now are allways on top.
+    * Any changes of a table column width will be saved and later restored.
+      The column width will be saved within the project file.
+  * com.vividsolutions.jump.workbench.ui.cursortool.LeftClickFilter
+    * implement and applied the isRightMouseButtonUsed() method for 
+      mouseClicked, mousePressed, mouseReleased and mouseDragged events.
 
 2011-12-24 Giuseppe Aruta <giuseppe_aruta@yahoo.it>
     * Modified Toolbar of Attribute Window
@@ -31,11 +38,11 @@
       - JoinAttributesSpatially : typo (no ellipsis needed in dialog box)
 
 2011-12-11 Matthias Scholz <ms@jammerhund.de>
-	* com.vividsolutions.jump.workbench.ui.plugin.FirstTaskFramePlugIn
-		* If we start OJ with a project file, now this is done with the new
-		  OpenProjectPlugIn. So the user can see what OJ are doing.
-	* com.vividsolutions.jump.workbench.ui.plugin.imagery.AddImageLayerPlugIn
-		* Added an enablecheck. This prevets a NPE if no projectwindow is open.
+  * com.vividsolutions.jump.workbench.ui.plugin.FirstTaskFramePlugIn
+    * If we start OJ with a project file, now this is done with the new
+      OpenProjectPlugIn. So the user can see what OJ are doing.
+  * com.vividsolutions.jump.workbench.ui.plugin.imagery.AddImageLayerPlugIn
+    * Added an enablecheck. This prevets a NPE if no projectwindow is open.
 
 2011-12-11 mmichaud <michael.michaud@free.fr>
     * Fixed bug 3441486 : popupMenu did not show the same plugins in InfoFrame
@@ -55,8 +62,8 @@
       when two projects were opened).
 
 2011-12-02 garuta <giuseppe_aruta@yahoo.it>
-	* Add small icons (16x16) to NewTaskPlugIn and SaveDatasetsPlugIn
-	  in the top/context menus
+  * Add small icons (16x16) to NewTaskPlugIn and SaveDatasetsPlugIn
+    in the top/context menus
 
 2011-11-23 mmichaud <michael.michaud@free.fr>
     * Replaced 3 first icons in the toolbar thanks to Peppe (previous one
@@ -315,8 +322,8 @@
     * Small improvements and internationalization of EnterWKTDialog
 
 2011-09-01 Matthias Scholz <ms@jammerhund.de>
-	* FeatureInstaller.java:
-		* Improve all addMainMenuItem() methods to returning the created JMenuItem
+  * FeatureInstaller.java:
+    * Improve all addMainMenuItem() methods to returning the created JMenuItem
 
 2011-08-28 mmichaud <michael.michaud@free.fr>
     * [ID 3397856] VertexZValueStyle now extends a new TextBasedVertexStyle
@@ -325,9 +332,9 @@
       used with a null  
 
 2011-08-27 Matthias Scholz <ms@jammerhund.de>
-	* BlendLineStringsPlugIn
-		* now the user have the choise which attributes will be transfered to
-		  the resulting lines
+  * BlendLineStringsPlugIn
+    * now the user have the choise which attributes will be transfered to
+      the resulting lines
 
 2011-08-25 mmichaud <michael.michaud@free.fr>
     * Move AddImageLayerPlugIn to File menu
@@ -339,12 +346,12 @@
         * Tools>Edit Geometry>Blend LineStrings
 
 2011-08-14 Matthias Scholz <ms@jammerhund.de>
-	* BlendLineStringsPlugIn
-		* some Enhancements: choice if the source linestrings are deleted and
-		  if a new layer with the reluts are created
-		* Bugfix: if the result was more then one blended linestring, then all
-		  linestrings had the attributes from the first selected linestring and
-		  not from the first blended
+  * BlendLineStringsPlugIn
+    * some Enhancements: choice if the source linestrings are deleted and
+      if a new layer with the reluts are created
+    * Bugfix: if the result was more then one blended linestring, then all
+      linestrings had the attributes from the first selected linestring and
+      not from the first blended
 
 2011-07-31 mmichaud <michael.michaud@free.fr>
     * Fix/improve ColorThemingStylePanel. The main option is now attribute
@@ -386,7 +393,7 @@
     * revert change made on WMS-getMapRequest (see ID: 3327322 and
       Jukka's remark on the JPP developper list)
 
-2011-06-27 edgard soldin
+2011-06-27 edgar soldin
     * FeatureInstaller.addPopupMenuSeparator(JPopupMenu popupMenu, String[] menuPath)
       allowing to conveniently add separators to popup menus
 
@@ -408,23 +415,23 @@
 2011-06-20 mmichaud <michael.michaud@free.fr>
     * Change Tools>Analysis menu. Now contains the following plugins
         - com.vividsolutions.jump.workbench.ui.plugin.analysis.BufferPlugIn
-	    - org.openjump.core.ui.plugin.tools.MultiRingBufferSelectedPlugIn
-	    - org.openjump.core.ui.plugin.tools.PlumePlugIn
-	    - com.vividsolutions.jump.workbench.ui.plugin.analysis.CalculateAreasAndLengthsPlugIn
-	    - com.vividsolutions.jump.workbench.ui.plugin.analysis.ConvexHullPlugIn
-	    - org.openjump.core.ui.plugin.tools.ConvexHullPlugIn
-	    - com.vividsolutions.jump.workbench.ui.plugin.analysis.GeometryFunctionPlugIn
-	    - com.vividsolutions.jump.workbench.ui.plugin.analysis.OverlayPlugIn
-	    - org.openjump.core.ui.plugin.tools.IntersectPolygonLayersPlugIn
-	    - com.vividsolutions.jump.workbench.ui.plugin.analysis.SpatialJoinPlugIn
-	    - org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn
-	    - com.vividsolutions.jump.workbench.ui.plugin.analysis.UnionPlugIn
-	    - org.openjump.core.ui.plugin.tools.UnionByAttributePlugIn
-	* Add icons to GenerateLogPlugIn and MosaicInternalFrame
+      - org.openjump.core.ui.plugin.tools.MultiRingBufferSelectedPlugIn
+      - org.openjump.core.ui.plugin.tools.PlumePlugIn
+      - com.vividsolutions.jump.workbench.ui.plugin.analysis.CalculateAreasAndLengthsPlugIn
+      - com.vividsolutions.jump.workbench.ui.plugin.analysis.ConvexHullPlugIn
+      - org.openjump.core.ui.plugin.tools.ConvexHullPlugIn
+      - com.vividsolutions.jump.workbench.ui.plugin.analysis.GeometryFunctionPlugIn
+      - com.vividsolutions.jump.workbench.ui.plugin.analysis.OverlayPlugIn
+      - org.openjump.core.ui.plugin.tools.IntersectPolygonLayersPlugIn
+      - com.vividsolutions.jump.workbench.ui.plugin.analysis.SpatialJoinPlugIn
+      - org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn
+      - com.vividsolutions.jump.workbench.ui.plugin.analysis.UnionPlugIn
+      - org.openjump.core.ui.plugin.tools.UnionByAttributePlugIn
+  * Add icons to GenerateLogPlugIn and MosaicInternalFrame
 
 2011-06-19 Matthias Scholz <ms@jammerhund.de>
-	* MultiClickTool.displayMetrics()
-		* Fix of bug 3034927 - Measure Tool Doesn't Comply With Snap
+  * MultiClickTool.displayMetrics()
+    * Fix of bug 3034927 - Measure Tool Doesn't Comply With Snap
 
 2011-06-18 mmichaud <michael.michaud@free.fr>
     * Fix LayerStyle2SLDPlugin and the corresponding xsl
@@ -435,21 +442,21 @@
       with an icon from Giuseppe
 
 2011-06-17 Matthias Scholz <ms@jammerhund.de>
-	* update german translation
+  * update german translation
 
 2011-06-13 Matthias Scholz <ms@jammerhund.de>
-	* InstallSkinsPlugIn.initialize(): change from hardcoded look and feel to 
-		retrieval of available look and feel's
-	* i18n of the word "Skin" in the SkinOptionsPanel
-	* Bugfix MultiClickTool.getShape():
-		* an IndexOutOfBoundsExeption occurs if you use a MultiClickTool and a
-			menu is open.
+  * InstallSkinsPlugIn.initialize(): change from hardcoded look and feel to 
+    retrieval of available look and feel's
+  * i18n of the word "Skin" in the SkinOptionsPanel
+  * Bugfix MultiClickTool.getShape():
+    * an IndexOutOfBoundsExeption occurs if you use a MultiClickTool and a
+      menu is open.
 
 2011-06-10 Matthias Scholz <ms@jammerhund.de>
-	* Fix NullPointerException in SystemLayerFinder.getLayer() and 
-		SelectionStyllingOptionsPanel.okPressed(), if no active internal frame
-		is there.
-		The NPE's came when you press the OK button in the options dialog.
+  * Fix NullPointerException in SystemLayerFinder.getLayer() and 
+    SelectionStyllingOptionsPanel.okPressed(), if no active internal frame
+    is there.
+    The NPE's came when you press the OK button in the options dialog.
 
 2011-05-28 mmichaud <michael.michaud@free.fr>
     * ui improvements : add/change icons from Giuseppe Aruta distribution (jefre)
@@ -573,39 +580,39 @@
       delete key does not delete a feature being edited any more
 
 2011-02-23 Matthias Scholz <ms@jammerhund.de>
-	* Changes for a better presentation of attribute values. Now Date, Double
-	  and Integer attributes will be formatted with the default loacle settings.
-	  Changes in:
-		* com.vividsolutions.jump.workbench.ui.renderer.style.LabelStyle.paint(Feature f, Graphics2D g, Viewport viewport)
-		* com.vividsolutions.jump.workbench.ui.style.LabelStylePanel.sampleText()
+  * Changes for a better presentation of attribute values. Now Date, Double
+    and Integer attributes will be formatted with the default loacle settings.
+    Changes in:
+    * com.vividsolutions.jump.workbench.ui.renderer.style.LabelStyle.paint(Feature f, Graphics2D g, Viewport viewport)
+    * com.vividsolutions.jump.workbench.ui.style.LabelStylePanel.sampleText()
 
 2011-02-22 mmichaud <michael.michaud@free.fr>
     * removed unused com.sun.corba.se.impl.protocol.giopmsgheaders.KeyAddr
     * removed unused com.sun.org.apache.xerces.internal.impl.dv.xs.DecimalDV
       in com.vividsolutions.jump.workbench.ui.plugin.clipboard.PasteItemsPlugIn
-	* removed a sun proprietary code dependency in 
-	  com.vividsolutions.jump.workbench.imagery.graphic.GraphicImage
-	  note 1 : the code was supposed to set different rendering hints for gray
-	  jpg image and for other jpg image types, but I could not see any effect
-	  note 2 : Currently ImageGraphic does interpolation for image rendering
-	  while the new Sextante Raster framework does not.
+  * removed a sun proprietary code dependency in 
+    com.vividsolutions.jump.workbench.imagery.graphic.GraphicImage
+    note 1 : the code was supposed to set different rendering hints for gray
+    jpg image and for other jpg image types, but I could not see any effect
+    note 2 : Currently ImageGraphic does interpolation for image rendering
+    while the new Sextante Raster framework does not.
 
 2011-02-16 Matthias Scholz <ms@jammerhund.de>
-	* updated german translation for LayerPropertiesPlugIn
+  * updated german translation for LayerPropertiesPlugIn
 
 2011-02-09 mmichaud <michael.michaud@free.fr> for mrashad
     * org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn
         add layer extent to the information panel
 
 2011-02-12 Matthias Scholz <ms@jammerhund.de>
-	* org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn
-		Bugfix in WriteLayer(), the charset was not considered while saving an
-		existing layer into a shapefile. So it was possible that you get wrong
-		strings in the dbf file.
-	* org.openjump.core.ui.plugin.tools.AdvancedMeasureTool
-		Bugfix in actionPerformed() to viewing the right OptionTab
-	* com.vividsolutions.jump.workbench.JUMPConfiguration
-		switched from the old MeasureTool to the new AdvancedMeasureTool
+  * org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn
+    Bugfix in WriteLayer(), the charset was not considered while saving an
+    existing layer into a shapefile. So it was possible that you get wrong
+    strings in the dbf file.
+  * org.openjump.core.ui.plugin.tools.AdvancedMeasureTool
+    Bugfix in actionPerformed() to viewing the right OptionTab
+  * com.vividsolutions.jump.workbench.JUMPConfiguration
+    switched from the old MeasureTool to the new AdvancedMeasureTool
 
 2011-02-09 mmichaud <michael.michaud@free.fr> for mrashad
     * org.openjump.core.rasterimage.AddRasterImageLayerWizard
@@ -625,62 +632,62 @@
         * org.openjump.core.attributeoperations.Classifier1D
 
 2011-01-22 Matthias Scholz <ms@jammerhund.de>
-	* small GUI fix in FontChooser, now the example text is better visible
-	* AdvancedMeasureTool enhancement:
-		If the user starts a measurement with a single click, all the old
-		measurements will be deleted. But if the user starts the measurement
-		with a double click, then nothing is deleted. So you can make multiple
-		measurements very easy without any additional menuitems and mouseclicks
-		in the menu.
+  * small GUI fix in FontChooser, now the example text is better visible
+  * AdvancedMeasureTool enhancement:
+    If the user starts a measurement with a single click, all the old
+    measurements will be deleted. But if the user starts the measurement
+    with a double click, then nothing is deleted. So you can make multiple
+    measurements very easy without any additional menuitems and mouseclicks
+    in the menu.
 
 2011-01-19 Matthias Scholz <ms@jammerhund.de>
-	* AdvancedMeasureOptionsPanel
-		* Bugfix: if you have the cancel button pressed in the FontChooser, then
-			an exception was thrown, because of a null-Font
-	* MeasurementStyle
-		* format pattern for area/length is now adaptive; thaks to Michaël for his idea
-	* AdvancedMeasureOptionsPanel, MeasurementStyle, MeasureLayerFinder
-		* now you can select individually if summary length and/or area should
-			be painted; thanks to Jukka Rahkonen for his idea
-	* AdvancedMeasureTool
-		* now you can pan and zoom during measurment
-	* CoordinateListMetrics
-		* now you can get the distance for a closed geometry
-		* this was the reason for different distance in the statusbar and while
-			area measurement mode in the AdvancedMeasureTool
+  * AdvancedMeasureOptionsPanel
+    * Bugfix: if you have the cancel button pressed in the FontChooser, then
+      an exception was thrown, because of a null-Font
+  * MeasurementStyle
+    * format pattern for area/length is now adaptive; thaks to Michaël for his idea
+  * AdvancedMeasureOptionsPanel, MeasurementStyle, MeasureLayerFinder
+    * now you can select individually if summary length and/or area should
+      be painted; thanks to Jukka Rahkonen for his idea
+  * AdvancedMeasureTool
+    * now you can pan and zoom during measurment
+  * CoordinateListMetrics
+    * now you can get the distance for a closed geometry
+    * this was the reason for different distance in the statusbar and while
+      area measurement mode in the AdvancedMeasureTool
 
 2011-01-16 Matthias Scholz <ms@jammerhund.de>
-	* MeasureLayerFinder.featuresChanged()
-		* Bugfix: the LayerListener now only works if the change was on
-			the measureLayer; all changes on other layers will be ignored
+  * MeasureLayerFinder.featuresChanged()
+    * Bugfix: the LayerListener now only works if the change was on
+      the measureLayer; all changes on other layers will be ignored
 
 2011-01-16 Matthias Scholz <ms@jammerhund.de>
-	* AdvancedMeasurePlugin
-		* styling for the AdvancedMeasureTool in the Option dialog added
-		* I18N for english and german
+  * AdvancedMeasurePlugin
+    * styling for the AdvancedMeasureTool in the Option dialog added
+    * I18N for english and german
 
 2011-01-03 Matthias Scholz <ms@jammerhund.de>
-	* com.vividsolutions.jump.workbench.ui.FontChooser
-		* sample text i18n -> ui.FontChooser.sampletext
-		* possibilty to set the font size in the dialog introduced
-			* The GUI code was already present in jbinit(), but the components
-			  was not finaly added to the dialog.
-			* Added a new showDialog() and constructor with a flag for showing
-			  the fontsize components or not.
+  * com.vividsolutions.jump.workbench.ui.FontChooser
+    * sample text i18n -> ui.FontChooser.sampletext
+    * possibilty to set the font size in the dialog introduced
+      * The GUI code was already present in jbinit(), but the components
+        was not finaly added to the dialog.
+      * Added a new showDialog() and constructor with a flag for showing
+        the fontsize components or not.
 
 2011-01-03 Matthias Scholz <ms@jammerhund.de>
-	* Added a new AdvancedMeasurePlugin in org.openjump.core.ui.plugin.tools
-		- added AdvancedMeasureTool, MeasureLayerFinder, MeasurementStyle
-		- can be activated in default-plugins.xml:
-			"<plug-in>org.openjump.core.ui.plugin.tools.AdvancedMeasurePlugin</plug-in>"
+  * Added a new AdvancedMeasurePlugin in org.openjump.core.ui.plugin.tools
+    - added AdvancedMeasureTool, MeasureLayerFinder, MeasurementStyle
+    - can be activated in default-plugins.xml:
+      "<plug-in>org.openjump.core.ui.plugin.tools.AdvancedMeasurePlugin</plug-in>"
 
 2010-12-27 Matthias Scholz <ms@jammerhund.de>
-	* Added some parts of org.openide.awt package from the NetBeans project
-		- now we have a DropDownbutton and a DropDownToogleButton
-		- this is a stripped down version of the original NB 6.9.1 source code,
-		   so we do not need many additional JAR's
-	* WorkbenchToolBar: added a addCursorTool() method for adding CursorTools
-		with an own JToggleButton implementation such as the DropDownToogleButton
+  * Added some parts of org.openide.awt package from the NetBeans project
+    - now we have a DropDownbutton and a DropDownToogleButton
+    - this is a stripped down version of the original NB 6.9.1 source code,
+       so we do not need many additional JAR's
+  * WorkbenchToolBar: added a addCursorTool() method for adding CursorTools
+    with an own JToggleButton implementation such as the DropDownToogleButton
 
 2010-12-14 mmichaud <michael.michaud@free.fr>
     * Fixed a bug in IntersectPolygonLayersPlugIn. resetFeatureValuesToNaN
@@ -694,11 +701,11 @@
       equivalent for nbPoints, nbComponents and nbHoles
 
 2010-12-11 Matthias Scholz <ms@jammerhund.de>
-	* WorkbenchFrame
-		* changed contents of the statusPanel to JSplitPane's
-		* DividerLocation of the JSplitPane's will be automaticaly saved/restored
-			through the PersistentBlackboard
-	* update ui.WorkbenchFrame.copy-to-clipboard key in lang files for es, fi, fr, it
+  * WorkbenchFrame
+    * changed contents of the statusPanel to JSplitPane's
+    * DividerLocation of the JSplitPane's will be automaticaly saved/restored
+      through the PersistentBlackboard
+  * update ui.WorkbenchFrame.copy-to-clipboard key in lang files for es, fi, fr, it
 
 2010-12-05 mmichaud <michael.michaud@free.fr>
     * Fixed a bug in TreeLayerNamePanel : now check if the layerable is selected
@@ -711,22 +718,22 @@
       the current build-2178 version
 
 2010-11-30 Matthias Scholz <ms@jammerhund.de>
-	* WorkbenchFrame
-		* changed the messageLabel to a JTextfield for copy&paste the content
-	* added ui.WorkbenchFrame.copy-to-clipboard I18n key for the tooltip
+  * WorkbenchFrame
+    * changed the messageLabel to a JTextfield for copy&paste the content
+  * added ui.WorkbenchFrame.copy-to-clipboard I18n key for the tooltip
 
 2010-11-23 mmichaud <michael.michaud@free.fr>
-	* Several bugs fixed in Simple query tool (QueryDialog.java)
-		* remove the useless cancel button
-		* stop the querying process if exit button is clicked (dialog was just
-		  hidden, but the query was going on)
-		* move Thread.yield so that process can be interrupted anytime, not
-		  just when a feature retained in the query is found
-		* deactivate refresh button while processing the query
+  * Several bugs fixed in Simple query tool (QueryDialog.java)
+    * remove the useless cancel button
+    * stop the querying process if exit button is clicked (dialog was just
+      hidden, but the query was going on)
+    * move Thread.yield so that process can be interrupted anytime, not
+      just when a feature retained in the query is found
+    * deactivate refresh button while processing the query
 
 2010-11-22 Matthias Scholz <ms@jammerhund.de>
-	* WorkbenchFrame.jbInit():
-		*add a MouseListener to the messageLabel which is copying the text of the statusbar to the clipboard
+  * WorkbenchFrame.jbInit():
+    *add a MouseListener to the messageLabel which is copying the text of the statusbar to the clipboard
 
 2010-11-15 mmichaud <michael.michaud@free.fr>
     * Changed version number to 1.4.1alpha
@@ -788,51 +795,51 @@
       Prepare migration from jump's AffineTransformation to JTS's
 
 2010-09-21 Matthias Scholz <ms@jammerhund.de>
-	* Added OptionPanel for dataset options -> showing charset selection or not
-		* added org.openjump.core.ui.DatasetOptionsPanel
-		* com.vividsolutions.jump.workbench.ui.plugin.OptionsPlugIn
-			* added DatasetOptionsPanel
-		* org.openjump.OpenJumpConfiguration
-			* charset Option now depends on the settings in the options
-		* com.vividsolutions.jump.workbench.datasource.InstallStandardDataSourceQueryChoosersPlugIn
-			* changed getSouthComponent1()
-		* improved org.openjump.core.ui.io.file.AbstractFileLayerLoader
-			* added removeOption() methods
-		* org.openjump.core.ui.io.file.Option
-			* added/overwrite equals() method for org.openjump.core.ui.io.file.AbstractFileLayerLoader.removeOption()
-		* translation, keys added:
-			* ui.DatasetOptionsPanel.datasetOptions
-			* ui.DatasetOptionsPanel.ShowCharsetSelection
+  * Added OptionPanel for dataset options -> showing charset selection or not
+    * added org.openjump.core.ui.DatasetOptionsPanel
+    * com.vividsolutions.jump.workbench.ui.plugin.OptionsPlugIn
+      * added DatasetOptionsPanel
+    * org.openjump.OpenJumpConfiguration
+      * charset Option now depends on the settings in the options
+    * com.vividsolutions.jump.workbench.datasource.InstallStandardDataSourceQueryChoosersPlugIn
+      * changed getSouthComponent1()
+    * improved org.openjump.core.ui.io.file.AbstractFileLayerLoader
+      * added removeOption() methods
+    * org.openjump.core.ui.io.file.Option
+      * added/overwrite equals() method for org.openjump.core.ui.io.file.AbstractFileLayerLoader.removeOption()
+    * translation, keys added:
+      * ui.DatasetOptionsPanel.datasetOptions
+      * ui.DatasetOptionsPanel.ShowCharsetSelection
 
 2010-09-06 Matthias Scholz <ms@jammerhund.de>
-	* Changes for save dataset as shapefile / fieldnames with charset settings
-		* org.geotools.dbffile.DbfFieldDef
-		* org.geotools.dbffile.DbfFile
-			* init()
-			* get/setCharset() removed, because Charset is set with the constructor
-		* org.geotools.dbffile.DbfFileWriter
-			* writeHeader()
-			* writeRecord()
-			* getCharset()/setCharset()
-		* com.vividsolutions.jump.workbench.datasource.InstallStandardDataSourceQueryChoosersPlugIn
-			* addFileDataSourceQueryChoosers(): added charset combobox for the save dataset as dialog
-		* com.vividsolutions.jump.io.ShapefileReader
-			* read()
-				* moved back the charset code outsite the "if ( mydbf == null )" brunch,
-				  for reading the fieldnames with charset
-			* getDbfFile() -> charset stuff
-		* com.vividsolutions.jump.io.ShapefileWriter
-			* write(), writeDbf()
-				* charset stuff
-	* org.openjump.OpenJumpConfiguration
-		* changed the key of the charset option; now we use a non localized key
-	* language files jump_de.properties and jump_en.properties (line 445)
-		* key "org.openjump.core.ui.plugin.file.charset" changed
-		  to "org.openjump.core.ui.io.file.DataSourceFileLayerLoader.charset"
-	* org.openjump.core.ui.plugin.file.open.SelectFileOptionsPanel
-		* addIndividualSettingsFields() -> translation of the option key activated (line 168)
-	* org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn
-		* shows the charset setting if we have a shapefile
+  * Changes for save dataset as shapefile / fieldnames with charset settings
+    * org.geotools.dbffile.DbfFieldDef
+    * org.geotools.dbffile.DbfFile
+      * init()
+      * get/setCharset() removed, because Charset is set with the constructor
+    * org.geotools.dbffile.DbfFileWriter
+      * writeHeader()
+      * writeRecord()
+      * getCharset()/setCharset()
+    * com.vividsolutions.jump.workbench.datasource.InstallStandardDataSourceQueryChoosersPlugIn
+      * addFileDataSourceQueryChoosers(): added charset combobox for the save dataset as dialog
+    * com.vividsolutions.jump.io.ShapefileReader
+      * read()
+        * moved back the charset code outsite the "if ( mydbf == null )" brunch,
+          for reading the fieldnames with charset
+      * getDbfFile() -> charset stuff
+    * com.vividsolutions.jump.io.ShapefileWriter
+      * write(), writeDbf()
+        * charset stuff
+  * org.openjump.OpenJumpConfiguration
+    * changed the key of the charset option; now we use a non localized key
+  * language files jump_de.properties and jump_en.properties (line 445)
+    * key "org.openjump.core.ui.plugin.file.charset" changed
+      to "org.openjump.core.ui.io.file.DataSourceFileLayerLoader.charset"
+  * org.openjump.core.ui.plugin.file.open.SelectFileOptionsPanel
+    * addIndividualSettingsFields() -> translation of the option key activated (line 168)
+  * org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn
+    * shows the charset setting if we have a shapefile
 
 2010-09-05 mmichaud <michael.michaud@free.fr>
     * setting vertex style on a layer without attribute don't remove basic
@@ -862,129 +869,129 @@
     * fixed a NPE in ShapefileReader arising with shapefiles without dbf
     
 2010-09-03 Matthias Scholz <ms@jammerhund.de>
-	* com.vividsolutions.jump.io.ShapefileReader
-		* read() fix for loading a Shapefile from a project or with the legacy "Load Dataset" method
-		  in both cases the default CharSet is used
+  * com.vividsolutions.jump.io.ShapefileReader
+    * read() fix for loading a Shapefile from a project or with the legacy "Load Dataset" method
+      in both cases the default CharSet is used
 
 2010-09-03 Matthias Scholz <ms@jammerhund.de>
-	* Possibility to select a charset for opening a ESRI Shape file (String attributes)
-	* language/jump_de.properties, language/jump_en.properties
-		* added key org.openjump.core.ui.plugin.file.charset
-	* org.openjump.OpenJumpConfiguration
-		* loadOpenJumpPlugIns() added Field Component Factory for "CharSetComboBoxField"
-		* postExtensionInitialization() added FileLoader option for shape files
-	* com.vividsolutions.jump.io.ShapefileReader
-		* read() added charset setting for DbfFile (mydbf)
-	* org.geotools.dbffile.DbfFile
-		* added private variable charset and getter/setter methods
-		* ParseRecordColumn(byte[] rec, int wantedCol) changed for creating returning String column with Charset
-	* org.openjump.core.ui.plugin.file.open.OpenFileWizardState
-		* getNextPanel() fixed wrong String comparison
+  * Possibility to select a charset for opening a ESRI Shape file (String attributes)
+  * language/jump_de.properties, language/jump_en.properties
+    * added key org.openjump.core.ui.plugin.file.charset
+  * org.openjump.OpenJumpConfiguration
+    * loadOpenJumpPlugIns() added Field Component Factory for "CharSetComboBoxField"
+    * postExtensionInitialization() added FileLoader option for shape files
+  * com.vividsolutions.jump.io.ShapefileReader
+    * read() added charset setting for DbfFile (mydbf)
+  * org.geotools.dbffile.DbfFile
+    * added private variable charset and getter/setter methods
+    * ParseRecordColumn(byte[] rec, int wantedCol) changed for creating returning String column with Charset
+  * org.openjump.core.ui.plugin.file.open.OpenFileWizardState
+    * getNextPanel() fixed wrong String comparison
 
 2010-09-03 Matthias Scholz <ms@jammerhund.de>
-	* Patch for selectionstyling
-	* added org.openjump.core.ui.SelectionStyllingOptionsPanel class
-	* com.vividsolutions.jump.workbench.ui.plugin.initialize()
-		* SelectionStyllingOptionsPanel added
-	* com.vividsolutions.jump.workbench.ui.renderer.AbstractSelectionRenderer
-		* AbstractSelectionRenderer() changed
-		* paint(Geometry geometry, Graphics2D g, Viewport viewport) changed
-		* setSelectionLineColor() added
-		* setSelectionPointSize() added
-		* setSelectionPointForm() added
-	* com.vividsolutions.jump.workbench.ui.renderer.FeatureSelectionRenderer  changed
-	* com.vividsolutions.jump.workbench.ui.renderer.style.VertexStyle
-		* Bugfix render(Graphics2D g) - outline draw and fill interchanged for right display of the vertices
-	* language files
-		* com.vividsolutions.jump.jump.properties
-		* language.jump_de.properties
-		
+  * Patch for selectionstyling
+  * added org.openjump.core.ui.SelectionStyllingOptionsPanel class
+  * com.vividsolutions.jump.workbench.ui.plugin.initialize()
+    * SelectionStyllingOptionsPanel added
+  * com.vividsolutions.jump.workbench.ui.renderer.AbstractSelectionRenderer
+    * AbstractSelectionRenderer() changed
+    * paint(Geometry geometry, Graphics2D g, Viewport viewport) changed
+    * setSelectionLineColor() added
+    * setSelectionPointSize() added
+    * setSelectionPointForm() added
+  * com.vividsolutions.jump.workbench.ui.renderer.FeatureSelectionRenderer  changed
+  * com.vividsolutions.jump.workbench.ui.renderer.style.VertexStyle
+    * Bugfix render(Graphics2D g) - outline draw and fill interchanged for right display of the vertices
+  * language files
+    * com.vividsolutions.jump.jump.properties
+    * language.jump_de.properties
+    
 2010-09-02 kdneufeld <>
     * Added isReadOnly property to FeatureSchema, and modified the code of
       AttributeTablePanel and LayerTableModel to prevent user modification
       of readonly attributes.
 
 2010-08-29 sstein <sstein@geo.uzh.ch>
-	added 5 statistic functions:  
-	(i):   Create Bar Plot
-	(ii):  Create Histogram
-	(iii): Create Scatter Plot
-	(iv):  Classify Attributes
-	(v):   Calculate Mean and Variance per Class
-	
-	added all five new plugins/functions to the package
-	org.openjump.core.ui.plugin.tools.statistics
-	
+  added 5 statistic functions:  
+  (i):   Create Bar Plot
+  (ii):  Create Histogram
+  (iii): Create Scatter Plot
+  (iv):  Classify Attributes
+  (v):   Calculate Mean and Variance per Class
+  
+  added all five new plugins/functions to the package
+  org.openjump.core.ui.plugin.tools.statistics
+  
 2010-08-29 sstein <sstein@geo.uzh.ch>
-	set OJ version to 1.4
-	
+  set OJ version to 1.4
+  
 2010-08-29 sstein <sstein@geo.uzh.ch>
-	removed log4j 1.2.8 and added log4j 1.2.16
-	
+  removed log4j 1.2.8 and added log4j 1.2.16
+  
 2010-08-26 sstein <sstein@geo.uzh.ch>
-	added 4 functions for working with sextante rasters in (new) menu "Raster":  
-	(i):   Create Lattice from Image
-	(ii):  Create Polygon Grid from Image
-	(iii): Profile Graph
-	(iv):  Raster Color Editor
-	
-	Note, the profile graph creates a plot. So I added the JMathPlot library to
-	the OJ lib folder.
-	
-	new packages with classes: 
-	org.openjump.core.ui.color.*
-	org.openjump.core.ui.plot.*
-	org.openjump.core.ui.plugin.raster.*
-	
+  added 4 functions for working with sextante rasters in (new) menu "Raster":  
+  (i):   Create Lattice from Image
+  (ii):  Create Polygon Grid from Image
+  (iii): Profile Graph
+  (iv):  Raster Color Editor
+  
+  Note, the profile graph creates a plot. So I added the JMathPlot library to
+  the OJ lib folder.
+  
+  new packages with classes: 
+  org.openjump.core.ui.color.*
+  org.openjump.core.ui.plot.*
+  org.openjump.core.ui.plugin.raster.*
+  
 2010-08-09 sstein <sstein@geo.uzh.ch>
-	ESRI ASCII grids can now be read in as Sextante Raster. Alberto did send me the code
-	for the changes (see JPP devel list)   
-	
-	changed classes:
-	org.openjump.core.rasterimage.RasterImageLayer
-	org.openjump.core.rasterimage.AddRasterImageLayerWizard
-	org.openjump.core.rasterimage.SelectRasterImageFilesPanel
-	
-	new classes
-	org.openjump.core.rasterimage.GridAscii	
-	
+  ESRI ASCII grids can now be read in as Sextante Raster. Alberto did send me the code
+  for the changes (see JPP devel list)   
+  
+  changed classes:
+  org.openjump.core.rasterimage.RasterImageLayer
+  org.openjump.core.rasterimage.AddRasterImageLayerWizard
+  org.openjump.core.rasterimage.SelectRasterImageFilesPanel
+  
+  new classes
+  org.openjump.core.rasterimage.GridAscii  
+  
 2010-08-09 sstein <sstein@geo.uzh.ch>
-	needed to revert the following change on 9.Aug.2010 6.35pm MT but 
-	added back on Aug.10:
-	tried to implement dynamic loading of images which decides based on used memory
-	and size of the image/raster if the image is load into memory or just read from
-	file each time pan/zoom is done.
+  needed to revert the following change on 9.Aug.2010 6.35pm MT but 
+  added back on Aug.10:
+  tried to implement dynamic loading of images which decides based on used memory
+  and size of the image/raster if the image is load into memory or just read from
+  file each time pan/zoom is done.
 
-	However, this needs more testing
-	
-	changed classes:
-	org.openjump.core.rasterimage.RasterImageLayer
-	
+  However, this needs more testing
+  
+  changed classes:
+  org.openjump.core.rasterimage.RasterImageLayer
+  
 2010-08-02 sstein <sstein@geo.uzh.ch>
-	changed access for Pirols RasterImageLayer class, since we need to store the image
-	and the data separately. This way we can adjust the image values without changing
-	the data. To scale image grey values for a better display a function was added to the
-	RasterImageLayer class (e.g. while previously very small values -> 0 have been displayed
-	as black pixels, they are now grey).
-	
-	I removed/renamed the function RasterImageLayer.getImage() to getImageForDisplay()
-	to avoid that other programs work with the stretched/modified image. Hence, I also
-	changed the access in the Sextante classes (e.g.: OpenJUMPSextanteRasterLayer).
-	I tested Loading, Saving and ExtractSelectedPart briefly - so I hope it works.
-	
-	changed classes:
-	org.openjump.core.rasterimage.RasterImageLayer
-	org.openjump.core.rasterimage.AddRasterImageLayerWizard
-	org.openjump.core.ui.plugin.layer.pirolraster.LoadSextanteRasterImagePlugIn
-	org.openjump.core.ui.plugin.layer.pirolraster.SaveRasterImageAsImagePlugIn
-	org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage
-	
-	org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer
-	note, the corresponding class needs also to be changed in the Sextante repository.
-	
-	Note, in general it is recommended to use OpenJUMPSextanteRasterLayer to do raster
-	operations and not the RasterImageLayer class.
-	
+  changed access for Pirols RasterImageLayer class, since we need to store the image
+  and the data separately. This way we can adjust the image values without changing
+  the data. To scale image grey values for a better display a function was added to the
+  RasterImageLayer class (e.g. while previously very small values -> 0 have been displayed
+  as black pixels, they are now grey).
+  
+  I removed/renamed the function RasterImageLayer.getImage() to getImageForDisplay()
+  to avoid that other programs work with the stretched/modified image. Hence, I also
+  changed the access in the Sextante classes (e.g.: OpenJUMPSextanteRasterLayer).
+  I tested Loading, Saving and ExtractSelectedPart briefly - so I hope it works.
+  
+  changed classes:
+  org.openjump.core.rasterimage.RasterImageLayer
+  org.openjump.core.rasterimage.AddRasterImageLayerWizard
+  org.openjump.core.ui.plugin.layer.pirolraster.LoadSextanteRasterImagePlugIn
+  org.openjump.core.ui.plugin.layer.pirolraster.SaveRasterImageAsImagePlugIn
+  org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage
+  
+  org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer
+  note, the corresponding class needs also to be changed in the Sextante repository.
+  
+  Note, in general it is recommended to use OpenJUMPSextanteRasterLayer to do raster
+  operations and not the RasterImageLayer class.
+  
 2010-06-22 mmichaud <michael.michaud@free.fr>
     Fix bug ID: 2716210 in JoinAttributesSpatiallyPlugIn (SpatialRelationOp).
     Can now collect attributes from LineStrings intersecting a polygon.
@@ -1004,7 +1011,7 @@
     org.openjump.core.ui.plugin.tools.analysis.onelayer.MergeSelectedPolygonsWithNeighbourPlugIn
 
 2010-06-04 beckerl <becker.larry@gmail.com>
-	Changed Label Style so that vertical alignment works for polygons. Default is now Above.
+  Changed Label Style so that vertical alignment works for polygons. Default is now Above.
     com.vividsolutions.jump.workbench.ui.renderer.style.LabelStyle.java
     
 2010-05-27 sstein <sstein@geo.uzh.ch>
@@ -1055,31 +1062,31 @@
     replaced by an empty GeometryCollection
 
 2010-03-04 sstein  <sstein@geo.uzh.ch>
-	added Sextante Raster interface classes, so we can process rasters now in OJ
-	
+  added Sextante Raster interface classes, so we can process rasters now in OJ
+  
 2010-03-04 sstein  <sstein@geo.uzh.ch>
-	added JTS 1.11
-	changed Maven pom script
-	
+  added JTS 1.11
+  changed Maven pom script
+  
 2010-02-12 beckerl <becker.larry@gmail.com>
-	Scalebar can now be modified with BeanShellScripts since getters/setters have been added.
-	jump.workbench.ui.plugin.scalebar.ScaleBarRenderer
-	
+  Scalebar can now be modified with BeanShellScripts since getters/setters have been added.
+  jump.workbench.ui.plugin.scalebar.ScaleBarRenderer
+  
 2010-02-12 beckerl <becker.larry@gmail.com>
-	Added optimization to stop drawing while loading layers.  
-	This significantly speeds up loading of large tasks. 
-	core.ui.plugin.file.open.OpenProjectWizard
-	
+  Added optimization to stop drawing while loading layers.  
+  This significantly speeds up loading of large tasks. 
+  core.ui.plugin.file.open.OpenProjectWizard
+  
 2010-02-04 beckerl <becker.larry@gmail.com>
-	OJ now remembers the window location, size, and maximized state in 
-	the workbench-state.xml file and the project files (improved until 10 Feb 2010)
+  OJ now remembers the window location, size, and maximized state in 
+  the workbench-state.xml file and the project files (improved until 10 Feb 2010)
     jump.workbench.JUMPWorkbench
     jump.workbench.ui.WorkbenchFrame
     jump.workbench.ui.plugin.AbstractSaveProjectPlugin
     jump.workbench.model.Task
     jump.workbench.model.Task.java2xml
     jump.util.java2xml.XML2Java
-	core.ui.plugin.file.open.OpenProjectWizard
+  core.ui.plugin.file.open.OpenProjectWizard
     
 2010-02-03 beckerl <becker.larry@gmail.com>
     core.ui.zoom.AbstractZoomTool
@@ -1151,7 +1158,7 @@
            **** release of OpenJUMP 1.3.1 ****
            
 2009-12-05 michaudm <michael.michaud@free.fr>
-	   * srid parameter for the view or the fence
+     * srid parameter for the view or the fence
        com.vividsolutions.jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel
        com.vividsolutions.jump.workbench.ui.plugin.datastore.RunDatastoreQueryPlugIn
           
@@ -1167,7 +1174,7 @@
         * now possible to add a ${view} or ${fence} parameter to limit the query
           to the wiew or to the fence
         com.vividsolutions.jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel
-    	com.vividsolutions.jump.workbench.ui.plugin.datastore.RunDatastoreQueryPlugIn
+      com.vividsolutions.jump.workbench.ui.plugin.datastore.RunDatastoreQueryPlugIn
 
 2009-07-07 stranger <schmitz@lat-lon.de>
         Fixed yet another dangling progress window.

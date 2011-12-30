@@ -180,6 +180,8 @@ public class WizardDialog extends JDialog implements WizardContext,
     for (WizardPanel wizardPanel : wizardPanels) {
       centerPanel.add((Component)wizardPanel, wizardPanel.getID());
     }
+    
+    pack();
   }
 
   public void init(List<WizardPanel> wizardPanels) {
