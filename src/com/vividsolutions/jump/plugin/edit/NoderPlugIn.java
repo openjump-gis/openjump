@@ -173,17 +173,34 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
             context.getWorkbenchFrame().warnUser(I18N.get("jump.plugin.edit.NoderPlugIn.no-data-to-process"));
             return;
         }
-        if (find_intersections) {
+        // If the user does not want to split features, find intersections will
+        // only find intersections if a vertex is missing (intersections
+        // locateded in the interior of a segment).
+        // ==> use IntersectionFinderAdder
+        if (find_intersections && (!split_lines) && (!split_polygons)) {
             IntersectionFinderAdder intersector = new IntersectionFinderAdder(ROBUST_INTERSECTOR);
-            FeatureCollection nodes = findNodes(segmentStrings, intersector);
+            FeatureCollection nodes = findInteriorIntersections(segmentStrings, intersector);
             context.addLayer(StandardCategoryNames.RESULT, 
                             layerName + " " + INTERSECTIONS, nodes);
         }
-        if (do_not_process_lines && do_not_process_polygons) {}
+        // If the user wants to split features, find intersections will
+        // find all intersections located in the interior of linear elements.
+        // Vertices may already exist or not.
+        // ==> use IntersectionAdder
+        else if (find_intersections) {
+            IntersectionAdder intersector = new IntersectionAdder(ROBUST_INTERSECTOR);
+            FeatureCollection nodes = findIntersections(segmentStrings, intersector);
+            context.addLayer(StandardCategoryNames.RESULT, 
+                            layerName + " " + INTERSECTIONS, nodes);
+        }
+        // If neither process lines nor process polygons is checked, do nothing
+        if (do_not_process_lines && do_not_process_polygons) {
+        }
+        // Else, compute nodes and create the geomStructureMap
         else {
             Noder noder = snap_rounding ? 
                           getScaledNoder() :
-                          getMCIndexNoder(new IntersectionFinderAdder(ROBUST_INTERSECTOR));
+                          getMCIndexNoder(new IntersectionAdder(ROBUST_INTERSECTOR));
             noder.computeNodes(segmentStrings);
             Collection nodedSubstring = noder.getNodedSubstrings();
             Map<Feature,Map<Integer,Map<Integer,List<SegmentString>>>> 
@@ -191,6 +208,7 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
                                    .getFeature2SegmentStringTreeMap(nodedSubstring);
             FeatureCollection fc = new FeatureDataset(schema);
             final Collection<Feature> updatedFeatures = new ArrayList<Feature>();
+            // Node lines and/or polygons and interpolate z if needed
             if (node_lines || node_polygons) {
                 if (create_new_layer) {
                     fc.addAll(nodeFeatures(geomStructureMap, interpolate_z, interpolated_z_dp));
@@ -202,7 +220,11 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
                     //commitUpdate(context, layer, inputFeatures, newFeatures);
                 }
             }
-            if (interpolate_z && (split_lines || split_polygons)) {
+            // If split AND interpolation is wanted, we need to
+            // - merge noded SegmentStrings for interpolation
+            // - interpolate
+            // - split again merged strings into SegmentStrings
+            if (/*interpolate_z &&*/ (split_lines || split_polygons)) {
                 for (Map.Entry<Feature,Map<Integer,Map<Integer,List<SegmentString>>>> entry : geomStructureMap.entrySet()) {
                     Geometry g = entry.getKey().getGeometry();
                     int dim = g.getDimension();
@@ -212,6 +234,7 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
                     }
                 }
             }
+            // Split lines and/or polygons either with interpolated z or not
             if (split_lines || split_polygons) {
                 if (create_new_layer) {
                     if (split_lines) {
@@ -254,8 +277,11 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
     }
     
     private Noder getMCIndexNoder(SegmentIntersector intersector) {
-        MCIndexNoder noder = new MCIndexNoder();
-        noder.setSegmentIntersector(intersector);
+        //MCIndexNoder noder = new MCIndexNoder();
+        //SimpleNoder noder = new SimpleNoder();
+        IteratedNoder noder = new IteratedNoder(new PrecisionModel());
+        noder.setMaximumIterations(16);
+        //noder.setSegmentIntersector(intersector);
         return noder;
     }
     
@@ -267,7 +293,9 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
     }
 
     /**
-     * Find nodes in a collection of linestrings with the MCIndexNoder. 
+     * Find interior intersections in a collection of linestrings with the
+     * MCIndexNoder. Interior intersections lies in the interior of at least one
+     * segment.
      * This method is for detection only. It uses a floating point precision
      * model and as a consequence, it is not 100% robust.
      *
@@ -275,13 +303,46 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
      * @param intersector SegmentIntersector to collect intersection information
      * @return a collection of nodes missing from the input
      */
-    private FeatureCollection findNodes(List<SegmentString> segmentStrings,
+    private FeatureCollection findInteriorIntersections(List<SegmentString> segmentStrings,
                                         IntersectionFinderAdder intersector) {
         Noder noder = getMCIndexNoder(intersector);
         noder.computeNodes(segmentStrings);
         List<Geometry> nodes = new ArrayList<Geometry>();
         for (Object node : intersector.getInteriorIntersections()) {
             nodes.add(gf.createPoint((Coordinate)node));
+        }
+        return FeatureDatasetFactory.createFromGeometry(nodes);
+    }
+    
+    /**
+     * Find intersections in a collection of linestrings with the MCIndexNoder. 
+     * Intersections include proper intersections, and intersections located on
+     * vertices of input LineStrings as long these vertices are not both end
+     * points of the LineStrings.
+     * This method is for detection only. It uses a floating point precision
+     * model and as a consequence, it is not 100% robust.
+     *
+     * @param segmentStrings SegmentStrings to process
+     * @param intersector SegmentIntersector to collect intersection information
+     * @return a collection of nodes missing from the input
+     */
+    private FeatureCollection findIntersections(List<SegmentString> segmentStrings,
+                                               IntersectionAdder intersector) {
+        Noder noder = getMCIndexNoder(intersector);
+        noder.computeNodes(segmentStrings);
+        Set<Geometry> nodes = new HashSet<Geometry>();
+        List<SegmentString> sss = (List<SegmentString>)noder.getNodedSubstrings();
+        for (SegmentString ss : sss) {
+            SegmentStringData data = (SegmentStringData)ss.getData();
+            Geometry g = data.getSourceLineString();
+            Coordinate[] ccss = ss.getCoordinates();
+            Coordinate[] ccgeom = g.getCoordinates();
+            if (!ccss[0].equals(ccgeom[0]) && !ccss[0].equals(ccgeom[ccgeom.length-1])) {
+                nodes.add(gf.createPoint(ccss[0]));
+            }
+            if (!ccss[ccss.length-1].equals(ccgeom[0]) && !ccss[ccss.length-1].equals(ccgeom[ccgeom.length-1])) {
+                nodes.add(gf.createPoint(ccss[ccss.length-1]));
+            }
         }
         return FeatureDatasetFactory.createFromGeometry(nodes);
     }
@@ -300,6 +361,7 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
         return list;
     }
     
+    // Build a new Feature from SegmentStrings
     private Feature nodeFeature(Feature feature,
             Map<Integer,Map<Integer,List<SegmentString>>> map,
             boolean interpolate_z, int interpolated_z_dp) {

@@ -34,6 +34,7 @@ package com.vividsolutions.jump.plugin.edit;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.noding.*;
 import com.vividsolutions.jts.operation.linemerge.LineMerger;
+import com.vividsolutions.jts.operation.linemerge.LineSequencer;
 import com.vividsolutions.jump.feature.Feature;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,8 +58,8 @@ public class SegmentStringsWithData2Features {
     private SegmentStringsWithData2Features() {}
     
     /**
-     * Build the new noded geometry from the source geometry and the structured
-     * map of SegmentStrings.
+     * Build a new noded geometry from the source Geometry and a structured
+     * map of its SegmentStrings.
      * @param source the source geometry
      * @param nodedSegmentStrings the hierarchical map of noded segment strings
      * @param interpolate_z whether the z of SegmentString ends must be 
@@ -69,28 +70,32 @@ public class SegmentStringsWithData2Features {
     public static Geometry buildGeometry(Geometry source, 
             Map<Integer,Map<Integer,List<SegmentString>>> nodedSegmentStrings,
             boolean interpolate_z, int interpolated_z_dp) {
-        // Number of components
+        // Use the same factory as source
         GeometryFactory gf = source.getFactory();
         Geometry[] geoms = new Geometry[nodedSegmentStrings.size()];
+        // For each component
         for (int i = 0 ; i < geoms.length ; i++) {
             Geometry sourceComponent = source.getGeometryN(i);
             Map<Integer,List<SegmentString>> lines = nodedSegmentStrings.get(i);
             if (sourceComponent instanceof LineString) {
                 geoms[i] = merge(lines.get(0), gf, false);
+                restoreZ(lines.get(0), (LineString)sourceComponent);
                 if (interpolate_z) {
                     interpolate(lines.get(0), (LineString)geoms[i], interpolated_z_dp);
                 }
             }
             else if (sourceComponent instanceof Polygon) {
                 LinearRing exteriorRing = (LinearRing)merge(lines.get(0), gf, true);
+                restoreZ(lines.get(0), (LineString)exteriorRing);
                 if (interpolate_z) {
                     interpolate(lines.get(0), exteriorRing, interpolated_z_dp);
                 }
                 LinearRing[] holes = new LinearRing[lines.size()-1];
                 for (int j = 0 ; j < holes.length ; j++) {
                     holes[j] = (LinearRing)merge(lines.get(j+1), gf, true);
+                    restoreZ(lines.get(j+1), (LineString)holes[j]);
                     if (interpolate_z) {
-                        interpolate(lines.get(0), holes[j], interpolated_z_dp);
+                        interpolate(lines.get(j+1), holes[j], interpolated_z_dp);
                     }
                 }
                 geoms[i] = source.getFactory().createPolygon(exteriorRing, holes);
@@ -100,7 +105,8 @@ public class SegmentStringsWithData2Features {
     }
     
     /** 
-     * Merge SegementStrings and return either a LineString or a LinearRing).
+     * Merge a List of connected SegmentStrings and return either a LineString 
+     * or a LinearRing.
      */
     private static LineString merge(List<SegmentString> list,
                                     GeometryFactory gf, boolean close) {
@@ -108,14 +114,40 @@ public class SegmentStringsWithData2Features {
         for (SegmentString ss : list) {
             lineMerger.add(gf.createLineString(ss.getCoordinates()));
         }
-        LineString ls = (LineString)lineMerger.getMergedLineStrings().iterator().next();
+        Collection lineStrings = lineMerger.getMergedLineStrings();
+        // If SegmentStrings are part of a non-simple (auto-intersecting) 
+        // LineString, the result of the merge operation will be a set of
+        // unordered linestrings.
+        // Ordering them with the LineSequencer makes it possible to re-build a
+        // single continuous LineString. However, there is no gurantee that
+        // the resulting LineString describes the original one in the same order
+        LineSequencer sequencer = new LineSequencer();
+        sequencer.add(lineStrings);
+        LineString ls = gf.createLineString(sequencer.getSequencedLineStrings().getCoordinates()); 
         if (close) {
             CoordinateList coords = new CoordinateList(ls.getCoordinates());
             coords.closeRing();
             return gf.createLinearRing(coords.toCoordinateArray());
         }
-        else {
-            return ls;
+        return ls;
+    }
+    
+    private static void restoreZ(List<SegmentString> list, LineString g) {
+        Map<Coordinate,Coordinate> map = new HashMap<Coordinate,Coordinate>();
+        for (Coordinate c : g.getCoordinates()) {
+            map.put(c,c);
+        }
+        for (SegmentString ss : list) {
+            Coordinate[] cc = ss.getCoordinates();
+            Coordinate c;
+            if (null != (c = map.get(cc[0]))) {
+                cc[0].z = c.z;
+            }
+            else cc[0].z = Double.NaN;
+            if (null != (c = map.get(cc[cc.length-1]))) {
+                cc[cc.length-1].z = c.z;
+            }
+            else cc[cc.length-1].z = Double.NaN;
         }
     }
     
@@ -147,7 +179,8 @@ public class SegmentStringsWithData2Features {
         int nextIndex = -1;
         Coordinate[] cc = line.getCoordinates();
         for (int i = 0 ; i < cc.length ; i++) {
-            if (index==-1 && c.equals(cc[i])) index = i;
+            if (c.equals(cc[i]) && !Double.isNaN(cc[i].z)) return cc[i].z;
+            else if (index==-1 && c.equals(cc[i])) index = i;
             else if (Double.isNaN(cc[i].z)) continue;
             else if (index==-1) prevIndex = i;
             else {nextIndex = i; break;}
@@ -173,8 +206,8 @@ public class SegmentStringsWithData2Features {
     }
     
     /**
-     * Creates a hierarchy structure containing all the noded SegmentStrings
-     * derived from Geometry components and linear elements.
+     * Creates a hierarchical structure containing all edges
+     * derived from Geometry components and linear elements as SegmentStrings.
      */
     public static Map<Feature,Map<Integer,Map<Integer,List<SegmentString>>>> 
                     getFeature2SegmentStringTreeMap(Collection nodedSubstring) {

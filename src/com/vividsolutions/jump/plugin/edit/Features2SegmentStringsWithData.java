@@ -42,6 +42,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Utility class to transform a collection of Features into a List of
+ * SegmentStrings, and to store genealogy data in into their data field.
+ */
 public class Features2SegmentStringsWithData {
 
     private Features2SegmentStringsWithData() {}
