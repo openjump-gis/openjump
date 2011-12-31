@@ -1,6 +1,7 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
 2011-12-30 ede
+  - bugfix: -i18n was not applied globally as default locale
   - bugfix 3439132: File dialog item for all supported files is too long
   - OpenWizard is now also centered on main window similar to other Wizards
   - added hint to not use tabs in ChangeLog, replaced sneaked in tabs with double spaces

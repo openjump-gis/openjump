@@ -311,38 +311,42 @@ public class JUMPWorkbench {
 		driverManager.loadDrivers(properties);
 	}
 
-	public static void main(String[] args) {
-		try {
-			// first fetch parameters, locale might be changed with -i18n switch
-			parseCommandLine(args);
-			// load i18n specified in command line ( '-i18n translation' )
-			if (commandLine.hasOption(I18N_FILE)) {
-				I18N.loadFile(commandLine.getOption(I18N_FILE).getArg(0));
-				I18N_SETLOCALE = commandLine.getOption(I18N_FILE).getArg(0);
-			}
-			
-			// Init the L&F before instantiating the progress monitor [Jon Aquino]
-			initLookAndFeel();
-			// setFont to switch fonts if defaults cannot display current language [ede]
-			// this changes the default font definition of the jre, first internationalized 
-			// string shown is 'JUMPWorkbench.version' on splashpanel
-			setFont();
-			
-			ProgressMonitor progressMonitor = (ProgressMonitor) progressMonitorClass
-					.newInstance();
-			SplashPanel splashPanel = new SplashPanel(splashImage(), 
-			        I18N.get("ui.AboutDialog.version")+" " + JUMPVersion.CURRENT_VERSION );
-			splashPanel.add(progressMonitor, new GridBagConstraints(0, 10, 1,
-					1, 1, 0, GridBagConstraints.NORTHWEST,
-					GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 10), 0,
-					0));
+  public static void main(String[] args) {
+    try {
+      // first fetch parameters, locale might be changed with -i18n switch
+      parseCommandLine(args);
+      // load i18n specified in command line ( '-i18n translation' )
+      if (commandLine.hasOption(I18N_FILE)) {
+        I18N_SETLOCALE = commandLine.getOption(I18N_FILE).getArg(0);
+        I18N.loadFile(I18N_SETLOCALE);
+        // [ede] while the above only loads the correct resourcebundle, 
+        // the below applies the chosen locale to the whole runtime
+        I18N.applyToRuntime();
+      }
 
-			main(args, I18N.get("JUMPWorkbench.jump"), new JUMPConfiguration(), splashPanel,
-					progressMonitor);
-		} catch (Throwable t) {
-			WorkbenchFrame.showThrowable(t, null);
-		}
-	}
+      // Init the L&F before instantiating the progress monitor [Jon Aquino]
+      initLookAndFeel();
+      // setFont to switch fonts if defaults cannot display current language
+      // [ede]
+      // early change the default font definition of the jre if necessary, the first
+      // internationalized string shown is 'JUMPWorkbench.version' on splashpanel
+      setFont();
+
+      ProgressMonitor progressMonitor = (ProgressMonitor) progressMonitorClass
+          .newInstance();
+      SplashPanel splashPanel = new SplashPanel(splashImage(),
+          I18N.get("ui.AboutDialog.version") + " "
+              + JUMPVersion.CURRENT_VERSION);
+      splashPanel.add(progressMonitor, new GridBagConstraints(0, 10, 1, 1, 1,
+          0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
+          new Insets(0, 0, 0, 10), 0, 0));
+
+      main(args, I18N.get("JUMPWorkbench.jump"), new JUMPConfiguration(),
+          splashPanel, progressMonitor);
+    } catch (Throwable t) {
+      WorkbenchFrame.showThrowable(t, null);
+    }
+  }
 
 	/**
 	 * setupClass is specified as a String to prevent it from being loaded

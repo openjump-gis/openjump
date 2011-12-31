@@ -34,13 +34,13 @@ package com.vividsolutions.jump;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.Locale;
-
-import com.vividsolutions.jump.workbench.JUMPWorkbench;
 
 import org.apache.log4j.Logger;
+
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
 
 /**
  * Singleton for the Internationalization (I18N)
@@ -103,7 +103,7 @@ public final class I18N {
   // STanner changed the place where are stored bundles. Now are in /language
   // public static ResourceBundle rb =
   // ResourceBundle.getBundle("com.vividsolutions.jump.jump");
-  public static ResourceBundle rb = ResourceBundle.getBundle("language/jump");
+  private static ResourceBundle jumpResourceBundle = ResourceBundle.getBundle("language/jump");
 
   // [Michael Michaud 2007-03-23] plugInsResourceBundle is deactivated because
   // all the methods
@@ -121,7 +121,7 @@ public final class I18N {
 
   /** The core OpenJUMP I18N instance. */
   private I18N() {
-    resourceBundle = rb;
+    resourceBundle = jumpResourceBundle;
   }
 
   /**
@@ -201,6 +201,26 @@ public final class I18N {
     // return SingletonHolder._singleton;
   }
 
+  // [ede] utility method as it is used in several places (loadFile,getLanguage...)
+  public static Locale fromCode(final String localeCode) {
+    // [Michael Michaud 2007-03-04] handle the case where lang is the only
+    // variable instead of catching an ArrayIndexOutOfBoundsException
+    String[] lc = localeCode.split("_");
+    Locale locale = Locale.getDefault();
+    if (lc.length > 1) {
+      LOG.debug("lang:" + lc[0] + " " + "country:" + lc[1]);
+      locale = new Locale(lc[0], lc[1]);
+    } else if (lc.length > 0) {
+      LOG.debug("lang:" + lc[0]);
+      locale = new Locale(lc[0]);
+    } else {
+      LOG.debug(localeCode
+        + " is an illegal argument to define lang [and country]");
+    }
+    
+    return locale;
+  }
+  
   /**
    * Load file specified in command line (-i18n lang_country) (lang_country
    * :language 2 letters + "_" + country 2 letters) Tries first to extract lang
@@ -210,23 +230,16 @@ public final class I18N {
    * @param langcountry
    */
   public static void loadFile(final String langcountry) {
-    // [Michael Michaud 2007-03-04] handle the case where lang is the only
-    // variable instead of catching an ArrayIndexOutOfBoundsException
-    String[] lc = langcountry.split("_");
-    Locale locale = Locale.getDefault();
-    if (lc.length > 1) {
-      LOG.debug("lang:" + lc[0] + " " + "country:" + lc[1]);
-      locale = new Locale(lc[0], lc[1]);
-    } else if (lc.length > 0) {
-      LOG.debug("lang:" + lc[0]);
-      locale = new Locale(lc[0]);
-    } else {
-      LOG.debug(langcountry
-        + " is an illegal argument to define lang [and country]");
-    }
-    rb = ResourceBundle.getBundle("language/jump", locale);
+    jumpResourceBundle = ResourceBundle.getBundle("language/jump", fromCode(langcountry));
   }
 
+  public static void applyToRuntime() {
+    Locale loc = jumpResourceBundle.getLocale();
+    Locale.setDefault(loc);
+    System.setProperty("user.language", loc.getLanguage());
+    System.setProperty("user.country", loc.getCountry());
+  }
+  
   /**
    * Process text with the locale 'jump_<locale>.properties' file
    * 
@@ -236,7 +249,7 @@ public final class I18N {
    */
   public static String get(final String label) {
     try {
-      return rb.getString(label);
+      return jumpResourceBundle.getString(label);
     } catch (java.util.MissingResourceException e) {
       String[] labelpath = label.split("\\.");
       LOG.debug("No resource bundle or no translation found for the key : "
@@ -252,7 +265,7 @@ public final class I18N {
    * @return string signature for locale
    */
   public static String getLocale() {
-    return rb.getLocale().getLanguage() + "_" + rb.getLocale().getCountry();
+    return jumpResourceBundle.getLocale().getLanguage() + "_" + jumpResourceBundle.getLocale().getCountry();
   }
 
   /**
@@ -264,12 +277,26 @@ public final class I18N {
   public static String getLanguage() {
     if (JUMPWorkbench.I18N_SETLOCALE == "") {
       // No locale has been specified at startup: choose default locale
-      return rb.getLocale().getLanguage();
+      return jumpResourceBundle.getLocale().getLanguage();
     } else {
-      return JUMPWorkbench.I18N_SETLOCALE.split("_")[0];
+      return fromCode(JUMPWorkbench.I18N_SETLOCALE).getLanguage();
     }
   }
 
+  /**
+   * Get the short signature for country (2 letter code)
+   * 
+   * @return string signature for country
+   */
+  public static String getCountry() {
+    if (JUMPWorkbench.I18N_SETLOCALE == "") {
+      // No locale has been specified at startup: choose default locale
+      return jumpResourceBundle.getLocale().getCountry();
+    } else {
+      return fromCode(JUMPWorkbench.I18N_SETLOCALE).getCountry();
+    }
+  }
+  
   /**
    * Process text with the locale 'jump_<locale>.properties' file If no
    * resourcebundle is found, returns default string contained inside
@@ -281,7 +308,7 @@ public final class I18N {
    */
   public static String getMessage(final String label, final Object[] objects) {
     try {
-      final MessageFormat mformat = new MessageFormat(rb.getString(label));
+      final MessageFormat mformat = new MessageFormat(jumpResourceBundle.getString(label));
       return mformat.format(objects);
     } catch (java.util.MissingResourceException e) {
       final String[] labelpath = label.split("\\.");
