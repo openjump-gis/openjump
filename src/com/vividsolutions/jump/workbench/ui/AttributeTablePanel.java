@@ -429,7 +429,9 @@ public class AttributeTablePanel extends JPanel {
         table.getColumnModel().getColumn(0).setPreferredWidth(editButtonWidth);
 		
 		// check if we have previoisly saved columns witdh
-		HashMap columnsWithMap = (HashMap) workbenchContext.getTask().getLayerManager().getLayer(getModel().getLayer().getName()).getDataSourceQuery().getDataSource().getProperties().get(ATTRIBUTE_COLUMNS_WIDTH_MAP);
+		Layer layer = workbenchContext.getTask().getLayerManager().getLayer(getModel().getLayer().getName());
+		if (layer.getDataSourceQuery() == null) return;
+		HashMap columnsWithMap = (HashMap)layer.getDataSourceQuery().getDataSource().getProperties().get(ATTRIBUTE_COLUMNS_WIDTH_MAP);
 		if (columnsWithMap != null) {
 			for (int i = 0; i < table.getColumnModel().getColumnCount(); i++) {
 				Integer columnWidth = (Integer) columnsWithMap.get(table.getColumnModel().getColumn(i).getHeaderValue());
