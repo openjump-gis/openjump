@@ -232,7 +232,9 @@ public class AttributeTab extends JPanel implements LayerNamePanel {
     }
 
     private void installToolBarButtons(final WorkbenchContext workbenchContext, final TaskFrame taskFrame) {
-    	 
+    	
+    	
+    	/*
     	EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
     	
     	  SaveDatasetsPlugIn saveDatasetsPlugIn = new SaveDatasetsPlugIn();
@@ -289,7 +291,7 @@ public class AttributeTab extends JPanel implements LayerNamePanel {
               new MultiEnableCheck().add(taskFrameEnableCheck).add(layersEnableCheck));
       	
           toolBar.addSeparator();   	
-    	
+    	*/
     	toolBar
             .add(
                 new JButton(),
@@ -409,6 +411,7 @@ public class AttributeTab extends JPanel implements LayerNamePanel {
             new MultiEnableCheck().add(taskFrameEnableCheck).add(layersEnableCheck).add(
                 rowsSelectedEnableCheck));
 
+        
         FeatureInfoPlugIn featureInfoPlugIn = new FeatureInfoPlugIn();
         toolBar.add(
             new JButton(),
@@ -435,7 +438,10 @@ public class AttributeTab extends JPanel implements LayerNamePanel {
                 ReplaceValuePlugIn.toActionListener(myReplacePlugIn, workbenchContext, null),
                 ReplaceValuePlugIn.createEnableCheck(workbenchContext));
          **/
-        
+        //-- [Giuseppe Aruta 1 gen. 2012] added Attribute Statistics PlugIn
+        /* Deactivated as it appears also in Info Panel
+        */
+        /**
             toolBar.addSeparator();
         
         StatisticOverViewPlugIn statisticOverViewPlugIn = new StatisticOverViewPlugIn();
@@ -447,7 +453,7 @@ public class AttributeTab extends JPanel implements LayerNamePanel {
             new MultiEnableCheck().add(taskFrameEnableCheck).add(layersEnableCheck));
         
         
-        
+       **/
         
         
         
