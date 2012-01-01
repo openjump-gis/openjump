@@ -1,5 +1,10 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2012-01-01 mmichaud <michael.michaud@free.fr>
+  * FillPolygonTool : Add a new Tool in the EditToolBox to fill the Polygon
+    around a mouse click. All visible linear elements can be used to create
+    the Polygon boundary.
+    
 2011-12-31 mmichaud <michael.michaud@free.fr>
   * NoderPlugIn : fix bug 3459726 and another bug related to non-simple
     linestrings. Update documentation.
