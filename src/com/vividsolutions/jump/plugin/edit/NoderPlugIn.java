@@ -66,7 +66,7 @@ import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 public class NoderPlugIn extends AbstractThreadedUiPlugIn {
     
     private final static String PROCESSED_DATA          = I18N.get("jump.plugin.edit.NoderPlugIn.processed-data");
-    private final static String SRC_LAYER               = I18N.get("jump.plugin.edit.NoderPlugIn.layer");
+    private final static String SRC_LAYER               = GenericNames.SOURCE_LAYER;
     private final static String SELECTED_ONLY           = GenericNames.USE_SELECTED_FEATURES_ONLY;
     
     private final static String PROCESSING              = I18N.get("jump.plugin.edit.NoderPlugIn.processing");
