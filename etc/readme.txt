@@ -166,6 +166,8 @@ OpenJUMP command line options
     ml (malayalam)
     pt (portuguese)
     pt_BR (brazilian portuguese)
+    ta_IN (indian tamil)
+    te (telugu)
     zh_CN (chinese simplified)
     zh_HK (chinese Hong Kong)
   ATTENTION: If the specified language is not available then
