@@ -90,6 +90,7 @@ public class AutoAssignAttributePlugIn extends AbstractUiPlugIn {
     private static String FROM_SOURCE_CHECK_BOX;
     private static String SOURCE_COMBO_BOX;
     private static String FROM_SOURCE_DESCRIPTION;
+    private static String SOURCE_DIFF_DESTINATION;
     
     private static String ASSIGN_VALUE_CHECK_BOX;
     private static String ASSIGN_VALUE_TEXT_BOX;
@@ -128,6 +129,7 @@ public class AutoAssignAttributePlugIn extends AbstractUiPlugIn {
         SOURCE_COMBO_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Source-attribute");
         FROM_SOURCE_CHECK_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Assign-from-other-attribute");
         FROM_SOURCE_DESCRIPTION = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.From-source-description");
+        SOURCE_DIFF_DESTINATION = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Source-and-destination-atributes-must-be-different");
         
         AUTOINC_CHECK_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Auto-increment");
         AUTOINC_PATTERN_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Auto-increment-pattern");
@@ -234,7 +236,7 @@ public class AutoAssignAttributePlugIn extends AbstractUiPlugIn {
         assignValue = dialog.getBoolean(ASSIGN_VALUE_CHECK_BOX);
         layer = dialog.getLayer(LAYER_COMBO_BOX);
         FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
-        boolean fromAttributeValid = schema.getAttributeCount() > 2;
+        boolean fromAttributeValid = schema.getAttributeCount() > 1;
         
         dialog.setFieldEnabled(AUTOINC_CHECK_BOX, !assignFromSource && !assignValue);
         dialog.setFieldEnabled(AUTOINC_PATTERN_BOX, autoIncrement && !assignFromSource && !assignValue);
@@ -286,8 +288,7 @@ public class AutoAssignAttributePlugIn extends AbstractUiPlugIn {
                     return assignFromSource && 
                            dialog.getText(TARGET_ATTRIBUTE_COMBO_BOX)
                                  .equals(dialog.getText(SOURCE_COMBO_BOX)) ? 
-                                 "Source and destination attributes must be different" : 
-                                 null;
+                                 SOURCE_DIFF_DESTINATION : null;
                 }
             }
         }));
