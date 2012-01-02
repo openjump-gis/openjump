@@ -41,7 +41,7 @@ as ( Library name - License name - License file in "licenses/" folder )
 Additionally PLUS distributions contain
 ( Component name - License name - License file in "licenses/" folder
    list of files and dependencies with license if any )
- BATIK - Apache License Version 2.0 - apache_license-2.0.txt
+ Batik SVG Toolkit - Apache License Version 2.0 - apache_license-2.0.txt
  Geoarbores Vertex Symbols Collection (Giuseppe Aruta) - GPL2 - gpl-2.txt
   lib/ext/VertexImages/*.wkt
  ECW and JPEG2000 Read Support based on ECW SDK 3.3 for windows x86/x64, 
