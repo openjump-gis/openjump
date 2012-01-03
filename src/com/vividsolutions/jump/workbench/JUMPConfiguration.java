@@ -664,11 +664,6 @@ public class JUMPConfiguration implements Setup {
         featureInstaller.addPopupMenuItem(popupMenu, copySelectedItemsPlugIn,
                 copySelectedItemsPlugIn.getNameWithMnemonic(), false, copySelectedItemsPlugIn.getIcon(),
                 CopySelectedItemsPlugIn.createEnableCheck(workbenchContext));
-        
-        featureInstaller.addPopupMenuItem(popupMenu, copyThisCoordinatePlugIn,
-                copyThisCoordinatePlugIn.getName(), false, null,
-                CopyThisCoordinatePlugIn.createEnableCheck(workbenchContext));
-        
         featureInstaller.addPopupMenuItem(popupMenu, editSelectedFeaturePlugIn,
                 editSelectedFeaturePlugIn.getName(), false, editSelectedFeaturePlugIn.getIcon(),
                 EditSelectedFeaturePlugIn.createEnableCheck(workbenchContext));

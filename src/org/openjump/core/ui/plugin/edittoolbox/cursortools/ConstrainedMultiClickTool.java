@@ -74,17 +74,17 @@ public abstract class ConstrainedMultiClickTool extends AbstractCursorTool
     private ConstraintManager constraintManager;
 //    private LayerViewPanel panel;
     private WorkbenchFrame frame;
-        
+     
     public ConstrainedMultiClickTool()
     {
-    	/**
+    	
     }
-        
+    /*    
     public boolean isRightMouseButtonUsed() //we want the right click to close the poly
     {
         return true;
     }
-    **/
+    */
     /**
      * Will return an empty List once the shape is cleared.
      * @see MultiClickTool#clearShape
