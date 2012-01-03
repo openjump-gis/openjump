@@ -77,13 +77,14 @@ public abstract class ConstrainedMultiClickTool extends AbstractCursorTool
         
     public ConstrainedMultiClickTool()
     {
+    	/**
     }
         
     public boolean isRightMouseButtonUsed() //we want the right click to close the poly
     {
         return true;
     }
-    
+    **/
     /**
      * Will return an empty List once the shape is cleared.
      * @see MultiClickTool#clearShape

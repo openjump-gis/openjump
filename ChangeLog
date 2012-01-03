@@ -1,5 +1,11 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2012-01-03 Giuseppe Aruta <giuseppe_aruta@yahoo.it>
+    * Add Clone Item PlugInto right click context mouse menu, add language strings to Clone Item PlugIn
+    * Changed position within right click context menu to Copy This Coordinate PlugIn
+    * Uncomment public boolean isRightMouseButtonUsed in ConstrainedMultiClickTool to let use right click context menu
+      with Constrained Tools
+
 2012-01-02 mmichaud <michael.michaud@free.fr>
   * AutoAssignAttributePlugIn : can copy from an attribute if attrite count > 1
     instead of 2 so that one can copy geometry attribute to a string attribute

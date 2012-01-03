@@ -170,6 +170,7 @@ import com.vividsolutions.jump.workbench.ui.zoom.ZoomTool;
 import de.latlon.deejump.plugin.style.DeeChangeStylesPlugIn;
 
 import org.openjump.core.CheckOS;
+import org.openjump.core.ui.plugin.mousemenu.DuplicateItemPlugIn;
 import org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel;
 import org.openjump.core.ui.plugin.tools.AdvancedMeasurePlugin;
 import org.openjump.core.ui.plugin.tools.AdvancedMeasureTool;
@@ -349,6 +350,8 @@ public class JUMPConfiguration implements Setup {
     private ImageLayerManagerPlugIn imageLayerManagerPlugIn = new ImageLayerManagerPlugIn();
 
   	private RefreshDataStoreLayerPlugin refreshDataStoreLayerPlugin = new RefreshDataStoreLayerPlugin();
+  	
+  	private DuplicateItemPlugIn duplicateItemPlugIn = new DuplicateItemPlugIn();
   	
     public void setup(WorkbenchContext workbenchContext) throws Exception {
         configureStyles(workbenchContext);
@@ -661,15 +664,22 @@ public class JUMPConfiguration implements Setup {
         featureInstaller.addPopupMenuItem(popupMenu, copySelectedItemsPlugIn,
                 copySelectedItemsPlugIn.getNameWithMnemonic(), false, copySelectedItemsPlugIn.getIcon(),
                 CopySelectedItemsPlugIn.createEnableCheck(workbenchContext));
+        
         featureInstaller.addPopupMenuItem(popupMenu, copyThisCoordinatePlugIn,
                 copyThisCoordinatePlugIn.getName(), false, null,
                 CopyThisCoordinatePlugIn.createEnableCheck(workbenchContext));
+        
         featureInstaller.addPopupMenuItem(popupMenu, editSelectedFeaturePlugIn,
                 editSelectedFeaturePlugIn.getName(), false, editSelectedFeaturePlugIn.getIcon(),
                 EditSelectedFeaturePlugIn.createEnableCheck(workbenchContext));
         featureInstaller.addPopupMenuItem(popupMenu, deleteSelectedItemsPlugIn,
                 deleteSelectedItemsPlugIn.getName(), false, deleteSelectedItemsPlugIn.getIcon(),
                 DeleteSelectedItemsPlugIn.createEnableCheck(workbenchContext));
+        
+        featureInstaller.addPopupMenuItem(popupMenu, duplicateItemPlugIn,
+        		duplicateItemPlugIn.getName(), false, duplicateItemPlugIn.getIcon(),
+                DuplicateItemPlugIn.createEnableCheck(workbenchContext));
+                
         featureInstaller.addPopupMenuItem(popupMenu,
                 combineSelectedFeaturesPlugIn, combineSelectedFeaturesPlugIn
                         .getName(), false, combineSelectedFeaturesPlugIn.getIcon(), 
@@ -678,6 +688,11 @@ public class JUMPConfiguration implements Setup {
                 explodeSelectedFeaturesPlugIn, explodeSelectedFeaturesPlugIn
                         .getName(), false, explodeSelectedFeaturesPlugIn.getIcon(), 
                 explodeSelectedFeaturesPlugIn.createEnableCheck(workbenchContext));
+        
+        featureInstaller.addPopupMenuItem(popupMenu, copyThisCoordinatePlugIn,
+                copyThisCoordinatePlugIn.getName(), false, null,
+                CopyThisCoordinatePlugIn.createEnableCheck(workbenchContext));
+        
     }
 
 
