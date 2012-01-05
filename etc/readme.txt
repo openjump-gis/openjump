@@ -212,7 +212,7 @@ Original development team of JUMP was:
 
 OpenJUMP regular contributors are (non exhaustive list!):
   Andreas Schmitz (lat-lon.de)
-  Edgar Soldin (edso)
+  Edgar Soldin (edso, soldin.de)
   Geoffrey G Roy
   Giuseppe Aruta
   Jukka Rahkonen
@@ -251,22 +251,25 @@ Past contributors:
   Steve Tanner
   Ugo Taddei 
 
-Translation contributors are:
-- English: Landon Blake
-- Finnish: Jukka Rahkonnen
-- French: Basile Chandesris, Erwan Bocher, Steve Tanner, Michaël Michaud
-- German: Florian Rengers, Stefan Steiniger, Edgar Soldin
-- Italian: Giuseppe Aruta
-- Japanese: Hisaji Ono
-- Malayalam : Mohammed Rashad
-- Portuguese (brazilian):
+Translation contributors are
+  Chinese: Elton Chan
+  Czech: Jan Ruzicka
+  English: Landon Blake
+  Finnish: Jukka Rahkonnen
+  French: Basile Chandesris, Erwan Bocher, Steve Tanner, Michaël Michaud
+  German: Florian Rengers, Stefan Steiniger, Edgar Soldin
+  Hungarian: Zoltan Siki
+  Italian: Giuseppe Aruta
+  Japanese: Hisaji Ono
+  Malayalam : Mohammed Rashad
+  Portuguese (brazilian):
     Ezequias Rodrigues da Rocha, 
     Cristiano das Neves Almeida
-- Spanish: Giuseppe Aruta, Steve Tanner, Fco Lavin, 
-           Nacho Uve, Agustin Diez-Castillo
-- Hungarian: Zoltan Siki
-- Czech: Jan Ruzicka
-- Chinese: Elton Chan
+  Spanish:
+    Giuseppe Aruta, Steve Tanner, Fco Lavin, 
+    Nacho Uve, Agustin Diez-Castillo
+  Tamil: Vikram Santhanam
+  Telugu: Ravi Vundavalli
 
 Contributing projects and companies:
 - Intevation GmbH
