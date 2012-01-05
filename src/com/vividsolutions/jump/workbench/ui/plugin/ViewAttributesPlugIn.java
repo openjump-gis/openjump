@@ -78,7 +78,7 @@ public class ViewAttributesPlugIn extends AbstractPlugIn {
 				LayerViewPanelProxy {
 		private LayerManager layerManager;
 		private OneLayerAttributeTab attributeTab;
-		public ViewAttributesFrame(Layer layer, PlugInContext context) {
+		public ViewAttributesFrame(final Layer layer, final PlugInContext context) {
 			this.layerManager = context.getLayerManager();
 			addInternalFrameListener(new InternalFrameAdapter() {
 				public void internalFrameClosed(InternalFrameEvent e) {
@@ -107,6 +107,15 @@ public class ViewAttributesPlugIn extends AbstractPlugIn {
 				public void layerChanged(LayerEvent e) {
 					if (attributeTab.getLayer() != null) {
 						updateTitle(attributeTab.getLayer());
+					}
+					// Layer REMOVE [mmichaud 2012-01-05]
+					if (e.getType() == LayerEventType.REMOVED) {
+					    if (e.getLayerable() == attributeTab.getLayer()) {
+					        attributeTab.getModel().dispose();
+					        context.getLayerManager().removeLayerListener(this);
+					        context.getWorkbenchFrame().removeInternalFrame(ViewAttributesFrame.this);
+					        dispose();
+					    }
 					}
 				}
 				public void categoryChanged(CategoryEvent e) {

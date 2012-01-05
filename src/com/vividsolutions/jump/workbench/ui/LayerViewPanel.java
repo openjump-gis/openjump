@@ -392,6 +392,11 @@ public class LayerViewPanel extends JPanel
 					Assert.shouldNeverReachHere();
 				}
 			}
+			// Moved this line of code from LayerManager to LayerViewPanel
+			// [mmichaud 2012-01-05]
+			if (e.getType() == LayerEventType.REMOVED) {
+			    getRenderingManager().removeLayerRenderer(e.getLayerable());
+			}
 		} catch (Throwable t) {
 			context.handleThrowable(t);
 		}

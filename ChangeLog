@@ -1,5 +1,12 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2012-01-05 mmichaud <michael.michaud@free.fr>
+    * Makes RemoveSelectedLayer more consistent and fix bug 3469215
+      Now, a LayerEventType.REMOVED is listened by :
+      - ViewAttributesPlugIn.ViewAttributesFrame which is also removed
+      - InfoFrame which removes data from this layer from the model
+      - LayerViewPanel which removes this layer renderer
+
 2012-01-03 Giuseppe Aruta <giuseppe_aruta@yahoo.it>
     * Add Clone Item PlugInto right click context mouse menu, add language strings to Clone Item PlugIn
     * Changed position within right click context menu to Copy This Coordinate PlugIn

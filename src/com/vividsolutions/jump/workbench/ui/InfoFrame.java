@@ -39,6 +39,12 @@ import javax.swing.event.InternalFrameEvent;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.model.CategoryEvent;
+import com.vividsolutions.jump.workbench.model.FeatureEvent;
+import com.vividsolutions.jump.workbench.model.Layer;
+import com.vividsolutions.jump.workbench.model.LayerEvent;
+import com.vividsolutions.jump.workbench.model.LayerEventType;
+import com.vividsolutions.jump.workbench.model.LayerListener;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
 import com.vividsolutions.jump.workbench.model.Task;
@@ -122,6 +128,20 @@ public class InfoFrame
                 //Assume that there are no other views on the model
                 model.dispose();
             }
+        });
+        layerManagerProxy.getLayerManager().addLayerListener(new LayerListener() {
+            public void featuresChanged(FeatureEvent e) {}
+
+            public void layerChanged(LayerEvent e) {
+                // Layer REMOVE [mmichaud 2012-01-05]
+                if (e.getType() == LayerEventType.REMOVED) {
+                    if (getModel().getLayers().contains(e.getLayerable())) {
+                        getModel().remove((Layer)e.getLayerable());
+                    }
+                }
+            }
+
+            public void categoryChanged(CategoryEvent e) {}
         });
     }
     public JPanel getAttributeTab() {

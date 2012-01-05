@@ -668,16 +668,17 @@ public class LayerManager {
     */
     public void dispose(WorkbenchFrame frame, Layerable layerable) {
         // removing all LayerRenderers for this Layer
-        JInternalFrame[] internalFrames = frame.getInternalFrames();
-        for (int i = 0 ; i < internalFrames.length ; i++) {
-            JInternalFrame internalFrame = internalFrames[i];
-            if (internalFrame instanceof LayerViewPanelProxy) {
-                ((LayerViewPanelProxy)internalFrame).getLayerViewPanel()
-                                                    .getRenderingManager()
-                                                    .removeLayerRenderer(layerable);
-            }
-            //layerViewPanel.getRenderingManager().removeLayerRenderer(layerable);
-        }
+        // replaced by listener in LayerViewPanel [2012-01-05]
+        //JInternalFrame[] internalFrames = frame.getInternalFrames();
+        //for (int i = 0 ; i < internalFrames.length ; i++) {
+        //    JInternalFrame internalFrame = internalFrames[i];
+        //    if (internalFrame instanceof LayerViewPanelProxy) {
+        //        ((LayerViewPanelProxy)internalFrame).getLayerViewPanel()
+        //                                            .getRenderingManager()
+        //                                            .removeLayerRenderer(layerable);
+        //    }
+        //    //layerViewPanel.getRenderingManager().removeLayerRenderer(layerable);
+        //}
     	for (Iterator i = categories.iterator(); i.hasNext();) {
             Category c = (Category) i.next();
             // deleting the layer from the category
