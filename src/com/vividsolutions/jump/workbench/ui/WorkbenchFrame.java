@@ -1403,7 +1403,7 @@ public class WorkbenchFrame extends JFrame
 	  statusPanelSplitPane3.setDividerLocation(blackboard.get(STATUSPANEL_DIVIDER_LOCATION_3, 100));
 	  statusPanelSplitPane4.setDividerLocation(blackboard.get(STATUSPANEL_DIVIDER_LOCATION_4, 200));
 
-	  Dimension d = new Dimension(900, 665);
+	  Dimension d = new Dimension(700, 480);
 	  if (blackboard.get(WIDTH_KEY) == null) {
 		  blackboard.put(WIDTH_KEY, d.width);
 		  blackboard.put(HEIGHT_KEY, d.height);
