@@ -2,17 +2,20 @@
 Version 1.5.0 - svn2588 (released on 07.jan.2012)
 
   New Features
-  - Added FillPolygonTool, an Edit Tool to create a polygon from a closed area
-  - Added Tools/Edit Geometries/Noder PlugIn : nodes/splits lines and polygons
+  - FillPolygonTool, an Edit Tool to create a polygon 
+    from a closed area
+  - Tools/Edit Geometries/Noder PlugIn : nodes/splits 
+    lines and polygons
   - Improved LayerView context menu :
     * new icons
     * new reverse line orientation plugin
-    * add zoom tools, replicate and clone plugins in the menu
-  - Added copy/paste schema
-  - Added language files for several Indian languages (partial)
-  - New buffer plugin including all the option of JTS API
-  - CORE and PLUS distributions replace normal and -s ones
-  - ECW package is refactored (PLUS distribution) and linux-box compatible
+    * add zoom tools, replicate and clone plugins
+  - Copy/Paste schema
+  - New i18n files for several Indian languages (partial)
+  - New Buffer PlugIn including all options of JTS API
+  - CORE and PLUS distributions replace normal and -s
+  - ECW package is refactored (PLUS distribution) and 
+    made linux-box compatible
   
   Small improvements
   - Better layout of AttributeTablePanel
