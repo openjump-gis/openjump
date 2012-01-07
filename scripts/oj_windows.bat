@@ -5,7 +5,7 @@ set JUMP_HOME=%~dp0..%
 
 rem -- uncomment to save settings and log to user profile, quote if env vars might contain spaces --
 rem -- if unset defaults to JUMP_HOME/bin/ --
-rem set SETTINGS_HOME="%HOMEDRIVE%%HOMEPATH%"\openjump
+rem set SETTINGS_HOME="%HOMEDRIVE%%HOMEPATH%"\.openjump
 
 rem -- uncomment to manually set java home, don't use quotes --
 rem set JAVA_HOME=G:\path\to\a\specific\<jre|jdk>-1.<5|6>
@@ -93,13 +93,14 @@ for %%i in ("%LIB%\*.jar" "%LIB%\*.zip" "%NATIVE%\%ID%%X64%\*.jar" "%NATIVE%\%ID
 echo %CLASSPATH%
 
 rem -- set settings home/log dir if none given, use [] for if to survive quotes in env var --
+rem -- ATTENTION: logdir requires a trailing backslash for concatenation in log4j.xml --
 if [%SETTINGS_HOME%]==[] (
   set SETTINGS_HOME=.\bin
-  set LOG_DIR="%JUMP_HOME%"
+  set LOG_DIR="%JUMP_HOME%"/
 ) else (
   rem -- create folder if not existing --
   if NOT EXIST "%SETTINGS_HOME%" mkdir "%SETTINGS_HOME%"
-  set LOG_DIR=%SETTINGS_HOME%
+  set LOG_DIR=%SETTINGS_HOME%/
 )
 
 rem -- look if we have a custom logging configuration in settings --
