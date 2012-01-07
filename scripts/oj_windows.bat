@@ -37,6 +37,16 @@ rem -- find java runtime --
 
   rem --- java home definition overwrites all ---
   if NOT "%JAVA_HOME%"=="" set JAVA=%JAVA_HOME%\bin\%JAVA_BIN%
+  
+  rem --- if java is still not found ---
+  if EXIST %JAVA% goto :x86
+  rem --- and batch is in x64 mode ---
+  if "%PROCESSOR_ARCHITECTURE%" == "x86" goto :x86
+  rem --- restart the batch in x86 mode---
+    echo Restarting using Wow64 filesystem redirection: %0
+    %SystemRoot%\SysWOW64\cmd.exe /c %0
+    exit /b %ERRORLEVEL%
+  :x86
 
 rem -- show java version (for debugging) --
 for %%F in ("%JAVA%") do set dirname=%%~dpF

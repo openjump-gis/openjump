@@ -14,7 +14,7 @@
 <project name="openjump" default="dist-zip" basedir="..">
     <property name="name" value="openjump"/>
     <property name="Name" value="OpenJUMP"/>
-    <property name="version" value="1.4.3alpha"/>
+    <property name="version" value="1.5.0"/>
     <!-- The recommended setting for debug is "on", so that line numbers are included in stack traces. [Jon Aquino 2005-04-06] -->
     <property name="debug" value="on"/>
     <property name="deprecation" value="off"/>
@@ -97,7 +97,7 @@
     <!-- =================================================================== -->
     <path id="base.classpath">
         <fileset dir="${lib.dir}">
-            <include name="**/*.jar"/>
+            <include name="*.jar"/>
             <!-- exclude postgis_1_0_0.jar, it is no more used-->
             <exclude name="postgis_1_0_0.jar"/>
         </fileset>
@@ -201,6 +201,7 @@
         <copy todir="${archive.dir}/licenses">
             <fileset dir="${licenses.dir}">
                 <include name="*.txt"/>
+                <include name="*.pdf"/>
             </fileset>
         </copy>
         <copy file="etc/readme.txt" todir="${archive.dir}"/>

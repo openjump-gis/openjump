@@ -38,7 +38,7 @@ package com.vividsolutions.jump;
  * An optional release status string may be present in the string version of
  * the version.
  *
- * @version 1.4.3
+ * @version 1.5.0
  */
 public class JUMPVersion {
 
@@ -55,12 +55,12 @@ public class JUMPVersion {
   /**
    * The minor version number.
    */
-  //public static final int MINOR = 4;
+  //public static final int MINOR = 5;
 
   /**
    * The patch version number.
    */
-  //public static final int PATCH = 3;
+  //public static final int PATCH = 0;
 
   /**
    * An optional string providing further release info (such as "alpha 1" or
