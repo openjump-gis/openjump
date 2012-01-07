@@ -27,26 +27,23 @@ rem -- find java runtime --
   rem --- default to javaw ---
   if "%JAVA_BIN%"=="" set JAVA_BIN=javaw
 
-  rem --- fallback to plain bin name, just in case ---
-  set JAVA=%JAVA_BIN%
+  rem --- search binary in path ---
+  @for %%i in (%JAVA_BIN%.exe) do @if NOT "%%~$PATH:i"=="" set JAVA=%%~$PATH:i
 
-  rem --- if no java home & java bin in path, replace fallback entry ---
-  if "%JAVA_HOME%"=="" (
-      @for %%i in (%JAVA_BIN%.exe) do @if NOT "%%~$PATH:i"=="" set JAVA=%%~$PATH:i
-  )
-
-  rem --- java home definition overwrites all ---
-  if NOT "%JAVA_HOME%"=="" set JAVA=%JAVA_HOME%\bin\%JAVA_BIN%
-  
-  rem --- if java is still not found ---
-  if EXIST %JAVA% goto :x86
-  rem --- and batch is in x64 mode ---
-  if "%PROCESSOR_ARCHITECTURE%" == "x86" goto :x86
-  rem --- restart the batch in x86 mode---
-    echo Restarting using Wow64 filesystem redirection: %0
+  rem --- we might be on amd64 having only x86 jre installed ---
+  if [%JAVA%]==[] if DEFINED ProgramFiles(x86) if NOT "%PROCESSOR_ARCHITECTURE%"=="x86" (
+    rem --- restart the batch in x86 mode---
+    echo Warning: No java interpreter found in path.
+    echo Retry using Wow64 filesystem [32bit environment] redirection.
     %SystemRoot%\SysWOW64\cmd.exe /c %0
     exit /b %ERRORLEVEL%
-  :x86
+  )
+
+  rem --- if unset fall back to plain bin name, just in case ---
+  if [%JAVA%]==[] set JAVA=%JAVA_BIN%
+  
+  rem --- java home definition overwrites all ---
+  if NOT [%JAVA_HOME%]==[] set JAVA=%JAVA_HOME%\bin\%JAVA_BIN%
 
 rem -- show java version (for debugging) --
 for %%F in ("%JAVA%") do set dirname=%%~dpF
@@ -95,14 +92,28 @@ for %%i in ("%LIB%\*.jar" "%LIB%\*.zip" "%NATIVE%\%ID%%X64%\*.jar" "%NATIVE%\%ID
 
 echo %CLASSPATH%
 
-rem -- set settings home if none given, use [] for if to survive quotes in env var --
-if [%SETTINGS_HOME%]==[] set SETTINGS_HOME=.\bin
+rem -- set settings home/log dir if none given, use [] for if to survive quotes in env var --
+if [%SETTINGS_HOME%]==[] (
+  set SETTINGS_HOME=.\bin
+  set LOG_DIR="%JUMP_HOME%"
+) else (
+  rem -- create folder if not existing --
+  if NOT EXIST "%SETTINGS_HOME%" mkdir "%SETTINGS_HOME%"
+  set LOG_DIR=%SETTINGS_HOME%
+)
+
+rem -- look if we have a custom logging configuration in settings --
+set LOG4J_CONF=.\bin\log4j.xml
+if NOT [%SETTINGS_HOME%]==[.\bin] if EXIST %SETTINGS_HOME%\log4j.xml (
+  rem --- log4j can't seem to find absolute path without the file:/// prefix ---
+  set LOG4J_CONF=file:///%SETTINGS_HOME%\log4j.xml
+)
 
 rem -- essential options, don't change unless you know what you're doing --
-set JAVA_OPTS=%JAVA_OPTS% -Dlog4j.configuration=%SETTINGS_HOME%\log4j.xml -Djump.home="%JUMP_HOME%"
+set JAVA_OPTS=%JAVA_OPTS% -Dlog4j.configuration=%LOG4J_CONF% -Dlog.dir=%LOG_DIR% -Djump.home="%JUMP_HOME%"
 
 rem -- set default app options --
-set JUMP_OPTS=-default-plugins bin\default-plugins.xml -properties %SETTINGS_HOME%\workbench-properties.xml -plug-in-directory "%LIB%\ext"
+set JUMP_OPTS=-default-plugins bin\default-plugins.xml -properties %SETTINGS_HOME%\workbench-properties.xml -state %SETTINGS_HOME% -plug-in-directory "%LIB%\ext"
 
 rem -- disconnect javaw from console by using start --
 rem -- note: title is needed or start won't accept quoted path to java binary (protect spaces in javapath) --
