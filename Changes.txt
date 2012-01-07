@@ -1,4 +1,68 @@
 --------------------------------------------------------
+Version 1.5.0 - svn25.. (released on 07.jan.2012)
+
+  New Features
+  - Added FillPolygonTool, an Edit Tool to create a polygon from a closed area
+  - Added Tools/Edit Geometries/Noder PlugIn : nodes/splits lines and polygons
+  - Improved LayerView context menu :
+    * new icons
+    * new reverse line orientation plugin
+    * add zoom tools, replicate and clone plugins in the menu
+  - Added copy/paste schema
+  - Added language files for several Indian languages (partial)
+  - New buffer plugin including all the option of JTS API
+  - CORE and PLUS distributions replace normal and -s ones
+  - ECW package is refactored (PLUS distribution) and linux-box compatible
+  
+  Small improvements
+  - Better layout of AttributeTablePanel
+  - Column width of AttributeTablePanel is now persistent
+  - Improved usability and consistency of right-click menu in AttributePanel
+    (fixes bug 3441486)
+  - Exended Pirol Attribute Calculator
+  - OpenProjectPlugIn is now used when OpenJUMP is started with a project file
+  - Now accept a zipped shapefile without dbf
+  - Many new icons and zoom plugins in LayerView context menu
+  - Removed Fill Patterns from core distribution
+  - deactivated SaveImageAsSVG and remove Batik from CORE distribution (kept in PLUS)
+  - FR 3422848 : Added a "limit" parameter in addDataStorePlugIn
+  - label style : separation of position parameter and horizontal alignment
+  - Refactored AutoAssign PlugIn
+  - New Union/Dissolve/Merge plugin unifying old Union and Dissolve
+  - ShapefileWriter now prompts the user to accept to truncate fields > 255 char
+  - You now get layer colors in SimpleQuery PlugIn
+  - Improved readability of Layer names in MultiInputDialog (white foreground 
+    used with dark selection background)
+  - ReferencedImageFactoryFileLayerLoader does not create empty layers any more
+    if loading fails, and OpenFileWizard displays errors properly
+  - About panel now displays the readme file (which is improved)
+ 
+  API Changes
+  - Refactoring of selection package (improved memory usage, fixed bug 2792806)
+  - Refactoring of EditTransaction class and make some operations much more fast
+  
+  Bug Fixes
+  - 3469215 : OpenJUMP could become instable if layers were removed from 
+    LayerNamePanel while the AttributeTable was opened
+  - 3439132 : Open File dialog was too large because of long file extension list
+  - Fixed an NPE throwed by AddImageLayerPlugIn when there is no Project Window
+  - 3456437 : IndexOutOfBoundException in ViewAttriute and FeatureInfo PlugIns
+  - 3442147 : With several projects, SimpleQuery could show a wrong layer list
+  - 3440346 : AttributeCalculator parser is now more robust
+  - makes workbench-state encoding and parsing consistent
+  - EditSelectedFeaturePlugIn was broken
+  - 3434161 : OpenProject/SaveProjectAs now remember last used directoy
+  - 3434648 : AutoAssignPlugIn did not recognize negatives and decimals
+  - 3428076 : SaveDatasetAs fixed for MacOSX
+  - 3413805 : Toggle layer visibility is now java7 compatible
+  - Fixed NPE in SaveDatasetsPlugIn
+  - 3413619 : moving category up and down with only one category was buggy
+  - 3415409 : NoteStyle could not be deserialized
+  - 2728360 : UndoChain was broken by layer operation
+  - 3084927 : better error handling if ecw file is in an accented path
+  
+
+--------------------------------------------------------
 Version 1.4.2 - svn2383 (released on 11.Sept.2011)
 
   New Features
@@ -7,7 +71,8 @@ Version 1.4.2 - svn2383 (released on 11.Sept.2011)
   
   Small improvements
   - Better internationalization
-  - Clean View menu : Move "Run SQL Query..." and "Add Image (Test, ECW...)" from Layer Menu to File menu.
+  - Clean View menu : Move "Run SQL Query..." and "Add Image (Test, ECW...)" 
+    from Layer Menu to File menu.
   - Readme file in the InfoPanel 
   
   API Changes

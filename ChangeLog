@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2012-01-07 mmichaud <michael.michaud@free.fr>
+    * Prepare 1.5 release
+
 2012-01-05 mmichaud <michael.michaud@free.fr>
     * Makes RemoveSelectedLayer more consistent and fix bug 3469215
       Now, a LayerEventType.REMOVED is listened by :
