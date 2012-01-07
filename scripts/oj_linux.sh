@@ -1,5 +1,10 @@
 #!/bin/sh
 
+## uncomment and put in the path where oj log, settings should end up
+## if unset defaults to
+##   JUMP_HOME (oj app folder) if writable or $HOME/.openjump (user home)
+#JUMP_SETTINGS="/tmp/foobar"
+
 ## uncomment and put the path to your jre here
 #JAVA_HOME="/home/ed/jre1.6.0_21"
 
@@ -30,18 +35,34 @@ end(){
 }
 
 if(test -L "$0") then
-    	auxlink=`ls -l "$0" | sed 's/^[^>]*-> //g'`
-    	JUMP_HOME=`dirname "$auxlink"`/..
+  auxlink=`ls -l "$0" | sed 's/^[^>]*-> //g'`
+  JUMP_HOME=`dirname "$auxlink"`/..
 else 
-    	JUMP_HOME=`dirname "$0"`/..
+  JUMP_HOME=`dirname "$0"`/..
 fi
-JUMP_PROPERTIES=./bin/workbench-properties.xml
+#JUMP_PROPERTIES=./bin/workbench-properties.xml
 JUMP_PLUGINS=./bin/default-plugins.xml
-JUMP_STATE=./bin/
 
 ## cd into jump home
 OLD_DIR=`pwd`
 cd "$JUMP_HOME"
+
+## determine where to place settings, if no path given
+[ -z "$JUMP_SETTINGS" ] && \
+JUMP_SETTINGS="$JUMP_HOME"; \
+if [ -d "$JUMP_SETTINGS" ]; then
+  if [ ! -w "$JUMP_SETTINGS" ]; then
+    # try users home dir
+    JUMP_SETTINGS="$HOME/.openjump"
+    # create if missing
+    [ ! -e "$JUMP_SETTINGS" ] && mkdir "$JUMP_SETTINGS"
+    # try to make it writable
+    [ ! -w "$JUMP_SETTINGS" ] && chmod u+wX -R "$JUMP_SETTINGS"
+    # check availability and issue warning in case
+  fi
+fi
+[ ! -d "$JUMP_SETTINGS" ] || [ ! -w "$JUMP_SETTINGS" ] && \
+  echo "Warning: Cannot access settings folder '$JUMP_SETTINGS' for writing."
 
 ## search java, order is:
 # 1. first in oj_home/jre
@@ -98,19 +119,15 @@ fi
 JUMP_NATIVE_DIR="$JUMP_LIB/native"
 JUMP_PLUGIN_DIR="${JUMP_PLUGIN_DIR:=$JUMP_LIB/ext}"
 
-if [ -z "$JUMP_PROPERTIES" ] || [ ! -f "$JUMP_PROPERTIES" ]; then
-  JUMP_PROPERTIES="./bin/workbench-properties.xml"
-fi
+#if [ -z "$JUMP_PROPERTIES" ] || [ ! -f "$JUMP_PROPERTIES" ]; then
+#  JUMP_PROPERTIES="./bin/workbench-properties.xml"
+#fi
 
 if [ -z "$JUMP_PLUGINS" ] || [ ! -f "$JUMP_PLUGINS" ]; then
   JUMP_PLUGINS="./bin/default-plugins.xml"
   if [ ! -f "$JUMP_PLUGINS" ]; then
     JUMP_PLUGINS="./scripts/default-plugins.xml"
   fi
-fi
-
-if [ -d "$JUMP_STATE" ] || [ -f "$JUMP_STATE" ]; then
-  JUMP_OPTS="$JUMP_OPTS -state $JUMP_STATE"
 fi
 
 # include every jar/zip in lib and native dir
@@ -124,18 +141,18 @@ export CLASSPATH;
 ## compile jump opts
 #
 JUMP_OPTS="-plug-in-directory $JUMP_PLUGIN_DIR"
-JUMP_OPTS="$JUMP_OPTS -properties $JUMP_PROPERTIES"
+JUMP_OPTS="$JUMP_OPTS -properties $JUMP_SETTINGS/workbench-properties.xml"
+JUMP_OPTS="$JUMP_OPTS -state $JUMP_SETTINGS/"
 if [ -f "$JUMP_PLUGINS" ]; then
   JUMP_OPTS="$JUMP_OPTS -default-plugins $JUMP_PLUGINS"
-fi
-if [ -d "$JUMP_STATE" ] || [ -f "$JUMP_STATE" ]; then
-  JUMP_OPTS="$JUMP_OPTS -state $JUMP_STATE"
 fi
 
 # compile jre opts, respect already set ones from e.g. mac
 JAVA_OPTS=""
 JAVA_OPTS="$JAVA_OPTS $JAVA_MAXMEM $JAVA_LANG"
 JAVA_OPTS="$JAVA_OPTS -Djump.home=."
+# log.dir needs a trailing slash for path concatenation in log4j.xml
+JAVA_OPTS="$JAVA_OPTS -Dlog.dir=$JUMP_SETTINGS/"
 [ -n "JAVA_SAXDRIVER"    ] && JAVA_OPTS="$JAVA_OPTS -Dorg.xml.sax.driver=$JAVA_SAXDRIVER"
 [ -n "$JAVA_LOOKANDFEEL" ] && JAVA_OPTS="$JAVA_OPTS -Dswing.defaultlaf=$JAVA_LOOKANDFEEL"
 JAVA_OPTS="$JAVA_OPTS $JAVA_OPTS_OVERRIDE"
