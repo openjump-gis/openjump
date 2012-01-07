@@ -17,6 +17,7 @@
         <exclude>org.openjump:OpenJUMP</exclude>
         <!-- exclude batik from CORE build -->
         <exclude>batik:*</exclude>
+        <exclude>junit:*</exclude>
       </excludes>
     </dependencySet>
     <!--dependencySet -->
