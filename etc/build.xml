@@ -221,6 +221,7 @@
         <copy todir="${archive.src.dir}/licenses">
             <fileset dir="${licenses.dir}">
                 <include name="*.txt"/>
+                <include name="*.pdf"/>
             </fileset>
         </copy>
         <!-- [sstein] added begin : copy also all other stuff to src-->

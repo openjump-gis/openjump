@@ -36,7 +36,7 @@ This folder must contains the following subfolders:
 
 If you have now all these folders in one, then go to the \etc\ folder and look for the file built.xml. Start this file with ANT. In Eclipse it might work to simply click on built.xml file and then choose from the mouse-menu the option to "run" with ANT.
 
-note: OpenJUMP can be built with Java 1.4 and 1.5 
+note: OpenJUMP can be built with Java 1.5 or later 
 
 If you have Questions on OpenJUMP, please have a look first on our wiki: http://www.openjump.org
 If you want to report a bug or feature request please do (both):
