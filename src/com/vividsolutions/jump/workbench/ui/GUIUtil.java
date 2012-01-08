@@ -362,10 +362,10 @@ public class GUIUtil {
      *            Description of the Parameter
      */
     public static void centreOnScreen(Component componentToMove) {
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        componentToMove.setLocation((screenSize.width - componentToMove
-                .getWidth()) / 2, (screenSize.height - componentToMove
-                .getHeight()) / 2);
+        Rectangle rect = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+        componentToMove.setLocation((rect.width - componentToMove
+                .getWidth()) / 2 + rect.x, (rect.height - componentToMove
+                .getHeight()) / 2 + rect.y);
     }
 
     /**

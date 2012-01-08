@@ -31,9 +31,12 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.Graphics;
-import java.awt.GridBagLayout;
+import java.awt.GraphicsEnvironment;
 import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -57,6 +60,7 @@ import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultDesktopManager;
+import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
@@ -67,6 +71,8 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSplitPane;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
@@ -112,9 +118,6 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ChoosableStyle;
 import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
-import javax.swing.JComponent;
-import javax.swing.JSplitPane;
-import javax.swing.JTextField;
 
 /**
  * This class is responsible for the main window of the JUMP application.
@@ -1383,36 +1386,67 @@ public class WorkbenchFrame extends JFrame
 	  return maximized; 
   }
 
+  
+  public Point initWindowLocation() {
+    Rectangle rect = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+    return new Point( (rect.width - getWidth()) / 2 + rect.x, (rect.height - getHeight()) / 2 + rect.y );
+  }
+  
+  public Dimension initWindowSize() {
+    Rectangle rect = GraphicsEnvironment.getLocalGraphicsEnvironment()
+        .getMaximumWindowBounds();
+    if (rect.width > 740)
+      rect.width = 740;
+    if (rect.height > 480)
+      rect.height = 480;
+    return rect.getSize();
+  }
+  
   public Point recallWindowLocation() {
-	  Blackboard blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
-	  Point p = new Point(0,0);
-	  if (blackboard.get(HORIZONTAL_KEY) == null) {
-		  blackboard.put(HORIZONTAL_KEY, p.x);
-		  blackboard.put(VERTICAL_KEY, p.y);
-	  }
-	  p.x = ((Integer) blackboard.get(HORIZONTAL_KEY)).intValue();
-	  p.y = ((Integer) blackboard.get(VERTICAL_KEY)).intValue();
-	  return p; 
+    Blackboard blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
+
+    Point p;
+    if (blackboard.get(HORIZONTAL_KEY) == null) {
+      p = initWindowLocation();
+      blackboard.put(HORIZONTAL_KEY, p.x);
+      blackboard.put(VERTICAL_KEY, p.y);
+    } else {
+      p = new Point(((Integer) blackboard.get(HORIZONTAL_KEY)).intValue(),
+          ((Integer) blackboard.get(VERTICAL_KEY)).intValue());
+    }
+    return p;
   }
 
   public Dimension recallWindowSize() {
-	  Blackboard blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
-	  // restore Statusbar divider loactions
-	  statusPanelSplitPane1.setDividerLocation(blackboard.get(STATUSPANEL_DIVIDER_LOCATION_1, 300));
-	  statusPanelSplitPane2.setDividerLocation(blackboard.get(STATUSPANEL_DIVIDER_LOCATION_2, 200));
-	  statusPanelSplitPane3.setDividerLocation(blackboard.get(STATUSPANEL_DIVIDER_LOCATION_3, 100));
-	  statusPanelSplitPane4.setDividerLocation(blackboard.get(STATUSPANEL_DIVIDER_LOCATION_4, 200));
+    Blackboard blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
+    // restore Statusbar divider loactions
+    statusPanelSplitPane1.setDividerLocation(blackboard.get(
+        STATUSPANEL_DIVIDER_LOCATION_1, 300));
+    statusPanelSplitPane2.setDividerLocation(blackboard.get(
+        STATUSPANEL_DIVIDER_LOCATION_2, 200));
+    statusPanelSplitPane3.setDividerLocation(blackboard.get(
+        STATUSPANEL_DIVIDER_LOCATION_3, 100));
+    statusPanelSplitPane4.setDividerLocation(blackboard.get(
+        STATUSPANEL_DIVIDER_LOCATION_4, 200));
 
-	  Dimension d = new Dimension(700, 480);
-	  if (blackboard.get(WIDTH_KEY) == null) {
-		  blackboard.put(WIDTH_KEY, d.width);
-		  blackboard.put(HEIGHT_KEY, d.height);
-	  }
-	  d.width = ((Integer) blackboard.get(WIDTH_KEY)).intValue();
-	  d.height = ((Integer) blackboard.get(HEIGHT_KEY)).intValue();
-	  return d; 
+    Dimension d;
+    if (blackboard.get(WIDTH_KEY) == null) {
+      d = initWindowSize();
+      blackboard.put(WIDTH_KEY, d.width);
+      blackboard.put(HEIGHT_KEY, d.height);
+    }
+    d = new Dimension();
+    d.width = ((Integer) blackboard.get(WIDTH_KEY)).intValue();
+    d.height = ((Integer) blackboard.get(HEIGHT_KEY)).intValue();
+    return d;
   }
 
+  public void restore() {
+      setSize(recallWindowSize());
+      setLocation(recallWindowLocation());
+      if (recallMaximizedState())
+        setExtendedState(Frame.MAXIMIZED_BOTH);  
+  }
 
 	/**
 	 * @return the taskListeners
