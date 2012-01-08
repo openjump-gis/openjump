@@ -1,0 +1,10 @@
+///////////////////////////////////////////////////////////////
+// HELLO WORLD SCRIPT
+// Michael Michaud 2007-03-15
+///////////////////////////////////////////////////////////////
+
+import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
+
+dialog = new MultiInputDialog(wc.workbench.frame, "", true);
+dialog.addLabel("Hello world");
+dialog.setVisible(true);
