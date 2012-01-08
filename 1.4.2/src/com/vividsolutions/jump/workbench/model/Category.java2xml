@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<root>
+  <attribute xml-name="name" java-name="name"/>
+  <element xml-name="layer" java-name="persistentLayerable"/>
+</root>
