@@ -1,8 +1,8 @@
 OpenJUMP ReadMe file
 --------------------
-Version 1.5.0
+Version ${version.number} ${version.release} rev.${version.revision}
 
-January 7th, 2012
+${version.buildDate}
 
 Contents
 --------

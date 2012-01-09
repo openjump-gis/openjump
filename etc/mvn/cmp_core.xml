@@ -59,9 +59,13 @@
       <directory>etc</directory>
       <outputDirectory>/</outputDirectory>
       <includes>
-        <include>readme.txt</include>
+        <!--filtering with assembly didn't work out, 
+        filter in basebuild now and package result here
+        see below-->
+        <!--include>readme.txt</include-->
         <include>licenses/*</include>
       </includes>
+      <filtered>false</filtered>
     </fileSet>
     <fileSet>
       <directory>.</directory>
@@ -72,21 +76,11 @@
         <include>lib/native/readme.txt</include>
       </includes>
     </fileSet>
-    <fileSet>
-      <!-- we add the version patched language files from target/classes -->
-      <directory>${project.build.outputDirectory}</directory>
-      <outputDirectory>/</outputDirectory>
-      <includes>
-        <include>language/**</include>
-      </includes>
-    </fileSet>
-    <fileSet>
-      <!-- add the language/** stripped version of oj-core.jar -->
-      <directory>${project.build.directory}/nolang</directory>
-      <outputDirectory>/lib</outputDirectory>
-      <includes>
-        <include>${artifactId}-${version}-nolang.jar</include>
-      </includes>
-    </fileSet>
   </fileSets>
+  <files>
+    <file>
+      <source>${project.build.directory}/tmp/readme.txt</source>
+      <outputDirectory>/</outputDirectory>
+    </file>
+  </files>
 </component>
