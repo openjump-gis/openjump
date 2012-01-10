@@ -68,7 +68,7 @@
                 <phase>package</phase>
                 <configuration>
                   <appendAssemblyId>false</appendAssemblyId>
-                  <finalName>${artifactId}-${version.number}-r${version.revision}-CORE</finalName>
+                  <finalName>${artifactId}-${version.number}-r${version.revision}-PLUS</finalName>
                   <descriptors>
                     <descriptor>etc/mvn/bin_zip-plus_snapshot.xml</descriptor>
                   </descriptors>
