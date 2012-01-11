@@ -1,7 +1,10 @@
 package org.openjump.core.ui.plugin.edit;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import javax.swing.JComponent;
 
@@ -25,6 +28,7 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.ThreadedPlugIn;
+import com.vividsolutions.jump.workbench.ui.HTMLFrame;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 
@@ -78,7 +82,7 @@ public class ClipToFencePlugIn extends AbstractPlugIn implements ThreadedPlugIn 
         return false;
     }
 
-   public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
+    public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
 
 		LayerManager layerManager = context.getLayerManager();
 		Layer fence = layerManager.getLayer(FenceLayerFinder.LAYER_NAME);
@@ -91,17 +95,32 @@ public class ClipToFencePlugIn extends AbstractPlugIn implements ThreadedPlugIn 
 		OverlayEngine overlayEngine = new OverlayEngine();
 		overlayEngine.setAllowingPolygonsOnly(POLYGON_OUTPUT);
 		overlayEngine.setSplittingGeometryCollections(POLYGON_OUTPUT);
-       FeatureCollection a = fence.getFeatureCollectionWrapper();
-       //boolean firingEvents = layerManager.isFiringEvents();
-       //layerManager.setFiringEvents(false);
+        FeatureCollection a = fence.getFeatureCollectionWrapper();
+        //boolean firingEvents = layerManager.isFiringEvents();
+        //layerManager.setFiringEvents(false);
+        List<Layer> unprocessedLayers = new ArrayList<Layer>();
 		for (Iterator j = layerList.iterator(); j.hasNext();) {
 			Layer layer = (Layer) j.next();
 			if (layer == fence) continue;
 	        FeatureCollection b = layer.getFeatureCollectionWrapper();
-	        FeatureCollection overlay = overlayEngine.overlay(a, b, mapping(a, b),
-	                monitor);
-	        
-	        layer.setFeatureCollection(overlay);
+	        if (hasDuplicateAttributeNames(b.getFeatureSchema())) {
+	            context.getWorkbenchFrame().warnUser(I18N.get(
+	                "org.openjump.core.ui.plugin.edit.ClipToFencePlugIn.duplicate-attribute-names-are-not-supported"));
+	            unprocessedLayers.add(layer);
+	        }
+	        else {
+	            FeatureCollection overlay = overlayEngine.overlay(a, b, mapping(a, b), monitor);
+	            layer.setFeatureCollection(overlay);
+	        }
+		}
+		if (unprocessedLayers.size()>0) {
+		    HTMLFrame outputFrame = context.getWorkbenchFrame().getOutputFrame();
+		    outputFrame.createNewDocument();
+		    outputFrame.addHeader(1, I18N.get("org.openjump.core.ui.plugin.edit.ClipToFencePlugIn.Clip-Map-to-Fence"));
+		    outputFrame.addHeader(2, I18N.get("org.openjump.core.ui.plugin.edit.ClipToFencePlugIn.unprocessed-layers"));
+		    for (Layer layer : unprocessedLayers) {
+		        outputFrame.append(layer.getName());
+		    }
 		}
        //layerManager.setFiringEvents(firingEvents);
    }
@@ -130,6 +149,14 @@ public class ClipToFencePlugIn extends AbstractPlugIn implements ThreadedPlugIn 
 //    
     private AttributeMapping mapping(FeatureCollection a, FeatureCollection b) {
         return new AttributeMapping( new FeatureSchema(), b.getFeatureSchema());
+    }
+    
+    private boolean hasDuplicateAttributeNames(FeatureSchema schema) {
+        Set set = new HashSet();
+        for (int i = 0; i < schema.getAttributeCount(); i++) {
+            if (!set.add(schema.getAttributeName(i))) return true ;
+        }
+        return false;
     }
 
     public EnableCheck fenceLayerMustBePresent() {
