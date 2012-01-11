@@ -1,5 +1,11 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2012-01-11
+    * Fixed bugs in
+      - ClipToFencePlugIn [3472008] two identical attribute names not accepted.
+        now throw a clearer message
+      - CombineSelectedLayer now accept non-default geometry attribute names
+
 2012-01-07 mmichaud <michael.michaud@free.fr>
     * Prepare 1.5 release (svn 2588)
 
