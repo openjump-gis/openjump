@@ -94,6 +94,9 @@ public class CombineSelectedLayersPlugIn extends AbstractPlugIn {
         		.getFeatureSchema();
         	for (int j=0; j<schema.getAttributeCount(); j++) {
         		String name = schema.getAttributeName(j);
+        		if (AttributeType.GEOMETRY == schema.getAttributeType(name)) {
+        		    continue;
+        		}
         		if (!featureSchema.hasAttribute(name)) {
         			featureSchema.addAttribute(name, schema.getAttributeType(name));
         		} else if (schema.getAttributeType(name) 
