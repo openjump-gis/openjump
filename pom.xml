@@ -87,6 +87,7 @@
         <!-- has to be set on maven run with -D version.number=X.X.X -->
         <version.number>unknown</version.number>
         <version.release>stable</version.release>
+        <version.string>${artifactId}-${version.number}-r${version.revision}</version.string>
       </properties>
       <build>
         <plugins>
@@ -193,7 +194,7 @@
         <executions>
           <execution>
             <id>generate-buildnumber</id>
-            <phase>validate</phase>
+            <phase>process-sources</phase>
             <goals>
               <goal>create</goal>
             </goals>
@@ -204,7 +205,7 @@
           </execution>
           <execution>
             <id>generate-datestamp</id>
-            <phase>validate</phase>
+            <phase>process-sources</phase>
             <goals>
               <goal>create</goal>
             </goals>
@@ -218,7 +219,7 @@
           </execution>
           <execution>
             <id>generate-date</id>
-            <phase>validate</phase>
+            <phase>process-sources</phase>
             <goals>
               <goal>create</goal>
             </goals>
