@@ -15,7 +15,7 @@
   <properties>
     <version.release>snapshot</version.release>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-    <!--assembly_descriptor>bin_zip-core.xml</assembly_descriptor-->
+    <!--assembly_descriptor>bin_zip-core.xml</assembly_descriptor -->
   </properties>
   <profiles>
     <profile>
@@ -23,9 +23,8 @@
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
-      <!--properties>
-        <version.number>${version.datestamp}</version.number>
-      </properties-->
+      <!--properties> <version.number>${version.datestamp}</version.number> 
+        </properties -->
       <build>
         <plugins>
           <plugin>
@@ -92,18 +91,38 @@
       <build>
         <plugins>
           <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <configuration>
+              <outputDirectory>${project.build.directory}/apidocs/</outputDirectory>
+              <reportOutputDirectory>${project.build.directory}/apidocs/</reportOutputDirectory>
+              <destDir>${version.string}</destDir>
+              <quiet>true</quiet>
+            </configuration>
+            <executions>
+              <execution>
+                <phase>compile</phase>
+                <goals>
+                  <goal>javadoc</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
             <artifactId>maven-assembly-plugin</artifactId>
-            <!--version>2.1</version -->
+            <configuration>
+              <appendAssemblyId>false</appendAssemblyId>
+            </configuration>
             <executions>
               <execution>
                 <id>release core</id>
                 <phase>package</phase>
                 <configuration>
-                  <appendAssemblyId>false</appendAssemblyId>
-                  <finalName>${artifactId}-${version.number}-r${version.revision}-CORE</finalName>
+                <finalName>${version.string}-CORE</finalName>
                   <descriptors>
                     <descriptor>etc/mvn/bin_zip-core_stable.xml</descriptor>
                   </descriptors>
+                  <useJvmChmod>true</useJvmChmod>
                 </configuration>
                 <goals>
                   <goal>single</goal>
@@ -113,8 +132,7 @@
                 <id>release plus</id>
                 <phase>package</phase>
                 <configuration>
-                  <appendAssemblyId>false</appendAssemblyId>
-                  <finalName>${artifactId}-${version.number}-r${version.revision}-PLUS</finalName>
+                  <finalName>${version.string}-PLUS</finalName>
                   <descriptors>
                     <descriptor>etc/mvn/bin_zip-plus_stable.xml</descriptor>
                   </descriptors>
@@ -138,7 +156,7 @@
         <directory>src</directory>
         <!-- we copy _everything_ to target/classes and filter during packaging -->
         <excludes>
-          <!-- exclude> **/*.java </exclude-->
+          <!-- exclude> **/*.java </exclude -->
           <exclude>language/*.properties</exclude>
         </excludes>
       </resource>
