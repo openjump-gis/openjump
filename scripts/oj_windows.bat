@@ -4,7 +4,6 @@ set OLD_DIR=%CD%
 set JUMP_HOME=%~dp0..%
 
 rem -- uncomment to save settings and log to user profile ---
-rem -- quote if env vars might contain spaces --
 rem -- if unset defaults to JUMP_HOME/bin/ --
 rem set SETTINGS_HOME="%HOMEDRIVE%%HOMEPATH%"\.openjump
 
@@ -24,15 +23,22 @@ rem --- change your memory configuration here - Xms is initial size, Xmx is maxi
 rem --- values are ##M for ## Megabytes, ##G for ## Gigabytes ---
 set JAVA_OPTS=%JAVA_OPTS% -Xms64M -Xmx512M
 
+rem --- uncomment and change your http proxy settings here
+set JAVA_OPTS=%JAVA_OPTS% -Dhttp.proxyHost=myproxyserver.com -Dhttp.proxyPort=80 -Dhttp.noProxyHosts="localhost|host.mydomain.com"
+
+rem --- if the proxy server requires authentication uncomment and edit also these
+set JAVA_OPTS=%JAVA_OPTS% -Dhttp.proxyUser=username -Dhttp.proxyPass=password
+
 rem -- dequote path entries, just to be sure --
 call :dequote %PATH%
-set "PATH=%unquoted%"%
+set "PATH=%unquoted%"
 
 rem -- dequote java_home, later on we assume it's unquoted --
 call :dequote %JAVA_HOME%
-set "JAVA_HOME=%unquoted%"%
+set "JAVA_HOME=%unquoted%"
 
 rem -- find java runtime --
+  set JAVA=
   rem --- default to javaw ---
   if "%JAVA_BIN%"=="" set JAVA_BIN=javaw
 
@@ -56,7 +62,7 @@ rem -- find java runtime --
 
 rem -- show java version (for debugging) --
 for %%F in ("%JAVA%") do set "dirname=%%~dpF"
-echo Using java found in '%dirname%'
+echo Using '%JAVA_BIN%' found in '%dirname%'
 "%dirname%java" -version
 
 rem -- Change to jump home dir --
@@ -84,7 +90,8 @@ rem -- add native as fallthrough and lib\ext the legacy value --
 set "NATIVEPATH=%NATIVE%\%ID%%X64%;%NATIVE%\%ID%;%NATIVE%"
 set "PATH=%PATH%;%NATIVEPATH%;%LIB%\ext"
 
-echo %PATH%
+rem -- debug info --
+if /i NOT "%JAVA_BIN%"=="javaw" echo ---PATH--- & echo %PATH%
 
 rem -- set classpath --
 set CLASSPATH=.;bin;conf
@@ -100,31 +107,39 @@ for %%i in ("%LIB%\*.jar" "%LIB%\*.zip" "%NATIVE%\%ID%%X64%\*.jar" "%NATIVE%\%ID
   call :setclass
 )
 
-echo %CLASSPATH%
+rem -- debug info --
+if /i NOT "%JAVA_BIN%"=="javaw" echo ---CLASSPATH--- & echo %CLASSPATH%
 
-rem -- set settings home/log dir if none given, use [] for if to survive quotes in env var --
-rem -- ATTENTION: logdir requires a trailing backslash for concatenation in log4j.xml --
-if [%SETTINGS_HOME%]==[] (
-  set SETTINGS_HOME=.\bin
-  set LOG_DIR="%JUMP_HOME%"/
-) else (
-  rem -- create folder if not existing --
-  if NOT EXIST "%SETTINGS_HOME%" mkdir "%SETTINGS_HOME%"
-  set LOG_DIR=%SETTINGS_HOME%/
-)
+rem -- set settings home/log dir if none given --
+  rem --- dequote settings_home, later on we assume it's unquoted ---
+  call :dequote %SETTINGS_HOME%
+  set "SETTINGS_HOME=%unquoted%"
+
+  rem --- set default or create missing folder ---
+  rem --- ATTENTION: logdir requires a trailing backslash for concatenation in log4j.xml ---
+  if NOT DEFINED SETTINGS_HOME (
+    rem ---- an absolute settings_home allows file:/// for log4j conf ----
+    set SETTINGS_HOME=%JUMP_HOME%\bin
+    set "LOG_DIR=%JUMP_HOME%/"
+  ) else (
+    rem ---- create folder if not existing ----
+    if NOT EXIST "%SETTINGS_HOME%" mkdir "%SETTINGS_HOME%"
+    set "LOG_DIR=%SETTINGS_HOME%/"
+  )
 
 rem -- look if we have a custom logging configuration in settings --
-set LOG4J_CONF=.\bin\log4j.xml
-if NOT [%SETTINGS_HOME%]==[.\bin] if EXIST %SETTINGS_HOME%\log4j.xml (
+if EXIST "%SETTINGS_HOME%\log4j.xml" (
   rem --- log4j can't seem to find absolute path without the file:/// prefix ---
   set LOG4J_CONF=file:///%SETTINGS_HOME%\log4j.xml
+) else (
+  set LOG4J_CONF=.\bin\log4j.xml
 )
 
 rem -- essential options, don't change unless you know what you're doing --
-set JAVA_OPTS=%JAVA_OPTS% -Dlog4j.configuration=%LOG4J_CONF% -Dlog.dir=%LOG_DIR% -Djump.home="%JUMP_HOME%"
+set JAVA_OPTS=%JAVA_OPTS% -Dlog4j.configuration="%LOG4J_CONF%" -Dlog.dir="%LOG_DIR%" -Djump.home="%JUMP_HOME%"
 
 rem -- set default app options --
-set JUMP_OPTS=-default-plugins bin\default-plugins.xml -properties %SETTINGS_HOME%\workbench-properties.xml -state %SETTINGS_HOME% -plug-in-directory "%LIB%\ext"
+set JUMP_OPTS=-default-plugins bin\default-plugins.xml -properties "%SETTINGS_HOME%\workbench-properties.xml" -state "%SETTINGS_HOME%" -plug-in-directory "%LIB%\ext"
 
 rem -- disconnect javaw from console by using start --
 rem -- note: title is needed or start won't accept quoted path to java binary (protect spaces in javapath) --
@@ -146,7 +161,7 @@ goto :eof
 :dequote
 SETLOCAL enabledelayedexpansion
 set string=%*
-set string=!string:"=!
+if DEFINED string set string=!string:"=!
 ENDLOCAL & set unquoted=%string%
 goto :eof
 
