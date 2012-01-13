@@ -142,7 +142,7 @@ public class PlugInManager {
                 plugIn.initialize(new PlugInContext(context, null, null, null, null));
             } catch (NoClassDefFoundError e) {
                 LOG.warn(plugInClass + " " + NOT_INITIALIZED);
-                LOG.info(e.getCause().toString());
+                LOG.info(e);
                 System.out.println(plugInClass + " " + NOT_INITIALIZED);
             }
         }
