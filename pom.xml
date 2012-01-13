@@ -426,7 +426,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8</version>
+      <version>4.10</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
