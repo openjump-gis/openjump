@@ -24,10 +24,10 @@ rem --- values are ##M for ## Megabytes, ##G for ## Gigabytes ---
 set JAVA_OPTS=%JAVA_OPTS% -Xms64M -Xmx512M
 
 rem --- uncomment and change your http proxy settings here
-set JAVA_OPTS=%JAVA_OPTS% -Dhttp.proxyHost=myproxyserver.com -Dhttp.proxyPort=80 -Dhttp.noProxyHosts="localhost|host.mydomain.com"
+rem set JAVA_OPTS=%JAVA_OPTS% -Dhttp.proxyHost=myproxyserver.com -Dhttp.proxyPort=80 -Dhttp.noProxyHosts="localhost|host.mydomain.com"
 
 rem --- if the proxy server requires authentication uncomment and edit also these
-set JAVA_OPTS=%JAVA_OPTS% -Dhttp.proxyUser=username -Dhttp.proxyPass=password
+rem set JAVA_OPTS=%JAVA_OPTS% -Dhttp.proxyUser=username -Dhttp.proxyPass=password
 
 rem -- dequote path entries, just to be sure --
 call :dequote %PATH%
