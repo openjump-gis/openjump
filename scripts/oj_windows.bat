@@ -3,11 +3,12 @@ rem -- Detect current dir and OJ home --
 set OLD_DIR=%CD%
 set JUMP_HOME=%~dp0..%
 
-rem -- uncomment to save settings and log to user profile, quote if env vars might contain spaces --
+rem -- uncomment to save settings and log to user profile ---
+rem -- quote if env vars might contain spaces --
 rem -- if unset defaults to JUMP_HOME/bin/ --
 rem set SETTINGS_HOME="%HOMEDRIVE%%HOMEPATH%"\.openjump
 
-rem -- uncomment to manually set java home, don't use quotes --
+rem -- uncomment to manually set java home --
 rem set JAVA_HOME=G:\path\to\a\specific\<jre|jdk>-1.<5|6>
 
 rem -- uncomment to use 'java' for console output, if unset defaults to 'javaw' for background jre  --
@@ -23,6 +24,14 @@ rem --- change your memory configuration here - Xms is initial size, Xmx is maxi
 rem --- values are ##M for ## Megabytes, ##G for ## Gigabytes ---
 set JAVA_OPTS=%JAVA_OPTS% -Xms64M -Xmx512M
 
+rem -- dequote path entries, just to be sure --
+call :dequote %PATH%
+set "PATH=%unquoted%"%
+
+rem -- dequote java_home, later on we assume it's unquoted --
+call :dequote %JAVA_HOME%
+set "JAVA_HOME=%unquoted%"%
+
 rem -- find java runtime --
   rem --- default to javaw ---
   if "%JAVA_BIN%"=="" set JAVA_BIN=javaw
@@ -31,7 +40,7 @@ rem -- find java runtime --
   @for %%i in (%JAVA_BIN%.exe) do @if NOT "%%~$PATH:i"=="" set JAVA=%%~$PATH:i
 
   rem --- we might be on amd64 having only x86 jre installed ---
-  if [%JAVA%]==[] if DEFINED ProgramFiles(x86) if NOT "%PROCESSOR_ARCHITECTURE%"=="x86" (
+  if "%JAVA%"=="" if DEFINED ProgramFiles(x86) if NOT "%PROCESSOR_ARCHITECTURE%"=="x86" (
     rem --- restart the batch in x86 mode---
     echo Warning: No java interpreter found in path.
     echo Retry using Wow64 filesystem [32bit environment] redirection.
@@ -40,13 +49,14 @@ rem -- find java runtime --
   )
 
   rem --- if unset fall back to plain bin name, just in case ---
-  if [%JAVA%]==[] set JAVA=%JAVA_BIN%
+  if "%JAVA%"=="" set JAVA=%JAVA_BIN%
   
   rem --- java home definition overwrites all ---
-  if NOT [%JAVA_HOME%]==[] set JAVA=%JAVA_HOME%\bin\%JAVA_BIN%
+  if NOT "%JAVA_HOME%"=="" set "JAVA=%JAVA_HOME%\bin\%JAVA_BIN%"
 
 rem -- show java version (for debugging) --
-for %%F in ("%JAVA%") do set dirname=%%~dpF
+for %%F in ("%JAVA%") do set "dirname=%%~dpF"
+echo Using java found in '%dirname%'
 "%dirname%java" -version
 
 rem -- Change to jump home dir --
@@ -131,6 +141,13 @@ goto :eof
 :setclass
 set CLASSPATH=%CLASSPATH%;%jarfile%
 set jarfile=
+goto :eof
+
+:dequote
+SETLOCAL enabledelayedexpansion
+set string=%*
+set string=!string:"=!
+ENDLOCAL & set unquoted=%string%
 goto :eof
 
 :eof
