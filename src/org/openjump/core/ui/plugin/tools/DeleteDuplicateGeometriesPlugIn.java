@@ -27,13 +27,12 @@
  */
 /*****************************************************
  * created:         30.01.2006
- * last modified:                       
+ * last modified:   15.01.2012                    
  *                  
  * 
- * @author sstein
+ * @author sstein, mmichaud
  * 
- * description:
- *  deletes items with same geometry
+ * description: deletes items with same geometry
  *  
  *****************************************************/
 
@@ -41,7 +40,10 @@ package org.openjump.core.ui.plugin.tools;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import javax.swing.JComboBox;
 import javax.swing.JMenuItem;
@@ -53,6 +55,7 @@ import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.feature.IndexedFeatureCollection;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
@@ -153,86 +156,57 @@ public class DeleteDuplicateGeometriesPlugIn extends AbstractPlugIn implements T
     }
     
     private boolean delete(PlugInContext context, TaskMonitor monitor) throws Exception{
-        System.gc(); //flush garbage collector
-        // --------------------------       
-        //-- get selected items
-        final Collection features = this.itemlayer.getFeatureCollectionWrapper().getFeatures();
-        ArrayList notFoundItemsOld = new ArrayList();
-        ArrayList notFoundItemsNew = new ArrayList();       
-        ArrayList doneItems = new ArrayList();      
-        int size = features.size();
-        Iterator iter = features.iterator();
-        Feature f = (Feature)iter.next();
-        FeatureSchema fs = f.getSchema();
-        //-- new collection for output : assuming that all features have same schema and 
-        //   first feature has correct scheme
-        FeatureCollection myCollA = new FeatureDataset(fs);                     
-        Feature fi = null;
-        int count=1; int dropped = 0;
-        notFoundItemsOld.addAll(features);
-        while(iter.hasNext()){
-            monitor.report(count, size, sChecked);
-            count++;
-            fi = (Feature)iter.next();
-            Geometry geom = (Geometry)fi.getGeometry();
-            int copycounter = 0;
-            for (int j = 0; j < notFoundItemsOld.size(); j++){
-                boolean isequal = false;                
-                Feature testF = (Feature)notFoundItemsOld.get(j);
-                try{
-                    //-- test if other object has same geometry
-                    isequal = geom.equals(testF.getGeometry());
-                    //-- test if objects have same attribute values
-                    if((isequal == true) && (this.deleteOnlyForSameAttributes == true)){
-                        boolean attributesAreDifferent = false;
-                        for (int k=0; k < fs.getAttributeCount(); k++){
-                            if(fs.getAttributeType(k) != AttributeType.GEOMETRY){
-                                Object val1 = fi.getAttribute(k); 
-                                Object val2 = testF.getAttribute(k);
-                                if(!val1.equals(val2)){                                     
-                                    attributesAreDifferent = true;
-                                    //System.out.println("Attribute vals are different: " + val1 + " and " + val2);
+        // Method is completely reworked to take advantage of indexes [mmichaud 2012-01-15]
+        FeatureCollection fc = itemlayer.getFeatureCollectionWrapper();
+    	FeatureSchema schema = fc.getFeatureSchema();
+    	int geomIndex = schema.getGeometryIndex();
+    	// Input data is indexed
+    	IndexedFeatureCollection index = new IndexedFeatureCollection(fc);
+    	Set<Integer> duplicates = new HashSet<Integer>();
+    	Iterator it = fc.iterator();
+    	while (it.hasNext()) {
+    		Feature f = (Feature)it.next();
+    		// For each feature, only candidate features are compared
+    		List candidates = index.query(f.getGeometry().getEnvelopeInternal());
+    		for (Object o : candidates) {
+    			Feature c = (Feature)o;
+    			// For equal features, the one with the greater ID is removed
+    			if (c.getID() > f.getID() && f.getGeometry().equalsNorm(c.getGeometry())) {
+    				if (deleteOnlyForSameAttributes) {
+    					boolean attributesEqual = true;
+    					for (int k=0; k < schema.getAttributeCount(); k++){
+                            if(k!=geomIndex){
+                                Object att1 = f.getAttribute(k);
+                                Object att2 = c.getAttribute(k);
+                                if (att1 == null && att2 == null) {
+                                    continue;
+                                }
+                                else if (att1 == null || att2 == null ||
+                                    !f.getAttribute(k).equals(c.getAttribute(k))) {
+                                    attributesEqual = false;
+                            	    break;
                                 }
                             }
                         }
-                        if (attributesAreDifferent == true){
-                            isequal = false;
-                        }
-                    }
-                }
-                catch(Exception e){
-                    System.out.println("items have problem (topology): " + testF.getID() + " and " + fi.getID());
-                    System.out.println(e.getStackTrace());
-                }
-                if (isequal){
-                    copycounter = copycounter+1;
-                    if (copycounter == 1){
-                        //-- hold at least one 
-                        // checking of Feature-Id's does not help - since every item is checked,
-                        // even if it has been deleted already from the second notFoundList, since we are
-                        // walking through the original features list - still containing all items
-                        notFoundItemsNew.add(testF);
-                    }
-                    else{
-                        //-- drop feature
-                        dropped= dropped+1;
-                    }
-                }
-                else{ //has same id or was not found
-                    notFoundItemsNew.add(testF);
-                }
-            } 
-            notFoundItemsOld.clear();
-            notFoundItemsOld.addAll(notFoundItemsNew);
-            notFoundItemsNew.clear();
-        }
-        for (Iterator iterator = notFoundItemsOld.iterator(); iterator.hasNext();) {
-            Feature element = (Feature) iterator.next();
-            //-- clone! not link
-            myCollA.add((Feature)element.clone());
-            
-        }
-        context.addLayer(StandardCategoryNames.RESULT,  itemlayer.getName()+ "-" + sCleaned, myCollA);         
-        return true;        
-    }       
+                        // if geometry and attributes are equals, add ID to duplicates
+    					if (attributesEqual) duplicates.add(c.getID());
+    				}
+    				// if geometry are equals, add ID to duplicates
+    				else duplicates.add(c.getID());
+    			}
+    		}
+    	}
+    	// Create a layer with features which ID is not in duplicates
+    	FeatureCollection noDuplicates = new FeatureDataset(schema);
+    	it = fc.iterator();
+    	while (it.hasNext()) {
+    		Feature f = (Feature)it.next();
+    		if (!duplicates.contains(f.getID())) {
+    	        noDuplicates.add(f.clone(true));
+    		}
+    	}
+    	context.addLayer(StandardCategoryNames.RESULT,  itemlayer.getName()+ "-" + sCleaned, noDuplicates);         
+        return true;
+    }
+    
 }

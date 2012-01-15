@@ -1,8 +1,17 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
 2012-01-15 mmichaud <michael.michaud@free.fr>
+    * Optimization of DeleteDuplicateItemsPlugIn + unit test
+    * added a unit-test target in ant build file
+      
+2012-01-14 mmichaud <michael.michaud@free.fr>
     * Fix two small language issues in 
       ReplicateSelectedItemsPlugIn and CreateThiessenPolygonsPlugIn
+      
+2012-01-13 benjamin gudehus
+    * added a unit test framework made of
+      - org.openjump.test package
+      - fixtures directory for datasets
 
 2012-01-11 mmichaud <michael.michaud@free.fr>
     * Fixed bugs in
