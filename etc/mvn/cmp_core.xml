@@ -82,5 +82,15 @@
       <source>${project.build.directory}/tmp/readme.txt</source>
       <outputDirectory>/</outputDirectory>
     </file>
+    <file>
+      <source>icon/openjump_icon3.ico</source>
+      <destName>oj.ico</destName>
+      <outputDirectory>/lib/icons/</outputDirectory>
+    </file>
+    <file>
+      <source>icon/openjump_icon3.png</source>
+      <destName>oj.png</destName>
+      <outputDirectory>/lib/icons/</outputDirectory>
+    </file>
   </files>
 </component>
