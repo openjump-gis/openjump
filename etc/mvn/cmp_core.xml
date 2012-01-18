@@ -79,6 +79,7 @@
   </fileSets>
   <files>
     <file>
+      <lineEnding>windows</lineEnding>
       <source>${project.build.directory}/res/readme.txt</source>
       <outputDirectory>/</outputDirectory>
     </file>
