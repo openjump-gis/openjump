@@ -79,7 +79,7 @@
   </fileSets>
   <files>
     <file>
-      <source>${project.build.directory}/tmp/readme.txt</source>
+      <source>${project.build.directory}/res/readme.txt</source>
       <outputDirectory>/</outputDirectory>
     </file>
     <file>
