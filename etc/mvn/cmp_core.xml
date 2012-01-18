@@ -79,7 +79,8 @@
   </fileSets>
   <files>
     <file>
-      <lineEnding>windows</lineEnding>
+      <!-- make sure the readme.txt is readable with windows notepad -->
+      <lineEnding>crlf</lineEnding>
       <source>${project.build.directory}/res/readme.txt</source>
       <outputDirectory>/</outputDirectory>
     </file>
