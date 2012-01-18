@@ -285,6 +285,9 @@
               <classifier>nosrc</classifier>
               <excludes>
                 <exclude>**/*.java</exclude>
+                <!-- excluding unit-test resources -->
+                <exclude>**/*Test.class</exclude>
+                <exclude>fixtures/**/*</exclude>
               </excludes>
             </configuration>
           </execution>
