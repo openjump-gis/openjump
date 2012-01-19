@@ -197,7 +197,7 @@
                     filtering="true" overwrite="true" />
                   <!-- Allows us to use the IzPack Ant task -->
                   <taskdef name="IzPack"
-                    classpath="launcher\IzPack-4.3.5\lib/standalone-compiler.jar"
+                    classpath="launcher/IzPack-4.3.5/lib/standalone-compiler.jar"
                     classname="com.izforge.izpack.ant.IzPackTask" />
                   <!-- We call IzPack -->
                   <echo message="Make CORE installer" />
@@ -206,14 +206,14 @@
                     output="${project.build.directory}/izpack/Install_${version.string}-CORE.jar"
                     installerType="standard"
                     basedir="${project.build.directory}/izpack/core/"
-                    IzPackDir="launcher\IzPack-4.3.5" />
+                    IzPackDir="launcher/IzPack-4.3.5" />
                   <echo message="Make PLUS installer" />
                   <IzPack
                     input="${project.build.directory}/izpack/plus/oj_installer.xml"
                     output="${project.build.directory}/izpack/Install_${version.string}-PLUS.jar"
                     installerType="standard"
                     basedir="${project.build.directory}/izpack/plus/"
-                    IzPackDir="launcher\IzPack-4.3.5" />
+                    IzPackDir="launcher/IzPack-4.3.5" />
                 </target>
               </configuration>
               <goals>
