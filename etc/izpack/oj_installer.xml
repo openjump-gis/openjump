@@ -126,6 +126,8 @@
 
   <packs>
 <refpackset dir="packs" includes="**/*.xml" />
+<executable targetfile="$INSTALL_PATH/bin/oj_linux.sh --post-install" stage="postinstall" keep="true" condition="izpack.linuxinstall"/>
+<executable targetfile="$INSTALL_PATH/bin/oj_linux.sh --mac-install" stage="postinstall" keep="true" condition="izpack.macinstall"/>
   </packs>
 
   <!-- The native libraries to add. This is required for creating shortcuts 

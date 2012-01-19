@@ -34,12 +34,46 @@ end(){
   fi
 }
 
+postinstall(){
+  [ ! -d "$1" ] && echo Missing app folder && exit 1
+  # fix permissions
+  find "$1" -type f -print0 | xargs -0 chmod 644 &&\
+  find "$1" -type d -print0 | xargs -0 chmod 755 &&\
+  find "$1" -type f \( -name *.sh -o -name *.command \)  -print0 | xargs -0 chmod 755
+  echo permissions fixed
+  exit
+}
+
+macinstall(){
+  [ ! -d "$1" ] && echo Missing app folder && exit 1
+  # fix permissions
+  find "$1" -type f -print0 | xargs -0 chmod 644 &&\
+  find "$1" -type d -print0 | xargs -0 chmod 755 &&\
+  find "$1" -type f \( -name *.sh -o -name *.command \)  -print0 | xargs -0 chmod 755
+  echo permissions fixed
+  exit
+}
+
+macinstall(){
+  [ ! -d "$1" ] && echo Missing app folder && exit 1
+  cp -ra "$1"/bin/OpenJUMP.app/Contents "$1"
+  awk '{sub(/..\/oj_/,"oj_",$0)}1' "$1"/bin/OpenJUMP.app/Contents/MacOS/oj.sh > "$1"/Contents/MacOS/oj.sh
+  echo patched oj.app
+  exit
+}
+
+## detect home folder
 if(test -L "$0") then
   auxlink=`ls -l "$0" | sed 's/^[^>]*-> //g'`
   JUMP_HOME=`dirname "$auxlink"`/..
 else 
   JUMP_HOME=`dirname "$0"`/..
 fi
+
+## run postinstall if requested
+[ "$1" = "--post-install" ] && postinstall "$JUMP_HOME"
+[ "$1" = "--mac-install" ] && macinstall "$JUMP_HOME"
+
 #JUMP_PROPERTIES=./bin/workbench-properties.xml
 JUMP_PLUGINS=./bin/default-plugins.xml
 
