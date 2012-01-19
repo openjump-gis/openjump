@@ -35,6 +35,7 @@
     <variables>
         <variable name="DesktopShortcutCheckboxEnabled" value="true" />
         <variable name="ApplicationShortcutPath" value="ApplicationShortcuts" />
+        <variable name="appfolder" value="OpenJUMP-@version@-r@revision@-@edition@" />
     </variables>
     
     
@@ -75,6 +76,9 @@
     </locale>
 
 <resources>
+<res id="TargetPanel.dir.mac_os_x" src="targetdir.macosx.conf" />
+<res id="TargetPanel.dir.macosx" src="targetdir.macosx.conf" />
+
   <!--res src="install-readme.html" id="HTMLInfoPanel.info" /-->
   <res src="res/gpl-2(nowrap).txt" encoding="ISO-8859-1" id="LicencePanel.licence" />
   <res id="InfoPanel.info" src="pack0/readme.txt" encoding="ISO-8859-1"/>
