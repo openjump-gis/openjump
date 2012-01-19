@@ -99,6 +99,9 @@ public abstract class AbstractCursorTool implements CursorTool {
 	private boolean filling = false;
 
 	private Shape lastShapeDrawn;
+	
+	// special check for linux because of the painting bug in the JVM
+	protected boolean isLinuxOS = System.getProperty("os.name").toLowerCase().startsWith("linux");
 
 	private LayerViewPanelListener layerViewPanelListener = new LayerViewPanelListener() {
 
@@ -338,8 +341,14 @@ public abstract class AbstractCursorTool implements CursorTool {
 
 		if (g != null) {
 			//Not sure why g is null sometimes [Jon Aquino]
-			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+			
+			// Workaround for the Linux X11 rendering bug with buggy screenrefresh
+			// on all other platforms there are no problems, so we don't use
+			// antialaising for drawing the shape under Linux [Matthias Scholz 19. Jan 2012]
+			if (!isLinuxOS) {
+				g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 					RenderingHints.VALUE_ANTIALIAS_ON);
+			}
 		}
 
 		return g;

@@ -1,5 +1,10 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2012-01-19 Matthias Scholz <ms@jammerhund.de>
+  * AbstractCursorTool.getGraphics2D()
+    Small fix/workaround for the Linux painting/ screen refresh problem during
+    Shape movement.
+
 2012-01-15 mmichaud <michael.michaud@free.fr>
     * Optimization of DeleteDuplicateItemsPlugIn + unit test
     * added a unit-test target in ant build file
