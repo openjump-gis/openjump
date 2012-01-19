@@ -41,6 +41,8 @@ postinstall(){
   find "$1" -type d -print0 | xargs -0 chmod 755 &&\
   find "$1" -type f \( -name *.sh -o -name *.command \)  -print0 | xargs -0 chmod 755
   echo permissions fixed
+  file="$1/lib/native/ecw-gvsig1.11-linux32.tar.gz"
+  [ -f "$file" ] && tar xvf "$file" -C "$(dirname "$file")" 1>/dev/null && echo extracted \'$file\'
   exit
 }
 
