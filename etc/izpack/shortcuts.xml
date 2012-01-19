@@ -28,7 +28,7 @@
             applications="no"
             startMenu="no"
             startup="no"
-            target="$INSTALL_PATH\uninstall\uninstaller.jar"
+            target="javaw.exe -jar &quot;$INSTALL_PATH\uninstall\uninstaller.jar&quot;"
             commandLine=""
             iconFile="%SystemRoot%\system32\SHELL32.dll"
             iconIndex="31"

@@ -90,7 +90,7 @@
     <shortcut
             name="OpenJUMP Uninstaller"
             programGroup="yes"
-            desktop="yes"
+            desktop="no"
             applications="no"
             startMenu="no"
             startup="no"
