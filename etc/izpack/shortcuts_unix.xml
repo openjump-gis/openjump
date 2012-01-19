@@ -54,14 +54,15 @@
      commandLine=""
      workingDirectory="$INSTALL_PATH/"
      description="Launch OpenJUMP"
-     iconFile="$INSTALL_PATH/bin/icons/oj.png"
+     iconFile="$INSTALL_PATH/lib/icons/oj.png"
      iconIndex="0"
      type="Application"
      encoding="UTF-8"
      terminal="true"
      KdeSubstUID="false"
-     initialState="normal">   
-     <createForPack name="OpenJUMP"/>     
+     createForAll="true"
+     initialState="normal">
+     <createForPack name="OpenJUMP"/>
    </shortcut>
 
     <!--shortcut
@@ -104,7 +105,7 @@
             encoding="UTF-8"
             KdeSubstUID="true"
             KdeUsername="root"
-            createForAll="false"
+            createForAll="true"
 
 
             Categories="Application;Development;"
