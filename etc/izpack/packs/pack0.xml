@@ -9,7 +9,7 @@
       <file src="res/postinstall.sh" targetdir="$INSTALL_PATH/bin/" condition="izpack.linuxinstall|izpack.macinstall"/>
       <executable targetfile="$INSTALL_PATH/bin/postinstall.sh" stage="postinstall" keep="false" condition="izpack.linuxinstall|izpack.macinstall"/>
       <file src="res/macinstall.sh" targetdir="$INSTALL_PATH/bin/" condition="izpack.macinstall"/>
-      <executable targetfile="$INSTALL_PATH/bin/macinstall.sh" stage="postinstall" keep="true" condition="izpack.macinstall"/>
+      <executable targetfile="$INSTALL_PATH/bin/macinstall.sh" stage="postinstall" keep="false" condition="izpack.macinstall"/>
     </pack>
   </packs>
 </installation>
