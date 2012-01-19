@@ -28,8 +28,8 @@
             applications="no"
             startMenu="no"
             startup="no"
-            target="javaw.exe -jar &quot;$INSTALL_PATH\uninstall\uninstaller.jar&quot;"
-            commandLine=""
+            target="javaw.exe"
+            commandLine="-jar &quot;$INSTALL_PATH\uninstall\uninstaller.jar&quot;"
             iconFile="%SystemRoot%\system32\SHELL32.dll"
             iconIndex="31"
             description="This uninstalls OJ">
