@@ -147,6 +147,84 @@
         </plugins>
       </build>
     </profile>
+  <profile>
+    <id>installer</id>
+    <properties>
+      <!-- has to be set on maven run with -D version.number=X.X.X -->
+      <version.number>unknown</version.number>
+      <version.release>stable</version.release>
+      <version.string>${artifactId}-${version.number}-r${version.revision}</version.string>
+    </properties>
+    <build>
+      <plugins>
+        <plugin>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <version>1.7</version>
+          <executions>
+            <execution>
+              <phase>package</phase>
+              <configuration>
+                <target>
+                  <delete includeemptydirs="true" quiet="true">
+                    <fileset dir="${project.build.directory}/izpack"
+                      followsymlinks="false" />
+                  </delete>
+                  <!-- Using an ant task to deflate *.zip -->
+                  <unzip
+                    src="${project.build.directory}/${version.string}-CORE.zip"
+                    dest="${project.build.directory}/izpack/core/pack0">
+                    <cutdirsmapper dirs="1" />
+                  </unzip>
+                  <unzip
+                    src="${project.build.directory}/${version.string}-PLUS.zip"
+                    dest="${project.build.directory}/izpack/plus/pack0">
+                    <cutdirsmapper dirs="1" />
+                  </unzip>
+                  <!-- prepare izpack environments -->
+                  <filter token="edition" value="CORE" />
+                  <filter token="version" value="${version.number}" />
+                  <filter token="revision" value="${version.revision}" />
+                  <copydir src="etc/izpack"
+                    dest="${project.build.directory}/izpack/core" />
+                  <copy file="etc/izpack/oj_installer.xml"
+                    todir="${project.build.directory}/izpack/core/"
+                    filtering="true" overwrite="true" />
+                  <filter token="edition" value="PLUS" />
+                  <copydir src="etc/izpack"
+                    dest="${project.build.directory}/izpack/plus" />
+                  <copy file="etc/izpack/oj_installer.xml"
+                    todir="${project.build.directory}/izpack/plus/"
+                    filtering="true" overwrite="true" />
+                  <!-- Allows us to use the IzPack Ant task -->
+                  <taskdef name="IzPack"
+                    classpath="launcher\IzPack-4.3.5\lib/standalone-compiler.jar"
+                    classname="com.izforge.izpack.ant.IzPackTask" />
+                  <!-- We call IzPack -->
+                  <echo message="Make CORE installer" />
+                  <IzPack
+                    input="${project.build.directory}/izpack/core/oj_installer.xml"
+                    output="${project.build.directory}/izpack/Install_${version.string}-CORE.jar"
+                    installerType="standard"
+                    basedir="${project.build.directory}/izpack/core/"
+                    IzPackDir="launcher\IzPack-4.3.5" />
+                  <echo message="Make PLUS installer" />
+                  <IzPack
+                    input="${project.build.directory}/izpack/plus/oj_installer.xml"
+                    output="${project.build.directory}/izpack/Install_${version.string}-PLUS.jar"
+                    installerType="standard"
+                    basedir="${project.build.directory}/izpack/plus/"
+                    IzPackDir="launcher\IzPack-4.3.5" />
+                </target>
+              </configuration>
+              <goals>
+                <goal>run</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </build>
+  </profile>
   </profiles>
   <build>
     <finalName>${artifactId}-${version.number}-r${version.revision}</finalName>
