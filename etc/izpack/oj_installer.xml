@@ -83,7 +83,7 @@
 
     <!--res src="install-readme.html" id="HTMLInfoPanel.info" / -->
     <res id="LicencePanel.licence" src="res/gpl-2(nowrap).txt" />
-    <res id="InfoPanel.info" src="../readme.txt" />
+    <res id="InfoPanel.info" src="pack0/readme.txt" />
     <!--res id="LicencePanel.licence" src="licenses/gpl-2.txt" encoding="ISO-8859-1"/ -->
     <res src="shortcuts.xml" id="shortcutSpec.xml" />
     <res src="shortcuts_unix.xml" id="Unix_shortcutSpec.xml" />
