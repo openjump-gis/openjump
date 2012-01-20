@@ -181,7 +181,7 @@
                     <cutdirsmapper dirs="1" />
                   </unzip>
                   <!-- prepare izpack environments -->
-                  <!-- this was a trial to get special chars correct, but no avail --
+                  <!-- this was a trial to get special chars correct, but no avail 
                   copy file="${project.build.directory}/izpack/core/pack0/readme.txt" 
                   todir="${project.build.directory}/izpack/" verbose="true" overwrite="true" 
                   encoding="ISO-8859-1" outputencoding="UTF-8" /-->
