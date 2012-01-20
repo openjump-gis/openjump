@@ -4,7 +4,7 @@
                 location="applications"/>
 
       <shortcut
-         name="OpenJUMP"
+         name="${APP_NAME} ${APP_VER}"
          programGroup="yes"
          desktop="yes"
          applications="no"
