@@ -14,6 +14,7 @@
   </scm>
   <properties>
     <version.release>snapshot</version.release>
+    <file.encoding>ISO-8859-1</file.encoding>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
     <!--assembly_descriptor>bin_zip-core.xml</assembly_descriptor -->
   </properties>
@@ -165,6 +166,7 @@
               <phase>package</phase>
               <configuration>
                 <target>
+                  <property name="file.encoding" value="ISO-8859-1"/>
                   <delete includeemptydirs="true" quiet="true">
                     <fileset dir="${project.build.directory}/izpack"
                       followsymlinks="false" />
