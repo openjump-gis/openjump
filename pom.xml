@@ -181,7 +181,7 @@
                     <cutdirsmapper dirs="1" />
                   </unzip>
                   <!-- prepare izpack environments -->
-                  <copy file="etc/readme.txt" todir="${project.build.directory}/izpack/" verbose="true" overwrite="true" encoding="ISO-8859-1" outputencoding="UTF-8">
+                  <copy file="etc/readme.txt" todir="${project.build.directory}/izpack/" verbose="true" overwrite="true" encoding="ISO-8859-1" outputencoding="UTF-8" />
                   <filter token="edition" value="CORE" />
                   <filter token="version" value="${version.number}" />
                   <filter token="revision" value="${version.revision}" />
