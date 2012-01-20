@@ -167,8 +167,6 @@ export CLASSPATH;
 ## compile jump opts
 #
 JUMP_OPTS="-plug-in-directory $JUMP_PLUGIN_DIR"
-JUMP_OPTS="$JUMP_OPTS -properties $JUMP_SETTINGS/workbench-properties.xml"
-JUMP_OPTS="$JUMP_OPTS -state $JUMP_SETTINGS/"
 if [ -f "$JUMP_PLUGINS" ]; then
   JUMP_OPTS="$JUMP_OPTS -default-plugins $JUMP_PLUGINS"
 fi
@@ -177,8 +175,6 @@ fi
 JAVA_OPTS=""
 JAVA_OPTS="$JAVA_OPTS $JAVA_MAXMEM $JAVA_LANG"
 JAVA_OPTS="$JAVA_OPTS -Djump.home=."
-# log.dir needs a trailing slash for path concatenation in log4j.xml
-JAVA_OPTS="$JAVA_OPTS -Dlog.dir=$JUMP_SETTINGS/"
 [ -n "JAVA_SAXDRIVER"    ] && JAVA_OPTS="$JAVA_OPTS -Dorg.xml.sax.driver=$JAVA_SAXDRIVER"
 [ -n "$JAVA_LOOKANDFEEL" ] && JAVA_OPTS="$JAVA_OPTS -Dswing.defaultlaf=$JAVA_LOOKANDFEEL"
 JAVA_OPTS="$JAVA_OPTS $JAVA_OPTS_OVERRIDE"
@@ -188,7 +184,8 @@ export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$JUMP_NATIVE_DIR:$JUMP_HOME/lib/ext"
 
 # try to start if no errors so far
 if [ -z "$ERROR" ]; then
-  $JAVA -cp "$CLASSPATH" $JAVA_OPTS $MAIN $JUMP_OPTS $*
+  # log.dir needs a trailing slash for path concatenation in log4j.xml
+  $JAVA -cp "$CLASSPATH" -Dlog.dir="$JUMP_SETTINGS/" $JAVA_OPTS $MAIN -properties "$JUMP_SETTINGS"/workbench-properties.xml -state "$JUMP_SETTINGS/" $JUMP_OPTS $*
   # result of jre call
   ERROR=$?
 fi
