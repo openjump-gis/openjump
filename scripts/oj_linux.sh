@@ -43,7 +43,7 @@ postinstall(){
   echo permissions fixed
   file="$1/lib/native/ecw-gvsig1.11-linux32.tar.gz"
   [ -f "$file" ] && tar xvf "$file" -C "$(dirname "$file")" 1>/dev/null && echo extracted \'$file\'
-  exit
+  exit 0
 }
 
 macinstall(){
@@ -51,7 +51,7 @@ macinstall(){
   cp -R -a "$1"/bin/OpenJUMP.app/Contents "$1"
   awk '{sub(/..\/oj_/,"bin/oj_",$0)}1' "$1"/bin/OpenJUMP.app/Contents/MacOS/oj.sh > "$1"/Contents/MacOS/oj.sh
   echo patched oj.app
-  exit
+  exit 0
 }
 
 ## detect home folder

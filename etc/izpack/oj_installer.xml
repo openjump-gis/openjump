@@ -14,7 +14,7 @@
     <uninstaller path="${INSTALL_PATH}/uninstall" write="yes" />
     <javaversion>1.5</javaversion>
     <run-privileged
-      condition="izpack.windowsinstall.xp|izpack.windowsinstall.2003|izpack.windowsinstall.vista|izpack.windowsinstall.7|izpack.macinstall" />
+      condition="izpack.windowsinstall.xp|izpack.windowsinstall.2003|izpack.windowsinstall.vista|izpack.windowsinstall.7" />
     <summarylogfilepath>
       $INSTALL_PATH/uninstall/InstallSummary.htm
     </summarylogfilepath>
@@ -37,7 +37,7 @@
   <variables>
     <variable name="DesktopShortcutCheckboxEnabled" value="true" />
     <variable name="ApplicationShortcutPath" value="ApplicationShortcuts" />
-    <variable name="AppFolderName" value="OpenJUMP-@version@-r@revision@-@edition@" />
+    <!--variable name="AppFolderName" value="OpenJUMP-@version@-r@revision@-@edition@" /-->
   </variables>
 
 
