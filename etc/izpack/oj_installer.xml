@@ -18,6 +18,7 @@
     <summarylogfilepath>
       $INSTALL_PATH/uninstall/InstallSummary.htm
     </summarylogfilepath>
+    <!--><pack200/>-->
   </info>
 
   <!-- Flexible and in the screen proportions -->
@@ -41,11 +42,11 @@
   </variables>
 
 
-  <conditions>
+  <!--conditions>
     <condition type="exists" id="ecwlinux32">
       <file>lib/native/ecw-gvsig1.11-linux32.tar.gz</file>
     </condition>
-  </conditions>
+  </conditions-->
 
   <!-- We include every langpack -->
   <locale>
@@ -83,7 +84,8 @@
 
     <!--res src="install-readme.html" id="HTMLInfoPanel.info" / -->
     <res id="LicencePanel.licence" src="res/gpl-2(nowrap).txt" />
-    <res id="InfoPanel.info" src="pack0/readme.txt" />
+    <!--res id="InfoPanel.info" src="pack0/readme.txt" /-->
+    <res id="HTMLInfoPanel.info" src="../readme.html" />
     <!--res id="LicencePanel.licence" src="licenses/gpl-2.txt" encoding="ISO-8859-1"/ -->
     <res src="shortcuts.xml" id="shortcutSpec.xml" />
     <res src="shortcuts_unix.xml" id="Unix_shortcutSpec.xml" />
@@ -108,7 +110,9 @@
   <!-- The panels in a classic order -->
   <panels>
     <panel classname="CheckedHelloPanel" id="hellopanel" />
-    <panel classname="InfoPanel" id="infopanel" encoding="ISO-8859-1" />
+    <!-- don't use InfoPanel: a combination of iso-8859-1, ant preprocessed html and HTMLInfoPanel let's survive special chars -->
+    <!--panel classname="InfoPanel" id="infopanel" encoding="ISO-8859-1"/-->
+    <panel classname="HTMLInfoPanel" id="infopanel" encoding="ISO-8859-1"/>
     <panel classname="LicencePanel" id="licensepanel" />
     <panel classname="TargetPanel" id="targetpanel" condition="!izpack.macinstall"/>
     <!--panel classname="PacksPanel" id="packspanel" / -->
@@ -131,8 +135,6 @@
     <refpackset dir="packs" includes="**/*.xml" />
   </packs>
 
-  <!-- The native libraries to add. This is required for creating shortcuts 
-    on Windows -->
   <!--natives -->
   <!-- The native libraries to add -->
   <native type="izpack" name="ShellLink.dll" />
@@ -140,6 +142,9 @@
   <native type="izpack" name="WinSetupAPI.dll" />
   <native type="izpack" name="WinSetupAPI_x64.dll" />
   <native type="3rdparty" name="COIOSHelper.dll" stage="both">
+    <os family="windows" />
+  </native>
+  <native type="3rdparty" name="COIOSHelper_x64.dll" stage="both">
     <os family="windows" />
   </native>
   <!--/natives -->
