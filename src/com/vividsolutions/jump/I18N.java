@@ -331,6 +331,17 @@ public final class I18N {
    */
   public static String getMessage(final String category, final String label, final Object[] objects) {
     I18N i18n = getInstance(category);
-    return i18n.getMessage(label,objects);
+    try {
+      final MessageFormat mformat = new MessageFormat(i18n.getText(label));
+      return mformat.format(objects);
+    } catch (java.util.MissingResourceException e) {
+      final String[] labelpath = label.split("\\.");
+      LOG.warn(e.getMessage() + " no default value, the resource key is used: "
+        + labelpath[labelpath.length - 1]);
+      final MessageFormat mformat = new MessageFormat(
+        labelpath[labelpath.length - 1]);
+      return mformat.format(objects);
+    }
+    //return i18n.getMessage(label,objects);
   }
 }

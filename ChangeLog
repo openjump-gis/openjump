@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2012-01-21 mmichaud <michael.michaud@free.fr>
+  * Fixed I18N.getMessage() method
+
 2012-01-19 Matthias Scholz <ms@jammerhund.de>
   * AbstractCursorTool.getGraphics2D()
     Small fix/workaround for the Linux painting/ screen refresh problem during
