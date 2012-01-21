@@ -279,10 +279,10 @@
       <resource>
         <filtering>true</filtering>
         <directory>etc</directory>
-        <targetPath>${project.build.directory}/res/</targetPath>
         <includes>
           <include>readme.txt</include>
         </includes>
+        <targetPath>${project.build.directory}/res/</targetPath>
       </resource>
     </resources>
     <plugins>
