@@ -79,8 +79,10 @@
   </fileSets>
   <files>
     <file>
-      <!-- make sure the readme.txt is readable with windows notepad -->
-      <lineEnding>crlf</lineEnding>
+      <!-- chose NOT to filter because maven killed special chars in the process
+           same goes for the lineendings -->
+      <!--lineEnding>crlf</lineEnding>
+      <filtered>false</filtered-->
       <source>${project.build.directory}/res/readme.txt</source>
       <outputDirectory>/</outputDirectory>
     </file>
