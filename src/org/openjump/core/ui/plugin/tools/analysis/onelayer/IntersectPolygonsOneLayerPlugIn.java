@@ -62,7 +62,7 @@ public class IntersectPolygonsOneLayerPlugIn extends ThreadedBasePlugIn {
 	public void initialize(PlugInContext context) throws Exception {
 		context.getFeatureInstaller().addMainMenuItem(
 				this,
-				new String[] { MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
+				new String[] { MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY},
 				this.getName() + "...",
 				false,
 				null,
