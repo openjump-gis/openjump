@@ -205,6 +205,15 @@
                     dest="${project.build.directory}/izpack/plus/pack0">
                     <cutdirsmapper dirs="1" />
                   </unzip>
+                  <!-- recompress jars -->
+                  <taskdef name="p200ant" classname="de.matthiasmann.p200ant.P200AntTask"
+                    classpath="launcher/p200ant.jar" />
+                  <fileset id="jars2pack" dir="${project.build.directory}/izpack/">
+                    <include name="**/*.jar" />
+                  </fileset>
+                  <p200ant repack="true">
+                    <fileset refid="jars2pack" />
+                  </p200ant>
                   <!-- prepare izpack environments -->
                   <!-- jump through hoops to get special chars in readme infopanel 
                     correct -->
