@@ -396,6 +396,11 @@
                 <!-- excluding unit-test resources -->
                 <exclude>**/*Test.class</exclude>
                 <exclude>fixtures/**/*</exclude>
+                <exclude>jumptest/**/*</exclude>
+                <exclude>versiondoc/**/*</exclude>
+                <exclude>fixtures</exclude>
+                <exclude>jumptest</exclude>
+                <exclude>versiondoc</exclude>
               </excludes>
             </configuration>
           </execution>

@@ -15,9 +15,12 @@
              which is added per fileset (for translator convenience)
              we add oj-nolang.jar to lib/ per fileset below -->
         <exclude>org.openjump:OpenJUMP</exclude>
-        <!-- exclude batik from CORE build -->
+        <!-- exclude batik and js which is a batil dependency from CORE build -->
         <exclude>batik:*</exclude>
+        <exclude>js:*</exclude>
+        <!-- exclude junit and hamcrest from CORE build -->
         <exclude>junit:*</exclude>
+        <exclude>hamcrest:*</exclude>
       </excludes>
     </dependencySet>
     <!--dependencySet -->
