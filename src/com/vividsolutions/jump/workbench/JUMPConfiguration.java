@@ -275,7 +275,7 @@ public class JUMPConfiguration implements Setup {
     private PasteLayersPlugIn pasteLayersPlugIn = new PasteLayersPlugIn();
 
     // Not necessary as we have "Delete Selected Items"
-    //private DeleteAllFeaturesPlugIn deleteAllFeaturesPlugIn = new DeleteAllFeaturesPlugIn();
+    private DeleteAllFeaturesPlugIn deleteAllFeaturesPlugIn = new DeleteAllFeaturesPlugIn();
 
     private DeleteSelectedItemsPlugIn deleteSelectedItemsPlugIn = new DeleteSelectedItemsPlugIn();
 
@@ -611,12 +611,14 @@ public class JUMPConfiguration implements Setup {
                 PasteItemsPlugIn.createEnableCheck(workbenchContext));
         
         //[sstein 22 Jan 2012] Not necessary as we have "Delete Selected Items" in "Edit" menu
-        /*
+        // but for now put it in separators, to avoid accidental use
+        layerNamePopupMenu.addSeparator(); // ===================
         featureInstaller.addPopupMenuItem(layerNamePopupMenu,
                 deleteAllFeaturesPlugIn, deleteAllFeaturesPlugIn.getName(),
                 false, DeleteAllFeaturesPlugIn.ICON, deleteAllFeaturesPlugIn
                         .createEnableCheck(workbenchContext));
-         */
+        layerNamePopupMenu.addSeparator(); // ===================
+         
     }
 
     private void configureLayerViewPanelPopupMenu(
