@@ -159,99 +159,111 @@
     </properties>
     <build>
       <plugins>
-  <plugin>
-    <artifactId>maven-antrun-plugin</artifactId>
-    <version>1.7</version>
-    <executions>
-      <execution>
-        <phase>package</phase>
-        <configuration>
-          <target>
-            <property name="file.encoding" value="ISO-8859-1" />
-            <delete includeemptydirs="true" quiet="true">
-              <fileset dir="${project.build.directory}/izpack"
-                followsymlinks="false" />
-            </delete>
-            <!-- Using an ant task to deflate *.zip -->
-            <unzip
-              src="${project.build.directory}/${version.string}-CORE.zip"
-              dest="${project.build.directory}/izpack/core/pack0">
-              <cutdirsmapper dirs="1" />
-            </unzip>
-            <unzip
-              src="${project.build.directory}/${version.string}-PLUS.zip"
-              dest="${project.build.directory}/izpack/plus/pack0">
-              <cutdirsmapper dirs="1" />
-            </unzip>
-            <!-- prepare izpack environments -->
-            <!-- jump through hoops to get special chars in readme infopanel 
-              correct -->
-            <copy file="${project.build.directory}/res/readme.txt"
-              tofile="${project.build.directory}/izpack/readme.text.html" />
-            <replace
-              file="${project.build.directory}/izpack/readme.text.html"
-              encoding="iso-8859-1">
-              <replacefilter>
-                <replacetoken>&amp;</replacetoken>
-                <replacevalue>&amp;amp;</replacevalue>
-              </replacefilter>
-              <replacefilter>
-                <replacetoken>&lt;</replacetoken>
-                <replacevalue>&amp;lt;</replacevalue>
-              </replacefilter>
-              <replacefilter>
-                <replacetoken>&gt;</replacetoken>
-                <replacevalue>&amp;gt;</replacevalue>
-              </replacefilter>
-            </replace>
-            <concat destfile="${project.build.directory}/izpack/readme.html"
-              binary="yes">
-              <fileset file="etc/izpack/res/readme.html.head" />
-              <fileset
-                file="${project.build.directory}/izpack/readme.text.html" />
-              <fileset file="etc/izpack/res/readme.html.foot" />
-            </concat>
-            <!-- prepare different editions -->
-            <filter token="edition" value="CORE" />
-            <filter token="version" value="${version.number}" />
-            <filter token="revision" value="${version.revision}" />
-            <!-- copydir src="etc/izpack" dest="${project.build.directory}/izpack/core" / -->
-            <copy todir="${project.build.directory}/izpack/core">
-              <fileset dir="etc/izpack" />
-            </copy>
-            <copy file="etc/izpack/oj_installer.xml" todir="${project.build.directory}/izpack/core/"
-              filtering="true" overwrite="true" />
-            <filter token="edition" value="PLUS" />
-            <copy todir="${project.build.directory}/izpack/plus">
-              <fileset dir="etc/izpack" />
-            </copy>
-            <copy file="etc/izpack/oj_installer.xml" todir="${project.build.directory}/izpack/plus/"
-              filtering="true" overwrite="true" />
-            <!-- Allows us to use the IzPack Ant task -->
-            <taskdef name="IzPack"
-              classpath="launcher/IzPack-4.3.5/lib/standalone-compiler.jar"
-              classname="com.izforge.izpack.ant.IzPackTask" />
-            <!-- We call IzPack -->
-            <echo message="Make CORE installer" />
-            <IzPack
-              input="${project.build.directory}/izpack/core/oj_installer.xml"
-              output="${project.build.directory}/izpack/Install_${version.string}-CORE.jar"
-              installerType="standard" basedir="${project.build.directory}/izpack/core/"
-              IzPackDir="launcher/IzPack-4.3.5" />
-            <echo message="Make PLUS installer" />
-            <IzPack
-              input="${project.build.directory}/izpack/plus/oj_installer.xml"
-              output="${project.build.directory}/izpack/Install_${version.string}-PLUS.jar"
-              installerType="standard" basedir="${project.build.directory}/izpack/plus/"
-              IzPackDir="launcher/IzPack-4.3.5" />
-          </target>
-        </configuration>
-        <goals>
-          <goal>run</goal>
-        </goals>
-      </execution>
-    </executions>
-  </plugin>
+        <plugin>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <version>1.7</version>
+          <executions>
+            <execution>
+              <phase>package</phase>
+              <configuration>
+                <target>
+                  <property name="file.encoding" value="ISO-8859-1" />
+                  <delete includeemptydirs="true" quiet="true">
+                    <fileset dir="${project.build.directory}/izpack"
+                      followsymlinks="false" />
+                  </delete>
+                  <!-- Using an ant task to deflate *.zip -->
+                  <unzip
+                    src="${project.build.directory}/${version.string}-CORE.zip"
+                    dest="${project.build.directory}/izpack/core/pack0">
+                    <cutdirsmapper dirs="1" />
+                  </unzip>
+                  <unzip
+                    src="${project.build.directory}/${version.string}-PLUS.zip"
+                    dest="${project.build.directory}/izpack/plus/pack0">
+                    <cutdirsmapper dirs="1" />
+                  </unzip>
+                  <!-- prepare izpack environments -->
+                  <!-- jump through hoops to get special chars in readme infopanel 
+                    correct -->
+                  <copy file="${project.build.directory}/res/readme.txt"
+                    tofile="${project.build.directory}/izpack/readme.text.html" />
+                  <replace
+                    file="${project.build.directory}/izpack/readme.text.html"
+                    encoding="iso-8859-1">
+                    <replacefilter>
+                      <replacetoken>&amp;</replacetoken>
+                      <replacevalue>&amp;amp;</replacevalue>
+                    </replacefilter>
+                    <replacefilter>
+                      <replacetoken>&lt;</replacetoken>
+                      <replacevalue>&amp;lt;</replacevalue>
+                    </replacefilter>
+                    <replacefilter>
+                      <replacetoken>&gt;</replacetoken>
+                      <replacevalue>&amp;gt;</replacevalue>
+                    </replacefilter>
+                  </replace>
+                  <concat destfile="${project.build.directory}/izpack/readme.html"
+                    binary="yes">
+                    <fileset file="etc/izpack/res/readme.html.head" />
+                    <fileset
+                      file="${project.build.directory}/izpack/readme.text.html" />
+                    <fileset file="etc/izpack/res/readme.html.foot" />
+                  </concat>
+                  <!-- prepare different editions -->
+                  <filter token="edition" value="CORE" />
+                  <filter token="version" value="${version.number}" />
+                  <filter token="revision" value="${version.revision}" />
+                  <!-- copydir src="etc/izpack" dest="${project.build.directory}/izpack/core" 
+                    / -->
+                  <copy todir="${project.build.directory}/izpack/core">
+                    <fileset dir="etc/izpack" />
+                  </copy>
+                  <copy file="etc/izpack/oj_installer.xml" todir="${project.build.directory}/izpack/core/"
+                    filtering="true" overwrite="true" />
+                  <filter token="edition" value="PLUS" />
+                  <copy todir="${project.build.directory}/izpack/plus">
+                    <fileset dir="etc/izpack" />
+                  </copy>
+                  <copy file="etc/izpack/oj_installer.xml" todir="${project.build.directory}/izpack/plus/"
+                    filtering="true" overwrite="true" />
+                  <!-- Allows us to use the IzPack Ant task -->
+                  <taskdef name="IzPack"
+                    classpath="launcher/IzPack-4.3.5/lib/standalone-compiler.jar"
+                    classname="com.izforge.izpack.ant.IzPackTask" />
+                  <!-- We call IzPack -->
+                  <echo message="Make CORE installer" />
+                  <IzPack
+                    input="${project.build.directory}/izpack/core/oj_installer.xml"
+                    output="${project.build.directory}/izpack/Install_${version.string}-CORE.jar"
+                    installerType="standard" basedir="${project.build.directory}/izpack/core/"
+                    IzPackDir="launcher/IzPack-4.3.5" />
+                  <echo message="Make PLUS installer" />
+                  <IzPack
+                    input="${project.build.directory}/izpack/plus/oj_installer.xml"
+                    output="${project.build.directory}/izpack/Install_${version.string}-PLUS.jar"
+                    installerType="standard" basedir="${project.build.directory}/izpack/plus/"
+                    IzPackDir="launcher/IzPack-4.3.5" />
+                  <!-- generate exe launcher via launch4j -->
+                  <property name="launch4j.dir" location="launcher/launch4j-3.0.2" />
+                  <property name="launch4j.config" location="etc/launch4j/ojinstall-launch4j.xml" />
+                  <taskdef name="launch4j" classname="net.sf.launch4j.ant.Launch4jTask"
+                    classpath="${launch4j.dir}/launch4j.jar:${launch4j.dir}/lib/xstream.jar" />
+                  <launch4j configFile="${launch4j.config}"
+                    jar="${project.build.directory}/izpack/Install_${version.string}-CORE.jar"
+                    outfile="${project.build.directory}/izpack/Install_${version.string}-CORE.exe" />
+                  <launch4j configFile="${launch4j.config}"
+                    jar="${project.build.directory}/izpack/Install_${version.string}-PLUS.jar"
+                    outfile="${project.build.directory}/izpack/Install_${version.string}-PLUS.exe" />
+                </target>
+              </configuration>
+              <goals>
+                <goal>run</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
       </plugins>
     </build>
   </profile>
