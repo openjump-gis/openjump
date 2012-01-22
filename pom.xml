@@ -18,6 +18,7 @@
   </properties>
   <profiles>
   <profile>
+    <id>windows</id>
     <activation>
       <os>
         <family>windows</family>
@@ -28,6 +29,7 @@
       </properties>
   </profile>
   <profile>
+    <id>unix</id>
     <activation>
       <os>
         <family>unix</family>
