@@ -11,7 +11,7 @@
   <supportUrl>http://openjump.org</supportUrl>
   <customProcName>true</customProcName>
   <stayAlive>false</stayAlive>
-  <manifest>../../launcher/launch4j-3.0.2/manifest/uac.exe.manifest</manifest>
+  <manifest>../../launcher/launch4j-3.0.2-win32/manifest/uac.exe.manifest</manifest>
   <icon>../../icon/openjump_icon3.ico</icon>
   <jre>
     <path></path>
