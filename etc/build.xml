@@ -114,9 +114,15 @@
     <!--  ===================================================================  -->
     <!--  Compiles the source code                                             -->
     <!--  ===================================================================  -->
-    <target name="compile" depends="prepare">
+    <target name="compile" id="compile" depends="prepare">
         <mkdir dir="${build.classes}"/>
-        <javac srcdir="${src.dir}" destdir="${build.classes}" debug="${debug}" deprecation="${deprecation}" optimize="${optimize}" target="${targetversion}" source="${sourceversion}">
+        <javac srcdir="${src.dir}" 
+               destdir="${build.classes}" 
+               debug="${debug}"    
+               deprecation="${deprecation}" 
+               optimize="${optimize}" 
+               target="${targetversion}" 
+               source="${sourceversion}">
             <classpath refid="base.classpath"/>
         </javac>
         <copy todir="${build.classes}">
@@ -130,7 +136,7 @@
     <!-- [sstein] new property -->
     <property name="distpathprop" refid="base.classpath"/>
     
-    <target name="jar" depends="compile">
+    <target name="jar" id="jar" depends="compile">
         <!-- [sstein] eliminate absolute paths from manifest file -->
         <!-- no more used...-->
         <!--replaceregexp file="${build.dir}/info.txt" match=":\\" replace="" flags="gs"/>
@@ -160,7 +166,7 @@
     <!--  ===================================================================  -->
     <!--  Creates the API documentation                                        -->
     <!--  ===================================================================  -->
-    <target name="javadocs" depends="prepare">
+    <target name="javadocs" id="javadoc" depends="prepare">
         <mkdir dir="${javadoc.dir}"/>
         <javadoc destdir="${javadoc.dir}" use="true">
             <classpath refid="base.classpath"/>
@@ -175,7 +181,7 @@
     <!--  ===================================================================  -->
     <!--  Creates the distribution                                             -->
     <!--  ===================================================================  -->
-    <target name="dist" depends="jar,javadocs">
+    <target name="dist" id="dist" depends="jar,javadocs">
     <!--target name="dist" depends="jar"-->
         <mkdir dir="${archive.dir}"/>
         <copy todir="${archive.dir}/bin">
