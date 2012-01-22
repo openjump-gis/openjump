@@ -176,6 +176,7 @@ import org.openjump.core.ui.plugin.tools.AdvancedMeasurePlugin;
 import org.openjump.core.ui.plugin.tools.AdvancedMeasureTool;
 import org.openjump.core.ui.plugin.tools.ZoomRealtimeTool;
 import org.openjump.core.ui.plugin.view.ShowScalePlugIn;
+import org.openjump.core.ui.plugin.view.SuperZoomPanTool;
 import org.openjump.core.ui.plugin.view.helpclassescale.InstallShowScalePlugIn;
 import org.openjump.core.ui.plugin.view.helpclassescale.InstallShowScalePlugIn;
 import org.openjump.core.ui.plugin.view.helpclassescale.ShowScaleRenderer;
@@ -1315,7 +1316,9 @@ public void configureDatastores(final WorkbenchContext context) throws Exception
         frame.getToolBar().addSeparator();        
         add(new ZoomTool(), workbenchContext);
         add(new PanTool(), workbenchContext);
-        frame.getToolBar().addSeparator();
+		// Test for the new Zoom/Pan tool, comment the following line out, if it makes problems
+		add(new SuperZoomPanTool(), workbenchContext);
+		frame.getToolBar().addSeparator();
         frame.getToolBar().addPlugIn(zoomToFullExtentPlugIn.getIcon(),
                 zoomToFullExtentPlugIn,
                 zoomToFullExtentPlugIn.createEnableCheck(workbenchContext),

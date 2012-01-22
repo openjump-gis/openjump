@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.Shape;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
@@ -12,6 +13,7 @@ import java.awt.geom.Point2D;
 import javax.swing.Icon;
 
 import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.Viewport;
 import com.vividsolutions.jump.workbench.ui.cursortool.DragTool;
@@ -22,16 +24,18 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.Transparency;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import org.openjump.core.ui.util.ScreenScale;
 
 /**
  * This tool have the following functions:
  * - zoom in/out with left/right mouse click
- * - pan with left mouse drag
- * - zoom in/out with mousewheel and then left for zomm and right for cancel
+ * - pan with mouse drag
+ * - zoom in/out with mousewheel and then left click for zoom or right click for cancel
  * In wheelMode you can see the new area after zooming. Also known as "Area of interest".
  * 
  * @author Matthias Scholz <ms@jammerhund.de>
@@ -41,9 +45,9 @@ public class SuperZoomPanTool extends DragTool implements MouseWheelListener {
 	public static final double WHEEL_ZOOM_FACTOR = 1.15;
 	public static final double ZOOM_IN_FACTOR = 2;
 	
-	public static Cursor CURSOR_ZOOM = createCursor(IconLoader.icon("MagnifyCursor.gif").getImage()); // TODO: new cursors
+	public static Cursor CURSOR_ZOOM = createCursor(IconLoader.icon("MagnifyCursor.gif").getImage());
 	public static Cursor CURSOR_PAN = createCursor(IconLoader.icon("Hand.gif").getImage());
-	public static Cursor CURSOR_WHEEL = createCursor(IconLoader.icon("Hand.gif").getImage()); // TODO: third cursor
+	public static Cursor CURSOR_WHEEL = createCursor(IconLoader.icon("MagnifyAreaCursor.gif").getImage());
 	
 	private boolean dragging = false;
 	private Image origImage;
@@ -54,6 +58,7 @@ public class SuperZoomPanTool extends DragTool implements MouseWheelListener {
 	private double scale = 1d;
 	private boolean mouseWheelListenerAdded = false;
 	private boolean isAnimatingZoom = false;
+	private Timer zoomPanClickTimer = null;
 
 	public SuperZoomPanTool() {
 	}
@@ -71,15 +76,20 @@ public class SuperZoomPanTool extends DragTool implements MouseWheelListener {
 	@Override
 	public void deactivate() {
 		super.deactivate();
-		// if the tool was deactivated, its better to reset all parameters
+		// remove the MouseWheelListener, because other tools do not need this MouseWheelListener ;-)
+		if (mouseWheelListenerAdded) {
+			getWorkbench().getContext().getLayerViewPanel().removeMouseWheelListener(this);
+			mouseWheelListenerAdded = false;
+		}
+		// if the tool was deactivated, it's better to reset all parameters
 		wheelMode = false;
-		getWorkbench().getContext().getLayerViewPanel().setCursor(CURSOR_PAN);
+		getWorkbench().getContext().getLayerViewPanel().setCursor(CURSOR_ZOOM);
 		scale = 1;
 		mouseWheelCount = 0;
 	}
 		
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		getWorkbench().getFrame().setStatusMessage("Left mousebutton -> zoom, right mousebutton cancel."); // TODO i18n
+		getWorkbench().getFrame().setStatusMessage(I18N.get("org.openjump.core.ui.plugin.view.SuperZoomPanTool.wheelmode-message"));
 		int nclicks = e.getWheelRotation();  //negative is up/away
 		mouseWheelCount = mouseWheelCount + nclicks;
 		if (mouseWheelCount == 0) {
@@ -136,30 +146,23 @@ public class SuperZoomPanTool extends DragTool implements MouseWheelListener {
 				try {
 					getPanel().getViewport().zoomToViewPoint(new Point(e.getX(), e.getY()), scale);
 				} catch (NoninvertibleTransformException ex) {
-				}
-				wheelMode = false;
-				getWorkbench().getContext().getLayerViewPanel().setCursor(CURSOR_PAN);
-				scale = 1;
-				mouseWheelCount = 0;
-				try {
-					redrawShape();
-				} catch (Exception ex) {
 					getPanel().getContext().handleThrowable(ex);
 				}
+			}
+			// for the right button we do not need some different code,
+			// because it's cancel and the following redraw clears the Shape.
+			// Clear the Shape is common for left and right click.
+			wheelMode = false;
+			scale = 1;
+			mouseWheelCount = 0;
+			try {
+				// the following redrawShape() clears the Shape from screen,
+				// because wheelMode is false.
+				redrawShape();
+			} catch (Exception ex) {
+				getPanel().getContext().handleThrowable(ex);
 			}
 
-			// right button cancel the zoom
-			if (SwingUtilities.isRightMouseButton(e)) {
-				wheelMode = false;
-				getWorkbench().getContext().getLayerViewPanel().setCursor(CURSOR_PAN);
-				scale = 1;
-				mouseWheelCount = 0;
-				try {
-					redrawShape();
-				} catch (Exception ex) {
-					getPanel().getContext().handleThrowable(ex);
-				}
-			}
 			getWorkbench().getFrame().setStatusMessage("");
 			getWorkbench().getFrame().setTimeMessage("");
 		} else {
@@ -170,11 +173,35 @@ public class SuperZoomPanTool extends DragTool implements MouseWheelListener {
 				getPanel().getContext().handleThrowable(t);
 			}
 		}
+		if (zoomPanClickTimer != null) {
+			zoomPanClickTimer.stop();
+			zoomPanClickTimer = null;
+		}
+		getWorkbench().getContext().getLayerViewPanel().setCursor(CURSOR_ZOOM);
+
 	}
 
 	@Override
+	public void mousePressed(MouseEvent e) {
+		super.mousePressed(e);
+		if (wheelMode) {
+			getWorkbench().getContext().getLayerViewPanel().setCursor(CURSOR_PAN);
+		} else {
+			if (zoomPanClickTimer == null) {
+				zoomPanClickTimer = new Timer(900, new ActionListener() {
+
+					public void actionPerformed(ActionEvent e) {
+						getWorkbench().getContext().getLayerViewPanel().setCursor(CURSOR_PAN);
+					}
+				});
+				zoomPanClickTimer.setRepeats(false);
+				zoomPanClickTimer.start();
+			}
+		}
+	}
+	
+	@Override
 	public boolean isRightMouseButtonUsed() {
-//		return wheelMode;
 		return true;
 	}
 
@@ -183,17 +210,29 @@ public class SuperZoomPanTool extends DragTool implements MouseWheelListener {
 		if (wheelMode) {
 			return CURSOR_WHEEL;
 		} else {
-			return CURSOR_PAN;
+			return CURSOR_ZOOM;
 		}
 	}
 
 	public Icon getIcon() {
-		return IconLoader.icon("BigHand.gif"); // TODO: new icon
+		return IconLoader.icon("BigHandZoom.gif");
 	}
 
 	@Override
+	public String getName() {
+		return I18N.get("org.openjump.core.ui.plugin.view.SuperZoomPanTool.zoom-pan");
+	}
+	
+	
+	
+	@Override
 	public void mouseDragged(MouseEvent e) {
 		try {
+			if (zoomPanClickTimer != null) {
+				zoomPanClickTimer.stop();
+				zoomPanClickTimer = null;
+			}
+			getWorkbench().getContext().getLayerViewPanel().setCursor(CURSOR_PAN);
 			if (!dragging) {
 				dragging = true;
 				getPanel().getRenderingManager().setPaintingEnabled(false);
@@ -216,6 +255,21 @@ public class SuperZoomPanTool extends DragTool implements MouseWheelListener {
 		getPanel().getRenderingManager().setPaintingEnabled(true);
 		dragging = false;
 		super.mouseReleased(e);
+		if (wheelMode) {
+			getWorkbench().getContext().getLayerViewPanel().setCursor(CURSOR_WHEEL);
+			try {
+				mousePosition = e.getPoint();
+				redrawShape();
+			} catch (Exception ex) {
+				getPanel().getContext().handleThrowable(ex);
+			}
+		} else {
+			if (zoomPanClickTimer != null) {
+				zoomPanClickTimer.stop();
+				zoomPanClickTimer = null;
+			}
+			getWorkbench().getContext().getLayerViewPanel().setCursor(CURSOR_ZOOM);
+		}
 	}
 
 	@Override
@@ -252,7 +306,6 @@ public class SuperZoomPanTool extends DragTool implements MouseWheelListener {
 			return img;
 
 		}
-		//return getPanel().createBlankPanelImage();
 		return currImage;
 	}
 
@@ -305,7 +358,6 @@ public class SuperZoomPanTool extends DragTool implements MouseWheelListener {
 				zoomPoint.getY() - (0.5 * (height / zoomFactor)) - dy,
 				zoomPoint.getY() + (0.5 * (height / zoomFactor)) - dy);
     	vp.zoom(zoomModelEnvelope);   		
-    		//getPanel().getViewport().zoomToViewPoint(p, zoomFactor);
     }
 
 }
