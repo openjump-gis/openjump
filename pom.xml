@@ -17,6 +17,26 @@
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
   </properties>
   <profiles>
+  <profile>
+    <activation>
+      <os>
+        <family>windows</family>
+      </os>
+    </activation>
+      <properties>
+        <launch4j.dir>launcher/launch4j-3.0.2-win32</launch4j.dir>
+      </properties>
+  </profile>
+  <profile>
+    <activation>
+      <os>
+        <family>unix</family>
+      </os>
+    </activation>
+      <properties>
+        <launch4j.dir>launcher/launch4j-3.0.2-linux</launch4j.dir>
+      </properties>
+  </profile>
     <profile>
       <id>core</id>
       <activation>
@@ -246,7 +266,7 @@
                     installerType="standard" basedir="${project.build.directory}/izpack/plus/"
                     IzPackDir="launcher/IzPack-4.3.5" />
                   <!-- generate exe launcher via launch4j -->
-                  <property name="launch4j.dir" location="launcher/launch4j-3.0.2" />
+                  <!-- property name="launch4j.dir" location="launcher/launch4j-3.0.2" /-->
                   <property name="launch4j.config" location="etc/launch4j/ojinstall-launch4j.xml" />
                   <taskdef name="launch4j" classname="net.sf.launch4j.ant.Launch4jTask"
                     classpath="${launch4j.dir}/launch4j.jar:${launch4j.dir}/lib/xstream.jar" />
