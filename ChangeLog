@@ -1,5 +1,11 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2012-01-21 sstein <sstein@geo.uzh.ch>
+  * removed "Delete All Features" from Layer pop-up menu, as
+    [Edit>Delete Selected Items] has same functionality and
+    is less dangerous to click on accidentally.
+    "Delete All Features" is also not undoable.
+  
 2012-01-22 Matthias Scholz <ms@jammerhund.de>
   * SuperZoomPanTool:
     - some fixes

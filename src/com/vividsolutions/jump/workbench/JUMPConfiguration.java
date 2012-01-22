@@ -274,7 +274,8 @@ public class JUMPConfiguration implements Setup {
 
     private PasteLayersPlugIn pasteLayersPlugIn = new PasteLayersPlugIn();
 
-    private DeleteAllFeaturesPlugIn deleteAllFeaturesPlugIn = new DeleteAllFeaturesPlugIn();
+    // Not necessary as we have "Delete Selected Items"
+    //private DeleteAllFeaturesPlugIn deleteAllFeaturesPlugIn = new DeleteAllFeaturesPlugIn();
 
     private DeleteSelectedItemsPlugIn deleteSelectedItemsPlugIn = new DeleteSelectedItemsPlugIn();
 
@@ -608,12 +609,14 @@ public class JUMPConfiguration implements Setup {
         featureInstaller.addPopupMenuItem(layerNamePopupMenu, pasteItemsPlugIn,
                 pasteItemsPlugIn.getNameWithMnemonic(), false, pasteItemsPlugIn.getIcon(),
                 PasteItemsPlugIn.createEnableCheck(workbenchContext));
-
+        
+        //[sstein 22 Jan 2012] Not necessary as we have "Delete Selected Items" in "Edit" menu
+        /*
         featureInstaller.addPopupMenuItem(layerNamePopupMenu,
                 deleteAllFeaturesPlugIn, deleteAllFeaturesPlugIn.getName(),
                 false, DeleteAllFeaturesPlugIn.ICON, deleteAllFeaturesPlugIn
                         .createEnableCheck(workbenchContext));
-         
+         */
     }
 
     private void configureLayerViewPanelPopupMenu(
@@ -776,7 +779,7 @@ public class JUMPConfiguration implements Setup {
         featureInstaller.addMainMenuItemWithJava14Fix(deleteSelectedItemsPlugIn, new String[] {MenuNames.EDIT},
                 deleteSelectedItemsPlugIn.getName(), false, DeleteSelectedItemsPlugIn.ICON,
                 DeleteSelectedItemsPlugIn.createEnableCheck(workbenchContext));
-        //featureInstaller.addMenuSeparator(MenuNames.EDIT); // ===================
+        featureInstaller.addMenuSeparator(MenuNames.EDIT); // ===================
         /*//--[sstein 24 march 2007] moved to new customize menu 
         featureInstaller.addMainMenuItemWithJava14Fix(optionsPlugIn, new String[] {MenuNames.EDIT}, optionsPlugIn
                 .getName()
