@@ -393,14 +393,11 @@
               <classifier>nosrc</classifier>
               <excludes>
                 <exclude>**/*.java</exclude>
-                <!-- excluding unit-test resources -->
+                <!-- excluding unit-test and doc resources -->
                 <exclude>**/*Test.class</exclude>
-                <exclude>fixtures/**/*</exclude>
-                <exclude>jumptest/**/*</exclude>
-                <exclude>versiondoc/**/*</exclude>
-                <exclude>fixtures</exclude>
-                <exclude>jumptest</exclude>
-                <exclude>versiondoc</exclude>
+                <exclude>fixtures/**</exclude>
+                <exclude>jumptest/**</exclude>
+                <exclude>versiondoc/**</exclude>
               </excludes>
             </configuration>
           </execution>
