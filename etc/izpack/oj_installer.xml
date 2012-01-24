@@ -18,7 +18,7 @@
     <summarylogfilepath>
       $INSTALL_PATH/uninstall/InstallSummary.htm
     </summarylogfilepath>
-    <!--><pack200/>-->
+    <!--><pack200/>--> 
   </info>
 
   <!-- Flexible and in the screen proportions -->
