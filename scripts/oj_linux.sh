@@ -66,7 +66,6 @@ fi
 [ "$1" = "--post-install" ] && postinstall "$JUMP_HOME"
 [ "$1" = "--mac-install" ] && macinstall "$JUMP_HOME"
 
-#JUMP_PROPERTIES=./bin/workbench-properties.xml
 JUMP_PLUGINS=./bin/default-plugins.xml
 
 ## cd into jump home
@@ -145,10 +144,6 @@ fi
 JUMP_NATIVE_DIR="$JUMP_LIB/native"
 JUMP_PLUGIN_DIR="${JUMP_PLUGIN_DIR:=$JUMP_LIB/ext}"
 
-#if [ -z "$JUMP_PROPERTIES" ] || [ ! -f "$JUMP_PROPERTIES" ]; then
-#  JUMP_PROPERTIES="./bin/workbench-properties.xml"
-#fi
-
 if [ -z "$JUMP_PLUGINS" ] || [ ! -f "$JUMP_PLUGINS" ]; then
   JUMP_PLUGINS="./bin/default-plugins.xml"
   if [ ! -f "$JUMP_PLUGINS" ]; then
@@ -185,7 +180,7 @@ export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$JUMP_NATIVE_DIR:$JUMP_HOME/lib/ext"
 # try to start if no errors so far
 if [ -z "$ERROR" ]; then
   # log.dir needs a trailing slash for path concatenation in log4j.xml
-  $JAVA -cp "$CLASSPATH" -Dlog.dir="$JUMP_SETTINGS/" $JAVA_OPTS $MAIN -properties "$JUMP_SETTINGS"/workbench-properties.xml -state "$JUMP_SETTINGS/" $JUMP_OPTS $*
+  $JAVA -cp "$CLASSPATH" -Dlog.dir="$JUMP_SETTINGS/" $JAVA_OPTS $MAIN -state "$JUMP_SETTINGS/" $JUMP_OPTS $*
   # result of jre call
   ERROR=$?
 fi

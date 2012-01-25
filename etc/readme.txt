@@ -141,14 +141,17 @@ OpenJUMP command line options
   as plugins. For example almost all functions of the "Tools" menu.
   This is configured as
     -default-plugins bin\default-plugins.xml 
--properties <file.xml> 
+-properties <file.xml>
   specifies the file where OpenJUMP persistent properties are stored.
-  Default setting is 
-    -properties bin\workbench-properties.xml
+  See Wiki article "How to use a plugin with a properties file in ECLIPSE".
+  Default: JUMP_HOME\bin\workbench-properties.xml
+-state <some/folder>
+  specifies the folder where OpenJUMP stores data between executions
+  (workbench-state.xml).
+  Default: JUMP_HOME or SETTINGS_HOME
 -plug-in-directory <path> 
-  Sets the location of the plugin directory. 
-  Default setting is
-    -plug-in-directory lib/ext
+  Sets the location of the plugin directory.
+  Default: JUMP_HOME/lib/ext
 -i18n <locale>
   Overrides the operating systems default locale setting (language, 
   number format etc.) For example:

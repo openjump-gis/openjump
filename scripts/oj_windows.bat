@@ -139,7 +139,7 @@ rem -- essential options, don't change unless you know what you're doing --
 set JAVA_OPTS=%JAVA_OPTS% -Dlog4j.configuration="%LOG4J_CONF%" -Dlog.dir="%LOG_DIR%" -Djump.home="%JUMP_HOME%"
 
 rem -- set default app options --
-set JUMP_OPTS=-default-plugins bin\default-plugins.xml -properties "%SETTINGS_HOME%\workbench-properties.xml" -state "%SETTINGS_HOME%" -plug-in-directory "%LIB%\ext"
+set JUMP_OPTS=-default-plugins bin\default-plugins.xml -state "%SETTINGS_HOME%" -plug-in-directory "%LIB%\ext"
 
 rem -- disconnect javaw from console by using start --
 rem -- note: title is needed or start won't accept quoted path to java binary (protect spaces in javapath) --
