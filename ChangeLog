@@ -1,14 +1,17 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2012-01-25 sstein <sstein@geo.uzh.ch>
+  * adjusted terminology:
+    - "Overlay Polygon Layers" to "Polygon Overlay", with the 
+    latter being the formal term
+    - "Spatial Join" to "Spatial Join (Transfer Attributes)" to be 
+    consistent as the item was renamed first (original name: "Transfer Attributes") 
+    and then moved to a different menu (Edit Attributes -> Analysis), 
+    so users would not find it without testing all functions.
+
 2012-01-25 mmichaud <michael.michaud@free.fr>
   * Pack "Save dataset as" dialog box when the format is changed otherwise, 
     when format shows new options, parts of the dialog could be hidden
-
-2012-01-21 sstein <sstein@geo.uzh.ch>
-  * removed "Delete All Features" from Layer pop-up menu, as
-    [Edit>Delete Selected Items] has same functionality and
-    is less dangerous to click on accidentally.
-    "Delete All Features" is also not undoable.
   
 2012-01-22 Matthias Scholz <ms@jammerhund.de>
   * SuperZoomPanTool:
