@@ -137,6 +137,7 @@ public class DataSourceQueryChooserDialog extends JDialog {
         formatComboBox.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     formatComboBox_actionPerformed(e);
+                    pack();
                 }
             });
         okCancelPanel.addActionListener(new java.awt.event.ActionListener() {
