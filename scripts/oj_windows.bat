@@ -88,7 +88,7 @@ for /f "delims=" %%v in ('ver^|findstr /C:"Version 6.1"') do (
 )
 rem -- add native as fallthrough and lib\ext the legacy value --
 set "NATIVEPATH=%NATIVE%\%ID%%X64%;%NATIVE%\%ID%;%NATIVE%"
-set "PATH=%PATH%;%NATIVEPATH%;%LIB%\ext"
+set "PATH=%NATIVEPATH%;%LIB%\ext;%PATH%"
 
 rem -- debug info --
 if /i NOT "%JAVA_BIN%"=="javaw" echo ---PATH--- & echo %PATH%
