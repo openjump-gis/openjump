@@ -19,6 +19,7 @@
 package org.openjump.core.ui.plugin.tools;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.util.HashMap;
@@ -30,10 +31,14 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.openjump.test.PerformanceUtils;
 import org.openjump.test.TestTools;
 
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.model.Category;
+import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManager;
+import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.plugin.PlugIn;
 
 /**
@@ -48,8 +53,10 @@ public class DeleteDuplicateGeometriesPlugInTest {
     
     public static JUMPWorkbench workbench;
     
+    public PlugIn plugin;
+    
     //-----------------------------------------------------------------------------------
-    // SETUP AND CLEANUP.
+    // FIXTURE METHODS.
     //-----------------------------------------------------------------------------------
     
     @BeforeClass
@@ -63,6 +70,7 @@ public class DeleteDuplicateGeometriesPlugInTest {
     @Before
     public void before() {
         //workbench.getFrame().addTaskFrame();
+        plugin = new DeleteDuplicateGeometriesPlugIn();
     }
     
     @After
@@ -79,60 +87,96 @@ public class DeleteDuplicateGeometriesPlugInTest {
     }
     
     //-----------------------------------------------------------------------------------
-    // TEST CASES.
+    // FEATURE METHODS.
     //-----------------------------------------------------------------------------------
-
+    
     @Test
-    public void testRemoveGeometryDuplicate() throws Exception {
+    public void remove_duplicate_geometries() throws Exception {
         // given: "a loaded shapefile fixture"
         File fixture = new File("src/fixtures/delete-duplicate-geometries.jml");
         TestTools.openFile(fixture, workbench.getContext());
-        
-        // and: "plugin with dialog values"
-        PlugIn plugin = new DeleteDuplicateGeometriesPlugIn();
         LayerManager layerManager = workbench.getContext().getLayerManager();
-        HashMap<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("itemlayer", layerManager.getLayer("delete-duplicate-geometries"));
-        parameters.put("deleteOnlyForSameAttributes", false);
-        TestTools.configurePlugIn(plugin, parameters);
         
-        // when: "union by attribute is called"
-        long t0 = System.nanoTime();
+        // and: "a configured plugin"
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("sourceLayer", layerManager.getLayer("delete-duplicate-geometries"));
+        params.put("deleteOnlySameAttributes", false);
+        TestTools.configurePlugIn(plugin, params);
+        
+        // when: "processed a dataset with 41 features, including 17 duplicates"
+        long startTime = PerformanceUtils.startTime();
         TestTools.executePlugIn(plugin, workbench.getContext());
-        System.out.println(System.nanoTime()-t0);
-        // Dataset has 41 features, including
-        // 17 geometry duplicates -> 24 features after process
+        PerformanceUtils.printDuration("duplicates", startTime);
+        
+        // then: "results with 24 features"
         assertEquals(24, layerManager.getLayer("delete-duplicate-geometries-cleaned")
         		                     .getFeatureCollectionWrapper()
         		                     .size());
+        //TestTools.installPlugIn(plugin, workbench.getContext());
         //Thread.sleep(Integer.MAX_VALUE);
     }
     
     @Test
-    public void testRemovePureDuplicate() throws Exception {
+    public void remove_duplicate_geometries_with_same_attributes() throws Exception {
         // given: "a loaded shapefile fixture"
         File fixture = new File("src/fixtures/delete-duplicate-geometries.jml");
         TestTools.openFile(fixture, workbench.getContext());
-        
-        // and: "plugin with dialog values"
-        PlugIn plugin = new DeleteDuplicateGeometriesPlugIn();
         LayerManager layerManager = workbench.getContext().getLayerManager();
-        HashMap<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("itemlayer", layerManager.getLayer("delete-duplicate-geometries"));
-        parameters.put("deleteOnlyForSameAttributes", true);
-        TestTools.configurePlugIn(plugin, parameters);
         
-        // when: "union by attribute is called"
-        long t0 = System.nanoTime();
+        // and: "a configured plugin"
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("sourceLayer", layerManager.getLayer("delete-duplicate-geometries"));
+        params.put("deleteOnlySameAttributes", true);
+        TestTools.configurePlugIn(plugin, params);
+        
+        // when: "processed a dataset with 41 features, including 8 strict duplicates"
+        long startTime = PerformanceUtils.startTime();
         TestTools.executePlugIn(plugin, workbench.getContext());
-        System.out.println(System.nanoTime()-t0);
+        PerformanceUtils.printDuration("strict duplicates", startTime);
         
-        // Dataset has 41 features, including 
-        // 8 strict duplicates -> 33 features after process
+        // then: "results with 33 features"
         assertEquals(33, layerManager.getLayer("delete-duplicate-geometries-cleaned")
                 .getFeatureCollectionWrapper()
                 .size());
         //Thread.sleep(Integer.MAX_VALUE);
     }
+    
+    @Test
+    public void configuration_parameters() throws Exception {
+        // expect: "sourceLayer can be set to a layer"
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("sourceLayer", new Layer());
+        TestTools.configurePlugIn(plugin, params);
+        
+        // and: "deleteOnlySameAttributes can be set to boolean"
+        params.put("deleteOnlySameAttributes", false);
+        TestTools.configurePlugIn(plugin, params);
+    }
+    
+    @Test
+    public void result_layer_name_and_category() throws Exception {
+        // given: "a loaded shapefile fixture"
+        File fixture = new File("src/fixtures/delete-duplicate-geometries.jml");
+        TestTools.openFile(fixture, workbench.getContext());
+        LayerManager layerManager = workbench.getContext().getLayerManager();
+        
+        // and: "a configured plugin"
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("sourceLayer", layerManager.getLayer("delete-duplicate-geometries"));
+        params.put("deleteOnlySameAttributes", false);
+        TestTools.configurePlugIn(plugin, params);
+        
+        // when: "the dataset is processed"
+        TestTools.executePlugIn(plugin, workbench.getContext());
+        
+        // then: "the result layer has a correct name"
+        Layer resultLayer = layerManager.getLayer("delete-duplicate-geometries-cleaned");
+        assertNotNull(resultLayer);
+        
+        // and: "the result layer is in the result category"
+        Category category = layerManager.getCategory(resultLayer);
+        assertEquals(StandardCategoryNames.RESULT, category.getName());
+    }
+    
     
 }
