@@ -28,8 +28,8 @@
             applications="no"
             startMenu="no"
             startup="no"
-            target="javaw.exe"
-            commandLine="$INSTALL_PATH\bin\oj_windows.bat --uninstall"
+            target="$INSTALL_PATH\bin\oj_windows.bat"
+            commandLine="--uninstall"
             iconFile="%SystemRoot%\system32\SHELL32.dll"
             iconIndex="31"
             description="This uninstalls OJ">
