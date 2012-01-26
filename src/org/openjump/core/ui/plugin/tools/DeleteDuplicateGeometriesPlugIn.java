@@ -28,7 +28,6 @@
 package org.openjump.core.ui.plugin.tools;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -59,18 +58,21 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 /**
  * Eliminates features that have exactly the same geometry.
  * 
- * Input: One read-only source layer.
- * Output: One result layer with deleted duplicate geometries. 
+ * <p><b>Input:</b> A read-only source layer.<br>
+ * <b>Output:</b> A result layer with deleted duplicate geometries. 
  * 
- * Implements DialogPlugIn with MultiInputDialog.
- * Implements ThreadedPlugIn with TaskMonitor.
- * Implements InstallablePlugIn with FeatureInstaller (menu items).
+ * <p><b>Features:</b>
+ * <ul>
+ * <li>Implements DialogPlugIn with MultiInputDialog.
+ * <li>Implements ThreadedPlugIn with TaskMonitor.
+ * <li>Implements InstallablePlugIn with FeatureInstaller (menu items).
+ * </ul>
  * 
- * @author Stefan Steiniger -- Original author.
- * @author Michaël Michaud -- Reworked run() completely to take advantage of indexes.
- * @author Benjamin Gudehus -- Refactored class in order to improve readabilty.
+ * @author Stefan Steiniger <i>(original author)</i>
+ * @author Michaël Michaud <i>(algorithm reworked to take advantage of indexes)</i>
+ * @author Benjamin Gudehus <i>(refactored class in order to improve readabilty)</i>
  */
-public class DeleteDuplicateGeometriesPlugIn extends AbstractPlugIn implements
+public final class DeleteDuplicateGeometriesPlugIn extends AbstractPlugIn implements
         ThreadedPlugIn {
     
     //-----------------------------------------------------------------------------------
@@ -78,8 +80,8 @@ public class DeleteDuplicateGeometriesPlugIn extends AbstractPlugIn implements
     //-----------------------------------------------------------------------------------
 
     // Configuration parameters.
-    private Layer sourceLayer = null;
-    private boolean deleteOnlySameAttributes = false;
+    private Layer confSourceLayer = null;
+    private boolean confDeleteOnlySameAttributes = false;
     
     // Language strings.
     private String langName = "Delete Duplicate Geometries";
@@ -117,7 +119,7 @@ public class DeleteDuplicateGeometriesPlugIn extends AbstractPlugIn implements
     }
     
     public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
-        String resultLayerName = sourceLayer.getName() + "-" + langResultNameCleaned;
+        String resultLayerName = confSourceLayer.getName() + "-" + langResultNameCleaned;
         FeatureCollection resultDataset = this.deleteDuplicateGeometries(monitor);
         context.addLayer(StandardCategoryNames.RESULT, resultLayerName, resultDataset);
         System.gc();
@@ -156,18 +158,18 @@ public class DeleteDuplicateGeometriesPlugIn extends AbstractPlugIn implements
         dialog.setSideBarDescription(langDescription);
         dialog.addLayerComboBox(langSourceLayer, context.getCandidateLayer(0), null, 
                 context.getLayerManager());
-        dialog.addCheckBox(langDeleteOnlySameAttributes, deleteOnlySameAttributes);
+        dialog.addCheckBox(langDeleteOnlySameAttributes, confDeleteOnlySameAttributes);
     }
 
     private void getDialogValues(MultiInputDialog dialog) {
-        sourceLayer = dialog.getLayer(langSourceLayer);
-        deleteOnlySameAttributes = dialog.getBoolean(langDeleteOnlySameAttributes);
+        confSourceLayer = dialog.getLayer(langSourceLayer);
+        confDeleteOnlySameAttributes = dialog.getBoolean(langDeleteOnlySameAttributes);
     }
 
     private FeatureCollection deleteDuplicateGeometries(TaskMonitor monitor) {
         // Method is completely reworked to take advantage of indexes [mmichaud
         // 2012-01-15].
-        FeatureCollection sourceDataset = sourceLayer.getFeatureCollectionWrapper();
+        FeatureCollection sourceDataset = confSourceLayer.getFeatureCollectionWrapper();
         FeatureSchema sourceSchema = sourceDataset.getFeatureSchema();
         
         // Input data is indexed.
@@ -191,7 +193,7 @@ public class DeleteDuplicateGeometriesPlugIn extends AbstractPlugIn implements
                 // For equal features, the one with the greater ID is removed.
                 if (candidate.getID() > feature.getID()
                         && feature.getGeometry().equalsNorm(candidate.getGeometry())) {
-                    if (deleteOnlySameAttributes) {
+                    if (confDeleteOnlySameAttributes) {
                         // If geometry and attributes are equals, add ID to
                         // duplicates.
                         if (areAttributesEqual(feature, candidate, sourceSchema)) {

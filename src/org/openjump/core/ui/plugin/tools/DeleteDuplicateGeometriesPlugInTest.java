@@ -99,8 +99,8 @@ public class DeleteDuplicateGeometriesPlugInTest {
         
         // and: "a configured plugin"
         HashMap<String, Object> params = new HashMap<String, Object>();
-        params.put("sourceLayer", layerManager.getLayer("delete-duplicate-geometries"));
-        params.put("deleteOnlySameAttributes", false);
+        params.put("confSourceLayer", layerManager.getLayer("delete-duplicate-geometries"));
+        params.put("confDeleteOnlySameAttributes", false);
         TestTools.configurePlugIn(plugin, params);
         
         // when: "processed a dataset with 41 features, including 17 duplicates"
@@ -125,8 +125,8 @@ public class DeleteDuplicateGeometriesPlugInTest {
         
         // and: "a configured plugin"
         HashMap<String, Object> params = new HashMap<String, Object>();
-        params.put("sourceLayer", layerManager.getLayer("delete-duplicate-geometries"));
-        params.put("deleteOnlySameAttributes", true);
+        params.put("confSourceLayer", layerManager.getLayer("delete-duplicate-geometries"));
+        params.put("confDeleteOnlySameAttributes", true);
         TestTools.configurePlugIn(plugin, params);
         
         // when: "processed a dataset with 41 features, including 8 strict duplicates"
@@ -145,11 +145,11 @@ public class DeleteDuplicateGeometriesPlugInTest {
     public void configuration_parameters() throws Exception {
         // expect: "sourceLayer can be set to a layer"
         HashMap<String, Object> params = new HashMap<String, Object>();
-        params.put("sourceLayer", new Layer());
+        params.put("confSourceLayer", new Layer());
         TestTools.configurePlugIn(plugin, params);
         
         // and: "deleteOnlySameAttributes can be set to boolean"
-        params.put("deleteOnlySameAttributes", false);
+        params.put("confDeleteOnlySameAttributes", false);
         TestTools.configurePlugIn(plugin, params);
     }
     
@@ -162,8 +162,8 @@ public class DeleteDuplicateGeometriesPlugInTest {
         
         // and: "a configured plugin"
         HashMap<String, Object> params = new HashMap<String, Object>();
-        params.put("sourceLayer", layerManager.getLayer("delete-duplicate-geometries"));
-        params.put("deleteOnlySameAttributes", false);
+        params.put("confSourceLayer", layerManager.getLayer("delete-duplicate-geometries"));
+        params.put("confDeleteOnlySameAttributes", false);
         TestTools.configurePlugIn(plugin, params);
         
         // when: "the dataset is processed"
