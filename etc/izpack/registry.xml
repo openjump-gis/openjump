@@ -20,7 +20,7 @@ unique uninstall key. -->
         <value name="UninstallString"
                keypath="SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$UNINSTALL_NAME"
                root="HKLM"
-               string="javaw.exe -jar &quot;$INSTALL_PATH\uninstall\uninstaller.jar&quot;" />
+               string="$INSTALL_PATH\bin\oj_windows.bat --uninstall" />
         <value name="DisplayIcon"
                keypath="SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$UNINSTALL_NAME"
                root="HKLM"

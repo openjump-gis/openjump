@@ -69,6 +69,12 @@ rem -- Change to jump home dir --
 rem -- NOTE: mount UNC paths to a local drive for this --
 cd /D %JUMP_HOME%
 
+rem -- Uninstall if asked nicely ---
+if "%1"=="--uninstall" ( 
+  "%JAVA%" -jar .\uninstall\uninstaller.jar
+  goto :eof
+)
+
 set LIB=lib
 
 rem -- setup native lib paths
