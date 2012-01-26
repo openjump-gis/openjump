@@ -169,20 +169,24 @@ public class DeleteDuplicateGeometriesPlugIn extends AbstractPlugIn implements
         // 2012-01-15].
         FeatureCollection sourceDataset = sourceLayer.getFeatureCollectionWrapper();
         FeatureSchema sourceSchema = sourceDataset.getFeatureSchema();
+        
         // Input data is indexed.
         FeatureCollection indexedDataset = new IndexedFeatureCollection(sourceDataset);
-        Set<Integer> duplicates = new HashSet<Integer>();
+        Set<Integer> duplicateIDs = new HashSet<Integer>();
+        
         @SuppressWarnings("unchecked")
-        Iterator<Feature> sourceIterator = sourceDataset.iterator();
+        List<Feature> sourceFeatures = sourceDataset.getFeatures();
         int checkCount = 0;
         int checkSize = sourceDataset.size();
-        while (sourceIterator.hasNext()) {
-            Feature feature = (Feature) sourceIterator.next();
+        
+        for (Feature feature : sourceFeatures) {
             monitor.report(checkCount, checkSize, langMonitorCheckedFeatures);
+            
             // For each feature, only candidate features are compared.
             Envelope envelope = feature.getGeometry().getEnvelopeInternal();
             @SuppressWarnings("unchecked")
             List<Feature> candidates = indexedDataset.query(envelope);
+            
             for (Feature candidate : candidates) {
                 // For equal features, the one with the greater ID is removed.
                 if (candidate.getID() > feature.getID()
@@ -191,24 +195,22 @@ public class DeleteDuplicateGeometriesPlugIn extends AbstractPlugIn implements
                         // If geometry and attributes are equals, add ID to
                         // duplicates.
                         if (areAttributesEqual(feature, candidate, sourceSchema)) {
-                            duplicates.add(candidate.getID());
+                            duplicateIDs.add(candidate.getID());
                         }
                     }
                     // If geometry are equals, add ID to duplicates.
                     else {
-                        duplicates.add(candidate.getID());
+                        duplicateIDs.add(candidate.getID());
                     }
                 }
             }
             checkCount += 1;
         }
+        
         // Create a feature collection with features which ID is not in duplicates.
         FeatureCollection resultDataset = new FeatureDataset(sourceSchema);
-        @SuppressWarnings("unchecked")
-        Iterator<Feature> sourceIterator2 = sourceDataset.iterator();
-        while (sourceIterator2.hasNext()) {
-            Feature feature = (Feature) sourceIterator2.next();
-            if (!duplicates.contains(feature.getID())) {
+        for (Feature feature : sourceFeatures) {
+            if (!duplicateIDs.contains(feature.getID())) {
                 resultDataset.add(feature.clone(true));
             }
         }
