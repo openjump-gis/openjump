@@ -5,7 +5,7 @@
  * JUMP is Copyright (C) 2003 Vivid Solutions
  *
  * This program implements extensions to JUMP and is
- * Copyright (C) 2004 Integrated Systems Analysts, Inc.
+ * Copyright (C) Stefan Steiniger.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,13 +22,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  * 
  * For more information, contact:
- *
- * Integrated Systems Analysts, Inc.
- * 630C Anchors St., Suite 101
- * Fort Walton Beach, Florida
- * USA
- *
- * (850)862-7321
+ * Stefan Steiniger
+ * perriger@gmx.de
  */
 
 package org.openjump.core.ui.plugin.tools;
