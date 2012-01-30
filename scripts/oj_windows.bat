@@ -4,7 +4,7 @@ set OLD_DIR=%CD%
 set JUMP_HOME=%~dp0..%
 
 rem -- uncomment to save settings and log to user profile ---
-rem -- if unset defaults to JUMP_HOME/bin/ --
+rem -- defaults to 'JUMP_HOME', if former is not writable 'userprofile/.openjump' --
 rem set SETTINGS_HOME="%HOMEDRIVE%%HOMEPATH%"\.openjump
 
 rem -- uncomment to manually set java home --
@@ -124,14 +124,20 @@ rem -- set settings home/log dir if none given --
   rem --- set default or create missing folder ---
   rem --- ATTENTION: logdir requires a trailing backslash for concatenation in log4j.xml ---
   if NOT DEFINED SETTINGS_HOME (
-    rem ---- an absolute settings_home allows file:/// for log4j conf ----
-    set "SETTINGS_HOME=%JUMP_HOME%\bin"
-    set "LOG_DIR=%JUMP_HOME%/"
-  ) else (
-    rem ---- create folder if not existing ----
-    if NOT EXIST "%SETTINGS_HOME%" mkdir "%SETTINGS_HOME%"
-    set "LOG_DIR=%SETTINGS_HOME%/"
+    rem ---- check if jumphome is writable ----
+    copy /Y NUL "%JUMP_HOME%\.writable" > NUL 2>&1 && set WRITEOK=1
+    IF DEFINED WRITEOK ( 
+      rem ---- an absolute settings_home allows file:/// for log4j conf ----
+      set "SETTINGS_HOME=%JUMP_HOME%"
+     ) else (
+      set "SETTINGS_HOME=%HOMEDRIVE%%HOMEPATH%\.openjump"
+    )
   )
+  set "LOG_DIR=%SETTINGS_HOME%/"
+  rem -- debug info --
+  if /i NOT "%JAVA_BIN%"=="javaw" echo ---Save logs ^& state to--- & echo %SETTINGS_HOME%
+  rem --- create folder if not existing ---
+  if NOT EXIST "%SETTINGS_HOME%" mkdir "%SETTINGS_HOME%"
 
 rem -- look if we have a custom logging configuration in settings --
 if EXIST "%SETTINGS_HOME%\log4j.xml" (
