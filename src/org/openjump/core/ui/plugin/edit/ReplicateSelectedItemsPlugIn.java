@@ -92,7 +92,7 @@ public class ReplicateSelectedItemsPlugIn extends AbstractPlugIn implements Thre
 		    context.getFeatureInstaller().addPopupMenuItem(
 		    		LayerViewPanel.popupMenu(),
 					this,
-					I18N.get("org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn.replicate-selected-items"),
+					I18N.get("org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn") + "...",
 					false, 
 					this.getIcon(),
                     createEnableCheck(context.getWorkbenchContext()));
@@ -100,7 +100,7 @@ public class ReplicateSelectedItemsPlugIn extends AbstractPlugIn implements Thre
 		    context.getFeatureInstaller().addMainMenuItemWithJava14Fix(this,
 		        new String[]
 				{MenuNames.EDIT},
-				I18N.get("org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn")+"{pos:16}", 
+				I18N.get("org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn") + "..." + "{pos:16}", 
 				false, 
 				this.getIcon(), 
 				createEnableCheck(context.getWorkbenchContext()));
