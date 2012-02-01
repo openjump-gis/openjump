@@ -81,15 +81,15 @@ rem -- setup native lib paths
 set NATIVE=%LIB%\native
 if DEFINED ProgramFiles(x86) set X64=64
 rem --- XP Version 5.x ---
-for /f "delims=" %%v in ('ver^|findstr /C:"Version 5"') do (
+for /f "delims=" %%v in ('ver^|findstr /I /C:"Version 5"') do (
   set "ID=xp"
 )
 rem --- Vista Version 6.0 ---
-for /f "delims=" %%v in ('ver^|findstr /C:"Version 6.0"') do (
+for /f "delims=" %%v in ('ver^|findstr /I /C:"Version 6.0"') do (
   set "ID=vista"
 )
 rem --- 7 Version 6.1 ---
-for /f "delims=" %%v in ('ver^|findstr /C:"Version 6.1"') do (
+for /f "delims=" %%v in ('ver^|findstr /I /C:"Version 6.1"') do (
   set "ID=seven"
 )
 rem -- add native as fallthrough and lib\ext the legacy value --
