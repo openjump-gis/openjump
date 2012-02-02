@@ -1,7 +1,7 @@
 Do not forget:
 -------------------------------------------------------------------------------
-1. set version and release in language/jump.properties AND etc/readme.txt
-2. test the build
+1. update AND set version and release date in Changes.txt
+2. build AND test
 3. tag the revision in svn with version to release
 4. set sf.net download button default (in sf.net file manager, info button on the right, default checkboxes)
 5. update and add links to website/wikipage

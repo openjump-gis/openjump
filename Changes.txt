@@ -1,16 +1,20 @@
 --------------------------------------------------------
-Version 1.5.1 - svn26xx (released on 04.feb.2012)
+Version 1.5.1 (released on 02.febr.2012)
 
   New Features
-  - New installer with IzPack
+  - New multiplatform installers for linux, mac, windows made with IzPack 
+    and Launch4J
   
   Bug fixes
-  - ClipToFencePlugIn [3472008] clearer message in case of duplicate attribute names
+  - ClipToFencePlugIn [3472008] clearer message in case of duplicate attribute 
+    names
   - CombineSelectedLayer now accept non-default geometry attribute names
   - AbstractCursorTool fix for the Linux painting/screen refresh problem
+  - more minor bug fixes
   
   Small improvements
   - Optimization of DeleteDuplicateItemsPlugIn
+  - Windows Exe-launcher executes oj_windows.bat now
 
 --------------------------------------------------------
 Version 1.5.0 - svn2588 (released on 07.jan.2012)
