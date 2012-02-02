@@ -74,7 +74,7 @@
       <directory>.</directory>
       <outputDirectory>/</outputDirectory>
       <includes>
-        <include>ChangeLog</include>
+        <include>Changes.txt</include>
         <include>lib/ext/**</include>
         <include>lib/native/readme.txt</include>
       </includes>
