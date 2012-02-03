@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<root>
+  <attribute xml-name="enabled" java-name="enabled"/>
+  <element xml-name="fill">
+    <attribute xml-name="enabled" java-name="renderingFill"/>
+    <element xml-name="pattern" java-name="fillPattern">    
+   		<attribute xml-name="enabled" java-name="renderingFillPattern"/>    	
+    </element>    
+    <element xml-name="color" java-name="fillColor"/>
+  </element>
+  <element xml-name="line">
+    <attribute xml-name="enabled" java-name="renderingLine"/>
+    <attribute xml-name="width" java-name="lineWidth"/>
+    <element xml-name="pattern" java-name="linePattern">    
+   		<attribute xml-name="enabled" java-name="renderingLinePattern"/>    	
+    </element>
+    <element xml-name="color" java-name="lineColor"/>
+  </element>
+  <element xml-name="alpha" java-name="alpha"/>
+</root>

@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset xmlns="http://www.safe.com/xml/namespaces/fmegml2" xmlns:fme="http://www.safe.com/xml/namespaces/fmegml2" xmlns:gml="http://www.opengis.net/gml" xmlns:xsi="http://www.w3.org/2000/10/XMLSchema-instance" xsi:schemaLocation="http://www.safe.com/xml/schemas/fmegml2.xsd">
+<schemaFeatures>
+<gml:featureMember>
+<Feature>
+<featureType>3points</featureType>
+<property fme:name="ID">fme_decimal(8,0)</property>
+<property fme:name="SITE">fme_char(16)</property>
+</Feature>
+</gml:featureMember>
+</schemaFeatures>
+<dataFeatures>
+<gml:featureMember>
+<Feature>
+<featureType>3points</featureType>
+<property fme:name="ID">1</property>
+<property fme:name="SITE">BMGS</property>
+<property fme:name="gml2_coordsys"></property>
+<gml:pointProperty>
+<gml:Point gml:srsName=""><gml:coordinates>1195523.78545869,382130.432621668</gml:coordinates></gml:Point>
+</gml:pointProperty>
+</Feature>
+</gml:featureMember>
+<gml:featureMember>
+<Feature>
+<featureType>3points</featureType>
+<property fme:name="ID">2</property>
+<property fme:name="SITE">Hotel</property>
+<property fme:name="gml2_coordsys"></property>
+<gml:pointProperty>
+<gml:Point gml:srsName=""><gml:coordinates>1195156.78946687,382069.533723461</gml:coordinates></gml:Point>
+</gml:pointProperty>
+</Feature>
+</gml:featureMember>
+<gml:featureMember>
+<Feature>
+<featureType>3points</featureType>
+<property fme:name="ID">3</property>
+<property fme:name="SITE">Museum</property>
+<property fme:name="gml2_coordsys"></property>
+<gml:pointProperty>
+<gml:Point gml:srsName=""><gml:coordinates>1195171.21289012,381902.863054685</gml:coordinates></gml:Point>
+</gml:pointProperty>
+</Feature>
+</gml:featureMember>
+</dataFeatures>
+</dataset>
