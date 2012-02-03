@@ -1,0 +1,109 @@
+Version 1.2.0 C (2007-08-11)
+
+  This release includes
+
+  New Features:
+  - Improve Tools > Edit Geometry > Segments extracter
+    Now, the plugin optionally removes segments appearing several times (as in
+    the JCS equivalent plugin) and optionally merges the result
+  - Improve Tools > Analysis > Union
+    Now, the plugin can union a layer or a selection, as in SkyJUMP
+  - Added Tools > Analysis > UnionByAttributePlugIn
+
+  
+  Changes in the user interface:
+  - JoinTablePlugIn now called from tools/edit attributes menu
+  - Fixed an alignment problem in the BasicStylePanel
+  - Now, every internal frames related to a TaskFrame (table view or info frame)
+    are closed before the TaskFrame (with a confirmation dialog)
+  - Removed File > Loading Dataset From File and
+                   Save Dataset As File
+    added automatic file extension in the main Save Dataset As
+    and put the format chooser at the bottom of the dialog (as in SkyJUMP)
+  - Add WMS Query : updated the demo.deegree.org URL to a working value
+  - The WMS field remembers the last used server address
+  - Added context menu entry on layer list that allows changing the layer name
+    Changed ToggleVisibilityPlugin to allow changing WMS layer visibility toggling
+  - set EditTransaction.ROLLING_BACK_INVALID_EDITS_KEY = true when starting up
+    OJUMP (i.e. invalid geometries are not alowed per default, switch can be
+    done in Edit Options Panel)
+  - Changed the URL field to a editable combo box (OpenJUMP now stores a list of
+    urls instead of just one)
+  
+  Fixes and performance improvements:
+  - I18N (no more exception when a string is missing)
+  - Improved shapefilereader performances (memory use and loading time)
+  - Fixed error with length-constraint text field in ConstraintsOptionsPanel
+  - Several bug fixes with the new BeanToolsPlugIn
+  - Fixed bug 1713295 (Snap always on)
+  - Fixed bug 1367145 : "End feathers" decoration appeared on wrong end
+  - Fixed a bug in WMSLayer.java: Cache last WMS result with a SoftReference
+  - Fixed the memory leak problem when removing a Layer
+  - Improved the rendering pipeline
+  - Always construct WMSLayer so that they are fetched in parallel running
+    threads
+  - ZoomBar optimization to reduce UI latency
+  - Stop throwing an exception when there are several geometry column in a
+    postgis table (consider the first geometry column as the feature geometry)
+  - Read PostGIS geometry columns as if it was WKB instead of WKT as it seems
+    to be the standard now
+  - Backport Larry's bug-fix to enable workbench-properties file outside the IDE
+    (see bug 1726102)
+  - Fix bug 1691834 about labelling (can label above, on are below lines again)
+  - Fixed the "Closing Cloned Window" bug (1475013) : now, layer manager
+    resources are released only when the last internal frame using it is closed.
+  - Fixed a problem with TaskFrame closing (related to bug 1726629)
+  - Fixed for expensive BasicStyle construction (slowed down colour theming a lot)
+  - Replacement for the old ThreadQueue. Now worker threads are kept alive for
+    at least 5 seconds waiting for new incomming jobs.
+  - Fixed a bug in the optimization code of UnionPlugIn
+  - SLD Size element is now next to the Mark element and not underneath it.
+    XSLUtility is now checking for null while constructing background
+  - Added improved startup script for Unix from Paul Austin
+  - Changed InfoModel to remove layers after the listeners are notified
+  - Fixed a bug in LabelStyle : added trim() to avoid labels to be ex-centered
+  - Fixed a bug where thick closed lines (and polygons) did not have a nice
+    join_bevel on the first/last point
+  - Replaced jmat_5.0.jar by the cleaned up version jmat_5.0m.jar
+  - Bug fixed thanks to Malte, to avoid null-pointer excpetion when making a copy
+    of a FeatureCollection containing Features with null values for attributes.
+    (see jpp-devel email send by sstein on 24.July.2007)
+  - SLD PlugIn : Default output is UTF-8 now instead of ISO-8859-1, fixing
+    encoding problems in resulting XML files
+  - WMS Layers use the title now instead of the WMS layer name.
+    While editing WMS requests, moving layers up/down caused the SRS
+    box to switch back to the first available SRS, this was fixed
+  - resolved LoadDatasetPlugIn "ok" button problem on MacOSX
+  - ShapefileWriter : an Exception is thrown if one try to save a shapefile with
+    mixed geometries (otherwise the user wonders when only polygons are stored)
+  - fixed a bug in Simple Query (responsible of confusion between the
+    three static taget options : all layers / selection / selected layers
+
+  Many new translations
+  
+  Code clean up (fixed javadoc tags, removed duplicated imports, unused files)
+  
+  Thanks to
+  - Andreas Schmitz
+  - Jon Aquino
+  - Landon Blake
+  - Larry Becker
+  - Martin Davis
+  - Michaël Michaud
+  - Paul Austin
+  - Sasha L. Teichmann
+  - Stefan Steiniger
+
+
+*******************************************************************************
+Version 1.2.0 Beta (2007-05-10)
+
+  This release includes major bugfixes
+  
+  Fixes:
+  - blabla
+
+
+  New Features:
+  - tofill
+  

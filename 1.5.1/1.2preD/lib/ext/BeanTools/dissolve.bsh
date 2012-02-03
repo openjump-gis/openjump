@@ -1,0 +1,81 @@
+///////////////////////////////////////////////////////////////
+// METHODS TO DISSOLVE / MERGE FEATURES WITH SAME ATTRIBUTE VALUE
+// Hisaji Ono 2007-Jun-05
+///////////////////////////////////////////////////////////////
+
+import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.feature.AbstractBasicFeature;
+import com.vividsolutions.jump.feature.FeatureUtil;
+import com.vividsolutions.jump.feature.BasicFeature;
+import com.vividsolutions.jump.feature.Feature;
+import com.vividsolutions.jump.feature.FeatureCollection;
+import com.vividsolutions.jump.feature.FeatureDataset;
+import com.vividsolutions.jump.workbench.ui.FeatureSelection;
+import com.vividsolutions.jump.workbench.model.Layer;
+import com.vividsolutions.jump.feature.AttributeType;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+//
+void doDissolve(String layerName, String key){
+  FeatureSelection selectedFeatures = wc.getLayerViewPanel().getSelectionManager().getFeatureSelection();
+
+  layer = wc.getLayerManager().getLayer(layerName);
+
+  FeatureCollection fc = layer.getFeatureCollectionWrapper();
+  Collection features = null;
+  features = fc.getFeatures();
+  schema = fc.getFeatureSchema();
+  Iterator it = features.iterator();
+  
+  int count = 0;
+
+  //get key list
+  zIndex = schema.getAttributeIndex(key);
+  Map codeList = new HashMap();
+  while(it.hasNext()){
+    BasicFeature f = (BasicFeature)it.next();
+    s = f.getAttribute(zIndex);  
+    if( codeList.get(s.toString()) == null)
+       codeList.put(s.toString(),1);
+    else
+       codeList.put(s.toString(),codeList.get(s.toString()) + 1);
+  }
+
+  //grouping by key
+  Iterator it2 = codeList.entrySet().iterator();
+  count = 0;
+  while(it2.hasNext()){
+    Map.Entry entry = (Map.Entry) it2.next();
+    key = (String) entry.getKey();
+    okFeatures = new ArrayList();
+    it = features.iterator();
+    while(it.hasNext()){
+      BasicFeature f = (BasicFeature)it.next();
+      s = f.getAttribute(zIndex);
+      if(s.toString().trim().equals(key.trim()) == true){
+        okFeatures.add(f);
+        count++;
+        if(count == entry.getValue())
+          break;
+      }
+    }
+
+   //do dissolve
+    selectedFeatures.selectItems(layer, okFeatures);
+    firstFeature = wc.layerViewPanel.selectionManager.getFeaturesWithSelectedItems(layer).iterator().next();
+    for (feature : wc.layerViewPanel.selectionManager.featuresWithSelectedItems) 
+      firstFeature.geometry = firstFeature.geometry.union(feature.geometry);
+  
+    for (layer : wc.layerViewPanel.selectionManager.layersWithSelectedItems) 
+      layer.featureCollectionWrapper.removeAll(wc.layerViewPanel.selectionManager.getFeaturesWithSelectedItems(layer));
+
+    layer.featureCollectionWrapper.add(firstFeature);
+    selectedFeatures.unselectItems();//unselect features
+  }
+  wc.layerViewPanel.repaint();
+}
+
+// WARNING : THE FOLLOWING METHOD MUST BE CHANGED TO FIT YOUR NEEDS
+// call dissolve function
+// doDissolve("your layer name", "your layer's field name as Key);
+doDissolve("japan_ver52_reprojected", "PREF");

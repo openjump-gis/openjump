@@ -1,0 +1,1 @@
+Drop into this directory your plug-in JAR files and any other JAR files that they need.

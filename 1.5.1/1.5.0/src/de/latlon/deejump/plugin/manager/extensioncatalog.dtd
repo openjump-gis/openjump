@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!ELEMENT Description (#PCDATA)>
+<!ELEMENT Extension (Description, ResourceList)>
+<!ATTLIST Extension
+	name CDATA #REQUIRED
+	title CDATA #REQUIRED
+	author (UT | reso) #REQUIRED
+	version CDATA #REQUIRED
+	jumpVersion CDATA #REQUIRED
+	category CDATA #REQUIRED
+>
+<!ELEMENT OpenJUMPExtensionCatalog (Extension+)>
+<!ELEMENT Resource EMPTY>
+<!ATTLIST Resource 
+	value CDATA #REQUIRED
+>
+<!ELEMENT ResourceList (Resource+)>

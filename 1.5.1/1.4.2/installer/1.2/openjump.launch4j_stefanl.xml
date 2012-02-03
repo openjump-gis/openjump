@@ -1,0 +1,30 @@
+<launch4jConfig>
+  <dontWrapJar>true</dontWrapJar>
+  <headerType>gui</headerType>
+  <jar></jar>
+  <outfile>C:\jumps\openjump-1-2\openjump12.exe</outfile>
+  <errTitle></errTitle>
+  <cmdLine>-properties bin/workbench-properties.xml -plug-in-directory lib/ext</cmdLine>
+  <chdir>..</chdir>
+  <priority>normal</priority>
+  <downloadUrl>http://java.com/download</downloadUrl>
+  <supportUrl></supportUrl>
+  <customProcName>true</customProcName>
+  <stayAlive>false</stayAlive>
+  <icon>C:\jumps\openjump-1-2\openjump.ico</icon>
+  <classPath>
+    <mainClass>com.vividsolutions.jump.workbench.JUMPWorkbench</mainClass>
+    <cp>./lib/*.jar</cp>
+    <cp>./build/*.jar</cp>
+  </classPath>
+  <jre>
+    <path></path>
+    <minVersion>1.5.0</minVersion>
+    <maxVersion></maxVersion>
+    <dontUsePrivateJres>false</dontUsePrivateJres>
+    <initialHeapSize>256</initialHeapSize>
+    <maxHeapSize>256</maxHeapSize>
+    <opt>-Djava.library.path=lib/ext</opt>
+    <opt>-Dlog4j.configuration=file:bin/log4j.xml</opt>
+  </jre>
+</launch4jConfig>
