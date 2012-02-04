@@ -50,7 +50,7 @@ rem -- find java runtime --
     rem --- restart the batch in x86 mode---
     echo Warning: No java interpreter found in path.
     echo Retry using Wow64 filesystem [32bit environment] redirection.
-    %SystemRoot%\SysWOW64\cmd.exe /c %0
+    %SystemRoot%\SysWOW64\cmd.exe /c %0 %*
     exit /b %ERRORLEVEL%
   )
 
