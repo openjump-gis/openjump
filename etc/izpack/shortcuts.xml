@@ -21,15 +21,16 @@
 
        </shortcut>
  
+    <!-- Redirect users to control panel / programs, as direct execution did not elevate to superuser rights correctly -->
     <shortcut
-            name="OJ Uninstaller"
+            name="Uninstall OJ via Control Panel"
             programGroup="yes"
             desktop="no"
             applications="no"
             startMenu="no"
             startup="no"
-            target="$INSTALL_PATH\bin\oj_windows.bat"
-            commandLine="--uninstall"
+            target="control"
+            commandLine="appwiz.cpl"
             iconFile="%SystemRoot%\system32\SHELL32.dll"
             iconIndex="31"
             description="This uninstalls OJ">
