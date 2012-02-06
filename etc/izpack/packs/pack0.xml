@@ -10,6 +10,8 @@
       <executable targetfile="$INSTALL_PATH/bin/postinstall.sh" stage="postinstall" keep="false" condition="izpack.linuxinstall|izpack.macinstall"/>
       <file src="res/macinstall.sh" targetdir="$INSTALL_PATH/bin/" condition="izpack.macinstall"/>
       <executable targetfile="$INSTALL_PATH/bin/macinstall.sh" stage="postinstall" keep="false" condition="izpack.macinstall"/>
+      <file src="res/desktoprefresh.exe" targetdir="$INSTALL_PATH/bin/" condition="izpack.windowsinstall"/>
+      <executable targetfile="$INSTALL_PATH/bin/desktoprefresh.exe" stage="postinstall" keep="false" condition="izpack.windowsinstall"/>
     </pack>
   </packs>
 </installation>
