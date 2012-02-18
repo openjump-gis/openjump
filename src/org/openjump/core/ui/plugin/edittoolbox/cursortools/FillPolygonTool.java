@@ -35,6 +35,7 @@ import com.vividsolutions.jts.algorithm.MCPointInRing;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
@@ -43,6 +44,7 @@ import com.vividsolutions.jts.operation.polygonize.Polygonizer;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.model.Layer;
+import com.vividsolutions.jump.workbench.model.UndoableCommand;
 import com.vividsolutions.jump.workbench.ui.cursortool.editing.FeatureDrawingUtil;
 import com.vividsolutions.jump.workbench.ui.cursortool.NClickTool;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
@@ -51,9 +53,12 @@ import com.vividsolutions.jump.workbench.ui.OKCancelDialog;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 
 import java.awt.geom.NoninvertibleTransformException;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.GridLayout;
 import java.awt.Shape;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -61,14 +66,21 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JDialog;
+import javax.swing.JProgressBar;
 
 public class FillPolygonTool extends NClickTool {
 
     public static final String AREA_NOT_CLOSED = I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.FillPolygonTool.clicked-area-is-not-closed");
     public static final String EXTEND_SEARCH   = I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.FillPolygonTool.do-you-want-to-extend-search-out-of-the-view");
+    public static final String INTERRUPTION    = I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.FillPolygonTool.interrupted-operation");
+    public static final String COMPUTING       = I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.FillPolygonTool.computing");
     
 	private FeatureDrawingUtil featureDrawingUtil;
 	private WorkbenchContext context;
+	private static long START = 0;
+	private static long END = 0;
+	private static boolean INTERRUPTED = false;
 
 	public FillPolygonTool(WorkbenchContext context) {
 		super(1);
@@ -93,10 +105,27 @@ public class FillPolygonTool extends NClickTool {
 
 	protected void gestureFinished() throws Exception {
 		reportNothingToUndoYet();
-        Polygon polygon;;
-        if (null != (polygon = getPolygon(true))) {
-		    execute(featureDrawingUtil.createAddCommand(
-				    polygon, isRollingBackInvalidEdits(), getPanel(), this));
+		
+		// What is the logic for this test ?
+		// If the user click several times to close the progress bar and
+		// interrupt the process, the first click will close the dialog box,
+		// but the next one will be queued in the EDT to start a new FillPolygon
+		// process. This is not what we want.
+		// The only way I found to cancel this second click is to check it does 
+		// not activate gestureFinished just after the processing thread ended.
+		// If gestureFinished is called less than 1 s after the previous process
+		// end, I suppose the click happened during the process and just 
+		// awaiting turn.
+		if (new Date().getTime() < END+1000) return;
+		
+        Polygon polygon = getPolygon(true);
+        if (INTERRUPTED) {
+            context.getWorkbench().getFrame().warnUser(INTERRUPTION);
+        }
+        else if (!polygon.isEmpty()) {
+            UndoableCommand command = featureDrawingUtil.createAddCommand(
+				    polygon, isRollingBackInvalidEdits(), getPanel(), this);
+			if (command != null) execute(command);
         } else {
             JPanel panel = new JPanel(new GridLayout(2,1));
             panel.add(new JLabel(AREA_NOT_CLOSED));
@@ -107,30 +136,87 @@ public class FillPolygonTool extends NClickTool {
                 true, panel, null);
             GUIUtil.centreOnWindow(dialog);
             dialog.setVisible(true);
-            if (dialog.wasOKPressed() && (null != (polygon = getPolygon(false)))) {
-                execute(
-			    featureDrawingUtil.createAddCommand(
-				    polygon, isRollingBackInvalidEdits(), getPanel(), this));
+            if (dialog.wasOKPressed()) {
+                polygon = getPolygon(false);
+                if (INTERRUPTED) {
+                    context.getWorkbench().getFrame().warnUser(INTERRUPTION);
+                } else if (!polygon.isEmpty()) {
+                    execute(featureDrawingUtil.createAddCommand(
+				        polygon, isRollingBackInvalidEdits(), getPanel(), this));
+				}
+				else {
+				    context.getWorkbench().getFrame().warnUser(AREA_NOT_CLOSED);
+				}
             } else {
-                context.getWorkbench().getFrame().warnUser(AREA_NOT_CLOSED);
+                context.getWorkbench().getFrame().warnUser(INTERRUPTION);
             }
         }
+        INTERRUPTED = false;
 	}
 
-	protected Polygon getPolygon(boolean inViewportOnly)
+	protected Polygon getPolygon(final boolean inViewportOnly)
 		throws NoninvertibleTransformException {
-		Polygonizer polygonizer = new Polygonizer();
-		polygonizer.add(getVisibleGeometries(inViewportOnly));
-		Collection polys = polygonizer.getPolygons();
-		//System.out.println("polys:" + polys);
-		Coordinate c = (Coordinate)getCoordinates().get(0);
-		for (Object poly : polys) {
-		    if (new MCPointInRing((LinearRing)((Polygon)poly).getExteriorRing()).isInside(c)) {
-		        return (Polygon)poly;
+	    
+		final JDialog dialog = new JDialog(
+		    context.getWorkbench().getFrame(), COMPUTING + "...", true);
+		
+		final Collection polys = new java.util.ArrayList();
+		final Thread t = new Thread() {
+		    public void run() {
+		        START = new Date().getTime();
+		        Polygonizer polygonizer = new Polygonizer();
+		        polygonizer.add(getVisibleGeometries(inViewportOnly));
+		        polys.addAll(polygonizer.getPolygons());
+		        END = new Date().getTime();
+		        dialog.setVisible(false);
 		    }
-		}
-		return null;
+		};
+		t.start();
+		
+		dialog.addWindowListener(new WindowAdapter() {
+		    public void windowClosing(WindowEvent e) {
+		        try {
+		            long timeStamp = new Date().getTime();
+		            // if dialog is closed before process END is recorded,
+		            // interruption has been requested by the user (see run
+		            // method of the Thread where dialog is automatically hidden
+		            // "after" END timestamp has been set.
+		            if (START > END) INTERRUPTED = true;
+		            else INTERRUPTED = false;
+		        } catch(Exception ex) {
+		            ex.printStackTrace();
+		        }
+		    }
+		});
+		
+		JProgressBar jpb = new JProgressBar();
+		jpb.setIndeterminate(true);
+		dialog.add(jpb);
+		dialog.pack();
+		dialog.setLocationRelativeTo(context.getWorkbench().getFrame());
+		dialog.setVisible(true);
+		GUIUtil.centreOnWindow(dialog);
+
+		try {
+		    t.join();
+		    if (!INTERRUPTED) {
+		        Coordinate c = (Coordinate)getCoordinates().get(0);
+		        Point p = new GeometryFactory().createPoint(c);
+		        for (Object poly : polys) {
+		            if (((Polygon)poly).intersects(p)) {
+		                return (Polygon)poly;
+		            }
+		        }
+		        GeometryFactory gf = new GeometryFactory();
+		        return gf.createPolygon(gf.createLinearRing(new Coordinate[0]), null);
+		    }
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        // if process has been INTERRUPTED by a user action
+        return null;
     }
+    
     
     private Set<Geometry> getVisibleGeometries(boolean inViewportOnly) {
         List layers = context.getLayerManager().getVisibleLayers(false);
