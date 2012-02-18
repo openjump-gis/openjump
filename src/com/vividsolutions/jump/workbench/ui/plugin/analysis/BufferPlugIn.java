@@ -1,4 +1,3 @@
-
 /*
  * The Unified Mapping Platform (JUMP) is an extensible, interactive GUI
  * for visualizing and manipulating spatial features with geometry and attributes.
@@ -37,6 +36,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.lang.Exception;
 import java.util.*;
 
 import javax.swing.DefaultComboBoxModel;
@@ -62,7 +62,26 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.plugin.clipboard.PasteItemsPlugIn;
 import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 
-
+/**
+ * PlugIn performing buffer operations authorized by JTS BufferOp class.
+ * It takes a number of options :
+ * <ul>
+ * <li>union selected features or all features of a selected layers</li>
+ * <li>buffer size</li>
+ * <li>number of segments by quadrant</li>
+ * <li>union the buffered features</li>
+ * <li>keep attributes of source features</li>
+ * </ul>
+ * Advanced options can be choosen from the second panel :
+ * <ul> 
+ * <li>choose end cap style</li>
+ * <li>choose join style</li>
+ * <li>fix a distance limit for mitre join style</li>
+ * <li>one side buffer</li>
+ * </ul>
+ * @author vividsolutions
+ * @author Micha&euml;l Michaud (refactoring, adding options of JTS 1.12)
+ */
 public class BufferPlugIn extends AbstractThreadedUiPlugIn {
 	
   private String MAIN_OPTIONS;
@@ -106,7 +125,8 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
   private int joinStyleCode       = BufferParameters.JOIN_ROUND;;
   private double mitreLimit       = 10.0;
   private boolean singleSided     = false;
-  private boolean exceptionThrown = false;
+  //private boolean exceptionThrown = false;
+  private int exceptionNumber     = 0;
   private boolean useSelected     = false;
   private int quadrantSegments    = 8;
   private boolean unionResult     = false;
@@ -134,14 +154,6 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
             this,
             createEnableCheck(context.getWorkbenchContext())
         );
-      	//FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-  		//featureInstaller.addMainMenuItem(
-  	    //    this,					//exe
-        //    new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS}, 	//menu path
-        //    this.getName() + "...", //name methode .getName received by AbstractPlugIn 
-        //    false,			        //checkbox
-        //    ICON,			        //icon
-        //    createEnableCheck(context.getWorkbenchContext()));
     }
   
     public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
@@ -224,6 +236,7 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
         FeatureSchema featureSchema = new FeatureSchema();
         featureSchema.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
         FeatureCollection resultFC = new FeatureDataset(featureSchema);
+        // Fill inputC with features to be processed
         Collection inputC;
         if (useSelected) {
         	inputC = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems();
@@ -235,13 +248,16 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
         	featureSchema = layer.getFeatureCollectionWrapper().getFeatureSchema();
         	resultFC = new FeatureDataset(featureSchema);
         }
+        // Short-circuit if input is empty
         FeatureDataset inputFD = new FeatureDataset(inputC, featureSchema);
         if (inputFD.isEmpty()) {
 	    	context.getWorkbenchFrame()
 	    	       .warnUser(I18N.get("ui.plugin.analysis.BufferPlugIn.empty-result-set"));
 	    	return;
 	    }
-        Collection resultGeomColl = runBuffer(monitor, inputFD);
+	    // Create buffers for each input feature
+        Collection resultGeomColl = runBuffer(monitor, context, inputFD);
+        // Post-process result
         if (copyAttributes) {
         	FeatureCollection resultFeatureColl = new FeatureDataset(featureSchema);
         	Iterator iResult = resultGeomColl.iterator();
@@ -283,12 +299,15 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
         	name = name + "-" + endCapStyle(endCapStyleCode);
         }
         context.addLayer(categoryName, name, resultFC);
-        if (exceptionThrown)
-          context.getWorkbenchFrame().warnUser(I18N.get("ui.plugin.analysis.BufferPlugIn.errors-found-while-executing-buffer"));
+        //if (exceptionNumber > 0) {
+        //    context.getWorkbenchFrame().warnUser(
+        //        I18N.get("ui.plugin.analysis.BufferPlugIn.errors-found-while-executing-buffer") + 
+        //        ": " + exceptionNumber);
+        //}
     }
 
-    private Collection runBuffer(TaskMonitor monitor, FeatureCollection fcA) {
-        exceptionThrown = false;
+    private Collection runBuffer(TaskMonitor monitor, PlugInContext context, FeatureCollection fcA) throws Exception {
+        exceptionNumber = 0;
         int total = fcA.size();
         int count = 0;
         Collection resultColl = new ArrayList();
@@ -307,26 +326,26 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
         	    else if (o instanceof Integer)
            		    bufferDistance = ((Integer) o).doubleValue();
             }
-            Geometry result = runBuffer(ga, bufferParameters);
-            if (result != null) {
+            try {
+                Geometry result = runBuffer(ga, bufferParameters);
                 resultColl.add(result);
+            } catch (Exception e) {
+                String errorMessage = I18N.getMessage(
+                    "ui.plugin.analysis.BufferPlugIn.error-found",
+                    new Object[]{fa.getID(), ga.getCoordinate().x, ga.getCoordinate().x});
+                context.getWorkbenchFrame().warnUser(errorMessage);
+                throw new Exception(errorMessage, e);
             }
         }
         return resultColl;
     }
 
-    private Geometry runBuffer(Geometry a, BufferParameters param) {
+    private Geometry runBuffer(Geometry a, BufferParameters param) 
+                                           throws TopologyException, Exception {
         Geometry result = null;
-        try {
-            BufferOp bufOp = new BufferOp(a, param);
-            result = bufOp.getResultGeometry(bufferDistance);
-            return result;
-        }
-        catch (RuntimeException ex) {
-            // simply eat exceptions and report them by returning null
-            exceptionThrown = true;
-        }
-        return null;
+        BufferOp bufOp = new BufferOp(a, param);
+        result = bufOp.getResultGeometry(bufferDistance);
+        return result;
     }
 
     private void setDialogValues(final MultiTabInputDialog dialog, PlugInContext context) {
