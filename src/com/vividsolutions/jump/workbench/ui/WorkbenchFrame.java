@@ -114,6 +114,7 @@ import com.vividsolutions.jump.workbench.model.WMSLayer;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugIn;
+import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ChoosableStyle;
@@ -143,6 +144,12 @@ public class WorkbenchFrame extends JFrame
 	JPanel statusPanel = new JPanel();
 
 	JLabel timeLabel = new JLabel();
+	
+
+	// Add a 5th SplitPanel for for scale      //
+	// [Giuseppe Aruta 2012-feb-18] //
+	JLabel scaleLabel = new JLabel();
+	private JSplitPane statusPanelSplitPane5;
 
 	// the four SplitPanes for the statusbar
 	private JSplitPane statusPanelSplitPane1;
@@ -272,7 +279,7 @@ public class WorkbenchFrame extends JFrame
 
     public void cursorPositionChanged(String x, String y) {
       positionStatusBuf.setLength(1);
-      positionStatusBuf.append(x).append(", ").append(y).append(")");
+      positionStatusBuf.append(x).append(" ; ").append(y).append(")");
       coordinateLabel.setText(positionStatusBuf.toString());
     }
 
@@ -351,6 +358,13 @@ public class WorkbenchFrame extends JFrame
       configureStatusLabel(coordinateLabel, 150);
       configureStatusLabel(timeLabel, 200);
       configureStatusLabel(wmsLabel, 100);
+      
+      // Configure scaleLabe  //
+      // [Giuseppe Aruta 2012-feb-18] //
+        configureStatusLabel(scaleLabel, 100);
+      
+      
+      
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -469,6 +483,19 @@ public class WorkbenchFrame extends JFrame
     // Aquino]
   }
 
+  
+     //Add new JLabel for scale      //
+	// [Giuseppe Aruta 2012-feb-18] //
+	public void setScaleText(String message) {
+	   scaleLabel.setText((message == "") ? " " : message);
+		scaleLabel.setToolTipText(message);
+	   }
+  
+  
+  
+  
+  
+  
   public JInternalFrame getActiveInternalFrame() {
     return desktopPane.getSelectedFrame();
   }
@@ -1063,6 +1090,8 @@ public class WorkbenchFrame extends JFrame
       }
     });
     coordinateLabel.setBorder(BorderFactory.createLoweredBevelBorder());
+    //  G. Aruta 2012 feb 18//
+    scaleLabel.setBorder(BorderFactory.createLoweredBevelBorder());
     wmsLabel.setBorder(BorderFactory.createLoweredBevelBorder());
     coordinateLabel.setText(" ");
     //messageTextField.setBorder(BorderFactory.createLoweredBevelBorder());
@@ -1079,9 +1108,22 @@ public class WorkbenchFrame extends JFrame
     fileMenu.add(exitMenuItem);
 	// [Matthias Scholz 11. Dec 2010] new resizable stausbar
 	statusPanel.setLayout(new BorderLayout());
-	int dividerSize = 4;
-	statusPanelSplitPane4 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, wmsLabel, coordinateLabel);
+	
+	
+
+	// Add new JLabel for scale      //
+	// [Giuseppe Aruta 2012-feb-08] //
+	
+	//int dividerSize = 4;
+	//statusPanelSplitPane4 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, wmsLabel, coordinateLabel);
+	//statusPanelSplitPane4.setDividerSize(dividerSize);
+	
+	int dividerSize = 5;
+	statusPanelSplitPane5 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, scaleLabel, coordinateLabel);
+	statusPanelSplitPane5.setDividerSize(dividerSize);
+	statusPanelSplitPane4 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, wmsLabel, statusPanelSplitPane5);
 	statusPanelSplitPane4.setDividerSize(dividerSize);
+	
 	statusPanelSplitPane3 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, memoryLabel, statusPanelSplitPane4);
 	statusPanelSplitPane3.setDividerSize(dividerSize);
 	statusPanelSplitPane2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, timeLabel, statusPanelSplitPane3);
@@ -1348,7 +1390,6 @@ public class WorkbenchFrame extends JFrame
   public void setTaskFrameFactory(ComponentFactory<TaskFrame> taskFrameFactory) {
     this.taskFrameFactory = taskFrameFactory;
   }
-  
   public final static String MAXIMIZED_KEY = WorkbenchFrame.class.getName()+" - MAXIMIZED_KEY";
   public final static String HORIZONTAL_KEY = WorkbenchFrame.class.getName()+" - HORIZONTAL_KEY";
   public final static String VERTICAL_KEY = WorkbenchFrame.class.getName()+" - VERTICAL_KEY";
@@ -1358,6 +1399,7 @@ public class WorkbenchFrame extends JFrame
   public final static String STATUSPANEL_DIVIDER_LOCATION_2 = WorkbenchFrame.class.getName() + " - STATUSPANEL_DIVIDER_LOCATION_2";
   public final static String STATUSPANEL_DIVIDER_LOCATION_3 = WorkbenchFrame.class.getName() + " - STATUSPANEL_DIVIDER_LOCATION_3";
   public final static String STATUSPANEL_DIVIDER_LOCATION_4 = WorkbenchFrame.class.getName() + " - STATUSPANEL_DIVIDER_LOCATION_4";
+  public final static String STATUSPANEL_DIVIDER_LOCATION_5 = WorkbenchFrame.class.getName() + " - STATUSPANEL_DIVIDER_LOCATION_5";
 
   public void saveWindowState() {
 	  boolean maximized = (this.getExtendedState() == MAXIMIZED_BOTH);
@@ -1374,6 +1416,7 @@ public class WorkbenchFrame extends JFrame
 	  blackboard.put(STATUSPANEL_DIVIDER_LOCATION_2, new Integer(statusPanelSplitPane2.getLastDividerLocation()));
 	  blackboard.put(STATUSPANEL_DIVIDER_LOCATION_3, new Integer(statusPanelSplitPane3.getLastDividerLocation()));
 	  blackboard.put(STATUSPANEL_DIVIDER_LOCATION_4, new Integer(statusPanelSplitPane4.getLastDividerLocation()));
+	  blackboard.put(STATUSPANEL_DIVIDER_LOCATION_5, new Integer(statusPanelSplitPane4.getLastDividerLocation()));
   }
 
   public boolean recallMaximizedState() {
@@ -1420,6 +1463,14 @@ public class WorkbenchFrame extends JFrame
   public Dimension recallWindowSize() {
     Blackboard blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
     // restore Statusbar divider loactions
+    
+    statusPanelSplitPane1.setDividerLocation(blackboard.get(STATUSPANEL_DIVIDER_LOCATION_1, 500));
+	  statusPanelSplitPane2.setDividerLocation(blackboard.get(STATUSPANEL_DIVIDER_LOCATION_2, 200));
+	  statusPanelSplitPane3.setDividerLocation(blackboard.get(STATUSPANEL_DIVIDER_LOCATION_3, 100));
+	  statusPanelSplitPane4.setDividerLocation(blackboard.get(STATUSPANEL_DIVIDER_LOCATION_4, 100));
+	  statusPanelSplitPane5.setDividerLocation(blackboard.get(STATUSPANEL_DIVIDER_LOCATION_5, 200));
+    
+    /*
     statusPanelSplitPane1.setDividerLocation(blackboard.get(
         STATUSPANEL_DIVIDER_LOCATION_1, 300));
     statusPanelSplitPane2.setDividerLocation(blackboard.get(
@@ -1428,7 +1479,7 @@ public class WorkbenchFrame extends JFrame
         STATUSPANEL_DIVIDER_LOCATION_3, 100));
     statusPanelSplitPane4.setDividerLocation(blackboard.get(
         STATUSPANEL_DIVIDER_LOCATION_4, 200));
-
+*/
     Dimension d;
     if (blackboard.get(WIDTH_KEY) == null) {
       d = initWindowSize();
