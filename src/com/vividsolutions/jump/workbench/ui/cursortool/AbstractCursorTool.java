@@ -41,11 +41,6 @@ import com.vividsolutions.jump.workbench.model.UndoableCommand;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.ui.*;
-import com.vividsolutions.jump.workbench.ui.EditTransaction;
-import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
-import com.vividsolutions.jump.workbench.ui.LayerViewPanelListener;
-import com.vividsolutions.jump.workbench.ui.TaskFrame;
-import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.snap.SnapManager;
 import com.vividsolutions.jump.workbench.ui.snap.SnapPolicy;
 import com.vividsolutions.jump.workbench.ui.snap.SnapToFeaturesPolicy;
@@ -77,6 +72,7 @@ import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
+import org.openjump.core.ui.util.ScreenScale;
 
 /**
  * A tool that draws an XOR visual indicator. Subclasses need not keep track of
@@ -106,6 +102,9 @@ public abstract class AbstractCursorTool implements CursorTool {
 	private LayerViewPanelListener layerViewPanelListener = new LayerViewPanelListener() {
 
 		public void cursorPositionChanged(String x, String y) {
+			// show scale view when cursos moves on view      //
+			// [Giuseppe Aruta 2012-feb-18] //
+			getWorkbench().getFrame().setScaleText("1:" + (int) Math.floor(ScreenScale.getHorizontalMapScale(panel.getViewport())));
 		}
 
 		public void selectionChanged() {
