@@ -2,6 +2,8 @@
 
 2012-02-18 mmichaud <michael.michaud@free.fr>
   * Simplify error management in BufferPlugIn
+  * Bugs #3488974 : pre-processing the geometry with a douglas-peucker 
+    simplification using 0.0 tolerance makes the process a bit more robust.  
 
 2012-02-12 mmichaud <michael.michaud@free.fr>
   * Reactivated the North-Arrow plugin (in view menu)

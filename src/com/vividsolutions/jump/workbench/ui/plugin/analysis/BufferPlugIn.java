@@ -51,6 +51,7 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jts.operation.buffer.BufferOp;
 import com.vividsolutions.jts.operation.buffer.BufferParameters;
 import com.vividsolutions.jts.operation.union.UnaryUnionOp;
+import com.vividsolutions.jts.simplify.DouglasPeuckerSimplifier;
 import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.task.*;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -343,6 +344,11 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
     private Geometry runBuffer(Geometry a, BufferParameters param) 
                                            throws TopologyException, Exception {
         Geometry result = null;
+        // Simplifying a with a Douglas-Peucker simplifier can eliminate
+        // useless aligned vertices which can cause exceptions
+        // see Bugs item #3488976
+        // Hopefully, the overhead is be small compared to buffer computation
+        a = DouglasPeuckerSimplifier.simplify(a, 0.0);
         BufferOp bufOp = new BufferOp(a, param);
         result = bufOp.getResultGeometry(bufferDistance);
         return result;
