@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2012-02-19 mmichaud <michael.michaud@free.fr>
+  * Improved SnapToGridPolicy to avoid floating point issue with fractional
+    grid size (872939.1 -> 872939.1000000001)
+
 2012-02-18 mmichaud <michael.michaud@free.fr>
   * Buffer Plugin
       - Simplify error management in BufferPlugIn

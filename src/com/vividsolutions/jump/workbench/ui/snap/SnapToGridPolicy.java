@@ -55,9 +55,19 @@ public class SnapToGridPolicy implements SnapPolicy {
 
         double gridSize = blackboard.get(GRID_SIZE_KEY, 20d);
 
-        Coordinate gridCoordinate = new Coordinate(Math.round(
-                    originalCoordinate.x / gridSize) * gridSize,
+        // [mmichaud 2012-02-19] This tip avoid floating point problems like
+        // calculating 123.10000000001 instead of 123.1 with a 0.1 grisSize
+        Coordinate gridCoordinate = null;
+        if (gridSize > 1.0) {
+            gridCoordinate = new Coordinate(
+                Math.round(originalCoordinate.x / gridSize) * gridSize,
                 Math.round(originalCoordinate.y / gridSize) * gridSize);
+        } else {
+            double scale = 1.0/gridSize;
+            gridCoordinate = new Coordinate(
+                Math.round(originalCoordinate.x * scale) / scale,
+                Math.round(originalCoordinate.y * scale) / scale);
+        }
 
         return (gridCoordinate.distance(originalCoordinate) <= (SnapManager.getToleranceInPixels(blackboard) / panel.getViewport()
                                                                                                                     .getScale()))
