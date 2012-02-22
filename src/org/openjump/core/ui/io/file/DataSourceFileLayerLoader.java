@@ -113,6 +113,9 @@ public class DataSourceFileLayerLoader extends AbstractFileLayerLoader {
         Category category = TaskUtil.getSelectedCategoryName(workbenchContext);
         layerManager.addLayerable(category.getName(), layer);
         layer.setName(layerName);
+        if (uri.getScheme().equals("zip")) {
+            layer.setReadonly(true);
+        }
         
 //        category.add(0, layer);
 

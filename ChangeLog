@@ -4,6 +4,8 @@
   * Bug #3488976 : fixed problems in the Noder plugin except one depending on a
     new version of JTS (preserving z with snap-rounding noder). There is still
     room for optimization in this plugin.
+  # Bug 3488028 : datasets read from a zip file are made readonly
+    (org.openjump.core.ui.io.file.DataSourceFileLayerLoader)
 
 2012-02-19 mmichaud <michael.michaud@free.fr>
   * Improved SnapToGridPolicy to avoid floating point issue with fractional
