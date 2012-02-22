@@ -38,6 +38,7 @@ import com.vividsolutions.jts.noding.*;
 import com.vividsolutions.jts.noding.snapround.MCIndexSnapRounder;
 import com.vividsolutions.jts.operation.linemerge.LineMerger;
 import com.vividsolutions.jts.operation.polygonize.Polygonizer;
+import com.vividsolutions.jts.precision.CoordinatePrecisionReducerFilter;
 import com.vividsolutions.jts.util.*;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
@@ -63,6 +64,22 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 
+/**
+ * Noder PlugIn computes intersection nodes in a collection of linear or areal
+ * features.</p>
+ * Main options are :
+ * <ul>
+ * <li>Input features : selected features or selected layer</li>
+ * <li>Output : new layer or layer update</li>
+ * <li>Output intersection points : yes/no</li>
+ * <li>What do you want to do with lines : nothing, insert nodes, split lines</li>
+ * <li>What do you want to do with polygons : nothing, insert nodes, split polygons</li>
+ * <li>Make the process fully robust using snap rounding mode : yes/no</li>
+ * <li>Interpolate z on new points</li>
+ * </ul>
+ *
+ * @author Micha&euml;l Michaud
+ */
 public class NoderPlugIn extends AbstractThreadedUiPlugIn {
     
     private final static String PROCESSED_DATA          = I18N.get("jump.plugin.edit.NoderPlugIn.processed-data");
@@ -153,29 +170,48 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
         return true;
     }
 
+    
     public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
         monitor.allowCancellationRequests();
         monitor.report(I18N.get("jump.plugin.edit.NoderPlugIn.noding-input"));
         
         final Layer layer = context.getLayerManager().getLayer(layerName);
         
-        // Feature collection to process, GeometryFactory and schema for this fc
+        // Feature collection to process and GeometryFactory initialisation
         Collection inputFeatures = getFeaturesToProcess(layer, context);
-        gf = ((Feature)inputFeatures.iterator().next()).getGeometry().getFactory();
+        if (inputFeatures.isEmpty()) {
+            context.getWorkbenchFrame().warnUser(I18N.get("jump.plugin.edit.NoderPlugIn.no-data-to-process"));
+            return;
+        }
         schema = ((Feature)inputFeatures.iterator().next()).getSchema();
+        // Now we are sure there is at least one feature to process
+        
+        // Create a GeometryFactory consistent with the snap_rounding parameters 
+        if (snap_rounding) {
+            gf = new GeometryFactory(
+                new PrecisionModel(Math.pow(10.0, (double)snap_rounding_dp)));
+        }
+        else {
+            gf = ((Feature)inputFeatures.iterator().next()).getGeometry().getFactory();
+        }
         
         monitor.report(I18N.get("jump.plugin.edit.NoderPlugIn.noding"));
         
+        // Segments strings are extracted from the input dataset, keeping a
+        // link to their parent feature
         List<SegmentString> segmentStrings = 
             Features2SegmentStringsWithData.getSegmentStrings(inputFeatures);
         
+        // If inputFeatures contains only 0-dim features, segmentString will be
+        // empty and the process should stop !
         if (segmentStrings.isEmpty()) {
             context.getWorkbenchFrame().warnUser(I18N.get("jump.plugin.edit.NoderPlugIn.no-data-to-process"));
             return;
         }
+        
         // If the user does not want to split features, find intersections will
         // only find intersections if a vertex is missing (intersections
-        // locateded in the interior of a segment).
+        // located in the interior of a segment).
         // ==> use IntersectionFinderAdder
         if (find_intersections && (!split_lines) && (!split_polygons)) {
             IntersectionFinderAdder intersector = new IntersectionFinderAdder(ROBUST_INTERSECTOR);
@@ -183,9 +219,11 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
             context.addLayer(StandardCategoryNames.RESULT, 
                             layerName + " " + INTERSECTIONS, nodes);
         }
-        // If the user wants to split features, find intersections will
-        // find all intersections located in the interior of linear elements.
-        // Vertices may already exist or not.
+        
+        // If the user wants to split features (either linestring or polygons), 
+        // find intersections will return all intersections located in the 
+        // interior of linear elements (including existing vertices as long as
+        // they are not a linestring endpoint).
         // ==> use IntersectionAdder
         else if (find_intersections) {
             IntersectionAdder intersector = new IntersectionAdder(ROBUST_INTERSECTOR);
@@ -193,9 +231,11 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
             context.addLayer(StandardCategoryNames.RESULT, 
                             layerName + " " + INTERSECTIONS, nodes);
         }
+        
         // If neither process lines nor process polygons is checked, do nothing
         if (do_not_process_lines && do_not_process_polygons) {
         }
+        
         // Else, compute nodes and create the geomStructureMap
         else {
             Noder noder = snap_rounding ? 
@@ -203,28 +243,30 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
                           getMCIndexNoder(new IntersectionAdder(ROBUST_INTERSECTOR));
             noder.computeNodes(segmentStrings);
             Collection nodedSubstring = noder.getNodedSubstrings();
+
             Map<Feature,Map<Integer,Map<Integer,List<SegmentString>>>> 
                 geomStructureMap = SegmentStringsWithData2Features
                                    .getFeature2SegmentStringTreeMap(nodedSubstring);
             FeatureCollection fc = new FeatureDataset(schema);
             final Collection<Feature> updatedFeatures = new ArrayList<Feature>();
-            // Node lines and/or polygons and interpolate z if needed
+            // Node lines and/or polygons and interpolate z as needed
+            // note : nodeFeatures method select lines and/or polygons according
+            // to node_lines and node_polygons option
             if (node_lines || node_polygons) {
                 if (create_new_layer) {
                     fc.addAll(nodeFeatures(geomStructureMap, interpolate_z, interpolated_z_dp));
                 }
                 else if (update_selected_features) {
                     updatedFeatures.addAll(insertRemove(inputFeatures, geomStructureMap));
-                    //final Collection undoableNewFeatures = newFeatures;
-                    //final Collection undoableModifiedFeatures = inputFeatures;
-                    //commitUpdate(context, layer, inputFeatures, newFeatures);
+                    // commit update happens later
                 }
             }
+            
             // If split AND interpolation is wanted, we need to
             // - merge noded SegmentStrings for interpolation
             // - interpolate
             // - split again merged strings into SegmentStrings
-            if (/*interpolate_z &&*/ (split_lines || split_polygons)) {
+            if (interpolate_z && (split_lines || split_polygons)) {
                 for (Map.Entry<Feature,Map<Integer,Map<Integer,List<SegmentString>>>> entry : geomStructureMap.entrySet()) {
                     Geometry g = entry.getKey().getGeometry();
                     int dim = g.getDimension();
@@ -234,28 +276,27 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
                     }
                 }
             }
+            
             // Split lines and/or polygons either with interpolated z or not
             if (split_lines || split_polygons) {
                 if (create_new_layer) {
                     if (split_lines) {
-                        fc.addAll(splitLines(nodedSubstring));
+                        fc.addAll(splitLines(monitor, nodedSubstring));
                     }
                     if (split_polygons) {
                         STRtree index = indexSegmentStrings(nodedSubstring);
-                        fc.addAll(splitPolygons(geomStructureMap, index));
+                        fc.addAll(splitPolygons(monitor, geomStructureMap, index));
                     }
                 }
                 else if (update_selected_features) {
                     insertRemove(inputFeatures, geomStructureMap);
-                    //final Collection<Feature> newFeatures = new ArrayList<Feature>();
                     if (split_lines) {
-                        updatedFeatures.addAll(splitLines(nodedSubstring));
+                        updatedFeatures.addAll(splitLines(monitor, nodedSubstring));
                     }
                     if (split_polygons) {
                         STRtree index = indexSegmentStrings(nodedSubstring);
-                        updatedFeatures.addAll(splitPolygons(geomStructureMap, index));
+                        updatedFeatures.addAll(splitPolygons(monitor, geomStructureMap, index));
                     }
-                    //commitUpdate(context, layer, inputFeatures, newFeatures);
                 }
             }
             if (update_selected_features) {
@@ -277,11 +318,10 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
     }
     
     private Noder getMCIndexNoder(SegmentIntersector intersector) {
-        //MCIndexNoder noder = new MCIndexNoder();
-        //SimpleNoder noder = new SimpleNoder();
-        IteratedNoder noder = new IteratedNoder(new PrecisionModel());
-        noder.setMaximumIterations(16);
-        //noder.setSegmentIntersector(intersector);
+        MCIndexNoder noder = new MCIndexNoder();
+        noder.setSegmentIntersector(intersector);
+        //IteratedNoder noder = new IteratedNoder(new PrecisionModel());
+        //noder.setMaximumIterations(16);
         return noder;
     }
     
@@ -317,8 +357,8 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
     /**
      * Find intersections in a collection of linestrings with the MCIndexNoder. 
      * Intersections include proper intersections, and intersections located on
-     * vertices of input LineStrings as long these vertices are not both end
-     * points of the LineStrings.
+     * vertices of input LineStrings as long as these vertices are not end
+     * points of two LineStrings.
      * This method is for detection only. It uses a floating point precision
      * model and as a consequence, it is not 100% robust.
      *
@@ -328,6 +368,7 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
      */
     private FeatureCollection findIntersections(List<SegmentString> segmentStrings,
                                                IntersectionAdder intersector) {
+    
         Noder noder = getMCIndexNoder(intersector);
         noder.computeNodes(segmentStrings);
         Set<Geometry> nodes = new HashSet<Geometry>();
@@ -375,7 +416,10 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
     }
     
     
-    private List<Feature> splitLines(Collection nodedSubstring) {
+    private List<Feature> splitLines(TaskMonitor monitor, Collection nodedSubstring) {
+        
+        monitor.report(I18N.get("jump.plugin.edit.NoderPlugIn.split-lines"));
+        int count = 0, total = nodedSubstring.size();
         List<Feature> list = new ArrayList<Feature>();
         for (Object line : nodedSubstring) {
             SegmentString ss = (SegmentString)line;
@@ -389,6 +433,7 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
                     list.add(feature);
                 }
             }
+            monitor.report(++count, total, "");
         }
         return list;
     }
@@ -410,45 +455,93 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
          return env;
     }
     
-    private List<Feature> splitPolygons(
+    private List<Feature> splitPolygons(TaskMonitor monitor,
             Map<Feature,Map<Integer,Map<Integer,List<SegmentString>>>> geomStructureMap,
             STRtree index) {
+    
+        monitor.report(I18N.get("jump.plugin.edit.NoderPlugIn.split-polygons"));
+        int count = 0 , total = geomStructureMap.size();
         List<Feature> list = new ArrayList<Feature>();
+        
         for (Map.Entry<Feature,Map<Integer,Map<Integer,List<SegmentString>>>> entry : geomStructureMap.entrySet()) {
             Geometry geometry = entry.getKey().getGeometry();
+
             if (geometry.getDimension() == 2) {
-                Polygonizer polygonizer = new Polygonizer();
-                List candidates = index.query(geometry.getEnvelopeInternal());
-                for (Object o : candidates) {
-                    Geometry g = geometry.getFactory()
-                        .createLineString(((SegmentString)o).getCoordinates());
-                    polygonizer.add(g);
+                
+                // If snap_rounding has been requested, segmentStrings have been
+                // rounded during the snapping process, so that input geometry 
+                // must also be rounded if we want the comparison to be fair.
+                if (snap_rounding) {
+                    CoordinatePrecisionReducerFilter filter = 
+                        new CoordinatePrecisionReducerFilter(gf.getPrecisionModel());
+                    geometry = (Geometry)geometry.clone();
+                    geometry.apply(filter);
+                    geometry.geometryChanged();
                 }
+                
+                Polygonizer polygonizer = new Polygonizer();
+                // Building a set will remove duplicates
+                // (polygonize does not work with duplicate LineStrings in jts 1.12)
+                Set<Geometry> uniqueCandidates = new HashSet<Geometry>();
+                Collection<SegmentString> sourceSegmentStrings = new ArrayList<SegmentString>();
+                // Add SegmentStrings issued from source geometry
+                for (Map<Integer,List<SegmentString>> map : entry.getValue().values()) {
+                    for (List<SegmentString> ssList : map.values()) {
+                        for (SegmentString ss : ssList) {
+                            sourceSegmentStrings.add(ss);
+                            Geometry g = gf.createLineString(ss.getCoordinates());
+                            uniqueCandidates.add(g.norm());
+                        }
+                    }
+                }
+                
+                Collection  candidates = index.query(geometry.getEnvelopeInternal());
+                // Add SegmentStrings not belonging to source geometry
+                for (Object o : candidates) {
+                    SegmentString ss = (SegmentString)o;
+                    Geometry g = gf.createLineString(ss.getCoordinates());
+                    uniqueCandidates.add(g.norm());
+                }
+                polygonizer.add(uniqueCandidates);
                 Collection polys = polygonizer.getPolygons();
+                
                 for (Object o : polys) {
                     Geometry g = (Geometry)o;
-                    if (g.getInteriorPoint().intersects(geometry)) {
+                    // Warning : a robusteness problem found in interiorPoint
+                    // function sometimes lying on the boundary
+                    Point interiorPoint = g.getInteriorPoint();
+                    if (interiorPoint.intersects(geometry)) {
+                        if (interiorPoint.intersects(geometry.getBoundary())) continue;
                         Feature newFeature = entry.getKey().clone(false);
-                        resetZpoly(g, candidates);
+                        resetZpoly(g, sourceSegmentStrings);
                         newFeature.setGeometry(g);
                         list.add(newFeature);
                     }
                 }
             }
+            monitor.report(++count, total, "");
         }
         return list;
     }
     
-    private static void resetZpoly(Geometry geometry, Collection segmentStrings) {
-        for (Object o : segmentStrings) {
-            SegmentString ss = (SegmentString)o;
-            int dim = ((SegmentStringData)ss.getData()).getFeature().getGeometry().getDimension();
+    /** 
+     * For SegmentStrings endpoints, transfer z of source SegmentStrings
+     * to final geometry.
+     */
+    private static void resetZpoly(Geometry geometry, Collection edges) {
+        //System.out.println("process " + geometry);
+        //System.out.println("process " + geometry.getCoordinates());
+        for (Object o : edges) {
+            
+            SegmentString edge = (SegmentString)o;
+            //System.out.println("    compare to " + java.util.Arrays.toString(g.getCoordinates()));
+            int dim = ((SegmentStringData)edge.getData()).getFeature().getGeometry().getDimension();
             if (dim == 2) {
-                Coordinate[] cc = ss.getCoordinates();
-                Coordinate ci = cc[0];
-                Coordinate cf = cc[cc.length-1];
-                cc = geometry.getCoordinates();
-                for (Coordinate c : cc) {
+                Coordinate[] cc_edge = edge.getCoordinates();
+                Coordinate ci = cc_edge[0];
+                Coordinate cf = cc_edge[cc_edge.length-1];
+                Coordinate[] cc_g = geometry.getCoordinates();
+                for (Coordinate c : cc_g) {
                     if (c.equals(ci)) c.z = ci.z;
                     if (c.equals(cf)) c.z = cf.z;
                 }
@@ -543,17 +636,22 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
         
         dialog.addSeparator();
         dialog.addSubTitle(ADVANCED_OPTIONS);
+        
         final JCheckBox snapRoundingCB = dialog.addCheckBox(SNAP_ROUNDING, snap_rounding, SNAP_ROUNDING_TOOLTIP);
         final JTextField snapRoundingDPTF = dialog.addIntegerField(SNAP_ROUNDING_DP, snap_rounding_dp, 6, DECIMAL_DIGITS_TOOLTIP);
+        
+        final JCheckBox interpolateZCB = dialog.addCheckBox(INTERPOLATE_Z, interpolate_z);
+        final JTextField interpolateZDPTF = dialog.addIntegerField(INTERPOLATED_Z_DP, interpolated_z_dp, 6, DECIMAL_DIGITS_TOOLTIP);
+        
         snapRoundingDPTF.setEnabled(snap_rounding);
         snapRoundingCB.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e) {
                 dialog.setFieldEnabled(SNAP_ROUNDING_DP, snapRoundingCB.isSelected());
+                //dialog.setFieldEnabled(INTERPOLATE_Z, !snapRoundingCB.isSelected());
+                //dialog.setFieldEnabled(INTERPOLATED_Z_DP, !snapRoundingCB.isSelected());
             }
         });
-        
-        final JCheckBox interpolateZCB = dialog.addCheckBox(INTERPOLATE_Z, interpolate_z);
-        final JTextField interpolateZDPTF = dialog.addIntegerField(INTERPOLATED_Z_DP, interpolated_z_dp, 6, DECIMAL_DIGITS_TOOLTIP);
+
         interpolateZDPTF.setEnabled(interpolate_z);
         interpolateZCB.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e) {

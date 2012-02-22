@@ -170,7 +170,7 @@ public class SegmentStringsWithData2Features {
     } 
     
     /**
-     * Interpolate the z of coordinate having indice c between coordinates
+     * Interpolate the z of coordinate c between coordinates
      * having prev and next indices in cc coordinate array.
      */
     private static double interpolate(Coordinate c, LineString line, int dp) {
