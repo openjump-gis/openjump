@@ -507,12 +507,18 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
                 
                 for (Object o : polys) {
                     Geometry g = (Geometry)o;
-                    // Warning : a robusteness problem found in interiorPoint
-                    // function sometimes lying on the boundary
                     Point interiorPoint = g.getInteriorPoint();
                     if (interiorPoint.intersects(geometry)) {
+                        // Warning : a robusteness problem found in interiorPoint
+                        // function sometimes lying on the boundary
                         if (interiorPoint.intersects(geometry.getBoundary())) continue;
                         Feature newFeature = entry.getKey().clone(false);
+                        // Polygonization may have lost some original z, because
+                        // Thanks to previous process, all intersection nodes
+                        // should now have a z, but polygonization will keep
+                        // only one z per node, which may blong to geometry A or
+                        // geometry B
+                        // resetZpoly will find the z on the source geometry
                         resetZpoly(g, sourceSegmentStrings);
                         newFeature.setGeometry(g);
                         list.add(newFeature);

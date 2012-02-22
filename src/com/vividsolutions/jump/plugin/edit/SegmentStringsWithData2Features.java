@@ -52,6 +52,8 @@ import java.util.Map;
  * <li>The second to build a full map containing Features and their 
  * corresponding SegmentString's Map</li>
  * </ul>
+ *
+ * @author Micha&eumll Michaud
  */
 public class SegmentStringsWithData2Features {
 
@@ -72,36 +74,47 @@ public class SegmentStringsWithData2Features {
             boolean interpolate_z, int interpolated_z_dp) {
         // Use the same factory as source
         GeometryFactory gf = source.getFactory();
-        Geometry[] geoms = new Geometry[nodedSegmentStrings.size()];
+        Geometry[] finalComponents = new Geometry[nodedSegmentStrings.size()];
         // For each component
-        for (int i = 0 ; i < geoms.length ; i++) {
+        for (int i = 0 ; i < finalComponents.length ; i++) {
             Geometry sourceComponent = source.getGeometryN(i);
             Map<Integer,List<SegmentString>> lines = nodedSegmentStrings.get(i);
+            
+            // LineString component processing
             if (sourceComponent instanceof LineString) {
-                geoms[i] = merge(lines.get(0), gf, false);
+                // Merge SegmentStrings to create the new noded Geometry
+                finalComponents[i] = merge(lines.get(0), gf, false);
+                // Restore z values from the source geometry where possible
                 restoreZ(lines.get(0), (LineString)sourceComponent);
+                // Interpolate z values for new nodes
                 if (interpolate_z) {
-                    interpolate(lines.get(0), (LineString)geoms[i], interpolated_z_dp);
+                    interpolate(lines.get(0), (LineString)finalComponents[i], interpolated_z_dp);
                 }
             }
+            
+            // Polygonal component processing
             else if (sourceComponent instanceof Polygon) {
+                // Merge SegmentStrings to create the new noded exterior ring
                 LinearRing exteriorRing = (LinearRing)merge(lines.get(0), gf, true);
-                restoreZ(lines.get(0), (LineString)exteriorRing);
+                // Restore z from source geometry where possible
+                restoreZ(lines.get(0), ((Polygon)sourceComponent).getExteriorRing());
+                // Interpolate z values for new nodes
                 if (interpolate_z) {
                     interpolate(lines.get(0), exteriorRing, interpolated_z_dp);
                 }
+                // Now process holes the same way
                 LinearRing[] holes = new LinearRing[lines.size()-1];
                 for (int j = 0 ; j < holes.length ; j++) {
                     holes[j] = (LinearRing)merge(lines.get(j+1), gf, true);
-                    restoreZ(lines.get(j+1), (LineString)holes[j]);
+                    restoreZ(lines.get(j+1), ((Polygon)sourceComponent).getInteriorRingN(j));
                     if (interpolate_z) {
                         interpolate(lines.get(j+1), holes[j], interpolated_z_dp);
                     }
                 }
-                geoms[i] = source.getFactory().createPolygon(exteriorRing, holes);
+                finalComponents[i] = source.getFactory().createPolygon(exteriorRing, holes);
             }
         }
-        return source.getFactory().buildGeometry(Arrays.asList(geoms));
+        return source.getFactory().buildGeometry(Arrays.asList(finalComponents));
     }
     
     /** 
@@ -119,7 +132,7 @@ public class SegmentStringsWithData2Features {
         // LineString, the result of the merge operation will be a set of
         // unordered linestrings.
         // Ordering them with the LineSequencer makes it possible to re-build a
-        // single continuous LineString. However, there is no gurantee that
+        // single continuous LineString. However, there is no guarantee that
         // the resulting LineString describes the original one in the same order
         LineSequencer sequencer = new LineSequencer();
         sequencer.add(lineStrings);
@@ -132,6 +145,12 @@ public class SegmentStringsWithData2Features {
         return ls;
     }
     
+    /**
+     * For SegmentString's end points equal to a source geometry point
+     * set the end point z to the source geometry z.
+     * Otherwise, set it to NaN (this second operation is important to avoid
+     * transferring a z from a feature to the other).
+     */
     private static void restoreZ(List<SegmentString> list, LineString g) {
         Map<Coordinate,Coordinate> map = new HashMap<Coordinate,Coordinate>();
         for (Coordinate c : g.getCoordinates()) {
@@ -171,7 +190,7 @@ public class SegmentStringsWithData2Features {
     
     /**
      * Interpolate the z of coordinate c between coordinates
-     * having prev and next indices in cc coordinate array.
+     * having prev and next indices in the line Coordinate array.
      */
     private static double interpolate(Coordinate c, LineString line, int dp) {
         int prevIndex = -1;
