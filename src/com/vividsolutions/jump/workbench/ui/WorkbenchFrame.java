@@ -29,6 +29,7 @@ package com.vividsolutions.jump.workbench.ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -1267,7 +1268,7 @@ public class WorkbenchFrame extends JFrame
     public void exitApplication(JFrame mainFrame) {
       if (confirmClose(I18N.get("ui.WorkbenchFrame.exit-jump"),
         getLayersWithModifiedFeatureCollections(),
-        getGeneratedLayers())) {
+        getGeneratedLayers(), WorkbenchFrame.this)) {
         // PersistentBlackboardPlugIn listens for when the workbench is
         // hidden [Jon Aquino]
     	saveWindowState();
@@ -1294,7 +1295,7 @@ public class WorkbenchFrame extends JFrame
     if (lastTaskFrame) {
       Collection modifiedItems = layerManager.getLayersWithModifiedFeatureCollections();
       Collection generatedItems = layerManager.getLayersWithNullDataSource();
-      if (confirmClose(I18N.get("ui.WorkbenchFrame.close-task"), modifiedItems, generatedItems)) {
+      if (confirmClose(I18N.get("ui.WorkbenchFrame.close-task"), modifiedItems, generatedItems, taskFrame)) {
         // There are other internal frames associated with this task
         if (associatedFrames.size() != 0) {
           // Confirm you want to close them first
@@ -1339,17 +1340,34 @@ public class WorkbenchFrame extends JFrame
     }
   }
 
-  private boolean confirmClose(String action, Collection modifiedLayers, Collection generatedLayers) {
+  /**
+   * This method is used to confirm the close of a TaskFrame or the close of the
+   * application. In both cases, we need to check there is no unsaved layers.
+   */
+  private boolean confirmClose(String action, 
+                               Collection modifiedLayers, 
+                               Collection generatedLayers,
+                               Container container) {
         if (modifiedLayers.isEmpty()) {
             if(generatedLayers.isEmpty()){
                 return true;
             }
-            JOptionPane pane = new JOptionPane(I18N.getMessage("ui.WorkbenchFrame.do-you-really-want-to-close-openjump-generated-layers-not-saved", new Object[]{Integer.valueOf(generatedLayers.size())}),
-                    JOptionPane.QUESTION_MESSAGE);
+            JOptionPane pane = new JOptionPane();
+            String message = null;
+            if (container instanceof WorkbenchFrame) {
+                message = I18N.getMessage("ui.WorkbenchFrame.do-you-really-want-to-close-openjump", 
+                    new Object[]{Integer.valueOf(generatedLayers.size())});
+            }
+            else if (container instanceof TaskFrame) {
+                message = I18N.getMessage("ui.WorkbenchFrame.do-you-really-want-to-close-the-project", 
+                    new Object[]{Integer.valueOf(generatedLayers.size())});
+            }
+            pane.setMessage(message);
+            pane.setMessageType(JOptionPane.QUESTION_MESSAGE);
             pane.setOptions(new String[] {
                     action, I18N.get("ui.WorkbenchFrame.cancel")
                   });
-            pane.createDialog(this, "JUMP").setVisible(true);
+            pane.createDialog(this, "OpenJUMP").setVisible(true);
             return pane.getValue().equals(action);
         }
     JOptionPane pane = new JOptionPane(
@@ -1364,13 +1382,13 @@ public class WorkbenchFrame extends JFrame
           + " ("
           + ((modifiedLayers.size() > 3) ? "e.g. " : "")
           + StringUtil.toCommaDelimitedString(new ArrayList(modifiedLayers).subList(
-            0, Math.min(3, modifiedLayers.size()))) + "). "
-          + I18N.get("ui.WorkbenchFrame.continue") + "?", 80),
+            0, Math.min(3, modifiedLayers.size()))) + ").\n"
+          + I18N.get("ui.WorkbenchFrame.continue"), 80),
       JOptionPane.WARNING_MESSAGE);
     pane.setOptions(new String[] {
       action, I18N.get("ui.WorkbenchFrame.cancel")
     });
-    pane.createDialog(this, "JUMP").setVisible(true);
+    pane.createDialog(this, "OpenJUMP").setVisible(true);
     return pane.getValue().equals(action);
   }
 
@@ -1380,7 +1398,7 @@ public class WorkbenchFrame extends JFrame
     pane.setOptions(new String[] {
       action, com.vividsolutions.jump.I18N.get("ui.WorkbenchFrame.cancel")
     });
-    pane.createDialog(this, "JUMP").setVisible(true);
+    pane.createDialog(this, "OpenJUMP").setVisible(true);
     return pane.getValue().equals(action);
   }
 
