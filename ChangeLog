@@ -2,6 +2,7 @@
 
 2012-02-23 mmichaud <michael.michaud@free.fr>
   * Bug #3486847 Wrong Dialog message when Closing project
+  * Bug #3491956 Union of overlapping lines could not be merged
 
 2012-02-22 mmichaud <michael.michaud@free.fr>
   * Bug #3488976 : fixed problems in the Noder plugin except one depending on a

@@ -384,14 +384,19 @@ public class UnionByAttributePlugIn extends AbstractThreadedUiPlugIn {
         if (points.size()>0 && null != (gp = UnaryUnionOp.union(points))) {
             geoms.add(gp);
         }
-        if (merge_linestrings && lineStrings.size()>0) {
-            LineMerger merger = new LineMerger();
-            merger.add(lineStrings);
-            geoms.addAll(merger.getMergedLineStrings());
-        }
+        //if (merge_linestrings && lineStrings.size()>0) {
+        //    LineMerger merger = new LineMerger();
+        //    merger.add(lineStrings);
+        //    geoms.addAll(merger.getMergedLineStrings());
+        //}
         else if (lineStrings.size()>0) {
             gp = UnaryUnionOp.union(lineStrings);
-            if (gp != null) geoms.add(gp);
+            if (gp != null && merge_linestrings) {
+                LineMerger merger = new LineMerger();
+                merger.add(gp);
+                geoms.addAll(merger.getMergedLineStrings());
+            }
+            else if (gp != null) geoms.add(gp);
         }
         if (polygons.size()>0 && null != (gp = UnaryUnionOp.union(polygons))) {
             geoms.add(gp);
