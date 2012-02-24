@@ -33,6 +33,7 @@ package com.vividsolutions.jump.workbench.ui;
 
 import java.awt.*;
 import java.awt.Dimension;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -152,6 +153,11 @@ public class LayerViewPanel extends JPanel
 					WorkbenchFrame workbenchFrame = (WorkbenchFrame) SwingUtilities
 							.getAncestorOfClass(WorkbenchFrame.class,
 									LayerViewPanel.this);
+				    //[mmichaud 2012-02-24] get rid of the focus problem between
+				    // OpenJUMP and BeanshellEditor (bug #3487686)
+					Window focusedWindow = KeyboardFocusManager
+					        .getCurrentKeyboardFocusManager().getFocusedWindow();
+					if (focusedWindow != workbenchFrame) return;
 					if (workbenchFrame != null && !workbenchFrame.isActive()) {
 						workbenchFrame.requestFocus();
 					}
