@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2012-02-25 mmichaud <michael.michaud@free.fr>
+  * Small improvements of status bar layout
+
 2012-02-24 mmichaud <michael.michaud@free.fr>
   * Bug #3487686 BeanshellEditor : the window focus problem between OpenJUMP
     and BeanshellEditor should be solved (in LayerViewPanel class)
