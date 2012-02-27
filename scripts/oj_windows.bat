@@ -152,11 +152,13 @@ set JAVA_OPTS=%JAVA_OPTS% -Dlog4j.configuration="%LOG4J_CONF%" -Dlog.dir="%LOG_D
 
 rem -- set default app options --
 set JUMP_OPTS=-default-plugins bin\default-plugins.xml -state "%SETTINGS_HOME%" -plug-in-directory "%LIB%\ext"
+rem --- workbench-properties.xml is used to manually load plugins (ISA uses this) ---
+if EXIST "bin\workbench-properties.xml" set "JUMP_OPTS=%JUMP_OPTS% -properties bin\workbench-properties.xml"
 
 rem -- disconnect javaw from console by using start --
 rem -- note: title is needed or start won't accept quoted path to java binary (protect spaces in javapath) --
 if /i "%JAVA_BIN%"=="javaw" ( set START=start "" ) else ( set START= )
-%START% "%JAVA%" -cp "%CLASSPATH%" %JAVA_OPTS% com.vividsolutions.jump.workbench.JUMPWorkbench %JUMP_OPTS%
+%START% "%JAVA%" -cp "%CLASSPATH%" %JAVA_OPTS% com.vividsolutions.jump.workbench.JUMPWorkbench %JUMP_OPTS% %*
 
 cd /D %OLD_DIR%
 
