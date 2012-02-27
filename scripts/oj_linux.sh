@@ -66,7 +66,6 @@ fi
 [ "$1" = "--post-install" ] && postinstall "$JUMP_HOME"
 [ "$1" = "--mac-install" ] && macinstall "$JUMP_HOME"
 
-JUMP_PLUGINS=./bin/default-plugins.xml
 
 ## cd into jump home
 OLD_DIR=`pwd`
@@ -144,6 +143,7 @@ fi
 JUMP_NATIVE_DIR="$JUMP_LIB/native"
 JUMP_PLUGIN_DIR="${JUMP_PLUGIN_DIR:=$JUMP_LIB/ext}"
 
+JUMP_PLUGINS=./bin/default-plugins.xml
 if [ -z "$JUMP_PLUGINS" ] || [ ! -f "$JUMP_PLUGINS" ]; then
   JUMP_PLUGINS="./bin/default-plugins.xml"
   if [ ! -f "$JUMP_PLUGINS" ]; then
@@ -164,6 +164,11 @@ export CLASSPATH;
 JUMP_OPTS="-plug-in-directory $JUMP_PLUGIN_DIR"
 if [ -f "$JUMP_PLUGINS" ]; then
   JUMP_OPTS="$JUMP_OPTS -default-plugins $JUMP_PLUGINS"
+fi
+# workbench-properties.xml is used to manually load plugins (ISA uses this)
+JUMP_PROPERTIES=./bin/workbench-properties.xml
+if [ -n "$JUMP_PROPERTIES" ] && [ -f "$JUMP_PROPERTIES" ]; then
+  JUMP_OPTS="$JUMP_OPTS -properties \"$JUMP_PROPERTIES\""
 fi
 
 # compile jre opts, respect already set ones from e.g. mac
