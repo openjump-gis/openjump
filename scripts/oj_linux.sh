@@ -185,7 +185,7 @@ export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$JUMP_NATIVE_DIR:$JUMP_HOME/lib/ext"
 # try to start if no errors so far
 if [ -z "$ERROR" ]; then
   # log.dir needs a trailing slash for path concatenation in log4j.xml
-  $JAVA -cp "$CLASSPATH" -Dlog.dir="$JUMP_SETTINGS/" $JAVA_OPTS $MAIN -state "$JUMP_SETTINGS/" $JUMP_OPTS $*
+  $JAVA -cp "$CLASSPATH" -Dlog.dir="$JUMP_SETTINGS/" $JAVA_OPTS $MAIN -state "$JUMP_SETTINGS/" $JUMP_OPTS "$@"
   # result of jre call
   ERROR=$?
 fi
