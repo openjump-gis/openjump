@@ -168,7 +168,7 @@ fi
 # workbench-properties.xml is used to manually load plugins (ISA uses this)
 JUMP_PROPERTIES=./bin/workbench-properties.xml
 if [ -n "$JUMP_PROPERTIES" ] && [ -f "$JUMP_PROPERTIES" ]; then
-  JUMP_OPTS="$JUMP_OPTS -properties \"$JUMP_PROPERTIES\""
+  JUMP_OPTS="$JUMP_OPTS -properties $JUMP_PROPERTIES"
 fi
 
 # compile jre opts, respect already set ones from e.g. mac
