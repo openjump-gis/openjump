@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2012-03-05 mmichaud <michael.michaud@free.fr>
+  * SimpleQuery : change the definition of strictIntersection from
+    TFFTFF*** to TFF*FF*** so that closed linestring can also be found
+
 2012-02-25 mmichaud <michael.michaud@free.fr>
   * Small improvements of status bar layout
 

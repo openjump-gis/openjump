@@ -20,7 +20,9 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 /**
  * Condition
  * @author Michael MICHAUD
- * @version 0.2.2
+ * @version 0.2.3
+ * version 0.2.3 (2012-03-05)
+ *     change TFFTFF*** to TFF*FF*** for the strictIntersection test
  * version 0.2.2 (2010-01-27)
  *     added Date management
  *     better null handling 
@@ -201,7 +203,7 @@ public class Condition  {
                 if (op==Operator.INTER && g.intersects(p)) return true;
                 else if (op==Operator.CONTA && g.contains(p)) return true;
                 else if (op==Operator.WITHI && g.within(p)) return true;
-                else if (op==Operator.WSTRI && g.relate(p, "TFFTFF***")) return true;
+                else if (op==Operator.WSTRI && g.relate(p, "TFF*FF***")) return true;
                 else if (op==Operator.WDIST && g.distance(p)<op.arg) return true;
                 else if (op==Operator.TOUCH && g.touches(p)) return true;
                 else if (op==Operator.CROSS && g.crosses(p)) return true;
@@ -221,7 +223,7 @@ public class Condition  {
                     if (op==Operator.INTER && g.intersects(p)) return true;
                     else if (op==Operator.CONTA && g.contains(p)) return true;
                     else if (op==Operator.WITHI && g.within(p)) return true;
-                    else if (op==Operator.WSTRI && g.relate(p, "TFFTFF***")) return true;
+                    else if (op==Operator.WSTRI && g.relate(p, "TFF*FF***")) return true;
                     else if (op==Operator.WDIST && g.distance(p)<op.arg) return true;
                     else if (op==Operator.TOUCH && g.touches(p)) return true;
                     else if (op==Operator.CROSS && g.crosses(p)) return true;
@@ -242,7 +244,7 @@ public class Condition  {
                     if (op==Operator.INTER && g.intersects(p)) return true;
                     else if (op==Operator.CONTA && g.contains(p)) return true;
                     else if (op==Operator.WITHI && g.within(p)) return true;
-                    else if (op==Operator.WSTRI && g.relate(p, "TFFTFF***")) return true;
+                    else if (op==Operator.WSTRI && g.relate(p, "TFF*FF***")) return true;
                     else if (op==Operator.WDIST && g.distance(p)<op.arg) return true;
                     else if (op==Operator.TOUCH && g.touches(p)) return true;
                     else if (op==Operator.CROSS && g.crosses(p)) return true;
@@ -261,7 +263,7 @@ public class Condition  {
                 if (op==Operator.INTER && g.intersects(p)) return true;
                 else if (op==Operator.CONTA && g.contains(p)) return true;
                 else if (op==Operator.WITHI && g.within(p)) return true;
-                else if (op==Operator.WSTRI && g.relate(p, "TFFTFF***")) return true;
+                else if (op==Operator.WSTRI && g.relate(p, "TFF*FF***")) return true;
                 else if (op==Operator.WDIST && g.distance(p)<op.arg) return true;
                 else if (op==Operator.TOUCH && g.touches(p)) return true;
                 else if (op==Operator.CROSS && g.crosses(p)) return true;
