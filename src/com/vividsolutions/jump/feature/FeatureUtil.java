@@ -47,7 +47,8 @@ public class FeatureUtil {
 	
 	/**
 	 * Creates a new Feature from the given Geometry, with nominal values for
-	 * the attributes.
+	 * the attributes.</p>
+	 * The schema must have a attribute of type AttributeType.GEOMETRY. 
 	 * @param g the Geometry to convert
 	 * @param schema metadata for the Feature to create
 	 * @return a new Feature containing the Geometry and default values for the
