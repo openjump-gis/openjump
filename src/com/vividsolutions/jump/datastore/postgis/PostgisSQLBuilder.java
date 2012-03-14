@@ -53,14 +53,18 @@ public class PostgisSQLBuilder {
     // Example of Postgis SQL: GEOM && SetSRID('BOX3D(191232 243117,191232 243119)'::box3d,-1);
     StringBuffer buf = new StringBuffer();
     // fixed by mmichaud on 2010-05-27 for mixed case geometryColName names
-    buf.append("\"" + geometryColName + "\" && SetSRID('BOX3D(");
+    buf.append("\"" + geometryColName + "\" && ST_SetSRID('BOX3D(");
     buf.append(env.getMinX()
                + " " + env.getMinY()
                + "," + env.getMaxX()
                + " " + env.getMaxY()
                );
     buf.append(")'::box3d,");
-    buf.append(getSRID(SRID) + ")");
+    // [mmichaud 2012-03-14] make windows srid homogeneous with geometry srid
+    // in case it is not defined
+    String srid = getSRID(SRID);
+    srid = srid==null? "ST_SRID(\"" + geometryColName + "\")" : srid;
+    buf.append(srid + ")");
     return buf.toString();
   }
 
@@ -70,8 +74,8 @@ public class PostgisSQLBuilder {
     if (! querySRID.isNull())
       srid = querySRID;
 
-    if (srid.isNull())
-      return "NULL";
+    if (srid.isNull() || srid.getString().trim().length()==0)
+      return null;
     else
       return srid.getString();
   }

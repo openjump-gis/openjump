@@ -53,7 +53,13 @@ public class PostgisFeatureInputStream
     stmt = conn.createStatement();
     String parsedQuery = queryString;
     //String parsedQuery = QueryUtil.parseQuery(queryString);
+    try {
     rs = stmt.executeQuery(parsedQuery);
+    } catch (SQLException e) {
+        SQLException sqle = new SQLException("Error : " + parsedQuery);
+        sqle.setNextException(e);
+        throw sqle;
+    }
     mapper = new PostgisResultSetConverter(conn, rs);
     featureSchema = mapper.getFeatureSchema();
   }
