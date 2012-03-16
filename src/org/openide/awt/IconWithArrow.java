@@ -59,11 +59,10 @@ import javax.swing.UIManager;
  */
 class IconWithArrow implements Icon {
     
-    private static final String ARROW_IMAGE_NAME = "org/openide/awt/resources/arrow.png"; //NOI18N
+    private static final String ARROW_IMAGE_NAME = "resources/arrow.png"; //NOI18N
     
     private Icon orig;
-//<modified for OJ>    private Icon arrow = ImageUtilities.loadImageIcon(ARROW_IMAGE_NAME, false);
-	private Icon arrow = new ImageIcon(ClassLoader.getSystemResource(ARROW_IMAGE_NAME));
+	private Icon arrow = new ImageIcon(IconWithArrow.class.getResource(ARROW_IMAGE_NAME));
     private boolean paintRollOver;
     
     private static final int GAP = 6;
