@@ -32,6 +32,7 @@
 package com.vividsolutions.jump.util;
 
 import com.vividsolutions.jts.util.Assert;
+import com.vividsolutions.jump.I18N;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -183,14 +184,16 @@ public class FlexibleDateParser {
             return null;
         }
         //The deprecated Date#parse method is actually pretty flexible. [Jon Aquino]
-        try {
-            if (verbose) {
-                System.out.println(s + " -- Date constructor");
-            }
-            return new Date(s);
-        } catch (Exception e) {
-            //Eat it. [Jon Aquino]
-        }
+        // [mmichaud 2012-03-17] Date parse without taking Locale into account
+        // -> prefer parse method using localized formatters
+        //try {
+        //    if (verbose) {
+        //        System.out.println(s + " -- Date constructor");
+        //    }
+        //    return new Date(s);
+        //} catch (Exception e) {
+        //    //Eat it. [Jon Aquino]
+        //}
 
         try {
             return parse(s, unlenientFormatters());
@@ -272,7 +275,7 @@ public class FlexibleDateParser {
     private void load() {
         if (lenientFormatters == null) {
             InputStream inputStream =
-                getClass().getResourceAsStream("FlexibleDateParser.txt");
+                getClass().getResourceAsStream(I18N.get("com.vividsolutions.jump.util.FlexibleDateParser"));
 
             try {
                 try {
