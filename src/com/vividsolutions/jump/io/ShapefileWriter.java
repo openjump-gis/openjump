@@ -415,10 +415,25 @@ public class ShapefileWriter implements JUMPWriter {
 
         // dbf column type and size
         f = 0;
+        
+        Map<String,Integer> truncatedFieldNameCounter = new HashMap<String,Integer>();
 
         for (t = 0; t < fs.getAttributeCount(); t++) {
             AttributeType columnType = fs.getAttributeType(t);
             String columnName = fs.getAttributeName(t);
+            
+            //[mmichaud 2012-03-24] increment identical truncated field names 
+            columnName = columnName.substring(0,Math.min(columnName.length(), 11));
+            if (truncatedFieldNameCounter.get(columnName) == null) {
+                truncatedFieldNameCounter.put(columnName,1);
+            }
+            else {
+                int count = truncatedFieldNameCounter.get(columnName);
+                truncatedFieldNameCounter.put(columnName, count+1);
+                if (count<10) columnName = columnName.substring(0,9) + "_" + count;
+                else columnName = columnName.substring(0,9) + count;
+            }
+            // end
 
             if (columnType == AttributeType.INTEGER) {
                 fields[f] = new DbfFieldDef(columnName, 'N', 11, 0);  //LDB: previously 16
