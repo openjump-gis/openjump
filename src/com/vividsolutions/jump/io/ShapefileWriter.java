@@ -324,16 +324,22 @@ public class ShapefileWriter implements JUMPWriter {
         }
 
         URL url = new URL("file", "localhost", shpfileName);
+        // Write shp file
         Shapefile myshape = new Shapefile(url);
         myshape.write(gc, shapeType);
 
+        // Write shx file
         shxfname = path + fname_withoutextention + ".shx";
-
-        BufferedOutputStream in = new BufferedOutputStream(new FileOutputStream(
-                    shxfname));
-        EndianDataOutputStream sfile = new EndianDataOutputStream(in);
-
+        BufferedOutputStream outputStream = 
+                new BufferedOutputStream(new FileOutputStream(shxfname));
+        EndianDataOutputStream sfile = new EndianDataOutputStream(outputStream);
         myshape.writeIndex(gc, sfile, shapeType);
+        
+        // Delete sbn, sbx and qix index files
+        deleteIndex(path, fname_withoutextention, "sbn");
+        deleteIndex(path, fname_withoutextention, "sbx");
+        deleteIndex(path, fname_withoutextention, "qix");
+        
         //If long fields have been truncated, remember the end process timestamp
         if (truncate) {
             lastTimeTruncate = new Date().getTime();
@@ -839,6 +845,16 @@ public class ShapefileWriter implements JUMPWriter {
         result = new GeometryCollection(allGeoms, new PrecisionModel(), 0);
 
         return result;
+    }
+    
+    private boolean deleteIndex(String path, String nameWithoutExtension, String extension) {
+        File file = new File(path + nameWithoutExtension + "." + extension.toLowerCase());
+        if (file.exists()) return file.delete();
+        else {
+            file = new File(path + nameWithoutExtension + "." + extension.toUpperCase());
+            if (file.exists()) return file.delete();
+            return false;
+        }
     }
     
     private OKCancelDialog getLongFieldManagementDialogBox() {
