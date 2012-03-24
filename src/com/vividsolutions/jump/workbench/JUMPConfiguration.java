@@ -171,6 +171,7 @@ import de.latlon.deejump.plugin.style.DeeChangeStylesPlugIn;
 
 import org.openjump.core.CheckOS;
 import org.openjump.core.ui.plugin.mousemenu.DuplicateItemPlugIn;
+import org.openjump.core.ui.plugin.mousemenu.MergeSelectedFeaturesPlugIn;
 import org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel;
 import org.openjump.core.ui.plugin.tools.AdvancedMeasurePlugin;
 import org.openjump.core.ui.plugin.tools.AdvancedMeasureTool;
@@ -341,6 +342,8 @@ public class JUMPConfiguration implements Setup {
     private PasteStylesPlugIn pasteStylesPlugIn = new PasteStylesPlugIn();
 
     private CombineSelectedFeaturesPlugIn combineSelectedFeaturesPlugIn = new CombineSelectedFeaturesPlugIn();
+    
+    private MergeSelectedFeaturesPlugIn mergeSelectedFeaturesPlugIn = new MergeSelectedFeaturesPlugIn();
 
     private ExplodeSelectedFeaturesPlugIn explodeSelectedFeaturesPlugIn = new ExplodeSelectedFeaturesPlugIn();
     
@@ -685,6 +688,10 @@ public class JUMPConfiguration implements Setup {
                 combineSelectedFeaturesPlugIn, combineSelectedFeaturesPlugIn
                         .getName(), false, combineSelectedFeaturesPlugIn.getIcon(), 
                 combineSelectedFeaturesPlugIn.createEnableCheck(workbenchContext));
+        featureInstaller.addPopupMenuItem(popupMenu,
+                mergeSelectedFeaturesPlugIn, mergeSelectedFeaturesPlugIn
+                        .getName(), false, mergeSelectedFeaturesPlugIn.getIcon(), 
+                mergeSelectedFeaturesPlugIn.createEnableCheck(workbenchContext));
         featureInstaller.addPopupMenuItem(popupMenu,
                 explodeSelectedFeaturesPlugIn, explodeSelectedFeaturesPlugIn
                         .getName(), false, explodeSelectedFeaturesPlugIn.getIcon(), 

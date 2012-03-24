@@ -3,6 +3,8 @@
 2012-03-24 mmichaud <michael.michaud@free.fr>
   * FR 3472020 : use a numeric pattern to save long attribute names in dbf
   * FR 3488025 : Delete existing sbn/sbx/qix files when writing a shp
+  * FR 3506380 : union selected features in place implemented in
+    MergeSelectedFeaturesPlugIn (right click in LayerViewPanel)
   
 2012-03-18 mmichaud <michael.michaud@free.fr>
   * FlexibleDateParser now takes Locale into account for Pattern ordering
