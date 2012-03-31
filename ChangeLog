@@ -3,6 +3,7 @@
 2012-03-31 mmichaud <michael.michaud@free.fr>
   * Bug #3510778 EZ Button does not respect layer editability
   * Bug #3513741 Attribute used to dissolve is repeated in unioned layer
+  * FR #3511501 Change "Fill Polygon" to "Create Polygon from Closed Area"
 
 2012-03-24 mmichaud <michael.michaud@free.fr>
   * FR 3472020 : use a numeric pattern to save long attribute names in dbf
