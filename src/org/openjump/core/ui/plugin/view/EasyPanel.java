@@ -320,7 +320,7 @@ public class EasyPanel extends JPanel {
 							((FeatureInstaller.JumpMenuListener) menuListeners[i]).menuSelected(null);							
 						}
 					}
-				} else {
+				} //else {
 					JPopupMenu popupMenu = ((JPopupMenu) jMenuItem.getParent());   			
 					PopupMenuListener[] listeners = popupMenu.getListeners(PopupMenuListener.class);
 					for (int i=0; i<listeners.length; i++) {
@@ -329,7 +329,7 @@ public class EasyPanel extends JPanel {
 								.popupMenuWillBecomeVisible(new PopupMenuEvent(popupMenu));
 						}
 					}
-				}
+				//}
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
 						if (jMenuItem.isEnabled())
