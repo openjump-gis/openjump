@@ -294,9 +294,13 @@ public class UnionByAttributePlugIn extends AbstractThreadedUiPlugIn {
             for (int i = 0, max = schema.getAttributeCount() ; i < max ; i++) {
                 if (schema.getAttributeType(i) == AttributeType.INTEGER ||
                     schema.getAttributeType(i) == AttributeType.DOUBLE ||
-                    schema.getAttributeType(i) == AttributeType.STRING)
+                    schema.getAttributeType(i) == AttributeType.STRING) {
+                    if (use_attribute && 
+                        !attribute.equals(MultiInputDialog.NO_VALID_ATTRIBUTE) &&
+                        attribute.equals(schema.getAttributeName(i))) continue;
                     newSchema.addAttribute(schema.getAttributeName(i),
                                            schema.getAttributeType(i));
+                }
             }
         }
         
