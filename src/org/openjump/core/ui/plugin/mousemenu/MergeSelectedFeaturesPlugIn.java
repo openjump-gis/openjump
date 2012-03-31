@@ -72,16 +72,6 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 public class MergeSelectedFeaturesPlugIn extends AbstractPlugIn {
 
 	private static final ImageIcon ICON = IconLoader.icon("features_merge.png");
-	
-    public void initialize(PlugInContext context) throws Exception {
-        WorkbenchContext workbenchContext = context.getWorkbenchContext();
-        FeatureInstaller featureInstaller = new FeatureInstaller(workbenchContext);
-        JPopupMenu popupMenu = LayerViewPanel.popupMenu();
-        featureInstaller.addPopupMenuItem(popupMenu,
-            this, getName(),
-            false, getIcon(), 
-            this.createEnableCheck(workbenchContext));        
-    }
     
     public ImageIcon getIcon() {
         return ICON;
