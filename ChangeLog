@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2012-04-01 mmichaud <michael.michaud@free.fr>
+  * Bug #3513735 Sextante Raster visibility not saved in project
+  * Bug #3513864 Left click on RasterImageLayer name throws exceptions
+
 2012-03-31 mmichaud <michael.michaud@free.fr>
   * Bug #3510778 EZ Button does not respect layer editability
   * Bug #3513741 Attribute used to dissolve is repeated in unioned layer

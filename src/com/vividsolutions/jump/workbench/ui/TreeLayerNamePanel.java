@@ -90,6 +90,7 @@ import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.model.WMSLayer;
 import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
 import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
+import org.openjump.core.rasterimage.RasterImageLayer;
 
 public class TreeLayerNamePanel extends JPanel
         implements
@@ -395,6 +396,7 @@ public class TreeLayerNamePanel extends JPanel
         map.put(Layer.class, layerTreeCellRenderer);
         map.put(WMSLayer.class, layerTreeCellRenderer);
         map.put(Category.class, layerTreeCellRenderer);
+        map.put(RasterImageLayer.class, layerTreeCellRenderer);
         map.put(LayerTreeModel.ColorThemingValue.class, createColorThemingValueRenderer());
         return map;
     }
