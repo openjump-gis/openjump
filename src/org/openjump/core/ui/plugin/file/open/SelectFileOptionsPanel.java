@@ -164,7 +164,8 @@ public class SelectFileOptionsPanel extends JPanel implements WizardPanel {
       for (Option option : optionFields) {
         final String name = option.getName();
         String label = I18N.get(loader.getClass().getName() + "."
-          + name.replaceAll(" ", "-"));
+          //+ name.replaceAll(" ", "-"));
+          + name);
         filePanel.add(new JLabel(label));
 
         String type = option.getType();
