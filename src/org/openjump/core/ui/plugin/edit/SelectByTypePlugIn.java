@@ -84,7 +84,7 @@ public class SelectByTypePlugIn extends AbstractPlugIn
     public void initialize(PlugInContext context) throws Exception
     {     
         workbenchContext = context.getWorkbenchContext();
-        context.getFeatureInstaller().addMainMenuItemWithJava14Fix(this, 
+        context.getFeatureInstaller().addMainMenuItem(this, 
         		new String[] { MenuNames.EDIT, MenuNames.SELECTION }, 
         		sSelectByGeometryType + "...", 
 				false, 

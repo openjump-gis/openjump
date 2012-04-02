@@ -711,7 +711,7 @@ public class JUMPConfiguration implements Setup {
       FeatureInstaller.addMainMenu(featureInstaller, new String[] {
         MenuNames.FILE
       }, MenuNames.FILE_NEW, 0);
-      featureInstaller.addMainMenuItemWithJava14Fix(newTaskPlugIn, new String[] {
+      featureInstaller.addMainMenuItem(newTaskPlugIn, new String[] {
         MenuNames.FILE, MenuNames.FILE_NEW
       }, newTaskPlugIn.getName(), false, newTaskPlugIn.getIcon2(), null);
       featureInstaller.addMenuSeparator(new String[] {
@@ -728,19 +728,19 @@ public class JUMPConfiguration implements Setup {
 
       featureInstaller.addMenuSeparator(MenuNames.FILE); // ===================
 
-      featureInstaller.addMainMenuItemWithJava14Fix(saveDatasetAsPlugIn, new String[] {MenuNames.FILE},
+      featureInstaller.addMainMenuItem(saveDatasetAsPlugIn, new String[] {MenuNames.FILE},
                 saveDatasetAsPlugIn.getName() + "...", false, SaveDatasetAsPlugIn.ICON,
                 SaveDatasetAsPlugIn.createEnableCheck(workbenchContext));  
-        featureInstaller.addMainMenuItemWithJava14Fix(saveProjectPlugIn, new String[] {MenuNames.FILE},
+        featureInstaller.addMainMenuItem(saveProjectPlugIn, new String[] {MenuNames.FILE},
                 saveProjectPlugIn.getName(), false, SaveProjectPlugIn.ICON, checkFactory
                         .createTaskWindowMustBeActiveCheck());
-        featureInstaller.addMainMenuItemWithJava14Fix(saveProjectAsPlugIn, new String[] {MenuNames.FILE},
+        featureInstaller.addMainMenuItem(saveProjectAsPlugIn, new String[] {MenuNames.FILE},
                 saveProjectAsPlugIn.getName() + "...", false, SaveProjectAsPlugIn.ICON, checkFactory
                         .createTaskWindowMustBeActiveCheck());  
         FeatureInstaller.addMainMenu(featureInstaller, new String[] {
                 MenuNames.FILE
               }, MenuNames.FILE_SAVEVIEW, 5);  
-        featureInstaller.addMainMenuItemWithJava14Fix(
+        featureInstaller.addMainMenuItem(
         		saveImageAsPlugIn, 
         	      new String[] {
         		          MenuNames.FILE, MenuNames.FILE_SAVEVIEW
@@ -750,32 +750,32 @@ public class JUMPConfiguration implements Setup {
 				SaveImageAsPlugIn.createEnableCheck(workbenchContext));    
         
 		//-- EDIT
-        featureInstaller.addMainMenuItemWithJava14Fix(undoPlugIn, new String[] {MenuNames.EDIT}, undoPlugIn
+        featureInstaller.addMainMenuItem(undoPlugIn, new String[] {MenuNames.EDIT}, undoPlugIn
                 .getName(), false, GUIUtil.toSmallIcon(undoPlugIn.getIcon()),
                 undoPlugIn.createEnableCheck(workbenchContext));
-        featureInstaller.addMainMenuItemWithJava14Fix(redoPlugIn, new String[] {MenuNames.EDIT}, redoPlugIn
+        featureInstaller.addMainMenuItem(redoPlugIn, new String[] {MenuNames.EDIT}, redoPlugIn
                 .getName(), false, GUIUtil.toSmallIcon(redoPlugIn.getIcon()),
                 redoPlugIn.createEnableCheck(workbenchContext));
         featureInstaller.addMenuSeparator(MenuNames.EDIT); // ===================
-        featureInstaller.addMainMenuItemWithJava14Fix(addNewFeaturesPlugIn, new String[] {MenuNames.EDIT},
+        featureInstaller.addMainMenuItem(addNewFeaturesPlugIn, new String[] {MenuNames.EDIT},
                 addNewFeaturesPlugIn.getName() + "...", false, AddNewFeaturesPlugIn.ICON,
                 AddNewFeaturesPlugIn.createEnableCheck(workbenchContext));
-        featureInstaller.addMainMenuItemWithJava14Fix(editSelectedFeaturePlugIn, new String[] {MenuNames.EDIT},
+        featureInstaller.addMainMenuItem(editSelectedFeaturePlugIn, new String[] {MenuNames.EDIT},
                 editSelectedFeaturePlugIn.getName(), false, editSelectedFeaturePlugIn.getIcon(),
                 EditSelectedFeaturePlugIn.createEnableCheck(workbenchContext));
         
         FeatureInstaller.addMainMenu(featureInstaller, new String[] {
                 MenuNames.EDIT
               }, MenuNames.SELECTION, 6);  
-        featureInstaller.addMainMenuItemWithJava14Fix(selectFeaturesInFencePlugIn, 
+        featureInstaller.addMainMenuItem(selectFeaturesInFencePlugIn, 
                 new String[] {MenuNames.EDIT, MenuNames.SELECTION},
                 selectFeaturesInFencePlugIn.getName(), false, null,
                 SelectFeaturesInFencePlugIn.createEnableCheck(workbenchContext));
-        featureInstaller.addMainMenuItemWithJava14Fix(clearSelectionPlugIn, new String[] {MenuNames.EDIT},
+        featureInstaller.addMainMenuItem(clearSelectionPlugIn, new String[] {MenuNames.EDIT},
                 clearSelectionPlugIn.getName(),false, null, clearSelectionPlugIn
                         .createEnableCheck(workbenchContext));
         featureInstaller.addMenuSeparator(MenuNames.EDIT); // ===================
-        featureInstaller.addMainMenuItemWithJava14Fix(cutSelectedItemsPlugIn, new String[] {MenuNames.EDIT},
+        featureInstaller.addMainMenuItem(cutSelectedItemsPlugIn, new String[] {MenuNames.EDIT},
                 cutSelectedItemsPlugIn.getName(), false, CutSelectedItemsPlugIn.ICON, cutSelectedItemsPlugIn
                         .createEnableCheck(workbenchContext));
         featureInstaller.addMainMenuItem(copySelectedItemsPlugIn, new String[] {MenuNames.EDIT},
@@ -785,28 +785,28 @@ public class JUMPConfiguration implements Setup {
                 new JMenuItem(pasteItemsPlugIn.getNameWithMnemonic(), pasteItemsPlugIn.ICON), 
                 PasteItemsPlugIn.createEnableCheck(workbenchContext));
         featureInstaller.addMenuSeparator(MenuNames.EDIT); // ===================
-        featureInstaller.addMainMenuItemWithJava14Fix(deleteSelectedItemsPlugIn, new String[] {MenuNames.EDIT},
+        featureInstaller.addMainMenuItem(deleteSelectedItemsPlugIn, new String[] {MenuNames.EDIT},
                 deleteSelectedItemsPlugIn.getName(), false, DeleteSelectedItemsPlugIn.ICON,
                 DeleteSelectedItemsPlugIn.createEnableCheck(workbenchContext));
         featureInstaller.addMenuSeparator(MenuNames.EDIT); // ===================
         /*//--[sstein 24 march 2007] moved to new customize menu 
-        featureInstaller.addMainMenuItemWithJava14Fix(optionsPlugIn, new String[] {MenuNames.EDIT}, optionsPlugIn
+        featureInstaller.addMainMenuItem(optionsPlugIn, new String[] {MenuNames.EDIT}, optionsPlugIn
                 .getName()
                 + "...", false, null, null);
         */
 		//-- VIEW        
         editingPlugIn.createMainMenuItem(new String[] { MenuNames.VIEW}, GUIUtil
                 .toSmallIcon(EditingPlugIn.ICON), workbenchContext);
-        featureInstaller.addMainMenuItemWithJava14Fix(copyImagePlugIn, new String[]{MenuNames.FILE},
+        featureInstaller.addMainMenuItem(copyImagePlugIn, new String[]{MenuNames.FILE},
                 copyImagePlugIn.getName(), false, copyImagePlugIn.ICON, CopyImagePlugIn
                         .createEnableCheck(workbenchContext));        
         featureInstaller.addMenuSeparator(MenuNames.VIEW); // ===================
-        featureInstaller.addMainMenuItemWithJava14Fix(featureInfoPlugIn, new String[] {MenuNames.VIEW},
+        featureInstaller.addMainMenuItem(featureInfoPlugIn, new String[] {MenuNames.VIEW},
                 featureInfoPlugIn.getName(), false,GUIUtil
                         .toSmallIcon(FeatureInfoTool.ICON), FeatureInfoPlugIn
                         .createEnableCheck(workbenchContext));
         featureInstaller
-        		.addMainMenuItemWithJava14Fix(
+        		.addMainMenuItem(
                         verticesInFencePlugIn,
                         new String[] {MenuNames.VIEW},
                         verticesInFencePlugIn.getName(),
@@ -818,12 +818,12 @@ public class JUMPConfiguration implements Setup {
                                                 .createWindowWithLayerViewPanelMustBeActiveCheck())
                                 .add(checkFactory.createFenceMustBeDrawnCheck()));
         featureInstaller.addMenuSeparator(MenuNames.VIEW); // ===================
-        featureInstaller.addMainMenuItemWithJava14Fix(zoomToFullExtentPlugIn, new String[]{MenuNames.VIEW},
+        featureInstaller.addMainMenuItem(zoomToFullExtentPlugIn, new String[]{MenuNames.VIEW},
                 zoomToFullExtentPlugIn.getName(), false, GUIUtil
                         .toSmallIcon(zoomToFullExtentPlugIn.getIcon()),
                 zoomToFullExtentPlugIn.createEnableCheck(workbenchContext));
         featureInstaller
-        			.addMainMenuItemWithJava14Fix(
+        			.addMainMenuItem(
                         zoomToFencePlugIn,
                         new String[] {MenuNames.VIEW},
                         zoomToFencePlugIn.getName(),
@@ -834,23 +834,23 @@ public class JUMPConfiguration implements Setup {
                                         checkFactory
                                                 .createWindowWithLayerViewPanelMustBeActiveCheck())
                                 .add(checkFactory.createFenceMustBeDrawnCheck()));
-        featureInstaller.addMainMenuItemWithJava14Fix(zoomToSelectedItemsPlugIn, new String[] {MenuNames.VIEW},
+        featureInstaller.addMainMenuItem(zoomToSelectedItemsPlugIn, new String[] {MenuNames.VIEW},
                 zoomToSelectedItemsPlugIn.getName(), false, GUIUtil
                         .toSmallIcon(zoomToSelectedItemsPlugIn.getIcon()),
                 ZoomToSelectedItemsPlugIn.createEnableCheck(workbenchContext));
-        featureInstaller.addMainMenuItemWithJava14Fix(zoomToCoordinatePlugIn, new String[]{MenuNames.VIEW},
+        featureInstaller.addMainMenuItem(zoomToCoordinatePlugIn, new String[]{MenuNames.VIEW},
                 zoomToCoordinatePlugIn.getName() + "...", false, null,
                 zoomToCoordinatePlugIn.createEnableCheck(workbenchContext));
-        featureInstaller.addMainMenuItemWithJava14Fix(zoomPreviousPlugIn, new String[] {MenuNames.VIEW},
+        featureInstaller.addMainMenuItem(zoomPreviousPlugIn, new String[] {MenuNames.VIEW},
                 zoomPreviousPlugIn.getName(), false, GUIUtil
                         .toSmallIcon(zoomPreviousPlugIn.getIcon()),
                 zoomPreviousPlugIn.createEnableCheck(workbenchContext));
-        featureInstaller.addMainMenuItemWithJava14Fix(zoomNextPlugIn, new String[] {MenuNames.VIEW}, zoomNextPlugIn
+        featureInstaller.addMainMenuItem(zoomNextPlugIn, new String[] {MenuNames.VIEW}, zoomNextPlugIn
                 .getName(), false, GUIUtil.toSmallIcon(zoomNextPlugIn.getIcon()),
                 zoomNextPlugIn.createEnableCheck(workbenchContext));
         featureInstaller.addMenuSeparator(MenuNames.VIEW); // ===================
         featureInstaller
-        	.addMainMenuItemWithJava14Fix(
+        	.addMainMenuItem(
                         showScalePlugIn,
                         new String[] {MenuNames.VIEW},
                         showScalePlugIn.getName(),
@@ -868,7 +868,7 @@ public class JUMPConfiguration implements Setup {
                                     }
                                 }));
         featureInstaller
-        	.addMainMenuItemWithJava14Fix(
+        	.addMainMenuItem(
                         scaleBarPlugIn,
                         new String[] { MenuNames.VIEW},
                         scaleBarPlugIn.getName(),
@@ -885,7 +885,7 @@ public class JUMPConfiguration implements Setup {
                                         return null;
                                     }
                                 }));
-        featureInstaller.addMainMenuItemWithJava14Fix(toolTipsPlugIn,
+        featureInstaller.addMainMenuItem(toolTipsPlugIn,
                 new String[] {MenuNames.VIEW}, toolTipsPlugIn.getName(), true, null,
                 MapToolTipsPlugIn.createEnableCheck(workbenchContext));
         zoomBarPlugIn.createMainMenuItem(new String[] { MenuNames.VIEW}, null,
@@ -896,21 +896,21 @@ public class JUMPConfiguration implements Setup {
         
         //-- WINDOW
         /*
-        featureInstaller.addMainMenuItemWithJava14Fix(optionsPlugIn, new String[] {MenuNames.WINDOW}, optionsPlugIn
+        featureInstaller.addMainMenuItem(optionsPlugIn, new String[] {MenuNames.WINDOW}, optionsPlugIn
                 .getName()
                 + "...", false, null, null);
         */
-        featureInstaller.addMainMenuItemWithJava14Fix(outputWindowPlugIn,
+        featureInstaller.addMainMenuItem(outputWindowPlugIn,
                 new String[] {MenuNames.WINDOW},
                 outputWindowPlugIn.getName(), false,
                 GUIUtil.toSmallIcon(outputWindowPlugIn.getIcon()), null);        
-        featureInstaller.addMainMenuItemWithJava14Fix(generateLogPlugIn,
+        featureInstaller.addMainMenuItem(generateLogPlugIn,
                 new String[] {MenuNames.WINDOW},
                 generateLogPlugIn.getName(), false,
                 GUIUtil.toSmallIcon(generateLogPlugIn.getIcon()), null);
         featureInstaller.addMenuSeparator(MenuNames.WINDOW); // ===================
         
-        featureInstaller.addMainMenuItemWithJava14Fix(cloneWindowPlugIn, new String[] {MenuNames.WINDOW},
+        featureInstaller.addMainMenuItem(cloneWindowPlugIn, new String[] {MenuNames.WINDOW},
                 cloneWindowPlugIn.getName(), false, null, new EnableCheck() {
 
                     public String check(JComponent component) {
@@ -929,14 +929,14 @@ public class JUMPConfiguration implements Setup {
         configToolsQA(workbenchContext, checkFactory, featureInstaller);  
         configToolsAttributes(workbenchContext, checkFactory, featureInstaller);  
 		*/
-        featureInstaller.addMainMenuItemWithJava14Fix(shortcutKeysPlugIn, new String[]{MenuNames.HELP},
+        featureInstaller.addMainMenuItem(shortcutKeysPlugIn, new String[]{MenuNames.HELP},
                 shortcutKeysPlugIn.getName() + "...", false, ShortcutKeysPlugIn.ICON, null);
-        new FeatureInstaller(workbenchContext).addMainMenuItemWithJava14Fix(
+        new FeatureInstaller(workbenchContext).addMainMenuItem(
                 new AboutPlugIn(), new String[]{MenuNames.HELP}, I18N.get("JUMPConfiguration.about"), false, AboutPlugIn.ICON, null);
     
         //-- CUSTOMIZE
         //-- [sstein: 24.03.2007 new menu]
-        featureInstaller.addMainMenuItemWithJava14Fix(optionsPlugIn, new String[] {MenuNames.CUSTOMIZE}, optionsPlugIn
+        featureInstaller.addMainMenuItem(optionsPlugIn, new String[] {MenuNames.CUSTOMIZE}, optionsPlugIn
                 .getName()
                 + "...", false, null, null);
     }

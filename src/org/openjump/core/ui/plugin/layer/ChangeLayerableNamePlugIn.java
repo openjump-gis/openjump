@@ -34,7 +34,7 @@ public class ChangeLayerableNamePlugIn extends AbstractPlugIn {
 	    
 	    // Install in main menu
 	    FeatureInstaller installer = new FeatureInstaller(workbenchContext);
-	    installer.addMainMenuItemWithJava14Fix(this,
+	    installer.addMainMenuItem(this,
 	        new String[] { MenuNames.LAYER }, getName() + "...", false, null, enableCheck);
 		
 		// Install in layerName popup menu

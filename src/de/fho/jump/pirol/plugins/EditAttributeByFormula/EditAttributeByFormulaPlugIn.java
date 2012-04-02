@@ -127,7 +127,7 @@ public class EditAttributeByFormulaPlugIn extends AbstractPlugIn {
     private static final Logger LOG = Logger.getLogger(EditAttributeByFormulaPlugIn.class);
     
     public void initialize(PlugInContext context) throws Exception {
-	    context.getFeatureInstaller().addMainMenuItemWithJava14Fix(this,
+	    context.getFeatureInstaller().addMainMenuItem(this,
 		        new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_ATTRIBUTES },
 				this.getName(), 
 				false, 

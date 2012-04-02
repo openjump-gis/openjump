@@ -21,7 +21,7 @@ import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStyle;
 public class TestColorThemingPlugIn extends AbstractPlugIn {
 
 	public void initialize(PlugInContext context) throws Exception {
-		context.getFeatureInstaller().addMainMenuItemWithJava14Fix(
+		context.getFeatureInstaller().addMainMenuItem(
 			this,
 			new String[] { "Tools", "Test" },
 			getName(),

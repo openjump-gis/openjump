@@ -61,7 +61,7 @@ import com.vividsolutions.jump.workbench.ui.cursortool.CursorTool;
 public class SelectItemsByFenceFromSelectedLayersPlugIn extends AbstractPlugIn{    
 
     public void initialize(PlugInContext context) throws Exception {
-		    context.getFeatureInstaller().addMainMenuItemWithJava14Fix(this,
+		    context.getFeatureInstaller().addMainMenuItem(this,
 		        new String[]
 				{MenuNames.EDIT, MenuNames.SELECTION},
 				I18N.get("org.openjump.core.ui.plugin.edit.SelectItemsByFenceFromSelectedLayersPlugIn.select-items-by-fence-from-selected-layers"), 

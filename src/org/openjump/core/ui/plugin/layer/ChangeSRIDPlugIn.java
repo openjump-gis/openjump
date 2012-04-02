@@ -24,7 +24,7 @@ public class ChangeSRIDPlugIn extends AbstractPlugIn {
                         .createWindowWithLayerManagerMustBeActiveCheck()).add(
                 enableCheckFactory.createExactlyNLayersMustBeSelectedCheck(1));
         new FeatureInstaller(context.getWorkbenchContext())
-                .addMainMenuItemWithJava14Fix(this, new String[]{MenuNames.LAYER},
+                .addMainMenuItem(this, new String[]{MenuNames.LAYER},
                         getName() + "...", false, null, enableCheck);
 //        new FeatureInstaller(context.getWorkbenchContext()).addPopupMenuItem(
 //                context.getWorkbenchFrame().getLayerNamePopupMenu(), this,

@@ -121,7 +121,7 @@ public class ExtractLayersByGeometry extends AbstractPlugIn {
                 MenuNames.EDIT
               }, MenuNames.EXTRACT, 17);  
         //--
-	    context.getFeatureInstaller().addMainMenuItemWithJava14Fix(this,
+	    context.getFeatureInstaller().addMainMenuItem(this,
 		        new String[]
 				{MenuNames.EDIT, MenuNames.EXTRACT},
 				getName(), 

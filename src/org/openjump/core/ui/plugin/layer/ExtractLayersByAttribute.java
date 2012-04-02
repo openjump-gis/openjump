@@ -90,7 +90,7 @@ public class ExtractLayersByAttribute extends AbstractPlugIn {
 	private boolean textAttributeFound = false;
 	 	 
 	public void initialize(PlugInContext context) throws Exception {
-	    context.getFeatureInstaller().addMainMenuItemWithJava14Fix(this,
+	    context.getFeatureInstaller().addMainMenuItem(this,
 		        new String[]
 				{MenuNames.EDIT, MenuNames.EXTRACT},
 				getName(), 

@@ -25,7 +25,7 @@ public class SimpleQueryPlugIn extends AbstractPlugIn {
 	
     public void initialize(PlugInContext context) throws Exception {
 
-		    context.getFeatureInstaller().addMainMenuItemWithJava14Fix(this,
+		    context.getFeatureInstaller().addMainMenuItem(this,
 		        new String[]{MenuNames.TOOLS, MenuNames.TOOLS_QUERIES},
 		        this.getName() + "...", false, null, null);   	   
     }

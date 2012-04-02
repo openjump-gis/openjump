@@ -52,7 +52,7 @@ public class SelectLayersWithSelectedItemsPlugIn extends AbstractPlugIn {
    public void initialize(PlugInContext context) throws Exception
     {     
         WorkbenchContext workbenchContext = context.getWorkbenchContext();
-        context.getFeatureInstaller().addMainMenuItemWithJava14Fix(this, 
+        context.getFeatureInstaller().addMainMenuItem(this, 
         		new String[] { MenuNames.EDIT, MenuNames.SELECTION }, 
         		sSelectLayersWithSelectedItems, 
 				false, 

@@ -64,7 +64,7 @@ public class CopyBBoxPlugin extends AbstractPlugIn {
         WorkbenchContext wbcontext = context.getWorkbenchContext();
         FeatureInstaller installer = new FeatureInstaller( wbcontext );
 
-        installer.addMainMenuItemWithJava14Fix( this, new String[] { MenuNames.VIEW },
+        installer.addMainMenuItem( this, new String[] { MenuNames.VIEW },
                                                 I18N.get( "org.openjump.core.ui.plugin.edit.CopyBBoxPlugin.name" )+"{pos:2}",
                                                 false, null, null );
     }

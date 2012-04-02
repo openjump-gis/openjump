@@ -71,7 +71,7 @@ public class SortCategoryByNamePlugIn extends SortCategoryAbstractPlugIn impleme
 				.get("org.openjump.core.ui.plugin.layer.SortCategoryByNamePlugIn.Ascending");
 
 //addMainMenuItemWithJava14Fix causing error with ja_JP language, but worked with others
-//		context.getFeatureInstaller().addMainMenuItemWithJava14Fix(this,
+//		context.getFeatureInstaller().addMainMenuItem(this,
 		context.getFeatureInstaller().addMainMenuItem(this,
 				getMenuLocation(submenuLabel), ascending, false, ICON,
 				createEnableCheck(context.getWorkbenchContext()));

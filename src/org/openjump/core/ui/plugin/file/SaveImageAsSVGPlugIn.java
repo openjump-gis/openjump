@@ -50,7 +50,7 @@ public class SaveImageAsSVGPlugIn extends AbstractPlugIn implements ThreadedPlug
 
 	public void initialize(PlugInContext context) throws Exception {
     	
-		context.getFeatureInstaller().addMainMenuItemWithJava14Fix(this,		        
+		context.getFeatureInstaller().addMainMenuItem(this,		        
       	      new String[] {
 		          MenuNames.FILE, MenuNames.FILE_SAVEVIEW
 		        }, 

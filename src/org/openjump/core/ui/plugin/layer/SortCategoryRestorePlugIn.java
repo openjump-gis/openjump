@@ -77,7 +77,7 @@ public class SortCategoryRestorePlugIn extends AbstractPlugIn {
 
 		context
 				.getFeatureInstaller()
-				.addMainMenuItemWithJava14Fix(
+				.addMainMenuItem(
 						this,
 						new String[] {
 								MenuNames.LAYER,

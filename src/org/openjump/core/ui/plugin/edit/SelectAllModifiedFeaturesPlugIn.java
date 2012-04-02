@@ -59,7 +59,7 @@ public class SelectAllModifiedFeaturesPlugIn extends AbstractPlugIn {
 	
     public void initialize(PlugInContext context) throws Exception
     {     
-	    context.getFeatureInstaller().addMainMenuItemWithJava14Fix(this,
+	    context.getFeatureInstaller().addMainMenuItem(this,
 		        new String[]
 				{MenuNames.EDIT, MenuNames.SELECTION},
 				I18N.get("org.openjump.core.ui.plugin.edit.SelectAllModifiedFeaturesPlugIn.select-all-modified-features"), 

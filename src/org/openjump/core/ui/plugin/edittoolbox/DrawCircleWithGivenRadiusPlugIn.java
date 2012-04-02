@@ -77,7 +77,7 @@ public class DrawCircleWithGivenRadiusPlugIn extends AbstractPlugIn{
     	this.T2 = "Number of segments per circle quarter";
 		this.sidebarstring = "Draw a circle by specifiying the radius, the number of points per circle quarter and the center position by mouse click";
 		/**
-	    context.getFeatureInstaller().addMainMenuItemWithJava14Fix(this,
+	    context.getFeatureInstaller().addMainMenuItem(this,
 		        new String[] {MenuNames.TOOLS, MenuNames.TOOLS_GENERATE},
 				"Draw Cirlce for Given Radius", 
 				false, //icon

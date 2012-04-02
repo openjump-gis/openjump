@@ -47,7 +47,7 @@ public class ProjectionPlugIn extends AbstractPlugIn
     public void initialize(PlugInContext context) throws Exception
     {        
         workbenchContext = context.getWorkbenchContext();
-        context.getFeatureInstaller().addMainMenuItemWithJava14Fix(
+        context.getFeatureInstaller().addMainMenuItem(
         		new ChangeCoordinateSystemPlugIn(), 
 				new String[] {MenuNames.TOOLS}, 
 				sName, 

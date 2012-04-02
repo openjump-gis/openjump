@@ -43,7 +43,7 @@ public class DuplicateItemPlugIn extends AbstractPlugIn {
 	        FeatureInstaller featureInstaller = new FeatureInstaller(workbenchContext);
 	        
 	         
-	        featureInstaller.addMainMenuItemWithJava14Fix(this,
+	        featureInstaller.addMainMenuItem(this,
 	      	        new String[] {I18N.get("Menu.Geometry"),I18N.get("Menu.Modify")}, 
 	      	      I18N.get("DuplicateItemsPlugIn.Duplicate.Item"), 
 	      	        false, 

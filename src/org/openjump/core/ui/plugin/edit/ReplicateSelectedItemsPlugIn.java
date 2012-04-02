@@ -97,7 +97,7 @@ public class ReplicateSelectedItemsPlugIn extends AbstractPlugIn implements Thre
 					this.getIcon(),
                     createEnableCheck(context.getWorkbenchContext()));
 
-		    context.getFeatureInstaller().addMainMenuItemWithJava14Fix(this,
+		    context.getFeatureInstaller().addMainMenuItem(this,
 		        new String[]
 				{MenuNames.EDIT},
 				I18N.get("org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn") + "..." + "{pos:16}", 

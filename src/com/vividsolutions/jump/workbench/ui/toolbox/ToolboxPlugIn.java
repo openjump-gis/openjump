@@ -79,7 +79,7 @@ public abstract class ToolboxPlugIn extends AbstractPlugIn {
     public void createMainMenuItem(String[] menuPath, Icon icon, final WorkbenchContext context) 
         throws Exception {
         new FeatureInstaller(context)
-            .addMainMenuItemWithJava14Fix(this, menuPath, getName()+"...", true, icon, new EnableCheck() {
+            .addMainMenuItem(this, menuPath, getName()+"...", true, icon, new EnableCheck() {
             public String check(JComponent component) {
                 ((JCheckBoxMenuItem) component).setSelected(getToolbox(context).isVisible());
                 return null;

@@ -72,7 +72,7 @@ public class SelectItemsByCircleFromSelectedLayersPlugIn extends AbstractPlugIn{
 		this.T1 = I18N.get("org.openjump.core.ui.plugin.edit.SelectItemsByCirlceFromSelectedLayersPlugIn.cirlce-diameter") + ":";
 		this.sidebarstring = I18N.get("org.openjump.core.ui.plugin.edit.SelectItemsByCirlceFromSelectedLayersPlugIn.select-items-within-a-circle-from-currently-selected-layers");
 		
-	    context.getFeatureInstaller().addMainMenuItemWithJava14Fix(this,
+	    context.getFeatureInstaller().addMainMenuItem(this,
 	        new String[]
 			{MenuNames.EDIT, MenuNames.SELECTION},
 			I18N.get("org.openjump.core.ui.plugin.edit.SelectItemsByCirlceFromSelectedLayersPlugIn.select-items-by-cirlce-from-selected-layers"), 

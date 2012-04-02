@@ -62,7 +62,7 @@ import com.vividsolutions.jump.workbench.ui.SelectionManager;
 public class InvertSelectionPlugIn extends AbstractPlugIn {
 	
     public void initialize(PlugInContext context) throws Exception {
-        context.getFeatureInstaller().addMainMenuItemWithJava14Fix(this,
+        context.getFeatureInstaller().addMainMenuItem(this,
             new String[]
                 {MenuNames.EDIT},
                 I18N.get("org.openjump.core.ui.plugin.edit.InvertSelectionPlugIn.invert-selection")+"{pos:6}",
