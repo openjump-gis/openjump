@@ -651,8 +651,9 @@ public class FeatureInstaller {
   public void addMenuItemShownListener(final JMenuItem menuItem,
       final MenuItemShownListener menuItemShownListener) {
     JMenu menu = (JMenu) ((JPopupMenu) menuItem.getParent()).getInvoker();
-    menu.addMenuListener(new MenuItemShownMenuListener(menuItem,
-        menuItemShownListener));
+    // wraps MenuListener in the JumpMenuListener wrapper class so that
+    // EasyPanel can determine which menu items had EnableChecks [Larry Becker]
+    menu.addMenuListener(new JumpMenuListener(menuItemShownListener, menuItem));
   }
 
   /**
