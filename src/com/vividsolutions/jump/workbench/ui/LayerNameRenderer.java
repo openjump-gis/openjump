@@ -41,6 +41,7 @@ import java.awt.Insets;
 import java.awt.Rectangle;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -49,6 +50,7 @@ import javax.swing.JTree;
 import javax.swing.ListCellRenderer;
 import javax.swing.UIManager;
 import javax.swing.tree.TreeCellRenderer;
+import org.openjump.core.rasterimage.RasterImageLayer;
 
 public class LayerNameRenderer extends JPanel implements ListCellRenderer,
 		TreeCellRenderer {
@@ -72,8 +74,7 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
 	private boolean indicatingProgress = false;
 	private int progressIconSize = 13;
 	private Icon[] progressIcons = null;
-	private Icon clearProgressIcon = GUIUtil.resize(IconLoader
-			.icon("Clear.gif"), progressIconSize);
+	private Icon clearProgressIcon = GUIUtil.resize(IconLoader.icon("Clear.gif"), progressIconSize);
 
 	public static String PROGRESS_ICON_KEY = "PROGRESS_ICON";
     
@@ -89,7 +90,9 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
 
 	private Font editableUnselectableFont = font.deriveFont(Font.BOLD+Font.ITALIC);
 
-	private JLabel wmsIconLabel = new JLabel(MapLayerPanel.ICON);
+	private JLabel imageLabel = new JLabel();
+	private ImageIcon wmsIcon = MapLayerPanel.ICON;
+	private ImageIcon rasterIcon = GUIUtil.resize(IconLoader.icon("Raster.gif"), progressIconSize);
 
 	public LayerNameRenderer() {
 		try {
@@ -161,7 +164,7 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
 	public Component getListCellRendererComponent(JList list, String value,
 			int index, boolean isSelected, boolean cellHasFocus) {
 	    label.setText((String)value);
-		wmsIconLabel.setVisible(false);
+		imageLabel.setVisible(false);
 		colorPanel.setVisible(false);
 		if (isSelected) {
 			label.setForeground(list.getSelectionForeground());
@@ -247,7 +250,14 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
 		} else {
 			label.setFont(font);
 		}
-		wmsIconLabel.setVisible(layerable instanceof WMSLayer);
+		if (layerable instanceof WMSLayer) {
+		    imageLabel.setIcon(wmsIcon);
+		    imageLabel.setVisible(true);
+		}
+		if (layerable instanceof RasterImageLayer) {
+		    imageLabel.setIcon(rasterIcon);
+		    imageLabel.setVisible(true);
+		}
 		// Only show the progress icon (clocks) for WMSLayers and
 		// database-backed layers, not Layers. Otherwise it's too busy.
 		// [Jon Aquino]
@@ -269,6 +279,7 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
 		Color backgroundColor = list.getBackground();
 		Color selectionBackgroundColor = list.getSelectionBackground();
 		if (layerable instanceof Layer) {
+		    imageLabel.setVisible(false);
 			Layer layer = (Layer) layerable;
 			colorPanel.init(layer, isSelected, backgroundColor,
 					selectionBackgroundColor);
@@ -322,7 +333,7 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
 		this.add(progressIconLabel, new GridBagConstraints(0, 0, 1, 1, 0.0,
 				0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
 				new Insets(0, 0, 0, 2), 0, 0));
-		this.add(wmsIconLabel, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
+		this.add(imageLabel, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
 				GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(
 						0, 0, 0, 2), 0, 0));
 		this.add(colorPanel, new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0,
