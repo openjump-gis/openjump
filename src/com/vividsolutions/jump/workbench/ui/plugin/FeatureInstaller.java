@@ -490,28 +490,25 @@ public class FeatureInstaller {
     return menuItem;
   }
 
-  private boolean win_vista_plus = false;
+  // workaround for checkbox tick missing in windows laf on windows vista/7
+  // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=7122141
+  // we simply leave out the icon, so the tick is displayed instead of the
+  // icon with a blue background
+  private boolean vista_checkbox_workaround =
+      System.getProperty("os.name").toLowerCase().contains("windows")
+      && Float.valueOf(System.getProperty("os.version")) >= 6
+      && UIManager.getLookAndFeel().getClass().getName()
+          .equals("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
 
   private void addMenuItemIcon(JMenuItem menuItem, Icon icon) {
-    // workaround for checkbox tick missing in windows laf on windows vista/7
-    // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=7122141
-    // we simply leave out the icon, so the tick is displayed instead of the
-    // icon with a blue background
-    if (!win_vista_plus
-        && System.getProperty("os.name").toLowerCase().contains("windows")
-        && Float.valueOf(System.getProperty("os.version")) >= 6) {
-      win_vista_plus = true;
-    }
     // no icons for windows laf on vista+
-    if (win_vista_plus
-        && (menuItem instanceof JRadioButtonMenuItem || menuItem instanceof JCheckBoxMenuItem)
-        && UIManager.getLookAndFeel().getClass().getName()
-            .equals("com.sun.java.swing.plaf.windows.WindowsLookAndFeel"))
+    // TODO: this obviously does not work when skin is switched during runtime
+    if (vista_checkbox_workaround
+        && (menuItem instanceof JRadioButtonMenuItem || menuItem instanceof JCheckBoxMenuItem))
       return;
     // ignore null values
     if (icon instanceof Icon)
       menuItem.setIcon(icon);
-    // System.getProperties().list(System.out);
   }
 
   private Menu createMenu(final JMenu menu) {
