@@ -106,6 +106,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.NewTaskPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.OptionsPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.OutputWindowPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.PasteSchemaPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.RedoPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.RemoveSelectedCategoriesPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.RemoveSelectedLayersPlugIn;
@@ -192,7 +193,7 @@ public class JUMPConfiguration implements Setup {
 	 * Built-in plugins must be defined as instance variables, since
 	 * they are located for iniatialization via reflection on this class
 	 */
-	
+  
 	private InstallShowScalePlugIn installShowScalePlugIn = new InstallShowScalePlugIn();
 	
     private InstallScaleBarPlugIn installScaleBarPlugIn = new InstallScaleBarPlugIn();
@@ -347,8 +348,6 @@ public class JUMPConfiguration implements Setup {
 
     private ExplodeSelectedFeaturesPlugIn explodeSelectedFeaturesPlugIn = new ExplodeSelectedFeaturesPlugIn();
     
-    private InstallSkinsPlugIn installSkinsPlugIn = new InstallSkinsPlugIn(); 
-
     // superseded by org/openjump/OpenJumpConfiguration.java
     //private InstallReferencedImageFactoriesPlugin installReferencedImageFactoriesPlugin = new InstallReferencedImageFactoriesPlugin();
 
@@ -359,6 +358,14 @@ public class JUMPConfiguration implements Setup {
   	private DuplicateItemPlugIn duplicateItemPlugIn = new DuplicateItemPlugIn();
   	
     public void setup(WorkbenchContext workbenchContext) throws Exception {
+
+        // first things first, make persistent data available early
+        PersistentBlackboardPlugIn persistentBlackboard = new PersistentBlackboardPlugIn();
+        persistentBlackboard.initialize(workbenchContext.createPlugInContext());
+        
+        // this restores the saved laf, so it must be loaded early
+        new InstallSkinsPlugIn().initialize(workbenchContext.createPlugInContext());
+      
         configureStyles(workbenchContext);
         configureDatastores(workbenchContext);
 

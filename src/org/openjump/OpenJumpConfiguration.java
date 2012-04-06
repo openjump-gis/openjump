@@ -15,9 +15,9 @@
  */
 package org.openjump;
 
-import com.vividsolutions.jump.I18N;
 import static com.vividsolutions.jump.workbench.ui.MenuNames.LAYER;
 
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,6 +27,7 @@ import org.openjump.core.ccordsys.srid.EnsureAllLayersHaveSRIDStylePlugIn;
 import org.openjump.core.rasterimage.AddRasterImageLayerWizard;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.RasterImageLayerRendererFactory;
+import org.openjump.core.ui.DatasetOptionsPanel;
 import org.openjump.core.ui.io.file.DataSourceFileLayerLoader;
 import org.openjump.core.ui.io.file.FileLayerLoader;
 import org.openjump.core.ui.io.file.ReferencedImageFactoryFileLayerLoader;
@@ -46,7 +47,6 @@ import org.openjump.core.ui.plugin.file.OpenFilePlugIn;
 import org.openjump.core.ui.plugin.file.OpenProjectPlugIn;
 import org.openjump.core.ui.plugin.file.OpenRecentPlugIn;
 import org.openjump.core.ui.plugin.file.OpenWizardPlugIn;
-import org.openjump.core.ui.plugin.layer.ChangeLayerableNamePlugIn;
 import org.openjump.core.ui.plugin.layer.ChangeSRIDPlugIn;
 import org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn;
 import org.openjump.core.ui.plugin.layer.ToggleVisiblityPlugIn;
@@ -71,6 +71,7 @@ import org.openjump.core.ui.plugin.wms.ZoomToWMSPlugIn;
 import org.openjump.core.ui.style.decoration.ArrowLineStringMiddlepointStyle;
 import org.openjump.core.ui.style.decoration.SegmentDownhillArrowStyle;
 import org.openjump.core.ui.style.decoration.VertexZValueStyle;
+import org.openjump.core.ui.swing.factory.field.ComboBoxFieldComponentFactory;
 import org.openjump.core.ui.swing.factory.field.FieldComponentFactoryRegistry;
 import org.openjump.core.ui.swing.factory.field.FileFieldComponentFactory;
 import org.openjump.core.ui.swing.wizard.WizardGroup;
@@ -100,9 +101,6 @@ import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
 
 import de.latlon.deejump.plugin.SaveLegendPlugIn;
 import de.latlon.deejump.plugin.style.LayerStyle2SLDPlugIn;
-import java.nio.charset.Charset;
-import org.openjump.core.ui.DatasetOptionsPanel;
-import org.openjump.core.ui.swing.factory.field.ComboBoxFieldComponentFactory;
 
 /**
  * This class loads all OpenJUMP plugins. The method
@@ -120,8 +118,6 @@ public class OpenJumpConfiguration {
      *  add here first the field which holds the plugin
      *  and afterwards initialize it for the menu
      *-----------------------------------------------*/
-    PersistentBlackboardPlugIn persistentBlackboard = new PersistentBlackboardPlugIn();
-    persistentBlackboard.initialize(pluginContext);
 
     /***************************************************************************
      * Field Component Factories

@@ -22,11 +22,13 @@ import java.awt.event.ActionListener;
 import java.util.Hashtable;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.ListCellRenderer;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -34,7 +36,7 @@ import javax.swing.border.EmptyBorder;
  *
  * @author Matthias Scholz <ms@jammerhund.de>
  */
-public class SelectionStyllingOptionsPanel extends JPanel implements OptionsPanel, ListCellRenderer {
+public class SelectionStyllingOptionsPanel extends JPanel implements OptionsPanel {
 
 	// Blackboard keys
 	public static final String BB_SELECTION_STYLE_COLOR = SelectionStyllingOptionsPanel.class.getName() + " SELECTION_STYLE_COLOR";
@@ -101,7 +103,7 @@ public class SelectionStyllingOptionsPanel extends JPanel implements OptionsPane
 		});
 		lineColorChooserPanel.setAlpha(255);
         pointStyleComboBox = new javax.swing.JComboBox();
-		pointStyleComboBox.setRenderer(this);
+		pointStyleComboBox.setRenderer(new ComboRenderer());
 		pointStyleComboBox.setEditable(false);
 		// an item is a String Array, index 0 is the Text in the ComboBox and index 1 is the VertexStyle
 		pointStyleComboBox.addItem(new String[] {I18N.get("deejump.ui.style.RenderingStylePanel.square"), VertexStylesFactory.SQUARE_STYLE});
@@ -247,14 +249,22 @@ public class SelectionStyllingOptionsPanel extends JPanel implements OptionsPane
 		}
 	}
 
-	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-		JLabel label = new JLabel(((String[]) value)[0]);
-		label.setOpaque(true);
-		if (isSelected) {
-			label.setBackground(new Color(163, 184, 204)); // may be the original Color of a JComboBox
-		}
-		return label;
-	}
-
-
+  // moved this into an extra class because it lead to a stackoverflow when
+  // switching skins in JComboBox#updateUI, essentially the method grabs the
+  // ListCellRenderer and executes SwingUtilities#updateComponentTreeUI on it
+  // again which is a bad idea if the ListCellRenderer is also the parent
+  // Component [ ede 5.4.2012 ]
+  private class ComboRenderer implements ListCellRenderer {
+    public Component getListCellRendererComponent(JList list, Object value,
+        int index, boolean isSelected, boolean cellHasFocus) {
+      JLabel label = new JLabel(((String[]) value)[0]);
+      label.setOpaque(true);
+      if (isSelected) {
+        label.setBackground(new Color(163, 184, 204)); // may be the original
+                                                       // Color of a JComboBox
+      }
+      return label;
+    }
+  }
 }
+

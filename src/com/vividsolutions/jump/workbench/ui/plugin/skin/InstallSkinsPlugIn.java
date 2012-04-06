@@ -36,62 +36,66 @@ import java.util.ArrayList;
 
 import javax.swing.LookAndFeel;
 import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
 
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.OptionsDialog;
-import javax.swing.UIManager.LookAndFeelInfo;
 
 /**
-* 
-* Installs custom 'look and feel' for UI via 'Skins'.
-* 
-*/
+ * 
+ * Installs custom 'look and feel' for UI via 'Skins'.
+ * 
+ */
 
 public class InstallSkinsPlugIn extends AbstractPlugIn {
-    
-    private static String SKINS = I18N.get("ui.plugin.skin.InstallSkinsPlugIn.skins");
-    private static String DEFAULT = I18N.get("ui.plugin.skin.InstallSkinsPlugIn.default");
-    
-    private LookAndFeelProxy createProxy(final String name,
-        final String lookAndFeelClassName) {
-        return new LookAndFeelProxy() {
-                public LookAndFeel getLookAndFeel() {
-                    try {
-                        return (LookAndFeel) Class.forName(lookAndFeelClassName)
-                                                  .newInstance();
-                    } catch (InstantiationException e) {
-                        Assert.shouldNeverReachHere(e.toString());
-                    } catch (IllegalAccessException e) {
-                        Assert.shouldNeverReachHere(e.toString());
-                    } catch (ClassNotFoundException e) {
-                        Assert.shouldNeverReachHere(e.toString());
-                    }
 
-                    return null;
-                }
+  private static String SKINS = I18N
+      .get("ui.plugin.skin.InstallSkinsPlugIn.skins");
+  private static String DEFAULT = I18N
+      .get("ui.plugin.skin.InstallSkinsPlugIn.default");
 
-                public String toString() {
-                    return name;
-                }
-            };
+  private LookAndFeelProxy createProxy(final String name,
+      final String lookAndFeelClassName) {
+    return new LookAndFeelProxy() {
+      public LookAndFeel getLookAndFeel() {
+        try {
+          return (LookAndFeel) Class.forName(lookAndFeelClassName)
+              .newInstance();
+        } catch (InstantiationException e) {
+          Assert.shouldNeverReachHere(e.toString());
+        } catch (IllegalAccessException e) {
+          Assert.shouldNeverReachHere(e.toString());
+        } catch (ClassNotFoundException e) {
+          Assert.shouldNeverReachHere(e.toString());
+        }
+
+        return null;
+      }
+
+      public String toString() {
+        return name;
+      }
+    };
+  }
+
+  public void initialize(PlugInContext context) throws Exception {
+    SKINS = I18N.get("ui.plugin.skin.InstallSkinsPlugIn.skins");
+    DEFAULT = I18N.get("ui.plugin.skin.InstallSkinsPlugIn.default");
+    ArrayList skins = new ArrayList();
+
+    for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+      String desc = info.getName();
+      // tag os default skin for user to see
+      if ( info.getClassName() == UIManager.getSystemLookAndFeelClassName() )
+        desc = desc + " (" + DEFAULT + ")";
+      skins.add(createProxy( desc, info.getClassName() ));
     }
-
-    public void initialize(PlugInContext context) throws Exception {
-        SKINS = I18N.get("ui.plugin.skin.InstallSkinsPlugIn.skins");
-        DEFAULT = I18N.get("ui.plugin.skin.InstallSkinsPlugIn.default");
-        ArrayList skins = new ArrayList();
-        skins.add(createProxy(DEFAULT,
-                UIManager.getSystemLookAndFeelClassName()));
-		for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-			skins.add(createProxy(info.getName(), info.getClassName()));
-		}
-        context.getWorkbenchContext().getWorkbench().getBlackboard().put(SkinOptionsPanel.SKINS_KEY,
-            skins);
-        OptionsDialog.instance(context.getWorkbenchContext().getWorkbench()).addTab(
-            SKINS,
-            new SkinOptionsPanel(context.getWorkbenchContext().getWorkbench().getBlackboard(), context.getWorkbenchFrame()));                                    
-    }
+    context.getWorkbenchContext().getWorkbench().getBlackboard()
+        .put(SkinOptionsPanel.SKINS_KEY, skins);
+    OptionsDialog.instance(context.getWorkbenchContext().getWorkbench())
+        .addTab(SKINS, new SkinOptionsPanel(context));
+  }
 }
