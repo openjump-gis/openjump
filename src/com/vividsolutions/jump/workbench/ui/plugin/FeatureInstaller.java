@@ -502,7 +502,9 @@ public class FeatureInstaller {
 
   private void addMenuItemIcon(JMenuItem menuItem, Icon icon) {
     // no icons for windows laf on vista+
-    // TODO: this obviously does not work when skin is switched during runtime
+    // TODO: this obviously does not work when skin is switched during runtime,
+    // but will work correctly when the new skin is restored after a restart
+    // [ ede 5.4.2012 ]
     if (vista_checkbox_workaround
         && (menuItem instanceof JRadioButtonMenuItem || menuItem instanceof JCheckBoxMenuItem))
       return;
