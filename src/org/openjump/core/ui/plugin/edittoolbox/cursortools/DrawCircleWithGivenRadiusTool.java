@@ -102,7 +102,7 @@ public class DrawCircleWithGivenRadiusTool extends NClickTool{
     private Point mp = null;
     private int points = 8;
     private double tolerance = 0.1;
-    private int deactivateCount=0;	
+    private int deactivateCount = 0;	
 	//private String T1 = "Circle Radius";
 	private String T1 = I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawCircleWithGivenRadiusTool.Cirlce-Radius") + ":";
 	//private String T2 = "Number of segments per circle quarter";
@@ -127,7 +127,6 @@ public class DrawCircleWithGivenRadiusTool extends NClickTool{
                     new float[] { 3, 3 },
                     0));
         this.allowSnapping();       
-
 	}
 		
     public static CursorTool create(LayerNamePanelProxy layerNamePanelProxy) {
@@ -188,31 +187,18 @@ public class DrawCircleWithGivenRadiusTool extends NClickTool{
     public void activate(LayerViewPanel layerViewPanel){
     	super.activate(layerViewPanel);
     	try{
-    		if (this.valuesWereSet == false){
-	    		this.makeDialogThings(layerViewPanel);
-	    		this.valuesWereSet = true;
-    		}
 	    	Envelope viewportEnvelope = layerViewPanel.getViewport().getEnvelopeInModelCoordinates();
 	    	double x = viewportEnvelope.getMinX() + viewportEnvelope.getWidth()/2;
 	    	double y = viewportEnvelope.getMinY() + viewportEnvelope.getHeight()/2;
 	    	Coordinate initCoords = new Coordinate(x,y);
-	    	this.calcuateCircle(initCoords, layerViewPanel);	    	
+	    	this.calculateCircle(initCoords, layerViewPanel);
+	    	redrawShape();
     	}
     	catch(Exception e){
-    		//System.out.println("DrawCirclyByRadiusTool: Exception eaten");
     		System.out.println(e);
     	}
     }
-        
-    public void deactivate(){
-    	//System.out.println("deactivate");
-    	super.deactivate();
-    	this.deactivateCount = this.deactivateCount + 1;
-    	if (this.deactivateCount == 2){
-    		this.valuesWereSet = false; //-- to show dialog if tool is again activated 
-    		this.deactivateCount=0;
-    	}
-    }
+
         
     public Cursor getCursor() {
         return Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
@@ -234,7 +220,7 @@ public class DrawCircleWithGivenRadiusTool extends NClickTool{
         try {
             setViewDestination(e.getPoint());
             redrawShape();
-            } 
+        } 
         catch (Throwable t) {
             getPanel().getContext().handleThrowable(t);
         }
@@ -246,7 +232,7 @@ public class DrawCircleWithGivenRadiusTool extends NClickTool{
      * changed to get circle around mouse pointer
      */
     protected Shape getShape(){
-    	this.calcuateCircle(this.modelDestination, this.getPanel());
+    	this.calculateCircle(this.modelDestination, this.getPanel());
 		return this.selectedFeaturesShape; 
     }   
      
@@ -255,7 +241,7 @@ public class DrawCircleWithGivenRadiusTool extends NClickTool{
 	 * calculates a cirle around the mouse pointer and converts it to a java shape  
 	 * @param middlePoint coordinates of the circle
 	 */
-    private void calcuateCircle(Coordinate middlePoint, LayerViewPanel panel){
+    private void calculateCircle(Coordinate middlePoint, LayerViewPanel panel){
         //--calculate circle;
     	Point p = new GeometryFactory().createPoint(middlePoint);
     	this.mp = p;
@@ -272,41 +258,37 @@ public class DrawCircleWithGivenRadiusTool extends NClickTool{
     	}
     }
  
-	public boolean makeDialogThings(LayerViewPanel panel) throws Exception{
+	public boolean makeDialogThings(LayerViewPanel panel) throws Exception {
 		LayerViewPanelContext context = (LayerViewPanelContext)panel.getContext();
 		WorkbenchFrame fr = (WorkbenchFrame)(context);
-	    //MultiInputDialogWithoutCancel dialog = new MultiInputDialogWithoutCancel(fr, getName(), true);
 	    MultiInputDialog dialog = new MultiInputDialog(fr, getName(), true);
 	    dialog.setCancelVisible(false);
-	        setDialogValues(dialog);
-	        GUIUtil.centreOnWindow(dialog);
-	        dialog.setVisible(true);
-	        if (! dialog.wasOKPressed()) { return false; }
-	        getDialogValues(dialog);
-	        return true;	
+	    setDialogValues(dialog);
+	    GUIUtil.centreOnWindow(dialog);
+	    dialog.setVisible(true);
+	    if (! dialog.wasOKPressed()) { return false; }
+	    getDialogValues(dialog);
+	    return true;	
 	}
 	
-    //private void setDialogValues(MultiInputDialogWithoutCancel dialog)
-    private void setDialogValues(MultiInputDialog dialog)
-	  {    	
+    private void setDialogValues(MultiInputDialog dialog) {    	
 	    dialog.setSideBarDescription(this.sidebarstring);
 	    dialog.addDoubleField(T1,this.radius,7,T1); 
 	    dialog.addDoubleField(this.sAccuracy,this.tolerance, 7,this.sAccuracy);
-	  }
+    }
 
-	//private void getDialogValues(MultiInputDialogWithoutCancel dialog) {
-	private void getDialogValues(MultiInputDialog dialog) {
-	    this.radius = dialog.getDouble(T1);
-	    this.tolerance = dialog.getDouble(this.sAccuracy); 
-	  }
+    private void getDialogValues(MultiInputDialog dialog) {
+        this.radius = dialog.getDouble(T1);
+        this.tolerance = dialog.getDouble(this.sAccuracy); 
+    }
 	
     //----------- from drag tool ------------//
        
-      protected void setViewDestination(Point2D destination) throws NoninvertibleTransformException {
-          this.setModelDestination(getPanel().getViewport().toModelCoordinate(destination));
-      }    
+    protected void setViewDestination(Point2D destination) throws NoninvertibleTransformException {
+        this.setModelDestination(getPanel().getViewport().toModelCoordinate(destination));
+    }    
 
-      protected void setModelDestination(Coordinate destination) {
-          this.modelDestination = snap(destination);
-     }    
+    protected void setModelDestination(Coordinate destination) {
+        this.modelDestination = snap(destination);
+    }    
 }

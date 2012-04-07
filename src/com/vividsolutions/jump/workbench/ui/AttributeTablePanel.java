@@ -428,6 +428,11 @@ public class AttributeTablePanel extends JPanel {
         table.getColumnModel().getColumn(0).setMaxWidth(editButtonWidth);
         table.getColumnModel().getColumn(0).setPreferredWidth(editButtonWidth);
 		
+        // [mmichaud 2012-04-06] don't know why, in the case where the schema is 
+        // changed while the AttributeTablePanel is opened, the
+        // TableModelListener is fired and then the initColumnWidths is called,
+        // but the workbenchContext.getTask() return null.
+        if (workbenchContext.getTask() == null) return;
 		// check if we have previoisly saved columns witdh
 		Layer layer = workbenchContext.getTask().getLayerManager().getLayer(getModel().getLayer().getName());
 		if (layer.getDataSourceQuery() == null) return;

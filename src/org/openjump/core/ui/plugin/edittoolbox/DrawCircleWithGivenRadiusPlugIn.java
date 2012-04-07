@@ -49,6 +49,7 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanelProxy;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.cursortool.CursorTool;
+import com.vividsolutions.jump.workbench.ui.cursortool.DelegatingTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.QuasimodeTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.editing.EditingPlugIn;
 import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxDialog;
@@ -180,12 +181,22 @@ public class DrawCircleWithGivenRadiusPlugIn extends AbstractPlugIn{
         if (!circleButtonAdded)
         {
             final ToolboxDialog toolbox = ((EditingPlugIn) pcontext.getWorkbenchContext().getBlackboard().get(EditingPlugIn.KEY)).getToolbox(pcontext.getWorkbenchContext());
-            QuasimodeTool quasimodeTool = new QuasimodeTool(DrawCircleWithGivenRadiusTool.create(toolbox.getContext()));
+            final DelegatingTool cursorTool = (DelegatingTool)DrawCircleWithGivenRadiusTool.create(toolbox.getContext());
+            final QuasimodeTool quasimodeTool = new QuasimodeTool(cursorTool);
             quasimodeTool.add(new QuasimodeTool.ModifierKeySpec(true, false, false), null);
             quasimodeTool.add(new QuasimodeTool.ModifierKeySpec(true, true, false), null);
             toolbox.add(quasimodeTool, null);
             toolbox.finishAddingComponents();
             toolbox.validate();
+            toolbox.getToolBar().getButton(quasimodeTool.getClass()).addMouseListener(new java.awt.event.MouseAdapter(){
+                public void mouseClicked(java.awt.event.MouseEvent e) {
+                    try {
+                        ((DrawCircleWithGivenRadiusTool)cursorTool.getDelegate()).makeDialogThings(pcontext.getWorkbenchContext().getLayerViewPanel());
+                    } catch(Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            });
             circleButtonAdded = true;
         }
     }
