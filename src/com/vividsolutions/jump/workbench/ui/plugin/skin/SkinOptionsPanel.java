@@ -147,13 +147,13 @@ public class SkinOptionsPanel extends JPanel implements OptionsPanel {
     } catch (UnsupportedLookAndFeelException e) {
       context.getWorkbenchFrame().handleThrowable(e);
     }
-    updateFrames();
-    updatePopupMenus();
-    SwingUtilities.updateComponentTreeUI(OptionsDialog.instance(
-        context.getWorkbenchContext().getWorkbench()).getContentPane());
+
     // during start we are added to the optionspanel later, hence update us
     // explicitely
     SwingUtilities.updateComponentTreeUI(this);
+
+    updateFrames();
+    updatePopupMenus();
 
     // save current laf to workbench state for restoration after restart
     blackboard_persist.put(CURRENT_SKIN_KEY, laf.getClass().getName());
