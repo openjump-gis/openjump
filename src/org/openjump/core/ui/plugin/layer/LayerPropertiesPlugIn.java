@@ -41,7 +41,9 @@ import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStyle;
 import com.vividsolutions.jump.feature.FeatureCollectionWrapper;
@@ -75,7 +77,7 @@ import javax.swing.event.ChangeEvent;
 import java.text.*;
 import java.util.Map;
 
-import org.openjump.core.ui.images.IconLoader;
+
 
 public class LayerPropertiesPlugIn extends AbstractPlugIn 
 {
@@ -151,7 +153,7 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
     public LayerPropertiesPlugIn() {}
     
     public ImageIcon getIcon() {
-        return IconLoader.icon("info16_v.png");
+        return IconLoader.icon("information.png");
     }
     
     public void initialize(PlugInContext context) throws Exception {
@@ -187,6 +189,7 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
         stylePanel = new StylePanel();
         MultiInputDialog dialog = new MultiInputDialog(context.getWorkbenchFrame(),
         		LAYER_PROPERTIES, true);
+        dialog.setIconImage(getIcon().getImage());
         //dialog.setInset(0);
         final ArrayList propertyPanels = new ArrayList();
         propertyPanels.add(infoPanel);
@@ -206,6 +209,7 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
                                 .getBlackboard().get(LAST_TAB_KEY,
                     ((PropertyPanel) propertyPanels.iterator().next()).getTitle())));
 
+        GUIUtil.centreOnWindow(dialog);
         dialog.setVisible(true);
         context.getWorkbenchContext().getWorkbench().getBlackboard().put(LAST_TAB_KEY,
             ((PropertyPanel) tabbedPane.getSelectedComponent()).getTitle());

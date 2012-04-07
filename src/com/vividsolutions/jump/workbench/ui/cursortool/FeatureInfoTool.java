@@ -50,8 +50,7 @@ import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 
 public class FeatureInfoTool extends SpecifyFeaturesTool {
 
-    //public static final ImageIcon ICON = IconLoaderFamFam.icon("information.png");
-    public static final ImageIcon ICON = IconLoader.icon("Info.gif");
+    public static final ImageIcon ICON = IconLoader.icon("information.png");
     public FeatureInfoTool() {
         setColor(Color.magenta);
     }
@@ -81,5 +80,5 @@ public class FeatureInfoTool extends SpecifyFeaturesTool {
             infoFrame.getModel().add(layer, features);
         }
         infoFrame.surface();
-    }    
+    }
 }
