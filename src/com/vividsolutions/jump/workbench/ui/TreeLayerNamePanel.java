@@ -577,7 +577,7 @@ public class TreeLayerNamePanel extends JPanel
     }
 
     public void layerChanged(final LayerEvent e) {
-        TreeModelEvent treeModelEvent = new TreeModelEvent(this, new Object[]{
+        final TreeModelEvent treeModelEvent = new TreeModelEvent(this, new Object[]{
                 tree.getModel().getRoot(), e.getCategory()}, new int[]{e
                 .getLayerableIndex()}, new Object[]{e.getLayerable()});
 
@@ -588,6 +588,8 @@ public class TreeLayerNamePanel extends JPanel
             // probably somewhere else.
             // The strange thing is that the bug appears only in the cloned
             // windows, not in the original one [mmichaud 2011-10-16]
+            // activate fireTreeStructureChanged ==> InvocationTargetException in ClassifyAttributesPlugIn
+            // deactivate fireTreeStructureChanged ==> 
             firableTreeModelWrapper.fireTreeStructureChanged(treeModelEvent);
             if ((selectedNodes(Layerable.class)).size() == 0 &&
                 e.getLayerable() instanceof Layer) {
