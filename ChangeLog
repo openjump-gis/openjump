@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2012-04-09 mmichaud <michael.michaud@free.fr>
+  * Bug 3515663 an exception was thrown by ClassifyAttributesPlugIn
+  
 2012-04-02 mmichaud <michael.michaud@free.fr>
   * Bug #3510832 dirty fix to avoid the NPE (did not understand the source of 
     the problem though)
