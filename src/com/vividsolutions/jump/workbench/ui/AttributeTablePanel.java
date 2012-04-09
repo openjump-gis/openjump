@@ -26,13 +26,21 @@
  */
 package com.vividsolutions.jump.workbench.ui;
 
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
+
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -49,13 +57,16 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableColumnModelEvent;
+import javax.swing.event.TableColumnModelListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumnModel;
 
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jump.feature.Feature;
+import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.util.FlexibleDateParser;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.CategoryEvent;
@@ -67,10 +78,6 @@ import com.vividsolutions.jump.workbench.model.LayerListener;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.EditSelectedFeaturePlugIn;
-import java.awt.*;
-import java.util.HashMap;
-import javax.swing.event.TableColumnModelListener;
-import javax.swing.table.TableColumnModel;
 
 /**
  * Implements an AttributeTable panel. Table-size changes are absorbed by the
@@ -203,8 +210,6 @@ public class AttributeTablePanel extends JPanel {
       return buttonGC;
     }
   }
-   
-    private boolean columnWidthsInitialized = false;
 
     private MyTable table = new MyTable();
 
@@ -244,10 +249,14 @@ public class AttributeTablePanel extends JPanel {
     private ArrayList listeners = new ArrayList();
 
     private WorkbenchContext workbenchContext;
+    private Layer layer;
+    private HashMap columnsWidthMap;
 
     public AttributeTablePanel(final LayerTableModel model, boolean addScrollPane,
             final WorkbenchContext workbenchContext) {
         this();
+        // this panel is exactly for this layer
+        this.layer = model.getLayer();
         if (addScrollPane) {
             remove(table);
             remove(table.getTableHeader());
@@ -288,7 +297,7 @@ public class AttributeTablePanel extends JPanel {
             model.addTableModelListener(new TableModelListener() {
 
                 public void tableChanged(TableModelEvent e) {
-                    if (e.getFirstRow() == TableModelEvent.HEADER_ROW) {
+                  if (e.getFirstRow() == TableModelEvent.HEADER_ROW) {
                         //Structure changed (LayerTableModel specifies
                         // HEADER_ROW).
                         //Add this listener after the table adds its listeners
@@ -422,75 +431,82 @@ public class AttributeTablePanel extends JPanel {
     }
 
     private void initColumnWidths() {
-        GUIUtil.chooseGoodColumnWidths(table);
-        int editButtonWidth = 16;
-        table.getColumnModel().getColumn(0).setMinWidth(editButtonWidth);
-        table.getColumnModel().getColumn(0).setMaxWidth(editButtonWidth);
-        table.getColumnModel().getColumn(0).setPreferredWidth(editButtonWidth);
-		
-        // [mmichaud 2012-04-06] don't know why, in the case where the schema is 
-        // changed while the AttributeTablePanel is opened, the
-        // TableModelListener is fired and then the initColumnWidths is called,
-        // but the workbenchContext.getTask() return null.
-        if (workbenchContext.getTask() == null) return;
-		// check if we have previoisly saved columns witdh
-		Layer layer = workbenchContext.getTask().getLayerManager().getLayer(getModel().getLayer().getName());
-		if (layer.getDataSourceQuery() == null) return;
-		HashMap columnsWithMap = (HashMap)layer.getDataSourceQuery().getDataSource().getProperties().get(ATTRIBUTE_COLUMNS_WIDTH_MAP);
-		if (columnsWithMap != null) {
-			for (int i = 0; i < table.getColumnModel().getColumnCount(); i++) {
-				Integer columnWidth = (Integer) columnsWithMap.get(table.getColumnModel().getColumn(i).getHeaderValue());
-				if (columnWidth != null) table.getColumnModel().getColumn(i).setPreferredWidth(columnWidth);
-			}
-			
-		}
-		
-		// add the Listener for changes
-		table.getColumnModel().addColumnModelListener(new TableColumnModelListener() {
-
-			public void columnAdded(TableColumnModelEvent e) {
-				handleColumnModelChanges((TableColumnModel)e.getSource());
-			}
-
-			public void columnRemoved(TableColumnModelEvent e) {
-				handleColumnModelChanges((TableColumnModel)e.getSource());
-			}
-
-			public void columnMoved(TableColumnModelEvent e) {
-				handleColumnModelChanges((TableColumnModel)e.getSource());
-			}
-
-			public void columnMarginChanged(ChangeEvent e) {
-				handleColumnModelChanges((TableColumnModel)e.getSource());
-			}
-
-			public void columnSelectionChanged(ListSelectionEvent e) {
-				// do nothing
-			}
-		});
-		
-        columnWidthsInitialized = true;
+      GUIUtil.chooseGoodColumnWidths(table);
+      int editButtonWidth = 16;
+      table.getColumnModel().getColumn(0).setMinWidth(editButtonWidth);
+      table.getColumnModel().getColumn(0).setMaxWidth(editButtonWidth);
+      table.getColumnModel().getColumn(0).setPreferredWidth(editButtonWidth);
+  
+      // reset to possibly saved column widths
+      if (layer.getDataSourceQuery() instanceof DataSourceQuery) {
+        HashMap savedWidthMap = (HashMap) layer.getDataSourceQuery()
+            .getDataSource().getProperties().get(ATTRIBUTE_COLUMNS_WIDTH_MAP);
+        if (savedWidthMap instanceof HashMap)
+          columnsWidthMap = savedWidthMap;
+      }
+      changeColumnWidths(table.getColumnModel(), false);
+  
+      // add the Listener for changes
+      table.getColumnModel().addColumnModelListener(
+          new TableColumnModelListener() {
+            final MyTable mytable = table;
+  
+            public void columnAdded(TableColumnModelEvent e) {
+              changeColumnWidths((TableColumnModel) e.getSource(), false);
+            }
+  
+            public void columnRemoved(TableColumnModelEvent e) {
+              changeColumnWidths((TableColumnModel) e.getSource(), false);
+            }
+  
+            public void columnMoved(TableColumnModelEvent e) {
+              changeColumnWidths((TableColumnModel) e.getSource(), false);
+            }
+  
+            public void columnMarginChanged(ChangeEvent e) {
+              changeColumnWidths((TableColumnModel) e.getSource(), true);
+            }
+  
+            public void columnSelectionChanged(ListSelectionEvent e) {
+              // do nothing
+            }
+          });
     }
 	
-	/**
-	 * This method handle the changes on the TableColumnModel. 
-	 * The width of all columns will be stored in the datasource properties.
-	 * Later this can be saved within the projectfile.
-	 * 
-	 * @param columnModel 
-	 */
-	private void handleColumnModelChanges(TableColumnModel columnModel) {
-		int columns = columnModel.getColumnCount();
-		HashMap columnsWithMap = new HashMap(columns);
-		// loop over all columns in this table
-		for (int i = 0; i < columns; i++) {
-			// we map the headername of a column to his width, because in the case
-			// of changing the column order we have a problem if we use the index!
-			columnsWithMap.put(columnModel.getColumn(i).getHeaderValue(), columnModel.getColumn(i).getWidth());
-		}
-		// and finaly add the map to the projects properties
-		workbenchContext.getTask().getLayerManager().getLayer(getModel().getLayer().getName()).getDataSourceQuery().getDataSource().getProperties().put(ATTRIBUTE_COLUMNS_WIDTH_MAP, columnsWithMap);
-	}
+    /**
+     * This method handle the changes on the TableColumnModel. The width of all
+     * columns will be stored in the datasource properties. Later this can be
+     * saved within the projectfile.
+     * 
+     * @param columnModel
+     * @param override
+     *          ignore datasource defaults, e.g. if user manually resizes col in
+     *          gui
+     */
+    private void changeColumnWidths(TableColumnModel columnModel, boolean override) {
+  
+      // init col widths memory map
+      if (!(columnsWidthMap instanceof HashMap))
+        columnsWidthMap = new HashMap(columnModel.getColumnCount());
+      // loop over table cols and restore if entry found
+      for (int i = 0; i < columnModel.getColumnCount(); i++) {
+        Integer savedWidth = (Integer) columnsWidthMap.get(columnModel.getColumn(
+            i).getHeaderValue());
+        Integer curWidth = columnModel.getColumn(i).getWidth();
+        // get or add new entry, override signal user resizes
+        if (savedWidth != null && !override)
+          columnModel.getColumn(i).setPreferredWidth(savedWidth);
+        else
+          columnsWidthMap
+              .put(columnModel.getColumn(i).getHeaderValue(), curWidth);
+      }
+  
+      // and finaly save the map to the projects properties
+      if (layer.getDataSourceQuery() == null)
+        return;
+      layer.getDataSourceQuery().getDataSource().getProperties()
+          .put(ATTRIBUTE_COLUMNS_WIDTH_MAP, columnsWidthMap);
+    }
 
     private void setToolTips() {
         table.addMouseMotionListener(new MouseMotionAdapter() {

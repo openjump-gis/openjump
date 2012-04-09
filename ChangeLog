@@ -1,8 +1,16 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2012-04-09 ede
+  * bugfix 3510832 "Changing schema with attribute table opened throw exception"
+    https://sourceforge.net/tracker/index.php?func=detail&aid=3510832&group_id=118054&atid=679906
+    NOTE: FeatureInfo is not updated, this is no simple issue to solve as schema modification
+          replaces the whole featurecollection for the layer, which let's the layer loose selection
+          and the attribute table loose the old feature object
+    WORKAROUND: simply close and reopen it
+
 2012-04-09 mmichaud <michael.michaud@free.fr>
   * Bug 3515663 an exception was thrown by ClassifyAttributesPlugIn
-  
+
 2012-04-02 mmichaud <michael.michaud@free.fr>
   * Bug #3510832 dirty fix to avoid the NPE (did not understand the source of 
     the problem though)
