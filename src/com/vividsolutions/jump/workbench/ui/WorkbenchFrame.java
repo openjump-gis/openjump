@@ -607,8 +607,8 @@ public class WorkbenchFrame extends JFrame
         }
       });
       // Call #activateFrame *after* adding the listener. [Jon Aquino]
-      activateFrame(internalFrame);
       position(internalFrame);
+      activateFrame(internalFrame);
     }
   }
 
