@@ -44,8 +44,7 @@ import com.vividsolutions.jump.workbench.ui.ErrorHandler;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanel;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanelProxy;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
-import com.vividsolutions.jump.workbench.ui.LayerViewPanelProxy;
-import com.vividsolutions.jump.workbench.ui.TaskFrameProxy;
+import com.vividsolutions.jump.workbench.ui.TaskFrame;
 
 
 /**
@@ -76,11 +75,12 @@ public class JUMPWorkbenchContext extends WorkbenchContext {
     }
 
     public Task getTask() {
-        if (!(activeInternalFrame() instanceof TaskFrameProxy)) {
-            return null;
-        }
+      // in the very beginning there is no task e.g. JUMPConfiguration.setup(WorkbenchContext)
+      return getActiveTaskFrame() instanceof TaskFrame ? getActiveTaskFrame().getTask() : null;
+    }
 
-        return ((TaskFrameProxy) activeInternalFrame()).getTaskFrame().getTask();
+    private TaskFrame getActiveTaskFrame(){
+      return workbench.getFrame().getActiveTaskFrame();
     }
 
     public LayerNamePanel getLayerNamePanel() {
@@ -102,11 +102,7 @@ public class JUMPWorkbenchContext extends WorkbenchContext {
     }
 
     public LayerViewPanel getLayerViewPanel() {
-        if (!(activeInternalFrame() instanceof LayerViewPanelProxy)) {
-            return null;
-        }
-
-        return ((LayerViewPanelProxy) activeInternalFrame()).getLayerViewPanel();
+        return getActiveTaskFrame() instanceof TaskFrame ? getActiveTaskFrame().getLayerViewPanel() : null;
     }
 
     private JInternalFrame activeInternalFrame() {

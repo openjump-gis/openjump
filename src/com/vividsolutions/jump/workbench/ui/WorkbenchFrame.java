@@ -124,38 +124,39 @@ import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
  * This class is responsible for the main window of the JUMP application.
  */
 public class WorkbenchFrame extends JFrame 
-	implements LayerViewPanelContext, ViewportListener, ErrorHandlerV2
-	{
+ implements LayerViewPanelContext,
+    ViewportListener, ErrorHandlerV2 {
 
-	BorderLayout borderLayout1 = new BorderLayout();
+  BorderLayout borderLayout1 = new BorderLayout();
 
-	JMenuBar menuBar = new JMenuBar();
+  JMenuBar menuBar = new JMenuBar();
 
-	JMenu fileMenu = (JMenu) FeatureInstaller.installMnemonic(new JMenu(
-			MenuNames.FILE), menuBar);
+  JMenu fileMenu = (JMenu) FeatureInstaller.installMnemonic(new JMenu(
+      MenuNames.FILE), menuBar);
 
-	JMenuItem exitMenuItem = FeatureInstaller.installMnemonic(new JMenuItem(
-			I18N.get("ui.WorkbenchFrame.exit")), fileMenu);
+  JMenuItem exitMenuItem = FeatureInstaller.installMnemonic(
+      new JMenuItem(I18N.get("ui.WorkbenchFrame.exit")), fileMenu);
 
-	// StatusBar
-    private JPanel statusPanel = new JPanel();
-    private JTextField messageTextField = new JTextField();
-    private JLabel timeLabel = new JLabel();
-    private JLabel memoryLabel = new JLabel();
-	private JLabel scaleLabel = new JLabel();         // [Giuseppe Aruta 2012-feb-18] new label for scale
-	private JLabel coordinateLabel = new JLabel();
-    
-	private String lastStatusMessage = "";
-	
-	// the four SplitPanes for the statusbar
-	private JSplitPane statusPanelSplitPane1;
-	private JSplitPane statusPanelSplitPane2;
-	private JSplitPane statusPanelSplitPane3;
-	private JSplitPane statusPanelSplitPane4;
+  private TaskFrame activeTaskFrame = null;
+  
+  // StatusBar
+  private JPanel statusPanel = new JPanel();
+  private JTextField messageTextField = new JTextField();
+  private JLabel timeLabel = new JLabel();
+  private JLabel memoryLabel = new JLabel();
+  private JLabel scaleLabel = new JLabel(); // [Giuseppe Aruta 2012-feb-18] new
+                                            // label for scale
+  private JLabel coordinateLabel = new JLabel();
 
-	// <<TODO:FEATURE>> Before JUMP Workbench closes, prompt the user to save
-	// any unsaved layers [Jon Aquino]
-	WorkbenchToolBar toolBar;
+  private String lastStatusMessage = "";
+
+  // the four SplitPanes for the statusbar
+  private JSplitPane statusPanelSplitPane1;
+  private JSplitPane statusPanelSplitPane2;
+  private JSplitPane statusPanelSplitPane3;
+  private JSplitPane statusPanelSplitPane4;
+
+  WorkbenchToolBar toolBar;
 
   JMenu windowMenu = (JMenu)FeatureInstaller.installMnemonic(new JMenu(
     MenuNames.WINDOW), menuBar);
@@ -750,6 +751,8 @@ public class WorkbenchFrame extends JFrame
   }
 
   public TaskFrame addTaskFrame(TaskFrame taskFrame) {
+    // reliably tell us which taskframe is active
+    taskFrame.addInternalFrameListener(new ActivateTaskFrame());
     taskFrame.getTask().getLayerManager().addLayerListener(new LayerListener() {
       public void featuresChanged(FeatureEvent e) {
       }
@@ -783,6 +786,16 @@ public class WorkbenchFrame extends JFrame
 		  l.taskAdded(new TaskEvent(this, taskFrame.getTask()));
 	  }
     return taskFrame;
+  }
+
+  private class ActivateTaskFrame extends InternalFrameAdapter{
+    public void internalFrameActivated(InternalFrameEvent e) {
+      activeTaskFrame = (TaskFrame)e.getInternalFrame();
+    }
+  }
+  
+  public TaskFrame getActiveTaskFrame() {
+    return activeTaskFrame;
   }
 
   public void flash(final HTMLFrame frame) {

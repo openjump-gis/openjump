@@ -7,6 +7,7 @@
           replaces the whole featurecollection for the layer, which let's the layer loose selection
           and the attribute table loose the old feature object
     WORKAROUND: simply close and reopen it
+  * JUMPWorkbenchContext.getTask() and getLayerViewPanel() now more robust if active InternalFrame is no TaskFrame
 
 2012-04-09 mmichaud <michael.michaud@free.fr>
   * Bug 3515663 an exception was thrown by ClassifyAttributesPlugIn
