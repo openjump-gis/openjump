@@ -81,7 +81,7 @@ public class ClassifyAttributesPlugIn extends AbstractPlugIn implements Threaded
     private String sideBarText = "Classifies attribute data with the chosen method.\n" +
     							 "The result is added as new field to the attribute table.";
     private String CLASSIFIER = "select classification method";
-    private String T2 ="number of classes";
+    private String T2 = "number of classes";
     private String CLAYER = "select layer";
     private String ATTRIBUTE = "select attribute";
     private String OPTIMIZEWITHKMEANS = "optimize with k-means" ;
@@ -110,6 +110,8 @@ public class ClassifyAttributesPlugIn extends AbstractPlugIn implements Threaded
 	private String sNotEnoughValuesWarning = "valid values is not enough";
     private String sWrongDataType = "Wrong datatype of chosen attribute";
     private String sNoAttributeChoosen = "No attribute choosen";
+    
+    private Plot2DPanelOJ plot;
 	
     /**
      * this method is called on the startup by JUMP/OpenJUMP.
@@ -187,30 +189,37 @@ public class ClassifyAttributesPlugIn extends AbstractPlugIn implements Threaded
     
 	public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
 		//-- get the LM because when the Histogram will be shown, the app. focus 
-		//   will change and context.addLayer will not work (null pointer exc.)  
+		//   will change and context.addLayer will not work (null pointer exc.)
+		// [mmichaud 2012-04-09] to completely resolve this problem, I added the
+		// new JInternalFrame is added after the addLayer method has been called
 		this.currentLM = context.getLayerManager();
     	monitor.allowCancellationRequests();
-//		if (this.selLayer.isEditable() == true){
-            if (this.selAttribute == null) {
-			    context.getWorkbenchFrame().warnUser(I18N.get(sNoAttributeChoosen));
-			    return;
-			}
-			FeatureDataset result = classifyAndCreatePlot(monitor, context);
-			if (result == null) {
-			    context.getWorkbenchFrame().warnUser(I18N.get(sNotEnoughValuesWarning));			
-			}
-			else if(result.size() > 0){
-				String name = this.selAttribute + "_" + this.selClassifier;
-				this.currentLM.addLayer(StandardCategoryNames.WORKING, name, result);
-			}
-			else{
-				context.getWorkbenchFrame().warnUser(sWarning);			
-			}
-//		}
-//		else{
-//			context.getWorkbenchFrame().warnUser("Layer not Editable");
-//		}
-		
+        if (this.selAttribute == null) {
+		    context.getWorkbenchFrame().warnUser(I18N.get(sNoAttributeChoosen));
+		    return;
+		}
+		javax.swing.JInternalFrame internalFrame = context.getWorkbenchFrame().getActiveInternalFrame();
+		FeatureDataset result = classifyAndCreatePlot(monitor, context);
+		context.getWorkbenchFrame().activateFrame(internalFrame);
+		if (result == null) {
+		    context.getWorkbenchFrame().warnUser(I18N.get(sNotEnoughValuesWarning));			
+		}
+		else if(result.size() > 0){
+			String name = this.selAttribute + "_" + this.selClassifier;
+			this.currentLM.addLayer(StandardCategoryNames.WORKING, name, result);
+			JInternalFrame frame = new JInternalFrame(this.sHistogram);
+            frame.setLayout(new BorderLayout());
+            frame.add(plot, BorderLayout.CENTER);
+            frame.setClosable(true);
+            frame.setResizable(true);
+            frame.setMaximizable(true);
+            frame.setSize(450, 450);
+            context.getWorkbenchFrame().addInternalFrame(frame);
+            plot = null;
+		}
+		else{
+			context.getWorkbenchFrame().warnUser(sWarning);			
+		}		
 	}
     
     private void setDialogValues(MultiInputDialog dialog, PlugInContext context)
@@ -383,7 +392,7 @@ public class ClassifyAttributesPlugIn extends AbstractPlugIn implements Threaded
         
         //=============== plot data and class breaks ==============/
         //-- create plots
-        final Plot2DPanelOJ plot = new Plot2DPanelOJ();        
+        /*final Plot2DPanelOJ*/ plot = new Plot2DPanelOJ();        
         plot.addHistogramPlotOJ(this.selAttribute, data, this.ranges*3, context, selLayer, this.selAttribute);
         plot.addScatterPlotOJ(this.sDatapoints, plotdata, fID, context, this.selLayer);
         plot.addBarPlot(this.sClassbreaks, limits2show);
@@ -392,16 +401,19 @@ public class ClassifyAttributesPlugIn extends AbstractPlugIn implements Threaded
         plot.setAxisLabel(1, this.sCount);
         plot.addLegend("SOUTH");
         
-        JInternalFrame frame = new JInternalFrame(this.sHistogram);
-        frame.setLayout(new BorderLayout());
-        frame.add(plot, BorderLayout.CENTER);
-        frame.setClosable(true);
-        frame.setResizable(true);
-        frame.setMaximizable(true);
-        frame.setSize(450, 450);
-        frame.setVisible(true);
+        // [mmichaud 2012-04-09] Moved in run method after the addLayer method
+        // to avoid the problem of the focus change
         
-        context.getWorkbenchFrame().addInternalFrame(frame);
+        //JInternalFrame frame = new JInternalFrame(this.sHistogram);
+        //frame.setLayout(new BorderLayout());
+        //frame.add(plot, BorderLayout.CENTER);
+        //frame.setClosable(true);
+        //frame.setResizable(true);
+        //frame.setMaximizable(true);
+        //frame.setSize(450, 450);
+        //frame.setVisible(true);
+        
+        //context.getWorkbenchFrame().addInternalFrame(frame);
         
         //=============== classify data ==============/
         if(monitor.isCancelRequested()){
