@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2012-04-11 mmichaud <michael.michaud@free.fr>
+  * New CreateGridPlugIn for OpenJUMP 1.6 (see also FR 2716201)
+
 2012-04-09 ede
   * bugfix 3510832 "Changing schema with attribute table opened throw exception"
     https://sourceforge.net/tracker/index.php?func=detail&aid=3510832&group_id=118054&atid=679906
