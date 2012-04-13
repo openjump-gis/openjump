@@ -416,7 +416,7 @@ public class AttributeTab extends JPanel implements LayerNamePanel {
         toolBar.add(
             new JButton(),
             featureInfoPlugIn.getName(),
-            FeatureInfoTool.ICON,
+            featureInfoPlugIn.ICON,
             FeatureInfoPlugIn.toActionListener(featureInfoPlugIn, workbenchContext, null),
             //FeatureInfoPlugIn.createEnableCheck(workbenchContext));
             // Fix BUG ID: 3441486
