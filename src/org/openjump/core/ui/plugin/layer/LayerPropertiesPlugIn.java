@@ -153,7 +153,7 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
     public LayerPropertiesPlugIn() {}
     
     public ImageIcon getIcon() {
-        return IconLoader.icon("information.png");
+        return IconLoader.icon("information_16x16.png");
     }
     
     public void initialize(PlugInContext context) throws Exception {
