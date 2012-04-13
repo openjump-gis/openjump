@@ -40,6 +40,8 @@ import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
 import com.vividsolutions.jts.simplify.*;
 import com.vividsolutions.jts.operation.linemerge.*;
 import com.vividsolutions.jts.operation.polygonize.*;
+
+import com.vividsolutions.jump.algorithm.Densifier;
 import com.vividsolutions.jump.I18N;
 
 /**
@@ -74,6 +76,7 @@ public abstract class GeometryFunction
     new BufferFunction(),
     new SimplifyFunction(),
     new SimplifyTopologyFunction(),
+    new DensifyFunction(),
     new ConvexHullFunction(),
     new BoundaryFunction(),
     new EnvelopeFunction(),
@@ -356,4 +359,16 @@ public abstract class GeometryFunction
 	      return clone.reverse();
 	  }
   }
+  
+  private static class DensifyFunction extends GeometryFunction {
+	  public DensifyFunction() {
+		  super(I18N.get("ui.plugin.analysis.GeometryFunction.Densify"), 1, 1);
+	  }
+
+	  public Geometry execute(Geometry[] geom, double[] param)
+	  {
+	      return Densifier.densify(geom[0], param[0]);
+	  }
+  }
+  
 }
