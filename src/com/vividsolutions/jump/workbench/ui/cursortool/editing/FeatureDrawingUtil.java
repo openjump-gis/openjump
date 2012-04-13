@@ -185,7 +185,10 @@ public class FeatureDrawingUtil {
         LayerViewPanel panel) {
         Collection selectedFeaturesContainingPolygon = selectedFeaturesContaining(polygon, panel);
         if (selectedFeaturesContainingPolygon.isEmpty()) {
-            AbstractPlugIn.execute(createAddCommand(polygon, rollingBackInvalidEdits, panel, tool), panel);
+            UndoableCommand cmd = createAddCommand(polygon, rollingBackInvalidEdits, panel, tool);
+            // createAddCommand() might return null on errors [ede]
+            if ( cmd instanceof UndoableCommand )
+              AbstractPlugIn.execute( cmd, panel);
         } else {
             createHole(
                 polygon,
