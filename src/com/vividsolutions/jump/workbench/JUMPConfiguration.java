@@ -493,8 +493,7 @@ public class JUMPConfiguration implements Setup {
                 viewSchemaPlugIn.getName(), false, ViewSchemaPlugIn.ICON,
                 ViewSchemaPlugIn.createEnableCheck(workbenchContext));
         AttributeTab.addPopupMenuItem(workbenchContext, featureInfoPlugIn,
-                featureInfoPlugIn.getName(), false, GUIUtil
-                        .toSmallIcon(FeatureInfoTool.ICON),
+                featureInfoPlugIn.getName(), false, FeatureInfoPlugIn.ICON,
                 FeatureInfoPlugIn.createEnableCheck(workbenchContext));
         AttributeTab.addPopupMenuItem(workbenchContext, cutSelectedItemsPlugIn,
                 cutSelectedItemsPlugIn.getName(), false,CutSelectedItemsPlugIn.ICON,
@@ -636,8 +635,7 @@ public class JUMPConfiguration implements Setup {
             FeatureInstaller featureInstaller) {
         JPopupMenu popupMenu = LayerViewPanel.popupMenu();
         featureInstaller.addPopupMenuItem(popupMenu, featureInfoPlugIn,
-                featureInfoPlugIn.getName(), false, GUIUtil
-                        .toSmallIcon(FeatureInfoTool.ICON), FeatureInfoPlugIn
+                featureInfoPlugIn.getName(), false, FeatureInfoPlugIn.ICON, FeatureInfoPlugIn
                         .createEnableCheck(workbenchContext));
         featureInstaller
                 .addPopupMenuItem(
@@ -809,8 +807,7 @@ public class JUMPConfiguration implements Setup {
                         .createEnableCheck(workbenchContext));        
         featureInstaller.addMenuSeparator(MenuNames.VIEW); // ===================
         featureInstaller.addMainMenuItem(featureInfoPlugIn, new String[] {MenuNames.VIEW},
-                featureInfoPlugIn.getName(), false,GUIUtil
-                        .toSmallIcon(FeatureInfoTool.ICON), FeatureInfoPlugIn
+                featureInfoPlugIn.getName(), false, FeatureInfoPlugIn.ICON, FeatureInfoPlugIn
                         .createEnableCheck(workbenchContext));
         featureInstaller
         		.addMainMenuItem(

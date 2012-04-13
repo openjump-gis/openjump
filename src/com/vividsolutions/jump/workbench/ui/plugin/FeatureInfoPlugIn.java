@@ -35,6 +35,8 @@ package com.vividsolutions.jump.workbench.ui.plugin;
 
 import java.util.Iterator;
 
+import javax.swing.ImageIcon;
+
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
@@ -45,9 +47,12 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.InfoFrame;
 import com.vividsolutions.jump.workbench.ui.SelectionManagerProxy;
 import com.vividsolutions.jump.workbench.ui.TaskFrameProxy;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class FeatureInfoPlugIn extends AbstractPlugIn {
     public FeatureInfoPlugIn() {}
+
+    public static final ImageIcon ICON = IconLoader.icon("information_16x16.png");
 
     public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
         EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
@@ -91,5 +96,7 @@ public class FeatureInfoPlugIn extends AbstractPlugIn {
 
         return true;
     }
+    
+    
 
 }

@@ -50,7 +50,7 @@ import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 
 public class FeatureInfoTool extends SpecifyFeaturesTool {
 
-    public static final ImageIcon ICON = IconLoader.icon("information.png");
+    public static final ImageIcon ICON = IconLoader.icon("information_20x20.png");
     public FeatureInfoTool() {
         setColor(Color.magenta);
     }
@@ -60,7 +60,7 @@ public class FeatureInfoTool extends SpecifyFeaturesTool {
     }
 
     public Cursor getCursor() {
-        return createCursor(IconLoader.icon("InfoCursor.gif").getImage());
+        return createCursor(IconLoader.icon("information_cursor.png").getImage());
     }
     
     protected void gestureFinished() throws Exception {
