@@ -1092,6 +1092,7 @@ public class WarpingPanel extends JPanel {
                     .check(null));
         triangulationCheckBox.setSelected(
             toolbox.getContext().getLayerViewPanel() != null
+                && toolbox.getContext().getLayerManager() != null
                 && toolbox.getContext().getLayerManager().getLayer(
                     ShowTriangulationPlugIn.SOURCE_LAYER_NAME)
                     != null
