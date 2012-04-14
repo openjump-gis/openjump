@@ -751,7 +751,7 @@ public class WorkbenchFrame extends JFrame
   }
 
   public TaskFrame addTaskFrame(TaskFrame taskFrame) {
-    // reliably tell us which taskframe is active
+    // track which taskframe is activated
     taskFrame.addInternalFrameListener(new ActivateTaskFrame());
     taskFrame.getTask().getLayerManager().addLayerListener(new LayerListener() {
       public void featuresChanged(FeatureEvent e) {
@@ -1231,6 +1231,9 @@ public class WorkbenchFrame extends JFrame
   private class DefaultInternalFrameCloser implements InternalFrameCloseHandler {
     public void close(JInternalFrame internalFrame) {
       if (internalFrame instanceof TaskFrame) {
+        // delete reference to taskframe to be closed
+        if (activeTaskFrame == internalFrame)
+          activeTaskFrame = null;
         closeTaskFrame((TaskFrame)internalFrame);
       } else {
         GUIUtil.dispose(internalFrame, desktopPane);

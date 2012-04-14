@@ -1,4 +1,3 @@
-
 /*
  * The Unified Mapping Platform (JUMP) is an extensible, interactive GUI 
  * for visualizing and manipulating spatial features with geometry and attributes.
@@ -44,68 +43,59 @@ import com.vividsolutions.jump.workbench.ui.ErrorHandler;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanel;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanelProxy;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
+import com.vividsolutions.jump.workbench.ui.LayerViewPanelProxy;
 import com.vividsolutions.jump.workbench.ui.TaskFrame;
 
-
 /**
- * Implementation of {@link WorkbenchContext} for the {@link
- * JUMPWorkbench}.
+ * Implementation of {@link WorkbenchContext} for the {@link JUMPWorkbench}.
  */
 public class JUMPWorkbenchContext extends WorkbenchContext {
-    private JUMPWorkbench workbench;
+  private JUMPWorkbench workbench;
 
-    public JUMPWorkbenchContext(JUMPWorkbench workbench) {
-        this.workbench = workbench;
-    }
+  public JUMPWorkbenchContext(JUMPWorkbench workbench) {
+    this.workbench = workbench;
+  }
 
-    public JUMPWorkbench getWorkbench() {
-        return workbench;
-    }
-    
-    public Blackboard getBlackboard() {
-		return workbench.getBlackboard();
-	}
+  public JUMPWorkbench getWorkbench() {
+    return workbench;
+  }
 
-    public DriverManager getDriverManager() {
-        return workbench.getDriverManager();
-    }
+  public Blackboard getBlackboard() {
+    return workbench.getBlackboard();
+  }
 
-    public ErrorHandler getErrorHandler() {
-        return workbench.getFrame();
-    }
+  public DriverManager getDriverManager() {
+    return workbench.getDriverManager();
+  }
 
-    public Task getTask() {
-      // in the very beginning there is no task e.g. JUMPConfiguration.setup(WorkbenchContext)
-      return getActiveTaskFrame() instanceof TaskFrame ? getActiveTaskFrame().getTask() : null;
-    }
+  public ErrorHandler getErrorHandler() {
+    return workbench.getFrame();
+  }
 
-    private TaskFrame getActiveTaskFrame(){
-      return workbench.getFrame().getActiveTaskFrame();
-    }
+  public Task getTask() {
+    // in the very beginning there is no task e.g.
+    // JUMPConfiguration.setup(WorkbenchContext)
+    return getActiveTaskFrame() instanceof TaskFrame ? getActiveTaskFrame()
+        .getTask() : null;
+  }
 
-    public LayerNamePanel getLayerNamePanel() {
-        if (!(activeInternalFrame() instanceof LayerNamePanelProxy)) {
-            return null;
-        }
+  public LayerNamePanel getLayerNamePanel() {
+    return getActiveTaskFrame() instanceof LayerNamePanelProxy ? 
+        ((LayerNamePanelProxy) getActiveTaskFrame()).getLayerNamePanel() : null;
+  }
 
-        return ((LayerNamePanelProxy) activeInternalFrame()).getLayerNamePanel();
-    }
+  public LayerManager getLayerManager() {
+    return getActiveTaskFrame() instanceof LayerManagerProxy ? getActiveTaskFrame()
+        .getLayerManager() : null;
+  }
 
-    public LayerManager getLayerManager() {
-        if (!(activeInternalFrame() instanceof LayerManagerProxy)) {
-            //WarpingPanel assumes that this method returns null if the active frame is not
-            //a LayerManagerProxy. [Jon Aquino]            
-            return null;
-        }
+  public LayerViewPanel getLayerViewPanel() {
+    return getActiveTaskFrame() instanceof LayerViewPanelProxy ? getActiveTaskFrame()
+        .getLayerViewPanel() : null;
+  }
 
-        return ((LayerManagerProxy) activeInternalFrame()).getLayerManager();
-    }
-
-    public LayerViewPanel getLayerViewPanel() {
-        return getActiveTaskFrame() instanceof TaskFrame ? getActiveTaskFrame().getLayerViewPanel() : null;
-    }
-
-    private JInternalFrame activeInternalFrame() {
-        return workbench.getFrame().getActiveInternalFrame();
-    }
+  // ask workbench to give us the active taskframe
+  private TaskFrame getActiveTaskFrame() {
+    return workbench.getFrame().getActiveTaskFrame();
+  }
 }
