@@ -254,9 +254,9 @@ public class EnableCheckFactory {
                             "com.vividsolutions.jump.workbench.plugin.Exactly-n-layers-must-be-selected",
                             new Object[] { n });
                 }
-                LayerNamePanel lv = workbenchContext.getLayerNamePanel();
-                return (lv instanceof LayerViewPanelProxy && n != lv
-                        .selectedNodes(layerableClass).size()) ? msg : null;
+                LayerNamePanel lnp = workbenchContext.getLayerNamePanel();
+                return ( lnp instanceof LayerNamePanel && n == lnp
+                        .selectedNodes(layerableClass).size()) ? null : msg;
             }
         };
     }
