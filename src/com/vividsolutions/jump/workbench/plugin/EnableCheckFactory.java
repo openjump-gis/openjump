@@ -246,6 +246,11 @@ public class EnableCheckFactory {
         final Class layerableClass) {
         return new EnableCheck() {
             public String check(JComponent component) {
+                LayerNamePanel lnp = workbenchContext.getLayerNamePanel();
+                if (lnp instanceof LayerNamePanel
+                    && n == lnp.selectedNodes(layerableClass).size())
+                  return null;
+                
                 String msg;
                 if (n == 1) {
                     msg = get("com.vividsolutions.jump.workbench.plugin.Exactly-one-layer-must-be-selected");
@@ -254,9 +259,8 @@ public class EnableCheckFactory {
                             "com.vividsolutions.jump.workbench.plugin.Exactly-n-layers-must-be-selected",
                             new Object[] { n });
                 }
-                LayerNamePanel lnp = workbenchContext.getLayerNamePanel();
-                return ( lnp instanceof LayerNamePanel && n == lnp
-                        .selectedNodes(layerableClass).size()) ? null : msg;
+                
+                return msg;
             }
         };
     }
