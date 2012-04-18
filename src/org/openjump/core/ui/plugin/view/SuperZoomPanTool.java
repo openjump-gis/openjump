@@ -78,14 +78,17 @@ public class SuperZoomPanTool extends DragTool implements MouseWheelListener {
 		super.deactivate();
 		// remove the MouseWheelListener, because other tools do not need this MouseWheelListener ;-)
 		if (mouseWheelListenerAdded) {
-			getWorkbench().getContext().getLayerViewPanel().removeMouseWheelListener(this);
-			mouseWheelListenerAdded = false;
+			LayerViewPanel layerViewPanel = getWorkbench().getContext().getLayerViewPanel();
+			if (layerViewPanel != null) {
+				layerViewPanel.removeMouseWheelListener(this);
+				mouseWheelListenerAdded = false;
+				// if the tool was deactivated, it's better to reset all parameters
+				wheelMode = false;
+				getWorkbench().getContext().getLayerViewPanel().setCursor(CURSOR_ZOOM);
+				scale = 1;
+				mouseWheelCount = 0;
+			}
 		}
-		// if the tool was deactivated, it's better to reset all parameters
-		wheelMode = false;
-		getWorkbench().getContext().getLayerViewPanel().setCursor(CURSOR_ZOOM);
-		scale = 1;
-		mouseWheelCount = 0;
 	}
 		
 	public void mouseWheelMoved(MouseWheelEvent e) {
