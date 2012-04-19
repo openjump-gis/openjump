@@ -1,4 +1,49 @@
 --------------------------------------------------------
+Version 1.5.2 (released on jj.mmmm.2012)
+
+  New Features
+  
+  Bug fixes
+  - Improved icon display (internal changes + icon replacement)
+  - Bug 3515663 : Statistics > Classify attribute was throwing an exception
+  - Bug 3513864 : Raster Image layers (Sextante) have now an icon in the 
+    TreeLayerNamePanel and do not throw exception anymore
+  - Bug 3513741 : Analysis > Union : attribute used to dissolve was 
+    duplicated in the result layer
+  - Bug 3513735 : Sextante Raster visibility attribute was not saved in project
+  - Bug 3510832 : Changing schema with attribute table opened throwed exception
+  - Bug 3510778 : EZ Button did not respect layer editability
+  - Bug 3497362 : Dialog box of "draw circle from center and radius" poped up
+  - Bug 3491956 : Union of overlapping lines could not be merged
+  - Bug 3489322 : Snapping on grid had rounding problems (snapped coordinate 
+    to 872939.1 could be 872939.1000000001)
+  - Bug 3489028 : FillPolygon ("Create polygon from closed area") could 
+    return a polygon which was not intersecting the clicked point if it had 
+    a hole.
+  - Bug 3489026 : FillPolygon ("Create polygon from closed area") can be 
+    long : a work-in-progress diamgo box has been added in this case
+  - Bug 3488976 : Noder plugin failed to split polygons
+  - Bug 3488974 : Buffer PlugIn : workaround a small problem of robustness 
+    by adding a simplify(geom,0) pre-process
+  - Bug 3488028 : A dataset read from zip could be tagged editable but could 
+    not be edited. It is now tagged read-only
+  - Bug 3486847 : Wrong message : When Closing a project with unsaved data, 
+    the message was asking if one want to close OpenJUMP
+  SimpleQuery : change the definition of strict intersection from 
+    TFFTFF*** to TFF*FF*** so that closed linestring can also be found
+  
+  Small improvements
+  - New (vertical) logo in the windows installer
+  - FR 3511501 : Change FillPolygon ToolTip to "Create polygon from closed 
+    area"
+  - Status bar : Small improvements in the layout
+
+  PLUS version
+  - Bug 3492384 : DXF export of lines does not export z value
+  - Bug 3487686 : BeanshellEditor : Flying the mouse over the LayerViewPanel 
+    was automatically hiding the editor
+
+--------------------------------------------------------
 Version 1.5.1 (released on 02.febr.2012)
 
   New Features
