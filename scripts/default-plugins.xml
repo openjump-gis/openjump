@@ -128,7 +128,13 @@
 	<!--- =========  MapWindow ====================  /-->
 	<plug-in>org.openjump.core.ui.plugin.mousemenu.ZoomInPlugIn</plug-in>	
 	<plug-in>org.openjump.core.ui.plugin.mousemenu.ZoomOutPlugIn</plug-in>	
-	<plug-in>org.openjump.core.ui.plugin.mousemenu.CenterZoomPlugIn</plug-in>	
+	<plug-in>org.openjump.core.ui.plugin.mousemenu.CenterZoomPlugIn</plug-in>
+    <plug-in>org.openjump.core.ui.plugin.mousemenu.NodeFeaturesPlugIn</plug-in>
+    <plug-in>org.openjump.core.ui.plugin.mousemenu.NodeLinesPlugIn</plug-in>
+    <plug-in>org.openjump.core.ui.plugin.mousemenu.NodePolygonsPlugIn</plug-in>
+    <plug-in>org.openjump.core.ui.plugin.mousemenu.SplitFeaturesPlugIn</plug-in>
+    <plug-in>org.openjump.core.ui.plugin.mousemenu.SplitLinesNodePolygonsPlugIn</plug-in>
+    <plug-in>org.openjump.core.ui.plugin.mousemenu.SplitPolygonsNodeLinesPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.mousemenu.MoveAlongAnglePlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.mousemenu.RotatePlugIn</plug-in>	
 	<plug-in>org.openjump.core.ui.plugin.mousemenu.EditSelectedSidePlugIn</plug-in>

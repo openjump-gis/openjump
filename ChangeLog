@@ -1,6 +1,21 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
-2012-01-22 Matthias Scholz <ms@jammerhund.de>
+2012-04-19 mmichaud <michael.michaud@free.fr>
+  * Improved NoderPlugIn to be able to process features selected in several 
+    layers and to make use of it in new plugins to be added in the mouse context 
+    menu.
+  * Add the following plugins in layer view mouse menu :
+    - org.openjump.core.ui.plugin.mousemenu.NodeFeaturesPlugIn
+    - org.openjump.core.ui.plugin.mousemenu.NodeLinesPlugIn
+    - org.openjump.core.ui.plugin.mousemenu.NodePolygonsPlugIn
+    - org.openjump.core.ui.plugin.mousemenu.SplitFeaturesPlugIn
+    - org.openjump.core.ui.plugin.mousemenu.SplitLinesNodePolygonsPlugIn
+    - org.openjump.core.ui.plugin.mousemenu.SpliPolygonsNodeLinesPlugIn
+  
+2012-04-19 ede
+  * Fix bug #3519264
+
+2012-04-18 Matthias Scholz <ms@jammerhund.de>
   * Fixed a NPE in the SuperZoomPanTool.deactivate()
 
 2012-04-14 mmichaud <michael.michaud@free.fr>
