@@ -56,6 +56,8 @@ import com.vividsolutions.jump.workbench.ui.plugin.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
+import java.util.Collection;
+
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -63,6 +65,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
+
 
 /**
  * Noder PlugIn computes intersection nodes in a collection of linear or areal
@@ -87,8 +90,8 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
     private final static String SELECTED_ONLY           = GenericNames.USE_SELECTED_FEATURES_ONLY;
     
     private final static String PROCESSING              = I18N.get("jump.plugin.edit.NoderPlugIn.processing");
-    private final static String CREATE_NEW_LAYER        = I18N.get("jump.plugin.edit.NoderPlugIn.create-new-layer");
-    private final static String UPDATE_SELECTED_FEATURES= I18N.get("jump.plugin.edit.NoderPlugIn.update-selected-features");
+    //private final static String CREATE_NEW_LAYER        = I18N.get("jump.plugin.edit.NoderPlugIn.create-new-layer");
+    //private final static String UPDATE_SELECTED_FEATURES= I18N.get("jump.plugin.edit.NoderPlugIn.update-selected-features");
     
     private final static String FIND_INTERSECTIONS      = I18N.get("jump.plugin.edit.NoderPlugIn.find-intersections");
     private final static String FIND_DESCRIPTION        = I18N.get("jump.plugin.edit.NoderPlugIn.create-new-layer-with-missing-intersections");
@@ -116,13 +119,10 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
     private final static String INTERSECTIONS           = I18N.get("jump.plugin.edit.NoderPlugIn.intersections");
     private final static String NODED                   = I18N.get("jump.plugin.edit.NoderPlugIn.noded");
     
-    private boolean useSelected = false;
-    private boolean create_new_layer = true;
-    private boolean update_selected_features = false;
+    private boolean use_selected = false;
     private String layerName;
     private GeometryFactory gf;
     private FeatureSchema schema_preserve_attributes;
-    private FeatureSchema schema;
     
     private boolean snap_rounding = false;
     int snap_rounding_dp = 6;
@@ -169,22 +169,49 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
         getDialogValues(dialog);
         return true;
     }
+    
+    public void setUseSelected(boolean use_selected) {this.use_selected = use_selected;}
+    public void setLayerName(String layerName) {this.layerName = layerName;}
+    public void setSnapRounding(boolean snap_rounding) {this.snap_rounding = snap_rounding;}
+    public void setSnapRoundingDp(int snap_rounding_dp) {this.snap_rounding_dp = snap_rounding_dp;}
+    public void setFindIntersections(boolean find_intersections) {this.find_intersections = find_intersections;}
+    public void setDoNotProcessLines(boolean do_not_process_lines) {this.do_not_process_lines = do_not_process_lines;}
+    public void setDoNotProcessPolygons(boolean do_not_process_polygons) {this.do_not_process_polygons = do_not_process_polygons;}
+    public void setNodeLines(boolean node_lines) {this.node_lines = node_lines;}
+    public void setNodePolygons(boolean node_polygons) {this.node_polygons = node_polygons;}
+    public void setSplitLines(boolean split_lines) {this.split_lines = split_lines;}
+    public void setSplitPolygons(boolean split_polygons) {this.split_polygons = split_polygons;}
+    public void setInterpolateZ(boolean interpolate_z) {this.interpolate_z = interpolate_z;}
+    public void setInterpolatedZDp(int interpolated_z_dp) {this.interpolated_z_dp = interpolated_z_dp;}
 
     
     public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
         monitor.allowCancellationRequests();
         monitor.report(I18N.get("jump.plugin.edit.NoderPlugIn.noding-input"));
         
-        final Layer layer = context.getLayerManager().getLayer(layerName);
+        // Test if features are selected
+        int selectedFeaturesNb = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems().size();
+        use_selected = selectedFeaturesNb > 0;
         
-        // Feature collection to process and GeometryFactory initialisation
-        Collection inputFeatures = getFeaturesToProcess(layer, context);
-        if (inputFeatures.isEmpty()) {
+        // [mmichaud 2012-04-18] main change in input data structure to be able to
+        // manage input from a selection of features belonging to several layers.
+        Map<Layer,Collection<Feature>> inputFeatures = getFeaturesToProcess(context);
+        Map<Layer,Collection<Feature>> outputFeatures = new HashMap<Layer,Collection<Feature>>();
+        Collection<Feature> inputAll = new ArrayList<Feature>();
+        Map<Feature,Layer> featureToLayer = new HashMap<Feature,Layer>(); 
+        for (Layer layer : inputFeatures.keySet()) {
+            outputFeatures.put(layer, new ArrayList<Feature>());
+            inputAll.addAll(inputFeatures.get(layer));
+            for (Feature f : inputFeatures.get(layer)) {
+                featureToLayer.put(f,layer);
+            }
+        }
+
+        // Short-circuit if inputFeatures is empty
+        if (inputAll.isEmpty()) {
             context.getWorkbenchFrame().warnUser(I18N.get("jump.plugin.edit.NoderPlugIn.no-data-to-process"));
             return;
         }
-        schema = ((Feature)inputFeatures.iterator().next()).getSchema();
-        // Now we are sure there is at least one feature to process
         
         // Create a GeometryFactory consistent with the snap_rounding parameters 
         if (snap_rounding) {
@@ -192,7 +219,7 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
                 new PrecisionModel(Math.pow(10.0, (double)snap_rounding_dp)));
         }
         else {
-            gf = ((Feature)inputFeatures.iterator().next()).getGeometry().getFactory();
+            gf = ((Feature)inputAll.iterator().next()).getGeometry().getFactory();
         }
         
         monitor.report(I18N.get("jump.plugin.edit.NoderPlugIn.noding"));
@@ -200,7 +227,7 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
         // Segments strings are extracted from the input dataset, keeping a
         // link to their parent feature
         List<SegmentString> segmentStrings = 
-            Features2SegmentStringsWithData.getSegmentStrings(inputFeatures);
+            Features2SegmentStringsWithData.getSegmentStrings(inputAll);
         
         // If inputFeatures contains only 0-dim features, segmentString will be
         // empty and the process should stop !
@@ -209,27 +236,29 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
             return;
         }
         
-        // If the user does not want to split features, find intersections will
-        // only find intersections if a vertex is missing (intersections
-        // located in the interior of a segment).
-        // ==> use IntersectionFinderAdder
-        if (find_intersections && (!split_lines) && (!split_polygons)) {
-            IntersectionFinderAdder intersector = new IntersectionFinderAdder(ROBUST_INTERSECTOR);
-            FeatureCollection nodes = findInteriorIntersections(segmentStrings, intersector);
-            context.addLayer(StandardCategoryNames.RESULT, 
-                            layerName + " " + INTERSECTIONS, nodes);
-        }
         
-        // If the user wants to split features (either linestring or polygons), 
-        // find intersections will return all intersections located in the 
-        // interior of linear elements (including existing vertices as long as
-        // they are not a linestring endpoint).
-        // ==> use IntersectionAdder
-        else if (find_intersections) {
-            IntersectionAdder intersector = new IntersectionAdder(ROBUST_INTERSECTOR);
-            FeatureCollection nodes = findIntersections(segmentStrings, intersector);
-            context.addLayer(StandardCategoryNames.RESULT, 
-                            layerName + " " + INTERSECTIONS, nodes);
+        if (find_intersections) {
+            FeatureCollection nodes = null;
+            // If the user does not want to split features, find intersections will
+            // only find places where a vertex is missing (intersections located in
+            // the interior of a segment)
+            // ==> use IntersectionFinderAdder
+            if ((!split_lines) && (!split_polygons)) {
+                IntersectionFinderAdder intersector = new IntersectionFinderAdder(ROBUST_INTERSECTOR);
+                nodes = findInteriorIntersections(segmentStrings, intersector);
+            }
+            // If the user wants to split features (either linestring or polygons), 
+            // find intersections will return all intersections located in the 
+            // interior of linear elements (including existing vertices as long as
+            // they are not a linestring endpoint).
+            // ==> use IntersectionAdder
+            else {
+                IntersectionAdder intersector = new IntersectionAdder(ROBUST_INTERSECTOR);
+                nodes = findIntersections(segmentStrings, intersector);
+            }
+            if (nodes!= null) {
+                context.addLayer(StandardCategoryNames.RESULT, layerName + " " + INTERSECTIONS, nodes);
+            }
         }
         
         // If neither process lines nor process polygons is checked, do nothing
@@ -247,18 +276,16 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
             Map<Feature,Map<Integer,Map<Integer,List<SegmentString>>>> 
                 geomStructureMap = SegmentStringsWithData2Features
                                    .getFeature2SegmentStringTreeMap(nodedSubstring);
-            FeatureCollection fc = new FeatureDataset(schema);
+            FeatureCollection fc = new FeatureDataset(
+                inputFeatures.keySet().iterator().next().getFeatureCollectionWrapper().getFeatureSchema());
             final Collection<Feature> updatedFeatures = new ArrayList<Feature>();
-            // Node lines and/or polygons and interpolate z as needed
-            // note : nodeFeatures method select lines and/or polygons according
-            // to node_lines and node_polygons option
+
             if (node_lines || node_polygons) {
-                if (create_new_layer) {
+                if (!use_selected) {
                     fc.addAll(nodeFeatures(geomStructureMap, interpolate_z, interpolated_z_dp));
                 }
-                else if (update_selected_features) {
-                    updatedFeatures.addAll(insertRemove(inputFeatures, geomStructureMap));
-                    // commit update happens later
+                else {
+                    insertRemove(inputFeatures, geomStructureMap, outputFeatures);
                 }
             }
             
@@ -279,28 +306,35 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
             
             // Split lines and/or polygons either with interpolated z or not
             if (split_lines || split_polygons) {
-                if (create_new_layer) {
+                if (!use_selected) {
                     if (split_lines) {
-                        fc.addAll(splitLines(monitor, nodedSubstring));
+                        fc.addAll(splitLines(monitor, nodedSubstring, featureToLayer, outputFeatures));
                     }
                     if (split_polygons) {
                         STRtree index = indexSegmentStrings(nodedSubstring);
-                        fc.addAll(splitPolygons(monitor, geomStructureMap, index));
+                        fc.addAll(splitPolygons(monitor, geomStructureMap, index, featureToLayer, outputFeatures));
                     }
                 }
-                else if (update_selected_features) {
-                    insertRemove(inputFeatures, geomStructureMap);
+                else {
+                    insertRemove(inputFeatures, geomStructureMap, outputFeatures);
                     if (split_lines) {
-                        updatedFeatures.addAll(splitLines(monitor, nodedSubstring));
+                        splitLines(monitor, nodedSubstring, featureToLayer, outputFeatures);
                     }
                     if (split_polygons) {
                         STRtree index = indexSegmentStrings(nodedSubstring);
-                        updatedFeatures.addAll(splitPolygons(monitor, geomStructureMap, index));
+                        splitPolygons(monitor, geomStructureMap, index, featureToLayer, outputFeatures);
                     }
                 }
             }
-            if (update_selected_features) {
-                commitUpdate(context, layer, inputFeatures, updatedFeatures);
+            if (use_selected) {
+                for (Layer layer : inputFeatures.keySet()) {
+                    if (layer.isEditable()) {
+                        commitUpdate(context, layer, inputFeatures.get(layer), outputFeatures.get(layer));
+                        //[mmichaud 2012-04-19] sellect updated features
+                        context.getLayerViewPanel().getSelectionManager().getFeatureSelection().unselectItems(layer);
+                        context.getLayerViewPanel().getSelectionManager().getFeatureSelection().selectItems(layer, outputFeatures.get(layer));
+                    }
+                }
             }
             else if (fc.size() > 0) {
                 context.addLayer(
@@ -325,11 +359,24 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
         return noder;
     }
     
-    private Collection getFeaturesToProcess(Layer lyr, PlugInContext context){
-        if (useSelected)
-          return context.getLayerViewPanel()
-                            .getSelectionManager().getFeaturesWithSelectedItems(lyr);
-        return lyr.getFeatureCollectionWrapper().getFeatures();
+    private Map<Layer,Collection<Feature>> getFeaturesToProcess(PlugInContext context){
+        Map<Layer,Collection<Feature>> map = new HashMap<Layer,Collection<Feature>>();
+        if (use_selected) {
+            Collection<Layer> layers = context.getLayerViewPanel().getSelectionManager().getLayersWithSelectedItems();
+            for (Layer layer : layers) {
+                map.put(layer, context.getLayerViewPanel()
+                                      .getSelectionManager()
+                                      .getFeaturesWithSelectedItems(layer));
+            }
+            return map;
+        }
+        else {
+            map.put(context.getLayerManager().getLayer(layerName),
+                    context.getLayerManager().getLayer(layerName)
+                                             .getFeatureCollectionWrapper()
+                                             .getFeatures());
+            return map;
+        }
     }
 
     /**
@@ -389,8 +436,8 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
     }
         
     private List<Feature> nodeFeatures(
-            Map<Feature,Map<Integer,Map<Integer,List<SegmentString>>>> geomStructureMap,
-            boolean interpolate, int interpolated_z_dp) {
+        Map<Feature,Map<Integer,Map<Integer,List<SegmentString>>>> geomStructureMap,
+        boolean interpolate, int interpolated_z_dp) {
         List<Feature> list = new ArrayList<Feature>();
         for (Map.Entry<Feature,Map<Integer,Map<Integer,List<SegmentString>>>> entry : geomStructureMap.entrySet()) {
             int dim = entry.getKey().getGeometry().getDimension();
@@ -416,7 +463,10 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
     }
     
     
-    private List<Feature> splitLines(TaskMonitor monitor, Collection nodedSubstring) {
+    private List<Feature> splitLines(TaskMonitor monitor, 
+                                     Collection nodedSubstring, 
+                                     Map<Feature,Layer> featureToLayer, 
+                                     Map<Layer,Collection<Feature>> outputFeatures) {
         
         monitor.report(I18N.get("jump.plugin.edit.NoderPlugIn.split-lines"));
         int count = 0, total = nodedSubstring.size();
@@ -431,8 +481,10 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
                     Feature feature = (Feature)metadata.getFeature().clone(false);
                     feature.setGeometry(gf.createLineString(cc));
                     list.add(feature);
+                    outputFeatures.get(featureToLayer.get(metadata.getFeature())).add(feature);
                 }
             }
+            //else if (outputFeatures.get(featureToLayer.get(metadata.getFeature())).contains())
             monitor.report(++count, total, "");
         }
         return list;
@@ -455,9 +507,17 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
          return env;
     }
     
+    /**
+     * @param monitor
+     * @param geomStructureMap a Map with source features as keys and 
+     * hierarchically organized noded segment strings as values
+     * @param index index of noded segment strings 
+     */
     private List<Feature> splitPolygons(TaskMonitor monitor,
             Map<Feature,Map<Integer,Map<Integer,List<SegmentString>>>> geomStructureMap,
-            STRtree index) {
+            STRtree index,
+            Map<Feature,Layer> featureToLayer, 
+            Map<Layer,Collection<Feature>> outputFeatures) {
     
         monitor.report(I18N.get("jump.plugin.edit.NoderPlugIn.split-polygons"));
         int count = 0 , total = geomStructureMap.size();
@@ -522,6 +582,7 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
                         resetZpoly(g, sourceSegmentStrings);
                         newFeature.setGeometry(g);
                         list.add(newFeature);
+                        outputFeatures.get(featureToLayer.get(entry.getKey())).add(newFeature);
                     }
                 }
             }
@@ -555,26 +616,28 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
         }
     }
     
-    private Collection<Feature> insertRemove(Collection inputFeatures,
-        Map<Feature,Map<Integer,Map<Integer,List<SegmentString>>>> geomStructureMap) {
-        Collection<Feature> newFeatures = new ArrayList<Feature>();
-        Collection featuresToRemove = new ArrayList();
-        for (Object o : inputFeatures) {
-            Feature oldFeature = (Feature)o;
-            int dim = oldFeature.getGeometry().getDimension();
-            if ((dim == 1 && node_lines) || (dim == 2 && node_polygons)) {
-                Feature newFeature = nodeFeature(oldFeature, 
-                    geomStructureMap.get(oldFeature), 
-                    interpolate_z, interpolated_z_dp);
-                newFeatures.add(newFeature);
-            } 
-            if ((dim == 1 && do_not_process_lines) || (dim == 2 && do_not_process_polygons)) {
-                featuresToRemove.add(oldFeature);
+    private Map<Layer,Collection<Feature>> insertRemove(Map<Layer,Collection<Feature>> inputFeatures,
+                Map<Feature,Map<Integer,Map<Integer,List<SegmentString>>>> geomStructureMap,
+                Map<Layer,Collection<Feature>> outputFeatures) {
+        for (Layer layer : inputFeatures.keySet()) {
+            if (!layer.isEditable()) continue;
+            outputFeatures.put(layer, new ArrayList<Feature>());
+            for (Feature oldFeature : inputFeatures.get(layer)) {
+                int dim = oldFeature.getGeometry().getDimension();
+                if ((dim == 1 && node_lines) || (dim == 2 && node_polygons)) {
+                    Feature newFeature = nodeFeature(oldFeature, 
+                        geomStructureMap.get(oldFeature), 
+                        interpolate_z, interpolated_z_dp);
+                    outputFeatures.get(layer).add(newFeature);
+                } 
+                if ((dim == 1 && do_not_process_lines) || (dim == 2 && do_not_process_polygons)) {
+                    outputFeatures.get(layer).add(oldFeature);
+                }
             }
         }
-        inputFeatures.removeAll(featuresToRemove);
-        return newFeatures;
+        return outputFeatures;
     }
+
     
     private void commitUpdate(PlugInContext context, final Layer layer,
                  final Collection inputFeatures, final Collection newFeatures) {
@@ -609,31 +672,38 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
         dialog.setSideBarImage(IconLoader.icon("Noder.png"));
         dialog.setSideBarDescription(I18N.get("jump.plugin.edit.NoderPlugIn.sidebar-description"));
         dialog.addSubTitle(PROCESSED_DATA);
-        JComboBox addLayerComboBox = dialog.addLayerComboBox(SRC_LAYER, context.getCandidateLayer(0), null, context.getLayerManager());
-        final JCheckBox selectedOnlyCB = dialog.addCheckBox(SELECTED_ONLY, useSelected);
-        selectedOnlyCB.setEnabled(n > 0);
+        final JComboBox addLayerComboBox = dialog.addLayerComboBox(SRC_LAYER, context.getCandidateLayer(0), null, context.getLayerManager());
+        // Hide the layer chooser component if some features are selected
+        addLayerComboBox.setVisible(n == 0);
+        dialog.getLabel(SRC_LAYER).setVisible(n == 0);
+        final javax.swing.JLabel selectionLabel = dialog.addLabel(SELECTED_ONLY);
+        // Hide the selection JLabel if no feature are selected 
+        selectionLabel.setVisible(n > 0);
+        
+        //final JCheckBox selectedOnlyCB = dialog.addCheckBox(SELECTED_ONLY, use_selected);
+        //selectedOnlyCB.setEnabled(n > 0);
         
         dialog.addSeparator();
         dialog.addSubTitle(PROCESSING);
-        final JRadioButton createNewRB = dialog.addRadioButton(CREATE_NEW_LAYER, "Result", create_new_layer, "");
-        final JRadioButton updateRB = dialog.addRadioButton(UPDATE_SELECTED_FEATURES, "Result", update_selected_features, "");
-        updateRB.setEnabled(n > 0);
-        if (!useSelected) updateRB.setSelected(false);
-        selectedOnlyCB.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e) {
-                updateRB.setEnabled(selectedOnlyCB.isSelected());
-                if (!selectedOnlyCB.isSelected()) createNewRB.setSelected(true);
-            }
-        });
-        updateRB.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e) {
-                if (updateRB.isSelected()) {
-                    selectedOnlyCB.setSelected(true);
-                }
-            }
-        });        
+        //final JRadioButton createNewRB = dialog.addRadioButton(CREATE_NEW_LAYER, "Result", create_new_layer, "");
+        //final JRadioButton updateRB = dialog.addRadioButton(UPDATE_SELECTED_FEATURES, "Result", update_selected_features, "");
+        //updateRB.setEnabled(n > 0);
+        //if (!use_selected) updateRB.setSelected(false);
+        //selectedOnlyCB.addActionListener(new ActionListener(){
+        //    public void actionPerformed(ActionEvent e) {
+        //        updateRB.setEnabled(selectedOnlyCB.isSelected());
+        //        if (!selectedOnlyCB.isSelected()) createNewRB.setSelected(true);
+        //    }
+        //});
+        //updateRB.addActionListener(new ActionListener(){
+        //    public void actionPerformed(ActionEvent e) {
+        //        if (updateRB.isSelected()) {
+        //            selectedOnlyCB.setSelected(true);
+        //        }
+        //    }
+        //});        
 
-        dialog.addSeparator();
+        //dialog.addSeparator();
         dialog.addCheckBox(FIND_INTERSECTIONS, find_intersections, FIND_DESCRIPTION);
         dialog.addComboBox(LINE_OPTIONS, line_processing, 
             Arrays.asList(new String[]{DO_NOT_PROCESS_LINES, NODE_LINES, SPLIT_LINES}), "");
@@ -669,9 +739,9 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
     private void getDialogValues(MultiInputDialog dialog) {
         Layer layer = dialog.getLayer(SRC_LAYER);
         layerName = layer.getName();
-        useSelected = dialog.getBoolean(SELECTED_ONLY);
-        create_new_layer = dialog.getBoolean(CREATE_NEW_LAYER);
-        update_selected_features = dialog.getBoolean(UPDATE_SELECTED_FEATURES);
+        //use_selected = dialog.getBoolean(SELECTED_ONLY);
+        //create_new_layer = dialog.getBoolean(CREATE_NEW_LAYER);
+        //update_selected_features = dialog.getBoolean(UPDATE_SELECTED_FEATURES);
         
         find_intersections = dialog.getBoolean(FIND_INTERSECTIONS);
         
