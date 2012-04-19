@@ -562,7 +562,8 @@ public class AttributeTab extends JPanel implements LayerNamePanel {
 
             public boolean execute(PlugInContext context) throws Exception {
                 //Save attributeTab before executing plug-in, as it may change active window. [Jon Aquino]
-                AttributeTab attributeTab = (AttributeTab) context.getLayerNamePanel();
+                AttributeTab attributeTab = (AttributeTab) ((LayerNamePanelProxy) context
+                    .getWorkbenchFrame().getActiveInternalFrame()).getLayerNamePanel();
                 setEnableLastSelectedLayers(true, attributeTab);
 
                 try {
