@@ -169,36 +169,42 @@ public class PolygonHandler implements ShapeHandler {
                 holesForShells.add(new ArrayList());
             }
             
-            //find holes
-            for(int i=0 ; i<holes.size() ; i++){
-                LinearRing testRing = (LinearRing)holes.get(i);
-                LinearRing minShell = null;
-                Envelope minEnv = null;
-                Envelope testEnv = testRing.getEnvelopeInternal();
-                Coordinate testPt = testRing.getCoordinateN(0);
-                LinearRing tryRing;
-                for(int j=0 ; j<shells.size() ; j++){
-                    tryRing = (LinearRing) shells.get(j);
-                    Envelope tryEnv = tryRing.getEnvelopeInternal();
-                    if (minShell != null) minEnv = minShell.getEnvelopeInternal();
-                    boolean isContained = false;
-                    Coordinate[] coordList = tryRing.getCoordinates() ;
-            
-                    if (tryEnv.contains(testEnv) && (cga.isPointInRing(testPt,coordList )))
-                        isContained = true;
-                        // check if this new containing ring is smaller than the current minimum ring
-                        if (isContained) {
-                            if (minShell == null || minEnv.contains(tryEnv)) {
+            // Improve performance of complex polygon reading (already 
+            // implemented in geotools). See also Martin's mail at :
+            // http://www.mail-archive.com/jump-pilot-devel@lists.sourceforge.net/msg10788.html
+            // If shell is unique, don't check if holes are included : 
+            if (shells.size() == 1) {
+                ((ArrayList)holesForShells.get(0)).addAll(holes);
+            }
+            else {
+                //find holes
+                for(int i=0 ; i<holes.size() ; i++){
+                    LinearRing testRing = (LinearRing)holes.get(i);
+                    LinearRing minShell = null;
+                    Envelope minEnv = null;
+                    Envelope testEnv = testRing.getEnvelopeInternal();
+                    Coordinate testPt = testRing.getCoordinateN(0);
+                    LinearRing tryRing;
+                    for(int j=0 ; j<shells.size() ; j++){
+                        tryRing = (LinearRing) shells.get(j);
+                        Envelope tryEnv = tryRing.getEnvelopeInternal();
+                        if (minShell != null) minEnv = minShell.getEnvelopeInternal();
+                        boolean isContained = false;
+                        Coordinate[] coordList = tryRing.getCoordinates() ;
+                        // Change test order to perform PiP test as few as possible
+                        if (tryEnv.contains(testEnv) && 
+                            (minShell == null || minEnv.contains(tryEnv)) &&
+                            (cga.isPointInRing(testPt,coordList ))) {
                             minShell = tryRing;
                         }
                     }
-                }
-                
-                if (minShell == null) {
-                    holesWithoutShells.add(testRing);
-                }
-                else {
-                  ((ArrayList)holesForShells.get(shells.indexOf(minShell))).add(testRing);
+                    
+                    if (minShell == null) {
+                        holesWithoutShells.add(testRing);
+                    }
+                    else {
+                      ((ArrayList) holesForShells.get(findIndex(shells, minShell))).add(testRing);
+                    }
                 }
             }
             
@@ -228,13 +234,23 @@ public class PolygonHandler implements ShapeHandler {
             shells = null;
             holes = null;
         }
-        
         //verify that we have read everything we need
         while (actualReadWords < contentLength) {
             int junk = file.readShortBE();	
             actualReadWords += 1;
         }
         return geom;
+    }
+    
+   /**
+    * Finds a object in a list using == instead of equals. 
+    * Should be much faster than indexof
+    */
+    private static int findIndex(ArrayList list, Object o) {
+        for (int i = 0, n = list.size(); i < n; i++) {
+            if (list.get(i) == o) return i;
+        }
+        return -1;
     }
 
     ArrayList findCWHoles(ArrayList shells, GeometryFactory geometryFactory) {
@@ -256,7 +272,7 @@ public class PolygonHandler implements ShapeHandler {
                     //&& (CGAlgorithms.isPointInRing(jPt2, coordList) || pointInList(jPt2, coordList))) {
                         && (CGAlgorithms.isPointInRing(jPt, coordList))
                         && (CGAlgorithms.isPointInRing(jPt2, coordList))) {
-                    if (!holesCW.contains(jRing)) {
+                    if (findIndex(holesCW, jRing) == -1) {
                         Polygon iPoly = geometryFactory.createPolygon(iRing,noHole);
                         Polygon jPoly = geometryFactory.createPolygon(jRing,noHole);
                         if (iPoly.contains(jPoly)) holesCW.add(jRing);

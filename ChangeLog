@@ -1,5 +1,10 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2012-04-20 mmichaud <michael.michaud@free.fr>
+  * Improve performance of complex shapefile polygon reading (already 
+    implemented in geotools). See also :
+    http://www.mail-archive.com/jump-pilot-devel@lists.sourceforge.net/msg10788.html
+
 2012-04-19 mmichaud <michael.michaud@free.fr>
   * Improved NoderPlugIn to be able to process features selected in several 
     layers and to make use of it in new plugins to be added in the mouse context 
