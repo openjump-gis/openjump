@@ -64,7 +64,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
-import javax.swing.border.Border;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.JUMPVersion;
@@ -98,6 +97,9 @@ public class AboutDialog extends JDialog {
     
     private WorkbenchContext wbc;
 
+	private JPanel aboutFillPanel;
+	private JPanel infoFillPanel;
+	
     public static AboutDialog instance(WorkbenchContext context) {
     	final String INSTANCE_KEY = AboutDialog.class.getName() + " - INSTANCE";
         if (context.getWorkbench().getBlackboard().get(INSTANCE_KEY) == null) {
@@ -134,8 +136,17 @@ public class AboutDialog extends JDialog {
     }
 
     void jbInit() throws Exception {
+		// empty fill Panel for nice layout
+		aboutFillPanel = new JPanel();
+		infoFillPanel = new JPanel();
+		GridBagConstraints fillPanelGridBagConstraints = new GridBagConstraints();
+		fillPanelGridBagConstraints.gridx = 0;
+        fillPanelGridBagConstraints.gridy = 6;
+        fillPanelGridBagConstraints.gridwidth = 3;
+        fillPanelGridBagConstraints.weightx = 1.0;
+        fillPanelGridBagConstraints.weighty = 1.0;
+		
         this.setMinimumSize(new Dimension( 200, 200));
-        Border border_0 = BorderFactory.createEmptyBorder(0, 0, 0, 0);
         
         this.getContentPane().setLayout(borderLayout2);
         //this.setResizable(false);
@@ -216,6 +227,8 @@ public class AboutDialog extends JDialog {
                     0));
             pnlButtons.add(btnGC, null);
             
+		// empty fill Panel for nice layout
+		infoPanel.add(infoFillPanel, fillPanelGridBagConstraints);
             
         JPanel aboutPanel = new JPanel();
 
@@ -227,13 +240,13 @@ public class AboutDialog extends JDialog {
         aboutPanel.add(splashPanel,new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.CENTER,GridBagConstraints.NONE,
                 new Insets(0, 0, 0, 0), 0, 0));
 
-/*
+
         // print classpath for debugging
         URL[] urls = ((java.net.URLClassLoader)ClassLoader.getSystemClassLoader()).getURLs();
         for(int i=0; i< urls.length; i++)
             System.out.println(urls[i]);
-*/
-        String result;
+
+        String result = null;
         String urlstring = "";
         try {
             URL url = ClassLoader.getSystemResource("readme.txt"); // "ÿ \u069e/test.txt"
@@ -252,11 +265,6 @@ public class AboutDialog extends JDialog {
         } catch (Exception e) {
             // this is normal in development where readme.txt is
             // located in /etc/readme.txt
-            StringBuffer buf = new StringBuffer();
-            for (int i = 0; i < e.getStackTrace().length; i++)
-                buf.append(e.getStackTrace()[i] + "\n");
-
-            result = e + "\n\n" + buf;
         }
         
         JTextArea readme = new JTextArea(/*urlstring +"\n\n"+*/ result ) ;
@@ -266,9 +274,15 @@ public class AboutDialog extends JDialog {
         // pad text away from the border
         readme.setBorder( BorderFactory.createEmptyBorder(10,10,10,10) );
         
-        aboutPanel.add(readme,new GridBagConstraints(0, 1, 1, 1, 0, 0, GridBagConstraints.CENTER,GridBagConstraints.NONE,
+		// only if the readme.txt was found
+        if (result != null) {
+			aboutPanel.add(readme,new GridBagConstraints(0, 1, 1, 1, 0, 0, GridBagConstraints.CENTER,GridBagConstraints.NONE,
                 new Insets(20, 0, 0, 0), 0, 0));
+		}
         
+		// empty fill Panel for nice layout
+		aboutPanel.add(aboutFillPanel, fillPanelGridBagConstraints);
+		
         aboutScroll = new JScrollPane();
         aboutScroll.getViewport().add(aboutPanel);
         aboutScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -322,6 +336,7 @@ public class AboutDialog extends JDialog {
     	return label;
     }
     
+	@Override
     public void setVisible(boolean b) {
         if (b) {
             DecimalFormat format = new DecimalFormat("###,###");
@@ -362,6 +377,7 @@ public class AboutDialog extends JDialog {
         // calculate h offset between scroll and dialog for dynamic resizing above
         int h_off = getHeight() - aboutScroll.getPreferredSize().height;
 
+		@Override
         public void componentResized(ComponentEvent evt) {
             // System.out.println( getX() + " cR " + getY());
             /*
@@ -423,6 +439,7 @@ public class AboutDialog extends JDialog {
             // + last_h );
         }
 
+		@Override
         public void componentMoved(ComponentEvent evt) {
             //if (evt.equals(last_e)) return;
             // do not move if resized vertically to the left
@@ -432,6 +449,7 @@ public class AboutDialog extends JDialog {
             memorize();
         }
 
+		@Override
         public void componentShown(ComponentEvent e) {
 
             // reset scrollpane on redisplay
