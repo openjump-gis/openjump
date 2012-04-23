@@ -317,8 +317,8 @@
               <phase>package</phase>
               <configuration>
                 <target>
-                  <zip zipfile="${project.build.directory}/${version.string}-src.zip" basedir="${project.build.directory}/classes"
-                   excludes="**/*.class"/>
+                  <zip destfile="${project.build.directory}/${version.string}-src.zip" basedir="${project.build.directory}/classes"
+                   excludes="**/*.class" level="9"/>
                 </target>
               </configuration>
               <goals>
