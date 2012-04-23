@@ -300,6 +300,36 @@
       </plugins>
     </build>
   </profile>
+  <profile>
+    <id>srczip</id>
+    <properties>
+      <!-- by default datestamp, can be overwritten with -D version.number=X.X.X -->
+      <version.number>${version.datestamp}</version.number>
+      <version.string>${artifactId}-${version.number}-r${version.revision}</version.string>
+    </properties>
+    <build>
+      <plugins>
+        <plugin>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <version>1.7</version>
+          <executions>
+            <execution>
+              <phase>package</phase>
+              <configuration>
+                <target>
+                  <zip zipfile="${project.build.directory}/${version.string}-src.zip" basedir="${project.build.directory}/classes"
+                   excludes="**/*.class"/>
+                </target>
+              </configuration>
+              <goals>
+                <goal>run</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </build>
+  </profile>
   </profiles>
   <build>
     <finalName>${artifactId}-${version.number}-r${version.revision}</finalName>
