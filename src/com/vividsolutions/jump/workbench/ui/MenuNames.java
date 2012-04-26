@@ -47,7 +47,7 @@ public interface MenuNames {
     public static String VIEW = I18N.get("ui.MenuNames.VIEW");
     public static String LAYER = I18N.get("ui.MenuNames.LAYER");
     public static String TOOLS = I18N.get("ui.MenuNames.TOOLS");
-    public static String TOOLS_ADVANCED = I18N.get("ui.MenuNames.TOOLS.ADVANCED");
+    //public static String TOOLS_ADVANCED = I18N.get("ui.MenuNames.TOOLS.ADVANCED"); // not used, not translated
     public static String TOOLS_ANALYSIS = I18N.get("ui.MenuNames.TOOLS.ANALYSIS");
     public static String TOOLS_GENERALIZATION = I18N.get("ui.MenuNames.TOOLS.GENERALIZATION");
     public static String TOOLS_GENERATE = I18N.get("ui.MenuNames.TOOLS.GENERATE");

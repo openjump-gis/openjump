@@ -23,6 +23,7 @@ import org.openjump.swing.listener.InvokeMethodActionListener;
 import org.openjump.swing.listener.InvokeMethodListSelectionListener;
 import org.openjump.swing.util.SpringUtilities;
 
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.TaskFrame;
@@ -50,11 +51,11 @@ public class ChooseProjectPanel extends AbstractWizardPanel {
     setLayout(new BorderLayout());
     JPanel view = new JPanel(new SpringLayout());
 
-    newButton = new JRadioButton("New Project");
+    newButton = new JRadioButton(I18N.get("org.openjump.core.ui.plugin.file.open.ChooseProjectPanel.new-project"));
     newButton.setSelected(true);
     view.add(newButton);
 
-    existingButton = new JRadioButton("Existing Project");
+    existingButton = new JRadioButton(I18N.get("org.openjump.core.ui.plugin.file.open.ChooseProjectPanel.existing-project"));
     view.add(existingButton);
 
     ButtonGroup group = new ButtonGroup();
