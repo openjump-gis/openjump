@@ -75,10 +75,15 @@ public class SelectItemsByCircleFromSelectedLayersPlugIn extends AbstractPlugIn{
 	    context.getFeatureInstaller().addMainMenuItem(this,
 	        new String[]
 			{MenuNames.EDIT, MenuNames.SELECTION},
-			I18N.get("org.openjump.core.ui.plugin.edit.SelectItemsByCirlceFromSelectedLayersPlugIn.select-items-by-cirlce-from-selected-layers"), 
+			getName(),
+			//I18N.get("org.openjump.core.ui.plugin.edit.SelectItemsByCirlceFromSelectedLayersPlugIn.select-items-by-cirlce-from-selected-layers"), 
 			false, //icon
 			null, //icon
             createEnableCheck(context.getWorkbenchContext())); //enable check
+    }
+    
+    public String getName() {
+        return I18N.get("org.openjump.core.ui.plugin.edit.SelectItemsByCirlceFromSelectedLayersPlugIn.select-items-by-cirlce-from-selected-layers");
     }
     
     public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
@@ -112,26 +117,25 @@ public class SelectItemsByCircleFromSelectedLayersPlugIn extends AbstractPlugIn{
 	
     
 	public boolean execute(PlugInContext context) throws Exception{	    
-        try
-        {
-        	this.makeDialogThings(context);
-        	Envelope viewportEnvelope = context.getLayerViewPanel().getViewport().getEnvelopeInModelCoordinates();
-        	double x = viewportEnvelope.getMinX() + viewportEnvelope.getWidth()/2;
-        	double y = viewportEnvelope.getMinY() + viewportEnvelope.getHeight()/2;
-        	Coordinate initCoords = new Coordinate(x,y);
-            SelectItemsByCircleTool sit = new SelectItemsByCircleTool(context, this.diameter, initCoords);
-            context.getLayerViewPanel().setCurrentCursorTool(sit);
-            
-            //-- if an toolbar item should be added use the following? 
-            /**
-            QuasimodeTool tool = new QuasimodeTool(sit).add(
-                    new QuasimodeTool.ModifierKeySpec(true, false, false), null);
-            WorkbenchContext wbcontext = context.getWorkbenchContext();
-            wbcontext.getWorkbench().getFrame().getToolBar().addCursorTool(tool).getQuasimodeTool();
-            **/     
+        try {
+            if (this.makeDialogThings(context)) {
+        	    Envelope viewportEnvelope = context.getLayerViewPanel().getViewport().getEnvelopeInModelCoordinates();
+        	    double x = viewportEnvelope.getMinX() + viewportEnvelope.getWidth()/2;
+        	    double y = viewportEnvelope.getMinY() + viewportEnvelope.getHeight()/2;
+        	    Coordinate initCoords = new Coordinate(x,y);
+                SelectItemsByCircleTool sit = new SelectItemsByCircleTool(context, this.diameter, initCoords);
+                context.getLayerViewPanel().setCurrentCursorTool(sit);
+                
+                //-- if an toolbar item should be added use the following? 
+                /**
+                QuasimodeTool tool = new QuasimodeTool(sit).add(
+                        new QuasimodeTool.ModifierKeySpec(true, false, false), null);
+                WorkbenchContext wbcontext = context.getWorkbenchContext();
+                wbcontext.getWorkbench().getFrame().getToolBar().addCursorTool(tool).getQuasimodeTool();
+                **/
+            }
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             context.getWorkbenchFrame().warnUser("SelecItemsByCircleTool Exception:" + e.toString());
             return false;
         }

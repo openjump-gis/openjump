@@ -83,7 +83,7 @@ public class SelectItemsByCircleTool extends DragTool {
                 new float[] { 3, 3 },
                 0));
         this.allowSnapping();       
-        this.calcuateCircle(initCoo);
+        this.calculateCircle(initCoo);
         
 
     }
@@ -223,7 +223,7 @@ public class SelectItemsByCircleTool extends DragTool {
      * changed to get circle around mouse pointer
      */
     protected Shape getShape() throws Exception {
-    	this.calcuateCircle(this.modelDestination);
+    	this.calculateCircle(this.modelDestination);
 		return this.selectedFeaturesShape; 
     }
 
@@ -255,7 +255,7 @@ public class SelectItemsByCircleTool extends DragTool {
 	 * calculates a cirle around the mouse pointer and converts it to a java shape  
 	 * @param middlePoint coordinates of the circle
 	 */
-    private void calcuateCircle(Coordinate middlePoint){
+    private void calculateCircle(Coordinate middlePoint){
         //--calcualte circle;
     	Point p = new GeometryFactory().createPoint(middlePoint);
     	this.mp = p;
