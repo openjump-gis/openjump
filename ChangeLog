@@ -6,6 +6,9 @@
   * Fixed some missing values in language files
   * FR 3521397/1 : fixed how cancel button of Select Items by Circle from
     Selected Layers dialog works
+  * FR 3203852 : GMLWriter : write directly in WriteBuffer instead of creating
+    String for each geometry, which may take too much memory for multi-million
+    coordinates geometries
 
 2012-04-22 Matthias Scholz <ms@jammerhund.de>
   * AboutDialog:

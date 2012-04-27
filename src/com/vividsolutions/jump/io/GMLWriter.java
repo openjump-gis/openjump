@@ -38,6 +38,7 @@ import com.vividsolutions.jump.feature.*;
 
 import java.io.BufferedWriter;
 import java.io.FileReader;
+import java.io.Writer;
 
 import java.lang.reflect.Array;
 
@@ -153,7 +154,7 @@ public class GMLWriter implements JUMPWriter {
         //have a template and FC.  Write it!
         setOutputTemplate(gmlTemplate);
 
-        java.io.Writer w;
+        Writer w;
 
         w = new java.io.BufferedWriter(new java.io.FileWriter(outputFname));
         this.write(featureCollection, w);
@@ -165,7 +166,7 @@ public class GMLWriter implements JUMPWriter {
      *@param featureCollection features to write
      *@param writer - where to send the output to
      */
-    public void write(FeatureCollection featureCollection, java.io.Writer writer)
+    public void write(FeatureCollection featureCollection, Writer writer)
         throws Exception {
         BufferedWriter buffWriter;
         Feature f;
@@ -189,13 +190,17 @@ public class GMLWriter implements JUMPWriter {
                 pre = (String) outputTemplate.featureText.get(u);
                 token = (String) outputTemplate.codingText.get(u);
                 buffWriter.write(pre);
-                evaled = evaluateToken(f, token);
+                //[mmichaud 2012-04-27] write directly into the writer instead
+                // of getting string which are hard to handle for multi-million
+                // coordinates geometries
+                evaluateToken(f, token, buffWriter);
+                //evaled = evaluateToken(f, token);
+                
+                //if (evaled == null) {
+                //    evaled = "";
+                //}
 
-                if (evaled == null) {
-                    evaled = "";
-                }
-
-                buffWriter.write(evaled);
+                //buffWriter.write(evaled);
             }
 
             buffWriter.write(outputTemplate.featureTextfooter);
@@ -254,7 +259,60 @@ public class GMLWriter implements JUMPWriter {
      * @param f feature to take geometry or column value from
      *@token token to evaluate - "column","geometry" or "geometrytype"
      */
+    // [mmichaud 2012-04-27] no mor eused, replaced by 
+    // evaluateToken(Feature f, String token, Writer writer)
     private String evaluateToken(Feature f, String token)
+        throws Exception, ParseException {
+        String column;
+        String cmd;
+        String result;
+        int index;
+    
+        //token = token.toLowerCase();
+        token = token.trim();
+    
+        if (!(token.startsWith("=")) || (token.length() < 7)) {
+            throw new ParseException("couldn't understand token '" + token +
+                "' in the output template");
+        }
+    
+        token = token.substring(1);
+        token = token.trim();
+        index = token.indexOf(" ");
+    
+        if (index == -1) {
+            cmd = token;
+        } else {
+            cmd = token.substring(0, token.indexOf(" "));
+        }
+    
+        if (cmd.equalsIgnoreCase("column")) {
+            column = token.substring(6);
+            column = column.trim();
+    
+            //  System.out.println("column = " + column);
+            result = toString(f, column);
+    
+            //need to ensure that the output is XML okay
+            result = safeXML(result);
+            
+            return result;
+        } else if (cmd.equalsIgnoreCase("geometry")) {
+            // MD - testing new GMLGeometryWriter
+            geometryWriter.setMaximumCoordinatesPerLine(1);
+    
+            return geometryWriter.write(f.getGeometry());
+    
+            //return Geometry2GML(f.getGeometry());
+        } else if (cmd.equalsIgnoreCase("geometrytype")) {
+            return f.getGeometry().getGeometryType();
+        } else {
+            throw new ParseException("couldn't understand token '" + token +
+                "' in the output template");
+        }
+    }
+    
+    private void evaluateToken(Feature f, String token, Writer writer)
         throws Exception, ParseException {
         String column;
         String cmd;
@@ -288,17 +346,19 @@ public class GMLWriter implements JUMPWriter {
 
             //need to ensure that the output is XML okay
             result = safeXML(result);
-
-            return result;
+            writer.append(result);
+            //return result;
         } else if (cmd.equalsIgnoreCase("geometry")) {
             // MD - testing new GMLGeometryWriter
             geometryWriter.setMaximumCoordinatesPerLine(1);
 
-            return geometryWriter.write(f.getGeometry());
+            //return geometryWriter.write(f.getGeometry(), writer);
+            geometryWriter.write(f.getGeometry(), writer);
 
             //return Geometry2GML(f.getGeometry());
         } else if (cmd.equalsIgnoreCase("geometrytype")) {
-            return f.getGeometry().getGeometryType();
+            writer.append(f.getGeometry().getGeometryType());
+            //return f.getGeometry().getGeometryType();
         } else {
             throw new ParseException("couldn't understand token '" + token +
                 "' in the output template");

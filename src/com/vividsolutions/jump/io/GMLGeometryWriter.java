@@ -33,6 +33,7 @@ package com.vividsolutions.jump.io;
 
 import com.vividsolutions.jts.geom.*;
 import java.io.*;
+import java.io.IOException;
 
 /**
  * Writes or creates a formatted string containing the GML
@@ -106,64 +107,63 @@ public class GMLGeometryWriter
     this.maxCoordinatesPerLine = maxCoordinatesPerLine;
   }
 
-  public String write(Geometry geom)
+  public String write(Geometry geom) throws IOException
   {
-    StringBuffer buf = new StringBuffer();
-    write(geom, buf);
-    return buf.toString();
+      StringWriter writer = new StringWriter();
+      write(geom, writer);
+      return writer.toString();
   }
 
-  public void write(Geometry geometry, Writer writer)
-    throws IOException
-  {
-    writer.write(write(geometry));
-  }
-
+  //public void write(Geometry geometry, Writer writer)
+  //  throws IOException
+  //{
+  //  writer.write(write(geometry));
+  //}
 
 
   /**
    * Generates the GML representation of a JTS Geometry.
    * @param g Geometry to output
    */
-  public void write(Geometry g, StringBuffer buf)
+  public void write(Geometry g, Writer writer) throws IOException 
   {
-    writeGeometry(g, attributeString(), 0, buf);
+    writeGeometry(g, attributeString(), 0, writer);
   }
 
   /**
    * Generates the GML representation of a JTS Geometry.
    * @param g Geometry to output
    */
-  private void writeGeometry(Geometry g, String attributes, int level, StringBuffer buf) {
+  private void writeGeometry(Geometry g, String attributes, int level, Writer writer) throws IOException {
     /*
      * order is important in this if-else list.
      * E.g. homogeneous collections need to come before GeometryCollection
     */
       if (g instanceof Point) {
-          writePoint((Point) g, attributes, level, buf);
+          writePoint((Point) g, attributes, level, writer);
       } else if (g instanceof LinearRing) {
-          writeLinearRing((LinearRing) g, attributes, level, buf);
+          writeLinearRing((LinearRing) g, attributes, level, writer);
       } else if (g instanceof LineString) {
-          writeLineString((LineString) g, attributes, level, buf);
+          writeLineString((LineString) g, attributes, level, writer);
       } else if (g instanceof Polygon) {
-          writePolygon((Polygon) g, attributes, level, buf);
+          writePolygon((Polygon) g, attributes, level, writer);
       } else if (g instanceof MultiPoint) {
-          writeMultiPoint((MultiPoint) g, attributes, level, buf);
+          writeMultiPoint((MultiPoint) g, attributes, level, writer);
       } else if (g instanceof MultiLineString) {
-          writeMultiLineString((MultiLineString) g, attributes, level, buf);
+          writeMultiLineString((MultiLineString) g, attributes, level, writer);
       } else if (g instanceof MultiPolygon) {
-          writeMultiPolygon((MultiPolygon) g, attributes, level, buf);
+          writeMultiPolygon((MultiPolygon) g, attributes, level, writer);
       } else if (g instanceof GeometryCollection) {
-        writeGeometryCollection((GeometryCollection) g, attributes, level, buf);
+        writeGeometryCollection((GeometryCollection) g, attributes, level, writer);
       }
       // throw an error for an unknown type?
   }
 
-  private void startLine(StringBuffer buf, int level, String text)
+  private void startLine(Writer writer, int level, String text) throws IOException
   {
-    if (linePrefix != null) buf.append(linePrefix);
-    buf.append(stringOfChar(' ', INDENT_SIZE * level));
-    buf.append(text);
+    if (linePrefix != null) writer.append(linePrefix);
+    writer.append(stringOfChar(' ', INDENT_SIZE * level));
+    writer.append(text);
   }
 
   private String geometryTag(String geometryName, String attributes)
@@ -196,90 +196,91 @@ public class GMLGeometryWriter
   }
 
   //<gml:Point><gml:coordinates>1195156.78946687,382069.533723461</gml:coordinates></gml:Point>
-  private void writePoint(Point p, String attributes, int level, StringBuffer buf) {
-      startLine(buf, level, geometryTag("Point", attributes) + "\n");
-      write(new Coordinate[] { p.getCoordinate() }, level + 1, buf);
-      startLine(buf, level, "</gml:Point>\n");
+  private void writePoint(Point p, String attributes, int level, Writer writer) throws IOException {
+      startLine(writer, level, geometryTag("Point", attributes) + "\n");
+      write(new Coordinate[] { p.getCoordinate() }, level + 1, writer);
+      startLine(writer, level, "</gml:Point>\n");
   }
 
   //<gml:LineString><gml:coordinates>1195123.37289257,381985.763974674 1195120.22369473,381964.660533343 1195118.14929823,381942.597718511</gml:coordinates></gml:LineString>
-  private void writeLineString(LineString ls, String attributes, int level, StringBuffer buf) {
-    startLine(buf, level, geometryTag("LineString", attributes) + "\n");
-    write(ls.getCoordinates(), level + 1, buf);
-    startLine(buf, level, "</gml:LineString>\n");
+  private void writeLineString(LineString ls, String attributes, int level, Writer writer) throws IOException {
+    startLine(writer, level, geometryTag("LineString", attributes) + "\n");
+    write(ls.getCoordinates(), level + 1, writer);
+    startLine(writer, level, "</gml:LineString>\n");
   }
 
   //<gml:LinearRing><gml:coordinates>1226890.26761027,1466433.47430292 1226880.59239079,1466427.03208053...></coordinates></gml:LinearRing>
-  private void writeLinearRing(LinearRing lr, String attributes, int level, StringBuffer buf) {
-    startLine(buf, level, geometryTag("LinearRing", attributes) + "\n");
-    write(lr.getCoordinates(), level + 1, buf);
-    startLine(buf, level, "</gml:LinearRing>\n");
+  private void writeLinearRing(LinearRing lr, String attributes, int level, Writer writer) throws IOException {
+    startLine(writer, level, geometryTag("LinearRing", attributes) + "\n");
+    write(lr.getCoordinates(), level + 1, writer);
+    startLine(writer, level, "</gml:LinearRing>\n");
   }
 
-  private void writePolygon(Polygon p, String attributes, int level, StringBuffer buf) {
-    startLine(buf, level, geometryTag("Polygon", attributes) + "\n");
+  private void writePolygon(Polygon p, String attributes, int level, Writer writer) throws IOException {
+    startLine(writer, level, geometryTag("Polygon", attributes) + "\n");
 
-    startLine(buf, level, "  <gml:outerBoundaryIs>\n");
-    writeLinearRing((LinearRing) p.getExteriorRing(), null, level + 1, buf);
-    startLine(buf, level, "  </gml:outerBoundaryIs>\n");
+    startLine(writer, level, "  <gml:outerBoundaryIs>\n");
+    writeLinearRing((LinearRing) p.getExteriorRing(), null, level + 1, writer);
+    startLine(writer, level, "  </gml:outerBoundaryIs>\n");
 
     for (int t = 0; t < p.getNumInteriorRing(); t++) {
-      startLine(buf, level, "  <gml:innerBoundaryIs>\n");
-      writeLinearRing((LinearRing) p.getInteriorRingN(t), null, level + 1, buf);
-      startLine(buf, level, "  </gml:innerBoundaryIs>\n");
+      startLine(writer, level, "  <gml:innerBoundaryIs>\n");
+      writeLinearRing((LinearRing) p.getInteriorRingN(t), null, level + 1, writer);
+      startLine(writer, level, "  </gml:innerBoundaryIs>\n");
     }
 
-    startLine(buf, level, "</gml:Polygon>\n");
+    startLine(writer, level, "</gml:Polygon>\n");
   }
 
-  private void writeMultiPoint(MultiPoint mp, String attributes, int level, StringBuffer buf) {
-    startLine(buf, level, geometryTag("MultiPoint", attributes) + "\n");
+  private void writeMultiPoint(MultiPoint mp, String attributes, int level, Writer writer) throws IOException {
+    startLine(writer, level, geometryTag("MultiPoint", attributes) + "\n");
     for (int t = 0; t < mp.getNumGeometries(); t++) {
-      startLine(buf, level, "  <gml:pointMember>\n");
-      writePoint((Point) mp.getGeometryN(t), null, level + 1, buf);
-      startLine(buf, level, "  </gml:pointMember>\n");
+      startLine(writer, level, "  <gml:pointMember>\n");
+      writePoint((Point) mp.getGeometryN(t), null, level + 1, writer);
+      startLine(writer, level, "  </gml:pointMember>\n");
     }
-    startLine(buf, level, "</gml:MultiPoint>\n");
+    startLine(writer, level, "</gml:MultiPoint>\n");
   }
 
-  private void writeMultiLineString(MultiLineString mls, String attributes, int level, StringBuffer buf) {
-    startLine(buf, level, geometryTag("MultiLineString", attributes) + "\n");
+  private void writeMultiLineString(MultiLineString mls, String attributes, int level, Writer writer) throws IOException {
+    startLine(writer, level, geometryTag("MultiLineString", attributes) + "\n");
     for (int t = 0; t < mls.getNumGeometries(); t++) {
-      startLine(buf, level, "  <gml:lineStringMember>\n");
-      writeLineString((LineString) mls.getGeometryN(t), null, level + 1, buf);
-      startLine(buf, level, "  </gml:lineStringMember>\n");
+      startLine(writer, level, "  <gml:lineStringMember>\n");
+      writeLineString((LineString) mls.getGeometryN(t), null, level + 1, writer);
+      startLine(writer, level, "  </gml:lineStringMember>\n");
     }
-    startLine(buf, level, "</gml:MultiLineString>\n");
+    startLine(writer, level, "</gml:MultiLineString>\n");
   }
 
-  private void writeMultiPolygon(MultiPolygon mp, String attributes, int level, StringBuffer buf) {
-    startLine(buf, level, geometryTag("MultiPolygon", attributes) + "\n");
+  private void writeMultiPolygon(MultiPolygon mp, String attributes, int level, Writer writer) throws IOException {
+    startLine(writer, level, geometryTag("MultiPolygon", attributes) + "\n");
     for (int t = 0; t < mp.getNumGeometries(); t++) {
-      startLine(buf, level, "  <gml:polygonMember>\n");
-      writePolygon((Polygon) mp.getGeometryN(t), null, level + 1, buf);
-      startLine(buf, level, "  </gml:polygonMember>\n");
+      startLine(writer, level, "  <gml:polygonMember>\n");
+      writePolygon((Polygon) mp.getGeometryN(t), null, level + 1, writer);
+      startLine(writer, level, "  </gml:polygonMember>\n");
     }
-    startLine(buf, level, "</gml:MultiPolygon>\n");
+    startLine(writer, level, "</gml:MultiPolygon>\n");
   }
 
-  private void writeGeometryCollection(GeometryCollection gc, String attributes, int level, StringBuffer buf) {
-    startLine(buf, level, geometryTag("MultiGeometry", attributes) + "\n");
+  private void writeGeometryCollection(GeometryCollection gc, String attributes, int level, Writer writer) throws IOException {
+    startLine(writer, level, geometryTag("MultiGeometry", attributes) + "\n");
     for (int t = 0; t < gc.getNumGeometries(); t++) {
-      startLine(buf, level, "  <gml:geometryMember>\n");
-      writeGeometry(gc.getGeometryN(t), null, level + 1, buf);
-      startLine(buf, level, "  </gml:geometryMember>\n");
+      startLine(writer, level, "  <gml:geometryMember>\n");
+      writeGeometry(gc.getGeometryN(t), null, level + 1, writer);
+      startLine(writer, level, "  </gml:geometryMember>\n");
     }
-    startLine(buf, level, "</gml:MultiGeometry>\n");
+    startLine(writer, level, "</gml:MultiGeometry>\n");
   }
 
   /**
    * Takes a list of coordinates and converts it to GML.<br>
    * 2d and 3d aware.
    * Terminates the coordinate output with a newline.
-   *@param cs array of coordinates
+   * @param coords array of coordinates
+   * @param writer Writer to write coordinates to
    */
-  private void write(Coordinate[] coords, int level, StringBuffer buf) {
-    startLine(buf, level, "<gml:coordinates>");
+  private void write(Coordinate[] coords, int level, Writer writer) throws IOException {
+    startLine(writer, level, "<gml:coordinates>");
     int dim = 2;
 
     if (coords.length > 0) {
@@ -290,29 +291,29 @@ public class GMLGeometryWriter
     boolean isNewLine = false;
     for (int i = 0; i < coords.length; i++) {
       if (isNewLine) {
-        startLine(buf, level, "  ");
+        startLine(writer, level, "  ");
         isNewLine = false;
       }
       if (dim == 2) {
-        buf.append(coords[i].x);
-        buf.append(coordinateSeparator);
-        buf.append(coords[i].y);
+        writer.append(""+coords[i].x);
+        writer.append(coordinateSeparator);
+        writer.append(""+coords[i].y);
       } else if (dim == 3) {
-        buf.append(coords[i].x);
-        buf.append(coordinateSeparator);
-        buf.append(coords[i].y);
-        buf.append(coordinateSeparator);
-        buf.append(coords[i].z);
+        writer.append(""+coords[i].x);
+        writer.append(coordinateSeparator);
+        writer.append(""+coords[i].y);
+        writer.append(coordinateSeparator);
+        writer.append(""+coords[i].z);
       }
-      buf.append(tupleSeparator);
+      writer.append(tupleSeparator);
 
       // break output lines to prevent them from getting too long
       if ((i + 1) % maxCoordinatesPerLine == 0 && i < coords.length - 1) {
-        buf.append("\n");
+        writer.append("\n");
         isNewLine = true;
       }
     }
-
-    buf.append("</gml:coordinates>\n");
+    writer.append("</gml:coordinates>\n");
   }
+  
 }
