@@ -1020,10 +1020,15 @@ public class QueryDialog extends BDialog {
                         dataset.addAll(okFeatures);
                     }
                     if(create.getState()) {
+                        String outputLayerName = layer.getName() + "_";
+                        if (attributeType != 'G') {
+                            outputLayerName += (attribute + "_");
+                        } 
+                        outputLayerName += (operator + "_" + value);
                         context.getLayerManager().addLayer(
                             //context.getLayerManager().getCategory(layer).getName(),
                             StandardCategoryNames.RESULT, // modified on 2007-08-22
-                            layer.getName()+"_"+value, dataset
+                            outputLayerName, dataset
                         );
                     }
                     if(display.getState()) {

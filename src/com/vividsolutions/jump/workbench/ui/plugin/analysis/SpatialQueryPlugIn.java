@@ -112,14 +112,14 @@ public class SpatialQueryPlugIn extends AbstractPlugIn implements ThreadedPlugIn
   
   public boolean execute(PlugInContext context) throws Exception {
   	//[sstein] added again for correct language setting
-    UPDATE_SRC = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Select-features-in-the-source-layer");
-    CREATE_LYR = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Create-a-new-layer-for-the-results");
-    MASK_LAYER = GenericNames.MASK_LAYER;
-    SRC_LAYER = GenericNames.SOURCE_LAYER;
-    PREDICATE = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Relation");
-    PARAM = GenericNames.PARAMETER;
-    DIALOG_COMPLEMENT = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Complement-Result");
-    ALLOW_DUPS = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Allow-Duplicates-in-Result");
+    //UPDATE_SRC = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Select-features-in-the-source-layer");
+    //CREATE_LYR = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Create-a-new-layer-for-the-results");
+    //MASK_LAYER = GenericNames.MASK_LAYER;
+    //SRC_LAYER = GenericNames.SOURCE_LAYER;
+    //PREDICATE = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Relation");
+    //PARAM = GenericNames.PARAMETER;
+    //DIALOG_COMPLEMENT = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Complement-Result");
+    //ALLOW_DUPS = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Allow-Duplicates-in-Result");
     
     dialog = new MultiInputDialog(context.getWorkbenchFrame(), getName(), true);
     setDialogValues(dialog, context);
@@ -163,9 +163,11 @@ public class SpatialQueryPlugIn extends AbstractPlugIn implements ThreadedPlugIn
 
     if (createLayer) 
     {
-      String outputLayerName = LayerNameGenerator.generateOperationOnLayerName(
-          funcNameToRun,
-          srcLayer.getName());
+      String outputLayerName = srcLayer.getName() + "_" + funcNameToRun + "_";
+      if (functionToRun.getParameterCount()==1) {
+          outputLayerName += (paramField.getText() + "_");
+      }
+      outputLayerName += maskLyr.getName();
       context.getLayerManager().addCategory(categoryName);
       context.addLayer(categoryName, outputLayerName, resultFC);
     } else {

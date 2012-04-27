@@ -123,14 +123,14 @@ public class AttributeQueryPlugIn extends AbstractPlugIn
   
   public boolean execute(PlugInContext context) throws Exception {
   	//[sstein] reset for correct language
-    ATTR_GEOMETRY_AREA = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.Area");
-    ATTR_GEOMETRY_LENGTH = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.Length");
-    ATTR_GEOMETRY_NUMPOINTS = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.NumPoints");
-    ATTR_GEOMETRY_NUMCOMPONENTS = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.NumComponents");
-    ATTR_GEOMETRY_ISCLOSED = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.IsClosed");
-    ATTR_GEOMETRY_ISSIMPLE = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.IsSimple");
-    ATTR_GEOMETRY_ISVALID = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.IsValid");
-    ATTR_GEOMETRY_TYPE = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.Type");
+    //ATTR_GEOMETRY_AREA = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.Area");
+    //ATTR_GEOMETRY_LENGTH = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.Length");
+    //ATTR_GEOMETRY_NUMPOINTS = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.NumPoints");
+    //ATTR_GEOMETRY_NUMCOMPONENTS = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.NumComponents");
+    //ATTR_GEOMETRY_ISCLOSED = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.IsClosed");
+    //ATTR_GEOMETRY_ISSIMPLE = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.IsSimple");
+    //ATTR_GEOMETRY_ISVALID = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.IsValid");
+    //ATTR_GEOMETRY_TYPE = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.Type");
 
     dialog = new MultiInputDialog(context.getWorkbenchFrame(), getName(), true);
     setDialogValues(dialog, context);
@@ -163,9 +163,9 @@ public class AttributeQueryPlugIn extends AbstractPlugIn
     FeatureCollection resultFC = executeQuery(sourceFC, attrName, value);
 
     if (createLayer) {
-      String outputLayerName = LayerNameGenerator.generateOperationOnLayerName(
-          funcNameToRun,
-          srcLayer.getName());
+      String outputLayerName = srcLayer.getName() + "_" + 
+              attrName.replaceAll(".*\\.","") + "_" + // remove first part of geometry.**** 
+              funcNameToRun + "_" + value;
       context.getLayerManager().addCategory(categoryName);
       context.addLayer(categoryName, outputLayerName, resultFC);
     } else {
@@ -266,13 +266,13 @@ public class AttributeQueryPlugIn extends AbstractPlugIn
 
   private void setDialogValues(MultiInputDialog dialog, PlugInContext context){
   	//[sstein] reset for language
-    LAYER = GenericNames.SOURCE_LAYER;
-    ATTRIBUTE = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Attribute");
-    PREDICATE = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Relation");
-    VALUE = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Value");
-    DIALOG_COMPLEMENT = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Complement-Result");
-    UPDATE_SRC = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Select-features-in-the-source-layer");
-    CREATE_LYR = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Create-a-new-layer-for-the-results");
+    //LAYER = GenericNames.SOURCE_LAYER;
+    //ATTRIBUTE = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Attribute");
+    //PREDICATE = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Relation");
+    //VALUE = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Value");
+    //DIALOG_COMPLEMENT = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Complement-Result");
+    //UPDATE_SRC = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Select-features-in-the-source-layer");
+    //CREATE_LYR = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Create-a-new-layer-for-the-results");
 
     dialog.setSideBarDescription(
     		I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Finds-the-Source-features-which-have-attribute-values-satisfying-a-given-condition"));
