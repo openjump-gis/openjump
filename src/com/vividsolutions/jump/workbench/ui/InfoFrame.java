@@ -54,14 +54,16 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 /**
  * Provides proxied (non-spatial) views of a Layer.
  */
-public class InfoFrame
-    extends JInternalFrame
-    implements
+public class InfoFrame extends JInternalFrame implements
         LayerManagerProxy,
         SelectionManagerProxy,
         LayerNamePanelProxy,
         TaskFrameProxy,
         LayerViewPanelProxy {
+    
+    public final static String TABLE_VIEW = I18N.get("com.vividsolutions.jump.workbench.ui.InfoFrame.table-view");
+    public final static String HTML_VIEW = I18N.get("com.vividsolutions.jump.workbench.ui.InfoFrame.html-view");
+    
     public LayerManager getLayerManager() {
         return layerManager;
     }
@@ -115,8 +117,8 @@ public class InfoFrame
         } catch (Exception e) {
             e.printStackTrace();
         }
-        tabbedPane.addTab("", IconLoader.icon("Table.gif"), attributeTab, "Table View");
-        tabbedPane.addTab("", IconLoader.icon("Paper.gif"), geometryInfoTab, "HTML View");
+        tabbedPane.addTab("", IconLoader.icon("Table.gif"), attributeTab, TABLE_VIEW);
+        tabbedPane.addTab("", IconLoader.icon("Paper.gif"), geometryInfoTab, HTML_VIEW);
         updateTitle(taskFrame.getTask().getName());
         taskFrame.getTask().add(new Task.NameListener() {
             public void taskNameChanged(String name) {

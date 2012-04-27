@@ -4,6 +4,8 @@
   * Improved/homogenized result layer naming in query tools :
     source layer_[attribute_]operator_[parameter_]value
   * Fixed some missing values in language files
+  * FR 3521397/1 : fixed how cancel button of Select Items by Circle from
+    Selected Layers dialog works
 
 2012-04-22 Matthias Scholz <ms@jammerhund.de>
   * AboutDialog:
