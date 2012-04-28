@@ -107,11 +107,16 @@ public class GMLGeometryWriter
     this.maxCoordinatesPerLine = maxCoordinatesPerLine;
   }
 
-  public String write(Geometry geom) throws IOException
+  public String write(Geometry geom)
   {
-      StringWriter writer = new StringWriter();
-      write(geom, writer);
-      return writer.toString();
+      try {
+          StringWriter writer = new StringWriter();
+          write(geom, writer);
+          return writer.toString();
+      } catch (IOException ioe) {
+          ioe.printStackTrace();
+      }
+      return null;
   }
 
   //public void write(Geometry geometry, Writer writer)
