@@ -58,6 +58,7 @@ import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.Collection;
 
+import javax.annotation.processing.Processor;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -90,21 +91,11 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
     private final static String SELECTED_ONLY           = GenericNames.USE_SELECTED_FEATURES_ONLY;
     
     private final static String PROCESSING              = I18N.get("jump.plugin.edit.NoderPlugIn.processing");
-    //private final static String CREATE_NEW_LAYER        = I18N.get("jump.plugin.edit.NoderPlugIn.create-new-layer");
-    //private final static String UPDATE_SELECTED_FEATURES= I18N.get("jump.plugin.edit.NoderPlugIn.update-selected-features");
     
     private final static String FIND_INTERSECTIONS      = I18N.get("jump.plugin.edit.NoderPlugIn.find-intersections");
     private final static String FIND_DESCRIPTION        = I18N.get("jump.plugin.edit.NoderPlugIn.create-new-layer-with-missing-intersections");
-                                                        
     private final static String LINE_OPTIONS            = I18N.get("jump.plugin.edit.NoderPlugIn.line-options");
-    private final static String DO_NOT_PROCESS_LINES    = I18N.get("jump.plugin.edit.NoderPlugIn.do-not-process-lines");
-    private final static String NODE_LINES              = I18N.get("jump.plugin.edit.NoderPlugIn.node-lines");
-    private final static String SPLIT_LINES             = I18N.get("jump.plugin.edit.NoderPlugIn.split-lines");
-                                                        
     private final static String POLYGON_OPTIONS         = I18N.get("jump.plugin.edit.NoderPlugIn.polygon-options");
-    private final static String DO_NOT_PROCESS_POLYGONS = I18N.get("jump.plugin.edit.NoderPlugIn.do-not-process-polygons");
-    private final static String NODE_POLYGONS           = I18N.get("jump.plugin.edit.NoderPlugIn.node-polygons");
-    private final static String SPLIT_POLYGONS          = I18N.get("jump.plugin.edit.NoderPlugIn.split-polygons");
                                                         
     private final static String ADVANCED_OPTIONS        = I18N.get("jump.plugin.edit.NoderPlugIn.advanced-options");
     private final static String NODING_METHOD           = I18N.get("jump.plugin.edit.NoderPlugIn.noding-method");
@@ -119,23 +110,31 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
     private final static String INTERSECTIONS           = I18N.get("jump.plugin.edit.NoderPlugIn.intersections");
     private final static String NODED                   = I18N.get("jump.plugin.edit.NoderPlugIn.noded");
     
+    /**
+     * Enumeration to choose if elements are processed and if they are only
+     * noded or also splitted.
+     */
+    public static enum Processor {
+        
+        DO_NOT_PROCESS, NODE, SPLIT;
+        
+        public String toString() {
+            return I18N.get("jump.plugin.edit.NoderPlugIn." + 
+                            name().toLowerCase().replaceAll("_","-"));
+        }
+    }
+
     private boolean use_selected = false;
     private String layerName;
     private GeometryFactory gf;
     private FeatureSchema schema_preserve_attributes;
     
+    private boolean find_intersections = true;
+    private Processor line_processor = Processor.SPLIT;
+    private Processor polygon_processor = Processor.NODE;
+    
     private boolean snap_rounding = false;
     int snap_rounding_dp = 6;
-    
-    private boolean find_intersections = true;
-    private String line_processing = SPLIT_LINES;
-    private boolean do_not_process_lines;
-    private boolean node_lines = true;
-    private boolean split_lines;
-    private String polygon_processing = NODE_POLYGONS;
-    private boolean do_not_process_polygons;
-    private boolean node_polygons = true;
-    private boolean split_polygons;
     
     private boolean interpolate_z = false;
     private int interpolated_z_dp  = 3;
@@ -175,12 +174,9 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
     public void setSnapRounding(boolean snap_rounding) {this.snap_rounding = snap_rounding;}
     public void setSnapRoundingDp(int snap_rounding_dp) {this.snap_rounding_dp = snap_rounding_dp;}
     public void setFindIntersections(boolean find_intersections) {this.find_intersections = find_intersections;}
-    public void setDoNotProcessLines(boolean do_not_process_lines) {this.do_not_process_lines = do_not_process_lines;}
-    public void setDoNotProcessPolygons(boolean do_not_process_polygons) {this.do_not_process_polygons = do_not_process_polygons;}
-    public void setNodeLines(boolean node_lines) {this.node_lines = node_lines;}
-    public void setNodePolygons(boolean node_polygons) {this.node_polygons = node_polygons;}
-    public void setSplitLines(boolean split_lines) {this.split_lines = split_lines;}
-    public void setSplitPolygons(boolean split_polygons) {this.split_polygons = split_polygons;}
+    
+    public void setLineProcessor(Processor processor) {this.line_processor = processor;}
+    public void setPolygonProcessor(Processor processor) {this.polygon_processor = processor;}
     public void setInterpolateZ(boolean interpolate_z) {this.interpolate_z = interpolate_z;}
     public void setInterpolatedZDp(int interpolated_z_dp) {this.interpolated_z_dp = interpolated_z_dp;}
 
@@ -243,7 +239,8 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
             // only find places where a vertex is missing (intersections located in
             // the interior of a segment)
             // ==> use IntersectionFinderAdder
-            if ((!split_lines) && (!split_polygons)) {
+            //if ((!split_lines) && (!split_polygons)) {
+            if (line_processor != Processor.SPLIT && polygon_processor != Processor.SPLIT) {
                 IntersectionFinderAdder intersector = new IntersectionFinderAdder(ROBUST_INTERSECTOR);
                 nodes = findInteriorIntersections(segmentStrings, intersector);
             }
@@ -262,7 +259,8 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
         }
         
         // If neither process lines nor process polygons is checked, do nothing
-        if (do_not_process_lines && do_not_process_polygons) {
+        //if (do_not_process_lines && do_not_process_polygons) {
+        if (line_processor == Processor.DO_NOT_PROCESS && polygon_processor == Processor.DO_NOT_PROCESS) {
         }
         
         // Else, compute nodes and create the geomStructureMap
@@ -280,7 +278,8 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
                 inputFeatures.keySet().iterator().next().getFeatureCollectionWrapper().getFeatureSchema());
             final Collection<Feature> updatedFeatures = new ArrayList<Feature>();
 
-            if (node_lines || node_polygons) {
+            //if (node_lines || node_polygons) {
+            if (line_processor == Processor.NODE || polygon_processor == Processor.NODE) {
                 if (!use_selected) {
                     fc.addAll(nodeFeatures(geomStructureMap, interpolate_z, interpolated_z_dp));
                 }
@@ -293,11 +292,13 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
             // - merge noded SegmentStrings for interpolation
             // - interpolate
             // - split again merged strings into SegmentStrings
-            if (interpolate_z && (split_lines || split_polygons)) {
+            if (interpolate_z && 
+                (line_processor == Processor.SPLIT || polygon_processor == Processor.SPLIT)) {
                 for (Map.Entry<Feature,Map<Integer,Map<Integer,List<SegmentString>>>> entry : geomStructureMap.entrySet()) {
                     Geometry g = entry.getKey().getGeometry();
                     int dim = g.getDimension();
-                    if ((dim == 1 && split_lines) || (dim == 2 && split_polygons)) {
+                    if ((dim == 1 && line_processor == Processor.SPLIT) || 
+                        (dim == 2 && polygon_processor == Processor.SPLIT)) {
                         SegmentStringsWithData2Features.buildGeometry(g, 
                             entry.getValue(), true, interpolated_z_dp);
                     }
@@ -305,22 +306,22 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
             }
             
             // Split lines and/or polygons either with interpolated z or not
-            if (split_lines || split_polygons) {
+            if (line_processor == Processor.SPLIT || polygon_processor == Processor.SPLIT) {
                 if (!use_selected) {
-                    if (split_lines) {
+                    if (line_processor == Processor.SPLIT) {
                         fc.addAll(splitLines(monitor, nodedSubstring, featureToLayer, outputFeatures));
                     }
-                    if (split_polygons) {
+                    if (polygon_processor == Processor.SPLIT) {
                         STRtree index = indexSegmentStrings(nodedSubstring);
                         fc.addAll(splitPolygons(monitor, geomStructureMap, index, featureToLayer, outputFeatures));
                     }
                 }
                 else {
                     insertRemove(inputFeatures, geomStructureMap, outputFeatures);
-                    if (split_lines) {
+                    if (line_processor == Processor.SPLIT) {
                         splitLines(monitor, nodedSubstring, featureToLayer, outputFeatures);
                     }
-                    if (split_polygons) {
+                    if (polygon_processor == Processor.SPLIT) {
                         STRtree index = indexSegmentStrings(nodedSubstring);
                         splitPolygons(monitor, geomStructureMap, index, featureToLayer, outputFeatures);
                     }
@@ -441,7 +442,8 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
         List<Feature> list = new ArrayList<Feature>();
         for (Map.Entry<Feature,Map<Integer,Map<Integer,List<SegmentString>>>> entry : geomStructureMap.entrySet()) {
             int dim = entry.getKey().getGeometry().getDimension();
-            if ((dim == 1 && node_lines) || (dim == 2 && node_polygons)) {
+            if ((dim == 1 && line_processor == Processor.NODE) || 
+                (dim == 2 && polygon_processor == Processor.NODE)) {
                 list.add(nodeFeature(entry.getKey(), entry.getValue(), 
                                      interpolate, interpolated_z_dp));
             }
@@ -567,6 +569,9 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
                 
                 for (Object o : polys) {
                     Geometry g = (Geometry)o;
+                    if (!geometry.getEnvelopeInternal().contains(g.getEnvelopeInternal())) {
+                        continue;
+                    }
                     Point interiorPoint = g.getInteriorPoint();
                     if (interiorPoint.intersects(geometry)) {
                         // Warning : a robusteness problem found in interiorPoint
@@ -596,12 +601,9 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
      * to final geometry.
      */
     private static void resetZpoly(Geometry geometry, Collection edges) {
-        //System.out.println("process " + geometry);
-        //System.out.println("process " + geometry.getCoordinates());
+        
         for (Object o : edges) {
-            
             SegmentString edge = (SegmentString)o;
-            //System.out.println("    compare to " + java.util.Arrays.toString(g.getCoordinates()));
             int dim = ((SegmentStringData)edge.getData()).getFeature().getGeometry().getDimension();
             if (dim == 2) {
                 Coordinate[] cc_edge = edge.getCoordinates();
@@ -624,13 +626,15 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
             outputFeatures.put(layer, new ArrayList<Feature>());
             for (Feature oldFeature : inputFeatures.get(layer)) {
                 int dim = oldFeature.getGeometry().getDimension();
-                if ((dim == 1 && node_lines) || (dim == 2 && node_polygons)) {
+                if ((dim == 1 && line_processor == Processor.NODE) || 
+                    (dim == 2 && polygon_processor == Processor.NODE)) {
                     Feature newFeature = nodeFeature(oldFeature, 
                         geomStructureMap.get(oldFeature), 
                         interpolate_z, interpolated_z_dp);
                     outputFeatures.get(layer).add(newFeature);
                 } 
-                if ((dim == 1 && do_not_process_lines) || (dim == 2 && do_not_process_polygons)) {
+                if ((dim == 1 && line_processor == Processor.DO_NOT_PROCESS) || 
+                    (dim == 2 && polygon_processor == Processor.DO_NOT_PROCESS)) {
                     outputFeatures.get(layer).add(oldFeature);
                 }
             }
@@ -680,35 +684,13 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
         // Hide the selection JLabel if no feature are selected 
         selectionLabel.setVisible(n > 0);
         
-        //final JCheckBox selectedOnlyCB = dialog.addCheckBox(SELECTED_ONLY, use_selected);
-        //selectedOnlyCB.setEnabled(n > 0);
-        
         dialog.addSeparator();
         dialog.addSubTitle(PROCESSING);
-        //final JRadioButton createNewRB = dialog.addRadioButton(CREATE_NEW_LAYER, "Result", create_new_layer, "");
-        //final JRadioButton updateRB = dialog.addRadioButton(UPDATE_SELECTED_FEATURES, "Result", update_selected_features, "");
-        //updateRB.setEnabled(n > 0);
-        //if (!use_selected) updateRB.setSelected(false);
-        //selectedOnlyCB.addActionListener(new ActionListener(){
-        //    public void actionPerformed(ActionEvent e) {
-        //        updateRB.setEnabled(selectedOnlyCB.isSelected());
-        //        if (!selectedOnlyCB.isSelected()) createNewRB.setSelected(true);
-        //    }
-        //});
-        //updateRB.addActionListener(new ActionListener(){
-        //    public void actionPerformed(ActionEvent e) {
-        //        if (updateRB.isSelected()) {
-        //            selectedOnlyCB.setSelected(true);
-        //        }
-        //    }
-        //});        
-
-        //dialog.addSeparator();
         dialog.addCheckBox(FIND_INTERSECTIONS, find_intersections, FIND_DESCRIPTION);
-        dialog.addComboBox(LINE_OPTIONS, line_processing, 
-            Arrays.asList(new String[]{DO_NOT_PROCESS_LINES, NODE_LINES, SPLIT_LINES}), "");
-        dialog.addComboBox(POLYGON_OPTIONS, polygon_processing, 
-            Arrays.asList(new String[]{DO_NOT_PROCESS_POLYGONS, NODE_POLYGONS, SPLIT_POLYGONS}), "");
+        dialog.addComboBox(LINE_OPTIONS, line_processor, 
+            Arrays.asList(new Processor[]{Processor.DO_NOT_PROCESS, Processor.NODE, Processor.SPLIT}), "");
+        dialog.addComboBox(POLYGON_OPTIONS, polygon_processor, 
+            Arrays.asList(new Processor[]{Processor.DO_NOT_PROCESS, Processor.NODE, Processor.SPLIT}), "");
         
         dialog.addSeparator();
         dialog.addSubTitle(ADVANCED_OPTIONS);
@@ -723,8 +705,6 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
         snapRoundingCB.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e) {
                 dialog.setFieldEnabled(SNAP_ROUNDING_DP, snapRoundingCB.isSelected());
-                //dialog.setFieldEnabled(INTERPOLATE_Z, !snapRoundingCB.isSelected());
-                //dialog.setFieldEnabled(INTERPOLATED_Z_DP, !snapRoundingCB.isSelected());
             }
         });
 
@@ -739,21 +719,10 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
     private void getDialogValues(MultiInputDialog dialog) {
         Layer layer = dialog.getLayer(SRC_LAYER);
         layerName = layer.getName();
-        //use_selected = dialog.getBoolean(SELECTED_ONLY);
-        //create_new_layer = dialog.getBoolean(CREATE_NEW_LAYER);
-        //update_selected_features = dialog.getBoolean(UPDATE_SELECTED_FEATURES);
         
         find_intersections = dialog.getBoolean(FIND_INTERSECTIONS);
-        
-        line_processing = dialog.getText(LINE_OPTIONS);
-        do_not_process_lines = line_processing == DO_NOT_PROCESS_LINES;
-        node_lines = line_processing == NODE_LINES;
-        split_lines = line_processing == SPLIT_LINES;
-        
-        polygon_processing = dialog.getText(POLYGON_OPTIONS);
-        do_not_process_polygons = polygon_processing == DO_NOT_PROCESS_POLYGONS;
-        node_polygons = polygon_processing == NODE_POLYGONS;
-        split_polygons = polygon_processing == SPLIT_POLYGONS;
+        line_processor = (Processor)dialog.getComboBox(LINE_OPTIONS).getSelectedItem();
+        polygon_processor = (Processor)dialog.getComboBox(POLYGON_OPTIONS).getSelectedItem();
 
         snap_rounding = dialog.getBoolean(SNAP_ROUNDING);
         snap_rounding_dp = dialog.getInteger(SNAP_ROUNDING_DP);        

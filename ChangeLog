@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2012-04-29 mmichaud <michael.michaud@free.fr>
+  * Clean NoderPlugin et derived mousemenu plugins, replace processing options 
+    by enum, update i18n
+
 2012-04-27 mmichaud <michael.michaud@free.fr>
   * Improved/homogenized result layer naming in query tools :
     source layer_[attribute_]operator_[parameter_]value

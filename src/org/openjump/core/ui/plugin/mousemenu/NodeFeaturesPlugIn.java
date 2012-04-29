@@ -87,24 +87,15 @@ public class NodeFeaturesPlugIn extends AbstractThreadedUiPlugIn {
     
     public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
         
-        //NoderPlugIn noder = new NoderPlugIn();
-        
         monitor.allowCancellationRequests();
         monitor.report(I18N.get("jump.plugin.edit.NoderPlugIn.noding-input"));
         
         final Layer layer = context.getLayerNamePanel().chooseEditableLayer();
         
         noder.setUseSelected(true); 
-        //noder.setLayerName(layer.getName());
-        //noder.setSnapRounding(false);
-        //noder.setSnapRoundingDp(int s
         noder.setFindIntersections(false);
-        noder.setDoNotProcessLines(false);
-        noder.setDoNotProcessPolygons(false);
-        noder.setNodeLines(true);
-        noder.setNodePolygons(true);
-        noder.setSplitLines(false);
-        noder.setSplitPolygons(false);
+        noder.setLineProcessor(NoderPlugIn.Processor.NODE);
+        noder.setPolygonProcessor(NoderPlugIn.Processor.NODE);
         noder.setInterpolateZ(true);
         noder.setInterpolatedZDp(3);
         

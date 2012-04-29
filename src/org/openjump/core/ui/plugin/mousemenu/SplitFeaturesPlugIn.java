@@ -88,24 +88,15 @@ public class SplitFeaturesPlugIn extends AbstractThreadedUiPlugIn {
     
     public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
         
-        //NoderPlugIn noder = new NoderPlugIn();
-        
         monitor.allowCancellationRequests();
         monitor.report(I18N.get("jump.plugin.edit.NoderPlugIn.noding-input"));
         
         final Layer layer = context.getLayerNamePanel().chooseEditableLayer();
         
         noder.setUseSelected(true); 
-        //noder.setLayerName(layer.getName());
-        //noder.setSnapRounding(false);
-        //noder.setSnapRoundingDp(int s
         noder.setFindIntersections(false);
-        noder.setDoNotProcessLines(false);
-        noder.setDoNotProcessPolygons(false);
-        noder.setNodeLines(false);
-        noder.setNodePolygons(false);
-        noder.setSplitLines(true);
-        noder.setSplitPolygons(true);
+        noder.setLineProcessor(NoderPlugIn.Processor.SPLIT);
+        noder.setPolygonProcessor(NoderPlugIn.Processor.SPLIT);
         noder.setInterpolateZ(true);
         noder.setInterpolatedZDp(3);
         
