@@ -29,6 +29,7 @@ package org.openjump.core.rasterimage;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -43,12 +44,15 @@ import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.InputChangedListener;
+import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
 
 public class SelectRasterImageFilesPanel extends JFileChooser implements WizardPanel {
 
   public static final String KEY = SelectRasterImageFilesPanel.class.getName();
+  
+  public static final String FILE_CHOOSER_DIRECTORY_KEY = KEY + " - FILE CHOOSER DIRECTORY";
 
   public static final String TITLE = I18N.get("org.openjump.core.rasterimage.SelectRasterImageFilesPanel.Select-Raster-Image");
 
@@ -63,6 +67,13 @@ public class SelectRasterImageFilesPanel extends JFileChooser implements WizardP
 
   public SelectRasterImageFilesPanel(final WorkbenchContext context) {
     setDialogType(JFileChooser.OPEN_DIALOG);
+    
+    if (PersistentBlackboardPlugIn.get(context).get(FILE_CHOOSER_DIRECTORY_KEY) != null) {
+      setCurrentDirectory(new File((String)PersistentBlackboardPlugIn
+                          .get(context)
+                          .get(FILE_CHOOSER_DIRECTORY_KEY)));
+    }
+    
     setFileSelectionMode(JFileChooser.FILES_ONLY);
     setMultiSelectionEnabled(true);
     GUIUtil.removeChoosableFileFilters(this);
@@ -87,6 +98,8 @@ public class SelectRasterImageFilesPanel extends JFileChooser implements WizardP
 
     addPropertyChangeListener(new PropertyChangeListener() {
       public void propertyChange(PropertyChangeEvent evt) {
+        PersistentBlackboardPlugIn.get(context)
+            .put(FILE_CHOOSER_DIRECTORY_KEY, getCurrentDirectory().toString());
         fireInputChanged();
       }
     });

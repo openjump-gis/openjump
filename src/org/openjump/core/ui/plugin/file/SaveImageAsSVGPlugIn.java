@@ -9,7 +9,11 @@
  ***********************************************/
 package org.openjump.core.ui.plugin.file;
 
+import com.vividsolutions.jts.geom.Envelope;
+
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.feature.FeatureCollection;
+import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
@@ -21,15 +25,20 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
+import com.vividsolutions.jump.workbench.ui.OKCancelDialog;
 import com.vividsolutions.jump.workbench.ui.renderer.LayerRenderer;
 import com.vividsolutions.jump.workbench.ui.renderer.Renderer;
 import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
+
+import java.awt.Font;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.util.List;
 
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JTextArea;
 
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.apache.batik.dom.GenericDOMImplementation;
@@ -100,13 +109,35 @@ public class SaveImageAsSVGPlugIn extends AbstractPlugIn implements ThreadedPlug
 
 		LayerViewPanel lvp = context.getLayerViewPanel();
 		RenderingManager rms = lvp.getRenderingManager();
-		List layers = context.getLayerManager().getVisibleLayers(false);		
+		List layers = context.getLayerManager().getVisibleLayers(false);
+		// Check if there are many features to draw and warn the user
+		int totalNumberOfFeatures = 0;
+		Envelope view = context.getLayerViewPanel().getViewport().getEnvelopeInModelCoordinates();
+		for (int i=0; i < layers.size(); i++) {
+		    FeatureCollection fc = ((Layer)layers.get(i)).getFeatureCollectionWrapper();
+		    totalNumberOfFeatures += fc.query(view).size();
+		}
+		if (totalNumberOfFeatures > 100000) {
+		    JTextArea labelArea = new JTextArea();
+            labelArea.setEditable(false);
+            labelArea.setOpaque(false);
+            labelArea.setFont(new JLabel().getFont());
+            labelArea.setText(I18N.get("org.openjump.core.ui.plugin.file.SaveImageAsSVGPlugIn.large-dataset-message"));
+		    OKCancelDialog dialog = new OKCancelDialog(
+		        context.getWorkbenchFrame(), 
+		        I18N.get("org.openjump.core.ui.plugin.file.SaveImageAsSVGPlugIn.warning-message-title"),
+		        true,
+		        labelArea,
+		        null);
+		    dialog.setVisible(true);
+		    if (!dialog.wasOKPressed()) return;
+		}
 		for (int i=0; i < layers.size(); i++) {
 			Layer layer = (Layer)layers.get(i);		
 			Renderer myR = rms.getRenderer(layer);
 			if( myR instanceof LayerRenderer){
 				LayerRenderer myRnew = (LayerRenderer)myR;
-				myRnew.setMaxFeatures(10000);
+				myRnew.setMaxFeatures(10000000);
 			}
 		}
 		lvp.repaint();
