@@ -29,6 +29,7 @@ import java.lang.Object;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openjump.core.ui.images.IconLoader;
 import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -92,7 +93,7 @@ public class VoronoiDiagramPlugIn extends AbstractThreadedUiPlugIn{
 	                new String[] {MenuNames.TOOLS, MenuNames.TOOLS_GENERATE},
 	                getName() + "...",
 	                false,			//checkbox
-	                null,			//icon
+	                IconLoader.icon("voronoi.png"),
 	                createEnableCheck(context.getWorkbenchContext()));
     }
     
@@ -101,9 +102,6 @@ public class VoronoiDiagramPlugIn extends AbstractThreadedUiPlugIn{
         return new MultiEnableCheck().add(checkFactory.createAtLeastNLayersMustExistCheck(1));
     }
     
-    //public String getName() {
-    //    return VORONOI_DIAGRAM;
-    //}
     
 	public boolean execute(PlugInContext context) throws Exception{
 	    this.reportNothingToUndoYet(context);
