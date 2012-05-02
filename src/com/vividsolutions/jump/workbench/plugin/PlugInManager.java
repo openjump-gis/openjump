@@ -162,6 +162,7 @@ public class PlugInManager {
             if (!file.isFile()) {
                 continue;
             }
+            if (file.getName().matches("(?i).*(png|gif|jpg)$")) continue;
             files.add(file);
         }
         return files;
