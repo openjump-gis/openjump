@@ -116,6 +116,18 @@ public class VoronoiDiagramPlugIn extends AbstractThreadedUiPlugIn{
 	    return true;
 	}
 	
+	public void setSitesLayer(String sitesLayer) {
+	    this.sitesLayer = sitesLayer;
+	}
+	
+	public void setTransferAttributes(boolean transferAttributes) {
+	    this.transferAttributes = transferAttributes;
+	}
+	
+	public void setTolerance(double tolerance) {
+	    this.tolerance = tolerance;
+	}
+	
     private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
 	    dialog.setSideBarDescription(DESCRIPTION);
 	    if (sitesLayer == null || context.getLayerManager().getLayer(sitesLayer) == null) {
