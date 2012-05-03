@@ -115,7 +115,7 @@ public class JUMPWorkbench {
 	public final static String PLUG_IN_DIRECTORY_OPTION = "plug-in-directory";
 	public final static String I18N_FILE = "i18n";
 	public static final String INITIAL_PROJECT_FILE = "project";
-    public static final String STATE_OPTION = "state";
+	public static final String STATE_OPTION = "state";
 	
 	// Added by STanner to allow I18N to have access to this
 	public static String I18N_SETLOCALE = "";
@@ -312,6 +312,7 @@ public class JUMPWorkbench {
 	}
 
   public static void main(String[] args) {
+    long start = PlugInManager.secondsSince(0);
     try {
       // first fetch parameters, locale might be changed with -i18n switch
       parseCommandLine(args);
@@ -343,6 +344,7 @@ public class JUMPWorkbench {
 
       main(args, I18N.get("JUMPWorkbench.jump"), new JUMPConfiguration(),
           splashPanel, progressMonitor);
+      System.out.println("OJ start took " +PlugInManager.secondsSince(start)+ "s alltogether.");
     } catch (Throwable t) {
       WorkbenchFrame.showThrowable(t, null);
     }
@@ -374,15 +376,19 @@ public class JUMPWorkbench {
 			SplashWindow splashWindow = new SplashWindow(splashComponent);
 			splashWindow.setVisible(true);
 
+			taskMonitor.report(I18N.get("JUMPWorkbench.status.create"));
 			JUMPWorkbench workbench = new JUMPWorkbench(title, args, splashWindow, taskMonitor);
 
+			taskMonitor.report(I18N.get("JUMPWorkbench.status.configure-core"));
 			setup.setup(workbench.context);
-			//must wait until after setup initializes the persistent blackboard to recall settings			
+			//must wait until after setup initializes the persistent blackboard to recall settings
 			WorkbenchFrame frame = workbench.getFrame();
+			taskMonitor.report(I18N.get("JUMPWorkbench.status.restore-state"));
 			frame.restore();
 
+			taskMonitor.report(I18N.get("JUMPWorkbench.status.load-extensions"));
 			workbench.context.getWorkbench().getPlugInManager().load();
-      OpenJumpConfiguration.postExtensionInitialization(workbench.context);
+			OpenJumpConfiguration.postExtensionInitialization(workbench.context);
 			workbench.getFrame().setVisible(true);
 		} catch (Throwable t) {
 			WorkbenchFrame.showThrowable(t, null);

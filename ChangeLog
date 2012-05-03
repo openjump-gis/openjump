@@ -1,5 +1,16 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2012-05-03 ede
+  "a startup overhaul draft"
+  * JUMPWorkbench
+    - add a stop watch output to STDOUT of the whole startup duration
+    - added some messages showing up in splash screen about what is happening during startup
+  * PluginManager
+    - overall performance enhancement
+    - duration output of scan and load of extensions to STDOUT (might be implemented more elegantly later)
+    - more detailed status messages to splash screen during startup
+    - extension jars now have to reside in lib/ext, subfolders are not searched anymore
+
 2012-05-02 mmichaud <michael.michaud@free.fr>
   * Quick fix of the Class Loading problem in PluginManager (PluginManager
     now skip image files).
