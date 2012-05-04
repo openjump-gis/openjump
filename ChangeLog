@@ -1,5 +1,11 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2012-05-04 ede
+  * probably bugfix 3521940: "Trouble with opening several shapefiles from one zip file"
+    https://sourceforge.net/tracker/?func=detail&aid=3521940&group_id=118054&atid=679906
+    - Note to us all: whoever wrote the JUMPReader code was either ingenious or mad or both at  the same time
+       we should probably strip the hardcoded zip/gz support an write a proper datasource for that
+
 2012-05-04 mmichaud <michael.michaud@free.fr>
   * switch back to 3D geometry description in info panel wkt format
     add z value to geometry description in info panel CL format

@@ -40,8 +40,7 @@ package com.vividsolutions.jump.io;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
+import java.util.zip.*;
 
 
 /**
@@ -203,22 +202,12 @@ public class CompressedFile {
         }
 
         if (extension.compareToIgnoreCase("zip") == 0) {
-            //zip file
-            InputStream IS_low = new FileInputStream(compressedFile);
-            ZipInputStream fr_high = new ZipInputStream(IS_low);
 
-            //need to find the correct file within the .zip file
-            ZipEntry entry;
-
-            entry = fr_high.getNextEntry();
-
-            while (entry != null) {
-                if (entry.getName().compareToIgnoreCase(fname) == 0) {
-                    return (fr_high);
-                }
-
-                entry = fr_high.getNextEntry();
-            }
+            ZipFile zipFile = new ZipFile(compressedFile);
+            ZipEntry zipEntry = zipFile.getEntry(fname);
+            //System.out.println(zipEntry + "->" + fname);
+            if (zipEntry!=null)
+              return zipFile.getInputStream(zipEntry);
 
             throw new Exception("couldnt find " + fname +
                 " in compressed file " + compressedFile);

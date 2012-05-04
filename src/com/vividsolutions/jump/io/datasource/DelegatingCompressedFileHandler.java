@@ -75,43 +75,27 @@ public class DelegatingCompressedFileHandler implements JUMPReader {
 	 *                  determined automatically
 	 */
     public FeatureCollection read(DriverProperties dp) throws Exception {
-        mangle(dp, "File", "CompressedFile", endings);
-        return reader.read(dp);
+      // TODO: write a clean zip datasource some time
+      mangle(dp, "File", "CompressedFile", endings);
+      return reader.read(dp);
     }
 
-    protected void mangle(
-        DriverProperties dp,
-        String fileProperty,
-        String compressedFileProperty,
-        Collection myEndings)
-        throws Exception {
-        if (FileUtil
-            .getExtension(new File(dp.getProperty(fileProperty)))
-            .equalsIgnoreCase("zip")) {
-            String internalName = null;
-            for (Iterator i = myEndings.iterator(); internalName == null && i.hasNext();) {
-                String ending = (String) i.next();
-                internalName =
-                    CompressedFile.getInternalZipFnameByExtension(
-                        ending,
-                        dp.getProperty(fileProperty));
-            }
-
-            if (internalName == null) {
-                throw new Exception(
-                    "Couldn't find a "
-                        + StringUtil.toCommaDelimitedString(myEndings)
-                        + " file inside the .zip file: "
-                        + dp.getProperty(fileProperty));
-            }
-            dp.set(compressedFileProperty, dp.getProperty(fileProperty));
-            dp.set(fileProperty, internalName);
-        } else if (
-            FileUtil.getExtension(
-                new File(dp.getProperty(fileProperty))).equalsIgnoreCase(
-                "gz")) {
-            dp.set(compressedFileProperty, dp.getProperty(fileProperty));
-        }
+    // [ede] mangle lead to all layers loading always the first file in zip
+    //  as mangle() only exchanges properties "File"<->"CompressedFile" (WTF!!)
+    //  we simply do this manually now
+    protected void mangle(DriverProperties dp, String fileProperty,
+        String compressedFileProperty, Collection myEndings) throws Exception {
+      
+      if (FileUtil.getExtension(new File(dp.getProperty(fileProperty)))
+          .equalsIgnoreCase("zip")) {
+        String buf = dp.getProperty("File");
+        dp.set("File", dp.getProperty("CompressedFile"));
+        dp.set("CompressedFile", buf);
+      }
+      else if (FileUtil.getExtension(new File(dp.getProperty(fileProperty)))
+          .equalsIgnoreCase("gz")) {
+        dp.set(compressedFileProperty, dp.getProperty(fileProperty));
+      }
     }
 
 }
