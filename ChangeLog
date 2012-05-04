@@ -1,5 +1,11 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2012-05-04 mmichaud <michael.michaud@free.fr>
+  * switch back to 3D geometry description in info panel wkt format
+    add z value to geometry description in info panel CL format
+  * Add a AddGeometryAttributesPlugIn as discussed in this thread
+    https://sourceforge.net/mailarchive/forum.php?thread_name=4F9E3579.9020702%40free.fr&forum_name=jump-pilot-devel
+
 2012-05-03 ede
   "a startup overhaul draft"
   * JUMPWorkbench

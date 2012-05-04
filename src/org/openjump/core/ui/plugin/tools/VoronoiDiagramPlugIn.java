@@ -68,7 +68,7 @@ import javax.swing.JCheckBox;
 
 
 /**
- * Creates a triangulation using the new Triangulation API of JTS 1.12
+ * Creates a Vorono&iuml; Dialgram using the new Triangulation API of JTS 1.12
  * @author Micha&euml;l Michaud
  */
 public class VoronoiDiagramPlugIn extends AbstractThreadedUiPlugIn{

@@ -104,6 +104,7 @@
 	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.CalculateAreasAndLengthsPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn</plug-in>
 	<plug-in>de.fho.jump.pirol.plugins.EditAttributeByFormula.EditAttributeByFormulaPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn</plug-in>
 	<!--- =========  Generalization ====================  /-->	
 	<plug-in>org.openjump.core.ui.plugin.tools.LineSimplifyJTS15AlgorithmPlugIn</plug-in>	
 	<!--plug-in>org.openjump.core.ui.plugin.tools.ReducePointsISAPlugIn</plug-in-->
