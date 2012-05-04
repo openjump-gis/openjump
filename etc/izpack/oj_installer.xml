@@ -8,7 +8,7 @@
     <appversion>@version@ rev.@revision@ @edition@</appversion>
     <appsubpath>OpenJUMP-@version@-r@revision@-@edition@</appsubpath>
     <authors>
-      <author email="" name="the OpenJUMP team" />
+      <author email="jump-pilot-devel@lists.sourceforge.net" name="jump pilot project" />
     </authors>
     <url>http://openjump.org/</url>
     <uninstaller path="${INSTALL_PATH}/uninstall" write="yes" />
