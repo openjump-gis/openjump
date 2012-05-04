@@ -278,12 +278,12 @@ public class PlugInManager {
         ArrayList classes = new ArrayList();
         for (Enumeration e = zipFile.entries(); e.hasMoreElements();) {
             ZipEntry entry = (ZipEntry) e.nextElement();
-            //Filter by filename; otherwise we'll be loading all the classes,
-            // which takes
-            //significantly longer [Jon Aquino]
-            if (!(entry.getName().matches(".*(Extension|Configuration)\\.class"))) {
-                //Include "Configuration" for backwards compatibility. [Jon
-                // Aquino]
+            // Filter by filename; otherwise we'll be loading all the classes,
+            // which takes significantly longer [Jon Aquino]
+            // no $ ensures that inner classes are ignored as well [ede]
+            // Include "Configuration" for backwards compatibility. [Jon Aquino]
+            if (!(entry.getName().matches("[^$]+(Extension|Configuration)\\.class"))
+                  || entry.isDirectory()) {
                 continue;
             }
             Class c = toClass(entry, classLoader);
@@ -296,17 +296,17 @@ public class PlugInManager {
     }
 
     private Class toClass(ZipEntry entry, ClassLoader classLoader) {
-        if (entry.isDirectory()) {
-            return null;
-        }
-        if (!entry.getName().endsWith(".class")) {
-            return null;
-        }
-        if (entry.getName().indexOf("$") != -1) {
-            //I assume it's not necessary to load inner classes explicitly.
-            // [Jon Aquino]
-            return null;
-        }
+//        if (entry.isDirectory()) {
+//            return null;
+//        }
+//        if (!entry.getName().endsWith(".class")) {
+//            return null;
+//        }
+//        if (entry.getName().indexOf("$") != -1) {
+//            //I assume it's not necessary to load inner classes explicitly.
+//            // [Jon Aquino]
+//            return null;
+//        }
         String className = entry.getName();
         className = className.substring(0, className.length()
                 - ".class".length());
