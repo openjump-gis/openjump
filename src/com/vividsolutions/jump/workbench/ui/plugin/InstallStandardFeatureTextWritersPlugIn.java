@@ -31,7 +31,7 @@ public class InstallStandardFeatureTextWritersPlugIn extends AbstractPlugIn {
             Coordinate[] coordinates = feature.getGeometry().getCoordinates();
             for (int i = 0; i < coordinates.length; i++) {
                 s.append("[" + Fmt.fmt(i, 10) + "] ");
-                s.append(coordinates[i].x + ", " + coordinates[i].y + "\n");
+                s.append(coordinates[i].x + ", " + coordinates[i].y + ", " + coordinates[i].z + "\n");
             }
             return s.toString().trim();
         }
@@ -52,6 +52,6 @@ public class InstallStandardFeatureTextWritersPlugIn extends AbstractPlugIn {
             return wktWriter.write(feature.getGeometry()).trim();
         }
 
-        private WKTWriter wktWriter = new WKTWriter();
+        private WKTWriter wktWriter = new WKTWriter(3);
     };
 }
