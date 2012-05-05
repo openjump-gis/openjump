@@ -4,6 +4,8 @@ Version 1.5.2 (released on jj.mmmm.2012)
   New Features
   
   Bug fixes
+  - Preserve z values in JML format, even if first coordinate has no z
+  - Write again wkt with z values in the info viewer
   - Improved icon display (internal changes + icon replacement)
   - Bug 3515663 : Statistics > Classify attribute was throwing an exception
   - Bug 3513864 : Raster Image layers (Sextante) have now an icon in the 
@@ -29,7 +31,7 @@ Version 1.5.2 (released on jj.mmmm.2012)
     not be edited. It is now tagged read-only
   - Bug 3486847 : Wrong message : When Closing a project with unsaved data, 
     the message was asking if one want to close OpenJUMP
-  SimpleQuery : change the definition of strict intersection from 
+  - SimpleQuery : change the definition of strict intersection from 
     TFFTFF*** to TFF*FF*** so that closed linestring can also be found
   
   Small improvements

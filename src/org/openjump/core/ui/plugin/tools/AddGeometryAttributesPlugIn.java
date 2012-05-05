@@ -25,31 +25,18 @@
  
 package org.openjump.core.ui.plugin.tools;
 
-//import java.lang.Object;
-//import java.util.ArrayList;
-//import java.util.List;
-//
 //import org.openjump.core.ui.images.IconLoader;
 import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
-//
-//import com.vividsolutions.jts.geom.Coordinate;
-//import com.vividsolutions.jts.geom.Envelope;
+
 import com.vividsolutions.jts.geom.Geometry;
-//import com.vividsolutions.jts.geom.GeometryCollection;
-//import com.vividsolutions.jts.geom.GeometryFactory;
-//import com.vividsolutions.jts.geom.LineString;
-//import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
-//import com.vividsolutions.jts.triangulate.VertexTaggedGeometryDataMapper;
-//import com.vividsolutions.jts.triangulate.VoronoiDiagramBuilder;
-//
+
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.BasicFeature;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureDataset;
-//import com.vividsolutions.jump.feature.FeatureDatasetFactory;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.task.TaskMonitor;
@@ -64,15 +51,21 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
-//
-//import javax.swing.JCheckBox;
 
 
 /**
- * User can add one or several of the following attribute to a layer.
+ * User can add one or several of the following geometry attributes to a layer.
  * <ul>
  * <li>X,Y</li>
  * <li>Z</li>
+ * <li>Number of points<li>
+ * <li>Number of holes</li>
+ * <li>Number of components</li>
+ * <li>Total length</li>
+ * <li>Total area</li>
+ * <li>Geometry type</li>
+ * <li>Geometry in WKT format</li>
+ * </ul>
  * @author Micha&euml;l Michaud
  */
 
@@ -80,7 +73,6 @@ import com.vividsolutions.jump.feature.FeatureSchema;
 
 public class AddGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
 
-    //public static String VORONOI_DIAGRAM     = I18N.get("org.openjump.core.ui.plugin.tools.VoronoiDiagramPlugIn.voronoi-diagram");
     public static String LAYER               = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.layer");
     
     public static String X                   = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.x");
@@ -114,25 +106,7 @@ public class AddGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
     public static String GEOM_ATTRIBUTES     = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.geometry-attributes");
     
     public static String COMPUTE_ATTRIBUTES  = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.compute-attributes"); 
-    
-    // Z_GEOMETRY 
-    // public static String ADD_Z_INI           = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-initial-z");
-    // public static String ADD_Z_FIN           = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-final-z");
-    // public static String ADD_Z_MIN           = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-min-z");
-    // public static String ADD_Z_MAX           = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-max-z");
-    // public static String ADD_Z_MEAN          = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-mean-z");
-    // 
-    // // MORPHOLOGY
-    // public static String ADD_ORIENTATION     = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-orientation");
-    // // http://iahs.info/hsj/470/hysj_47_06_0921.pdf
-    // // http://www.ipublishing.co.in/jggsvol1no12010/voltwo/EIJGGS3022.pdf
-    // public static String ADD_GRAVELIUS          = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-miller");
-    // public static String ADD_MILLER          = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-miller");
-    
-    public static String ADD_SINUOSITY       = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-miller");
-    
-    
-          
+
 
     String layer;
     
@@ -305,6 +279,5 @@ public class AddGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
         if (addGeometryType) f.setAttribute(GEOM_TYPE, g.getGeometryType());
         if (addWKT) f.setAttribute(WKT, g.toString());
     }
-    
 	
 }

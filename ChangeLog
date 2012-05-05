@@ -3,6 +3,8 @@
 2012-05-05 mmichaud <michael.michaud@free.fr>
   * JML writer preserved z values only if first coordinate had a z, it now 
     write 3d geometries if any coordinate has a z value.
+  * Add the Add3DGeometryAttributesPlugIn able to add the following attributes :
+    start z, end z, minz, maxz, mean z, length3d, slopes z=NaN...
 
 2012-05-04 ede
   * probably bugfix 3521940: "Trouble with opening several shapefiles from one zip file"
