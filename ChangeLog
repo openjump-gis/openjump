@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2012-05-05 mmichaud <michael.michaud@free.fr>
+  * JML writer preserved z values only if first coordinate had a z, it now 
+    write 3d geometries if any coordinate has a z value.
+
 2012-05-04 ede
   * probably bugfix 3521940: "Trouble with opening several shapefiles from one zip file"
     https://sourceforge.net/tracker/?func=detail&aid=3521940&group_id=118054&atid=679906
