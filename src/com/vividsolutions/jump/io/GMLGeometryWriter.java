@@ -288,13 +288,11 @@ public class GMLGeometryWriter
     startLine(writer, level, "<gml:coordinates>");
     int dim = 2;
 
-    if (coords.length > 0) {
-        // [mmichaud 2012-05-05] if there is a single z value, I want to keep it 
-        for (Coordinate c : coords) {
-            if (!(Double.isNaN(c.z))) {
-                dim = 3;
-                break;
-            }
+    // [mmichaud 2012-05-05] if there is a single z value, I want to keep it 
+    for (Coordinate c : coords) {
+        if (!(Double.isNaN(c.z))) {
+            dim = 3;
+            break;
         }
     }
 
