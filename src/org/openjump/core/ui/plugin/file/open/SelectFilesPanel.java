@@ -47,6 +47,7 @@ import org.openjump.core.ui.io.file.FileNameExtensionFilter;
 import org.openjump.swing.listener.InvokeMethodActionListener;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.io.CompressedFile;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.datasource.LoadFileDataSourceQueryChooser;
@@ -69,6 +70,8 @@ public class SelectFilesPanel extends JFileChooser implements WizardPanel {
   public static final String ALL_SUPPORTED_FILES = I18N.get(KEY + ".all-supported-files");
   
   public static final String ARCHIVED_FILES = I18N.get(KEY + ".archived-files");
+
+  public static final String COMPRESSED_FILES = I18N.get(KEY + ".compressed-files");
 
   private Set<InputChangedListener> listeners = new LinkedHashSet<InputChangedListener>();
 
@@ -121,11 +124,16 @@ public class SelectFilesPanel extends JFileChooser implements WizardPanel {
     Set<String> allExtensions = new TreeSet<String>();
     Map<String, FileFilter> filters = new TreeMap<String, FileFilter>();
     
-    // zip support is hardcoded in OpenFileWizard.run()
-    String[] zipExtensions = new String[]{ "zip", "gz" };
+    // archive support is hardcoded in OpenFileWizardState,CompressedFile and 
+    String[] zipExtensions = CompressedFile.getArchiveExtensions();
     allExtensions.addAll( Arrays.asList(zipExtensions) );
     FileFilter zipFilter = new FileNameExtensionFilter(ARCHIVED_FILES, zipExtensions );
     filters.put(zipFilter.getDescription(), zipFilter);
+    // separate single compressed files to signal that they are not archives
+    String[] packedExtensions = CompressedFile.getFileExtensions();
+    allExtensions.addAll( Arrays.asList(packedExtensions) );
+    FileFilter packedFilter = new FileNameExtensionFilter(COMPRESSED_FILES, packedExtensions );
+    filters.put(packedFilter.getDescription(), packedFilter);
 
     for (Object loader : loaders) {
       final FileLayerLoader fileLayerLoader = (FileLayerLoader)loader;

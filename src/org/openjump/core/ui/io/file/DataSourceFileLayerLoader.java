@@ -40,6 +40,7 @@ import org.openjump.util.UriUtil;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.coordsys.CoordinateSystemRegistry;
 import com.vividsolutions.jump.feature.FeatureCollection;
+import com.vividsolutions.jump.io.CompressedFile;
 import com.vividsolutions.jump.io.datasource.Connection;
 import com.vividsolutions.jump.io.datasource.DataSource;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
@@ -92,11 +93,13 @@ public class DataSourceFileLayerLoader extends AbstractFileLayerLoader {
     DataSource dataSource = (DataSource)LangUtil.newInstance(dataSourceClass);
     Map<String, Object> properties = toProperties(uri, options);
     dataSource.setProperties(properties);
-    String name = UriUtil.getFileNameWithoutExtension(uri);
+    String filename = UriUtil.getFileName(uri);
+    String layerName = filename;
+    if (uri.getScheme().equals("zip"))
+      layerName = UriUtil.getZipEntryName(uri)+" ("+filename+")";
     DataSourceQuery dataSourceQuery = new DataSourceQuery(dataSource, null,
-      name);
+      filename);
     ArrayList exceptions = new ArrayList();
-    String layerName = dataSourceQuery.toString();
     monitor.report("Loading " + layerName + "...");
 
     Connection connection = dataSourceQuery.getDataSource().getConnection();
@@ -113,7 +116,8 @@ public class DataSourceFileLayerLoader extends AbstractFileLayerLoader {
         Category category = TaskUtil.getSelectedCategoryName(workbenchContext);
         layerManager.addLayerable(category.getName(), layer);
         layer.setName(layerName);
-        if (uri.getScheme().equals("zip")) {
+        // make sure compressed files are loaded readonly
+        if (CompressedFile.isCompressed(filename)) {
             layer.setReadonly(true);
         }
         
@@ -152,6 +156,7 @@ public class DataSourceFileLayerLoader extends AbstractFileLayerLoader {
     Map<String, Object> options) {
     Map<String, Object> properties = new HashMap<String, Object>();
     File file;
+    // zip:// applies to all archives like *.zip,*.tgz ...
     if (uri.getScheme().equals("zip")) {
       file = UriUtil.getZipFile(uri);
       String compressedFile = UriUtil.getZipEntryName(uri);

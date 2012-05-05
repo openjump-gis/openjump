@@ -85,22 +85,19 @@ public class FileNameExtensionFilter extends FileFilter {
       if (f.isDirectory()) {
         return true;
       }
+      
+      // check extension one by one
+      // [ede] changed to allow double extensions like shp.gz or tar.gz
+      final String filename = f.getName().toLowerCase();
+      for (String extension : lowerCaseExtensions) {
+        if ( filename.endsWith("."+extension) ) 
+          return true;
+      }
       // NOTE: we tested implementations using Maps, binary search
       // on a sorted list and this implementation. All implementations
       // provided roughly the same speed, most likely because of
       // overhead associated with java.io.File. Therefor we've stuck
       // with the simple lightweight approach.
-      String fileName = f.getName();
-      int i = fileName.lastIndexOf('.');
-      if (i > 0 && i < fileName.length() - 1) {
-        String desiredExtension = fileName.substring(i + 1).toLowerCase(
-          Locale.ENGLISH);
-        for (String extension : lowerCaseExtensions) {
-          if (desiredExtension.equals(extension)) {
-            return true;
-          }
-        }
-      }
     }
     return false;
   }

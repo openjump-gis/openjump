@@ -24,12 +24,12 @@ public final class UriUtil {
    * @param entry The ZIP entry.
    * @return The URI.
    */
-  public static URI getUri(final File file, final ZipEntry entry) {
+  public static URI getUri(final File file, final String entry) {
     try {
-      final String entryName = entry.getName();
+      //final String entryName = entry.getName();
       final URI fileUri = file.toURI();
       final String filePath = fileUri.getPath();
-      final URI uri = new URI("zip", null, filePath + "!/" + entryName, null);
+      final URI uri = new URI("zip", null, filePath + "!/" + entry, null);
       return uri;
     } catch (final URISyntaxException e) {
       throw new IllegalArgumentException("Cannot create URI for " + file + "!/"
@@ -38,25 +38,31 @@ public final class UriUtil {
   }
 
   /**
-   * Get the ZIP file name from a ZIP URI.
+   * Get the ZIP file from a ZIP URI.
    * 
    * @param uri The URI.
    * @return The ZIP file.
    */
   public static File getZipFile(final URI uri) {
-    final String path = uri.getPath();
-    final int index = path.indexOf('!');
-    if (index == -1) {
-      return new File(uri);
-    } else {
       try {
-        final URI fileUri = new URI("file", null, path.substring(0, index),
+        final URI fileUri = new URI("file", null, getZipFilePath(uri),
           null);
         return new File(fileUri);
       } catch (final URISyntaxException e) {
         throw new RuntimeException(e.getMessage(), e);
       }
-    }
+  }
+
+  public static String getZipFilePath(final URI uri){
+    final String path = uri.getPath();
+    final int index = path.indexOf('!');
+    return index<0 ? path : path.substring(0, index);
+  }
+
+  public static String getZipFileName(final URI uri){
+    final String path = getZipFilePath(uri);
+    final int index = path.lastIndexOf('/');
+    return index<0 ? path : path.substring(index+1);
   }
 
   /**
@@ -98,13 +104,8 @@ public final class UriUtil {
    * @return The file name.
    */
   public static String getFileName(final URI uri) {
-    final String path = uri.getPath();
-    final int slashIndex = path.lastIndexOf('/');
-    if (slashIndex != -1) {
-      return path.substring(slashIndex + 1);
-    } else {
-      return "";
-    }
+    // make getFilename zip url safe
+    return getZipFileName(uri);
   }
 
   /**

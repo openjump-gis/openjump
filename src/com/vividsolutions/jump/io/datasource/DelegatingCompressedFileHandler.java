@@ -76,26 +76,25 @@ public class DelegatingCompressedFileHandler implements JUMPReader {
 	 */
     public FeatureCollection read(DriverProperties dp) throws Exception {
       // TODO: write a clean zip datasource some time
-      mangle(dp, "File", "CompressedFile", endings);
+      //mangle(dp, "File", "CompressedFile", endings);
       return reader.read(dp);
     }
 
-    // [ede] mangle lead to all layers loading always the first file in zip
-    //  as mangle() only exchanges properties "File"<->"CompressedFile" (WTF!!)
-    //  we simply do this manually now
+    // [ede 05.2012]
+    //  we keep this as stub as StandardReaderWriter seems to need the definition
     protected void mangle(DriverProperties dp, String fileProperty,
         String compressedFileProperty, Collection myEndings) throws Exception {
       
-      if (FileUtil.getExtension(new File(dp.getProperty(fileProperty)))
-          .equalsIgnoreCase("zip")) {
-        String buf = dp.getProperty("File");
-        dp.set("File", dp.getProperty("CompressedFile"));
-        dp.set("CompressedFile", buf);
-      }
-      else if (FileUtil.getExtension(new File(dp.getProperty(fileProperty)))
-          .equalsIgnoreCase("gz")) {
-        dp.set(compressedFileProperty, dp.getProperty(fileProperty));
-      }
+//      if (FileUtil.getExtension(new File(dp.getProperty(fileProperty)))
+//          .equalsIgnoreCase("zip")) {
+//        String buf = dp.getProperty("File");
+//        dp.set("File", dp.getProperty("CompressedFile"));
+//        dp.set("CompressedFile", buf);
+//      }
+//      else if (FileUtil.getExtension(new File(dp.getProperty(fileProperty)))
+//          .equalsIgnoreCase("gz")) {
+//        dp.set(compressedFileProperty, dp.getProperty(fileProperty));
+//      }
     }
 
 }
