@@ -1,6 +1,14 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
-2012-05-04 ede  "refurbished compressed files/archive support"
+2012-05-06 ede
+  - reverted AboutDialog changes by Matthias from 2012-04-22
+    please find a way to include readme.txt into webstart
+    also see
+     http://www.mail-archive.com/jump-pilot-devel@lists.sourceforge.net/msg10867.html
+     and
+     http://www.mail-archive.com/jump-pilot-devel@lists.sourceforge.net/msg10840.html
+
+2012-05-05 ede  "refurbished compressed files/archive support"
   - separated "Compressed File" from "Archive with supported formats"
   - added BZIP2 support for TAR archives or compressed file
   - added support for TAR archives
