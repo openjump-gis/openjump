@@ -1,9 +1,9 @@
 --------------------------------------------------------
 Version 1.5.2 (released on jj.mmmm.2012)
-
-  New Features
   
   Bug fixes
+  - PLUS edition finally starts at reasonable times even from network shares
+  - Bug 3521940 : Trouble with opening several shapefiles from one zip file
   - Preserve z values in JML format, even if first coordinate has no z
   - Write again wkt with z values in the info viewer
   - Improved icon display (internal changes + icon replacement)
@@ -33,17 +33,22 @@ Version 1.5.2 (released on jj.mmmm.2012)
     the message was asking if one want to close OpenJUMP
   - SimpleQuery : change the definition of strict intersection from 
     TFFTFF*** to TFF*FF*** so that closed linestring can also be found
+  in PLUS edition
+  - Bug 3492384 : DXF export of lines does not export z value
+  - Bug 3487686 : BeanshellEditor : Flying the mouse over the LayerViewPanel 
+    was automatically hiding the editor
   
   Small improvements
   - New (vertical) logo in the windows installer
   - FR 3511501 : Change FillPolygon ToolTip to "Create polygon from closed 
     area"
   - Status bar : Small improvements in the layout
-
-  PLUS version
-  - Bug 3492384 : DXF export of lines does not export z value
-  - Bug 3487686 : BeanshellEditor : Flying the mouse over the LayerViewPanel 
-    was automatically hiding the editor
+  - startup now more talkative and output of startup durations to console
+  - selected skins in options dialog are now persistent over restarts
+  - BZIP, GZ compressed files read support e.g. data.shp.gz
+  - BZIP, GZ compressed and uncompressed TAR archive read support
+  - new application wide info icon and cursor
+  - improved performance of complex polygon reading from shapefiles
 
 --------------------------------------------------------
 Version 1.5.1 (released on 02.febr.2012)
