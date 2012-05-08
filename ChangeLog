@@ -2,7 +2,15 @@
 
 2012-05-08 mmichaud <michael.michaud@free.fr>
   * WMS : cache the label associated to each MapLayer in MapLayerPanel as it is
-    called very often and includes a costly calculation (getFullSRSList) 
+    called very often and includes a costly calculation (getFullSRSList)
+  * Major update on plugin for PLUS version
+    - csv-driver-0.6.0 (replaces txt driver 0.3)
+  * Minor updates on plugins for PLUS version
+    - aggregation-0.2.5 (make sure it is java 1.5 compatible)
+    - bsheditor4jump-0.2.3 (make sure it is java 1.5 compatible)
+    - dxf-driver 0.7.7 (DXF export of lines did not export z value)
+    - postgis plugin 1.5.2 (add date management)
+    - topology-0.3.2 (typo)
 
 2012-05-06 ede
   - reverted AboutDialog changes by Matthias from 2012-04-22
