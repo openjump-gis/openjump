@@ -41,8 +41,10 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
@@ -80,6 +82,8 @@ public class MapLayerPanel extends JPanel {
     private GridBagLayout gridBagLayout1 = new GridBagLayout();
     private AddRemovePanel addRemovePanel = new AddRemovePanel(true);
     private JCheckBox checkBox = new JCheckBox(I18N.get("ui.plugin.wms.MapLayerPanel.sort"), true);
+    // [mmichaud 2012-05-08] cache the fullSrs list associated to each MapLayer
+    private Map<String,String> fullSrsMap = new HashMap<String,String>();
 
     public MapLayerPanel() {
         try {
@@ -105,8 +109,13 @@ public class MapLayerPanel extends JPanel {
     }
 
     private void setRendererText(JLabel renderer, MapLayer layer) {
-        renderer.setText(layer.getTitle() + " [" +
-            StringUtil.toCommaDelimitedString(layer.getFullSRSList()) + "]");
+        String label = fullSrsMap.get(layer.getTitle());
+        if (label == null) {
+            label = layer.getTitle() + " [" +
+                StringUtil.toCommaDelimitedString(layer.getFullSRSList()) + "]";
+            fullSrsMap.put(layer.getTitle(), label);
+        }
+        renderer.setText(label);
     }
 
     void jbInit() throws Exception {

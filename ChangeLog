@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2012-05-08 mmichaud <michael.michaud@free.fr>
+  * WMS : cache the label associated to each MapLayer in MapLayerPanel as it is
+    called very often and includes a costly calculation (getFullSRSList) 
+
 2012-05-06 ede
   - reverted AboutDialog changes by Matthias from 2012-04-22
     please find a way to include readme.txt into webstart
