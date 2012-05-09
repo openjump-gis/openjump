@@ -61,12 +61,13 @@ public class PostgisDSMetadata implements DataStoreMetadata {
     String sql2 = "";
     if(datasetName.indexOf('.') != -1) {
         String[] parts = datasetName.split("\\.", 2);
-        sql = "SELECT AsBinary(ST_Estimated_Extent( '" + parts[0] + "', '" + parts[1] +"', '" + attributeName + "' ))";
-        sql2 = "SELECT AsBinary(find_extent( '" + parts[0] + "', '" + parts[1] +"', '" + attributeName + "' ))";
+        sql = "SELECT ST_AsBinary(ST_Estimated_Extent( '" + parts[0] + "', '" + parts[1] +"', '" + attributeName + "' ))";
+        //sql2 = "SELECT ST_AsBinary(ST_Extent(" + attributeName + ")) FROM " + datasetName;
     } else {
-        sql = "SELECT AsBinary(ST_Estimated_Extent( '" + datasetName + "', '" + attributeName + "' ))";
-        sql2 = "SELECT AsBinary(find_extent( '" + datasetName + "', '" + attributeName + "' ))";
+        sql = "SELECT ST_AsBinary(ST_Estimated_Extent( '" + datasetName + "', '" + attributeName + "' ))";
+        //sql2 = "SELECT ST_AsBinary(ST_Extent( '" + datasetName + "', '" + attributeName + "' ))";
     }
+    sql2 = "SELECT ST_AsBinary(ST_Extent(" + attributeName + ")) FROM " + datasetName;
     final ResultSetBlock resultSetBlock = new ResultSetBlock() {
         public void yield( ResultSet resultSet ) throws Exception {
             if ( resultSet.next() ) {
