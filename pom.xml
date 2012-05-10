@@ -351,11 +351,20 @@
           <include>language/*.properties</include>
         </includes>
       </resource>
+      <!-- filter version placeholders during copying -->
       <resource>
         <filtering>true</filtering>
         <directory>etc</directory>
         <includes>
           <include>readme.txt</include>
+        </includes>
+        <targetPath>${project.build.directory}/res/</targetPath>
+      </resource>
+      <resource>
+        <filtering>true</filtering>
+        <directory>.</directory>
+        <includes>
+          <include>Changes.txt</include>
         </includes>
         <targetPath>${project.build.directory}/res/</targetPath>
       </resource>

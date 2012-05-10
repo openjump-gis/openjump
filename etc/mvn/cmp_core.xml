@@ -79,16 +79,19 @@
         <include>lib/native/readme.txt</include>
       </includes>
     </fileSet>
-  </fileSets>
-  <files>
-    <file>
+    <fileSet>
       <!-- chose NOT to filter because maven killed special chars in the process
            same goes for the lineendings -->
       <!--lineEnding>crlf</lineEnding>
       <filtered>false</filtered-->
-      <source>${project.build.directory}/res/readme.txt</source>
+      <directory>${project.build.directory}/res/</directory>
       <outputDirectory>/</outputDirectory>
-    </file>
+      <includes>
+        <include>*.txt</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+  <files>
     <file>
       <source>icon/openjump_icon3.ico</source>
       <destName>oj.ico</destName>
