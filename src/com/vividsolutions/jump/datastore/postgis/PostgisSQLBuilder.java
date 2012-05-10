@@ -88,7 +88,7 @@ public class PostgisSQLBuilder {
     StringBuffer buf = new StringBuffer();
     // fixed by mmichaud using a patch from jaakko [2008-05-21]
     // query geomColName as geomColName instead of geomColName as geomColName + "_wkb"
-    buf.append("AsEwkb(\"").append(geomColName).append("\") as ").append(geomColName);
+    buf.append("ST_AsEWKB(\"").append(geomColName).append("\") as ").append(geomColName);
     for (int i = 0; i < colName.length; i++) {
       if (! geomColName.equalsIgnoreCase(colName[i])) {
         buf.append(",\"");
