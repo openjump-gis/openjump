@@ -3,6 +3,7 @@ Version ${version.number} ${version.release} rev.${version.revision} (released o
   
   Bug fixes
   - PLUS edition finally starts at reasonable times even from network shares
+  - Bug 3521266 : create SelectRasterImageFilesPanel only once
   - Bug 3521940 : Trouble with opening several shapefiles from one zip file
   - Preserve z values in JML format, even if first coordinate has no z
   - Write again wkt with z values in the info viewer
@@ -33,12 +34,15 @@ Version ${version.number} ${version.release} rev.${version.revision} (released o
     the message was asking if one want to close OpenJUMP
   - SimpleQuery : change the definition of strict intersection from 
     TFFTFF*** to TFF*FF*** so that closed linestring can also be found
+    
   in PLUS edition
+  - Bug 3519929 : date management in PostGIS
   - Bug 3492384 : DXF export of lines does not export z value
   - Bug 3487686 : BeanshellEditor : Flying the mouse over the LayerViewPanel 
     was automatically hiding the editor
   
   Small improvements
+  - improved PostGIS 2.0 compatibility
   - New (vertical) logo in the windows installer
   - FR 3511501 : Change FillPolygon ToolTip to "Create polygon from closed 
     area"
