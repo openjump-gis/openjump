@@ -75,9 +75,12 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
   }
   
   private void initPanels(final WorkbenchContext workbenchContext) {
+      // [mmichaud 2012-05-11] bug #3521266 : create selectFilesPanel only once
+      if (selectFilesPanel == null) {
 	    selectFilesPanel = new SelectRasterImageFilesPanel(workbenchContext);
 	    addPanel(selectFilesPanel);
 	  }
+  }
   
   /**
    * Load the files selected in the wizard.
