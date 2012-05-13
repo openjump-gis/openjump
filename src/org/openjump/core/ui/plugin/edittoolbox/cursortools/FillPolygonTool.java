@@ -105,7 +105,6 @@ public class FillPolygonTool extends NClickTool {
 
 	protected void gestureFinished() throws Exception {
 		reportNothingToUndoYet();
-		
 		// What is the logic for this test ?
 		// If the user click several times to close the progress bar and
 		// interrupt the process, the first click will close the dialog box,
@@ -157,21 +156,10 @@ public class FillPolygonTool extends NClickTool {
 	protected Polygon getPolygon(final boolean inViewportOnly)
 		throws NoninvertibleTransformException {
 	    
+		final Collection polys = new java.util.ArrayList();
+		
 		final JDialog dialog = new JDialog(
 		    context.getWorkbench().getFrame(), COMPUTING + "...", true);
-		
-		final Collection polys = new java.util.ArrayList();
-		final Thread t = new Thread() {
-		    public void run() {
-		        START = new Date().getTime();
-		        Polygonizer polygonizer = new Polygonizer();
-		        polygonizer.add(getVisibleGeometries(inViewportOnly));
-		        polys.addAll(polygonizer.getPolygons());
-		        END = new Date().getTime();
-		        dialog.setVisible(false);
-		    }
-		};
-		t.start();
 		
 		dialog.addWindowListener(new WindowAdapter() {
 		    public void windowClosing(WindowEvent e) {
@@ -194,6 +182,18 @@ public class FillPolygonTool extends NClickTool {
 		dialog.add(jpb);
 		dialog.pack();
 		dialog.setLocationRelativeTo(context.getWorkbench().getFrame());
+		
+		final Thread t = new Thread() {
+		    public void run() {
+		        START = new Date().getTime();
+		        Polygonizer polygonizer = new Polygonizer();
+		        polygonizer.add(getVisibleGeometries(inViewportOnly));
+		        polys.addAll(polygonizer.getPolygons());
+		        END = new Date().getTime();
+		        dialog.setVisible(false);
+		    }
+		};
+		t.start();
 		dialog.setVisible(true);
 		GUIUtil.centreOnWindow(dialog);
 

@@ -3,10 +3,11 @@ Version ${version.number} ${version.release} rev.${version.revision} (released o
   
   Bug fixes
   - PLUS edition finally starts at reasonable times even from network shares
-  - Bug 3521266 : create SelectRasterImageFilesPanel only once
+  - Bug 3521266 : open Raster image (Sextante) checkbox was now always available
+    when an image file was selected
   - Bug 3521940 : Trouble with opening several shapefiles from one zip file
   - Preserve z values in JML format, even if first coordinate has no z
-  - Write again wkt with z values in the info viewer
+  - Write again z values in WKT format of Info viewer
   - Improved icon display (internal changes + icon replacement)
   - Bug 3515663 : Statistics > Classify attribute was throwing an exception
   - Bug 3513864 : Raster Image layers (Sextante) have now an icon in the 
@@ -21,10 +22,9 @@ Version ${version.number} ${version.release} rev.${version.revision} (released o
   - Bug 3489322 : Snapping on grid had rounding problems (snapped coordinate 
     to 872939.1 could be 872939.1000000001)
   - Bug 3489028 : FillPolygon ("Create polygon from closed area") could 
-    return a polygon which was not intersecting the clicked point if it had 
-    a hole.
+    return a wrong area in the case of polygons with holes.
   - Bug 3489026 : FillPolygon ("Create polygon from closed area") can be 
-    long : a work-in-progress diamgo box has been added in this case
+    long : a work-in-progress dialog box has been added in this case
   - Bug 3488976 : Noder plugin failed to split polygons
   - Bug 3488974 : Buffer PlugIn : workaround a small problem of robustness 
     by adding a simplify(geom,0) pre-process
@@ -34,7 +34,7 @@ Version ${version.number} ${version.release} rev.${version.revision} (released o
     the message was asking if one want to close OpenJUMP
   - SimpleQuery : change the definition of strict intersection from 
     TFFTFF*** to TFF*FF*** so that closed linestring can also be found
-    
+
   in PLUS edition
   - Bug 3519929 : date management in PostGIS
   - Bug 3492384 : DXF export of lines does not export z value
