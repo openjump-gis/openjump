@@ -161,6 +161,7 @@
             <version>1.7</version>
             <executions>
               <execution>
+                <id>create installers</id>
                 <phase>package</phase>
                 <configuration>
                   <target>
@@ -318,6 +319,7 @@
             <version>1.7</version>
             <executions>
               <execution>
+                <id>create apidoc zip</id>
                 <phase>package</phase>
                 <configuration>
                   <target>
@@ -351,6 +353,7 @@
             <version>1.7</version>
             <executions>
               <execution>
+                <id>create src zip</id>
                 <phase>package</phase>
                 <configuration>
                   <target>
