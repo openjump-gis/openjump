@@ -63,6 +63,9 @@ public class FileNameExtensionFilter extends FileFilter {
         throw new IllegalArgumentException(
           "Each extension must be non-null and not empty");
       }
+      // disable filtering on wildcard extension
+      if (extensions[i] == "*")
+        filter = false;
       this.extensions[i] = extensions[i];
       lowerCaseExtensions[i] = extensions[i].toLowerCase(Locale.ENGLISH);
     }
@@ -153,6 +156,8 @@ public class FileNameExtensionFilter extends FileFilter {
       if ( extDescription.length() > 0 )
         fullDescription = fullDescription + " (" + extDescription + ")";
 
+      if (fullDescription.length() > 80)
+        fullDescription = fullDescription.substring(0,80) + "...";
     return fullDescription.toString();
   }
 }

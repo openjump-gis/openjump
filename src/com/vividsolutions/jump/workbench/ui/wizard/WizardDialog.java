@@ -311,4 +311,12 @@ public class WizardDialog extends JDialog implements WizardContext,
   public Object getData(String name) {
     return dataMap.get(name);
   }
+
+//  public Component[] getComponents() {
+//    ArrayList components = new ArrayList(allWizardPanels);
+//    components.addAll(Arrays.asList(getContentPane().getComponents()));
+//    return (Component[])components.toArray(new Component[]{});
+//  }
+  
+  
 }

@@ -144,7 +144,7 @@ public class SelectFilesPanel extends JFileChooser implements WizardPanel {
 
     // ATTENTION: ALL and ALL_SUPPORTED have leading spaces so they get sorted to the 
     //            beginning of the formats list regardless of translations first character ;) 
-    FileFilter filterNone = new FileNameExtensionFilter(" "+ALL_FILES, new String[]{} );
+    FileFilter filterNone = new FileNameExtensionFilter(" "+ALL_FILES, new String[]{"*"} );
     filters.put(filterNone.getDescription(), filterNone);
     
     FileFilter allFilter = new FileNameExtensionFilter(" "+ALL_SUPPORTED_FILES,
