@@ -312,11 +312,16 @@ public class WizardDialog extends JDialog implements WizardContext,
     return dataMap.get(name);
   }
 
-//  public Component[] getComponents() {
-//    ArrayList components = new ArrayList(allWizardPanels);
-//    components.addAll(Arrays.asList(getContentPane().getComponents()));
-//    return (Component[])components.toArray(new Component[]{});
-//  }
+  /**
+   * @override this method to return all "contained" ui components for
+   * SkinOptinsPanel to SwingUtilities.updateComponentTreeUI() them after
+   * L&F change [ede 05.2012]
+   */
+  public Component[] getComponents() {
+    ArrayList components = new ArrayList(allWizardPanels);
+    components.addAll(Arrays.asList(getContentPane().getComponents()));
+    return (Component[])components.toArray(new Component[]{});
+  }
   
   
 }
