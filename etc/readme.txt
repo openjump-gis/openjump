@@ -124,17 +124,8 @@ Java VM options (a complete list can be found in the Java VM documentation)
 Example: -Xms256M will allocate 256M of memory for OpenJUMP
 -Xmx defines the maximum allocated memory for the virtual machine.
 Example: -Xmx256M
--Dproperty=value set a system property. 
-At the moment, the following properties are used:
-  -Dswing.defaultlaf for enforcing a specific Look and Feel. 
-    Several possibilities:
-    Metal L&F
-     -Dswing.defaultlaf=javax.swing.plaf.metal.MetalLookAndFeel
-    Windows L&F
-     -Dswing.defaultlaf=com.sun.java.swing.plaf.windows.WindowsLookAndFeel
-  -Dlog4j.configuration for defining the configuration file for Log4j. 
-    e.g. by default:
-     Dlog4j.configuration=file:./log4j.xml
+-Dproperty=value set a jvm system property. 
+
 
 OpenJUMP command line options
 -default-plugins <file.xml>
@@ -175,7 +166,7 @@ OpenJUMP command line options
     zh_CN (chinese simplified)
     zh_HK (chinese Hong Kong)
   ATTENTION: If the specified language is not available then
-             the locale used is english (en).
+             the language used is english (en).
 
   
 4. Support
@@ -214,22 +205,17 @@ Original development team of JUMP was:
     David Blasby 
     Paul Ramsey 
 
-OpenJUMP regular contributors are (non exhaustive list!):
-  Andreas Schmitz (lat-lon.de)
+OpenJUMP continuous contributors (non exhaustive list in alphabetical order):
   Edgar Soldin (edso, soldin.de)
-  Geoffrey G Roy
   Giuseppe Aruta
   Jukka Rahkonen
-  Larry Becker (ISA.com)
-  Larry Reeder
   Matthias Scholz
   Michaël Michaud
-  Mohammed Rashad
   Stefan Steiniger
-  Uwe Dallüge
 
-Past contributors:
+Past contributors (in alphabetical order):
   Alberto de Luca (geomaticaeambiente.it)
+  Andreas Schmitz (lat-lon.de)
   Axel Orth
   Basile Chandesris
   Bing Ran
@@ -237,6 +223,7 @@ Past contributors:
   Erwan Bocher
   Ezequias Rodrigues da Rocha
   Fco Lavin
+  Geoffrey G Roy
   Hisaji Ono
   Jaakko Ruutiainen
   Jan Ruzicka
@@ -245,7 +232,10 @@ Past contributors:
   Jonathan Aquino
   Kevin Neufeld
   Landon Blake (Sunburned Surveyor)
+  Larry Becker (ISA.com)
+  Larry Reeder
   Martin Davis (refractions.net)
+  Mohammed Rashad
   Ole Rahn
   Paolo Rizzi
   Paul Austin
@@ -253,7 +243,8 @@ Past contributors:
   Sascha Teichmann (intevation.de)
   Stephan Holl
   Steve Tanner
-  Ugo Taddei 
+  Ugo Taddei
+  Uwe Dallüge
 
 Translation contributors are
   Chinese: Elton Chan
