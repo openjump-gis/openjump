@@ -319,10 +319,8 @@ public class JUMPWorkbench {
       // load i18n specified in command line ( '-i18n translation' )
       if (commandLine.hasOption(I18N_FILE)) {
         I18N_SETLOCALE = commandLine.getOption(I18N_FILE).getArg(0);
+        // initialize I18N
         I18N.loadFile(I18N_SETLOCALE);
-        // [ede] while the above only loads the correct resourcebundle, 
-        // the below applies the chosen locale to the whole runtime
-        I18N.applyToRuntime();
       }
 
       // Init the L&F before instantiating the progress monitor [Jon Aquino]

@@ -230,11 +230,14 @@ public final class I18N {
    * @param langcountry
    */
   public static void loadFile(final String langcountry) {
-    jumpResourceBundle = ResourceBundle.getBundle("language/jump", fromCode(langcountry));
+    Locale loc = fromCode(langcountry);
+    // apply to system
+    applyToRuntime( loc );
+    // load resourcebundle accordingly
+    jumpResourceBundle = ResourceBundle.getBundle("language/jump", loc);
   }
 
-  public static void applyToRuntime() {
-    Locale loc = jumpResourceBundle.getLocale();
+  public static void applyToRuntime( Locale loc ) {
     Locale.setDefault(loc);
     System.setProperty("user.language", loc.getLanguage());
     System.setProperty("user.country", loc.getCountry());
