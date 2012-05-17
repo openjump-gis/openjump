@@ -3,6 +3,10 @@
 2012-05-17 mmichaud <michael.michaud@free.fr>
   * Fix bug in Network Topology Cleaning plugin (PLUS edition) -> topology-0.3.4
 
+2012-05-13 ede
+  * bugfix 3526321 "switching L&F layout issues in OpenWizard"
+    https://sourceforge.net/tracker/?func=detail&aid=3526321&group_id=118054&atid=679906
+
 2012-05-13 mmichaud <michael.michaud@free.fr>
   * Fix bug #3526277 : create polygon from closed area sometimes displayed
     the progressbar forever
