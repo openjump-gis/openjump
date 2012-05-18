@@ -146,6 +146,59 @@
               </execution>
             </executions>
           </plugin>
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>1.7</version>
+            <executions>
+              <execution>
+                <id>recompress portable zip distros</id>
+                <phase>package</phase>
+                <configuration>
+                  <target>
+                    <property name="file.encoding" value="ISO-8859-1" />
+                    <property name="recompress.folder"
+                      value="${project.build.directory}/recompress" />
+                    <delete includeemptydirs="true" quiet="true">
+                      <fileset dir="${project.build.directory}/recompress"
+                        followsymlinks="false" />
+                    </delete>
+                    <!-- Using an ant task to deflate *.zip -->
+                    <unzip
+                      src="${project.build.directory}/${version.string}-CORE.zip"
+                      dest="${recompress.folder}/core">
+                      <cutdirsmapper dirs="1" />
+                    </unzip>
+                    <unzip
+                      src="${project.build.directory}/${version.string}-PLUS.zip"
+                      dest="${recompress.folder}/plus">
+                      <cutdirsmapper dirs="1" />
+                    </unzip>
+                    <!-- Set correct permissions for executables -->
+                    <chmod dir="${recompress.folder}" perm="644" type="file"
+                      includes="**" verbose="true" />
+                    <chmod dir="${recompress.folder}" perm="755" type="dir"
+                      includes="**" verbose="true" />
+                    <chmod dir="${recompress.folder}" perm="755" type="file"
+                      includes="**/*.command,**/*.sh,**/*.bat,**/*.exe" verbose="true" />
+                    <!-- Recompress to distro zips -->
+                    <zip destfile="${recompress.folder}/${portable.filename}-CORE.zip"
+                      level="9">
+                      <zipfileset dir="${recompress.folder}/core"
+                        prefix="${version.string}-CORE" />
+                    </zip>
+                    <zip destfile="${recompress.folder}/${portable.filename}-PLUS.zip"
+                      level="9">
+                      <zipfileset dir="${recompress.folder}/plus"
+                        prefix="${version.string}-PLUS" />
+                    </zip>
+                  </target>
+                </configuration>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
         </plugins>
       </build>
     </profile>
