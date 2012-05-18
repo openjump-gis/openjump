@@ -141,23 +141,36 @@ public class FileNameExtensionFilter extends FileFilter {
     if (fullDescription != null)
       return fullDescription.toString();
 
-    fullDescription = description;
+    StringBuffer buffy = new StringBuffer();
+    // append descriptive name
+    buffy.append(description);
+
     // add extensions
-    StringBuffer extDescription = new StringBuffer();
-    for (Iterator extensions = Arrays.asList(this.extensions).iterator(); extensions
+    if (extensions.length > 0) {
+      buffy.append(" (");
+
+      for (Iterator extensions = Arrays.asList(this.extensions).iterator(); extensions
           .hasNext();) {
         String extension = (String) extensions.next();
-        extDescription.append("*.");
-        extDescription.append(extension);
+        buffy.append("*.");
+        buffy.append(extension);
         if (extensions.hasNext()) {
-          extDescription.append(",");
+          buffy.append(",");
         }
       }
-      if ( extDescription.length() > 0 )
-        fullDescription = fullDescription + " (" + extDescription + ")";
+      buffy.append(")");
+    }
 
-      if (fullDescription.length() > 80)
-        fullDescription = fullDescription.substring(0,80) + "...";
-    return fullDescription.toString();
+    // WORKAROUND: make sure description starts with a uppercase letter because
+    // otherwise lower case description are sorted to the end of the list
+    buffy.setCharAt(0, Character.toUpperCase(buffy.charAt(0)));
+
+    // hardcoded maximum length (FileChooser sometimes makes file filter 
+    // dropdown as wide the description, which could be wider than the screen)
+    int maxlen = 80;
+    fullDescription = (buffy.length() > maxlen) ? buffy.substring(0, maxlen)
+        + "..." : buffy.toString();
+
+    return fullDescription;
   }
 }
