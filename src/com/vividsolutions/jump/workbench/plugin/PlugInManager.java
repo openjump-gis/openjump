@@ -61,6 +61,7 @@ public class PlugInManager {
     private Collection configurations = new ArrayList();
 
     private File plugInDirectory;
+    private ClassLoader classLoader;
 
     /**
      * @param plugInDirectory
@@ -105,7 +106,7 @@ public class PlugInManager {
           start = secondsSince(0);
           configurations.addAll(findConfigurations(plugInDirectory));
           System.out.println("Finding all OJ extensions took "
-              + secondsSince(start) + "s");
+              + secondsSinceString(start) + "s");
         }
         
         monitor.report("add standard extensions");
@@ -114,7 +115,7 @@ public class PlugInManager {
         
         start = secondsSince(0);
         loadConfigurations();
-        System.out.println("Loading all OJ extensions took " + secondsSince(start) + "s");
+        System.out.println("Loading all OJ extensions took " + secondsSinceString(start) + "s");
     }
 
     private void loadConfigurations() throws Exception {
@@ -126,15 +127,19 @@ public class PlugInManager {
         configuration
             .configure(new PlugInContext(context, null, null, null, null));
         System.out.println("Loading " + name(configuration) + " "
-            + version(configuration) + " took " + secondsSince(start) + "s");
+            + version(configuration) + " took " + secondsSinceString(start) + "s");
       }
     }
 
-    // a helper method to measure time frames in seconds 
+    // a helper method to measure time frames in milliseconds 
     public static long secondsSince( long i ){
-      return Math.abs(System.currentTimeMillis()/1000) - i;
+      return System.currentTimeMillis() - i;
     }
-    
+    // a helper method to nicely format the above output e.g. 12046ms -> 12.05s
+    public static String secondsSinceString( long i ){
+      return String.format("%.2f", secondsSince(i)/1000f);
+    }
+
     public static String name(Configuration configuration) {
         if (configuration instanceof Extension) {
             return ((Extension) configuration).getName();
@@ -188,12 +193,6 @@ public class PlugInManager {
         }
     }
 
-    private ClassLoader classLoader;
-
-    private Collection findFiles(File directory) {
-      return findFilesRecursively( directory, false);
-    }
-
     FileFilter jarfilter = new FileFilter(){
       public boolean accept(File f) {
         return f.getName().matches(".*\\.(?i:jar|zip)$") || f.isDirectory();
@@ -222,12 +221,9 @@ public class PlugInManager {
     private Collection findConfigurations(File plugInDirectory) throws Exception {
       ArrayList configurations = new ArrayList();
       long start;
-      for (Iterator i = findFiles(plugInDirectory).iterator(); i.hasNext();) {
+      for (Iterator i = findFilesRecursively( plugInDirectory, false ).iterator(); i.hasNext();) {
         start = secondsSince(0);
         File file = (File) i.next();
-//        if (!file.getPath().toLowerCase().endsWith(".zip")
-//            && !file.getPath().toLowerCase().endsWith(".jar"))
-//          continue;
         String msg = I18N.getMessage(
             "com.vividsolutions.jump.workbench.plugin.PlugInManager.scan",
             new String[] { file.getName() });
@@ -238,7 +234,7 @@ public class PlugInManager {
         } catch (ZipException e) {
           // Might not be a zipfile. Eat it. [Jon Aquino]
         }
-        System.out.println("Scanning " + file + " took " + secondsSince(start)
+        System.out.println("Scanning " + file + " took " + secondsSinceString(start)
             + "s");
       }
   
@@ -261,20 +257,8 @@ public class PlugInManager {
       return urls;
     }
 
-//    private URL[] toURLs(File[] files) {
-//      URL[] urls = new URL[files.length];
-//      for (int i = 0; i < files.length; i++) {
-//          try {
-//              urls[i] = new URL("jar:file:" + files[i].getPath() + "!/");
-//          } catch (MalformedURLException e) {
-//              Assert.shouldNeverReachHere(e.toString());
-//          }
-//      }
-//      return urls;
-//  }
-    
-    private List classes(ZipFile zipFile, ClassLoader classLoader) {
-
+    private List classes(ZipFile zipFile, ClassLoader classLoader) 
+    {
         ArrayList classes = new ArrayList();
         for (Enumeration e = zipFile.entries(); e.hasMoreElements();) {
             ZipEntry entry = (ZipEntry) e.nextElement();
@@ -295,18 +279,8 @@ public class PlugInManager {
         return classes;
     }
 
-    private Class toClass(ZipEntry entry, ClassLoader classLoader) {
-//        if (entry.isDirectory()) {
-//            return null;
-//        }
-//        if (!entry.getName().endsWith(".class")) {
-//            return null;
-//        }
-//        if (entry.getName().indexOf("$") != -1) {
-//            //I assume it's not necessary to load inner classes explicitly.
-//            // [Jon Aquino]
-//            return null;
-//        }
+    private Class toClass(ZipEntry entry, ClassLoader classLoader) 
+    {
         String className = entry.getName();
         className = className.substring(0, className.length()
                 - ".class".length());

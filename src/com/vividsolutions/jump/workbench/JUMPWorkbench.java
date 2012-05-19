@@ -342,7 +342,7 @@ public class JUMPWorkbench {
 
       main(args, I18N.get("JUMPWorkbench.jump"), new JUMPConfiguration(),
           splashPanel, progressMonitor);
-      System.out.println("OJ start took " +PlugInManager.secondsSince(start)+ "s alltogether.");
+      System.out.println("OJ start took " +PlugInManager.secondsSinceString(start)+ "s alltogether.");
     } catch (Throwable t) {
       WorkbenchFrame.showThrowable(t, null);
     }
