@@ -6,7 +6,7 @@ import com.vividsolutions.jump.I18N;
 /**
  * Function
  * Definition of functions used in the QueryDialog 
- * @author Michaël MICHAUD
+ * @author Micha&euml;l MICHAUD
  * @version 0.2 (16 Oct 2005)
  */
 

@@ -60,7 +60,7 @@ import java.awt.event.ActionListener;
  * This abstract class includes the logic from original JUMP MultiInputDialog
  * but does not layout components, which is done by implementing classes. 
  * 
- * @author Michaël Michaud
+ * @author Micha&euml;l Michaud
  */
 public abstract class AbstractMultiInputDialog extends JDialog {
     
