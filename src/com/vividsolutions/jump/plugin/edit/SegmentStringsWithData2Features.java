@@ -103,15 +103,18 @@ public class SegmentStringsWithData2Features {
                     interpolate(lines.get(0), exteriorRing, interpolated_z_dp);
                 }
                 // Now process holes the same way
-                LinearRing[] holes = new LinearRing[lines.size()-1];
-                for (int j = 0 ; j < holes.length ; j++) {
-                    holes[j] = (LinearRing)merge(lines.get(j+1), gf, true);
+                //LinearRing[] holes = new LinearRing[lines.size()-1];
+                List<LinearRing> holes = new ArrayList<LinearRing>();
+                for (int j = 0 ; j < lines.size()-1 ; j++) {
+                    LinearRing hole = (LinearRing)merge(lines.get(j+1), gf, true);
                     restoreZ(lines.get(j+1), ((Polygon)sourceComponent).getInteriorRingN(j));
+                    if (hole.isEmpty()) continue;
+                    holes.add(hole);
                     if (interpolate_z) {
-                        interpolate(lines.get(j+1), holes[j], interpolated_z_dp);
+                        interpolate(lines.get(j+1), hole, interpolated_z_dp);
                     }
                 }
-                finalComponents[i] = source.getFactory().createPolygon(exteriorRing, holes);
+                finalComponents[i] = source.getFactory().createPolygon(exteriorRing, holes.toArray(new LinearRing[holes.size()]));
             }
         }
         return source.getFactory().buildGeometry(Arrays.asList(finalComponents));
@@ -140,6 +143,9 @@ public class SegmentStringsWithData2Features {
         if (close) {
             CoordinateList coords = new CoordinateList(ls.getCoordinates());
             coords.closeRing();
+            if (ls.getCoordinates().length < 4) {
+                return gf.createLinearRing(new Coordinate[0]);
+            }
             return gf.createLinearRing(coords.toCoordinateArray());
         }
         return ls;
