@@ -52,6 +52,13 @@ import com.vividsolutions.jump.workbench.ui.Viewport;
 
 
 public class BasicStyle implements Style, StrokeFillStyle {
+	/* Giuseppe Aruta 11-june-2012
+	 * Added code from SkyJUMP BasicStyle to enable color chooser plugin
+	 */
+	public static final String RGB_ATTRIBUTE_NAME = "R_G_B";
+	/*
+	 * 
+	 */
     private boolean renderingFill = true;
     private boolean renderingLine = true;
     private boolean renderingLinePattern = false;
@@ -289,7 +296,7 @@ public class BasicStyle implements Style, StrokeFillStyle {
     }
     
     /**
-     * - Giuseppe Aruta 11-June - 2012 - added code from SkyJUMP to anable color chooser plugIn -
+     * - Giuseppe Aruta 11-June - 2012 - added code from SkyJUMP to enable color chooser plugIn -
      * - Original comments from SkyJUMP developers -
      * 
      * Looks for an Attriubte field that contains the RGB color code and returns
