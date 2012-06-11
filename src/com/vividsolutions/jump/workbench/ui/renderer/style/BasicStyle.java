@@ -147,6 +147,24 @@ public class BasicStyle implements Style, StrokeFillStyle {
 
     public void paint(Feature f, Graphics2D g, Viewport viewport)
         throws NoninvertibleTransformException {
+    	
+    	
+    	/* Giuseppe Aruta 11-june-2012
+    	 * Added code from SkyJUMP BasicStyle to enable color chooser plugin
+    	 */
+    	Color fillColor = this.fillColor;
+    	Color lineColor = this.lineColor;
+    	Color featureColor = getFeatureColor(f);
+    	
+    	if (featureColor != null)
+    	{
+    		fillColor = featureColor;
+    		lineColor = featureColor.darker();
+    	}
+    	/*
+    	 * End of code 1
+    	*/
+    	
         if (!renderingVertices && f.getGeometry() instanceof Point) {
             return;
         }
@@ -269,4 +287,42 @@ public class BasicStyle implements Style, StrokeFillStyle {
     public BasicStroke getLineStroke() {
         return lineStroke;
     }
+    
+    /**
+     * - Giuseppe Aruta 11-June - 2012 - added code from SkyJUMP to anable color chooser plugIn -
+     * - Original comments from SkyJUMP developers -
+     * 
+     * Looks for an Attriubte field that contains the RGB color code and returns
+     * it or null if the RGB hex string is empty or ill-formed. 
+     * @param    f   the <code>Feature</code> containing the RGB 
+     * 			Attribute to be parsed.
+     * @return   the <code>Color</code> represented by the R_B_G hex value with 
+     *           the current Alpha value inserted.
+     *           Warning: returns null in many "normal" cases.
+     */
+     public Color getFeatureColor(Feature f)
+     {
+      	if(f.getSchema().hasAttribute(RGB_ATTRIBUTE_NAME))
+     	{
+     		String colorStr = (String)f.getAttribute(RGB_ATTRIBUTE_NAME);
+     		
+     		if ((colorStr != null) && (colorStr.trim().length() == 6))
+     		{
+     			try
+     			{
+     				int r = Integer.parseInt(colorStr.substring(0,2), 16);
+     				int g = Integer.parseInt(colorStr.substring(2,4), 16);
+     				int b = Integer.parseInt(colorStr.substring(4,6), 16);
+     				return new Color(r, g, b, getAlpha());
+     			}
+     			catch (NumberFormatException ex)
+     			{
+     				return null;
+     			}
+     		}
+     	}
+     	
+     	return null;
+     }
+    
 }
