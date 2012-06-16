@@ -43,6 +43,7 @@ public class ConnectionManager {
         for (Iterator i = connectionDescriptors.iterator(); i.hasNext();) {
             ConnectionDescriptor connectionDescriptor = (ConnectionDescriptor) i
                     .next();
+            if (connectionDescriptor == null) continue;
             connectionDescriptorToConnectionMap.put(connectionDescriptor,
                     DUMMY_CONNECTION);
         }
@@ -118,6 +119,7 @@ public class ConnectionManager {
      */
     public DataStoreConnection getConnection(
             ConnectionDescriptor connectionDescriptor) {
+        if (connectionDescriptor == null) return DUMMY_CONNECTION;
         if (!connectionDescriptorToConnectionMap
                 .containsKey(connectionDescriptor)) {
             connectionDescriptorToConnectionMap.put(connectionDescriptor,

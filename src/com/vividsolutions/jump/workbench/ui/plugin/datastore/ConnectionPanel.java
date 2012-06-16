@@ -86,6 +86,14 @@ public class ConnectionPanel extends JPanel {
         }
         return connectionComboBox;
     }
+    
+    public void addActionListener(ActionListener l) {
+        connectionComboBox.addActionListener(l);
+    }
+    
+    public void removeActionListener(ActionListener l) {
+        connectionComboBox.removeActionListener(l);
+    }
 
 
     protected void addRow( String caption,
