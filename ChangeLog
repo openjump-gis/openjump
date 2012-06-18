@@ -1,4 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
+2012-06-18 mentaer <sstein@geo.uzh.ch>
+  * Fixed bug in OpenUMPSextanteRasterLayer, the cellSize needs to be provided 
+    first, otherwise the row and column number of raster cells will be zero, due
+    to automated updating.
 
 2012-06-11 Giuseppe Aruta (giuseppe_aruta@yahoo.it)
   * Made a correction to bug on New BasicStyle file (to enable color chooser plugIn)

@@ -49,10 +49,10 @@ public class OpenJUMPSextanteRasterLayer extends AbstractSextanteRasterLayer{
 		m_sFilename = layer.getImageFileName();
 		Envelope env = layer.getEnvelope();
 		m_LayerExtent = new GridExtent();
-		m_LayerExtent.setXRange(env.getMinX(), env.getMaxX());
-		m_LayerExtent.setYRange(env.getMinY(), env.getMaxY());
 		m_LayerExtent.setCellSize((env.getMaxX() - env.getMinX())
 							/ (double)m_Raster.getWidth());
+		m_LayerExtent.setXRange(env.getMinX(), env.getMaxX());
+		m_LayerExtent.setYRange(env.getMinY(), env.getMaxY());
 		m_dNoDataValue = DEFAULT_NO_DATA_VALUE;
 		*/
 		
@@ -74,10 +74,10 @@ public class OpenJUMPSextanteRasterLayer extends AbstractSextanteRasterLayer{
 			m_sFilename = layer.getImageFileName();
 			Envelope env = layer.getEnvelope();
 			m_LayerExtent = new GridExtent();
+			m_LayerExtent.setCellSize((env.getMaxX() - env.getMinX())
+					/ (double)m_Raster.getWidth());
 			m_LayerExtent.setXRange(env.getMinX(), env.getMaxX());
 			m_LayerExtent.setYRange(env.getMinY(), env.getMaxY());
-			m_LayerExtent.setCellSize((env.getMaxX() - env.getMinX())
-								/ (double)m_Raster.getWidth());
 			m_dNoDataValue = DEFAULT_NO_DATA_VALUE;
 		}
 		else{	
@@ -94,10 +94,14 @@ public class OpenJUMPSextanteRasterLayer extends AbstractSextanteRasterLayer{
 			m_sFilename = rasterLayer.getImageFileName();
 			Envelope env = rasterLayer.getEnvelope();
 			m_LayerExtent = new GridExtent();
+			//[sstein 18.June.2012]: note, to be working, the cell size need to be set first,
+			// since setting the ranges will update NX, NY and MaxX, MaxY values - dependent
+			// on cell size
+			// TODO: check if elsewhere setCellSize() is used, and set after setXRange/setYRange
+			m_LayerExtent.setCellSize((env.getMaxX() - env.getMinX())
+					/ (double)m_Raster.getWidth());
 			m_LayerExtent.setXRange(env.getMinX(), env.getMaxX());
 			m_LayerExtent.setYRange(env.getMinY(), env.getMaxY());
-			m_LayerExtent.setCellSize((env.getMaxX() - env.getMinX())
-								/ (double)m_Raster.getWidth());
 			m_dNoDataValue = DEFAULT_NO_DATA_VALUE;
 		}
 
