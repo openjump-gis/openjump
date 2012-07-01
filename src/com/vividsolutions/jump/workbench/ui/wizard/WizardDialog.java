@@ -48,6 +48,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -317,12 +318,15 @@ public class WizardDialog extends JDialog implements WizardContext,
    * SkinOptinsPanel to SwingUtilities.updateComponentTreeUI() them after
    * L&F change [ede 05.2012]
    * [mmichaud 2012-07-01] removed in a try to fix bug 3528917
+   * [ede 2012-07-01] fix bug 3528917 by adding super.getComponents()
    */
-  //public Component[] getComponents() {
-  //  ArrayList components = new ArrayList(allWizardPanels);
-  //  components.addAll(Arrays.asList(getContentPane().getComponents()));
-  //  return (Component[])components.toArray(new Component[]{});
-  //}
+  public Component[] getComponents() {
+    // get parent components, linkedhashset is an ordered unique list
+    LinkedHashSet components = new LinkedHashSet(Arrays.asList(super.getComponents()));
+    // add all additional components and panels
+    components.addAll(Arrays.asList(getContentPane().getComponents()));
+    return (Component[])components.toArray(new Component[]{});
+  }
   
   
 }
