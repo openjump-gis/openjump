@@ -50,75 +50,75 @@ import com.vividsolutions.jump.workbench.ui.cursortool.SelectLineStringsTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.SelectPartsTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.SplitLineStringTool;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 import com.vividsolutions.jump.workbench.ui.plugin.OptionsPlugIn;
 import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxDialog;
 import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxPlugIn;
 
 public class EditingPlugIn extends ToolboxPlugIn {
-    
-    public String getName() { return I18N.get("ui.cursortool.editing.EditingPlugIn.editing-toolbox"); }
 
-    //public static ImageIcon ICON = IconLoaderFamFam.icon("page_white_wrench.png");
-    public static ImageIcon ICON = IconLoader.icon("EditingToolbox.gif");
+  public String getName() {
+    return I18N.get("ui.cursortool.editing.EditingPlugIn.editing-toolbox");
+  }
 
-    public static final String KEY = EditingPlugIn.class.getName();
+  // public static ImageIcon ICON =
+  // IconLoaderFamFam.icon("page_white_wrench.png");
+  public static ImageIcon ICON = IconLoader.icon("EditingToolbox.gif");
 
-	private JButton optionsButton = new JButton(I18N.get("ui.cursortool.editing.EditingPlugIn.options"));
+  public static final String KEY = EditingPlugIn.class.getName();
 
-    public void initialize(PlugInContext context) throws Exception {
-        context.getWorkbenchContext().getWorkbench().getBlackboard().put(KEY, this);
-    }
+  private JButton optionsButton;
 
-    protected void initializeToolbox(ToolboxDialog toolbox) {
-    	//-- [sstein, 15.07.2006] set again in correct language
-    	optionsButton.setText(I18N.get("ui.cursortool.editing.EditingPlugIn.options"));
-        //The auto-generated title "Editing Toolbox" is too long to fit. [Jon Aquino]
-        toolbox.setTitle(I18N.get("ui.cursortool.editing.EditingPlugIn.editing"));
-        EnableCheckFactory checkFactory = new EnableCheckFactory(toolbox.getContext());
-        //Null out the quasimodes for [Ctrl] because the Select tools will handle that case. [Jon Aquino]
-        toolbox.add(
-            new QuasimodeTool(new SelectFeaturesTool()).add(
-                new QuasimodeTool.ModifierKeySpec(true, false, false),
-                null));
-        toolbox.add(
-            new QuasimodeTool(new SelectPartsTool()).add(
-                new QuasimodeTool.ModifierKeySpec(true, false, false),
-                null));
-        toolbox.add(
-            new QuasimodeTool(new SelectLineStringsTool()).add(
-                new QuasimodeTool.ModifierKeySpec(true, false, false),
-                null));
-        toolbox.add(new MoveSelectedItemsTool(checkFactory));
+  public void initialize(PlugInContext context) throws Exception {
+    context.getWorkbenchContext().getWorkbench().getBlackboard().put(KEY, this);
+    optionsButton = new JButton(
+        I18N.get("ui.cursortool.editing.EditingPlugIn.options"));
+  }
 
-        toolbox.addToolBar();    
-        toolbox.add(DrawRectangleTool.create(toolbox.getContext()));
-        toolbox.add(DrawPolygonTool.create(toolbox.getContext()));
-		toolbox.add(DrawLineStringTool.create(toolbox.getContext()));
-		toolbox.add(DrawPointTool.create(toolbox.getContext()));
+  protected void initializeToolbox(ToolboxDialog toolbox) {
+    // The auto-generated title "Editing Toolbox" is too long to fit. [Jon
+    // Aquino]
+    toolbox.setTitle(I18N.get("ui.cursortool.editing.EditingPlugIn.editing"));
+    EnableCheckFactory checkFactory = new EnableCheckFactory(
+        toolbox.getContext());
+    // Null out the quasimodes for [Ctrl] because the Select tools will handle
+    // that case. [Jon Aquino]
+    toolbox.add(new QuasimodeTool(new SelectFeaturesTool()).add(
+        new QuasimodeTool.ModifierKeySpec(true, false, false), null));
+    toolbox.add(new QuasimodeTool(new SelectPartsTool()).add(
+        new QuasimodeTool.ModifierKeySpec(true, false, false), null));
+    toolbox.add(new QuasimodeTool(new SelectLineStringsTool()).add(
+        new QuasimodeTool.ModifierKeySpec(true, false, false), null));
+    toolbox.add(new MoveSelectedItemsTool(checkFactory));
 
-		toolbox.addToolBar();
-		toolbox.add(new InsertVertexTool(checkFactory));
-		toolbox.add(new DeleteVertexTool(checkFactory));
-		toolbox.add(new MoveVertexTool(checkFactory));
-		//-- [sstein: 11.12.2006] added here to fill toolbox 
-        toolbox.add(new ScaleSelectedItemsTool(checkFactory));
+    toolbox.addToolBar();
+    toolbox.add(DrawRectangleTool.create(toolbox.getContext()));
+    toolbox.add(DrawPolygonTool.create(toolbox.getContext()));
+    toolbox.add(DrawLineStringTool.create(toolbox.getContext()));
+    toolbox.add(DrawPointTool.create(toolbox.getContext()));
 
-		toolbox.addToolBar();
-		toolbox.add(new SnapVerticesTool(checkFactory));
-		toolbox.add(new SnapVerticesToSelectedVertexTool(checkFactory));
-		toolbox.add(new SplitLineStringTool());
-		toolbox.add(new NodeLineStringsTool());
+    toolbox.addToolBar();
+    toolbox.add(new InsertVertexTool(checkFactory));
+    toolbox.add(new DeleteVertexTool(checkFactory));
+    toolbox.add(new MoveVertexTool(checkFactory));
+    // -- [sstein: 11.12.2006] added here to fill toolbox
+    toolbox.add(new ScaleSelectedItemsTool(checkFactory));
 
-		optionsButton.addActionListener(AbstractPlugIn.toActionListener(
-				new OptionsPlugIn(), toolbox.getContext(), null));
-		toolbox.getCenterPanel().add(optionsButton, BorderLayout.CENTER);
-		toolbox.setInitialLocation(new GUIUtil.Location(20, true, 20, false));
-		toolbox.setResizable(false);
-	}
+    toolbox.addToolBar();
+    toolbox.add(new SnapVerticesTool(checkFactory));
+    toolbox.add(new SnapVerticesToSelectedVertexTool(checkFactory));
+    toolbox.add(new SplitLineStringTool());
+    toolbox.add(new NodeLineStringsTool());
 
-	protected JButton getOptionsButton() {
-		return optionsButton;
-	}
+    optionsButton.addActionListener(AbstractPlugIn.toActionListener(
+        new OptionsPlugIn(), toolbox.getContext(), null));
+    toolbox.getCenterPanel().add(optionsButton, BorderLayout.CENTER);
+    toolbox.setInitialLocation(new GUIUtil.Location(20, true, 20, false));
+    toolbox.setResizable(false);
+  }
+
+  // [ede 07.2012] commented, couldn't find a class extending EditingPlugin
+  // protected JButton getOptionsButton() {
+  // return optionsButton;
+  // }
 
 }
