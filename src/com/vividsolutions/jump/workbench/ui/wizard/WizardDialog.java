@@ -198,7 +198,7 @@ public class WizardDialog extends JDialog implements WizardContext,
     JPanel titlePanel = new JPanel(new GridLayout(2, 1));
     titlePanel.setBackground(Color.white);
     titlePanel.setForeground(Color.black);
-    add(titlePanel, BorderLayout.NORTH);
+    contentPane.add(titlePanel, BorderLayout.NORTH);
 
     titleLabel.setFont(titleLabel.getFont().deriveFont(1, 12));
     titleLabel.setBorder(BorderFactory.createEmptyBorder(3, 5, 3, 5));
@@ -316,12 +316,13 @@ public class WizardDialog extends JDialog implements WizardContext,
    * @override this method to return all "contained" ui components for
    * SkinOptinsPanel to SwingUtilities.updateComponentTreeUI() them after
    * L&F change [ede 05.2012]
+   * [mmichaud 2012-07-01] removed in a try to fix bug 3528917
    */
-  public Component[] getComponents() {
-    ArrayList components = new ArrayList(allWizardPanels);
-    components.addAll(Arrays.asList(getContentPane().getComponents()));
-    return (Component[])components.toArray(new Component[]{});
-  }
+  //public Component[] getComponents() {
+  //  ArrayList components = new ArrayList(allWizardPanels);
+  //  components.addAll(Arrays.asList(getContentPane().getComponents()));
+  //  return (Component[])components.toArray(new Component[]{});
+  //}
   
   
 }

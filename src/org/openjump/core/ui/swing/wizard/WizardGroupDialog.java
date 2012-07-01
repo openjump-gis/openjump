@@ -104,20 +104,21 @@ public class WizardGroupDialog extends WizardDialog implements WizardContext,
    * @override this method to return all "contained" ui components for
    * SkinOptinsPanel to SwingUtilities.updateComponentTreeUI() them after
    * L&F change [ede 05.2012]
+   * [mmichaud 2012-07-01] removed in a try to fix bug 3528917
    */
-  public Component[] getComponents() {
-    DefaultListModel model = (DefaultListModel)groupSelectList.getModel();
-    ArrayList components = new ArrayList<Component>();
-    components.addAll(Arrays.asList(getContentPane().getComponents()));
-    for (Object wo : model.toArray()) {
-      WizardGroup wg = (WizardGroup) wo;
-      for (WizardPanel wp : wg.getPanels()) {
-        //System.out.println("add "+wp.getID()+" ->"+(wp instanceof Component));
-        if (wp instanceof Component)
-          components.add((Component)wp);
-      }
-    }
-    return (Component[])components.toArray(new Component[]{});
-  }
+  //public Component[] getComponents() {
+  //  DefaultListModel model = (DefaultListModel)groupSelectList.getModel();
+  //  ArrayList components = new ArrayList<Component>();
+  //  components.addAll(Arrays.asList(getContentPane().getComponents()));
+  //  for (Object wo : model.toArray()) {
+  //    WizardGroup wg = (WizardGroup) wo;
+  //    for (WizardPanel wp : wg.getPanels()) {
+  //      //System.out.println("add "+wp.getID()+" ->"+(wp instanceof Component));
+  //      if (wp instanceof Component)
+  //        components.add((Component)wp);
+  //    }
+  //  }
+  //  return (Component[])components.toArray(new Component[]{});
+  //}
   
 }
