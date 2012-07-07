@@ -50,7 +50,7 @@ public abstract class ToolboxPlugIn extends AbstractPlugIn {
         if (toolbox == null) {
             toolbox = new ToolboxDialog(context);
             toolbox.setTitle(getName());
-            initializeToolbox(toolbox);       
+            initializeToolbox(toolbox);
             toolbox.finishAddingComponents();
         }
         return toolbox;
@@ -67,7 +67,9 @@ public abstract class ToolboxPlugIn extends AbstractPlugIn {
      */
     public boolean execute(PlugInContext context) throws Exception {
         reportNothingToUndoYet(context);
-        getToolbox(context.getWorkbenchContext()).setVisible(!getToolbox(context.getWorkbenchContext()).isVisible());
+        ToolboxDialog td = getToolbox(context.getWorkbenchContext());
+        td.setVisible(!td.isVisible());
+        //td.setVisible(false);
         return true;
     }
 
