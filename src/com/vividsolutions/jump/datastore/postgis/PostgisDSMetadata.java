@@ -67,7 +67,7 @@ public class PostgisDSMetadata implements DataStoreMetadata {
         sql = "SELECT ST_AsBinary(ST_Estimated_Extent( '" + datasetName + "', '" + attributeName + "' ))";
         //sql2 = "SELECT ST_AsBinary(ST_Extent( '" + datasetName + "', '" + attributeName + "' ))";
     }
-    sql2 = "SELECT ST_AsBinary(ST_Extent(" + attributeName + ")) FROM " + datasetName;
+    sql2 = "SELECT ST_AsBinary(ST_Extent(\"" + attributeName + "\")) FROM \"" + datasetName + "\"";
     final ResultSetBlock resultSetBlock = new ResultSetBlock() {
         public void yield( ResultSet resultSet ) throws Exception {
             if ( resultSet.next() ) {
