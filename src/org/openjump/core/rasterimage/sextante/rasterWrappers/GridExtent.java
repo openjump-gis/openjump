@@ -66,7 +66,8 @@ public class GridExtent {
 
 	/**
 	 * Sets a new range for X coordinates. Coordinates are not center
-	 * cell ones, but border ones
+	 * cell ones, but border ones. Note, the CellSize needs to be set first
+	 * before this method is used.
 	 * @param dXMin the minimum x coordinate of the extent.
 	 * @param dXMax the maximum x coordinate of the extent
 	 */
@@ -80,7 +81,8 @@ public class GridExtent {
 
 	/**
 	 * Sets a new range for Y coordinates. Coordinates are not center
-	 * cell ones, but border ones
+	 * cell ones, but border ones. Note, the CellSize needs to be set first
+	 * before this method is used.
 	 * @param dYMin the minimum Y coordinate of the extent.
 	 * @param dYMax the maximum Y coordinate of the extent
 	 */
