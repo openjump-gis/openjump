@@ -2,6 +2,8 @@
 
 2012-07-02 mmichaud <michael.michaud@free.fr>
   * Small fix related to mixed case table names in PostGIS driver.
+  * Add a new PostGIS driver adding write capabilities to OpenJUMP (inclusion
+    of the plugin in OpenJUMP core is not yet validated by the community though)
     
 2012-07-07 ede
   * committed size optimized editing toolbox for evaluation
