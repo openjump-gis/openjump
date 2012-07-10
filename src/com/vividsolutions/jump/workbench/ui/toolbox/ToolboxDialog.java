@@ -51,6 +51,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
+import javax.swing.border.BevelBorder;
 import javax.swing.border.LineBorder;
 
 import com.vividsolutions.jump.I18N;
@@ -181,9 +182,11 @@ public class ToolboxDialog extends JDialog {
             // #initializeLocation again just before making the dialog
             // visible. [Jon Aquino 2005-03-14]
             initializeLocation();
-            Dimension dim = new Dimension(toolbarsPanel.getPreferredSize().width,title.getPreferredSize().height);
+            Dimension dim = new Dimension(toolbarsPanel.getPreferredSize().width,titlePanel.getPreferredSize().height);
             title.setMaximumSize(dim);
             title.setPreferredSize(dim);
+            titlePanel.setMaximumSize(dim);
+            titlePanel.setPreferredSize(dim);
             pack();
             locationInitializedBeforeMakingDialogVisible = true;
         }
@@ -212,26 +215,37 @@ public class ToolboxDialog extends JDialog {
 
     private GridLayout gridLayout1 = new GridLayout(1, 1, 0, 0);
 
+    private JPanel titlePanel = new JPanel();
+
     private JLabel title = new JLabel("Toolbox", JLabel.CENTER);
 
     private void jbInit() throws Exception {
         this.getContentPane().setLayout(borderLayout1);
         centerPanel.setLayout(borderLayout2);
-        centerPanel.setBorder(new LineBorder(Color.BLACK));
+        centerPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED)/*new LineBorder(Color.BLACK)*/);
         toolbarsPanel.setLayout(gridLayout1);
         gridLayout1.setColumns(1);
         // setup top titlebar label
+        //title.setForeground(Color.WHITE);
         title.setHorizontalTextPosition(JLabel.CENTER);
         title.setBorder(BorderFactory.createEmptyBorder(4,2,4,2));
-        title.setToolTipText(I18N.get("com.vividsolutions.jump.workbench.ui.toolbox.drag-to-move-doubleclick-to-hide"));
+        title.setToolTipText(I18N.get("com.vividsolutions.jump.workbench.ui.toolbox.click-n-drag-to-move-doubleclick-to-hide"));
         MouseAdapter mover = new MoveCloser(this);
         title.addMouseListener(mover);
         title.addMouseMotionListener(mover);
+        // add bottom line to title
+        titlePanel.setLayout(new BorderLayout());
+        titlePanel.add(title);
+        titlePanel.setBackground(Color.lightGray);
+        titlePanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK));
         // add components
-        centerPanel.add(title, BorderLayout.NORTH);
+        centerPanel.add(titlePanel, BorderLayout.NORTH);
         centerPanel.add(toolbarsPanel, BorderLayout.CENTER);
 
-        this.getContentPane().add(centerPanel, BorderLayout.CENTER);
+        JPanel borderPanel = new JPanel(new BorderLayout());
+        borderPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+        borderPanel.add(centerPanel);
+        this.getContentPane().add(borderPanel, BorderLayout.CENTER);
     }
 
     public void setTitle(String text) {
