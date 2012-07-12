@@ -1374,9 +1374,16 @@ public void configureDatastores(final WorkbenchContext context) throws Exception
 
         //Null out the quasimodes for [Ctrl] because the Select tools will
         // handle that case. [Jon Aquino]
-        add(new QuasimodeTool(new SelectFeaturesTool()).add(
+        QuasimodeTool qt = add(new QuasimodeTool(new SelectFeaturesTool()).add(
                 new QuasimodeTool.ModifierKeySpec(true, false, false), null),
                 workbenchContext);
+        // [mmichaud 2012-07-12] by default, the first CursorTool (zoom) is 
+        // activated. After that, the SelectTool button will be selected.
+        // See also the end of JUMPWorkbench.main() where the SelectFeatureTool
+        // will really be activated (it takes place lately because it needs the 
+        // LayerViewPanel to be initialized) 
+        frame.getToolBar().getButton(qt.getClass()).doClick();
+        
         frame.getToolBar().addPlugIn(ClearSelectionPlugIn.getIcon(),
         		clearSelectionPlugIn,
 				clearSelectionPlugIn.createEnableCheck(workbenchContext),

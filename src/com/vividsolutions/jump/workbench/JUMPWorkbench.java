@@ -53,6 +53,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JWindow;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.plaf.FontUIResource;
 
@@ -375,12 +376,12 @@ public class JUMPWorkbench {
 			splashWindow.setVisible(true);
 
 			taskMonitor.report(I18N.get("JUMPWorkbench.status.create"));
-			JUMPWorkbench workbench = new JUMPWorkbench(title, args, splashWindow, taskMonitor);
+			final JUMPWorkbench workbench = new JUMPWorkbench(title, args, splashWindow, taskMonitor);
 
 			taskMonitor.report(I18N.get("JUMPWorkbench.status.configure-core"));
 			setup.setup(workbench.context);
 			//must wait until after setup initializes the persistent blackboard to recall settings
-			WorkbenchFrame frame = workbench.getFrame();
+			final WorkbenchFrame frame = workbench.getFrame();
 			taskMonitor.report(I18N.get("JUMPWorkbench.status.restore-state"));
 			frame.restore();
 
@@ -388,6 +389,14 @@ public class JUMPWorkbench {
 			workbench.context.getWorkbench().getPlugInManager().load();
 			OpenJumpConfiguration.postExtensionInitialization(workbench.context);
 			workbench.getFrame().setVisible(true);
+			// Activate SelectFeaturesTool cursor after opening a new session.
+			// See also JUMPConfiguration.configureToolBar() where the select
+			// button has been selected.
+			SwingUtilities.invokeLater(new Runnable(){
+                    public void run() {
+			            frame.getToolBar().reClickSelectedCursorToolButton();
+			        }
+	        });
 		} catch (Throwable t) {
 			WorkbenchFrame.showThrowable(t, null);
 		}
