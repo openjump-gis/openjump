@@ -30,14 +30,9 @@
  * www.vividsolutions.com
  */
 package com.vividsolutions.jump.workbench.ui;
-import java.awt.BorderLayout;
-import javax.swing.JInternalFrame;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import javax.swing.event.InternalFrameAdapter;
-import javax.swing.event.InternalFrameEvent;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.CategoryEvent;
 import com.vividsolutions.jump.workbench.model.FeatureEvent;
@@ -48,21 +43,39 @@ import com.vividsolutions.jump.workbench.model.LayerListener;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
 import com.vividsolutions.jump.workbench.model.Task;
-import com.vividsolutions.jump.workbench.ui.cursortool.editing.EditingPlugIn;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.ViewAttributesPlugIn;
+import java.awt.BorderLayout;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import javax.swing.JInternalFrame;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+import javax.swing.event.InternalFrameAdapter;
+import javax.swing.event.InternalFrameEvent;
+import org.openjump.core.ui.swing.DetachableInternalFrame;
 
 /**
  * Provides proxied (non-spatial) views of a Layer.
  */
-public class InfoFrame extends JInternalFrame implements
+public class InfoFrame extends DetachableInternalFrame implements
         LayerManagerProxy,
         SelectionManagerProxy,
         LayerNamePanelProxy,
         TaskFrameProxy,
         LayerViewPanelProxy {
-    
+
     public final static String TABLE_VIEW = I18N.get("com.vividsolutions.jump.workbench.ui.InfoFrame.table-view");
     public final static String HTML_VIEW = I18N.get("com.vividsolutions.jump.workbench.ui.InfoFrame.html-view");
+
+    // Blackboard keys
+	public static final String BB_FEATUREINFO_WINDOW_SIZE_WIDTH = ViewAttributesPlugIn.class.getName() + " - FEATUREINFO_WINDOW_SIZE_WIDTH";
+	public static final String BB_FEATUREINFO_WINDOW_SIZE_HEIGHT = ViewAttributesPlugIn.class.getName() + " - FEATUREINFO_WINDOW_SIZE_HEIGHT";
+	public static final String BB_FEATUREINFO_WINDOW_POSITION_X = ViewAttributesPlugIn.class.getName() + " - FEATUREINFO_WINDOW_POSITION_X";
+	public static final String BB_FEATUREINFO_WINDOW_POSITION_Y = ViewAttributesPlugIn.class.getName() + " - FEATUREINFO_WINDOW_POSITION_Y";
+	
+	private static Blackboard blackboard = null;
     
     public LayerManager getLayerManager() {
         return layerManager;
@@ -81,6 +94,7 @@ public class InfoFrame extends JInternalFrame implements
         WorkbenchContext workbenchContext,
         LayerManagerProxy layerManagerProxy,
         final TaskFrame taskFrame) {
+		blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
         geometryInfoTab = new GeometryInfoTab(model, workbenchContext);
         //Keep my own copy of LayerManager, because it will be nulled in TaskFrame
         //when TaskFrame closes (it may in fact already be closed, which is why
@@ -97,6 +111,7 @@ public class InfoFrame extends JInternalFrame implements
         });*/
         attributeTab = new AttributeTab(model, workbenchContext, taskFrame, this, false);
         addInternalFrameListener(new InternalFrameAdapter() {
+			@Override
             public void internalFrameOpened(InternalFrameEvent e) {
                 attributeTab.getToolBar().updateEnabledState();
             }
@@ -111,7 +126,7 @@ public class InfoFrame extends JInternalFrame implements
         //WorkbenchFrame. See the call to #setSize in WorkbenchFrame. [Jon Aquino]
         //Make sure there's a little space for a custom FeatureTextWriter 
         //[Jon Aquino 12/31/2003]
-        this.setSize(550, 185);
+//        this.setSize(550, 185);
         try {
             jbInit();
         } catch (Exception e) {
@@ -126,11 +141,28 @@ public class InfoFrame extends JInternalFrame implements
             }
         });
         addInternalFrameListener(new InternalFrameAdapter() {
+			@Override
             public void internalFrameClosed(InternalFrameEvent e) {
                 //Assume that there are no other views on the model
                 model.dispose();
+				savePositionAndSize();
             }
+
         });
+		
+		addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentMoved(ComponentEvent e) {
+				super.componentMoved(e);
+				savePositionAndSize();
+			}
+			@Override
+			public void componentResized(ComponentEvent e) {
+				super.componentResized(e);
+				savePositionAndSize();
+			}
+		});
+		
         layerManagerProxy.getLayerManager().addLayerListener(new LayerListener() {
             public void featuresChanged(FeatureEvent e) {}
 
@@ -186,6 +218,11 @@ public class InfoFrame extends JInternalFrame implements
         this.getContentPane().add(tabbedPane, BorderLayout.CENTER);
     }
     public void surface() {
+		// restore size of the featureinfo window.
+		int width =  blackboard.get(BB_FEATUREINFO_WINDOW_SIZE_WIDTH, 550);
+		int height =  blackboard.get(BB_FEATUREINFO_WINDOW_SIZE_HEIGHT, 185);
+		this.setSize(width, height);
+		
         JInternalFrame activeFrame = workbenchFrame.getActiveInternalFrame();
         if (!workbenchFrame.hasInternalFrame(this)) {
             workbenchFrame.addInternalFrame(this, false, true);
@@ -194,6 +231,12 @@ public class InfoFrame extends JInternalFrame implements
             workbenchFrame.activateFrame(activeFrame);
         }
         moveToFront();
+		// restore position of the featureinfo window. We make this after 
+		// addInternalFrame, because addInternalFrame calls setLocation..., 
+		// so we cannot set location in the InfoFrame constructor :-(
+		int x =  blackboard.get(BB_FEATUREINFO_WINDOW_POSITION_X, getLocation().x);
+		int y =  blackboard.get(BB_FEATUREINFO_WINDOW_POSITION_Y, getLocation().y);
+		this.setLocation(x, y);
         //Move this frame to the front, but don't activate it if the TaskFrame is
         //active. Otherwise the user would need to re-activate the TaskFrame before
         //making another Info gesture. [Jon Aquino]
@@ -207,4 +250,15 @@ public class InfoFrame extends JInternalFrame implements
     public LayerViewPanel getLayerViewPanel() {
         return getTaskFrame().getLayerViewPanel();
     }
+	
+	/**
+	 * Save's the position and size of the frame to the blackboard
+	 */
+	private void savePositionAndSize() {
+		// save window size and position
+		blackboard.put(BB_FEATUREINFO_WINDOW_SIZE_WIDTH, getSize().width);
+		blackboard.put(BB_FEATUREINFO_WINDOW_SIZE_HEIGHT, getSize().height);
+		blackboard.put(BB_FEATUREINFO_WINDOW_POSITION_X, getLocation().x);
+		blackboard.put(BB_FEATUREINFO_WINDOW_POSITION_Y, getLocation().y);
+	}
 }

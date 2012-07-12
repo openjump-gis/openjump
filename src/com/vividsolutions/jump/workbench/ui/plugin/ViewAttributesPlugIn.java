@@ -27,6 +27,7 @@
 package com.vividsolutions.jump.workbench.ui.plugin;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.*;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
@@ -35,19 +36,35 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.*;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
-
 import java.awt.BorderLayout;
 import javax.swing.ImageIcon;
-import javax.swing.JInternalFrame;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
+import org.openjump.core.ui.swing.DetachableInternalFrame;
 public class ViewAttributesPlugIn extends AbstractPlugIn {
+	
+	// Blackboard keys
+	public static final String BB_ATTRIBUTES_WINDOW_SIZE_WIDTH = ViewAttributesPlugIn.class.getName() + " - ATTRIBUTES_WINDOW_SIZE_WIDTH";
+	public static final String BB_ATTRIBUTES_WINDOW_SIZE_HEIGHT = ViewAttributesPlugIn.class.getName() + " - ATTRIBUTES_WINDOW_SIZE_HEIGHT";
+	public static final String BB_ATTRIBUTES_WINDOW_POSITION_X = ViewAttributesPlugIn.class.getName() + " - ATTRIBUTES_WINDOW_POSITION_X";
+	public static final String BB_ATTRIBUTES_WINDOW_POSITION_Y = ViewAttributesPlugIn.class.getName() + " - ATTRIBUTES_WINDOW_POSITION_Y";
+	
+	private static Blackboard blackboard = null;
+	
 	public ViewAttributesPlugIn() {
 	}
+
+	@Override
+	public void initialize(PlugInContext context) throws Exception {
+		super.initialize(context);
+		blackboard = PersistentBlackboardPlugIn.get(context.getWorkbenchContext());
+	}
+	
+	@Override
 	public String getName() {
 		return I18N.get("ui.plugin.ViewAttributesPlugIn.view-edit-attributes");
 	}
+	@Override
 	public boolean execute(final PlugInContext context) throws Exception {
 		reportNothingToUndoYet(context);
 		//Don't add GeometryInfoFrame because the HTML will probably be too
@@ -55,6 +72,14 @@ public class ViewAttributesPlugIn extends AbstractPlugIn {
 		final ViewAttributesFrame frame = new ViewAttributesFrame(context
 				.getSelectedLayer(0), context);
 		context.getWorkbenchFrame().addInternalFrame(frame);
+		// restore window position and size from Blackboard. We make this after 
+		// addInternalFrame, because addInternalFrame calls setLocation..., 
+		// so we cannot set location in the ViewAttributesFrame constructor :-(
+		int x =  blackboard.get(BB_ATTRIBUTES_WINDOW_POSITION_X, 10);
+		int y =  blackboard.get(BB_ATTRIBUTES_WINDOW_POSITION_Y, 10);
+		int width =  blackboard.get(BB_ATTRIBUTES_WINDOW_SIZE_WIDTH, 500);
+		int height =  blackboard.get(BB_ATTRIBUTES_WINDOW_SIZE_HEIGHT, 300);
+		frame.setBounds(x, y, width, height);
 		return true;
 	}
 	public MultiEnableCheck createEnableCheck(
@@ -69,7 +94,7 @@ public class ViewAttributesPlugIn extends AbstractPlugIn {
 		//return IconLoaderFamFam.icon("table.png");
 		return IconLoader.icon("Row.gif");
 	}
-	public static class ViewAttributesFrame extends JInternalFrame
+	public static class ViewAttributesFrame extends DetachableInternalFrame
 			implements
 				LayerManagerProxy,
 				SelectionManagerProxy,
@@ -81,10 +106,17 @@ public class ViewAttributesPlugIn extends AbstractPlugIn {
 		public ViewAttributesFrame(final Layer layer, final PlugInContext context) {
 			this.layerManager = context.getLayerManager();
 			addInternalFrameListener(new InternalFrameAdapter() {
+				@Override
 				public void internalFrameClosed(InternalFrameEvent e) {
 					//Assume that there are no other views on the model [Jon
 					// Aquino]
 					attributeTab.getModel().dispose();
+					
+					// save window size and position
+					blackboard.put(BB_ATTRIBUTES_WINDOW_SIZE_WIDTH, getSize().width);
+					blackboard.put(BB_ATTRIBUTES_WINDOW_SIZE_HEIGHT, getSize().height);
+					blackboard.put(BB_ATTRIBUTES_WINDOW_POSITION_X, getLocation().x);
+					blackboard.put(BB_ATTRIBUTES_WINDOW_POSITION_Y, getLocation().y);
 				}
 			});
 			setResizable(true);
@@ -96,12 +128,12 @@ public class ViewAttributesPlugIn extends AbstractPlugIn {
 					.getWorkbenchContext(), ((TaskFrameProxy) context
 					.getActiveInternalFrame()).getTaskFrame(), this).setLayer(layer);
 			addInternalFrameListener(new InternalFrameAdapter() {
+				@Override
 				public void internalFrameOpened(InternalFrameEvent e) {
 					attributeTab.getToolBar().updateEnabledState();
 				}
 			});
 			getContentPane().add(attributeTab, BorderLayout.CENTER);
-			setSize(500, 300);
 			updateTitle(attributeTab.getLayer());
 			context.getLayerManager().addLayerListener(new LayerListener() {
 				public void layerChanged(LayerEvent e) {
