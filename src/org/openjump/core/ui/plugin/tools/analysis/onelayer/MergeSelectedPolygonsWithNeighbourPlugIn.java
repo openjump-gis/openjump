@@ -302,7 +302,10 @@ public class MergeSelectedPolygonsWithNeighbourPlugIn extends ThreadedBasePlugIn
 					}
 					// get the feature with the longest shared edge
 					Feature fToMerge = null;
-					if(longestEdge.node1.realWorldObject.getID() == ftemp.getID()){
+					// Add a test to avoid a NPE, but it would need more 
+					// investigation [mmichaud 2012-07-13]
+					if (longestEdge == null) continue;
+					else if(longestEdge.node1.realWorldObject.getID() == ftemp.getID()){
 						fToMerge = longestEdge.node2.realWorldObject;
 					}
 					else{
