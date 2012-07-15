@@ -37,9 +37,9 @@ end(){
 postinstall(){
   [ ! -d "$1" ] && echo Missing app folder && exit 1
   # fix permissions
-  find "$1" -type f -print0 | xargs -0 chmod 644 &&\
-  find "$1" -type d -print0 | xargs -0 chmod 755 &&\
-  find "$1" -type f \( -name *.sh -o -name *.command \)  -print0 | xargs -0 chmod 755
+  find "$1" -type f -exec chmod 644 {} \; &&\
+  find "$1" -type d -exec chmod 755 {} \; &&\
+  find "$1" -type f \( -name *.sh -o -name *.command \) -exec chmod 755 {} \; &&\
   echo permissions fixed
   file="$1/lib/native/ecw-gvsig1.11-linux32.tar.gz"
   [ -f "$file" ] && tar xvf "$file" -C "$(dirname "$file")" 1>/dev/null && echo extracted \'$file\'
@@ -48,9 +48,9 @@ postinstall(){
 
 macinstall(){
   [ ! -d "$1" ] && echo Missing app folder && exit 1
-  cp -R -a "$1"/bin/OpenJUMP.app/Contents "$1"
-  awk '{sub(/..\/oj_/,"bin/oj_",$0)}1' "$1"/bin/OpenJUMP.app/Contents/MacOS/oj.sh > "$1"/Contents/MacOS/oj.sh
-  echo patched oj.app
+  cp -R -a "$1"/bin/OpenJUMP.app/Contents "$1" &&\
+  awk '{sub(/..\/oj_/,"bin/oj_",$0)}1' "$1"/bin/OpenJUMP.app/Contents/MacOS/oj.sh > "$1"/Contents/MacOS/oj.sh &&\
+  echo patched oj.app &&\
   exit 0
 }
 
