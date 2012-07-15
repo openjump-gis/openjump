@@ -9,7 +9,7 @@
 <!-- copy script, mark it executable, execute during postinstall -->
       <file src="res/macinstall.sh" targetdir="$INSTALL_PATH/bin/" condition="izpack.macinstall"/>
       <file src="res/postinstall.sh" targetdir="$INSTALL_PATH/bin/" condition="izpack.linuxinstall|izpack.macinstall"/>
-      <executable type="bin" stage="never" targetfile="$INSTALL_PATH/bin/postinstall.sh" condition="izpack.linuxinstall|izpack.macinstall"/>
+      <executable type="bin" stage="never" targetfile="$INSTALL_PATH/bin/postinstall.sh"/>
       <executable targetfile="$INSTALL_PATH/bin/postinstall.sh" stage="postinstall" keep="true" condition="izpack.linuxinstall|izpack.macinstall"/>
 <!-- app creation on mac only -->
       <executable targetfile="$INSTALL_PATH/bin/macinstall.sh" stage="postinstall" keep="true" condition="izpack.macinstall"/>
