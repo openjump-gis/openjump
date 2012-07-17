@@ -39,11 +39,10 @@ postinstall(){
   # fix permissions
   find "$1" -type f -exec chmod 644 {} \; &&\
   find "$1" -type d -exec chmod 755 {} \; &&\
-  find "$1" -type f \( -name *.sh -o -name *.command \) -exec chmod 755 {} \; &&\
+  find "$1" -type f \( -name *.sh -o -name *.command \) -print -exec chmod 755 {} \; &&\
   echo permissions fixed
   file="$1/lib/native/ecw-gvsig1.11-linux32.tar.gz"
   [ -f "$file" ] && tar xvf "$file" -C "$(dirname "$file")" 1>/dev/null && echo extracted \'$file\'
-  exit 0
 }
 
 macinstall(){
@@ -53,7 +52,6 @@ macinstall(){
   cp -R -a "$1"/bin/OpenJUMP.app/Contents "$1" &&\
   awk '{sub(/..\/oj_/,"bin/oj_",$0)}1' "$1"/bin/OpenJUMP.app/Contents/MacOS/oj.sh > "$1"/Contents/MacOS/oj.sh &&\
   echo patched oj.app &&\
-  exit 0
 }
 
 ## detect home folder
@@ -65,8 +63,8 @@ else
 fi
 
 ## run postinstall if requested
-[ "$1" = "--post-install" ] && postinstall "$JUMP_HOME" 2>&1 > "$JUMP_HOME"/postinstall.log
-[ "$1" = "--mac-install" ] && macinstall "$JUMP_HOME" 2>&1 > "$JUMP_HOME"/macinstall.log
+[ "$1" = "--post-install" ] && postinstall "$JUMP_HOME" > "$JUMP_HOME"/postinstall.log 2>&1
+[ "$1" = "--mac-install" ] && macinstall "$JUMP_HOME" > "$JUMP_HOME"/macinstall.log 2>&1
 
 
 ## cd into jump home

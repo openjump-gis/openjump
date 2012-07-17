@@ -7,11 +7,15 @@
       <!--file src="test.zip" targetdir="${INSTALL_PATH}" override="true" unpack="true"/-->
       <fileset dir="pack0" targetdir="${INSTALL_PATH}" override="true"/>
 <!-- copy script, mark it executable, execute during postinstall -->
-      <file src="res/postinstall.sh" targetdir="$INSTALL_PATH/bin/" condition="izpack.linuxinstall"/>
-      <executable targetfile="$INSTALL_PATH/bin/postinstall.sh" stage="postinstall" keep="true" condition="izpack.linuxinstall"/>
+      <executable targetfile="$INSTALL_PATH/bin/postinstall.sh" stage="postinstall" keep="true">
+        <os name="linux" />
+        <args><arg value="--post-install"/></args>
+      </executable>
 <!-- app creation on mac only -->
-      <file src="res/macinstall.sh" targetdir="$INSTALL_PATH/bin/" condition="izpack.macinstall"/>
-      <executable targetfile="$INSTALL_PATH/bin/macinstall.sh" stage="postinstall" keep="true" condition="izpack.macinstall"/>
+      <executable targetfile="$INSTALL_PATH/bin/oj_linux.sh" stage="postinstall" keep="true">
+        <os family="mac" />
+        <args><arg value="--mac-install"/></args>
+      </executable>
 <!-- refresh desktop to show icon on windows -->
       <file src="res/desktoprefresh.exe" targetdir="$INSTALL_PATH/bin/" condition="izpack.windowsinstall"/>
       <executable targetfile="$INSTALL_PATH/bin/desktoprefresh.exe" stage="postinstall" keep="false" condition="izpack.windowsinstall"/>
