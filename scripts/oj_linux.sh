@@ -43,7 +43,7 @@ postinstall(){
   echo permissions fixed
   file="$1/lib/native/ecw-gvsig1.11-linux32.tar.gz"
   [ -f "$file" ] && tar xvf "$file" -C "$(dirname "$file")" && echo extracted \'$file\'
-  which xrefresh && xrefresh && echo reloaded desktop
+  which xdg-desktop-menu && xdg-desktop-menu forceupdate && echo reloaded desktop
 }
 
 macinstall(){
