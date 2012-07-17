@@ -42,7 +42,8 @@ postinstall(){
   find "$1" -type f \( -name \*.sh -o -name \*.command \) -print -exec chmod 755 {} \; &&\
   echo permissions fixed
   file="$1/lib/native/ecw-gvsig1.11-linux32.tar.gz"
-  [ -f "$file" ] && tar xvf "$file" -C "$(dirname "$file")" 1>/dev/null && echo extracted \'$file\'
+  [ -f "$file" ] && tar xvf "$file" -C "$(dirname "$file")" && echo extracted \'$file\'
+  which xrefresh && xrefresh && echo reloaded desktop
 }
 
 macinstall(){
