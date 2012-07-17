@@ -62,10 +62,17 @@ else
   JUMP_HOME=`dirname "$0"`/..
 fi
 
-## run postinstall if requested
-[ "$1" = "--post-install" ] && postinstall "$JUMP_HOME" > "$JUMP_HOME"/postinstall.log 2>&1 ; exit
-[ "$1" = "--mac-install" ] && macinstall "$JUMP_HOME" > "$JUMP_HOME"/macinstall.log 2>&1 ; exit
-
+## run postinstalls only, if requested
+case "$1" in
+ --post-install)
+  postinstall "$JUMP_HOME" 2>&1 | tee "$JUMP_HOME"/postinstall.log
+  exit
+ ;;
+ --mac-install) 
+  macinstall "$JUMP_HOME" 2>&1 | tee "$JUMP_HOME"/macinstall.log
+  exit
+ ;;
+esac
 
 ## cd into jump home
 OLD_DIR=`pwd`
