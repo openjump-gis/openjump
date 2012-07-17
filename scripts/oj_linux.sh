@@ -39,7 +39,7 @@ postinstall(){
   # fix permissions
   find "$1" -type f -exec chmod 644 {} \; &&\
   find "$1" -type d -exec chmod 755 {} \; &&\
-  find "$1" -type f \( -name *.sh -o -name *.command \) -print -exec chmod 755 {} \; &&\
+  find "$1" -type f \( -name \*.sh -o -name \*.command \) -print -exec chmod 755 {} \; &&\
   echo permissions fixed
   file="$1/lib/native/ecw-gvsig1.11-linux32.tar.gz"
   [ -f "$file" ] && tar xvf "$file" -C "$(dirname "$file")" 1>/dev/null && echo extracted \'$file\'
@@ -63,8 +63,8 @@ else
 fi
 
 ## run postinstall if requested
-[ "$1" = "--post-install" ] && postinstall "$JUMP_HOME" > "$JUMP_HOME"/postinstall.log 2>&1
-[ "$1" = "--mac-install" ] && macinstall "$JUMP_HOME" > "$JUMP_HOME"/macinstall.log 2>&1
+[ "$1" = "--post-install" ] && postinstall "$JUMP_HOME" > "$JUMP_HOME"/postinstall.log 2>&1 ; exit
+[ "$1" = "--mac-install" ] && macinstall "$JUMP_HOME" > "$JUMP_HOME"/macinstall.log 2>&1 ; exit
 
 
 ## cd into jump home
