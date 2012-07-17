@@ -51,7 +51,7 @@ macinstall(){
   # create app package
   cp -R -a "$1"/bin/OpenJUMP.app/Contents "$1" &&\
   awk '{sub(/..\/oj_/,"bin/oj_",$0)}1' "$1"/bin/OpenJUMP.app/Contents/MacOS/oj.sh > "$1"/Contents/MacOS/oj.sh &&\
-  echo patched oj.app &&\
+  echo patched oj.app
 }
 
 ## detect home folder
