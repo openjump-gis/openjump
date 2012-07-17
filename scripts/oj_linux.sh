@@ -47,7 +47,9 @@ postinstall(){
 }
 
 macinstall(){
-  [ ! -d "$1" ] && echo Missing app folder && exit 1
+  # do postinstall
+  sh "$1"/bin/oj_linux.sh --post-install
+  # create app package
   cp -R -a "$1"/bin/OpenJUMP.app/Contents "$1" &&\
   awk '{sub(/..\/oj_/,"bin/oj_",$0)}1' "$1"/bin/OpenJUMP.app/Contents/MacOS/oj.sh > "$1"/Contents/MacOS/oj.sh &&\
   echo patched oj.app &&\
@@ -63,8 +65,8 @@ else
 fi
 
 ## run postinstall if requested
-[ "$1" = "--post-install" ] && postinstall "$JUMP_HOME"
-[ "$1" = "--mac-install" ] && macinstall "$JUMP_HOME"
+[ "$1" = "--post-install" ] && postinstall "$JUMP_HOME" 2>&1 > "$JUMP_HOME"/postinstall.log
+[ "$1" = "--mac-install" ] && macinstall "$JUMP_HOME" 2>&1 > "$JUMP_HOME"/macinstall.log
 
 
 ## cd into jump home
