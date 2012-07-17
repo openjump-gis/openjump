@@ -5,9 +5,9 @@
     <pack name="OpenJUMP" required="yes">
       <description>The core files needed for the application</description>
       <!--file src="test.zip" targetdir="${INSTALL_PATH}" override="true" unpack="true"/-->
-      <fileset dir="pack0" targetdir="${INSTALL_PATH}" override="true"/>
+      <fileset dir="pack0" targetdir="${INSTALL_PATH}" override="asktrue"/>
 <!-- copy script, mark it executable, execute during postinstall -->
-      <executable targetfile="$INSTALL_PATH/bin/postinstall.sh" stage="postinstall" keep="true">
+      <executable targetfile="$INSTALL_PATH/bin/oj_linux.sh" stage="postinstall" keep="true">
         <os name="linux" />
         <args><arg value="--post-install"/></args>
       </executable>
