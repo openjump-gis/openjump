@@ -370,6 +370,24 @@ public class AttributeTablePanel extends JPanel {
                     }
                 }
             });
+            // pressing a key starts the cell editing mode, but it did not 
+            // clear the selection and kept delete feature action possible,
+            // which was quite dangerous. Now, the selection is cleared
+            table.addKeyListener(new java.awt.event.KeyListener(){
+                    public void keyPressed(java.awt.event.KeyEvent e) {
+                        // delete, shift and ctrl do not clear selection
+                        if (e.getKeyCode() != java.awt.event.KeyEvent.VK_DELETE &&
+                            e.getKeyCode() != java.awt.event.KeyEvent.VK_SHIFT && 
+                            e.getKeyCode() != java.awt.event.KeyEvent.VK_CONTROL) {
+                            table.getSelectionModel().clearSelection();
+                        }
+                    }
+                    public void keyReleased(java.awt.event.KeyEvent e) {
+                    }
+                    public void keyTyped(java.awt.event.KeyEvent e) {
+                    }
+            });
+
         } catch (Throwable t) {
             workbenchContext.getErrorHandler().handleThrowable(t);
         }
