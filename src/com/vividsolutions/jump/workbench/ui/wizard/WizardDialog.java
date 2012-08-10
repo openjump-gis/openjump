@@ -313,20 +313,21 @@ public class WizardDialog extends JDialog implements WizardContext,
     return dataMap.get(name);
   }
 
-  /**
-   * @override this method to return all "contained" ui components for
-   * SkinOptinsPanel to SwingUtilities.updateComponentTreeUI() them after
-   * L&F change [ede 05.2012]
-   * [mmichaud 2012-07-01] removed in a try to fix bug 3528917
-   * [ede 2012-07-01] fix bug 3528917 by adding super.getComponents()
-   */
-  public Component[] getComponents() {
-    // get parent components, linkedhashset is an ordered unique list
-    LinkedHashSet components = new LinkedHashSet(Arrays.asList(super.getComponents()));
-    // add all additional components and panels
-    components.addAll(Arrays.asList(getContentPane().getComponents()));
-    return (Component[])components.toArray(new Component[]{});
-  }
-  
-  
+//  /**
+//   * @override this method to return all "contained" ui components for
+//   * SkinOptinsPanel to SwingUtilities.updateComponentTreeUI() them after
+//   * L&F change [ede 05.2012]
+//   * [mmichaud 2012-07-01] removed in a try to fix bug 3528917
+//   * [ede 2012-07-01] fix bug 3528917 by adding super.getComponents()
+//   * [ede 2012-08-10] commented again to prevent left column flicker during dialog resize
+//   *                  skin seems to be propagated properly since java7 if switched
+//   */
+//  public Component[] getComponents() {
+//    // get parent components, linkedhashset is an ordered unique list
+//    LinkedHashSet components = new LinkedHashSet(Arrays.asList(super.getComponents()));
+//    // add all additional components and panels
+//    components.addAll(Arrays.asList(getContentPane().getComponents()));
+//    return (Component[])components.toArray(new Component[]{});
+//  }
+
 }
