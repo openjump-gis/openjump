@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2012-08-07 mmichaud <michael.michaud@free.fr>
+  * Add an offsetCurve plugin based on JTS OffsetCurveBuilder but removing
+    segments inside buffer
+    
 2012-08-10 ede
   * fixed flicker of left column in OpenWizard on resize  introduced by 
     persistent skinning changes
