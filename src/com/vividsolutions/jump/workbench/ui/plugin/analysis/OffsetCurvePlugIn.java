@@ -309,7 +309,8 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
                     curve = gf.createLineString(builder.getOffsetCurve(
                         component.getCoordinates(), bufferDistance));
                 }
-                offsetCurves.add(simplify(curve, component));
+                if (component.isSimple()) offsetCurves.add(simplify(curve, component));
+                else offsetCurves.add(curve);
             }
             else {
                 System.out.println("Cannot process non linear components");
