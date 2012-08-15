@@ -10,7 +10,7 @@
   <componentDescriptors>
     <componentDescriptor>etc/mvn/cmp_core.xml</componentDescriptor>
     <componentDescriptor>etc/mvn/cmp_oj-nolang.xml</componentDescriptor>
-    <componentDescriptor>etc/mvn/cmp_lang.xml</componentDescriptor>
+    <componentDescriptor>etc/mvn/cmp_snapshot.xml</componentDescriptor>
     <componentDescriptor>etc/mvn/cmp_plus.xml</componentDescriptor>
   </componentDescriptors>
 </assembly>
