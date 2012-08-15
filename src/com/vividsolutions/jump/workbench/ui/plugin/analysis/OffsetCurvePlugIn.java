@@ -94,6 +94,8 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
   private String ATTRIBUTE;
   private String FROM_ATTRIBUTE;
   private String ATTRIBUTE_TOOLTIP;
+  private String CLEAN_OUTPUT;
+  private String CLEAN_OUTPUT_TOOLTIP;
   
   private String OTHER_OPTIONS;
   private String QUADRANT_SEGMENTS;
@@ -111,6 +113,7 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
 
   private Layer layer;
   private double bufferDistance   = 1.0;
+  private boolean cleanOutput    = true;
   private int joinStyleCode       = BufferParameters.JOIN_ROUND;;
   private double mitreLimit       = 10.0;
   private boolean useSelected     = false;
@@ -156,11 +159,13 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
         SELECTION = I18N.get("ui.plugin.analysis.BufferPlugIn.selection");
         SELECTION_HELP = I18N.get("ui.plugin.analysis.BufferPlugIn.selection-help");
   
-        DISTANCE = I18N.get("ui.plugin.analysis.BufferPlugIn.distance");
-	    FIXED_DISTANCE = I18N.get("ui.plugin.analysis.BufferPlugIn.fixed-distance");
+        DISTANCE = I18N.get("ui.plugin.analysis.OffsetCurvePlugIn.distance");
+	    FIXED_DISTANCE = I18N.get("ui.plugin.analysis.OffsetCurvePlugIn.fixed-distance");
 	    FROM_ATTRIBUTE = I18N.get("ui.plugin.analysis.BufferPlugIn.get-distance-from-attribute-value");
 	    ATTRIBUTE = I18N.get("ui.plugin.analysis.BufferPlugIn.attribute-to-use");
 	    ATTRIBUTE_TOOLTIP = I18N.get("ui.plugin.analysis.BufferPlugIn.attribute-to-use-tooltip");
+	    CLEAN_OUTPUT = I18N.get("ui.plugin.analysis.OffsetCurvePlugIn.clean-output");
+	    CLEAN_OUTPUT_TOOLTIP = I18N.get("ui.plugin.analysis.OffsetCurvePlugIn.clean-output-tooltip");
 	    
 	    OTHER_OPTIONS = I18N.get("ui.plugin.analysis.BufferPlugIn.other-options");
         QUADRANT_SEGMENTS = I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawCircleWithGivenRadiusTool.Number-of-segments-per-circle-quarter");
@@ -309,7 +314,9 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
                     curve = gf.createLineString(builder.getOffsetCurve(
                         component.getCoordinates(), bufferDistance));
                 }
-                if (component.isSimple()) offsetCurves.add(simplify(curve, component));
+                if (component.isSimple() && cleanOutput) {
+                    addSimplifiedOffsetCurves(offsetCurves, curve, component);
+                }
                 else offsetCurves.add(curve);
             }
             else {
@@ -320,20 +327,22 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
         return gf.buildGeometry(offsetCurves);
     }
     
-    private Geometry simplify(LineString offsetCurve, Geometry sourceCurve) {
+    private void addSimplifiedOffsetCurves(Collection offsetCurves, 
+                                 LineString offsetCurve, Geometry sourceCurve) {
         Geometry union = UnaryUnionOp.union(offsetCurve);
-        Collection offsetCurves = new ArrayList();
+        Collection mergedCurves = new ArrayList();
         for (int i = 0 ; i < union.getNumGeometries() ; i++) {
             Geometry component = union.getGeometryN(i);
             if (component.distance(sourceCurve) > 
-                Math.abs(bufferDistance)*Math.cos(Math.PI/4*quadrantSegments)*0.99) {
-                offsetCurves.add(component);
+                Math.abs(bufferDistance)*Math.cos(Math.PI/(4*quadrantSegments))*0.999) {
+                mergedCurves.add(component);
             }
         }
         LineMerger merger = new LineMerger();
-        merger.add(offsetCurves);
-        offsetCurves = merger.getMergedLineStrings();
-        return sourceCurve.getFactory().buildGeometry(offsetCurves);
+        merger.add(mergedCurves);
+        mergedCurves = merger.getMergedLineStrings();
+        for (Object lineString : mergedCurves) offsetCurves.add(lineString);
+        //return sourceCurve.getFactory().buildGeometry(offsetCurves);
     }
     
 
@@ -351,6 +360,7 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
         final JTextField bufferDistanceTextField = dialog.addDoubleField(FIXED_DISTANCE, bufferDistance, 10, null);	    	
 	    final JCheckBox fromAttributeCheckBox = dialog.addCheckBox(FROM_ATTRIBUTE, false, ATTRIBUTE_TOOLTIP);
 	    final JComboBox attributeComboBox = dialog.addAttributeComboBox(ATTRIBUTE, LAYER, AttributeTypeFilter.NUMERIC_FILTER, ATTRIBUTE_TOOLTIP);
+	    final JCheckBox cleanOutputCheckBox = dialog.addCheckBox(CLEAN_OUTPUT, cleanOutput, CLEAN_OUTPUT_TOOLTIP);
         
         dialog.addSeparator();
         dialog.addSubTitle(OTHER_OPTIONS);
@@ -387,6 +397,7 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
 		    layer = dialog.getLayer(LAYER);
         }
 	    bufferDistance = dialog.getDouble(FIXED_DISTANCE);
+	    cleanOutput = dialog.getBoolean(CLEAN_OUTPUT);
 	    quadrantSegments = dialog.getInteger(QUADRANT_SEGMENTS);
 	    joinStyleCode = joinStyleCode(dialog.getText(JOIN_STYLE));
 	    mitreLimit = dialog.getDouble(MITRE_LIMIT);
