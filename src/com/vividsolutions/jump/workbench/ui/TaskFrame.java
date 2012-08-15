@@ -96,7 +96,14 @@ public class TaskFrame extends JInternalFrame implements TaskFrameProxy,
         //this.layerManager = task.getLayerManager();
         this.cloneIndex = cloneIndex;
         this.workbenchContext = workbenchContext;
+        final WorkbenchFrame frame = workbenchContext.getWorkbench().getFrame();
         addInternalFrameListener(new InternalFrameAdapter() {
+            public void internalFrameActivated(InternalFrameEvent e) {
+                //activeTaskFrame = (TaskFrame)e.getInternalFrame();
+                //toolBar.reClickSelectedCursorToolButton();
+                frame.setActiveTaskFrame((TaskFrame)e.getInternalFrame());
+                frame.getToolBar().reClickSelectedCursorToolButton();
+            }
             public void internalFrameDeactivated(InternalFrameEvent e) {
                 //Deactivate the current CursorTool. Otherwise, the following
                 // problem
@@ -121,8 +128,7 @@ public class TaskFrame extends JInternalFrame implements TaskFrameProxy,
                     timer.stop();
                     //memoryCleanup();
                 } catch (Throwable t) {
-                    workbenchContext.getWorkbench().getFrame().handleThrowable(
-                            t);
+                    frame.handleThrowable(t);
                 }
             }
 

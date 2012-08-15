@@ -580,7 +580,8 @@ public class WorkbenchFrame extends JFrame
           toolBar.updateEnabledState();
           // Associate current cursortool with the new frame [Jon
           // Aquino]
-          toolBar.reClickSelectedCursorToolButton();
+          // move to ActivateTaskFrame internal class
+          // toolBar.reClickSelectedCursorToolButton();
         }
 
         public void internalFrameClosed(InternalFrameEvent e) {
@@ -751,8 +752,10 @@ public class WorkbenchFrame extends JFrame
   }
 
   public TaskFrame addTaskFrame(TaskFrame taskFrame) {
-    // track which taskframe is activated
-    taskFrame.addInternalFrameListener(new ActivateTaskFrame());
+    // track which taskframe is activated [ede r2804]
+    // move addInternalFrameListener to TaskFrame class (constructor)
+    // to fix bugs id 3530414 and 3536708 [mmichaud r2978]
+    // taskFrame.addInternalFrameListener(new ActivateTaskFrame());
     taskFrame.getTask().getLayerManager().addLayerListener(new LayerListener() {
       public void featuresChanged(FeatureEvent e) {
       }
@@ -788,14 +791,19 @@ public class WorkbenchFrame extends JFrame
     return taskFrame;
   }
 
-  private class ActivateTaskFrame extends InternalFrameAdapter{
-    public void internalFrameActivated(InternalFrameEvent e) {
-      activeTaskFrame = (TaskFrame)e.getInternalFrame();
-    }
-  }
+  //private class ActivateTaskFrame extends InternalFrameAdapter{
+  //  public void internalFrameActivated(InternalFrameEvent e) {
+  //    activeTaskFrame = (TaskFrame)e.getInternalFrame();
+  //    toolBar.reClickSelectedCursorToolButton();
+  //  }
+  //}
   
   public TaskFrame getActiveTaskFrame() {
     return activeTaskFrame;
+  }
+  
+  public void setActiveTaskFrame(TaskFrame taskFrame) {
+    this.activeTaskFrame = taskFrame;
   }
 
   public void flash(final HTMLFrame frame) {
