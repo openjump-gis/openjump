@@ -20,7 +20,8 @@
   <xsl:param name="maxScale">999999999999</xsl:param>
   <xsl:param name="Namespace">http://sourceforge.net/projects/jump-pilot/</xsl:param>
   <!--xsl:param name="NamespacePrefixWithoutColon">oj</xsl:param-->
-  <xsl:param name="NamespacePrefix">oj:</xsl:param>
+  <!--xsl:param name="NamespacePrefix">oj:</xsl:param-->
+  <xsl:param name="NamespacePrefix"></xsl:param>
 
   <xsl:template match="/">
     <sld:StyledLayerDescriptor xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd"
@@ -44,7 +45,11 @@
       <!-- This rule works only with xalan-->
       <!--xsl:attribute name="{ $NamespacePrefixWithoutColon }:dummy" namespace="{ $Namespace }"/-->
       <!-- This rule fix the prefix to oj and works with java xslt processor -->
-      <xsl:attribute name="oj:dummy" namespace="{$Namespace}"/>
+      <!-- remove to fix problem reported and discussed in 
+           https://sourceforge.net/projects/jump-pilot/forums/forum/729479/topic/5456685 
+           https://sourceforge.net/mailarchive/forum.php?thread_name=502D0D11.6090403%40telus.net&forum_name=jump-pilot-devel
+       -->
+      <!--xsl:attribute name="oj:dummy" namespace="{$Namespace}"/-->
       <xsl:apply-templates select="layer"/>
     </sld:StyledLayerDescriptor>
   </xsl:template>
@@ -78,13 +83,19 @@
         <xsl:choose>
           <xsl:when test="contains($geoType,'Polygon')">
             <sld:Rule>
-              <ogc:Filter>
+              <sld:Name>basicPolyStyle</sld:Name>
+              <!--
+                  Remove this filter because PropertyIsInstanceOf is not authorized
+                  See the complete discussion here 
+                  https://sourceforge.net/projects/jump-pilot/forums/forum/729479/topic/5456685 
+                  https://sourceforge.net/mailarchive/forum.php?thread_name=502D0D11.6090403%40telus.net&forum_name=jump-pilot-devel
+              -->
+              <!--ogc:Filter>
                 <ogc:PropertyIsInstanceOf>
                   <ogc:PropertyName><xsl:value-of select="$NamespacePrefix"/>geometry</ogc:PropertyName>
                   <ogc:Literal>gml:_Surface</ogc:Literal>
                 </ogc:PropertyIsInstanceOf>
-              </ogc:Filter>
-              <sld:Name>basicPolyStyle</sld:Name>
+              </ogc:Filter-->
               <sld:MinScaleDenominator>
                 <xsl:value-of select="$minScale"/>
               </sld:MinScaleDenominator>
@@ -102,13 +113,19 @@
           </xsl:when>
           <xsl:when test="contains($geoType,'Line')">
             <sld:Rule>
-              <ogc:Filter>
+              <sld:Name>basicLineStyle</sld:Name>
+              <!--
+                  Remove this filter because PropertyIsInstanceOf is not authorized
+                  See the complete discussion here 
+                  https://sourceforge.net/projects/jump-pilot/forums/forum/729479/topic/5456685 
+                  https://sourceforge.net/mailarchive/forum.php?thread_name=502D0D11.6090403%40telus.net&forum_name=jump-pilot-devel
+              -->
+              <!--ogc:Filter>
                 <ogc:PropertyIsInstanceOf>
                   <ogc:PropertyName><xsl:value-of select="$NamespacePrefix"/>geometry</ogc:PropertyName>
                   <ogc:Literal>gml:_Curve</ogc:Literal>
                 </ogc:PropertyIsInstanceOf>
-              </ogc:Filter>
-              <sld:Name>basicLineStyle</sld:Name>
+              </ogc:Filter-->
               <sld:MinScaleDenominator>
                 <xsl:value-of select="$minScale"/>
               </sld:MinScaleDenominator>
@@ -125,13 +142,19 @@
           </xsl:when>
           <xsl:when test="contains($geoType,'Point')">
             <sld:Rule>
-              <ogc:Filter>
+              <sld:Name>basicPointStyle</sld:Name>
+              <!--
+                  Remove this filter because PropertyIsInstanceOf is not authorized
+                  See the complete discussion here 
+                  https://sourceforge.net/projects/jump-pilot/forums/forum/729479/topic/5456685 
+                  https://sourceforge.net/mailarchive/forum.php?thread_name=502D0D11.6090403%40telus.net&forum_name=jump-pilot-devel
+              -->
+              <!--ogc:Filter>
                 <ogc:PropertyIsInstanceOf>
                   <ogc:PropertyName><xsl:value-of select="$NamespacePrefix"/>geometry</ogc:PropertyName>
                   <ogc:Literal>gml:Point</ogc:Literal>
                 </ogc:PropertyIsInstanceOf>
-              </ogc:Filter>
-              <sld:Name>basicPointStyle</sld:Name>
+              </ogc:Filter-->
               <sld:MinScaleDenominator>
                 <xsl:value-of select="$minScale"/>
               </sld:MinScaleDenominator>
