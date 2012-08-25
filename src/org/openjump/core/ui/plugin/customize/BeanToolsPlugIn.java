@@ -39,6 +39,8 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxDialog;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.HTMLFrame;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
@@ -46,14 +48,25 @@ import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.Date;
 
+import javax.swing.JTextArea;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import org.apache.log4j.Logger;
 
@@ -142,22 +155,72 @@ public class BeanToolsPlugIn extends AbstractPlugIn {
     }
     
     public boolean execute(final PlugInContext context) throws Exception {
-    	ToolboxDialog toolbox = new ToolboxDialog(context.getWorkbenchContext());
+    	//final ToolboxDialog toolbox = new ToolboxDialog(context.getWorkbenchContext());
+    	// [mmichaud 2012-08-25] added an output TextArea to display script
+    	// outputs.
+    	// I did not use HTMLFrame because when the script output is redirected
+    	// to HTMLFrame, a new line is automatically inserted after each print.
+    	// Instead, copying JTextArea content to HTMLFrame after the end is OK.
+    	final JTextArea console = new JTextArea(15,60);
+    	final OutputStream out = getOutputStream(console);
+    	
+        console.append("************************************************************");
+    	console.append("\nScript started from \"" + lastcmd + "\" at\n" +
+    	    String.format("%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS", new Date()));
+    	console.append("\n************************************************************\n");
+    	final JDialog dialog = displayConsole(context, console);
+    	
+    	long t0 = System.currentTimeMillis();
     	try {
-            Interpreter interpreter = new Interpreter();
-            interpreter.setClassLoader(toolbox.getContext().getWorkbench()
+            final Interpreter interpreter = new Interpreter();
+            interpreter.setOut(new PrintStream(out));
+            interpreter.setErr(new PrintStream(out));
+            interpreter.setClassLoader(context.getWorkbenchContext().getWorkbench()
     				.getPlugInManager().getClassLoader());
-            interpreter.set("wc", toolbox.getContext());
+            interpreter.set("wc", context.getWorkbenchContext());
             interpreter.eval("setAccessibility(true)");
             interpreter.eval("import com.vividsolutions.jts.geom.*");
             interpreter.eval("import com.vividsolutions.jump.feature.*");
-            //interpreter.source(beanShellDirName + File.separator + lastcmd + ".bsh");
             interpreter.source(lastcmd);
+            console.append("\nExecuted in " + (System.currentTimeMillis()-t0) + " ms\n");
+            
+            dialog.addWindowListener(new WindowAdapter() {
+                    public void windowClosing(WindowEvent e) {
+                        HTMLFrame outputFrame = context.getOutputFrame();
+                        outputFrame.createNewDocument();
+                        outputFrame.addText(console.getText());
+                    } 
+            });
         } 
     	catch (EvalError e) {
-            toolbox.getContext().getErrorHandler().handleThrowable(e);
+    	    console.append("\n" + e.getMessage());
+    	    for (int i = 0 ; i < e.getStackTrace().length ; i++) {
+    	        console.append("\n" + e.getStackTrace()[i].toString());
+    	    }
+    	    console.append("\nExecuted with errors in " + (System.currentTimeMillis()-t0) + " ms");
+            //toolbox.getContext().getErrorHandler().handleThrowable(e);
         }
     	return true;
+    }
+    
+    private OutputStream getOutputStream(final JTextArea textArea) {
+        return new java.io.OutputStream() {
+    	    public void write(int b) {
+    	        textArea.append(String.valueOf((char) b));
+    	    }
+    	    public void write(byte b[], int off, int len) {
+    	        textArea.append(new String(b, off, len));
+    	    }
+    	};
+    }
+    
+    private JDialog displayConsole(final PlugInContext context, final JTextArea textArea) {
+        JDialog consoleDialog = new JDialog(context.getWorkbenchFrame(), "BeanTool output", false);
+        consoleDialog.add(new JScrollPane(textArea));
+        consoleDialog.setMinimumSize(textArea.getPreferredSize());
+        GUIUtil.centre(consoleDialog, context.getWorkbenchFrame());
+    	consoleDialog.setVisible(true);
+    	return consoleDialog;
     }
     
 }
