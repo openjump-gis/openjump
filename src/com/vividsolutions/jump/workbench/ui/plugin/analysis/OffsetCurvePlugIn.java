@@ -51,8 +51,14 @@ import javax.swing.JTextField;
 
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jts.algorithm.CGAlgorithms;
+import com.vividsolutions.jts.algorithm.distance.DistanceToPoint;
+import com.vividsolutions.jts.algorithm.distance.PointPairDistance;
 import com.vividsolutions.jts.geomgraph.Position;
+import com.vividsolutions.jts.math.Vector2D;
+import com.vividsolutions.jts.noding.SegmentString;
 import com.vividsolutions.jts.operation.buffer.OffsetCurveBuilder;
+import com.vividsolutions.jts.operation.buffer.OffsetCurveSetBuilder;
 import com.vividsolutions.jts.operation.buffer.BufferOp;
 import com.vividsolutions.jts.operation.buffer.BufferParameters;
 import com.vividsolutions.jts.operation.linemerge.LineMerger;
@@ -94,8 +100,9 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
   private String ATTRIBUTE;
   private String FROM_ATTRIBUTE;
   private String ATTRIBUTE_TOOLTIP;
-  private String CLEAN_OUTPUT;
-  private String CLEAN_OUTPUT_TOOLTIP;
+  private String ROUGH_OFFSET_CURVE;
+  private String ROUGH_OFFSET_CURVE_TOOLTIP;
+  private String OFFSET;
   
   private String OTHER_OPTIONS;
   private String QUADRANT_SEGMENTS;
@@ -112,15 +119,15 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
   private List joinStyles;
 
   private Layer layer;
-  private double bufferDistance   = 1.0;
-  private boolean cleanOutput    = true;
-  private int joinStyleCode       = BufferParameters.JOIN_ROUND;;
-  private double mitreLimit       = 10.0;
-  private boolean useSelected     = false;
-  private int quadrantSegments    = 8;
-  private String sideBarText      = "";
-  private boolean fromAttribute   = false;
-  private int attributeIndex      = 0;
+  private double offsetDistance    = 1.0;
+  private boolean roughOffsetCurve = false;
+  private int joinStyleCode        = BufferParameters.JOIN_ROUND;;
+  private double mitreLimit        = 10.0;
+  private boolean useSelected      = false;
+  private int quadrantSegments     = 8;
+  private String sideBarText       = "";
+  private boolean fromAttribute    = false;
+  private int attributeIndex       = 0;
 
     public OffsetCurvePlugIn() {
         super(
@@ -164,8 +171,9 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
 	    FROM_ATTRIBUTE = I18N.get("ui.plugin.analysis.BufferPlugIn.get-distance-from-attribute-value");
 	    ATTRIBUTE = I18N.get("ui.plugin.analysis.BufferPlugIn.attribute-to-use");
 	    ATTRIBUTE_TOOLTIP = I18N.get("ui.plugin.analysis.BufferPlugIn.attribute-to-use-tooltip");
-	    CLEAN_OUTPUT = I18N.get("ui.plugin.analysis.OffsetCurvePlugIn.clean-output");
-	    CLEAN_OUTPUT_TOOLTIP = I18N.get("ui.plugin.analysis.OffsetCurvePlugIn.clean-output-tooltip");
+	    ROUGH_OFFSET_CURVE = I18N.get("ui.plugin.analysis.OffsetCurvePlugIn.rough-offset-curve");
+	    ROUGH_OFFSET_CURVE_TOOLTIP = I18N.get("ui.plugin.analysis.OffsetCurvePlugIn.rough-offset-curve-tooltip");
+	    OFFSET = I18N.get("ui.plugin.analysis.OffsetCurvePlugIn.offset");;
 	    
 	    OTHER_OPTIONS = I18N.get("ui.plugin.analysis.BufferPlugIn.other-options");
         QUADRANT_SEGMENTS = I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawCircleWithGivenRadiusTool.Number-of-segments-per-circle-quarter");
@@ -253,7 +261,7 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
         	name = layer.getName();
         else
         	name = I18N.get("ui.MenuNames.SELECTION");
-        name = I18N.get("com.vividsolutions.jump.workbench.ui.plugin.analysis.OffsetCurvePlugIn") + "-" + name;
+        name = name + "-" + OFFSET + "-" + offsetDistance;
         context.addLayer(categoryName, name, resultFC);
     }
 
@@ -269,9 +277,9 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
             if (fromAttribute) {
         	    Object o = fa.getAttribute(attributeIndex);
         	    if (o instanceof Double)     		  
-        		    bufferDistance = ((Double) o).doubleValue();
+        		    offsetDistance = ((Double) o).doubleValue();
         	    else if (o instanceof Integer)
-           		    bufferDistance = ((Integer) o).doubleValue();
+           		    offsetDistance = ((Integer) o).doubleValue();
             }
             // Create one offset curve per feature
             try {
@@ -290,59 +298,136 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
 
     private Geometry runOffset(Geometry a) throws TopologyException, Exception {
         GeometryFactory gf = a.getFactory();
+        // If "a" is a surface, process its boundary
         if (a.getDimension() == 2) a = a.getBoundary();
-        BufferParameters bufferParameters =
+        BufferParameters parameters =
             new BufferParameters(quadrantSegments, BufferParameters.CAP_FLAT, joinStyleCode, mitreLimit);
-        
-        OffsetCurveBuilder builder = new OffsetCurveBuilder(gf.getPrecisionModel(), bufferParameters);
-        
-        Geometry offset = null;
+                
         Collection offsetCurves = new ArrayList();
-        for (int i = 0 ; i < a.getNumGeometries() ; i++) {
-            Geometry component = a.getGeometryN(i);
-            if (component instanceof LineString) {
-                LineString curve = (LineString)component;
-                if (curve instanceof LinearRing || curve.isClosed()) {
-                    if (bufferDistance >= 0) {
-                        curve = gf.createLineString(builder.getRingCurve(
-                            component.getCoordinates(), Position.LEFT, bufferDistance));
-                    } else {
-                        curve = gf.createLineString(builder.getRingCurve(
-                            component.getCoordinates(), Position.RIGHT, -bufferDistance));
-                    }
-                } else {
-                    curve = gf.createLineString(builder.getOffsetCurve(
-                        component.getCoordinates(), bufferDistance));
-                }
-                if (component.isSimple() && cleanOutput) {
-                    addSimplifiedOffsetCurves(offsetCurves, curve, component);
-                }
-                else offsetCurves.add(curve);
-            }
-            else {
-                System.out.println("Cannot process non linear components");
-                continue;
-            }
+        if (roughOffsetCurve) {
+            addRoughOffsetCurves(offsetCurves, a, parameters);
+            
+        } else {
+            addCleanOffsetCurves(offsetCurves, a, parameters);
         }
         return gf.buildGeometry(offsetCurves);
     }
     
-    private void addSimplifiedOffsetCurves(Collection offsetCurves, 
-                                 LineString offsetCurve, Geometry sourceCurve) {
-        Geometry union = UnaryUnionOp.union(offsetCurve);
-        Collection mergedCurves = new ArrayList();
-        for (int i = 0 ; i < union.getNumGeometries() ; i++) {
-            Geometry component = union.getGeometryN(i);
-            if (component.distance(sourceCurve) > 
-                Math.abs(bufferDistance)*Math.cos(Math.PI/(4*quadrantSegments))*0.999) {
-                mergedCurves.add(component);
+    
+    private Collection merge(Collection linestrings) {
+        LineMerger merger = new LineMerger();
+        merger.add(linestrings);
+        return merger.getMergedLineStrings();
+    }
+    
+    private void addCleanOffsetCurves(Collection offsetCurves, 
+            Geometry sourceCurve, BufferParameters parameters) {
+        parameters.setSingleSided(true);
+        parameters.setQuadrantSegments(quadrantSegments);
+        Geometry sidedBuffer = new BufferOp(sourceCurve, parameters)
+            .getResultGeometry(offsetDistance)
+            .getBoundary();
+        Collection offsetSegments = new ArrayList();
+        // Segments located entirely under this distance are excluded
+        double lowerBound = Math.abs(offsetDistance)*Math.sin(Math.PI/(4*quadrantSegments));
+        // Segments located entirely over this distance are included
+        // note that the theoretical approximation made with quadrantSegments
+        // is offset*cos(PI/(4*quadrantSegments) but offset*cos(PI/(2*quadrantSegments)
+        // is used to make sure to include segments located on the boundary
+        double upperBound = Math.abs(offsetDistance)*Math.cos(Math.PI/(2*quadrantSegments));
+        for (int i = 0 ; i < sidedBuffer.getNumGeometries() ; i++) {
+            Coordinate[] cc = sidedBuffer.getGeometryN(i).getCoordinates();
+            PointPairDistance ppd = new PointPairDistance();
+            DistanceToPoint.computeDistance(sourceCurve, cc[0], ppd);
+            double dj = ppd.getDistance();
+            for (int j = 1 ; j < cc.length ; j++) {
+                double di = dj;
+                ppd = new PointPairDistance();
+                DistanceToPoint.computeDistance(sourceCurve, cc[j], ppd);
+                dj = ppd.getDistance();
+                // segment along or touching the source geometry : eclude it
+                if (Math.max(di, dj) < lowerBound || di == 0 || dj == 0) {
+                    continue;
+                }
+                // segment along the buffer boundary : include it
+                else if (Math.min(di, dj) > upperBound) {
+                    LineString segment = sourceCurve.getFactory().createLineString(
+                        new Coordinate[]{cc[j-1], cc[j]});
+                    offsetSegments.add(segment);
+                }
+                // segment entirely located inside the buffer : exclude it
+                else if (Math.min(di, dj) > lowerBound && Math.max(di, dj) < upperBound) {
+                    continue;
+                }
+                // segment with a end at the offset distance and the other
+                // located within the buffer : divide it
+                else {
+                    // One of the coordinates is closed to but not on the source
+                    // curve and the other is more or less closed to offset distance
+                    divide(offsetSegments, sourceCurve, cc[j-1], cc[j], di, dj, lowerBound, upperBound);
+                }
             }
         }
-        LineMerger merger = new LineMerger();
-        merger.add(mergedCurves);
-        mergedCurves = merger.getMergedLineStrings();
-        for (Object lineString : mergedCurves) offsetCurves.add(lineString);
-        //return sourceCurve.getFactory().buildGeometry(offsetCurves);
+        offsetCurves.addAll(merge(offsetSegments));
+    }
+    
+    
+    // Recursive function to split segments located on the single-side buffer
+    // boundary, but having a part of them inside the full buffer.
+    private void divide(Collection offsetSegments, Geometry sourceCurve,
+            Coordinate c1, Coordinate c2, double d1, double d2, double lb, double ub) {
+        // I stop recursion for segment < 2*lb to exclude small segments
+        // perpendicular but very close to the boundary
+        if (c1.distance(c2) < 2*lb) return;
+        
+        Coordinate c = new Coordinate((c1.x+c2.x)/2.0, (c1.y+c2.y)/2.0);
+        PointPairDistance ppd = new PointPairDistance();
+        DistanceToPoint.computeDistance(sourceCurve, c, ppd);
+        double d = ppd.getDistance();
+        if (Math.max(d1, d) < lb) {}
+        else if (Math.min(d1, d) > lb && Math.max(d1, d) < ub) {}
+        else if (Math.min(d1, d) > ub) {
+            LineString segment = sourceCurve.getFactory().createLineString(
+                        new Coordinate[]{c1, c});
+            offsetSegments.add(segment);
+        }
+        else {
+            divide(offsetSegments, sourceCurve, c1, c, d1, d, lb, ub);
+        }
+        if (Math.max(d, d2) < lb) {}
+        else if (Math.min(d, d2) > lb && Math.max(d, d2) < ub) {}
+        else if (Math.min(d, d2) > ub) {
+            LineString segment = sourceCurve.getFactory().createLineString(
+                        new Coordinate[]{c, c2});
+            offsetSegments.add(segment);
+        }
+        else {
+            divide(offsetSegments, sourceCurve, c, c2, d, d2, lb, ub);
+        }
+    }
+    
+    private void addRoughOffsetCurves(Collection offsetCurves, 
+            Geometry sourceCurve, BufferParameters parameters) {
+        
+        OffsetCurveBuilder builder = new OffsetCurveBuilder(
+            sourceCurve.getFactory().getPrecisionModel(), parameters);
+        
+        for (int i = 0 ; i < sourceCurve.getNumGeometries() ; i++) {
+            if (sourceCurve.getGeometryN(i) instanceof LineString) {
+                LineString lineString = (LineString)sourceCurve.getGeometryN(i);
+                Coordinate[] cc = lineString.getCoordinates();
+                if (lineString.isClosed()) {
+                    offsetCurves.add(lineString.getFactory().createLineString(
+                        builder.getRingCurve(cc, 
+                            offsetDistance>0?Position.LEFT:Position.RIGHT, 
+                            Math.abs(offsetDistance))));
+                }
+                else {
+                    offsetCurves.add(lineString.getFactory().createLineString(
+                        builder.getOffsetCurve(cc, offsetDistance)));
+                }
+            }
+        }
     }
     
 
@@ -357,10 +442,10 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
         
         dialog.addSeparator();
         dialog.addSubTitle(DISTANCE);
-        final JTextField bufferDistanceTextField = dialog.addDoubleField(FIXED_DISTANCE, bufferDistance, 10, null);	    	
+        final JTextField offsetDistanceTextField = dialog.addDoubleField(FIXED_DISTANCE, offsetDistance, 10, null);	    	
 	    final JCheckBox fromAttributeCheckBox = dialog.addCheckBox(FROM_ATTRIBUTE, false, ATTRIBUTE_TOOLTIP);
 	    final JComboBox attributeComboBox = dialog.addAttributeComboBox(ATTRIBUTE, LAYER, AttributeTypeFilter.NUMERIC_FILTER, ATTRIBUTE_TOOLTIP);
-	    final JCheckBox cleanOutputCheckBox = dialog.addCheckBox(CLEAN_OUTPUT, cleanOutput, CLEAN_OUTPUT_TOOLTIP);
+	    final JCheckBox roughOffsetCurveCheckBox = dialog.addCheckBox(ROUGH_OFFSET_CURVE, roughOffsetCurve, ROUGH_OFFSET_CURVE_TOOLTIP);
         
         dialog.addSeparator();
         dialog.addSubTitle(OTHER_OPTIONS);
@@ -396,8 +481,8 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
 	    if (!useSelected) {
 		    layer = dialog.getLayer(LAYER);
         }
-	    bufferDistance = dialog.getDouble(FIXED_DISTANCE);
-	    cleanOutput = dialog.getBoolean(CLEAN_OUTPUT);
+	    offsetDistance = dialog.getDouble(FIXED_DISTANCE);
+	    roughOffsetCurve = dialog.getBoolean(ROUGH_OFFSET_CURVE);
 	    quadrantSegments = dialog.getInteger(QUADRANT_SEGMENTS);
 	    joinStyleCode = joinStyleCode(dialog.getText(JOIN_STYLE));
 	    mitreLimit = dialog.getDouble(MITRE_LIMIT);

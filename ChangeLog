@@ -1,6 +1,10 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
 2012-08-25 mmichaud <michael.michaud@free.fr>
+  * Complete change in the Offset Curve alogorithm which is now mainly based on
+    JTS single-side buffer method.
+
+2012-08-25 mmichaud <michael.michaud@free.fr>
   * Beanshell Tool now display a JTextArea with all the outputs from the script
     If the script ends with no exception, the output is transferred to InfoFrame
     when the dialog is closed.
