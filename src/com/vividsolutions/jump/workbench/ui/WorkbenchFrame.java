@@ -115,6 +115,7 @@ import com.vividsolutions.jump.workbench.model.WMSLayer;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugIn;
+import com.vividsolutions.jump.workbench.ui.TaskFrameProxy;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ChoosableStyle;
@@ -1241,8 +1242,14 @@ public class WorkbenchFrame extends JFrame
       if (internalFrame instanceof TaskFrame) {
         // delete reference to taskframe to be closed
         if (activeTaskFrame == internalFrame)
-          activeTaskFrame = null;
-        closeTaskFrame((TaskFrame)internalFrame);
+          //activeTaskFrame = null;
+          closeTaskFrame((TaskFrame)internalFrame);
+          JInternalFrame activeInternalFrame = getActiveInternalFrame();
+          if (activeInternalFrame == null || 
+              !(activeInternalFrame instanceof TaskFrameProxy)) {
+              activeTaskFrame = null;
+          }
+          else activeTaskFrame = ((TaskFrameProxy)activeInternalFrame).getTaskFrame();
       } else {
         GUIUtil.dispose(internalFrame, desktopPane);
       }
