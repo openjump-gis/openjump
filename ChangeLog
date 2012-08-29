@@ -1,8 +1,10 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
-2012-08-28 mmichaud <michael.michaud@free.fr>
+2012-08-29 mmichaud <michael.michaud@free.fr>
   * Fix bug 3560828 by changing the dashed red line to a solid red line while
     moving an objetc.
+  * NoderPlugIn : improve robustness of the workaround for the case where
+    interiorPoint falls on the geometry boundary (JTS bug) 
   
 2012-08-28 mmichaud <michael.michaud@free.fr>
   * Fix bug 3562375 (cancel project closing did not work any more)

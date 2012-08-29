@@ -573,10 +573,15 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
                         continue;
                     }
                     Point interiorPoint = g.getInteriorPoint();
+                    // Warning : a robusteness problem found in interiorPoint function
+                    // interiorPoint may lie on g boundary
+                    // take the interiorPoint of an area computed as the the 
+                    // intersection of g and first interiorPoint neighbourhood
+                    if (interiorPoint.intersects(g.getBoundary())) {
+                        interiorPoint = g.intersection(interiorPoint.buffer(g.getLength()/100.0)).getInteriorPoint();
+                    }
                     if (interiorPoint.intersects(geometry)) {
-                        // Warning : a robusteness problem found in interiorPoint
-                        // function sometimes lying on the boundary
-                        if (interiorPoint.intersects(geometry.getBoundary())) continue;
+
                         Feature newFeature = entry.getKey().clone(false);
                         // Polygonization may have lost some original z, because
                         // Thanks to previous process, all intersection nodes
