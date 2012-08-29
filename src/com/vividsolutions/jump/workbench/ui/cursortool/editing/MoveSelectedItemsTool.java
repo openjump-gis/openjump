@@ -79,13 +79,14 @@ public class MoveSelectedItemsTool extends DragTool {
     public MoveSelectedItemsTool(EnableCheckFactory checkFactory) {
         this.checkFactory = checkFactory;
         setStroke(
+            // change dashed line to solid line to fix bug id 3560828
             new BasicStroke(
                 1,
                 BasicStroke.CAP_BUTT,
-                BasicStroke.JOIN_BEVEL,
+                BasicStroke.JOIN_BEVEL/*,
                 0,
                 new float[] { 3, 3 },
-                0));
+                0*/));
         allowSnapping();
     }
 

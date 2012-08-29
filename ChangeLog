@@ -1,6 +1,10 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
 2012-08-28 mmichaud <michael.michaud@free.fr>
+  * Fix bug 3560828 by changing the dashed red line to a solid red line while
+    moving an objetc.
+  
+2012-08-28 mmichaud <michael.michaud@free.fr>
   * Fix bug 3562375 (cancel project closing did not work any more)
   
 2012-08-25 mmichaud <michael.michaud@free.fr>
