@@ -6,6 +6,9 @@
     Remove check for java 1.4+ in SaveImageAsPlugIn
   * Fix bug 3564039 : Rendering is set to true when the thread actually starts, 
     otherwise, it may create infinite loops (see bug id 3564039)
+  * Fix bug 3526653 : SaveImageAsPlugIn did not scale the RasterImage when
+    it was exported to a wider image (the new RendererFactory framework was not 
+    used by RasterImageRenderer)
 
 2012-08-29 mmichaud <michael.michaud@free.fr>
   * Fix bug 3560828 by changing the dashed red line to a solid red line while

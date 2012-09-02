@@ -444,7 +444,9 @@ public class OpenJumpConfiguration {
     
     //-- [sstein 22.Feb.2009]
     //-- adds renderer for (Pirol/Sextante) raster images
-    RenderingManager.putRendererForLayerable(RasterImageLayer.class, new RasterImageLayerRendererFactory(pluginContext.getWorkbenchContext()));
+    //RenderingManager.putRendererForLayerable(RasterImageLayer.class, new RasterImageLayerRendererFactory(pluginContext.getWorkbenchContext()));
+    // [mmichaud 2012-09-01] changed how RasterImageLayerRendererFactory is initialized to fix bug 3526653
+    RenderingManager.setRendererFactory(RasterImageLayer.class, new RasterImageLayerRendererFactory()); 
     //-- adds the context menu for (Pirol/Sextante) Raster Images
     pluginContext.getWorkbenchFrame().getNodeClassToPopupMenuMap().put(RasterImageLayer.class, RasterImageContextMenu.getInstance(pluginContext));
     

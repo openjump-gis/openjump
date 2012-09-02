@@ -10,7 +10,9 @@
 package org.openjump.core.rasterimage;
 
 import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.renderer.Renderer;
+import com.vividsolutions.jump.workbench.ui.renderer.RendererFactory;
 
 /**
  * TODO: comment class
@@ -24,7 +26,7 @@ import com.vividsolutions.jump.workbench.ui.renderer.Renderer;
  * @version $Rev: 2434 $
  * 
  */
-public class RasterImageLayerRendererFactory implements Renderer.ContentDependendFactory {
+public class RasterImageLayerRendererFactory implements Renderer.ContentDependendFactory, RendererFactory<RasterImageLayer> {
 
     protected WorkbenchContext wbContext = null;
     
@@ -38,6 +40,14 @@ public class RasterImageLayerRendererFactory implements Renderer.ContentDependen
      */
     public Renderer create(Object contentID) {
         return new RasterImageRenderer(contentID, this.wbContext.getLayerViewPanel());
+    }
+    
+    // [mmichaud 2012-09-02] method added to conform to RendererFactory interface
+    public RasterImageLayerRendererFactory() {}
+    
+    // [mmichaud 2012-09-02] method added to conform to RendererFactory interface
+    public Renderer create(RasterImageLayer layer, LayerViewPanel panel, int maxFeatures) {
+        return new RasterImageRenderer(layer, panel);
     }
 
 }
