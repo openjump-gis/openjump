@@ -69,10 +69,14 @@ public abstract class ImageCachingRenderer implements Renderer {
 		}
 		//Rendering starts as soon as the #createRunnable request is made,
 		//to get the animated clock icons going. [Jon Aquino]
-		rendering = true;
+		//rendering = true;
 		cancelled = false;
 		return new Runnable() {
 			public void run() {
+			    //Rendering starts when the thread actually starts
+			    //In some situations, setting rendering=true before starting 
+			    //Runnable could create infinite loops (see bug id 3564039)
+			    rendering = true;
 				try {
 					if (cancelled) {
 						//This short-circuit exit made a big speed increase
