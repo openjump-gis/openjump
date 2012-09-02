@@ -30,6 +30,7 @@ import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
+import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
@@ -39,11 +40,17 @@ import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.ValidatingTextField;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
+/**
+ * Save the view to a PNG or a JPG image file.
+ * The exported image can have a size different from the original view.
+ */
 public class SaveImageAsPlugIn extends ExportImagePlugIn {
     //ImageIO doesn't know about the "gif" format. I guess it's a copyright
     // issue [Jon Aquino 11/6/2003]
     //Don't use TYPE_INT_ARGB for jpegs -- they will turn pink [Jon Aquino
     // 11/6/2003]
+    //ImageIO can probably write gif images from java 6, but we do we really 
+    // need that ? [mmichaud 2012-09-02]
     
     private List myFileFilters = Arrays.asList(new Object[]{
         createFileFilter("PNG - Portable Network Graphics", "png",
@@ -68,7 +75,7 @@ public class SaveImageAsPlugIn extends ExportImagePlugIn {
     		}
     		try {
     			int i = Integer.parseInt(text);
-    			return i<=3800;
+    			return i<=4000;
     		} catch (NumberFormatException e) {
     			return false;
     		}
@@ -130,6 +137,7 @@ public class SaveImageAsPlugIn extends ExportImagePlugIn {
 			return 800;  //some reasonable default
 		}   	
     }
+    
     private MyFileFilter createFileFilter(String description, String format,
             int bufferedmageType) {
         return new MyFileFilter(description, format);
@@ -196,7 +204,7 @@ public class SaveImageAsPlugIn extends ExportImagePlugIn {
 			else {
 				envelope = workbenchContext.getLayerViewPanel().getViewport().getEnvelopeInModelCoordinates();
 			}
-			image = layerPrinter.print(workbenchContext.getLayerManager().getLayers(), envelope, getPixelSize());
+			image = layerPrinter.print(context.getLayerManager().getLayerables(Layerable.class), envelope, getPixelSize());
         	viewPanel = layerPrinter.getLayerViewPanel();
         }
         String filename = addExtension(getFileChooser().getSelectedFile()
@@ -227,15 +235,7 @@ public class SaveImageAsPlugIn extends ExportImagePlugIn {
         EnableCheckFactory checkFactory = new EnableCheckFactory(
                 workbenchContext);
         return new MultiEnableCheck()
-                .add(checkFactory
-                        .createWindowWithLayerViewPanelMustBeActiveCheck()).add(new EnableCheck() {
-                    public String check(JComponent component) {
-                        //Need Java 1.4's ImageIO class [Jon Aquino 11/6/2003]
-                    return !java14OrNewer()
-                            ? "This feature requires Java 1.4 or newer"
-                            : null;
-                }
-                });
+                .add(checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck());
     }
     
     

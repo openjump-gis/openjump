@@ -43,6 +43,7 @@ import java.util.Collection;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.workbench.model.Layer;
+import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
 import com.vividsolutions.jump.workbench.ui.renderer.ThreadQueue;
@@ -71,7 +72,7 @@ public class LayerPrinter2 {
 		final Throwable[] throwable = new Throwable[] { null };
 		panel = 
 			new LayerViewPanel( 
-					(!layers.isEmpty()) ? ((Layer) layers.iterator().next()).getLayerManager()
+					(!layers.isEmpty()) ? ((Layerable)layers.iterator().next()).getLayerManager()
 							: new LayerManager(),
 							new LayerViewPanelContext() {
 						public void setStatusMessage(String message) {
