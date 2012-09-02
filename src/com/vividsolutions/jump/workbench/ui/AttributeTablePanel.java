@@ -32,6 +32,7 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -375,12 +376,17 @@ public class AttributeTablePanel extends JPanel {
             // which was quite dangerous. Now, the selection is cleared
             table.addKeyListener(new java.awt.event.KeyListener(){
                     public void keyPressed(java.awt.event.KeyEvent e) {
-                        // delete, shift and ctrl do not clear selection
-                        if (e.getKeyCode() != java.awt.event.KeyEvent.VK_DELETE &&
-                            e.getKeyCode() != java.awt.event.KeyEvent.VK_SHIFT && 
-                            e.getKeyCode() != java.awt.event.KeyEvent.VK_CONTROL) {
-                            table.getSelectionModel().clearSelection();
-                        }
+                        if (!layer.isEditable()) return;
+                        if (e.isControlDown() || e.isAltDown()) return;
+                        if (e.getKeyCode() == KeyEvent.VK_DELETE) return;
+                        if (e.getKeyCode() == KeyEvent.VK_SHIFT) return; 
+                        if (e.getKeyCode() == KeyEvent.VK_CONTROL) return;
+                        // if layer is editable and the user pressed a key 
+                        // without ctrl or alt pressed. If this key is not
+                        // delete or shift or ctrl, the table will enter in 
+                        // edition mode. Before that, clear the selection to
+                        // avoid the risk to delete the selection while editing
+                        table.getSelectionModel().clearSelection();
                     }
                     public void keyReleased(java.awt.event.KeyEvent e) {
                     }
