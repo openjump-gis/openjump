@@ -9,6 +9,8 @@ import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 
 public abstract class ExportImagePlugIn extends AbstractPlugIn {
 
+    // TODO : remove before final OpenJUMP 1.6 release
+    /** @deprecated */
     protected static boolean java14OrNewer() {
         String version = System.getProperty("java.version");
         if (version.indexOf("1.0") == 0) {
