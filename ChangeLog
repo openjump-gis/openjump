@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2012-09-03 mmichaud <michael.michaud@free.fr>
+  * Upgrade csv-driver to version 0.6.5 (create empty geometries if geometry
+    column is missing.
+    
 2012-09-02 mmichaud <michael.michaud@free.fr>
   * Fix bug 3564137 : pass Layerables to the LayerPrinter2 instead of Layers, so
     that a view containing a single RasterImageLayer can export the view.

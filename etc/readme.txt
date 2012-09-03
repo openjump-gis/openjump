@@ -54,6 +54,8 @@ and the following plugins
   aggregation-*.jar
  BeanShell Editor (Michaël Michaud) - GPL2 - gpl-2.txt
   bsheditor4jump-*.jar, buoy.jar(see above)
+ CSV driver (Michaël Michaud) - GPL2 - gpl-2.txt
+  csv-driver-*.jar
  DXF driver (Michaël Michaud) - GPL2 - gpl-2.txt
   driver-dxf-*.jar
  Graph Extension (Michaël Michaud) - GPL2 - gpl-2.txt
@@ -77,8 +79,6 @@ and the following plugins
   xbean-*.jar - Apache License Version 2.0 - apache_license-2.0.txt
  Topology Extension (Michaël Michaud) - GPL2 - gpl-2.txt
   topology-*.jar
- Text Driver (Michaël Michaud) - GPL2 - gpl-2.txt
-  txt-driver-*.jar
  Vertex Note (com.cadplan.jump) - GPL2 - gpl-2.txt
  Vertex Symbols (com.cadplan.jump) - GPL2 - gpl-2.txt
   VertexSymbols.jar
