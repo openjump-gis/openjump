@@ -58,7 +58,6 @@ import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.Collection;
 
-import javax.annotation.processing.Processor;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
