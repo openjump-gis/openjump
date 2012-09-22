@@ -1,5 +1,11 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2012-09-22 mmichaud <michael.michaud@free.fr>
+  * Update DXF driver to 0.7.8 (fix a bug preventing reading of TEXT entities)
+  * Update topology plugin to 0.6 (rewrite of project points on line which can
+    now perform several projections/insertions/splits per node
+  * Fix 3569045 in PostGIS Writer
+
 2012-09-05 ede
   * JUMPWorkbench:
    - exit jre after early exception, no more hanging jre's

@@ -52,18 +52,19 @@ public class SaveToPostGISDataSource extends com.vividsolutions.jump.io.datasour
         WorkbenchContextReference {
     
     //public static final String DATASET_NAME_KEY = "Dataset Name";
-    //public static final String GEOMETRY_COLUMN_KEY = "Geometry Column Name";
     
-    // Do not translate, these are keys
+    // Do not translate, these keys are used to persist information in a map
     public static final String CONNECTION_DESCRIPTOR_KEY = "Connection Descriptor";
-    public static final String TABLE_KEY = "Table";
+    public static final String TABLE_KEY          = "Table";
     
-    public static final String SAVE_METHOD_KEY = "Save method";
+    public static final String SAVE_METHOD_KEY    = "Save method";
     public static final String SAVE_METHOD_CREATE = "Create";
     public static final String SAVE_METHOD_INSERT = "Insert";
     public static final String SAVE_METHOD_UPDATE = "Update";
     public static final String SAVE_METHOD_DELETE = "Delete";
-    public static final String ID_COLUMN_KEY = "Unique column";
+    public static final String LOCAL_ID_KEY       = "LOCAL_ID";
+    public static final String NO_LOCAL_ID        = "NO_LOCAL_ID";
+    public static final String USE_DB_ID_KEY      = "USE_DB_ID";
 
     private WorkbenchContext context;
 
@@ -77,7 +78,6 @@ public class SaveToPostGISDataSource extends com.vividsolutions.jump.io.datasour
                                    WorkbenchContext context) {
         setProperties(CollectionUtil.createMap(new Object[] {
             TABLE_KEY, tableName,
-            //GEOMETRY_COLUMN_KEY, geometryColumnName,
             CONNECTION_DESCRIPTOR_KEY, connectionDescriptor, 
         }));
         setWorkbenchContext(context);
@@ -88,9 +88,11 @@ public class SaveToPostGISDataSource extends com.vividsolutions.jump.io.datasour
         return true;
     }
 
+    
     public Connection getConnection() {
         
         return new Connection() {
+            
             public FeatureCollection executeQuery(String query,
                     Collection exceptions, TaskMonitor monitor) {
                 throw new UnsupportedOperationException();
@@ -124,11 +126,13 @@ public class SaveToPostGISDataSource extends com.vividsolutions.jump.io.datasour
                 // Get schema and table names
                 String table = (String)getProperties().get(TABLE_KEY);
                 String[] dbSchemaTable = PostGISUtil.divideTableName(table);
-                String key = (String)getProperties().get(ID_COLUMN_KEY);
-                String geometryType = "GEOMETRY";
-                int srid = -1;
-                int dim = 3;
-                setFeatureCollectionProperties(featureCollection, srid, geometryType, dim);
+                String quotedSchemaName = quote(unquote(dbSchemaTable[0]));
+                String quotedTableName = quote(unquote(dbSchemaTable[1]));
+                String local_id_key = (String)getProperties().get(LOCAL_ID_KEY);
+                boolean use_db_id_key = (Boolean)getProperties().get(USE_DB_ID_KEY);
+                int srid = getSrid(featureCollection, -1);
+                String geometryType = getGeometryType(featureCollection, "GEOMETRY");
+                int dim = getGeometryDimension(featureCollection, 3);
 
                 PostgisDSConnection pgConnection = 
                         (PostgisDSConnection)new PostgisDataStoreDriver()
@@ -136,16 +140,18 @@ public class SaveToPostGISDataSource extends com.vividsolutions.jump.io.datasour
                 java.sql.Connection conn = pgConnection.getConnection();
 
                 if (method.equals(SAVE_METHOD_CREATE)) {
-                    boolean exists = tableExists(conn, dbSchemaTable[0], dbSchemaTable[1]);
+                    boolean exists = tableExists(conn, unquote(quotedSchemaName), unquote(quotedTableName));
                     if (exists && !confirmOverwrite()) return;
                     try {
                         conn.setAutoCommit(false);
                         if (exists) {
-                            deleteTableQuery(conn, dbSchemaTable[0], dbSchemaTable[1]);
+                            deleteTableQuery(conn, quotedSchemaName, quotedTableName);
                         }
                         createAndPopulateTable(conn, featureCollection, 
-                            dbSchemaTable[0], dbSchemaTable[1], srid, geometryType, dim);
-                        if (key != null) addPrimaryKey(conn, dbSchemaTable[0], dbSchemaTable[1], key);
+                            quotedSchemaName, quotedTableName, srid, geometryType, dim);
+                        if (local_id_key != null && !local_id_key.equals(NO_LOCAL_ID)) {
+                            addPrimaryKey(conn, quotedSchemaName, quotedTableName, local_id_key);
+                        }
                         conn.commit();
                     } catch(SQLException e) {
                         throw e;
@@ -155,11 +161,11 @@ public class SaveToPostGISDataSource extends com.vividsolutions.jump.io.datasour
                     try {
                         conn.setAutoCommit(false);
                         FeatureSchema featureSchema = featureCollection.getFeatureSchema();
-                        if (PostGISUtil.compatibleSchemaSubset(conn, dbSchemaTable[0], dbSchemaTable[1], featureSchema).length < featureSchema.getAttributeCount()) {
+                        if (PostGISUtil.compatibleSchemaSubset(conn, quotedSchemaName, quotedTableName, featureSchema).length < featureSchema.getAttributeCount()) {
                             if (!confirmWriteDespiteDifferentSchemas()) return;
                         }
                         insertInTable(conn, featureCollection, 
-                            dbSchemaTable[0], dbSchemaTable[1], srid!=-1, dim);
+                            quotedSchemaName, quotedTableName, srid!=-1, dim);
                         conn.commit();
                     } catch(Exception e) {
                         throw e;
@@ -170,10 +176,10 @@ public class SaveToPostGISDataSource extends com.vividsolutions.jump.io.datasour
                         // Makes delete previous table and create new table atomic
                         conn.setAutoCommit(false);
                         FeatureSchema featureSchema = featureCollection.getFeatureSchema();
-                        if (PostGISUtil.compatibleSchemaSubset(conn, dbSchemaTable[0], dbSchemaTable[1], featureSchema).length < featureSchema.getAttributeCount()) {
+                        if (PostGISUtil.compatibleSchemaSubset(conn, quotedSchemaName, quotedTableName, featureSchema).length < featureSchema.getAttributeCount()) {
                             if (!confirmWriteDespiteDifferentSchemas()) return;
                         }
-                        insertUpdateTable(conn, featureCollection, dbSchemaTable[0], dbSchemaTable[1], key, srid!=-1, dim);
+                        insertUpdateTable(conn, featureCollection, quotedSchemaName, quotedTableName, local_id_key, srid!=-1, dim);
                         conn.commit();
                     } catch(SQLException e) {
                         throw e;
@@ -183,11 +189,11 @@ public class SaveToPostGISDataSource extends com.vividsolutions.jump.io.datasour
                     try {
                         conn.setAutoCommit(false);
                         FeatureSchema featureSchema = featureCollection.getFeatureSchema();
-                        if (PostGISUtil.compatibleSchemaSubset(conn, dbSchemaTable[0], dbSchemaTable[1], featureSchema).length < featureSchema.getAttributeCount()) {
+                        if (PostGISUtil.compatibleSchemaSubset(conn, quotedSchemaName, quotedTableName, featureSchema).length < featureSchema.getAttributeCount()) {
                             if (!confirmWriteDespiteDifferentSchemas()) return;
                         }
-                        insertUpdateTable(conn, featureCollection, dbSchemaTable[0], dbSchemaTable[1], key, srid!=-1, dim);
-                        deleteNotExistingFeaturesFromTable(conn, featureCollection, dbSchemaTable[0], dbSchemaTable[1], key);
+                        insertUpdateTable(conn, featureCollection, quotedSchemaName, quotedTableName, local_id_key, srid!=-1, dim);
+                        deleteNotExistingFeaturesFromTable(conn, featureCollection, quotedSchemaName, quotedTableName, local_id_key);
                         conn.commit();
                     } catch(SQLException e) {
                         throw e;
@@ -227,7 +233,7 @@ public class SaveToPostGISDataSource extends com.vividsolutions.jump.io.datasour
      */
     private boolean tableExists(java.sql.Connection connection, String dbSchema, String dbTable) throws SQLException {
         DatabaseMetaData metadata = connection.getMetaData();
-        return metadata.getTables(null, unquote(dbSchema), unquote(dbTable), new String[]{"TABLE"}).next();
+        return metadata.getTables(null, dbSchema, dbTable, new String[]{"TABLE"}).next();
     }
     
     
@@ -328,8 +334,11 @@ public class SaveToPostGISDataSource extends com.vividsolutions.jump.io.datasour
     private void deleteNotExistingFeaturesFromTable(java.sql.Connection conn, 
             FeatureCollection fc, String dbSchema, String dbTable, String key) throws SQLException {
         StringBuffer sb = new StringBuffer();
+        boolean numeric = 
+            fc.getFeatureSchema().getAttributeType(key) == AttributeType.INTEGER ? true : false;
         for (Iterator it = fc.iterator() ; it.hasNext() ; ) {
-            sb.append(((Feature)it.next()).getString(key));
+            if (numeric) sb.append(((Feature)it.next()).getString(key));
+            else sb.append("'" + ((Feature)it.next()).getString(key) + "'");
             if (it.hasNext()) sb.append(",");
         }
         try {
@@ -365,7 +374,6 @@ public class SaveToPostGISDataSource extends com.vividsolutions.jump.io.datasour
             sb.append(i==0?"?":",?");
         }
         sb.append(") WHERE \"" + key + "\" = " + fid + ";");
-        //System.out.println(sb.toString());
         PreparedStatement pstmt = conn.prepareStatement(sb.toString());
         return setAttributeValues(pstmt, feature, hasSrid, dim);
     }
@@ -387,60 +395,52 @@ public class SaveToPostGISDataSource extends com.vividsolutions.jump.io.datasour
         return pstmt;
     }
     
-    
-    private void setFeatureCollectionProperties(FeatureCollection featureCollection, int srid, String geometryType, int dim) {
-        CoordinateSystem cs = featureCollection.getFeatureSchema().getCoordinateSystem();
+    private int getSrid(FeatureCollection coll, int defaultSrid) {
+        CoordinateSystem cs = coll.getFeatureSchema().getCoordinateSystem();
         if (cs != null) {
-            try {srid = cs.getEPSGCode();}
-            // if no srid defined, default posgis -1 code is used
-            catch(UnsupportedOperationException e) {}
-        }
-        if (featureCollection.size() > 0) {
-            Feature f = (Feature)featureCollection.iterator().next();
-            String firstGeometryType = f.getGeometry().getGeometryType();
-            boolean homogeneous = true;
-            int d = 2;
-            for (Iterator it = featureCollection.iterator() ; it.hasNext() ; ) {
-                f = (Feature)it.next();
-                if (homogeneous && !f.getGeometry().getGeometryType().equals(firstGeometryType)) {
-                    homogeneous = false;
-                }
-                if (PostGISUtil.getGeometryDimension(f.getGeometry()) == 3) d = 3;
-                if (d==3 && !homogeneous) return;
+            try {
+                return cs.getEPSGCode();
             }
-            if (homogeneous) geometryType = firstGeometryType;
-            if (d==2) dim = 2;
-        }
+            catch(UnsupportedOperationException e) {
+                return defaultSrid;
+            }
+        } else return defaultSrid;
     }
     
-    //private int getDimension(Geometry g) {
-    //    Coordinate[] cc = g.getCoordinates();
-    //    int d = 2;
-    //    for (Coordinate c : cc) {
-    //        if (!Double.isNaN(c.z)) return 3;
-    //    }
-    //    return 2;
-    //}
-
-    //private FeatureCollection createFeatureCollection() {
-    //    FilterQuery query = new FilterQuery();
-    //    query.setDatasetName((String)getProperties().get(DATASET_NAME_KEY));
-    //    query.setGeometryAttributeName((String)getProperties().get(
-    //            GEOMETRY_ATTRIBUTE_NAME_KEY));
-    //    if (((String)getProperties().get(WHERE_CLAUSE_KEY)).length() > 0) {
-    //        query.setCondition((String) getProperties().get(WHERE_CLAUSE_KEY));
-    //    }
-    //    if (getProperties().get(MAX_FEATURES_KEY) != null) {
-    //        query.setLimit((Integer)getProperties().get(MAX_FEATURES_KEY));
-    //    }
-    //    return new CachingFeatureCollection(new DynamicFeatureCollection(
-    //            (ConnectionDescriptor) getProperties().get(
-    //                    CONNECTION_DESCRIPTOR_KEY), ConnectionManager
-    //                    .instance(context), query))
-    //            .setCachingByEnvelope(((Boolean) LangUtil.ifNull(
-    //                    getProperties().get(CACHING_KEY), Boolean.TRUE))
-    //                    .booleanValue());
-    //}
+    private String getGeometryType(FeatureCollection coll, String defaultType) {
+        if (coll.size() > 0) {
+            Feature f = (Feature)coll.iterator().next();
+            String firstGeometryType = f.getGeometry().getGeometryType();
+            boolean homogeneous = true;
+            for (Iterator it = coll.iterator() ; it.hasNext() ; ) {
+                f = (Feature)it.next();
+                if (!f.getGeometry().getGeometryType().equals(firstGeometryType)) {
+                    return defaultType;
+                }
+            }
+            if (homogeneous) return firstGeometryType;
+            else return defaultType;
+        } 
+        else return defaultType;
+    }
+    
+    private int getGeometryDimension(FeatureCollection coll, int defaultDim) {
+        if (coll.size() > 0) {
+            // will explore up to 1000 features regularly distributed in the dataset
+            // if none of these feature has dim = 3, return 2, else return 3
+            int step = 1 + coll.size()/1000;
+            int count = 0;
+            for (Iterator it = coll.iterator() ; it.hasNext() ; ) {
+                if (count%step == 0 && 
+                        PostGISUtil.getGeometryDimension(((Feature)it.next()).getGeometry()) == 3) {
+                    return 3;
+                }
+                count++;
+            }
+            return 2;
+        } else return defaultDim;
+    }
+    
     
     public void setWorkbenchContext(WorkbenchContext context) {
         this.context = context;

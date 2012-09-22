@@ -17,6 +17,7 @@
 package org.openjump.core.ui.plugin.datastore.postgis;
 
 import com.vividsolutions.jump.workbench.datasource.DataSourceQueryChooserManager;
+import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.PlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import org.openjump.core.ui.plugin.datastore.AddDataStoreLayerWizard;
@@ -28,8 +29,7 @@ import org.openjump.core.ui.plugin.file.OpenWizardPlugIn;
  */
 public class SaveToPostGISPlugIn implements PlugIn {
   
-    public static boolean DEBUG = true;
-    public static PlugInContext plgInContext;
+    //public static boolean DEBUG = true;
     private PostGISSaveDataSourceQueryChooser saveChooser;
   
     /**
@@ -50,7 +50,7 @@ public class SaveToPostGISPlugIn implements PlugIn {
     }
 
     /**
-     * This function does nothing, all the setup is completed in initialize().
+     * This function always returns false.
      */
     public boolean execute(PlugInContext context) {
         return false;

@@ -29,13 +29,23 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.datasource.DataSourceQueryChooser;
+import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 
 /**
  * A DataSourceQueryChooser for writing to a PostGIS data source.
  */
 public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser {
+    
+    public static final String KEY = PostGISSaveDataSourceQueryChooser.class.getName();
+    
+	static final String ERROR = I18N.get(KEY + ".error");
+	static final String NO_CONNECTION_CHOOSEN     = I18N.get(KEY + ".no-connection-choosen");
+	static final String NO_TABLE_CHOOSEN          = I18N.get(KEY + ".no-table-choosen");
+	static final String CONNECTION_IS_NOT_POSTGIS = I18N.get(KEY + ".selected-connection-is-not-postgis");
+	static final String UNIQUE_IDENTIFIER_NEEDED  = I18N.get(KEY + ".unique-identifier-is-needed");
     
     private PostGISSaveDriverPanel panel;
     private SaveToPostGISDataSource dataSource;
@@ -61,6 +71,7 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
      * @see com.vividsolutions.jump.workbench.datasource.DataSourceQueryChooser#getComponent()
      */
     public Component getComponent() {
+        //panel.changeTableName((String)properties.get(SaveToPostGISDataSource.TABLE_KEY));
         return panel; 
     }
   
@@ -78,46 +89,45 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
             (String)properties.get(SaveToPostGISDataSource.TABLE_KEY)
         );    
         query.setProperties(getProperties());
-        
         List queries = new ArrayList();
         queries.add(query);
       
         return queries;
     }
+    
   
     /**
      * Checks that user input is valid.
      * @see com.vividsolutions.jump.workbench.datasource.DataSourceQueryChooser#isInputValid()
      */
     public boolean isInputValid() {
-        //if (!super.isInputValid()) return(false);
         if (panel.getConnectionDescriptor() == null) { 
                 JOptionPane.showMessageDialog(panel, 
-                    "No connection choosen!",
-                    "Error!", JOptionPane.ERROR_MESSAGE );
+                    NO_CONNECTION_CHOOSEN,
+                    ERROR, JOptionPane.ERROR_MESSAGE );
             return false;
         }
         else if (!panel.getConnectionDescriptor()
                        .getDataStoreDriverClassName()
                        .equals("com.vividsolutions.jump.datastore.postgis.PostgisDataStoreDriver")) {
                 JOptionPane.showMessageDialog(null,
-                    "The selected Connection is not a PostGIS connection!",
-                    "Error!", JOptionPane.ERROR_MESSAGE );
+                    CONNECTION_IS_NOT_POSTGIS,
+                    ERROR, JOptionPane.ERROR_MESSAGE );
             return false;
         }
         else if (panel.getTableName() == null || 
             panel.getTableName().trim().length() == 0) { 
                 JOptionPane.showMessageDialog(panel, 
-                    "You must choose a table to write to!",
-                    "Error!", JOptionPane.ERROR_MESSAGE );
+                    NO_TABLE_CHOOSEN,
+                    ERROR, JOptionPane.ERROR_MESSAGE );
             return false;
         }
-        else if ((panel.getIdColumn() == null || panel.getIdColumn().trim().length() == 0) && 
+        else if ((panel.getLocalId() == null || panel.getLocalId().trim().length() == 0) && 
             (panel.getSaveMethod().equals(SaveToPostGISDataSource.SAVE_METHOD_UPDATE) || 
              panel.getSaveMethod().equals(SaveToPostGISDataSource.SAVE_METHOD_DELETE))) { 
                 JOptionPane.showMessageDialog(panel, 
-                    "Unique Column does not exist!",
-                    "Error!", JOptionPane.ERROR_MESSAGE );
+                    UNIQUE_IDENTIFIER_NEEDED,
+                    ERROR, JOptionPane.ERROR_MESSAGE );
             return false;
         }
         return true;
@@ -131,8 +141,8 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
         properties.put(SaveToPostGISDataSource.CONNECTION_DESCRIPTOR_KEY, panel.getConnectionDescriptor());
         properties.put(SaveToPostGISDataSource.TABLE_KEY, panel.getTableName());
         properties.put(SaveToPostGISDataSource.SAVE_METHOD_KEY, panel.getSaveMethod());
-        //properties.put(SaveToPostGISDataSource.GEOMETRY_COLUMN_KEY, panel.getGeometryColumn());
-        properties.put(SaveToPostGISDataSource.ID_COLUMN_KEY, panel.getIdColumn());
+        properties.put(SaveToPostGISDataSource.LOCAL_ID_KEY, panel.getLocalId());
+        properties.put(SaveToPostGISDataSource.USE_DB_ID_KEY, panel.isCreateDbIdColumnSelected());
         return properties;
     }
     
@@ -140,8 +150,11 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
         return dataSource;   
     }
   
+    /**
+     * Returns the String displayed in the Format Chooser.
+     */
     public String toString() {
-        return "PostGIS Table";
+        return "PostGIS Table (new)";
     }
 
 }

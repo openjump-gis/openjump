@@ -109,7 +109,9 @@ public class PostGISUtil {
 	 * assumption whether names are quoted or not.
 	 */
 	public static String compose(String dbSchema, String dbTable) {
-	    return dbSchema == null ? dbTable : dbSchema + "." + dbTable;
+	    return dbSchema == null ? 
+	            "\"" + unquote(dbTable) + "\"" : 
+	            "\"" + unquote(dbSchema) + "\".\"" + unquote(dbTable) + "\"";
 	}
     
     /**
@@ -225,7 +227,7 @@ public class PostGISUtil {
                 dbSchema + "'" + unquote(dbTable) + "'::varchar,'" + 
                 geometryColumn + "'::varchar," + 
                 srid + ",'" + 
-                geometryType + "'::varchar," + 
+                geometryType.toUpperCase() + "'::varchar," + 
                 dim + ");";
     }
     

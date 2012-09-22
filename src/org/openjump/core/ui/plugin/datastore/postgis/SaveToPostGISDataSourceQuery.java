@@ -21,7 +21,7 @@ import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import java.util.HashMap;
 
 /**
- * This class represents a query against a PostGIS data source. 
+ * A query performed against a PostGIS data source. 
  */
 public class SaveToPostGISDataSourceQuery extends DataSourceQuery {
 
