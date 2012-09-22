@@ -30,7 +30,6 @@
  * www.vividsolutions.com
  */
 package com.vividsolutions.jump.workbench.ui.renderer.style;
-import com.sun.xml.internal.bind.v2.TODO;
 
 import java.awt.Color;
 import java.awt.Font;
