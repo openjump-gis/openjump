@@ -5,6 +5,7 @@
   * Update topology plugin to 0.6 (rewrite of project points on line which can
     now perform several projections/insertions/splits per node
   * Fix 3569045 in PostGIS Writer
+  * FR 3491966 Improve performance of label rendering with very large polygons.
 
 2012-09-05 ede
   * JUMPWorkbench:

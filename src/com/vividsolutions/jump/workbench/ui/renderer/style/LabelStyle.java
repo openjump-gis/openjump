@@ -30,6 +30,8 @@
  * www.vividsolutions.com
  */
 package com.vividsolutions.jump.workbench.ui.renderer.style;
+import com.sun.xml.internal.bind.v2.TODO;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -46,6 +48,7 @@ import org.openjump.core.ui.util.ScreenScale;
 
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.index.quadtree.Quadtree;
+import com.vividsolutions.jts.simplify.DouglasPeuckerSimplifier;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
@@ -132,6 +135,17 @@ public class LabelStyle implements Style {
     
     public void paint(Feature f, Graphics2D g, Viewport viewport)
         throws NoninvertibleTransformException {
+        // Test scale first to return faster if realScale > scaleToHideAt
+        if (isHidingAtScale()){
+        	double scale = height / getFont().getSize2D();
+        	if (isScaling()) {
+        		scale *= viewport.getScale();
+        	}
+        	double realScale = ScreenScale.getHorizontalMapScale(viewport);            	
+        	if (realScale > scaleToHideAt)
+            return;
+        }  
+            
         Object attributeValue = getAttributeValue(f);
         String attributeStringValue;
         if ((attributeValue == null)) {
@@ -153,16 +167,20 @@ public class LabelStyle implements Style {
 		    attributeStringValue = attributeValue.toString();
 		}
         
-        if (isHidingAtScale()){
-        	double scale = height / getFont().getSize2D();
-        	if (isScaling()) {
-        		scale *= viewport.getScale();
-        	}
-        	double realScale = ScreenScale.getHorizontalMapScale(viewport);            	
-        	if (realScale > scaleToHideAt)
-            return;
-        }
-        Geometry viewportIntersection = intersection(f.getGeometry(), viewport);
+		// [mmichaud 2012-09-22] Simplify the geometry used to draw the label
+		// makes sense for very complex polygons
+		// ex. finnish lake of 282000 pts takes 0.3 s instead of 8 s
+		// TODO : investigate another problem : paint is called 4 times after a pan !
+		Geometry geom = f.getGeometry();
+		double pixelSize = viewport.getEnvelopeInModelCoordinates().getWidth()/
+		                   viewport.getPanel().getSize().getWidth();
+		if (geom.getNumPoints() > 64) {
+		    geom = DouglasPeuckerSimplifier.simplify(f.getGeometry(), pixelSize);
+		    // revert if geometry is empty or invalid
+		    if (geom.isEmpty() || !geom.isValid()) geom = f.getGeometry();
+		}
+        
+        Geometry viewportIntersection = intersection(geom, viewport);
         if (viewportIntersection == null) {
             return;
         }
