@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2012-09-24 mmichaud <michael.michaud@free.fr>
+  * Small fix in SegmentStringsWithData2Features used by the NoderPlugIn
+
 2012-09-22 mmichaud <michael.michaud@free.fr>
   * Update DXF driver to 0.7.8 (fix a bug preventing reading of TEXT entities)
   * Update topology plugin to 0.6 (rewrite of project points on line which can

@@ -128,7 +128,7 @@ public class SegmentStringsWithData2Features {
                                     GeometryFactory gf, boolean close) {
         LineMerger lineMerger = new LineMerger();
         for (SegmentString ss : list) {
-            lineMerger.add(gf.createLineString(ss.getCoordinates()));
+            if (ss.size()>1) lineMerger.add(gf.createLineString(ss.getCoordinates()));
         }
         Collection lineStrings = lineMerger.getMergedLineStrings();
         // If SegmentStrings are part of a non-simple (auto-intersecting) 
@@ -143,7 +143,7 @@ public class SegmentStringsWithData2Features {
         if (close) {
             CoordinateList coords = new CoordinateList(ls.getCoordinates());
             coords.closeRing();
-            if (ls.getCoordinates().length < 4) {
+            if (ls.getNumPoints() < 4) {
                 return gf.createLinearRing(new Coordinate[0]);
             }
             return gf.createLinearRing(coords.toCoordinateArray());
