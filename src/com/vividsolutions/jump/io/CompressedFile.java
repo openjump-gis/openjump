@@ -40,18 +40,17 @@ package com.vividsolutions.jump.io;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.net.URI;
 import java.util.zip.*;
 
 import org.apache.tools.tar.TarEntry;
 import org.apache.tools.tar.TarInputStream;
-import org.openjump.util.UriUtil;
 
 /**
- * Utility class for dealing with compressed (.zip, .gz) files.
+ * Utility class for dealing with compressed files.
+ * @see #isCompressed(String)
  * 
  * @author dblasby
- * 
+ * @author ede
  */
 // TODO :I18N
 public class CompressedFile {
@@ -208,18 +207,18 @@ public class CompressedFile {
           return tis;
       }
 
-      throw new Exception("couldnt find " + filePath + " in compressed file "
-          + compressedEntry);
+      throw new Exception("couldn't find entry '" + compressedEntry + "' in compressed file: "
+          + filePath);
     }
 
     else if (compressedEntry == null && isGZip(filePath)) {
-      // gz file -- easy
+      // gz compressed file -- easy
       InputStream IS_low = new FileInputStream(filePath);
       return (new java.util.zip.GZIPInputStream(IS_low));
     }
     
     else if (compressedEntry == null && isBZip(filePath)) {
-      // bz file -- easy
+      // bz compressed file -- easy
       InputStream is = new FileInputStream(filePath);
       return new org.apache.tools.bzip2.CBZip2InputStream(is);
     }
@@ -229,11 +228,11 @@ public class CompressedFile {
       ZipFile zipFile = new ZipFile(filePath);
       ZipEntry zipEntry = zipFile.getEntry(compressedEntry);
       // System.out.println(zipEntry + "->" + fname);
-      if (zipEntry != null)
+      if (zipEntry != null) 
         return zipFile.getInputStream(zipEntry);
 
-      throw new Exception("couldnt find " + filePath + " in compressed file "
-          + compressedEntry);
+      throw new Exception("couldn't find entry '" + compressedEntry + "' in compressed file: "
+          + filePath);
     }
     // return plain stream if no compressedEntry
     else if (compressedEntry == null) {

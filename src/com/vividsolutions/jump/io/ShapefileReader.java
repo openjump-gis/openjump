@@ -36,17 +36,17 @@
  */
 package com.vividsolutions.jump.io;
 
-import com.vividsolutions.jts.geom.*;
+import java.io.*;
+import java.nio.charset.Charset;
 
-import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.feature.*;
-
+import org.apache.log4j.Logger;
 import org.geotools.dbffile.DbfFile;
 import org.geotools.shapefile.Shapefile;
 import org.geotools.shapefile.ShapefileException;
 
-import java.io.*;
-import java.nio.charset.Charset;
+import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.feature.*;
 
 /**
  * ShapefileReader is a {@link JUMPReader} specialized to read Shapefiles.
@@ -73,7 +73,7 @@ import java.nio.charset.Charset;
 
  *    <tr>
  *      <td>CompressedFile</td>
- *      <td>File name (.zip NOT a .gz) with a .shp and .dbf file inside</td>
+ *      <td>File name (.zip or .tgz NOT a .gz) with .shp and .dbf file inside</td>
  *    </tr>
  *
  *    <tr>
@@ -90,9 +90,10 @@ import java.nio.charset.Charset;
 public class ShapefileReader implements JUMPReader {
     private File delete_this_tmp_dbf = null;
 
-	public static final String FILE_PROPERTY_KEY = "File";
-	public static final String DEFAULT_VALUE_PROPERTY_KEY = "DefaultValue";
-	public static final String COMPRESSED_FILE_PROPERTY_KEY = "CompressedFile";
+    private static Logger LOG = Logger.getLogger(ShapefileReader.class);
+    public static final String FILE_PROPERTY_KEY = "File";
+    public static final String DEFAULT_VALUE_PROPERTY_KEY = "DefaultValue";
+    public static final String COMPRESSED_FILE_PROPERTY_KEY = "CompressedFile";
 
     /** Creates new ShapeReader */
     public ShapefileReader() {
@@ -108,34 +109,26 @@ public class ShapefileReader implements JUMPReader {
     public FeatureCollection read(DriverProperties dp)
         throws IllegalParametersException, Exception {
 
-        String shpfileName = dp.getProperty(FILE_PROPERTY_KEY);
+        // ATTENTION: this can contain a zip file path as well
+        String shpFileName = dp.getProperty(FILE_PROPERTY_KEY);
 
-        if (shpfileName == null) {
-            shpfileName = dp.getProperty(DEFAULT_VALUE_PROPERTY_KEY);
+        if (shpFileName == null) {
+            shpFileName = dp.getProperty(DEFAULT_VALUE_PROPERTY_KEY);
         }
 
-        if (shpfileName == null) {
+        if (shpFileName == null) {
             throw new IllegalParametersException(I18N.get("io.ShapefileReader.no-file-property-specified"));
         }
 
-        int loc = shpfileName.lastIndexOf(File.separatorChar);
-        String path = shpfileName.substring(0, loc + 1); // ie. "/data1/hills.shp" -> "/data1/"
-        String fname = shpfileName.substring(loc + 1); // ie. "/data1/hills.shp" -> "hills.shp"
+        int loc = shpFileName.lastIndexOf(File.separatorChar);
+        String path = shpFileName.substring(0, loc + 1); // ie. "/data1/hills.shp" -> "/data1/"
+        String fname = shpFileName.substring(loc + 1); // ie. "/data1/hills.shp" -> "hills.shp"
 
-        loc = fname.lastIndexOf(".");
-
-        if (loc == -1) {
-            throw new IllegalParametersException(I18N.get("io.ShapefileReader.filename-must-end-in-shp"));
-        }
-
-        String fnameWithoutExtention = fname.substring(0, loc); // ie. "hills.shp" -> "hills"
-        String dbfFileName = path + fnameWithoutExtention + ".dbf";
-
-        //okay, have .shp and .dbf file paths, lets create Shapefile and DbfFile
-        Shapefile myshape = getShapefile(shpfileName, dp.getProperty(COMPRESSED_FILE_PROPERTY_KEY));
-		String charsetName = dp.getProperty("charset");
-		if (charsetName == null) charsetName = Charset.defaultCharset().name();
-        DbfFile mydbf = getDbfFile(dbfFileName, dp.getProperty(COMPRESSED_FILE_PROPERTY_KEY), Charset.forName(charsetName));
+        //okay, we have .shp and .dbf file paths, lets create Shapefile and DbfFile
+        Shapefile myshape = getShapefile(shpFileName, dp.getProperty(COMPRESSED_FILE_PROPERTY_KEY));
+        String charsetName = dp.getProperty("charset");
+        if (charsetName == null) charsetName = Charset.defaultCharset().name();
+        DbfFile mydbf = getDbfFile(shpFileName, dp.getProperty(COMPRESSED_FILE_PROPERTY_KEY), Charset.forName(charsetName));
         GeometryFactory factory = new GeometryFactory();
         GeometryCollection collection = null;
         try {
@@ -213,21 +206,30 @@ public class ShapefileReader implements JUMPReader {
 	 * For compatibilty reasons, this method is a wrapper to the new with
 	 * Charset functions.
 	 *
-	 * @param dbfFileName
+	 * @param srcFileName either a pass to a dbf or an archive file (*.zip etc.) accompanied by the compressedFname it contains
 	 * @param compressedFname
 	 * @return a DbfFile object for the dbf file named FileName
 	 * @throws Exception
 	 */
-    protected DbfFile getDbfFile(String dbfFileName, String compressedFname) throws Exception {
-		return getDbfFile(dbfFileName, compressedFname, Charset.defaultCharset());
+    protected DbfFile getDbfFile(String srcFileName, String compressedFname) throws Exception {
+		return getDbfFile(srcFileName, compressedFname, Charset.defaultCharset());
 	}
 
-    protected DbfFile getDbfFile(String dbfFileName, String compressedFname, Charset charset)
+    protected DbfFile getDbfFile(String srcFileName, String compressedFname, Charset charset)
         throws Exception {
 
-        DbfFile mydbf = null;
+        DbfFile mydbf;
 
-        if ((compressedFname != null) && (compressedFname.length() > 0)) {
+        // default is a *.shp src file
+        if (srcFileName.matches("(?i).*\\.shp$")) {
+          // replace file name extension of compressedFname (probably .shp) with .dbf
+          srcFileName = srcFileName.replaceAll("\\.[^.]*$", ".dbf");
+          File dbfFile = new File( srcFileName );
+          if ( dbfFile.exists() )
+              return new DbfFile(srcFileName, charset);
+        }
+        // if we are in an archive that can hold multiple files compressedFname is defined and a String
+        else if (CompressedFile.isCompressed(srcFileName) && compressedFname instanceof String) {
             byte[] b = new byte[16000];
             int len;
             boolean keepGoing = true;
@@ -236,8 +238,11 @@ public class ShapefileReader implements JUMPReader {
             File file = File.createTempFile("dbf", ".dbf");
             FileOutputStream out = new FileOutputStream(file);
             
+            // replace file name extension of compressedFname (probably .shp) with .dbf
+            compressedFname = compressedFname.replaceAll("\\.[^.]*$", ".dbf");
+            
             try {
-                InputStream in = CompressedFile.openFile(dbfFileName,compressedFname);
+                InputStream in = CompressedFile.openFile(srcFileName,compressedFname);
 
                 while (keepGoing) {
                     len = in.read(b);
@@ -254,18 +259,15 @@ public class ShapefileReader implements JUMPReader {
                 
                 mydbf = new DbfFile(file.toString(), charset);
                 delete_this_tmp_dbf = file; // to be deleted later on
-            } catch (Exception e) {
                 return mydbf;
+            } catch (Exception e) {
+                String msg = e.getMessage();
+                LOG.info(msg);
+                System.err.println(msg);
             }
-        } else {
-            File dbfFile = new File( dbfFileName );
+        } 
 
-            if ( dbfFile.exists() ) {
-                mydbf = new DbfFile(dbfFileName, charset);
-            }
-        }
-
-        return mydbf;
+        return null;
     }
 
 
