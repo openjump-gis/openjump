@@ -363,24 +363,33 @@ public abstract class AbstractCursorTool implements CursorTool {
 		lastShapeDrawn = newShape;
 	}
 
-	protected void drawShapeXOR(Shape shape, Graphics2D graphics) {
-		setup(graphics);
+  protected void drawShapeXOR(Shape shape, Graphics2D graphics) {
+    setup(graphics);
 
-		try {
-			//Pan tool returns a null shape. [Jon Aquino]
-			if (shape != null) {
-				//Can't both draw and fill, because we're using XOR. [Jon
-				// Aquino]
-				if (filling) {
-					graphics.fill(shape);
-				} else {
-					graphics.draw(shape);
-				}
-			}
-		} finally {
-			cleanup(graphics);
-		}
-	}
+    try {
+      // Pan tool returns a null shape. [Jon Aquino]
+      if (shape != null) {
+        // Can't both draw and fill, because we're using XOR. [Jon
+        // Aquino]
+        if (filling) {
+          graphics.fill(shape);
+        } else {
+          graphics.draw(shape);
+        }
+      }
+    } 
+    // easy workaround for 
+    //  java.lang.InternalError: Unable to Stroke shape (attempt to 
+    //  validate Pipe with invalid SurfaceData)
+    // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=7153339
+    catch (java.lang.InternalError ie){
+      ie.printStackTrace(System.err);
+      LOG.error(ie.getLocalizedMessage() +": "+Arrays.toString(ie.getStackTrace()));
+    }
+    finally {
+      cleanup(graphics);
+    }
+  }
 
 	protected void redrawShape() throws Exception {
 		redrawShape(getGraphics2D());
