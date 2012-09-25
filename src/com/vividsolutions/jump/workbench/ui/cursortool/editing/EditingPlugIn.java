@@ -75,7 +75,6 @@ public class EditingPlugIn extends ToolboxPlugIn {
   }
 
   protected void initializeToolbox(ToolboxDialog toolbox) {
-    //System.out.println("initializeToolbox "+toolbox.isVisible());
     // The auto-generated title "Editing Toolbox" is too long to fit. [Jon
     // Aquino]
     toolbox.setTitle(I18N.get("ui.cursortool.editing.EditingPlugIn.editing"));
@@ -112,7 +111,7 @@ public class EditingPlugIn extends ToolboxPlugIn {
 
     optionsButton.addActionListener(AbstractPlugIn.toActionListener(
         new OptionsPlugIn(), toolbox.getContext(), null));
-    toolbox.getCenterPanel().add(optionsButton, BorderLayout.SOUTH);
+    toolbox.getCenterPanel().add(optionsButton, BorderLayout.CENTER);
     toolbox.setInitialLocation(new GUIUtil.Location(20, true, 20, false));
     toolbox.setResizable(false);
   }

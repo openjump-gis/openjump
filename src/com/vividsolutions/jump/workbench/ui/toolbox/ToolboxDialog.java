@@ -33,28 +33,13 @@
 package com.vividsolutions.jump.workbench.ui.toolbox;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import javax.swing.AbstractButton;
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JToggleButton;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.LineBorder;
+import javax.swing.*;
 
-import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
@@ -140,17 +125,13 @@ public class ToolboxDialog extends JDialog {
 
     public ToolboxDialog(final WorkbenchContext context) {
         super(context.getWorkbench().getFrame(), "", false);
-        this.context = context;
-        super.setVisible(false);
-        setResizable(true);
-        // [ede 07.2012] remove titlebar to allow packing dialog to width of containing buttons only
-        setUndecorated(true);
         try {
             jbInit();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        this.context = context;
+        setResizable(true);
         setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
         this.addComponentListener(new ComponentAdapter() {
             public void componentHidden(ComponentEvent e) {
@@ -172,7 +153,7 @@ public class ToolboxDialog extends JDialog {
         // #initializeLocation will be called again in #setVisible, but
         // call it here just in case the window is realized by some other
         // means than #setVisible (unlikely). [Jon Aquino 2005-03-14]
-        //initializeLocation();
+        initializeLocation();
     }
 
     public void setVisible(boolean visible) {
@@ -182,12 +163,6 @@ public class ToolboxDialog extends JDialog {
             // #initializeLocation again just before making the dialog
             // visible. [Jon Aquino 2005-03-14]
             initializeLocation();
-            Dimension dim = new Dimension(toolbarsPanel.getPreferredSize().width,titlePanel.getPreferredSize().height);
-            title.setMaximumSize(dim);
-            title.setPreferredSize(dim);
-            titlePanel.setMaximumSize(dim);
-            titlePanel.setPreferredSize(dim);
-            pack();
             locationInitializedBeforeMakingDialogVisible = true;
         }
         super.setVisible(visible);
@@ -213,45 +188,15 @@ public class ToolboxDialog extends JDialog {
 
     private JPanel toolbarsPanel = new JPanel();
 
-    private GridLayout gridLayout1 = new GridLayout(1, 1, 0, 0);
-
-    private JPanel titlePanel = new JPanel();
-
-    private JLabel title = new JLabel("Toolbox", JLabel.CENTER);
+    private GridLayout gridLayout1 = new GridLayout();
 
     private void jbInit() throws Exception {
         this.getContentPane().setLayout(borderLayout1);
         centerPanel.setLayout(borderLayout2);
-        centerPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED)/*new LineBorder(Color.BLACK)*/);
         toolbarsPanel.setLayout(gridLayout1);
         gridLayout1.setColumns(1);
-        // setup top titlebar label
-        //title.setForeground(Color.WHITE);
-        title.setHorizontalTextPosition(JLabel.CENTER);
-        title.setBorder(BorderFactory.createEmptyBorder(4,2,4,2));
-        title.setToolTipText(I18N.get("com.vividsolutions.jump.workbench.ui.toolbox.click-n-drag-to-move-doubleclick-to-hide"));
-        MouseAdapter mover = new MoveCloser(this);
-        title.addMouseListener(mover);
-        title.addMouseMotionListener(mover);
-        // add bottom line to title
-        titlePanel.setLayout(new BorderLayout());
-        titlePanel.add(title);
-        titlePanel.setBackground(Color.lightGray);
-        titlePanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK));
-        // add components
-        centerPanel.add(titlePanel, BorderLayout.NORTH);
-        centerPanel.add(toolbarsPanel, BorderLayout.CENTER);
-
-        JPanel borderPanel = new JPanel(new BorderLayout());
-        borderPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-        borderPanel.add(centerPanel);
-        this.getContentPane().add(borderPanel, BorderLayout.CENTER);
-    }
-
-    public void setTitle(String text) {
-      super.setTitle(text);
-      title.setText(text);
-      pack();
+        this.getContentPane().add(centerPanel, BorderLayout.CENTER);
+        centerPanel.add(toolbarsPanel, BorderLayout.NORTH);
     }
 
     public JPanel getCenterPanel() {
@@ -268,33 +213,5 @@ public class ToolboxDialog extends JDialog {
     public void setInitialLocation(GUIUtil.Location location) {
         initialLocation = location;
     }
-
-}
-
-class MoveCloser extends MouseAdapter {
-
-  private int offX = 0;
-  private int offY = 0;
-  private Component cp;
-
-  public MoveCloser(Component cp) {
-    this.cp = cp;
-  }
-
-  public void mouseClicked(MouseEvent e) {
-    if (e.getClickCount() > 1)
-      cp.setVisible(false);
-  }
-
-  public void mousePressed(MouseEvent e) {
-    offX = e.getX();
-    offY = e.getY();
-  }
-
-  public void mouseDragged(MouseEvent e) {
-    int newX = cp.getX() + e.getX() - offX;
-    int newY = cp.getY() + e.getY() - offY;
-    cp.setLocation(newX, newY);
-  }
 
 }
