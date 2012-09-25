@@ -270,7 +270,7 @@ public class JUMPWorkbench {
         extensionsDirectory = null;
       }
     } else {
-      extensionsDirectory = new File("../lib/ext");
+      extensionsDirectory = new File("lib/ext");
       if (!extensionsDirectory.exists()) {
         // Added further information so that debug user will know where
         // it is actually looking for as the extension directory. [Ed Deen]
@@ -419,6 +419,7 @@ public class JUMPWorkbench {
     // Apple stuff from Raj Singh's startup script [Jon Aquino 10/30/2003]
     System.setProperty("apple.laf.useScreenMenuBar", "true");
     System.setProperty("apple.awt.showGrowBox", "true");
+    
     if (UIManager.getLookAndFeel() != null
         && UIManager.getLookAndFeel().getClass().getName()
             .equals(UIManager.getSystemLookAndFeelClassName())) {
