@@ -1,5 +1,10 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2012-09-25 ede
+  * AbstractCursorTool:  work around "unable to draw first shape" due to 
+    "java.lang.InternalError: 
+      Unable to Stroke shape (attempt to validate Pipe with invalid SurfaceData)"
+
 2012-09-24 ede
   * probably fix bug 3560708: Only .shp opened from zipped shapefile
     http://sourceforge.net/tracker/?func=detail&atid=679906&aid=3560708&group_id=118054
