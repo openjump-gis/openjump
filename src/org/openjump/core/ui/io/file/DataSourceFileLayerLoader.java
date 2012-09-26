@@ -93,7 +93,7 @@ public class DataSourceFileLayerLoader extends AbstractFileLayerLoader {
     DataSource dataSource = (DataSource)LangUtil.newInstance(dataSourceClass);
     Map<String, Object> properties = toProperties(uri, options);
     dataSource.setProperties(properties);
-    String filename = UriUtil.getFileName(uri);
+    String filename = UriUtil.getFileNameWithoutExtension(uri);
     String layerName = filename;
     if (uri.getScheme().equals("zip"))
       layerName = UriUtil.getZipEntryName(uri)+" ("+filename+")";

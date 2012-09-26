@@ -1,5 +1,11 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2012-09-26 mmichaud <michael.michaud@free.fr>
+  * DataSourceFileLayerLoader : revert a change made a few months ago. Layer
+    name has the file name *without* extension again. Did not yet revert for zip 
+    files which still take the compressed file name (+ zip file name within 
+    parenthesis) 
+
 2012-09-25 ede
   * AbstractCursorTool:  work around "unable to draw first shape" due to 
     "java.lang.InternalError: 
