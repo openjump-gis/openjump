@@ -117,7 +117,7 @@ public class DataSourceFileLayerLoader extends AbstractFileLayerLoader {
         layerManager.addLayerable(category.getName(), layer);
         layer.setName(layerName);
         // make sure compressed files are loaded readonly
-        if (CompressedFile.isCompressed(filename)) {
+        if (CompressedFile.isCompressed(UriUtil.getFileName(uri))) {
             layer.setReadonly(true);
         }
         
