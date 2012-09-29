@@ -75,8 +75,11 @@ import com.vividsolutions.jump.io.WKTWriter;
 import com.vividsolutions.jump.io.datasource.DataSource;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.io.datasource.StandardReaderWriterFileDataSource;
+import com.vividsolutions.jump.task.DummyTaskMonitor;
 import com.vividsolutions.jump.util.FileUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.datasource.DataSourceQueryChooserManager;
+import com.vividsolutions.jump.workbench.datasource.SaveFileDataSourceQueryChooser;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
@@ -579,6 +582,39 @@ public class SaveDatasetsPlugIn extends AbstractPlugIn
     		{
     			(new WKTWriter()).write(layer.getFeatureCollectionWrapper(), dp);
     			return true;
+    		}
+    		
+    		// [mmichaud 2012-09-29] After having tried to save the layer with 
+    		// standard reader/writer (shp, jml...), the method tries to save it
+    		// with other writers registered with DataSourceQueryChooserManager.
+    		// All writers are tested here after, and this method should
+    		// completely replace the previous one, but it needs some care to
+    		// handle shapefile.
+    		// Note that datastores like postgis datastore are currently excluded
+    		// from the method, but it couls probably be included later.
+    		List saveFileChoosers = DataSourceQueryChooserManager
+    		        .get(context.getWorkbenchContext().getBlackboard())
+    		        .getSaveDataSourceQueryChoosers();
+    		for (Object chooser : saveFileChoosers) {
+    		    if (chooser instanceof SaveFileDataSourceQueryChooser) {
+    		        SaveFileDataSourceQueryChooser saver = (SaveFileDataSourceQueryChooser)chooser;
+    		        String[] extensions = saver.getExtensions();
+    		        boolean extension_matches = false;
+    		        for (String ext : extensions) {
+    		            if (filename.matches("(?i).*\\."+ext+"$")) {
+    		                extension_matches = true;
+    		                break;
+    		            }
+    		        }
+    		        if (extension_matches) {
+    		            dsq.getDataSource()
+    		            /*saver.toDataSourceQuery(new File(filename))
+    		                .getDataSource()*/
+    		                .getConnection()
+    		                .executeUpdate(null, layer.getFeatureCollectionWrapper(), new com.vividsolutions.jump.task.DummyTaskMonitor());
+    		            return true;
+    		        }
+    		    }
     		}
     		
     		context.getWorkbenchFrame().getOutputFrame().addText( sUnrecognizedFileType + " --- " + sCouldNotSaveLayer + ": " + layer.getName());
