@@ -5,6 +5,8 @@
     applied on compressed files. This is now fixed.
   * Modify SaveDatasetsPlugIn so that it can save formats defined in drivers
     loaded from extensions (ex. dxf, geoconcept, kml)
+  * SaveDatasetAsPlugIn now replace layer special characters by '_' to
+    propose a valid file name in the file chooser
 
 2012-09-26 mmichaud <michael.michaud@free.fr>
   * DataSourceFileLayerLoader : revert a change made a few months ago. Layer

@@ -55,7 +55,7 @@ public class SaveDatasetAsPlugIn extends AbstractSaveDatasetAsPlugIn {
         if (fcp != null) {
             JFileChooser jfc = fcp.getChooser();
             jfc.setSelectedFile(new File(jfc.getCurrentDirectory(),
-                                context.getLayerNamePanel().getSelectedLayers()[0].getName()));
+                context.getLayerNamePanel().getSelectedLayers()[0].getName().replaceAll("[/:\\\\><\\|]","_")));
         }
 
         getDialog().setVisible(true);
