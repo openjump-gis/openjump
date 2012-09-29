@@ -27,13 +27,13 @@
  */
 
 /*****************************************************
- * created:  		30.Apr.2012
- * last modified:   17.May.2012	added overshoot option			
+ * created:  		4.Sept.2012
+ * last modified:			
  * 					
  * 
  * @author sstein
  * 
- * description: Plugin that extends line segements by closing the line towards a geometry 
+ * description: Plugin that extends line segments by closing the line towards a geometry 
  *              of another layer with polygons or lines using the shortest distance 
  *              connection (i.e. point-line distance)
  * 	
@@ -57,6 +57,7 @@ import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureDataset;
@@ -81,12 +82,13 @@ import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
  **/
 public class PointLayerFromAttributeTablePlugIn extends AbstractThreadedUiPlugIn{
 
-    private String sSidebar ="Creates a point layer from another layers attribute table by using provided attributes as coordintes. Note, coordinate attributes cannot be text (String)";   
-    private final String sLAYER = "Layer with attribute table";
-    private final String sXCoordAttrib = "select attribute with East coordinate";
-    private final String sYCoordAttrib = "select attribute with North coordinate";
-    private final String sZCoordAttrib = "select attribute with Height";
-    private final String sHasZCoord = "data have a z-coordinate / height value ";
+    private String sSidebar =				I18N.get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.descriptiontext");   
+    private final String sLAYER = 			I18N.get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.Layer-with-attribute-table");
+    private final String sXCoordAttrib = 	I18N.get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.select-attribute-with-East-coordinate");
+    private final String sYCoordAttrib = 	I18N.get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.select-attribute-with-North-coordinate");
+    private final String sZCoordAttrib = 	I18N.get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.select-attribute-with-Height");
+    private final String sHasZCoord = 		I18N.get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.data-have-a-z-coordinate-/-height-value");
+    private final String sPointsFrom =		I18N.get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.Points-from");
     
     private FeatureCollection inputFC = null;
     private Layer inputLayer= null;
@@ -102,12 +104,16 @@ public class PointLayerFromAttributeTablePlugIn extends AbstractThreadedUiPlugIn
     
     private PlugInContext context = null;
         
+	public String getName() {
+		return I18N
+				.get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn") + "...";
+	}
+	
     public void initialize(PlugInContext context) throws Exception {
-    				
 	        context.getFeatureInstaller().addMainMenuItem(
-	                new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY}, 	//menu path
+	                new String[] {MenuNames.TOOLS, MenuNames.TOOLS_GENERATE}, 	//menu path
 	                this,
-	                new JMenuItem("Create Point Layer from Attribute Table ...", null),
+	                new JMenuItem( this.getName(), null),
 	                createEnableCheck(context.getWorkbenchContext()), -1);
 	}
 	        
@@ -150,7 +156,7 @@ public class PointLayerFromAttributeTablePlugIn extends AbstractThreadedUiPlugIn
 	    	
 	    	for (Iterator iterator = inputFC.iterator(); iterator.hasNext();) {
 				Feature origFeature = (Feature) iterator.next();
-		    	monitor.report(i, numTransfers, "items processed");	
+		    	monitor.report(i, numTransfers, I18N.get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.items-processed"));	
 
 		    	double xc = origFeature.getDouble(dXCoord);
 		    	double yc = origFeature.getDouble(dYCoord);
@@ -171,7 +177,7 @@ public class PointLayerFromAttributeTablePlugIn extends AbstractThreadedUiPlugIn
 	    	
 	    	// show results
 	        if(resultFC.size() > 0){
-	        	context.addLayer(StandardCategoryNames.RESULT, "Points from " + inputLayer.getName(), resultFC);
+	        	context.addLayer(StandardCategoryNames.RESULT, sPointsFrom + " " + inputLayer.getName(), resultFC);
 	        }
 	    	//--
 	        System.gc();    		
@@ -180,7 +186,7 @@ public class PointLayerFromAttributeTablePlugIn extends AbstractThreadedUiPlugIn
 	private void initDialog(PlugInContext context) {
 		JComboBox layerComboBoxLayerSelection = null;
 		
-        dialog = new MultiInputDialog(context.getWorkbenchFrame(), "Create Point Layer", true);
+        dialog = new MultiInputDialog(context.getWorkbenchFrame(), I18N.get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.Create-Point-Layer"), true);
         dialog.setSideBarDescription(sSidebar);
         
         	layerComboBoxLayerSelection = dialog.addLayerComboBox(this.sLAYER, context.getCandidateLayer(0), null, context.getLayerManager());

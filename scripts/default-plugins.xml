@@ -72,6 +72,7 @@
 	<plug-in>org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.tools.TriangulationPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.tools.VoronoiDiagramPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn</plug-in>
 	<!--- =========  WARP ====================  /-->
 	<plug-in>com.vividsolutions.jump.workbench.ui.warp.WarpingPlugIn</plug-in>	
 	<plug-in>com.vividsolutions.jump.workbench.ui.warp.AffineTransformPlugIn</plug-in>	
