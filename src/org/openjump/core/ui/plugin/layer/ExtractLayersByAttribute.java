@@ -210,11 +210,22 @@ public class ExtractLayersByAttribute extends AbstractPlugIn {
 	        Layer newLayer = context.addLayer(EXTRACT, layerName,
 	        	new FeatureDataset(featureSchema));
 	        if (textAttributeFound) {
-	        	LabelStyle labelStyle = new LabelStyle();
-	        	labelStyle.setAttribute(TEXT);
-	        	labelStyle.setScaling(true);
-	        	labelStyle.setEnabled(true);	        	
-		        newLayer.addStyle(labelStyle);
+	            boolean textAttributePopulated = false;
+		        for (Iterator j = featureList.iterator(); j.hasNext();) {
+		        	Feature feature = (Feature) j.next();
+		        	String attributeValue = feature.getAttribute("TEXT").toString();
+		        	if ( feature.getAttribute(attributeIndex).toString().equals(layerName) && attributeValue != null && !attributeValue.isEmpty()) {
+		        		textAttributePopulated = true;
+			        	break;
+		        	}
+	            }
+	            if (textAttributePopulated) {
+	        	    LabelStyle labelStyle = new LabelStyle();
+	        	    labelStyle.setAttribute(TEXT);
+	        	    labelStyle.setScaling(true);
+	        	    labelStyle.setEnabled(true);	        	
+		            newLayer.addStyle(labelStyle);
+		        }
 	        }
 			context.getLayerManager().setFiringEvents(false);
 	        

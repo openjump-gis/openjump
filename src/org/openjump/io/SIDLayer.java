@@ -380,7 +380,7 @@ public class SIDLayer extends WMSLayer
             {
                 AddSIDLayerPlugIn.MRSIDINFO,
                 sidFilename,
-                "-sid",
+                //"-sid",   //this option is no longer supported (GeoExpressCLUtils-8.0.0.3065)
                 "-quiet",
                 "-log",
                 infoFilename
