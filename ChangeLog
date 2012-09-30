@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2012-07-12 Matthias Scholz <ms@jammerhund.de>
+  * fix bug 3573079 with the detachable attribute window. Plase read the comment
+    in the DetachableInternalFrame.detach() method.
+
 2012-09-29 sstein <sstein@geo.uzh.ch>
   * New function "Tools>Generate>Create Point Layer from Attribute Table..." to generate 
     a point layer based on 2 attribute fields. The function can be used to convert 

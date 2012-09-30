@@ -40,6 +40,7 @@ public class DetachableInternalFrame extends JInternalFrame {
 	private JMenuItem detachMenuItem = null;
 	private JFrame detachedFrame = null;
 	private JRootPane activeRootPane = null;
+    private Point internalFrameLocation = null;
 
 	/**
 	 * Constructs a detachable JInternalFrame.<br/>
@@ -151,7 +152,19 @@ public class DetachableInternalFrame extends JInternalFrame {
 		activeRootPane = this.getRootPane();
 
 		// switch the internalframe invisible
-		this.setVisible(false);
+        /*
+         * We do not set this JInternalFrame invisible! This results in a
+         * ClassCastException in the AttributeTab class and generates problems
+         * with the EnableCheck. Please see Bug Id 3573079
+         * The problem is, that an invisible JInternalFrame can't be an active one.
+         * The solution is simple. We move this JInternalFrame outside the visible
+         * area. And on attach we move it back.
+         */
+        //this.setVisible(false);
+        // save the actual location
+        internalFrameLocation = this.getLocation();
+        // move it outside
+        this.setLocation(0 - bounds.width, 0 - bounds.height);
 
 		// create a new JFrame instance with the content of the internalframe
 		detachedFrame = new JFrame() {
@@ -197,7 +210,10 @@ public class DetachableInternalFrame extends JInternalFrame {
 		// restore rootpane
 		this.setRootPane(activeRootPane);
 		// and make the internal frame visible again
-		this.setVisible(true);
+        // PLEASE read the comment in the detach() method too!
+        //this.setVisible(true);
+        // move it back
+        this.setLocation(internalFrameLocation);
 		
 		detached = false;
 		return true;
