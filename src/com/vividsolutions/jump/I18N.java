@@ -252,7 +252,17 @@ public final class I18N {
    */
   public static String get(final String label) {
     try {
-      return jumpResourceBundle.getString(label);
+      String txt = jumpResourceBundle.getString(label);
+      //-- [sstein 30.Sept.2012] if this string wasn't translated
+	  //   get the default value from jump.properties
+      if(txt.startsWith("#T:")) {
+    	  ResourceBundle defaultRB = ResourceBundle.getBundle("language/jump", Locale.ROOT);
+    	  txt = defaultRB.getString(label);
+    	  //String newtext = defaultRB.getString(label);
+    	  //System.out.println(txt + " >> " + newtext);
+      }
+      //-- [sstein] end
+      return txt;
     } catch (java.util.MissingResourceException e) {
       String[] labelpath = label.split("\\.");
       LOG.debug("No resource bundle or no translation found for the key : "
