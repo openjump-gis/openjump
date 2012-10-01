@@ -65,6 +65,8 @@ and the following plugins
   JumpChart.jar
  Jump Fill Pattern (com.cadplan.jump) - GPL2 - gpl-2.txt
   JumpFillPattern.jar
+ KML Driver (skyjump) - GPL2 - gpl-2.txt
+  kml-driver-*.jar
  Printer (com.cadplan.jump) - GPL2 - gpl-2.txt
   jumpPrinter.jar
  Pirol Csv Dataset 
