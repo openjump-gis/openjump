@@ -1,5 +1,10 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2012-10-01 sstein <sstein@geo.uzh.ch>
+  * New function "Tools>Edit Attributes>Join Table..." to attach attributes 
+  from an one layer to another layer based on a unique ID field. 
+    - new class: JoinTableFromExistingLayerPlugIn 
+
 2012-10-01 mmichaud <michael.michaud@free.fr>
   * ExtractLayersByAttribute port r1.5 from skyjump to openjump
   * SIDLayer port r1.3 from skyjump to openjump
