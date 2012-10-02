@@ -1,8 +1,12 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2012-10-02 mmichaud <michael.michaud@free.fr>
+  * Make csv-driver compatible with SaveDatasetsPlugIn and improve exception 
+    handling
+
 2012-10-01 sstein <sstein@geo.uzh.ch>
   * New function "Tools>Edit Attributes>Join Table..." to attach attributes 
-  from an one layer to another layer based on a unique ID field. 
+    from an one layer to another layer based on a unique ID field. 
     - new class: JoinTableFromExistingLayerPlugIn 
 
 2012-10-01 mmichaud <michael.michaud@free.fr>
