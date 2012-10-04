@@ -83,16 +83,17 @@ import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
  **/
 public class JoinTableFromExistingLayerPlugIn extends AbstractThreadedUiPlugIn{
 
-	private String sSidebar ="Performs a 'Table Join', by adding attributes from the attribute layer " +
-			"to the base layer, creating a new layer. In both tables need to be a unique ID attribute, " +
-			"of data type 'Integer', to perform the matching. The result layer will contain also the " +
-			"unmatched base features, but with empty attribute values";   
-	private final String sLAYERBase = "Base-layer that should be extended";
-	private final String sLAYERwAttributes = "Layer with attributes to join";
-	private final String sBaseLayerID = "Base-layer attribute with unique feature IDs";
-	private final String sTableLayerAttributeID = "Attribute with unique IDs";
-	private final String sDisplayUnmatched = "display unmatched items from base layer";
-
+	private String sSidebar = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.description");   
+	private final String sLAYERBase = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.Base-layer-that-should-be-extended");
+	private final String sLAYERwAttributes = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.Layer-with-attributes-to-join");
+	private final String sBaseLayerID = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.Base-layer-attribute-with-unique-feature-IDs");
+	private final String sTableLayerAttributeID = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.Attribute-with-unique-IDs");
+	private final String sDisplayUnmatched = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.display-unmatched-items-from-base-layer");
+	private final String sAllMatched = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.All-items-matched-no-layer-with-unmatched-features");
+	//-- for output of layers
+	private final String sJoined =  I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.joined");
+	private final String sUnmatchedItems = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.unmatched-items");
+	
 	private FeatureCollection base = null;
 	private FeatureCollection tabletojoin = null;
 	private Layer inputBaseLayer = null;
@@ -105,11 +106,8 @@ public class JoinTableFromExistingLayerPlugIn extends AbstractThreadedUiPlugIn{
 	private PlugInContext context = null;
 
 	public String getName() {
-		/*
 		return I18N
-				.get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn") + "...";
-		 */
-		return "Join Table...";
+				.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn") + "...";
 	}
 
 	public void initialize(PlugInContext context) throws Exception {
@@ -163,7 +161,7 @@ public class JoinTableFromExistingLayerPlugIn extends AbstractThreadedUiPlugIn{
 		int numFeatures = this.base.size();
 		for (Iterator iterator = base.iterator(); iterator.hasNext();) {
 			Feature baseFeature = (Feature) iterator.next();
-			monitor.report(i, numFeatures, "items processed");	
+			monitor.report(i, numFeatures, I18N.get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.items-processed"));	
 			int baseFeatureId = baseFeature.getInteger(dFromID);
 
 			//-- find the base-features corresponding entry
@@ -203,11 +201,14 @@ public class JoinTableFromExistingLayerPlugIn extends AbstractThreadedUiPlugIn{
 
 		// show results
 		if(featuresFound.size() > 0){
-			context.addLayer(StandardCategoryNames.RESULT, this.inputBaseLayer.getName() + " - " + "joined", featuresFound);
+			context.addLayer(StandardCategoryNames.RESULT, this.inputBaseLayer.getName() + " - " + sJoined , featuresFound);
 		}
 		
 		if((this.displayUnmatched) && (featuresMissing.size() > 0)){
-			context.addLayer(StandardCategoryNames.RESULT, this.inputBaseLayer.getName() + " - " + "unmatched items", featuresMissing);
+			context.addLayer(StandardCategoryNames.RESULT, this.inputBaseLayer.getName() + " - " + sUnmatchedItems, featuresMissing);
+		}
+		else{
+			context.getWorkbenchFrame().warnUser(sAllMatched);
 		}
 		
 		//--
@@ -218,7 +219,7 @@ public class JoinTableFromExistingLayerPlugIn extends AbstractThreadedUiPlugIn{
 		JComboBox layerComboBoxBase = null;
 		JComboBox layerComboBoxTable = null;
 
-		dialog = new MultiInputDialog(context.getWorkbenchFrame(), "Connect Sidewalk Lines", true);
+		dialog = new MultiInputDialog(context.getWorkbenchFrame(), this.getName(), true);
 		dialog.setSideBarDescription(sSidebar);
 
 		layerComboBoxBase = dialog.addLayerComboBox(this.sLAYERBase, context.getCandidateLayer(0), null, context.getLayerManager());
