@@ -91,8 +91,10 @@ public class JoinTableFromExistingLayerPlugIn extends AbstractThreadedUiPlugIn{
 	private final String sDisplayUnmatched = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.display-unmatched-items-from-base-layer");
 	private final String sAllMatched = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.All-items-matched-no-layer-with-unmatched-features");
 	//-- for output of layers
-	private final String sJoined =  I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.joined");
+	private final String sJoinResult =  I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.join-result");
 	private final String sUnmatchedItems = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.unmatched-items");
+	private final String sTooManyItems = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.multiple-matches");
+	private final String sMultiMatchesMsg = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.multiple-matches-for-feature-FID");
 	
 	private FeatureCollection base = null;
 	private FeatureCollection tabletojoin = null;
@@ -155,6 +157,7 @@ public class JoinTableFromExistingLayerPlugIn extends AbstractThreadedUiPlugIn{
 
 		FeatureCollection featuresFound = new FeatureDataset(mapping.createSchema("Geometry"));
 		FeatureCollection featuresMissing = new FeatureDataset(base.getFeatureSchema());
+		FeatureCollection featuresWithManyMatches = new FeatureDataset(mapping.createSchema("Geometry"));
 		
 		//-- loop over all base features (as they are our reference)
 		int i = 0;
@@ -168,42 +171,93 @@ public class JoinTableFromExistingLayerPlugIn extends AbstractThreadedUiPlugIn{
 			//   we could optimize this procedure by removing found
 			//   table items from the list
 			boolean notFound = true;
+			boolean foundFirst = false;
+			boolean foundSecond = false;
+			Feature firstFeatureToJoin = null;
 			int j = 0;
 			while(notFound){
 				Feature tmpTableItem = (Feature)allTableFeatures.get(j);
 				int tableItemId = tmpTableItem.getInteger(dToID);
 				if(tableItemId == baseFeatureId){
-					notFound = false;
-					Feature newFeature = new BasicFeature(featuresFound.getFeatureSchema());
-					mapping.transferAttributes(baseFeature, tmpTableItem, newFeature);
-					newFeature.setGeometry((Geometry)baseFeature.getGeometry().clone());
-					featuresFound.add(newFeature);
-				}
+					if (foundFirst == false){
+						firstFeatureToJoin = tmpTableItem;
+						foundFirst = true;
+						notFound = true; //keep searching
+					}
+					else{
+						if(foundSecond == false){
+							//we got i>=2 matches
+							//write the original
+							Feature newFeature = new BasicFeature(featuresFound.getFeatureSchema());
+							mapping.transferAttributes(baseFeature, null, newFeature);
+							newFeature.setGeometry((Geometry)baseFeature.getGeometry().clone());
+							featuresFound.add(newFeature);
+							//and inform the user
+							context.getWorkbenchFrame().warnUser( sMultiMatchesMsg + " : " + baseFeature.getID());
+							//add the first and the second to the multiple list
+							//add first
+							Feature newFeature1 = new BasicFeature(featuresWithManyMatches.getFeatureSchema());
+							mapping.transferAttributes(baseFeature, firstFeatureToJoin, newFeature1);
+							newFeature1.setGeometry((Geometry)baseFeature.getGeometry().clone());
+							featuresWithManyMatches.add(newFeature1);
+							//add second
+							Feature newFeature2 = new BasicFeature(featuresWithManyMatches.getFeatureSchema());
+							mapping.transferAttributes(baseFeature, tmpTableItem, newFeature2);
+							newFeature2.setGeometry((Geometry)baseFeature.getGeometry().clone());
+							featuresWithManyMatches.add(newFeature2);
+							
+							foundSecond = true;
+						}
+						else{//this should be the third match
+							 //just add it to the list 
+							Feature newFeature3 = new BasicFeature(featuresWithManyMatches.getFeatureSchema());
+							mapping.transferAttributes(baseFeature, tmpTableItem, newFeature3);
+							newFeature3.setGeometry((Geometry)baseFeature.getGeometry().clone());
+							featuresWithManyMatches.add(newFeature3);
+						}
+						
+					}
+				}//end: we had a match
 				j++;
 				if(j < numTableFeatures){
 					//we have not searched all yet
 				}
 				else{
-					//we have searched all - so we have no matching
-					//transfer it anyway
-					Feature newFeature = new BasicFeature(featuresFound.getFeatureSchema());
-					mapping.transferAttributes(baseFeature, null, newFeature);
-					newFeature.setGeometry((Geometry)baseFeature.getGeometry().clone());
-					featuresFound.add(newFeature);
-					//and also put into this list
-					featuresMissing.add(baseFeature.clone(true));
-					//stop the loop
+					//we have searched all
 					notFound = false;
 				}
 			} //end while loop over stop-list
+			//-- save if not saved yet
+			if(foundFirst == false){
+				//so we have no matching
+				//transfer it anyway
+				Feature newFeature = new BasicFeature(featuresFound.getFeatureSchema());
+				mapping.transferAttributes(baseFeature, null, newFeature);
+				newFeature.setGeometry((Geometry)baseFeature.getGeometry().clone());
+				featuresFound.add(newFeature);
+				//and also put into this list
+				featuresMissing.add(baseFeature.clone(true));
+				//stop the loop
+			}
+			else{//foundFirst == true
+				if(foundSecond == false){
+					//we have only one match
+					Feature newFeature = new BasicFeature(featuresFound.getFeatureSchema());
+					mapping.transferAttributes(baseFeature, firstFeatureToJoin, newFeature);
+					newFeature.setGeometry((Geometry)baseFeature.getGeometry().clone());
+					featuresFound.add(newFeature);
+				}
+			}
 			i++; //count feature processing (next transfer)
 		}
 
 		// show results
 		if(featuresFound.size() > 0){
-			context.addLayer(StandardCategoryNames.RESULT, this.inputBaseLayer.getName() + " - " + sJoined , featuresFound);
+			context.addLayer(StandardCategoryNames.RESULT, this.inputBaseLayer.getName() + " - " + sJoinResult , featuresFound);
 		}
-		
+		if(featuresWithManyMatches.size() > 0){
+			context.addLayer(StandardCategoryNames.RESULT, this.inputBaseLayer.getName() + " - " + sTooManyItems , featuresWithManyMatches);
+		}
 		if((this.displayUnmatched) && (featuresMissing.size() > 0)){
 			context.addLayer(StandardCategoryNames.RESULT, this.inputBaseLayer.getName() + " - " + sUnmatchedItems, featuresMissing);
 		}
