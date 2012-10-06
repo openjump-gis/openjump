@@ -5,6 +5,7 @@
 	<plug-in>org.openjump.core.ui.plugin.file.SaveImageAsSVGPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.datastore.postgis.SaveToPostGISPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.file.InstallDummyReaderPlugIn</plug-in>
 	<!---  ======================================== /-->
 	<!--  			menu EDIT 						/-->
 	<!--- ========================================= /-->
