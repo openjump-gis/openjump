@@ -348,8 +348,22 @@ public abstract class AbstractMultiInputDialog extends JDialog {
                                  Object selectedItem,
                                  Collection items,
                                  String toolTipText) {
-        JComboBox comboBox = new JComboBox(new Vector(items));
+        final JComboBox comboBox = new JComboBox(new Vector(items));
         comboBox.setSelectedItem(selectedItem);
+        // [mmichaud 2012-10-07] This is a tip to solve bug id 3570707
+        // in windows 7, just after the user chose an item, this item stay
+        // selected (white) and is displayed in front of a white background 
+        // (making it invisible).
+        // This tip change the focus just after the popup menu becomes invisible
+        // so that the name looses its selected status and is painted black on 
+        // white.
+        comboBox.addPopupMenuListener(new javax.swing.event.PopupMenuListener(){
+                public void popupMenuCanceled(javax.swing.event.PopupMenuEvent e) {}
+                public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent e) {
+                    comboBox.transferFocusBackward();
+                }
+                public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent e) {}
+        });
         addRow(fieldName, new JLabel(fieldName), comboBox, null, toolTipText, LEFT_LABEL, NONE);
         return comboBox;
     }

@@ -422,16 +422,18 @@ public class ShapefileWriter implements JUMPWriter {
             AttributeType columnType = fs.getAttributeType(t);
             String columnName = fs.getAttributeName(t);
             
-            //[mmichaud 2012-03-24] increment identical truncated field names 
-            columnName = columnName.substring(0,Math.min(columnName.length(), 11));
+            //[mmichaud 2012-03-24] increment identical truncated field names
+            //[mmichaud 2012-10-07] change from 11 to 10 char (to conform to dbf
+            // specification)
+            columnName = columnName.substring(0,Math.min(columnName.length(), 10));
             if (truncatedFieldNameCounter.get(columnName) == null) {
                 truncatedFieldNameCounter.put(columnName,1);
             }
             else {
                 int count = truncatedFieldNameCounter.get(columnName);
                 truncatedFieldNameCounter.put(columnName, count+1);
-                if (count<10) columnName = columnName.substring(0,9) + "_" + count;
-                else columnName = columnName.substring(0,9) + count;
+                if (count<10) columnName = columnName.substring(0,8) + "_" + count;
+                else columnName = columnName.substring(0,8) + count;
             }
             // end
 
