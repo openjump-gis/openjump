@@ -61,7 +61,8 @@ public class FormulaEditingPanel extends JPanel implements ActionListener, Value
     
     private static final long serialVersionUID = -7709755834905111906L;
     
-    protected JTextArea formulaField = new JTextArea(4,20), errorMessages = new JTextArea(3,20); 
+    protected JTextArea formulaField = new JTextArea(4,20);
+    protected JTextArea errorMessages = new JTextArea(4,20); 
     protected FeatureSchema featureSchema = null;
     protected AttributeInfo[] attributeInfos = null;
     
@@ -104,7 +105,7 @@ public class FormulaEditingPanel extends JPanel implements ActionListener, Value
         this.setLayout(new BorderLayout());
         JPanel formulaAndOperators = new JPanel();
         BorderLayout moreGenerousLayout = new BorderLayout();
-        moreGenerousLayout.setVgap(15);
+        moreGenerousLayout.setVgap(5);
         formulaAndOperators.setLayout(moreGenerousLayout);
         
         //-- [sstein 23.March.2007] -- disable since we do not assume an existing file
@@ -174,11 +175,11 @@ public class FormulaEditingPanel extends JPanel implements ActionListener, Value
         vbox.add(Box.createVerticalGlue());
 
         JScrollPane scrollPane = new JScrollPane(vbox);
-        scrollPane.setSize(new Dimension(wantedWidth, 200));
+        scrollPane.setSize(new Dimension(wantedWidth, 40));
         scrollPane.setMinimumSize(scrollPane.getSize());
         scrollPane.setPreferredSize(scrollPane.getSize());
-        this.setPreferredSize(new Dimension(wantedWidth, 320));
-        this.setSize(new Dimension(wantedWidth, 320));
+        //this.setPreferredSize(new Dimension(wantedWidth, 320));
+        //this.setSize(new Dimension(wantedWidth, 320));
         this.add(scrollPane, BorderLayout.CENTER);
         
         JPanel numberInputAndErrorPanel = new JPanel(new BorderLayout());
@@ -188,15 +189,15 @@ public class FormulaEditingPanel extends JPanel implements ActionListener, Value
         
         numberInputPanel.add(this.numberInputField, BorderLayout.CENTER);
         numberInputPanel.add( new JButton(new AddTextFieldTextToTextAreaOnClick_Action(this.numberInputField, this.formulaField, I18N.get("pirol.plugIns.FormulaEditingPanel.copy-value-to-formula"))), BorderLayout.EAST ); //$NON-NLS-1$
-        
         numberInputAndErrorPanel.add(numberInputPanel, BorderLayout.NORTH);
-        numberInputAndErrorPanel.add(this.errorMessages, BorderLayout.SOUTH);
+        
         this.errorMessages.setEditable(false);
         this.errorMessages.setWrapStyleWord(true);
         this.errorMessages.setLineWrap(true);
-        this.errorMessages.setFont(this.errorMessages.getFont().deriveFont(Font.BOLD));
+        this.errorMessages.setFont(this.errorMessages.getFont().deriveFont(Font.BOLD).deriveFont(12f));
         this.errorMessages.setForeground(Color.red);
         this.errorMessages.setBackground(this.getBackground());
+        numberInputAndErrorPanel.add(this.errorMessages, BorderLayout.SOUTH);
         
         this.add(numberInputAndErrorPanel, BorderLayout.SOUTH);
         

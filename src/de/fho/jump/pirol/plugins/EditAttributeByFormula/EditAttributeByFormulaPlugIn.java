@@ -96,6 +96,7 @@ import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 
 import de.fho.jump.pirol.utilities.FormulaParsing.FormulaValue;
@@ -221,6 +222,7 @@ public class EditAttributeByFormulaPlugIn extends AbstractPlugIn {
 				I18N.get("pirol.plugIns.EditAttributeByFormulaPlugIn.editByFormula-explaining-text"), 
 				layer.getFeatureCollectionWrapper().getFeatureSchema()); 
         
+		GUIUtil.centreOnWindow(dialog);
         dialog.setVisible(true);
         
         String formula = dialog.getFormula();
