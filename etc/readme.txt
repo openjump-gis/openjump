@@ -146,6 +146,8 @@ OpenJUMP command line options
 -plug-in-directory <path> 
   Sets the location of the plugin directory.
   Default: JUMP_HOME/lib/ext
+-project <path/project.jmp>
+  Open a project located on the file system at starting time
 -i18n <locale>
   Overrides the operating systems default locale setting (language, 
   number format etc.) For example:
