@@ -360,7 +360,8 @@ public abstract class AbstractMultiInputDialog extends JDialog {
         comboBox.addPopupMenuListener(new javax.swing.event.PopupMenuListener(){
                 public void popupMenuCanceled(javax.swing.event.PopupMenuEvent e) {}
                 public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent e) {
-                    comboBox.transferFocusBackward();
+                    //comboBox.transferFocusBackward();
+                    comboBox.getParent().requestFocusInWindow();
                 }
                 public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent e) {}
         });
