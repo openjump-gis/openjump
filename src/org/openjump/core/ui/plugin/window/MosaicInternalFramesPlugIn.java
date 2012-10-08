@@ -28,37 +28,19 @@
 
 package org.openjump.core.ui.plugin.window;
 
-import org.openjump.core.ui.images.IconLoader;
-import org.openjump.core.ui.plugin.AbstractUiPlugIn;
-import org.openjump.core.ui.util.ScreenScale;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
-import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
-import com.vividsolutions.jump.workbench.ui.TaskFrame;
-import com.vividsolutions.jump.workbench.ui.Viewport;
-import com.vividsolutions.jump.workbench.ui.ViewportListener;
-
-import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import javax.swing.ImageIcon;
-import javax.swing.JMenuItem;
 import javax.swing.JInternalFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.MenuElement;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import javax.swing.JMenuItem;
+import org.openjump.core.ui.images.IconLoader;
+import org.openjump.core.ui.plugin.AbstractUiPlugIn;
+import org.openjump.core.ui.swing.DetachableInternalFrame;
 
 /**
  * A plugin to layout opened internal frames as a mosaic.
@@ -76,6 +58,7 @@ public class MosaicInternalFramesPlugIn extends AbstractUiPlugIn {
             ICON);
     }
 
+    @Override
     public void initialize(PlugInContext context) throws Exception {
 
         super.initialize(context);
@@ -85,15 +68,26 @@ public class MosaicInternalFramesPlugIn extends AbstractUiPlugIn {
 
     }
 
+    @Override
     public EnableCheck getEnableCheck() {
         EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
         return new MultiEnableCheck()
             .add(checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck());
     }
 
+    @Override
 	public boolean execute(PlugInContext context) throws Exception{
 
-        JInternalFrame[] iframes = context.getWorkbenchFrame().getInternalFrames();
+        // we only provide non detached internal frames for mosaic'ing
+        ArrayList<JInternalFrame> iframeList = new ArrayList<JInternalFrame>();
+        for (JInternalFrame iframe : context.getWorkbenchFrame().getInternalFrames()) {
+            if (!(iframe instanceof DetachableInternalFrame && ((DetachableInternalFrame)iframe).isDetached())) {
+                iframeList.add(iframe);
+            }
+        }
+        
+        JInternalFrame[] iframes = new JInternalFrame[0];
+        iframes = iframeList.toArray(iframes);
         // number of opened internal frames 
         int nbFrames = iframes.length;
         int n = nbFrames;
