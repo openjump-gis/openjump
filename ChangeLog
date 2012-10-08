@@ -2,6 +2,9 @@
 
 2012-10-08 mmichaud <michael.michaud@free.fr>
   * Fix bug id 3570707 : LayerNameRenderer and Windows 7 issue (continue)
+  * If OpenJUMP.exe has a single parameter and this parameter is a file 
+    consider this is a project file and add -project automatically (this makes
+    it possible to associate jmp file extension to OpenJUMP.exe)
 
 2012-10-08 Matthias Scholz <ms@jammerhund.de>
   * fix bug 3575326 with the detachable frames and MosaicInternalFramesPlugIn.

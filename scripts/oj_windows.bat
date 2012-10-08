@@ -158,6 +158,13 @@ if EXIST "bin\workbench-properties.xml" set "JUMP_OPTS=%JUMP_OPTS% -properties b
 rem -- disconnect javaw from console by using start --
 rem -- note: title is needed or start won't accept quoted path to java binary (protect spaces in javapath) --
 if /i "%JAVA_BIN%"=="javaw" ( set START=start "" ) else ( set START= )
+rem -- if OpenJUMP exe has a single parameter and this parameter is a file
+rem -- consider this option as a project file and add -project automatically
+set project="%1"
+set other_options="%2"
+if EXIST %project% (
+  if NOT DEFINED %other_options% set JUMP_OPTS=%JUMP_OPTS% -project
+)
 %START% "%JAVA%" -cp "%CLASSPATH%" %JAVA_OPTS% com.vividsolutions.jump.workbench.JUMPWorkbench %JUMP_OPTS% %*
 
 cd /D %OLD_DIR%
