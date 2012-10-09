@@ -186,7 +186,7 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel implements Actio
 		add(tableComboBox);
 		
 		// method
-		JLabel methodLabel = new JLabel("Save method");
+		JLabel methodLabel = new JLabel(SELECT_SAVE_METHOD);
 		gbConstraints.gridx = 0;
 		gbConstraints.gridy = 6;
 		//gbConstraints.gridheight = 1;
