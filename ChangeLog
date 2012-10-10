@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2012-10-10 mmichaud <michael.michaud@free.fr>
+  * Fix bug 3525977 : PNG rasters with void pixels not displayed
+
 2012-10-08 mmichaud <michael.michaud@free.fr>
   * Fix bug id 3570707 : LayerNameRenderer and Windows 7 issue (continue)
   * If OpenJUMP.exe has a single parameter and this parameter is a file 

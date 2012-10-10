@@ -312,7 +312,9 @@ public class GraphicImage
           //since jpgRightPixel & jpgBotPixel are defined in terms of array element position
           //any questions, see Java documentation for Graphics object
           Composite composite = g.getComposite();
-          g.setComposite(AlphaComposite.Src);
+          //[mmichaud 2012-10-10] fix bug 3525977: PNG rasters with void pixels not displayed
+          //g.setComposite(AlphaComposite.Src);
+          g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
           g.drawImage(image.getAsBufferedImage(), image_x, image_y, image_x + image_w, image_y + image_h, jpgLeftPixel, jpgTopPixel, jpgRightPixel + 1, jpgBotPixel + 1, viewport.getPanel());
           g.setComposite(composite);
 	  }
