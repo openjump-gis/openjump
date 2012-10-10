@@ -8,11 +8,17 @@ import java.util.Vector;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
-
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 
-  public class FindFile {
+public class FindFile {
+    
+    private static final String KEY = FindFile.class.getName();
+
+    private static final String CHOOSE_LOCATION = I18N.get(KEY
+        + ".choose-current-location-of");
+    
     private Vector prefixList = new Vector(5, 5);
 
     private JFileChooser fileChooser;
@@ -23,7 +29,7 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
       this.window = window;
       fileChooser = new JFileChooser();
       fileChooser = GUIUtil.createJFileChooserWithExistenceChecking();
-      fileChooser.setDialogTitle("Choose current location of: ");
+      fileChooser.setDialogTitle(CHOOSE_LOCATION);
       fileChooser.setDialogType(JFileChooser.OPEN_DIALOG);
       fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
       fileChooser.setMultiSelectionEnabled(false);
@@ -57,7 +63,7 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
 
       // at this point didn't find a match
       // ask user to find file
-      fileChooser.setDialogTitle("Choose current location of: " + filenamepath);
+      fileChooser.setDialogTitle(CHOOSE_LOCATION + filenamepath);
       GUIUtil.removeChoosableFileFilters(fileChooser);
       fileChooser.addChoosableFileFilter(GUIUtil.ALL_FILES_FILTER);
       String ext = "";
