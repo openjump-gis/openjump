@@ -96,7 +96,15 @@ public class BasicFeature extends AbstractBasicFeature implements Serializable {
      *@return the attribute
      */
     public Object getAttribute(int i) {
-        return attributes[i];
+        // [mmichaud 2012-10-13] handle dynamic attributes
+        if (getSchema().isOperation(i)) {
+            try {
+                return getSchema().getOperation(i).invoke(this);
+            } catch(Exception e) {
+                return new Error(e); // error is not catched
+            }
+        }
+        else return attributes[i];
         //We used to eat ArrayOutOfBoundsExceptions here. I've removed this behaviour
         //because ArrayOutOfBoundsExceptions are bugs and should be exposed. [Jon Aquino]
     }

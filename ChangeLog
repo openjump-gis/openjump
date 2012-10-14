@@ -1,5 +1,12 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2012-10-14 mmichaud <michael.michaud@free.fr>
+  * Add the capability to have dynamic attributes in a feature.
+    Main modification is in FeatureSchema, but small modifications have also 
+    been made in AbstractBasicFeature, BasicFeature and ViewSchemaPlugIn
+  * Add BeanshellAttributeCalculatorPlugIn to the core.
+    This plugin uses the new dynamic attribute capability
+  
 2012-10-10 mmichaud <michael.michaud@free.fr>
   * Fix bug 3525977 : PNG rasters with void pixels not displayed
 

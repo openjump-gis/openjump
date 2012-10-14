@@ -111,6 +111,7 @@
 	<plug-in>org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.tools.BeanshellAttributeCalculatorPlugIn</plug-in>
 	<!--- =========  Generalization ====================  /-->	
 	<plug-in>org.openjump.core.ui.plugin.tools.LineSimplifyJTS15AlgorithmPlugIn</plug-in>	
 	<!--plug-in>org.openjump.core.ui.plugin.tools.ReducePointsISAPlugIn</plug-in-->

@@ -34,6 +34,8 @@ import java.io.Serializable;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.util.Assert;
+import java.util.HashMap;
+import java.util.Map;
 /**
  * Default implementation of the Feature interface. Subclasses need
  * implement only the four remaining Feature methods: #getAttribute,
@@ -43,6 +45,10 @@ public abstract class AbstractBasicFeature implements Feature, Serializable {
     private static final long serialVersionUID = 4215477286292970800L;
     private FeatureSchema schema;
     private int id;
+    // [mmichaud 2012-10-13] userData idea is taken from the GeoAPI interfaces,
+    // and is used for dynamic attributes calculation to avoid circular references.
+    // Access methods are not yet exposed in Feature interface.
+    private Map<Object,Object> userData;
     /**
      * A low-level accessor that is not normally used.
      */
@@ -212,5 +218,35 @@ public abstract class AbstractBasicFeature implements Feature, Serializable {
         if (a.hashCode() != b.hashCode()) { return a.hashCode() - b.hashCode(); }
         Assert.shouldNeverReachHere();
         return -1;        
+    }
+    
+    /**
+     * Sets a new value in userData replacing the old one for this key.
+     */
+    public void setUserData(Object key, Object value) {
+        if (userData == null) userData = new HashMap<Object,Object>();
+        userData.put(key, value);
+    }
+    
+    /**
+     * Gets the userData value for this key.
+     */
+    public Object getUserData(Object key) {
+        return userData == null ? null : userData.get(key);
+    }
+    
+    /**
+     * Removes the userData value for this key.
+     */
+    public void removeUserData(Object key) {
+        if (userData != null) userData.remove(key);
+    }
+    
+    /**
+     * Remove all the userData keys and nullify the userData map itself.
+     */
+    public void removeAllUserData(Object key) {
+        if (userData != null) userData.clear();
+        userData = null;
     }
 }

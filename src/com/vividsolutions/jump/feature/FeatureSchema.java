@@ -31,6 +31,7 @@
  */
 package com.vividsolutions.jump.feature;
 import java.io.Serializable;
+import java.lang.Object;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -52,6 +53,8 @@ public class FeatureSchema implements Cloneable, Serializable {
     private ArrayList attributeNames = new ArrayList();
     private ArrayList attributeTypes = new ArrayList();
     private ArrayList<Boolean> attributeReadOnly = new ArrayList<Boolean>();
+    // [mmichaud 2012-10-13] add Operation capability for dynamic attributes 
+    private ArrayList<Operation> operations = new ArrayList<Operation>();
 
     //todo Deep-copy! [Jon Aquino]
     //deep copy done 25. Juli 2005 [sstein] 
@@ -63,6 +66,7 @@ public class FeatureSchema implements Cloneable, Serializable {
     			String aname = (String)this.attributeNames.get(i);
     			fs.addAttribute(aname,at);
     			fs.setAttributeReadOnly(i, isAttributeReadOnly(i));
+    			fs.setOperation(i, getOperation(i));
     		}
     		fs.setCoordinateSystem(this.coordinateSystem);
     		return fs;
@@ -145,8 +149,26 @@ public class FeatureSchema implements Cloneable, Serializable {
         attributeTypes.add(attributeType);
         // default to current implementation - all attributes are editable 
         // (not readonly)
-        attributeReadOnly.add(false); 
+        attributeReadOnly.add(false);
+        operations.add(null);
         attributeCount++;
+    }
+    /**
+     * Add a dynamic attribute to this FeatureSchema
+     * A dynamic attribute is a readOnly attribute which is dynamically
+     * evaluated on demand.
+     * @since 1.6
+     */
+    public void addDynamicAttribute(String attributeName, 
+                AttributeType attributeType, Operation operation) {
+        Assert.isTrue(attributeType != AttributeType.GEOMETRY);
+        attributeNames.add(attributeName);
+        attributeNameToIndexMap.put(attributeName, new Integer(attributeCount));
+        attributeTypes.add(attributeType);
+        attributeReadOnly.add(true);
+        operations.add(operation);
+        attributeCount++;
+    
     }
     /**
      * Returns whether the two FeatureSchemas have the same attribute names
@@ -158,6 +180,8 @@ public class FeatureSchema implements Cloneable, Serializable {
     /**
      * Returns whether the two FeatureSchemas have the same attribute names
      * with the same types and (optionally) in the same order.
+     * WARNING : be aware that equals method compare neither isReadOnly attribute 
+     * nor operation. Not sure if it must be added. 
      */
     public boolean equals(Object other, boolean orderMatters) {
         if (!(other instanceof FeatureSchema)) {
@@ -237,6 +261,39 @@ public class FeatureSchema implements Cloneable, Serializable {
 	 */
 	public void setAttributeReadOnly(int attributeIndex, boolean isReadOnly) {
 		attributeReadOnly.set(attributeIndex, isReadOnly);
+	}
+	
+    /**
+	 * Returns true if an attribute must be computed on the fly by an Operation.
+	 * @param attributeIndex The index of the attribute in question.
+	 * @return <tt>TRUE</tt> if the specified attribute is dynamically computed.
+	 */
+	 public boolean isOperation(int attributeIndex) {
+	     return operations.get(attributeIndex) != null;
+	 }
+	 
+	/**
+	 * Set the Operation in charge of computing this attribute.
+	 * @param attributeIndex index of the attribute to compute.
+	 * @param operation operation in charge of the evaluation.
+	 */
+	 public void setOperation(int attributeIndex, Operation operation) {
+	     operations.set(attributeIndex, operation);
+	 }
+	 
+	/**
+	 * Get the operation in charge of the attribute value evaluation.
+	 * @param attributeIndex index of the attribute.
+	 */
+	 public Operation getOperation(int attributeIndex) {
+	     return operations.get(attributeIndex);
+	 }
+	
+	/**
+	 * Interface that any dynamic attribute must implement.
+	 */
+	public static interface Operation {
+	    public Object invoke(Feature feature) throws Exception;
 	}
 
 }

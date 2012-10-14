@@ -91,6 +91,7 @@ import javax.swing.event.InternalFrameEvent;
 
 
 public class ViewSchemaPlugIn extends AbstractPlugIn {
+    
     private static final String KEY = ViewSchemaPlugIn.class + " - FRAME";
     private EditingPlugIn editingPlugIn;
     private GeometryFactory factory = new GeometryFactory();
@@ -123,29 +124,41 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
         FeatureSchema newSchema = new FeatureSchema();
         //-- [sstein 10. Oct 2006] bugfix for colortheming by Ole
         FeatureSchema oldSchema = layer.getFeatureCollectionWrapper().getFeatureSchema();
-        String attributeName = null;
         //-- end
 
         for (int i = 0; i < panel.getModel().getRowCount(); i++) {
         	//-- [sstein 10. Oct 2006] bugfix for colortheming by Ole
-        	attributeName = panel.getModel().get(i).getName();
+        	String attributeName = panel.getModel().get(i).getName();
         	newSchema.addAttribute(attributeName, panel.getModel().get(i).getType());
-        	if ( oldSchema.hasAttribute(attributeName) &&
-        		!newSchema.getAttributeType(attributeName).equals(oldSchema.getAttributeType(attributeName))
-        		){
-        		if (ColorThemingStyle.get(layer) != null){
-        		layer.removeStyle(ColorThemingStyle.get(layer));
-        		layer.getBasicStyle().setEnabled(true);
-        		layer.fireAppearanceChanged();
+        	if (oldSchema.hasAttribute(attributeName)) {
+        	    // [mmichaud - 2012-10-13]
+        	    if (newSchema.getAttributeType(attributeName)
+        	        .equals(oldSchema.getAttributeType(attributeName))) {
+        	        newSchema.setAttributeReadOnly(
+        	            newSchema.getAttributeIndex(attributeName),
+        	            oldSchema.isAttributeReadOnly(oldSchema.getAttributeIndex(attributeName))
+        	        );
+        	        newSchema.setOperation(
+        	            newSchema.getAttributeIndex(attributeName),
+        	            oldSchema.getOperation(oldSchema.getAttributeIndex(attributeName))
+        	        );
+        	    }
+        	    else {
+        		    if (ColorThemingStyle.get(layer) != null) {
+        		        layer.removeStyle(ColorThemingStyle.get(layer));
+        		        layer.getBasicStyle().setEnabled(true);
+        		        layer.fireAppearanceChanged();
+        		    }
         		}
         	}
-        	//-- END: added/modyfied by Ole
+        	//-- END: added/modyfied by Ole        	
         }
 
         List originalFeatures = layer.getFeatureCollectionWrapper().getFeatures();
         ArrayList tempFeatures = new ArrayList();
 
-        //Two-phase commit. Phase 1: check that no conversion errors occur. [Jon Aquino]
+        //Two-phase commit. 
+        //Phase 1: check that no conversion errors occur. [Jon Aquino]
         for (Iterator i = layer.getFeatureCollectionWrapper().iterator();
                 i.hasNext();) {
             Feature feature = (Feature) i.next();
