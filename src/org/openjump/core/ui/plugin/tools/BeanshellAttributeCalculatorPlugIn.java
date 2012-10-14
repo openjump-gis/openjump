@@ -108,6 +108,7 @@ public class BeanshellAttributeCalculatorPlugIn extends ThreadedBasePlugIn
     private static String TEST_EXPRESSION         = I18N.get(KEY + ".test-expression");
     private static String SCRIPT_INIT_ERROR       = I18N.get(KEY + ".script-initialisation-error");
     private static String SCRIPT_EVAL_ERROR       = I18N.get(KEY + ".script-evaluation-error");
+    private static String CHECK_TYPES_MATCH       = I18N.get(KEY + ".check-types-match");
     private static String SCRIPT_EVAL             = I18N.get(KEY + ".script-evaluation");
     private static String SCRIPT_OK               = I18N.get(KEY + ".script-ok");
     
@@ -311,7 +312,8 @@ public class BeanshellAttributeCalculatorPlugIn extends ThreadedBasePlugIn
         public Object invoke(Feature feature) throws Exception {
             return evaluate((BasicFeature)feature);
         }
-        public Object evaluate(BasicFeature f) throws EvalError {
+        public Object evaluate(BasicFeature f) throws EvalError, 
+                               NumberFormatException, IllegalArgumentException {
             FeatureSchema schema = f.getSchema();
             
             // evaluated dynamic attributes are tagged in the feature userData 
@@ -353,6 +355,14 @@ public class BeanshellAttributeCalculatorPlugIn extends ThreadedBasePlugIn
                 else return obj;
             }
             catch(EvalError e) {
+                context.getWorkbenchFrame().warnUser(e.toString());
+                throw e;
+            } 
+            catch(NumberFormatException e) {
+                context.getWorkbenchFrame().warnUser(e.toString());
+                throw e;
+            } 
+            catch(IllegalArgumentException e) {
                 context.getWorkbenchFrame().warnUser(e.toString());
                 throw e;
             }
@@ -448,13 +458,21 @@ public class BeanshellAttributeCalculatorPlugIn extends ThreadedBasePlugIn
         try {
             for (Iterator it = fc.iterator() ; it.hasNext() ; ) {
                 bshExp.evaluate((BasicFeature)it.next());
-                if (count++ > 6) return;
+                if (count++ > 6) break;
             }
             if (count == 0) {
                 bshExp.evaluate(createFakeFeature(fc.getFeatureSchema()));
             }
         } catch(EvalError e) {
             ErrorDialog.show(dialog, SCRIPT_EVAL_ERROR, e.toString(), StringUtil.stackTrace(e));
+            return;
+        } catch(NumberFormatException e) {
+            ErrorDialog.show(dialog, SCRIPT_EVAL_ERROR, CHECK_TYPES_MATCH + "\n" + 
+                e.toString(), StringUtil.stackTrace(e));
+            return;
+        } catch(IllegalArgumentException e) {
+            ErrorDialog.show(dialog, SCRIPT_EVAL_ERROR, CHECK_TYPES_MATCH + "\n" + 
+                e.toString(), StringUtil.stackTrace(e));
             return;
         }
         
