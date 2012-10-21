@@ -123,12 +123,18 @@ public class PlanarGraphPlugIn extends ThreadedBasePlugIn {
         monitor.report(I18N.get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Generate-layer-of-arcs"));
         FeatureCollection fcEdge = createEdgeLayer(
             layer.getFeatureCollectionWrapper(), nodeb, faceb, relb, context);
+        if (fcEdge.size() > 0) {
+            context.getLayerManager().addLayer(CATEGORY, layerName + "_" + EDGE, fcEdge);
+        } else {context.getWorkbenchFrame().warnUser("No edge found");}
         monitor.report(I18N.get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Arc-layer-generated"));
         
         // Create the node Layer
         monitor.report(I18N.get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Create-nodes"));
         if (nodeb) {
             FeatureCollection fcNode = createNodeLayer(fcEdge, context, relb);
+            if (fcNode.size() > 0) {
+                context.getLayerManager().addLayer(CATEGORY, layerName + "_" + NODE, fcNode);
+            } else {context.getWorkbenchFrame().warnUser("No node found");}
         }
         monitor.report(I18N.get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Layer-with-nodes-generated"));
         
@@ -229,7 +235,14 @@ public class PlanarGraphPlugIn extends ThreadedBasePlugIn {
     private void initDialog(PlugInContext context) {
         
         mid = new MultiInputDialog(context.getWorkbenchFrame(), TITLE, true);
-        mid.addLayerComboBox(SELECT_LAYER, context.getLayerManager().getLayer(0), context.getLayerManager());
+        Layer src_layer;
+        if (layerName == null || context.getLayerManager().getLayer(layerName) == null) {
+            src_layer = context.getCandidateLayer(0);
+        } 
+        else {
+            src_layer = context.getLayerManager().getLayer(layerName);
+        }
+        mid.addLayerComboBox(SELECT_LAYER, src_layer, context.getLayerManager());
         mid.addLabel(I18N.get("org.openjump.sigle.plugin.PlanarGraphPlugIn.The-layer-of-arcs-is-always-generated"));
         mid.addCheckBox(CALCULATE_NODES, nodeb);
         mid.addCheckBox(CALCULATE_FACES, faceb);
@@ -299,7 +312,7 @@ public class PlanarGraphPlugIn extends ThreadedBasePlugIn {
             f.setAttribute("ID", new Integer(++no));
             fcEdge.add(f);
         }
-        context.getLayerManager().addLayer(CATEGORY, layerName + "_" + EDGE, fcEdge);
+        //context.getLayerManager().addLayer(CATEGORY, layerName + "_" + EDGE, fcEdge);
         return fcEdge;
     }
     
@@ -329,7 +342,7 @@ public class PlanarGraphPlugIn extends ThreadedBasePlugIn {
             nodes.put(f.getGeometry().getCoordinate(), f);
             fcNode.add(f);
         }
-        context.getLayerManager().addLayer(CATEGORY, layerName + "_" + NODE, fcNode);
+        //context.getLayerManager().addLayer(CATEGORY, layerName + "_" + NODE, fcNode);
         
         // Compute the relation between edges and nodes
         if (relations) {
