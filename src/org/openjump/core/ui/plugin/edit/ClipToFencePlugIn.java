@@ -28,6 +28,7 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.ThreadedPlugIn;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.HTMLFrame;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
@@ -44,7 +45,7 @@ public class ClipToFencePlugIn extends AbstractPlugIn implements ThreadedPlugIn 
 	private static final boolean POLYGON_OUTPUT = false;
 	
 	private WorkbenchContext workbenchContext;
-	private boolean visibleOnly = false;
+	private boolean visibleOnly = true;
 
     public String getName() {  //for the menu
     	return I18N.get("org.openjump.core.ui.plugin.edit.ClipToFencePlugIn.Clip-Map-to-Fence");
@@ -73,7 +74,8 @@ public class ClipToFencePlugIn extends AbstractPlugIn implements ThreadedPlugIn 
 		//dialog.setInset(0);
 		dialog.setSideBarDescription(DIALOGMSG);
 		dialog.addLabel(DIALOGWARNING);
-		dialog.addCheckBox(VISIBLEONLY, false);
+		dialog.addCheckBox(VISIBLEONLY, visibleOnly);
+		GUIUtil.centreOnWindow(dialog);
 		dialog.setVisible(true);
 		if (dialog.wasOKPressed()) {
 			visibleOnly = dialog.getCheckBox(VISIBLEONLY).isSelected();	
