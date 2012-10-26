@@ -686,7 +686,7 @@ public class FeatureInstaller {
    *       this should be reworked/streamlined in a way similar to 
    *       addMainMenuPlugin, which returns the menu item for plugins to attach
    *       listeners or such
-   *       also the whole Mnemonic attachement routing can be done better
+   *       also the whole Mnemonic attachment routing can be done better
    */
   private JMenuItem createPopupMenuItem(JPopupMenu popupMenu, String menuItemName, boolean checkBox, Icon icon){
     Map properties = extractProperties(menuItemName);
