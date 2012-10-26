@@ -663,7 +663,8 @@ public class FeatureInstaller {
    */
   public void addPopupMenuItem(JPopupMenu popupMenu, PlugIn executable,
       String menuItemName, boolean checkBox, Icon icon, EnableCheck enableCheck) {
-    addPopupMenuItem(popupMenu, executable, null, menuItemName, checkBox, icon,
+    JMenuItem menuItem = createPopupMenuItem(popupMenu, menuItemName, checkBox, icon);
+    addPopupMenuItem(popupMenu, executable, null, menuItem, extractProperties(menuItemName),
         enableCheck);
   }
 
@@ -674,15 +675,28 @@ public class FeatureInstaller {
   public void addPopupMenuItem(JPopupMenu popupMenu, PlugIn executable,
       String[] menuPath, String menuItemName, boolean checkBox, Icon icon,
       EnableCheck enableCheck) {
+    JMenuItem menuItem = createPopupMenuItem(popupMenu, menuItemName, checkBox, icon);
+    addPopupMenuItem(popupMenu, executable, menuPath, menuItem, extractProperties(menuItemName),
+        enableCheck);
+  }
+
+  /**
+   * Creates a popup menu item for the methods above
+   * TODO: [ede 10.2012]
+   *       this should be reworked/streamlined in a way similar to 
+   *       addMainMenuPlugin, which returns the menu item for plugins to attach
+   *       listeners or such
+   *       also the whole Mnemonic attachement routing can be done better
+   */
+  private JMenuItem createPopupMenuItem(JPopupMenu popupMenu, String menuItemName, boolean checkBox, Icon icon){
     Map properties = extractProperties(menuItemName);
     menuItemName = removeProperties(menuItemName);
     JMenuItem menuItem = installMnemonic(checkBox ? new JCheckBoxMenuItem(
         menuItemName) : new JMenuItem(menuItemName), popupMenu);
     addMenuItemIcon(menuItem, icon);
-    addPopupMenuItem(popupMenu, executable, menuPath, menuItem, properties,
-        enableCheck);
+    return menuItem;
   }
-
+  
   private void addPopupMenuItem(JPopupMenu popupMenu, final PlugIn executable,
       final String[] menuPath, final JMenuItem menuItem, Map properties,
       final EnableCheck enableCheck) {
