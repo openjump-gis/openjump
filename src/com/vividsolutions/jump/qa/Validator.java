@@ -37,6 +37,7 @@ import java.util.*;
 
 import com.vividsolutions.jts.algorithm.RobustCGAlgorithms;
 import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.operation.IsSimpleOp;
 import com.vividsolutions.jts.operation.valid.*;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
@@ -55,6 +56,7 @@ public class Validator {
     private boolean checkingBasicTopology = true;
     private boolean checkingPolygonOrientation = false;
     private boolean checkingLineStringsSimple = false;
+    private boolean checkingGeometriesSimple = false;
     private boolean checkingMinSegmentLength = false;
     private boolean checkingMinAngle = false;
     private boolean checkingMinPolygonArea = false;
@@ -143,9 +145,20 @@ public class Validator {
      * Sets whether to enforce the constraint that LineStrings must be simple
      * @param checkingLineStringsSimple whether to enforce the constraint that
      * LineStrings must be simple
+     * @deprecated As of OpenJUMP 1.6, replaced by {@link #setCheckingGeometriesSimple}
      */
     public void setCheckingLineStringsSimple(boolean checkingLineStringsSimple) {
         this.checkingLineStringsSimple = checkingLineStringsSimple;
+    }
+    
+    /**
+     * Sets whether to enforce the constraint that Geometries must be simple
+     * @param checkingGeometriesSimple whether to enforce the constraint that
+     * Geometries must be simple
+     * @since OpenJUMP 1.6
+     */
+    public void setCheckingGeometriesSimple(boolean checkingGeometriesSimple) {
+        this.checkingGeometriesSimple = checkingGeometriesSimple;
     }
 
     /**
@@ -245,8 +258,8 @@ public class Validator {
             addIfNotNull(validatePolygonOrientation(feature), validationErrors);
         }
 
-        if (checkingLineStringsSimple) {
-            addIfNotNull(validateLineStringsSimple(feature), validationErrors);
+        if (checkingGeometriesSimple) {
+            addIfNotNull(validateGeometriesSimple(feature), validationErrors);
         }
 
         if (checkingMinSegmentLength) {
@@ -305,24 +318,15 @@ public class Validator {
         return null;
     }
 
-    protected ValidationError validateLineStringsSimple(Feature feature) {
-        return recursivelyValidate(feature.getGeometry(), feature,
-            new RecursiveValidation() {
-                public ValidationError validate(Geometry g, Feature f) {
-                    LineString lineString = (LineString) g;
-
-                    if (!lineString.isSimple()) {
-                        return new ValidationError(ValidationErrorType.NONSIMPLE_LINESTRING,
-                            f, lineString);
-                    }
-
-                    return null;
-                }
-
-                public Class getTargetGeometryClass() {
-                    return LineString.class;
-                }
-            });
+    protected ValidationError validateGeometriesSimple(Feature feature) {
+        // [mmichaud 2012-10-28] isSimple is now able to check geometries of
+        // any dimension (with jts 1.12) and even GeometryCollection (jts 1.13)
+        Geometry geometry = feature.getGeometry();
+        IsSimpleOp simpleOp = new IsSimpleOp(geometry);
+        if (!simpleOp.isSimple()) {
+            return new ValidationError(ValidationErrorType.NONSIMPLE, feature, simpleOp.getNonSimpleLocation());
+        } 
+        else return null;
     }
 
     protected ValidationError validatePolygonOrientation(Feature feature) {

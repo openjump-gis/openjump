@@ -57,9 +57,19 @@ public class ValidationErrorType {
     public final static ValidationErrorType INTERIOR_RING_CW = new ValidationErrorType(
     		I18N.get("qa.ValidationErrorType.polygon-hole-is-oriented-clockwise"));
 
-    /** Linestring not simple */
+    /** 
+     * Linestring not simple 
+     * @deprecated  As of OpenJUMP 1.6, replaced by {@link #NONSIMPLE}
+     */
     public final static ValidationErrorType NONSIMPLE_LINESTRING = new ValidationErrorType(
     		I18N.get("qa.ValidationErrorType.linestring-not-simple"));
+    
+    /** 
+     * Linestring not simple 
+     * @since OpenJUMP 1.6
+     */
+    public final static ValidationErrorType NONSIMPLE = new ValidationErrorType(
+    		I18N.get("qa.ValidationErrorType.non-simple"));
 
     /** Contains segment with length below minimum */
     public final static ValidationErrorType SMALL_SEGMENT = new ValidationErrorType(

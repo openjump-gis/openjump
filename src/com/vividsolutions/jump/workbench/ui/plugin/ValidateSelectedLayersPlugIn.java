@@ -77,7 +77,8 @@ public class ValidateSelectedLayersPlugIn extends AbstractPlugIn
     implements ThreadedPlugIn {
     private static String CHECK_BASIC_TOPOLOGY = "";
     private final static String CHECK_POLYGON_ORIENTATION = I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.check-polygon-orientation");
-    private final static String CHECK_LINESTRINGS_SIMPLE = I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.check-that-linestrings-are-simple");
+    //private final static String CHECK_LINESTRINGS_SIMPLE = I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.check-that-linestrings-are-simple");
+    private final static String CHECK_GEOMETRIES_SIMPLE = I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.check-that-geometries-are-simple");
     private final static String CHECK_POLYGONS_HAVE_NO_HOLES = I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.disallow-polygons-and-multipolygons-with-holes");
     private final static String CHECK_NO_REPEATED_CONSECUTIVE_POINTS = I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.disallow-repeated-consective-points");
     private final static String CHECK_MIN_SEGMENT_LENGTH = I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.check-minimum-segment-length");
@@ -170,8 +171,8 @@ public class ValidateSelectedLayersPlugIn extends AbstractPlugIn
         		CHECK_BASIC_TOPOLOGY));
         validator.setCheckingNoRepeatedConsecutivePoints(dialog.getBoolean(
                 CHECK_NO_REPEATED_CONSECUTIVE_POINTS));
-        validator.setCheckingLineStringsSimple(dialog.getBoolean(
-                CHECK_LINESTRINGS_SIMPLE));
+        validator.setCheckingGeometriesSimple(dialog.getBoolean(
+                CHECK_GEOMETRIES_SIMPLE));
         validator.setCheckingPolygonOrientation(dialog.getBoolean(
                 CHECK_POLYGON_ORIENTATION));
         validator.setCheckingNoHoles(dialog.getBoolean(
@@ -369,8 +370,8 @@ public class ValidateSelectedLayersPlugIn extends AbstractPlugIn
         dialog.addCheckBox(CHECK_MIN_POLYGON_AREA, false);
         dialog.addPositiveDoubleField(MIN_POLYGON_AREA, 0.001,
             5);
-        dialog.addCheckBox(CHECK_LINESTRINGS_SIMPLE, false,
-        		I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.check-that-linestrings-are-simple"));
+        dialog.addCheckBox(CHECK_GEOMETRIES_SIMPLE, false,
+        		I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.check-that-geometries-are-simple"));
         //dialog.startNewColumn();
         dialog.setRightPane();
         dialog.addLabel("<HTML><STRONG>"+I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.geometry-types-validation")+"</STRONG></HTML>");
