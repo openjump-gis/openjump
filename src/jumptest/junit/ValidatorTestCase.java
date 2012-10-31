@@ -38,8 +38,8 @@ public class ValidatorTestCase extends TestCase {
     protected ValidationError validatePolygonOrientation(Feature feature) {
       return super.validatePolygonOrientation(feature);
     }
-    protected ValidationError validateLineStringsSimple(Feature feature) {
-      return super.validateLineStringsSimple(feature);
+    protected ValidationError validateGeometriesSimple(Feature feature) {
+      return super.validateGeometriesSimple(feature);
     }
     protected ValidationError validateMinSegmentLength(Feature feature) {
       return super.validateMinSegmentLength(feature);
@@ -259,32 +259,32 @@ public class ValidatorTestCase extends TestCase {
         + ")")));
   }
 
-  public void testValidateLineStringsSimple() {
+  public void testValidateGeometriesSimple() {
     testValidator.setCheckingLineStringsSimple(true);
-    assertTypeEquals(null, testValidator.validateLineStringsSimple(toFeature("GEOMETRYCOLLECTION EMPTY")));
-    assertTypeEquals(null, testValidator.validateLineStringsSimple(toFeature("MULTIPOINT EMPTY")));
-    assertTypeEquals(null, testValidator.validateLineStringsSimple(toFeature("MULTILINESTRING EMPTY")));
-    assertTypeEquals(null, testValidator.validateLineStringsSimple(toFeature("MULTIPOLYGON EMPTY")));
-    assertTypeEquals(null, testValidator.validateLineStringsSimple(toFeature("POINT EMPTY")));
-    assertTypeEquals(null, testValidator.validateLineStringsSimple(toFeature("LINESTRING EMPTY")));
-    assertTypeEquals(null, testValidator.validateLineStringsSimple(toFeature(new LinearRing(null, null, 0))));
-    assertTypeEquals(null, testValidator.validateLineStringsSimple(toFeature("POLYGON EMPTY")));
+    assertTypeEquals(null, testValidator.validateGeometriesSimple(toFeature("GEOMETRYCOLLECTION EMPTY")));
+    assertTypeEquals(null, testValidator.validateGeometriesSimple(toFeature("MULTIPOINT EMPTY")));
+    assertTypeEquals(null, testValidator.validateGeometriesSimple(toFeature("MULTILINESTRING EMPTY")));
+    assertTypeEquals(null, testValidator.validateGeometriesSimple(toFeature("MULTIPOLYGON EMPTY")));
+    assertTypeEquals(null, testValidator.validateGeometriesSimple(toFeature("POINT EMPTY")));
+    assertTypeEquals(null, testValidator.validateGeometriesSimple(toFeature("LINESTRING EMPTY")));
+    assertTypeEquals(null, testValidator.validateGeometriesSimple(toFeature(new LinearRing(null, null, 0))));
+    assertTypeEquals(null, testValidator.validateGeometriesSimple(toFeature("POLYGON EMPTY")));
 
-    assertTypeEquals(null, testValidator.validateLineStringsSimple(toFeature(
+    assertTypeEquals(null, testValidator.validateGeometriesSimple(toFeature(
         "LINESTRING(0 0, 10 10, 10 0)")));
-    assertTypeEquals(null, testValidator.validateLineStringsSimple(toFeature(
+    assertTypeEquals(null, testValidator.validateGeometriesSimple(toFeature(
         "MULTILINESTRING((100 100, 200 200), (0 0, 10 10, 10 0))")));
 
-    assertTypeEquals(ValidationErrorType.NONSIMPLE_LINESTRING, testValidator.validateLineStringsSimple(toFeature(
+    assertTypeEquals(ValidationErrorType.NONSIMPLE_LINESTRING, testValidator.validateGeometriesSimple(toFeature(
         "LINESTRING(0 0, 10 10, 10 0, 0 10)")));
-    assertTypeEquals(ValidationErrorType.NONSIMPLE_LINESTRING, testValidator.validateLineStringsSimple(toFeature(
+    assertTypeEquals(ValidationErrorType.NONSIMPLE_LINESTRING, testValidator.validateGeometriesSimple(toFeature(
         "MULTILINESTRING((100 100, 200 200), (0 0, 10 10, 10 0, 0 10))")),
         new Coordinate(5, 5));
 
-    assertTypeEquals(null, testValidator.validateLineStringsSimple(toFeature(
+    assertTypeEquals(null, testValidator.validateGeometriesSimple(toFeature(
         "LINESTRING(0 0, 10 10, 10 0, 0 0)")));
 
-    assertTypeEquals(null, testValidator.validateLineStringsSimple(toFeature(new LinearRing(new Coordinate[] {
+    assertTypeEquals(null, testValidator.validateGeometriesSimple(toFeature(new LinearRing(new Coordinate[] {
         new Coordinate(0, 0), new Coordinate(10, 10), new Coordinate(10, 0),
         new Coordinate(0, 0)}, null, 0))));
   }
