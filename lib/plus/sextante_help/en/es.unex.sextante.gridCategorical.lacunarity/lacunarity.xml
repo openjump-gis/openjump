@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm calculates lacunarity statistics for a categorical raster layer. Lacunarity quantifies the spatial structure of categories in a raster layer, analyzing their shape and spatial configuration.&#10;&#10;The algorithm uses a variable-size gliding box and analyzes statistical values of lacunarity across the raster layer for each size." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="* http://proceedings.esri.com/library/userconf/proc02/pap0667/p0667.htm&#10;* www.public.asu.edu/~smyint/publications/CEUS-Lacunarity-Myint-Lam.pdf" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="" description="Algorithm created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="Victor Olaya" description="User_notes" type="0">
+		</element>
+		<element name="INPUT" text="The input categorical layer" description="Input Layer" type="3">
+		</element>
+		<element name="MAX_SIZE" text="The largest size of the gliding window. All sizes from 4 to this largest size are analyzed" description="Largest window size" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT_TABLE" text="A table with lacunarity statistics" description="Lacunarity" type="2">
+		</element>
+		<element name="RESULT_CHART" text="A chart showing how lacunarity varies with window size" description="Lacunarity" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm generates two new layers (raster and vector) with a channel network extracted from a DEM and a layer with addittional information. This second layer should contain a variable that can be used to delineate the channel network. FLow accumulation is the most common used one." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="* D. P. Tarboton, D.G.; Ames. Advances in the mapping of flow networks from digital elevation data. In World Water and Environmental Resources Congress,2001. &#10;* D. Mark. Automated detection of drainage networks from digital elevation models. Cartographica, 21:168-178, 1984." description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="DEM" text="Digital Elevation Model." description="Elevation" type="3">
+		</element>
+		<element name="THRESHOLDLAYER" text="A layer to locate stream headers. Flow accumulation is usually used as the threshold layer. " description="Threshold layer" type="3">
+		</element>
+		<element name="METHOD" text="a condition that the cells of the threshold layer should meet to be part of a stream&#10;* Greater than&#10;* Lower than" description="Threshold" type="3">
+		</element>
+		<element name="THRESHOLD" text="A threshold value to apply the above mentioned condition. It must be in the same units as the threshold layer. The algorithm look for cells that meet the threshold criteria but their upslope cell does not meet it. These are used as starting cells, and channels are delineated from those cells downhill." description="Threshold" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="NETWORK" text="the values of the cells indicate the hierarchical order (Strahler) of the streams that flow through each one of them. In those cells where no stream is defined, no data values will appear." description="Channel network" type="2">
+			<image description="" file="red de drenaje_raster.jpg">
+			</image>
+		</element>
+		<element name="NETWORKVECT" text="The channel network in vector format" description="Channel network" type="2">
+			<image description="" file="red de drenaje_vectorial.jpg">
+			</image>
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

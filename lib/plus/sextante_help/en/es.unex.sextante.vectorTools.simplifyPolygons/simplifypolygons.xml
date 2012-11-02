@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm simplifies points, removing nodes from them. This reduces the amount of data needed to store a polygon, while preserving its original shape as much as possible. The number of nodes removed depends on a tolerance value." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="V&#237;ctor Olaya" description="Algorithm created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="V&#237;ctor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="LAYER" text="The input layer with polygons to simplify" description="Polygons" type="3">
+		</element>
+		<element name="TOLERANCE" text="The tolerance to use. Larger values will yield more simplified polygons (a larger number of points will be removed)" description="Tolerance" type="3">
+		</element>
+		<element name="PRESERVE" text="If selected, the algorithm will preserve the topology." description="Preserve topology" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="The output layer with simplified polygons. The attributes table is left unaltered." description="Simplified polygons" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
