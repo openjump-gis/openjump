@@ -479,8 +479,41 @@ public class ShapefileWriter implements JUMPWriter {
                 f++;                
             } else if (columnType == AttributeType.GEOMETRY) {
                 //do nothing - the .shp file handles this
+            } else if (columnType == null) {
+            	//[sstein 9.Nov.2012] added this, as Sextante delivered an AttributeType set to null
+            	if(columnName.isEmpty() == false){
+	            	// treat as string
+	                int maxlength = findMaxStringLength(featureCollection, t);
+	
+	                if (maxlength > 255) {
+	                    // If truncate option has been applied for less than 30 s
+	                    // automatically switch to truncate option
+	                    if ((new Date().getTime() - lastTimeTruncate) < 30000) {
+	                        maxlength = 255;
+	                    }
+	                    else {
+	                        OKCancelDialog okCancelDialog = getLongFieldManagementDialogBox();
+	                        okCancelDialog.setLocationRelativeTo(null);
+	                        okCancelDialog.setVisible(true);
+	                        if (okCancelDialog.wasOKPressed()) {
+	                            maxlength = 255;
+	                            truncate = true;
+	                        }
+	                        else {
+	                            truncate = false;
+	                            throw new Exception(
+	                                I18N.get("io.ShapefileWriter.export-cancelled") + " " +
+	                                I18N.get("io.ShapefileWriter.more-than-255-characters-field-found"));
+	                        }
+	                    }
+	                }
+	
+	                fields[f] = new DbfFieldDef(columnName, 'C', maxlength, 0);
+	                //fields[f] = overrideWithExistingCompatibleDbfFieldDef(fields[f], fieldMap);
+	               f++;
+            	}
             } else {
-                throw new Exception(I18N.get("io.ShapefileWriter.unsupported-attribute-type"));
+                throw new Exception(I18N.get("io.ShapefileWriter.unsupported-attribute-type") + " : " + columnType.toString() );
             }
         }
 
@@ -539,6 +572,26 @@ public class ShapefileWriter implements JUMPWriter {
                             DBFrow.add(a.toString());
                         }
                     }
+                } else if (columnType == null) {
+                	// [sstein 9 Nov. 2012] added:
+                	// in case there is no attribute type but an attribute name
+                	// which was for instance returned by Sextante Buffer algorithm
+                	// than we treat it like a String
+                	String columnName = fs.getAttributeName(u);
+                	if(columnName.isEmpty() == false){
+                        Object a = feature.getAttribute(u);
+
+                        if (a == null) {
+                            DBFrow.add(new String(""));
+                        } else {
+                            // MD 16 jan 03 - added some defensive programming
+                            if (a instanceof String) {
+                                DBFrow.add(a);
+                            } else {
+                                DBFrow.add(a.toString());
+                            }
+                        }
+                	}
                 }
             }
 
