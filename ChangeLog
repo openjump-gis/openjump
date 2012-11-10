@@ -2,6 +2,7 @@
 
 2012-11-10 mmichaud <michael.michaud@free.fr>
   * PostGIS driver : fix bug ID: 3519931 + split utils methods into two classes
+  * ReferencedImage :: fix bug ID: 3077786 and make images resizable
   
 2012-11-6 Giuseppe Aruta (giuseppe_aruta@yahoo.it)
   * Upgrade Italian and Spanish  language files

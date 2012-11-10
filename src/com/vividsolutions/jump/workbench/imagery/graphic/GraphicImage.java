@@ -124,17 +124,12 @@ public class GraphicImage
   	  }else{
   		  return new Envelope();
   	  }
-  	  
-	  xm = 0;
-	  xM = image.getWidth() * wf.getXSize();
-	  ym = 0;
-	  yM = image.getHeight() * wf.getYSize();
 
-	  xm = xm+wf.getXUpperLeft();
-	  xM = xM+wf.getXUpperLeft();
+	  xm = wf.getXUpperLeft() + wf.getXSize() * (-0.5);
+	  xM = wf.getXUpperLeft() + wf.getXSize() * (-0.5 + image.getWidth());
 
-	  ym = ym+wf.getYUpperLeft();
-	  yM = yM+wf.getYUpperLeft();
+	  ym = wf.getYUpperLeft() + wf.getYSize() * (-0.5);
+	  yM = wf.getYUpperLeft() + wf.getYSize() * (-0.5 + image.getHeight());
 	  
     return new Envelope(xm, xM, ym, yM );
   }
@@ -188,21 +183,6 @@ public class GraphicImage
 //  }
 
   public void paint(Feature f, java.awt.Graphics2D g, Viewport viewport){
-	  
-//	  BufferedImage image = null;
-	  	
-//      if (((jpgFile.exists()) && (jpgFile.isFile()) && (jpgFile.canRead())))
-//      {
-//          FileInputStream in = new FileInputStream(jpgFilename);
-//          JPEGImageDecoder decoder = JPEGCodec.createJPEGDecoder(in);
-//          image = decoder.decodeAsBufferedImage();
-//          jpg_colorspace = decoder.getJPEGDecodeParam().getEncodedColorID();
-//          in.close();
-//      }
-//      else
-//      {
-//      	  return;
-//      }
   
 	  RenderedOp image = null;
   	  if(file.exists() && file.isFile() && file.canRead()){
@@ -234,11 +214,15 @@ public class GraphicImage
           {
         	  // If World File exists then use worldfile for initial upper left coordinates
         	  jpg_xres = wf.getXSize();
-        	  jpg_ulx = wf.getXUpperLeft(); //realworld coords
-        	  jpg_uly = wf.getYUpperLeft(); //realworld coords
+        	  jpg_ulx = wf.getXUpperLeft() - wf.getXSize()*0.5;
+	          jpg_uly = wf.getYUpperLeft() + wf.getYSize()*0.5 - image.getHeight();
           }
           // Set Inital Load to false
           this.initialload = false;
+      }
+      else 
+      {
+          jpg_xres = f.getGeometry().getEnvelopeInternal().getWidth() / image.getWidth();
       }
 
       int image_x = 0; //x position of raster in final image in pixels
@@ -256,9 +240,9 @@ public class GraphicImage
       //Here calculate the real world jpg edges.
       //NOTE: world file coordinates are center of pixels
       double halfPixel = 0.5 * jpg_xres;
-      double rwJpgFileLeftEdge = jpg_ulx - halfPixel;
+      double rwJpgFileLeftEdge = jpg_ulx/* - halfPixel*/;
       double rwJpgFileRightEdge = rwJpgFileLeftEdge + (jpgPixelWidth * jpg_xres);
-      double rwJpgFileTopEdge = jpg_uly + halfPixel;
+      double rwJpgFileTopEdge = jpg_uly/* + halfPixel*/;
       double rwJpgFileBotEdge = rwJpgFileTopEdge - (jpgPixelHeight * jpg_xres);
       
       double rwRasterLeft = Math.max(rwViewLeft, rwJpgFileLeftEdge);

@@ -46,8 +46,8 @@ public class WorldFile {
 	private float rowRotation = 0;
 	private float colRotation = 0;
 	
-	private double xUpperLeft = 0;
-	private double yUpperLeft = 0;
+	private double xUpperLeft = 0.5;
+	private double yUpperLeft = -0.5;
 
 	private WorldFile(){
 	}
