@@ -18,9 +18,11 @@ import java.util.Map;
 import org.openjump.core.ui.io.file.DataSourceFileLayerLoader;
 
 /**
- * Plug-in to open files using a wizard.
+ * Install a dummy reader which does not try to read files with xml or txt 
+ * extension. This is useful to skip those files if there are included in a
+ * zip file
  * 
- * @author Paul Austin
+ * @author Michaël Michaud
  */
 public class InstallDummyReaderPlugIn extends AbstractPlugIn {
 
