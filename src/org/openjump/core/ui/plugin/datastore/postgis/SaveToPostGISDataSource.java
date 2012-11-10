@@ -130,6 +130,8 @@ public class SaveToPostGISDataSource extends com.vividsolutions.jump.io.datasour
                 String quotedTableName = quote(unquote(dbSchemaTable[1]));
                 String local_id_key = (String)getProperties().get(LOCAL_ID_KEY);
                 boolean use_db_id_key = (Boolean)getProperties().get(USE_DB_ID_KEY);
+                // In PostGIS 2.x, default SRID has changed to 0, but don't mind,
+                // AddGeometryColumn automatically change -1 to 0.
                 int srid = getSrid(featureCollection, -1);
                 String geometryType = getGeometryType(featureCollection, "GEOMETRY");
                 int dim = getGeometryDimension(featureCollection, 3);

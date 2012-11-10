@@ -219,7 +219,14 @@ public class PostGISUtil {
         throw new IllegalArgumentException("" + sqlType + " is an unknown SQLType");
     }
     
-    
+    /**
+     * Create the query String to add a GeometryColumn.
+     * Note 1 : In PostGIS 2.x, srid=-1 is automatically converted to srid=0 by
+     * AddGeometryColumn function.
+     * Note 2 : To stay compatible with PostGIS 1.x, last argument of 
+     * AddGeometryColumn is omitted. As a consequence, geometry type is inserted
+     * a the column type rather than a constraint (new default behaviour in 2.x)
+     */
     public static String getAddGeometryColumnStatement(String dbSchema, String dbTable, 
                 String geometryColumn, int srid, String geometryType, int dim) {
         dbSchema = dbSchema == null ? "" : "'" + unquote(dbSchema) + "'::varchar,";
