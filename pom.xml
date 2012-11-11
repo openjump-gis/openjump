@@ -174,23 +174,39 @@
                       dest="${recompress.folder}/plus">
                       <cutdirsmapper dirs="1" />
                     </unzip>
-                    <!-- Set correct permissions for executables -->
-                    <chmod dir="${recompress.folder}" perm="644" type="file"
-                      includes="**" verbose="true" />
-                    <chmod dir="${recompress.folder}" perm="755" type="dir"
-                      includes="**" verbose="true" />
-                    <chmod dir="${recompress.folder}" perm="755" type="file"
-                      includes="**/*.command,**/*.sh,**/*.bat,**/*.exe" verbose="true" />
+                    <!-- recompress jars -->
+                    <taskdef name="p200ant"
+                      classname="de.matthiasmann.p200ant.P200AntTask"
+                      classpath="launcher/p200ant.jar" />
+                    <fileset id="jars2pack" dir="${recompress.folder}/">
+                      <include name="**/*.jar" />
+                      <!-- exclude signed jars, circumvent security errors e.g. 
+                        "SecurityException: SHA1 digest error" -->
+                      <exclude name="**/ermapper.jar" />
+                    </fileset>
+                    <p200ant repack="true">
+                      <fileset refid="jars2pack" />
+                    </p200ant>
                     <!-- Recompress to distro zips -->
                     <zip destfile="${recompress.folder}/${portable.filename}-CORE.zip"
                       level="9">
                       <zipfileset dir="${recompress.folder}/core"
-                        prefix="${version.string}-CORE" />
+                        prefix="${version.string}-CORE"
+                        excludes="**/*.command,**/*.sh,**/*.bat,**/*.exe" />
+                      <zipfileset dir="${recompress.folder}/core"
+                        prefix="${version.string}-CORE"
+                        includes="**/*.command,**/*.sh,**/*.bat,**/*.exe"
+                        filemode="755" />
                     </zip>
                     <zip destfile="${recompress.folder}/${portable.filename}-PLUS.zip"
                       level="9">
                       <zipfileset dir="${recompress.folder}/plus"
-                        prefix="${version.string}-PLUS" />
+                        prefix="${version.string}-PLUS" 
+                        excludes="**/*.command,**/*.sh,**/*.bat,**/*.exe" />
+                      <zipfileset dir="${recompress.folder}/plus"
+                        prefix="${version.string}-PLUS"
+                        includes="**/*.command,**/*.sh,**/*.bat,**/*.exe"
+                        filemode="755" />
                     </zip>
                   </target>
                 </configuration>
@@ -236,6 +252,13 @@
                       dest="${project.build.directory}/izpack/plus/pack0">
                       <cutdirsmapper dirs="1" />
                     </unzip>
+                    <!-- Set correct permissions for executables -->
+                    <chmod dir="${project.build.directory}/izpack" perm="644" type="file"
+                      includes="**" verbose="true" />
+                    <chmod dir="${project.build.directory}/izpack" perm="755" type="dir"
+                      includes="**" verbose="true" />
+                    <chmod dir="${project.build.directory}/izpack" perm="755" type="file"
+                      includes="**/*.command,**/*.sh,**/*.bat,**/*.exe" verbose="true" />
                     <!-- recompress jars -->
                     <taskdef name="p200ant"
                       classname="de.matthiasmann.p200ant.P200AntTask"
