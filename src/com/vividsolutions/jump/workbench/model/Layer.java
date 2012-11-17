@@ -40,6 +40,8 @@ import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureCollectionWrapper;
 import com.vividsolutions.jump.feature.FeatureDataset;
+import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.feature.Operation;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.ui.plugin.AddNewLayerPlugIn;
@@ -54,6 +56,7 @@ import com.vividsolutions.jump.workbench.ui.renderer.style.*;
  * fired.
  */
 public class Layer extends AbstractLayerable implements LayerManagerProxy {
+    
 	public static final String FIRING_APPEARANCE_CHANGED_ON_ATTRIBUTE_CHANGE = Layer.class
 			.getName()
 			+ " - FIRING APPEARANCE CHANGED ON ATTRIBUTE CHANGE";
@@ -239,7 +242,7 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy {
 				}
 			});
 		}
-
+		
 		setFeatureCollectionWrapper(observableFeatureCollection);
 	}
 
@@ -295,6 +298,11 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy {
 	protected void setFeatureCollectionWrapper(
 			FeatureCollectionWrapper featureCollectionWrapper) {
 		this.featureCollectionWrapper = featureCollectionWrapper;
+		// To set FeatureSchema's dynamic attributes (AKA Operations), we need
+		// a reference to the FeatureSchema. This is the reason why it is not
+		// done immediately by the xml2java deserialization but here, after the 
+		// FeatureCollection has been set.
+		setFeatureCollectionSchemaOperations();
 	}
 
 	/**
@@ -539,4 +547,48 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy {
 
 		return this;
 	}
+	
+	public Collection<String> getFeatureSchemaOperations() {
+	    FeatureSchema fs = getFeatureCollectionWrapper().getFeatureSchema();
+	    List<String> operations = new ArrayList<String>();
+	    for (int i = 0 ; i < fs.getAttributeCount()  ; i++) {
+	        Operation operation = fs.getOperation(i);
+	        if (operation != null) operations.add(fs.getOperation(i).toString());
+	        else operations.add("NULL");
+	    }
+	    return Collections.unmodifiableCollection(operations);
+	}
+
+	// Used for Operation deserialization
+	Collection<String> expressions;
+    public void addFeatureSchemaOperation(String expression) {
+	    if (expressions == null) expressions = new ArrayList<String>();
+	    expressions.add(expression);
+	}
+	
+	private void setFeatureCollectionSchemaOperations() {
+	    FeatureCollection fc = getFeatureCollectionWrapper();
+	    if (expressions != null && fc != null &&
+	        expressions.size() == fc.getFeatureSchema().getAttributeCount()) {
+	        FeatureSchema schema = fc.getFeatureSchema();
+	        Iterator<String> it = expressions.iterator();
+	        for (int i = 0 ; i < schema.getAttributeCount() ; i++) {
+	            try {
+	                String expression = it.next();
+	                if (expression != null && !expression.equals("NULL") && expression.indexOf('\n') > -1) {
+	                    String[] class_expression = expression.split("\n", 2);
+	                    Operation op = org.openjump.core.feature.AttributeOperationFactory
+	                        .getFactory(class_expression[0])
+	                        .createOperation(schema.getAttributeType(i), class_expression[1]);
+	                    schema.setOperation(i, op);
+	                    schema.setAttributeReadOnly(i, true);
+	                }
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	            }
+	        }
+	    }
+	    expressions = null;
+	}
+	
 }

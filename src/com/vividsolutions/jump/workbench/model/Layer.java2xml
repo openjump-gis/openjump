@@ -17,4 +17,5 @@
   <element xml-name="styles">
     <element xml-name="style" java-name="style"/>
   </element>
+  <element xml-name="feature-schema-operation" java-name="featureSchemaOperation"/>
 </root>

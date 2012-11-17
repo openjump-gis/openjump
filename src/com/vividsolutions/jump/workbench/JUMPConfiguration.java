@@ -387,6 +387,7 @@ public class JUMPConfiguration implements Setup {
         configureCategoryPopupMenu(workbenchContext, featureInstaller);
         configureLayerViewPanelPopupMenu(workbenchContext, checkFactory,
                 featureInstaller);
+        //org.openjump.core.feature.OperationFactory.init(workbenchContext.createPlugInContext());
 
         initializeRenderingManager();
         

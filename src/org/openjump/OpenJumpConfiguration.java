@@ -24,6 +24,7 @@ import java.util.List;
 import javax.swing.JPopupMenu;
 
 import org.openjump.core.ccordsys.srid.EnsureAllLayersHaveSRIDStylePlugIn;
+import org.openjump.core.feature.BeanshellAttributeOperationFactory;
 import org.openjump.core.rasterimage.AddRasterImageLayerWizard;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.RasterImageLayerRendererFactory;
@@ -127,6 +128,10 @@ public class OpenJumpConfiguration {
 	FieldComponentFactoryRegistry.setFactory(workbenchContext, "CharSetComboBoxField",
       new ComboBoxFieldComponentFactory(workbenchContext, null, Charset.availableCharsets().keySet().toArray()));
 
+    /***************************************************************************
+     * OperationFactories
+     **************************************************************************/
+    BeanshellAttributeOperationFactory baof = new BeanshellAttributeOperationFactory(pluginContext); 
 
     /***************************************************************************
      * menu FILE

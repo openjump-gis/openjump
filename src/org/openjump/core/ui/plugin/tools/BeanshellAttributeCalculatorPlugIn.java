@@ -36,6 +36,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import java.lang.Object;
 import java.util.*;
 
 import java.util.Collection;
@@ -76,6 +77,9 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.OKCancelPanel;
 
+import org.openjump.core.feature.AttributeOperationFactory;
+import org.openjump.core.feature.BeanshellAttributeOperation;
+
 import bsh.EvalError;
 import bsh.Interpreter;
 
@@ -94,7 +98,7 @@ public class BeanshellAttributeCalculatorPlugIn extends ThreadedBasePlugIn
     
     private static final String KEY = BeanshellAttributeCalculatorPlugIn.class.getName();
     
-    private Interpreter interpreter;
+    //private Interpreter interpreter;
     
     //String LAYER                   = I18N.getString(KEY + ".layer");
     private static String BEANSHELL_ATT_CAL       = I18N.get(KEY);
@@ -133,10 +137,10 @@ public class BeanshellAttributeCalculatorPlugIn extends ThreadedBasePlugIn
                                       "()?\"true\":\"false\"",
                                       "?==null?\"0\":\"1\"", };
     
-    String src_layer_name;
+    Layer layer;
     String new_attribute_name = NEW_ATTRIBUTE_NAME;
-    String bsh_expression;
-    AttributeType new_attribute_type;
+    String bsh_expression = "\"Nb Pts = \" + GEOMETRY.getNumPoints()";
+    AttributeType new_attribute_type = AttributeType.STRING;
     boolean dynamic;
     final Vector<String> keywords = new Vector<String>();
     
@@ -158,16 +162,12 @@ public class BeanshellAttributeCalculatorPlugIn extends ThreadedBasePlugIn
         final DualPaneInputDialog dialog = new DualPaneInputDialog (
         context.getWorkbenchFrame(), BEANSHELL_ATT_CAL, true);
         
-        Layer src_layer;
-        if (src_layer_name == null || 
-                context.getLayerManager().getLayer(src_layer_name) == null) {
-            src_layer = context.getCandidateLayer(0);
+        //Layer src_layer;
+        if (layer == null) {
+            layer = context.getCandidateLayer(0);
         } 
-        else {
-            src_layer = context.getLayerManager().getLayer(src_layer_name);
-        }
-        final JComboBox jcb_layer1 = dialog.addLayerComboBox(
-            SOURCE_LAYER, src_layer, null, context.getLayerManager());
+        final JComboBox jcb_layer = dialog.addLayerComboBox(
+            SOURCE_LAYER, layer, null, context.getLayerManager());
         keywords.clear();
         keywords.addAll(getFieldsFromLayer(context.getCandidateLayer(0)));
         Collections.addAll(keywords, FUNCTIONS);
@@ -181,13 +181,18 @@ public class BeanshellAttributeCalculatorPlugIn extends ThreadedBasePlugIn
         list.add(AttributeType.INTEGER);
         list.add(AttributeType.DATE);
         list.add(AttributeType.OBJECT);
-        final JComboBox jcb_type = dialog.addComboBox(NEW_ATTRIBUTE_TYPE, AttributeType.STRING, list, "");
+        final JComboBox jcb_type = dialog.addComboBox(NEW_ATTRIBUTE_TYPE, new_attribute_type, list, "");
+        //jcb_type.addActionListener(new ActionListener() {
+        //    public void actionPerformed(ActionEvent e) {
+        //        new_attribute_type = (AttributeType)dialog.getComboBox(NEW_ATTRIBUTE_TYPE).getSelectedItem();
+        //    }
+        //});
         
         final JCheckBox jcb_dynamic = dialog.addCheckBox(
             DYNAMIC, false, DYNAMIC);
         
         final JTextArea jta_bsh_expression = dialog.addTextAreaField(
-            BSH_EXPRESSION, "\"Nb Pts = \" + GEOMETRY.getNumPoints()", 3, 50, true, null, BSH_EXPRESSION);
+            BSH_EXPRESSION, bsh_expression, 3, 50, true, null, BSH_EXPRESSION);
         
         final JButton test_expression = dialog.addButton(TEST_EXPRESSION);
         test_expression.addActionListener(new ActionListener() {
@@ -212,8 +217,9 @@ public class BeanshellAttributeCalculatorPlugIn extends ThreadedBasePlugIn
             }
         });
         
-        jcb_layer1.addActionListener(new ActionListener() {
+        jcb_layer.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                layer = dialog.getLayer(SOURCE_LAYER);
                 keywords.clear();
                 keywords.addAll(getFieldsFromLayer(dialog.getLayer(SOURCE_LAYER)));
                 Collections.addAll(keywords, FUNCTIONS);
@@ -224,13 +230,13 @@ public class BeanshellAttributeCalculatorPlugIn extends ThreadedBasePlugIn
         GUIUtil.centreOnWindow(dialog);
         dialog.setVisible(true);
         if (dialog.wasOKPressed()) {
-            src_layer_name = dialog.getLayer(SOURCE_LAYER).getName();
+            layer = dialog.getLayer(SOURCE_LAYER);
             new_attribute_name = dialog.getText(NEW_ATTRIBUTE_NAME);
             new_attribute_type = (AttributeType)dialog.getComboBox(NEW_ATTRIBUTE_TYPE).getSelectedItem();
             dynamic = dialog.getBoolean(DYNAMIC);
             bsh_expression = dialog.getText(BSH_EXPRESSION);
-            try {initInterpreter(context, dialog.getLayer(SOURCE_LAYER));}
-            catch(EvalError e) {context.getWorkbenchFrame().warnUser(e.toString());}
+            //try {initInterpreter(context, dialog.getLayer(SOURCE_LAYER));}
+            //catch(EvalError e) {context.getWorkbenchFrame().warnUser(e.toString());}
             return true;
         }
         else return false;
@@ -241,22 +247,21 @@ public class BeanshellAttributeCalculatorPlugIn extends ThreadedBasePlugIn
         monitor.allowCancellationRequests();
         monitor.report(COMPUTING_NEW_ATTRIBUTE + "...");
         
-        FeatureCollection fc = context.getLayerManager().getLayer(src_layer_name).getFeatureCollectionWrapper();
+        FeatureCollection fc = layer.getFeatureCollectionWrapper();
         FeatureSchema fs = fc.getFeatureSchema();
         
-        // Expression evaluator
-        BeanshellExpression bshExp = new BeanshellExpression(context, interpreter,
-                src_layer_name, new_attribute_name, new_attribute_type, bsh_expression);
+        BeanshellAttributeOperation operation = 
+            (BeanshellAttributeOperation)AttributeOperationFactory
+                .getFactory(BeanshellAttributeOperation.class.getName())
+                .createOperation(new_attribute_type, bsh_expression);
         
         // Schema of the new layer
         FeatureSchema dfs = (FeatureSchema)fs.clone();
+        dfs.addAttribute(new_attribute_name, new_attribute_type);
         if (dynamic) {
-            dfs.addDynamicAttribute(new_attribute_name, new_attribute_type, bshExp);
-        } 
-        else {
-            dfs.addAttribute(new_attribute_name, new_attribute_type);
+            dfs.setOperation(dfs.getAttributeCount()-1, operation);
+            dfs.setAttributeReadOnly(dfs.getAttributeCount()-1, true);
         }
-        
         FeatureCollection result = new FeatureDataset(dfs);
         int errors = 0;
         EvalError evalError = null;
@@ -269,153 +274,23 @@ public class BeanshellAttributeCalculatorPlugIn extends ThreadedBasePlugIn
                 }
                 // values are added if the new attribue is not dynamic
                 // otherwise, values are evaluated as needed
-                if (!dynamic) newFeature.setAttribute(new_attribute_name, bshExp.evaluate((BasicFeature)newFeature));
+                if (!dynamic) newFeature.setAttribute(new_attribute_name, 
+                    operation.evaluate((BasicFeature)oldFeature));
                 result.add(newFeature);
             } 
             catch(EvalError e) {
                 throw e;
-                //errors++;
-                //if (errors > 12) {
-                //    context.getWorkbenchFrame().warnUser(TOO_MANY_ERRORS + " (" + e.toString() + ")");
-                //    break;
-                //}
             }
         }
         context.getLayerManager().addLayer(StandardCategoryNames.RESULT, 
-                src_layer_name + "_" + new_attribute_name, result);
-    }
-    
-    /**
-     * BeanshellExpression implements FeatureSchema.Operation wich defines
-     * how dynamic attributes are evaluated.
-     */
-    public static class BeanshellExpression implements FeatureSchema.Operation {
-        private String bsh_expression;
-        private Interpreter interpreter;
-        private PlugInContext context;
-        private String src_layer_name;
-        private String new_attribute_name;
-        private AttributeType new_attribute_type;
-        public BeanshellExpression(PlugInContext context,
-                                   Interpreter interpreter,
-                                   String src_layer_name,
-                                   String dyn_attribute_name,
-                                   AttributeType dyn_attribute_type,
-                                   String bsh_expression) {
-            this.interpreter = interpreter;
-            this.src_layer_name = src_layer_name;
-            this.context = context;
-            this.new_attribute_name = dyn_attribute_name;
-            this.new_attribute_type = dyn_attribute_type;
-            this.bsh_expression = bsh_expression;
-        }
-        public Object invoke(Feature feature) throws Exception {
-            return evaluate((BasicFeature)feature);
-        }
-        public Object evaluate(BasicFeature f) throws EvalError, 
-                               NumberFormatException, IllegalArgumentException {
-            FeatureSchema schema = f.getSchema();
-            
-            // evaluated dynamic attributes are tagged in the feature userData 
-            // to avoid cyclic reference 
-            Set<Integer> evaluatedAttributes = (Set<Integer>)f.getUserData("evaluatedAttributes");
-            if (evaluatedAttributes == null) {
-                evaluatedAttributes = new HashSet<Integer>();
-                f.setUserData("evaluatedAttributes", evaluatedAttributes);
-            }
-            evaluatedAttributes.add(schema.getAttributeCount()-1);
-            
-            for (int i = 0 ; i < schema.getAttributeCount() ; i++) {
-                // to avoid cyclic references, dynamic attributes are evaluated only once
-                if (evaluatedAttributes.contains(i)) continue;
-                try {
-                    interpreter.set(normalizeVarName(
-                        schema.getAttributeName(i)), f.getAttribute(i));
-                    evaluatedAttributes.add(i);
-                }
-                catch(EvalError e) {
-                    context.getWorkbenchFrame().warnUser(e.toString());
-                    throw e;
-                }
-            }
-            f.removeUserData((Object)"evaluatedAttributes");
-            try {
-                interpreter.set("geometry", f.getGeometry());
-                interpreter.set("Geometry", f.getGeometry());
-                interpreter.set("GEOMETRY", f.getGeometry());
-                interpreter.set("feature", f);
-                interpreter.set("Feature", f);
-                interpreter.set("FEATURE", f);
-                Object obj = interpreter.eval(bsh_expression);
-                if (obj == null) return null;
-                else if (new_attribute_type == AttributeType.STRING) return obj.toString();
-                else if (new_attribute_type == AttributeType.DOUBLE) return new Double(obj.toString());
-                else if (new_attribute_type == AttributeType.INTEGER) return new Integer(obj.toString());
-                else if (new_attribute_type == AttributeType.DATE) return new Date(obj.toString());
-                else return obj;
-            }
-            catch(EvalError e) {
-                context.getWorkbenchFrame().warnUser(e.toString());
-                throw e;
-            } 
-            catch(NumberFormatException e) {
-                context.getWorkbenchFrame().warnUser(e.toString());
-                throw e;
-            } 
-            catch(IllegalArgumentException e) {
-                context.getWorkbenchFrame().warnUser(e.toString());
-                throw e;
-            }
-        }
-    }
-    
-    
-    private void initInterpreter(PlugInContext context, Layer layer) throws EvalError {
-        FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
-        interpreter = new Interpreter();
-        interpreter.setClassLoader(context.getWorkbenchContext().getWorkbench()
-                .getPlugInManager().getClassLoader());
-        interpreter.set("wc", context.getWorkbenchContext());
-        interpreter.eval("setAccessibility(true)");
-        interpreter.eval("import com.vividsolutions.jts.geom.*");
-        interpreter.eval("import com.vividsolutions.jump.feature.*");
-        interpreter.eval("import com.vividsolutions.jts.operation.union.UnaryUnionOp");
-
-        interpreter.set(normalizeVarName(layer.getName()), layer);
-        interpreter.eval("selection() {"+
-            "return wc.layerViewPanel.selectionManager.featuresWithSelectedItems;}");
-        interpreter.eval(
-            "dataset(String layerName) {" +
-            "return wc.layerManager.getLayer(layerName).getFeatureCollectionWrapper().features;}");
-        interpreter.eval("intersects(Feature feature, Collection features) {" +
-            "for (f : features) {if (feature.geometry.intersects(f.geometry) && feature.ID!=f.ID) return true;}" +
-            "return false;}");
-        interpreter.eval("distance(Feature feature, Collection features) {" +
-            "min = Double.MAX_VALUE;" +
-            "for (f : features) {min = Math.min(min,feature.geometry.distance(f.geometry));}" +
-            "return min == Double.MAX_VALUE ? null : min;}");
-        interpreter.eval(
-            "round(double d, int i) {" +
-            " p10 = Math.pow(10.0,(double)i);" +
-            " return Math.rint(d*p10)/p10;" +
-            "}");
-    }
-    
-    private static String normalizeVarName(String s) {
-        StringBuffer sb = new StringBuffer(s);
-        for (int i = 0 ; i < s.length() ; i++) {
-            if (!Character.isJavaIdentifierPart(sb.charAt(i))) {
-                sb.setCharAt(i, '_');
-            }
-        }
-        return sb.toString();
+                layer.getName() + "_" + new_attribute_name, result);
     }
     
     private List getFieldsFromLayer(Layer l) {
         List fields = new ArrayList();
         FeatureSchema schema = l.getFeatureCollectionWrapper().getFeatureSchema();
         for (int i = 0 ; i < schema.getAttributeCount() ; i++) {
-           fields.add(normalizeVarName(schema.getAttributeName(i)));  
+           fields.add(BeanshellAttributeOperation.normalizeVarName(schema.getAttributeName(i)));  
         }
         return fields;
     }
@@ -437,32 +312,31 @@ public class BeanshellAttributeCalculatorPlugIn extends ThreadedBasePlugIn
      * against a fake feature if the selected Layer is empty
      */
     private void checkExpression(final PlugInContext context, final DualPaneInputDialog dialog) {
-        src_layer_name = dialog.getLayer(SOURCE_LAYER).getName();
-        new_attribute_name = dialog.getText(NEW_ATTRIBUTE_NAME);
-        new_attribute_type = (AttributeType)dialog.getComboBox(NEW_ATTRIBUTE_TYPE).getSelectedItem();
-        bsh_expression = dialog.getText(BSH_EXPRESSION);
-        try {
-            initInterpreter(context, dialog.getLayer(SOURCE_LAYER));
-        }
-        catch(EvalError e) {
-            ErrorDialog.show(dialog, SCRIPT_INIT_ERROR, e.toString(), StringUtil.stackTrace(e));
-            return;
-        }
-        FeatureCollection fc = context.getLayerManager().getLayer(src_layer_name).getFeatureCollectionWrapper();
-        
-        // Expression evaluator
-        BeanshellExpression bshExp = new BeanshellExpression(context, interpreter,
-                src_layer_name, new_attribute_name, new_attribute_type, bsh_expression);
 
-        int count = 0;
+        String tmp_bsh_expression = dialog.getText(BSH_EXPRESSION);
+        FeatureCollection fc = layer.getFeatureCollectionWrapper();
+        new_attribute_type = (AttributeType)dialog.getComboBox(NEW_ATTRIBUTE_TYPE).getSelectedItem();
+        //FeatureSchema dfs = (FeatureSchema)fc.getFeatureSchema().clone();
+        //dfs.addAttribute(new_attribute_name, new_attribute_type);
         try {
+            BeanshellAttributeOperation operation = 
+                (BeanshellAttributeOperation)AttributeOperationFactory
+                .getFactory(BeanshellAttributeOperation.class.getName())
+                .createOperation(new_attribute_type, tmp_bsh_expression);
+            int count = 0;
             for (Iterator it = fc.iterator() ; it.hasNext() ; ) {
-                bshExp.evaluate((BasicFeature)it.next());
+                BasicFeature old = (BasicFeature)it.next();
+                //BasicFeature bf = new BasicFeature(dfs);
+                //Object[] att = bf.getAttributes();
+                //System.arraycopy(old.getAttributes(), 0, att, 0, old.getAttributes().length);
+                //bf.setAttributes(att);
+                operation.evaluate(old);
                 if (count++ > 6) break;
             }
             if (count == 0) {
-                bshExp.evaluate(createFakeFeature(fc.getFeatureSchema()));
+                operation.evaluate(createFakeFeature(fc.getFeatureSchema()));
             }
+            bsh_expression = tmp_bsh_expression;
         } catch(EvalError e) {
             ErrorDialog.show(dialog, SCRIPT_EVAL_ERROR, e.toString(), StringUtil.stackTrace(e));
             return;

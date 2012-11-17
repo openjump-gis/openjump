@@ -288,12 +288,5 @@ public class FeatureSchema implements Cloneable, Serializable {
 	 public Operation getOperation(int attributeIndex) {
 	     return operations.get(attributeIndex);
 	 }
-	
-	/**
-	 * Interface that any dynamic attribute must implement.
-	 */
-	public static interface Operation {
-	    public Object invoke(Feature feature) throws Exception;
-	}
 
 }
