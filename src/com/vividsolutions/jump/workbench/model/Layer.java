@@ -302,7 +302,7 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy {
 		// a reference to the FeatureSchema. This is the reason why it is not
 		// done immediately by the xml2java deserialization but here, after the 
 		// FeatureCollection has been set.
-		setFeatureCollectionSchemaOperations();
+		setFeatureSchemaOperations();
 	}
 
 	/**
@@ -566,7 +566,7 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy {
 	    expressions.add(expression);
 	}
 	
-	private void setFeatureCollectionSchemaOperations() {
+	private void setFeatureSchemaOperations() {
 	    FeatureCollection fc = getFeatureCollectionWrapper();
 	    if (expressions != null && fc != null &&
 	        expressions.size() == fc.getFeatureSchema().getAttributeCount()) {
