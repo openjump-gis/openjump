@@ -37,8 +37,8 @@ public class SaveToPostGISPlugIn implements PlugIn {
      * @see PlugIn#initialize(com.vividsolutions.jump.workbench.plugin.PlugInContext)
      */
     public void initialize(PlugInContext context) {
-        SaveToPostGISDataSource dataSource = new SaveToPostGISDataSource();
-        dataSource.setWorkbenchContext(context.getWorkbenchContext());
+        SaveToPostGISDataSource dataSource = new SaveToPostGISDataSource(context.getWorkbenchContext());
+        //dataSource.setWorkbenchContext(context.getWorkbenchContext());
         saveChooser = new PostGISSaveDataSourceQueryChooser(dataSource, context);
         
         DataSourceQueryChooserManager.get(

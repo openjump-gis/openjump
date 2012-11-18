@@ -39,21 +39,28 @@ import com.vividsolutions.jump.workbench.datastore.ConnectionManager;
 import com.vividsolutions.jump.workbench.model.cache.CachingFeatureCollection;
 import com.vividsolutions.jump.workbench.model.cache.DynamicFeatureCollection;
 import com.vividsolutions.jump.workbench.ui.plugin.WorkbenchContextReference;
+import com.vividsolutions.jump.workbench.ui.plugin.datastore.DataStoreQueryDataSource;
 import com.vividsolutions.jump.workbench.ui.plugin.datastore.PasswordPrompter;
 
 import static org.openjump.core.ui.plugin.datastore.postgis.PostGISQueryUtil.*;
 
 /**
- * Implementation of DataSource interface to write/update a FeatureCollection
- * into a PostGIS table.
+ * Adds Write capabilities to DataStoreDataSource for PostGIS table.
  */
-public class SaveToPostGISDataSource extends com.vividsolutions.jump.io.datasource.DataSource implements
-        WorkbenchContextReference {
-    
-    //public static final String DATASET_NAME_KEY = "Dataset Name";
+public class SaveToPostGISDataSource extends DataStoreQueryDataSource /*implements
+        WorkbenchContextReference*/ {
     
     // Do not translate, these keys are used to persist information in a map
-    public static final String CONNECTION_DESCRIPTOR_KEY = "Connection Descriptor";
+    //public static final String CONNECTION_DESCRIPTOR_KEY = "Connection Descriptor";
+    
+    // QUERY
+    //public static final String DATASET_NAME_KEY   = "Dataset Name";
+    //public static final String GEOMETRY_ATTRIBUTE_NAME_KEY = "Geometry Attribute Name";
+    //public static final String MAX_FEATURES_KEY   = "Max Features";
+    //public static final String WHERE_CLAUSE_KEY   = "Where Clause";
+    //public static final String CACHING_KEY        = "Caching";
+
+    // UPDATE
     public static final String TABLE_KEY          = "Table";
     
     public static final String SAVE_METHOD_KEY    = "Save method";
@@ -65,10 +72,15 @@ public class SaveToPostGISDataSource extends com.vividsolutions.jump.io.datasour
     public static final String NO_LOCAL_ID        = "NO_LOCAL_ID";
     public static final String USE_DB_ID_KEY      = "USE_DB_ID";
 
-    private WorkbenchContext context;
+    //private WorkbenchContext context;
 
     public SaveToPostGISDataSource() {
         // Called by Java2XML [Jon Aquino 2005-03-16]
+    }
+    
+    /** Constructor used by the SaveToPostGISPlugIn.*/
+    public SaveToPostGISDataSource(WorkbenchContext context) {
+        super(context);
     }
     
     public SaveToPostGISDataSource(String tableName,
@@ -94,13 +106,34 @@ public class SaveToPostGISDataSource extends com.vividsolutions.jump.io.datasour
             
             public FeatureCollection executeQuery(String query,
                     Collection exceptions, TaskMonitor monitor) {
-                throw new UnsupportedOperationException();
+                try {
+                    return createFeatureCollection();
+                } catch (Exception e) {
+                    exceptions.add(e);
+                    return null;
+                }
             }
 
             public FeatureCollection executeQuery(String query,
                     TaskMonitor monitor) throws Exception {
-                throw new UnsupportedOperationException();
+                Collection exceptions = new ArrayList();
+                FeatureCollection featureCollection = executeQuery(query,
+                        exceptions, monitor);
+                if (!exceptions.isEmpty()) {
+                    throw (Exception) exceptions.iterator().next();
+                }
+                return featureCollection;
             }
+            
+            //public FeatureCollection executeQuery(String query,
+            //        Collection exceptions, TaskMonitor monitor) {
+            //    throw new UnsupportedOperationException();
+            //}
+            //
+            //public FeatureCollection executeQuery(String query,
+            //        TaskMonitor monitor) throws Exception {
+            //    throw new UnsupportedOperationException();
+            //}
 
             // Main method doing the job of updating a PostGIS table
             public void executeUpdate(String query,
@@ -219,7 +252,7 @@ public class SaveToPostGISDataSource extends com.vividsolutions.jump.io.datasour
     
     private boolean confirmOverwrite() {
         int opt = JOptionPane.showConfirmDialog(
-                context.getWorkbench().getFrame(),
+                getWorkbenchContext().getWorkbench().getFrame(),
                 I18N.get("org.openjump.core.ui.plugin.datastore.postgis.SaveToPostGISDataSource.overwrite-dialog-message"),
                 I18N.get("org.openjump.core.ui.plugin.datastore.postgis.SaveToPostGISDataSource.overwrite-dialog-title"),
                 JOptionPane.YES_NO_OPTION);
@@ -228,7 +261,7 @@ public class SaveToPostGISDataSource extends com.vividsolutions.jump.io.datasour
     
     private boolean confirmWriteDespiteDifferentSchemas() {
         int opt = JOptionPane.showConfirmDialog(
-                context.getWorkbench().getFrame(),
+                getWorkbenchContext().getWorkbench().getFrame(),
                 I18N.get("org.openjump.core.ui.plugin.datastore.postgis.SaveToPostGISDataSource.schema-mismatch-dialog-message"),
                 I18N.get("org.openjump.core.ui.plugin.datastore.postgis.SaveToPostGISDataSource.schema-mismatch-dialog-title"),
                 JOptionPane.YES_NO_OPTION);                        
@@ -403,28 +436,50 @@ public class SaveToPostGISDataSource extends com.vividsolutions.jump.io.datasour
     }
     
     
-    public void setWorkbenchContext(WorkbenchContext context) {
-        this.context = context;
-        try {
-            // This method is called by OpenProjectPlugIn in the
-            // GUI thread, so now is a good time to prompt for
-            // a password if necessary. [Jon Aquino 2005-03-16]
-            if (ConnectionManager.instance(context) != null &&
-                getProperties() != null &&
-                getProperties().get(CONNECTION_DESCRIPTOR_KEY) != null) {
-                new PasswordPrompter().getOpenConnection(
-                    ConnectionManager.instance(context),
-                    (ConnectionDescriptor)getProperties().get(CONNECTION_DESCRIPTOR_KEY), 
-                    context.getWorkbench().getFrame()
-                );
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+
     
-    public WorkbenchContext getWorkbenchContext() {
-        return context;
-    }
+    //public WorkbenchContext getWorkbenchContext() {
+    //    return context;
+    //}
+    
+    //private FeatureCollection createFeatureCollection() {
+    //    FilterQuery query = new FilterQuery();
+    //    query.setDatasetName((String)getProperties().get(DATASET_NAME_KEY));
+    //    query.setGeometryAttributeName((String)getProperties().get(
+    //            GEOMETRY_ATTRIBUTE_NAME_KEY));
+    //    if (((String)getProperties().get(WHERE_CLAUSE_KEY)).length() > 0) {
+    //        query.setCondition((String) getProperties().get(WHERE_CLAUSE_KEY));
+    //    }
+    //    if (getProperties().get(MAX_FEATURES_KEY) != null) {
+    //        query.setLimit((Integer)getProperties().get(MAX_FEATURES_KEY));
+    //    }
+    //    return new CachingFeatureCollection(new DynamicFeatureCollection(
+    //            (ConnectionDescriptor) getProperties().get(
+    //                    CONNECTION_DESCRIPTOR_KEY), ConnectionManager
+    //                    .instance(context), query))
+    //            .setCachingByEnvelope(((Boolean) LangUtil.ifNull(
+    //                    getProperties().get(CACHING_KEY), Boolean.TRUE))
+    //                    .booleanValue());
+    //}
+    //
+    //public void setWorkbenchContext(WorkbenchContext context) {
+    //    this.context = context;
+    //    try {
+    //        // This method is called by OpenProjectPlugIn in the
+    //        // GUI thread, so now is a good time to prompt for
+    //        // a password if necessary. [Jon Aquino 2005-03-16]
+    //        if (ConnectionManager.instance(context) != null &&
+    //            getProperties() != null &&
+    //            getProperties().get(CONNECTION_DESCRIPTOR_KEY) != null) {
+    //            new PasswordPrompter().getOpenConnection(
+    //                ConnectionManager.instance(context),
+    //                (ConnectionDescriptor)getProperties().get(CONNECTION_DESCRIPTOR_KEY), 
+    //                context.getWorkbench().getFrame()
+    //            );
+    //        }
+    //    } catch (Exception e) {
+    //        throw new RuntimeException(e);
+    //    }
+    //}
 
 }

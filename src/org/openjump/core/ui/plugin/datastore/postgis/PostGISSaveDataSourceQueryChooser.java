@@ -30,6 +30,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.workbench.datasource.DataSourceQueryChooser;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
@@ -47,6 +48,7 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
 	static final String CONNECTION_IS_NOT_POSTGIS = I18N.get(KEY + ".selected-connection-is-not-postgis");
 	static final String UNIQUE_IDENTIFIER_NEEDED  = I18N.get(KEY + ".unique-identifier-is-needed");
     
+	private PlugInContext context;
     private PostGISSaveDriverPanel panel;
     private SaveToPostGISDataSource dataSource;
     private HashMap properties;
@@ -62,7 +64,8 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
      * @param dataSource DataSource object to be queried against.
      */
     public PostGISSaveDataSourceQueryChooser(SaveToPostGISDataSource dataSource, PlugInContext context) {
-        this.dataSource = dataSource; 
+        this.dataSource = dataSource;
+        this.context = context;
         panel = new PostGISSaveDriverPanel(context);
         properties = new HashMap();
     }
@@ -143,6 +146,18 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
         properties.put(SaveToPostGISDataSource.SAVE_METHOD_KEY, panel.getSaveMethod());
         properties.put(SaveToPostGISDataSource.LOCAL_ID_KEY, panel.getLocalId());
         properties.put(SaveToPostGISDataSource.USE_DB_ID_KEY, panel.isCreateDbIdColumnSelected());
+        Layer[] layers = context.getWorkbenchContext().getLayerNamePanel().getSelectedLayers();
+        if (layers.length == 1) {
+            properties.put(SaveToPostGISDataSource.DATASET_NAME_KEY, layers[0].getName());
+            FeatureSchema schema = layers[0].getFeatureCollectionWrapper().getFeatureSchema();
+            //properties.put(SaveToPostGISDataSource.GEOMETRY_ATTRIBUTE_NAME_KEY, schema.getAttributeName(schema.getGeometryIndex()));
+            properties.put(SaveToPostGISDataSource.SQL_QUERY_KEY, "SELECT * FROM " +
+                panel.getTableName() + " LIMIT 100000");
+                
+            //properties.put(SaveToPostGISDataSource.MAX_FEATURES_KEY, 100000);
+            //properties.put(SaveToPostGISDataSource.WHERE_CLAUSE_KEY, "");
+            //properties.put(SaveToPostGISDataSource.CACHING_KEY, false);
+        }
         return properties;
     }
     

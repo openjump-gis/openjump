@@ -1,6 +1,8 @@
 package org.openjump.core.ui.plugin.datastore;
 
 import com.vividsolutions.jump.coordsys.CoordinateSystemRegistry;
+import com.vividsolutions.jump.feature.Feature;
+import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.model.Layer;
@@ -15,6 +17,8 @@ import com.vividsolutions.jump.workbench.ui.plugin.datastore.DataStoreQueryDataS
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.plugin.OpenProjectPlugIn;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
+import java.util.Iterator;
+
 import javax.swing.ImageIcon;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
@@ -54,15 +58,34 @@ public class RefreshDataStoreQueryPlugIn extends ThreadedBasePlugIn {
     public void run(TaskMonitor monitor, final PlugInContext context) throws Exception {
         Layer[] selectedLayers = context.getSelectedLayers();
 	    for (final Layer layer : selectedLayers) {
+	        
+	        FeatureSchema oldSchema = layer.getFeatureCollectionWrapper().getFeatureSchema();
+	        
 	        OpenProjectPlugIn.load(layer,
                 CoordinateSystemRegistry.instance(context.getWorkbenchContext().getBlackboard()),
                 monitor);
+            
+            // Refreshing the layer change its schema. After a refresh,
+            // the following code get the Operation and the readOnly properties
+            // from the previous schema
+            FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
+		    if (oldSchema.equals(schema, false)) {
+		        for (int i = 0 ; i < oldSchema.getAttributeCount() ; i++) {
+		            String name = oldSchema.getAttributeName(i);
+		            int index = schema.getAttributeIndex(name);
+				    schema.setOperation(index, oldSchema.getOperation(i));
+				    schema.setAttributeReadOnly(index, oldSchema.isAttributeReadOnly(i));
+				}
+	        }
+            
             // setFeatureCollectionModified(false) must be set after fireFeaturesChanged
             // As in Layer.setFeatureCollection method, fireFeaturesChanged is
             // called in an invokeLater thread, setFeatureCollectionModified
             // must also be called in an invokeLater clause.
             SwingUtilities.invokeLater(new Runnable() {
-				public void run() {layer.setFeatureCollectionModified(false);}
+				public void run() {
+				    layer.setFeatureCollectionModified(false);
+				}
             });
 	    }
     }

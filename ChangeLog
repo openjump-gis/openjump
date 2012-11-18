@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2012-11-18 mmichaud <michael.michaud@free.fr>
+  * Improvements in the SaveToPostGIS datasource which now extends 
+    DataStoreQueryDataSource (query on demand).
+  
 2012-11-17 mmichaud <michael.michaud@free.fr>
   * Add persistence of BeanshellAttributeOperation in a project
 

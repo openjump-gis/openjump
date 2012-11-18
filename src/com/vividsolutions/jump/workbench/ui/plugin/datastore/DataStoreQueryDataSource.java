@@ -42,6 +42,15 @@ public class DataStoreQueryDataSource extends DataSource implements
     public DataStoreQueryDataSource() {
         // Called by Java2XML [Jon Aquino 2005-03-16]
     }
+    
+    /** Constructor used by the SaveToPostGISPlugIn.*/
+    public DataStoreQueryDataSource(WorkbenchContext context) {
+        this.context = context;
+    }
+    
+    protected WorkbenchContext getWorkbenchContext() {
+        return context;
+    }
 
     public DataStoreQueryDataSource(String datasetName,
             String query,
@@ -95,7 +104,7 @@ public class DataStoreQueryDataSource extends DataSource implements
         };
     }
 
-    private FeatureCollection createFeatureCollection() {
+    protected FeatureCollection createFeatureCollection() {
         FeatureInputStream featureInputStream = null;
         FeatureDataset featureDataset = null;
         

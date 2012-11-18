@@ -112,7 +112,7 @@ public class DataStoreDataSource extends DataSource implements
         };
     }
 
-    private FeatureCollection createFeatureCollection() {
+    protected FeatureCollection createFeatureCollection() {
         FilterQuery query = new FilterQuery();
         query.setDatasetName((String)getProperties().get(DATASET_NAME_KEY));
         query.setGeometryAttributeName((String)getProperties().get(
