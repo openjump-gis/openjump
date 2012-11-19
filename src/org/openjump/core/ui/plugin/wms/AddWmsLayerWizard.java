@@ -47,7 +47,7 @@ public class AddWmsLayerWizard extends AbstractWizardGroup {
   private ChooseProjectPanel chooseProjectPanel;
 
   public AddWmsLayerWizard(WorkbenchContext workbenchContext) {
-    super(I18N.get("org.openjump.core.ui.plugin.wms.AddWmsLayerWizard.Add-WMS-Layer"), IconLoader.icon("SmallWorld.png"),
+    super(I18N.get("org.openjump.core.ui.plugin.wms.AddWmsLayerWizard.Add-WMS-Layer"), IconLoader.icon("globe3_16.png"),
       URLWizardPanel.class.getName());
     this.workbenchContext = workbenchContext;
   }

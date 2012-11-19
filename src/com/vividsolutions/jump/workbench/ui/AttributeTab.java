@@ -368,7 +368,7 @@ public class AttributeTab extends JPanel implements LayerNamePanel {
             .add(
                 new JButton(),
                 I18N.get("ui.AttributeTab.zoom-to-full-extent"),
-                IconLoader.icon("SmallWorld.gif"),
+                IconLoader.icon("globe3_16.png"),
                 new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {

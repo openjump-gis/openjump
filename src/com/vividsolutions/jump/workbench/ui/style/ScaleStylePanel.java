@@ -34,8 +34,7 @@ public class ScaleStylePanel extends JPanel implements StylePanel {
 
     private static final ImageIcon MAX_SCALE_ICON = IconLoader.icon("Atom.gif");
 
-    private static final ImageIcon MIN_SCALE_ICON = GUIUtil.resize(IconLoader
-            .icon("World2.gif"), 32);
+    private static final ImageIcon MIN_SCALE_ICON = IconLoader.icon("globe3_32.png");
 
     private JCheckBox enableScaleDependentRenderingCheckBox = null;
 

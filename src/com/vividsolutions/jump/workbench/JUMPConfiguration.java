@@ -824,8 +824,7 @@ public class JUMPConfiguration implements Setup {
                                 .add(checkFactory.createFenceMustBeDrawnCheck()));
         featureInstaller.addMenuSeparator(MenuNames.VIEW); // ===================
         featureInstaller.addMainMenuItem(zoomToFullExtentPlugIn, new String[]{MenuNames.VIEW},
-                zoomToFullExtentPlugIn.getName(), false, GUIUtil
-                        .toSmallIcon(zoomToFullExtentPlugIn.getIcon()),
+                zoomToFullExtentPlugIn.getName(), false, zoomToFullExtentPlugIn.getIcon16(),
                 zoomToFullExtentPlugIn.createEnableCheck(workbenchContext));
         featureInstaller
         			.addMainMenuItem(
