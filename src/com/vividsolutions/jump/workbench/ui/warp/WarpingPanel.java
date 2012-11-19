@@ -849,7 +849,10 @@ public class WarpingPanel extends JPanel {
             }
         }));
         sourceLayerComboBox.setModel(sourceLayerComboBoxModel);
-        sourceLayerComboBox.setRenderer(new LayerNameRenderer());
+        LayerNameRenderer layerListCellRenderer = new LayerNameRenderer();
+        layerListCellRenderer.setCheckBoxVisible(false);
+        layerListCellRenderer.setProgressIconLabelVisible(false);
+        sourceLayerComboBox.setRenderer(layerListCellRenderer);
         warpButton.setIcon(IconLoader.icon("GoalFlag.gif"));
         layerLabel.setText(I18N.get("ui.warp.WarpingPanel.source-layer"));
         this.setLayout(gridBagLayout1);

@@ -88,11 +88,7 @@ public abstract class AbstractMultiInputDialog extends JDialog {
     /** Attribute combobox message displayed if no valid attribute is available.*/
     public static final String NO_VALID_ATTRIBUTE = I18N.get("ui.MultiInputDialog.no-valid-attribute");
     
-    
-    private LayerNameRenderer layerListCellRenderer = new LayerNameRenderer();
-    
-    
-    /**
+   /**
      * @param frame the frame on which to make this dialog modal and centred
      * @param title the title of the dialog box
      * @param modal set if the dialog box is modal or not
@@ -350,21 +346,6 @@ public abstract class AbstractMultiInputDialog extends JDialog {
                                  String toolTipText) {
         final JComboBox comboBox = new JComboBox(new Vector(items));
         comboBox.setSelectedItem(selectedItem);
-        // [mmichaud 2012-10-07] This is a tip to solve bug id 3570707
-        // in windows 7, just after the user chose an item, this item stay
-        // selected (white) and is displayed in front of a white background 
-        // (making it invisible).
-        // This tip change the focus just after the popup menu becomes invisible
-        // so that the name looses its selected status and is painted black on 
-        // white.
-        comboBox.addPopupMenuListener(new javax.swing.event.PopupMenuListener(){
-                public void popupMenuCanceled(javax.swing.event.PopupMenuEvent e) {}
-                public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent e) {
-                    //comboBox.transferFocusBackward();
-                    comboBox.getParent().requestFocusInWindow();
-                }
-                public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent e) {}
-        });
         addRow(fieldName, new JLabel(fieldName), comboBox, null, toolTipText, LEFT_LABEL, NONE);
         return comboBox;
     }
@@ -643,8 +624,12 @@ public abstract class AbstractMultiInputDialog extends JDialog {
                                       Layer initialValue,
                                       String toolTipText,
                                       Collection layers) {
-        addComboBox(fieldName, initialValue, layers, toolTipText);
-        getComboBox(fieldName).setRenderer(layerListCellRenderer);
+        JComboBox comboBox = addComboBox(fieldName, initialValue, layers, toolTipText);
+        LayerNameRenderer layerListCellRenderer = new LayerNameRenderer();
+        layerListCellRenderer.setCheckBoxVisible(false);
+        layerListCellRenderer.setProgressIconLabelVisible(false);
+        comboBox.setRenderer(layerListCellRenderer);
+        comboBox.invalidate();
         return getComboBox(fieldName);
     }
     

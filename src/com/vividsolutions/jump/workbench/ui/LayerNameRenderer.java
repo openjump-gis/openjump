@@ -25,20 +25,15 @@
  * (250)385-6040 www.vividsolutions.com
  */
 package com.vividsolutions.jump.workbench.ui;
-import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.workbench.model.Layer;
-import com.vividsolutions.jump.workbench.model.Layerable;
-import com.vividsolutions.jump.workbench.model.WMSLayer;
-import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import com.vividsolutions.jump.workbench.ui.plugin.wms.MapLayerPanel;
-import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Rectangle;
+
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -50,7 +45,16 @@ import javax.swing.JTree;
 import javax.swing.ListCellRenderer;
 import javax.swing.UIManager;
 import javax.swing.tree.TreeCellRenderer;
+
 import org.openjump.core.rasterimage.RasterImageLayer;
+
+import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.model.Layer;
+import com.vividsolutions.jump.workbench.model.Layerable;
+import com.vividsolutions.jump.workbench.model.WMSLayer;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.plugin.wms.MapLayerPanel;
+import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
 
 public class LayerNameRenderer extends JPanel implements ListCellRenderer,
 		TreeCellRenderer {
@@ -142,9 +146,27 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
 		return gridBagLayout.getLayoutDimensions()[1][0];
 	}
 
-	public void setCheckBoxVisible(boolean checkBoxVisible) {
-		checkBox.setVisible(checkBoxVisible);
-	}
+  private boolean showProgressIconLabel = true;
+  private boolean showImageLabel = true;
+  private boolean showColorPanel = true;
+  private boolean showCheckBox = true;
+  private boolean showLabel = true;
+  
+  public void setProgressIconLabelVisible(boolean visible) {
+    showProgressIconLabel = visible;
+  }
+  public void setImageLabelVisible(boolean visible) {
+    showImageLabel = visible;
+  }
+  public void setColorPanelVisible(boolean visible) {
+    showColorPanel = visible;
+  }
+  public void setCheckBoxVisible(boolean visible) {
+    showCheckBox = visible;
+  }
+  public void setLabelVisible(boolean visible) {
+    showLabel = visible;
+  }
 
 	/**
 	 * Workaround for bug 4238829 in the Java bug database: "JComboBox
@@ -167,125 +189,147 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
 		imageLabel.setVisible(false);
 		colorPanel.setVisible(false);
 		if (isSelected) {
-			label.setForeground(list.getSelectionForeground());
-			label.setBackground(list.getSelectionBackground());
+		// [ede 11.2012] commented label.set* because it triggers
+		// http://sourceforge.net/tracker/?func=detail&atid=679906&aid=3570707&group_id=118054
+			//label.setForeground(list.getSelectionForeground());
+			//label.setBackground(list.getSelectionBackground());
 			setForeground(list.getSelectionForeground());
 			setBackground(list.getSelectionBackground());
 		} else {
-			label.setForeground(list.getForeground());
-			label.setBackground(list.getBackground());
+			//label.setForeground(list.getForeground());
+			//label.setBackground(list.getBackground());
 			setForeground(list.getForeground());
 			setBackground(list.getBackground());
 		}
 		return this;
     }
 
-	public Component getListCellRendererComponent(JList list, Object value,
-			int index, boolean isSelected, boolean cellHasFocus) {
-		if (value == null) {
-			return defaultListCellRenderer.getListCellRendererComponent(list,
-					value, index, isSelected, cellHasFocus);
-		}
-		// Accepting String is not the normal use, but it makes it possible 
-		// to pass special values as "All Layers" or "Selected Layers" (used in
-		// QueryDialog).
-		if (value instanceof String) {
-		    return getListCellRendererComponent(list, (String)value, index, isSelected, cellHasFocus);
-		}
-		// end of 
-		Layerable layerable = (Layerable) value;
-		label.setText(layerable.getName());
-		/*setToolTipText(layerable.getName()
-				+ ((layerable instanceof Layer
-						&& (((Layer) layerable).getDescription() != null) && (((Layer) layerable)
-						.getDescription().trim().length() > 0)) ? (": " + ((Layer) layerable)
-						.getDescription())
-						: ""));*/
-        String tooltip = "";
-        if (layerable instanceof Layer) {
-            if (((Layer) layerable).getDescription() == null ||
-                ((Layer) layerable).getDescription().trim().length() == 0 ||
-                ((Layer) layerable).getDescription().equals(layerable.getName())) {
-                tooltip = FEATURE_COUNT + " = " +
-                    ((Layer) layerable).getFeatureCollectionWrapper().size();
-            }
-            else {tooltip = layerable.getName() + ": " +
-                  ((Layer) layerable).getDescription();
-            }
-        }
-        else tooltip = layerable.getName();
-        setToolTipText(tooltip);
+  private Component formatLayerEntry(JList list, Object value,
+      int index, boolean isSelected, boolean cellHasFocus) {
+    // only treat layers & strings
+    if (value == null || ! (value instanceof Layerable || value instanceof String) )
+      return defaultListCellRenderer.getListCellRendererComponent(list, value,
+          index, isSelected, cellHasFocus);
+    
+    // Accepting String is not the normal use, but it makes it possible
+    // to pass special values as "All Layers" or "Selected Layers" (used in
+    // QueryDialog).
+    if (value instanceof String) {
+      return getListCellRendererComponent(list, (String) value, index,
+          isSelected, cellHasFocus);
+    }
 
-		if (isSelected) {
-			//label.setForeground(list.getForeground());            //LDB: use this instead of following
-			label.setForeground(list.getSelectionForeground());   //LDB: causes Vista render problem
-			label.setBackground(list.getSelectionBackground());
-			setForeground(list.getSelectionForeground());
-			setBackground(list.getSelectionBackground());
-		} else {
-			label.setForeground(list.getForeground());
-			label.setBackground(list.getBackground());
-			setForeground(list.getForeground());
-			setBackground(list.getBackground());
-		}
-		
-		colorPanel.setVisible(layerable instanceof Layer);
-		checkBox.setSelected(layerable.isVisible());
-		if (indicatingEditability && layerable instanceof Layer) {
-			if (((Layer) layerable).isEditable()) {
-				if (!((Layer) layerable).isSelectable()) {  
-					label.setFont(editableUnselectableFont); //LDB [2007-09-18] italic feedback
-				}else {
-					label.setFont(editableFont);
-				}
-			}else {
-				if (!((Layer) layerable).isSelectable()) {
-					label.setFont(unselectableFont);
-				}else {
-					label.setFont(font);
-				}
-			}
-			label.setForeground(isSelected ? SELECTED_EDITABLE_FONT_COLOR
-					: UNSELECTED_EDITABLE_FONT_COLOR);
-		} else {
-			label.setFont(font);
-		}
-		if (layerable instanceof WMSLayer) {
-		    imageLabel.setIcon(wmsIcon);
-		    imageLabel.setVisible(true);
-		}
-		if (layerable instanceof RasterImageLayer) {
-		    imageLabel.setIcon(rasterIcon);
-		    imageLabel.setVisible(true);
-		}
-		// Only show the progress icon (clocks) for WMSLayers and
-		// database-backed layers, not Layers. Otherwise it's too busy.
-		// [Jon Aquino]
-		if (layerable.getBlackboard().get(USE_CLOCK_ANIMATION_KEY, false)
-				&& indicatingProgress
-				&& (renderingManager.getRenderer(layerable) != null)
-				&& renderingManager.getRenderer(layerable).isRendering()) {
-			layerable.getBlackboard().put(PROGRESS_ICON_KEY,
-					layerable.getBlackboard().get(PROGRESS_ICON_KEY, 0) + 1);
-			if (layerable.getBlackboard().getInt(PROGRESS_ICON_KEY) > (getProgressIcons().length - 1)) {
-				layerable.getBlackboard().put(PROGRESS_ICON_KEY, 0);
-			}
-			progressIconLabel.setIcon(getProgressIcons()[layerable
-					.getBlackboard().getInt(PROGRESS_ICON_KEY)]);
-		} else {
-			progressIconLabel.setIcon(clearProgressIcon);
-			layerable.getBlackboard().put(PROGRESS_ICON_KEY, null);
-		}
-		Color backgroundColor = list.getBackground();
-		Color selectionBackgroundColor = list.getSelectionBackground();
-		if (layerable instanceof Layer) {
-		    imageLabel.setVisible(false);
-			Layer layer = (Layer) layerable;
-			colorPanel.init(layer, isSelected, backgroundColor,
-					selectionBackgroundColor);
-		}
-		return this;
-	}
+    // assign layername to list entry
+    Layerable layerable = (Layerable) value;
+    label.setText(layerable.getName());
+    // show if allowed
+    label.setVisible(showLabel);
+
+    /*
+     * setToolTipText(layerable.getName() + ((layerable instanceof Layer &&
+     * (((Layer) layerable).getDescription() != null) && (((Layer) layerable)
+     * .getDescription().trim().length() > 0)) ? (": " + ((Layer) layerable)
+     * .getDescription()) : ""));
+     */
+    String tooltip = "";
+    if (layerable instanceof Layer) {
+      if (((Layer) layerable).getDescription() == null
+          || ((Layer) layerable).getDescription().trim().length() == 0
+          || ((Layer) layerable).getDescription().equals(layerable.getName())) {
+        tooltip = FEATURE_COUNT + " = "
+            + ((Layer) layerable).getFeatureCollectionWrapper().size();
+      } else {
+        tooltip = layerable.getName() + ": "
+            + ((Layer) layerable).getDescription();
+      }
+    } else {
+      tooltip = layerable.getName();
+    }
+    setToolTipText(tooltip);
+
+    // set proper colors for text
+    if (isSelected) {
+      // [ede 11.2012] commented label.set* because it triggers
+      // http://sourceforge.net/tracker/?func=detail&atid=679906&aid=3570707&group_id=118054
+      //label.setForeground(list.getSelectionForeground());
+      //label.setBackground(list.getSelectionBackground());
+      setForeground(list.getSelectionForeground());
+      setBackground(list.getSelectionBackground());
+    } else {
+      //label.setForeground(list.getForeground());
+      //label.setBackground(list.getBackground());
+      setForeground(list.getForeground());
+      setBackground(list.getBackground());
+    }
+
+    checkBox.setSelected(layerable.isVisible());
+    checkBox.setVisible(showCheckBox);
+    
+    // indicate editablility (if enabled) via text formatting (regular,italic ...)
+    if (indicatingEditability && layerable instanceof Layer) {
+      if (((Layer) layerable).isEditable()) {
+        if (!((Layer) layerable).isSelectable()) {
+          label.setFont(editableUnselectableFont); // LDB [2007-09-18] italic
+                                                   // feedback
+        } else {
+          label.setFont(editableFont);
+        }
+      } else {
+        if (!((Layer) layerable).isSelectable()) {
+          label.setFont(unselectableFont);
+        } else {
+          label.setFont(font);
+        }
+      }
+      label.setForeground(isSelected ? SELECTED_EDITABLE_FONT_COLOR
+          : UNSELECTED_EDITABLE_FONT_COLOR);
+    } else {
+      label.setFont(font);
+    }
+    
+    imageLabel.setVisible(false);
+    colorPanel.setVisible(false);
+    // either add image icon for image layers (if allowed)
+    if (showImageLabel) {
+      if (layerable instanceof WMSLayer)
+        imageLabel.setIcon(wmsIcon);
+      if (layerable instanceof RasterImageLayer)
+        imageLabel.setIcon(rasterIcon);
+      imageLabel.setVisible(true);
+    }
+    // or colorpanel for vector layers
+    if (showColorPanel && layerable instanceof Layer) {
+      colorPanel.init((Layer) layerable, isSelected, list.getBackground(),
+          list.getSelectionBackground());
+      colorPanel.setVisible(true);
+    }
+
+    progressIconLabel.setVisible(false);
+    // show the progress icon if allowed
+    if (showProgressIconLabel) {
+      // Only show the progress icon (clocks) for WMSLayers and
+      // database-backed layers, not Layers. Otherwise it's too busy.
+      // [Jon Aquino]
+      if (layerable.getBlackboard().get(USE_CLOCK_ANIMATION_KEY, false)
+          && indicatingProgress
+          && (renderingManager.getRenderer(layerable) != null)
+          && renderingManager.getRenderer(layerable).isRendering()) {
+        layerable.getBlackboard().put(PROGRESS_ICON_KEY,
+            layerable.getBlackboard().get(PROGRESS_ICON_KEY, 0) + 1);
+        if (layerable.getBlackboard().getInt(PROGRESS_ICON_KEY) > (getProgressIcons().length - 1)) {
+          layerable.getBlackboard().put(PROGRESS_ICON_KEY, 0);
+        }
+        progressIconLabel.setIcon(getProgressIcons()[layerable.getBlackboard()
+            .getInt(PROGRESS_ICON_KEY)]);
+      } else {
+        progressIconLabel.setIcon(clearProgressIcon);
+        layerable.getBlackboard().put(PROGRESS_ICON_KEY, null);
+      }
+      progressIconLabel.setVisible(true);
+    }
+
+    return this;
+  }
 
 	private JList list(JTree tree) {
 		JList list = new JList();
@@ -298,11 +342,35 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
 		return list;
 	}
 
+  public Component getListCellRendererComponent(JList list, Object value,
+      int index, boolean isSelected, boolean cellHasFocus) {
+    // generally format layer
+    formatLayerEntry(list, value, index, isSelected, cellHasFocus);
+    
+    // assign proper width to cell entry
+    setPreferredSize(getPreferredListSize());
+    //System.out.println(index +","+value.toString()+","+getPreferredListSize().width);
+    
+    return this;
+  }
+
+  // calculate the optimimum width for listcells to show complete content
+  private Dimension getPreferredListSize() {
+    int width = 0, height = 0;
+    for (Component comp : getComponents()) {
+      int cheight = comp.getPreferredSize().height;
+      height = cheight>height ? cheight : height;
+      width += comp.getPreferredSize().width;
+    }
+    return new Dimension(width,height);
+  }
+  
 	public Component getTreeCellRendererComponent(JTree tree, Object value,
 			boolean selected, boolean expanded, boolean leaf, int row,
 			boolean hasFocus) {
 		Layerable layerable = (Layerable) value;
-		getListCellRendererComponent(list(tree), layerable, -1, selected,
+		// generally format layer
+		formatLayerEntry(list(tree), layerable, row, selected,
 				hasFocus);
 		if (selected) {
 			label.setForeground(UIManager.getColor("Tree.selectionForeground"));
@@ -321,6 +389,7 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
 						: UNSELECTED_EDITABLE_FONT_COLOR);
 			}
 		}
+
 		return this;
 	}
 

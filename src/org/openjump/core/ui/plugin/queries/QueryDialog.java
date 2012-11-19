@@ -43,6 +43,7 @@ import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.FeatureSelection;
 import com.vividsolutions.jump.workbench.ui.InfoFrame;
+import com.vividsolutions.jump.workbench.ui.LayerNameRenderer;
 import com.vividsolutions.jump.workbench.ui.TaskFrame;
 
 
@@ -401,7 +402,9 @@ public class QueryDialog extends BDialog {
     
     void initComboBoxes() {
         // INIT layerCB and attributeCB
-        com.vividsolutions.jump.workbench.ui.LayerNameRenderer layerListCellRenderer = new com.vividsolutions.jump.workbench.ui.LayerNameRenderer();
+        LayerNameRenderer layerListCellRenderer = new LayerNameRenderer();
+        layerListCellRenderer.setCheckBoxVisible(false);
+        layerListCellRenderer.setProgressIconLabelVisible(false);
         
         layerCB.removeAll();
         layerCB.add(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.all-layers"));

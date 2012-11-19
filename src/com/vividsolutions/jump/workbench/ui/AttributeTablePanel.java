@@ -245,7 +245,7 @@ public class AttributeTablePanel extends JPanel {
         }
     };
 
-    private LayerNameRenderer layerNameRenderer = new LayerNameRenderer();
+    private LayerNameRenderer layerListCellRenderer;
 
     private ArrayList listeners = new ArrayList();
 
@@ -259,14 +259,14 @@ public class AttributeTablePanel extends JPanel {
         // this panel is exactly for this layer
         this.layer = model.getLayer();
         if (addScrollPane) {
-            remove(table);
-            remove(table.getTableHeader());
-            JScrollPane scrollPane = new JScrollPane();
-            scrollPane.getViewport().add(table);
-            this.add(scrollPane, new GridBagConstraints(0, 2, 1, 1, 1, 1,
-                    GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(
-                            0, 0, 0, 0), 0, 0));
-		}
+          remove(table);
+          remove(table.getTableHeader());
+          JScrollPane scrollPane = new JScrollPane();
+          scrollPane.getViewport().add(table);
+          this.add(scrollPane, new GridBagConstraints(0, 2, 1, 1, 1, 1,
+              GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0,
+                  0, 0), 0, 0));
+        }
         updateGrid(model.getLayer());
         model.getLayer().getLayerManager().addLayerListener(
                 new LayerListener() {
@@ -292,7 +292,7 @@ public class AttributeTablePanel extends JPanel {
         try {
             JList list = new JList();
             list.setBackground(new JLabel().getBackground());
-            layerNameRenderer.getListCellRendererComponent(list, model
+            layerListCellRenderer.getListCellRendererComponent(list, model
                     .getLayer(), -1, false, false);
             table.setModel(model);
             model.addTableModelListener(new TableModelListener() {
@@ -310,8 +310,8 @@ public class AttributeTablePanel extends JPanel {
                     }
                 }
             });
-            layerNameRenderer.getLabel().setFont(
-                    layerNameRenderer.getLabel().getFont()
+            layerListCellRenderer.getLabel().setFont(
+                    layerListCellRenderer.getLabel().getFont()
                             .deriveFont(Font.BOLD));
             model.addTableModelListener(new TableModelListener() {
 
@@ -400,11 +400,14 @@ public class AttributeTablePanel extends JPanel {
     }
 
     private AttributeTablePanel() {
-        try {
+      layerListCellRenderer = new LayerNameRenderer();
+      layerListCellRenderer.setCheckBoxVisible(false);
+      layerListCellRenderer.setProgressIconLabelVisible(false);
+      try {
         jbInit();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
     }
 
     private void updateGrid(Layer layer) {
@@ -417,12 +420,12 @@ public class AttributeTablePanel extends JPanel {
 
     private void updateLabel() {//[sstein] change for translation
     	if (getModel().getRowCount() == 1) {
-    		 layerNameRenderer.getLabel().setText(
+    		 layerListCellRenderer.getLabel().setText(
                     getModel().getLayer().getName() + " ("
                             + getModel().getRowCount() + " "
 							+ I18N.get("ui.AttributeTablePanel.feature") + ")");
     	} else {
-    		 layerNameRenderer.getLabel().setText(
+    		 layerListCellRenderer.getLabel().setText(
                     getModel().getLayer().getName() + " ("
                             + getModel().getRowCount() + " "
                             + I18N.get("ui.AttributeTablePanel.features") + ")");
@@ -443,7 +446,7 @@ public class AttributeTablePanel extends JPanel {
 
     void jbInit() throws Exception {
         this.setLayout(gridBagLayout1);
-        this.add(layerNameRenderer, new GridBagConstraints(0, 0, 2, 1, 1.0,
+        this.add(layerListCellRenderer, new GridBagConstraints(0, 0, 2, 1, 1.0,
                 0.0, GridBagConstraints.NORTHWEST,
                 GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
         this.add(table.getTableHeader(), new GridBagConstraints(0, 1, 1, 1, 0,
@@ -663,7 +666,7 @@ public class AttributeTablePanel extends JPanel {
     }
 
     public LayerNameRenderer getLayerNameRenderer() {
-        return layerNameRenderer;
+        return layerListCellRenderer;
     }
     public void setFeatureEditor(FeatureEditor featureEditor) {
         this.featureEditor = featureEditor;
