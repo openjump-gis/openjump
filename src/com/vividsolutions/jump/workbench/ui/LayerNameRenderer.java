@@ -98,13 +98,17 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
 	private ImageIcon wmsIcon = MapLayerPanel.ICON;
 	private ImageIcon rasterIcon = GUIUtil.resize(IconLoader.icon("Raster.gif"), progressIconSize);
 
-	public LayerNameRenderer() {
-		try {
-			jbInit();
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-	}
+  public LayerNameRenderer() {
+    super();
+    setOpaque(true);
+    setName("List.layerNameRenderer");
+
+    try {
+      jbInit();
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
+  }
 
 	public void setIndicatingEditability(boolean indicatingEditability) {
 		this.indicatingEditability = indicatingEditability;
@@ -177,32 +181,26 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
 		validate();
 	}
 	
-	/**
-	 * Special getListCellRendererComponent to render simple Strings.
-	 * It is not the normal use, but it makes it possible to pass special 
-	 * values as "All Layers" or "Selected Layers" (used in QueryDialog).
-	 * [mmichaud 2011-09-27]
-	 */
-	public Component getListCellRendererComponent(JList list, String value,
-			int index, boolean isSelected, boolean cellHasFocus) {
-	    label.setText((String)value);
-		imageLabel.setVisible(false);
-		colorPanel.setVisible(false);
-		if (isSelected) {
-		// [ede 11.2012] commented label.set* because it triggers
-		// http://sourceforge.net/tracker/?func=detail&atid=679906&aid=3570707&group_id=118054
-			//label.setForeground(list.getSelectionForeground());
-			//label.setBackground(list.getSelectionBackground());
-			setForeground(list.getSelectionForeground());
-			setBackground(list.getSelectionBackground());
-		} else {
-			//label.setForeground(list.getForeground());
-			//label.setBackground(list.getBackground());
-			setForeground(list.getForeground());
-			setBackground(list.getBackground());
-		}
-		return this;
+  /**
+   * Special getListCellRendererComponent to render simple Strings. It is not
+   * the normal use, but it makes it possible to pass special values as
+   * "All Layers" or "Selected Layers" (used in QueryDialog). [mmichaud
+   * 2011-09-27]
+   */
+  public Component getListCellRendererComponent(JList list, String value,
+      int index, boolean isSelected, boolean cellHasFocus) {
+    label.setText((String) value);
+    imageLabel.setVisible(false);
+    colorPanel.setVisible(false);
+    if (isSelected) {
+      setForeground(list.getSelectionForeground());
+      setBackground(list.getSelectionBackground());
+    } else {
+      setForeground(list.getForeground());
+      setBackground(list.getBackground());
     }
+    return this;
+  }
 
   private Component formatLayerEntry(JList list, Object value,
       int index, boolean isSelected, boolean cellHasFocus) {
@@ -247,21 +245,25 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
     }
     setToolTipText(tooltip);
 
-    // set proper colors for text
     if (isSelected) {
-      // [ede 11.2012] commented label.set* because it triggers
-      // http://sourceforge.net/tracker/?func=detail&atid=679906&aid=3570707&group_id=118054
-      //label.setForeground(list.getSelectionForeground());
-      //label.setBackground(list.getSelectionBackground());
-      setForeground(list.getSelectionForeground());
-      setBackground(list.getSelectionBackground());
+        Color sbg = list.getSelectionBackground();
+        Color sfg = list.getSelectionForeground();
+        
+        // [ede 11.2012] the following calculates the brightness y of the backgroundcolor sbg
+        // the workaround was meant to enforce a readable fg text color, because on win7 the combobox
+        // content was somehow painted white on white. this seems to be solved but i just keep it
+        // here because we might need it again, who knows
+        //double ybg = (299 * sbg.getRed() + 587 * sbg.getGreen() + 114 * sbg.getBlue()) / 1000;
+        //System.out.println(sbg+"/"+sfg+" -> "+ybg+"/"+yfg);
+        //sfg = ybg>=128 ? Color.BLACK : Color.WHITE;
+        setBackground(sbg);
+        setForeground(sfg);
     } else {
-      //label.setForeground(list.getForeground());
-      //label.setBackground(list.getBackground());
-      setForeground(list.getForeground());
-      setBackground(list.getBackground());
+        setBackground(list.getBackground());
+        setForeground(list.getForeground());
     }
-
+    
+    
     checkBox.setSelected(layerable.isVisible());
     checkBox.setVisible(showCheckBox);
     
@@ -348,23 +350,47 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
     formatLayerEntry(list, value, index, isSelected, cellHasFocus);
     
     // assign proper width to cell entry
-    setPreferredSize(getPreferredListSize());
-    //System.out.println(index +","+value.toString()+","+getPreferredListSize().width);
-    
+    setPreferredSize(getPreferredListCellSize());
+
     return this;
   }
 
-  // calculate the optimimum width for listcells to show complete content
-  private Dimension getPreferredListSize() {
+  // calculate the optimum width for listcells to show complete content
+  private Dimension getPreferredListCellSize() {
     int width = 0, height = 0;
     for (Component comp : getComponents()) {
+      if (!comp.isVisible())
+        continue;
       int cheight = comp.getPreferredSize().height;
       height = cheight>height ? cheight : height;
       width += comp.getPreferredSize().width;
     }
-    return new Dimension(width,height);
+    // add some padding
+    return new Dimension(width+10,height+4);
+  }
+
+  // helper method to assign fg/bgcolor to _all_ panel components at once
+  private void _setComponentsFBGColor(Color c, boolean fg){
+    for ( Component comp : getComponents() ) {
+      if (fg)
+        comp.setForeground(c);
+      else
+        comp.setBackground(c);
+    }
   }
   
+  @Override
+  public void setForeground(Color c) {
+    super.setForeground(c);
+    _setComponentsFBGColor(c,true);
+  }
+
+  @Override
+  public void setBackground(Color c) {
+    super.setBackground(c);
+    _setComponentsFBGColor(c,false);
+  }
+
 	public Component getTreeCellRendererComponent(JTree tree, Object value,
 			boolean selected, boolean expanded, boolean leaf, int row,
 			boolean hasFocus) {
@@ -440,4 +466,19 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
 		}
 		return progressIcons;
 	}
+	
+  @Override
+  // [ede 11.2012] this is necessary for comboboxes with transparent bg, like in 
+  // default vista/win7 lnf, else ugly background is painted behind the letters
+  public boolean isOpaque() {
+    Color bgc = getBackground();
+    Component p;
+    // fetch cellrendererpane's parent if possible
+    if ((p = getParent()) != null)
+      p = p.getParent();
+    // calculate our opaque state by honoring our parents values
+    boolean colorMatchOrOpaque = (bgc != null) && (p != null)
+        && bgc.equals(p.getBackground()) && p.isOpaque();
+    return !colorMatchOrOpaque && super.isOpaque();
+  }
 }
