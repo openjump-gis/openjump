@@ -187,7 +187,17 @@ JAVA_OPTS="$JAVA_OPTS -Djump.home=."
 [ -n "$JAVA_LOOKANDFEEL" ] && JAVA_OPTS="$JAVA_OPTS -Dswing.defaultlaf=$JAVA_LOOKANDFEEL"
 JAVA_OPTS="$JAVA_OPTS $JAVA_OPTS_OVERRIDE"
 
+# extract zipped files in native dir (our way to ship symlinks to desktops)
+for file in "$JUMP_NATIVE_DIR/"*.tar.gz "$JUMP_NATIVE_DIR/"*.tgz
+do
+  file=$(basename "$file")
+  done=".$file.unzipped"
+  # we create a marker file symbolizing previous successful extraction
+  ( cd "$JUMP_NATIVE_DIR/"; [ ! -f "$done" ] && tar -xvf $(basename $file) && touch "$done" );
+done
+
 # allow jre to find native libraries in native dir, lib/ext (backwards compatibility)
+# NOTE: mac osx DYLD_LIBRARY_PATH is set in oj_macosx.command only
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$JUMP_NATIVE_DIR:$JUMP_HOME/lib/ext"
 
 # try to start if no errors so far

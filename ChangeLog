@@ -1,5 +1,22 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2012-11-26 ede
+  * add OSX 32bit ECW,JP2 libraries courtesy of gvsigce project
+    - modified start scripts accordingly
+    - osx jre is started in 32bit by default if possible because the libs
+      are x86 compiled
+  * portable zip PLUS now extracts ECW libs automatically on linux & osx
+
+2012-11-20 ede
+  * bug 3570707: LayerNameRenderer and Windows 7 issue (better fix)
+    and also
+    - refinement of layername presentation in several dialogs
+    - layer comboboxes are now sized properly, optimal preferred size
+    - wasted empty space in front of layer descriptions was removed
+
+2012-11-19 ede
+  * beautify world icon (zoomToFullExtent,wms layer,...), artwork by ede 
+
 2012-11-18 mmichaud <michael.michaud@free.fr>
   * Improvements in the SaveToPostGIS datasource which now extends 
     DataStoreQueryDataSource (query on demand).
