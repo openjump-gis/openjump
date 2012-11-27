@@ -38,7 +38,7 @@ public class PropertyUtil {
         ResourceBundle bundle = null;
         
 	try {
-	   bundle=ResourceBundle.getBundle("xtiff",Locale.US);
+	   bundle=ResourceBundle.getBundle("org.libtiff.jai.xtiff",Locale.US);
 	   return bundle;
         } catch (Exception e) {
             e.printStackTrace();

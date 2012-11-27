@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2012-11-18 mmichaud <michael.michaud@free.fr>
+  * xtiff_en_US.properties was not found by org.libtiff.jai.util.PropertyUtil
+  
 2012-11-26 ede
   * add OSX 32bit ECW,JP2 libraries courtesy of gvsigce project
     - modified start scripts accordingly
