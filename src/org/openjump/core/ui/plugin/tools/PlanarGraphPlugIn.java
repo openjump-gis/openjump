@@ -21,6 +21,8 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.IntersectionMatrix;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
 import com.vividsolutions.jts.operation.linemerge.LineMerger;
 import com.vividsolutions.jts.operation.polygonize.Polygonizer;
@@ -394,22 +396,6 @@ public class PlanarGraphPlugIn extends ThreadedBasePlugIn {
                 for (int i = 0 ; i < list.size() ; i++) {
                     Feature face = (Feature)list.get(i);
                     labelEdge(edge, face);
-                    /*
-                    Geometry g2 = face.getGeometry();
-                    Geometry inters = g2.intersection(g1);
-                    // Michael Michaud : added on 2006-05-01
-                    // Process properly the case of empty intersection
-                    if (inters.isEmpty()) continue;
-                    else if (inters.getLength()>0) {
-                        Integer idValue = (Integer) face.getAttribute("ID");
-                        if (!idValue.equals(MINUS_ONE)) {
-                            if (inters.getCoordinates()[0].equals(g1.getCoordinates()[0])) {
-                                edge.setAttribute(RIGHT_FACE, face.getAttribute("ID"));
-                            }
-                            else {edge.setAttribute(LEFT_FACE, face.getAttribute("ID"));}
-                        }
-                    }
-                    */
                 }
             }
         }
@@ -420,15 +406,23 @@ public class PlanarGraphPlugIn extends ThreadedBasePlugIn {
         IntersectionMatrix im = edge.getGeometry().relate(face.getGeometry());
         // intersection between boundaries has dimension 1
         if (im.matches("*1*******")) {
-            int edgeC0 = getIndex(edge.getGeometry().getCoordinates()[0], face.getGeometry());
-            int edgeC1 = getIndex(edge.getGeometry().getCoordinates()[1], face.getGeometry());
-            // The Math.abs(edgeC1-edgeC0) test inverse the rule when the two consecutive
-            // points are the last point and the first point of a ring...
-            if ((edgeC1 > edgeC0 && Math.abs(edgeC1-edgeC0) == 1) ||
-                (edgeC1 < edgeC0 && Math.abs(edgeC1-edgeC0) > 1)) {
+            //int edgeC0 = getIndex(edge.getGeometry().getCoordinates()[0], face.getGeometry());
+            //int edgeC1 = getIndex(edge.getGeometry().getCoordinates()[1], face.getGeometry());
+            //// The Math.abs(edgeC1-edgeC0) test inverse the rule when the two consecutive
+            //// points are the last point and the first point of a ring...
+            //if ((edgeC1 > edgeC0 && Math.abs(edgeC1-edgeC0) == 1) ||
+            //    (edgeC1 < edgeC0 && Math.abs(edgeC1-edgeC0) > 1)) {
+            //    edge.setAttribute(RIGHT_FACE, face.getAttribute("ID"));
+            //}
+            //else edge.setAttribute(LEFT_FACE, face.getAttribute("ID"));
+            Coordinate c0 = edge.getGeometry().getCoordinates()[0];
+            Coordinate c1 = edge.getGeometry().getCoordinates()[1];
+            if (hasSameOrientation(c0, c1, face.getGeometry())) {
                 edge.setAttribute(RIGHT_FACE, face.getAttribute("ID"));
             }
-            else edge.setAttribute(LEFT_FACE, face.getAttribute("ID"));
+            else {
+                edge.setAttribute(LEFT_FACE, face.getAttribute("ID"));
+            }
         }
         // intersection between the line and the polygon interior has dimension 1
         else if (im.matches("1********")) {
@@ -440,13 +434,40 @@ public class PlanarGraphPlugIn extends ThreadedBasePlugIn {
         else;
     }
     
-    // Returns the index of c in the geometry g or -1 if c is not a vertex of g
-    private int getIndex(Coordinate c, Geometry g) {
-        Coordinate[] cc = g.getCoordinates();
+    // Returns true if c0-c1 has the same orientation as g boundary
+    // Returns false else if
+    private boolean hasSameOrientation(Coordinate c0, Coordinate c1, Geometry g) {
+        assert g instanceof Polygon;
+        assert !c0.equals(c1);
+        
+        int index0 = -1;
+        int index1 = -1;
+        
+        LineString ring = ((Polygon)g).getExteriorRing();
+        Coordinate[] cc = ring.getCoordinates();
         for (int i = 0 ; i < cc.length ; i++) {
-            if (cc[i].equals(c)) return i;
+            if (index0 == -1 && cc[i].equals(c0)) index0 = i;
+            if (index1 == -1 && cc[i].equals(c1)) index1 = i;
+            if (index0 > -1 && index1 > -1) {
+                if (Math.abs(index1-index0) == 1) return index1 > index0;
+                else return index0 > index1;
+            }
         }
-        return -1;
+        for (int i = 0 ; i < ((Polygon)g).getNumInteriorRing() ; i++) {
+            LineString hole = ((Polygon)g).getInteriorRingN(i);
+            index0 = -1;
+            index1 = -1;
+            cc = hole.getCoordinates();
+            for (int j = 0 ; j < cc.length ; j++) {
+                if (index0 == -1 && cc[j].equals(c0)) index0 = j;
+                if (index1 == -1 && cc[j].equals(c1)) index1 = j;
+                if (index0 > -1 && index1 > -1) {
+                    if (Math.abs(index1-index0) == 1) return index1 > index0;
+                    else return index0 > index1;
+                }
+            }
+        }
+        return false;
     }
     
 }

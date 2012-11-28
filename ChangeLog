@@ -1,6 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
-2012-11-18 mmichaud <michael.michaud@free.fr>
+2012-11-28 mmichaud <michael.michaud@free.fr>
+  * Fix bug id 3590463 in PlanarGraphPlugIn
+  
+2012-11-28 mmichaud <michael.michaud@free.fr>
   * xtiff_en_US.properties was not found by org.libtiff.jai.util.PropertyUtil
   
 2012-11-26 ede
