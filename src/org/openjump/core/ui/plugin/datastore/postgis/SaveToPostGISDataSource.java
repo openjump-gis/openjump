@@ -47,8 +47,7 @@ import static org.openjump.core.ui.plugin.datastore.postgis.PostGISQueryUtil.*;
 /**
  * Adds Write capabilities to DataStoreDataSource for PostGIS table.
  */
-public class SaveToPostGISDataSource extends DataStoreQueryDataSource /*implements
-        WorkbenchContextReference*/ {
+public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
     
     // Do not translate, these keys are used to persist information in a map
     //public static final String CONNECTION_DESCRIPTOR_KEY = "Connection Descriptor";
@@ -61,18 +60,18 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource /*implemen
     //public static final String CACHING_KEY        = "Caching";
 
     // UPDATE
-    public static final String TABLE_KEY          = "Table";
+    public static final String TABLE_KEY           = "Table";
     
-    public static final String SAVE_METHOD_KEY    = "Save method";
-    public static final String SAVE_METHOD_CREATE = "Create";
-    public static final String SAVE_METHOD_INSERT = "Insert";
-    public static final String SAVE_METHOD_UPDATE = "Update";
-    public static final String SAVE_METHOD_DELETE = "Delete";
-    public static final String LOCAL_ID_KEY       = "LOCAL_ID";
-    public static final String NO_LOCAL_ID        = "NO_LOCAL_ID";
-    public static final String USE_DB_ID_KEY      = "USE_DB_ID";
+    public static final String SAVE_METHOD_KEY     = "Save method";
+    public static final String SAVE_METHOD_CREATE  = "Create";
+    public static final String SAVE_METHOD_REPLACE = "Replace";
+    public static final String SAVE_METHOD_INSERT  = "Insert";
+    public static final String SAVE_METHOD_UPDATE  = "Update";
+    public static final String SAVE_METHOD_DELETE  = "Delete";
+    public static final String LOCAL_ID_KEY        = "LOCAL_ID";
+    public static final String NO_LOCAL_ID         = "NO_LOCAL_ID";
+    public static final String USE_DB_ID_KEY       = "USE_DB_ID";
 
-    //private WorkbenchContext context;
 
     public SaveToPostGISDataSource() {
         // Called by Java2XML [Jon Aquino 2005-03-16]
@@ -174,7 +173,7 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource /*implemen
                 java.sql.Connection conn = pgConnection.getConnection();
                 PostGISConnectionUtil connUtil = new PostGISConnectionUtil(conn);
                 // For update operations, use the dimension defined in 
-                // geometry_comumn if any
+                // geometry_column if any
                 if (!method.equals(SAVE_METHOD_CREATE)) {
                     dim = connUtil.getGeometryDimension(unquote(quotedSchemaName), unquote(quotedTableName), dim);
                 }
@@ -194,6 +193,21 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource /*implemen
                         }
                         conn.commit();
                     } catch(SQLException e) {
+                        throw e;
+                    }
+                }
+                if (method.equals(SAVE_METHOD_REPLACE)) {
+                    try {
+                        conn.setAutoCommit(false);
+                        FeatureSchema featureSchema = featureCollection.getFeatureSchema();
+                        if (connUtil.compatibleSchemaSubset(quotedSchemaName, quotedTableName, featureSchema).length < featureSchema.getAttributeCount()) {
+                            if (!confirmWriteDespiteDifferentSchemas()) return;
+                        }
+                        truncateTable(conn, quotedSchemaName, quotedTableName);
+                        insertInTable(conn, featureCollection, 
+                            quotedSchemaName, quotedTableName, srid!=-1, dim);
+                        conn.commit();
+                    } catch(Exception e) {
                         throw e;
                     }
                 }
@@ -295,6 +309,16 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource /*implemen
         } catch(SQLException e) {
             // If DropGeometryTable failed, try a simple DROP TABLE statement
             connection.createStatement().execute("DROP TABLE " + compose(dbSchema, dbTable) + ";");
+        }
+    }
+    
+    private void truncateTable(java.sql.Connection conn, String quotedSchemaName, String quotedTableName) throws SQLException {
+        String name = (quotedSchemaName != null && quotedSchemaName.length() > 0) ? 
+                quotedSchemaName + "." + quotedTableName : quotedTableName;
+        try {
+            conn.createStatement().execute("TRUNCATE TABLE " + name);
+        } catch (SQLException sqle) {
+            throw new SQLException("Error executing query: TRUNCATE TABLE " + name, sqle);
         }
     }
     
@@ -425,10 +449,10 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource /*implemen
             AttributeType type = schema.getAttributeType(i);
             if (feature.getAttribute(i) == null)     pstmt.setObject(i+1, null);
             else if (type == AttributeType.STRING)   pstmt.setString(i+1, feature.getString(i));
+            else if (type == AttributeType.GEOMETRY) pstmt.setBytes(i+1, PostGISQueryUtil.getByteArrayFromGeometry((Geometry)feature.getAttribute(i), hasSrid, dim));
             else if (type == AttributeType.INTEGER)  pstmt.setInt(i+1, feature.getInteger(i));
             else if (type == AttributeType.DOUBLE)   pstmt.setDouble(i+1, feature.getDouble(i));
             else if (type == AttributeType.DATE)     pstmt.setTimestamp(i+1, new Timestamp(((Date)feature.getAttribute(i)).getTime()));
-            else if (type == AttributeType.GEOMETRY) pstmt.setBytes(i+1, PostGISQueryUtil.getByteArrayFromGeometry((Geometry)feature.getAttribute(i), hasSrid, dim));
             else if (type == AttributeType.OBJECT)   pstmt.setObject(i+1, feature.getAttribute(i));
             else throw new IllegalArgumentException("" + type + " is an unknown AttributeType !");
         }

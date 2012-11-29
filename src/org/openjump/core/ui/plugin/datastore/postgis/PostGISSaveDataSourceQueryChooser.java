@@ -150,7 +150,6 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
         if (layers.length == 1) {
             properties.put(SaveToPostGISDataSource.DATASET_NAME_KEY, layers[0].getName());
             FeatureSchema schema = layers[0].getFeatureCollectionWrapper().getFeatureSchema();
-            //properties.put(SaveToPostGISDataSource.GEOMETRY_ATTRIBUTE_NAME_KEY, schema.getAttributeName(schema.getGeometryIndex()));
             properties.put(SaveToPostGISDataSource.SQL_QUERY_KEY, "SELECT * FROM " +
                 panel.getTableName() + " LIMIT 100000");
                 

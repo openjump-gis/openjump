@@ -70,17 +70,19 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel implements Actio
 	
     public static final String KEY = PostGISSaveDriverPanel.class.getName();
 	
-	static final String CREATE_HELP_STRING = I18N.get(KEY + ".create-or-replace-help-string");
-	static final String INSERT_HELP_STRING = I18N.get(KEY + ".insert-only-help-string");
-	static final String UPDATE_HELP_STRING = I18N.get(KEY + ".insert-or-update-help-string");
-	static final String DELETE_HELP_STRING = I18N.get(KEY + ".insert-update-or-delete-help-string");
+	static final String CREATE_HELP_STRING  = I18N.get(KEY + ".create-or-replace-help-string");
+	static final String REPLACE_HELP_STRING = I18N.get(KEY + ".replace-table-rows-help-string");
+	static final String INSERT_HELP_STRING  = I18N.get(KEY + ".insert-only-help-string");
+	static final String UPDATE_HELP_STRING  = I18N.get(KEY + ".insert-or-update-help-string");
+	static final String DELETE_HELP_STRING  = I18N.get(KEY + ".insert-update-or-delete-help-string");
 	
-	static final String TITLE  = I18N.get(KEY + ".title");
+	static final String TITLE   = I18N.get(KEY + ".title");
 	static final String SELECT_SAVE_METHOD = I18N.get(KEY + ".select-save-method");
-	static final String CREATE = I18N.get(KEY + ".create-or-replace");
-	static final String INSERT = I18N.get(KEY + ".insert-only");
-	static final String UPDATE = I18N.get(KEY + ".insert-or-update");
-	static final String DELETE = I18N.get(KEY + ".insert-update-or-delete");
+	static final String CREATE  = I18N.get(KEY + ".create-or-replace");
+	static final String REPLACE = I18N.get(KEY + ".replace-table-rows");
+	static final String INSERT  = I18N.get(KEY + ".insert-only");
+	static final String UPDATE  = I18N.get(KEY + ".insert-or-update");
+	static final String DELETE  = I18N.get(KEY + ".insert-update-or-delete");
 
 	//static final String GEOMETRY_COLUMN = I18N.get(KEY + ".geometry-Column");
 	static final String LOCAL_ID     = I18N.get(KEY + ".local-id");
@@ -90,6 +92,7 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel implements Actio
 	// UI elements
     private ButtonGroup methodButtons;
     private JRadioButton createButton;
+    private JRadioButton replaceButton;
     private JRadioButton insertButton;
     private JRadioButton updateButton;
     private JRadioButton deleteButton;
@@ -148,6 +151,10 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel implements Actio
 		    public void ancestorAdded(AncestorEvent e) {
 		        Layer[] layers = wbContext.getLayerNamePanel().getSelectedLayers();
 	            if (layers.length == 1) {
+	                // call connectionChanged to refresh the list of tables 
+	                // available in the database in case it has been changed
+	                // by another client
+	                connectionChanged();
 	                String layerName = layers[0].getName();
 	                if (!layerName.equals(lastUsedLayerName) || lastUsedLayerName == null) {
 	                    lastUsedLayerName = layerName;
@@ -202,11 +209,20 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel implements Actio
 		gbLayout.setConstraints(createButton, gbConstraints);
 		add(createButton);
 		
+		replaceButton = new JRadioButton (REPLACE);
+		replaceButton.setActionCommand(SaveToPostGISDataSource.SAVE_METHOD_REPLACE);
+		replaceButton.addActionListener(this);
+		gbConstraints.gridx = 1;
+		gbConstraints.gridy = 8;
+		//gbConstraints.gridheight = 1;
+		gbLayout.setConstraints(replaceButton, gbConstraints);
+		add(replaceButton);
+		
 		insertButton = new JRadioButton (INSERT);
 		insertButton.setActionCommand(SaveToPostGISDataSource.SAVE_METHOD_INSERT);
 		insertButton.setSelected(true);
 		insertButton.addActionListener(this);
-		gbConstraints.gridy = 8;
+		gbConstraints.gridy = 9;
 		gbLayout.setConstraints(insertButton, gbConstraints);
 		add(insertButton);
 		
@@ -214,7 +230,7 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel implements Actio
 		updateButton.setActionCommand(SaveToPostGISDataSource.SAVE_METHOD_UPDATE);
 		updateButton.addActionListener(this);
 		updateButton.setSelected(false);
-		gbConstraints.gridy = 9;
+		gbConstraints.gridy = 10;
 		gbLayout.setConstraints(updateButton, gbConstraints);
 		add(updateButton);
 		
@@ -222,12 +238,13 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel implements Actio
 		deleteButton.setActionCommand(SaveToPostGISDataSource.SAVE_METHOD_DELETE);
 		deleteButton.addActionListener(this);
 		deleteButton.setSelected(false);
-		gbConstraints.gridy = 10;
+		gbConstraints.gridy = 11;
 		gbLayout.setConstraints(deleteButton, gbConstraints);
 		add(deleteButton);
 		
 		methodButtons = new ButtonGroup();
 		methodButtons.add(createButton);
+		methodButtons.add(replaceButton);
 		methodButtons.add(insertButton);
 		methodButtons.add(updateButton);
 		methodButtons.add(deleteButton);
@@ -236,7 +253,7 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel implements Actio
 		localIdLabel = new JLabel(LOCAL_ID);
 		localIdLabel.setEnabled(true);
 		gbConstraints.gridx = 0;
-		gbConstraints.gridy = 11;
+		gbConstraints.gridy = 12;
 		gbLayout.setConstraints(localIdLabel, gbConstraints);
 		add(localIdLabel);
 		localIdComboBox = new JComboBox(new Object[0]);
@@ -250,7 +267,7 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel implements Actio
 		createDbIdCheckBox = new JCheckBox(CREATE_DB_ID);
 		createDbIdCheckBox.setEnabled(createButton.isSelected());
 		gbConstraints.gridx = 1;
-		gbConstraints.gridy = 12;
+		gbConstraints.gridy = 13;
 		gbLayout.setConstraints(createDbIdCheckBox, gbConstraints);
 		//add(createDbIdCheckBox);
 		
@@ -265,7 +282,7 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel implements Actio
 		gbConstraints.gridx = 2;
 		gbConstraints.gridy = 7;
 		gbConstraints.gridwidth = 1;
-		gbConstraints.gridheight = 4;
+		gbConstraints.gridheight = 5;
 		helpPanel.add(help);
 		gbLayout.setConstraints(helpPanel, gbConstraints);
 		add(helpPanel);
@@ -360,6 +377,14 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel implements Actio
 			localIdComboBox.setEnabled(true);
 			createDbIdCheckBox.setEnabled(true);
 			help.setText(CREATE_HELP_STRING);
+		}
+		if(action.equals(SaveToPostGISDataSource.SAVE_METHOD_REPLACE)) {
+			tableComboBox.setEditable(false);
+			localIdLabel.setEnabled(false);
+			//resetIdChooser();
+			localIdComboBox.setEnabled(false);
+			createDbIdCheckBox.setEnabled(false);
+			help.setText(REPLACE_HELP_STRING);
 		}
 		if(action.equals(SaveToPostGISDataSource.SAVE_METHOD_INSERT)) {
 			tableComboBox.setEditable(false);
