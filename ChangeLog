@@ -1,6 +1,11 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
 2012-11-28 mmichaud <michael.michaud@free.fr>
+  * Add a fifth option to PostGISWriter to empty a PostgreSQL table before 
+    inserting features from the layer (in order to save the precise structure 
+    and constraints of the PostgreSQL table
+
+2012-11-28 mmichaud <michael.michaud@free.fr>
   * Fix bug id 3590463 in PlanarGraphPlugIn
   
 2012-11-28 mmichaud <michael.michaud@free.fr>

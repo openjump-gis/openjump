@@ -35,6 +35,8 @@ import com.vividsolutions.jump.workbench.datasource.DataSourceQueryChooser;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 
+import org.openjump.core.ccordsys.srid.SRIDStyle;
+
 /**
  * A DataSourceQueryChooser for writing to a PostGIS data source.
  */
@@ -152,7 +154,11 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
             FeatureSchema schema = layers[0].getFeatureCollectionWrapper().getFeatureSchema();
             properties.put(SaveToPostGISDataSource.SQL_QUERY_KEY, "SELECT * FROM " +
                 panel.getTableName() + " LIMIT 100000");
-                
+            // OpenJUMP has now a better support of Coordinate System at
+            // FeatureCollection and FeatureSchema level, but this one is simple
+            // and makes it easy to set the SRID the user want before an update
+            SRIDStyle sridStyle = (SRIDStyle) layers[0].getStyle(SRIDStyle.class);
+            properties.put(SaveToPostGISDataSource.SRID_KEY, sridStyle.getSRID()); 
             //properties.put(SaveToPostGISDataSource.MAX_FEATURES_KEY, 100000);
             //properties.put(SaveToPostGISDataSource.WHERE_CLAUSE_KEY, "");
             //properties.put(SaveToPostGISDataSource.CACHING_KEY, false);

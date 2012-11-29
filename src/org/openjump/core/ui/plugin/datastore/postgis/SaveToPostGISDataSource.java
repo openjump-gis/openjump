@@ -45,7 +45,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.datastore.PasswordPrompter;
 import static org.openjump.core.ui.plugin.datastore.postgis.PostGISQueryUtil.*;
 
 /**
- * Adds Write capabilities to DataStoreDataSource for PostGIS table.
+ * Adds Write capabilities to DataStoreQueryDataSource for PostGIS table.
  */
 public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
     
@@ -71,6 +71,8 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
     public static final String LOCAL_ID_KEY        = "LOCAL_ID";
     public static final String NO_LOCAL_ID         = "NO_LOCAL_ID";
     public static final String USE_DB_ID_KEY       = "USE_DB_ID";
+    
+    public static final String SRID_KEY            = "SRID";
 
 
     public SaveToPostGISDataSource() {
@@ -124,15 +126,6 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
                 return featureCollection;
             }
             
-            //public FeatureCollection executeQuery(String query,
-            //        Collection exceptions, TaskMonitor monitor) {
-            //    throw new UnsupportedOperationException();
-            //}
-            //
-            //public FeatureCollection executeQuery(String query,
-            //        TaskMonitor monitor) throws Exception {
-            //    throw new UnsupportedOperationException();
-            //}
 
             // Main method doing the job of updating a PostGIS table
             public void executeUpdate(String query,
@@ -163,7 +156,8 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
                 boolean use_db_id_key = (Boolean)getProperties().get(USE_DB_ID_KEY);
                 // In PostGIS 2.x, default SRID has changed to 0, but don't mind,
                 // AddGeometryColumn automatically change -1 to 0.
-                int srid = getSrid(featureCollection, -1);
+                //int srid = getSrid(featureCollection, -1);
+                int srid = getProperties().get(SRID_KEY)==null ? -1 : (Integer)getProperties().get(SRID_KEY);
                 String geometryType = getGeometryType(featureCollection, "GEOMETRY");
                 int dim = getGeometryDimension(featureCollection, 3);
 
