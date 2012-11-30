@@ -2,12 +2,15 @@ package com.vividsolutions.jump.workbench.ui.plugin.datastore;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.operation.union.UnaryUnionOp;
 
 import com.vividsolutions.jump.datastore.AdhocQuery;
 import com.vividsolutions.jump.datastore.FilterQuery;
+import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.io.FeatureInputStream;
@@ -28,7 +31,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.WorkbenchContextReference;
  * Implements the DataSource interface in order to persist a query issued
  * from RunDatastoreQueryPlugIn.
  */
-public class DataStoreQueryDataSource extends DataSource implements
+public class DataStoreQueryDataSource extends com.vividsolutions.jump.io.datasource.DataSource implements
         WorkbenchContextReference {
 
     public static final String DATASET_NAME_KEY = "Dataset Name";
@@ -154,10 +157,11 @@ public class DataStoreQueryDataSource extends DataSource implements
         }
     }
     
-    private String expandQuery(String query, PlugInContext context) {
+    protected static String expandQuery(String query, PlugInContext context) {
         GeometryFactory gf = new GeometryFactory();
         Geometry viewG = gf.toGeometry(context.getLayerViewPanel().getViewport().getEnvelopeInModelCoordinates());
         Geometry fenceG = context.getLayerViewPanel().getFence();
+        Geometry selectionG = selection(context);
         if (viewG != null) {
             query = query.replaceAll("\\$\\{view\\}", "\\${view:-1}");
             query = query.replaceAll("\\$\\{view(?::(-?[0-9]+))\\}", "ST_GeomFromText('" + viewG.toText() + "',$1)");
@@ -170,7 +174,37 @@ public class DataStoreQueryDataSource extends DataSource implements
             query = query.replaceAll("\\$\\{fence\\}", "\\${fence:-1}");
             query = query.replaceAll("\\$\\{fence(?::(-?[0-9]+))\\}", "ST_GeomFromText('POLYGON EMPTY',$1)");
         }
+        if (selectionG != null) {
+            query = query.replaceAll("\\$\\{selection\\}", "\\${selection:-1}");
+            query = query.replaceAll("\\$\\{selection(?::(-?[0-9]+))\\}", "ST_GeomFromText('" + selectionG.toText() + "',$1)");
+        }
         return query;
+    }
+    
+    private static Geometry selection(PlugInContext context) {
+        Collection<Feature> features = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems();
+        if (features.size() > 0) {
+            if (features.size() == 1) {
+                return features.iterator().next().getGeometry();
+            }
+            else {
+                List<Geometry> selectedGeometries = new ArrayList<Geometry>();
+                int max_dim = -1;
+                for (Feature feature : features) {
+                    int dim = feature.getGeometry().getDimension();
+                    if (dim > max_dim) max_dim = dim;
+                    selectedGeometries.add(feature.getGeometry());
+                }
+                List<Geometry> homogeneousGeometries = new ArrayList<Geometry>();
+                for (Geometry g : selectedGeometries) {
+                    if (g.getDimension() == max_dim) homogeneousGeometries.add(g);
+                }
+                Geometry union = UnaryUnionOp.union(homogeneousGeometries);
+                if (!union.isEmpty()) return union;
+                else return null;
+            }
+        }
+        else return null;
     }
 
 }

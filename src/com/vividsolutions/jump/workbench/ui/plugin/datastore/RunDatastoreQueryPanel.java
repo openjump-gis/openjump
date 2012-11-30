@@ -71,18 +71,28 @@ public class RunDatastoreQueryPanel extends ConnectionPanel
         JButton jbView = new JButton(I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.View"));
         jbView.addActionListener(new ActionListener() {
             public void actionPerformed( ActionEvent e ) {
-                queryTextArea.insert("${view:-1}", queryTextArea.getCaretPosition());
+                queryTextArea.replaceSelection("${view:-1}");
+                queryTextArea.requestFocusInWindow();
             }
         });
         JButton jbFence = new JButton(I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.Fence"));
         jbFence.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                queryTextArea.insert("${fence:-1}", queryTextArea.getCaretPosition());
+                queryTextArea.replaceSelection("${fence:-1}");
+                queryTextArea.requestFocusInWindow();
             }
         });
-        JPanel jpButtons = new JPanel(new java.awt.GridLayout(2,1));
+        JButton jbSelection = new JButton(I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.Selection"));
+        jbSelection.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                queryTextArea.replaceSelection("${selection:-1}");
+                queryTextArea.requestFocusInWindow();
+            }
+        });
+        JPanel jpButtons = new JPanel(new java.awt.GridLayout(3,1));
         jpButtons.add(jbView);
         jpButtons.add(jbFence);
+        jpButtons.add(jbSelection);
         addRow(I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.Layer-Name"), getLayerNameTextField(), null, false);
         //addRow(I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.Max-Features"), getMaxFeaturesTextField(), null, false);
         addRow(I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.Query"), new JScrollPane(getQueryTextArea()) {

@@ -66,7 +66,7 @@ public class RunDatastoreQueryPlugIn extends AbstractAddDatastoreLayerPlugIn {
         String driver = panel.getConnectionDescriptor().getDataStoreDriverClassName();
         String query = panel.getQuery();
         if (driver.contains("Postgis") && query.matches("(?s).*\\$\\{[^\\{\\}]*\\}.*")) {
-            query = expandQuery(query, context);
+            query = DataStoreQueryDataSource.expandQuery(query, context);
         }
         // end
         FeatureInputStream featureInputStream =
@@ -106,19 +106,19 @@ public class RunDatastoreQueryPlugIn extends AbstractAddDatastoreLayerPlugIn {
         }
     }
     
-    private String expandQuery(String query, PlugInContext context) {
-        GeometryFactory gf = new GeometryFactory();
-        Geometry viewG = gf.toGeometry(context.getLayerViewPanel().getViewport().getEnvelopeInModelCoordinates());
-        Geometry fenceG = context.getLayerViewPanel().getFence();
-        if (viewG != null) {
-            query = query.replaceAll("\\$\\{view\\}", "\\${view:-1}");
-            query = query.replaceAll("\\$\\{view(?::(-?[0-9]+))\\}", "ST_GeomFromText('" + viewG.toText() + "',$1)");
-        }
-        if (fenceG != null) {
-            query = query.replaceAll("\\$\\{fence\\}", "\\${fence:-1}");
-            query = query.replaceAll("\\$\\{fence(?::(-?[0-9]+))\\}", "ST_GeomFromText('" + fenceG.toText() + "',$1)");
-        }
-        return query;
-    }
+    //private String expandQuery(String query, PlugInContext context) {
+    //    GeometryFactory gf = new GeometryFactory();
+    //    Geometry viewG = gf.toGeometry(context.getLayerViewPanel().getViewport().getEnvelopeInModelCoordinates());
+    //    Geometry fenceG = context.getLayerViewPanel().getFence();
+    //    if (viewG != null) {
+    //        query = query.replaceAll("\\$\\{view\\}", "\\${view:-1}");
+    //        query = query.replaceAll("\\$\\{view(?::(-?[0-9]+))\\}", "ST_GeomFromText('" + viewG.toText() + "',$1)");
+    //    }
+    //    if (fenceG != null) {
+    //        query = query.replaceAll("\\$\\{fence\\}", "\\${fence:-1}");
+    //        query = query.replaceAll("\\$\\{fence(?::(-?[0-9]+))\\}", "ST_GeomFromText('" + fenceG.toText() + "',$1)");
+    //    }
+    //    return query;
+    //}
     
 }
