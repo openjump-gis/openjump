@@ -91,76 +91,70 @@ import org.apache.log4j.Logger;
 public final class I18N {
 
   private static final Logger LOG = Logger.getLogger(I18N.class);
-
-  // [Michael Michaud 2007-03-23] removed SingletonHolder internal class
-  // 1 - getInstance is enough to guarantee I18N instance unicity
-  // 2 - I18N should not be instanciated as the class has only static methods
   private static final I18N instance = new I18N();
-
-  // use 'jump<locale>.properties' i18n mapping file
-  // STanner changed the place where are stored bundles. Now are in /language
-  // public static ResourceBundle rb =
-  // ResourceBundle.getBundle("com.vividsolutions.jump.jump");
-  //private static ResourceBundle jumpResourceBundle = ResourceBundle.getBundle("language/jump");
 
   // [Michael Michaud 2007-03-23] plugInsResourceBundle is deactivated because
   // all the methods
   // using it have been deactivated.
   // [sstein] activated again since Pirol does use it
+  // [ede 11.2012] kept it, although i don't see any usage of it in here
   public static Hashtable plugInsResourceBundle = new Hashtable();
-
   /** The map from category names to I18N instances. */
   private static Map<String, I18N> instances = new HashMap<String, I18N>();
 
-  private static ClassLoader classLoader;
-
-  /** The resource bundles for the I18N instance. */
+  /** The defaults for the I18N instance. */
+  private static ClassLoader classLoader = I18N.class.getClassLoader();
   private String resourcePath = "language/jump";
   private Locale locale = Locale.getDefault();
+  /** three rbs see getText(String) for details */
   private ResourceBundle resourceBundle,resourceBundle2,resourceBundle3;
 
-  /** The core OpenJUMP I18N instance. */
-  private I18N() { init(); }
+  private I18N() {}
 
-  private I18N( Locale loc ) {
-    locale = loc;
-    init();
-  }
-  
   /**
    * Construct an I18N instance for the category.
    * 
    * @param resourcePath The path to the language files.
    */
-  private I18N(final String category ) {
+  private I18N( final String category ) {
     resourcePath = category.replace('.', '/') + "/" + resourcePath;
     init();
   }
 
   private void setLocale(Locale loc) {
-    locale = loc;
-    init();
+    if (loc != null) {
+      locale = loc;
+      init();
+    }
   }
 
+  /**
+   * the following three methods locale() language() country() are named that
+   * way because the getter methods were already defined statically and have
+   * to remain for legacy reasons
+   */
   private Locale locale() {
-    return locale !=null ? locale : Locale.getDefault();
+    return locale != null ? locale : Locale.getDefault();
   }
-
   private String language() {
     return locale().getLanguage();
   }
-
   private String country() {
     return locale().getCountry();
   }
 
-  private void init(){
+  // everytime something important changes the resourcebundles have to be
+  // recreated accordingly and the runtime should be updated as well
+  private void init() {
     // load resourcebundle accordingly
-    resourceBundle = ResourceBundle.getBundle(resourcePath, locale);
-    resourceBundle2 = ResourceBundle.getBundle(resourcePath, new Locale(language()));
-    resourceBundle3 = ResourceBundle.getBundle(resourcePath, Locale.ROOT);
+    resourceBundle = ResourceBundle
+        .getBundle(resourcePath, locale, classLoader);
+    resourceBundle2 = ResourceBundle.getBundle(resourcePath, new Locale(
+        language()), classLoader);
+    resourceBundle3 = ResourceBundle.getBundle(resourcePath, Locale.ROOT,
+        classLoader);
     // apply to system
-    applyToRuntime( locale );
+    applyToRuntime(locale);
   }
 
   /**
@@ -194,19 +188,24 @@ public final class I18N {
       return labelpath[labelpath.length - 1];
     }
   }
-  
+
   private boolean isValid( String text ){
     return text != null && !text.matches("^(\\s*#T:.*|)$");
   }
 
   /**
-   * Set the class loader used to load resource bundles, must only be called by
-   * the plug-in loader.
+   * Set the class loader used to load resource bundles, must be called by the
+   * PlugInManager (plugin jars are added to a child classloader there) to allow
+   * plugins to make use of this I18N class.
    * 
-   * @param classLoader the classLoader to set
+   * @param classLoader
+   *          the classLoader to set
    */
-  public static void setClassLoader(ClassLoader classLoader) {
-    I18N.classLoader = classLoader;
+  public static void setClassLoader(ClassLoader cl) {
+    if (classLoader instanceof ClassLoader)
+      classLoader = cl;
+    // apply to default instance
+    getInstance().init();
   }
 
   /**
