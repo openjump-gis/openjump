@@ -40,8 +40,6 @@ import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 
-import com.vividsolutions.jump.workbench.JUMPWorkbench;
-
 /**
  * Singleton for the Internationalization (I18N)
  * 
@@ -103,7 +101,7 @@ public final class I18N {
   // STanner changed the place where are stored bundles. Now are in /language
   // public static ResourceBundle rb =
   // ResourceBundle.getBundle("com.vividsolutions.jump.jump");
-  private static ResourceBundle jumpResourceBundle = ResourceBundle.getBundle("language/jump");
+  //private static ResourceBundle jumpResourceBundle = ResourceBundle.getBundle("language/jump");
 
   // [Michael Michaud 2007-03-23] plugInsResourceBundle is deactivated because
   // all the methods
@@ -116,22 +114,89 @@ public final class I18N {
 
   private static ClassLoader classLoader;
 
-  /** The resource bundle for the I18N instance. */
-  private ResourceBundle resourceBundle;
+  /** The resource bundles for the I18N instance. */
+  private String resourcePath = "language/jump";
+  private Locale locale = Locale.getDefault();
+  private ResourceBundle resourceBundle,resourceBundle2,resourceBundle3;
 
   /** The core OpenJUMP I18N instance. */
-  private I18N() {
-    resourceBundle = jumpResourceBundle;
-  }
+  private I18N() { init(); }
 
+  private I18N( Locale loc ) {
+    locale = loc;
+    init();
+  }
+  
   /**
    * Construct an I18N instance for the category.
    * 
    * @param resourcePath The path to the language files.
    */
-  private I18N(final String resourcePath) {
-    resourceBundle = ResourceBundle.getBundle(resourcePath,
-      Locale.getDefault(), classLoader);
+  private I18N(final String category ) {
+    resourcePath = category.replace('.', '/') + "/" + resourcePath;
+    init();
+  }
+
+  private void setLocale(Locale loc) {
+    locale = loc;
+    init();
+  }
+
+  private Locale locale() {
+    return locale !=null ? locale : Locale.getDefault();
+  }
+
+  private String language() {
+    return locale().getLanguage();
+  }
+
+  private String country() {
+    return locale().getCountry();
+  }
+
+  private void init(){
+    // load resourcebundle accordingly
+    resourceBundle = ResourceBundle.getBundle(resourcePath, locale);
+    resourceBundle2 = ResourceBundle.getBundle(resourcePath, new Locale(language()));
+    resourceBundle3 = ResourceBundle.getBundle(resourcePath, Locale.ROOT);
+    // apply to system
+    applyToRuntime( locale );
+  }
+
+  /**
+   * Get the I18N text from the language file associated with this instance. If
+   * no label is defined then a default string is created from the last part of
+   * the key.
+   * 
+   * ATTENTION: using three resource bundles is a workaround to enable having
+   * entries in the language properties that are not translated now (empty or
+   * #T:something)
+   * 
+   * @param key
+   *          The key of the text in the language file.
+   * @return The I18Nized text.
+   */
+  public String getText(final String key) {
+    try {
+      String text;
+      // try lang_country resourcebundle
+      if (isValid(text = resourceBundle.getString(key)))
+        return text;
+      // try language only resourcebundle
+      if (isValid(text = resourceBundle2.getString(key)))
+        return text;
+      // eventually use base resourcebundle
+      return resourceBundle3.getString(key);
+    } catch (java.util.MissingResourceException e) {
+      String[] labelpath = key.split("\\.");
+      LOG.debug("No resource bundle or no translation found for the key : "
+          + key);
+      return labelpath[labelpath.length - 1];
+    }
+  }
+  
+  private boolean isValid( String text ){
+    return text != null && !text.matches("^(\\s*#T:.*|)$");
   }
 
   /**
@@ -142,25 +207,6 @@ public final class I18N {
    */
   public static void setClassLoader(ClassLoader classLoader) {
     I18N.classLoader = classLoader;
-  }
-
-  /**
-   * Get the I18N text from the language file associated with this instance. If
-   * no label is defined then a default string is created from the last part of
-   * the key.
-   * 
-   * @param key The key of the text in the language file.
-   * @return The I18Nized text.
-   */
-  public String getText(final String key) {
-    try {
-      return resourceBundle.getString(key);
-    } catch (java.util.MissingResourceException e) {
-      String[] labelpath = key.split("\\.");
-      LOG.debug("No resource bundle or no translation found for the key : "
-        + key);
-      return labelpath[labelpath.length - 1];
-    }
   }
 
   /**
@@ -187,8 +233,7 @@ public final class I18N {
   public static I18N getInstance(final String category) {
     I18N instance = instances.get(category);
     if (instance == null) {
-      String resourcePath = category.replace('.', '/') + "/language/jump";
-      instance = new I18N(resourcePath);
+      instance = new I18N( category );
       instances.put(category, instance);
     }
     return instance;
@@ -196,9 +241,7 @@ public final class I18N {
 
   public static I18N getInstance() {
     // [Michael Michaud 2007-03-04] guarantee I18N instance unicity without
-    // creating a SingletonHolder inner class instance
     return (instance == null) ? new I18N() : instance;
-    // return SingletonHolder._singleton;
   }
 
   // [ede] utility method as it is used in several places (loadFile,getLanguage...)
@@ -231,18 +274,21 @@ public final class I18N {
    */
   public static void loadFile(final String langcountry) {
     Locale loc = fromCode(langcountry);
-    // apply to system
-    applyToRuntime( loc );
-    // load resourcebundle accordingly
-    jumpResourceBundle = ResourceBundle.getBundle("language/jump", loc);
+    getInstance().setLocale(loc);
+    getInstance().init();
   }
 
+  /***
+   * Applies a given locale to the java runtime.
+   * 
+   * @param locale
+   */
   public static void applyToRuntime( Locale loc ) {
     Locale.setDefault(loc);
     System.setProperty("user.language", loc.getLanguage());
     System.setProperty("user.country", loc.getCountry());
   }
-  
+
   /**
    * Process text with the locale 'jump_<locale>.properties' file
    * 
@@ -251,24 +297,7 @@ public final class I18N {
    *         found, returns a default string which is the last part of the label
    */
   public static String get(final String label) {
-    try {
-      String txt = jumpResourceBundle.getString(label);
-      //-- [sstein 30.Sept.2012] if this string wasn't translated
-	  //   get the default value from jump.properties
-      if(txt.startsWith("#T:")) {
-    	  ResourceBundle defaultRB = ResourceBundle.getBundle("language/jump", Locale.ROOT);
-    	  txt = defaultRB.getString(label);
-    	  //String newtext = defaultRB.getString(label);
-    	  //System.out.println(txt + " >> " + newtext);
-      }
-      //-- [sstein] end
-      return txt;
-    } catch (java.util.MissingResourceException e) {
-      String[] labelpath = label.split("\\.");
-      LOG.debug("No resource bundle or no translation found for the key : "
-        + label);
-      return labelpath[labelpath.length - 1];
-    }
+    return getInstance().getText(label);
   }
 
   /**
@@ -278,38 +307,28 @@ public final class I18N {
    * @return string signature for locale
    */
   public static String getLocale() {
-    return jumpResourceBundle.getLocale().getLanguage() + "_" + jumpResourceBundle.getLocale().getCountry();
+    return getLanguage() + "_" + getCountry();
   }
 
   /**
    * Get the short signature for language (letters extension :language 2
-   * letters)
+   * letters) of the default instance
    * 
    * @return string signature for language
    */
   public static String getLanguage() {
-    if (JUMPWorkbench.I18N_SETLOCALE == "") {
-      // No locale has been specified at startup: choose default locale
-      return jumpResourceBundle.getLocale().getLanguage();
-    } else {
-      return fromCode(JUMPWorkbench.I18N_SETLOCALE).getLanguage();
-    }
+    return getInstance().language();
   }
 
   /**
-   * Get the short signature for country (2 letter code)
+   * Get the short signature for country (2 letter code) of the default instance
    * 
    * @return string signature for country
    */
   public static String getCountry() {
-    if (JUMPWorkbench.I18N_SETLOCALE == "") {
-      // No locale has been specified at startup: choose default locale
-      return jumpResourceBundle.getLocale().getCountry();
-    } else {
-      return fromCode(JUMPWorkbench.I18N_SETLOCALE).getCountry();
-    }
+    return getInstance().country();
   }
-  
+
   /**
    * Process text with the locale 'jump_<locale>.properties' file If no
    * resourcebundle is found, returns default string contained inside
@@ -320,19 +339,10 @@ public final class I18N {
    * @return i18n label
    */
   public static String getMessage(final String label, final Object[] objects) {
-    try {
-      final MessageFormat mformat = new MessageFormat(jumpResourceBundle.getString(label));
-      return mformat.format(objects);
-    } catch (java.util.MissingResourceException e) {
-      final String[] labelpath = label.split("\\.");
-      LOG.warn(e.getMessage() + " no default value, the resource key is used: "
-        + labelpath[labelpath.length - 1]);
-      final MessageFormat mformat = new MessageFormat(
-        labelpath[labelpath.length - 1]);
-      return mformat.format(objects);
-    }
+    return getMessage("", label, objects);
   }
-  /**
+
+   /**
    * Get the I18N text from the language file associated with the specified
    * category. If no label is defined then a default string is created from the
    * last part of the key.
@@ -343,7 +353,7 @@ public final class I18N {
    * @return i18n label
    */
   public static String getMessage(final String category, final String label, final Object[] objects) {
-    I18N i18n = getInstance(category);
+    I18N i18n = category.trim().isEmpty() ? getInstance(category) : getInstance();
     try {
       final MessageFormat mformat = new MessageFormat(i18n.getText(label));
       return mformat.format(objects);
@@ -355,6 +365,6 @@ public final class I18N {
         labelpath[labelpath.length - 1]);
       return mformat.format(objects);
     }
-    //return i18n.getMessage(label,objects);
   }
 }
+
