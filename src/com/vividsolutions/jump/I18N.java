@@ -103,13 +103,13 @@ public final class I18N {
   private static Map<String, I18N> instances = new HashMap<String, I18N>();
 
   /** The defaults for the I18N instance. */
-  private static ClassLoader classLoader = I18N.class.getClassLoader();
+  private static ClassLoader classLoader;
   private String resourcePath = "language/jump";
   private Locale locale = Locale.getDefault();
   /** three rbs see getText(String) for details */
   private ResourceBundle resourceBundle,resourceBundle2,resourceBundle3;
 
-  private I18N() {}
+  private I18N() { init(); }
 
   /**
    * Construct an I18N instance for the category.
@@ -146,13 +146,13 @@ public final class I18N {
   // everytime something important changes the resourcebundles have to be
   // recreated accordingly and the runtime should be updated as well
   private void init() {
+    ClassLoader cl = classLoader instanceof ClassLoader ? classLoader
+        : getClass().getClassLoader();
     // load resourcebundle accordingly
-    resourceBundle = ResourceBundle
-        .getBundle(resourcePath, locale, classLoader);
+    resourceBundle = ResourceBundle.getBundle(resourcePath, locale, cl);
     resourceBundle2 = ResourceBundle.getBundle(resourcePath, new Locale(
-        language()), classLoader);
-    resourceBundle3 = ResourceBundle.getBundle(resourcePath, Locale.ROOT,
-        classLoader);
+        language()), cl);
+    resourceBundle3 = ResourceBundle.getBundle(resourcePath, Locale.ROOT, cl);
     // apply to system
     applyToRuntime(locale);
   }
@@ -171,8 +171,8 @@ public final class I18N {
    * @return The I18Nized text.
    */
   public String getText(final String key) {
+    String text;
     try {
-      String text;
       // try lang_country resourcebundle
       if (isValid(text = resourceBundle.getString(key)))
         return text;
@@ -341,29 +341,34 @@ public final class I18N {
     return getMessage("", label, objects);
   }
 
-   /**
+  /**
    * Get the I18N text from the language file associated with the specified
    * category. If no label is defined then a default string is created from the
    * last part of the key.
    * 
-   * @param category The category.
-   * @param label with argument insertion : {0}
+   * @param category
+   *          The category.
+   * @param label
+   *          Label with argument insertion : {0}
    * @param objects
    * @return i18n label
    */
-  public static String getMessage(final String category, final String label, final Object[] objects) {
-    I18N i18n = category.trim().isEmpty() ? getInstance(category) : getInstance();
+  public static String getMessage(final String category, final String label,
+      final Object[] objects) {
+    I18N i18n = !category.trim().isEmpty() ? getInstance(category)
+        : getInstance();
     try {
       final MessageFormat mformat = new MessageFormat(i18n.getText(label));
       return mformat.format(objects);
     } catch (java.util.MissingResourceException e) {
       final String[] labelpath = label.split("\\.");
       LOG.warn(e.getMessage() + " no default value, the resource key is used: "
-        + labelpath[labelpath.length - 1]);
+          + labelpath[labelpath.length - 1]);
       final MessageFormat mformat = new MessageFormat(
-        labelpath[labelpath.length - 1]);
+          labelpath[labelpath.length - 1]);
       return mformat.format(objects);
     }
   }
+
 }
 
