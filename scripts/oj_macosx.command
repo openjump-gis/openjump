@@ -17,4 +17,4 @@ export DYLD_LIBRARY_PATH="$DYLD_LIBRARY_PATH:./lib/native:./lib/ext"
 JAVA_OPTS_OVERRIDE="$JAVA_OPTS_OVERRIDE -d32"
 
 ## run the real magic now
-. "$CDIR/oj_linux.sh"
+. "$CDIR/oj_linux.sh" "$@"
