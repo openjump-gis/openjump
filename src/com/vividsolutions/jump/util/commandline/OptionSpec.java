@@ -1,4 +1,3 @@
-
 /*
  * The Unified Mapping Platform (JUMP) is an extensible, interactive GUI 
  * for visualizing and manipulating spatial features with geometry and attributes.
@@ -33,124 +32,122 @@
 
 package com.vividsolutions.jump.util.commandline;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Vector;
 
-
 /**
- * Specifes the syntax for a single option on a command line.
- *
- * ToDo: <br>
- * <pre>
- * - add syntax pattern parsing
- *      Syntax patterns are similar to Java type signatures
- *  F - float
- *  I - int
- *  L - long
- *  S - string
- *  B - boolean
- *  + - one or more
- * eg:  "FIS+" takes a double, int, and one or more Strings
- * </pre>
+ * Specifies the syntax for a single option on a command line.
  */
 public class OptionSpec {
-    public final static int NARGS_ZERO_OR_MORE = -1;
-    public final static int NARGS_ONE_OR_MORE = -2;
-    public final static int NARGS_ZERO_OR_ONE = -3;
-    public final static String OPTION_FREE_ARGS = "**FREE_ARGS**"; // option name for free args
-    String name;
-    int nAllowedArgs = 0; // number of arguments allowed
-    String syntaxPattern;
-    String argDoc = ""; // arg syntax description
-    String doc = ""; // option description
-    Vector options = new Vector();
+  public final static int NARGS_ZERO_OR_MORE = -1;
+  public final static int NARGS_ONE_OR_MORE = -2;
+  public final static int NARGS_ZERO_OR_ONE = -3;
 
-    public OptionSpec(String optName) {
-        name = optName;
-        nAllowedArgs = 0;
+  Vector<String> names = new Vector<String>();
+  // number of arguments needed, will be checked
+  int nNeededArgs = 0;
+  String syntaxPattern;
+  String doc = ""; // option description
+  Vector<Option> options = new Vector<Option>();
+
+  public OptionSpec(String[] optNames, int needed, String desc) {
+    for (String name : optNames) {
+      names.add(name.toLowerCase());
+    }
+    doc = desc;
+    nNeededArgs = needed;
+  }
+
+  public OptionSpec(String optName, int needed, String desc) {
+    this(new String[] { optName }, needed, desc);
+  }
+
+  public void setDoc(String docLine) {
+    doc = docLine;
+  }
+
+  public String getDesc() {
+    return doc;
+  }
+
+  public int getNumOptions() {
+    return options.size();
+  }
+
+  public Option getOption(int i) {
+    if (options.size() > 0) {
+      return (Option) options.elementAt(i);
     }
 
-    public OptionSpec(String optName, int nAllowed) {
-        this(optName);
+    return null;
+  }
 
-        // check for invalid input
-        if (nAllowedArgs >= NARGS_ZERO_OR_ONE) {
-            nAllowedArgs = nAllowed;
-        }
+  public Option getOption() {
+    if (options.size() > 0) {
+      return (Option) options.lastElement();
     }
 
-    public OptionSpec(String optName, String _syntaxPattern) {
-        this(optName);
-        syntaxPattern = _syntaxPattern;
+    return null;
+  }
+
+  // merge all options into one list e.g. -param value1 -param value2
+  public Iterator getAllOptions() {
+    Vector all = new Vector();
+    for (Option option : options) {
+      all.addAll(Arrays.asList(option.getArgs()));
+    }
+    return all.iterator();
+  }
+
+  public boolean hasOption() {
+    return options.size() > 0;
+  }
+
+  final Vector<String> getNames() {
+    return names;
+  }
+
+  boolean matches(String name) {
+    return names.contains(name.toLowerCase());
+  }
+
+  int getAllowedArgs() {
+    return nNeededArgs;
+  }
+
+  void checkNumArgs(String[] args) throws ParseException {
+    if (nNeededArgs == NARGS_ZERO_OR_MORE) {
+      // this is senseless as it allows everything
+    } else if (nNeededArgs == NARGS_ONE_OR_MORE) {
+      if (args.length <= 0) {
+        throw new ParseException("option " + names
+            + ": expected one or more args, found " + args.length);
+      }
+    } else if (nNeededArgs == NARGS_ZERO_OR_ONE) {
+      if (args.length > 1) {
+        throw new ParseException("option " + names
+            + ": expected zero or one arg, found " + args.length);
+      }
+    }
+    // we complain only if there are too few arguments
+    // more can as well be files that were carelessly placed
+    else if (args.length < nNeededArgs) {
+      throw new ParseException("option " + names + ": expected " + nNeededArgs
+          + " args, found " + args.length);
+    }
+  }
+
+  public Option addOption(Vector v) throws ParseException {
+    String[] args = (String[]) v.toArray(new String[] {});
+    checkNumArgs(args);
+    String[] argsNeeded = new String[nNeededArgs];
+    for (int i = 0; i < nNeededArgs; i++) {
+      argsNeeded[i] = args[i];
     }
 
-    public void setDoc(String _argDoc, String docLine) {
-        argDoc = _argDoc;
-        doc = docLine;
-    }
-
-    public String getArgDesc() {
-        return argDoc;
-    }
-
-    public String getDocDesc() {
-        return doc;
-    }
-
-    public int getNumOptions() {
-        return options.size();
-    }
-
-    public Option getOption(int i) {
-        if (options.size() > 0) {
-            return (Option) options.elementAt(i);
-        }
-
-        return null;
-    }
-
-    public Iterator getOptions() {
-        return options.iterator();
-    }
-
-    public boolean hasOption() {
-        return options.size() > 0;
-    }
-
-    void addOption(Option opt) {
-        options.addElement(opt);
-    }
-
-    String getName() {
-        return name;
-    }
-
-    int getAllowedArgs() {
-        return nAllowedArgs;
-    }
-
-    Option parse(String[] args) throws ParseException {
-        checkNumArgs(args);
-
-        return new Option(this, args);
-    }
-
-    void checkNumArgs(String[] args) throws ParseException {
-        if (nAllowedArgs == NARGS_ZERO_OR_MORE) {
-            // args must be ok
-        } else if (nAllowedArgs == NARGS_ONE_OR_MORE) {
-            if (args.length <= 0) {
-                throw new ParseException("option " + name +
-                    ": expected one or more args, found " + args.length);
-            }
-        } else if (nAllowedArgs == NARGS_ZERO_OR_ONE) {
-            if (args.length > 1) {
-                throw new ParseException("option " + name +
-                    ": expected zero or one arg, found " + args.length);
-            }
-        } else if (args.length != nAllowedArgs) {
-            throw new ParseException("option " + name + ": expected " +
-                nAllowedArgs + " args, found " + args.length);
-        }
-    }
+    Option opt = new Option(this, argsNeeded);
+    options.add(opt);
+    return opt;
+  }
 }

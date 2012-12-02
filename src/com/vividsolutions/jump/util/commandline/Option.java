@@ -1,4 +1,3 @@
-
 /*
  * The Unified Mapping Platform (JUMP) is an extensible, interactive GUI 
  * for visualizing and manipulating spatial features with geometry and attributes.
@@ -33,28 +32,39 @@
 
 package com.vividsolutions.jump.util.commandline;
 
+import java.util.Vector;
 
 /**
  * The parameters for an instance of an option occurring in a command.
  */
 public class Option {
-    OptionSpec optSpec;
-    String[] args; // the actual option args found
+  OptionSpec optSpec;
+  Vector<String> args = new Vector<String>(); // the actual option args found
 
-    public Option(OptionSpec spec, String[] _args) {
-        optSpec = spec;
-        args = _args;
+  public Option(OptionSpec spec, String[] _args) {
+    optSpec = spec;
+    for (String string : _args) {
+      args.add(string);
     }
+  }
 
-    public String getName() {
-        return optSpec.getName();
-    }
+  public final OptionSpec getSpec() {
+    return optSpec;
+  }
 
-    public int getNumArgs() {
-        return args.length;
-    }
+  public void addArg(String value) {
+    args.add(value);
+  }
 
-    public String getArg(int i) {
-        return args[i];
-    }
+  public int getNumArgs() {
+    return args.size();
+  }
+
+  public String getArg(int i) {
+    return args.get(i);
+  }
+
+  public String[] getArgs() {
+    return args.toArray(new String[] {});
+  }
 }

@@ -30,71 +30,111 @@
  * www.vividsolutions.com
  */
 package com.vividsolutions.jump.workbench.ui.plugin;
+
+import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.io.File;
+import java.util.Iterator;
 
 import org.apache.log4j.Logger;
+import org.openjump.core.ui.plugin.file.OpenFilePlugIn;
+import org.openjump.core.ui.plugin.file.OpenProjectPlugIn;
 
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.TaskFrame;
 import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
-import java.awt.event.ActionEvent;
-import org.openjump.core.ui.plugin.file.OpenProjectPlugIn;
 
 /**
  * Opens a TaskFrame when the Workbench starts up
  */
-public class FirstTaskFramePlugIn extends AbstractPlugIn {//AbstractPlugIn {
-    
-    private static Logger LOG = Logger.getLogger( FirstTaskFramePlugIn.class );
-	
-    public FirstTaskFramePlugIn() {
-    }
-	
-    private ComponentListener componentListener;
-	
-	@Override
-    public void initialize(final PlugInContext context) throws Exception {
-		
-		final WorkbenchContext workbenchContext = context.getWorkbenchContext();
+public class FirstTaskFramePlugIn extends AbstractPlugIn {// AbstractPlugIn {
 
-        componentListener = new ComponentAdapter() {
-			@Override
-            public void componentShown(ComponentEvent e) {
-                //Two reasons wait until the frame is shown before adding the task frame:
-                //(1) Otherwise the task frame won't be selected (2) Otherwise GUIUtil.setLocation
-                //will throw an IllegalComponentStateException. [Jon Aquino]
-                //UT skip this; see 1st if there is a filename available
-                // if so, load it
-                String filename = (String)context.getWorkbenchContext().getBlackboard().get( JUMPWorkbench.INITIAL_PROJECT_FILE );
-                
-                if( filename == null ){//create empty task
-                    context.getWorkbenchFrame().addTaskFrame();
-                } else {
+  private static Logger LOG = Logger.getLogger(FirstTaskFramePlugIn.class);
 
-                    LOG.info( "Found initial project file: " + filename);
+  public FirstTaskFramePlugIn() {
+  }
 
-                    File f = new File( filename );
-                    
-	        		try {
-						// switch to new OpenProjectPlugIn [Matthias Scholz 11. Dec. 2011]
-						OpenProjectPlugIn openProjectPlugIn = new OpenProjectPlugIn(workbenchContext, f);
-						AbstractPlugIn.toActionListener(openProjectPlugIn, workbenchContext, new TaskMonitorManager()).actionPerformed(new ActionEvent(this, 0, ""));
-	                } catch (Exception ex) {
-	                    String mesg = "Could not load initial file";
-	                    LOG.error( mesg );
-	                    context.getWorkbenchFrame().warnUser( mesg );
-	                    context.getWorkbenchFrame().addTaskFrame();
-	                }
-                }
-                
-                context.getWorkbenchFrame().removeComponentListener(componentListener);
+  private ComponentListener componentListener;
+
+  @Override
+  public void initialize(final PlugInContext context) throws Exception {
+
+    final WorkbenchContext workbenchContext = context.getWorkbenchContext();
+
+    componentListener = new ComponentAdapter() {
+      @Override
+      public void componentShown(ComponentEvent e) {
+        // Two reasons wait until the frame is shown before adding the task
+        // frame:
+        // (1) Otherwise the task frame won't be selected (2) Otherwise
+        // GUIUtil.setLocation
+        // will throw an IllegalComponentStateException. [Jon Aquino]
+        // UT skip this; see 1st if there is a filename available
+        // if so, load it
+        String filename = (String) context.getWorkbenchContext()
+            .getBlackboard().get(JUMPWorkbench.INITIAL_PROJECT_FILE);
+        File f;
+
+        // load -project
+        if (filename != null ) {// create empty task
+          LOG.info("Found initial '-project' file: " + filename);
+          f = new File(filename);
+
+          try {
+            // switch to new OpenProjectPlugIn [Matthias Scholz 11. Dec. 2011]
+            OpenProjectPlugIn openProjectPlugIn = new OpenProjectPlugIn(
+                workbenchContext, f);
+            AbstractPlugIn.toActionListener(openProjectPlugIn,
+                workbenchContext, new TaskMonitorManager()).actionPerformed(
+                new ActionEvent(this, 0, ""));
+          } catch (Exception ex) {
+            String mesg = I18N.getMessage(this.getClass().getName()+".could-not-load-file-{0}", f);
+            LOG.error(mesg);
+            context.getWorkbenchFrame().warnUser(mesg);
+          }
+        }
+
+        // load files from commandline
+        Iterator files = context.getWorkbenchContext().getWorkbench().getCommandLine().getParams();
+        while (files.hasNext()) {
+          filename = (String) files.next();
+          f = new File(filename);
+          try {
+            // try project
+            if (SaveProjectAsPlugIn.JUMP_PROJECT_FILE_FILTER.accept(f)){
+              OpenProjectPlugIn open = new OpenProjectPlugIn(
+                  workbenchContext, f);
+              AbstractPlugIn.toActionListener(open,
+                  workbenchContext, new TaskMonitorManager()).actionPerformed(
+                  new ActionEvent(this, 0, ""));
             }
-        };
-        context.getWorkbenchFrame().addComponentListener(componentListener);
-    }
+            // else must be a data file
+            else {
+              OpenFilePlugIn open = new OpenFilePlugIn(
+                  workbenchContext, f);
+              AbstractPlugIn.toActionListener(open,
+                  workbenchContext, new TaskMonitorManager()).actionPerformed(
+                  new ActionEvent(this, 0, ""));
+            }
+          } catch (Exception e2) {
+            String mesg = I18N.getMessage(this.getClass().getName()+".could-not-load-file-{0}", f);
+            LOG.error(mesg);
+          }
+        }
+
+        // always open at least one first task
+        if (!(context.getWorkbenchFrame().getActiveTaskFrame() instanceof TaskFrame))
+          context.getWorkbenchFrame().addTaskFrame();
+
+        context.getWorkbenchFrame().removeComponentListener(componentListener);
+      }
+    };
+    context.getWorkbenchFrame().addComponentListener(componentListener);
+  }
 }

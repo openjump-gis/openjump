@@ -89,7 +89,6 @@ public class JUMPWorkbench {
     // and we want the splash screen to appear ASAP [Jon Aquino]
     if (splashImage == null) {
       splashImage = IconLoader.icon("splash.png");
-      // splashImage = IconLoader.icon(I18N.get("splash.png"));
     }
     return splashImage;
   }
@@ -281,10 +280,14 @@ public class JUMPWorkbench {
         extensionsDirectory = null;
       }
     }
+    
+    // [ede 12.2012] deprecated -project option
     if (commandLine.hasOption(INITIAL_PROJECT_FILE)) {
       String task = commandLine.getOption(INITIAL_PROJECT_FILE).getArg(0);
       this.getBlackboard().put(INITIAL_PROJECT_FILE, task);
     }
+
+    // open files from command line takes place in FirstTaskFramePlugIn
 
     if (commandLine.hasOption(STATE_OPTION)) {
       File option = new File(commandLine.getOption(STATE_OPTION).getArg(0));
@@ -319,10 +322,22 @@ public class JUMPWorkbench {
       // load i18n specified in command line ( '-i18n translation' )
       if (commandLine.hasOption(I18N_FILE)) {
         I18N_SETLOCALE = commandLine.getOption(I18N_FILE).getArg(0);
-        // initialize I18N
-        I18N.loadFile(I18N_SETLOCALE);
+        // initialize I18N 
+        I18N.setLocale(I18N_SETLOCALE);
       }
 
+      if (commandLine.hasOption("help")) {
+        commandLine.printDoc(System.out);
+        System.exit(0);
+      }
+      
+      if (commandLine.hasOption("version")) {
+        System.out.println(I18N.get("JUMPWorkbench.jump") + " "
+            + I18N.get("ui.AboutDialog.version") + " "
+            + JUMPVersion.CURRENT_VERSION);
+        System.exit(0);
+      }
+      
       // Init the L&F before instantiating the progress monitor [Jon Aquino]
       initLookAndFeel();
       // setFont to switch fonts if defaults cannot display current language
@@ -522,22 +537,42 @@ public class JUMPWorkbench {
     return context;
   }
 
+  public static final CommandLine getCommandLine(){
+    return commandLine;
+  }
+
   private static void parseCommandLine(String[] args) throws WorkbenchException {
-    // <<TODO:QUESTION>> Notify MD: using CommandLine [Jon Aquino]
     commandLine = new CommandLine('-');
-    commandLine.addOptionSpec(new OptionSpec(PROPERTIES_OPTION, 1));
-    commandLine.addOptionSpec(new OptionSpec(DEFAULT_PLUGINS, 1));
-    commandLine.addOptionSpec(new OptionSpec(PLUG_IN_DIRECTORY_OPTION, 1));
-    commandLine.addOptionSpec(new OptionSpec(I18N_FILE, 1));
+    commandLine.addOptionSpec(new OptionSpec(PROPERTIES_OPTION, 1,
+        "workbench property file (activate extensions and plugins)"));
+    commandLine.addOptionSpec(new OptionSpec(DEFAULT_PLUGINS, 1,
+        "property file (default OpenJUMP extensions and plugins)"));
+    commandLine.addOptionSpec(new OptionSpec(PLUG_IN_DIRECTORY_OPTION, 1,
+        "plugin folder location, default './lib/ext'"));
+    commandLine
+        .addOptionSpec(new OptionSpec(
+            I18N_FILE,
+            1,
+            "switch language and numberformatting by overriding system's default locale setting, e.g en_US"));
     // [UT] 17.08.2005
-    commandLine.addOptionSpec(new OptionSpec(INITIAL_PROJECT_FILE, 1));
-    commandLine.addOptionSpec(new OptionSpec(STATE_OPTION, 1));
+    commandLine.addOptionSpec(new OptionSpec(INITIAL_PROJECT_FILE, 1,
+        "deprecated, simply add files as parameter"));
+    commandLine
+        .addOptionSpec(new OptionSpec(
+            STATE_OPTION,
+            1,
+            "where to save workbench settings, default OJ_HOME folder or USER_HOME/.openjump/"));
+    // add help
+    commandLine.addOptionSpec(new OptionSpec(new String[] { "h", "help" }, 0,
+        "show this help"));
+    // add version
+    commandLine.addOptionSpec(new OptionSpec(new String[] { "v", "version" },
+        0, "show version information"));
 
     try {
       commandLine.parse(args);
     } catch (ParseException e) {
-      throw new WorkbenchException(
-          "A problem occurred parsing the command line: " + e.toString());
+      throw new WorkbenchException(e.getLocalizedMessage());
     }
   }
 

@@ -1,4 +1,3 @@
-
 /*
  * The Unified Mapping Platform (JUMP) is an extensible, interactive GUI 
  * for visualizing and manipulating spatial features with geometry and attributes.
@@ -33,11 +32,12 @@
 
 package com.vividsolutions.jump.util.commandline;
 
+import java.io.File;
 import java.io.PrintStream;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
 
+import com.vividsolutions.jump.I18N;
 
 //<<TODO:NAMING>> MOve the command package under ui [Jon Aquino]
 
@@ -45,148 +45,109 @@ import java.util.Vector;
  * A class to parse Unix (and DOS/Win)-style application command-lines.
  */
 public class CommandLine {
-    Hashtable optSpecs = new Hashtable();
-    Vector optVec = new Vector(); // used to store options in order of entry
-    char optionChar; // the char that indicates an option.  Default is '/', which is
-                     // NT Standard, but this causes problems on Unix systems, so '-' should
-                     // be used for cross-platform apps
+  // store options defs
+  Vector optSpecs = new Vector<OptionSpec>();
+  // store optionless file parameters
+  Vector parVec = new Vector<String>(); // store plain params (e.g.
+                                        // projects/files to open)
+  char optionChar; // the char that indicates an option. Default is '/', which
+                   // is
+                   // NT Standard, but this causes problems on Unix systems, so
+                   // '-' should
+                   // be used for cross-platform apps
 
-    public CommandLine() {
-        this('/');
+  public CommandLine() {
+    this('/');
+  }
+
+  public CommandLine(char optionCh) {
+    optionChar = optionCh;
+  }
+
+  public void addOptionSpec(OptionSpec optSpec) {
+    // should check for duplicate option names here
+    optSpecs.add(optSpec);
+
+  }
+
+  OptionSpec getOptionSpec(String name) {
+    for (Iterator opts = optSpecs.iterator(); opts.hasNext();) {
+      OptionSpec optspec = (OptionSpec) opts.next();
+      if (optspec.matches(name)) {
+        return optspec;
+      }
+    }
+    return null;
+  }
+
+  public Option getOption(String name) {
+    OptionSpec spec = getOptionSpec(name);
+    return spec != null ? spec.getOption() : null;
+  }
+
+  public Iterator getParams() {
+    return parVec.iterator();
+  }
+
+  public boolean hasOption(String name) {
+    OptionSpec spec = getOptionSpec(name);
+    return spec != null ? spec.hasOption() : false;
+  }
+
+  public void printDoc(PrintStream out) {
+    OptionSpec os = null;
+    System.out
+        .println("Syntax: oj_starter -option <parameter>... <file>...\n\nOptions:");
+
+    for (Iterator i = optSpecs.iterator(); i.hasNext();) {
+      os = (OptionSpec) i.next();
+      String names = "";
+      for (String name : os.getNames()) {
+        names = names.isEmpty() ? optionChar + name : names + ", " + optionChar
+            + name;
+      }
+
+      out.println("  " + names + "\n    " + os.getDesc());
+    }
+  }
+
+  public void parse(String[] args) throws ParseException {
+    int i = 0;
+
+    while (i < args.length) {
+      OptionSpec optSpec;
+      // check for valid option
+      if (args[i].charAt(0) == optionChar
+          && (optSpec = getOptionSpec(args[i].substring(1))) != null) {
+        int paramStart = i + 1;
+        int expectedArgCount = optSpec.getAllowedArgs();
+
+        Option opt = optSpec.addOption(splitOptionParams(args, i));
+
+        // forward pointer to after options params
+        i += 1 + opt.getNumArgs();
+      }
+      // check for files
+      else if (new File(args[i]).exists()) {
+        parVec.add(args[i]);
+        i++;
+      } else
+        throw new ParseException(I18N.getMessage(getClass().getName()
+            + ".unknown-option-or-file-not-found-{0}", args[i]));
     }
 
-    public CommandLine(char optionCh) {
-        optionChar = optionCh;
+  }
+
+  // create list containing only the parameters up to the next valid parameter
+  private Vector<String> splitOptionParams(String[] args, int i) {
+    Vector params = new Vector<String>();
+    for (int j = ++i; j < args.length; j++) {
+      String param = args[j];
+      if (param.charAt(0) == optionChar
+          && getOptionSpec(param.substring(1)) != null)
+        break;
+      params.add(param);
     }
-
-    public void addOptionSpec(OptionSpec optSpec) {
-        String name = optSpec.getName();
-
-        // should check for duplicate option names here
-        optSpecs.put(name.toLowerCase(), optSpec);
-        optVec.add(optSpec);
-    }
-
-    OptionSpec getOptionSpec(String name) {
-        if (optSpecs.containsKey(name.toLowerCase())) {
-            return (OptionSpec) optSpecs.get(name.toLowerCase());
-        }
-
-        return null;
-    }
-
-    public Option getOption(String name) {
-        OptionSpec spec = getOptionSpec(name);
-
-        if (spec == null) {
-            return null;
-        }
-
-        return spec.getOption(0);
-    }
-
-    public Iterator getOptions(String name) {
-        OptionSpec spec = getOptionSpec(name);
-
-        return spec.getOptions();
-    }
-
-    public boolean hasOption(String name) {
-        OptionSpec spec = getOptionSpec(name);
-
-        if (spec == null) {
-            return false;
-        }
-
-        return spec.hasOption();
-    }
-
-    /**
-     *  adds an option for an <B>existing</B> option spec
-     */
-    void addOption(Option opt) {
-        String name = opt.getName();
-        ((OptionSpec) optSpecs.get(name.toLowerCase())).addOption(opt);
-    }
-
-    public void printDoc(PrintStream out) {
-        OptionSpec os = null;
-        out.println("Options:");
-
-        for (Iterator i = optVec.iterator(); i.hasNext();) {
-            os = (OptionSpec) i.next();
-
-            String name = optionChar + os.getName();
-
-            if (os.getName() == OptionSpec.OPTION_FREE_ARGS) {
-                name = "(free)";
-            }
-
-            out.println("  " + name + " " + os.getArgDesc() + " - " +
-                os.getDocDesc());
-        }
-    }
-
-    public void parse(String[] args) throws ParseException {
-        String noOptMsg;
-        String optName;
-        Vector params = new Vector();
-        int i = 0;
-        int paramStart;
-
-        while (i < args.length) {
-            if (args[i].charAt(0) == optionChar) {
-                optName = args[i].substring(1);
-                noOptMsg = "Invalid option: " + args[i];
-                paramStart = i + 1;
-            } else {
-                optName = OptionSpec.OPTION_FREE_ARGS;
-                noOptMsg = "Invalid option: " + args[i];
-                paramStart = i;
-            }
-
-            OptionSpec optSpec = getOptionSpec(optName);
-
-            if (optSpec == null) {
-                throw new ParseException(noOptMsg);
-            }
-
-            int expectedArgCount = optSpec.getAllowedArgs();
-
-            // parse option args
-            parseParams(args, params, paramStart, expectedArgCount);
-
-            Option opt = optSpec.parse((String[]) params.toArray(new String[0]));
-
-            // check for number of allowed instances here
-            addOption(opt);
-            i++;
-            i += params.size();
-        }
-    }
-
-    void parseParams(String[] args, Vector params, int i, int expectedArgCount) {
-        params.clear();
-
-        int count = 0;
-        int expected = expectedArgCount;
-
-        if (expectedArgCount == OptionSpec.NARGS_ZERO_OR_ONE) {
-            expected = 1;
-        }
-
-        if (expectedArgCount == OptionSpec.NARGS_ZERO_OR_MORE) {
-            expected = 999999999;
-        }
-
-        if (expectedArgCount == OptionSpec.NARGS_ONE_OR_MORE) {
-            expected = 999999999;
-        }
-
-        while ((i < args.length) && (count < expected) &&
-                (args[i].charAt(0) != optionChar)) {
-            params.addElement(args[i++]);
-            count++;
-        }
-    }
+    return params;
+  }
 }

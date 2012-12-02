@@ -151,14 +151,13 @@ public class OpenProjectWizard extends AbstractWizardGroup {
         TaskFrame frame = workbenchFrame.addTaskFrame(newTask);
         Dimension size = newTask.getTaskWindowSize();
         if (size != null)
-        	frame.setSize(size);
-        Point location = newTask.getTaskWindowLocation();
-        if ( (location != null)
-        		&& (location.x < workbenchFrame.getSize().width)
-        		&& (location.y < workbenchFrame.getSize().height))
-        	frame.setLocation(location);
-        if (newTask.getMaximized())
-			frame.setMaximum(true);
+          frame.setSize(size);
+//        Point location = newTask.getTaskWindowLocation();
+//        if ( (location != null)
+//        		&& (location.x < workbenchFrame.getSize().width)
+//        		&& (location.y < workbenchFrame.getSize().height))
+//        	frame.setLocation(location);
+        if (newTask.getMaximized()) frame.setMaximum(true);
         savedTaskEnvelope = newTask.getSavedViewEnvelope();
 
         LayerManager sourceLayerManager = sourceTask.getLayerManager();
