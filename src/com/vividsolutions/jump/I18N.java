@@ -121,7 +121,7 @@ public final class I18N {
     init();
   }
 
-  private void setLocale(Locale loc) {
+  private void locale(Locale loc) {
     if (loc != null) {
       locale = loc;
       init();
@@ -183,8 +183,10 @@ public final class I18N {
       return resourceBundle3.getString(key);
     } catch (java.util.MissingResourceException e) {
       String[] labelpath = key.split("\\.");
-      LOG.debug("No resource bundle or no translation found for the key : "
-          + key);
+      String msg = getClass().getName()+"\nNo resource bundle or no translation found for''{0}''.\nError was:\n{1}";
+      msg = new MessageFormat(msg).format(new String[]{key,e.getLocalizedMessage()});
+      LOG.debug(msg);
+      System.out.println(msg);
       return labelpath[labelpath.length - 1];
     }
   }
@@ -271,9 +273,9 @@ public final class I18N {
    * 
    * @param langcountry
    */
-  public static void loadFile(final String langcountry) {
+  public static void setLocale(final String langcountry) {
     Locale loc = fromCode(langcountry);
-    getInstance().setLocale(loc);
+    getInstance().locale(loc);
     getInstance().init();
   }
 
@@ -339,6 +341,11 @@ public final class I18N {
    */
   public static String getMessage(final String label, final Object[] objects) {
     return getMessage("", label, objects);
+  }
+
+  // convenience method for one parameter only calls
+  public static String getMessage(final String label, final Object object) {
+    return getMessage("", label, new Object[]{object});
   }
 
   /**
