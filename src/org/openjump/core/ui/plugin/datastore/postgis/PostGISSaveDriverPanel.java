@@ -21,16 +21,15 @@ import com.vividsolutions.jump.workbench.datastore.ConnectionDescriptor;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
-
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -108,6 +107,7 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel implements Actio
     // context variables
     private WorkbenchContext wbContext;
     private String lastUsedLayerName = null;
+    private Map<String,String> layer2TableMap = new HashMap<String,String>();
     private DefaultComboBoxModel tableList = new DefaultComboBoxModel();
     
     public PostGISSaveDriverPanel(PlugInContext context) {
@@ -145,26 +145,7 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel implements Actio
 		    }
 		});
 		// listen to ancestor to re-init the layer name when the source layer changes
-		addAncestorListener(new AncestorListener(){
-		    // called when the panel or an ancestor is made visible
-		    // call layerChanged if the source layer has changed since last call
-		    public void ancestorAdded(AncestorEvent e) {
-		        Layer[] layers = wbContext.getLayerNamePanel().getSelectedLayers();
-	            if (layers.length == 1) {
-	                // call connectionChanged to refresh the list of tables 
-	                // available in the database in case it has been changed
-	                // by another client
-	                connectionChanged();
-	                String layerName = layers[0].getName();
-	                if (!layerName.equals(lastUsedLayerName) || lastUsedLayerName == null) {
-	                    lastUsedLayerName = layerName;
-	                    layerChanged();
-	                }
-	            }
-		    }
-		    public void ancestorMoved(AncestorEvent event) {}
-		    public void ancestorRemoved(AncestorEvent event) {} 
-		});
+		addAncestorListener(new DPAncestorListener());
 		
 		gbConstraints.gridx = 0;
 		gbConstraints.gridy = 4;
@@ -290,6 +271,35 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel implements Actio
 		help.setText(CREATE_HELP_STRING);
 
 	}
+	
+	class DPAncestorListener implements AncestorListener {
+		// called when the panel or an ancestor is made visible
+		// call layerChanged if the source layer has changed since last call
+		public void ancestorAdded(AncestorEvent e) {
+		    Layer[] layers = wbContext.getLayerNamePanel().getSelectedLayers();
+	        if (layers.length == 1) {
+	            // call connectionChanged to refresh the list of tables available
+	            // in the database in case it has been changed by another client
+	            connectionChanged();
+	            String layerName = layers[0].getName();
+	            // if selected layer has changed, refresh tableList state
+	            if (!layerName.equals(lastUsedLayerName) || lastUsedLayerName == null) {
+	                lastUsedLayerName = layerName;
+	                layerChanged();
+	            }
+	            // if layerName has already been associated to a different table name
+	            // select this table name in the comboBox 
+	            if (layer2TableMap.get(layerName) != null) {
+	                tableList.setSelectedItem(layer2TableMap.get(layerName));
+	            }
+	            else {
+	                tableList.setSelectedItem(layerName);
+	            }
+	        }
+		}
+		public void ancestorMoved(AncestorEvent event) {}
+		public void ancestorRemoved(AncestorEvent event) {} 
+	}
 
 
 	public String getValidationError() {
@@ -336,7 +346,7 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel implements Actio
 	
 	public String getTableName() {
 	    //System.out.println("table name : " + tableComboBox.getSelectedItem().toString());
-	    //System.out.println("table name : " + tableComboBox.getEditor().getItem());
+	    layer2TableMap.put(lastUsedLayerName, tableComboBox.getSelectedItem().toString());
 	    return tableComboBox.getSelectedItem().toString();
 	}
 	
@@ -357,20 +367,21 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel implements Actio
 	    return createDbIdCheckBox.isSelected();
 	}
 	
-	//public void setIdColumnModel() {
-	//}
 
 	public void actionPerformed(ActionEvent ae) {
 		String action = ae.getActionCommand();
 		if(action.equals(SaveToPostGISDataSource.SAVE_METHOD_CREATE)) {
-		    
-		    Layer[] layers = wbContext.getLayerNamePanel().getSelectedLayers();
-	        if (layers.length == 1) {
-	            String layerName = layers[0].getName();
-	            int pos = tableList.getIndexOf(layerName);
-	            if (pos < 0) tableList.addElement(layerName);
-	            tableComboBox.setSelectedItem(layerName);
-	        } 
+		    //Layer[] layers = wbContext.getLayerNamePanel().getSelectedLayers();
+	        //if (layers.length == 1) {
+	        //    String layerName = layers[0].getName();
+	        //    if (layer2TableMap.get(layerName) != null) {
+	        //        tableComboBox.setSelectedItem(layer2TableMap.get(layerName));
+	        //    }
+	        //    else {
+	        //        addItemToTableList(tableList, layerName);
+	        //        tableComboBox.setSelectedItem(layerName);
+	        //    }
+	        //} 
 			tableComboBox.setEditable(true);
 			localIdLabel.setEnabled(true);
 			resetIdChooser();
@@ -417,9 +428,7 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel implements Actio
 	private void layerChanged() {
 	    //System.out.println("layer changed");
 	    createButton.setSelected(true);
-	    int pos = tableList.getIndexOf(lastUsedLayerName);
-	    if (pos < 0) tableList.insertElementAt(lastUsedLayerName, 0);
-	    tableComboBox.setSelectedItem(lastUsedLayerName);
+	    addItemToTableList(tableList, lastUsedLayerName);
 	}
 	
 	// Called if the connection changed
@@ -469,37 +478,23 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel implements Actio
 	    // If create option is selected, default table name will be the layer name
 	    if (layers.length == 1 && createButton.isSelected()) {
 	        String layerName = layers[0].getName();
-	        if (previousSelection == null) previousSelection = layerName;
-	        int pos = tableList.getIndexOf(layerName);
-	        if (pos < 0) tableList.insertElementAt(layerName, 0);
+	        addItemToTableList(tableList, layerName);
 	        tableComboBox.setSelectedItem(layerName);
-	    }  
+	    }
 	    if (metadata != null) {
 	        String[] tableNames = metadata.getDatasetNames();
-	        for (String t : tableNames) tableList.addElement(t);
+	        for (String t : tableNames) {
+	            addItemToTableList(tableList, t);
+	        }
 	    }
 	    tableComboBox.setEditable(true);
 	    this.validate();
 	    
-	    if (tableComboBox.getSelectedItem() != null /*&&
-	        !tableComboBox.getSelectedItem().equals(previousSelection)*/) {
+	    if (tableComboBox.getSelectedItem() != null) {
 	        resetIdChooser();
 	    }
 	}
-	
-	//private String[] getColumns(Connection conn, String table, boolean includeGeometry, boolean includeNullable) throws SQLException {
-	//    DatabaseMetaData metadata = conn.getMetaData();
-	//    //String[] schema_table = getSchemaTable(table);
-	//    String[] schema_table = PostGISUtil.divideTableName(table);
-	//    ResultSet rs = metadata.getColumns(null, schema_table[0], schema_table[1], null);
-	//    List<String> columns = new ArrayList<String>();
-	//    while (rs.next()) {
-	//        if (!includeGeometry && rs.getString("TYPE_NAME").equals("GEOMETRY")) continue;
-	//        if (!includeNullable && rs.getString("IS_NULLABLE").equals("YES")) continue;
-	//        columns.add(rs.getString("COLUMN_NAME"));
-	//    }
-	//    return columns.toArray(new String[columns.size()]);
-	//}
+
 	
 	private void resetIdChooser() {
 	    Object oldValue = localIdComboBox.getSelectedItem();
@@ -522,6 +517,23 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel implements Actio
 	        }
 	        this.validate();
 	    }
+	}
+	
+	/**
+	 * Adds a new item to the model, without duplicate, and in alphabetical order
+	 */
+	private void addItemToTableList(DefaultComboBoxModel model, String item) {
+	    for (int i = 0 ; i < model.getSize() ; i++) {
+	        String item_i = (String)model.getElementAt(i);
+	        int compare = item.compareTo(item_i);
+	        if (compare < 0) {
+	            model.insertElementAt(item, i);
+	            return;
+	        }
+	        else if (compare == 0) return;
+	        else continue;
+	    }
+	    model.insertElementAt(item, model.getSize());
 	}
 
 }
