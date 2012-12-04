@@ -152,8 +152,11 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
         if (layers.length == 1) {
             properties.put(SaveToPostGISDataSource.DATASET_NAME_KEY, layers[0].getName());
             FeatureSchema schema = layers[0].getFeatureCollectionWrapper().getFeatureSchema();
-            properties.put(SaveToPostGISDataSource.SQL_QUERY_KEY, "SELECT * FROM \"" +
-                panel.getTableName() + "\" LIMIT 100000");
+            String[] schema_table = PostGISQueryUtil.divideTableName(panel.getTableName());
+            
+            properties.put(SaveToPostGISDataSource.SQL_QUERY_KEY, "SELECT * FROM " +
+                PostGISQueryUtil.compose(schema_table[0], schema_table[1]) + 
+                " LIMIT 100000");
             // OpenJUMP has now a better support of Coordinate System at
             // FeatureCollection and FeatureSchema level, but this one is simple
             // and makes it easy to set the SRID the user want before an update
