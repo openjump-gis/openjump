@@ -39,20 +39,18 @@ postinstall(){
   # fix permissions
   find "$1" -type f -exec chmod 644 {} \; &&\
   find "$1" -type d -exec chmod 755 {} \; &&\
-  find "$1" -type f \( -name \*.sh -o -name \*.command \) -print -exec chmod 755 {} \; &&\
+  find "$1" -type f \( -name \*.sh -o -name \*.command -o -name script -o -name OpenJUMP \) -print -exec chmod 755 {} \; &&\
   echo permissions fixed
-  file="$1/lib/native/ecw-gvsig1.11-linux32.tar.gz"
-  [ -f "$file" ] && tar xvf "$file" -C "$(dirname "$file")" && echo extracted \'$file\'
   which xdg-desktop-menu && xdg-desktop-menu forceupdate && echo reloaded desktop
 }
 
 macinstall(){
-  # do postinstall
-  postinstall "$1"
   # create app package
   cp -R -a "$1"/bin/OpenJUMP.app/Contents "$1" &&\
-  awk '{sub(/..\/oj_/,"bin/oj_",$0)}1' "$1"/bin/OpenJUMP.app/Contents/MacOS/oj.sh > "$1"/Contents/MacOS/oj.sh &&\
+  awk '{sub(/..\/oj_/,"bin/oj_",$0)}1' "$1"/bin/OpenJUMP.app/Contents/Resources/script > "$1"/Contents/Resources/script &&\
   echo patched oj.app
+  # do postinstall
+  postinstall "$1"
 }
 
 ## detect home folder
@@ -193,7 +191,7 @@ do
   file=$(basename "$file")
   done=".$file.unzipped"
   # we create a marker file symbolizing previous successful extraction
-  ( cd "$JUMP_NATIVE_DIR/"; [ ! -f "$done" ] && tar -xvf $(basename $file) && touch "$done" );
+  ( cd "$JUMP_NATIVE_DIR/"; [ -f "$file" ] && [ ! -f "$done" ] && tar -xvf "$file" && touch "$done" );
 done
 
 # allow jre to find native libraries in native dir, lib/ext (backwards compatibility)
