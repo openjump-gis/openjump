@@ -186,7 +186,7 @@ public final class I18N {
       String msg = getClass().getName()+"\nNo resource bundle or no translation found for''{0}''.\nError was:\n{1}";
       msg = new MessageFormat(msg).format(new String[]{key,e.getLocalizedMessage()});
       LOG.debug(msg);
-      System.out.println(msg);
+      System.out.println("Missing translation for '"+key+"' in resource bundle '"+this.resourcePath+"'.");
       return labelpath[labelpath.length - 1];
     }
   }
