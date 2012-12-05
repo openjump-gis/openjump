@@ -103,7 +103,7 @@ public final class I18N {
   private static Map<String, I18N> instances = new HashMap<String, I18N>();
 
   /** The defaults for the I18N instance. */
-  private static java.lang.ClassLoader classLoader;
+  private static ClassLoader classLoader;
   private String resourcePath = "language/jump";
   private Locale locale = Locale.getDefault();
   /** three rbs see getText(String) for details */
@@ -206,8 +206,8 @@ public final class I18N {
   public static void setClassLoader(ClassLoader cl) {
     if (cl!=null) classLoader = cl;
     // apply to instances
-    for (I18N i18ns : instances.values()) {
-      i18ns.init();
+    for (I18N i18n : instances.values()) {
+      i18n.init();
     }
     getInstance().init();
   }
