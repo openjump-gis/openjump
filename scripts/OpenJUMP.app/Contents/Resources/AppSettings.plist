@@ -22,8 +22,8 @@
 	<key>InterpreterArgs</key>
 	<array/>
 	<!-- OutputType = None/Text Window/Progress Bar -->
-	<key>None</key>
-	<string>Text Window</string>
+	<key>OutputType</key>
+	<string>None</string>
 	<key>RemainRunningAfterCompletion</key>
 	<false/>
 	<key>RequiresAdminPrivileges</key>
