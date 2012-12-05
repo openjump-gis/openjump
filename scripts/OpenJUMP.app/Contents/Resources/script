@@ -1,6 +1,6 @@
 #!/bin/sh
-## open a terminal and run the mac shell script in it
-#open -a Terminal "$(dirname "$0")/../../../oj_macosx.command" "$@"
+## open a terminal and run the mac shell script in it 
+## (open cannot give parameters t )o called script but to called app only)
+#open -a Terminal "$(dirname "$0")/../../../oj_macosx.command"
 ## run shell script in background
-sh "$(dirname "$0")/../../../oj_macosx.command" "$@" &
-sleep 30
+sh "$(dirname "$0")/../../../oj_macosx.command" "$@"
