@@ -211,6 +211,7 @@ public class DrawConstrainedCircleTool extends ConstrainedMultiClickTool {
 			return shape;
         }
 		return super.getShape();
+       
 	}
    
 }

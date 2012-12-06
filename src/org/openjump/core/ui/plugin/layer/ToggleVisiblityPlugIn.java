@@ -39,7 +39,11 @@ package org.openjump.core.ui.plugin.layer;
 import java.util.Collection;
 import java.util.Iterator;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JPopupMenu;
+
+import org.openjump.core.ui.plugin.layer.ToggleVisiblityPlugIn;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.task.TaskMonitor;
@@ -50,6 +54,8 @@ import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 public class ToggleVisiblityPlugIn extends AbstractPlugIn
@@ -66,20 +72,34 @@ public class ToggleVisiblityPlugIn extends AbstractPlugIn
                                                         .getFrame()
                                                         .getLayerNamePopupMenu();
         featureInstaller.addPopupMenuItem(layerNamePopupMenu,
-            this, toggleVisibility,
-            false, null,
-            ToggleVisiblityPlugIn.createEnableCheck(workbenchContext));
+       		 this, toggleVisibility,
+                true,
+                GUIUtil.toSmallIcon((ImageIcon) this.getIcon()),
+                ToggleVisiblityPlugIn.createEnableCheck2(workbenchContext));
         
         JPopupMenu wmsLayerNamePopupMenu = workbenchContext.getWorkbench()
                                                         .getFrame()
                                                         .getWMSLayerNamePopupMenu();
+        .getWMSLayerNamePopupMenu();
         featureInstaller.addPopupMenuItem(wmsLayerNamePopupMenu,
-            this, toggleVisibility,
-            false, null,
-            ToggleVisiblityPlugIn.createEnableCheck2(workbenchContext));
+        		this, toggleVisibility,
+        		true,
+        		GUIUtil.toSmallIcon((ImageIcon) this.getIcon()),
+        		ToggleVisiblityPlugIn.createEnableCheck2(workbenchContext));
+
         
     }
 
+    
+
+    
+    public Icon getIcon() {
+        return IconLoader.icon("eye.png");
+    }
+    
+    
+    
+    
     public boolean execute(PlugInContext context) throws Exception
     {
         try
