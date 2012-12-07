@@ -67,6 +67,7 @@ public class ToggleVisiblityPlugIn extends AbstractPlugIn
     public void initialize(PlugInContext context) throws Exception
     {
         WorkbenchContext workbenchContext = context.getWorkbenchContext();
+        
         FeatureInstaller featureInstaller = new FeatureInstaller(workbenchContext);
         JPopupMenu layerNamePopupMenu = workbenchContext.getWorkbench()
                                                         .getFrame()
@@ -80,7 +81,6 @@ public class ToggleVisiblityPlugIn extends AbstractPlugIn
         JPopupMenu wmsLayerNamePopupMenu = workbenchContext.getWorkbench()
                                                         .getFrame()
                                                         .getWMSLayerNamePopupMenu();
-        .getWMSLayerNamePopupMenu();
         featureInstaller.addPopupMenuItem(wmsLayerNamePopupMenu,
         		this, toggleVisibility,
         		true,
@@ -130,6 +130,7 @@ public class ToggleVisiblityPlugIn extends AbstractPlugIn
         return true;
     }    
     
+    /** @deprecated */
     public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext)
     {
         EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);        
