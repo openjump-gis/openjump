@@ -1,7 +1,6 @@
 package org.openjump.core.ui.plugin.file.open;
 
 import java.awt.Dimension;
-import java.awt.Point;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -49,8 +48,8 @@ public class OpenProjectWizard extends AbstractWizardGroup {
   /** The key for the wizard. */
   public static final String KEY = OpenProjectWizard.class.getName();
   
-  public static final String FILE_CHOOSER_DIRECTORY_KEY = 
-        OpenProjectWizard.class.getName() + " - FILE CHOOSER DIRECTORY";
+  public static final String FILE_CHOOSER_DIRECTORY_KEY = KEY
+      + " - FILE CHOOSER DIRECTORY";
 
   /** The workbench context. */
   private WorkbenchContext workbenchContext;
@@ -97,39 +96,28 @@ public class OpenProjectWizard extends AbstractWizardGroup {
    * Load the files selected in the wizard.
    * 
    * @param monitor The task monitor.
+   * @throws Exception 
    */
-  public void run(WizardDialog dialog, TaskMonitor monitor) {
-    if (files == null) {
-      //Blackboard blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
-      //String dir = (String)blackboard.get(FILE_CHOOSER_DIRECTORY_KEY);
-      //if (dir != null) selectProjectPanel.setCurrentDirectory(new File(dir));
-      File[] selectedFiles = selectProjectPanel.getSelectedFiles();
-      open(selectedFiles, monitor);
-    } else {
-      open(files, monitor);
-    }
+  public void run(WizardDialog dialog, TaskMonitor monitor) throws Exception {
+    // local list for internal usage OR let user select via gui
+    File[] selectedFiles = (files!=null) ? files : 
+                                           selectProjectPanel.getSelectedFiles();
+    open(selectedFiles, monitor);
   }
 
-  private void open(File[] files, TaskMonitor monitor) {
+  private void open(File[] files, TaskMonitor monitor) throws Exception {
     for (File file : files) {
-      open(file, monitor);
-    }
-    // [mmichaud 2011-11-08] persist last used directory in workbench-state.xml
-    if (files != null && files.length>0) {
-       File file = files[0];
-       try {
-           Blackboard blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
-           blackboard.put(FILE_CHOOSER_DIRECTORY_KEY, file.getAbsoluteFile().getParent());
-       } catch(Exception e) {
-           e.printStackTrace();
-       }
+        open(file, monitor);
     }
   }
 
-  public void open(File file, TaskMonitor monitor) {
-    try {
-      FileReader reader = new FileReader(file);
+  public void open(File file, TaskMonitor monitor) throws Exception {
 
+      // persist last used directory in workbench-state.xml
+      Blackboard blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
+      blackboard.put(FILE_CHOOSER_DIRECTORY_KEY, file.getAbsoluteFile().getParent());
+    
+      FileReader reader = new FileReader(file);
       try {
         JUMPWorkbench workbench = workbenchContext.getWorkbench();
         WorkbenchFrame workbenchFrame = workbench.getFrame();
@@ -172,12 +160,17 @@ public class OpenProjectWizard extends AbstractWizardGroup {
 
         OpenRecentPlugIn.get(workbenchContext).addRecentProject(file);
 
-      } finally {
+      }
+      catch (Exception cause) {
+        Exception e = new Exception(I18N.getMessage(KEY
+            + ".could-not-open-project-file-{0}-with-error-{1}", new Object[] {
+            file, cause.getLocalizedMessage() }), cause);
+        monitor.report(e);
+        throw e;
+      }
+      finally {
         reader.close();
       }
-    } catch (Exception e) {
-      monitor.report(e);
-    }
   }
 
   private void initializeDataSources(Task task, WorkbenchContext context) {

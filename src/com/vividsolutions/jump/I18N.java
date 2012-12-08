@@ -192,7 +192,7 @@ public final class I18N {
   }
 
   private boolean isValid( String text ){
-    return text != null && !text.matches("^(\\s*#T:.*|)$");
+    return text != null && !text.trim().isEmpty() && !text.trim().startsWith("#T:");
   }
 
   /**
