@@ -49,6 +49,7 @@
   * xtiff_en_US.properties was not found by org.libtiff.jai.util.PropertyUtil
   
 2012-11-26 ede
+  PLUS
   * add OSX 32bit ECW,JP2 libraries courtesy of gvsigce project
     - modified start scripts accordingly
     - osx jre is started in 32bit by default if possible because the libs
