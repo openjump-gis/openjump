@@ -156,9 +156,9 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
                 boolean use_db_id_key = (Boolean)getProperties().get(USE_DB_ID_KEY);
                 // In PostGIS 2.x, default SRID has changed to 0, but don't mind,
                 // AddGeometryColumn automatically change -1 to 0.
-                //int srid = getSrid(featureCollection, -1);
                 int srid = getProperties().get(SRID_KEY)==null ? -1 : (Integer)getProperties().get(SRID_KEY);
-                String geometryType = getGeometryType(featureCollection, "GEOMETRY");
+                // finally, always create a new table with the Geometry Type
+                //String geometryType = getGeometryType(featureCollection, "GEOMETRY");
                 int dim = getGeometryDimension(featureCollection, 3);
 
                 PostgisDSConnection pgConnection = 
@@ -181,7 +181,7 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
                             deleteTableQuery(conn, quotedSchemaName, quotedTableName);
                         }
                         createAndPopulateTable(conn, featureCollection, 
-                            quotedSchemaName, quotedTableName, srid, geometryType, dim);
+                            quotedSchemaName, quotedTableName, srid, "GEOMETRY", dim);
                         if (local_id_key != null && !local_id_key.equals(NO_LOCAL_ID)) {
                             addPrimaryKey(conn, quotedSchemaName, quotedTableName, local_id_key);
                         }
