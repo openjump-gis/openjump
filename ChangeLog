@@ -7,7 +7,31 @@
 2012-12-04 mmichaud <michael.michaud@free.fr>
   * Improved PostGISWriter : solve case sensitivity problem, list table in
     alphabetical order without duplicate. Remember layer to table mapping.
-  
+
+2012-12-02 ede
+  * added -h/-help -v/-version command line parameters
+  * refined -help output
+  * better validity check (option argument count)
+  * treat lonesome arguments as files to load
+  * load project and data files when given via command line
+  * data files are loaded into project file (see example below) or into a newly created task frame
+  * it's possible to open more than one project, data file 
+  e.g. proj1.jmp data1.shp data2.shp proj2.jmp data3.shp will load data1,2 into proj1 and data3 into proj2
+
+2012-11-30 ede
+  I18N
+  * general cleanup (lot's of doubled code between static class and instance)
+  * fixup stefan's non-empty placeholder language key issue; keys are now searched in the order 
+   lang_country, 
+   language only,
+   base (jump.properties)
+  * values that are ignored are now:
+   #T: and everything after OR <empty string>
+  e.g.
+   plugin.edit.SomePlugIn = #T: translate me i am new
+  or
+   plugin.edit.SomePlugIn =
+
 2012-11-30 mmichaud <michael.michaud@free.fr>
   * Add an option in the RunDataStoreQueryPlugIn to insert a ${selection} mark
     in the query. This parameter is replaced by the union of selected
