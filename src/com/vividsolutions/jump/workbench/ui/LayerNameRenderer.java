@@ -289,15 +289,17 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
       label.setFont(font);
     }
     
-    imageLabel.setVisible(false);
+
     colorPanel.setVisible(false);
     // either add image icon for image layers (if allowed)
     if (showImageLabel) {
+      imageLabel.setVisible(true);
       if (layerable instanceof WMSLayer)
         imageLabel.setIcon(wmsIcon);
-      if (layerable instanceof RasterImageLayer)
+      else if (layerable instanceof RasterImageLayer)
         imageLabel.setIcon(rasterIcon);
-      imageLabel.setVisible(true);
+      else
+        imageLabel.setVisible(false);
     }
     // or colorpanel for vector layers
     if (showColorPanel && layerable instanceof Layer) {
