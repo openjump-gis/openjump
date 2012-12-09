@@ -32,28 +32,25 @@
 package com.vividsolutions.jump.io;
 
 import com.vividsolutions.jts.algorithm.CGAlgorithms;
-import com.vividsolutions.jts.algorithm.RobustCGAlgorithms;
 import com.vividsolutions.jts.geom.*;
-
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.feature.*;
+import com.vividsolutions.jump.feature.AttributeType;
+import com.vividsolutions.jump.feature.Feature;
+import com.vividsolutions.jump.feature.FeatureCollection;
+import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.workbench.ui.OKCancelDialog;
-
 import org.geotools.dbffile.DbfFieldDef;
 import org.geotools.dbffile.DbfFile;
 import org.geotools.dbffile.DbfFileWriter;
-
 import org.geotools.shapefile.Shapefile;
 
-import java.io.*;
-
+import javax.swing.*;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.net.URL;
 import java.nio.charset.Charset;
-
 import java.util.*;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 
 
 /**
@@ -230,7 +227,7 @@ public class ShapefileWriter implements JUMPWriter {
 	public static boolean truncate = false;
 	private static long lastTimeTruncate = new Date(0).getTime();
 	
-    protected static CGAlgorithms cga = new RobustCGAlgorithms();
+    protected static CGAlgorithms cga = new CGAlgorithms();
 
     /** Creates new ShapefileWriter */
     public ShapefileWriter() {
@@ -370,7 +367,7 @@ public class ShapefileWriter implements JUMPWriter {
 	 * For compatibilty reasons, this method is
 	 * is now a wrapper for the changed/new one with Charset functions.
 	 *
-	 * @see writeDbf(FeatureCollection featureCollection, String fname, Charset charset)
+	 * @see #writeDbf(com.vividsolutions.jump.feature.FeatureCollection, String, java.nio.charset.Charset)
 	 *
 	 * @param featureCollection
 	 * @param fname
@@ -763,7 +760,7 @@ public class ShapefileWriter implements JUMPWriter {
             newCoords[t] = lr.getCoordinateN(numPoints - t - 1);
         }
 
-        return new LinearRing(newCoords, new PrecisionModel(), 0);
+        return lr.getFactory().createLinearRing(newCoords);
     }
 
     /**
@@ -795,7 +792,7 @@ public class ShapefileWriter implements JUMPWriter {
             }
         }
 
-        return new Polygon(outer, holes, new PrecisionModel(), 0);
+        return p.getFactory().createPolygon(outer, holes);
     }
 
     /**
@@ -811,7 +808,7 @@ public class ShapefileWriter implements JUMPWriter {
             ps[t] = makeGoodSHAPEPolygon((Polygon) mp.getGeometryN(t));
         }
 
-        result = new MultiPolygon(ps, new PrecisionModel(), 0);
+        result = mp.getFactory().createMultiPolygon(ps);
 
         return result;
     }
@@ -830,6 +827,7 @@ public class ShapefileWriter implements JUMPWriter {
         throws Exception {
         GeometryCollection result;
         Geometry[] allGeoms = new Geometry[fc.size()];
+        GeometryFactory gf = new GeometryFactory();
         
         int geomtype = findBestGeometryType(fc);
 
@@ -843,12 +841,13 @@ public class ShapefileWriter implements JUMPWriter {
         for (int t = 0; t < features.size(); t++) {
             
             Geometry geom = ((Feature) features.get(t)).getGeometry();
+            gf = geom.getFactory();
 
             switch (geomtype) {
             
             case 0: //empty geometry collection
                 // empty geometry collections are arbitrarily written in a Point shapefile
-                allGeoms[t] = geom.getFactory().createGeometryCollection(new Geometry[0]);
+                allGeoms[t] = gf.createGeometryCollection(new Geometry[0]);
                 break;
                 
             case 1: //single point
@@ -856,7 +855,7 @@ public class ShapefileWriter implements JUMPWriter {
                 if ((geom instanceof Point)) {
                     allGeoms[t] = (Point) geom;
                 } else {
-                    allGeoms[t] = new Point(null, new PrecisionModel(), 0);
+                    allGeoms[t] = gf.createPoint((Coordinate)null);
                 }
 
                 break;
@@ -868,11 +867,11 @@ public class ShapefileWriter implements JUMPWriter {
                     Point[] p = new Point[1];
                     p[0] = (Point) geom;
 
-                    allGeoms[t] = new MultiPoint(p, new PrecisionModel(), 0);
+                    allGeoms[t] = gf.createMultiPoint(p);
                 } else if (geom instanceof MultiPoint) {
                     allGeoms[t] = geom;
                 } else {
-                    allGeoms[t] = new MultiPoint(null, new PrecisionModel(), 0);
+                    allGeoms[t] = gf.createMultiPoint(new Point[0]);
                 }
 
                 break;
@@ -883,12 +882,11 @@ public class ShapefileWriter implements JUMPWriter {
                     LineString[] l = new LineString[1];
                     l[0] = (LineString) geom;
 
-                    allGeoms[t] = new MultiLineString(l, new PrecisionModel(), 0);
+                    allGeoms[t] = gf.createMultiLineString(l);
                 } else if (geom instanceof MultiLineString) {
                     allGeoms[t] = geom;
                 } else {
-                    allGeoms[t] = new MultiLineString(null,
-                            new PrecisionModel(), 0);
+                    allGeoms[t] = gf.createMultiLineString(new LineString[0]);
                 }
 
                 break;
@@ -900,19 +898,18 @@ public class ShapefileWriter implements JUMPWriter {
                     Polygon[] p = new Polygon[1];
                     p[0] = (Polygon) geom;
 
-                    allGeoms[t] = makeGoodSHAPEMultiPolygon(new MultiPolygon(
-                                p, new PrecisionModel(), 0));
+                    allGeoms[t] = makeGoodSHAPEMultiPolygon(gf.createMultiPolygon(p));
                 } else if (geom instanceof MultiPolygon) {
                     allGeoms[t] = makeGoodSHAPEMultiPolygon((MultiPolygon) geom);
                 } else {
-                    allGeoms[t] = new MultiPolygon(null, new PrecisionModel(), 0);
+                    allGeoms[t] = gf.createMultiPolygon(new Polygon[0]);
                 }
 
                 break;
             }
         }
 
-        result = new GeometryCollection(allGeoms, new PrecisionModel(), 0);
+        result = gf.createGeometryCollection(allGeoms);
 
         return result;
     }
