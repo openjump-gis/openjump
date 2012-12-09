@@ -1,21 +1,20 @@
 package org.geotools.shapefile;
 
-import java.io.IOException;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-
 import com.vividsolutions.jts.algorithm.CGAlgorithms;
-import com.vividsolutions.jts.algorithm.RobustCGAlgorithms;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jump.io.EndianDataInputStream;
 import com.vividsolutions.jump.io.EndianDataOutputStream;
+
+import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 /**
  * Wrapper for a Shapefile Polygon.
  */
 public class PolygonHandler implements ShapeHandler {
 
-    protected static CGAlgorithms cga = new RobustCGAlgorithms();
+    protected static CGAlgorithms cga = new CGAlgorithms();
 
     int myShapeType;
     
@@ -292,7 +291,7 @@ public class PolygonHandler implements ShapeHandler {
         for (int t=0 ; t<numPoints ; t++) {
             newCoords[t] = lr.getCoordinateN(numPoints - t - 1);
         }
-        return new LinearRing(newCoords, new PrecisionModel(), 0);
+        return lr.getFactory().createLinearRing(newCoords);
     }
 
      public void write(Geometry geometry, EndianDataOutputStream file) throws IOException{
@@ -307,7 +306,7 @@ public class PolygonHandler implements ShapeHandler {
             multi = (MultiPolygon)geometry;
         }
         else {
-            multi = new MultiPolygon(new Polygon[]{(Polygon)geometry}, geometry.getPrecisionModel(), geometry.getSRID());
+            multi = geometry.getFactory().createMultiPolygon(new Polygon[]{(Polygon)geometry});
         }
         
         file.writeIntLE(getShapeType());
@@ -400,7 +399,7 @@ public class PolygonHandler implements ShapeHandler {
             multi = (MultiPolygon)geometry;
         }
         else {
-            multi = new MultiPolygon(new Polygon[]{(Polygon)geometry},geometry.getPrecisionModel(),geometry.getSRID());
+            multi = geometry.getFactory().createMultiPolygon(new Polygon[]{(Polygon)geometry});
         }
         int nrings=0;
         for (int t=0 ; t<multi.getNumGeometries() ; t++) {
