@@ -1,10 +1,9 @@
 package jumptest.junit;
 
-import junit.framework.TestCase;
-
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanelContext;
+import junit.framework.TestCase;
 
 public class PanelTestCase extends TestCase {
 
@@ -32,12 +31,12 @@ public class PanelTestCase extends TestCase {
 
   public void testFormat() {
     TestPanel panel = new TestPanel();
-    assertEquals("123.5", panel.format(123.456, 2222));
-    assertEquals("123.5", panel.format(123.456, 7));
-    assertEquals("123.5", panel.format(123.456, 1));
-    assertEquals("123.46", panel.format(123.456, 0.1));
-    assertEquals("123.46", panel.format(123.456, 0.09));
-    assertEquals("123.456", panel.format(123.456, 0.01));
-    assertEquals("123.456", panel.format(123.456, 0.001));
+    assertEquals(String.format("%.1f",123.456), panel.format(123.456, 2222));
+    assertEquals(String.format("%.1f",123.456), panel.format(123.456, 7));
+    assertEquals(String.format("%.1f",123.456), panel.format(123.456, 1));
+    assertEquals(String.format("%.2f",123.456), panel.format(123.456, 0.1));
+    assertEquals(String.format("%.2f",123.456), panel.format(123.456, 0.09));
+    assertEquals(String.format("%.3f",123.456), panel.format(123.456, 0.01));
+    assertEquals(String.format("%.3f",123.456), panel.format(123.456, 0.001));
   }
 }

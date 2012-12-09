@@ -1,15 +1,21 @@
 package jumptest.junit;
 
-import java.util.*;
-
-import junit.framework.TestCase;
-
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
-import com.vividsolutions.jump.feature.*;
+import com.vividsolutions.jump.feature.AttributeType;
+import com.vividsolutions.jump.feature.BasicFeature;
+import com.vividsolutions.jump.feature.Feature;
+import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.geom.Angle;
-import com.vividsolutions.jump.qa.*;
+import com.vividsolutions.jump.qa.ValidationError;
+import com.vividsolutions.jump.qa.ValidationErrorType;
+import com.vividsolutions.jump.qa.Validator;
+import junit.framework.TestCase;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 
 public class ValidatorTestCase extends TestCase {
 
@@ -275,9 +281,9 @@ public class ValidatorTestCase extends TestCase {
     assertTypeEquals(null, testValidator.validateGeometriesSimple(toFeature(
         "MULTILINESTRING((100 100, 200 200), (0 0, 10 10, 10 0))")));
 
-    assertTypeEquals(ValidationErrorType.NONSIMPLE_LINESTRING, testValidator.validateGeometriesSimple(toFeature(
+    assertTypeEquals(ValidationErrorType.NONSIMPLE, testValidator.validateGeometriesSimple(toFeature(
         "LINESTRING(0 0, 10 10, 10 0, 0 10)")));
-    assertTypeEquals(ValidationErrorType.NONSIMPLE_LINESTRING, testValidator.validateGeometriesSimple(toFeature(
+    assertTypeEquals(ValidationErrorType.NONSIMPLE, testValidator.validateGeometriesSimple(toFeature(
         "MULTILINESTRING((100 100, 200 200), (0 0, 10 10, 10 0, 0 10))")),
         new Coordinate(5, 5));
 

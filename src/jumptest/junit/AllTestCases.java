@@ -42,6 +42,7 @@ public class AllTestCases extends TestCase {
   }
 
   public static void main(String[] args) {
+      System.setProperty("jump-test-data-directory", "jumptest/data/");
     junit.textui.TestRunner.run(suite());
     //Must explicitly exit because any LayerViewPanels created have their own
     //rendering timers that keep going. [Jon Aquino]

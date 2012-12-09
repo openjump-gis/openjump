@@ -1,13 +1,14 @@
 package jumptest.junit;
 
-import java.io.FileReader;
-import java.util.List;
-
-import junit.framework.TestCase;
-
-import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jump.util.io.SimpleGMLReader;
+import junit.framework.TestCase;
+
+import java.io.FileReader;
+import java.util.List;
 
 public class SimpleGMLReaderTestCase extends TestCase {
 
@@ -24,7 +25,7 @@ public class SimpleGMLReaderTestCase extends TestCase {
 
   public void test() throws Exception {
     List geometries;
-    FileReader fileReader = new FileReader(TestUtil.toFile("3points.xml"));
+    FileReader fileReader = new FileReader(SimpleGMLReaderTestCase.class.getClassLoader().getResource("jumptest/data/3points.xml").toURI().getPath());
     try {
       geometries = new SimpleGMLReader().toGeometries(fileReader,
           "dataFeatures", "Feature", "gml:pointProperty");
