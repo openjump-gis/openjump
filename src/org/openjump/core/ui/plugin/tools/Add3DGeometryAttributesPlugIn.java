@@ -25,28 +25,9 @@
  
 package org.openjump.core.ui.plugin.tools;
 
-import java.util.ArrayList;
-import java.util.List;
-
-//import org.openjump.core.ui.images.IconLoader;
-import com.vividsolutions.jts.geom.LineString;
-
-import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
-
+import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.feature.AttributeType;
-import com.vividsolutions.jump.feature.BasicFeature;
-import com.vividsolutions.jump.feature.Feature;
-import com.vividsolutions.jump.feature.FeatureCollection;
-import com.vividsolutions.jump.feature.FeatureDataset;
-import com.vividsolutions.jump.feature.Feature;
-import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
@@ -59,8 +40,13 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
+import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 
+import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
 
+//import org.openjump.core.ui.images.IconLoader;
 /**
  * User can add one or several of the following 3d attributes to a layer.
  * <ul>
@@ -80,8 +66,6 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
  * </ul>
  * @author Micha&euml;l Michaud
  */
-
-import com.vividsolutions.jump.feature.FeatureSchema;
 
 public class Add3DGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
 
@@ -141,19 +125,19 @@ public class Add3DGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
 
     String layer;
     
-    boolean addStartZ         = false;
-    boolean addEndZ           = false;
-    boolean addMinZ           = true;
-    boolean addMaxZ           = true;
-    boolean addWeightedMeanZ  = false;
-    boolean addLength3d       = true;
-    boolean addMaxDownslope   = false;
-    boolean addMaxUpslope     = false;
-    boolean addMaxSlope       = false;
-    boolean addNbNaNZ         = true;
-    boolean addNbNegativeZ    = false;
-    boolean addNb0Z           = false;
-    boolean addNbPositiveZ    = false;
+    private boolean addStartZ         = false;
+    private boolean addEndZ           = false;
+    private boolean addMinZ           = true;
+    private boolean addMaxZ           = true;
+    private boolean addWeightedMeanZ  = false;
+    private boolean addLength3d       = true;
+    private boolean addMaxDownslope   = false;
+    private boolean addMaxUpslope     = false;
+    private boolean addMaxSlope       = false;
+    private boolean addNbNaNZ         = true;
+    private boolean addNbNegativeZ    = false;
+    private boolean addNb0Z           = false;
+    private boolean addNbPositiveZ    = false;
     
     public void initialize(PlugInContext context) throws Exception {
     	    
@@ -161,9 +145,7 @@ public class Add3DGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
 	    	featureInstaller.addMainMenuItem(
 	    	        this,
 	                new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_ATTRIBUTES},
-	                getName() + "...",
-	                false,			//checkbox
-	                null,           // Icon
+	                new JMenuItem(getName() + "..."),
 	                createEnableCheck(context.getWorkbenchContext()));
     }
     
@@ -187,7 +169,7 @@ public class Add3DGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
 	}
 	
 	public void setLayer(String sitesLayer) {
-	    this.layer = layer;
+	    this.layer = sitesLayer;
 	}
     
 	public void setAddStartZ(boolean addStartZ) {

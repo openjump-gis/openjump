@@ -3,16 +3,6 @@
 package org.openjump.core.ui.plugin.edittoolbox.cursortools;
 
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
-
-import org.openjump.core.apitools.FeatureCollectionTools;
-
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
@@ -23,17 +13,17 @@ import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
-import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
-import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanel;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanelProxy;
-import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
-import com.vividsolutions.jump.workbench.ui.SelectionManager;
 import com.vividsolutions.jump.workbench.ui.cursortool.CursorTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.PolygonTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.editing.FeatureDrawingUtil;
-import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+
+import javax.swing.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
 * This cursor tool is installed by CutPoygonSIGLEPlugIn
@@ -55,7 +45,7 @@ public class CutPolygonTool extends PolygonTool {
 	
 	private FeatureDrawingUtil featureDrawingUtil;
 					
-	protected CutPolygonTool(FeatureDrawingUtil featuredrawingutil) {
+	protected CutPolygonTool(FeatureDrawingUtil featureDrawingUtil) {
 	    this.featureDrawingUtil = featureDrawingUtil;
 	}
 

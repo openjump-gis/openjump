@@ -26,19 +26,11 @@
 package org.openjump.core.ui.plugin.tools;
 
 //import org.openjump.core.ui.images.IconLoader;
-import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
-
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.feature.AttributeType;
-import com.vividsolutions.jump.feature.BasicFeature;
-import com.vividsolutions.jump.feature.Feature;
-import com.vividsolutions.jump.feature.FeatureCollection;
-import com.vividsolutions.jump.feature.FeatureDataset;
-import com.vividsolutions.jump.feature.Feature;
-import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
@@ -51,7 +43,9 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
+import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 
+import javax.swing.*;
 
 /**
  * User can add one or several of the following geometry attributes to a layer.
@@ -68,8 +62,6 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
  * </ul>
  * @author Micha&euml;l Michaud
  */
-
-import com.vividsolutions.jump.feature.FeatureSchema;
 
 public class AddGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
 
@@ -110,15 +102,15 @@ public class AddGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
 
     String layer;
     
-    boolean addXY = true;
-    boolean addZ  = false;
-    boolean addNbPoints  = false;
-    boolean addNbHoles  = false;
-    boolean addNbComponents  = false;
-    boolean addLength  = false;
-    boolean addArea  = false;
-    boolean addGeometryType  = false;
-    boolean addWKT  = false;
+    private boolean addXY = true;
+    private boolean addZ  = false;
+    private boolean addNbPoints  = false;
+    private boolean addNbHoles  = false;
+    private boolean addNbComponents  = false;
+    private boolean addLength  = false;
+    private boolean addArea  = false;
+    private boolean addGeometryType  = false;
+    private boolean addWKT  = false;
     
     public void initialize(PlugInContext context) throws Exception {
     	    
@@ -126,9 +118,7 @@ public class AddGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
 	    	featureInstaller.addMainMenuItem(
 	    	        this,
 	                new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_ATTRIBUTES},
-	                getName() + "...",
-	                false,			//checkbox
-	                null,           // Icon
+	                new JMenuItem(getName() + "..."),
 	                createEnableCheck(context.getWorkbenchContext()));
     }
     
@@ -152,7 +142,7 @@ public class AddGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
 	}
 	
 	public void setLayer(String sitesLayer) {
-	    this.layer = layer;
+	    this.layer = sitesLayer;
 	}
 	
 	public void setAddXY(boolean addXY) {
