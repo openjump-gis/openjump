@@ -97,7 +97,7 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
   private JLabel imageLabel = new JLabel();
   private ImageIcon wmsIcon = MapLayerPanel.ICON;
   private ImageIcon rasterIcon = IconLoader.icon("map.png");
-  private ImageIcon sextante_rasterIcon = IconLoader.icon("mapS.png");
+  private ImageIcon sextante_rasterIcon = IconLoader.icon("mapSv2.png");
 
   public LayerNameRenderer() {
     super();

@@ -56,7 +56,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
   public AddRasterImageLayerWizard(WorkbenchContext workbenchContext) {
     super(
         I18N.get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.Sextante-Raster-Image"),
-        IconLoader.icon("mapS.png"), SelectRasterImageFilesPanel.KEY);
+        IconLoader.icon("mapSv2.png"), SelectRasterImageFilesPanel.KEY);
     this.workbenchContext = workbenchContext;
   }
 
