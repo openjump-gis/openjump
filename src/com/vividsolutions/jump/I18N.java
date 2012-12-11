@@ -152,7 +152,7 @@ public final class I18N {
     resourceBundle = ResourceBundle.getBundle(resourcePath, locale, cl);
     resourceBundle2 = ResourceBundle.getBundle(resourcePath, new Locale(
         language()), cl);
-    resourceBundle3 = ResourceBundle.getBundle(resourcePath, Locale.ROOT, cl);
+    resourceBundle3 = ResourceBundle.getBundle(resourcePath, new Locale("",""), cl);
     // apply to system
     applyToRuntime(locale);
   }
@@ -192,7 +192,7 @@ public final class I18N {
   }
 
   private boolean isValid( String text ){
-    return text != null && !text.trim().isEmpty() && !text.trim().startsWith("#T:");
+    return text != null && !text.trim().equals("") && !text.trim().startsWith("#T:");
   }
 
   /**
@@ -364,7 +364,7 @@ public final class I18N {
    */
   public static String getMessage(final String category, final String label,
       final Object[] objects) {
-    I18N i18n = !category.trim().isEmpty() ? getInstance(category)
+    I18N i18n = !category.trim().equals("") ? getInstance(category)
         : getInstance();
     try {
       final MessageFormat mformat = new MessageFormat(i18n.getText(label));
