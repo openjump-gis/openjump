@@ -135,16 +135,14 @@ public class OpenFileWizard extends AbstractWizardGroup {
               openedFiles.add(new File(uri));
             }
           }
-		} catch (final Exception e) {
-			((ErrorHandlerV2) workbenchContext.getErrorHandler())
-					.handleThrowable(e, dialog);
-
-		}
+        } catch (final Exception e) {
+          ((ErrorHandlerV2) workbenchContext.getErrorHandler())
+              .handleThrowable(e, dialog);
+        }
       }
     } finally {
       state = null;
       OpenRecentPlugIn recentPlugin = OpenRecentPlugIn.get(workbenchContext);
-
       for (File file : openedFiles) {
         recentPlugin.addRecentFile(file);
       }
