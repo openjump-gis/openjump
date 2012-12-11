@@ -46,13 +46,17 @@ import com.vividsolutions.jump.workbench.ui.renderer.style.DummyStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.Style;
 
 public class LayerColorPanel extends JPanel {
+    public LayerColorPanel(int i) {
+      setLayout(new BorderLayout());
+      add(oneColorPanel);
+      setMaximumSize(new Dimension(i,i));
+      setMinimumSize(new Dimension(i,i));
+      setPreferredSize(new Dimension(i,i));  }
+    
     public LayerColorPanel() {
-        setLayout(new BorderLayout());
-        add(oneColorPanel);
-        setMaximumSize(new Dimension(10, 10));
-        setMinimumSize(new Dimension(10, 10));
-        setPreferredSize(new Dimension(10, 10));
+      this(10);
     }
+  
     private ColorPanel oneColorPanel = new ColorPanel();
     private FourColorPanel fourColorPanel = new LayerColorPanel.FourColorPanel();
     public LayerColorPanel init(

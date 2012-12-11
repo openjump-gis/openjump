@@ -30,6 +30,7 @@ import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.*;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 
 /**
  *  Simple Image Layer Management UI. Allows the user to add / remove images,
@@ -44,6 +45,9 @@ public class ImageLayerManagerPlugIn extends AbstractPlugIn {
         super(I18N.get("ui.plugin.imagery.ImageLayerManagerPlugIn.Image-Layer-Manager"));
     }
 
+    public Icon getIcon() {
+        return IconLoaderFamFam.icon("pictures.png");
+    }
 
     public static EnableCheck createEnableCheck(final WorkbenchContext context) {
         MultiEnableCheck mec = new MultiEnableCheck();

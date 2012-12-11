@@ -44,6 +44,7 @@ import javax.swing.JPanel;
 import javax.swing.JTree;
 import javax.swing.ListCellRenderer;
 import javax.swing.UIManager;
+import javax.swing.border.EmptyBorder;
 import javax.swing.tree.TreeCellRenderer;
 
 import org.openjump.core.rasterimage.RasterImageLayer;
@@ -51,6 +52,7 @@ import org.openjump.core.rasterimage.RasterImageLayer;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.Layerable;
+import com.vividsolutions.jump.workbench.model.ReferencedImageLayer;
 import com.vividsolutions.jump.workbench.model.WMSLayer;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.wms.MapLayerPanel;
@@ -68,7 +70,7 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
 	private final static Color SELECTED_EDITABLE_FONT_COLOR = Color.yellow;
 	protected JCheckBox checkBox = new JCheckBox();
 
-	private LayerColorPanel colorPanel = new LayerColorPanel();
+	private LayerColorPanel colorPanel = new LayerColorPanel(13);
 
 	GridBagLayout gridBagLayout = new GridBagLayout();
 
@@ -89,14 +91,13 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
 	private JLabel progressIconLabel = new JLabel();
 	private Font font = new JLabel().getFont();
 	private Font editableFont = font.deriveFont(Font.BOLD);
-
 	private Font unselectableFont = font.deriveFont(Font.ITALIC);
-
 	private Font editableUnselectableFont = font.deriveFont(Font.BOLD+Font.ITALIC);
 
-	private JLabel imageLabel = new JLabel();
-	private ImageIcon wmsIcon = MapLayerPanel.ICON;
-	private ImageIcon rasterIcon = GUIUtil.resize(IconLoader.icon("Raster.gif"), progressIconSize);
+  private JLabel imageLabel = new JLabel();
+  private ImageIcon wmsIcon = MapLayerPanel.ICON;
+  private ImageIcon rasterIcon = IconLoader.icon("map.png");
+  private ImageIcon sextante_rasterIcon = IconLoader.icon("mapS.png");
 
   public LayerNameRenderer() {
     super();
@@ -290,22 +291,23 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
     }
     
 
-    colorPanel.setVisible(false);
     // either add image icon for image layers (if allowed)
-    if (showImageLabel) {
-      imageLabel.setVisible(true);
-      if (layerable instanceof WMSLayer)
-        imageLabel.setIcon(wmsIcon);
-      else if (layerable instanceof RasterImageLayer)
-        imageLabel.setIcon(rasterIcon);
-      else
-        imageLabel.setVisible(false);
-    }
+    imageLabel.setVisible(false);
     // or colorpanel for vector layers
-    if (showColorPanel && layerable instanceof Layer) {
+    colorPanel.setVisible(false);
+    if (showImageLabel && layerable instanceof ReferencedImageLayer) {
+      imageLabel.setIcon(rasterIcon);
+      imageLabel.setVisible(true);
+    } else if (showColorPanel && layerable instanceof Layer) {
       colorPanel.init((Layer) layerable, isSelected, list.getBackground(),
           list.getSelectionBackground());
       colorPanel.setVisible(true);
+    } else if (showImageLabel && layerable instanceof WMSLayer) {
+      imageLabel.setIcon(wmsIcon);
+      imageLabel.setVisible(true);
+    } else if (showImageLabel && layerable instanceof RasterImageLayer) {
+      imageLabel.setIcon(sextante_rasterIcon);
+      imageLabel.setVisible(true);
     }
 
     progressIconLabel.setVisible(false);
@@ -325,11 +327,12 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
         }
         progressIconLabel.setIcon(getProgressIcons()[layerable.getBlackboard()
             .getInt(PROGRESS_ICON_KEY)]);
+        progressIconLabel.setVisible(true);
       } else {
         progressIconLabel.setIcon(clearProgressIcon);
         layerable.getBlackboard().put(PROGRESS_ICON_KEY, null);
+        progressIconLabel.setVisible(false);
       }
-      progressIconLabel.setVisible(true);
     }
 
     return this;
@@ -352,7 +355,7 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
     formatLayerEntry(list, value, index, isSelected, cellHasFocus);
     
     // assign proper width to cell entry
-    setPreferredSize(getPreferredListCellSize());
+    //setPreferredSize(getPreferredListCellSize());
 
     return this;
   }
@@ -368,7 +371,7 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
       width += comp.getPreferredSize().width;
     }
     // add some padding
-    return new Dimension(width+10,height+4);
+    return new Dimension(width+10,height);
   }
 
   // helper method to assign fg/bgcolor to _all_ panel components at once
@@ -400,6 +403,8 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
 		// generally format layer
 		formatLayerEntry(list(tree), layerable, row, selected,
 				hasFocus);
+    // assign proper width to cell entry
+    //setPreferredSize(getPreferredListCellSize());
 		if (selected) {
 			label.setForeground(UIManager.getColor("Tree.selectionForeground"));
 			label.setBackground(UIManager.getColor("Tree.selectionBackground"));
@@ -421,28 +426,29 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
 		return this;
 	}
 
-	void jbInit() throws Exception {
-		checkBox.setVisible(false);
-		this.setLayout(gridBagLayout);
-		label.setOpaque(false);
-		label.setText("Layer Name Goes Here");
-		checkBox.setOpaque(false);
-		this.add(progressIconLabel, new GridBagConstraints(0, 0, 1, 1, 0.0,
-				0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
-				new Insets(0, 0, 0, 2), 0, 0));
-		this.add(imageLabel, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
-				GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(
-						0, 0, 0, 2), 0, 0));
-		this.add(colorPanel, new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0,
-				GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0,
-						0, 0, 5), 0, 0));
-		this.add(checkBox, new GridBagConstraints(3, 0, 1, 1, 0.0, 0.0,
-				GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(
-						0, 0, 0, 0), 0, 0));
-		this.add(label, new GridBagConstraints(4, 0, 1, 1, 1.0, 0.0,
-				GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-				new Insets(0, 0, 0, 0), 0, 0));
-	}
+  void jbInit() throws Exception {
+    Insets zero_insets = new Insets(0, 0, 0, 0);
+    this.setLayout(gridBagLayout);
+    //checkBox.setOpaque(false);
+    checkBox.setVisible(false);
+    checkBox.setMargin(zero_insets);
+    checkBox.setBorder(new EmptyBorder(zero_insets));
+    //label.setOpaque(false);
+    label.setText("None");
+    // label gets an extra left padding
+    label.setBorder(new EmptyBorder(new Insets(0, 2, 0, 0)));
+    Insets space_insets = new Insets(2, 2, 2, 0);
+    this.add(imageLabel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
+        GridBagConstraints.CENTER, GridBagConstraints.NONE, space_insets, 0, 0));
+    this.add(colorPanel, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
+        GridBagConstraints.CENTER, GridBagConstraints.NONE, space_insets, 0, 0));
+    this.add(checkBox, new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0,
+        GridBagConstraints.CENTER, GridBagConstraints.NONE, space_insets, 0, 0));
+    this.add(progressIconLabel, new GridBagConstraints(3, 0, 1, 1, 0.0, 0.0,
+        GridBagConstraints.CENTER, GridBagConstraints.NONE , space_insets, 0, 0));
+    this.add(label, new GridBagConstraints(4, 0, 1, 1, 1.0, 0.0,
+        GridBagConstraints.WEST, GridBagConstraints.NONE, space_insets, 0, 0));
+  }
 
 	private Icon[] getProgressIcons() {
 		//Create lazily -- OptimizeIt tells me creating these images takes 20

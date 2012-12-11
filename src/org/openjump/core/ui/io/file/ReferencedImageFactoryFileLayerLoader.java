@@ -55,6 +55,7 @@ import com.vividsolutions.jump.workbench.imagery.ReferencedImageStyle;
 import com.vividsolutions.jump.workbench.model.Category;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManager;
+import com.vividsolutions.jump.workbench.model.ReferencedImageLayer;
 
 public class ReferencedImageFactoryFileLayerLoader extends
   AbstractFileLayerLoader {
@@ -217,7 +218,7 @@ public class ReferencedImageFactoryFileLayerLoader extends
   }
 
   private Layer createLayer(LayerManager layerManager, File file) {
-    Layer layer = new Layer(file.getName(), Color.black, new FeatureDataset(
+    Layer layer = new ReferencedImageLayer(file.getName(), Color.black, new FeatureDataset(
       ImageryLayerDataset.getSchema()), layerManager);
     layer.setEditable(true);
     layer.getBasicStyle().setEnabled(false);

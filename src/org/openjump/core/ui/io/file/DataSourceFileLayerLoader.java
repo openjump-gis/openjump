@@ -120,8 +120,6 @@ public class DataSourceFileLayerLoader extends AbstractFileLayerLoader {
         if (CompressedFile.isCompressed(UriUtil.getFileName(uri))) {
             layer.setReadonly(true);
         }
-        
-//        category.add(0, layer);
 
         layer.setDataSourceQuery(dataSourceQuery);
         layer.setFeatureCollectionModified(false);
@@ -129,6 +127,7 @@ public class DataSourceFileLayerLoader extends AbstractFileLayerLoader {
     } finally {
       connection.close();
     }
+    // handle exceptions that might have occured
     if (!exceptions.isEmpty()) {
       WorkbenchFrame workbenchFrame = workbenchContext.getWorkbench()
         .getFrame();

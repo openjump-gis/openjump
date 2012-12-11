@@ -557,7 +557,7 @@ public class JUMPConfiguration implements Setup {
             new String[]{MenuNames.DATASTORE}, refreshDataStoreLayerPlugin.getName(), false, RefreshDataStoreLayerPlugin.ICON,
                 RefreshDataStoreLayerPlugin.createEnableCheck(workbenchContext));
         featureInstaller.addPopupMenuItem(layerNamePopupMenu, imageLayerManagerPlugIn,
-                imageLayerManagerPlugIn.getName() + "...", false, null,
+                imageLayerManagerPlugIn.getName() + "...", false, imageLayerManagerPlugIn.getIcon(),
                 ImageLayerManagerPlugIn.createEnableCheck(workbenchContext));
         FeatureInstaller.childMenuItem(MenuNames.DATASTORE, layerNamePopupMenu).setIcon(IconLoader.icon("database_gear.png"));
 

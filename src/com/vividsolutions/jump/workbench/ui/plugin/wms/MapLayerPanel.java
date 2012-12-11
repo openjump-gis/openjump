@@ -76,8 +76,7 @@ import com.vividsolutions.wms.WMService;
 
 
 public class MapLayerPanel extends JPanel {
-    public final static ImageIcon ICON = GUIUtil.resize(IconLoader.icon(
-                "country.gif"), 13);
+    public final static ImageIcon ICON = IconLoader.icon("globe3_13.png");
     private InputChangedFirer inputChangedFirer = new InputChangedFirer();
     private GridBagLayout gridBagLayout1 = new GridBagLayout();
     private AddRemovePanel addRemovePanel = new AddRemovePanel(true);

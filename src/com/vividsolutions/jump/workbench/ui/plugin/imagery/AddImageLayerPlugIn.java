@@ -2,7 +2,10 @@ package com.vividsolutions.jump.workbench.ui.plugin.imagery;
 
 import java.awt.Color;
 import java.util.Collection;
+
 import javax.swing.Icon;
+
+import org.openjump.core.ui.plugin.AbstractUiPlugIn;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.FeatureDataset;
@@ -11,14 +14,13 @@ import com.vividsolutions.jump.workbench.imagery.ImageryLayerDataset;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageStyle;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManager;
+import com.vividsolutions.jump.workbench.model.ReferencedImageLayer;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
-import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
-
-import org.openjump.core.ui.plugin.AbstractUiPlugIn;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 
 
@@ -39,7 +41,7 @@ public class AddImageLayerPlugIn extends AbstractUiPlugIn {
     
     @Override
     public Icon getIcon() {
-        return IconLoaderFamFam.icon("image_add.png");
+        return IconLoader.icon("map_add_16.png");
     }
 
 	@Override
@@ -72,7 +74,7 @@ public class AddImageLayerPlugIn extends AbstractUiPlugIn {
 
     private Layer createLayer(LayerManager lm) {
         String newLayerName = I18N.get("ui.plugin.imagery.AddImageLayerPlugIn.Image")+"_"+nameCounter++;
-        Layer layer = new Layer(newLayerName,
+        Layer layer = new ReferencedImageLayer(newLayerName,
                         Color.black,
                         new FeatureDataset(ImageryLayerDataset.getSchema()),
                         lm);

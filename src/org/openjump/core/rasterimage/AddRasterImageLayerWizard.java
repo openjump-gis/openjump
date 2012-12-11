@@ -27,7 +27,7 @@ import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.Viewport;
-import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
 
@@ -53,10 +53,11 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
   private String cachedLayer = "default-layer-name";
   //------ 
   
-  public AddRasterImageLayerWizard(WorkbenchContext workbenchContext) {	 
-	  super(I18N.get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.Sextante-Raster-Image"), IconLoaderFamFam.icon("image.png"),
-			  SelectRasterImageFilesPanel.KEY);	  
-	  this.workbenchContext = workbenchContext;
+  public AddRasterImageLayerWizard(WorkbenchContext workbenchContext) {
+    super(
+        I18N.get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.Sextante-Raster-Image"),
+        IconLoader.icon("mapS.png"), SelectRasterImageFilesPanel.KEY);
+    this.workbenchContext = workbenchContext;
   }
 
 
