@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2012-12-12  Giuseppe Aruta (giuseppe_aruta@yahoo.it)
+  * Add Arrange views plugin (Vertically, Horizontally, Cascade) to Windows menu
+  * Add Icon to Clone Windows menu
+
 2012-12-06  Giuseppe Aruta (giuseppe_aruta@yahoo.it)
   * Add icon to ToggleVisibilityPlugInr plugin
   * Move Delete selected layer plugin from top to bottom layer menu (test - Modify JUMPConfiguration.java)

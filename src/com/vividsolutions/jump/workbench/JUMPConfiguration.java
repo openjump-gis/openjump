@@ -913,7 +913,7 @@ public class JUMPConfiguration implements Setup {
         featureInstaller.addMenuSeparator(MenuNames.WINDOW); // ===================
         
         featureInstaller.addMainMenuItem(cloneWindowPlugIn, new String[] {MenuNames.WINDOW},
-                cloneWindowPlugIn.getName(), false, null, new EnableCheck() {
+                cloneWindowPlugIn.getName(), false, IconLoader.icon("application_duplicate.png"), new EnableCheck() {
 
                     public String check(JComponent component) {
                         return (!(workbenchContext.getWorkbench().getFrame()
@@ -921,7 +921,14 @@ public class JUMPConfiguration implements Setup {
                                 : null;
                     }
                 });
-      
+        featureInstaller.addMainMenuItem(arrangeHorizontalPlugIn, new String[] {MenuNames.WINDOW},
+        		arrangeHorizontalPlugIn.getName(), false, IconLoader.icon("application_tile_horizontal.png"), null);
+        
+        featureInstaller.addMainMenuItem(arrangeVerticalPlugIn, new String[] {MenuNames.WINDOW},
+        		arrangeVerticalPlugIn.getName(), false, IconLoader.icon("application_tile_vertical.png"), null);
+        
+        featureInstaller.addMainMenuItem(arrangeCascadePlugIn, new String[] {MenuNames.WINDOW},
+        		arrangeCascadePlugIn.getName(), false, IconLoader.icon("application_cascade.png"), null);
         //featureInstaller.addMenuSeparator(MenuNames.WINDOW); // ===================
 
         //-- TOOLS
