@@ -44,7 +44,7 @@ import javax.swing.JToggleButton;
 
 import org.openjump.OpenJumpConfiguration;
 
-import aa.org.saig.jump.plugin.utils.window.ArrangeViewsPlugIn;
+ 
 
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
@@ -184,6 +184,7 @@ import org.openjump.core.ui.plugin.view.SuperZoomPanTool;
 import org.openjump.core.ui.plugin.view.helpclassescale.InstallShowScalePlugIn;
 import org.openjump.core.ui.plugin.view.helpclassescale.InstallShowScalePlugIn;
 import org.openjump.core.ui.plugin.view.helpclassescale.ShowScaleRenderer;
+import org.openjump.core.ui.plugin.window.ArrangeViewsPlugIn;
 
 /**
  * Initializes the Workbench with various menus and cursor tools. Accesses the
