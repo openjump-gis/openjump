@@ -44,6 +44,8 @@ import javax.swing.JToggleButton;
 
 import org.openjump.OpenJumpConfiguration;
 
+import aa.org.saig.jump.plugin.utils.window.ArrangeViewsPlugIn;
+
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.datastore.DataStoreDriver;
@@ -357,6 +359,15 @@ public class JUMPConfiguration implements Setup {
   	
   	private DuplicateItemPlugIn duplicateItemPlugIn = new DuplicateItemPlugIn();
   	
+     ///  Initialize ArrangeViewsPlugIn G. Aruta 2012-13-12
+  	 private ArrangeViewsPlugIn arrangeHorizontalPlugIn = new ArrangeViewsPlugIn(1);
+
+  	 private ArrangeViewsPlugIn arrangeVerticalPlugIn = new ArrangeViewsPlugIn(2);
+  	 
+  	 private ArrangeViewsPlugIn arrangeCascadePlugIn = new ArrangeViewsPlugIn(3);
+  	 
+  	 private ArrangeViewsPlugIn arrangeAllPlugIn = new ArrangeViewsPlugIn(4);
+  	//////////////////////////////////////////////////////////////////////
     public void setup(WorkbenchContext workbenchContext) throws Exception {
 
         // first things first, make persistent data available early
