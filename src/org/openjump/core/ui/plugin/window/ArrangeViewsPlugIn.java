@@ -68,7 +68,7 @@ public class ArrangeViewsPlugIn extends AbstractPlugIn
 
     switch (this.arrangeType) {
     case 1:
-      name = I18N.get("oorg.openjump.core.ui.plugin.window.ArrangeViewsPlugIn.distribute-views-horizontally");
+      name = I18N.get("org.openjump.core.ui.plugin.window.ArrangeViewsPlugIn.distribute-views-horizontally");
       break;
     case 2:
       name = I18N.get("org.openjump.core.ui.plugin.window.ArrangeViewsPlugIn.distribute-views-vertically");
