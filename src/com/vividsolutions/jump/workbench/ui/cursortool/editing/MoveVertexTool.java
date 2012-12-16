@@ -95,7 +95,16 @@ public class MoveVertexTool extends DragTool {
             if (!check(checkFactory.createAtLeastNItemsMustBeSelectedCheck(1))) {
                 return;
             }
-            if (!check(new EnableCheck() {
+            // [mmichaud 2012-12-16] if getClickCount == 2, insert instead of move
+            if (e.getClickCount() == 2) {
+                InsertVertexTool ivt = new InsertVertexTool(checkFactory);
+                ivt.activate(this.getPanel());
+                ivt.mousePressed(new MouseEvent((java.awt.Component)e.getSource(), MouseEvent.MOUSE_PRESSED, e.getWhen(), e.getModifiers(), e.getX(), e.getY(), 1, false));
+                ivt.mouseReleased(new MouseEvent((java.awt.Component)e.getSource(), MouseEvent.MOUSE_RELEASED, e.getWhen(), e.getModifiers(), e.getX(), e.getY(), 1, false));
+                ivt.deactivate();
+                return;
+            }
+            if (!insertMode && !check(new EnableCheck() {
                 public String check(JComponent component) {
                     try {
                         return !nearSelectionHandle(e.getPoint())
