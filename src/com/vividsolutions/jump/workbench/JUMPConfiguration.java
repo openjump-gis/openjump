@@ -535,7 +535,12 @@ public class JUMPConfiguration implements Setup {
                 selectablePlugIn.getName(), true, selectablePlugIn.ICON, selectablePlugIn
                         .createEnableCheck(workbenchContext));
         layerNamePopupMenu.addSeparator(); // ===================
+        featureInstaller.addPopupMenuItem(layerNamePopupMenu,
+                removeSelectedLayersPlugIn, removeSelectedLayersPlugIn
+                        .getName(), false, RemoveSelectedLayersPlugIn.ICON, removeSelectedLayersPlugIn
+                        .createEnableCheck(workbenchContext));
         
+        layerNamePopupMenu.addSeparator(); // ===================
              
         featureInstaller.addPopupMenuItem(layerNamePopupMenu,
                 zoomToLayerPlugIn, zoomToLayerPlugIn.getName(), false, ZoomToLayerPlugIn.ICON,
@@ -611,11 +616,7 @@ public class JUMPConfiguration implements Setup {
                         .getNameWithMnemonic(), false, copySelectedLayersPlugIn.ICON,
                 copySelectedLayersPlugIn.createEnableCheck(workbenchContext));
         
-        featureInstaller.addPopupMenuItem(layerNamePopupMenu,
-                removeSelectedLayersPlugIn, removeSelectedLayersPlugIn
-                        .getName(), false, RemoveSelectedLayersPlugIn.ICON, removeSelectedLayersPlugIn
-                        .createEnableCheck(workbenchContext));
-        
+                
         layerNamePopupMenu.addSeparator(); // ===================
         featureInstaller.addPopupMenuItem(layerNamePopupMenu,
                 addNewFeaturesPlugIn, addNewFeaturesPlugIn.getName() + "...",
