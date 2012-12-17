@@ -104,7 +104,7 @@ public class MoveVertexTool extends DragTool {
                 ivt.deactivate();
                 return;
             }
-            if (!insertMode && !check(new EnableCheck() {
+            if (!check(new EnableCheck() {
                 public String check(JComponent component) {
                     try {
                         return !nearSelectionHandle(e.getPoint())
