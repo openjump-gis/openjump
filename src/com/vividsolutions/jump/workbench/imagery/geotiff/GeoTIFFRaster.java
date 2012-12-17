@@ -42,8 +42,7 @@ import org.libtiff.jai.codec.XTIFFField;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jump.util.FileUtil;
 
-public class GeoTIFFRaster extends GeoReferencedRaster
-{
+public class GeoTIFFRaster extends GeoReferencedRaster {
   private final String MSG_GENERAL = "This is not a valid GeoTIFF file.";
   String fileName;
 
@@ -52,112 +51,131 @@ public class GeoTIFFRaster extends GeoReferencedRaster
   /**
    * Called by Java2XML
    */
-  public GeoTIFFRaster(String imageFileLocation)
-      throws Exception
-  {
+  public GeoTIFFRaster(String imageFileLocation) throws Exception {
     super(imageFileLocation);
     fileName = imageFileLocation;
     registerWithJAI();
     readRasterfile();
   }
 
-  private void registerWithJAI()
-  {
+  private void registerWithJAI() {
     // Register the GeoTIFF descriptor with JAI.
     GeoTIFFDescriptor.register();
   }
 
-  private void parseGeoTIFFDirectory(GeoTIFFDirectory dir) throws Exception
-  {
+  private void parseGeoTIFFDirectory(GeoTIFFDirectory dir) throws Exception {
     // Find the ModelTiePoints field
     XTIFFField fieldModelTiePoints = dir.getField(XTIFF.TIFFTAG_GEO_TIEPOINTS);
-    if (fieldModelTiePoints == null)
-      throw new Exception("Missing tiepoints-tag in file.\n" + MSG_GENERAL);
+    if (fieldModelTiePoints == null) {
+      // try to read geotransform (tranformation matrix) information,
+      // if tiepoints are not used to georeference this image.
+      // These parameters are the same as those in a tfw file.
+      XTIFFField fieldModelGeoTransform = dir
+          .getField(XTIFF.TIFFTAG_GEO_TRANS_MATRIX);
+      if (fieldModelGeoTransform == null) {
+        throw new Exception(
+            "Missing tiepoints-tag and tranformation matrix-tag parameters in file.\n"
+                + MSG_GENERAL);
+      }
+      double[] tags = new double[6];
+      tags[0] = fieldModelGeoTransform.getAsDouble(0); // pixel size in x
+                                                       // direction
+      tags[1] = fieldModelGeoTransform.getAsDouble(1); // rotation about y-axis
+      tags[2] = fieldModelGeoTransform.getAsDouble(4); // rotation about x-axis
+      tags[3] = fieldModelGeoTransform.getAsDouble(5); // pixel size in the
+                                                       // y-direction
+      tags[4] = fieldModelGeoTransform.getAsDouble(3); // x-coordinate of the
+                                                       // center of the upper
+                                                       // left pixel
+      tags[5] = fieldModelGeoTransform.getAsDouble(7); // y-coordinate of the
+                                                       // center of the upper
+                                                       // left pixel
+      setCoorRasterTiff_tiepointLT(new Coordinate(0, 0));
+      setCoorModel_tiepointLT(new Coordinate(0, 0));
+      setAffineTransformation(new AffineTransform(tags));
+    } else {
 
-    // Get the number of modeltiepoints
-//    int numModelTiePoints = fieldModelTiePoints.getCount() / 6;
+      // Get the number of modeltiepoints
+      // int numModelTiePoints = fieldModelTiePoints.getCount() / 6;
 
-    // ToDo: alleen numModelTiePoints == 1 ondersteunen.
+      // ToDo: alleen numModelTiePoints == 1 ondersteunen.
 
-    // Map the modeltiepoints from raster to model space
+      // Map the modeltiepoints from raster to model space
 
-    // Read the tiepoints
-    setCoorRasterTiff_tiepointLT(new Coordinate(fieldModelTiePoints
-        .getAsDouble(0), fieldModelTiePoints.getAsDouble(1), 0));
-    setCoorModel_tiepointLT(new Coordinate(fieldModelTiePoints.getAsDouble(3),
-        fieldModelTiePoints.getAsDouble(4), 0));
-    setEnvelope();
-    // Find the ModelPixelScale field
-    XTIFFField fieldModelPixelScale = dir
-        .getField(XTIFF.TIFFTAG_GEO_PIXEL_SCALE);
-    if (fieldModelPixelScale == null)
-      throw new Exception("Missing pixelscale-tag in file." + "\n"
-          + MSG_GENERAL);
+      // Read the tiepoints
+      setCoorRasterTiff_tiepointLT(new Coordinate(
+          fieldModelTiePoints.getAsDouble(0),
+          fieldModelTiePoints.getAsDouble(1), 0));
+      setCoorModel_tiepointLT(new Coordinate(
+          fieldModelTiePoints.getAsDouble(3),
+          fieldModelTiePoints.getAsDouble(4), 0));
+      setEnvelope();
+      // Find the ModelPixelScale field
+      XTIFFField fieldModelPixelScale = dir
+          .getField(XTIFF.TIFFTAG_GEO_PIXEL_SCALE);
+      if (fieldModelPixelScale == null) {
+        // TODO: fieldModelTiePoints may contains GCP that could be exploited to
+        // georeference the image
+        throw new Exception("Missing pixelscale-tag in file." + "\n"
+            + MSG_GENERAL);
+      }
 
-    setDblModelUnitsPerRasterUnit_X(fieldModelPixelScale.getAsDouble(0));
-    setDblModelUnitsPerRasterUnit_Y(fieldModelPixelScale.getAsDouble(1));
+      setDblModelUnitsPerRasterUnit_X(fieldModelPixelScale.getAsDouble(0));
+      setDblModelUnitsPerRasterUnit_Y(fieldModelPixelScale.getAsDouble(1));
+    }
   }
 
   /**
    * @return filename of the tiff worldfile
    */
-  private String worldFileName()
-  {
+  private String worldFileName() {
     int posDot = fileName.lastIndexOf('.');
-    if (posDot == -1)
-    {
+    if (posDot == -1) {
       posDot = fileName.length();
     }
     return fileName.substring(0, posDot) + ".tfw";
   }
 
-  private void parseWorldFile() throws Exception
-  {
+  private void parseWorldFile() throws Exception {
     // Get the name of the tiff worldfile.
     String name = worldFileName();
 
     // Read the tags from the tiff worldfile.
     List lines = FileUtil.getContents(name);
     double[] tags = new double[6];
-    for (int i = 0; i < 6; i++)
-    {
+    for (int i = 0; i < 6; i++) {
       String line = (String) lines.get(i);
       tags[i] = Double.parseDouble(line);
     }
-    setCoorRasterTiff_tiepointLT(new Coordinate(0, 0) );
-    setCoorModel_tiepointLT(new Coordinate(0, 0) );
+    setCoorRasterTiff_tiepointLT(new Coordinate(0, 0));
+    setCoorModel_tiepointLT(new Coordinate(0, 0));
     setAffineTransformation(new AffineTransform(tags));
   }
 
-  protected void readRasterfile() throws Exception
-  {
-//    ImageCodec originalCodec = ImageCodec.getCodec("tiff");
-      super.readRasterfile();
+  protected void readRasterfile() throws Exception {
+    // ImageCodec originalCodec = ImageCodec.getCodec("tiff");
+    super.readRasterfile();
 
-      // Get access to the tags and geokeys.
-      // First, get the TIFF directory
-      GeoTIFFDirectory dir = (GeoTIFFDirectory) src
-          .getProperty("tiff.directory");
-      if (dir == null)
-        throw new Exception("This is not a (geo)tiff file.");
+    // Get access to the tags and geokeys.
+    // First, get the TIFF directory
+    GeoTIFFDirectory dir = (GeoTIFFDirectory) src.getProperty("tiff.directory");
+    if (dir == null) {
+      throw new Exception("This is not a (geo)tiff file.");
+    }
 
-      try
-      {
-        // Try to parse any embedded geotiff tags.
-        parseGeoTIFFDirectory(dir);
-      } catch (Exception E)
-      {
-        // Embedded geotiff tags have not been found. Try
-        // to use a geotiff world file.
-        try
-        {
-          parseWorldFile();
-        } catch (Exception e)
-        {
-          throw new Exception(
-              "Neither geotiff tags nor valid worldfile found.\n" + MSG_GENERAL);
-        }
+    try {
+      // Try to parse any embedded geotiff tags.
+      parseGeoTIFFDirectory(dir);
+    } catch (Exception E) {
+      // Embedded geotiff tags have not been found. Try
+      // to use a geotiff world file.
+      try {
+        parseWorldFile();
+      } catch (Exception e) {
+        throw new Exception("Neither geotiff tags nor valid worldfile found.\n"
+            + MSG_GENERAL);
       }
+    }
   }
 
 }
