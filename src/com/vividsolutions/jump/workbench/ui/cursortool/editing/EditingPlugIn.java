@@ -43,6 +43,7 @@ import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.cursortool.CursorTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.NodeLineStringsTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.QuasimodeTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.SelectFeaturesTool;
@@ -97,9 +98,17 @@ public class EditingPlugIn extends ToolboxPlugIn {
     toolbox.add(DrawPointTool.create(toolbox.getContext()));
 
     toolbox.addToolBar();
-    toolbox.add(new InsertVertexTool(checkFactory));
-    toolbox.add(new DeleteVertexTool(checkFactory));
-    toolbox.add(new MoveVertexTool(checkFactory));
+    CursorTool insVertex = new InsertVertexTool(checkFactory);
+    toolbox.add(insVertex);
+    CursorTool delVertex = new DeleteVertexTool(checkFactory);
+    toolbox.add(delVertex);
+    //toolbox.add(new MoveVertexTool(checkFactory));
+    
+    QuasimodeTool editVertex = new QuasimodeTool(new MoveVertexTool(checkFactory));
+    editVertex.add(new QuasimodeTool.ModifierKeySpec(true, false, false), delVertex);
+    editVertex.add(new QuasimodeTool.ModifierKeySpec(false, true, false), insVertex);
+    toolbox.add(editVertex);
+    
     // -- [sstein: 11.12.2006] added here to fill toolbox
     toolbox.add(new ScaleSelectedItemsTool(checkFactory));
 
