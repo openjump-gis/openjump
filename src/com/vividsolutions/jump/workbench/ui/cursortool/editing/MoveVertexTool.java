@@ -53,9 +53,9 @@ import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 public class MoveVertexTool extends DragTool {
+
     public final static int TOLERANCE = 5;
 
     private EnableCheckFactory checkFactory;
@@ -63,7 +63,7 @@ public class MoveVertexTool extends DragTool {
     public MoveVertexTool(EnableCheckFactory checkFactory) {
         this.checkFactory = checkFactory;
         setColor(new Color(194, 179, 205));
-        setStrokeWidth(5);
+        setStroke(new BasicStroke(5));
         allowSnapping();
     }
 
@@ -90,16 +90,7 @@ public class MoveVertexTool extends DragTool {
             if (!check(checkFactory.createAtLeastNItemsMustBeSelectedCheck(1))) {
                 return;
             }
-            // [mmichaud 2012-12-16] if getClickCount == 2, insert instead of move
-            if (e.getClickCount() == 2 && !e.isShiftDown()) {
-                InsertVertexTool ivt = new InsertVertexTool(checkFactory);
-                ivt.activate(this.getPanel());
-                ivt.mousePressed(new MouseEvent((java.awt.Component)e.getSource(), MouseEvent.MOUSE_PRESSED, e.getWhen(), e.getModifiers(), e.getX(), e.getY(), 1, false));
-                ivt.mouseReleased(new MouseEvent((java.awt.Component)e.getSource(), MouseEvent.MOUSE_RELEASED, e.getWhen(), e.getModifiers(), e.getX(), e.getY(), 1, false));
-                ivt.deactivate();
-                return;
-            }
-            if (!check(new EnableCheck() {
+            else if (!check(new EnableCheck() {
                 public String check(JComponent component) {
                     try {
                         return !nearSelectionHandle(e.getPoint())
@@ -112,17 +103,10 @@ public class MoveVertexTool extends DragTool {
             })) {
                 return;
             }
-            // [mmichaud 2012-12-18] if getClickCount == 2 and shift is down, delete instead of move
-            if (e.getClickCount() == 2 && e.isShiftDown()) {
-                DeleteVertexTool dvt = new DeleteVertexTool(checkFactory);
-                dvt.activate(this.getPanel());
-                //dvt.mousePressed(new MouseEvent((java.awt.Component)e.getSource(), MouseEvent.MOUSE_PRESSED, e.getWhen(), e.getModifiers(), e.getX(), e.getY(), 1, false));
-                //dvt.mouseReleased(new MouseEvent((java.awt.Component)e.getSource(), MouseEvent.MOUSE_RELEASED, e.getWhen(), e.getModifiers(), e.getX(), e.getY(), 1, false));
-                dvt.mouseClicked(new MouseEvent((java.awt.Component)e.getSource(), MouseEvent.MOUSE_CLICKED, e.getWhen(), -1, e.getX(), e.getY(), 1, false));
-                dvt.deactivate();
-                return;
+            else if (!e.isShiftDown()) {
+                super.mousePressed(e);
             }
-            super.mousePressed(e);
+            else ;
         } catch (Throwable t) {
             getPanel().getContext().handleThrowable(t);
         }
@@ -131,17 +115,12 @@ public class MoveVertexTool extends DragTool {
     private boolean nearSelectionHandle(Point2D p) throws NoninvertibleTransformException {
         final Envelope buffer = vertexBuffer(getPanel().getViewport().toModelCoordinate(p));
         final boolean[] result = new boolean[] { false };
-        for (Iterator i = getPanel().getSelectionManager().getLayersWithSelectedItems().iterator();
-            i.hasNext();
-            ) {
-            Layer layer = (Layer) i.next();
+        for (Layer layer : getPanel().getSelectionManager().getLayersWithSelectedItems()) {
             if (!layer.isEditable()) {
                 continue;
             }
-            for (Iterator j = getPanel().getSelectionManager().getSelectedItems(layer).iterator();
-                j.hasNext();
-                ) {
-                Geometry item = (Geometry) j.next();
+            for (Object object : getPanel().getSelectionManager().getSelectedItems(layer)) {
+                Geometry item = (Geometry) object;
                 item.apply(new CoordinateFilter() {
                     public void filter(Coordinate coord) {
                         if (buffer.contains(coord)) {
@@ -162,16 +141,13 @@ public class MoveVertexTool extends DragTool {
     public void moveVertices(Coordinate initialLocation, Coordinate finalLocation)
         throws Exception {
         final Envelope oldVertexBuffer = vertexBuffer(initialLocation);
-        final Coordinate newVertex = finalLocation;
         ArrayList transactions = new ArrayList();
-        for (Iterator i = getPanel().getSelectionManager().getLayersWithSelectedItems().iterator();
-            i.hasNext();
-            ) {
-            Layer layerWithSelectedItems = (Layer) i.next();
+        for (Object object : getPanel().getSelectionManager().getLayersWithSelectedItems()) {
+            Layer layerWithSelectedItems = (Layer) object;
             if (!layerWithSelectedItems.isEditable()) {
                 continue;
             }
-            transactions.add(createTransaction(layerWithSelectedItems, oldVertexBuffer, newVertex));
+            transactions.add(createTransaction(layerWithSelectedItems, oldVertexBuffer, finalLocation));
         }
         EditTransaction.commit(transactions);
     }
@@ -182,8 +158,8 @@ public class MoveVertexTool extends DragTool {
         final Coordinate newVertex) {
         return EditTransaction.createTransactionOnSelection(new EditTransaction.SelectionEditor() {
             public Geometry edit(Geometry geometryWithSelectedItems, Collection selectedItems) {
-                for (Iterator j = selectedItems.iterator(); j.hasNext();) {
-                    Geometry item = (Geometry) j.next();
+                for (Object object : selectedItems) {
+                    Geometry item = (Geometry) object;
                     edit(item);
                 }
                 return geometryWithSelectedItems;
