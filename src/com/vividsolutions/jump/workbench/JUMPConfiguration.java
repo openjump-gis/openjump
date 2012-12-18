@@ -864,13 +864,14 @@ public class JUMPConfiguration implements Setup {
                 .getName(), false, GUIUtil.toSmallIcon(zoomNextPlugIn.getIcon()),
                 zoomNextPlugIn.createEnableCheck(workbenchContext));
         featureInstaller.addMenuSeparator(MenuNames.VIEW); // ===================
+     
         featureInstaller
         	.addMainMenuItem(
                         showScalePlugIn,
-                        new String[] {MenuNames.VIEW},
+                        new String[] {MenuNames.VIEW, I18N.get("ui.style.DecorationStylePanel.decorations")},
                         showScalePlugIn.getName(),
                         true,
-                        null,
+                        IconLoader.icon("show_scale_text.png"),
                         new MultiEnableCheck()
                                 .add(checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck())
                                 .add(new EnableCheck() {
@@ -885,10 +886,10 @@ public class JUMPConfiguration implements Setup {
         featureInstaller
         	.addMainMenuItem(
                         scaleBarPlugIn,
-                        new String[] { MenuNames.VIEW},
+                        new String[] { MenuNames.VIEW, I18N.get("ui.style.DecorationStylePanel.decorations")}, 
                         scaleBarPlugIn.getName(),
                         true,
-                        null,
+                        IconLoader.icon("show_scale.png"),
                         new MultiEnableCheck()
                                 .add(checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck())
                                 .add(new EnableCheck() {
@@ -901,7 +902,9 @@ public class JUMPConfiguration implements Setup {
                                     }
                                 }));
         featureInstaller.addMainMenuItem(toolTipsPlugIn,
-                new String[] {MenuNames.VIEW}, toolTipsPlugIn.getName(), true, null,
+                new String[] {MenuNames.VIEW}, toolTipsPlugIn.getName(), 
+                true, 
+                IconLoader.icon("show_tooltip.png"),
                 MapToolTipsPlugIn.createEnableCheck(workbenchContext));
         zoomBarPlugIn.createMainMenuItem(new String[] { MenuNames.VIEW}, null,
                 workbenchContext);

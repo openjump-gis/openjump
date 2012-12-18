@@ -43,6 +43,7 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 
@@ -58,10 +59,10 @@ public class NorthArrowPlugIn extends AbstractPlugIn {
 				null, null, null, null));
 		EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
 		featureInstaller.addMainMenuItem(this,
-				new String[] { MenuNames.VIEW},
+				new String[]  { MenuNames.VIEW, I18N.get("ui.style.DecorationStylePanel.decorations")},
 				getName(),
 				true,
-				null,
+				IconLoader.icon("show_nord.png"),
 				new MultiEnableCheck().add(
 						checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck())
 						.add(new EnableCheck() {
