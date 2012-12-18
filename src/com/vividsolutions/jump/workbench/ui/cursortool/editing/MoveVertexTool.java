@@ -33,21 +33,6 @@
 
 package com.vividsolutions.jump.workbench.ui.cursortool.editing;
 
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Point;
-import java.awt.Shape;
-import java.awt.event.MouseEvent;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.NoninvertibleTransformException;
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-
-import javax.swing.Icon;
-import javax.swing.JComponent;
-
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateFilter;
 import com.vividsolutions.jts.geom.Envelope;
@@ -59,6 +44,16 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
 import com.vividsolutions.jump.workbench.ui.cursortool.DragTool;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
 public class MoveVertexTool extends DragTool {
     public final static int TOLERANCE = 5;
@@ -96,7 +91,7 @@ public class MoveVertexTool extends DragTool {
                 return;
             }
             // [mmichaud 2012-12-16] if getClickCount == 2, insert instead of move
-            if (e.getClickCount() == 2) {
+            if (e.getClickCount() == 2 && !e.isShiftDown()) {
                 InsertVertexTool ivt = new InsertVertexTool(checkFactory);
                 ivt.activate(this.getPanel());
                 ivt.mousePressed(new MouseEvent((java.awt.Component)e.getSource(), MouseEvent.MOUSE_PRESSED, e.getWhen(), e.getModifiers(), e.getX(), e.getY(), 1, false));
@@ -115,6 +110,16 @@ public class MoveVertexTool extends DragTool {
                 }
 
             })) {
+                return;
+            }
+            // [mmichaud 2012-12-18] if getClickCount == 2 and shift is down, delete instead of move
+            if (e.getClickCount() == 2 && e.isShiftDown()) {
+                DeleteVertexTool dvt = new DeleteVertexTool(checkFactory);
+                dvt.activate(this.getPanel());
+                //dvt.mousePressed(new MouseEvent((java.awt.Component)e.getSource(), MouseEvent.MOUSE_PRESSED, e.getWhen(), e.getModifiers(), e.getX(), e.getY(), 1, false));
+                //dvt.mouseReleased(new MouseEvent((java.awt.Component)e.getSource(), MouseEvent.MOUSE_RELEASED, e.getWhen(), e.getModifiers(), e.getX(), e.getY(), 1, false));
+                dvt.mouseClicked(new MouseEvent((java.awt.Component)e.getSource(), MouseEvent.MOUSE_CLICKED, e.getWhen(), -1, e.getX(), e.getY(), 1, false));
+                dvt.deactivate();
                 return;
             }
             super.mousePressed(e);
