@@ -67,7 +67,7 @@ echo Using '%JAVA_BIN%' found in '%dirname%'
 
 rem -- Change to jump home dir --
 rem -- NOTE: mount UNC paths to a local drive for this --
-cd /D %JUMP_HOME%
+cd /D "%JUMP_HOME%"
 
 rem -- Uninstall if asked nicely ---
 if "%1"=="--uninstall" ( 
@@ -80,16 +80,20 @@ set LIB=lib
 rem -- setup native lib paths
 set NATIVE=%LIB%\native
 if DEFINED ProgramFiles(x86) set X64=64
+rem command ver example outputs
+rem  german win7 "Microsoft Windows [Version 6.1.7601]"
+rem  finnish xp  "Microsoft Windows XP [versio 5.1.2600]"
+rem  french  xp  "Microsoft Windows XP [version 5.1.2600]"
 rem --- XP Version 5.x ---
-for /f "delims=" %%v in ('ver^|findstr /I /C:"Version 5"') do (
+for /f "delims=" %%v in ('ver^|findstr /REC:" 5[0-9\.]*]"') do (
   set "ID=xp"
 )
 rem --- Vista Version 6.0 ---
-for /f "delims=" %%v in ('ver^|findstr /I /C:"Version 6.0"') do (
+for /f "delims=" %%v in ('ver^|findstr /REC:" 6.0.[0-9\.]*]"') do (
   set "ID=vista"
 )
 rem --- 7 Version 6.1 ---
-for /f "delims=" %%v in ('ver^|findstr /I /C:"Version 6.1"') do (
+for /f "delims=" %%v in ('ver^|findstr /REC:" 6.1.[0-9\.]*]"') do (
   set "ID=seven"
 )
 rem -- add native as fallthrough and lib\ext the legacy value --
