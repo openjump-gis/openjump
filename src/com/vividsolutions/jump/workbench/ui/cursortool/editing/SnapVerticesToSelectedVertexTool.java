@@ -53,36 +53,46 @@ public class SnapVerticesToSelectedVertexTool extends QuasimodeTool {
     private static final Cursor SHIFT_NOT_DOWN_CURSOR =
         AbstractCursorTool.createCursor(
             IconLoader.icon("SnapVerticesTogetherCursor4.gif").getImage());
+    private static final String NAME = I18N
+        .get("com.vividsolutions.jump.workbench.ui.cursortool.editing.SnapVerticesToSelectedVertexTool");
 
     public String getName() {
-        return AbstractCursorTool.name(this);
+        return NAME;
     }
 
     public SnapVerticesToSelectedVertexTool(EnableCheckFactory checkFactory) {
-        super(new DrawRectangleFenceTool() {
-            public void mouseClicked(final MouseEvent e) {
-                if (!check(new EnableCheck() {
-                    public String check(JComponent component) {
-                        return (!e.isShiftDown())
-                            ? I18N.get("ui.cursortool.editing.SnapVerticesToSelectedVertexTool.shift-click-the-vertex-to-snap-to")
-                            : null;
-                            }
-                })) {
-                    return;
-                }
-                super.mouseClicked(e);
+      super(new DrawRectangleFenceTool() {
+        public String getName() {
+          return NAME;
+        }
+  
+        public void mouseClicked(final MouseEvent e) {
+          if (!check(new EnableCheck() {
+            public String check(JComponent component) {
+              return (!e.isShiftDown()) ? I18N
+                  .get("ui.cursortool.editing.SnapVerticesToSelectedVertexTool.shift-click-the-vertex-to-snap-to")
+                  : null;
             }
+          })) {
+            return;
+          }
+          super.mouseClicked(e);
+        }
+  
+        public Cursor getCursor() {
+          return SHIFT_NOT_DOWN_CURSOR;
+        }
+      });
+      add(new ModifierKeySpec(false, true, false),
+          new SnapVerticesToSelectedVertexClickTool(checkFactory) {
             public Cursor getCursor() {
-                return SHIFT_NOT_DOWN_CURSOR;
+              return SHIFT_DOWN_CURSOR;
             }
-        });
-        add(
-            new ModifierKeySpec(false, true, false),
-            new SnapVerticesToSelectedVertexClickTool(checkFactory) {
-            public Cursor getCursor() {
-                return SHIFT_DOWN_CURSOR;
+  
+            public String getName() {
+              return NAME;
             }
-        });
+          });
     }
 
     public Icon getIcon() {
