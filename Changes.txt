@@ -1,5 +1,71 @@
 --------------------------------------------------------
-Version ${version.number} ${version.release} rev.${version.revision} (released on ${version.buildDate})
+1.6.0 (released on xx.dec.2012)
+ 
+  New Features
+  * adding support for GeoTIFF with transformation matrix georeferencing
+    courtesy of Nicolas Ribot
+  * add arrange view horizontally and vertically to the view menu
+  * add a PostGIS writer including 5 options to create a PostGIS table, to 
+    insert rows or to update an existing table.
+  * add a "selection" parameter option to RunDataStoreQueryPlugIn
+  * add Dynamic Attributes based on beanshell snippets + persistence in openjump
+    project files.
+  * add function "Tools>Edit Attributes>Join Table..." to attach attributes 
+    from an one layer to another layer based on a unique ID field
+  * add an Offset curve plugin
+  * add detachable InternalFrame
+  
+  
+  Improvements
+  * create a View>Decoration submenu including ScaleBarPlugin, ShowScalePlugIn 
+    and NorthArrowPlugin
+  * add or changed icons in many menu items
+  * improved command line parameters
+  * improved Layer Name presentation
+  * improved isSimple check in ValidateSelectedLayersPlugIn
+  * migration from jts-1.12 to jts-1.13
+  * clip to fence plugin : center dialog box and change default option
+  * improved PlanarGraphPlugIn code
+  * include csv-driver in the datasource framework
+  * improvements of ExtractLayersByAttribute and SIDLayer courtesy of L Becker
+  * improvement of SaveDatasetsPlugIn (ready for new drivers format persistence)
+  * FR 3491966 Improve performance of label rendering with very large polygons.
+  * Exceptions thrown by BeanshellTools are now shown to the user
+  * Select and activate SelectFeaturesTool the first time OpenJUMP is opened
+  * ViewAttributesPlugIn now saves/restores the window position and size
+  * file formats with lower case description are now capitalized so they do not 
+    get sorted to the end of the file format list in file chooser any more
+  
+  Bug Fixes
+  * id 3590463 : in PlanarGraphPlugIn
+  * xtiff_en_US.properties was not found by org.libtiff.jai.util.PropertyUtil
+  * id 3077786 : makes referenced images resizable
+  * id 3525977 : PNG rasters with void pixels not displayed
+  * id 3570707 : LayerNameRenderer and Windows 7 issue
+  * id 3575323 : fixed and changed the whole layout of Attribute Calculator
+  * id 3571031 : Too long field names saved into dbf
+  * SavaDatasetAsPlugIn now check that it produces a valid file name
+  * id 3564137 : view containing a single RasterImageLayer can now be exported
+  * id 3564039 : infinite loop possible in the raster rendering engine
+  * id 3526653 : SaveImageAsPlugIn did not always scale the RasterImage
+  * improved robustess of NoderPlugIn
+  * fix three small bugs in sld export
+  * fix an NPE in MergeSelectedPolygonsWithNeighbourPlugIn
+  * fixed bug in OpenUMPSextanteRasterLayer
+  * id 3526321 : bugfix  "switching L&F layout issues in OpenWizard"
+  * id 3526277 : create polygon from closed area sometimes displayed
+    the progressbar forever
+  
+  New in PLUS edition
+  * add OSX 32bit ECW,JP2 libraries courtesy of gvsigce project
+  * upgrade from Sextante 0.6 to Sextante 1.0
+  * fix bug in DXF reader (text entities were unreadable)
+  * improvements of topology extension (ProjectPointOnLine plugin)
+  * csv driver now creates empty geometries if no geometry is provided
+  * add ColorChooser to the PLUS version
+
+--------------------------------------------------------
+Version 1.5.2 (released on 18.may.2012)
   
   Bug fixes
   - PLUS edition finally starts at reasonable times even from network shares
