@@ -200,7 +200,7 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
 		  sideBarText = SELECTION;
 		}
 	    else {
-		  sideBarText = I18N.get("ui.plugin.analysis.BufferPlugIn.buffers-all-geometries-in-the-input-layer");
+		  sideBarText = I18N.get("ui.plugin.analysis.OffsetCurvePlugIn.description");
 		}
 	    setDialogValues(dialog, context);
 	    updateControls(dialog);
