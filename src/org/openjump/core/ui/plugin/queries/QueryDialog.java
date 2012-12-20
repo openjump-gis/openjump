@@ -722,7 +722,7 @@ public class QueryDialog extends BDialog {
             valueCB.setContents(new Object[]{DATE_FORMATTER.format(new Date())});
         }
         else if (attributeType=='S') {
-            valueCB.setContents(availableStrings(attribute, 12));
+            valueCB.setContents(availableStrings(attribute, 256));
             if (operator==Operator.MATC || operator==Operator.FIND) {
                 valueCB.setContents(new String[]{
                 		I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.regular-expression")
