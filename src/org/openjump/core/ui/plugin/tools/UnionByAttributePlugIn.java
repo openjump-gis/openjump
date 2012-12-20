@@ -235,7 +235,7 @@ public class UnionByAttributePlugIn extends AbstractThreadedUiPlugIn {
             if (merge_linestrings) dialog.setSideBarImage(IconLoader.icon("union_selection_merge.png"));
             else dialog.setSideBarImage(IconLoader.icon("union_selection_no_merge.png"));
         }
-        else if (!use_attribute) {
+        else if (!use_attribute || !has_attributes || use_selection) {
             dialog.setSideBarDescription(I18N.getMessage(
                 "ui.plugin.analysis.UnionByAttributePlugIn.union-layer-description", 
                 new Object[]{layer.getName()}
