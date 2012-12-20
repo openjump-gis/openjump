@@ -61,6 +61,7 @@ public class MoveVertexTool extends DragTool {
     private EnableCheckFactory checkFactory;
 
     public MoveVertexTool(EnableCheckFactory checkFactory) {
+    	
         this.checkFactory = checkFactory;
         setColor(new Color(194, 179, 205));
         setStroke(new BasicStroke(5));
