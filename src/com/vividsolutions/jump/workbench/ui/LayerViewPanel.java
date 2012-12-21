@@ -103,10 +103,10 @@ public class LayerViewPanel extends JPanel
 				Object tool = ((QuasimodeTool) currentCursorTool).getDelegate();
 				if (tool instanceof ZoomTool)  {
 					((ZoomTool) tool).mouseWheelMoved(e);
-				} else if  (tool instanceof LeftClickFilter) {
+				} else if (tool instanceof LeftClickFilter) {
 					CursorTool wrappee = ((LeftClickFilter) tool).getWrappee();
 					if (wrappee instanceof PanTool)
-						((PanTool) wrappee).mouseWheelMoved(e);					
+						((PanTool) wrappee).mouseWheelMoved(e);
 				}
 			}
 		}
