@@ -868,7 +868,7 @@ public class JUMPConfiguration implements Setup {
         featureInstaller
         	.addMainMenuItem(
                         showScalePlugIn,
-                        new String[] {MenuNames.VIEW, I18N.get("ui.style.DecorationStylePanel.decorations")},
+                        new String[] {MenuNames.VIEW, MenuNames.MAP_DECORATIONS},
                         showScalePlugIn.getName(),
                         true,
                         IconLoader.icon("show_scale_text.png"),
@@ -886,7 +886,7 @@ public class JUMPConfiguration implements Setup {
         featureInstaller
         	.addMainMenuItem(
                         scaleBarPlugIn,
-                        new String[] { MenuNames.VIEW, I18N.get("ui.style.DecorationStylePanel.decorations")}, 
+                        new String[] {MenuNames.VIEW, MenuNames.MAP_DECORATIONS}, 
                         scaleBarPlugIn.getName(),
                         true,
                         IconLoader.icon("show_scale.png"),

@@ -59,7 +59,7 @@ public class NorthArrowPlugIn extends AbstractPlugIn {
 				null, null, null, null));
 		EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
 		featureInstaller.addMainMenuItem(this,
-				new String[]  { MenuNames.VIEW, I18N.get("ui.style.DecorationStylePanel.decorations")},
+				new String[]  {MenuNames.VIEW, MenuNames.MAP_DECORATIONS},
 				getName(),
 				true,
 				IconLoader.icon("show_nord.png"),
