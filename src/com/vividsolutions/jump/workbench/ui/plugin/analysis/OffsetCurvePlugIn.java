@@ -196,12 +196,7 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
 	        context.getWorkbenchFrame(), getName(), MAIN_OPTIONS, true);
 	    int n = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems().size();
 	    useSelected = (n > 0);
-	    if (useSelected) {
-		  sideBarText = SELECTION;
-		}
-	    else {
-		  sideBarText = I18N.get("ui.plugin.analysis.OffsetCurvePlugIn.description");
-		}
+		sideBarText = I18N.get("ui.plugin.analysis.OffsetCurvePlugIn.description");
 	    setDialogValues(dialog, context);
 	    updateControls(dialog);
 	    GUIUtil.centreOnWindow(dialog);

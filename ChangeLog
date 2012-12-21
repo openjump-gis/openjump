@@ -1,4 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
+
+2012-12-21 mmichaud <michael.michaud@free.fr>
+  * Small improvements in language files and in OffsetCurvePlugIn UI after 
+    Jukka's feedback and before the end of the world.
+
 2012-12-18   Giuseppe Aruta (giuseppe_aruta@yahoo.it)
   * Move Show ScaleBarPlugin, ShowScalePlugIn and NorthArrowPlugin to "View>Decoration" submenu.
   * Add icons to ScaleBarPlugin, ShowScalePlugIn and NorthArrowPlugin and ToolTip plugIns

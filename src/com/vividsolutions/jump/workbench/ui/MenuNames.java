@@ -45,6 +45,7 @@ public interface MenuNames {
     public static String TOOLS_EDIT_ATTRIBUTES = I18N.get("ui.MenuNames.EDIT") +  " " + I18N.get("ui.MenuNames.ATTRIBUTS");
     public static String TOOLS_EDIT_GEOMETRY = I18N.get("ui.MenuNames.EDIT") +  " " + I18N.get("ui.MenuNames.GEOMETRY");
     public static String VIEW = I18N.get("ui.MenuNames.VIEW");
+    public static String MAP_DECORATIONS = I18N.get("ui.MenuNames.VIEW.MAP_DECORATIONS");
     public static String LAYER = I18N.get("ui.MenuNames.LAYER");
     public static String TOOLS = I18N.get("ui.MenuNames.TOOLS");
     //public static String TOOLS_ADVANCED = I18N.get("ui.MenuNames.TOOLS.ADVANCED"); // not used, not translated
