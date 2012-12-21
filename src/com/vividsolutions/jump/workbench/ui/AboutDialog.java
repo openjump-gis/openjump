@@ -62,9 +62,7 @@ import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
-import javax.swing.border.Border;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.JUMPVersion;
@@ -79,19 +77,19 @@ import com.vividsolutions.jump.workbench.ui.plugin.AboutPlugIn;
 //a smooth sinusoidal interface. [Jon Aquino]
 //<<TODO:AESTHETICS>> The lettering on the image is a bit blocky. Fix. [Jon Aquino]
 public class AboutDialog extends JDialog {
-    BorderLayout borderLayout2 = new BorderLayout();
-
     private static AboutDialog aboutDialog;
     JPanel buttonPanel = new JPanel();
     JButton okButton = new JButton();
     private JTabbedPane jTabbedPane1 = new JTabbedPane();
     private JPanel infoPanel = new JPanel();
-    private BorderLayout borderLayout3 = new BorderLayout();
     
-    private JScrollPane aboutScroll;
-
-    private JLabel lblJavaVersion, lblFreeMemory, lblTotalMemory, 
-    				lblOSVersion, lblCommittedMemory;
+    private JScrollPane aboutScroll, extScroll;
+  
+    private JLabel lblJavaVersion = new JLabel();
+    private JLabel lblOSVersion = new JLabel();
+    private JLabel lblTotalMemory = new JLabel();
+    private JLabel lblCommittedMemory = new JLabel();
+    private JLabel lblFreeMemory = new JLabel();
     private JPanel pnlButtons = new JPanel();
     private JButton btnGC = new JButton();
     private SplashPanel splashPanel;
@@ -134,99 +132,16 @@ public class AboutDialog extends JDialog {
     }
 
     void jbInit() throws Exception {
-        this.setMinimumSize(new Dimension( 200, 200));
-        Border border_0 = BorderFactory.createEmptyBorder(0, 0, 0, 0);
-        
-        this.getContentPane().setLayout(borderLayout2);
-        //this.setResizable(false);
-        okButton.setText("OK");
-        okButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                okButton_actionPerformed(e);
-            }
-        });
-        infoPanel.setLayout(borderLayout3);
+        setLayout(new BorderLayout());
 
-        infoPanel.setLayout( new GridBagLayout() );
-        
-        JLabel lbl_sysinfo = createLabel( I18N.get("ui.AboutDialog.system-info") );
-        lbl_sysinfo.setFont(lbl_sysinfo.getFont().deriveFont( Font.ITALIC | Font.BOLD , 12f));
-        lbl_sysinfo.setHorizontalAlignment(SwingConstants.LEFT);
-        panelAdd( lbl_sysinfo, infoPanel, 0, 0, GridBagConstraints.CENTER);
+        /* About Panel *******************************************************/
+        JPanel aboutPanel = new JPanel(new GridBagLayout());
 
-        JLabel lbl_java = createLabel(I18N.get("ui.AboutDialog.java-version"));
-        lbl_java.setFont(lbl_java.getFont().deriveFont( Font.ITALIC ));
-        panelAdd( lbl_java, infoPanel, 1, 0, GridBagConstraints.WEST);
-
-        JLabel lbl_os = createLabel(I18N.get("ui.AboutDialog.os"));
-        lbl_os.setFont(lbl_java.getFont());
-        panelAdd( lbl_os, infoPanel, 1, 1, GridBagConstraints.WEST);
-        
-        JLabel lbl_memtotal = createLabel(I18N.get("ui.AboutDialog.total-memory"));
-        lbl_memtotal.setFont(lbl_java.getFont());
-        panelAdd( lbl_memtotal, infoPanel, 1, 2, GridBagConstraints.WEST);
-        
-        JLabel lbl_memcom = createLabel(I18N.get("ui.AboutDialog.comitted-memory"));
-        lbl_memcom.setFont(lbl_java.getFont());
-        panelAdd( lbl_memcom, infoPanel, 1, 3, GridBagConstraints.WEST); 
-        
-        JLabel lbl_memfree = createLabel(I18N.get("ui.AboutDialog.free-memory"));
-        lbl_memfree.setFont(lbl_java.getFont());
-        panelAdd( lbl_memfree, infoPanel, 1, 4, GridBagConstraints.WEST); 
-               
-        lblJavaVersion = new JLabel();
-        lblJavaVersion.setToolTipText("");
-        lblJavaVersion.setText("x");
-        panelAdd( lblJavaVersion, infoPanel, 2, 0, GridBagConstraints.WEST);
-        lblOSVersion = new JLabel();
-        lblOSVersion.setText("x"); 
-        panelAdd( lblOSVersion, infoPanel, 2, 1, GridBagConstraints.WEST);
-        lblTotalMemory = new JLabel();
-        lblTotalMemory.setText("x");
-        panelAdd( lblTotalMemory, infoPanel, 2, 2, GridBagConstraints.WEST);
-        lblCommittedMemory = new JLabel();
-        lblCommittedMemory.setText("x");
-        panelAdd( lblCommittedMemory, infoPanel, 2, 3, GridBagConstraints.WEST);
-        lblFreeMemory = new JLabel();
-        lblFreeMemory.setToolTipText("");
-        lblFreeMemory.setText("x");
-        panelAdd( lblFreeMemory, infoPanel, 2, 4, GridBagConstraints.WEST);
-
-
-        btnGC.setText(I18N.get("ui.AboutDialog.garbage-collect"));
-        btnGC.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                btnGC_actionPerformed(e);
-            }
-        });
-        
-        infoPanel.add(
-                pnlButtons,
-                new GridBagConstraints(
-                    0,
-                    5,
-                    3,
-                    1,
-                    0.0,
-                    0.0,
-                    GridBagConstraints.CENTER,
-                    GridBagConstraints.NONE,
-                    new Insets(0, 0, 0, 0),
-                    0,
-                    0));
-            pnlButtons.add(btnGC, null);
-            
-            
-        JPanel aboutPanel = new JPanel();
-
-        aboutPanel.setLayout(new GridBagLayout());
-        
         ImageIcon splash = JUMPWorkbench.splashImage();
         this.splashPanel =
                 new SplashPanel(splash, I18N.get("ui.AboutDialog.version")+" " + JUMPVersion.CURRENT_VERSION);
-        aboutPanel.add(splashPanel,new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.CENTER,GridBagConstraints.NONE,
+        aboutPanel.add(splashPanel,new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.NORTH,GridBagConstraints.NONE,
                 new Insets(0, 0, 0, 0), 0, 0));
-
 /*
         // print classpath for debugging
         URL[] urls = ((java.net.URLClassLoader)ClassLoader.getSystemClassLoader()).getURLs();
@@ -237,6 +152,7 @@ public class AboutDialog extends JDialog {
         String urlstring = "";
         try {
             URL url = ClassLoader.getSystemResource("readme.txt"); // "ÿ \u069e/test.txt"
+
             if (url == null)
                 throw new FileNotFoundException(
                         "readme.txt missing in ojhome/.");
@@ -266,41 +182,123 @@ public class AboutDialog extends JDialog {
         // pad text away from the border
         readme.setBorder( BorderFactory.createEmptyBorder(10,10,10,10) );
         
-        aboutPanel.add(readme,new GridBagConstraints(0, 1, 1, 1, 0, 0, GridBagConstraints.CENTER,GridBagConstraints.NONE,
-                new Insets(20, 0, 0, 0), 0, 0));
-        
-        aboutScroll = new JScrollPane();
-        aboutScroll.getViewport().add(aboutPanel);
-        aboutScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        aboutScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        aboutPanel.add(readme,new GridBagConstraints(0, 1, 1, 1, 0, 0, GridBagConstraints.CENTER,GridBagConstraints.BOTH,
+                new Insets(20, 20, 0, 20), 0, 0));
+        JPanel aboutP2 = new JPanel(new BorderLayout());
+        aboutP2.add(aboutPanel, BorderLayout.NORTH);
+        aboutScroll = new JScrollPane(aboutP2);
+        aboutScroll.setBorder(BorderFactory.createEmptyBorder());
+
         // calculate initial height of biggest asset according to app window height
         // unless it is smaller then splash height plus offset
         int min_h = splashPanel.getPreferredSize().height + 60;
-        int pref_h = wbc.getWorkbench().getFrame().getHeight() - 200;
+        int pref_h = aboutScroll.getPreferredSize().height; //wbc.getWorkbench().getFrame().getHeight() - 200;
         pref_h = pref_h < min_h ? min_h : pref_h;
         // fixed width splash width + 25px for scrollbar
-        aboutScroll.setPreferredSize(new Dimension (splash.getIconWidth() + 25, pref_h));
-        jTabbedPane1.add (I18N.get("ui.AboutDialog.about"), aboutScroll);
-        
-        jTabbedPane1.addTab(I18N.get("ui.AboutDialog.info"), infoPanel);
-        jTabbedPane1.addTab(I18N.get("ui.AboutDialog.Extensions"), extensionsAboutPanel);
-        
-        // add tabbedpane
-        this.getContentPane().add(jTabbedPane1, BorderLayout.NORTH);
+        aboutScroll.setMinimumSize(new Dimension (splash.getIconWidth() + 25, min_h));
+        jTabbedPane1.addTab(I18N.get("ui.AboutDialog.about"), aboutScroll);
 
-        // add ok button
+
+        /* Info Panel ********************************************************/
+        infoPanel.setLayout( new GridBagLayout() );
+
+        JLabel lbl_sysinfo = createLabel( I18N.get("ui.AboutDialog.system-info") );
+        lbl_sysinfo.setFont(lbl_sysinfo.getFont().deriveFont( Font.ITALIC | Font.BOLD , 12f));
+        lbl_sysinfo.setHorizontalAlignment(SwingConstants.LEFT);
+        panelAdd( lbl_sysinfo, infoPanel, 0, 0, GridBagConstraints.CENTER);
+
+        JLabel lbl_java = createLabel(I18N.get("ui.AboutDialog.java-version"));
+        lbl_java.setFont(lbl_java.getFont().deriveFont( Font.ITALIC ));
+        panelAdd( lbl_java, infoPanel, 1, 0, GridBagConstraints.WEST);
+
+        JLabel lbl_os = createLabel(I18N.get("ui.AboutDialog.os"));
+        lbl_os.setFont(lbl_java.getFont());
+        panelAdd( lbl_os, infoPanel, 1, 1, GridBagConstraints.WEST);
+        
+        JLabel lbl_memtotal = createLabel(I18N.get("ui.AboutDialog.total-memory"));
+        lbl_memtotal.setFont(lbl_java.getFont());
+        panelAdd( lbl_memtotal, infoPanel, 1, 2, GridBagConstraints.WEST);
+        
+        JLabel lbl_memcom = createLabel(I18N.get("ui.AboutDialog.comitted-memory"));
+        lbl_memcom.setFont(lbl_java.getFont());
+        panelAdd( lbl_memcom, infoPanel, 1, 3, GridBagConstraints.WEST); 
+        
+        JLabel lbl_memfree = createLabel(I18N.get("ui.AboutDialog.free-memory"));
+        lbl_memfree.setFont(lbl_java.getFont());
+        panelAdd( lbl_memfree, infoPanel, 1, 4, GridBagConstraints.WEST); 
+
+        lblJavaVersion.setToolTipText("");
+        lblJavaVersion.setText("x");
+        panelAdd( lblJavaVersion, infoPanel, 2, 0, GridBagConstraints.WEST);
+
+        lblOSVersion.setText("x"); 
+        panelAdd( lblOSVersion, infoPanel, 2, 1, GridBagConstraints.WEST);
+
+        lblTotalMemory.setText("x");
+        panelAdd( lblTotalMemory, infoPanel, 2, 2, GridBagConstraints.WEST);
+
+        lblCommittedMemory.setText("x");
+        panelAdd( lblCommittedMemory, infoPanel, 2, 3, GridBagConstraints.WEST);
+
+        lblFreeMemory.setToolTipText("");
+        lblFreeMemory.setText("x");
+        panelAdd( lblFreeMemory, infoPanel, 2, 4, GridBagConstraints.WEST);
+
+        btnGC.setText(I18N.get("ui.AboutDialog.garbage-collect"));
+        btnGC.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                btnGC_actionPerformed(e);
+            }
+        });
+        
+        infoPanel.add(
+                pnlButtons,
+                new GridBagConstraints(
+                    0,
+                    5,
+                    3,
+                    1,
+                    0.0,
+                    0.0,
+                    GridBagConstraints.CENTER,
+                    GridBagConstraints.NONE,
+                    new Insets(0, 0, 0, 0),
+                    0,
+                    0));
+            pnlButtons.add(btnGC, null);
+
+        jTabbedPane1.addTab(I18N.get("ui.AboutDialog.info"), infoPanel);
+
+
+        /* Extensions Panel **************************************************/
+        extScroll = new JScrollPane(extensionsAboutPanel);
+        extScroll.setBorder(BorderFactory.createEmptyBorder());
+        jTabbedPane1.addTab(I18N.get("ui.AboutDialog.Extensions"), extScroll);
+
+        // add tabbedpane
+        add(jTabbedPane1, BorderLayout.CENTER);
+
+        /* OK Button */
+
+        okButton.setText(I18N.get("ui.OKCancelPanel.ok"));
+        okButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                okButton_actionPerformed(e);
+            }
+        });
         this.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
         buttonPanel.add(okButton, null);
         jTabbedPane1.setBounds(0, 0, 0, 0);
         
-        int w = splash.getIconWidth() + 50;
         // set a minimumsize enforce by listener below
-        this.setMinimumSize(new Dimension (w, 364));
+        // disabled because aboutScrollPanel has a minimum size now
+        //this.setMinimumSize(new Dimension (w, h));
 
     }
 
+    // info panel helper method
     private void panelAdd ( Component comp, JPanel panel, int cellx, int celly, int position){
-    	panel.add(
+      panel.add(
                 comp,
                 new GridBagConstraints(
                     cellx,
@@ -310,16 +308,16 @@ public class AboutDialog extends JDialog {
                     0.0,
                     0.0,
                     position,
-                    GridBagConstraints.NONE,
+                    GridBagConstraints.BOTH,
                     new Insets(0, 10, 0, 10),
                     0,
-                    0));    	
+                    0));
     }
     
     private JLabel createLabel ( String text ){
-    	JLabel label = new JLabel( text );
-    	label.setBorder( BorderFactory.createEmptyBorder(5, 5, 5, 5) );
-    	return label;
+      JLabel label = new JLabel( text );
+      label.setBorder( BorderFactory.createEmptyBorder(5, 5, 5, 5) );
+      return label;
     }
     
     public void setVisible(boolean b) {
@@ -359,8 +357,6 @@ public class AboutDialog extends JDialog {
         int last_y = getY();
         int last_w = getWidth();
         int last_h = getHeight();
-        // calculate h offset between scroll and dialog for dynamic resizing above
-        int h_off = getHeight() - aboutScroll.getPreferredSize().height;
 
         public void componentResized(ComponentEvent evt) {
             // System.out.println( getX() + " cR " + getY());
@@ -400,27 +396,8 @@ public class AboutDialog extends JDialog {
                 setLocation(newX, newY);
             }
 
-            // System.out.println( oldX + "/" + oldY + " -> " + newX +
-            // "/"+newY);
-
-            // resize readme field with scrollbars
-            Dimension scold = aboutScroll.getSize();
-            int new_sc_h = getHeight() - h_off;//scold.height + (newHeight - oldHeight);
-            aboutScroll.setPreferredSize(new Dimension(scold.width, new_sc_h));
-            // System.out.println( scold.height + " h> " + new_sc_h + " diff " +
-            // (newHeight - oldHeight));
-            aboutScroll.revalidate();
-            // aboutScroll.repaint();
-
-            validate();
-
-            // System.out.println( getX() + " cR2 " + getY());
-
             // save current loc and dimension for next run
             memorize();
-
-            // System.out.println( last_x + "/" + last_y + " , " + last_w + "/"
-            // + last_h );
         }
 
         public void componentMoved(ComponentEvent evt) {
@@ -432,17 +409,23 @@ public class AboutDialog extends JDialog {
             memorize();
         }
 
+        private void resetScrollPositions(JScrollPane sp) {
+          JScrollBar verticalScrollBar = sp.getVerticalScrollBar();
+          JScrollBar horizontalScrollBar = sp.getHorizontalScrollBar();
+          verticalScrollBar.setValue(verticalScrollBar.getMinimum());
+          horizontalScrollBar.setValue(horizontalScrollBar.getMinimum());
+        }
+
         public void componentShown(ComponentEvent e) {
 
             // reset scrollpane on redisplay
-            JScrollBar verticalScrollBar = aboutScroll.getVerticalScrollBar();
-            JScrollBar horizontalScrollBar = aboutScroll
-                    .getHorizontalScrollBar();
-            verticalScrollBar.setValue(verticalScrollBar.getMinimum());
-            horizontalScrollBar.setValue(horizontalScrollBar.getMinimum());
+            resetScrollPositions(aboutScroll);
+            resetScrollPositions(extScroll);
+            
             // resize and locate according to new workbench position
             setPreferredSize(new Dimension(last_w, wbc.getWorkbench()
                     .getFrame().getHeight() - 200));
+
             pack();
             GUIUtil.centreOnWindow(aboutDialog);
             
