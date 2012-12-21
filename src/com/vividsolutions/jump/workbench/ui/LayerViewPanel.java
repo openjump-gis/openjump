@@ -311,6 +311,12 @@ public class LayerViewPanel extends JPanel
 	}
 
 	public void setCurrentCursorTool(CursorTool currentCursorTool) {
+		// if the CursorTool is identical don't do the whole shebang
+		// but inform current that the LayerView to edit has changed
+		if (currentCursorTool.equals(this.currentCursorTool)) {
+			this.currentCursorTool.activate(this);
+			return;
+		}
 		this.currentCursorTool.deactivate();
 		removeMouseListener(this.currentCursorTool);
 		removeMouseMotionListener(this.currentCursorTool);

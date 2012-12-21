@@ -262,6 +262,11 @@ public abstract class MultiClickTool extends AbstractCursorTool {
     {
         super.activate(layerViewPanel);
         
+        // cancel gestures if we switch LayerViews (switch Tasks)
+        if ((panel != null) && !(panel.equals(layerViewPanel))) {
+          cancelGesture();
+        }
+        
         //following added to handle Backspace key deletes last vertex
         panel = layerViewPanel;
         frame = AbstractCursorTool.workbenchFrame(panel);
@@ -270,6 +275,8 @@ public abstract class MultiClickTool extends AbstractCursorTool {
             frame.addEasyKeyListener(keyListener);
             activated = true;
         }
+        
+        
      }
     
     private KeyListener keyListener = new KeyListener() 

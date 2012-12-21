@@ -99,10 +99,12 @@ public class TaskFrame extends JInternalFrame implements TaskFrameProxy,
         final WorkbenchFrame frame = workbenchContext.getWorkbench().getFrame();
         addInternalFrameListener(new InternalFrameAdapter() {
             public void internalFrameActivated(InternalFrameEvent e) {
-                //activeTaskFrame = (TaskFrame)e.getInternalFrame();
-                //toolBar.reClickSelectedCursorToolButton();
-                frame.setActiveTaskFrame((TaskFrame)e.getInternalFrame());
-                frame.getToolBar().reClickSelectedCursorToolButton();
+              // inform workbench that we are active (plugins use that later)  
+              frame.setActiveTaskFrame((TaskFrame)e.getInternalFrame());
+              frame.getToolBar().reClickSelectedCursorToolButton();
+              // re-set the current CursorTool, this effectively informs CursorTools 
+              // that the LayerView to work with has changed
+              getLayerViewPanel().setCurrentCursorTool(getLayerViewPanel().getCurrentCursorTool());
             }
             public void internalFrameDeactivated(InternalFrameEvent e) {
                 //Deactivate the current CursorTool. Otherwise, the following
@@ -116,7 +118,9 @@ public class TaskFrame extends JInternalFrame implements TaskFrameProxy,
                 //      This shouldn't happen; instead, the drawing should be
                 // cancelled.
                 //[Jon Aquino]
-                layerViewPanel.setCurrentCursorTool(new DummyTool());
+                //[ede 12.2012] deactivated as it stops drawing when AttributeFrame is
+                //              activated, stop drwaing in Multiclicktool instead
+                //layerViewPanel.setCurrentCursorTool(new DummyTool());
             }
 
             public void internalFrameClosed(InternalFrameEvent e) {
