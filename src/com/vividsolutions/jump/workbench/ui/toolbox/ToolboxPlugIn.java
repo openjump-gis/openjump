@@ -50,7 +50,7 @@ public abstract class ToolboxPlugIn extends AbstractPlugIn {
         if (toolbox == null) {
             toolbox = new ToolboxDialog(context);
             toolbox.setTitle(getName());
-            initializeToolbox(toolbox);       
+            initializeToolbox(toolbox);
             toolbox.finishAddingComponents();
         }
         return toolbox;

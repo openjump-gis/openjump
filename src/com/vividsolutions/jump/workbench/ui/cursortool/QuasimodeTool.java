@@ -55,28 +55,17 @@ import org.openjump.core.CheckOS;
  */
 public class QuasimodeTool extends DelegatingTool {
 
-    private boolean altKeyDown = false;
-    private boolean mouseDown = false;
-    
     //Sometimes when I try to use the Alt quasimode, the cursor becomes the default
     //cursor (arrow) and stays that way. This seems to have been fixed in JDK 1.4,
     //in which the default cursor stays only for a split second. [Jon Aquino]
-
     public QuasimodeTool(CursorTool defaultTool) {
         super(defaultTool);
         add(new ModifierKeySpec(false, false, false), defaultTool);
-        cursor = defaultTool.getCursor();
     }
 
     private CursorTool getDefaultTool() {
         return (CursorTool) keySpecToToolMap.get(new ModifierKeySpec(false, false, false));
     }
-
-    public Cursor getCursor() {
-        return cursor;
-    }
-
-    private Cursor cursor;
 
     private CursorTool getTool(KeyEvent e) {
         CursorTool tool =
@@ -89,55 +78,50 @@ public class QuasimodeTool extends DelegatingTool {
     }
 
     private KeyListener keyListener = new KeyListener() {
+        private KeyEvent previous = null;
+        private boolean previous_pressed = false;
+
         public void keyTyped(KeyEvent e) {}
 
         public void keyPressed(KeyEvent e) {
-            keyStateChanged(e);
+            keyStateChanged(e, true);
         }
 
         public void keyReleased(KeyEvent e) {
-            keyStateChanged(e);
+            keyStateChanged(e, false);
         }
 
-        private void keyStateChanged(KeyEvent e) {
-            altKeyDown = e.isAltDown();
-            setTool(e);
-        }
+      private void keyStateChanged(KeyEvent e, boolean pressed) {
+        // filter out duplicate events (e.g. key stays pressed)
+        if (previous != null && e.getKeyCode() == previous.getKeyCode()
+            && previous_pressed == pressed)
+          return;
+        previous = e;
+        previous_pressed = pressed;
+        //altKeyDown = e.isAltDown();
+        setTool(e);
+      }
     };
-    /*
-    * [sstein: 17.Mar2007] added the Listener, to be able to remove the listener 
-    * if the cursortool is deactivated. Otherwise the listener still exists and
-    * the mousepointer is "flickering" through all previously used mouse-tools
-    * The modifications (see also #activate and #deactivate) are proposed by Bob and Larry
-    */
-    private WindowAdapter windowListener = new WindowAdapter()
-    {
-        public void windowActivated(WindowEvent e) {
-			super.windowActivated(e);
-			setTool(new KeyEvent(panel, KeyEvent.KEY_PRESSED, 
-                0, 0, KeyEvent.VK_UNDEFINED, KeyEvent.CHAR_UNDEFINED));
-        }
-    };
+//    /*
+//    * [sstein: 17.Mar2007] added the Listener, to be able to remove the listener 
+//    * if the cursortool is deactivated. Otherwise the listener still exists and
+//    * the mousepointer is "flickering" through all previously used mouse-tools
+//    * The modifications (see also #activate and #deactivate) are proposed by Bob and Larry
+//    * [ede 12.2012] commented, see reasoning above in activate()
+//    */
+//    private WindowAdapter windowListener = new WindowAdapter()
+//    {
+//        public void windowActivated(WindowEvent e) {
+//			super.windowActivated(e);
+//			setTool(new KeyEvent(panel, KeyEvent.KEY_PRESSED, 
+//                0, 0, KeyEvent.VK_UNDEFINED, KeyEvent.CHAR_UNDEFINED));
+//        }
+//    };
     
     private void setTool(KeyEvent e) {
-        if (!mouseDown)
-        {
-            cursor = getTool(e).getCursor();
-            panel.setCursor(cursor);
-            currentKeyEvent = e;
-            setDelegate(getTool(e));
-        }
-        
-//        if the following code is used then the tool gets set during the mouse pressed event
-//        if (getDelegate().isGestureInProgress()
-//            && getDelegate() != getTool(e)
-//            && getDelegate() != getDefaultTool()) 
-//        {
-//            setDelegate(getDefaultTool());
-//        }
+      setDelegate(getTool(e));
+      panel.setCursor(getCursor());
     }
-
-    private KeyEvent currentKeyEvent = null;
 
     private LayerViewPanel panel;
     private WorkbenchFrame frame;
@@ -164,7 +148,10 @@ public class QuasimodeTool extends DelegatingTool {
             
             //-- [sstein : ] deactivated and repalced by line above see comment 
             //	             on windowListener above
-            frame.addWindowListener(windowListener);
+            // [ede 12.2012] deactivated as it interferes with QuasiModeTools switched
+            // by key pressed while toolbox is still active, tool got switched but was
+            // reset to the default tool by the next line
+            //frame.addWindowListener(windowListener);
             
             //Need to do the following so that the delegate gets set to the LeftClickFilter
             //This fixes a problem where the selection was being lost on a right click
@@ -174,39 +161,24 @@ public class QuasimodeTool extends DelegatingTool {
             //another application forward.
             //This event was done when clicking the selection tool on the toolbox so
             //that is why it was always working.
-			setTool(new KeyEvent(panel, KeyEvent.KEY_PRESSED, 
-	                0, 0, KeyEvent.VK_UNDEFINED, KeyEvent.CHAR_UNDEFINED));
-			
-            /*frame.addWindowListener(new WindowAdapter() {
-                public void windowActivated(WindowEvent e) {
-					super.windowActivated(e);
-					setTool(new KeyEvent(panel, KeyEvent.KEY_PRESSED, 
-                        0, 0, KeyEvent.VK_UNDEFINED, KeyEvent.CHAR_UNDEFINED));
-                }
-            });*/
+            // [ede 12.2012] deactivated, keep tool even if we loose focus
+            // setTool(new KeyEvent(panel, KeyEvent.KEY_PRESSED, 0, 0,
+            //      KeyEvent.VK_UNDEFINED, KeyEvent.CHAR_UNDEFINED));
+
         }
-    }
-
-    public void mousePressed(MouseEvent e) {
-//        setDelegate(currentKeyEvent != null ? getTool(currentKeyEvent) : getDefaultTool());
-        super.mousePressed(e);
-        mouseDown = true;
-    }
-
-    public void mouseReleased(MouseEvent e) {
-        super.mouseReleased(e);
-        mouseDown = false;
     }
 
     public void deactivate() {
-        if (!altKeyDown)
-        {
-            super.deactivate();
-            if (frame != null) {
-                frame.removeEasyKeyListener(keyListener);
-                frame.removeWindowListener(windowListener);
-            }
-        }
+      // [ede 12.2012] deactivated, as it makes no sense not to deactivate the tool if ALT is not pressed
+      // if (!altKeyDown)
+      // {
+      super.deactivate();
+      if (frame != null) {
+        frame.removeEasyKeyListener(keyListener);
+        // [ede 12.2012] deactivated, keep tool even if we loose focus
+        //frame.removeWindowListener(windowListener);
+      }
+      // }
     }
 
     private HashMap keySpecToToolMap = new HashMap();

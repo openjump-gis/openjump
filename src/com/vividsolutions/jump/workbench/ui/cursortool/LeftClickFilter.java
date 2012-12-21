@@ -113,11 +113,12 @@ public class LeftClickFilter implements CursorTool {
     }
 
     public boolean isRightMouseButtonUsed() {
-		boolean rightMouseButtonUsed = false;
-		if (wrappee instanceof AbstractCursorTool) {
-			rightMouseButtonUsed = ((AbstractCursorTool) wrappee).isRightMouseButtonUsed();
-		}
-        return rightMouseButtonUsed;
+      boolean rightMouseButtonUsed = false;
+      if (wrappee instanceof AbstractCursorTool) {
+        rightMouseButtonUsed = ((AbstractCursorTool) wrappee)
+            .isRightMouseButtonUsed();
+      }
+      return rightMouseButtonUsed;
     }
 
     public boolean isGestureInProgress() {

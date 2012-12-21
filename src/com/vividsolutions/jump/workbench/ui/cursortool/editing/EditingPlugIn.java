@@ -39,6 +39,7 @@ import javax.swing.JButton;
 import org.openjump.core.ui.plugin.edittoolbox.cursortools.ScaleSelectedItemsTool;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
@@ -68,14 +69,20 @@ public class EditingPlugIn extends ToolboxPlugIn {
   public static final String KEY = EditingPlugIn.class.getName();
 
   private JButton optionsButton;
+  
+  private WorkbenchContext wbc;
 
   public void initialize(PlugInContext context) throws Exception {
-    context.getWorkbenchContext().getWorkbench().getBlackboard().put(KEY, this);
+    wbc = context.getWorkbenchContext();
+    wbc.getWorkbench().getBlackboard().put(KEY, this);
     optionsButton = new JButton(
         I18N.get("ui.cursortool.editing.EditingPlugIn.options"));
   }
 
   protected void initializeToolbox(ToolboxDialog toolbox) {
+    // add easylistener to switch QuasiModeTools also when focus is still on Toolbox
+    wbc.getWorkbench().getFrame().addEasyKeyListenerToComp(toolbox);
+    
     // The auto-generated title "Editing Toolbox" is too long to fit. [Jon
     // Aquino]
     toolbox.setTitle(I18N.get("ui.cursortool.editing.EditingPlugIn.editing"));
@@ -102,8 +109,7 @@ public class EditingPlugIn extends ToolboxPlugIn {
     toolbox.add(insVertex);
     CursorTool delVertex = new DeleteVertexTool(checkFactory);
     toolbox.add(delVertex);
-    //toolbox.add(new MoveVertexTool(checkFactory));
-    
+    // create allow MoveVertex to be Delete/InsertVertex when SHIFT/CTRL is pressed
     QuasimodeTool editVertex = new QuasimodeTool(new MoveVertexTool(checkFactory));
     editVertex.add(new QuasimodeTool.ModifierKeySpec(true, false, false), delVertex);
     editVertex.add(new QuasimodeTool.ModifierKeySpec(false, true, false), insVertex);

@@ -322,6 +322,8 @@ public class WorkbenchFrame extends JFrame
   private int addedMenuItems = -1;
 
   private ComponentFactory<TaskFrame> taskFrameFactory;
+  
+  private RecursiveKeyListener easyKeyListener;
 
   public WorkbenchFrame(String title, final WorkbenchContext workbenchContext) throws Exception {
     setTitle(title);
@@ -351,7 +353,7 @@ public class WorkbenchFrame extends JFrame
     } catch (Exception e) {
       e.printStackTrace();
     }
-    new RecursiveKeyListener(this) {
+    easyKeyListener = new RecursiveKeyListener(this) {
       public void keyTyped(KeyEvent e) {
         for (Iterator i = easyKeyListeners.iterator(); i.hasNext();) {
           KeyListener l = (KeyListener)i.next();
@@ -390,6 +392,14 @@ public class WorkbenchFrame extends JFrame
 
   public void removeEasyKeyListener(KeyListener l) {
     easyKeyListeners.remove(l);
+  }
+  
+  public void addEasyKeyListenerToComp( Component c ) {
+    easyKeyListener.listenTo(c);
+  }
+
+  public void removeEasyKeyListenerFromComp( Component c ) {
+    easyKeyListener.ignore(c);
   }
 
   public String getMBCommittedMemory() {
