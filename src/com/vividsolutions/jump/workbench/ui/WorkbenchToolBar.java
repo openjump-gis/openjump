@@ -169,7 +169,7 @@ public class WorkbenchToolBar extends EnableableToolBar {
             }, cursorToolEnableCheck);
         if (cursorToolButtonGroup.getButtonCount() == 1) {
             cursorToolButtonGroup.setSelected(button.getModel(), true);
-            reClickSelectedCursorToolButton();            
+            reClickSelectedCursorToolButton();
         }            
         return new ToolConfig(button, quasimodeTool);
     }
