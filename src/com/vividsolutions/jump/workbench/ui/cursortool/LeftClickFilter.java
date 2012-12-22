@@ -135,4 +135,10 @@ public class LeftClickFilter implements CursorTool {
         return SwingUtilities.isLeftMouseButton(e) &&
         !SwingUtilities.isRightMouseButton(e);
     }
+
+    @Override
+    public String toString() {
+      return wrappee.toString();
+    }
+
 }

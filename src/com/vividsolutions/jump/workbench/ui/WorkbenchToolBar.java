@@ -153,7 +153,7 @@ public class WorkbenchToolBar extends EnableableToolBar {
     private ToolConfig addCursorTool(String tooltip, final CursorTool cursorTool, JToggleButton button) {
         cursorToolButtonGroup.add(button);
         cursorToolClassToButtonMap.put(cursorTool.getClass(), button);
-        final QuasimodeTool quasimodeTool = QuasimodeTool.addStandardQuasimodes(cursorTool);        
+        final QuasimodeTool quasimodeTool = QuasimodeTool.addStandardQuasimodes(cursorTool);
         add(button, tooltip, cursorTool.getIcon(),
             new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
@@ -195,7 +195,7 @@ public class WorkbenchToolBar extends EnableableToolBar {
         if (cursorToolButtonGroup.getButtonCount() == 0) {
             return;
         }
-        getSelectedCursorToolButton().doClick(); 
+        getSelectedCursorToolButton().doClick();
     }
 
     //<<TODO:REFACTOR>> This method duplicates code in FeatureInstaller, with the

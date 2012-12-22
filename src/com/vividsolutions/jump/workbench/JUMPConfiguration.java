@@ -1298,8 +1298,8 @@ private void configToolsAttributes(final WorkbenchContext workbenchContext,
 */
 public void configureDatastores(final WorkbenchContext context) throws Exception {
 
-	context.getRegistry().
-    createEntry(DataStoreDriver.REGISTRY_CLASSIFICATION,new PostgisDataStoreDriver());
+    context.getRegistry().createEntry(DataStoreDriver.REGISTRY_CLASSIFICATION,
+        new PostgisDataStoreDriver());
 
     // update exit handler
     final ApplicationExitHandler oldApplicationExitHandler = context
@@ -1339,108 +1339,110 @@ public void configureDatastores(final WorkbenchContext context) throws Exception
     }
 
     private QuasimodeTool add(CursorTool tool, WorkbenchContext context) {
-        return context.getWorkbench().getFrame().getToolBar().addCursorTool(
-                tool).getQuasimodeTool();
+      return context.getWorkbench().getFrame().getToolBar().addCursorTool(tool)
+          .getQuasimodeTool();
     }
 
     private void configureToolBar(final WorkbenchContext workbenchContext,
-            EnableCheckFactory checkFactory) {    	
-        WorkbenchFrame frame = workbenchContext.getWorkbench().getFrame();
-        frame.getToolBar().addPlugIn(NewTaskPlugIn.getIcon(),
-        		newTaskPlugIn,
-        		NewTaskPlugIn.createEnableCheck(workbenchContext),
-				workbenchContext);                
-        frame.getToolBar().addSeparator();        
-        add(new ZoomTool(), workbenchContext);
-        add(new PanTool(), workbenchContext);
-		// Test for the new Zoom/Pan tool, comment the following line out, if it makes problems
-		add(new SuperZoomPanTool(), workbenchContext);
-		frame.getToolBar().addSeparator();
-        frame.getToolBar().addPlugIn(zoomToFullExtentPlugIn.getIcon(),
-                zoomToFullExtentPlugIn,
-                zoomToFullExtentPlugIn.createEnableCheck(workbenchContext),
-                workbenchContext);
-        frame.getToolBar().addPlugIn(zoomToSelectedItemsPlugIn.getIcon(),
-                zoomToSelectedItemsPlugIn,
-                ZoomToSelectedItemsPlugIn.createEnableCheck(workbenchContext),
-                workbenchContext);
-        add(new ZoomRealtimeTool(), workbenchContext);  //TODO: move to OpenJumpConfiguration if possible
-        frame
-                .getToolBar()
-                .addPlugIn(
-                        zoomToFencePlugIn.getIcon(),
-                        zoomToFencePlugIn,
-                        new MultiEnableCheck()
-                                .add(
-                                        checkFactory
-                                                .createWindowWithLayerViewPanelMustBeActiveCheck())
-                                .add(checkFactory.createFenceMustBeDrawnCheck()),
-                        workbenchContext);
-        frame.getToolBar().addPlugIn(zoomPreviousPlugIn.getIcon(),
-                zoomPreviousPlugIn,
-                zoomPreviousPlugIn.createEnableCheck(workbenchContext),
-                workbenchContext);
-        frame.getToolBar().addPlugIn(zoomNextPlugIn.getIcon(), zoomNextPlugIn,
-                zoomNextPlugIn.createEnableCheck(workbenchContext),
-                workbenchContext);
-        frame.getToolBar().addPlugIn(changeStylesPlugIn.getIcon(),
-                changeStylesPlugIn,
-                changeStylesPlugIn.createEnableCheck(workbenchContext),
-                workbenchContext);
-        frame.getToolBar().addPlugIn(viewAttributesPlugIn.getIcon(),
-                viewAttributesPlugIn,
-                viewAttributesPlugIn.createEnableCheck(workbenchContext),
-                workbenchContext);
-        frame.getToolBar().addSeparator();
-
-        //Null out the quasimodes for [Ctrl] because the Select tools will
-        // handle that case. [Jon Aquino]
-        QuasimodeTool qt = add(new QuasimodeTool(new SelectFeaturesTool()).add(
-                new QuasimodeTool.ModifierKeySpec(true, false, false), null),
-                workbenchContext);
-        // [mmichaud 2012-07-12] by default, the first CursorTool (zoom) is 
-        // activated. After that, the SelectTool button will be selected.
-        // See also the end of JUMPWorkbench.main() where the SelectFeatureTool
-        // will really be activated (it takes place lately because it needs the 
-        // LayerViewPanel to be initialized) 
-        frame.getToolBar().getButton(qt.getClass()).doClick();
-        
-        frame.getToolBar().addPlugIn(ClearSelectionPlugIn.getIcon(),
-        		clearSelectionPlugIn,
-				clearSelectionPlugIn.createEnableCheck(workbenchContext),
-				workbenchContext);
-        add(new OrCompositeTool() {
-
-            public String getName() {
-                return I18N.get("JUMPConfiguration.fence");
-            }
-        }.add(new DrawRectangleFenceTool()).add(new DrawPolygonFenceTool()),
-                workbenchContext);
-        add(new FeatureInfoTool(), workbenchContext);
-        frame.getToolBar().addSeparator();
-        configureEditingButton(workbenchContext);
-        frame.getToolBar().addSeparator();
-//        add(new MeasureTool(), workbenchContext);
-		AdvancedMeasureTool advancedMeasureTool = new AdvancedMeasureTool(workbenchContext);
-		workbenchContext.getWorkbench().getFrame().getToolBar().addCursorTool(advancedMeasureTool, advancedMeasureTool.getToolbarButton());
-		OptionsDialog.instance(workbenchContext.getWorkbench()).addTab(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasurePlugin.OptionPanelTitle"), new AdvancedMeasureOptionsPanel(workbenchContext));
-
-        frame.getToolBar().addSeparator();
-        frame.getToolBar().addPlugIn(undoPlugIn.getIcon(), undoPlugIn,
-                undoPlugIn.createEnableCheck(workbenchContext),
-                workbenchContext);
-        frame.getToolBar().addPlugIn(redoPlugIn.getIcon(), redoPlugIn,
-                redoPlugIn.createEnableCheck(workbenchContext),
-                workbenchContext);
-        frame.getToolBar().addSeparator();
-        workbenchContext.getWorkbench().getFrame().getOutputFrame().setButton(
-                frame.getToolBar().addPlugIn(outputWindowPlugIn.getIcon(),
-                        outputWindowPlugIn, new MultiEnableCheck(),
-                        workbenchContext));
-        //Last of all, add a separator because some plug-ins may add
-        // CursorTools.
-        //[Jon Aquino]
-        frame.getToolBar().addSeparator();
+        EnableCheckFactory checkFactory) {
+      WorkbenchFrame frame = workbenchContext.getWorkbench().getFrame();
+      frame.getToolBar().addPlugIn(NewTaskPlugIn.getIcon(), newTaskPlugIn,
+          NewTaskPlugIn.createEnableCheck(workbenchContext), workbenchContext);
+      frame.getToolBar().addSeparator();
+      add(new ZoomTool(), workbenchContext);
+      add(new PanTool(), workbenchContext);
+      // Test for the new Zoom/Pan tool, comment the following line out, if it
+      // makes problems
+      add(new SuperZoomPanTool(), workbenchContext);
+      frame.getToolBar().addSeparator();
+      frame.getToolBar().addPlugIn(zoomToFullExtentPlugIn.getIcon(),
+          zoomToFullExtentPlugIn,
+          zoomToFullExtentPlugIn.createEnableCheck(workbenchContext),
+          workbenchContext);
+      frame.getToolBar().addPlugIn(zoomToSelectedItemsPlugIn.getIcon(),
+          zoomToSelectedItemsPlugIn,
+          ZoomToSelectedItemsPlugIn.createEnableCheck(workbenchContext),
+          workbenchContext);
+      add(new ZoomRealtimeTool(), workbenchContext); // TODO: move to
+                                                     // OpenJumpConfiguration if
+                                                     // possible
+      frame.getToolBar().addPlugIn(
+          zoomToFencePlugIn.getIcon(),
+          zoomToFencePlugIn,
+          new MultiEnableCheck().add(
+              checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck())
+              .add(checkFactory.createFenceMustBeDrawnCheck()), workbenchContext);
+      frame.getToolBar().addPlugIn(zoomPreviousPlugIn.getIcon(),
+          zoomPreviousPlugIn,
+          zoomPreviousPlugIn.createEnableCheck(workbenchContext),
+          workbenchContext);
+      frame.getToolBar().addPlugIn(zoomNextPlugIn.getIcon(), zoomNextPlugIn,
+          zoomNextPlugIn.createEnableCheck(workbenchContext), workbenchContext);
+      frame.getToolBar().addPlugIn(changeStylesPlugIn.getIcon(),
+          changeStylesPlugIn,
+          changeStylesPlugIn.createEnableCheck(workbenchContext),
+          workbenchContext);
+      frame.getToolBar().addPlugIn(viewAttributesPlugIn.getIcon(),
+          viewAttributesPlugIn,
+          viewAttributesPlugIn.createEnableCheck(workbenchContext),
+          workbenchContext);
+      frame.getToolBar().addSeparator();
+  
+      QuasimodeTool qt = add(new QuasimodeTool(new SelectFeaturesTool()),
+          workbenchContext);
+      // [mmichaud 2012-07-12] by default, the first CursorTool (zoom) is
+      // activated. After that, the SelectTool button will be selected.
+      // See also the end of JUMPWorkbench.main() where the SelectFeatureTool
+      // will really be activated (it takes place later because it needs the
+      // LayerViewPanel to be initialized)
+      frame.getToolBar().getButton(qt.getClass()).doClick();
+  
+      frame.getToolBar().addPlugIn(ClearSelectionPlugIn.getIcon(),
+          clearSelectionPlugIn,
+          clearSelectionPlugIn.createEnableCheck(workbenchContext),
+          workbenchContext);
+      add(new OrCompositeTool() {
+        public String getName() {
+          return I18N.get("JUMPConfiguration.fence");
+        }
+      }.add(new DrawRectangleFenceTool()).add(new DrawPolygonFenceTool()),
+          workbenchContext);
+      add(new FeatureInfoTool(), workbenchContext);
+      frame.getToolBar().addSeparator();
+      configureEditingButton(workbenchContext);
+      frame.getToolBar().addSeparator();
+      // add(new MeasureTool(), workbenchContext);
+      AdvancedMeasureTool advancedMeasureTool = new AdvancedMeasureTool(
+          workbenchContext);
+      workbenchContext
+          .getWorkbench()
+          .getFrame()
+          .getToolBar()
+          .addCursorTool(advancedMeasureTool,
+              advancedMeasureTool.getToolbarButton());
+      OptionsDialog
+          .instance(workbenchContext.getWorkbench())
+          .addTab(
+              I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasurePlugin.OptionPanelTitle"),
+              new AdvancedMeasureOptionsPanel(workbenchContext));
+  
+      frame.getToolBar().addSeparator();
+      frame.getToolBar().addPlugIn(undoPlugIn.getIcon(), undoPlugIn,
+          undoPlugIn.createEnableCheck(workbenchContext), workbenchContext);
+      frame.getToolBar().addPlugIn(redoPlugIn.getIcon(), redoPlugIn,
+          redoPlugIn.createEnableCheck(workbenchContext), workbenchContext);
+      frame.getToolBar().addSeparator();
+      workbenchContext
+          .getWorkbench()
+          .getFrame()
+          .getOutputFrame()
+          .setButton(
+              frame.getToolBar().addPlugIn(outputWindowPlugIn.getIcon(),
+                  outputWindowPlugIn, new MultiEnableCheck(), workbenchContext));
+      // Last of all, add a separator because some plug-ins may add
+      // CursorTools.
+      // [Jon Aquino]
+      frame.getToolBar().addSeparator();
     }
 
     private void configureEditingButton(final WorkbenchContext workbenchContext) {

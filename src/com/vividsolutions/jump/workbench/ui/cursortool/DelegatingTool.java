@@ -57,17 +57,12 @@ public abstract class DelegatingTool implements CursorTool {
     }
 
     public void setDelegate(CursorTool delegate) {
-        if (this.delegate == delegate) {
+      if (this.delegate == delegate) {
             //Don't activate/deactivate. [Jon Aquino]
             return;
         }
 
-//        if (active) {
-//            this.delegate.deactivate();
-//        }
-
         this.delegate = delegate;
-
         if (active) {
             this.delegate.activate(layerViewPanel);
         }

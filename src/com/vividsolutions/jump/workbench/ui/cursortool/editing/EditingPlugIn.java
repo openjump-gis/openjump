@@ -32,6 +32,7 @@
 package com.vividsolutions.jump.workbench.ui.cursortool.editing;
 
 import java.awt.BorderLayout;
+import java.awt.event.KeyEvent;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -106,15 +107,20 @@ public class EditingPlugIn extends ToolboxPlugIn {
 
     toolbox.addToolBar();
     CursorTool insVertex = new InsertVertexTool(checkFactory);
-    toolbox.add(insVertex);
     CursorTool delVertex = new DeleteVertexTool(checkFactory);
-    toolbox.add(delVertex);
-    // create allow MoveVertex to be Delete/InsertVertex when SHIFT/CTRL is pressed
-    QuasimodeTool editVertex = new QuasimodeTool(new MoveVertexTool(checkFactory));
-    editVertex.add(new QuasimodeTool.ModifierKeySpec(true, false, false), delVertex);
-    editVertex.add(new QuasimodeTool.ModifierKeySpec(false, true, false), insVertex);
+    CursorTool movVertex = new MoveVertexTool(checkFactory);
+    // create allow MoveVertex to be Delete/Insert/MoveVertex when A/X/M is pressed
+    // first define a QuasiModeTool with one default tool set
+    QuasimodeTool editVertex = new QuasimodeTool(insVertex);
+    editVertex.add(new QuasimodeTool.ModifierKeySpec(new int[]{KeyEvent.VK_X}), delVertex);
+    editVertex.add(new QuasimodeTool.ModifierKeySpec(new int[]{KeyEvent.VK_A}), insVertex);
+    editVertex.add(new QuasimodeTool.ModifierKeySpec(new int[]{KeyEvent.VK_M}), movVertex);
+    // add it
     toolbox.add(editVertex);
-    
+    // add the variants by cloning and changing the default tool
+    toolbox.add(editVertex.cloneAndSetDefaultTool(delVertex));
+    toolbox.add(editVertex.cloneAndSetDefaultTool(movVertex));
+
     // -- [sstein: 11.12.2006] added here to fill toolbox
     toolbox.add(new ScaleSelectedItemsTool(checkFactory));
 
