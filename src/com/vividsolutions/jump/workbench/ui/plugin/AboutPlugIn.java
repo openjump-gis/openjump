@@ -48,7 +48,7 @@ public class AboutPlugIn extends AbstractPlugIn {
     public static final ImageIcon ICON = IconLoader.icon("information_16x16.png");
 
     public boolean execute(PlugInContext context) throws Exception {
-        reportNothingToUndoYet(context);                
+        reportNothingToUndoYet(context);
         AboutDialog.instance(context.getWorkbenchContext()).setVisible(true);
 
         return true;
