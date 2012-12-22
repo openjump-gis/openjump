@@ -306,7 +306,8 @@ public class WorkbenchFrame extends JFrame
 
   private Set choosableStyleClasses = new HashSet();
 
-  private ArrayList easyKeyListeners = new ArrayList();
+  // make sure not to register Listeners two times
+  private HashSet easyKeyListeners = new HashSet();
 
   private ArrayList<TaskListener> taskListeners = new ArrayList<TaskListener>();
 
