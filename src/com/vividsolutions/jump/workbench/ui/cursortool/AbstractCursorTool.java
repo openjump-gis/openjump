@@ -31,23 +31,6 @@
  */
 package com.vividsolutions.jump.workbench.ui.cursortool;
 
-import com.vividsolutions.jts.geom.Coordinate;
-
-import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.util.Blackboard;
-import com.vividsolutions.jump.util.StringUtil;
-import com.vividsolutions.jump.workbench.JUMPWorkbench;
-import com.vividsolutions.jump.workbench.model.UndoableCommand;
-import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
-import com.vividsolutions.jump.workbench.plugin.EnableCheck;
-import com.vividsolutions.jump.workbench.ui.*;
-import com.vividsolutions.jump.workbench.ui.snap.SnapManager;
-import com.vividsolutions.jump.workbench.ui.snap.SnapPolicy;
-import com.vividsolutions.jump.workbench.ui.snap.SnapToFeaturesPolicy;
-import com.vividsolutions.jump.workbench.ui.snap.SnapToGridPolicy;
-import com.vividsolutions.jump.workbench.ui.snap.SnapToVerticesPolicy;
-import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
-
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Cursor;
@@ -62,7 +45,6 @@ import java.awt.Window;
 import java.awt.event.MouseEvent;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -73,6 +55,27 @@ import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 import org.openjump.core.ui.util.ScreenScale;
+
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.util.Blackboard;
+import com.vividsolutions.jump.util.StringUtil;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.model.UndoableCommand;
+import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
+import com.vividsolutions.jump.workbench.plugin.EnableCheck;
+import com.vividsolutions.jump.workbench.ui.EditTransaction;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
+import com.vividsolutions.jump.workbench.ui.LayerViewPanelListener;
+import com.vividsolutions.jump.workbench.ui.TaskFrame;
+import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
+import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
+import com.vividsolutions.jump.workbench.ui.snap.SnapManager;
+import com.vividsolutions.jump.workbench.ui.snap.SnapPolicy;
+import com.vividsolutions.jump.workbench.ui.snap.SnapToFeaturesPolicy;
+import com.vividsolutions.jump.workbench.ui.snap.SnapToGridPolicy;
+import com.vividsolutions.jump.workbench.ui.snap.SnapToVerticesPolicy;
 
 /**
  * A tool that draws an XOR visual indicator. Subclasses need not keep track of
@@ -501,16 +504,22 @@ public abstract class AbstractCursorTool implements CursorTool {
 		return name(this);
 	}
 
-	public static String name(CursorTool tool) {
-		try {
-	        return I18N.get(tool.getClass().getName());
-	    } catch(java.util.MissingResourceException e){
-	    	// No I18N for the PlugIn so log it, but don't stop
-	    	LOG.error(e.getMessage()+" "+tool.getClass().getName());
-	    	return StringUtil.toFriendlyName(tool.getClass().getName(), 
-	    				I18N.get("ui.cursortool.AbstractCursorTool.tool"));
-    	}
-	}
+  public static String name(CursorTool tool) {
+    try {
+      String key = tool.getClass().getName();
+      Class c;
+      // use superclass name if tool was modified as inner class in any way
+      while (key.contains("$") && (c = tool.getClass().getSuperclass())!=null) {
+        key = c.getName();
+       }
+      return I18N.get(key);
+    } catch (java.util.MissingResourceException e) {
+      // No I18N for the PlugIn so log it, but don't stop
+      LOG.error(e.getMessage() + " " + tool.getClass().getName());
+      return StringUtil.toFriendlyName(tool.getClass().getName(),
+          I18N.get("ui.cursortool.AbstractCursorTool.tool"));
+    }
+  }
 
 	protected boolean check(EnableCheck check) {
 		String warning = check.check(null);
