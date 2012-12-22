@@ -34,6 +34,7 @@ package com.vividsolutions.jump.workbench.ui;
 import java.awt.BorderLayout;
 import java.util.Iterator;
 
+import javax.swing.BorderFactory;
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -44,8 +45,6 @@ import com.vividsolutions.jump.workbench.plugin.PlugInManager;
 
 public class ExtensionsAboutPanel extends JPanel {
 
-    private BorderLayout borderLayout1 = new BorderLayout();
-    private JScrollPane scrollPane = new JScrollPane();
     private JEditorPane editorPane = new JEditorPane();
 
     public ExtensionsAboutPanel() {
@@ -77,12 +76,12 @@ public class ExtensionsAboutPanel extends JPanel {
         editorPane.setText(sb.toString());
     }
     void jbInit() throws Exception {
-        this.setLayout(borderLayout1);
+        setLayout(new BorderLayout());
         editorPane.setEditable(false);
         editorPane.setOpaque(false);
         editorPane.setText("jEditorPane1");
         editorPane.setContentType("text/html");
-        this.add(scrollPane, BorderLayout.CENTER);
-        scrollPane.getViewport().add(editorPane, null);
+        editorPane.setBorder(BorderFactory.createEmptyBorder());
+        this.add(editorPane, BorderLayout.NORTH);
     }
 }
