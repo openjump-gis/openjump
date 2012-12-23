@@ -10,15 +10,24 @@
   * add a "selection" parameter option to RunDataStoreQueryPlugIn
   * add Dynamic Attributes based on beanshell snippets + persistence in openjump
     project files.
-  * add function "Tools>Edit Attributes>Join Table..." to attach attributes 
+  * add Tools > Generate > Create Point Layer from Attribute Table
+  * add Tools > Edit Attributes > Join Table... to attach attributes 
     from an one layer to another layer based on a unique ID field
-  * add an Offset curve plugin
+  * add 6 plugins derived from Noder plugin and available in LayerView context menu
+  * add Merge selected features in place in LayerView context menu (FR 3506380)
+  * add Offset curve plugin
+  * add View > Map decoration > NorthArrow plugin
+  * add densifier function in Tools > Analysis > Geometry functions (FR 3516240)
+  * add Tools > Edit Attributes > Add 3D Geometry Attributes plugin
+  * add Tools > Edit Attributes > Add Geometry Attributes plugin
   * add detachable InternalFrame
-  
+  * add Generate > Create Grid plugin
+  * add Generate > Voronoi Diagram plugin
+  * add Generate > Triangulation plugin
   
   Improvements
-  * create a View>Decoration submenu including ScaleBarPlugin, ShowScalePlugIn 
-    and NorthArrowPlugin
+  * create a View > Map Decoration submenu including ScaleBarPlugin, 
+    ShowScalePlugIn and NorthArrowPlugin
   * add or changed icons in many menu items
   * improved command line parameters
   * improved Layer Name presentation
@@ -37,6 +46,7 @@
     get sorted to the end of the file format list in file chooser any more
   
   Bug Fixes
+  * create Lattice from Raster failed in some cases
   * id 3590463 : in PlanarGraphPlugIn
   * xtiff_en_US.properties was not found by org.libtiff.jai.util.PropertyUtil
   * id 3077786 : makes referenced images resizable
@@ -47,6 +57,7 @@
   * SavaDatasetAsPlugIn now check that it produces a valid file name
   * id 3564137 : view containing a single RasterImageLayer can now be exported
   * id 3564039 : infinite loop possible in the raster rendering engine
+  * id 3528917 : Open wizard looks weird with windows 64
   * id 3526653 : SaveImageAsPlugIn did not always scale the RasterImage
   * improved robustess of NoderPlugIn
   * fix three small bugs in sld export
@@ -55,14 +66,16 @@
   * id 3526321 : bugfix  "switching L&F layout issues in OpenWizard"
   * id 3526277 : create polygon from closed area sometimes displayed
     the progressbar forever
+  * id 3446420 : fix import of zipped shapefiles with XML metadata file
   
   New in PLUS edition
   * add OSX 32bit ECW,JP2 libraries courtesy of gvsigce project
   * upgrade from Sextante 0.6 to Sextante 1.0
   * fix bug in DXF reader (text entities were unreadable)
   * improvements of topology extension (ProjectPointOnLine plugin)
-  * csv driver now creates empty geometries if no geometry is provided
-  * add ColorChooser to the PLUS version
+  * new csv driver with an automatic mode (guess separator) and a customizable 
+    mode. The driver creates empty geometries if no geometry is provided.
+  * add SkyJUMP pick Color integration to the PLUS version
 
 --------------------------------------------------------
 Version 1.5.2 (released on 18.may.2012)
