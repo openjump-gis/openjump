@@ -55,6 +55,7 @@ import com.vividsolutions.jump.workbench.ui.zoom.ZoomTool;
  */
 public class QuasimodeTool extends DelegatingTool {
   private HashMap<ModifierKeySpec,CursorTool> keySpecToToolMap;
+  private DummyTool dummytool = new DummyTool();
 
   // a tool that has delegates enabled via KEY events
   public QuasimodeTool(CursorTool defaultTool) {
@@ -101,10 +102,10 @@ public class QuasimodeTool extends DelegatingTool {
   }
   
   private CursorTool getTool(Set<Integer> keys) {
-    CursorTool tool = (CursorTool) keySpecToToolMap.get(new ModifierKeySpec(
+    CursorTool tool = (CursorTool) keySpecToToolMap.get(new ModifierKeySet(
         keys));
-    //System.out.println("keys: " + keys +" is "+(tool!=null?tool.getName():null));
-    return tool != null ? tool : getDefaultTool();
+    //System.out.println("keys: " + keys +" is "+(tool!=null?tool+"\n"+this:null));
+    return tool;
   }
 
   private KeyListener keyListener = new KeyListener() {
@@ -130,10 +131,18 @@ public class QuasimodeTool extends DelegatingTool {
       if (previous != null && previous.equals(keys))
         return;
       previous = (HashSet) keys.clone();
-      // System.out.println(e.getKeyText(e.getKeyCode()));
+      //System.out.println(e.getKeyCode()+"/"+e.getKeyModifiersText(e.getModifiers())+"/"+e.getKeyText(e.getKeyCode()));
       setTool(keys);
     }
+    
+//    public String toString(){
+//      return getName()+" KeyListener";
+//    }
   };
+
+  public KeyListener getKeyListener(){
+    return keyListener;
+  }
 
   // /*
   // * [sstein: 17.Mar2007] added the Listener, to be able to remove the
@@ -154,22 +163,42 @@ public class QuasimodeTool extends DelegatingTool {
   // };
 
   private void setTool(Set<Integer> keys) {
-    setDelegate(getTool(keys));
-    panel.setCursor(getCursor());
+    CursorTool tool = getTool(keys);
+    // only remove tool on unknown modifier combinations
+    // else use default tool, allows draw e.g. to use backspace key
+    if (tool == null)
+      for (Integer integer : keys) {
+        if (integer != KeyEvent.VK_SHIFT && integer != KeyEvent.VK_CONTROL
+            && integer != KeyEvent.VK_META && integer != KeyEvent.VK_ALT) {
+          tool = getDefaultTool();
+          break;
+        }
+      }
+    // standard null tool is DummyTool
+    if (tool == null)
+      tool = dummytool;
+    
+    setDelegate(tool);
+    super.activate(panel);
+    panel.setCurrentCursorTool(this);
   }
 
   private LayerViewPanel panel;
   private WorkbenchFrame frame;
 
   public void activate(final LayerViewPanel panel) {
-    super.activate(panel);
+    if (panel==null) return;
+    
     this.panel = panel;
+    super.activate(panel);
+    panel.setCurrentCursorTool(this);
+    panel.getWorkBenchFrame().addEasyKeyListener(keyListener);
     // Cache WorkbenchFrame because in JDK 1.3 when I minimize an internal
     // frame, SwingUtilities#windowForComponent returns null for that frame.
     // A Swing bug. [Jon Aquino]
-    frame = AbstractCursorTool.workbenchFrame(panel);
-    if (frame != null) {
-      frame.addEasyKeyListener(keyListener);
+    //frame = AbstractCursorTool.workbenchFrame(panel);
+    //if (frame != null) {
+      //frame.addEasyKeyListener(keyListener);
       // Workaround for the following:
       // * Use WorkbenchFrame#addKeyboardShortcut for a plug-in that
       // pops up a dialog (or could pop up an error dialog). Assign it to
@@ -208,7 +237,7 @@ public class QuasimodeTool extends DelegatingTool {
       // setTool(new KeyEvent(panel, KeyEvent.KEY_PRESSED, 0, 0,
       // KeyEvent.VK_UNDEFINED, KeyEvent.CHAR_UNDEFINED));
 
-    }
+    //}
   }
 
   public void deactivate() {
@@ -217,12 +246,21 @@ public class QuasimodeTool extends DelegatingTool {
     // if (!altKeyDown)
     // {
     super.deactivate();
-    if (frame != null) {
-      frame.removeEasyKeyListener(keyListener);
-      // [ede 12.2012] deactivated, keep tool even if we loose focus
-      // frame.removeWindowListener(windowListener);
-    }
+    panel.getWorkBenchFrame().removeEasyKeyListener(keyListener);
+//    if (frame != null) {
+//      frame.removeEasyKeyListener(keyListener);
+//      // [ede 12.2012] deactivated, keep tool even if we loose focus
+//      // frame.removeWindowListener(windowListener);
+//    }
     // }
+  }
+
+  // same as below, just does not alter key assignments but mirrors actually pressed keys instead
+  public static class ModifierKeySet extends ModifierKeySpec {
+    public ModifierKeySet(Collection<Integer> keys) {
+      super();
+      addAllRaw(keys);
+    }
   }
 
   public static class ModifierKeySpec extends HashSet<Integer> {
@@ -258,11 +296,19 @@ public class QuasimodeTool extends DelegatingTool {
 
     @Override
     public boolean add(Integer e) {
-      // OsX always uses CMD key instead of ALT, which is preserved for left
+      // OsX always uses CMD key instead of CTRL, which is preserved for left
       // click context menu, right click emulation
-      if (e == KeyEvent.VK_ALT && CheckOS.isMacOsx())
+      if (e == KeyEvent.VK_CONTROL && CheckOS.isMacOsx()){
         e = new Integer(KeyEvent.VK_META);
+      }
       return super.add((Integer) e);
+    }
+
+    protected void addAllRaw(Collection<Integer> c) {
+      Iterator<Integer> e = c.iterator();
+      while (e.hasNext()) {
+        super.add(e.next());
+      }
     }
 
     public boolean equals(Object obj) {
@@ -275,9 +321,7 @@ public class QuasimodeTool extends DelegatingTool {
       while (iter.hasNext()) {
         Integer keyval = (Integer) iter.next();
         if (!other.contains(keyval)) {
-          // we allow meta to replace ALT generally
-          if (keyval == KeyEvent.VK_ALT && other.contains(KeyEvent.VK_META))
-            continue;
+          // wrong shortcut dude
           return false;
         }
       }

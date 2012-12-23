@@ -306,7 +306,7 @@ public class WorkbenchFrame extends JFrame
 
   private Set choosableStyleClasses = new HashSet();
 
-  // make sure not to register Listeners two times
+  // make sure not to register Listeners more than once
   private HashSet easyKeyListeners = new HashSet();
 
   private ArrayList<TaskListener> taskListeners = new ArrayList<TaskListener>();
@@ -388,10 +388,12 @@ public class WorkbenchFrame extends JFrame
    * @see #addKeyboardShortcut
    */
   public void addEasyKeyListener(KeyListener l) {
+    //System.out.println("add "+l);
     easyKeyListeners.add(l);
   }
 
   public void removeEasyKeyListener(KeyListener l) {
+    //System.out.println("rem "+l);
     easyKeyListeners.remove(l);
   }
   
@@ -449,10 +451,35 @@ public class WorkbenchFrame extends JFrame
     setStatusBarTextHighlighted(false, null);
   }
 
+  Thread thread = null;
+
+  public void setStatusMessage(final String msg, final int millis) {
+    if (thread != null) {
+      thread.interrupt();
+    }
+    System.out.println("hello");
+    thread = new Thread(new Runnable() {
+      public void run() {
+        setStatusMessage(msg);
+        try {
+          Thread.sleep(millis);
+        } catch (Exception e) {
+        }
+        if (getStatusBarText().equals(msg))
+          setStatusMessage("");
+      }
+    });
+    thread.start();
+  }
+
   private void setStatusBarText(String message) {
     // Make message at least a space so that the label won't collapse [Jon Aquino]
     message = (message==null || message.equals("")) ? " " : message;
     messageTextField.setText(message);
+  }
+  
+  private String getStatusBarText(){
+    return messageTextField.getText();
   }
 
   /**

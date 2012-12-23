@@ -113,12 +113,11 @@ public class LeftClickFilter implements CursorTool {
     }
 
     public boolean isRightMouseButtonUsed() {
-      boolean rightMouseButtonUsed = false;
       if (wrappee instanceof AbstractCursorTool) {
-        rightMouseButtonUsed = ((AbstractCursorTool) wrappee)
+        return ((AbstractCursorTool) wrappee)
             .isRightMouseButtonUsed();
       }
-      return rightMouseButtonUsed;
+      return false;
     }
 
     public boolean isGestureInProgress() {
@@ -132,8 +131,7 @@ public class LeftClickFilter implements CursorTool {
     private boolean isOnlyLeftMouseButton(MouseEvent e) {
         //A future CursorTool may check whether *both* buttons are pressed (to
         //indicate that the interaction should be cancelled). [Jon Aquino]
-        return SwingUtilities.isLeftMouseButton(e) &&
-        !SwingUtilities.isRightMouseButton(e);
+        return SwingUtilities.isLeftMouseButton(e) && !e.isPopupTrigger();
     }
 
     @Override

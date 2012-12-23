@@ -63,9 +63,6 @@ public abstract class DelegatingTool implements CursorTool {
         }
 
         this.delegate = delegate;
-        if (active) {
-            this.delegate.activate(layerViewPanel);
-        }
     }
 
     public String getName() {
@@ -130,4 +127,5 @@ public abstract class DelegatingTool implements CursorTool {
     public boolean isRightMouseButtonUsed() {
         return delegate.isRightMouseButtonUsed();
     }
+
 }

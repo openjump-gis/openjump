@@ -42,6 +42,8 @@ import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.Window;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
@@ -85,9 +87,9 @@ import com.vividsolutions.jump.workbench.ui.snap.SnapToVerticesPolicy;
 public abstract class AbstractCursorTool implements CursorTool {
 	private static Logger LOG = Logger.getLogger(AbstractCursorTool.class);
 	
-	private boolean snappingConfigured = false;
+	private boolean snappingInitialized = false;
 
-	private boolean configuringSnapping = false;
+	private boolean snappingAllowed = false;
 
 	private boolean controlPressed;
 
@@ -155,11 +157,19 @@ public abstract class AbstractCursorTool implements CursorTool {
 	/**
 	 * Makes this CursorTool obey the snapping settings in the Options dialog.
 	 */
-	public void allowSnapping() {
-		configuringSnapping = true;
-	}
+  public void allowSnapping() {
+    snappingAllowed = true;
+  }
 
-	protected boolean wasShiftPressed() {
+  public void prohibitSnapping() {
+    snappingAllowed = false;
+  }
+
+  public boolean supportsSnapping() {
+    return snappingAllowed;
+  }
+
+  protected boolean wasShiftPressed() {
 		return shiftPressed;
 	}
 
@@ -216,32 +226,32 @@ public abstract class AbstractCursorTool implements CursorTool {
 		return shapeOnScreen;
 	}
 
-	public void activate(LayerViewPanel layerViewPanel) {
-		if (workbenchFrame(layerViewPanel) != null) {
-			workbenchFrame(layerViewPanel).log(
-					I18N.get("ui.cursortool.AbstractCursorTool.activating")+" " + getName());
-		}
+  public void activate(LayerViewPanel layerViewPanel) {
+    if (workbenchFrame(layerViewPanel) != null) {
+      workbenchFrame(layerViewPanel).log(
+          I18N.get("ui.cursortool.AbstractCursorTool.activating") + " "
+              + getName());
+    }
+    // [ede 12.2012] disabled as LayerViewPanel holds listeners now in a HashSet
+    // ensuring to have only one instance
+    // if (this.panel != null) {
+    // this.panel.removeListener(layerViewPanelListener);
+    // }
 
-		if (this.panel != null) {
-			this.panel.removeListener(layerViewPanelListener);
-		}
+    this.panel = layerViewPanel;
+    this.panel.addListener(layerViewPanelListener);
 
-		this.panel = layerViewPanel;
-		this.panel.addListener(layerViewPanelListener);
-
-		if (configuringSnapping && !snappingConfigured) {
-            //Must wait until now because #getWorkbench needs the panel to be set. [Jon Aquino]
-            //getSnapManager().addPolicies(
-            //createStandardSnappingPolicies(getWorkbench().getBlackboard()));
-            
-            //fix bug 1713295 - change blackboard to PersistentBlackboard.
-			//Snap options have been broken since PersistentBlackboard has
-			//replaced blackboard in InstallGridPlugIn [Michael Michaud 2007-05-12]
-            getSnapManager().addPolicies(createStandardSnappingPolicies(
-                PersistentBlackboardPlugIn.get(getWorkbench().getContext())));
-			snappingConfigured = true;
-		}
-	}
+    if (snappingAllowed && !snappingInitialized) {
+      getSnapManager().addPolicies(
+          createStandardSnappingPolicies(PersistentBlackboardPlugIn
+              .get(getWorkbench().getContext())));
+      snappingInitialized = true;
+    }
+    
+    // following added to handle KEY shortcuts e.g. SPACEBAR snap switching
+    WorkbenchFrame frame = panel.getWorkBenchFrame();
+    frame.addEasyKeyListener(keyListener);
+  }
 
 	public static WorkbenchFrame workbenchFrame(LayerViewPanel layerViewPanel) {
 		Window window = SwingUtilities.windowForComponent(layerViewPanel);
@@ -253,7 +263,7 @@ public abstract class AbstractCursorTool implements CursorTool {
 				: null;
 	}
 
-	public static List createStandardSnappingPolicies(Blackboard blackboard) {
+	private static List createStandardSnappingPolicies(Blackboard blackboard) {
 		return Arrays.asList(new SnapPolicy[]{
 				new SnapToVerticesPolicy(blackboard),
 				new SnapToFeaturesPolicy(blackboard),
@@ -265,9 +275,13 @@ public abstract class AbstractCursorTool implements CursorTool {
 				EditTransaction.ROLLING_BACK_INVALID_EDITS_KEY, false);
 	}
 
-	public void deactivate() {
-		cancelGesture();
-	}
+  public void deactivate() {
+    cancelGesture();
+
+    // following added to handle SPACEBAR snap switching
+    WorkbenchFrame frame = panel.getWorkBenchFrame();
+    frame.removeEasyKeyListener(keyListener);
+  }
 
 	public void mouseClicked(MouseEvent e) {
 	}
@@ -404,7 +418,7 @@ public abstract class AbstractCursorTool implements CursorTool {
 	}
 
 	protected Coordinate snap(Coordinate modelCoordinate) {
-		return snapManager.snap(getPanel(), modelCoordinate);
+		return snappingAllowed ? snapManager.snap(getPanel(), modelCoordinate) : modelCoordinate;
 	}
 
 	private void setShapeOnScreen(boolean shapeOnScreen) {
@@ -497,18 +511,18 @@ public abstract class AbstractCursorTool implements CursorTool {
 	}
 
 	public String toString() {
-		return getName();
+		return name(this)+"@"+hashCode();
 	}
 
 	public String getName() {
 		return name(this);
 	}
 
-  public static String name(CursorTool tool) {
+  private static String name(CursorTool tool) {
     try {
       String key = tool.getClass().getName();
       Class c;
-      // use superclass name if tool was modified as inner class in any way
+      // use superclass name if tool was modified as anonymous inner class in any way
       while (key.contains("$") && (c = tool.getClass().getSuperclass())!=null) {
         key = c.getName();
        }
@@ -545,4 +559,39 @@ public abstract class AbstractCursorTool implements CursorTool {
 
 		public void gestureFinished();
 	}
+
+  // snap on/off via key listener
+  private KeyListener keyListener = new KeyListener() {
+    boolean off = false;
+
+    public void keyTyped(KeyEvent e) {
+    }
+
+    public void keyPressed(KeyEvent e) {
+      if (snappingInitialized && isSpace(e) && !off) {
+        off = true;
+        prohibitSnapping();
+        // System.out.println("snap off");
+        showMsg("com.vividsolutions.jump.workbench.ui.cursortool.AbstractCursorTool.snapping-off");
+      }
+    }
+
+    public void keyReleased(KeyEvent e) {
+      if (snappingInitialized && isSpace(e) && off) {
+        off = false;
+        allowSnapping();
+        // System.out.println("snap on");
+        showMsg("com.vividsolutions.jump.workbench.ui.cursortool.AbstractCursorTool.snapping-on");
+      }
+    }
+
+    private void showMsg(String msg) {
+      getPanel().getWorkBenchFrame().setStatusMessage(I18N.get(msg),5000);
+    }
+
+    private boolean isSpace(KeyEvent e) {
+      return (e.getKeyCode() == KeyEvent.VK_SPACE);
+    }
+
+  };
 }

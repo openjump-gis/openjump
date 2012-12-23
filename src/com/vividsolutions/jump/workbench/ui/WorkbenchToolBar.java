@@ -157,14 +157,11 @@ public class WorkbenchToolBar extends EnableableToolBar {
         add(button, tooltip, cursorTool.getIcon(),
             new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    //It's null when the Workbench starts up. [Jon Aquino]
-                    //Or the active frame may not have a LayerViewPanel. [Jon Aquino]
-                    if (layerViewPanelProxy.getLayerViewPanel() != null) {
-                        layerViewPanelProxy.getLayerViewPanel().setCurrentCursorTool(quasimodeTool);
-                    }
-
-                    //<<TODO:DESIGN>> We really shouldn't create a new LeftClickFilter on each
-                    //click of the tool button. Not a big deal though. [Jon Aquino]
+                  //It's null when the Workbench starts up. [Jon Aquino]
+                  //Or the active frame may not have a LayerViewPanel. [Jon Aquino]
+                  quasimodeTool.activate(layerViewPanelProxy.getLayerViewPanel());
+                  //<<TODO:DESIGN>> We really shouldn't create a new LeftClickFilter on each
+                  //click of the tool button. Not a big deal though. [Jon Aquino]
                 }
             }, cursorToolEnableCheck);
         if (cursorToolButtonGroup.getButtonCount() == 1) {

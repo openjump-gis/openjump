@@ -76,6 +76,10 @@ import com.vividsolutions.jump.workbench.ui.cursortool.QuasimodeTool;
 /**
  * Be sure to call #dispose() when the LayerViewPanel is no longer needed.
  */
+/**
+ * @author ed
+ *
+ */
 public class LayerViewPanel extends JPanel
 		implements
 			LayerListener,
@@ -85,11 +89,14 @@ public class LayerViewPanel extends JPanel
 	private ToolTipWriter toolTipWriter = new ToolTipWriter(this);
 	BorderLayout borderLayout1 = new BorderLayout();
 	private LayerManager layerManager;
-	private CursorTool currentCursorTool = new DummyTool();
+	// one dummytool for unassigned ModifierKey combinations
+	private CursorTool dummyCursorTool = new DummyTool();
+	private CursorTool currentCursorTool = dummyCursorTool;
 	private Viewport viewport = new Viewport(this);
 	private boolean viewportInitialized = false;
 	private java.awt.Point lastClickedPoint;
-	private ArrayList listeners = new ArrayList();
+	// no doubled listener entries
+	private HashSet listeners = new HashSet();
 	private LayerViewPanelContext context;
 	private RenderingManager renderingManager = new RenderingManager(this);
 	private FenceLayerFinder fenceLayerFinder;
@@ -150,9 +157,7 @@ public class LayerViewPanel extends JPanel
 					//JavaDoc for #toFront says some platforms will not
 					// activate the window.
 					//So use #requestFocus instead. [Jon Aquino 12/9/2003]
-					WorkbenchFrame workbenchFrame = (WorkbenchFrame) SwingUtilities
-							.getAncestorOfClass(WorkbenchFrame.class,
-									LayerViewPanel.this);
+					WorkbenchFrame workbenchFrame = getWorkBenchFrame();
 				    //[mmichaud 2012-02-24] get rid of the focus problem between
 				    // OpenJUMP and BeanshellEditor (bug #3487686)
 					Window focusedWindow = KeyboardFocusManager
@@ -310,22 +315,45 @@ public class LayerViewPanel extends JPanel
 		return popupMenu;
 	}
 
-	public void setCurrentCursorTool(CursorTool currentCursorTool) {
-		// if the CursorTool is identical don't do the whole shebang
-		// but inform current that the LayerView to edit has changed
-		if (currentCursorTool.equals(this.currentCursorTool)) {
-			this.currentCursorTool.activate(this);
-			return;
-		}
-		this.currentCursorTool.deactivate();
-		removeMouseListener(this.currentCursorTool);
-		removeMouseMotionListener(this.currentCursorTool);
-		this.currentCursorTool = currentCursorTool;
-		currentCursorTool.activate(this);
-		setCursor(currentCursorTool.getCursor());
-		addMouseListener(currentCursorTool);
-		addMouseMotionListener(currentCursorTool);
-	}
+  public CursorTool getCurrentCursorTool() {
+    return currentCursorTool;
+  }
+
+  public void setCurrentCursorTool(CursorTool newct) {
+     // if the CursorTool is identical don't do the whole shebang
+     if (newct.equals(this.currentCursorTool)) {
+       // update the cursor though, delegate might have changed
+       setCursor(newct.getCursor());
+       return;
+     }
+    // remove old
+    removeCurrentCursorTool();
+    // add new
+    currentCursorTool = newct;
+    setCursor(newct.getCursor());
+    addMouseListener(newct);
+    addMouseMotionListener(newct);
+    //System.out.println("keylstnrs "+getWorkBenchFrame().easyKeyListeners);
+  }
+
+  public void removeCurrentCursorTool() {
+    CursorTool oldct = this.currentCursorTool;
+    setCursor(null);
+    removeMouseListener(oldct);
+    removeMouseMotionListener(oldct);
+    oldct.deactivate();
+    this.currentCursorTool = dummyCursorTool;
+  }
+
+  /**
+   * Find the parent WorkBenchFrame.
+   * 
+   * @return WorkbenchFrame
+   */
+  public WorkbenchFrame getWorkBenchFrame() {
+    return (WorkbenchFrame) SwingUtilities.getAncestorOfClass(
+        WorkbenchFrame.class, LayerViewPanel.this);
+  }
 
 	/**
 	 * When a layer is added, if this flag is false, the viewport will be zoomed
@@ -333,10 +361,6 @@ public class LayerViewPanel extends JPanel
 	 */
 	public void setViewportInitialized(boolean viewportInitialized) {
 		this.viewportInitialized = viewportInitialized;
-	}
-
-	public CursorTool getCurrentCursorTool() {
-		return currentCursorTool;
 	}
 
 	/**
@@ -469,20 +493,25 @@ public class LayerViewPanel extends JPanel
 		g.fill(r);
 	}
 
-	void jbInit() throws Exception {
-		this.setBackground(Color.white);
-		this.addMouseListener(new java.awt.event.MouseAdapter() {
-			public void mouseReleased(MouseEvent e) {
-				this_mouseReleased(e);
-			}
-		});
-		this.addComponentListener(new java.awt.event.ComponentAdapter() {
-			public void componentResized(ComponentEvent e) {
-				this_componentResized(e);
-			}
-		});
-		this.setLayout(borderLayout1);
-	}
+  void jbInit() throws Exception {
+    this.setBackground(Color.white);
+    this.addMouseListener(new java.awt.event.MouseAdapter() {
+      public void mousePressed(MouseEvent e) {
+        // popup triggers are pressed on Linux/OSX, released on Windows
+        if (e.isPopupTrigger())
+          this_mouseReleased(e);
+      }
+      public void mouseReleased(MouseEvent e) {
+        this_mouseReleased(e);
+      }
+    });
+    this.addComponentListener(new java.awt.event.ComponentAdapter() {
+      public void componentResized(ComponentEvent e) {
+        this_componentResized(e);
+      }
+    });
+    this.setLayout(borderLayout1);
+  }
 
 	void this_componentResized(ComponentEvent e) {
 		try {
@@ -503,7 +532,9 @@ public class LayerViewPanel extends JPanel
 			return;
 		}
 
-		if (SwingUtilities.isRightMouseButton(e)) {
+		//[ede 12.2012] use isPopupTrigger which is supposed to be _really_ crossplatform
+		//if (SwingUtilities.isRightMouseButton(e)) {
+		if (e.isPopupTrigger()) {
 			//Custom workbenches might not add any items to the LayerViewPanel
 			// popup menu.
 			//[Jon Aquino]

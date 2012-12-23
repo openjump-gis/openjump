@@ -47,6 +47,7 @@ import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.*;
+import com.vividsolutions.jump.workbench.ui.cursortool.CursorTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.DummyTool;
 import com.vividsolutions.jump.workbench.ui.renderer.ImageCachingRenderer;
 import com.vividsolutions.jump.workbench.ui.renderer.Renderer;
@@ -102,9 +103,11 @@ public class TaskFrame extends JInternalFrame implements TaskFrameProxy,
               // inform workbench that we are active (plugins use that later)  
               frame.setActiveTaskFrame((TaskFrame)e.getInternalFrame());
               frame.getToolBar().reClickSelectedCursorToolButton();
-              // re-set the current CursorTool, this effectively informs CursorTools 
-              // that the LayerView to work with has changed
-              getLayerViewPanel().setCurrentCursorTool(getLayerViewPanel().getCurrentCursorTool());
+              // re-set the current CursorTool, this effectively informs
+              // CursorTools that the LayerView to work with has changed
+              CursorTool ct = getLayerViewPanel().getCurrentCursorTool();
+              if (ct != null)
+                ct.activate(getLayerViewPanel());
             }
             public void internalFrameDeactivated(InternalFrameEvent e) {
                 //Deactivate the current CursorTool. Otherwise, the following

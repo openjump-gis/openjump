@@ -433,6 +433,11 @@ public class TreeLayerNamePanel extends JPanel
     void jbInit() throws Exception {
         this.setLayout(borderLayout1);
         tree.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+              // popup triggers are pressed on Linux/OSX, released on Windows
+              if (e.isPopupTrigger())
+                tree_mouseReleased(e);
+            }
             public void mouseReleased(MouseEvent e) {
                 tree_mouseReleased(e);
             }
@@ -454,7 +459,8 @@ public class TreeLayerNamePanel extends JPanel
     }
 
     void tree_mouseReleased(MouseEvent e) {
-        if (!SwingUtilities.isRightMouseButton(e)) {
+        //[ede 12.2012] use isPopupTrigger which is supposed to be _really_ crossplatform
+        if (!e.isPopupTrigger()) {
             return;
         }
 
@@ -468,11 +474,13 @@ public class TreeLayerNamePanel extends JPanel
 
         // #isAltDown returns true on a middle-click; #isMetaDown returns true
         // on a right-click[Jon Aquino]
+        //[ede 12.2012] use isPopupTrigger which is supposed to be _really_ 
+        // crossplatform, Swing utility methods give wrong results
         // Third check can't simply user JTree#isPathSelected because the node
         // wrappers are value objects and thus can't reliably be compared by
         // reference (which is what #isPathSelected seems to do). [Jon Aquino]
-        if (!(e.isControlDown() || e.isShiftDown() || selectedNodes(
-                Object.class).contains(popupNode))) {
+        if ( e.isPopupTrigger() && !selectedNodes(
+                Object.class).contains(popupNode)) {
             tree.getSelectionModel().clearSelection();
         }
 
