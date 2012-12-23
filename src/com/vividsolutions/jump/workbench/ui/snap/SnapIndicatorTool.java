@@ -61,11 +61,11 @@ public class SnapIndicatorTool extends AbstractCursorTool {
 
     public SnapIndicatorTool(Color snappedColor, Color unsnappedColor,
         double diameter, Collection snapPolicies) {
-		getSnapManager().addPolicies(snapPolicies);            
-        setFilling(true);
-        this.snappedColor = snappedColor;
-        this.unsnappedColor = unsnappedColor;
-        this.diameter = diameter;
+      getSnapManager().addPolicies(snapPolicies);
+      setFilling(true);
+      this.snappedColor = snappedColor;
+      this.unsnappedColor = unsnappedColor;
+      this.diameter = diameter;
     }
 
     public Icon getIcon() {
