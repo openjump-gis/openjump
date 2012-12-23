@@ -40,58 +40,57 @@ import javax.swing.Icon;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 
-
 public class DummyTool implements CursorTool {
-    public DummyTool() {                         
-    }
+  public DummyTool() {
+  }
 
-    public Cursor getCursor() {                         
-        return Cursor.getDefaultCursor();
-    }
+  public Cursor getCursor() {
+    return Cursor.getDefaultCursor();
+  }
 
-    public void activate(LayerViewPanel layerViewPanel) {               
-    }
+  public void activate(LayerViewPanel layerViewPanel) {
+  }
 
-    public void deactivate() {                           
-    }
+  public void deactivate() {
+  }
 
-    public boolean isRightMouseButtonUsed() {                             
-        return false;
-    }
+  public boolean isRightMouseButtonUsed() {
+    return false;
+  }
 
-    public void mouseClicked(MouseEvent e) {                          
-    }
+  public void mouseClicked(MouseEvent e) {
+  }
 
-    public void mousePressed(MouseEvent e) {                            
-    }
+  public void mousePressed(MouseEvent e) {
+  }
 
-    public void mouseReleased(MouseEvent e) {                            
-    }
+  public void mouseReleased(MouseEvent e) {
+  }
 
-    public void mouseEntered(MouseEvent e) {                         
-    }
+  public void mouseEntered(MouseEvent e) {
+  }
 
-    public void mouseExited(MouseEvent e) {                             
-    }
+  public void mouseExited(MouseEvent e) {
+  }
 
-    public void mouseDragged(MouseEvent e) {                           
-    }
+  public void mouseDragged(MouseEvent e) {
+  }
 
-    public void mouseMoved(MouseEvent e) {                            
-    }
+  public void mouseMoved(MouseEvent e) {
+  }
 
-    public Icon getIcon() {                            
-        return null;
-    }
+  public Icon getIcon() {
+    return null;
+  }
 
-    public boolean isGestureInProgress() {                            
-        return false;
-    }
+  public boolean isGestureInProgress() {
+    return false;
+  }
 
-    public void cancelGesture() {                        
-    }
+  public void cancelGesture() {
+  }
 
-    public String getName() {                       
-        return I18N.get("ui.cursortool.DummyTool.dummy-cursor-tool");
-    }
+  public String getName() {
+    return I18N.get("ui.cursortool.DummyTool.dummy-cursor-tool");
+  }
 }
