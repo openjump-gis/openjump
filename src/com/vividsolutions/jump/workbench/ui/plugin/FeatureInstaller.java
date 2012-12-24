@@ -256,12 +256,13 @@ public class FeatureInstaller {
   }
 
   /**
-   * Replacement for the retired methods above. Rationale was to have the
-   * methods return the menuitem to the plugin for further manipulation &
-   * handling. Lot's of existing plugins depend on these methods. Unfortunately
-   * the return type is not part of the java method footprint, so we couldn't
-   * just change the return type but had to modify the name as well. Also the
-   * position parameter was added as it was needed anyway.
+   * Replacement for the retired methods above and below. Lot's of existing
+   * plugins depend on these methods. Rationale was to have the methods return
+   * the menuitem to the plugin for further manipulation & attaching listeners
+   * etc. Unfortunately the return type is not part of the java method
+   * footprint, so we couldn't just change the return type but had to modify the
+   * name as well. Also the position parameter was added as it was needed
+   * anyway.
    * 
    * @param executable
    * @param menuPath
@@ -285,7 +286,7 @@ public class FeatureInstaller {
 
     final JMenuItem menuItem = checkBox ? new JCheckBoxMenuItem(menuItemName)
         : new JMenuItem(menuItemName);
-    addMainMenuItem(executable, menuPath, menuItem, enableCheck, pos);
+    addMainMenuPluginItem(executable, menuPath, menuItem, enableCheck, pos);
     addMenuItemIcon(menuItem, icon);
     return menuItem;
   }
@@ -302,6 +303,54 @@ public class FeatureInstaller {
       final Icon icon, final EnableCheck enableCheck) {
     return addMainMenuPlugin(executable, menuPath, menuItemName, checkBox,
         icon, enableCheck, -1);
+  }
+
+  /**
+   * Generic addMainMenu method. This is an internal utility method. If you want
+   * to finetune your MenuItem consider adding it via addMainMenuPlugin() and
+   * modifying the returned MenuItem.
+   * 
+   * @param plugin
+   *          the plugin to execute with this item
+   * @param menuPath
+   *          the menu path made of the menu and submenu names
+   * @param menuItem
+   *          the JMenuItem (or JCheckBoxMenuItem or JRadioButtonMenuItem) to
+   *          the parent menu
+   * @param enableCheck
+   *          conditions making the plugin enabled
+   * @param pos
+   *          defines the position of menuItem in the menu -1 adds menuItem at
+   *          the end of the menu except for FILE menu where -1 adds menuItem
+   *          before the separator preceding exit menuItem
+   */
+  private JMenuItem addMainMenuPluginItem(PlugIn plugin, String[] menuPath,
+      JMenuItem menuItem, EnableCheck enableCheck, int pos) {
+    JMenu menu = menuBarMenu(menuPath[0]);
+    if (menu == null) {
+      menu = (JMenu) installMnemonic(new JMenu(menuPath[0]), menuBar());
+      addToMenuBar(menu);
+    }
+    JMenu parent = createMenusIfNecessary(menu, behead(menuPath));
+    if (menuItem.getText().trim().length() == 0) {
+      menuItem.setText(plugin.getName());
+    }
+    installMnemonic(menuItem, parent);
+    associate(menuItem, plugin);
+    // insert(menuItem, createMenu(parent), properties);
+    if (pos >= 0) {
+      parent.insert(menuItem, pos);
+    } else if (parent.getText().equals(MenuNames.FILE)) {
+      // In File menu, insert new items before the separator before Exit 
+      // [Jon Aquino]
+      parent.insert(menuItem, parent.getItemCount() - 2);
+    } else {
+      parent.add(menuItem);
+    }
+    if (enableCheck != null) {
+      addMenuItemShownListener(menuItem, toMenuItemShownListener(enableCheck));
+    }
+    return menuItem;
   }
 
   /**
@@ -344,6 +393,9 @@ public class FeatureInstaller {
    *          the plugin associated to this menu item
    * @param enableCheck
    *          conditions making the plugin enabled
+   *
+   *
+   * @deprecated use addMainMenuPlugin() instead
    */
   public JMenuItem addMainMenuItem(final String[] menuPath,
       final AbstractUiPlugIn plugin, final EnableCheck enableCheck) {
@@ -364,6 +416,8 @@ public class FeatureInstaller {
    *          defines the position of the menu item in the menu -1 adds menuItem
    *          at the end except for FILE menu where -1 adds menuItem before the
    *          separator preceding exit menu item
+   *
+   * @deprecated use addMainMenuPlugin() instead
    */
   public JMenuItem addMainMenuItem(final String[] menuPath,
       final AbstractUiPlugIn plugin, final EnableCheck enableCheck,
@@ -386,9 +440,9 @@ public class FeatureInstaller {
    *          defines the position of the menu item in the menu -1 adds menuItem
    *          at the end except for FILE menu where -1 adds menuItem before the
    *          separator preceding exit menu item
+   *
+   * @deprecated use addMainMenuPlugin() instead
    */
-  // Added by Michael Michaud on 2008-04-06
-  // This method makes it possible to add any subclasses of JMenuItem
   public JMenuItem addMainMenuItem(final String[] menuPath,
       final AbstractUiPlugIn plugin, final JMenuItem menuItem, final int pos) {
     return addMainMenuItem(menuPath, plugin, menuItem, null, pos);
@@ -410,8 +464,9 @@ public class FeatureInstaller {
    *          defines the position of the menu item in the menu -1 adds menuItem
    *          at the end except for FILE menu where -1 adds menuItem before the
    *          separator preceding exit menu item
+   *
+   * @deprecated use addMainMenuPlugin() instead
    */
-  // [mmichaud 2011-10-01]
   public JMenuItem addMainMenuItem(final String[] menuPath,
       final AbstractUiPlugIn plugin, final JMenuItem menuItem,
       final EnableCheck enableCheck, final int pos) {
@@ -436,8 +491,9 @@ public class FeatureInstaller {
    *          the parent menu
    * @param enableCheck
    *          conditions making the plugin enabled
+   *
+   * @deprecated use addMainMenuPlugin() instead
    */
-  // [mmichaud 2011-10-20]
   public JMenuItem addMainMenuItem(PlugIn plugin, String[] menuPath,
       JMenuItem menuItem, EnableCheck enableCheck) {
     return addMainMenuItem(plugin, menuPath, menuItem, enableCheck, -1);
@@ -459,35 +515,12 @@ public class FeatureInstaller {
    *          defines the position of menuItem in the menu -1 adds menuItem at
    *          the end of the menu except for FILE menu where -1 adds menuItem
    *          before the separator preceding exit menuItem
+   *          
+   * @deprecated use addMainMenuPlugin() instead
    */
-  // [mmichaud 2011-09-13]
   public JMenuItem addMainMenuItem(PlugIn plugin, String[] menuPath,
       JMenuItem menuItem, EnableCheck enableCheck, int pos) {
-    JMenu menu = menuBarMenu(menuPath[0]);
-    if (menu == null) {
-      menu = (JMenu) installMnemonic(new JMenu(menuPath[0]), menuBar());
-      addToMenuBar(menu);
-    }
-    JMenu parent = createMenusIfNecessary(menu, behead(menuPath));
-    if (menuItem.getText().trim().length() == 0) {
-      menuItem.setText(plugin.getName());
-    }
-    installMnemonic(menuItem, parent);
-    associate(menuItem, plugin);
-    // insert(menuItem, createMenu(parent), properties);
-    if (pos >= 0) {
-      parent.insert(menuItem, pos);
-    } else if (parent.getText().equals(MenuNames.FILE)) {
-      // In File menu, insert new items before the separator before Exit 
-      // [Jon Aquino]
-      parent.insert(menuItem, parent.getItemCount() - 2);
-    } else {
-      parent.add(menuItem);
-    }
-    if (enableCheck != null) {
-      addMenuItemShownListener(menuItem, toMenuItemShownListener(enableCheck));
-    }
-    return menuItem;
+    return addMainMenuPluginItem(plugin, menuPath, menuItem, enableCheck, pos);
   }
 
   // workaround for checkbox tick missing in windows laf on windows vista/7
@@ -501,9 +534,11 @@ public class FeatureInstaller {
           .equals("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
 
   private void addMenuItemIcon(JMenuItem menuItem, Icon icon) {
-    // no icons for windows laf on vista+
+    // no icons for radio/checkbox on windows laf on vista+, the "highlighted"
+    // icon is too close to the normal icon so we stay with the radio or tick
     // TODO: this obviously does not work when skin is switched during runtime,
-    // but will work correctly when the new skin is restored after a restart
+    // as items are created with or w/o icon during startup. however it will
+    // work correctly when the new skin is restored after a restart
     // [ ede 5.4.2012 ]
     if (vista_checkbox_workaround
         && (menuItem instanceof JRadioButtonMenuItem || menuItem instanceof JCheckBoxMenuItem))
@@ -821,6 +856,13 @@ public class FeatureInstaller {
     }
   }
 
+  /**
+   * Find the first occurence of a menu item with the given name and return it.
+   * 
+   * @param childName
+   * @param menu
+   * @return JMenuItem
+   */
   public static JMenuItem childMenuItem(String childName, MenuElement menu) {
     if (menu instanceof JMenu) {
       return childMenuItem(childName, ((JMenu) menu).getPopupMenu());
