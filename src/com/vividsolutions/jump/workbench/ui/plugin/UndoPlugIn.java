@@ -31,6 +31,9 @@
  */
 
 package com.vividsolutions.jump.workbench.ui.plugin;
+
+import java.awt.event.KeyEvent;
+
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.undo.UndoManager;
@@ -46,46 +49,56 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class UndoPlugIn extends AbstractPlugIn {
-    public UndoPlugIn() {}
-    private String sName = "undo";
-    public void initialize(PlugInContext context) throws Exception {
-    	sName = I18N.get("com.vividsolutions.jump.workbench.ui.plugin.UndoPlugIn");
-    }
-    public boolean execute(PlugInContext context) throws Exception {
-        ((LayerManagerProxy) context.getWorkbenchContext()
-                        .getWorkbench()
-                        .getFrame()
-                        .getActiveInternalFrame())
-                        .getLayerManager().getUndoableEditReceiver().getUndoManager().undo();
-        //Exclude the plug-in's activity from the undo history [Jon Aquino]
-        reportNothingToUndoYet(context);
-        context.getWorkbenchFrame().getToolBar().updateEnabledState();
-        return true;
-    }
-    public MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
-        return new MultiEnableCheck().add(
-            checkFactory.createWindowWithLayerManagerMustBeActiveCheck()).add(new EnableCheck() {
+  private String sName = "undo";
+  private MultiEnableCheck check = null;
+
+  public UndoPlugIn() {
+  }
+
+  public void initialize(PlugInContext context) throws Exception {
+    sName = I18N.get("com.vividsolutions.jump.workbench.ui.plugin.UndoPlugIn");
+    context.getWorkbenchFrame().addKeyboardShortcut(KeyEvent.VK_Z,
+        KeyEvent.CTRL_MASK, this,
+        createEnableCheck(context.getWorkbenchContext()));
+  }
+
+  public boolean execute(PlugInContext context) throws Exception {
+    ((LayerManagerProxy) context.getWorkbenchContext().getWorkbench()
+        .getFrame().getActiveInternalFrame()).getLayerManager()
+        .getUndoableEditReceiver().getUndoManager().undo();
+    // Exclude the plug-in's activity from the undo history [Jon Aquino]
+    reportNothingToUndoYet(context);
+    context.getWorkbenchFrame().getToolBar().updateEnabledState();
+    return true;
+  }
+
+  public MultiEnableCheck createEnableCheck(
+      final WorkbenchContext workbenchContext) {
+    if (check == null) {
+      EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+      check = new MultiEnableCheck().add(
+          checkFactory.createWindowWithLayerManagerMustBeActiveCheck()).add(
+          new EnableCheck() {
             public String check(JComponent component) {
-                UndoManager undoManager =
-                    ((LayerManagerProxy) workbenchContext
-                        .getWorkbench()
-                        .getFrame()
-                        .getActiveInternalFrame())
-                        .getLayerManager()
-                        .getUndoableEditReceiver()
-                        .getUndoManager();
+              UndoManager undoManager = ((LayerManagerProxy) workbenchContext
+                  .getWorkbench().getFrame().getActiveInternalFrame())
+                  .getLayerManager().getUndoableEditReceiver().getUndoManager();
+              if (component != null)
                 component.setToolTipText(undoManager.getUndoPresentationName());
-                return (!undoManager.canUndo()) ? "X" : null;
+              return (!undoManager.canUndo()) ? "X" : null;
             }
-        });
+          });
     }
-    public ImageIcon getIcon() {
-        //return IconLoaderFamFam.icon("arrow_undo.png");
-        return IconLoader.icon("Undo.gif");
-    }
-    @Override
-    public String getName() {
-    	return sName;
-    }
+    return check;
+  }
+
+  public ImageIcon getIcon() {
+    // return IconLoaderFamFam.icon("arrow_undo.png");
+    return IconLoader.icon("Undo.gif");
+  }
+
+  @Override
+  public String getName() {
+    return sName;
+  }
 }

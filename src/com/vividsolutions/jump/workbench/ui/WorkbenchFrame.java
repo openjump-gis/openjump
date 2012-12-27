@@ -37,7 +37,6 @@ import java.awt.Graphics;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -74,7 +73,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.WindowConstants;
@@ -115,7 +113,6 @@ import com.vividsolutions.jump.workbench.model.WMSLayer;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugIn;
-import com.vividsolutions.jump.workbench.ui.TaskFrameProxy;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ChoosableStyle;
@@ -1227,25 +1224,28 @@ public class WorkbenchFrame extends JFrame
       }
 
       public void keyReleased(KeyEvent e) {
+        Object[] plugInAndEnableCheck = (Object[])keyCodeAndModifiersToPlugInAndEnableCheckMap.get(e.getKeyCode()
+            + ":" + e.getModifiers());
+//          System.out.println(e.getKeyCode()
+//              + ":" + e.getModifiers() +"/"+plugInAndEnableCheck+"/"+keyCodeAndModifiersToPlugInAndEnableCheckMap.keySet());
+          if (plugInAndEnableCheck == null) {
+            return;
+          }
+
+          PlugIn plugIn = (PlugIn)plugInAndEnableCheck[0];
+          EnableCheck enableCheck = (EnableCheck)plugInAndEnableCheck[1];
+          if (enableCheck != null && enableCheck.check(null) != null) {
+            return;
+          }
+          // #toActionListener handles checking if the plugIn is a
+          // ThreadedPlugIn,
+          // and making calls to UndoableEditReceiver if necessary. [Jon
+          // Aquino 10/15/2003]
+          AbstractPlugIn.toActionListener(plugIn, workbenchContext,
+            new TaskMonitorManager()).actionPerformed(null);
       }
 
       public void keyPressed(KeyEvent e) {
-        Object[] plugInAndEnableCheck = (Object[])keyCodeAndModifiersToPlugInAndEnableCheckMap.get(e.getKeyCode()
-          + ":" + e.getModifiers());
-        if (plugInAndEnableCheck == null) {
-          return;
-        }
-        PlugIn plugIn = (PlugIn)plugInAndEnableCheck[0];
-        EnableCheck enableCheck = (EnableCheck)plugInAndEnableCheck[1];
-        if (enableCheck != null && enableCheck.check(null) != null) {
-          return;
-        }
-        // #toActionListener handles checking if the plugIn is a
-        // ThreadedPlugIn,
-        // and making calls to UndoableEditReceiver if necessary. [Jon
-        // Aquino 10/15/2003]
-        AbstractPlugIn.toActionListener(plugIn, workbenchContext,
-          new TaskMonitorManager()).actionPerformed(null);
       }
     });
   }
