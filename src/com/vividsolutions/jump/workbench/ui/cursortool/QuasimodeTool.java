@@ -296,7 +296,7 @@ public class QuasimodeTool extends DelegatingTool {
 
     @Override
     public boolean add(Integer e) {
-      // OsX always uses CMD key instead of CTRL, which is preserved for left
+      // Mac always uses CMD key instead of CTRL, which is preserved for left
       // click context menu, right click emulation
       if (e == KeyEvent.VK_CONTROL && CheckOS.isMacOsx()){
         e = new Integer(KeyEvent.VK_META);
