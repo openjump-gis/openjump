@@ -32,6 +32,8 @@
 
 package com.vividsolutions.jump.workbench.ui.plugin;
 
+import java.awt.event.KeyEvent;
+
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
@@ -50,6 +52,11 @@ public class SaveProjectPlugIn extends AbstractSaveProjectPlugIn {
     public String getName() {
         return I18N.get("ui.plugin.SaveProjectPlugIn.save-project");
     }    
+
+    public void initialize(PlugInContext context) throws Exception {
+      context.getWorkbenchFrame().addKeyboardShortcut(KeyEvent.VK_S,
+          KeyEvent.CTRL_MASK, this, null);
+    }
 
     public boolean execute(PlugInContext context) throws Exception {
         reportNothingToUndoYet(context);

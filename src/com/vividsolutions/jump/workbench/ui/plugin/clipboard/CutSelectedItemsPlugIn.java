@@ -31,6 +31,8 @@
  */
 package com.vividsolutions.jump.workbench.ui.plugin.clipboard;
 
+import java.awt.event.KeyEvent;
+
 import javax.swing.ImageIcon;
 
 import com.vividsolutions.jump.util.StringUtil;
@@ -39,6 +41,7 @@ import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.MacroPlugIn;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugIn;
+import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 import com.vividsolutions.jump.workbench.ui.plugin.DeleteSelectedItemsPlugIn;
@@ -50,6 +53,14 @@ public class CutSelectedItemsPlugIn extends MacroPlugIn {
                 new CopySelectedItemsPlugIn(),
                 new DeleteSelectedItemsPlugIn()
             });
+    }
+
+    @Override
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+      context.getWorkbenchFrame().addKeyboardShortcut(KeyEvent.VK_X,
+          KeyEvent.CTRL_MASK, this,
+          createEnableCheck(context.getWorkbenchContext()));
     }
 
     public String getName() {

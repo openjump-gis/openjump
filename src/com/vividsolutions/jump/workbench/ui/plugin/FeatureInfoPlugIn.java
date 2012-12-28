@@ -33,6 +33,7 @@
 
 package com.vividsolutions.jump.workbench.ui.plugin;
 
+import java.awt.event.KeyEvent;
 import java.util.Iterator;
 
 import javax.swing.ImageIcon;
@@ -62,6 +63,14 @@ public class FeatureInfoPlugIn extends AbstractPlugIn {
             .add(checkFactory.createWindowWithLayerManagerMustBeActiveCheck())            
             .add(checkFactory.createWindowWithAssociatedTaskFrameMustBeActiveCheck())                        
             .add(checkFactory.createAtLeastNItemsMustBeSelectedCheck(1));
+    }
+
+    @Override
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+      context.getWorkbenchFrame().addKeyboardShortcut(KeyEvent.VK_I,
+          KeyEvent.CTRL_MASK, this,
+          createEnableCheck(context.getWorkbenchContext()));
     }
 
     public boolean execute(PlugInContext context) throws Exception {

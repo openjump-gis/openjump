@@ -34,6 +34,7 @@ package com.vividsolutions.jump.workbench.ui.plugin.clipboard;
 import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
+import java.awt.event.KeyEvent;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -101,6 +102,14 @@ public class PasteItemsPlugIn extends AbstractPlugIn {
   
   public String getNameWithMnemonic() {
     return StringUtil.replace(getName(), "P", "&P", false);
+  }
+
+  @Override
+  public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
+    context.getWorkbenchFrame().addKeyboardShortcut(KeyEvent.VK_V,
+        KeyEvent.CTRL_MASK, this,
+        createEnableCheck(context.getWorkbenchContext()));
   }
 
   public boolean execute(final PlugInContext context) throws Exception {

@@ -1,5 +1,6 @@
 package org.openjump.core.ui.plugin.file;
 
+import java.awt.event.KeyEvent;
 import java.util.List;
 
 import javax.swing.Icon;
@@ -58,6 +59,10 @@ public class OpenWizardPlugIn extends AbstractThreadedUiPlugIn {
     // Add layer pop-up menu
     featureInstaller.addPopupMenuItem(frame.getCategoryPopupMenu(), this, name
       + "{pos:3}", false, icon, enableCheck);
+    
+    // add workbench shortcut
+    context.getWorkbenchFrame().addKeyboardShortcut(KeyEvent.VK_O,
+        KeyEvent.CTRL_MASK, this, null);
   }
 
   public boolean execute(PlugInContext context) throws Exception {

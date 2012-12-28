@@ -41,11 +41,20 @@ import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.cursortool.editing.EditingPlugIn;
 
+import java.awt.event.KeyEvent;
 import java.util.Collection;
 
 
 public class AddNewLayerPlugIn extends AbstractPlugIn {
     public AddNewLayerPlugIn() {
+    }
+
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+      context.getWorkbenchFrame().
+      addKeyboardShortcut(KeyEvent.VK_L,
+          KeyEvent.CTRL_MASK, this,
+          null);
     }
 
     public static FeatureCollection createBlankFeatureCollection() {

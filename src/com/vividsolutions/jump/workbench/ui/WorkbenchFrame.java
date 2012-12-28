@@ -113,6 +113,7 @@ import com.vividsolutions.jump.workbench.model.WMSLayer;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugIn;
+import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ChoosableStyle;
@@ -136,7 +137,7 @@ public class WorkbenchFrame extends JFrame
       new JMenuItem(I18N.get("ui.WorkbenchFrame.exit")), fileMenu);
 
   private TaskFrame activeTaskFrame = null;
-  
+
   // StatusBar
   private JPanel statusPanel = new JPanel();
   private JTextField messageTextField = new JTextField();
@@ -156,8 +157,8 @@ public class WorkbenchFrame extends JFrame
 
   WorkbenchToolBar toolBar;
 
-  JMenu windowMenu = (JMenu)FeatureInstaller.installMnemonic(new JMenu(
-    MenuNames.WINDOW), menuBar);
+  JMenu windowMenu = (JMenu) FeatureInstaller.installMnemonic(new JMenu(
+      MenuNames.WINDOW), menuBar);
 
   private DecimalFormat memoryFormat = new DecimalFormat("###,###");
 
@@ -167,7 +168,7 @@ public class WorkbenchFrame extends JFrame
         public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
           LayerNamePanel panel = ((LayerNamePanelProxy)getActiveInternalFrame()).getLayerNamePanel();
           setTitle((panel.selectedNodes(Category.class).size() != 1) ? ("("
-            + panel.selectedNodes(Category.class).size() + " categories selected)")
+              + panel.selectedNodes(Category.class).size() + " categories selected)")
             : ((Category)panel.selectedNodes(Category.class).iterator().next()).getName());
         }
 
@@ -218,8 +219,8 @@ public class WorkbenchFrame extends JFrame
         public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
           LayerNamePanel panel = ((LayerNamePanelProxy)getActiveInternalFrame()).getLayerNamePanel();
           setTitle((panel.selectedNodes(Layer.class).size() != 1) ? ("("
-            + panel.selectedNodes(Layer.class).size() + " "
-            + I18N.get("ui.WorkbenchFrame.layers-selected") + ")")
+              + panel.selectedNodes(Layer.class).size() + " "
+              + I18N.get("ui.WorkbenchFrame.layers-selected") + ")")
             : ((Layerable)panel.selectedNodes(Layer.class).iterator().next()).getName());
         }
 
@@ -238,8 +239,8 @@ public class WorkbenchFrame extends JFrame
         public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
           LayerNamePanel panel = ((LayerNamePanelProxy)getActiveInternalFrame()).getLayerNamePanel();
           setTitle((panel.selectedNodes(WMSLayer.class).size() != 1) ? ("("
-            + panel.selectedNodes(WMSLayer.class).size() + " "
-            + I18N.get("ui.WorkbenchFrame.wms-layers-selected") + ")")
+              + panel.selectedNodes(WMSLayer.class).size() + " "
+              + I18N.get("ui.WorkbenchFrame.wms-layers-selected") + ")")
             : ((Layerable)panel.selectedNodes(WMSLayer.class).iterator().next()).getName());
         }
 
@@ -303,9 +304,6 @@ public class WorkbenchFrame extends JFrame
 
   private Set choosableStyleClasses = new HashSet();
 
-  // make sure not to register Listeners more than once
-  private HashSet easyKeyListeners = new HashSet();
-
   private ArrayList<TaskListener> taskListeners = new ArrayList<TaskListener>();
 
   private Map nodeClassToLayerNamePopupMenuMap = CollectionUtil.createMap(new Object[] {
@@ -320,60 +318,78 @@ public class WorkbenchFrame extends JFrame
   private int addedMenuItems = -1;
 
   private ComponentFactory<TaskFrame> taskFrameFactory;
-  
-  private RecursiveKeyListener easyKeyListener;
+
+  // RecursiveKeyListener easyKeyListener;
+  MultiRecursiveKeyListener easyKeyListener;
+  ShortcutPluginExecuteKeyListener shortcutListener;
 
   public WorkbenchFrame(String title, final WorkbenchContext workbenchContext) throws Exception {
     setTitle(title);
     new Timer(1000, new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         memoryLabel.setText(getMBCommittedMemory() + " MB "
-          + I18N.get("ui.WorkbenchFrame.committed-memory"));
-        //memoryLabel.setToolTipText(LayerManager.layerManagerCount() + " "
-        //  + I18N.get("ui.WorkbenchFrame.layer-manager")
-        //  + StringUtil.s(LayerManager.layerManagerCount()));
+            + I18N.get("ui.WorkbenchFrame.committed-memory"));
+        // memoryLabel.setToolTipText(LayerManager.layerManagerCount() + " "
+        // + I18N.get("ui.WorkbenchFrame.layer-manager")
+        // + StringUtil.s(LayerManager.layerManagerCount()));
       }
     }).start();
     this.workbenchContext = workbenchContext;
-	
+
     // set icon for the app frame
-    JUMPWorkbench.setIcon(this);  
-    
+    JUMPWorkbench.setIcon(this);
+
     toolBar = new WorkbenchToolBar(workbenchContext);
     toolBar.setTaskMonitorManager(new TaskMonitorManager());
     try {
       jbInit();
-	  //configureStatusLabel(messageTextField, 300);
+      // configureStatusLabel(messageTextField, 300);
       configureStatusLabel(timeLabel, 175);
       configureStatusLabel(scaleLabel, 90); // [Giuseppe Aruta 2012-feb-18]
       configureStatusLabel(coordinateLabel, 175);
-      
+
     } catch (Exception e) {
       e.printStackTrace();
     }
-    easyKeyListener = new RecursiveKeyListener(this) {
-      public void keyTyped(KeyEvent e) {
-        for (Iterator i = easyKeyListeners.iterator(); i.hasNext();) {
-          KeyListener l = (KeyListener)i.next();
-          l.keyTyped(e);
-        }
-      }
 
-      public void keyPressed(KeyEvent e) {
-        for (Iterator i = new ArrayList(easyKeyListeners).iterator(); i.hasNext();) {
-          KeyListener l = (KeyListener)i.next();
-          l.keyPressed(e);
-        }
+    // easyKeyListener = new RecursiveKeyListener(this) {
+    // public void keyTyped(KeyEvent e) {
+    // for (Iterator i = easyKeyListeners.iterator(); i.hasNext();) {
+    // KeyListener l = (KeyListener)i.next();
+    // l.keyTyped(e);
+    // }
+    // }
+    //
+    // public void keyPressed(KeyEvent e) {
+    // for (Iterator i = new ArrayList(easyKeyListeners).iterator();
+    // i.hasNext();) {
+    // KeyListener l = (KeyListener)i.next();
+    // l.keyPressed(e);
+    // }
+    // }
+    //
+    // public void keyReleased(KeyEvent e) {
+    // for (Iterator i = new ArrayList(easyKeyListeners).iterator();
+    // i.hasNext();) {
+    // KeyListener l = (KeyListener)i.next();
+    // l.keyReleased(e);
+    // }
+    // }
+    // }
+    // attach a multi listener
+    easyKeyListener = new MultiRecursiveKeyListener(this);
+    // create a run plugin via shortcut listener
+    shortcutListener = new ShortcutPluginExecuteKeyListener(workbenchContext);
+    // add it to multi listener above
+    addEasyKeyListener(shortcutListener);
+    // add quit shortcut
+    addKeyboardShortcut(KeyEvent.VK_Q, KeyEvent.CTRL_MASK, new AbstractPlugIn(
+        I18N.get("ui.WorkbenchFrame.exit")) {
+      public boolean execute(PlugInContext context) throws Exception {
+        closeApplication();
+        return true;
       }
-
-      public void keyReleased(KeyEvent e) {
-        for (Iterator i = new ArrayList(easyKeyListeners).iterator(); i.hasNext();) {
-          KeyListener l = (KeyListener)i.next();
-          l.keyReleased(e);
-        }
-      }
-    };
-    installKeyboardShortcutListener();
+    }, null);
   }
 
   /**
@@ -386,19 +402,21 @@ public class WorkbenchFrame extends JFrame
    */
   public void addEasyKeyListener(KeyListener l) {
     //System.out.println("add "+l);
-    easyKeyListeners.add(l);
+    //easyKeyListeners.add(l);
+    easyKeyListener.addKeyListener(l);
   }
 
   public void removeEasyKeyListener(KeyListener l) {
-    //System.out.println("rem "+l);
-    easyKeyListeners.remove(l);
+    // System.out.println("rem "+l);
+    //easyKeyListeners.remove(l);
+    easyKeyListener.removeKeyListener(l);
   }
-  
-  public void addEasyKeyListenerToComp( Component c ) {
+
+  public void addEasyKeyListenerToComp(Component c) {
     easyKeyListener.listenTo(c);
   }
 
-  public void removeEasyKeyListenerFromComp( Component c ) {
+  public void removeEasyKeyListenerFromComp(Component c) {
     easyKeyListener.ignore(c);
   }
 
@@ -420,13 +438,13 @@ public class WorkbenchFrame extends JFrame
   }
 
   public void setMaximumFeatureExtentForEnvelopeRenderingInPixels(
-    int newMaximumFeatureExtentForEnvelopeRenderingInPixels) {
+      int newMaximumFeatureExtentForEnvelopeRenderingInPixels) {
     maximumFeatureExtentForEnvelopeRenderingInPixels = newMaximumFeatureExtentForEnvelopeRenderingInPixels;
   }
 
   public void log(String message) {
     log.append(new Date() + "  " + message
-      + System.getProperty("line.separator"));
+        + System.getProperty("line.separator"));
   }
 
   public String getLog() {
@@ -434,7 +452,7 @@ public class WorkbenchFrame extends JFrame
   }
 
   public void setMinimumFeatureExtentForAnyRenderingInPixels(
-    int newMinimumFeatureExtentForAnyRenderingInPixels) {
+      int newMinimumFeatureExtentForAnyRenderingInPixels) {
     minimumFeatureExtentForAnyRenderingInPixels = newMinimumFeatureExtentForAnyRenderingInPixels;
   }
 
@@ -471,11 +489,11 @@ public class WorkbenchFrame extends JFrame
 
   private void setStatusBarText(String message) {
     // Make message at least a space so that the label won't collapse [Jon Aquino]
-    message = (message==null || message.equals("")) ? " " : message;
+    message = (message == null || message.equals("")) ? " " : message;
     messageTextField.setText(message);
   }
-  
-  private String getStatusBarText(){
+
+  private String getStatusBarText() {
     return messageTextField.getText();
   }
 
@@ -493,22 +511,20 @@ public class WorkbenchFrame extends JFrame
 
   public void setTimeMessage(String message) {
     // Make message at least a space so that the label won't collapse [Jon Aquino]
-    message = (message==null || message.equals("")) ? " " : message;
+    message = (message == null || message.equals("")) ? " " : message;
     timeLabel.setText(message);
-	timeLabel.setToolTipText(message);
+    timeLabel.setToolTipText(message);
   }
 
-  
-  //Add new JLabel for scale      //
+  // Add new JLabel for scale //
   // [Giuseppe Aruta 2012-feb-18] //
   public void setScaleText(String message) {
     // Make message at least a space so that the label won't collapse [Jon Aquino]
-    message = (message==null || message.equals("")) ? " " : message;
+    message = (message == null || message.equals("")) ? " " : message;
     scaleLabel.setText(message);
     scaleLabel.setToolTipText(message);
   }
-  
-  
+
   public JInternalFrame getActiveInternalFrame() {
     return desktopPane.getSelectedFrame();
   }
@@ -595,21 +611,21 @@ public class WorkbenchFrame extends JFrame
   }
 
   public void addInternalFrame(final JInternalFrame internalFrame,
-    boolean alwaysOnTop, boolean autoUpdateToolBar) {
+      boolean alwaysOnTop, boolean autoUpdateToolBar) {
     if (internalFrame instanceof LayerManagerProxy) {
-      setClosingBehaviour((LayerManagerProxy)internalFrame);
-      installTitleBarModifiedIndicator((LayerManagerProxy)internalFrame);
+      setClosingBehaviour((LayerManagerProxy) internalFrame);
+      installTitleBarModifiedIndicator((LayerManagerProxy) internalFrame);
     }
     // <<TODO:IMPROVE>> Listen for when the frame closes, and when it does,
     // activate the topmost frame. Because Swing does not seem to do this
     // automatically. [Jon Aquino]
-    JUMPWorkbench.setIcon( internalFrame );
+    JUMPWorkbench.setIcon(internalFrame);
     // Call JInternalFrame#setVisible before JDesktopPane#add; otherwise, the
     // TreeLayerNamePanel starts too narrow (100 pixels or so) for some reason.
     // <<TODO>>Investigate. [Jon Aquino]
     internalFrame.setVisible(true);
     desktopPane.add(internalFrame, alwaysOnTop ? JLayeredPane.PALETTE_LAYER
-      : JLayeredPane.DEFAULT_LAYER);
+        : JLayeredPane.DEFAULT_LAYER);
     if (autoUpdateToolBar) {
       internalFrame.addInternalFrameListener(new InternalFrameListener() {
         public void internalFrameActivated(InternalFrameEvent e) {
@@ -651,8 +667,8 @@ public class WorkbenchFrame extends JFrame
   }
 
   private void installTitleBarModifiedIndicator(
-    final LayerManagerProxy internalFrame) {
-    final JInternalFrame i = (JInternalFrame)internalFrame;
+      final LayerManagerProxy internalFrame) {
+    final JInternalFrame i = (JInternalFrame) internalFrame;
     new Block() {
       // Putting updatingTitle in a Block is better than making it an
       // instance variable, because this way there is one updatingTitle
@@ -685,7 +701,7 @@ public class WorkbenchFrame extends JFrame
         internalFrame.getLayerManager().addLayerListener(new LayerListener() {
           public void layerChanged(LayerEvent e) {
             if ((e.getType() == LayerEventType.METADATA_CHANGED)
-              || (e.getType() == LayerEventType.REMOVED)) {
+                || (e.getType() == LayerEventType.REMOVED)) {
               updateTitle();
             }
           }
@@ -697,18 +713,18 @@ public class WorkbenchFrame extends JFrame
           }
         });
         i.addPropertyChangeListener(JInternalFrame.TITLE_PROPERTY,
-          new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent e) {
-              updateTitle();
-            }
-          });
+            new PropertyChangeListener() {
+              public void propertyChange(PropertyChangeEvent e) {
+                updateTitle();
+              }
+            });
         return null;
       }
     }.yield();
   }
 
   private void setClosingBehaviour(final LayerManagerProxy proxy) {
-    final JInternalFrame internalFrame = (JInternalFrame)proxy;
+    final JInternalFrame internalFrame = (JInternalFrame) proxy;
     internalFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
     internalFrame.addInternalFrameListener(new InternalFrameAdapter() {
       public void internalFrameClosing(InternalFrameEvent e) {
@@ -722,7 +738,7 @@ public class WorkbenchFrame extends JFrame
     JInternalFrame[] internalFrames = getInternalFrames();
     for (int i = 0; i < internalFrames.length; i++) {
       if (internalFrames[i] instanceof LayerManagerProxy
-        && (((LayerManagerProxy)internalFrames[i]).getLayerManager() == layerManager)) {
+          && (((LayerManagerProxy) internalFrames[i]).getLayerManager() == layerManager)) {
         internalFramesAssociatedWithLayerManager.add(internalFrames[i]);
       }
     }
@@ -736,7 +752,7 @@ public class WorkbenchFrame extends JFrame
     JInternalFrame[] internalFrames = getInternalFrames();
     for (int i = 0; i < internalFrames.length; i++) {
       if (internalFrames[i] instanceof TaskFrame
-        && (((TaskFrame)internalFrames[i]).getLayerManager() == layerManager)) {
+          && (((TaskFrame) internalFrames[i]).getLayerManager() == layerManager)) {
         taskFramesAssociatedWithLayerManager.add(internalFrames[i]);
       }
     }
@@ -751,8 +767,8 @@ public class WorkbenchFrame extends JFrame
     JInternalFrame[] internalFrames = getInternalFrames();
     for (int i = 0; i < internalFrames.length; i++) {
       if (internalFrames[i] instanceof TaskFrameProxy
-        && (((TaskFrameProxy)internalFrames[i]).getTaskFrame() == taskFrame)
-        && internalFrames[i] != taskFrame) {
+          && (((TaskFrameProxy) internalFrames[i]).getTaskFrame() == taskFrame)
+          && internalFrames[i] != taskFrame) {
         internalFramesAssociatedWithTaskFrame.add(internalFrames[i]);
       }
     }
@@ -808,36 +824,36 @@ public class WorkbenchFrame extends JFrame
     taskFrame.getLayerViewPanel()
       .getLayerManager()
       .getUndoableEditReceiver()
-      .add(new UndoableEditReceiver.Listener() {
-        public void undoHistoryChanged() {
-          toolBar.updateEnabledState();
-        }
+        .add(new UndoableEditReceiver.Listener() {
+          public void undoHistoryChanged() {
+            toolBar.updateEnabledState();
+          }
 
-        public void undoHistoryTruncated() {
-          toolBar.updateEnabledState();
-          log(I18N.get("ui.WorkbenchFrame.undo-history-was-truncated"));
-        }
-      });
-	  // fire TaskListener's
-	  Object[] listeners =  getTaskListeners().toArray();
-	  for (int i = 0; i < listeners.length; i++) {
-		  TaskListener l = (TaskListener) listeners[i];
-		  l.taskAdded(new TaskEvent(this, taskFrame.getTask()));
-	  }
+          public void undoHistoryTruncated() {
+            toolBar.updateEnabledState();
+            log(I18N.get("ui.WorkbenchFrame.undo-history-was-truncated"));
+          }
+        });
+    // fire TaskListener's
+    Object[] listeners = getTaskListeners().toArray();
+    for (int i = 0; i < listeners.length; i++) {
+      TaskListener l = (TaskListener) listeners[i];
+      l.taskAdded(new TaskEvent(this, taskFrame.getTask()));
+    }
     return taskFrame;
   }
 
-  //private class ActivateTaskFrame extends InternalFrameAdapter{
-  //  public void internalFrameActivated(InternalFrameEvent e) {
-  //    activeTaskFrame = (TaskFrame)e.getInternalFrame();
-  //    toolBar.reClickSelectedCursorToolButton();
-  //  }
-  //}
-  
+  // private class ActivateTaskFrame extends InternalFrameAdapter{
+  // public void internalFrameActivated(InternalFrameEvent e) {
+  // activeTaskFrame = (TaskFrame)e.getInternalFrame();
+  // toolBar.reClickSelectedCursorToolButton();
+  // }
+  // }
+
   public TaskFrame getActiveTaskFrame() {
     return activeTaskFrame;
   }
-  
+
   public void setActiveTaskFrame(TaskFrame taskFrame) {
     this.activeTaskFrame = taskFrame;
   }
@@ -851,9 +867,9 @@ public class WorkbenchFrame extends JFrame
         try {
           tickCount++;
           frame.setBackgroundColor(((tickCount % 2) == 0) ? originalColor
-            : Color.yellow);
+              : Color.yellow);
           if (tickCount == 2) {
-            Timer timer = (Timer)e.getSource();
+            Timer timer = (Timer) e.getSource();
             timer.stop();
           }
         } catch (Throwable t) {
@@ -874,7 +890,7 @@ public class WorkbenchFrame extends JFrame
         setStatusBarText(message);
         setStatusBarTextHighlighted((tickCount % 2) == 0, color);
         if (tickCount == 4) {
-          Timer timer = (Timer)e.getSource();
+          Timer timer = (Timer) e.getSource();
           timer.stop();
         }
       }
@@ -893,7 +909,7 @@ public class WorkbenchFrame extends JFrame
     Window[] ownedWindows = getOwnedWindows();
     for (int i = 0; i < ownedWindows.length; i++) {
       if (ownedWindows[i] instanceof Dialog && ownedWindows[i].isVisible()
-        && ((Dialog)ownedWindows[i]).isModal()) {
+          && ((Dialog) ownedWindows[i]).isModal()) {
         parent = ownedWindows[i];
         break;
       }
@@ -902,9 +918,9 @@ public class WorkbenchFrame extends JFrame
   }
 
   public void handleThrowable(final Throwable t, final Component parent) {
-	  showThrowable(t, parent);
+    showThrowable(t, parent);
   }
-  
+
   public static void showThrowable(final Throwable t, final Component parent) {
     t.printStackTrace(System.err);
     SwingUtilities.invokeLater(new Runnable() {
@@ -931,7 +947,7 @@ public class WorkbenchFrame extends JFrame
     } else if (t.getLocalizedMessage().toLowerCase().indexOf(
       I18N.get("ui.WorkbenchFrame.side-location-conflict")) > -1) {
       message = t.getLocalizedMessage() + " -- "
-        + I18N.get("ui.WorkbenchFrame.check-for-invalid-geometries");
+          + I18N.get("ui.WorkbenchFrame.check-for-invalid-geometries");
     } else {
       message = t.getLocalizedMessage();
     }
@@ -1003,7 +1019,7 @@ public class WorkbenchFrame extends JFrame
     if (windowMenu.getItemCount() == addedMenuItems) {
       // For ezLink [Jon Aquino]
       windowMenu.add(new JMenuItem("("
-        + I18N.get("ui.WorkbenchFrame.no-windows") + ")"));
+          + I18N.get("ui.WorkbenchFrame.no-windows") + ")"));
     }
   }
 
@@ -1026,20 +1042,20 @@ public class WorkbenchFrame extends JFrame
   private Collection getLayersWithModifiedFeatureCollections() {
     ArrayList layersWithModifiedFeatureCollections = new ArrayList();
     for (Iterator i = getLayerManagers().iterator(); i.hasNext();) {
-      LayerManager layerManager = (LayerManager)i.next();
+      LayerManager layerManager = (LayerManager) i.next();
       layersWithModifiedFeatureCollections.addAll(layerManager.getLayersWithModifiedFeatureCollections());
     }
     return layersWithModifiedFeatureCollections;
   }
 
   private Collection getGeneratedLayers() {
-      ArrayList list = new ArrayList();
-      for (Iterator i = getLayerManagers().iterator(); i.hasNext();) {
-        LayerManager layerManager = (LayerManager)i.next();
-        list.addAll(layerManager.getLayersWithNullDataSource());
-      }
-      return list;
+    ArrayList list = new ArrayList();
+    for (Iterator i = getLayerManagers().iterator(); i.hasNext();) {
+      LayerManager layerManager = (LayerManager) i.next();
+      list.addAll(layerManager.getLayersWithNullDataSource());
     }
+    return list;
+  }
 
   private Collection getLayerManagers() {
     // Multiple windows may point to the same LayerManager, so use
@@ -1067,8 +1083,8 @@ public class WorkbenchFrame extends JFrame
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
     // TODO: insert icon necessary?
-    //JUMPWorkbench.setIcon( this );
-    
+    // JUMPWorkbench.setIcon( this );
+
     this.addComponentListener(new java.awt.event.ComponentAdapter() {
       public void componentShown(ComponentEvent e) {
         this_componentShown(e);
@@ -1092,7 +1108,7 @@ public class WorkbenchFrame extends JFrame
     // (although it's supposed to be fixed in 1.4.2, which has not yet been
     // released). (see Sun Java Bug ID 4665237). [Jon Aquino]
     // desktopPane.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
-    
+
     exitMenuItem.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
         exitMenuItem_actionPerformed(e);
@@ -1109,23 +1125,23 @@ public class WorkbenchFrame extends JFrame
         windowMenu_menuSelected(e);
       }
     });
-    
+
     messageTextField.setOpaque(true);
-	messageTextField.setEditable(false);
+    messageTextField.setEditable(false);
     messageTextField.setToolTipText(I18N.get("ui.WorkbenchFrame.copy-to-clipboard"));
-	messageTextField.setFont(coordinateLabel.getFont());
+    messageTextField.setFont(coordinateLabel.getFont());
     messageTextField.setText(" ");
-    
+
     timeLabel.setBorder(BorderFactory.createLoweredBevelBorder());
     timeLabel.setText(" ");
-    
+
     memoryLabel.setBorder(BorderFactory.createLoweredBevelBorder());
     memoryLabel.setText(" ");
-    
-    //  G. Aruta 2012 feb 18//
+
+    // G. Aruta 2012 feb 18//
     scaleLabel.setBorder(BorderFactory.createLoweredBevelBorder());
     scaleLabel.setText(" ");
-    
+
     coordinateLabel.setBorder(BorderFactory.createLoweredBevelBorder());
     coordinateLabel.setText(" ");
 
@@ -1135,32 +1151,32 @@ public class WorkbenchFrame extends JFrame
     getContentPane().add(desktopPane, BorderLayout.CENTER);
     fileMenu.addSeparator();
     fileMenu.add(exitMenuItem);
-    
-	// [Matthias Scholz 11. Dec 2010] new resizable statusbar
-	statusPanel.setLayout(new BorderLayout());
-	
-	int dividerSize = 4;
+
+    // [Matthias Scholz 11. Dec 2010] new resizable statusbar
+    statusPanel.setLayout(new BorderLayout());
+
+    int dividerSize = 4;
 	statusPanelSplitPane4 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, scaleLabel, coordinateLabel);
-	statusPanelSplitPane4.setDividerSize(dividerSize);
-	
+    statusPanelSplitPane4.setDividerSize(dividerSize);
+
 	statusPanelSplitPane3 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, memoryLabel, statusPanelSplitPane4);
-	statusPanelSplitPane3.setDividerSize(dividerSize);
-	
+    statusPanelSplitPane3.setDividerSize(dividerSize);
+
 	statusPanelSplitPane2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, timeLabel, statusPanelSplitPane3);
-	statusPanelSplitPane2.setDividerSize(dividerSize);
-	statusPanelSplitPane2.setResizeWeight(1.0);
-	
+    statusPanelSplitPane2.setDividerSize(dividerSize);
+    statusPanelSplitPane2.setResizeWeight(1.0);
+
 	statusPanelSplitPane1 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, messageTextField, statusPanelSplitPane2);
-	statusPanelSplitPane1.setDividerSize(dividerSize);
-	statusPanelSplitPane1.setResizeWeight(1.0);
-	
-	// Workaround for java bug 4131528
+    statusPanelSplitPane1.setDividerSize(dividerSize);
+    statusPanelSplitPane1.setResizeWeight(1.0);
+
+    // Workaround for java bug 4131528
     statusPanelSplitPane1.setBorder(null);
-	statusPanelSplitPane2.setBorder(null);
-	statusPanelSplitPane3.setBorder(null);
-	statusPanelSplitPane4.setBorder(null);
-	statusPanel.add(statusPanelSplitPane1, BorderLayout.CENTER);
-	this.getContentPane().add(statusPanel, BorderLayout.SOUTH);
+    statusPanelSplitPane2.setBorder(null);
+    statusPanelSplitPane3.setBorder(null);
+    statusPanelSplitPane4.setBorder(null);
+    statusPanel.add(statusPanelSplitPane1, BorderLayout.CENTER);
+    this.getContentPane().add(statusPanel, BorderLayout.SOUTH);
   }
 
   private void position(JInternalFrame internalFrame) {
@@ -1191,8 +1207,6 @@ public class WorkbenchFrame extends JFrame
     choosableStyleClasses.add(choosableStyleClass);
   }
 
-  private HashMap keyCodeAndModifiersToPlugInAndEnableCheckMap = new HashMap();
-
   /**
    * Adds a keyboard shortcut for a plugin. logs plugin exceptions. note -
    * attaching to keyCode 'a', modifiers =1 will detect shift-A events. It will
@@ -1210,44 +1224,9 @@ public class WorkbenchFrame extends JFrame
    * @param enableCheck Is the key enabled at the moment?
    */
   public void addKeyboardShortcut(final int keyCode, final int modifiers,
-    final PlugIn plugIn, final EnableCheck enableCheck) {
+      final PlugIn plugIn, final EnableCheck enableCheck) {
     // Overwrite existing shortcut [Jon Aquino]
-    keyCodeAndModifiersToPlugInAndEnableCheckMap.put(keyCode + ":" + modifiers,
-      new Object[] {
-        plugIn, enableCheck
-      });
-  }
-
-  private void installKeyboardShortcutListener() {
-    addEasyKeyListener(new KeyListener() {
-      public void keyTyped(KeyEvent e) {
-      }
-
-      public void keyReleased(KeyEvent e) {
-        Object[] plugInAndEnableCheck = (Object[])keyCodeAndModifiersToPlugInAndEnableCheckMap.get(e.getKeyCode()
-            + ":" + e.getModifiers());
-//          System.out.println(e.getKeyCode()
-//              + ":" + e.getModifiers() +"/"+plugInAndEnableCheck+"/"+keyCodeAndModifiersToPlugInAndEnableCheckMap.keySet());
-          if (plugInAndEnableCheck == null) {
-            return;
-          }
-
-          PlugIn plugIn = (PlugIn)plugInAndEnableCheck[0];
-          EnableCheck enableCheck = (EnableCheck)plugInAndEnableCheck[1];
-          if (enableCheck != null && enableCheck.check(null) != null) {
-            return;
-          }
-          // #toActionListener handles checking if the plugIn is a
-          // ThreadedPlugIn,
-          // and making calls to UndoableEditReceiver if necessary. [Jon
-          // Aquino 10/15/2003]
-          AbstractPlugIn.toActionListener(plugIn, workbenchContext,
-            new TaskMonitorManager()).actionPerformed(null);
-      }
-
-      public void keyPressed(KeyEvent e) {
-      }
-    });
+    shortcutListener.add(keyCode, modifiers, plugIn, enableCheck);
   }
 
   // ==========================================================================
@@ -1280,12 +1259,12 @@ public class WorkbenchFrame extends JFrame
       if (internalFrame instanceof TaskFrame) {
         // delete reference to taskframe to be closed
         if (activeTaskFrame == internalFrame)
-          //activeTaskFrame = null;
-          closeTaskFrame((TaskFrame)internalFrame);
-          JInternalFrame activeInternalFrame = getActiveInternalFrame();
+          // activeTaskFrame = null;
+          closeTaskFrame((TaskFrame) internalFrame);
+        JInternalFrame activeInternalFrame = getActiveInternalFrame();
           if (activeInternalFrame == null || 
               !(activeInternalFrame instanceof TaskFrameProxy)) {
-              activeTaskFrame = null;
+          activeTaskFrame = null;
           }
           else activeTaskFrame = ((TaskFrameProxy)activeInternalFrame).getTaskFrame();
       } else {
@@ -1307,7 +1286,7 @@ public class WorkbenchFrame extends JFrame
         getGeneratedLayers(), WorkbenchFrame.this)) {
         // PersistentBlackboardPlugIn listens for when the workbench is
         // hidden [Jon Aquino]
-    	saveWindowState();
+        saveWindowState();
         setVisible(false);
         // Invoke System#exit after all pending GUI events have been fired
         // (e.g. the hiding of this WorkbenchFrame) [Jon Aquino]
@@ -1335,13 +1314,13 @@ public class WorkbenchFrame extends JFrame
         if (associatedFrames.size() != 0) {
           // Confirm you want to close them first
           if (confirmClose(
-            StringUtil.split(
-              I18N.get("ui.WorkbenchFrame.other-internal-frames-depend-on-this-task-frame")
-                + " "
+              StringUtil.split(
+                  I18N.get("ui.WorkbenchFrame.other-internal-frames-depend-on-this-task-frame")
+                      + " "
                 + I18N.get("ui.WorkbenchFrame.do-you-want-to-close-them-also"),
-              60), I18N.get("ui.WorkbenchFrame.close-all"))) {
+                  60), I18N.get("ui.WorkbenchFrame.close-all"))) {
             for (java.util.Iterator it = associatedFrames.iterator(); it.hasNext();) {
-              GUIUtil.dispose((JInternalFrame)it.next(), desktopPane);
+              GUIUtil.dispose((JInternalFrame) it.next(), desktopPane);
             }
 
           } else
@@ -1358,13 +1337,13 @@ public class WorkbenchFrame extends JFrame
       if (associatedFrames.size() != 0) {
         // Confirm you want to close them first
         if (confirmClose(
-          StringUtil.split(
-            I18N.get("ui.WorkbenchFrame.other-internal-frames-depend-on-this-task-frame")
-              + " "
+            StringUtil.split(
+                I18N.get("ui.WorkbenchFrame.other-internal-frames-depend-on-this-task-frame")
+                    + " "
               + I18N.get("ui.WorkbenchFrame.do-you-want-to-close-them-also"),
-            60), I18N.get("ui.WorkbenchFrame.close-all"))) {
+                60), I18N.get("ui.WorkbenchFrame.close-all"))) {
           for (java.util.Iterator it = associatedFrames.iterator(); it.hasNext();) {
-            GUIUtil.dispose((JInternalFrame)it.next(), desktopPane);
+            GUIUtil.dispose((JInternalFrame) it.next(), desktopPane);
           }
         } else
           return; // finally, I don't want to close
@@ -1383,43 +1362,43 @@ public class WorkbenchFrame extends JFrame
                                Collection modifiedLayers, 
                                Collection generatedLayers,
                                Container container) {
-        if (modifiedLayers.isEmpty()) {
-            if(generatedLayers.isEmpty()){
-                return true;
-            }
-            JOptionPane pane = new JOptionPane();
-            String message = null;
-            if (container instanceof WorkbenchFrame) {
+    if (modifiedLayers.isEmpty()) {
+      if (generatedLayers.isEmpty()) {
+        return true;
+      }
+      JOptionPane pane = new JOptionPane();
+      String message = null;
+      if (container instanceof WorkbenchFrame) {
                 message = I18N.getMessage("ui.WorkbenchFrame.do-you-really-want-to-close-openjump", 
-                    new Object[]{Integer.valueOf(generatedLayers.size())});
+            new Object[] { Integer.valueOf(generatedLayers.size()) });
             }
             else if (container instanceof TaskFrame) {
                 message = I18N.getMessage("ui.WorkbenchFrame.do-you-really-want-to-close-the-project", 
-                    new Object[]{Integer.valueOf(generatedLayers.size())});
-            }
-            pane.setMessage(message);
-            pane.setMessageType(JOptionPane.QUESTION_MESSAGE);
+            new Object[] { Integer.valueOf(generatedLayers.size()) });
+      }
+      pane.setMessage(message);
+      pane.setMessageType(JOptionPane.QUESTION_MESSAGE);
             pane.setOptions(new String[] {
                     action, I18N.get("ui.WorkbenchFrame.cancel")
                   });
-            pane.createDialog(this, "OpenJUMP").setVisible(true);
-            return pane.getValue().equals(action);
-        }
+      pane.createDialog(this, "OpenJUMP").setVisible(true);
+      return pane.getValue().equals(action);
+    }
     JOptionPane pane = new JOptionPane(
       StringUtil.split(
         modifiedLayers.size()
-          + " "
-          + I18N.get("ui.WorkbenchFrame.dataset")
-          + StringUtil.s(modifiedLayers.size())
-          + " "
+            + " "
+            + I18N.get("ui.WorkbenchFrame.dataset")
+            + StringUtil.s(modifiedLayers.size())
+            + " "
           + ((modifiedLayers.size() > 1) ? I18N.get("ui.WorkbenchFrame.have-been-modified")
             : I18N.get("ui.WorkbenchFrame.has-been-modified"))
-          + " ("
-          + ((modifiedLayers.size() > 3) ? "e.g. " : "")
+            + " ("
+            + ((modifiedLayers.size() > 3) ? "e.g. " : "")
           + StringUtil.toCommaDelimitedString(new ArrayList(modifiedLayers).subList(
             0, Math.min(3, modifiedLayers.size()))) + ").\n"
-          + I18N.get("ui.WorkbenchFrame.continue"), 80),
-      JOptionPane.WARNING_MESSAGE);
+            + I18N.get("ui.WorkbenchFrame.continue"), 80),
+        JOptionPane.WARNING_MESSAGE);
     pane.setOptions(new String[] {
       action, I18N.get("ui.WorkbenchFrame.cancel")
     });
@@ -1429,7 +1408,7 @@ public class WorkbenchFrame extends JFrame
 
   private boolean confirmClose(String question, String action) {
     javax.swing.JOptionPane pane = new javax.swing.JOptionPane(question,
-      javax.swing.JOptionPane.WARNING_MESSAGE);
+        javax.swing.JOptionPane.WARNING_MESSAGE);
     pane.setOptions(new String[] {
       action, com.vividsolutions.jump.I18N.get("ui.WorkbenchFrame.cancel")
     });
@@ -1443,7 +1422,7 @@ public class WorkbenchFrame extends JFrame
   public void setTaskFrameFactory(ComponentFactory<TaskFrame> taskFrameFactory) {
     this.taskFrameFactory = taskFrameFactory;
   }
-  
+
   public final static String MAXIMIZED_KEY = WorkbenchFrame.class.getName()+" - MAXIMIZED_KEY";
   public final static String HORIZONTAL_KEY = WorkbenchFrame.class.getName()+" - HORIZONTAL_KEY";
   public final static String VERTICAL_KEY = WorkbenchFrame.class.getName()+" - VERTICAL_KEY";
@@ -1456,16 +1435,16 @@ public class WorkbenchFrame extends JFrame
   //public final static String STATUSPANEL_DIVIDER_LOCATION_5 = WorkbenchFrame.class.getName() + " - STATUSPANEL_DIVIDER_LOCATION_5";
 
   public void saveWindowState() {
-	  boolean maximized = (this.getExtendedState() == MAXIMIZED_BOTH);
-	  Blackboard blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
-	  blackboard.put(MAXIMIZED_KEY, maximized);	  
-	  Point p = this.getLocation(null);
-	  blackboard.put(HORIZONTAL_KEY, p.x);	    
-	  blackboard.put(VERTICAL_KEY, p.y);	 
-	  Dimension d = this.getSize();
-	  blackboard.put(WIDTH_KEY, d.width);	    
-	  blackboard.put(HEIGHT_KEY, d.height);
-	  // save the statuspanel divider locations
+    boolean maximized = (this.getExtendedState() == MAXIMIZED_BOTH);
+    Blackboard blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
+    blackboard.put(MAXIMIZED_KEY, maximized);
+    Point p = this.getLocation(null);
+    blackboard.put(HORIZONTAL_KEY, p.x);
+    blackboard.put(VERTICAL_KEY, p.y);
+    Dimension d = this.getSize();
+    blackboard.put(WIDTH_KEY, d.width);
+    blackboard.put(HEIGHT_KEY, d.height);
+    // save the statuspanel divider locations
 	  blackboard.put(STATUSPANEL_DIVIDER_LOCATION_1, new Integer(statusPanelSplitPane1.getLastDividerLocation()));
 	  blackboard.put(STATUSPANEL_DIVIDER_LOCATION_2, new Integer(statusPanelSplitPane2.getLastDividerLocation()));
 	  blackboard.put(STATUSPANEL_DIVIDER_LOCATION_3, new Integer(statusPanelSplitPane3.getLastDividerLocation()));
@@ -1473,21 +1452,20 @@ public class WorkbenchFrame extends JFrame
   }
 
   public boolean recallMaximizedState() {
-	  Blackboard blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
-	  boolean maximized = false;
-	  if (blackboard.get(MAXIMIZED_KEY) == null) {
-		  blackboard.put(MAXIMIZED_KEY, maximized);
-	  }
-	  maximized = ((Boolean) blackboard.get(MAXIMIZED_KEY)).booleanValue();
-	  return maximized; 
+    Blackboard blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
+    boolean maximized = false;
+    if (blackboard.get(MAXIMIZED_KEY) == null) {
+      blackboard.put(MAXIMIZED_KEY, maximized);
+    }
+    maximized = ((Boolean) blackboard.get(MAXIMIZED_KEY)).booleanValue();
+    return maximized;
   }
 
-  
   public Point initWindowLocation() {
     Rectangle rect = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
     return new Point( (rect.width - getWidth()) / 2 + rect.x, (rect.height - getHeight()) / 2 + rect.y );
   }
-  
+
   public Dimension initWindowSize() {
     Rectangle rect = GraphicsEnvironment.getLocalGraphicsEnvironment()
         .getMaximumWindowBounds();
@@ -1497,7 +1475,7 @@ public class WorkbenchFrame extends JFrame
       rect.height = 480;
     return rect.getSize();
   }
-  
+
   public Point recallWindowLocation() {
     Blackboard blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
 
@@ -1534,37 +1512,37 @@ public class WorkbenchFrame extends JFrame
   }
 
   public void restore() {
-      setSize(recallWindowSize());
-      setLocation(recallWindowLocation());
-      if (recallMaximizedState())
-        setExtendedState(Frame.MAXIMIZED_BOTH);  
+    setSize(recallWindowSize());
+    setLocation(recallWindowLocation());
+    if (recallMaximizedState())
+      setExtendedState(Frame.MAXIMIZED_BOTH);
   }
 
-	/**
-	 * @return the taskListeners
-	 */
-	public ArrayList<TaskListener> getTaskListeners() {
-		return taskListeners;
-	}
+  /**
+   * @return the taskListeners
+   */
+  public ArrayList<TaskListener> getTaskListeners() {
+    return taskListeners;
+  }
 
   /**
    * Add's a TaskListener, wich will be fired if a Task was added
    * via the WorkbenchFrame.addTaskFrame(TaskFrame taskFrame) or
    * the a Task was loaded completly with all his layers.
-   *
+   * 
    * @param l - The TaskListener to add.
    */
   public void addTaskListener(TaskListener l) {
-	  	getTaskListeners().add(l);
+    getTaskListeners().add(l);
   }
 
   /**
    * Remove's a TaskListener.
-   *
+   * 
    * @param l - The TaskListener to add.
    */
   public void removeTaskListener(TaskListener l) {
-	  	getTaskListeners().remove(l);
+    getTaskListeners().remove(l);
   }
 
 }

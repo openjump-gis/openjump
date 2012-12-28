@@ -33,6 +33,8 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
+
+import java.awt.event.KeyEvent;
 import java.io.File;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.ImageIcon;
@@ -84,6 +86,9 @@ public class SaveProjectAsPlugIn extends AbstractSaveProjectPlugIn {
         if (dir != null) {
             fileChooser.setCurrentDirectory(new File(dir));
         }
+        
+        context.getWorkbenchFrame().addKeyboardShortcut(KeyEvent.VK_S,
+            KeyEvent.CTRL_MASK + KeyEvent.SHIFT_MASK, this, null);
     }
     
     public String getName() {

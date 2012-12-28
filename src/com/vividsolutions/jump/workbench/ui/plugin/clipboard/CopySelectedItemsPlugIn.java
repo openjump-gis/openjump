@@ -31,6 +31,7 @@
  */
 package com.vividsolutions.jump.workbench.ui.plugin.clipboard;
 
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
@@ -39,43 +40,57 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.SelectionManagerProxy;
 
-
 import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
 
 import javax.swing.ImageIcon;
 
 import org.openjump.core.ui.images.IconLoader;
 
-
 public class CopySelectedItemsPlugIn extends AbstractPlugIn {
-    //Note: Need to copy the data twice: once when the user hits Copy, so she is
-    //free to modify the original afterwards, and again when the user hits Paste,
-    //so she is free to modify the first copy then hit Paste again. [Jon Aquino]
-    public CopySelectedItemsPlugIn() {
-    }
-    
-	public static ImageIcon ICON = IconLoader.icon("items_copy.png");	
-    
-    public String getNameWithMnemonic() {
-        return StringUtil.replace(getName(), "C", "&C", false);
-    }    
+  // Note: Need to copy the data twice: once when the user hits Copy, so she is
+  // free to modify the original afterwards, and again when the user hits Paste,
+  // so she is free to modify the first copy then hit Paste again. [Jon Aquino]
+  public CopySelectedItemsPlugIn() {
+  }
 
-    public boolean execute(PlugInContext context) throws Exception {
-        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new CollectionOfFeaturesTransferable(
-                ((SelectionManagerProxy)context.getActiveInternalFrame()).getSelectionManager().createFeaturesFromSelectedItems()), new DummyClipboardOwner());
-        return true;
-    }        
+  public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
+    context.getWorkbenchFrame().
+    addKeyboardShortcut(KeyEvent.VK_C,
+        KeyEvent.CTRL_MASK, this,
+        createEnableCheck(context.getWorkbenchContext()));
+  }
 
-    public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+  public static ImageIcon ICON = IconLoader.icon("items_copy.png");
 
-        return new MultiEnableCheck()
-            .add(checkFactory.createWindowWithSelectionManagerMustBeActiveCheck())
-            .add(checkFactory.createAtLeastNItemsMustBeSelectedCheck(1));
-    }
-    
-    public ImageIcon getIcon() {
-        return ICON;
-    }
+  public String getNameWithMnemonic() {
+    return StringUtil.replace(getName(), "C", "&C", false);
+  }
+
+  public boolean execute(PlugInContext context) throws Exception {
+    Toolkit
+        .getDefaultToolkit()
+        .getSystemClipboard()
+        .setContents(
+            new CollectionOfFeaturesTransferable(
+                ((SelectionManagerProxy) context.getActiveInternalFrame())
+                    .getSelectionManager().createFeaturesFromSelectedItems()),
+            new DummyClipboardOwner());
+    return true;
+  }
+
+  public static MultiEnableCheck createEnableCheck(
+      WorkbenchContext workbenchContext) {
+    EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+
+    return new MultiEnableCheck().add(
+        checkFactory.createWindowWithSelectionManagerMustBeActiveCheck()).add(
+        checkFactory.createAtLeastNItemsMustBeSelectedCheck(1));
+  }
+
+  public ImageIcon getIcon() {
+    return ICON;
+  }
 
 }

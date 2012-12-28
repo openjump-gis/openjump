@@ -33,6 +33,8 @@
 
 package com.vividsolutions.jump.workbench.ui.plugin;
 
+import java.awt.event.KeyEvent;
+
 import javax.swing.ImageIcon;
 
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -44,6 +46,14 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class NewTaskPlugIn extends AbstractPlugIn {
     public NewTaskPlugIn() {
+    }
+
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+      context.getWorkbenchFrame().
+      addKeyboardShortcut(KeyEvent.VK_N,
+          KeyEvent.CTRL_MASK, this,
+          null);
     }
 
     public boolean execute(PlugInContext context) throws Exception {
