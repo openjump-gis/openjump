@@ -161,6 +161,6 @@
 	<!---  ======================================== /-->
 	<!--  			OTHER 							/-->
 	<!--- ========================================= /-->
-	<!--plug-in>org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn</plug-in-->	
+	<plug-in>org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn</plug-in>	
 </workbench>
 

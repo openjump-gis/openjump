@@ -10,6 +10,7 @@ import javax.swing.JInternalFrame;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
+import com.vividsolutions.jump.workbench.plugin.PlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.TaskFrame;
@@ -33,10 +34,10 @@ public class InstallKeyPanPlugIn extends AbstractPlugIn {
     private static final int SOUTH = 2; 
     private static final int WEST  = 3; 
     
-    
-    private static final int ZOOM_IN  = 4;   
-    private static final int ZOOM_OUT = 5; 
-    
+    private static final int ZOOM_IN  = 4;
+    private static final int ZOOM_OUT = 5;
+    private static final int ZOOM_FULL = 6;
+
     /* matrix defining directions */
     private static final int[][] DIRECTIONS = 
         {   {0, -1, 0, -1}, //NORTH
@@ -45,6 +46,7 @@ public class InstallKeyPanPlugIn extends AbstractPlugIn {
             {1, 0, 1, 0},
             {1, 1, -1, -1}, //ZOOM_IN
             {-1, -1, 1, 1}};//ZOOM_OUT
+          
     
     private static double panPercentage;
     
@@ -52,7 +54,7 @@ public class InstallKeyPanPlugIn extends AbstractPlugIn {
      * Default constructor 
      */
     public InstallKeyPanPlugIn() {
-        this( 0.2 );
+        this( 0.5 );
     }
 
     /**
@@ -68,19 +70,18 @@ public class InstallKeyPanPlugIn extends AbstractPlugIn {
     }
 
     public boolean execute(PlugInContext context) throws Exception {
-        context.getLayerViewPanel().getViewport().zoomToFullExtent();
         return true;
     }
-    
-    private static Envelope createEnvelopeFromDirection( Envelope oldEnvelope, int direction) {
+
+    private static Envelope createEnvelopeFromDirection( Envelope oldEnvelope, int mode) {
         
         double oldWidth = panPercentage*oldEnvelope.getWidth();
         double oldHeight = panPercentage*oldEnvelope.getHeight();
         
-        double dxPlus = DIRECTIONS[ direction ][0]*oldWidth;
-        double dyPlus = DIRECTIONS[ direction ][1]*oldHeight;
-        double dxMinus = DIRECTIONS[ direction ][2]*oldWidth;
-        double dyMinus = DIRECTIONS[ direction ][3]*oldHeight;
+        double dxPlus = DIRECTIONS[ mode ][0]*oldWidth;
+        double dyPlus = DIRECTIONS[ mode ][1]*oldHeight;
+        double dxMinus = DIRECTIONS[ mode ][2]*oldWidth;
+        double dyMinus = DIRECTIONS[ mode ][3]*oldHeight;
         
         return new Envelope(
                         oldEnvelope.getMinX() - dxMinus, 
@@ -89,54 +90,58 @@ public class InstallKeyPanPlugIn extends AbstractPlugIn {
                         oldEnvelope.getMaxY() - dyPlus);
     }
     
-    public boolean pan( JInternalFrame jif, int direction ) {
+    private boolean pan(JInternalFrame jif, int mode) {
+      if (jif instanceof TaskFrame) {
+        try {
+          TaskFrame taskFrame = (TaskFrame) jif;
+          LayerViewPanel lvp = taskFrame.getLayerViewPanel();
+          Viewport vp = lvp.getViewport();
+          // zoom to full
+          if (mode == ZOOM_FULL){
+            vp.zoomToFullExtent();
+            return true;
+          }
 
-        if (jif instanceof TaskFrame) {
-            TaskFrame taskFrame = (TaskFrame) jif;
-            LayerViewPanel lvp = taskFrame.getLayerViewPanel();
-            Viewport vp = lvp.getViewport();
-            Envelope oldEnvelope = vp.getEnvelopeInModelCoordinates();
-            
-            try {
-                vp.zoom(
-                    createEnvelopeFromDirection( oldEnvelope, direction) );
-            } catch (NoninvertibleTransformException e1) {
-                e1.printStackTrace();
-                return false;
-            }                
-        } 
-        return true;
+          Envelope oldEnvelope = vp.getEnvelopeInModelCoordinates();
+          vp.zoom(createEnvelopeFromDirection(oldEnvelope, mode));
+        } catch (NoninvertibleTransformException e1) {
+          e1.printStackTrace();
+          return false;
+        }
+      }
+      return true;
     }
-    
+
     public void initialize(PlugInContext context) throws Exception {
         super.initialize(context);
         
-        AbstractPlugIn[] plugIns =  
+        PlugIn zoom_in, zoom_out;
+        PlugIn[] plugIns =  
             { this, new PanHelper( NORTH ), new PanHelper( EAST ), 
-                new PanHelper( SOUTH), new PanHelper( WEST ), 
-                new PanHelper( ZOOM_IN ), new PanHelper( ZOOM_OUT ) };
+                new PanHelper( SOUTH ), new PanHelper( WEST ), 
+                zoom_in=new PanHelper( ZOOM_IN ), zoom_out=new PanHelper( ZOOM_OUT ),
+                zoom_in, zoom_out, new PanHelper( ZOOM_FULL )};
         
         int[] keys = { KeyEvent.VK_HOME, KeyEvent.VK_UP, KeyEvent.VK_RIGHT, 
-                KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_PAGE_DOWN, 
-                KeyEvent.VK_PAGE_UP };
+                KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_PLUS, 
+                KeyEvent.VK_MINUS, KeyEvent.VK_ADD, KeyEvent.VK_SUBTRACT,
+                KeyEvent.VK_A};
         
         for (int i = 0; i < keys.length; i++) {
             context.getWorkbenchContext().getWorkbench().getFrame()
-                .addKeyboardShortcut( keys[i], 0, plugIns[i], null);
-            
+                .addKeyboardShortcut( keys[i], KeyEvent.ALT_MASK, plugIns[i], null);
         }
-        
     }
-    
+
     public String getName() { return ""; }
-   
+
     /**
      * Get the pan/zoom percentage, a value between 0 and 1. Deafult is 0.25 (=25%)
      */
     public static double getPanPercentage() {
         return 2*panPercentage;
     }
-    
+
     /**
      * Set the pan percentage. Legal values are between greater than 0 and less than 
      * or equal to 1.0
@@ -157,12 +162,15 @@ public class InstallKeyPanPlugIn extends AbstractPlugIn {
      * Helper class to pan in the direction given in constructor 
      */
     private class PanHelper extends AbstractPlugIn {
-        private final int direction;
-        public PanHelper( int direction ) {
-            this.direction = direction;
+        private final int mode;
+        public PanHelper( int mode ) {
+            this.mode = mode;
         }
         public boolean execute(PlugInContext context) throws Exception {
-            return pan( context.getWorkbenchFrame().getActiveInternalFrame(), direction );
+            return pan( context.getWorkbenchFrame().getActiveInternalFrame(), mode );
+        }
+        public String getName() {
+          return "PanHelper";
         }
     }
 
