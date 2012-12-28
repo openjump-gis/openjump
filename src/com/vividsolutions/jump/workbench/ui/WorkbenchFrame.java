@@ -472,7 +472,7 @@ public class WorkbenchFrame extends JFrame
     if (thread != null) {
       thread.interrupt();
     }
-    System.out.println("hello");
+
     thread = new Thread(new Runnable() {
       public void run() {
         setStatusMessage(msg);
