@@ -33,6 +33,8 @@
 
 package com.vividsolutions.jump.workbench.ui.plugin;
 
+import java.awt.event.KeyEvent;
+
 import javax.swing.ImageIcon;
 
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -45,6 +47,12 @@ import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 
 public class ClearSelectionPlugIn extends AbstractPlugIn {
     public ClearSelectionPlugIn() {}
+
+    public void initialize(PlugInContext context) throws Exception {
+      context.getWorkbenchFrame().addKeyboardShortcut(KeyEvent.VK_D,
+          KeyEvent.CTRL_MASK, this,
+          createEnableCheck(context.getWorkbenchContext()));
+    }
 
     public boolean execute(PlugInContext context) throws Exception {
         reportNothingToUndoYet(context);

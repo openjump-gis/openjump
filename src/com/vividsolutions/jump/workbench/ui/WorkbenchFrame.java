@@ -461,27 +461,43 @@ public class WorkbenchFrame extends JFrame
   }
 
   public void setStatusMessage(String message) {
+    setStatusMessage(message, null);
+  }
+
+  // set message for a time only
+  public void setStatusMessage(String message, int millis) {
+    setStatusMessage(message, millis, null, false);
+  }
+
+  public void setStatusMessage(String message, Color color) {
     lastStatusMessage = message;
     setStatusBarText(message);
-    setStatusBarTextHighlighted(false, null);
+    boolean high = color!=null;
+    setStatusBarTextHighlighted(high, color);
   }
 
   Thread thread = null;
 
-  public void setStatusMessage(final String msg, final int millis) {
+  public void setStatusMessage(final String msg, final int millis, final Color color, final boolean flash) {
     if (thread != null) {
       thread.interrupt();
     }
 
     thread = new Thread(new Runnable() {
       public void run() {
-        setStatusMessage(msg);
-        try {
-          Thread.sleep(millis);
-        } catch (Exception e) {
+        if (flash)
+          flashStatusMessage(msg, color);
+        else {
+          setStatusMessage(msg, color);
         }
-        if (getStatusBarText().equals(msg))
-          setStatusMessage("");
+        if ( millis > 0) {
+          try {
+            Thread.sleep(millis);
+          } catch (Exception e) {
+          }
+          if (getStatusBarText().equals(msg))
+            setStatusMessage("");
+        }
       }
     });
     thread.start();
@@ -973,7 +989,7 @@ public class WorkbenchFrame extends JFrame
 
   public void warnUser(String warning) {
     log(I18N.get("ui.WorkbenchFrame.warning") + ": " + warning);
-    flashStatusMessage(warning, Color.yellow);
+    setStatusMessage(warning, 15000, Color.YELLOW, true);
   }
 
   public void zoomChanged(Envelope modelEnvelope) {

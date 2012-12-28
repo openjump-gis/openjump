@@ -48,10 +48,18 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanel;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
+import com.vividsolutions.jump.workbench.ui.MenuNames;
 
 
 public class SelectFeaturesInFencePlugIn extends AbstractPlugIn {
     public SelectFeaturesInFencePlugIn() {
+    }
+
+    @Override
+    public void initialize(PlugInContext context) throws Exception {
+      context.getFeatureInstaller().addMainMenuPlugin(this,
+          new String[] { MenuNames.EDIT, MenuNames.SELECTION }, getName(), false,
+          null, createEnableCheck(context.getWorkbenchContext()));
     }
 
     public boolean execute(PlugInContext context) throws Exception {

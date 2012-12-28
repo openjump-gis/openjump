@@ -42,6 +42,7 @@ import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
+import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
@@ -51,25 +52,32 @@ import com.vividsolutions.jump.workbench.ui.TaskFrameProxy;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class FeatureInfoPlugIn extends AbstractPlugIn {
+    private static EnableCheck checker = null;
+
     public FeatureInfoPlugIn() {}
 
     public static final ImageIcon ICON = IconLoader.icon("information_16x16.png");
 
-    public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
+    public static EnableCheck createEnableCheck(
+        WorkbenchContext workbenchContext) {
+      if (checker == null) {
         EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
-
-        return new MultiEnableCheck()
+        checker = new MultiEnableCheck()
             .add(checkFactory.createWindowWithSelectionManagerMustBeActiveCheck())
-            .add(checkFactory.createWindowWithLayerManagerMustBeActiveCheck())            
-            .add(checkFactory.createWindowWithAssociatedTaskFrameMustBeActiveCheck())                        
+            .add(checkFactory.createWindowWithLayerManagerMustBeActiveCheck())
+            .add(
+                checkFactory
+                    .createWindowWithAssociatedTaskFrameMustBeActiveCheck())
             .add(checkFactory.createAtLeastNItemsMustBeSelectedCheck(1));
+      }
+      return checker;
     }
 
     @Override
     public void initialize(PlugInContext context) throws Exception {
       super.initialize(context);
       context.getWorkbenchFrame().addKeyboardShortcut(KeyEvent.VK_I,
-          KeyEvent.CTRL_MASK, this,
+          KeyEvent.ALT_MASK, this,
           createEnableCheck(context.getWorkbenchContext()));
     }
 
@@ -100,12 +108,10 @@ public class FeatureInfoPlugIn extends AbstractPlugIn {
                     layer));
         }
 
-        infoFrame.setSelectedTab(infoFrame.getGeometryTab());
+        //infoFrame.setSelectedTab(infoFrame.getGeometryTab());
         context.getWorkbenchFrame().addInternalFrame(infoFrame);
 
         return true;
     }
-    
-    
 
 }

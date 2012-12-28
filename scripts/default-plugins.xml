@@ -9,10 +9,11 @@
 	<!---  ======================================== /-->
 	<!--  			menu EDIT 						/-->
 	<!--- ========================================= /-->
-	<plug-in>org.openjump.core.ui.plugin.edit.SelectItemsByFenceFromSelectedLayersPlugIn</plug-in>
-	<plug-in>org.openjump.core.ui.plugin.edit.SelectItemsByCircleFromSelectedLayersPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.edit.SelectAllLayerItemsPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.edit.SelectAllModifiedFeaturesPlugIn</plug-in>
+	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.SelectFeaturesInFencePlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.edit.SelectItemsByFenceFromSelectedLayersPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.edit.SelectItemsByCircleFromSelectedLayersPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.edit.SelectByTypePlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.edit.SelectLayersWithSelectedItemsPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.edit.InvertSelectionPlugIn</plug-in>

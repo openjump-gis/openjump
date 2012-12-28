@@ -33,6 +33,7 @@
 
 package org.openjump.core.ui.plugin.edit;
 
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -60,15 +61,21 @@ import com.vividsolutions.jump.workbench.ui.SelectionManager;
  * @author beckerl
  */
 public class InvertSelectionPlugIn extends AbstractPlugIn {
-	
+  private String name = I18N
+      .get("org.openjump.core.ui.plugin.edit.InvertSelectionPlugIn.invert-selection");
+
     public void initialize(PlugInContext context) throws Exception {
         context.getFeatureInstaller().addMainMenuItem(this,
             new String[]
                 {MenuNames.EDIT},
-                I18N.get("org.openjump.core.ui.plugin.edit.InvertSelectionPlugIn.invert-selection")+"{pos:6}",
+                name+"{pos:6}",
                 false,
                 null,
                 createEnableCheck(context.getWorkbenchContext())); //enable check
+
+        context.getWorkbenchFrame().addKeyboardShortcut(KeyEvent.VK_I,
+            KeyEvent.CTRL_MASK, this,
+            createEnableCheck(context.getWorkbenchContext()));
     }
 
     public boolean execute(final PlugInContext context) throws Exception {
@@ -109,6 +116,10 @@ public class InvertSelectionPlugIn extends AbstractPlugIn {
     public MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
         EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
         return new MultiEnableCheck().add(checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck());
+    }
+
+    public String getName() {
+      return name;
     }
 }
 

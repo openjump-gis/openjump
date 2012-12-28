@@ -36,6 +36,8 @@
  *****************************************************/
 
 package org.openjump.core.ui.plugin.edit;
+
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -51,70 +53,85 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 
-
 /**
- * Selects all items of the actual layer and informs about the number
- * of selected items
+ * Selects all items of the actual layer and informs about the number of
+ * selected items
  * 
  * @author sstein
- *
+ * 
  */
-public class SelectAllLayerItemsPlugIn extends AbstractPlugIn{
-         
-    public void initialize(PlugInContext context) throws Exception {
-	
-		    context.getFeatureInstaller().addPopupMenuItem(context.getWorkbenchContext().getWorkbench()
-                    .getFrame().getLayerNamePopupMenu(), 
-					this,                    
-                    I18N.get("org.openjump.core.ui.plugin.edit.SelectAllLayerItemsPlugIn.select-current-layer-items"),
-					false, 
-					null,
-                    createEnableCheck(context.getWorkbenchContext()));
-		    
-		    context.getFeatureInstaller().addMainMenuItem(this,
-		        new String[]
-				{MenuNames.EDIT, MenuNames.SELECTION},
-				I18N.get("org.openjump.core.ui.plugin.edit.SelectAllLayerItemsPlugIn.select-layer-items"), 
-				false, 
-				null, 
-				createEnableCheck(context.getWorkbenchContext())); //enable check
-    }
-    
-    public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);        
-        return new MultiEnableCheck()
-                        .add(checkFactory.createAtLeastNLayersMustBeSelectedCheck(1));   
-    }
-        
-	public boolean execute(PlugInContext context) throws Exception{
-		
-		int count = 0;	    
-		Layer[] selectedLayers = context.getLayerNamePanel().getSelectedLayers();
-		for (int i = 0; i < selectedLayers.length; i++) {
-			Layer actualLayer = selectedLayers[i];
-			if (actualLayer.isVisible()){
-				FeatureCollection fc = context.getSelectedLayer(i).getFeatureCollectionWrapper().getWrappee();
-				Collection features = new ArrayList();
-	
-				for (Iterator iter = fc.iterator(); iter.hasNext();) {
-					Feature element = (Feature) iter.next();
-					features.add(element);
-					count++;
-				}
-				context.getLayerViewPanel().getSelectionManager().getFeatureSelection().selectItems(actualLayer, features);	
-			}
-		}
-	    final Collection myf = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems();
-		context.getWorkbenchFrame().setTimeMessage(
-				I18N.get("org.openjump.core.ui.plugin.edit.SelectAllLayerItemsPlugIn.layer-items") + ": " + 
-				count + 
-				", " +
-				I18N.get("org.openjump.core.ui.plugin.edit.SelectAllLayerItemsPlugIn.selected-items") +
-				": " +
-				myf.size());
-		System.gc();
-	    return true;
-	}
+public class SelectAllLayerItemsPlugIn extends AbstractPlugIn {
+  private String name = I18N
+      .get("org.openjump.core.ui.plugin.edit.SelectAllLayerItemsPlugIn.select-all-items-of-selected-layers");
 
-     
+  public void initialize(PlugInContext context) throws Exception {
+
+    context
+        .getFeatureInstaller()
+        .addPopupMenuItem(
+            context.getWorkbenchContext().getWorkbench().getFrame()
+                .getLayerNamePopupMenu(),
+            this,
+            I18N.get("org.openjump.core.ui.plugin.edit.SelectAllLayerItemsPlugIn.select-current-layer-items"),
+            false, null, createEnableCheck(context.getWorkbenchContext()));
+
+    context
+        .getFeatureInstaller()
+        .addMainMenuItem(
+            this,
+            new String[] { MenuNames.EDIT, MenuNames.SELECTION },
+            name,
+            false, null, createEnableCheck(context.getWorkbenchContext()));
+    
+    context.getWorkbenchFrame().addKeyboardShortcut(KeyEvent.VK_A,
+        KeyEvent.CTRL_MASK, this,
+        createEnableCheck(context.getWorkbenchContext()));
+  }
+
+  public static MultiEnableCheck createEnableCheck(
+      WorkbenchContext workbenchContext) {
+    EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+    return new MultiEnableCheck().add(checkFactory
+        .createAtLeastNLayersMustBeSelectedCheck(1));
+  }
+
+  public boolean execute(PlugInContext context) throws Exception {
+
+    int count = 0;
+    Layer[] selectedLayers = context.getLayerNamePanel().getSelectedLayers();
+    for (int i = 0; i < selectedLayers.length; i++) {
+      Layer actualLayer = selectedLayers[i];
+      if (actualLayer.isVisible()) {
+        FeatureCollection fc = context.getSelectedLayer(i)
+            .getFeatureCollectionWrapper().getWrappee();
+        Collection features = new ArrayList();
+
+        for (Iterator iter = fc.iterator(); iter.hasNext();) {
+          Feature element = (Feature) iter.next();
+          features.add(element);
+          count++;
+        }
+        context.getLayerViewPanel().getSelectionManager().getFeatureSelection()
+            .selectItems(actualLayer, features);
+      }
+    }
+    final Collection myf = context.getLayerViewPanel().getSelectionManager()
+        .getFeaturesWithSelectedItems();
+    context
+        .getWorkbenchFrame()
+        .setTimeMessage(
+            I18N.get("org.openjump.core.ui.plugin.edit.SelectAllLayerItemsPlugIn.layer-items")
+                + ": "
+                + count
+                + ", "
+                + I18N
+                    .get("org.openjump.core.ui.plugin.edit.SelectAllLayerItemsPlugIn.selected-items")
+                + ": " + myf.size());
+    System.gc();
+    return true;
+  }
+
+  public String getName() {
+    return name;
+  }
 }

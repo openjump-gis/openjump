@@ -52,57 +52,56 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
 
 /**
  * Selects all Features with the modified flag set
+ * 
  * @author beckerl
- *
+ * 
  */
 public class SelectAllModifiedFeaturesPlugIn extends AbstractPlugIn {
-	
-    public void initialize(PlugInContext context) throws Exception
-    {     
-	    context.getFeatureInstaller().addMainMenuItem(this,
-		        new String[]
-				{MenuNames.EDIT, MenuNames.SELECTION},
-				I18N.get("org.openjump.core.ui.plugin.edit.SelectAllModifiedFeaturesPlugIn.select-all-modified-features"), 
-				false, 
-				null, 
-				createEnableCheck(context.getWorkbenchContext())); //enable check
+
+  public void initialize(PlugInContext context) throws Exception {
+    context
+        .getFeatureInstaller()
+        .addMainMenuPlugin(
+            this,
+            new String[] { MenuNames.EDIT, MenuNames.SELECTION },
+            I18N.get("org.openjump.core.ui.plugin.edit.SelectAllModifiedFeaturesPlugIn.select-all-modified-features"),
+            false, null, createEnableCheck(context.getWorkbenchContext()));
+  }
+
+  public boolean execute(final PlugInContext context) throws Exception {
+    reportNothingToUndoYet(context);
+    ArrayList selectedFeatures = new ArrayList();
+    LayerViewPanel layerViewPanel = context.getWorkbenchContext()
+        .getLayerViewPanel();
+    layerViewPanel.getSelectionManager().clear();
+    Collection layers = (Collection) context.getWorkbenchContext()
+        .getLayerNamePanel().getLayerManager().getLayers();
+    for (Iterator j = layers.iterator(); j.hasNext();) {
+      Layer layer = (Layer) j.next();
+      selectedFeatures.clear();
+
+      if (layer.isVisible()) {
+        FeatureCollection featureCollection = layer
+            .getFeatureCollectionWrapper();
+        for (Iterator i = featureCollection.iterator(); i.hasNext();) {
+          Feature feature = (Feature) i.next();
+          if (feature instanceof BasicFeature
+              && ((BasicFeature) feature).isModified()) {
+            selectedFeatures.add(feature);
+          }
+        }
+      }
+      if (selectedFeatures.size() > 0)
+        layerViewPanel.getSelectionManager().getFeatureSelection()
+            .selectItems(layer, selectedFeatures);
     }
+    return true;
+  }
 
-    public boolean execute(final PlugInContext context) throws Exception
-    {
-    	reportNothingToUndoYet(context);
-    	ArrayList selectedFeatures = new ArrayList();        
-    	LayerViewPanel layerViewPanel = context.getWorkbenchContext().getLayerViewPanel();
-    	layerViewPanel.getSelectionManager().clear();
-    	Collection layers = (Collection) context.getWorkbenchContext()
-    		.getLayerNamePanel().getLayerManager().getLayers();
-    	for (Iterator j = layers.iterator(); j.hasNext();) 
-    	{
-    		Layer layer = (Layer) j.next();
-    		selectedFeatures.clear();
-
-    		if (layer.isVisible())
-    		{
-    			FeatureCollection featureCollection = layer.getFeatureCollectionWrapper();
-    			for (Iterator i = featureCollection.iterator(); i.hasNext();)
-    			{
-    				Feature feature = (Feature) i.next();
-    				if (feature instanceof BasicFeature 
-    						&& ((BasicFeature) feature).isModified()) {
-    					selectedFeatures.add(feature);
-    				}
-    			}
-    		}
-    		if (selectedFeatures.size() > 0)
-    			layerViewPanel.getSelectionManager().getFeatureSelection().selectItems(layer, selectedFeatures);
-    	}        
-    	return true;
-    }
-
-    public MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) 
-    {
-    	EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
-    	return new MultiEnableCheck().add(checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck());
-    }    
+  public MultiEnableCheck createEnableCheck(
+      final WorkbenchContext workbenchContext) {
+    EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+    return new MultiEnableCheck().add(checkFactory
+        .createWindowWithLayerViewPanelMustBeActiveCheck());
+  }
 }
-

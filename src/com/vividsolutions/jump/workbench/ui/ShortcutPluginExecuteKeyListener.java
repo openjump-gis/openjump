@@ -4,6 +4,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.HashMap;
 
+import org.openjump.core.CheckOS;
+
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
@@ -18,8 +20,18 @@ public class ShortcutPluginExecuteKeyListener implements KeyListener {
     this.workbenchContext = wbc;
   }
 
-  public void add(final int keyCode, final int modifiers, final PlugIn plugIn,
+  public void add(final int keyCode, int modifiers, final PlugIn plugIn,
       final EnableCheck enableCheck) {
+
+    // Mac always uses CMD key instead of CTRL, which is preserved 
+    // for left click context menu, right click emulation
+    if ( CheckOS.isMacOsx() && (modifiers & KeyEvent.CTRL_MASK)!=0 ){
+      // subtract Ctrl
+      modifiers -= KeyEvent.CTRL_MASK;
+      // add Meta
+      modifiers += KeyEvent.META_MASK;
+    }
+
     keyCodeAndModifiersToPlugInAndEnableCheckMap.put(keyCode + ":" + modifiers,
         new Object[] { plugIn, enableCheck });
   }
@@ -40,7 +52,9 @@ public class ShortcutPluginExecuteKeyListener implements KeyListener {
 
     PlugIn plugIn = (PlugIn) plugInAndEnableCheck[0];
     EnableCheck enableCheck = (EnableCheck) plugInAndEnableCheck[1];
-    if (enableCheck != null && enableCheck.check(null) != null) {
+    String msg = null;
+    if (enableCheck != null && (msg=enableCheck.check(null)) != null) {
+      workbenchContext.getWorkbench().getFrame().warnUser(msg);
       return;
     }
     // #toActionListener handles checking if the plugIn is a

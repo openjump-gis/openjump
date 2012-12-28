@@ -43,8 +43,16 @@ import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
 
 import org.openjump.OpenJumpConfiguration;
-
- 
+import org.openjump.core.ui.plugin.mousemenu.DuplicateItemPlugIn;
+import org.openjump.core.ui.plugin.mousemenu.MergeSelectedFeaturesPlugIn;
+import org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel;
+import org.openjump.core.ui.plugin.tools.AdvancedMeasureTool;
+import org.openjump.core.ui.plugin.tools.ZoomRealtimeTool;
+import org.openjump.core.ui.plugin.view.ShowScalePlugIn;
+import org.openjump.core.ui.plugin.view.SuperZoomPanTool;
+import org.openjump.core.ui.plugin.view.helpclassescale.InstallShowScalePlugIn;
+import org.openjump.core.ui.plugin.view.helpclassescale.ShowScaleRenderer;
+import org.openjump.core.ui.plugin.window.ArrangeViewsPlugIn;
 
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
@@ -54,7 +62,6 @@ import com.vividsolutions.jump.datastore.postgis.PostgisDataStoreDriver;
 import com.vividsolutions.jump.workbench.datasource.AbstractSaveDatasetAsPlugIn;
 import com.vividsolutions.jump.workbench.datasource.InstallStandardDataSourceQueryChoosersPlugIn;
 import com.vividsolutions.jump.workbench.datasource.LoadDatasetPlugIn;
-import com.vividsolutions.jump.workbench.datasource.SaveDatasetAsFilePlugIn;
 import com.vividsolutions.jump.workbench.datasource.SaveDatasetAsPlugIn;
 import com.vividsolutions.jump.workbench.datastore.ConnectionManager;
 import com.vividsolutions.jump.workbench.model.Layer;
@@ -77,7 +84,6 @@ import com.vividsolutions.jump.workbench.ui.cursortool.CursorTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.DrawPolygonFenceTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.DrawRectangleFenceTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.FeatureInfoTool;
-import com.vividsolutions.jump.workbench.ui.cursortool.MeasureTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.OrCompositeTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.QuasimodeTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.SelectFeaturesTool;
@@ -115,7 +121,6 @@ import com.vividsolutions.jump.workbench.ui.plugin.RemoveSelectedLayersPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.SaveImageAsPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.SaveProjectAsPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.SaveProjectPlugIn;
-import com.vividsolutions.jump.workbench.ui.plugin.SelectFeaturesInFencePlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.SelectablePlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.ShortcutKeysPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.UndoPlugIn;
@@ -133,10 +138,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.clipboard.PasteLayersPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.datastore.AddDatastoreLayerPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.datastore.InstallDatastoreLayerRendererHintsPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.datastore.RefreshDataStoreLayerPlugin;
-//import com.vividsolutions.jump.workbench.ui.plugin.datastore.RunDatastoreQueryPlugIn;
-//import com.vividsolutions.jump.workbench.ui.plugin.imagery.AddImageLayerPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.imagery.ImageLayerManagerPlugIn;
-import com.vividsolutions.jump.workbench.ui.plugin.imagery.InstallReferencedImageFactoriesPlugin;
 import com.vividsolutions.jump.workbench.ui.plugin.scalebar.InstallScaleBarPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.scalebar.ScaleBarPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.scalebar.ScaleBarRenderer;
@@ -171,20 +173,6 @@ import com.vividsolutions.jump.workbench.ui.zoom.ZoomToSelectedItemsPlugIn;
 import com.vividsolutions.jump.workbench.ui.zoom.ZoomTool;
 
 import de.latlon.deejump.plugin.style.DeeChangeStylesPlugIn;
-
-import org.openjump.core.CheckOS;
-import org.openjump.core.ui.plugin.mousemenu.DuplicateItemPlugIn;
-import org.openjump.core.ui.plugin.mousemenu.MergeSelectedFeaturesPlugIn;
-import org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel;
-import org.openjump.core.ui.plugin.tools.AdvancedMeasurePlugin;
-import org.openjump.core.ui.plugin.tools.AdvancedMeasureTool;
-import org.openjump.core.ui.plugin.tools.ZoomRealtimeTool;
-import org.openjump.core.ui.plugin.view.ShowScalePlugIn;
-import org.openjump.core.ui.plugin.view.SuperZoomPanTool;
-import org.openjump.core.ui.plugin.view.helpclassescale.InstallShowScalePlugIn;
-import org.openjump.core.ui.plugin.view.helpclassescale.InstallShowScalePlugIn;
-import org.openjump.core.ui.plugin.view.helpclassescale.ShowScaleRenderer;
-import org.openjump.core.ui.plugin.window.ArrangeViewsPlugIn;
 
 /**
  * Initializes the Workbench with various menus and cursor tools. Accesses the
@@ -293,8 +281,6 @@ public class JUMPConfiguration implements Setup {
     private SaveProjectPlugIn saveProjectPlugIn = new SaveProjectPlugIn(
             saveProjectAsPlugIn);
 
-    private SelectFeaturesInFencePlugIn selectFeaturesInFencePlugIn = new SelectFeaturesInFencePlugIn();
-    
     private ShowScalePlugIn showScalePlugIn = new ShowScalePlugIn();
 
     private ScaleBarPlugIn scaleBarPlugIn = new ScaleBarPlugIn();
@@ -677,13 +663,7 @@ public class JUMPConfiguration implements Setup {
         //featureInstaller.addPopupMenuItem(popupMenu, zoomToClickPlugIn,
         //        I18N.get("JUMPConfiguration.zoom-out"), false, null, null);
         popupMenu.addSeparator(); // ===================
-        /*//[sstein] 23Mar2009 -- remove from layer view context menu to get space
-        //                      but is still to be found in >edit>selection> 
-        featureInstaller.addPopupMenuItem(popupMenu,
-                selectFeaturesInFencePlugIn, selectFeaturesInFencePlugIn
-                        .getName(), false, null, SelectFeaturesInFencePlugIn
-                        .createEnableCheck(workbenchContext));
-        */
+
         featureInstaller.addPopupMenuItem(popupMenu, cutSelectedItemsPlugIn,
                 cutSelectedItemsPlugIn.getName(), false, CutSelectedItemsPlugIn.ICON,
                 cutSelectedItemsPlugIn.createEnableCheck(workbenchContext));
@@ -783,11 +763,8 @@ public class JUMPConfiguration implements Setup {
         
         FeatureInstaller.addMainMenu(featureInstaller, new String[] {
                 MenuNames.EDIT
-              }, MenuNames.SELECTION, 6);  
-        featureInstaller.addMainMenuItem(selectFeaturesInFencePlugIn, 
-                new String[] {MenuNames.EDIT, MenuNames.SELECTION},
-                selectFeaturesInFencePlugIn.getName(), false, null,
-                SelectFeaturesInFencePlugIn.createEnableCheck(workbenchContext));
+              }, MenuNames.SELECTION, 6);
+
         featureInstaller.addMainMenuItem(clearSelectionPlugIn, new String[] {MenuNames.EDIT},
                 clearSelectionPlugIn.getName(),false, null, clearSelectionPlugIn
                         .createEnableCheck(workbenchContext));
