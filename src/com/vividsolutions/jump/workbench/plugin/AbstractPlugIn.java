@@ -53,7 +53,7 @@ import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
  * for example), and supporting undo.
  */
 public abstract class AbstractPlugIn implements PlugIn {
-	private static Logger LOG = Logger.getLogger(AbstractPlugIn.class);
+    private static Logger LOG = Logger.getLogger(AbstractPlugIn.class);
     protected void execute(UndoableCommand command, PlugInContext context) {
         execute(command, context.getLayerViewPanel());
     }
