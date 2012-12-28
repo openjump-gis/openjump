@@ -456,8 +456,7 @@ public abstract class AbstractCursorTool implements CursorTool {
 	}
 
 	public static JUMPWorkbench workbench(LayerViewPanel panel) {
-		return ((WorkbenchFrame) SwingUtilities.getAncestorOfClass(
-				WorkbenchFrame.class, panel)).getContext().getWorkbench();
+		return JUMPWorkbench.getWorkBench();
 	}
 
 	protected abstract void gestureFinished() throws Exception;
