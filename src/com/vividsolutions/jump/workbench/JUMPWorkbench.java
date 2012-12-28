@@ -125,6 +125,7 @@ public class JUMPWorkbench {
   // <<TODO:REFACTORING>> Move images package under
   // com.vividsolutions.jump.workbench
   // to avoid naming conflicts with other libraries. [Jon Aquino]
+  private static JUMPWorkbench workbench;
   private static CommandLine commandLine;
   private WorkbenchContext context = new JUMPWorkbenchContext(this);
   private WorkbenchFrame frame;
@@ -401,7 +402,7 @@ public class JUMPWorkbench {
     splashWindow.setVisible(true);
 
     taskMonitor.report(I18N.get("JUMPWorkbench.status.create"));
-    final JUMPWorkbench workbench = new JUMPWorkbench(title, args,
+    workbench = new JUMPWorkbench(title, args,
         splashWindow, taskMonitor);
 
     taskMonitor.report(I18N.get("JUMPWorkbench.status.configure-core"));
@@ -539,6 +540,13 @@ public class JUMPWorkbench {
 
   public static final CommandLine getCommandLine(){
     return commandLine;
+  }
+
+  /**
+   * @return JUMPWorkbench instance
+   */
+  public static final JUMPWorkbench getWorkBench(){
+    return workbench;
   }
 
   private static void parseCommandLine(String[] args) throws WorkbenchException {
