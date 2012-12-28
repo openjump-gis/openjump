@@ -49,14 +49,13 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class UndoPlugIn extends AbstractPlugIn {
-  private String sName = "undo";
   private MultiEnableCheck check = null;
+  private ImageIcon icon = IconLoader.icon("Undo.gif");
 
   public UndoPlugIn() {
   }
 
   public void initialize(PlugInContext context) throws Exception {
-    sName = I18N.get("com.vividsolutions.jump.workbench.ui.plugin.UndoPlugIn");
     context.getWorkbenchFrame().addKeyboardShortcut(KeyEvent.VK_Z,
         KeyEvent.CTRL_MASK, this,
         createEnableCheck(context.getWorkbenchContext()));
@@ -93,12 +92,7 @@ public class UndoPlugIn extends AbstractPlugIn {
   }
 
   public ImageIcon getIcon() {
-    // return IconLoaderFamFam.icon("arrow_undo.png");
-    return IconLoader.icon("Undo.gif");
+    return icon;
   }
 
-  @Override
-  public String getName() {
-    return sName;
-  }
 }

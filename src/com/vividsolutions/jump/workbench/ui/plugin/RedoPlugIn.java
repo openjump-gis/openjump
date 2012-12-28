@@ -49,14 +49,13 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class RedoPlugIn extends AbstractPlugIn {
-  private String sName = "redo";
   private MultiEnableCheck check = null;
+  private ImageIcon icon = IconLoader.icon("Redo.gif");
 
   public RedoPlugIn() {
   }
 
   public void initialize(PlugInContext context) throws Exception {
-    sName = I18N.get("com.vividsolutions.jump.workbench.ui.plugin.RedoPlugIn");
     context.getWorkbenchFrame().addKeyboardShortcut(KeyEvent.VK_Y,
         KeyEvent.CTRL_MASK, this,
         createEnableCheck(context.getWorkbenchContext()));
@@ -91,14 +90,9 @@ public class RedoPlugIn extends AbstractPlugIn {
     }
     return check;
   }
-
+  
   public ImageIcon getIcon() {
-    // return IconLoaderFamFam.icon("arrow_redo.png");
-    return IconLoader.icon("Redo.gif");
+    return icon;
   }
 
-  @Override
-  public String getName() {
-    return sName;
-  }
 }
