@@ -52,7 +52,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -73,6 +72,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
+import javax.swing.MenuElement;
+import javax.swing.MenuSelectionManager;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.WindowConstants;
@@ -128,7 +130,23 @@ public class WorkbenchFrame extends JFrame
 
   BorderLayout borderLayout1 = new BorderLayout();
 
-  JMenuBar menuBar = new JMenuBar();
+  JMenuBar menuBar = new JMenuBar(){
+    @Override
+    public void processKeyEvent(KeyEvent e, MenuElement[] path,
+        MenuSelectionManager manager) {
+      super.processKeyEvent(e, path, manager);
+    }
+
+    @Override
+    protected boolean processKeyBinding(KeyStroke ks, KeyEvent e,
+        int condition, boolean pressed) {
+      // ignore RETURN as pushed when accepting geometries
+      if (e.getKeyChar()!=KeyEvent.VK_ENTER)
+        return super.processKeyBinding(ks, e, condition, pressed);
+      return false;
+    }
+    
+  };
 
   JMenu fileMenu = (JMenu) FeatureInstaller.installMnemonic(new JMenu(
       MenuNames.FILE), menuBar);
