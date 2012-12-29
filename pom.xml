@@ -15,6 +15,7 @@
   <properties>
     <version.release>snapshot</version.release>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+    <project.binaries>**/*.command,**/*.sh,**/*.bat,**/*.exe,**/MacOS/OpenJUMP</project.binaries>
   </properties>
   <profiles>
     <profile>
@@ -192,20 +193,20 @@
                       level="9">
                       <zipfileset dir="${recompress.folder}/core"
                         prefix="${version.string}-CORE"
-                        excludes="**/*.command,**/*.sh,**/*.bat,**/*.exe" />
+                        excludes="${project.binaries}" />
                       <zipfileset dir="${recompress.folder}/core"
                         prefix="${version.string}-CORE"
-                        includes="**/*.command,**/*.sh,**/*.bat,**/*.exe"
+                        includes="${project.binaries}"
                         filemode="755" />
                     </zip>
                     <zip destfile="${recompress.folder}/${portable.filename}-PLUS.zip"
                       level="9">
                       <zipfileset dir="${recompress.folder}/plus"
                         prefix="${version.string}-PLUS" 
-                        excludes="**/*.command,**/*.sh,**/*.bat,**/*.exe" />
+                        excludes="${project.binaries}" />
                       <zipfileset dir="${recompress.folder}/plus"
                         prefix="${version.string}-PLUS"
-                        includes="**/*.command,**/*.sh,**/*.bat,**/*.exe"
+                        includes="${project.binaries}"
                         filemode="755" />
                     </zip>
                   </target>
@@ -252,13 +253,14 @@
                       dest="${project.build.directory}/izpack/plus/pack0">
                       <cutdirsmapper dirs="1" />
                     </unzip>
-                    <!-- Set correct permissions for executables -->
+                    <!-- Set correct permissions for executables. Seems not to be respected 
+                         by izpack packer, hence it has to be done again in post-install -->
                     <chmod dir="${project.build.directory}/izpack" perm="644" type="file"
                       includes="**" verbose="true" />
                     <chmod dir="${project.build.directory}/izpack" perm="755" type="dir"
                       includes="**" verbose="true" />
                     <chmod dir="${project.build.directory}/izpack" perm="755" type="file"
-                      includes="**/*.command,**/*.sh,**/*.bat,**/*.exe" verbose="true" />
+                      includes="${project.binaries}" verbose="true" />
                     <!-- recompress jars -->
                     <taskdef name="p200ant"
                       classname="de.matthiasmann.p200ant.P200AntTask"
