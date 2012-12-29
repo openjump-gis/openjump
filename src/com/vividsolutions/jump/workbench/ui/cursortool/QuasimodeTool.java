@@ -45,6 +45,7 @@ import org.openjump.core.ui.plugin.view.SuperZoomPanTool;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.zoom.PanTool;
+import com.vividsolutions.jump.workbench.ui.zoom.ZoomTool;
 
 /**
  * Delegates to different CursorTools depending on whether various modifier keys
@@ -357,7 +358,7 @@ public class QuasimodeTool extends DelegatingTool {
   // }
 
   // keep one instance only per default shortcut
-  private static CursorTool zoom = new SuperZoomPanTool();
+  private static CursorTool zoom = new ZoomTool();
   private static CursorTool pan = new PanTool();
   private static SelectFeaturesTool selectFeaturesTool = new SelectFeaturesTool() {
     protected boolean selectedLayersOnly() {
@@ -370,8 +371,8 @@ public class QuasimodeTool extends DelegatingTool {
     QuasimodeTool quasimodeTool = tool instanceof QuasimodeTool ? (QuasimodeTool) tool
         : new QuasimodeTool(tool);
     quasimodeTool.add(new ModifierKeySpec(false, false, true), zoom);
-    // disabled cause shortcut is used by Ubuntu, use combined SuperZoomPanTool instead
-    //quasimodeTool.add(new ModifierKeySpec(false, true, true), pan);
+    // shortcut is used by Ubuntu
+    quasimodeTool.add(new ModifierKeySpec(false, true, true), pan);
 
     // using Shift we can actually add to the selction or deselct
     quasimodeTool.add(new ModifierKeySpec(true, false, false),
