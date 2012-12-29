@@ -127,31 +127,31 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
         //-- end
 
         for (int i = 0; i < panel.getModel().getRowCount(); i++) {
-        	//-- [sstein 10. Oct 2006] bugfix for colortheming by Ole
-        	String attributeName = panel.getModel().get(i).getName();
-        	newSchema.addAttribute(attributeName, panel.getModel().get(i).getType());
-        	if (oldSchema.hasAttribute(attributeName)) {
-        	    // [mmichaud - 2012-10-13]
-        	    if (newSchema.getAttributeType(attributeName)
-        	        .equals(oldSchema.getAttributeType(attributeName))) {
-        	        newSchema.setAttributeReadOnly(
-        	            newSchema.getAttributeIndex(attributeName),
-        	            oldSchema.isAttributeReadOnly(oldSchema.getAttributeIndex(attributeName))
-        	        );
-        	        newSchema.setOperation(
-        	            newSchema.getAttributeIndex(attributeName),
-        	            oldSchema.getOperation(oldSchema.getAttributeIndex(attributeName))
-        	        );
-        	    }
-        	    else {
-        		    if (ColorThemingStyle.get(layer) != null) {
-        		        layer.removeStyle(ColorThemingStyle.get(layer));
-        		        layer.getBasicStyle().setEnabled(true);
-        		        layer.fireAppearanceChanged();
-        		    }
-        		}
-        	}
-        	//-- END: added/modyfied by Ole        	
+            //-- [sstein 10. Oct 2006] bugfix for colortheming by Ole
+            String attributeName = panel.getModel().get(i).getName();
+            newSchema.addAttribute(attributeName, panel.getModel().get(i).getType());
+            if (oldSchema.hasAttribute(attributeName)) {
+                // [mmichaud - 2012-10-13]
+                if (newSchema.getAttributeType(attributeName)
+                    .equals(oldSchema.getAttributeType(attributeName))) {
+                    newSchema.setAttributeReadOnly(
+                        newSchema.getAttributeIndex(attributeName),
+                        oldSchema.isAttributeReadOnly(oldSchema.getAttributeIndex(attributeName))
+                    );
+                    newSchema.setOperation(
+                        newSchema.getAttributeIndex(attributeName),
+                        oldSchema.getOperation(oldSchema.getAttributeIndex(attributeName))
+                    );
+                }
+                else {
+                    if (ColorThemingStyle.get(layer) != null) {
+                        layer.removeStyle(ColorThemingStyle.get(layer));
+                        layer.getBasicStyle().setEnabled(true);
+                        layer.fireAppearanceChanged();
+                    }
+                }
+            }
+            //-- END: added/modyfied by Ole
         }
 
         List originalFeatures = layer.getFeatureCollectionWrapper().getFeatures();
@@ -232,7 +232,7 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
             }
 
             if (oldType == AttributeType.STRING) {
-                String oldString = (String) oldValue;
+                String oldString = oldValue!=null ? oldValue.toString() : "";
 
                 if (newType == AttributeType.STRING) {
                     return oldString;
@@ -243,7 +243,7 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
                         return new Integer(oldString);
                     } catch (NumberFormatException e) {
                         throw new ConversionException(
-                        	I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-integer")+" \"" +
+                            I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-integer")+" \"" +
                             limitLength(oldValue.toString()) + "\" (" + name +
                             ")");
                     }
@@ -254,7 +254,7 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
                         return new Double(oldString);
                     } catch (NumberFormatException e) {
                         throw new ConversionException(
-                        	I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-double")+" \"" +
+                            I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-double")+" \"" +
                             limitLength(oldValue.toString()) + "\" (" + name +
                             ")");
                     }
@@ -265,7 +265,7 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
                         return wktReader.read(oldString);
                     } catch (ParseException e) {
                         throw new ConversionException(
-                        	I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-geometry")+" \"" +
+                            I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-geometry")+" \"" +
                             limitLength(oldValue.toString()) + "\" (" + name +
                             ")");
                     }
@@ -276,7 +276,7 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
                         return dateParser.parse(oldString, false);
                     } catch (java.text.ParseException e) {
                         throw new ConversionException(
-                        	I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-date")+" \"" +
+                            I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-date")+" \"" +
                             limitLength(oldValue.toString()) + "\" (" + name +
                             ")");
                     }
@@ -300,7 +300,7 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
 
                 if (newType == AttributeType.GEOMETRY) {
                     throw new ConversionException(
-                    	I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-geometry")+" \"" +
+                        I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-geometry")+" \"" +
                         limitLength(oldValue.toString()) + "\" (" + name + ")");
                 }
 
@@ -309,7 +309,7 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
                         return dateParser.parse("" + oldInt, false);
                     } catch (java.text.ParseException e) {
                         throw new ConversionException(
-                        	I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-date")+" \"" +
+                            I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-date")+" \"" +
                             limitLength(oldValue.toString()) + "\" (" + name +
                             ")");
                     }
@@ -333,7 +333,7 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
 
                 if (newType == AttributeType.GEOMETRY) {
                     throw new ConversionException(
-                    	I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-geometry")+" \"" +
+                        I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-geometry")+" \"" +
                         limitLength(oldValue.toString()) + "\" (" + name + ")");
                 }
 
@@ -352,13 +352,13 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
 
                 if (newType == AttributeType.INTEGER) {
                     throw new ConversionException(
-                    		I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-integer")+" \"" +
+                            I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-integer")+" \"" +
                         limitLength(oldValue.toString()) + "\" (" + name + ")");
                 }
 
                 if (newType == AttributeType.DOUBLE) {
                     throw new ConversionException(
-                    	I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-double")+" \"" +
+                        I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-double")+" \"" +
                         limitLength(oldValue.toString()) + "\" (" + name + ")");
                 }
 
@@ -389,7 +389,7 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
 
                 if (newType == AttributeType.GEOMETRY) {
                     throw new ConversionException(
-                    	I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-geometry")+" \"" +
+                        I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-geometry")+" \"" +
                         limitLength(oldValue.toString()) + "\" (" + name + ")");
                 }
 
@@ -409,7 +409,7 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
                         return new Integer(((Number)oldValue).intValue());
                     }
                     throw new ConversionException(
-                    		I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-integer")+" \"" +
+                            I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-integer")+" \"" +
                         limitLength(oldValue.toString()) + "\" (" + name + ")");
                 }
 
@@ -418,21 +418,21 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
                         return new Double(((Number)oldValue).doubleValue());
                     }
                     throw new ConversionException(
-                    		I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-double")+" \"" +
+                            I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-double")+" \"" +
                         limitLength(oldValue.toString()) + "\" (" + name + ")");
                 }
 
                 if (newType == AttributeType.GEOMETRY) {
                     if (oldValue instanceof Geometry) return oldValue;
                     throw new ConversionException(
-                    	I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-geometry")+" \"" +
+                        I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-geometry")+" \"" +
                         limitLength(oldValue.toString()) + "\" (" + name + ")");
                 }
 
                 if (newType == AttributeType.DATE) {
                     if (oldValue instanceof Date) return oldValue;
                     throw new ConversionException(
-                    	I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-date")+" \"" +
+                        I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-date")+" \"" +
                         limitLength(oldValue.toString()) + "\" (" + name + ")");
                 }
             }
@@ -570,7 +570,7 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
                         }
 
                         switch (JOptionPane.showConfirmDialog(EditSchemaFrame.this,
-                        	I18N.get("ui.plugin.ViewSchemaPlugIn.apply-changes-to-schema"), "JUMP",
+                            I18N.get("ui.plugin.ViewSchemaPlugIn.apply-changes-to-schema"), "JUMP",
                             JOptionPane.YES_NO_CANCEL_OPTION,
                             JOptionPane.WARNING_MESSAGE)) {
                         case JOptionPane.YES_OPTION:
@@ -604,9 +604,9 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
 
         private void updateTitle(Layer layer) {
             setTitle((layer.isEditable() ? 
-            		I18N.get("ui.plugin.ViewSchemaPlugIn.edit") : 
-            		I18N.get("ui.plugin.ViewSchemaPlugIn.view")) 
-					+ " "+I18N.get("ui.plugin.ViewSchemaPlugIn.schema")+": " +
+                    I18N.get("ui.plugin.ViewSchemaPlugIn.edit") : 
+                    I18N.get("ui.plugin.ViewSchemaPlugIn.view")) 
+                    + " "+I18N.get("ui.plugin.ViewSchemaPlugIn.schema")+": " +
                 layer.getName());
         }
 
