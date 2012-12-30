@@ -584,17 +584,6 @@ public class JUMPWorkbench {
     }
   }
 
-  private static void addProperties(WorkbenchProperties oldProperties,
-      WorkbenchProperties newProperties) throws Exception {
-    oldProperties.getPlugInClasses().addAll(newProperties.getPlugInClasses());
-    oldProperties.getInputDriverClasses().addAll(
-        newProperties.getInputDriverClasses());
-    oldProperties.getOutputDriverClasses().addAll(
-        newProperties.getOutputDriverClasses());
-    oldProperties.getConfigurationClasses().addAll(
-        newProperties.getConfigurationClasses());
-  }
-
   public PlugInManager getPlugInManager() {
     return plugInManager;
   }

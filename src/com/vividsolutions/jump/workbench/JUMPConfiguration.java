@@ -72,6 +72,7 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.plugin.ShortcutPlugin;
 import com.vividsolutions.jump.workbench.ui.ApplicationExitHandler;
 import com.vividsolutions.jump.workbench.ui.AttributeTab;
 import com.vividsolutions.jump.workbench.ui.CloneableInternalFrame;
@@ -1468,9 +1469,10 @@ public void configureDatastores(final WorkbenchContext context) throws Exception
             throws Exception {
         Field[] fields = getClass().getDeclaredFields();
 
+        Object field = null;
+        final PlugInContext plugInContext = new PlugInContext(workbenchContext, null,
+            null, null, null);
         for (int i = 0; i < fields.length; i++) {
-            Object field = null;
-
             try {
                 field = fields[i].get(this);
             } catch (IllegalAccessException e) {
@@ -1482,8 +1484,11 @@ public void configureDatastores(final WorkbenchContext context) throws Exception
             }
 
             PlugIn plugIn = (PlugIn) field;
-            plugIn.initialize(new PlugInContext(workbenchContext, null, null,
-                    null, null));
+            plugIn.initialize(plugInContext);
+            
+            // register shortcuts of plugins
+            if (plugIn instanceof ShortcutPlugin)
+              ((ShortcutPlugin)plugIn).registerShortcut();
         }
     }
 }
