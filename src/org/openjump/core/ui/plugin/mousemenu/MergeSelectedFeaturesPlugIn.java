@@ -32,6 +32,7 @@
 
 package org.openjump.core.ui.plugin.mousemenu;
 
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -63,89 +64,102 @@ import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
-
 /**
- * A¨PlugIn to merge selected features. Polygon are unioned while linestring
- * are merged.
+ * A¨PlugIn to merge selected features. Polygon are unioned while linestring are
+ * merged.
+ * 
  * @author Micha&euml;l MICHAUD
  **/
 public class MergeSelectedFeaturesPlugIn extends AbstractPlugIn {
 
-	private static final ImageIcon ICON = IconLoader.icon("features_merge.png");
-    
-    public ImageIcon getIcon() {
-        return ICON;
+  private static final ImageIcon ICON = IconLoader.icon("features_merge.png");
+
+  public ImageIcon getIcon() {
+    return ICON;
+  }
+
+  public MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
+    EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+    return new MultiEnableCheck()
+        .add(checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck())
+        .add(checkFactory.createExactlyNLayersMustHaveSelectedItemsCheck(1))
+        .add(checkFactory.createAtLeastNFeaturesMustHaveSelectedItemsCheck(2))
+        .add(checkFactory.createSelectedItemsLayersMustBeEditableCheck());
+  }
+
+  public void initialize(PlugInContext context) throws Exception {
+    context.getWorkbenchFrame().addKeyboardShortcut(KeyEvent.VK_U,
+        KeyEvent.CTRL_MASK, this,
+        createEnableCheck(context.getWorkbenchContext()));
+  }
+
+  public boolean execute(PlugInContext context) throws Exception {
+
+    final Collection features = context.getWorkbenchContext()
+        .getLayerViewPanel().getSelectionManager()
+        .getFeaturesWithSelectedItems();
+    final Layer layer = (Layer) context.getWorkbenchContext()
+        .getLayerViewPanel().getSelectionManager().getLayersWithSelectedItems()
+        .iterator().next();
+
+    Collection points = new ArrayList();
+    Collection linestrings = new ArrayList();
+    Collection polygons = new ArrayList();
+    distribute(features, points, linestrings, polygons);
+
+    // Merge linear features
+    LineMerger merger = new LineMerger();
+    merger.add(linestrings);
+    linestrings = merger.getMergedLineStrings();
+
+    // Union all features
+    Collection geometries = new ArrayList(polygons);
+    geometries.addAll(linestrings);
+    geometries.addAll(points);
+    Geometry geometry = UnaryUnionOp.union(geometries);
+
+    Iterator iterator = features.iterator();
+    final Feature mergedFeature = (Feature) ((Feature) iterator.next()).clone();
+    mergedFeature.setGeometry(geometry);
+
+    execute(new UndoableCommand(getName()) {
+      public void execute() {
+        layer.getFeatureCollectionWrapper().removeAll(features);
+        layer.getFeatureCollectionWrapper().add(mergedFeature);
+      }
+
+      public void unexecute() {
+        layer.getFeatureCollectionWrapper().remove(mergedFeature);
+        layer.getFeatureCollectionWrapper().addAll(features);
+      }
+    }, context);
+
+    context.getWorkbenchContext().getLayerViewPanel().getSelectionManager()
+        .clear();
+    // select the result so that it is easy to add a explode feature step
+    context.getWorkbenchContext().getLayerViewPanel().getSelectionManager()
+        .getFeatureSelection().selectItems(layer, mergedFeature);
+    return true;
+  }
+
+  private void distribute(Collection features, Collection points,
+      Collection linestrings, Collection polygons) {
+    for (Iterator it = features.iterator(); it.hasNext();) {
+      Feature feature = (Feature) it.next();
+      Geometry geometry = feature.getGeometry();
+      if (geometry instanceof Point)
+        points.add(geometry);
+      else if (geometry instanceof LineString)
+        linestrings.add(geometry);
+      else if (geometry instanceof Polygon)
+        polygons.add(geometry);
+      else if (geometry instanceof GeometryCollection) {
+        for (int i = 0; i < geometry.getNumGeometries(); i++) {
+          distribute(Collections.singletonList(geometry.getGeometryN(i)),
+              points, linestrings, polygons);
+        }
+      }
     }
-    
-    public MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
-        return new MultiEnableCheck()
-            .add(checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck())
-            .add(checkFactory.createExactlyNLayersMustHaveSelectedItemsCheck(1))
-            .add(checkFactory.createAtLeastNFeaturesMustHaveSelectedItemsCheck(2))
-            .add(checkFactory.createSelectedItemsLayersMustBeEditableCheck());
-    }
-    
-	public boolean execute(PlugInContext context) throws Exception {
-    	        		
-	    final Collection features = context.getWorkbenchContext().getLayerViewPanel()
-	            .getSelectionManager().getFeaturesWithSelectedItems();
-	    final Layer layer = (Layer)context.getWorkbenchContext().getLayerViewPanel()
-	            .getSelectionManager().getLayersWithSelectedItems().iterator().next();
-	    
-	    Collection points = new ArrayList();
-	    Collection linestrings = new ArrayList();
-	    Collection polygons = new ArrayList();
-	    distribute(features, points, linestrings, polygons);
-	    
-	    // Merge linear features
-	    LineMerger merger = new LineMerger();
-	    merger.add(linestrings);
-	    linestrings = merger.getMergedLineStrings();
-	    
-	    // Union all features
-	    Collection geometries = new ArrayList(polygons);
-	    geometries.addAll(linestrings);
-	    geometries.addAll(points);
-	    Geometry geometry = UnaryUnionOp.union(geometries);
-	    
-	    Iterator iterator = features.iterator();
-	    final Feature mergedFeature = (Feature)((Feature)iterator.next()).clone();
-	    mergedFeature.setGeometry(geometry);
-	    
-	    execute(new UndoableCommand(getName()) {
-            public void execute() {
-                layer.getFeatureCollectionWrapper().removeAll(features);
-                layer.getFeatureCollectionWrapper().add(mergedFeature);
-            }
-            public void unexecute() {
-                layer.getFeatureCollectionWrapper().remove(mergedFeature);
-                layer.getFeatureCollectionWrapper().addAll(features);
-            }
-        }, context);
-	    
-    	context.getWorkbenchContext().getLayerViewPanel().getSelectionManager().clear();
-    	// select the result so that it is easy to add a explode feature step
-    	context.getWorkbenchContext().getLayerViewPanel().getSelectionManager().getFeatureSelection().selectItems(layer, mergedFeature);
-	    return true;
-    }	
-	
-	private void distribute(Collection features, Collection points, 
-	                                           Collection linestrings, 
-	                                           Collection polygons) {
-	    for (Iterator it = features.iterator() ; it.hasNext() ; ) {
-	        Feature feature = (Feature)it.next();
-	        Geometry geometry = feature.getGeometry();
-	        if (geometry instanceof Point) points.add(geometry);
-	        else if (geometry instanceof LineString) linestrings.add(geometry);
-	        else if (geometry instanceof Polygon) polygons.add(geometry);
-	        else if (geometry instanceof GeometryCollection) {
-	            for (int i = 0 ; i < geometry.getNumGeometries() ; i++) {
-	                distribute(Collections.singletonList(geometry.getGeometryN(i)), 
-	                    points, linestrings, polygons);
-	            }
-	        }
-	    }
-    }
-  
+  }
+
 }
