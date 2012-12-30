@@ -52,14 +52,8 @@ public class CopySelectedItemsPlugIn extends AbstractPlugIn {
   // free to modify the original afterwards, and again when the user hits Paste,
   // so she is free to modify the first copy then hit Paste again. [Jon Aquino]
   public CopySelectedItemsPlugIn() {
-  }
-
-  public void initialize(PlugInContext context) throws Exception {
-    super.initialize(context);
-    context.getWorkbenchFrame().
-    addKeyboardShortcut(KeyEvent.VK_C,
-        KeyEvent.CTRL_MASK, this,
-        createEnableCheck(context.getWorkbenchContext()));
+    this.setShortcutKeys(KeyEvent.VK_C);
+    this.setShortcutModifiers(KeyEvent.CTRL_MASK);
   }
 
   public static ImageIcon ICON = IconLoader.icon("items_copy.png");

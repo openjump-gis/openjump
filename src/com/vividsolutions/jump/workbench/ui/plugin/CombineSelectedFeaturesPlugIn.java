@@ -61,13 +61,12 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 
 public class CombineSelectedFeaturesPlugIn extends AbstractPlugIn {
-
   public static ImageIcon ICON = IconLoader.icon("features_combine.png");
 
-  public void initialize(PlugInContext context) throws Exception {
-    context.getWorkbenchFrame().addKeyboardShortcut(KeyEvent.VK_G,
-        KeyEvent.CTRL_MASK, this,
-        createEnableCheck(context.getWorkbenchContext()));
+  public CombineSelectedFeaturesPlugIn() {
+    super();
+    this.setShortcutKeys(KeyEvent.VK_G);
+    this.setShortcutModifiers(KeyEvent.CTRL_MASK);
   }
 
   public boolean execute(final PlugInContext context) throws Exception {

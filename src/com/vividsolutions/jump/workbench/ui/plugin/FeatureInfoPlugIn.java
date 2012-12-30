@@ -54,7 +54,10 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 public class FeatureInfoPlugIn extends AbstractPlugIn {
     private static EnableCheck checker = null;
 
-    public FeatureInfoPlugIn() {}
+    public FeatureInfoPlugIn() {
+      this.setShortcutKeys(KeyEvent.VK_I);
+      this.setShortcutModifiers(KeyEvent.ALT_MASK);
+    }
 
     public static final ImageIcon ICON = IconLoader.icon("information_16x16.png");
 
@@ -71,14 +74,6 @@ public class FeatureInfoPlugIn extends AbstractPlugIn {
             .add(checkFactory.createAtLeastNItemsMustBeSelectedCheck(1));
       }
       return checker;
-    }
-
-    @Override
-    public void initialize(PlugInContext context) throws Exception {
-      super.initialize(context);
-      context.getWorkbenchFrame().addKeyboardShortcut(KeyEvent.VK_I,
-          KeyEvent.ALT_MASK, this,
-          createEnableCheck(context.getWorkbenchContext()));
     }
 
     public boolean execute(PlugInContext context) throws Exception {

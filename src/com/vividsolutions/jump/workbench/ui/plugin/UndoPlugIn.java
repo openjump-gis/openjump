@@ -53,12 +53,8 @@ public class UndoPlugIn extends AbstractPlugIn {
   private ImageIcon icon = IconLoader.icon("Undo.gif");
 
   public UndoPlugIn() {
-  }
-
-  public void initialize(PlugInContext context) throws Exception {
-    context.getWorkbenchFrame().addKeyboardShortcut(KeyEvent.VK_Z,
-        KeyEvent.CTRL_MASK, this,
-        createEnableCheck(context.getWorkbenchContext()));
+    this.setShortcutKeys(KeyEvent.VK_Z);
+    this.setShortcutModifiers(KeyEvent.CTRL_MASK);
   }
 
   public boolean execute(PlugInContext context) throws Exception {

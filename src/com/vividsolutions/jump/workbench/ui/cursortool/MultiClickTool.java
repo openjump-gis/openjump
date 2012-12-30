@@ -63,9 +63,6 @@ public abstract class MultiClickTool extends AbstractCursorTool {
   // set this to true if rubber band should be closed
   private boolean closeRing = false;
   private CoordinateListMetrics metrics = null;
-  private LayerViewPanel panel;
-  private WorkbenchFrame frame;
-  private boolean activated = false; // LDB: prevent multiple activate
 
   public MultiClickTool() {
   }
@@ -257,24 +254,19 @@ public abstract class MultiClickTool extends AbstractCursorTool {
 
   public void deactivate() {
     super.deactivate();
-    frame = panel.getWorkBenchFrame();
-    frame.removeEasyKeyListener(keyListener);
-    activated = false;
+    getWorkbenchFrame().removeEasyKeyListener(keyListener);
   }
 
-  public void activate(LayerViewPanel layerViewPanel) {
-    // cancel gestures if we switch LayerViews (switch Tasks)
-    if ((panel != null) && !(panel.equals(layerViewPanel))) {
+  public void activate(LayerViewPanel new_panel) {
+    LayerViewPanel panel = getPanel();
+    // cancel ongoing possibly gestures if we switch LayerViews (switch Tasks)
+    if ((panel != null) && !(panel.equals(new_panel))) {
       cancelGesture();
     }
 
-    super.activate(layerViewPanel);
-    panel = layerViewPanel;
-
+    super.activate(new_panel);
     // following added to handle Backspace key deletes last vertex
-    frame = panel.getWorkBenchFrame();
-    frame.addEasyKeyListener(keyListener);
-    activated = true;
+    getWorkbenchFrame().addEasyKeyListener(keyListener);
   }
 
   private KeyListener keyListener = new KeyListener() {

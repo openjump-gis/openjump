@@ -55,6 +55,13 @@ public class SaveProjectAsPlugIn extends AbstractSaveProjectPlugIn {
         
     private JFileChooser fileChooser;
     
+
+    public SaveProjectAsPlugIn() {
+      super();
+      this.setShortcutKeys(KeyEvent.VK_S);
+      this.setShortcutModifiers(KeyEvent.CTRL_MASK+KeyEvent.SHIFT_MASK);
+    }
+
     public void initialize(PlugInContext context) throws Exception {
         //Don't initialize fileChooser at field declaration; otherwise get
         // intermittent
@@ -87,8 +94,6 @@ public class SaveProjectAsPlugIn extends AbstractSaveProjectPlugIn {
             fileChooser.setCurrentDirectory(new File(dir));
         }
         
-        context.getWorkbenchFrame().addKeyboardShortcut(KeyEvent.VK_S,
-            KeyEvent.CTRL_MASK + KeyEvent.SHIFT_MASK, this, null);
     }
     
     public String getName() {

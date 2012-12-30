@@ -140,10 +140,12 @@ public class WorkbenchFrame extends JFrame
     @Override
     protected boolean processKeyBinding(KeyStroke ks, KeyEvent e,
         int condition, boolean pressed) {
-      // ignore RETURN as pushed when accepting geometries
-      if (e.getKeyChar()!=KeyEvent.VK_ENTER)
-        return super.processKeyBinding(ks, e, condition, pressed);
-      return false;
+      // ignore RETURN as pushed when accepting geometries after ALT was
+      // pressed
+      if (ks.getKeyCode()==KeyEvent.VK_ENTER)
+        return false;
+      
+      return super.processKeyBinding(ks, e, condition, pressed);
     }
     
   };
@@ -1239,10 +1241,10 @@ public class WorkbenchFrame extends JFrame
    */
   public void addKeyboardShortcut(final int keyCode, final int modifiers,
       final PlugIn plugIn, final EnableCheck enableCheck) {
-    // warn on overwriting shortcuts
-    if (shortcutListener.contains(keyCode, modifiers)
-        && ((PlugIn) shortcutListener.get(keyCode, modifiers)[0]).getName() != plugIn
-            .getName())
+    // warn on overwriting shortcuts, only to console "KISS"
+    if (shortcutListener.containsDefinition(keyCode, modifiers)
+        /*&& ((PlugIn) shortcutListener.get(keyCode, modifiers)[0]).getName() != plugIn
+            .getName()*/)
       System.err.println("reassign shortcut "
           + KeyEvent.getKeyModifiersText(modifiers) + "/"
           + KeyEvent.getKeyText(keyCode) + " from "
@@ -1252,6 +1254,7 @@ public class WorkbenchFrame extends JFrame
     shortcutListener.add(keyCode, modifiers, plugIn, enableCheck);
   }
 
+  
   // ==========================================================================
   // Applications (such as EziLink) want to override the default JUMP
   // frame closing behaviour and application exit behaviour with their own

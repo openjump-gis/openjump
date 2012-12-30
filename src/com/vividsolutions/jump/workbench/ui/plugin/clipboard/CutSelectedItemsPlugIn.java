@@ -53,14 +53,8 @@ public class CutSelectedItemsPlugIn extends MacroPlugIn {
                 new CopySelectedItemsPlugIn(),
                 new DeleteSelectedItemsPlugIn()
             });
-    }
-
-    @Override
-    public void initialize(PlugInContext context) throws Exception {
-      super.initialize(context);
-      context.getWorkbenchFrame().addKeyboardShortcut(KeyEvent.VK_X,
-          KeyEvent.CTRL_MASK, this,
-          createEnableCheck(context.getWorkbenchContext()));
+        this.setShortcutKeys(KeyEvent.VK_X);
+        this.setShortcutModifiers(KeyEvent.CTRL_MASK);
     }
 
     public String getName() {

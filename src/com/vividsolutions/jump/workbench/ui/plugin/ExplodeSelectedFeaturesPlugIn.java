@@ -61,15 +61,14 @@ import com.vividsolutions.jump.workbench.ui.EditTransaction;
  * Other attributes are the same as the original one.
  */
 public class ExplodeSelectedFeaturesPlugIn extends AbstractPlugIn {
-
   public static ImageIcon ICON = IconLoader.icon("features_explode.png");
 
-  public void initialize(PlugInContext context) throws Exception {
-    context.getWorkbenchFrame().addKeyboardShortcut(KeyEvent.VK_G,
-        KeyEvent.CTRL_MASK + KeyEvent.SHIFT_MASK, this,
-        createEnableCheck(context.getWorkbenchContext()));
+  public ExplodeSelectedFeaturesPlugIn() {
+    super();
+    this.setShortcutKeys(KeyEvent.VK_G);
+    this.setShortcutModifiers(KeyEvent.CTRL_MASK + KeyEvent.SHIFT_MASK);
   }
-  
+
   public boolean execute(final PlugInContext context) throws Exception {
     final ArrayList transactions = new ArrayList();
     for (Iterator i = context.getLayerViewPanel().getSelectionManager()

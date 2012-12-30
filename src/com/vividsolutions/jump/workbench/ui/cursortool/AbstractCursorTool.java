@@ -232,6 +232,8 @@ public abstract class AbstractCursorTool implements CursorTool {
           I18N.get("ui.cursortool.AbstractCursorTool.activating") + " "
               + getName());
     }
+
+    
     // [ede 12.2012] disabled as LayerViewPanel holds listeners now in a HashSet
     // ensuring to have only one instance
     // if (this.panel != null) {
@@ -279,8 +281,7 @@ public abstract class AbstractCursorTool implements CursorTool {
     cancelGesture();
 
     // following added to handle SPACEBAR snap switching
-    WorkbenchFrame frame = panel.getWorkBenchFrame();
-    frame.removeEasyKeyListener(keyListener);
+    getWorkbenchFrame().removeEasyKeyListener(keyListener);
   }
 
 	public void mouseClicked(MouseEvent e) {
@@ -333,10 +334,6 @@ public abstract class AbstractCursorTool implements CursorTool {
 		graphics.setStroke(stroke);
 	}
 
-	protected LayerViewPanel getPanel() {
-		return panel;
-	}
-
 	/**
 	 * @return null if nothing should be drawn
 	 */
@@ -348,9 +345,10 @@ public abstract class AbstractCursorTool implements CursorTool {
 		graphics.setStroke(originalStroke);
 	}
 
-	protected void clearShape() {
-		clearShape(getGraphics2D());
-	}
+  protected void clearShape() {
+    if (panel != null)
+      clearShape(getGraphics2D());
+  }
 
 	private Graphics2D getGraphics2D() {
 		Graphics2D g = (Graphics2D) panel.getGraphics();
@@ -455,6 +453,10 @@ public abstract class AbstractCursorTool implements CursorTool {
 		return workbench(getPanel());
 	}
 
+  public WorkbenchFrame getWorkbenchFrame() {
+    return workbench(getPanel()).getFrame();
+  }
+
 	public static JUMPWorkbench workbench(LayerViewPanel panel) {
 		return JUMPWorkbench.getWorkBench();
 	}
@@ -516,6 +518,20 @@ public abstract class AbstractCursorTool implements CursorTool {
 	public String getName() {
 		return name(this);
 	}
+
+  public static final LayerViewPanel getPanel(CursorTool ct) {
+    if (ct instanceof AbstractCursorTool)
+      return ((AbstractCursorTool)ct).getPanel();
+    return null;
+  }
+	
+  public final LayerViewPanel getPanel() {
+    return this.panel;
+  }
+
+  protected void setPanel(LayerViewPanel panel) {
+    this.panel = panel;
+  }
 
   private static String name(CursorTool tool) {
     try {

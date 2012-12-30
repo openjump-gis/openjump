@@ -47,16 +47,13 @@ public class SaveProjectPlugIn extends AbstractSaveProjectPlugIn {
 
     public SaveProjectPlugIn(SaveProjectAsPlugIn saveProjectAsPlugIn) {
         this.saveProjectAsPlugIn = saveProjectAsPlugIn;
+        this.setShortcutKeys(KeyEvent.VK_S);
+        this.setShortcutModifiers(KeyEvent.CTRL_MASK);
     }
     
     public String getName() {
         return I18N.get("ui.plugin.SaveProjectPlugIn.save-project");
     }    
-
-    public void initialize(PlugInContext context) throws Exception {
-      context.getWorkbenchFrame().addKeyboardShortcut(KeyEvent.VK_S,
-          KeyEvent.CTRL_MASK, this, null);
-    }
 
     public boolean execute(PlugInContext context) throws Exception {
         reportNothingToUndoYet(context);

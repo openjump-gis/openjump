@@ -9,6 +9,7 @@ import java.awt.geom.NoninvertibleTransformException;
 import javax.swing.JInternalFrame;
 
 import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
@@ -50,6 +51,17 @@ public class InstallKeyPanPlugIn extends AbstractPlugIn {
     
     private static double panPercentage;
     
+    PlugIn zoom_in, zoom_out;
+    PlugIn[] plugIns =  
+        { this, new PanHelper( NORTH ), new PanHelper( EAST ), 
+            new PanHelper( SOUTH ), new PanHelper( WEST ), 
+            zoom_in=new PanHelper( ZOOM_IN ), zoom_out=new PanHelper( ZOOM_OUT ),
+            zoom_in, zoom_out, new PanHelper( ZOOM_FULL )};
+    
+    int[] keys = { KeyEvent.VK_HOME, KeyEvent.VK_UP, KeyEvent.VK_RIGHT, 
+            KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_PLUS, 
+            KeyEvent.VK_MINUS, KeyEvent.VK_ADD, KeyEvent.VK_SUBTRACT,
+            KeyEvent.VK_0};
     /**
      * Default constructor 
      */
@@ -115,22 +127,16 @@ public class InstallKeyPanPlugIn extends AbstractPlugIn {
     public void initialize(PlugInContext context) throws Exception {
         super.initialize(context);
         
-        PlugIn zoom_in, zoom_out;
-        PlugIn[] plugIns =  
-            { this, new PanHelper( NORTH ), new PanHelper( EAST ), 
-                new PanHelper( SOUTH ), new PanHelper( WEST ), 
-                zoom_in=new PanHelper( ZOOM_IN ), zoom_out=new PanHelper( ZOOM_OUT ),
-                zoom_in, zoom_out, new PanHelper( ZOOM_FULL )};
+ 
         
-        int[] keys = { KeyEvent.VK_HOME, KeyEvent.VK_UP, KeyEvent.VK_RIGHT, 
-                KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_PLUS, 
-                KeyEvent.VK_MINUS, KeyEvent.VK_ADD, KeyEvent.VK_SUBTRACT,
-                KeyEvent.VK_A};
-        
-        for (int i = 0; i < keys.length; i++) {
-            context.getWorkbenchContext().getWorkbench().getFrame()
-                .addKeyboardShortcut( keys[i], KeyEvent.ALT_MASK, plugIns[i], null);
-        }
+    }
+
+    public boolean registerShortcut() {
+      for (int i = 0; i < keys.length; i++) {
+        JUMPWorkbench.getWorkBench().getFrame()
+            .addKeyboardShortcut(keys[i], KeyEvent.CTRL_MASK, plugIns[i], null);
+      }
+      return true;
     }
 
     public String getName() { return ""; }

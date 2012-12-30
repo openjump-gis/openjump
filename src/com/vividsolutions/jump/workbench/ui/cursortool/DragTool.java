@@ -119,6 +119,7 @@ public abstract class DragTool extends AbstractCursorTool {
 
             setViewDestination(e.getPoint());
             redrawShape();
+            super.mouseDragged(e);
         } catch (Throwable t) {
             getPanel().getContext().handleThrowable(t);
         }
@@ -150,6 +151,7 @@ public abstract class DragTool extends AbstractCursorTool {
 
     public void mouseReleased(MouseEvent e) {
         try {
+            super.mouseReleased(e);
             boolean dragComplete = isShapeOnScreen();
             clearShape();
 

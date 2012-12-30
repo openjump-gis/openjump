@@ -64,6 +64,12 @@ public class SelectAllLayerItemsPlugIn extends AbstractPlugIn {
   private String name = I18N
       .get("org.openjump.core.ui.plugin.edit.SelectAllLayerItemsPlugIn.select-all-items-of-selected-layers");
 
+  public SelectAllLayerItemsPlugIn() {
+    super();
+    this.setShortcutKeys(KeyEvent.VK_A);
+    this.setShortcutModifiers(KeyEvent.CTRL_MASK);
+  }
+
   public void initialize(PlugInContext context) throws Exception {
 
     context
@@ -83,9 +89,6 @@ public class SelectAllLayerItemsPlugIn extends AbstractPlugIn {
             name,
             false, null, createEnableCheck(context.getWorkbenchContext()));
     
-    context.getWorkbenchFrame().addKeyboardShortcut(KeyEvent.VK_A,
-        KeyEvent.CTRL_MASK, this,
-        createEnableCheck(context.getWorkbenchContext()));
   }
 
   public static MultiEnableCheck createEnableCheck(

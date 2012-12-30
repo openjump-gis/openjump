@@ -106,8 +106,7 @@ public class TaskFrame extends JInternalFrame implements TaskFrameProxy,
               // re-set the current CursorTool, this effectively informs
               // CursorTools that the LayerView to work with has changed
               CursorTool ct = getLayerViewPanel().getCurrentCursorTool();
-              if (ct != null)
-                ct.activate(getLayerViewPanel());
+              getLayerViewPanel().setCurrentCursorTool(ct);
             }
             public void internalFrameDeactivated(InternalFrameEvent e) {
                 //Deactivate the current CursorTool. Otherwise, the following

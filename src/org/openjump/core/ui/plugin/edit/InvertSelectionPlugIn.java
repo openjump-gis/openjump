@@ -64,6 +64,12 @@ public class InvertSelectionPlugIn extends AbstractPlugIn {
   private String name = I18N
       .get("org.openjump.core.ui.plugin.edit.InvertSelectionPlugIn.invert-selection");
 
+    public InvertSelectionPlugIn() {
+      super();
+      this.setShortcutKeys(KeyEvent.VK_I);
+      this.setShortcutModifiers(KeyEvent.CTRL_MASK);
+    }
+
     public void initialize(PlugInContext context) throws Exception {
         context.getFeatureInstaller().addMainMenuItem(this,
             new String[]
@@ -72,10 +78,6 @@ public class InvertSelectionPlugIn extends AbstractPlugIn {
                 false,
                 null,
                 createEnableCheck(context.getWorkbenchContext())); //enable check
-
-        context.getWorkbenchFrame().addKeyboardShortcut(KeyEvent.VK_I,
-            KeyEvent.CTRL_MASK, this,
-            createEnableCheck(context.getWorkbenchContext()));
     }
 
     public boolean execute(final PlugInContext context) throws Exception {

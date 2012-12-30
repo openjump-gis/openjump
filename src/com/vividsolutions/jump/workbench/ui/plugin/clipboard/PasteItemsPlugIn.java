@@ -98,18 +98,16 @@ public class PasteItemsPlugIn extends AbstractPlugIn {
   // free to modify the original afterwards, and again when the user hits Paste,
   // so she is free to modify the first copy then hit Paste again. [Jon Aquino]
   public PasteItemsPlugIn() {
+    this.setShortcutKeys(KeyEvent.VK_V);
+    this.setShortcutModifiers(KeyEvent.CTRL_MASK);
   }
   
-  public String getNameWithMnemonic() {
-    return StringUtil.replace(getName(), "P", "&P", false);
+  public PasteItemsPlugIn(String name) {
+    super(name);
   }
 
-  @Override
-  public void initialize(PlugInContext context) throws Exception {
-    super.initialize(context);
-    context.getWorkbenchFrame().addKeyboardShortcut(KeyEvent.VK_V,
-        KeyEvent.CTRL_MASK, this,
-        createEnableCheck(context.getWorkbenchContext()));
+  public String getNameWithMnemonic() {
+    return StringUtil.replace(getName(), "P", "&P", false);
   }
 
   public boolean execute(final PlugInContext context) throws Exception {

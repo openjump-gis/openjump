@@ -47,6 +47,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.NoninvertibleTransformException;
@@ -122,7 +123,7 @@ public class LayerViewPanel extends JPanel
 	private CursorTool currentCursorTool = dummyCursorTool;
 	private Viewport viewport = new Viewport(this);
 	private boolean viewportInitialized = false;
-	private java.awt.Point lastClickedPoint;
+	private java.awt.Point lastClickedPoint, lastMouseLoc;
 	// no doubled listener entries
 	private HashSet listeners = new HashSet();
 	private LayerViewPanelContext context;
@@ -147,82 +148,95 @@ public class LayerViewPanel extends JPanel
 		}
 	}
 	
-	public LayerViewPanel(LayerManager layerManager,
-			LayerViewPanelContext context) {
-		//Errors occur if the LayerViewPanel is sized to 0. [Jon Aquino]
-		setMinimumSize(new Dimension(100, 100));
+  public LayerViewPanel(LayerManager layerManager, LayerViewPanelContext context) {
+    // Errors occur if the LayerViewPanel is sized to 0. [Jon Aquino]
+    setMinimumSize(new Dimension(100, 100));
 
-		//Set toolTipText to null to disable, "" to use default (i.e. show all
-		// attributes),
-		//or a custom template. [Jon Aquino]
-		setToolTipText("");
-		GUIUtil.fixClicks(this);
+    // Set toolTipText to null to disable, "" to use default (i.e. show all
+    // attributes),
+    // or a custom template. [Jon Aquino]
+    setToolTipText("");
+    GUIUtil.fixClicks(this);
 
-		try {
-			this.context = context;
-			this.layerManager = layerManager;
-			selectionManager = new SelectionManager(this, this);
-			fenceLayerFinder = new FenceLayerFinder(this);
+    try {
+      this.context = context;
+      this.layerManager = layerManager;
+      selectionManager = new SelectionManager(this, this);
+      fenceLayerFinder = new FenceLayerFinder(this);
 
-			//Immediately register with the LayerManager because
-			// #getLayerManager will
-			//be called right away (when #setBackground is called in #jbInit)
-			// [Jon Aquino]
-			layerManager.addLayerListener(this);
+      // Immediately register with the LayerManager because
+      // #getLayerManager will
+      // be called right away (when #setBackground is called in #jbInit)
+      // [Jon Aquino]
+      layerManager.addLayerListener(this);
 
-			try {
-				jbInit();
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-			addMouseListener(new MouseAdapter() {
-				public void mouseEntered(MouseEvent e) {
-					//Re-activate WorkbenchFrame. Otherwise, user may try
-					// entering
-					//a quasi-mode by pressing a modifier key -- nothing will
-					// happen because the
-					//WorkbenchFrame does not have focus. [Jon Aquino]
-					//JavaDoc for #toFront says some platforms will not
-					// activate the window.
-					//So use #requestFocus instead. [Jon Aquino 12/9/2003]
-					WorkbenchFrame workbenchFrame = getWorkBenchFrame();
-				    //[mmichaud 2012-02-24] get rid of the focus problem between
-				    // OpenJUMP and BeanshellEditor (bug #3487686)
-					Window focusedWindow = KeyboardFocusManager
-					        .getCurrentKeyboardFocusManager().getFocusedWindow();
-					if (focusedWindow != workbenchFrame) return;
-					if (workbenchFrame != null && !workbenchFrame.isActive()) {
-						workbenchFrame.requestFocus();
-					}
-				}
-			});
+      this.setBackground(Color.white);
+      this.addMouseListener(new java.awt.event.MouseAdapter() {
+        public void mousePressed(MouseEvent e) {
+          // popup triggers are pressed on Linux/OSX, released on Windows
+          if (e.isPopupTrigger())
+            this_mouseReleased(e);
+        }
 
-			addMouseMotionListener(new MouseMotionAdapter() {
-				public void mouseDragged(MouseEvent e) {
-					mouseLocationChanged(e);
-				}
+        public void mouseReleased(MouseEvent e) {
+          this_mouseReleased(e);
+        }
+      });
+      this.addComponentListener(new java.awt.event.ComponentAdapter() {
+        public void componentResized(ComponentEvent e) {
+          this_componentResized(e);
+        }
+      });
+      this.setLayout(borderLayout1);
 
-				public void mouseMoved(MouseEvent e) {
-					mouseLocationChanged(e);
-				}
+      addMouseListener(new MouseAdapter() {
+        public void mouseEntered(MouseEvent e) {
+          // Re-activate WorkbenchFrame. Otherwise, user may try
+          // entering
+          // a quasi-mode by pressing a modifier key -- nothing will
+          // happen because the
+          // WorkbenchFrame does not have focus. [Jon Aquino]
+          // JavaDoc for #toFront says some platforms will not
+          // activate the window.
+          // So use #requestFocus instead. [Jon Aquino 12/9/2003]
+          WorkbenchFrame workbenchFrame = getWorkBenchFrame();
+          // [mmichaud 2012-02-24] get rid of the focus problem between
+          // OpenJUMP and BeanshellEditor (bug #3487686)
+          Window focusedWindow = KeyboardFocusManager
+              .getCurrentKeyboardFocusManager().getFocusedWindow();
+          if (focusedWindow != workbenchFrame)
+            return;
+          if (workbenchFrame != null && !workbenchFrame.isActive()) {
+            workbenchFrame.requestFocus();
+          }
+        }
+      });
 
-				private void mouseLocationChanged(MouseEvent e) {
-					try {
-						Point2D p = getViewport().toModelPoint(e.getPoint());
-						fireCursorPositionChanged(format(p.getX()), format(p
-								.getY()));
-					} catch (Throwable t) {
-						LayerViewPanel.this.context.handleThrowable(t);
-					}
-				}
-			});
-			
-			addMouseWheelListener(new MouseWheelZoomListener() );
+      addMouseMotionListener(new MouseMotionAdapter() {
+        public void mouseDragged(MouseEvent e) {
+          mouseLocationChanged(e);
+        }
 
-		} catch (Throwable t) {
-			context.handleThrowable(t);
-		}
-	}
+        public void mouseMoved(MouseEvent e) {
+          mouseLocationChanged(e);
+        }
+
+        private void mouseLocationChanged(MouseEvent e) {
+          try {
+            Point2D p = getViewport().toModelPoint(lastMouseLoc=e.getPoint());
+            fireCursorPositionChanged(format(p.getX()), format(p.getY()));
+          } catch (Throwable t) {
+            LayerViewPanel.this.context.handleThrowable(t);
+          }
+        }
+      });
+
+      addMouseWheelListener(new MouseWheelZoomListener());
+
+    } catch (Throwable t) {
+      context.handleThrowable(t);
+    }
+  }
 
 	public ToolTipWriter getToolTipWriter() {
 		return toolTipWriter;
@@ -358,14 +372,17 @@ public class LayerViewPanel extends JPanel
     removeCurrentCursorTool();
     // add new
     currentCursorTool = newct;
+    newct.activate(this);
     setCursor(newct.getCursor());
     addMouseListener(newct);
     addMouseMotionListener(newct);
     //System.out.println("keylstnrs "+getWorkBenchFrame().easyKeyListeners);
+    //System.out.println("lvp set "+newct.getClass().getSimpleName()+"/"+newct.getName()+"@" + Integer.toHexString(hashCode())+" "+AbstractCursorTool.getPanel(newct));
   }
 
   public void removeCurrentCursorTool() {
     CursorTool oldct = this.currentCursorTool;
+    //System.out.println("lvp rem "+oldct.getClass().getSimpleName()+"/"+oldct.getName()+"@" + Integer.toHexString(hashCode())+" "+AbstractCursorTool.getPanel(oldct));
     setCursor(null);
     removeMouseListener(oldct);
     removeMouseMotionListener(oldct);
@@ -399,6 +416,10 @@ public class LayerViewPanel extends JPanel
 		return lastClickedPoint;
 	}
 
+  public java.awt.Point getLastMouseLocation() {
+    return lastMouseLoc;
+  }
+	
 	public Viewport getViewport() {
 		return viewport;
 	}
@@ -519,26 +540,6 @@ public class LayerViewPanel extends JPanel
 				getHeight());
 		g.fill(r);
 	}
-
-  void jbInit() throws Exception {
-    this.setBackground(Color.white);
-    this.addMouseListener(new java.awt.event.MouseAdapter() {
-      public void mousePressed(MouseEvent e) {
-        // popup triggers are pressed on Linux/OSX, released on Windows
-        if (e.isPopupTrigger())
-          this_mouseReleased(e);
-      }
-      public void mouseReleased(MouseEvent e) {
-        this_mouseReleased(e);
-      }
-    });
-    this.addComponentListener(new java.awt.event.ComponentAdapter() {
-      public void componentResized(ComponentEvent e) {
-        this_componentResized(e);
-      }
-    });
-    this.setLayout(borderLayout1);
-  }
 
 	void this_componentResized(ComponentEvent e) {
 		try {

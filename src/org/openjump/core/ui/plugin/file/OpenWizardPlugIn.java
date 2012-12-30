@@ -33,6 +33,8 @@ public class OpenWizardPlugIn extends AbstractThreadedUiPlugIn {
 
   public OpenWizardPlugIn() {
     super(I18N.get(KEY), IconLoader.icon("folder_add_small.png"));
+    this.setShortcutKeys(KeyEvent.VK_O);
+    this.setShortcutModifiers(KeyEvent.CTRL_MASK);
   }
 
   public static void addWizard(final WorkbenchContext workbenchContext,
@@ -60,9 +62,8 @@ public class OpenWizardPlugIn extends AbstractThreadedUiPlugIn {
     featureInstaller.addPopupMenuItem(frame.getCategoryPopupMenu(), this, name
       + "{pos:3}", false, icon, enableCheck);
     
-    // add workbench shortcut
-    context.getWorkbenchFrame().addKeyboardShortcut(KeyEvent.VK_O,
-        KeyEvent.CTRL_MASK, this, null);
+    // shortcut
+    registerShortcut();
   }
 
   public boolean execute(PlugInContext context) throws Exception {

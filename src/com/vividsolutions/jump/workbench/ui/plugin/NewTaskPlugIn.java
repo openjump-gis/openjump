@@ -46,14 +46,8 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class NewTaskPlugIn extends AbstractPlugIn {
     public NewTaskPlugIn() {
-    }
-
-    public void initialize(PlugInContext context) throws Exception {
-      super.initialize(context);
-      context.getWorkbenchFrame().
-      addKeyboardShortcut(KeyEvent.VK_N,
-          KeyEvent.CTRL_MASK, this,
-          null);
+      this.setShortcutKeys(KeyEvent.VK_N);
+      this.setShortcutModifiers(KeyEvent.CTRL_MASK);
     }
 
     public boolean execute(PlugInContext context) throws Exception {

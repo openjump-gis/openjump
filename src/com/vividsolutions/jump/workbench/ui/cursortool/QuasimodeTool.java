@@ -192,7 +192,7 @@ public class QuasimodeTool extends DelegatingTool {
     
     this.panel = panel;
     super.activate(panel);
-    panel.setCurrentCursorTool(this);
+
     panel.getWorkBenchFrame().addEasyKeyListener(keyListener);
     // Cache WorkbenchFrame because in JDK 1.3 when I minimize an internal
     // frame, SwingUtilities#windowForComponent returns null for that frame.

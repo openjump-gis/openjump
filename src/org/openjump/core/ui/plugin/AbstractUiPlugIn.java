@@ -11,6 +11,7 @@ import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.UndoableEditReceiver;
+import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugIn;
@@ -26,7 +27,7 @@ import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
  * name, converting a PlugIn into an ActionListener (for use with JButtons, for
  * example), and supporting undo.
  */
-public abstract class AbstractUiPlugIn implements PlugIn, ActionListener {
+public abstract class AbstractUiPlugIn extends AbstractPlugIn implements ActionListener {
   /** The icon for the plug-in. */
   private Icon icon;
 
@@ -154,7 +155,7 @@ public abstract class AbstractUiPlugIn implements PlugIn, ActionListener {
   public EnableCheck getEnableCheck() {
     return enableCheck;
   }
-  
+
   /**
    * Get the icon for the plug-in.
    * 
@@ -164,18 +165,18 @@ public abstract class AbstractUiPlugIn implements PlugIn, ActionListener {
     return icon;
   }
 
-  /**
-   * Get the name of the plug-in. If a name was not specified create a name
-   * using {@link #createName(Class)}.
-   * 
-   * @return The plug-in name.
-   */
-  public String getName() {
-    if (name == null) {
-      name = createName(getClass());
-    }
-    return name;
-  }
+//  /**
+//   * Get the name of the plug-in. If a name was not specified create a name
+//   * using {@link #createName(Class)}.
+//   * 
+//   * @return The plug-in name.
+//   */
+//  public String getName() {
+//    if (name == null) {
+//      name = createName(getClass());
+//    }
+//    return name;
+//  }
 
   /**
    * Get the tool-tip for the plug-in.
@@ -186,20 +187,20 @@ public abstract class AbstractUiPlugIn implements PlugIn, ActionListener {
     return toolTip;
   }
 
-  /**
-   * Create a name using the I18N String using the class name or by adding
-   * spaces between the words in the class name without the PlugIn suffix.
-   * 
-   * @param plugInClass The plug-in's class.
-   * @return The plug-in's name.
-   */
-  public static String createName(final Class plugInClass) {
-    try {
-      return I18N.get(plugInClass.getName());
-    } catch (java.util.MissingResourceException e) {
-      return StringUtil.toFriendlyName(plugInClass.getName(), "PlugIn");
-    }
-  }
+//  /**
+//   * Create a name using the I18N String using the class name or by adding
+//   * spaces between the words in the class name without the PlugIn suffix.
+//   * 
+//   * @param plugInClass The plug-in's class.
+//   * @return The plug-in's name.
+//   */
+//  public static String createName(final Class plugInClass) {
+//    try {
+//      return I18N.get(plugInClass.getName());
+//    } catch (java.util.MissingResourceException e) {
+//      return StringUtil.toFriendlyName(plugInClass.getName(), "PlugIn");
+//    }
+//  }
 
   /**
    * @param workbenchContext the workbenchContext to set
@@ -208,12 +209,12 @@ public abstract class AbstractUiPlugIn implements PlugIn, ActionListener {
     this.workbenchContext = workbenchContext;
   }
 
-  /**
-   * Get the String representation of the plug-in.
-   * 
-   * @return The string.
-   */
-  public String toString() {
-    return getName();
-  }
+//  /**
+//   * Get the String representation of the plug-in.
+//   * 
+//   * @return The string.
+//   */
+//  public String toString() {
+//    return getName();
+//  }
 }

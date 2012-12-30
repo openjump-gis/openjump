@@ -46,12 +46,9 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 
 public class ClearSelectionPlugIn extends AbstractPlugIn {
-    public ClearSelectionPlugIn() {}
-
-    public void initialize(PlugInContext context) throws Exception {
-      context.getWorkbenchFrame().addKeyboardShortcut(KeyEvent.VK_D,
-          KeyEvent.CTRL_MASK, this,
-          createEnableCheck(context.getWorkbenchContext()));
+    public ClearSelectionPlugIn() {
+      this.setShortcutKeys(KeyEvent.VK_D);
+      this.setShortcutModifiers(KeyEvent.CTRL_MASK);
     }
 
     public boolean execute(PlugInContext context) throws Exception {

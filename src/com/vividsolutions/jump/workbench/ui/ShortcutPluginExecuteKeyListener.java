@@ -20,10 +20,20 @@ public class ShortcutPluginExecuteKeyListener implements KeyListener {
     this.workbenchContext = wbc;
   }
 
-  private String key(int keyCode, int modifiers) {
+  public boolean contains(int keyCode, int modifiers) {
+    return keyCodeAndModifiersToPlugInAndEnableCheckMap.keySet().contains(
+        key(keyCode, modifiers, false));
+  }
+
+  public boolean containsDefinition(int keyCode, int modifiers) {
+    return keyCodeAndModifiersToPlugInAndEnableCheckMap.keySet().contains(
+        key(keyCode, modifiers, true));
+  }
+  
+  private String key(int keyCode, int modifiers, boolean define) {
     // Mac always uses CMD key instead of CTRL, which is preserved
     // for left click context menu, right click emulation
-    if (CheckOS.isMacOsx() && (modifiers & KeyEvent.CTRL_MASK) != 0) {
+    if (define && CheckOS.isMacOsx() && (modifiers & KeyEvent.CTRL_MASK) != 0) {
       // subtract Ctrl
       modifiers -= KeyEvent.CTRL_MASK;
       // add Meta
@@ -32,19 +42,16 @@ public class ShortcutPluginExecuteKeyListener implements KeyListener {
     return keyCode + ":" + modifiers;
   }
 
-  public boolean contains(int keyCode, int modifiers) {
-    return keyCodeAndModifiersToPlugInAndEnableCheckMap.keySet().contains(
-        key(keyCode, modifiers));
-  }
-
   public Object[] get(int keyCode, int modifiers) {
+    // get plain w/o key() as it is to fetch assigned plugins for keys actually
+    // pressed
     return (Object[]) keyCodeAndModifiersToPlugInAndEnableCheckMap.get(key(
-        keyCode, modifiers));
+        keyCode, modifiers, false));
   }
 
   public void add(final int keyCode, int modifiers, final PlugIn plugIn,
       final EnableCheck enableCheck) {
-    keyCodeAndModifiersToPlugInAndEnableCheckMap.put(key(keyCode, modifiers),
+    keyCodeAndModifiersToPlugInAndEnableCheckMap.put(key(keyCode, modifiers, true),
         new Object[] { plugIn, enableCheck });
   }
 

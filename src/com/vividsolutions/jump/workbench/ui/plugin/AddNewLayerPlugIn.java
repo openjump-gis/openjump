@@ -47,14 +47,8 @@ import java.util.Collection;
 
 public class AddNewLayerPlugIn extends AbstractPlugIn {
     public AddNewLayerPlugIn() {
-    }
-
-    public void initialize(PlugInContext context) throws Exception {
-      super.initialize(context);
-      context.getWorkbenchFrame().
-      addKeyboardShortcut(KeyEvent.VK_L,
-          KeyEvent.CTRL_MASK, this,
-          null);
+      this.setShortcutKeys(KeyEvent.VK_L);
+      this.setShortcutModifiers(KeyEvent.CTRL_MASK);
     }
 
     public static FeatureCollection createBlankFeatureCollection() {

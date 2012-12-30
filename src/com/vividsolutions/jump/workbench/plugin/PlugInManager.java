@@ -179,12 +179,16 @@ public class PlugInManager {
     }
 
     private void loadPlugInClasses(List plugInClasses) throws Exception {
+        PlugInContext pc = new PlugInContext(context, null, null, null, null);
         for (Iterator i = plugInClasses.iterator(); i.hasNext();) {
             Class plugInClass = null;
             try {
                 plugInClass = (Class) i.next();
                 PlugIn plugIn = (PlugIn) plugInClass.newInstance();
-                plugIn.initialize(new PlugInContext(context, null, null, null, null));
+                plugIn.initialize(pc);
+                // register shortcuts of plugins
+                if (plugIn instanceof ShortcutPlugin)
+                  ((ShortcutPlugin)plugIn).registerShortcut();
             } catch (NoClassDefFoundError e) {
                 LOG.warn(plugInClass + " " + NOT_INITIALIZED);
                 LOG.info(e);

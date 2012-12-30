@@ -53,12 +53,8 @@ public class RedoPlugIn extends AbstractPlugIn {
   private ImageIcon icon = IconLoader.icon("Redo.gif");
 
   public RedoPlugIn() {
-  }
-
-  public void initialize(PlugInContext context) throws Exception {
-    context.getWorkbenchFrame().addKeyboardShortcut(KeyEvent.VK_Y,
-        KeyEvent.CTRL_MASK, this,
-        createEnableCheck(context.getWorkbenchContext()));
+    this.setShortcutKeys(KeyEvent.VK_Y);
+    this.setShortcutModifiers(KeyEvent.CTRL_MASK);
   }
 
   public boolean execute(PlugInContext context) throws Exception {

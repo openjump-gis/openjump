@@ -1,4 +1,3 @@
-
 /*
  * The Unified Mapping Platform (JUMP) is an extensible, interactive GUI 
  * for visualizing and manipulating spatial features with geometry and attributes.
@@ -56,62 +55,50 @@ import org.openjump.core.ui.images.IconLoader;
 //Say "delete" for features but "remove" for layers; otherwise, "delete layers" may
 //sound to a user that we're actually deleting the file from the disk. [Jon Aquino]
 public class DeleteSelectedItemsPlugIn extends AbstractPlugIn {
-    
-	public static ImageIcon ICON = IconLoader.icon("item_delete.png");	
-	
-    public DeleteSelectedItemsPlugIn() {}
 
-    private GeometryEditor geometryEditor = new GeometryEditor();
+  public static ImageIcon ICON = IconLoader.icon("item_delete.png");
 
-    public boolean execute(final PlugInContext context) throws Exception {
-        reportNothingToUndoYet(context);
-        ArrayList transactions = new ArrayList();
-        final SelectionManager selectionManager = 
-            ((SelectionManagerProxy)context.getActiveInternalFrame()).getSelectionManager();
-        
-        for (final Layer layer : selectionManager.getLayersWithSelectedItems()) {
-            transactions.add(EditTransaction.createTransactionOnSelection(
-                new EditTransaction.SelectionEditor() {
-                    public Geometry edit(Geometry geometryWithSelectedItems,
-                                         Collection selectedItems) {
-                        Geometry g = geometryWithSelectedItems;
-                        for (Iterator i = selectedItems.iterator(); i.hasNext();) {
-                            Geometry selectedItem = (Geometry) i.next();
-                            g = geometryEditor.remove(g, selectedItem);
-                        }
-                        return g;
-                    }
-                },
-                ((SelectionManagerProxy)context.getActiveInternalFrame()),
-                context.getWorkbenchFrame(),
-                getName(),
-                layer,
-                isRollingBackInvalidEdits(context),
-                true)
-            );
-        }
-        return EditTransaction.commit(transactions);
-    }
+  public DeleteSelectedItemsPlugIn() {
+    this.setShortcutKeys(KeyEvent.VK_DELETE);
+  }
 
-    public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
-        return new MultiEnableCheck()
-            .add(checkFactory.createWindowWithSelectionManagerMustBeActiveCheck())
-            .add(checkFactory.createAtLeastNItemsMustBeSelectedCheck(1))
-            .add(checkFactory.createSelectedItemsLayersMustBeEditableCheck());
-    }
-    
-    public void initialize(PlugInContext context) throws Exception {
-        super.initialize(context);
-        registerDeleteKey(context.getWorkbenchContext());
-    }
+  private GeometryEditor geometryEditor = new GeometryEditor();
 
-    private void registerDeleteKey(final WorkbenchContext context) {
-        context.getWorkbench().getFrame().addKeyboardShortcut(KeyEvent.VK_DELETE,
-            0, this, createEnableCheck(context));
-    }
+  public boolean execute(final PlugInContext context) throws Exception {
+    reportNothingToUndoYet(context);
+    ArrayList transactions = new ArrayList();
+    final SelectionManager selectionManager = ((SelectionManagerProxy) context
+        .getActiveInternalFrame()).getSelectionManager();
 
-    public ImageIcon getIcon() {
-        return ICON;
+    for (final Layer layer : selectionManager.getLayersWithSelectedItems()) {
+      transactions.add(EditTransaction.createTransactionOnSelection(
+          new EditTransaction.SelectionEditor() {
+            public Geometry edit(Geometry geometryWithSelectedItems,
+                Collection selectedItems) {
+              Geometry g = geometryWithSelectedItems;
+              for (Iterator i = selectedItems.iterator(); i.hasNext();) {
+                Geometry selectedItem = (Geometry) i.next();
+                g = geometryEditor.remove(g, selectedItem);
+              }
+              return g;
+            }
+          }, ((SelectionManagerProxy) context.getActiveInternalFrame()),
+          context.getWorkbenchFrame(), getName(), layer,
+          isRollingBackInvalidEdits(context), true));
     }
+    return EditTransaction.commit(transactions);
+  }
+
+  public static MultiEnableCheck createEnableCheck(
+      WorkbenchContext workbenchContext) {
+    EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+    return new MultiEnableCheck()
+        .add(checkFactory.createWindowWithSelectionManagerMustBeActiveCheck())
+        .add(checkFactory.createAtLeastNItemsMustBeSelectedCheck(1))
+        .add(checkFactory.createSelectedItemsLayersMustBeEditableCheck());
+  }
+
+  public ImageIcon getIcon() {
+    return ICON;
+  }
 }
