@@ -20,19 +20,31 @@ public class ShortcutPluginExecuteKeyListener implements KeyListener {
     this.workbenchContext = wbc;
   }
 
-  public void add(final int keyCode, int modifiers, final PlugIn plugIn,
-      final EnableCheck enableCheck) {
-
-    // Mac always uses CMD key instead of CTRL, which is preserved 
+  private String key(int keyCode, int modifiers) {
+    // Mac always uses CMD key instead of CTRL, which is preserved
     // for left click context menu, right click emulation
-    if ( CheckOS.isMacOsx() && (modifiers & KeyEvent.CTRL_MASK)!=0 ){
+    if (CheckOS.isMacOsx() && (modifiers & KeyEvent.CTRL_MASK) != 0) {
       // subtract Ctrl
       modifiers -= KeyEvent.CTRL_MASK;
       // add Meta
       modifiers += KeyEvent.META_MASK;
     }
+    return keyCode + ":" + modifiers;
+  }
 
-    keyCodeAndModifiersToPlugInAndEnableCheckMap.put(keyCode + ":" + modifiers,
+  public boolean contains(int keyCode, int modifiers) {
+    return keyCodeAndModifiersToPlugInAndEnableCheckMap.keySet().contains(
+        key(keyCode, modifiers));
+  }
+
+  public Object[] get(int keyCode, int modifiers) {
+    return (Object[]) keyCodeAndModifiersToPlugInAndEnableCheckMap.get(key(
+        keyCode, modifiers));
+  }
+
+  public void add(final int keyCode, int modifiers, final PlugIn plugIn,
+      final EnableCheck enableCheck) {
+    keyCodeAndModifiersToPlugInAndEnableCheckMap.put(key(keyCode, modifiers),
         new Object[] { plugIn, enableCheck });
   }
 
@@ -40,7 +52,7 @@ public class ShortcutPluginExecuteKeyListener implements KeyListener {
   }
 
   public void keyReleased(KeyEvent e) {
-    //System.out.println("SCPE src "+e.getSource());
+    // System.out.println("SCPE src "+e.getSource());
     Object[] plugInAndEnableCheck = (Object[]) keyCodeAndModifiersToPlugInAndEnableCheckMap
         .get(e.getKeyCode() + ":" + e.getModifiers());
     // System.out.println(e.getKeyCode()
@@ -53,7 +65,7 @@ public class ShortcutPluginExecuteKeyListener implements KeyListener {
     PlugIn plugIn = (PlugIn) plugInAndEnableCheck[0];
     EnableCheck enableCheck = (EnableCheck) plugInAndEnableCheck[1];
     String msg = null;
-    if (enableCheck != null && (msg=enableCheck.check(null)) != null) {
+    if (enableCheck != null && (msg = enableCheck.check(null)) != null) {
       workbenchContext.getWorkbench().getFrame().warnUser(msg);
       return;
     }
@@ -67,4 +79,5 @@ public class ShortcutPluginExecuteKeyListener implements KeyListener {
 
   public void keyPressed(KeyEvent e) {
   }
+
 }

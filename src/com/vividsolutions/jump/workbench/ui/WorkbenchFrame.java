@@ -370,30 +370,6 @@ public class WorkbenchFrame extends JFrame
       e.printStackTrace();
     }
 
-    // easyKeyListener = new RecursiveKeyListener(this) {
-    // public void keyTyped(KeyEvent e) {
-    // for (Iterator i = easyKeyListeners.iterator(); i.hasNext();) {
-    // KeyListener l = (KeyListener)i.next();
-    // l.keyTyped(e);
-    // }
-    // }
-    //
-    // public void keyPressed(KeyEvent e) {
-    // for (Iterator i = new ArrayList(easyKeyListeners).iterator();
-    // i.hasNext();) {
-    // KeyListener l = (KeyListener)i.next();
-    // l.keyPressed(e);
-    // }
-    // }
-    //
-    // public void keyReleased(KeyEvent e) {
-    // for (Iterator i = new ArrayList(easyKeyListeners).iterator();
-    // i.hasNext();) {
-    // KeyListener l = (KeyListener)i.next();
-    // l.keyReleased(e);
-    // }
-    // }
-    // }
     // attach a multi listener
     easyKeyListener = new MultiRecursiveKeyListener(this);
     // create a run plugin via shortcut listener
@@ -1251,14 +1227,27 @@ public class WorkbenchFrame extends JFrame
    * (caps-lock A). For more details, see the java.awt.event.KeyEvent class - it
    * has a full explaination.
    * 
-   * @param keyCode What key to attach to (See java.awt.event.KeyEvent)
-   * @param modifiers 0= none, 1=shift, 2= cntrl, 8=alt, 3=shift+cntrl, etc...
-   *          See the modifier mask constants in the Event class
-   * @param plugIn What plugin to execute
-   * @param enableCheck Is the key enabled at the moment?
+   * @param keyCode
+   *          What key to attach to (See java.awt.event.KeyEvent)
+   * @param modifiers
+   *          0= none, 1=shift, 2= cntrl, 8=alt, 3=shift+cntrl, etc... See the
+   *          modifier mask constants in the Event class
+   * @param plugIn
+   *          What plugin to execute
+   * @param enableCheck
+   *          Is the key enabled at the moment?
    */
   public void addKeyboardShortcut(final int keyCode, final int modifiers,
       final PlugIn plugIn, final EnableCheck enableCheck) {
+    // warn on overwriting shortcuts
+    if (shortcutListener.contains(keyCode, modifiers)
+        && ((PlugIn) shortcutListener.get(keyCode, modifiers)[0]).getName() != plugIn
+            .getName())
+      System.err.println("reassign shortcut "
+          + KeyEvent.getKeyModifiersText(modifiers) + "/"
+          + KeyEvent.getKeyText(keyCode) + " from "
+          + shortcutListener.get(keyCode, modifiers)[0] + " to " + plugIn);
+
     // Overwrite existing shortcut [Jon Aquino]
     shortcutListener.add(keyCode, modifiers, plugIn, enableCheck);
   }
