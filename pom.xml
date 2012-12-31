@@ -606,6 +606,11 @@
       <url>http://lists.refractions.net/m2</url>
     </repository>
     <repository>
+      <id>maven central</id>
+      <name>Central Maven 2 Repository</name>
+      <url>http://central.maven.org/maven2</url>
+    </repository>
+    <repository>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
@@ -725,11 +730,6 @@
       <groupId>org.python</groupId>
       <artifactId>jython</artifactId>
       <version>2.2</version>
-    </dependency>
-    <dependency>
-      <groupId>com.yuvimasory</groupId>
-      <artifactId>orange-extensions</artifactId>
-      <version>1.2.0</version>
     </dependency>
   </dependencies>
 </project>
