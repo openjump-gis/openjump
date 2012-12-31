@@ -734,7 +734,9 @@
     <dependency>
       <groupId>com.yuvimasory</groupId>
       <artifactId>orange-extensions</artifactId>
-      <version>1.0.0</version>
+      <version>1.2.0</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/OrangeExtensions-1.2.jar</systemPath>
     </dependency>
   </dependencies>
 </project>
