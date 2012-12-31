@@ -731,5 +731,10 @@
       <artifactId>jython</artifactId>
       <version>2.2</version>
     </dependency>
+    <dependency>
+      <groupId>com.yuvimasory</groupId>
+      <artifactId>orange-extensions</artifactId>
+      <version>1.0.0</version>
+    </dependency>
   </dependencies>
 </project>
