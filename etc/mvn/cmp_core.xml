@@ -21,6 +21,8 @@
         <!-- exclude junit and hamcrest from CORE build -->
         <exclude>junit:*</exclude>
         <exclude>hamcrest:*</exclude>
+        <!-- exclude Apple stubs -->
+        <exclude>*:orange-extensions</exclude>
       </excludes>
     </dependencySet>
     <!--dependencySet -->
