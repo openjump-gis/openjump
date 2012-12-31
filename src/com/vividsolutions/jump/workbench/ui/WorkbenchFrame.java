@@ -47,6 +47,8 @@ import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -85,13 +87,25 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
+import org.apache.log4j.Logger;
+import org.junit.Ignore;
+import org.openjump.core.CheckOS;
 import org.openjump.core.model.TaskEvent;
 import org.openjump.core.model.TaskListener;
 import org.openjump.swing.factory.component.ComponentFactory;
 
+import sun.rmi.runtime.Log;
+
+import com.apple.eawt.AboutHandler;
+import com.apple.eawt.AppEvent.AboutEvent;
+import com.apple.eawt.AppEvent.QuitEvent;
+import com.apple.eawt.Application;
+import com.apple.eawt.QuitHandler;
+import com.apple.eawt.QuitResponse;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.io.datasource.DataSource;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.util.Block;
 import com.vividsolutions.jump.util.CollectionUtil;
@@ -116,6 +130,7 @@ import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.plugin.AboutPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ChoosableStyle;
@@ -157,7 +172,8 @@ public class WorkbenchFrame extends JFrame
       new JMenuItem(I18N.get("ui.WorkbenchFrame.exit")), fileMenu);
 
   private TaskFrame activeTaskFrame = null;
-
+  private static Logger LOG = Logger.getLogger(WorkbenchFrame.class);
+  
   // StatusBar
   private JPanel statusPanel = new JPanel();
   private JTextField messageTextField = new JTextField();
@@ -386,6 +402,30 @@ public class WorkbenchFrame extends JFrame
         return true;
       }
     }, null);
+    
+    if (CheckOS.isMacOsx()) {
+      try {
+        Application app = Application.getApplication();
+        app.setQuitHandler(new QuitHandler() {
+          public void handleQuitRequestWith(QuitEvent arg0, QuitResponse resp) {
+            closeApplication();
+            // still here?, must have been cancelled
+            resp.cancelQuit();
+          }
+        });
+        app.setAboutHandler(new AboutHandler() {
+          public void handleAbout(AboutEvent e) {
+            AboutDialog.instance(getContext()).setVisible(true);
+          }
+        });
+      } catch (Exception e) {
+        // the whole handling above is optional, inform but don't fail
+        StringWriter sw = new StringWriter();
+        e.printStackTrace(new PrintWriter(sw));
+        System.err.println(sw);
+        log(sw.toString());
+      }
+    }
   }
 
   /**
@@ -439,6 +479,7 @@ public class WorkbenchFrame extends JFrame
   }
 
   public void log(String message) {
+    LOG.info(message);
     log.append(new Date() + "  " + message
         + System.getProperty("line.separator"));
   }
