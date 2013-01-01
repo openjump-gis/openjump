@@ -96,12 +96,6 @@ import org.openjump.swing.factory.component.ComponentFactory;
 
 import sun.rmi.runtime.Log;
 
-import com.apple.eawt.AboutHandler;
-import com.apple.eawt.AppEvent.AboutEvent;
-import com.apple.eawt.AppEvent.QuitEvent;
-import com.apple.eawt.Application;
-import com.apple.eawt.QuitHandler;
-import com.apple.eawt.QuitResponse;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
@@ -405,20 +399,8 @@ public class WorkbenchFrame extends JFrame
     
     if (CheckOS.isMacOsx()) {
       try {
-        Application app = Application.getApplication();
-        app.setQuitHandler(new QuitHandler() {
-          public void handleQuitRequestWith(QuitEvent arg0, QuitResponse resp) {
-            closeApplication();
-            // still here?, must have been cancelled
-            resp.cancelQuit();
-          }
-        });
-        app.setAboutHandler(new AboutHandler() {
-          public void handleAbout(AboutEvent e) {
-            AboutDialog.instance(getContext()).setVisible(true);
-          }
-        });
-      } catch (Exception e) {
+        new AppleHandler().register();
+      } catch (Throwable e) {
         // the whole handling above is optional, inform but don't fail
         StringWriter sw = new StringWriter();
         e.printStackTrace(new PrintWriter(sw));
@@ -1612,4 +1594,32 @@ public class WorkbenchFrame extends JFrame
     getTaskListeners().remove(l);
   }
 
+  private class AppleHandler{
+    public void register(){
+        // import com.apple.eawt.AboutHandler;
+        // import com.apple.eawt.AppEvent.AboutEvent;
+        // import com.apple.eawt.AppEvent.QuitEvent;
+        // import com.apple.eawt.Application;
+        // import com.apple.eawt.QuitHandler;
+        // import com.apple.eawt.QuitResponse;
+
+        com.apple.eawt.Application app = com.apple.eawt.Application
+            .getApplication();
+        app.setQuitHandler(new com.apple.eawt.QuitHandler() {
+          public void handleQuitRequestWith(
+              com.apple.eawt.AppEvent.QuitEvent e,
+              com.apple.eawt.QuitResponse resp) {
+            closeApplication();
+            // still here?, must have been cancelled
+            resp.cancelQuit();
+          }
+        });
+        app.setAboutHandler(new com.apple.eawt.AboutHandler() {
+          public void handleAbout(com.apple.eawt.AppEvent.AboutEvent e) {
+            AboutDialog.instance(getContext()).setVisible(true);
+          }
+        });
+    }
+  }
+  
 }
