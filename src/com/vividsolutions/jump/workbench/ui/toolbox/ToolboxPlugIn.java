@@ -43,6 +43,8 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 public abstract class ToolboxPlugIn extends AbstractPlugIn {
+    private ToolboxDialog toolbox = null;
+
     /**
      * @return the toolbox for this plug-in class.
      */
@@ -55,8 +57,6 @@ public abstract class ToolboxPlugIn extends AbstractPlugIn {
         }
         return toolbox;
     }
-    
-    private ToolboxDialog toolbox = null;
     
     protected abstract void initializeToolbox(ToolboxDialog toolbox);
 

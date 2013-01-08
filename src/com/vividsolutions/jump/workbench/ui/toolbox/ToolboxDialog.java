@@ -34,11 +34,17 @@ package com.vividsolutions.jump.workbench.ui.toolbox;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
-import java.awt.event.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import javax.swing.*;
+import javax.swing.AbstractButton;
+import javax.swing.Icon;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+import javax.swing.JToggleButton;
 
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
@@ -146,28 +152,46 @@ public class ToolboxDialog extends JDialog {
     }
 
     /**
+     * [ede 01.2013] disabled and replaced with ComponentListener above
      * Call this method after all the CursorTools have been added.
      */
-    public void finishAddingComponents() {
-        pack();
-        // #initializeLocation will be called again in #setVisible, but
-        // call it here just in case the window is realized by some other
-        // means than #setVisible (unlikely). [Jon Aquino 2005-03-14]
-        initializeLocation();
-    }
+    public void finishAddingComponents() {}
 
     public void setVisible(boolean visible) {
         if (visible && !locationInitializedBeforeMakingDialogVisible) {
+            //here comes a hack
+            addComponentListener(new ComponentListener() {
+              public void componentShown(ComponentEvent e) {
+                // we assume all plugins registered before us, so they will
+                // install before us also, so we pack and unregister ourself
+                pack();
+                removeComponentListener(this);
+              }
+              
+              public void componentResized(ComponentEvent e) {}
+              
+              public void componentMoved(ComponentEvent e) {}
+              
+              public void componentHidden(ComponentEvent e) {}
+            });
+          
             // #initializeLocation was called in #finishAddingComponents,
             // but the Workbench may have moved since then, so call
             // #initializeLocation again just before making the dialog
             // visible. [Jon Aquino 2005-03-14]
+            pack();
             initializeLocation();
             locationInitializedBeforeMakingDialogVisible = true;
         }
+        // TODO: change this strange programming, see above
+        // weird shit.. Plugins register as ComponentListeners to us, so 
+        // they can add buttons as soon as we are shown [ede 01.2013]
+        // this leads to the phenomenon that on shown we see the editTooolbar 
+        //  extending while plugins add their tools to it and pack() it after
+        //  each entry in finishAddingComponents()
         super.setVisible(visible);
     }
-
+    
     private boolean locationInitializedBeforeMakingDialogVisible = false;
 
     private void initializeLocation() {
@@ -180,23 +204,21 @@ public class ToolboxDialog extends JDialog {
 
     private WorkbenchContext context;
 
-    private BorderLayout borderLayout1 = new BorderLayout();
-
     private JPanel centerPanel = new JPanel();
-
-    private BorderLayout borderLayout2 = new BorderLayout();
-
+    private JPanel floatPanel = new JPanel();
     private JPanel toolbarsPanel = new JPanel();
-
+    
     private GridLayout gridLayout1 = new GridLayout();
 
     private void jbInit() throws Exception {
-        this.getContentPane().setLayout(borderLayout1);
-        centerPanel.setLayout(borderLayout2);
+        getContentPane().setLayout(new BorderLayout());
         toolbarsPanel.setLayout(gridLayout1);
         gridLayout1.setColumns(1);
-        this.getContentPane().add(centerPanel, BorderLayout.CENTER);
-        centerPanel.add(toolbarsPanel, BorderLayout.NORTH);
+        // float them to the middle
+        floatPanel.add(toolbarsPanel);
+        getContentPane().add(floatPanel, BorderLayout.CENTER);
+        centerPanel.setLayout(new BorderLayout());
+        getContentPane().add(centerPanel, BorderLayout.SOUTH);
     }
 
     public JPanel getCenterPanel() {

@@ -87,16 +87,16 @@ public class EditingPlugIn extends ToolboxPlugIn {
     // The auto-generated title "Editing Toolbox" is too long to fit. [Jon
     // Aquino]
     toolbox.setTitle(I18N.get("ui.cursortool.editing.EditingPlugIn.editing"));
+    toolbox.setResizable(false);
+    toolbox.setInitialLocation(new GUIUtil.Location(20, true, 20, false));
+    
     EnableCheckFactory checkFactory = new EnableCheckFactory(
         toolbox.getContext());
     // Null out the quasimodes for [Ctrl] because the Select tools will handle
     // that case. [Jon Aquino]
-    toolbox.add(new QuasimodeTool(new SelectFeaturesTool()).add(
-        new QuasimodeTool.ModifierKeySpec(true, false, false), null));
-    toolbox.add(new QuasimodeTool(new SelectPartsTool()).add(
-        new QuasimodeTool.ModifierKeySpec(true, false, false), null));
-    toolbox.add(new QuasimodeTool(new SelectLineStringsTool()).add(
-        new QuasimodeTool.ModifierKeySpec(true, false, false), null));
+    toolbox.add(new QuasimodeTool(new SelectFeaturesTool()));
+    toolbox.add(new QuasimodeTool(new SelectPartsTool()));
+    toolbox.add(new QuasimodeTool(new SelectLineStringsTool()));
     toolbox.add(new MoveSelectedItemsTool(checkFactory));
 
     toolbox.addToolBar();
@@ -133,13 +133,7 @@ public class EditingPlugIn extends ToolboxPlugIn {
     optionsButton.addActionListener(AbstractPlugIn.toActionListener(
         new OptionsPlugIn(), toolbox.getContext(), null));
     toolbox.getCenterPanel().add(optionsButton, BorderLayout.CENTER);
-    toolbox.setInitialLocation(new GUIUtil.Location(20, true, 20, false));
-    toolbox.setResizable(false);
-  }
 
-  // [ede 07.2012] commented, couldn't find a class extending EditingPlugin
-  // protected JButton getOptionsButton() {
-  // return optionsButton;
-  // }
+  }
 
 }
