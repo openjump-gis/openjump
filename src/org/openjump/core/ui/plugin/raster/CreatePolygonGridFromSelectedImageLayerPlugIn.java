@@ -102,7 +102,7 @@ public class CreatePolygonGridFromSelectedImageLayerPlugIn extends AbstractPlugI
 
 		this.sName = I18N.get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.Create-Polygon-Grid-from-Raster");
 		this.sRemoveZeroCells = I18N.get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.remove-cells-with-values") + " =< 0"; 
-		this.sSidebar = I18N.get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.Creates-a-polygon-grid-from-the-selected-raster.");
+		this.sSidebar = I18N.get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.Creates-a-polygon-grid-from-the-selected-raster");
 		this.sMaxCellsToDisplay = I18N.get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.max-cells-to-display");
 		this.sCreatingPolygons = I18N.get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.Creating-polygons") + "...";
 		this.sGrid = I18N.get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.grid");
