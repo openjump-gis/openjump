@@ -38,6 +38,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -96,7 +98,7 @@ public abstract class AbstractSelection {
      */
     public Map<Feature,Set<Integer>> getFeatureToSelectedItemIndexCollectionMap(Layer layer) {
         if (!layerMap.containsKey(layer)) {
-            layerMap.put(layer, new HashMap<Feature,Set<Integer>>());
+            layerMap.put(layer, new LinkedHashMap<Feature,Set<Integer>>());
         }
         return layerMap.get(layer);
     }
@@ -113,7 +115,7 @@ public abstract class AbstractSelection {
      * Returns a mapping of each feature to selected items in this feature.
      */
     public Map<Feature,List<Geometry>> getFeatureToSelectedItemCollectionMap(Layer layer) {
-        Map<Feature,List<Geometry>> collectionMap = new HashMap<Feature,List<Geometry>>();
+        Map<Feature,List<Geometry>> collectionMap = new LinkedHashMap<Feature,List<Geometry>>();
         for (Feature feature : getFeatureToSelectedItemIndexCollectionMap(layer).keySet()) {
             Set<Integer> set = getSelectedItemIndices(layer, feature);
             if (set == null) {
@@ -188,7 +190,7 @@ public abstract class AbstractSelection {
      */
     public Set<Integer> indices(Geometry geometry, Collection<Geometry> items) {
         List<Geometry> allItems = items(geometry);
-        Set<Integer> indices = new HashSet<Integer>(1);
+        Set<Integer> indices = new LinkedHashSet<Integer>(1);
         for (Geometry item : items) {
             indices.add(new Integer(allItems.indexOf(item)));
         }
@@ -231,7 +233,7 @@ public abstract class AbstractSelection {
             unselectInDescendants(layer, feature, itemsToSelect);
             Set<Integer> featureIndices = getFeatureToSelectedItemIndexCollectionMap(layer).get(feature);
             if (featureIndices == null) {
-                featureIndices = new HashSet<Integer>(1);
+                featureIndices = new LinkedHashSet<Integer>(1);
                 getFeatureToSelectedItemIndexCollectionMap(layer).put(feature, featureIndices);
             }
             Set<Integer> itemIndices = indices(feature.getGeometry(), itemsToSelect);

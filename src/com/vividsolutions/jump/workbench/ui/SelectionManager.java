@@ -274,7 +274,7 @@ public class SelectionManager {
     }
 
     public Collection getFeaturesWithSelectedItems(Layer layer) {
-        HashSet featuresWithSelectedItems = new HashSet();
+        Set featuresWithSelectedItems = new java.util.LinkedHashSet();
         for (AbstractSelection selection : selections) {
             featuresWithSelectedItems.addAll(selection.getFeaturesWithSelectedItems(layer));
         }
