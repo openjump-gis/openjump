@@ -254,6 +254,10 @@ public abstract class AbstractSelection {
             Set<Integer> featureIndices = getFeatureToSelectedItemIndexCollectionMap(layer).get(feature);
             if (featureIndices != null && itemsIndices != null) {
                 featureIndices.removeAll(itemsIndices);
+                // [mmichaud 2013-01-10] remove feature from layerMap if no more item is selected
+                if (featureIndices.isEmpty()) {
+                    getFeatureToSelectedItemIndexCollectionMap(layer).remove(feature);
+                }
             }
         } finally {
             selectionManager.setPanelUpdatesEnabled(originalPanelUpdatesEnabled);
