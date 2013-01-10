@@ -10,11 +10,11 @@ featureDrawingUtil = FeatureDrawingUtil(toolbox.getContext())
 toolMenu = toolbox.JMenuBar.getMenu(0)
 sep = File.separator # / for linux and \ for windows
 
-toolbox.centerPanel.components[1].hide() #comment out to initially show
+toolbox.centerPanel.components[0].hide() #comment out to initially show
 #install menu items
-def showConsole(event): toolbox.centerPanel.components[1].show(); toolbox.pack()
+def showConsole(event): toolbox.centerPanel.components[0].show(); toolbox.pack()
 toolMenu.add(swing.JMenuItem("Show Console", actionPerformed=showConsole))
-def hideConsole(event): toolbox.centerPanel.components[1].hide(); toolbox.pack()
+def hideConsole(event): toolbox.centerPanel.components[0].hide(); toolbox.pack()
 toolMenu.add(swing.JMenuItem("Hide Console", actionPerformed=hideConsole))
 import UnionSelected  #too much code to inline.  use module
 toolMenu.add(swing.JMenuItem("Union Selected", actionPerformed=UnionSelected.unionSelected))
