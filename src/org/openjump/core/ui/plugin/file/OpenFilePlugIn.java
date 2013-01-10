@@ -26,7 +26,10 @@
  ******************************************************************************/
 package org.openjump.core.ui.plugin.file;
 
+import java.awt.event.KeyEvent;
 import java.io.File;
+
+import javax.swing.ImageIcon;
 
 import org.openjump.core.ui.enablecheck.BooleanPropertyEnableCheck;
 import org.openjump.core.ui.images.IconLoader;
@@ -35,6 +38,7 @@ import org.openjump.core.ui.plugin.file.open.OpenFileWizard;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
@@ -46,6 +50,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
  */
 public class OpenFilePlugIn extends AbstractWizardPlugin {
   private static final String KEY = OpenFilePlugIn.class.getName();
+  private static final ImageIcon ICON = IconLoader.icon("folder_page.png");
 
   private static final String FILE_DOES_NOT_EXIST = I18N.get(KEY
     + ".file-does-not-exist");
@@ -54,7 +59,9 @@ public class OpenFilePlugIn extends AbstractWizardPlugin {
    * Construct the main Open File plug-in.
    */
   public OpenFilePlugIn() {
-    super(IconLoader.icon("folder_page.png"));
+    super(ICON);
+    this.setShortcutKeys(KeyEvent.VK_O);
+    this.setShortcutModifiers(KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK);
   }
 
   /**
@@ -64,17 +71,19 @@ public class OpenFilePlugIn extends AbstractWizardPlugin {
    * @param file The file to load.
    */
   public OpenFilePlugIn(final WorkbenchContext workbenchContext, final File file) {
-    super(file.getName(), file.getAbsolutePath());
+    super(file.getName(), ICON, file.getAbsolutePath());
     setWorkbenchContext(workbenchContext);
     File[] files = new File[] {
       file
     };
+    // en/disable recent entry according to file availability
     this.enableCheck = new BooleanPropertyEnableCheck(file, "exists", true,
       FILE_DOES_NOT_EXIST + ": " + file.getAbsolutePath());
     OpenFileWizard openFileWizard = new OpenFileWizard(workbenchContext, files);
     setWizard(openFileWizard);
   }
 
+  // for internal non gui use
   public OpenFilePlugIn(WorkbenchContext workbenchContext, File[] files) {
     setWorkbenchContext(workbenchContext);
     OpenFileWizard openFileWizard = new OpenFileWizard(workbenchContext, files);
@@ -101,6 +110,9 @@ public class OpenFilePlugIn extends AbstractWizardPlugin {
     OpenFileWizard openFileWizard = new OpenFileWizard(workbenchContext);
     setWizard(openFileWizard);
     OpenWizardPlugIn.addWizard(workbenchContext, openFileWizard);
+    
+    // register shortcut
+    //AbstractPlugIn.registerShortcuts(this);
   }
 
 }

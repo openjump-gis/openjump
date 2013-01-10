@@ -165,18 +165,14 @@ public abstract class AbstractUiPlugIn extends AbstractPlugIn implements ActionL
     return icon;
   }
 
-//  /**
-//   * Get the name of the plug-in. If a name was not specified create a name
-//   * using {@link #createName(Class)}.
-//   * 
-//   * @return The plug-in name.
-//   */
-//  public String getName() {
-//    if (name == null) {
-//      name = createName(getClass());
-//    }
-//    return name;
-//  }
+  /**
+   * Get the name of the plug-in. If a name was not specified ask super class.
+   * 
+   * @return The plug-in name.
+   */
+  public String getName() {
+    return name!=null ? name : super.getName();
+  }
 
   /**
    * Get the tool-tip for the plug-in.

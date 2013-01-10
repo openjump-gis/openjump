@@ -28,6 +28,8 @@ package org.openjump.core.ui.plugin.file;
 
 import java.io.File;
 
+import javax.swing.ImageIcon;
+
 import org.openjump.core.ui.enablecheck.BooleanPropertyEnableCheck;
 import org.openjump.core.ui.images.IconLoader;
 import org.openjump.core.ui.plugin.AbstractWizardPlugin;
@@ -41,20 +43,20 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 public class OpenProjectPlugIn extends AbstractWizardPlugin {
   private static final String KEY = OpenProjectPlugIn.class.getName();
-
   private static final String FILE_DOES_NOT_EXIST = I18N.get(KEY
     + ".file-does-not-exist");
-
+  private static final ImageIcon ICON = IconLoader.icon("folder_layout_add.png");
+      
   private File[] files;
 
   private OpenProjectWizard wizard;
 
   public OpenProjectPlugIn() {
-    super(IconLoader.icon("folder_layout_add.png"));
+    super(ICON);
   }
 
   public OpenProjectPlugIn(WorkbenchContext workbenchContext, File file) {
-    super(file.getName(), file.getAbsolutePath());
+    super(file.getName(), ICON, file.getAbsolutePath());
     this.workbenchContext = workbenchContext;
     this.files = new File[] {
       file
