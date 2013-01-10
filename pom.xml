@@ -628,6 +628,11 @@
       <name>OpenJUMP Maven 2 Repository</name>
       <url>http://jump-pilot.svn.sourceforge.net/svnroot/jump-pilot/maven-repository/</url>
     </repository>
+    <repository>
+      <id>mvn-adamgent</id>
+      <url>http://mvn-adamgent.googlecode.com/svn/maven/release</url>
+      <name>Adam Gent Maven Repository</name>
+    </repository>
   </repositories>
   <dependencies>
     <dependency>
@@ -669,7 +674,7 @@
     <dependency>
       <groupId>postgresql</groupId>
       <artifactId>postgresql</artifactId>
-      <version>9.0-801.jdbc3</version>
+      <version>9.2-1002.jdbc4</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
