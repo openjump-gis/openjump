@@ -127,8 +127,14 @@ public class MapLayerTreeModel extends DefaultTreeModel {
 
         public int compareTo(Object o) {
             LayerNode other = (LayerNode) o;
-
-            return layer.getTitle().compareTo(other.layer.getTitle());
+            // [mmichaud 2013-01-15] avoid NPE in case layer has no title
+            if (layer.getTitle() != null) {
+                return layer.getTitle().compareTo(other.layer.getTitle());
+            } else if (layer.getName() != null) {
+                return layer.getName().compareTo(other.layer.getName());
+            } else if (other.layer.getTitle() == null) {
+                return 0;
+            } else return -1;
         }
     }
 }
