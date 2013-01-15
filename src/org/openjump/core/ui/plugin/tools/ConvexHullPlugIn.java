@@ -41,6 +41,7 @@ import com.vividsolutions.jts.geom.CoordinateList;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.util.UniqueCoordinateArrayFilter;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
@@ -57,6 +58,7 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class ConvexHullPlugIn extends AbstractPlugIn {
     private WorkbenchContext workbenchContext;
@@ -68,11 +70,13 @@ public class ConvexHullPlugIn extends AbstractPlugIn {
 
     public void initialize(PlugInContext context) throws Exception
     {     
-        workbenchContext = context.getWorkbenchContext();
-        context.getFeatureInstaller().addMainMenuItem(this,
-			new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
-			getName() /*+ "{pos:3}"*/,
-			false, null, this.createEnableCheck(workbenchContext));
+    	 workbenchContext = context.getWorkbenchContext();
+         context.getFeatureInstaller().addMainMenuItem(this,
+ 			new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
+ 			getName() /*+ "{pos:3}"*/,
+ 			false, 
+ 			IconLoader.icon("convex_hull2.png"), 
+ 			this.createEnableCheck(workbenchContext));
     }
     
     public String getName() {
@@ -103,7 +107,12 @@ public class ConvexHullPlugIn extends AbstractPlugIn {
          }
          
         CoordinateList convexHullCoords = GeoUtils.ConvexHullWrap( coords );
-        LineString convexHull = new GeometryFactory().createLineString(convexHullCoords.toCoordinateArray());
+        /* 
+         * Plugin saves Covex hull as polygon ( like Convex Hull of Layer
+         *  Plugin. Giuseppe Aruta giuseppe_aruta@yahoo.it
+         */
+        Polygon convexHull = new GeometryFactory().createPolygon(convexHullCoords.toCoordinateArray());
+        //LineString convexHull = new GeometryFactory().createLineString(convexHullCoords.toCoordinateArray());
 
         Feature newFeature = new BasicFeature(featureSchema);
         newFeature.setGeometry(convexHull);
@@ -111,7 +120,12 @@ public class ConvexHullPlugIn extends AbstractPlugIn {
         newFeatures.add(newFeature);
         
         layerManager.addLayer(selectedCategories.isEmpty()
-        ? StandardCategoryNames.WORKING
+        /* 
+         * Covex hull on selection saves to RESULT category (as other analysis tools like Convex Hull of Layer
+         *  Plugin. Giuseppe Aruta giuseppe_aruta@yahoo.it
+         */
+        ? StandardCategoryNames.RESULT		
+       // ? StandardCategoryNames.WORKING
         : selectedCategories.iterator().next().toString(),
         layerManager.uniqueLayerName(sConvexHull),
         newFeatures);

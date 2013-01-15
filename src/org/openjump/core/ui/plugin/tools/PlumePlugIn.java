@@ -54,6 +54,7 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.SelectionManagerProxy;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class PlumePlugIn extends AbstractPlugIn {
     
@@ -74,7 +75,7 @@ public class PlumePlugIn extends AbstractPlugIn {
 		    this, new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
 		    getName() + "...",
 		    false,
-		    null,
+		    IconLoader.icon("buffer_plume.gif"),
 		    this.createEnableCheck(workbenchContext));
 	}
 
@@ -122,6 +123,7 @@ public class PlumePlugIn extends AbstractPlugIn {
 
 
 	private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
+		dialog.setSideBarImage(IconLoader.icon("buffer_plume_image.png"));
 		dialog.addDoubleField(RADIUS1, radius1, 6, sTheradius);
 		dialog.addDoubleField(RADIUS2, radius2, 6, sTheradius);
 	}

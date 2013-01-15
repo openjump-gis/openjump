@@ -51,6 +51,7 @@ import com.vividsolutions.jump.workbench.plugin.*;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 
@@ -70,11 +71,21 @@ public class ConvexHullPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
     
     public void initialize(PlugInContext context) throws Exception {
         FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
+        
+        featureInstaller.addMainMenuItem(this,
+     			new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
+     			getName(),
+     			false, 
+     			IconLoader.icon("convex_hull1.png"), 
+     			createEnableCheck(context.getWorkbenchContext())); 
+        
+        /*
         featureInstaller.addMainMenuItem(
             this,
             new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
             new JMenuItem(this.getName() + "..."),
             createEnableCheck(context.getWorkbenchContext())); 
+            */
     }
     
     public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {

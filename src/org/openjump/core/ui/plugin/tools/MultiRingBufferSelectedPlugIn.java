@@ -58,6 +58,7 @@ import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.*;
 import com.vividsolutions.jump.workbench.plugin.*;
 import com.vividsolutions.jump.workbench.ui.*;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.renderer.style.LabelStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
@@ -106,7 +107,7 @@ public class MultiRingBufferSelectedPlugIn extends AbstractPlugIn
         context.getFeatureInstaller().addMainMenuItem(this,
             new String[] {MenuNames.TOOLS , MenuNames.TOOLS_ANALYSIS},
             MULTIPLE_RING_BUFFER + "...",
-            false, null, this.createEnableCheck(context.getWorkbenchContext()));
+            false, IconLoader.icon("buffer_multiple.gif"), this.createEnableCheck(context.getWorkbenchContext()));
     }
   
     public boolean execute(PlugInContext context) throws Exception {
@@ -280,7 +281,8 @@ public class MultiRingBufferSelectedPlugIn extends AbstractPlugIn
     }
 
     private void setDialogValues(final MultiInputDialog dialog, PlugInContext context) {
-        dialog.setSideBarDescription( SELECTED_ONLY);
+    	dialog.setSideBarImage(IconLoader.icon("buffer_multiple_image.png"));
+    	dialog.setSideBarDescription( SELECTED_ONLY);
         dialog.addSeparator();
         dialog.addLabel(LAYEROPTIONS);
         dialog.addSeparator();
