@@ -361,13 +361,29 @@ public class LayerViewPanel extends JPanel
     return currentCursorTool;
   }
 
+  /**
+   * force the current tool to be reactivated on us. e.g. on task switches
+   */
+  public void resetCurrentCursorTool() {
+    setCurrentCursorTool( getCurrentCursorTool(), true );
+  }
+  
+  /**
+   * set a cursortool to associate with the layer view. will return immediatly
+   * if the old cursor tools is identical to the new one.
+   * @param newct
+   */
   public void setCurrentCursorTool(CursorTool newct) {
-     // if the CursorTool is identical don't do the whole shebang
-     if (newct.equals(this.currentCursorTool)) {
-       // update the cursor though, delegate might have changed
-       setCursor(newct.getCursor());
-       return;
-     }
+    setCurrentCursorTool( newct, false );
+  }
+  
+  private void setCurrentCursorTool(CursorTool newct, boolean force) {
+    // if the CursorTool is identical don't do the whole shebang
+    if (!force && newct.equals(this.currentCursorTool)) {
+      // update the cursor though, delegate might have changed
+      setCursor(newct.getCursor());
+      return;
+    }
     // remove old
     removeCurrentCursorTool();
     // add new
