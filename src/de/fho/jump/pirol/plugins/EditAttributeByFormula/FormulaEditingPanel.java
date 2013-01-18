@@ -175,7 +175,7 @@ public class FormulaEditingPanel extends JPanel implements ActionListener, Value
         vbox.add(Box.createVerticalGlue());
 
         JScrollPane scrollPane = new JScrollPane(vbox);
-        scrollPane.setSize(new Dimension(wantedWidth, 40));
+        scrollPane.setSize(new Dimension(wantedWidth, 60));
         scrollPane.setMinimumSize(scrollPane.getSize());
         scrollPane.setPreferredSize(scrollPane.getSize());
         //this.setPreferredSize(new Dimension(wantedWidth, 320));
@@ -218,7 +218,7 @@ public class FormulaEditingPanel extends JPanel implements ActionListener, Value
     }
 
     /**
-     * ... to react on a selction in the stored formula drop down menu ...
+     * ... to react on a selection in the stored formula drop down menu ...
      *@param event
      */
     public void actionPerformed(ActionEvent event) {

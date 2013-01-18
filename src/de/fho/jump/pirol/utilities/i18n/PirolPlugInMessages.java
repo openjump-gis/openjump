@@ -11,6 +11,7 @@ package de.fho.jump.pirol.utilities.i18n;
 
 import java.util.MissingResourceException;
 
+import com.vividsolutions.jump.I18N;
 import org.openjump.core.apitools.HandlerToMakeYourLifeEasier;
 
 import de.fho.jump.pirol.utilities.debugOutput.DebugUserIds;
@@ -32,7 +33,7 @@ import de.fho.jump.pirol.utilities.debugOutput.PersonalLogger;
  * 
  */
 public class PirolPlugInMessages implements HandlerToMakeYourLifeEasier {
-    private static final String BUNDLE_NAME = "de.fhOsnabrueck.jump.pirol.resources.PirolPlugIns";
+    //private static final String BUNDLE_NAME = "de.fhOsnabrueck.jump.pirol.resources.PirolPlugIns";
     
     private static boolean inited = false;
 
@@ -48,13 +49,13 @@ public class PirolPlugInMessages implements HandlerToMakeYourLifeEasier {
      *@return the translated text
      */
     public static String getString(String key) {
-        if (!PirolPlugInMessages.inited){
-            I18NPlug.setPlugInRessource("de.fhOsnabrueck.jump.pirol", PirolPlugInMessages.BUNDLE_NAME);
-            PirolPlugInMessages.inited = true;
-        }
+        //if (!PirolPlugInMessages.inited){
+        //    I18NPlug.setPlugInRessource("de.fhOsnabrueck.jump.pirol", PirolPlugInMessages.BUNDLE_NAME);
+        //    PirolPlugInMessages.inited = true;
+        //}
         
         try {
-            return I18NPlug.get("de.fhOsnabrueck.jump.pirol", key);
+            return I18N.get(key);
         } catch (MissingResourceException e) {
             logger.printMinorError("i18n key not found for: \"" + key + "\"");
             return "!" + key + "!";

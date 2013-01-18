@@ -1,6 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
 2012-01-15 mmichaud <michael.michaud@free.fr>
+  * Fixed a severe bug in EditAttributeByFormulaPlugIn + I18N improvement
+  
+2012-01-15 mmichaud <michael.michaud@free.fr>
   * Avoid NPE in the case a WMS Layer has no Title
   
 2012-01-09 mmichaud <michael.michaud@free.fr>

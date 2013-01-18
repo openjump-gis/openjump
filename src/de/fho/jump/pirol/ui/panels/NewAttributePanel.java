@@ -54,7 +54,6 @@ import com.vividsolutions.jump.feature.AttributeType;
 import de.fho.jump.pirol.utilities.attributes.AttributeInfo;
 import de.fho.jump.pirol.utilities.debugOutput.DebugUserIds;
 import de.fho.jump.pirol.utilities.debugOutput.PersonalLogger;
-//import de.fho.jump.pirol.utilities.i18n.PirolPlugInMessages;
 
 /**
  * 

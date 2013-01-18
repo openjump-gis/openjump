@@ -654,8 +654,11 @@ public class FeatureCollectionTools extends ToolToMakeYourLifeEasier {
         
         for (int i=0; i<numFeats; i++){
             feat = features[i];
-            feat.setAttribute(attrInd, new Double(formula.getValue(feat)));
-            
+            try {
+                feat.setAttribute(attrInd, new Double(formula.getValue(feat)));
+            } catch (java.lang.Exception e) {
+                logger.printDebug("fail to apply \"" + formula + "\" on feature id " + feat.getID());
+            }
             if (i%500 == 0)
                 logger.printDebug("done: " + i);
         }

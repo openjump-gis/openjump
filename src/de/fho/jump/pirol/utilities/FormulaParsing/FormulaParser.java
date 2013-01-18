@@ -9,6 +9,7 @@
  */
 package de.fho.jump.pirol.utilities.FormulaParsing;
 
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureSchema;
 
@@ -35,7 +36,6 @@ import de.fho.jump.pirol.utilities.FormulaParsing.Values.ConstantValue;
 import de.fho.jump.pirol.utilities.attributes.AttributeInfo;
 import de.fho.jump.pirol.utilities.debugOutput.DebugUserIds;
 import de.fho.jump.pirol.utilities.debugOutput.PersonalLogger;
-import de.fho.jump.pirol.utilities.i18n.PirolPlugInMessages;
 import de.fho.jump.pirol.utilities.FormulaParsing.Values.PiValue;
 
 /**
@@ -121,33 +121,33 @@ public class FormulaParser {
                         theValue = new AttributeValue(attrName);
                     } else {
                         logger.printError("could not parse: " + attrName);
-                        throw new IllegalArgumentException( PirolPlugInMessages.getString("do-not-know-how-to-parse") + ": >" + attrName + "<");
+                        throw new IllegalArgumentException( I18N.get("pirol.plugIns.EditAttributeByFormula.do-not-know-how-to-parse") + ": >" + attrName + "<");
                     }
                         
                 } else if (operation[0].trim().startsWith(FormulaParser.KEY_SQRT)){
-                    theValue = new SquareRootOperation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_SQRT.length()+1).trim(), featSchema));
+                    theValue = new SquareRootOperation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_SQRT.length()).trim(), featSchema));
                 } else if (operation[0].trim().startsWith(FormulaParser.KEY_LOG)){
-                    theValue = new LogarithmOperation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_LOG.length()+1).trim(), featSchema));
+                    theValue = new LogarithmOperation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_LOG.length()).trim(), featSchema));
                 } else if (operation[0].trim().startsWith(FormulaParser.KEY_LOG10)){
-                    theValue = new Log10Operation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_LOG10.length()+1).trim(), featSchema));
+                    theValue = new Log10Operation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_LOG10.length()).trim(), featSchema));
                 } else if (operation[0].trim().startsWith(FormulaParser.KEY_SIN)){
-                    theValue = new SinOperation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_SIN.length()+1).trim(), featSchema));
+                    theValue = new SinOperation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_SIN.length()).trim(), featSchema));
                 } else if (operation[0].trim().startsWith(FormulaParser.KEY_COS)){
-                    theValue = new CosOperation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_COS.length()+1).trim(), featSchema));
+                    theValue = new CosOperation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_COS.length()).trim(), featSchema));
                 } else if (operation[0].trim().startsWith(FormulaParser.KEY_TAN)){
-                    theValue = new TanOperation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_TAN.length()+1).trim(), featSchema));
+                    theValue = new TanOperation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_TAN.length()).trim(), featSchema));
                 } else if (operation[0].trim().startsWith(FormulaParser.KEY_ASIN)){
-                    theValue = new AsinOperation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_ASIN.length()+1).trim(), featSchema));
+                    theValue = new AsinOperation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_ASIN.length()).trim(), featSchema));
                 } else if (operation[0].trim().startsWith(FormulaParser.KEY_ACOS)){
-                    theValue = new AcosOperation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_ACOS.length()+1).trim(), featSchema));
+                    theValue = new AcosOperation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_ACOS.length()).trim(), featSchema));
                 } else if (operation[0].trim().startsWith(FormulaParser.KEY_ATAN)){
-                    theValue = new AtnaOperation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_ATAN.length()+1).trim(), featSchema));
+                    theValue = new AtnaOperation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_ATAN.length()).trim(), featSchema));
                 } else if (operation[0].trim().startsWith(FormulaParser.KEY_EXP)){
-                    theValue = new ExpOperation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_EXP.length()+1).trim(), featSchema));
+                    theValue = new ExpOperation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_EXP.length()).trim(), featSchema));
                 } else if (operation[0].trim().startsWith(FormulaParser.KEY_TODEG)){
-                    theValue = new ToDegreesOperation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_TODEG.length()+1).trim(), featSchema));
+                    theValue = new ToDegreesOperation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_TODEG.length()).trim(), featSchema));
                 } else if (operation[0].trim().startsWith(FormulaParser.KEY_TORAD)){
-                    theValue = new ToRadiansOperation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_TORAD.length()+1).trim(), featSchema));
+                    theValue = new ToRadiansOperation(FormulaParser.getValue(operation[0].substring(FormulaParser.KEY_TORAD.length()).trim(), featSchema));
                 } else if (operation[0].trim().startsWith(FormulaParser.KEY_PI)){
                     theValue = new PiValue(Math.PI);
                 
@@ -166,7 +166,7 @@ public class FormulaParser {
                     theValue = new PowerOfOperation(FormulaParser.getValue(value1Str, featSchema), FormulaParser.getValue(value2Str, featSchema));
                 } else {
                     logger.printError("could not parse: " + operation[0]);
-                    throw new IllegalArgumentException( PirolPlugInMessages.getString("do-not-know-how-to-parse") + ": >" + operation[0] + "<");
+                    throw new IllegalArgumentException( I18N.get("pirol.plugIns.EditAttributeByFormula.do-not-know-how-to-parse") + ": >" + operation[0] + "<");
                 }
             }
         } else {
@@ -258,7 +258,7 @@ public class FormulaParser {
         int firstAddOrSubIndex = -1;
         int operatorIndex = -1;
 
-        // are there multiplication/divsions??
+        // are there multiplication/divisions??
         firstMultiOrDivIndex =  FormulaParser.findFirstMultiDivOperatorOutsideABracket(formula, -1); 
         firstAddOrSubIndex   =  FormulaParser.findFirstAddSubOperatorOutsideABracket(formula, -1);
         
@@ -287,8 +287,8 @@ public class FormulaParser {
             }
 
             firstLevelOperation[0] = formula.substring(0, operatorIndex).trim();
-            firstLevelOperation[1] = formula.substring(operatorIndex, Math.min(operatorIndex + 2, formula.length())).trim();
-            firstLevelOperation[2] = formula.substring(Math.min(operatorIndex + 2, formula.length())).trim();
+            firstLevelOperation[1] = formula.substring(operatorIndex, Math.min(operatorIndex + 1, formula.length())).trim();
+            firstLevelOperation[2] = formula.substring(Math.min(operatorIndex + 1, formula.length())).trim();
             
             logger.printDebug("----");
             logger.printDebug(firstLevelOperation[0] +"; " + firstLevelOperation[1] + "; " + firstLevelOperation[2]);
