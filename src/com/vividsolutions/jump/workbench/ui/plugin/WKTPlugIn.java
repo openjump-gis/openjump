@@ -51,12 +51,16 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
 import com.vividsolutions.jump.workbench.ui.EnterWKTDialog;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
+
 /**
  *  Base class for PlugIns that ask the user to enter Well-Known Text.
  */
 public abstract class WKTPlugIn extends AbstractPlugIn {
+    
     protected Layer layer;
+    
     public WKTPlugIn() {}
+    
     private void validate(FeatureCollection c, PlugInContext context) throws WorkbenchException {
         for (Iterator i = c.iterator(); i.hasNext();) {
             Feature f = (Feature) i.next();
@@ -75,15 +79,22 @@ public abstract class WKTPlugIn extends AbstractPlugIn {
             }
         }
     }
+    
     protected abstract Layer layer(PlugInContext context);
+    
     public boolean execute(PlugInContext context) throws Exception {
         layer = layer(context);
         EnterWKTDialog d = createDialog(context);
         d.setVisible(true);
-        return d.wasOKPressed();
+        boolean ret = d.wasOKPressed();
+        //[2012-01-20] fix a memory leak (all EnterWKTDialog were retained in memory)
+        d.dispose();
+        return ret;
     }
+    
     protected abstract void apply(FeatureCollection c, PlugInContext context)
         throws WorkbenchException;
+    
     protected EnterWKTDialog createDialog(final PlugInContext context) {
         final EnterWKTDialog d =
             new EnterWKTDialog(context.getWorkbenchFrame(), I18N.get("ui.plugin.WKTPlugIn.enter-well-known-text"), true);
@@ -103,6 +114,7 @@ public abstract class WKTPlugIn extends AbstractPlugIn {
         GUIUtil.centreOnWindow(d);
         return d;
     }
+    
     protected void apply(String wkt, PlugInContext context) throws Exception {
         StringReader stringReader = new StringReader(wkt);
         try {
@@ -114,4 +126,5 @@ public abstract class WKTPlugIn extends AbstractPlugIn {
             stringReader.close();
         }
     }
+    
 }
