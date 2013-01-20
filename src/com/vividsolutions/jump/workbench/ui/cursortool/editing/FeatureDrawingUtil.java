@@ -144,12 +144,12 @@ public class FeatureDrawingUtil {
         final Layer layer = layer(layerViewPanel);
         final Feature feature =
             FeatureUtil.toFeature(editor.removeRepeatedPoints(geometry), layer.getFeatureCollectionWrapper().getFeatureSchema());
-        return new UndoableCommand(tool.getName()) {
+        return new UndoableCommand(tool.getName(), layer) {
             public void execute() {
-                layer.getFeatureCollectionWrapper().add(feature);
+                getLayer().getFeatureCollectionWrapper().add(feature);
             }
             public void unexecute() {
-                layer.getFeatureCollectionWrapper().remove(feature);
+                getLayer().getFeatureCollectionWrapper().remove(feature);
             }
         };
     }

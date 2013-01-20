@@ -45,13 +45,49 @@ import javax.swing.undo.UndoableEdit;
  */
 public abstract class UndoableCommand {
     private String name;
+    private Layer layer;
+    boolean canceled = false;
 
+    /**
+     * UndoableCommand with a name to be shown in the user interface.
+     */
     public UndoableCommand(String name) {
         this.name = name;
     }
     
-    /** Releases resources. */
-    protected void dispose() {}
+    /**
+     * UndoableCommand with a name and a layer parameter.
+     * The layer parameter is used to neutralize the undoableEdit if the layer
+     * is removed from the LayerManager (neutralization uses significant
+     * attribute).
+     */
+    public UndoableCommand(String name, Layer layer) {
+        this(name);
+        setLayer(layer);
+    }
+    
+    public void setLayer(Layer layer) {
+        this.layer = layer;
+    }
+    
+    public Layer getLayer() {
+        return layer;
+    }
+    
+    /** 
+     * Releases resources and make the edit action unsignificant, so that
+     * it will be ignored in the undo chain.
+     * If a UndoableCommand subclasse has resources to be released,
+     * oveload this method and call super.dispose() set canceled to true.
+     */
+    protected void dispose() {
+        layer = null;
+        canceled = true;
+    }
+    
+    public boolean isCanceled() {
+        return canceled;
+    } 
 
     /**
      * If there is an exception that leaves this UndoableCommand execution 
@@ -70,6 +106,7 @@ public abstract class UndoableCommand {
             }
 
             public void redo() {
+                if (isCanceled()) return;
                 execute();
                 super.redo();
             }
@@ -80,9 +117,15 @@ public abstract class UndoableCommand {
             }
 
             public void undo() {
+                System.out.println("layer="+layer + " canceled="+isCanceled());
+                if (isCanceled()) return;
                 super.undo();
                 unexecute();
             }
+            
+            public boolean isSignificant() {
+                return !isCanceled();
+            } 
         };
     }
     public String getName() {

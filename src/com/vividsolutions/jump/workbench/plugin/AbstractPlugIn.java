@@ -36,6 +36,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import javax.swing.undo.UndoableEdit;
 
 import org.apache.log4j.Logger;
 
@@ -43,6 +44,12 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.model.CategoryEvent;
+import com.vividsolutions.jump.workbench.model.FeatureEvent;
+import com.vividsolutions.jump.workbench.model.LayerEvent;
+import com.vividsolutions.jump.workbench.model.LayerEventType;
+import com.vividsolutions.jump.workbench.model.LayerListener;
+import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
 import com.vividsolutions.jump.workbench.model.UndoableCommand;
 import com.vividsolutions.jump.workbench.model.UndoableEditReceiver;
@@ -212,7 +219,7 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutPlugin, EnableCh
     };
   }
 
-  public static void execute(UndoableCommand command,
+  public static void execute(final UndoableCommand command,
       LayerManagerProxy layerManagerProxy) {
     // Used to do nothing if command or panel were null, but that seems to me
     // now like a dangerous thing to do. So I've taken it out, and hopefully will
@@ -229,6 +236,25 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutPlugin, EnableCh
         layerManagerProxy.getLayerManager().getUndoableEditReceiver()
             .getUndoManager().discardAllEdits();
       }
+    }
+    // [2013-01-20 mmichaud] undoableEdits created by classes derived from
+    // AbstractPlugIn listen to LayerEvent to cancel the action and to free
+    // resources if the layer has been removed. 
+    final UndoableEdit undoableEdit = command.toUndoableEdit();
+    if (command.getLayer() != null) {
+        LayerManager layerManager = command.getLayer().getLayerManager();
+        if (layerManager != null) {
+            layerManager.addLayerListener(new LayerListener(){
+                  public void categoryChanged(CategoryEvent e) {}
+                  public void featuresChanged(FeatureEvent e) {}
+                  public void layerChanged(LayerEvent e) {
+                      if (e.getType() == LayerEventType.REMOVED &&
+                          e.getLayerable() == command.getLayer()) {
+                          undoableEdit.die();
+                      }
+                  }
+            });
+        }
     }
     layerManagerProxy.getLayerManager().getUndoableEditReceiver()
         .receive(command.toUndoableEdit());

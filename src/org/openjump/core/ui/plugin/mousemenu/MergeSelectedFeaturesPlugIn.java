@@ -122,15 +122,22 @@ public class MergeSelectedFeaturesPlugIn extends AbstractPlugIn {
     final Feature mergedFeature = (Feature) ((Feature) iterator.next()).clone();
     mergedFeature.setGeometry(geometry);
 
-    execute(new UndoableCommand(getName()) {
+    execute(new UndoableCommand(getName(), layer) {
+      
+      public void dispose() {
+        super.dispose();
+        features.clear();
+        mergedFeature.setGeometry(null);
+      }
+      
       public void execute() {
-        layer.getFeatureCollectionWrapper().removeAll(features);
-        layer.getFeatureCollectionWrapper().add(mergedFeature);
+        getLayer().getFeatureCollectionWrapper().removeAll(features);
+        getLayer().getFeatureCollectionWrapper().add(mergedFeature);
       }
 
       public void unexecute() {
-        layer.getFeatureCollectionWrapper().remove(mergedFeature);
-        layer.getFeatureCollectionWrapper().addAll(features);
+        getLayer().getFeatureCollectionWrapper().remove(mergedFeature);
+        getLayer().getFeatureCollectionWrapper().addAll(features);
       }
     }, context);
 

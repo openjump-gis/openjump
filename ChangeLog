@@ -1,15 +1,22 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
-2012-01-20 mmichaud <michael.michaud@free.fr>
-  * Fixed a memory leak in WKTPlugIn
+2013-01-20 mmichaud <michael.michaud@free.fr>
+  * Fixed a memory leak in WKTPlugIn (geometry text representation was retained) 
+  * Improve UndoableCommand so that one can deactivate commands related to a
+    specific layer when the layer no more exists.
+  * Resources used by a UndoableCommand can be removed if the UndoableCommand
+    is related to a Layer which does not exist anymore (fix another memory leak) 
   
-2012-01-19 mmichaud <michael.michaud@free.fr>
+2013-01-19 mmichaud <michael.michaud@free.fr>
   * Fixed a severe bug in EditAttributeByFormulaPlugIn + I18N improvement
   
-2012-01-15 mmichaud <michael.michaud@free.fr>
+2013-01-15 mmichaud <michael.michaud@free.fr>
   * Avoid NPE in the case a WMS Layer has no Title
+
+2013-01-15  Giuseppe Aruta (giuseppe_aruta@yahoo.it)
+  * Add several icons to File and Tools menu
   
-2012-01-09 mmichaud <michael.michaud@free.fr>
+2013-01-09 mmichaud <michael.michaud@free.fr>
   * Try to make feature selection order more predictable
 
 2012-12-31 

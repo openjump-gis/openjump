@@ -306,13 +306,13 @@ public class EditTransaction {
             public void execute() {
                 for (Iterator i = commands.iterator(); i.hasNext();) {
                     UndoableCommand subCommand = (UndoableCommand) i.next();
-                    subCommand.execute();
+                    if (!subCommand.isCanceled()) subCommand.execute();
                 }
             }
             public void unexecute() {
                 for (Iterator i = commands.iterator(); i.hasNext();) {
                     UndoableCommand subCommand = (UndoableCommand) i.next();
-                    subCommand.unexecute();
+                    if (!subCommand.isCanceled()) subCommand.unexecute();
                 }
             }
         };
@@ -356,7 +356,12 @@ public class EditTransaction {
     }
 
     protected UndoableCommand createCommand() {
-        UndoableCommand command = new UndoableCommand(name) {
+        UndoableCommand command = new UndoableCommand(name, layer) {
+            public void dispose() {
+                super.dispose();
+                proposedGeometries.clear();
+                originalGeometries.clear();
+            }
             public void execute() {
                 changeGeometries(proposedGeometries, originalGeometries, layer);
             }

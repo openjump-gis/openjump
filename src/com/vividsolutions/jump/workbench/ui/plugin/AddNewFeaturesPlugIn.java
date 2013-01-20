@@ -66,7 +66,7 @@ public class AddNewFeaturesPlugIn extends WKTPlugIn {
         return super.execute(context);
     }
 
-    protected void apply(FeatureCollection c, final PlugInContext context) {
+    protected void apply(final FeatureCollection c, final PlugInContext context) {
         //Can't use WeakHashMap, otherwise the features will vanish when the command
         //is undone! [Jon Aquino]
         final ArrayList features = new ArrayList();               
@@ -78,13 +78,20 @@ public class AddNewFeaturesPlugIn extends WKTPlugIn {
             features.add(FeatureUtil.toFeature(feature.getGeometry(), fs));
         }
 
-        execute(new UndoableCommand(getName()) {
+        execute(new UndoableCommand(getName(), this.layer) {
+            
+            public void dispose() {
+                super.dispose();
+                features.clear();
+                c.clear();
+            }
+            
             public void execute() {
-                layer.getFeatureCollectionWrapper().addAll(features);
+                getLayer().getFeatureCollectionWrapper().addAll(features);
             }
 
             public void unexecute() {
-                layer.getFeatureCollectionWrapper().removeAll(features);
+                getLayer().getFeatureCollectionWrapper().removeAll(features);
             }
         }, context);
     }
