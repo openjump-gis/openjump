@@ -1,6 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
 2013-01-20 mmichaud <michael.michaud@free.fr>
+  * Fix bug 3600776 : regression in LabelStyle (caused by jts update to 1.13)
+
+2013-01-20 mmichaud <michael.michaud@free.fr>
   * Fixed a memory leak in WKTPlugIn (geometry text representation was retained) 
   * Improve UndoableCommand so that one can deactivate commands related to a
     specific layer when the layer no more exists.

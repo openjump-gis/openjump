@@ -180,7 +180,7 @@ public class LabelStyle implements Style {
 		}
         
         Geometry viewportIntersection = intersection(geom, viewport);
-        if (viewportIntersection == null) {
+        if (viewportIntersection == null || viewportIntersection.isEmpty()) {
             return;
         }
         ModelSpaceLabelSpec spec = modelSpaceLabelSpec(viewportIntersection);
