@@ -103,7 +103,7 @@ public class AboutDialog extends JDialog {
             context.getWorkbench().getBlackboard().put(INSTANCE_KEY, aboutDialog);
         }
         aboutDialog = (AboutDialog) context.getWorkbench().getBlackboard().get(INSTANCE_KEY);
-        GUIUtil.centreOnWindow(aboutDialog);
+        //GUIUtil.centreOnWindow(aboutDialog);
         return aboutDialog;
     }
 
@@ -124,6 +124,7 @@ public class AboutDialog extends JDialog {
         try {
             jbInit();
             pack();
+            setPreferredSize(new Dimension(this.getWidth(), frame.getHeight() - 200));
             GUIUtil.centreOnWindow(this);
             this.addComponentListener(new ResizeMe());
         } catch (Exception ex) {
@@ -357,7 +358,8 @@ public class AboutDialog extends JDialog {
         int last_y = getY();
         int last_w = getWidth();
         int last_h = getHeight();
-
+        boolean initialized = false;
+        
         public void componentResized(ComponentEvent evt) {
             // System.out.println( getX() + " cR " + getY());
             /*
@@ -421,14 +423,16 @@ public class AboutDialog extends JDialog {
             // reset scrollpane on redisplay
             resetScrollPositions(aboutScroll);
             resetScrollPositions(extScroll);
-            
-            // resize and locate according to new workbench position
-            setPreferredSize(new Dimension(last_w, wbc.getWorkbench()
+            if (initialized) {
+                // resize and locate according to new workbench position
+                setPreferredSize(new Dimension(last_w, wbc.getWorkbench()
                     .getFrame().getHeight() - 200));
-
-            pack();
-            GUIUtil.centreOnWindow(aboutDialog);
+                pack();
+            } else {
+                initialized = true;
+            }
             
+                     
             memorize();
         }
 

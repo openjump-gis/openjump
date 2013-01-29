@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-01-29 mmichaud <michael.michaud@free.fr>
+  * Prevent flickering of AboutDialog the first time it is opened.
+  
 2013-01-20 mmichaud <michael.michaud@free.fr>
   * Fix bug 3600776 : regression in LabelStyle (caused by jts update to 1.13)
 
