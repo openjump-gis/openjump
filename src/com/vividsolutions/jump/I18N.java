@@ -33,6 +33,7 @@ package com.vividsolutions.jump;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Locale;
 import java.util.Map;
@@ -156,6 +157,9 @@ public final class I18N {
     // apply to system
     applyToRuntime(locale);
   }
+  
+  // remember missing strings, do not flood log
+  private HashSet missing = new HashSet();
 
   /**
    * Get the I18N text from the language file associated with this instance. If
@@ -182,11 +186,14 @@ public final class I18N {
       // eventually use base resourcebundle
       return resourceBundle3.getString(key);
     } catch (java.util.MissingResourceException e) {
+      if (!missing.contains(key)) {
+        String msg = getClass().getName()+"\nNo resource bundle or no translation found for''{0}''.\nError was:\n{1}";
+        msg = new MessageFormat(msg).format(new String[]{key,e.getLocalizedMessage()});
+        LOG.debug(msg);
+        System.out.println("Missing translation for '"+key+"' in resource bundle '"+this.resourcePath+"'.");
+        missing.add(key);
+      }
       String[] labelpath = key.split("\\.");
-      String msg = getClass().getName()+"\nNo resource bundle or no translation found for''{0}''.\nError was:\n{1}";
-      msg = new MessageFormat(msg).format(new String[]{key,e.getLocalizedMessage()});
-      LOG.debug(msg);
-      System.out.println("Missing translation for '"+key+"' in resource bundle '"+this.resourcePath+"'.");
       return labelpath[labelpath.length - 1];
     }
   }
