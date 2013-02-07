@@ -89,27 +89,30 @@ and the following plugins
 
 2. Installation instructions
 ----------------------------
-OpenJUMP comes in the form of a compressed zip archive file.
-To install, decompress the archive in your hard drive, for example into 
-c:/OpenJUMP
-You will end up with the following folder structure:
-c:/OpenJUMP/
-c:/OpenJUMP/bin
-c:/OpenJUMP/lib
-c:/OpenJUMP/licenses
+Try the shiny installers
+ OpenJUMP-Installer-*.exe (for windows)
+ OpenJUMP-Installer-*.jar (for linux & mac)
+Or
+ Extract the portable zip file distribution.
+ OpenJUMP-Portable-*.zip
 
 
 3. Running OpenJUMP
 -------------------
-Run the startup scripts contained in the /bin folder:
-- On windows, double-click on oj_windows.bat or OpenJUMP.exe
+To start OpenJUMP run the launcher for your platform from the 
+<appfolder>/bin directory.
+- On Windows, double-click on oj_windows.bat or OpenJUMP.exe
 - On Linux/Unix, launch oj_linux.sh
-- On Mac OSX, launch oj_mac.command or OpenJUMP.app
+- On MacOSX, launch oj_mac.command or OpenJUMP.app
 
-Further notes can be found on our wiki:
-http://sourceforge.net/apps/mediawiki/jump-pilot/
-and on 
-http://www.openjump.org
+Additionally, if you used the installer you should have
+- On Windows, a start menu entry.
+- On Linux, a link on the desktop.
+- On MacOSX, a self contained app on the desktop. 
+  Move it to 'Applications' folder if you like.
+
+Further information can be found in the OJ wiki:
+http://sourceforge.net/apps/mediawiki/jump-pilot/index.php?title=Starting_OpenJUMP
 
 
 Startup/Command line options
@@ -188,12 +191,17 @@ OpenJUMP options:
 
 4. Support
 ----------
-General questions regarding OpenJUMP can be found in:
-- www.openjump.org the OpenJUMP home
-- jump-pilot.sourceforge.net the OpenJUMP developper site
+for a general overview visit
+  www.openjump.org - the OpenJUMP web site
+  jump-pilot.sourceforge.net - alternative domain to the above
+for support
+  consult the OJ wiki
+    http://sourceforge.net/apps/mediawiki/jump-pilot
+  use mailing list or trackers
+    http://sourceforge.net/apps/mediawiki/jump-pilot/index.php?title=OpenJUMP_Support
 
-For commerical support, e.g. payed plugin development, see our
-www.openjump.org home.
+For commercial support, e.g. paid plugin development, contact the developer 
+mailing list http://lists.sourceforge.net/lists/listinfo/jump-pilot-devel .
 
 
 5. OpenJUMP history
