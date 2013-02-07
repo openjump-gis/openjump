@@ -112,70 +112,80 @@ and on
 http://www.openjump.org
 
 
-Startup options
+Startup/Command line options
 -----------------
 Several startup options are available, either for the Java Virtual Machine, 
-or for the OpenJUMP core. To change them, edit the startup script accordingly.
-The scripts contain documentation comments, don't be afraid.
-
-Note, that Windows users that like to start OpenJUMP with the OpenJUMP.exe 
-launcher will need to modify OpenJUMP.ini.  
+or for the OpenJUMP application. To change them, edit the startup script 
+accordingly. The scripts contain documentation comments, don't be afraid.
 
 Useful Java VM options
 -Xms defines the allocated memory for the virtual machine at startup.
   Example: -Xms256M will allocate 256M of memory for OpenJUMP
 -Xmx defines the maximum allocated memory for the virtual machine.
   Example: -Xmx256M
--Dproperty=value set a jvm system property. 
+-Dproperty=value set a jvm system property.
 
-OpenJUMP command line syntax
-  oj_starter -option <argument> ... <file(data/project)>...
+OpenJUMP command line syntax:
 
-OJ Options
--default-plugins <file.xml>
-  Specifies the configuration file of a standard set of functions realized
-  as plugins. For example almost all functions of the "Tools" menu.
-  This is configured as
-    -default-plugins bin\default-plugins.xml 
--plug-in-directory <path> 
-  Sets the location of the plugin directory.
-  Default: JUMP_HOME/lib/ext
--project <path/project.jmp> 
-  DEPRECATED: simply add the path as mentioned in the syntax above
-  Open a project located on the file system at starting time
--properties <file.xml>
-  specifies the file where OpenJUMP persistent properties are stored.
-  See Wiki article "How to use a plugin with a properties file in ECLIPSE".
-  Default: JUMP_HOME\bin\workbench-properties.xml
--state <some/folder>
-  specifies the folder where OpenJUMP stores data between executions
-  (workbench-state.xml).
-  Default: JUMP_HOME or SETTINGS_HOME
--i18n <locale>
-  Overrides the operating systems default locale setting (language, 
-  number format etc.) For example:
-  - For starting OpenJUMP in French: use -i18n fr
-  - languages available (09/2011): 
-    cz (czech)
-    de (german)
-    en (english)
-    es (spanish)
-    fi (finnish)
-    fr (french)
-    hu (hungarian)
-    it (italian)
-    ja_JP (japanese)
-    ml (malayalam)
-    pt (portuguese)
-    pt_BR (brazilian portuguese)
-    ta_IN (indian tamil)
-    te (telugu)
-    zh_CN (chinese simplified)
-    zh_HK (chinese Hong Kong)
-  ATTENTION: If the specified language is not available then
-             the language used is english (en).
+  oj_starter -option <argument> ... <[data|project]_file>...
 
-  
+OpenJUMP options:
+
+  -default-plugins <file.xml>
+    Specifies the configuration file of a standard set of functions realized
+    as plugins. For example almost all functions of the "Tools" menu.
+    This is configured as
+      -default-plugins bin\default-plugins.xml
+
+  -h, -help
+    show the help information
+
+  -i18n <locale>
+    Overrides the operating systems default locale setting (language, 
+    number format etc.) For example:
+    - For starting OpenJUMP in French: use -i18n fr
+    - languages available (09/2011): 
+      cz (czech)
+      de (german)
+      en (english)
+      es (spanish)
+      fi (finnish)
+      fr (french)
+      hu (hungarian)
+      it (italian)
+      ja_JP (japanese)
+      ml (malayalam)
+      pt (portuguese)
+      pt_BR (brazilian portuguese)
+      ta_IN (indian tamil)
+      te (telugu)
+      zh_CN (chinese simplified)
+      zh_HK (chinese Hong Kong)
+    ATTENTION: If the specified language is not available then
+               the language used is english (en).
+
+  -plug-in-directory <path> 
+    Sets the location of the plugin directory.
+    Default: JUMP_HOME/lib/ext
+
+  -project <path/project.jmp> 
+    DEPRECATED: simply add the path as mentioned in the syntax above
+    Open a project located on the file system at starting time
+
+  -properties <file.xml>
+    specifies the file where OpenJUMP persistent properties are stored.
+    See Wiki article "How to use a plugin with a properties file in ECLIPSE".
+    Default: JUMP_HOME\bin\workbench-properties.xml
+
+  -state <some/folder>
+    specifies the folder where OpenJUMP stores data between executions
+    (workbench-state.xml).
+    Default: JUMP_HOME or SETTINGS_HOME
+
+  -v, -version
+    show version information
+
+
 4. Support
 ----------
 General questions regarding OpenJUMP can be found in:
