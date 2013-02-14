@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-02-14 mmichaud <michael.michaud@free.fr>
+  * Fixed a problem with TEXT attribute in ExtractLayerByAttributePlugIn
+
 2013-01-29 mmichaud <michael.michaud@free.fr>
   * Prevent flickering of AboutDialog the first time it is opened.
   

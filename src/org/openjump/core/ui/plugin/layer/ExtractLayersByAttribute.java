@@ -88,6 +88,7 @@ public class ExtractLayersByAttribute extends AbstractPlugIn {
 	private Layer sourceLayer = null;
 	private JComboBox layerAttributeComboBox = null;
 	private boolean textAttributeFound = false;
+	private String textAttribute = null;
 	 	 
 	public void initialize(PlugInContext context) throws Exception {
 	    context.getFeatureInstaller().addMainMenuItem(this,
@@ -150,7 +151,8 @@ public class ExtractLayersByAttribute extends AbstractPlugIn {
             if (attribute.equalsIgnoreCase(LAYER)) {
             	layerName = attribute;
             } else if (attribute.equalsIgnoreCase(TEXT)) {
-            	textAttributeFound = true;           	
+            	textAttributeFound = true;
+            	textAttribute = attribute;
             }
         }
 		layerAttributeComboBox.setSelectedItem(layerName);
@@ -213,7 +215,7 @@ public class ExtractLayersByAttribute extends AbstractPlugIn {
 	            boolean textAttributePopulated = false;
 		        for (Iterator j = featureList.iterator(); j.hasNext();) {
 		        	Feature feature = (Feature) j.next();
-		        	String attributeValue = feature.getAttribute("TEXT").toString();
+		        	String attributeValue = feature.getAttribute(textAttribute).toString();
 		        	if ( feature.getAttribute(attributeIndex).toString().equals(layerName) && attributeValue != null && !attributeValue.isEmpty()) {
 		        		textAttributePopulated = true;
 			        	break;
@@ -221,7 +223,7 @@ public class ExtractLayersByAttribute extends AbstractPlugIn {
 	            }
 	            if (textAttributePopulated) {
 	        	    LabelStyle labelStyle = new LabelStyle();
-	        	    labelStyle.setAttribute(TEXT);
+	        	    labelStyle.setAttribute(textAttribute);
 	        	    labelStyle.setScaling(true);
 	        	    labelStyle.setEnabled(true);	        	
 		            newLayer.addStyle(labelStyle);
