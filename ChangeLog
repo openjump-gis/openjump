@@ -2,6 +2,7 @@
 
 2013-02-17 mmichaud <michael.michaud@free.fr>
   * FR 3601072 : Replace aggregation-0.2.5 by 0.2.6 in PLUS distribution
+  * Include CoverageCleanerPlugIn in Topology extension
 
 2013-02-14 mmichaud <michael.michaud@free.fr>
   * Fixed a problem with TEXT attribute in ExtractLayerByAttributePlugIn
