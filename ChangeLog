@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-02-20 mmichaud <michael.michaud@free.fr>
+  * Add TextBasesVertexStyle.java2xml to be able to save text based
+    decoration styles in a project
+
 2013-02-17 mmichaud <michael.michaud@free.fr>
   * FR 3601072 : Replace aggregation-0.2.5 by 0.2.6 in PLUS distribution
   * Include CoverageCleanerPlugIn in Topology extension
