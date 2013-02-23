@@ -346,13 +346,31 @@ public class GUIUtil {
      *            Description of the Parameter
      */
     public static void centre(Component componentToMove,
-            Component componentToCentreOn) {
-        Dimension componentToCentreOnSize = componentToCentreOn.getSize();
-        componentToMove.setLocation(
-            componentToCentreOn.getX()
-                + ((componentToCentreOnSize.width - componentToMove.getWidth()) / 2), 
-            componentToCentreOn.getY()
-                + ((componentToCentreOnSize.height - componentToMove.getHeight()) / 2));
+        Component componentToCentreOn) {
+      int offset = 30;
+      Dimension screendim = Toolkit.getDefaultToolkit().getScreenSize();
+      Dimension componentToCentreOnSize = componentToCentreOn.getSize();
+      int newx = componentToCentreOn.getX()
+          + ((componentToCentreOnSize.width - componentToMove.getWidth()) / 2);
+      int newy = componentToCentreOn.getY()
+          + ((componentToCentreOnSize.height - componentToMove.getHeight()) / 2);
+      int neww = componentToMove.getWidth(), newh = componentToMove.getHeight();
+      // move back to screen if placed outside or too close to the border
+      // (offsetted by 30px for possible os menus e.g. taskbar)
+      if (newx < offset) {
+        newx = offset;
+      }
+      if (newy < offset) {
+        newy = offset;
+      }
+      // resize smaller if bigger than screen
+      if (newx+neww>screendim.width-offset){
+        neww = screendim.width-offset-newx;
+      }
+      if (newy+newh>screendim.height-offset){
+        newh = screendim.height-offset-newy;
+      }
+      componentToMove.setBounds(newx, newy, neww, newh);
     }
 
     /**
