@@ -94,8 +94,6 @@ import org.openjump.core.model.TaskEvent;
 import org.openjump.core.model.TaskListener;
 import org.openjump.swing.factory.component.ComponentFactory;
 
-import sun.rmi.runtime.Log;
-
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
