@@ -145,6 +145,7 @@ public class AttributeTablePanel extends JPanel {
             if (!isEditButtonColumn(column)) {
                 JComponent renderer = (JComponent) super.getCellRenderer(row,
                         column);
+                setDefaultRenderer(Date.class, new FlexibleDateParser.CellRenderer());
 				if (AttributeTablePanel.this.getModel().getLayer().isEditable()
 						&& !AttributeTablePanel.this.getModel()
 							.isCellEditable(row, column))
