@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-02-24 mmichaud <michael.michaud@free.fr>
+  * fix 1447907 : upgrade jdom.jar (1.0b8) to jdom-1.1.3.jar
+
 2013-02-20 mmichaud <michael.michaud@free.fr>
   * Add TextBasesVertexStyle.java2xml to be able to save text based
     decoration styles in a project

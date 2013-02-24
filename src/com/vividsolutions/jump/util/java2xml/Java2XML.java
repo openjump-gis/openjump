@@ -29,6 +29,7 @@ import org.apache.log4j.Logger;
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
 import java.io.*;
@@ -75,8 +76,11 @@ public class Java2XML extends XMLBinder {
         write(object, document.getRootElement(),
                 specElements(object.getClass()));
         XMLOutputter xmlOutputter = new XMLOutputter();
-        xmlOutputter.setNewlines(true);
-        xmlOutputter.setIndent(true);
+        // replace old jdom syntax (version 1.0 beta from 2004)
+        //xmlOutputter.setNewlines(true);
+        //xmlOutputter.setIndent(true);
+        // by newer version syntax
+        xmlOutputter.setFormat(Format.getPrettyFormat());
         xmlOutputter.output(document, writer);
     }
     private void write(final Object object, final Element tag, List specElements)
