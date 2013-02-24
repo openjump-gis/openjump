@@ -108,7 +108,8 @@ public class ValueConverterFactory
     public Object getValue(ResultSet rs, int columnIndex)
         throws SQLException
     {
-      return rs.getDate(columnIndex);
+      //return rs.getDate(columnIndex);
+      return rs.getTimestamp(columnIndex);
     }
   }
 }

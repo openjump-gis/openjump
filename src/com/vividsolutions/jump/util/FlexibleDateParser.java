@@ -60,6 +60,7 @@ import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 
 /**
@@ -122,8 +123,22 @@ public class FlexibleDateParser {
         }
 
         //Same formatter as used by JTable.DateRenderer. [Jon Aquino]
-        private DateFormat formatter = DateFormat.getDateInstance();
+        private DateFormat formatter = DateFormat.getDateTimeInstance();
     };
+    
+    public static final class CellRenderer extends DefaultTableCellRenderer {
+        
+        DateFormat formatter = DateFormat.getDateTimeInstance();
+        
+        public CellRenderer() { super(); }
+
+        public void setValue(Object value) {
+            if (formatter==null) {
+                formatter = DateFormat.getDateTimeInstance();
+            }
+            setText((value == null) ? "" : formatter.format(value));
+        }
+    }
 
     private boolean verbose = false;
 

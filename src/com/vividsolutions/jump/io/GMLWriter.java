@@ -381,7 +381,7 @@ public class GMLWriter implements JUMPWriter {
         return dateFormatter.format(date);
     }
     
-    private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+    private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
     /** given a FEatureSchema, make an output template
      *  in the JCS  format

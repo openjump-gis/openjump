@@ -24,9 +24,16 @@ dd.MM.yyyy
 #MM/dd/yyyy because JUMP will be used mainly in North America. 
 #Anyway, yyyy-MM-dd should be preferred to both. [Jon Aquino]
 MM/dd/yyyy
+MM/dd/yyyy HH:mm:ss
 dd/MM/yyyy
+dd/MM/yyyy HH:mm:ss
+
+MMM dd', 'yyyy hh:mm:ss a
 
 yyyy-MM-dd HH:mm:ss
+yyyy-MM-dd'T'HH:mm:ss
+# most informative format conforming the ISO 8601
+yyyy-MM-dd'T'HH:mm:ss.SSSZ
 yyyyMMddHHmmss
 MMMM d, yyyy
 yyyy.MM.dd hh:mm:ss
@@ -38,6 +45,8 @@ ddMMyyyy
 dd-MMM-yyyy
 dd-MM-yyyy
 dd MMM yyyy
+dd MMM yyyy HH:mm:ss
+dd MMMM yyyy HH:mm:ss
 yyyyMMddHHmmssSSS
 yyyyMMddHHmm
 yyyy/MM/dd HH:mm:ss
