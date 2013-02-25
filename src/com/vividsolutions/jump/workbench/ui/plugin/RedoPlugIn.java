@@ -39,6 +39,7 @@ import javax.swing.JComponent;
 import javax.swing.undo.UndoManager;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
@@ -49,7 +50,20 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class RedoPlugIn extends AbstractPlugIn {
-  private MultiEnableCheck check = null;
+  private MultiEnableCheck check = new MultiEnableCheck().add(
+      EnableCheckFactory.getInstance()
+          .createWindowWithLayerManagerMustBeActiveCheck()).add(
+      new EnableCheck() {
+        public String check(JComponent component) {
+          UndoManager undoManager = ((LayerManagerProxy) JUMPWorkbench
+              .getInstance().getFrame().getActiveInternalFrame())
+              .getLayerManager().getUndoableEditReceiver().getUndoManager();
+          if (component != null)
+            component.setToolTipText(undoManager.getRedoPresentationName());
+          return (!undoManager.canRedo()) ? I18N.get("com.vividsolutions.jump.workbench.ui.plugin.RedoPlugIn.nothing-to-redo") : null;
+        }
+      });;
+
   private ImageIcon icon = IconLoader.icon("Redo.gif");
 
   public RedoPlugIn() {
@@ -69,21 +83,6 @@ public class RedoPlugIn extends AbstractPlugIn {
 
   public MultiEnableCheck createEnableCheck(
       final WorkbenchContext workbenchContext) {
-    if (check == null) {
-      EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
-      check = new MultiEnableCheck().add(
-          checkFactory.createWindowWithLayerManagerMustBeActiveCheck()).add(
-          new EnableCheck() {
-            public String check(JComponent component) {
-              UndoManager undoManager = ((LayerManagerProxy) workbenchContext
-                  .getWorkbench().getFrame().getActiveInternalFrame())
-                  .getLayerManager().getUndoableEditReceiver().getUndoManager();
-              if (component != null)
-                component.setToolTipText(undoManager.getRedoPresentationName());
-              return (!undoManager.canRedo()) ? "X" : null;
-            }
-          });
-    }
     return check;
   }
   

@@ -136,7 +136,7 @@ public class LeftClickFilter implements CursorTool {
 
     @Override
     public String toString() {
-      return wrappee.toString();
+      return super.toString()+"/"+wrappee.toString();
     }
 
 }

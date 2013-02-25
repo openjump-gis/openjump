@@ -32,15 +32,8 @@
 
 package com.vividsolutions.jump.workbench.ui.cursortool;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jump.feature.Feature;
-import com.vividsolutions.jump.geom.EnvelopeUtil;
-import com.vividsolutions.jump.workbench.model.FenceLayerFinder;
-import com.vividsolutions.jump.workbench.model.Layer;
-import com.vividsolutions.jump.workbench.ui.AbstractSelection;
-import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
-
 import java.awt.Cursor;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.NoninvertibleTransformException;
 import java.util.ArrayList;
@@ -49,11 +42,23 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.swing.Icon;
 
-public abstract class SelectTool extends DragTool {
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.feature.Feature;
+import com.vividsolutions.jump.geom.EnvelopeUtil;
+import com.vividsolutions.jump.workbench.model.FenceLayerFinder;
+import com.vividsolutions.jump.workbench.model.Layer;
+import com.vividsolutions.jump.workbench.ui.AbstractSelection;
+import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
+import com.vividsolutions.jump.workbench.ui.cursortool.QuasimodeTool.ModifierKeySpec;
+
+public abstract class SelectTool extends DragTool implements ShortcutsDescriptor{
     
     public Cursor getCursor() {
         return Cursor.getDefaultCursor();
@@ -142,7 +147,7 @@ public abstract class SelectTool extends DragTool {
         Map<Feature,List<Geometry>> featureToSelectedItemsMap =
             selection.getFeatureToSelectedItemCollectionMap(layer);
         Map<Feature,List<Geometry>> featureToItemsInFenceMap = 
-            new HashMap<Feature,List<Geometry>>();
+            new LinkedHashMap<Feature,List<Geometry>>();
         for (Iterator i = features.iterator(); i.hasNext();) {
             Feature feature = (Feature) i.next();
             List<Geometry> selectedItems = featureToSelectedItemsMap.get(feature);
@@ -173,4 +178,10 @@ public abstract class SelectTool extends DragTool {
         return null;
     }
 
+    public Map<ModifierKeySpec, String> describeShortcuts() {
+      Map map = new HashMap();
+      map.put(new ModifierKeySpec(new int[] { KeyEvent.VK_SHIFT }),
+          I18N.get(this.getClass().getName() + ".add-to-selection"));
+      return map;
+    }
 }

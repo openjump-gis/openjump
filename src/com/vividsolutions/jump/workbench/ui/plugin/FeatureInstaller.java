@@ -31,7 +31,6 @@
  */
 package com.vividsolutions.jump.workbench.ui.plugin;
 
-import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,6 +45,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
+import javax.swing.KeyStroke;
 import javax.swing.MenuElement;
 import javax.swing.UIManager;
 import javax.swing.event.MenuEvent;
@@ -55,20 +55,24 @@ import javax.swing.event.PopupMenuListener;
 
 import org.openjump.core.ui.plugin.AbstractUiPlugIn;
 import org.openjump.core.ui.swing.listener.EnableCheckMenuItemShownListener;
-import org.openjump.core.ui.swing.listener.MenuItemShownMenuListener;
 
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.util.CollectionUtil;
 import com.vividsolutions.jump.util.StringUtil;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
+import com.vividsolutions.jump.workbench.plugin.EnableChecked;
+import com.vividsolutions.jump.workbench.plugin.Iconified;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugIn;
+import com.vividsolutions.jump.workbench.plugin.ShortcutEnabled;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
+import com.vividsolutions.jump.workbench.ui.ShortcutPluginExecuteKeyListener;
 import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
 
 /**
@@ -89,6 +93,8 @@ public class FeatureInstaller {
 
   }
 
+  private static FeatureInstaller instance = null;
+
   private WorkbenchContext workbenchContext;
 
   private TaskMonitorManager taskMonitorManager = new TaskMonitorManager();
@@ -103,6 +109,12 @@ public class FeatureInstaller {
   public FeatureInstaller(WorkbenchContext workbenchContext) {
     this.workbenchContext = workbenchContext;
     checkFactory = new EnableCheckFactory(workbenchContext);
+  }
+
+  public static final FeatureInstaller getInstance() {
+    if (instance == null)
+      instance = new FeatureInstaller(JUMPWorkbench.getInstance().getContext());
+    return instance;
   }
 
   /** @deprecated Use the EnableCheckFactory methods instead */
@@ -143,20 +155,16 @@ public class FeatureInstaller {
   }
 
   public void addMenuSeparator(JMenu menu) {
-    Component separator = null;
-    Component exitMenu = null;
-    if (menu.getText().equals(MenuNames.FILE)) {
-      // Ensure separator and Exit appear last
-      separator = menu.getMenuComponent(menu.getMenuComponentCount() - 2);
-      exitMenu = menu.getMenuComponent(menu.getMenuComponentCount() - 1);
-      menu.remove(separator);
-      menu.remove(exitMenu);
-    }
-    menu.addSeparator();
-    if (menu.getText().equals(MenuNames.FILE)) {
-      menu.add(separator);
-      menu.add(exitMenu);
-    }
+    int pos = -1;
+    // protect the first two FILE menu entries, separator + exit item
+    int count = menu.getMenuComponentCount();
+    if (menu.getText().equals(MenuNames.FILE) && (pos < 0 || pos >= count - 2))
+      pos = count - 2;
+
+    if (pos < 0)
+      menu.addSeparator();
+    else
+      menu.insertSeparator(pos);
   }
 
   private void associate(JMenuItem menuItem, PlugIn plugIn) {
@@ -223,8 +231,8 @@ public class FeatureInstaller {
    */
   public void addMainMenuItem(PlugIn executable, String menuName,
       String menuItemName, Icon icon, EnableCheck enableCheck) {
-    addMainMenuItem(executable, new String[] { menuName }, menuItemName, false,
-        icon, enableCheck);
+    addMainMenuPlugin(executable, new String[] { menuItemName }, menuItemName,
+        false, icon, enableCheck);
   }
 
   /**
@@ -284,11 +292,44 @@ public class FeatureInstaller {
       final String[] menuPath, String menuItemName, final boolean checkBox,
       final Icon icon, final EnableCheck enableCheck, final int pos) {
 
-    final JMenuItem menuItem = checkBox ? new JCheckBoxMenuItem(menuItemName)
-        : new JMenuItem(menuItemName);
-    addMainMenuPluginItem(executable, menuPath, menuItem, enableCheck, pos);
-    addMenuItemIcon(menuItem, icon);
+    JMenuItem menuItem = createMenuItem(menuItemName, checkBox);
+    menuItem = addMainMenuPluginItemWithPostProcessing(executable, menuPath,
+        menuItem, icon, enableCheck, pos);
     return menuItem;
+  }
+
+  /**
+   * this is merely decorative. the keys are intercepted in WorkbenchFrame and
+   * handled by an global key listener which also consumes them thereafter.
+   * 
+   * @param menuItem
+   * @param executable
+   */
+  private void assignShortcut(JMenuItem menuItem, PlugIn executable) {
+    if (executable instanceof ShortcutEnabled) {
+      KeyStroke st = ((ShortcutEnabled) executable).getShortcutKeyStroke();
+      if (st == null || st.getKeyCode() < 1)
+        return;
+      // filter according to platform first
+      st = ShortcutPluginExecuteKeyListener.getPlatformKeyStroke(st);
+      menuItem.setAccelerator(st);
+      // register with workbench (usually done in JumpConfiguration, Pluginmanager)
+      // for cases where plugins initialize themselves and "forgot" to do it
+      if (JUMPWorkbench.getInstance().getFrame().getKeyboardShortcutPlugin(st)==null)
+        AbstractPlugIn.registerShortcuts(executable);
+    }
+  }
+
+  private JMenuItem createMenuItem(String menuItemName, boolean checkBox) {
+    return checkBox ? new JCheckBoxMenuItem(menuItemName) : new JMenuItem(
+        menuItemName);
+  }
+
+  public JMenuItem addMainMenuPlugin(final PlugIn executable,
+      final String[] menuPath) {
+    // icon and check are fetched in addmainMenuPluginItemWithPostProcessing()
+    return addMainMenuPlugin(executable, menuPath, executable.getName(), false,
+        null, null, -1);
   }
 
   /*
@@ -303,6 +344,35 @@ public class FeatureInstaller {
       final Icon icon, final EnableCheck enableCheck) {
     return addMainMenuPlugin(executable, menuPath, menuItemName, checkBox,
         icon, enableCheck, -1);
+  }
+
+  /**
+   * The catch all for all methods. It tries to add icon and shortcut.
+   * 
+   * @param executable
+   * @param menuPath
+   * @param menuItem
+   * @param icon
+   * @param enableCheck
+   * @param pos
+   * @return menu item
+   */
+  private JMenuItem addMainMenuPluginItemWithPostProcessing(PlugIn executable,
+      String[] menuPath, JMenuItem menuItem, Icon icon,
+      EnableCheck enableCheck, int pos) {
+    // fetch a check
+    enableCheck = enableCheck == null
+        && executable instanceof EnableChecked ? ((EnableChecked) executable)
+        .getEnableCheck() : enableCheck;
+    addMainMenuPluginItem(executable, menuPath, menuItem, enableCheck, pos);
+    // icon
+    addMenuItemIcon(
+        menuItem,
+        icon == null && executable instanceof Iconified ? ((Iconified) executable)
+            .getIcon(16) : icon);
+    // shortcut
+    assignShortcut(menuItem, executable);
+    return menuItem;
   }
 
   /**
@@ -326,24 +396,31 @@ public class FeatureInstaller {
    */
   private JMenuItem addMainMenuPluginItem(PlugIn plugin, String[] menuPath,
       JMenuItem menuItem, EnableCheck enableCheck, int pos) {
+
     JMenu menu = menuBarMenu(menuPath[0]);
     if (menu == null) {
       menu = (JMenu) installMnemonic(new JMenu(menuPath[0]), menuBar());
       addToMenuBar(menu);
     }
     JMenu parent = createMenusIfNecessary(menu, behead(menuPath));
+
     if (menuItem.getText().trim().length() == 0) {
       menuItem.setText(plugin.getName());
     }
     installMnemonic(menuItem, parent);
     associate(menuItem, plugin);
-    // insert(menuItem, createMenu(parent), properties);
+
+    // System.out.println("fi "+plugin.getName()+" pos "+pos+" count "+parent.getMenuComponentCount());
+    // protect the first two FILE menu entries, separator + exit item
+    int count = menu.getMenuComponentCount();
+    if (parent.getText().equals(MenuNames.FILE)
+        && (pos < 0 || pos >= count - 2)) {
+      pos = count - 2;
+      // System.out.println("fi "+pos);
+    }
+
     if (pos >= 0) {
       parent.insert(menuItem, pos);
-    } else if (parent.getText().equals(MenuNames.FILE)) {
-      // In File menu, insert new items before the separator before Exit 
-      // [Jon Aquino]
-      parent.insert(menuItem, parent.getItemCount() - 2);
     } else {
       parent.add(menuItem);
     }
@@ -360,10 +437,11 @@ public class FeatureInstaller {
    *          path from the main menu to the menu item
    * @param plugin
    *          the plugin associated to this menu item
+   *          
+   * @deprecated use addMainMenuPlugin() instead
    */
   public JMenuItem addMainMenuItem(String[] menuPath, AbstractUiPlugIn plugin) {
-    JMenuItem menuItem = new JMenuItem(plugin.getName());
-    return addMainMenuItem(menuPath, plugin, menuItem, null, -1);
+    return addMainMenuPlugin(plugin, menuPath);
   }
 
   /**
@@ -377,11 +455,13 @@ public class FeatureInstaller {
    *          defines the position of the menu item in the menu -1 adds menuItem
    *          at the end except for FILE menu where -1 adds menuItem before the
    *          separator preceding exit menu item
+   *          
+   * @deprecated use addMainMenuPlugin() instead
    */
   public JMenuItem addMainMenuItem(final String[] menuPath,
       final AbstractUiPlugIn plugin, final int pos) {
-    JMenuItem menuItem = new JMenuItem(plugin.getName());
-    return addMainMenuItem(menuPath, plugin, menuItem, null, pos);
+    return addMainMenuPlugin(plugin, menuPath, plugin.getName(), false,
+        plugin.getIcon(), plugin.getEnableCheck(), pos);
   }
 
   /**
@@ -393,14 +473,13 @@ public class FeatureInstaller {
    *          the plugin associated to this menu item
    * @param enableCheck
    *          conditions making the plugin enabled
-   *
-   *
+   * 
    * @deprecated use addMainMenuPlugin() instead
    */
   public JMenuItem addMainMenuItem(final String[] menuPath,
       final AbstractUiPlugIn plugin, final EnableCheck enableCheck) {
-    JMenuItem menuItem = new JMenuItem(plugin.getName());
-    return addMainMenuItem(menuPath, plugin, menuItem, enableCheck, -1);
+    return addMainMenuPlugin(plugin, menuPath, plugin.getName(), false,
+        plugin.getIcon(), enableCheck);
   }
 
   /**
@@ -416,14 +495,14 @@ public class FeatureInstaller {
    *          defines the position of the menu item in the menu -1 adds menuItem
    *          at the end except for FILE menu where -1 adds menuItem before the
    *          separator preceding exit menu item
-   *
+   * 
    * @deprecated use addMainMenuPlugin() instead
    */
   public JMenuItem addMainMenuItem(final String[] menuPath,
       final AbstractUiPlugIn plugin, final EnableCheck enableCheck,
       final int pos) {
-    JMenuItem menuItem = new JMenuItem(plugin.getName());
-    return addMainMenuItem(menuPath, plugin, menuItem, enableCheck, pos);
+    return addMainMenuPlugin(plugin, menuPath, plugin.getName(), false,
+        plugin.getIcon(), enableCheck, pos);
   }
 
   /**
@@ -440,12 +519,13 @@ public class FeatureInstaller {
    *          defines the position of the menu item in the menu -1 adds menuItem
    *          at the end except for FILE menu where -1 adds menuItem before the
    *          separator preceding exit menu item
-   *
+   * 
    * @deprecated use addMainMenuPlugin() instead
    */
   public JMenuItem addMainMenuItem(final String[] menuPath,
       final AbstractUiPlugIn plugin, final JMenuItem menuItem, final int pos) {
-    return addMainMenuItem(menuPath, plugin, menuItem, null, pos);
+    return addMainMenuPluginItemWithPostProcessing(plugin, menuPath, menuItem,
+        null, null, pos);
   }
 
   /**
@@ -464,17 +544,15 @@ public class FeatureInstaller {
    *          defines the position of the menu item in the menu -1 adds menuItem
    *          at the end except for FILE menu where -1 adds menuItem before the
    *          separator preceding exit menu item
-   *
+   * 
    * @deprecated use addMainMenuPlugin() instead
    */
   public JMenuItem addMainMenuItem(final String[] menuPath,
       final AbstractUiPlugIn plugin, final JMenuItem menuItem,
       final EnableCheck enableCheck, final int pos) {
 
-    if (plugin.getIcon() != null)
-      addMenuItemIcon(menuItem, plugin.getIcon());
-
-    return addMainMenuItem(plugin, menuPath, menuItem, enableCheck, pos);
+    return addMainMenuPluginItemWithPostProcessing(plugin, menuPath, menuItem,
+        null, enableCheck, pos);
   }
 
   /**
@@ -491,12 +569,13 @@ public class FeatureInstaller {
    *          the parent menu
    * @param enableCheck
    *          conditions making the plugin enabled
-   *
+   * 
    * @deprecated use addMainMenuPlugin() instead
    */
   public JMenuItem addMainMenuItem(PlugIn plugin, String[] menuPath,
       JMenuItem menuItem, EnableCheck enableCheck) {
-    return addMainMenuItem(plugin, menuPath, menuItem, enableCheck, -1);
+    return addMainMenuPluginItemWithPostProcessing(plugin, menuPath, menuItem,
+        null, enableCheck, -1);
   }
 
   /**
@@ -515,20 +594,21 @@ public class FeatureInstaller {
    *          defines the position of menuItem in the menu -1 adds menuItem at
    *          the end of the menu except for FILE menu where -1 adds menuItem
    *          before the separator preceding exit menuItem
-   *          
+   * 
    * @deprecated use addMainMenuPlugin() instead
    */
   public JMenuItem addMainMenuItem(PlugIn plugin, String[] menuPath,
       JMenuItem menuItem, EnableCheck enableCheck, int pos) {
-    return addMainMenuPluginItem(plugin, menuPath, menuItem, enableCheck, pos);
+    return addMainMenuPluginItemWithPostProcessing(plugin, menuPath, menuItem,
+        null, enableCheck, pos);
   }
 
   // workaround for checkbox tick missing in windows laf on windows vista/7
   // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=7122141
   // we simply leave out the icon, so the tick is displayed instead of the
   // icon with a blue background
-  private boolean vista_checkbox_workaround =
-      System.getProperty("os.name").toLowerCase().contains("windows")
+  private boolean vista_checkbox_workaround = System.getProperty("os.name")
+      .toLowerCase().contains("windows")
       && Float.valueOf(System.getProperty("os.version")) >= 6
       && UIManager.getLookAndFeel().getClass().getName()
           .equals("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
@@ -691,51 +771,109 @@ public class FeatureInstaller {
   }
 
   /**
+   * Ultimate convenience method for attaching a plugin to a popummenu.
+   * 
+   * @param popupMenu
+   * @param executable
+   * @return menu item
+   */
+  public JMenuItem addPopupMenuPlugin(JPopupMenu popupMenu, PlugIn executable) {
+    return addPopupMenuPlugin(popupMenu, executable, new String[]{},
+        null, false, null, null);
+  }
+
+  /**
    * Convenience method for entries without menupath
    * 
+   * @param checkBox
+   *          true for item to be checkable
    * @param enableCheck
-   *          null to leave unspecified
+   *          , icon null to leave unspecified
+   * @return menu item
+   */
+  public JMenuItem addPopupMenuPlugin(JPopupMenu popupMenu, PlugIn executable,
+      String menuItemName, boolean checkBox, Icon icon, EnableCheck enableCheck) {
+    return addPopupMenuPlugin(popupMenu, executable, new String[] {},
+        menuItemName, checkBox, icon, enableCheck);
+  }
+
+  /**
+   * Analogue to addMainMenuPlugin(). Adds a plugin to a popup menu.
+   * 
+   * @param popupMenu
+   * @param executable
+   * @param menuPath
+   * @param menuItemName
+   * @param checkBox
+   * @param icon
+   * @param enableCheck
+   * @return menu item
+   */
+  public JMenuItem addPopupMenuPlugin(JPopupMenu popupMenu, PlugIn executable,
+      String[] menuPath, String menuItemName, boolean checkBox, Icon icon,
+      EnableCheck enableCheck) {
+
+    // ensure we got a name
+    if (menuItemName == null)
+      menuItemName = executable.getName();
+    // icon
+    icon = (icon == null) && (executable instanceof Iconified) ? ((Iconified) executable)
+        .getIcon(16) : icon;
+    // create item
+    JMenuItem menuItem = createPopupMenuItem(popupMenu, menuItemName, checkBox,
+        icon);
+    // add plugin action to it
+    associate(menuItem, executable);
+    // fetch a check if none
+    enableCheck = (enableCheck == null)
+        && (executable instanceof EnableChecked) ? ((EnableChecked) executable)
+        .getEnableCheck() : enableCheck;
+    // add
+    addPopupMenuItem(popupMenu, executable, menuPath, menuItem,
+            extractProperties(menuItemName), enableCheck);
+
+    // shortcut
+    assignShortcut(menuItem, executable);
+    return menuItem;
+  }
+
+  /**
+   * @deprecated use addPopupMenuPlugin instead
    */
   public void addPopupMenuItem(JPopupMenu popupMenu, PlugIn executable,
       String menuItemName, boolean checkBox, Icon icon, EnableCheck enableCheck) {
-    JMenuItem menuItem = createPopupMenuItem(popupMenu, menuItemName, checkBox, icon);
-    addPopupMenuItem(popupMenu, executable, null, menuItem, extractProperties(menuItemName),
+    addPopupMenuPlugin(popupMenu, executable, menuItemName, checkBox, icon,
         enableCheck);
   }
 
   /**
-   * Add a menu item to a JPopupMenu with optional submenus defined by menuPath
-   * Added by mmichaud on 2011-03-20 to reorganize LayerNamePanel JPopupMenu
+   * @deprecated use addPopupMenuPlugin instead
    */
   public void addPopupMenuItem(JPopupMenu popupMenu, PlugIn executable,
       String[] menuPath, String menuItemName, boolean checkBox, Icon icon,
       EnableCheck enableCheck) {
-    JMenuItem menuItem = createPopupMenuItem(popupMenu, menuItemName, checkBox, icon);
-    addPopupMenuItem(popupMenu, executable, menuPath, menuItem, extractProperties(menuItemName),
-        enableCheck);
+    addPopupMenuPlugin(popupMenu, executable, menuPath, menuItemName, checkBox,
+        icon, enableCheck);
   }
 
   /**
-   * Creates a popup menu item for the methods above
-   * TODO: [ede 10.2012]
-   *       this should be reworked/streamlined in a way similar to 
-   *       addMainMenuPlugin, which returns the menu item for plugins to attach
-   *       listeners or such
-   *       also the whole Mnemonic attachment routing can be done better
+   * Creates a popup menu item for the methods above TODO: the whole Mnemonic
+   * attachment routing can be done better
    */
-  private JMenuItem createPopupMenuItem(JPopupMenu popupMenu, String menuItemName, boolean checkBox, Icon icon){
+  private JMenuItem createPopupMenuItem(JPopupMenu popupMenu,
+      String menuItemName, boolean checkBox, Icon icon) {
     Map properties = extractProperties(menuItemName);
     menuItemName = removeProperties(menuItemName);
-    JMenuItem menuItem = installMnemonic(checkBox ? new JCheckBoxMenuItem(
-        menuItemName) : new JMenuItem(menuItemName), popupMenu);
+    JMenuItem menuItem = installMnemonic(
+        createMenuItem(menuItemName, checkBox), popupMenu);
     addMenuItemIcon(menuItem, icon);
     return menuItem;
   }
-  
+
   private void addPopupMenuItem(JPopupMenu popupMenu, final PlugIn executable,
       final String[] menuPath, final JMenuItem menuItem, Map properties,
       final EnableCheck enableCheck) {
-    associate(menuItem, executable);
+
     if (menuPath == null || menuPath.length == 0) {
       insert(menuItem, createMenu(popupMenu), properties);
     } else {
@@ -751,10 +889,8 @@ public class FeatureInstaller {
         public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
           toMenuItemShownListener(enableCheck).menuItemShown(menuItem);
         }
-
         public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
         }
-
         public void popupMenuCanceled(PopupMenuEvent e) {
         }
       });

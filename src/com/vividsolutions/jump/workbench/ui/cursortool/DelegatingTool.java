@@ -45,7 +45,6 @@ import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
  */
 public abstract class DelegatingTool implements CursorTool {
     private CursorTool delegate = new DummyTool();
-    private boolean active = false;
     private LayerViewPanel layerViewPanel;
 
     public CursorTool getDelegate() { 
@@ -92,7 +91,6 @@ public abstract class DelegatingTool implements CursorTool {
     public void activate(LayerViewPanel layerViewPanel) {
         this.layerViewPanel = layerViewPanel;
         delegate.activate(layerViewPanel);
-        active = true;
     }
 
     public Cursor getCursor() {
@@ -101,7 +99,6 @@ public abstract class DelegatingTool implements CursorTool {
 
     public void deactivate() {
         delegate.deactivate();
-        active = false;
     }
 
     public void mouseReleased(MouseEvent e) {

@@ -1,5 +1,7 @@
 package com.vividsolutions.jump.workbench.plugin;
 
+import javax.swing.KeyStroke;
+
 
 /**
  * A set of method to implement for plugins to be recognized as shortcut enabled.
@@ -7,7 +9,14 @@ package com.vividsolutions.jump.workbench.plugin;
  * @author ed
  *
  */
-public interface ShortcutPlugin {
+public interface ShortcutEnabled {
+  public boolean isShortcutEnabled();
+  
+  /**
+   * Convenience Method for getShortcutKeys() and getShortcutModifiers()
+   */
+  public KeyStroke getShortcutKeyStroke();
+  
   public int getShortcutModifiers();
 
   public void setShortcutModifiers(int shortcutModifiers);
@@ -15,8 +24,4 @@ public interface ShortcutPlugin {
   public int getShortcutKeys();
 
   public void setShortcutKeys(int shortcutKeys);
-
-  public boolean registerShortcut();
-
-  public boolean unregisterShortcut();
 }

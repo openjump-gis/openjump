@@ -37,13 +37,21 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Set;
 
-import org.openjump.core.CheckOS;
-import org.openjump.core.ui.plugin.view.SuperZoomPanTool;
+import javax.swing.KeyStroke;
 
+import org.openjump.core.CheckOS;
+import org.openjump.core.ui.plugin.edittoolbox.cursortools.RotateSelectedItemTool;
+
+import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
+import com.vividsolutions.jump.workbench.ui.cursortool.editing.DeleteVertexTool;
+import com.vividsolutions.jump.workbench.ui.cursortool.editing.InsertVertexTool;
+import com.vividsolutions.jump.workbench.ui.cursortool.editing.MoveSelectedItemsTool;
+import com.vividsolutions.jump.workbench.ui.cursortool.editing.MoveVertexTool;
 import com.vividsolutions.jump.workbench.ui.zoom.PanTool;
 import com.vividsolutions.jump.workbench.ui.zoom.ZoomTool;
 
@@ -57,6 +65,47 @@ import com.vividsolutions.jump.workbench.ui.zoom.ZoomTool;
 public class QuasimodeTool extends DelegatingTool {
   private HashMap<ModifierKeySpec,CursorTool> keySpecToToolMap;
   private DummyTool dummytool = new DummyTool();
+  // switch defaults on/off
+  private boolean useDefaults = false;
+  // default tools - keep one instance only per default shortcut
+  private static CursorTool zoom = new ZoomTool();
+  private static CursorTool pan = new PanTool();
+  private static CursorTool selectFeaturesTool = new SelectFeaturesTool() {
+    protected boolean selectedLayersOnly() {
+      return false;
+    }
+  };
+  private static CursorTool info = new FeatureInfoTool();
+  private static CursorTool insVertex = new InsertVertexTool(EnableCheckFactory.getInstance());
+  private static CursorTool delVertex = new DeleteVertexTool(EnableCheckFactory.getInstance());
+  private static CursorTool movVertex = new MoveVertexTool(EnableCheckFactory.getInstance());
+  private static CursorTool moveItem = new MoveSelectedItemsTool(EnableCheckFactory.getInstance());
+  private static CursorTool rotateItem = new RotateSelectedItemTool(EnableCheckFactory.getInstance());
+  // add default tools, keep adding order for documentation later
+  private static HashMap<ModifierKeySpec,CursorTool> defaultToolsMap= new LinkedHashMap();
+  static {
+    addDefaultTool(new ModifierKeySpec(false, false, true), zoom);
+    // KNOWN ISSUE: shortcut is used by Ubuntu
+    addDefaultTool(new ModifierKeySpec(false, true, true), pan);
+    // using Ctrl+Shift we can actually add to the selection or deselect
+    selectFeaturesTool = addDefaultTool(new ModifierKeySpec(true, false, false),
+        selectFeaturesTool);
+    addDefaultTool(new ModifierKeySpec(true, true, false),
+        selectFeaturesTool);
+    addDefaultTool(new ModifierKeySpec(true, false, true), info);
+    // add edit vertex modes 
+    addDefaultTool(new ModifierKeySpec(new int[]{KeyEvent.VK_A}), insVertex);
+    addDefaultTool(new ModifierKeySpec(new int[]{KeyEvent.VK_X}), delVertex);
+    addDefaultTool(new ModifierKeySpec(new int[]{KeyEvent.VK_V}), movVertex);
+    // move item
+    addDefaultTool(new ModifierKeySpec(new int[]{KeyEvent.VK_M}), moveItem);
+    // rotate (use identical instance for setting rotation center)
+    rotateItem = addDefaultTool(
+        new ModifierKeySpec(new int[] { KeyEvent.VK_R }), rotateItem);
+    addDefaultTool(new ModifierKeySpec(new int[] { KeyEvent.VK_R,
+        KeyEvent.VK_SHIFT }), rotateItem);
+  }
+
 
   // a tool that has delegates enabled via KEY events
   public QuasimodeTool(CursorTool defaultTool) {
@@ -71,7 +120,7 @@ public class QuasimodeTool extends DelegatingTool {
     setDefaultTool(defaultTool);
   }
 
-  private CursorTool getDefaultTool() {
+  public CursorTool getDefaultTool() {
     return (CursorTool) keySpecToToolMap.get(ModifierKeySpec.DEFAULT);
   }
 
@@ -81,6 +130,11 @@ public class QuasimodeTool extends DelegatingTool {
       keySpecToToolMap.put(keySpec, (tool.isRightMouseButtonUsed() ? tool
           : new LeftClickFilter(tool)));
     //System.out.println("add: " + (keySpec != null ? keySpec : "null") + " = " + (tool != null ? tool.getName() : "null")+"\nRES: "+keySpecToToolMap);
+    return this;
+  }
+
+  public QuasimodeTool remove(ModifierKeySpec keySpec) {
+    keySpecToToolMap.remove(keySpec);
     return this;
   }
 
@@ -97,14 +151,23 @@ public class QuasimodeTool extends DelegatingTool {
   public String toString(){
     StringBuffer buf = new StringBuffer();
     for (ModifierKeySpec keys : (Set<ModifierKeySpec>)keySpecToToolMap.keySet()) {
-      buf.append(keys + "=" + ((CursorTool)keySpecToToolMap.get(keys)).getName() + "\n");
+      buf.append(keys + "=" + ((CursorTool)keySpecToToolMap.get(keys)) + "\n");
+    }
+    if (useDefaults){
+      for (ModifierKeySpec keys : (Set<ModifierKeySpec>)defaultToolsMap.keySet()) {
+        buf.append(keys + "=" + ((CursorTool)defaultToolsMap.get(keys)) + "\n");
+      }
     }
     return getDefaultTool().getName()+"\n"+buf;
   }
   
   private CursorTool getTool(Set<Integer> keys) {
-    CursorTool tool = (CursorTool) keySpecToToolMap.get(new ModifierKeySet(
-        keys));
+    // tools override defaults
+    ModifierKeySet ks = new ModifierKeySet(keys);
+    CursorTool tool = keySpecToToolMap.get(ks);
+    // fetch defaults if enabled
+    if (useDefaults && tool == null)
+      tool = defaultToolsMap.get(ks);
     //System.out.println("keys: " + keys +" is "+(tool!=null?tool+"\n"+this:null));
     return tool;
   }
@@ -165,22 +228,24 @@ public class QuasimodeTool extends DelegatingTool {
 
   private void setTool(Set<Integer> keys) {
     CursorTool tool = getTool(keys);
-    // only remove tool on unknown modifier combinations
-    // else use default tool, allows draw e.g. to use backspace key
+
+    // standard null tool is the default tool
     if (tool == null)
-      for (Integer integer : keys) {
-        if (integer != KeyEvent.VK_SHIFT && integer != KeyEvent.VK_CONTROL
-            && integer != KeyEvent.VK_META && integer != KeyEvent.VK_ALT) {
-          tool = getDefaultTool();
-          break;
-        }
-      }
-    // standard null tool is DummyTool
-    if (tool == null)
-      tool = dummytool;
+      tool = getDefaultTool();//dummytool;
     
+    //System.out.println("qmt selected "+tool.getName());
+    
+    // if delegate tool didn't change, do nothing
+    //System.out.println(tool+" == "+getDelegate()+" is "+(tool.equals(getDelegate())));
+    if (tool.equals(getDelegate())){
+      return;
+    }
+    
+    super.deactivate();
     setDelegate(tool);
     super.activate(panel);
+
+    panel.setCursor(getCursor());
     panel.setCurrentCursorTool(this);
   }
 
@@ -313,21 +378,61 @@ public class QuasimodeTool extends DelegatingTool {
     }
 
     public boolean equals(Object obj) {
-      if (!(obj instanceof ModifierKeySpec)) {
-        return false;
+      if (obj instanceof ModifierKeySpec) {
+        ModifierKeySpec other = (ModifierKeySpec) obj;
+        // System.out.println("vgl1: "+other+"\nvgl2: "+this);
+        Iterator iter = this.iterator();
+        while (iter.hasNext()) {
+          Integer keyval = (Integer) iter.next();
+          if (!other.contains(keyval)) {
+            // wrong shortcut dude
+            return false;
+          }
+        }
+        // arrived here? all is well
+        return true;
+      }else if (obj instanceof KeyStroke){
+        KeyStroke other = (KeyStroke) obj;
+        return other.equals(toKeyStroke());
       }
-      ModifierKeySpec other = (ModifierKeySpec) obj;
-      // System.out.println("vgl1: "+other+"\nvgl2: "+this);
+      
+      return false;
+    }
+    
+    public KeyStroke toKeyStroke(){
       Iterator iter = this.iterator();
+      // iterate over pressed keys, generate
+      int modifiers = 0, keys = 0;
       while (iter.hasNext()) {
         Integer keyval = (Integer) iter.next();
-        if (!other.contains(keyval)) {
-          // wrong shortcut dude
-          return false;
+        if (keyval==KeyEvent.VK_SHIFT){
+          modifiers |= KeyEvent.SHIFT_MASK;
+        }else if (keyval==KeyEvent.VK_CONTROL){
+          modifiers |= KeyEvent.CTRL_MASK;
+        }else if (keyval==KeyEvent.VK_META){
+          modifiers |= KeyEvent.META_MASK;
+        }else if (keyval==KeyEvent.VK_ALT){
+          modifiers |= KeyEvent.ALT_MASK;
+        }else if (keyval==KeyEvent.VK_ALT_GRAPH){
+          modifiers |= KeyEvent.ALT_GRAPH_MASK;
+        }else{
+          keys |= keyval;
         }
       }
-      // arrived here? all is well
-      return true;
+
+      return KeyStroke.getKeyStroke(keys, modifiers);
+    }
+
+    public String toString() {
+      String out = "";
+      Iterator iter = this.iterator();
+      // iterate over pressed keys, generate
+      while (iter.hasNext()) {
+        Integer keyval = (Integer) iter.next();
+        String keyDesc = KeyEvent.getKeyText(keyval);
+        out += out.length()>0? "+"+keyDesc : keyDesc;
+      }
+      return out;
     }
   }
 
@@ -357,37 +462,49 @@ public class QuasimodeTool extends DelegatingTool {
   // }
   // }
 
-  // keep one instance only per default shortcut
-  private static CursorTool zoom = new ZoomTool();
-  private static CursorTool pan = new PanTool();
-  private static SelectFeaturesTool selectFeaturesTool = new SelectFeaturesTool() {
-    protected boolean selectedLayersOnly() {
-      return false;
-    }
-  };
-  private static CursorTool info = new FeatureInfoTool();
+
 
   public static QuasimodeTool addStandardQuasimodes(CursorTool tool) {
     QuasimodeTool quasimodeTool = tool instanceof QuasimodeTool ? (QuasimodeTool) tool
         : new QuasimodeTool(tool);
-    quasimodeTool.add(new ModifierKeySpec(false, false, true), zoom);
-    // shortcut is used by Ubuntu
-    quasimodeTool.add(new ModifierKeySpec(false, true, true), pan);
-
-    // using Shift we can actually add to the selction or deselct
-    quasimodeTool.add(new ModifierKeySpec(true, false, false),
-        selectFeaturesTool);
-    quasimodeTool.add(new ModifierKeySpec(true, true, false),
-        selectFeaturesTool);
-    // [sstein 7.Nov.2011] we do not want the tool on MacOSX as the mouse
-    // pointer change
-    // interferes with the Edit Feature Context menu
-    // [ede 12.2012] disabled to see what the real issue is here
-    //               OSX now by default only accepts META_KEY instead of ALT
-    // if (CheckOS.isMacOsx() == false) {
-    quasimodeTool.add(new ModifierKeySpec(true, false, true), info);
-    // }
+    
+    quasimodeTool.useDefaults(true);
+    
     return quasimodeTool;
   }
 
+  /*
+   * manually add a default quasimode tool.
+   */
+  private static CursorTool addDefaultTool(ModifierKeySpec key, CursorTool tool) {
+    tool = (tool.isRightMouseButtonUsed() || tool instanceof LeftClickFilter) ? tool
+        : new LeftClickFilter(tool);
+    defaultToolsMap.put(key, tool);
+    return tool;
+  }
+  
+  /*
+   * switch using default quasimodes on/off
+   */
+  private void useDefaults( boolean onoff ){
+    useDefaults = onoff;
+  }
+  
+  /*
+   * retrieve a quasimode tool by it's shortcut
+   */
+  public static CursorTool getDefaultKeyboardShortcutTool(ModifierKeySpec key){
+    return defaultToolsMap.get(key);
+  }
+
+  /*
+   * retrieve a set of all registered quasimode tools
+   */
+  public static Set<ModifierKeySpec> getDefaultKeyboardShortcuts(){
+//    HashSet<KeyStroke> set = new HashSet<KeyStroke>();
+//    for (ModifierKeySpec spec : defaultToolsMap.keySet()) {
+//      set.add(spec.toKeyStroke());
+//    }
+    return defaultToolsMap.keySet();
+  }
 }

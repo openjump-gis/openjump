@@ -39,6 +39,7 @@ import javax.swing.JComponent;
 import javax.swing.undo.UndoManager;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
@@ -49,7 +50,22 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class UndoPlugIn extends AbstractPlugIn {
-  private MultiEnableCheck check = null;
+  private MultiEnableCheck check = new MultiEnableCheck().add(
+      EnableCheckFactory.getInstance()
+          .createWindowWithLayerManagerMustBeActiveCheck()).add(
+      new EnableCheck() {
+        public String check(JComponent component) {
+          UndoManager undoManager = ((LayerManagerProxy) JUMPWorkbench
+              .getInstance().getFrame().getActiveInternalFrame())
+              .getLayerManager().getUndoableEditReceiver().getUndoManager();
+          if (component != null)
+            component.setToolTipText(undoManager.getUndoPresentationName());
+          return (!undoManager.canUndo()) ? I18N
+              .get("com.vividsolutions.jump.workbench.ui.plugin.UndoPlugIn.nothing-to-undo")
+              : null;
+        }
+      });
+
   private ImageIcon icon = IconLoader.icon("Undo.gif");
 
   public UndoPlugIn() {
@@ -69,21 +85,6 @@ public class UndoPlugIn extends AbstractPlugIn {
 
   public MultiEnableCheck createEnableCheck(
       final WorkbenchContext workbenchContext) {
-    if (check == null) {
-      EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
-      check = new MultiEnableCheck().add(
-          checkFactory.createWindowWithLayerManagerMustBeActiveCheck()).add(
-          new EnableCheck() {
-            public String check(JComponent component) {
-              UndoManager undoManager = ((LayerManagerProxy) workbenchContext
-                  .getWorkbench().getFrame().getActiveInternalFrame())
-                  .getLayerManager().getUndoableEditReceiver().getUndoManager();
-              if (component != null)
-                component.setToolTipText(undoManager.getUndoPresentationName());
-              return (!undoManager.canUndo()) ? "X" : null;
-            }
-          });
-    }
     return check;
   }
 

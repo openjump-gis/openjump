@@ -36,6 +36,7 @@ import javax.swing.Icon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
@@ -45,17 +46,21 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 public abstract class ToolboxPlugIn extends AbstractPlugIn {
     private ToolboxDialog toolbox = null;
 
+    public ToolboxDialog getToolbox() {
+      return getToolbox(JUMPWorkbench.getInstance().getContext());
+    }
+
     /**
      * @return the toolbox for this plug-in class.
      */
     public ToolboxDialog getToolbox(WorkbenchContext context) {
-        if (toolbox == null) {
-            toolbox = new ToolboxDialog(context);
-            toolbox.setTitle(getName());
-            initializeToolbox(toolbox);
-            toolbox.finishAddingComponents();
-        }
-        return toolbox;
+      if (toolbox == null) {
+        toolbox = new ToolboxDialog(context);
+        toolbox.setTitle(getName());
+        initializeToolbox(toolbox);
+        toolbox.finishAddingComponents();
+      }
+      return toolbox;
     }
     
     protected abstract void initializeToolbox(ToolboxDialog toolbox);

@@ -39,6 +39,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.AbstractButton;
 import javax.swing.Icon;
@@ -61,12 +62,14 @@ import com.vividsolutions.jump.workbench.ui.cursortool.CursorTool;
  * the main toolbar).
  */
 
-//Must use modeless dialog rather than JInternalFrame; otherwise, if we
-// implement
-//it as an internal frame, when we click it, the original TaskFrame will
-// deactivate,
-//thus deactivating the current CursorTool. [Jon Aquino]
+// Must use modeless dialog rather than JInternalFrame; otherwise, if we
+// implement it as an internal frame, when we click it, the original TaskFrame
+// will deactivate, thus deactivating the current CursorTool. [Jon Aquino]
+// not sure this is necessary anymore as the logic of determining the active
+// taskframe has been reworked, still it works, so leave it in peace [ede 01.2013]
 public class ToolboxDialog extends JDialog {
+    private ArrayList pluginsTools = new ArrayList();
+  
     public AbstractButton getButton(Class cursorToolClass) {
         for (Iterator i = toolBars.iterator(); i.hasNext();) {
             WorkbenchToolBar toolBar = (WorkbenchToolBar) i.next();
@@ -104,14 +107,23 @@ public class ToolboxDialog extends JDialog {
         getToolBar().setEnableCheck(button,
                 enableCheck != null ? enableCheck : new MultiEnableCheck());
         registerButton(button, enableCheck);
+        
+        // add to internal list
+        pluginsTools.add(tool);
         return config;
     }
 
     public void addPlugIn(PlugIn plugIn, EnableCheck enableCheck, Icon icon) {
         registerButton(getToolBar().addPlugIn(icon, plugIn, enableCheck,
                 context), enableCheck);
+        // add to internal list
+        pluginsTools.add(plugIn);
     }
 
+    public List getPluginsTools(){
+      return new ArrayList(pluginsTools);
+    }
+    
     private void registerButton(AbstractButton button, EnableCheck enableCheck) {
         buttons.add(button);
     }

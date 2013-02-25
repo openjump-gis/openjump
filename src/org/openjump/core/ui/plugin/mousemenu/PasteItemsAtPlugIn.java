@@ -32,7 +32,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.clipboard.CollectionOfFeature
 import com.vividsolutions.jump.workbench.ui.plugin.clipboard.PasteItemsPlugIn;
 
 public class PasteItemsAtPlugIn extends PasteItemsPlugIn {
-  public static ImageIcon ICON = IconLoader.icon("shape_paste_point.png");
+  public static ImageIcon ICON = IconLoader.icon("items_paste_here.png");
   WKTReader reader = new WKTReader();
   private static final String PASTE_ITEMS_AT_POINT = I18N
       .get("org.openjump.core.ui.plugin.mousemenu.PasteItemsAtPlugIn.Paste-Items-At-Point");
@@ -44,12 +44,12 @@ public class PasteItemsAtPlugIn extends PasteItemsPlugIn {
   }
 
   public void initialize(PlugInContext context) throws Exception {
-    WorkbenchContext workbenchContext = context.getWorkbenchContext();
-    FeatureInstaller featureInstaller = new FeatureInstaller(workbenchContext);
-    JPopupMenu popupMenu = LayerViewPanel.popupMenu();
-    featureInstaller.addPopupMenuItem(popupMenu, this, getNameWithMnemonic()
-        + "{pos:10}", false, this.getIcon(),
-        this.createEnableCheck(workbenchContext));
+//    WorkbenchContext workbenchContext = context.getWorkbenchContext();
+//    FeatureInstaller featureInstaller = new FeatureInstaller(workbenchContext);
+//    JPopupMenu popupMenu = LayerViewPanel.popupMenu();
+//    featureInstaller.addPopupMenuItem(popupMenu, this, getNameWithMnemonic()
+//        + "{pos:10}", false, this.getIcon(),
+//        this.createEnableCheck(workbenchContext));
   }
 
   public boolean execute(final PlugInContext context) throws Exception {

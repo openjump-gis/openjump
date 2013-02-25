@@ -30,18 +30,14 @@
 
 package org.openjump.core.ui.plugin.view;
 
-
 import java.awt.BorderLayout;
-import java.awt.MenuBar;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
-import javax.swing.JMenuBar;
 import javax.swing.JPopupMenu;
 
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
@@ -52,42 +48,43 @@ import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxPlugIn;
 
 public class EasyButtonsPlugin extends ToolboxPlugIn {
 
-	private String TOOLBOX_NAME = I18N.get("org.openjump.core.ui.plugin.view.EasyButtonsPlugin.EZ-Buttons");
-	
-	private JPopupMenu popup = new JPopupMenu();
+  public static final String TOOLBOX_NAME = I18N
+      .get("org.openjump.core.ui.plugin.view.EasyButtonsPlugin.EZ-Buttons");
+  public static final ImageIcon ICON = new ImageIcon(EasyButtonsPlugin.class.getResource("ez.png"));
 
-	public void initialize(PlugInContext context) throws Exception {
-		createMainMenuItem(
-				new String[] {MenuNames.CUSTOMIZE},
-				getIcon(),
-				context.getWorkbenchContext());
-	}
+  private JPopupMenu popup = new JPopupMenu();
 
-	public String getName() {
-		return TOOLBOX_NAME;
-	}
-	
-    public Icon getIcon() {
-        return new ImageIcon(getClass().getResource("ez.png"));
+  public void initialize(PlugInContext context) throws Exception {
+    createMainMenuItem(new String[] { MenuNames.CUSTOMIZE }, getIcon(),
+        context.getWorkbenchContext());
+  }
+
+  public String getName() {
+    return TOOLBOX_NAME;
+  }
+
+  public Icon getIcon() {
+    return ICON;
+  }
+
+  protected void initializeToolbox(ToolboxDialog toolbox) {
+    EasyPanel buttonPanel = new EasyPanel(toolbox);
+    toolbox.getCenterPanel().add(buttonPanel, BorderLayout.CENTER);
+    toolbox.setInitialLocation(new GUIUtil.Location(10, true, 270, false));
+    try {
+      toolbox.setIconImage(ICON.getImage());
+    } catch (NoSuchMethodError e) {
+      // IGNORE: this is 1.5 missing setIconImage()
     }
+  }
 
-	protected void initializeToolbox(ToolboxDialog toolbox) {
-		EasyPanel buttonPanel = new EasyPanel(toolbox);
-		toolbox.getCenterPanel().add(buttonPanel, BorderLayout.CENTER);
-		toolbox.setInitialLocation(new GUIUtil.Location(10, true, 270, false));   
-//		toolbox.setIconImage(((ImageIcon)getIcon()).getImage());
-	}
+  private void add(CursorTool tool, final boolean incremental,
+      ToolboxDialog toolbox, final EasyPanel warpingPanel) {
+    toolbox.add(tool, new EnableCheck() {
+      public String check(JComponent component) {
+        return null;
+      }
+    });
+  }
 
-	private void add(
-			CursorTool tool,
-			final boolean incremental,
-			ToolboxDialog toolbox,
-			final EasyPanel warpingPanel) {
-		toolbox.add(tool, new EnableCheck() {
-			public String check(JComponent component) {
-				return null;
-			}
-		});
-	}
-	
 }

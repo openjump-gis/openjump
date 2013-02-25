@@ -611,7 +611,6 @@ public class OpenJumpConfiguration {
      * projectionPlugin.initialize(new PlugInContext(workbenchContext, null,
      * null, null, null));
      */
-
   }
 
   public static void postExtensionInitialization(

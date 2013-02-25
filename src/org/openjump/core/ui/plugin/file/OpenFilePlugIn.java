@@ -112,7 +112,7 @@ public class OpenFilePlugIn extends AbstractWizardPlugin {
     OpenWizardPlugIn.addWizard(workbenchContext, openFileWizard);
     
     // register shortcut
-    //AbstractPlugIn.registerShortcuts(this);
+    AbstractPlugIn.registerShortcuts(this);
   }
 
 }

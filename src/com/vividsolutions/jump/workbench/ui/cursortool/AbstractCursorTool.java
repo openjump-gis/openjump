@@ -170,6 +170,7 @@ public abstract class AbstractCursorTool implements CursorTool {
   }
 
   protected boolean wasShiftPressed() {
+    //System.out.println("act shift pressed");
 		return shiftPressed;
 	}
 
@@ -300,8 +301,6 @@ public abstract class AbstractCursorTool implements CursorTool {
 	}
 
 	public void mousePressed(MouseEvent e) {
-		controlPressed = e.isControlDown();
-		shiftPressed = e.isShiftDown();
 	}
 
 	public void mouseReleased(MouseEvent e) {
@@ -458,7 +457,7 @@ public abstract class AbstractCursorTool implements CursorTool {
   }
 
 	public static JUMPWorkbench workbench(LayerViewPanel panel) {
-		return JUMPWorkbench.getWorkBench();
+		return JUMPWorkbench.getInstance();
 	}
 
 	protected abstract void gestureFinished() throws Exception;
@@ -583,21 +582,31 @@ public abstract class AbstractCursorTool implements CursorTool {
     }
 
     public void keyPressed(KeyEvent e) {
+      //System.out.println(e);
       if (snappingInitialized && isSpace(e) && !off) {
         off = true;
         prohibitSnapping();
         // System.out.println("snap off");
         showMsg("com.vividsolutions.jump.workbench.ui.cursortool.AbstractCursorTool.snapping-off");
       }
+      saveModifiers(e);
     }
 
     public void keyReleased(KeyEvent e) {
+      //System.out.println(e);
       if (snappingInitialized && isSpace(e) && off) {
         off = false;
         allowSnapping();
         // System.out.println("snap on");
         showMsg("com.vividsolutions.jump.workbench.ui.cursortool.AbstractCursorTool.snapping-on");
       }
+      saveModifiers(e);
+    }
+    
+    private void saveModifiers(KeyEvent e){
+      shiftPressed = e.isShiftDown();
+      controlPressed = e.isControlDown();
+      //System.out.println("act "+shiftPressed+"/"+controlPressed);
     }
 
     private void showMsg(String msg) {

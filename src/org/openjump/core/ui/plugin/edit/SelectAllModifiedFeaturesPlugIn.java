@@ -33,6 +33,7 @@
 
 package org.openjump.core.ui.plugin.edit;
 
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -58,13 +59,19 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
  */
 public class SelectAllModifiedFeaturesPlugIn extends AbstractPlugIn {
 
+  public SelectAllModifiedFeaturesPlugIn() {
+    super(I18N.get("org.openjump.core.ui.plugin.edit.SelectAllModifiedFeaturesPlugIn.select-all-modified-features"));
+    this.setShortcutKeys(KeyEvent.VK_A);
+    this.setShortcutModifiers(KeyEvent.CTRL_MASK+KeyEvent.SHIFT_MASK);
+  }
+
   public void initialize(PlugInContext context) throws Exception {
     context
         .getFeatureInstaller()
         .addMainMenuPlugin(
             this,
             new String[] { MenuNames.EDIT, MenuNames.SELECTION },
-            I18N.get("org.openjump.core.ui.plugin.edit.SelectAllModifiedFeaturesPlugIn.select-all-modified-features"),
+            getName(),
             false, null, createEnableCheck(context.getWorkbenchContext()));
   }
 

@@ -11,5 +11,5 @@ import com.vividsolutions.jump.workbench.WorkbenchContext;
  * 
  */
 public interface EnableChecked {
-  public EnableCheck getEnableCheck( WorkbenchContext workbenchContext );
+  public EnableCheck getEnableCheck();
 }

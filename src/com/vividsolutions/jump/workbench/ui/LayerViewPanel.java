@@ -364,7 +364,7 @@ public class LayerViewPanel extends JPanel
   /**
    * force the current tool to be reactivated on us. e.g. on task switches
    */
-  public void resetCurrentCursorTool() {
+  public void reSetCurrentCursorTool() {
     setCurrentCursorTool( getCurrentCursorTool(), true );
   }
   
@@ -412,7 +412,7 @@ public class LayerViewPanel extends JPanel
    * @return WorkbenchFrame
    */
   public WorkbenchFrame getWorkBenchFrame() {
-    return JUMPWorkbench.getWorkBench().getFrame();
+    return JUMPWorkbench.getInstance().getFrame();
   }
 
 	/**

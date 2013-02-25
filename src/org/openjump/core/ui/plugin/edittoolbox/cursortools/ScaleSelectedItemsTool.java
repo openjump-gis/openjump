@@ -43,13 +43,16 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.NoninvertibleTransformException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -71,10 +74,12 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.cursortool.DragTool;
+import com.vividsolutions.jump.workbench.ui.cursortool.ShortcutsDescriptor;
+import com.vividsolutions.jump.workbench.ui.cursortool.QuasimodeTool.ModifierKeySpec;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.snap.SnapManager;
 
-public class ScaleSelectedItemsTool extends DragTool {
+public class ScaleSelectedItemsTool extends DragTool implements ShortcutsDescriptor{
 	
     private String scaleSelectedItems = "Scale Selected Items"; 
     private String sScaleFactor = "scale factor";    
@@ -460,5 +465,12 @@ public class ScaleSelectedItemsTool extends DragTool {
    		}
    	}
    	return farestp;
+   }
+   
+   public Map<ModifierKeySpec, String> describeShortcuts() {
+     Map map = new HashMap();
+     map.put(new ModifierKeySpec(new int[] { KeyEvent.VK_SHIFT }),
+         I18N.get(this.getClass().getName() + ".keep-aspect-ratio"));
+     return map;
    }
 }

@@ -100,16 +100,16 @@ public class PlugInManager {
                 .getPlugInClasses(getClassLoader()));
 
         long start;
+        
         //Find the configurations right away so they get reported to the splash
         //screen ASAP. [Jon Aquino]
-        if (plugInDirectory != null) {
+      if (plugInDirectory != null) {
           start = secondsSince(0);
           configurations.addAll(findConfigurations(plugInDirectory));
           System.out.println("Finding all OJ extensions took "
               + secondsSinceString(start) + "s");
         }
         
-        monitor.report("add standard extensions");
         configurations.addAll(findConfigurations(context.getWorkbench()
                 .getProperties().getConfigurationClasses()));
         
@@ -187,8 +187,7 @@ public class PlugInManager {
                 PlugIn plugIn = (PlugIn) plugInClass.newInstance();
                 plugIn.initialize(pc);
                 // register shortcuts of plugins
-                if (plugIn instanceof ShortcutPlugin)
-                  ((ShortcutPlugin)plugIn).registerShortcut();
+                AbstractPlugIn.registerShortcuts(plugIn);
             } catch (NoClassDefFoundError e) {
                 LOG.warn(plugInClass + " " + NOT_INITIALIZED);
                 LOG.info(e);

@@ -58,6 +58,14 @@ import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxDialog;
 import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxPlugIn;
 
 public class EditingPlugIn extends ToolboxPlugIn {
+  private static EditingPlugIn instance = null;
+  
+  /**
+   * please use getInstance() to get unique runtime instance.
+   */
+  private EditingPlugIn() {
+    super();
+  }
 
   public String getName() {
     return I18N.get("ui.cursortool.editing.EditingPlugIn.editing-toolbox");
@@ -109,17 +117,9 @@ public class EditingPlugIn extends ToolboxPlugIn {
     CursorTool insVertex = new InsertVertexTool(checkFactory);
     CursorTool delVertex = new DeleteVertexTool(checkFactory);
     CursorTool movVertex = new MoveVertexTool(checkFactory);
-    // create allow MoveVertex to be Delete/Insert/MoveVertex when A/X/M is pressed
-    // first define a QuasiModeTool with one default tool set
-    QuasimodeTool editVertex = new QuasimodeTool(insVertex);
-    editVertex.add(new QuasimodeTool.ModifierKeySpec(new int[]{KeyEvent.VK_X}), delVertex);
-    editVertex.add(new QuasimodeTool.ModifierKeySpec(new int[]{KeyEvent.VK_A}), insVertex);
-    editVertex.add(new QuasimodeTool.ModifierKeySpec(new int[]{KeyEvent.VK_M}), movVertex);
-    // add it
-    toolbox.add(editVertex);
-    // add the variants by cloning and changing the default tool
-    toolbox.add(editVertex.cloneAndSetDefaultTool(delVertex));
-    toolbox.add(editVertex.cloneAndSetDefaultTool(movVertex));
+    toolbox.add(insVertex);
+    toolbox.add(delVertex);
+    toolbox.add(movVertex);
 
     // -- [sstein: 11.12.2006] added here to fill toolbox
     toolbox.add(new ScaleSelectedItemsTool(checkFactory));
@@ -136,4 +136,10 @@ public class EditingPlugIn extends ToolboxPlugIn {
 
   }
 
+  public static EditingPlugIn getInstance(){
+    if (instance==null)
+      instance=new EditingPlugIn();
+    return instance;
+  }
+  
 }

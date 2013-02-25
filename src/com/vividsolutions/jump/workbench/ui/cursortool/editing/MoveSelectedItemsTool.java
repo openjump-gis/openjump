@@ -35,19 +35,20 @@ package com.vividsolutions.jump.workbench.ui.cursortool.editing;
 import java.awt.BasicStroke;
 import java.awt.Cursor;
 import java.awt.Shape;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 
 import org.openjump.core.geomutils.GeoUtils;
 import org.openjump.core.geomutils.MathVector;
@@ -58,14 +59,17 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.geom.CoordUtil;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
 import com.vividsolutions.jump.workbench.ui.cursortool.DragTool;
+import com.vividsolutions.jump.workbench.ui.cursortool.QuasimodeTool.ModifierKeySpec;
+import com.vividsolutions.jump.workbench.ui.cursortool.ShortcutsDescriptor;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
-public class MoveSelectedItemsTool extends DragTool {
+public class MoveSelectedItemsTool extends DragTool implements ShortcutsDescriptor{
     private EnableCheckFactory checkFactory;
     private Shape selectedFeaturesShape;
     private GeometryFactory geometryFactory = new GeometryFactory();
@@ -296,4 +300,10 @@ public class MoveSelectedItemsTool extends DragTool {
         this.modelDestination = modelDestination;
     }
 
+    public Map<ModifierKeySpec, String> describeShortcuts() {
+      Map map = new HashMap();
+      map.put(new ModifierKeySpec(new int[] { KeyEvent.VK_SHIFT }),
+          I18N.get(this.getClass().getName() + ".rotate-item"));
+      return map;
+    }
 }

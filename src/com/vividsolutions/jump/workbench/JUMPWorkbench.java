@@ -356,8 +356,7 @@ public class JUMPWorkbench {
           0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
           new Insets(0, 0, 0, 10), 0, 0));
 
-      main(args, I18N.get("JUMPWorkbench.jump"), new JUMPConfiguration(),
-          splashPanel, progressMonitor);
+      main(args, I18N.get("JUMPWorkbench.jump"), splashPanel, progressMonitor);
       System.out.println("OJ start took "
           + PlugInManager.secondsSinceString(start) + "s alltogether.");
 
@@ -395,7 +394,7 @@ public class JUMPWorkbench {
    *          notified of progress of plug-in loading
    * @throws Exception
    */
-  public static void main(String[] args, String title, Setup setup,
+  static void main(String[] args, String title,
       JComponent splashComponent, TaskMonitor taskMonitor) throws Exception {
 
     SplashWindow splashWindow = new SplashWindow(splashComponent);
@@ -406,7 +405,7 @@ public class JUMPWorkbench {
         splashWindow, taskMonitor);
 
     taskMonitor.report(I18N.get("JUMPWorkbench.status.configure-core"));
-    setup.setup(workbench.context);
+    new JUMPConfiguration().setup(workbench.context);
     // must wait until after setup initializes the persistent blackboard to
     // recall settings
     final WorkbenchFrame frame = workbench.getFrame();
@@ -545,7 +544,7 @@ public class JUMPWorkbench {
   /**
    * @return JUMPWorkbench instance
    */
-  public static final JUMPWorkbench getWorkBench(){
+  public static final JUMPWorkbench getInstance(){
     return workbench;
   }
 

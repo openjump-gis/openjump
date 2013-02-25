@@ -74,6 +74,12 @@ public class MergeSelectedFeaturesPlugIn extends AbstractPlugIn {
 
   private static final ImageIcon ICON = IconLoader.icon("features_merge.png");
 
+  public MergeSelectedFeaturesPlugIn() {
+    super();
+    this.setShortcutKeys(KeyEvent.VK_M);
+    this.setShortcutModifiers(KeyEvent.CTRL_MASK);
+  }
+
   public ImageIcon getIcon() {
     return ICON;
   }
@@ -85,12 +91,6 @@ public class MergeSelectedFeaturesPlugIn extends AbstractPlugIn {
         .add(checkFactory.createExactlyNLayersMustHaveSelectedItemsCheck(1))
         .add(checkFactory.createAtLeastNFeaturesMustHaveSelectedItemsCheck(2))
         .add(checkFactory.createSelectedItemsLayersMustBeEditableCheck());
-  }
-
-  public void initialize(PlugInContext context) throws Exception {
-    context.getWorkbenchFrame().addKeyboardShortcut(KeyEvent.VK_U,
-        KeyEvent.CTRL_MASK, this,
-        createEnableCheck(context.getWorkbenchContext()));
   }
 
   public boolean execute(PlugInContext context) throws Exception {

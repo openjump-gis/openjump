@@ -115,9 +115,12 @@ public class InvertSelectionPlugIn extends AbstractPlugIn {
         return true;
     }
 
-    public MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
-        return new MultiEnableCheck().add(checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck());
+    public MultiEnableCheck createEnableCheck(
+        final WorkbenchContext workbenchContext) {
+      EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+      return new MultiEnableCheck().add(
+          checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck()).add(
+          checkFactory.createAtLeastNItemsMustBeSelectedCheck(1));
     }
 
     public String getName() {

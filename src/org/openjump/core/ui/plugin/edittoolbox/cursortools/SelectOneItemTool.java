@@ -37,6 +37,7 @@ import java.awt.geom.NoninvertibleTransformException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -45,10 +46,12 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
+import com.vividsolutions.jump.workbench.ui.cursortool.QuasimodeTool.ModifierKeySpec;
 import com.vividsolutions.jump.workbench.ui.cursortool.SelectTool;
+import com.vividsolutions.jump.workbench.ui.cursortool.ShortcutsDescriptor;
 import com.vividsolutions.jump.workbench.ui.renderer.FeatureSelectionRenderer;
 
-public class SelectOneItemTool extends SelectTool {
+public class SelectOneItemTool extends SelectTool implements ShortcutsDescriptor{
 	
     final static String sSelectOneItem =I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.SelectOneItemTool.Select-One-Item");
     
@@ -129,5 +132,10 @@ public class SelectOneItemTool extends SelectTool {
         {
             layerViewPanel.getSelectionManager().getFeatureSelection().selectItems(botLayer, botFeature);
         }
+    }
+    
+    // override SelectTool shortcut, not supported
+    public Map<ModifierKeySpec, String> describeShortcuts() {
+      return null;
     }
 }

@@ -15,6 +15,7 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.registry.Registry;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
@@ -61,9 +62,9 @@ public class OpenWizardPlugIn extends AbstractThreadedUiPlugIn {
     // Add layer pop-up menu
     featureInstaller.addPopupMenuItem(frame.getCategoryPopupMenu(), this, name
       + "{pos:3}", false, icon, enableCheck);
-    
+
     // shortcut
-    registerShortcut();
+    AbstractPlugIn.registerShortcuts(this);
   }
 
   public boolean execute(PlugInContext context) throws Exception {

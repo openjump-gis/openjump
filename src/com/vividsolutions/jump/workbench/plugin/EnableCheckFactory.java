@@ -44,6 +44,7 @@ import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
 
 import com.vividsolutions.jts.util.Assert;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManager;
@@ -64,10 +65,17 @@ import com.vividsolutions.jump.workbench.ui.warp.WarpingVectorLayerFinder;
  */
 public class EnableCheckFactory {
     WorkbenchContext workbenchContext;
+    static EnableCheckFactory instance = null;
 
     public EnableCheckFactory(WorkbenchContext workbenchContext) {
         Assert.isTrue(workbenchContext != null);
         this.workbenchContext = workbenchContext;
+    }
+
+    public static final EnableCheckFactory getInstance(){
+      if (instance==null)
+        instance = new EnableCheckFactory(JUMPWorkbench.getInstance().getContext());
+      return instance;
     }
 
     //<<TODO:WORKAROUND>> I came across a bug in the JBuilder 4 compiler (bcj.exe)

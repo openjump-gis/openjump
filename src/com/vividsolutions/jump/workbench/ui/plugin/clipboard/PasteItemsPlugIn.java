@@ -102,7 +102,7 @@ public class PasteItemsPlugIn extends AbstractPlugIn {
     this.setShortcutModifiers(KeyEvent.CTRL_MASK);
   }
   
-  public PasteItemsPlugIn(String name) {
+  protected PasteItemsPlugIn(String name) {
     super(name);
   }
 

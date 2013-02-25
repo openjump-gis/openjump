@@ -32,14 +32,23 @@
 
 package com.vividsolutions.jump.workbench.plugin;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+
+import java.util.Arrays;
+import java.util.Vector;
+
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.KeyStroke;
 import javax.swing.undo.UndoableEdit;
 
 import org.apache.log4j.Logger;
 
+import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
@@ -54,6 +63,7 @@ import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
 import com.vividsolutions.jump.workbench.model.UndoableCommand;
 import com.vividsolutions.jump.workbench.model.UndoableEditReceiver;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
 
 /**
@@ -61,10 +71,11 @@ import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
  * name, converting a PlugIn into an ActionListener (for use with JButtons, for
  * example), and supporting undo.
  */
-public abstract class AbstractPlugIn implements PlugIn, ShortcutPlugin, EnableChecked {
+public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableChecked, Iconified {
   private static Logger LOG = Logger.getLogger(AbstractPlugIn.class);
   protected int shortcutModifiers = 0;
   protected int shortcutKeys = 0;
+  private String name;
 
   protected void execute(UndoableCommand command, PlugInContext context) {
     execute(command, context.getLayerViewPanel());
@@ -84,54 +95,130 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutPlugin, EnableCh
     return true;
   }
 
+  /**
+   * Indicates that this plug-in either (1) is undoable but hasn't modified the
+   * system yet or (2) does not modify the system. In either case, the undo
+   * history will be preserved. If this method is not called, then this plug-in
+   * will be assumed to be non-undoable, and the undo history will be truncated.
+   */
+  protected void reportNothingToUndoYet(PlugInContext context) {
+    // The LayerManager can be null if for example there are no TaskFrames
+    // and
+    // the user selects File / New Task. When we get to this point,
+    // LayerManager
+    // will be null. [Jon Aquino]
+    if (context.getLayerManager() == null) {
+      return;
+    }
+    context.getLayerManager().getUndoableEditReceiver()
+        .reportNothingToUndoYet();
+  }
 
+  protected boolean isRollingBackInvalidEdits(PlugInContext context) {
+    return context.getWorkbenchContext().getWorkbench().getBlackboard()
+        .get(EditTransaction.ROLLING_BACK_INVALID_EDITS_KEY, false);
+  }
+
+  /*
+   * ShortCutEnabled implementation.
+   */
+  public boolean isShortcutEnabled() {
+    return shortcutKeys>0;
+  }
+
+  /*
+   * ShortCutEnabled implementation.
+   */
   public final int getShortcutModifiers() {
     return shortcutModifiers;
   }
 
+  /*
+   * ShortCutEnabled implementation.
+   */
   public void setShortcutModifiers(int shortcutModifiers) {
     this.shortcutModifiers = shortcutModifiers;
   }
 
+  /*
+   * ShortCutEnabled implementation.
+   */
   public final int getShortcutKeys() {
     return shortcutKeys;
   }
-
+  /*
+   * ShortCutEnabled implementation.
+   */
   public void setShortcutKeys(int shortcutKeys) {
     this.shortcutKeys = shortcutKeys;
   }
 
-  public boolean registerShortcut() {
-    // don't set when not set
-    if (shortcutKeys < 1)
-      return false;
-    JUMPWorkbench wb = JUMPWorkbench.getWorkBench();
-    wb.getFrame().addKeyboardShortcut(shortcutKeys,
-        shortcutModifiers, this,
-        getEnableCheck(wb.getContext()));
-    return true;
+  /*
+   * ShortCutEnabled implementation.
+   */
+  public KeyStroke getShortcutKeyStroke() {
+    return getShortcutKeys() > 0 ? KeyStroke.getKeyStroke(getShortcutKeys(),
+        getShortcutModifiers()) : null;
   }
 
-  public boolean unregisterShortcut() {
-    // currently unimplemented
-    return true;
-  }
-
-  public MultiEnableCheck getEnableCheck(
-      final WorkbenchContext workbenchContext) {
+  public EnableCheck getEnableCheck() {
+    //System.out.println("ap look for "+this.getName());
     // find old method
     try {
-      Method m = this.getClass().getDeclaredMethod("createEnableCheck", WorkbenchContext.class);
-      m.setAccessible(true);
-      return (MultiEnableCheck) m.invoke(this, workbenchContext);
+      Method m = null;
+      Class c = this.getClass();
+      do {
+        try {
+          //System.out.println("ap check "+c);
+          m = c.getDeclaredMethod("createEnableCheck", WorkbenchContext.class);
+        } catch (NoSuchMethodException e) {}
+      } while (m==null && (c=c.getSuperclass())!=null);
+      if (m != null) {
+        m.setAccessible(true);
+        return (MultiEnableCheck) m.invoke(this, JUMPWorkbench.getInstance()
+            .getContext());
+      }
     } catch (SecurityException e) {
-    } catch (NoSuchMethodException e) {
     } catch (IllegalArgumentException e) {
     } catch (IllegalAccessException e) {
     } catch (InvocationTargetException e) {
     }
     // or return unimplemented
     return null;
+  }
+
+  public Icon getIcon(int height) {
+    return getIcon(new Dimension(height, height));
+  }
+
+  public Icon getIcon(Dimension dim) {
+    Icon icon = null;
+    // find old method
+    try {
+      Method m = null;
+      Class c = this.getClass();
+      do {
+        try {
+          //System.out.println("ap check "+c);
+          m = c.getDeclaredMethod("getIcon");
+        } catch (NoSuchMethodException e) {}
+      } while (m==null && (c=c.getSuperclass())!=null);
+      if (m != null) {
+        m.setAccessible(true);
+        icon = (Icon) m.invoke(this);
+      }
+    } catch (SecurityException e) {
+    } catch (IllegalArgumentException e) {
+    } catch (IllegalAccessException e) {
+    } catch (InvocationTargetException e) {
+    }
+    // resize if requested (currently only one via height param)
+    if (icon!=null && icon instanceof ImageIcon
+          && dim!=null && icon.getIconHeight()!=dim.height ){
+      icon = GUIUtil.resize((ImageIcon)icon, dim.height);
+    }
+    
+    return icon;
   }
 
   /**
@@ -143,8 +230,10 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutPlugin, EnableCh
     return name == null ? createName(getClass()) : name;
   }
 
-  private String name;
-
+  public String toString() {
+    return getName();
+  }
+  
   public static String createName(Class plugInClass) {
     try {
       return I18N.get(plugInClass.getName());
@@ -166,6 +255,7 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutPlugin, EnableCh
       final TaskMonitorManager taskMonitorManager) {
     return new ActionListener() {
       public void actionPerformed(ActionEvent e) {
+        //System.out.println("ap toaction "+e);
         try {
           if (workbenchContext.getWorkbench() != null) {
             workbenchContext.getWorkbench().getFrame().setStatusMessage("");
@@ -260,31 +350,64 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutPlugin, EnableCh
         .receive(command.toUndoableEdit());
   }
 
-  public String toString() {
-    return getName();
+  /**
+   * Utility method to fetch enable checks from enablechecked plugins.
+   * 
+   * @param plugin
+   * @return enable check
+   */
+  public static EnableCheck getEnableCheck(PlugIn plugin) {
+    return plugin instanceof EnableChecked ? ((EnableChecked) plugin)
+        .getEnableCheck() : null;
   }
 
   /**
-   * Indicates that this plug-in either (1) is undoable but hasn't modified the
-   * system yet or (2) does not modify the system. In either case, the undo
-   * history will be preserved. If this method is not called, then this plug-in
-   * will be assumed to be non-undoable, and the undo history will be truncated.
+   * Convenience method to collect all plugins of a probably multi shortcut
+   * enabled plugin. Used to register multiple shortcut enabled plugins in one
+   * go.
+   * 
+   * @param plugin
+   * @return plugins array
    */
-  protected void reportNothingToUndoYet(PlugInContext context) {
-    // The LayerManager can be null if for example there are no TaskFrames
-    // and
-    // the user selects File / New Task. When we get to this point,
-    // LayerManager
-    // will be null. [Jon Aquino]
-    if (context.getLayerManager() == null) {
-      return;
+  public static PlugIn[] fetchShortcutEnabledPlugins(PlugIn plugin) {
+    Vector plugins = new Vector();
+    // add plugin
+    if (plugin instanceof ShortcutEnabled
+        && ((ShortcutEnabled) plugin).isShortcutEnabled())
+      plugins.add(plugin);
+    // add plugin contained shortcut plugins
+    if (plugin instanceof MultiShortcutEnabled) {
+      PlugIn[] shortys = ((MultiShortcutEnabled) plugin)
+          .getShortcutEnabledPlugins();
+      if (shortys != null)
+        plugins.addAll(Arrays.asList(shortys));
     }
-    context.getLayerManager().getUndoableEditReceiver()
-        .reportNothingToUndoYet();
+
+    return (PlugIn[]) plugins.toArray(new PlugIn[]{});
   }
 
-  protected boolean isRollingBackInvalidEdits(PlugInContext context) {
-    return context.getWorkbenchContext().getWorkbench().getBlackboard()
-        .get(EditTransaction.ROLLING_BACK_INVALID_EDITS_KEY, false);
+  /**
+   * Utility method to register global shortcuts. Should be preferred to the 
+   * more direct approach using WorkbenchFrame.addKeyboardShortcut() .
+   * 
+   * @param plugin
+   * @return done
+   */
+  public static boolean registerShortcuts(PlugIn plugin) {
+    PlugIn[] shortys = fetchShortcutEnabledPlugins(plugin);
+    if (shortys.length < 1)
+      return false;
+
+    JUMPWorkbench wb = JUMPWorkbench.getInstance();
+    for (PlugIn p : shortys) {
+      Assert.isTrue(p instanceof ShortcutEnabled,
+          "plugin must be shortcut enabled");
+      wb.getFrame().addKeyboardShortcut(
+          ((ShortcutEnabled) p).getShortcutKeys(),
+          ((ShortcutEnabled) p).getShortcutModifiers(), p, getEnableCheck(p));
+    }
+
+    return true;
   }
+
 }

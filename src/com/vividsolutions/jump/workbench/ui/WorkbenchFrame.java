@@ -30,11 +30,13 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.DefaultKeyboardFocusManager;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.GraphicsEnvironment;
+import java.awt.KeyEventDispatcher;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Window;
@@ -88,7 +90,6 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
 import org.apache.log4j.Logger;
-import org.junit.Ignore;
 import org.openjump.core.CheckOS;
 import org.openjump.core.model.TaskEvent;
 import org.openjump.core.model.TaskListener;
@@ -97,7 +98,6 @@ import org.openjump.swing.factory.component.ComponentFactory;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.io.datasource.DataSource;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.util.Block;
 import com.vividsolutions.jump.util.CollectionUtil;
@@ -122,7 +122,6 @@ import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.ui.plugin.AboutPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ChoosableStyle;
@@ -138,30 +137,41 @@ public class WorkbenchFrame extends JFrame
   BorderLayout borderLayout1 = new BorderLayout();
 
   JMenuBar menuBar = new JMenuBar(){
-    @Override
     public void processKeyEvent(KeyEvent e, MenuElement[] path,
         MenuSelectionManager manager) {
       super.processKeyEvent(e, path, manager);
     }
-
-    @Override
+    // filter how we react on specific key events
     protected boolean processKeyBinding(KeyStroke ks, KeyEvent e,
         int condition, boolean pressed) {
-      // ignore RETURN as pushed when accepting geometries after ALT was
-      // pressed
-      if (ks.getKeyCode()==KeyEvent.VK_ENTER)
+      // ignore plain RETURNs as raised when accepting geometries 
+      if (ks!=null && ks.getKeyCode()==KeyEvent.VK_ENTER)
         return false;
-      
       return super.processKeyBinding(ks, e, condition, pressed);
     }
-    
   };
 
   JMenu fileMenu = (JMenu) FeatureInstaller.installMnemonic(new JMenu(
       MenuNames.FILE), menuBar);
 
-  JMenuItem exitMenuItem = FeatureInstaller.installMnemonic(
-      new JMenuItem(I18N.get("ui.WorkbenchFrame.exit")), fileMenu);
+  public class ExitPlugin extends AbstractPlugIn {
+    public ExitPlugin() {
+      super(I18N.get("ui.WorkbenchFrame.exit"));
+      this.setShortcutKeys(KeyEvent.VK_Q);
+      this.setShortcutModifiers(KeyEvent.CTRL_MASK);
+    }
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+      context.getFeatureInstaller().addMainMenuPlugin(this,
+          new String[] { MenuNames.FILE });
+      // register and block menu accelerator action
+      registerShortcuts(this);
+    }
+    public boolean execute(PlugInContext context) throws Exception {
+      closeApplication();
+      return true;
+    }
+  };
 
   private TaskFrame activeTaskFrame = null;
   private static Logger LOG = Logger.getLogger(WorkbenchFrame.class);
@@ -386,15 +396,9 @@ public class WorkbenchFrame extends JFrame
     shortcutListener = new ShortcutPluginExecuteKeyListener(workbenchContext);
     // add it to multi listener above
     addEasyKeyListener(shortcutListener);
-    // add quit shortcut
-    addKeyboardShortcut(KeyEvent.VK_Q, KeyEvent.CTRL_MASK, new AbstractPlugIn(
-        I18N.get("ui.WorkbenchFrame.exit")) {
-      public boolean execute(PlugInContext context) throws Exception {
-        closeApplication();
-        return true;
-      }
-    }, null);
-    
+
+    // these register handlers for mac menus, need apple stubs avail in 
+    // lib/orange*.jar in calsspath to compile
     if (CheckOS.isMacOsx()) {
       try {
         new AppleHandler().register();
@@ -406,6 +410,36 @@ public class WorkbenchFrame extends JFrame
         log(sw.toString());
       }
     }
+    
+    // intercept global key events via custom dispatcher, see
+    // http://tips4java.wordpress.com/2009/09/06/global-event-dispatching/
+    // this is a HACK. we intercept registered shortcuts here because
+    // - this way we get keyinput regardless which component has focus
+    // - we inhibit the real menu item accelerators, which would react on 
+    //   every key pressed
+    // - we inhibit ALT-char combinations to execute menu mnemonics although
+    //   the combination is actually an registered shortcut
+    // TODO: we should check/reassign menmonics on every shortcut assignment 
+    //       to prevent dead menemonics
+    KeyEventDispatcher dispatcher = new KeyEventDispatcher() {
+      public boolean dispatchKeyEvent(KeyEvent e) {
+          switch (e.getID()) {
+          case KeyEvent.KEY_PRESSED:
+            shortcutListener.keyPressed(e);
+            break;
+          case KeyEvent.KEY_RELEASED:
+            shortcutListener.keyReleased(e);
+            break;
+          case KeyEvent.KEY_TYPED:
+            shortcutListener.keyTyped(e);
+            break;
+          }
+        return e.isConsumed();
+      }
+    };
+
+    DefaultKeyboardFocusManager.getCurrentKeyboardFocusManager().
+        addKeyEventDispatcher(dispatcher);
   }
 
   /**
@@ -423,7 +457,7 @@ public class WorkbenchFrame extends JFrame
   }
 
   public void removeEasyKeyListener(KeyListener l) {
-    // System.out.println("rem "+l);
+    //System.out.println("rem "+l);
     //easyKeyListeners.remove(l);
     easyKeyListener.removeKeyListener(l);
   }
@@ -1142,11 +1176,6 @@ public class WorkbenchFrame extends JFrame
     // released). (see Sun Java Bug ID 4665237). [Jon Aquino]
     // desktopPane.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
 
-    exitMenuItem.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        exitMenuItem_actionPerformed(e);
-      }
-    });
     windowMenu.addMenuListener(new javax.swing.event.MenuListener() {
       public void menuCanceled(MenuEvent e) {
       }
@@ -1182,8 +1211,6 @@ public class WorkbenchFrame extends JFrame
     menuBar.add(windowMenu);
     getContentPane().add(toolBar, BorderLayout.NORTH);
     getContentPane().add(desktopPane, BorderLayout.CENTER);
-    fileMenu.addSeparator();
-    fileMenu.add(exitMenuItem);
 
     // [Matthias Scholz 11. Dec 2010] new resizable statusbar
     statusPanel.setLayout(new BorderLayout());
@@ -1257,25 +1284,39 @@ public class WorkbenchFrame extends JFrame
    *          modifier mask constants in the Event class
    * @param plugIn
    *          What plugin to execute
-   * @param enableCheck
-   *          Is the key enabled at the moment?
+   *          
+   * @deprecated use addKeyboardShortcut(KeyStroke key, PlugIn plugIn) instead
    */
   public void addKeyboardShortcut(final int keyCode, final int modifiers,
-      final PlugIn plugIn, final EnableCheck enableCheck) {
+      final PlugIn plugIn, EnableCheck check) {
     // warn on overwriting shortcuts, only to console "KISS"
-    if (shortcutListener.containsDefinition(keyCode, modifiers)
-        /*&& ((PlugIn) shortcutListener.get(keyCode, modifiers)[0]).getName() != plugIn
-            .getName()*/)
-      System.err.println("reassign shortcut "
-          + KeyEvent.getKeyModifiersText(modifiers) + "/"
-          + KeyEvent.getKeyText(keyCode) + " from "
-          + shortcutListener.get(keyCode, modifiers)[0] + " to " + plugIn);
+//    if (shortcutListener.containsDefinition(KeyStroke.getKeyStroke(keyCode, modifiers)))
+//      System.err.println("reassign shortcut "
+//          + KeyEvent.getKeyModifiersText(modifiers) + "/"
+//          + KeyEvent.getKeyText(keyCode)/* + "(" + modifiers + "/" + keyCode
+//          + ") from " + shortcutListener.get(keyCode, modifiers)[0] + " to "
+//          + plugIn + " -> " + shortcutListener*/);
 
-    // Overwrite existing shortcut [Jon Aquino]
-    shortcutListener.add(keyCode, modifiers, plugIn, enableCheck);
+    check = (check==null) ? AbstractPlugIn.getEnableCheck(plugIn) : check;
+    //System.err.println("add shortcut "+keyCode+"/"+modifiers+ " -> "+plugIn.getName());
+    shortcutListener.add(keyCode, modifiers, plugIn, check);
+  }
+  
+  public void addKeyboardShortcut(KeyStroke key, PlugIn plugIn) {
+    shortcutListener.add(key, plugIn);
   }
 
-  
+  public PlugIn getKeyboardShortcutPlugin(KeyStroke key){
+    PlugIn p = shortcutListener.getPlugIn(key);
+    //if (p==null)
+    //System.out.println("wbf getkscp "+keyCode+"/"+modifiers+" = "+p+" -> "+shortcutListener);
+    return p;
+  }
+
+  public final Set<KeyStroke> getKeyboardShortcuts(){
+    return shortcutListener.getAllKeyStrokes();
+  }
+
   // ==========================================================================
   // Applications (such as EziLink) want to override the default JUMP
   // frame closing behaviour and application exit behaviour with their own
