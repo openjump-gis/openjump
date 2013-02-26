@@ -307,18 +307,8 @@ public class QuasimodeTool extends DelegatingTool {
   }
 
   public void deactivate() {
-    // [ede 12.2012] deactivated, as it makes no sense not to deactivate the
-    // tool if ALT is not pressed
-    // if (!altKeyDown)
-    // {
     super.deactivate();
     panel.getWorkBenchFrame().removeEasyKeyListener(keyListener);
-//    if (frame != null) {
-//      frame.removeEasyKeyListener(keyListener);
-//      // [ede 12.2012] deactivated, keep tool even if we loose focus
-//      // frame.removeWindowListener(windowListener);
-//    }
-    // }
   }
 
   // same as below, just does not alter key assignments but mirrors actually pressed keys instead

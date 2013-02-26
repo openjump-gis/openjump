@@ -139,7 +139,7 @@ public abstract class AbstractCursorTool implements CursorTool {
 
 	private Stroke originalStroke;
 
-	protected LayerViewPanel panel;
+	protected LayerViewPanel panel = null;
 
 	private boolean shapeOnScreen = false;
 
@@ -227,21 +227,20 @@ public abstract class AbstractCursorTool implements CursorTool {
 		return shapeOnScreen;
 	}
 
-  public void activate(LayerViewPanel layerViewPanel) {
-    if (workbenchFrame(layerViewPanel) != null) {
-      workbenchFrame(layerViewPanel).log(
+  public void activate(LayerViewPanel new_panel) {
+    if (workbenchFrame(new_panel) != null) {
+      workbenchFrame(new_panel).log(
           I18N.get("ui.cursortool.AbstractCursorTool.activating") + " "
               + getName());
     }
 
-    
-    // [ede 12.2012] disabled as LayerViewPanel holds listeners now in a HashSet
-    // ensuring to have only one instance
-    // if (this.panel != null) {
-    // this.panel.removeListener(layerViewPanelListener);
-    // }
+    LayerViewPanel old_panel = getPanel();
+    // cancel ongoing possibly gestures if we switch LayerViews (switch Tasks)
+    if ((old_panel != null) && !(old_panel.equals(new_panel))) {
+      cancelGesture();
+    }
 
-    this.panel = layerViewPanel;
+    this.panel = new_panel;
     this.panel.addListener(layerViewPanelListener);
 
     if (snappingAllowed && !snappingInitialized) {
@@ -252,7 +251,7 @@ public abstract class AbstractCursorTool implements CursorTool {
     }
     
     // following added to handle KEY shortcuts e.g. SPACEBAR snap switching
-    WorkbenchFrame frame = panel.getWorkBenchFrame();
+    WorkbenchFrame frame = this.panel.getWorkBenchFrame();
     frame.addEasyKeyListener(keyListener);
   }
 
@@ -279,7 +278,8 @@ public abstract class AbstractCursorTool implements CursorTool {
 	}
 
   public void deactivate() {
-    cancelGesture();
+    // gestures are cancelled explicitly only when layerview changed
+    //cancelGesture();
 
     // following added to handle SPACEBAR snap switching
     getWorkbenchFrame().removeEasyKeyListener(keyListener);
