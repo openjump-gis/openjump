@@ -32,34 +32,17 @@
 
 package com.vividsolutions.jump.workbench.ui.plugin.skin;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
-import java.util.zip.ZipFile;
 
 import javax.swing.LookAndFeel;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
-import org.apache.log4j.Logger;
-
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.util.Blackboard;
-import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
-import com.vividsolutions.jump.workbench.plugin.Configuration;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.plugin.PlugInManager;
 import com.vividsolutions.jump.workbench.ui.OptionsDialog;
-import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 
 /**
  * 
@@ -68,13 +51,13 @@ import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
  */
 
 public class InstallSkinsPlugIn extends AbstractPlugIn {
-  private static Logger LOG = Logger.getLogger(InstallSkinsPlugIn.class);
+
   private static String SKINS = I18N
       .get("ui.plugin.skin.InstallSkinsPlugIn.skins");
   private static String DEFAULT = I18N
       .get("ui.plugin.skin.InstallSkinsPlugIn.default");
 
-  public static LookAndFeelProxy createProxy(final String name,
+  private LookAndFeelProxy createProxy(final String name,
       final String lookAndFeelClassName) {
     return new LookAndFeelProxy() {
       public LookAndFeel getLookAndFeel() {
@@ -99,86 +82,20 @@ public class InstallSkinsPlugIn extends AbstractPlugIn {
   }
 
   public void initialize(PlugInContext context) throws Exception {
-    SkinOptionsPanel skinpan = new SkinOptionsPanel(context);
-    
-    String saved_skin = (String) PersistentBlackboardPlugIn.get(
-        context.getWorkbenchContext()).get(SkinOptionsPanel.CURRENT_SKIN_KEY);
-    
-    //System.out.println(saved_skin);
-    try {
-      URLClassLoader ucl = (URLClassLoader) this.getClass().getClassLoader();
-      // import lib/skins
-      
-      // check for availability
-      Class c = this.getClass().getClassLoader().loadClass(saved_skin);
-      // apply
-      skinpan.updateAll((LookAndFeel)c.newInstance());
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    
-    OptionsDialog.instance(context.getWorkbenchContext().getWorkbench())
-    .addTab(SKINS, skinpan);
-  }
-
-  public static void addSkins(File skinsDirectory) throws Exception {
+    SKINS = I18N.get("ui.plugin.skin.InstallSkinsPlugIn.skins");
+    DEFAULT = I18N.get("ui.plugin.skin.InstallSkinsPlugIn.default");
     ArrayList skins = new ArrayList();
 
-    for (Iterator i = findFilesRecursively(skinsDirectory, true).iterator(); i
-        .hasNext();) {
-      File file = (File) i.next();
-      try {
-        ZipFile zipFile = new ZipFile(file);
-        // add to classloader
-        // TODO: ucl.
-        for (Enumeration e = zipFile.entries(); e.hasMoreElements();) {
-          ZipEntry entry = (ZipEntry) e.nextElement();
-          //System.out.println(entry.getName());
-          if ( entry.isDirectory() || !entry.getName().matches(".*\\.(?i:class)$") )
-            continue;
-          String className = entry.getName().substring(0,
-              entry.getName().length() - ".class".length());
-          className = StringUtil.replaceAll(className, "/", ".");
-          try {
-            Class c = InstallSkinsPlugIn.class.getClassLoader().loadClass(className);
-            if (c != null) {
-            // try to instantiate
-            LookAndFeel skin = (LookAndFeel) c.newInstance();
-            // add if successful
-            UIManager.installLookAndFeel(skin.getName(),skin.getClass().getName());
-            }
-          } catch (Throwable t) { /*class loading issue or no lnf*/ }
-        }
-      } catch (ZipException e) {
-        // Might not be a zipfile
-      }
+    for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+      String desc = info.getName();
+      // tag os default skin for user to see
+      if ( info.getClassName() == UIManager.getSystemLookAndFeelClassName() )
+        desc = desc + " (" + DEFAULT + ")";
+      skins.add(createProxy( desc, info.getClassName() ));
     }
+    context.getWorkbenchContext().getWorkbench().getBlackboard()
+        .put(SkinOptionsPanel.SKINS_KEY, skins);
+    OptionsDialog.instance(context.getWorkbenchContext().getWorkbench())
+        .addTab(SKINS, new SkinOptionsPanel(context));
   }
-
-  static FileFilter jarfilter = new FileFilter() {
-    public boolean accept(File f) {
-      return f.getName().matches(".*\\.(?i:jar|zip)$") || f.isDirectory();
-    }
-  };
-
-  private static Collection<File> findFilesRecursively(File directory,
-      boolean recursive) {
-    Collection files = new ArrayList();
-    // add only jars/zips, recursively if requested
-    for (Iterator i = Arrays.asList(directory.listFiles(jarfilter)).iterator(); i
-        .hasNext();) {
-      File file = (File) i.next();
-      //System.out.println(file);
-      if (file.isDirectory() && recursive) {
-        files.addAll(findFilesRecursively(file, recursive));
-      }
-      if (!file.isFile()) {
-        continue;
-      }
-
-      files.add(file);
-    }
-    return files;
-  }
-
 }
