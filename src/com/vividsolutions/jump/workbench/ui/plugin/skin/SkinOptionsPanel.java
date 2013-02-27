@@ -37,11 +37,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Window;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -54,9 +49,7 @@ import javax.swing.LookAndFeel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.UIManager.LookAndFeelInfo;
 
-import com.sun.org.apache.bcel.internal.generic.INSTANCEOF;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
@@ -72,13 +65,9 @@ import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
  */
 
 public class SkinOptionsPanel extends JPanel implements OptionsPanel {
-  public static final String CURRENT_SKIN_KEY = SkinOptionsPanel.class
+  private static final String CURRENT_SKIN_KEY = SkinOptionsPanel.class
       + " - CURRENT SKIN";
   public static final String SKINS_KEY = SkinOptionsPanel.class + " - SKINS";
-  public static String SKINS = I18N
-      .get("ui.plugin.skin.InstallSkinsPlugIn.skins");
-  private static String DEFAULT = I18N
-      .get("ui.plugin.skin.InstallSkinsPlugIn.default");
   private GridBagLayout gridBagLayout1 = new GridBagLayout();
   private JComboBox comboBox = new JComboBox();
   private JPanel fillerPanel = new JPanel();
@@ -86,13 +75,42 @@ public class SkinOptionsPanel extends JPanel implements OptionsPanel {
   private PlugInContext context;
   private Blackboard blackboard;
   private Blackboard blackboard_persist;
-  private boolean initialized = false;
 
   public SkinOptionsPanel(PlugInContext plc) {
     this.blackboard = plc.getWorkbenchContext().getWorkbench().getBlackboard();
     this.blackboard_persist = PersistentBlackboardPlugIn.get(plc
         .getWorkbenchContext());
     this.context = plc;
+
+    String saved_skin = (String) blackboard_persist.get(CURRENT_SKIN_KEY);
+    String cur_skin = UIManager.getLookAndFeel().getClass().getName();
+
+    try {
+      jbInit();
+
+      DefaultComboBoxModel model = new DefaultComboBoxModel();
+
+      for (Iterator i = ((Collection) blackboard.get(SKINS_KEY)).iterator(); i
+          .hasNext();) {
+        LookAndFeelProxy proxy = (LookAndFeelProxy) i.next();
+        String proxy_skin = proxy.getLookAndFeel().getClass().getName();
+        model.addElement(proxy);
+
+        // activate saved laf if available
+        if (saved_skin instanceof String && saved_skin.equals(proxy_skin)
+            && cur_skin instanceof String && !cur_skin.equals(proxy_skin)) {
+          updateAll(proxy.getLookAndFeel());
+          cur_skin = proxy_skin;
+        }
+        // reflect active laf selected in combobox
+        if (cur_skin == proxy_skin)
+          model.setSelectedItem(proxy);
+      }
+
+      comboBox.setModel(model);
+    } catch (Exception ex) {
+      context.getWorkbenchFrame().handleThrowable(ex);
+    }
   }
 
   void jbInit() throws Exception {
@@ -109,65 +127,15 @@ public class SkinOptionsPanel extends JPanel implements OptionsPanel {
             10, 4), 0, 0));
   }
 
+  // all initialization is done in constructor
   public void init() {
-    if (initialized) return;
-    
-    String saved_skin = (String) blackboard_persist.get(CURRENT_SKIN_KEY);
-    String cur_skin = UIManager.getLookAndFeel().getClass().getName();
-
-    try {
-      jbInit();
-
-      DefaultComboBoxModel model = new DefaultComboBoxModel();
-
-      File skinDir = new File("lib/skins/");
-      if (!skinDir.isDirectory()) 
-        System.out.println( "Warning: skin folder '"+skinDir+"' does not exist" );
-      InstallSkinsPlugIn.addSkins(skinDir);
-      //System.out.println(Arrays.toString(new File("lib/skins/").list()));
-      
-      ArrayList skins = new ArrayList();
-      for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-        String desc = info.getName();
-        // tag os default skin for user to see
-        if (info.getClassName() == UIManager.getSystemLookAndFeelClassName())
-          desc = desc + " (" + DEFAULT + ")";
-        skins.add(InstallSkinsPlugIn.createProxy(desc, info.getClassName()));
-      }
-      context.getWorkbenchContext().getWorkbench().getBlackboard()
-          .put(SkinOptionsPanel.SKINS_KEY, skins);
-
-      for (Iterator i = ((Collection) blackboard.get(SKINS_KEY)).iterator(); i
-          .hasNext();) {
-        LookAndFeelProxy proxy = (LookAndFeelProxy) i.next();
-        String proxy_skin = proxy.getLookAndFeel().getClass().getName();
-        model.addElement(proxy);
-
-        // activate saved laf if available
-//        if (saved_skin instanceof String && saved_skin.equals(proxy_skin)
-//            && cur_skin instanceof String && !cur_skin.equals(proxy_skin)) {
-//          updateAll(proxy.getLookAndFeel());
-//          cur_skin = proxy_skin;
-//        }
-        // reflect active laf selected in combobox
-        if (cur_skin == proxy_skin)
-          model.setSelectedItem(proxy);
-      }
-
-      comboBox.setModel(model);
-      this.invalidate();
-      
-      initialized = true;
-    } catch (Exception ex) {
-      context.getWorkbenchFrame().handleThrowable(ex);
-    }
   }
 
   public void okPressed() {
     updateAll(((LookAndFeelProxy) comboBox.getSelectedItem()).getLookAndFeel());
   }
 
-  public void updateAll(LookAndFeel laf) {
+  private void updateAll(LookAndFeel laf) {
 
     // do nothing if this laf is already set
     if (UIManager.getLookAndFeel().getClass().equals(laf.getClass())) {
