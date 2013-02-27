@@ -38,7 +38,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.swing.KeyStroke;
 
@@ -75,6 +77,7 @@ public class QuasimodeTool extends DelegatingTool {
       return false;
     }
   };
+  // create default tools
   private static CursorTool info = new FeatureInfoTool();
   private static CursorTool insVertex = new InsertVertexTool(EnableCheckFactory.getInstance());
   private static CursorTool delVertex = new DeleteVertexTool(EnableCheckFactory.getInstance());
@@ -161,7 +164,7 @@ public class QuasimodeTool extends DelegatingTool {
     return getDefaultTool().getName()+"\n"+buf;
   }
   
-  private CursorTool getTool(Set<Integer> keys) {
+  private CursorTool getTool(Collection<Integer> keys) {
     // tools override defaults
     ModifierKeySet ks = new ModifierKeySet(keys);
     CursorTool tool = keySpecToToolMap.get(ks);
@@ -172,40 +175,57 @@ public class QuasimodeTool extends DelegatingTool {
     return tool;
   }
 
+  private HashMap keyTimeMap = new HashMap();
+  
   private KeyListener keyListener = new KeyListener() {
-    private HashSet keys = new HashSet();
-    private HashSet previous = null;
+    private Collection previous = null;
 
     public void keyTyped(KeyEvent e) {
     }
 
     public void keyPressed(KeyEvent e) {
-      keys.add(e.getKeyCode());
+      keyTimeMap.put(e.getKeyCode(), System.currentTimeMillis());
       keyStateChanged(e);
     }
 
     public void keyReleased(KeyEvent e) {
-      keys.remove(e.getKeyCode());
+      keyTimeMap.remove(e.getKeyCode());
       keyStateChanged(e);
     }
 
     // one method to rule them all
     private void keyStateChanged(KeyEvent e) {
+      Set keys = keyTimeMap.keySet();
       // filter out duplicate events (e.g. key stays pressed)
       if (previous != null && previous.equals(keys))
         return;
-      previous = (HashSet) keys.clone();
+      previous = new Vector(keys);
       //System.out.println(e.getKeyCode()+"/"+e.getKeyModifiersText(e.getModifiers())+"/"+e.getKeyText(e.getKeyCode()));
       setTool(keys);
     }
     
-//    public String toString(){
-//      return getName()+" KeyListener";
-//    }
   };
 
   public KeyListener getKeyListener(){
     return keyListener;
+  }
+
+  /*
+   * Cleans up the list of pressed keys by verifying the attached time stamp
+   * and deleting all entries older than 1 second
+   * 
+   * This prevents keeping entries where the app lost focus with the key 
+   * pressed and java does not receive key released event.
+   */
+  public void revalidateQuasiMode(){
+    Iterator it = keyTimeMap.entrySet().iterator();
+    while (it.hasNext()) {
+        Map.Entry pair = (Map.Entry)it.next();
+        //System.out.println(pair.getKey()+"="+((Long)pair.getValue()-System.currentTimeMillis()));
+        if ((Long)pair.getValue() < System.currentTimeMillis()-1000)
+          it.remove(); // avoids a ConcurrentModificationException
+    }
+    setTool(keyTimeMap.keySet());
   }
 
   // /*
@@ -257,53 +277,10 @@ public class QuasimodeTool extends DelegatingTool {
     
     this.panel = panel;
     super.activate(panel);
-
+    // check if keys are still pushed
+    revalidateQuasiMode();
+    // attach our keylistener
     panel.getWorkBenchFrame().addEasyKeyListener(keyListener);
-    // Cache WorkbenchFrame because in JDK 1.3 when I minimize an internal
-    // frame, SwingUtilities#windowForComponent returns null for that frame.
-    // A Swing bug. [Jon Aquino]
-    //frame = AbstractCursorTool.workbenchFrame(panel);
-    //if (frame != null) {
-      //frame.addEasyKeyListener(keyListener);
-      // Workaround for the following:
-      // * Use WorkbenchFrame#addKeyboardShortcut for a plug-in that
-      // pops up a dialog (or could pop up an error dialog). Assign it to
-      // Ctrl-A,
-      // for example.
-      // * Press Ctrl-A. The Ctrl quasimode happens. But also the dialog pops
-      // up.
-      // * Release Ctrl. Close the dialog. Note that the cursor shows we're
-      // still
-      // in the Ctrl quasimode! This is because the dialog consumed the
-      // key-up event.
-      // So we're working around this by clearing the quasimode when the
-      // WorkbenchFrame is activated (e.g. when a dialog is closed). [Jon
-      // Aquino]
-
-      // -- [sstein : ] deactivated and repalced by line above see comment
-      // on windowListener above
-      // [ede 12.2012] deactivated as it interferes with QuasiModeTools switched
-      // by key pressed while toolbox is still active, tool got switched but was
-      // reset to the default tool by the next line
-      // frame.addWindowListener(windowListener);
-
-      // Need to do the following so that the delegate gets set to the
-      // LeftClickFilter
-      // This fixes a problem where the selection was being lost on a right
-      // click
-      // when using the selector tool on the tool bar.
-      // The following code is executed during windowActivated event in
-      // WindowAdapter windowListener above.
-      // This is why the problem fixed itself when returning to the window after
-      // bringing
-      // another application forward.
-      // This event was done when clicking the selection tool on the toolbox so
-      // that is why it was always working.
-      // [ede 12.2012] deactivated, keep tool even if we loose focus
-      // setTool(new KeyEvent(panel, KeyEvent.KEY_PRESSED, 0, 0,
-      // KeyEvent.VK_UNDEFINED, KeyEvent.CHAR_UNDEFINED));
-
-    //}
   }
 
   public void deactivate() {
@@ -311,7 +288,7 @@ public class QuasimodeTool extends DelegatingTool {
     panel.getWorkBenchFrame().removeEasyKeyListener(keyListener);
   }
 
-  // same as below, just does not alter key assignments but mirrors actually pressed keys instead
+  // same as below, just does not alter key assignments but represents pressed keys instead
   public static class ModifierKeySet extends ModifierKeySpec {
     public ModifierKeySet(Collection<Integer> keys) {
       super();

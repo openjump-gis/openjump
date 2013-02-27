@@ -1159,6 +1159,16 @@ public class WorkbenchFrame extends JFrame
     });
     this.getContentPane().setLayout(borderLayout1);
     this.addWindowListener(new java.awt.event.WindowAdapter() {
+
+      public void windowActivated(WindowEvent e) {
+        TaskFrame f = getActiveTaskFrame();
+        if (f!=null){
+          // have cursortool reactivated, in turn recheck the 
+          // currently pressed keys
+          f.getLayerViewPanel().reSetCurrentCursorTool();
+        }
+      }
+
       public void windowClosing(WindowEvent e) {
         this_windowClosing(e);
       }
