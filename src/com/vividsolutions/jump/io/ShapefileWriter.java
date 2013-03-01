@@ -436,11 +436,15 @@ public class ShapefileWriter implements JUMPWriter {
 
             if (columnType == AttributeType.INTEGER) {
                 fields[f] = new DbfFieldDef(columnName, 'N', 11, 0);  //LDB: previously 16
-                fields[f] = overrideWithExistingCompatibleDbfFieldDef(fields[f], fieldMap);
-               f++;
+                DbfFieldDef fromFile = overrideWithExistingCompatibleDbfFieldDef(fields[f], fieldMap);
+                if (fromFile.fieldnumdec == 0)
+                    fields[f] = fromFile;
+                f++;
             } else if (columnType == AttributeType.DOUBLE) {
                 fields[f] = new DbfFieldDef(columnName, 'N', 33, 16);
-                fields[f] = overrideWithExistingCompatibleDbfFieldDef(fields[f], fieldMap);
+                DbfFieldDef fromFile = overrideWithExistingCompatibleDbfFieldDef(fields[f], fieldMap);
+                if (fromFile.fieldnumdec > 0)
+                    fields[f] = fromFile;
                f++;
             } else if (columnType == AttributeType.STRING) {
                 int maxlength = findMaxStringLength(featureCollection, t);
@@ -613,6 +617,9 @@ public class ShapefileWriter implements JUMPWriter {
     					return dbfFieldDef; 
     				}
     			break;
+    		// if previous dbf field with the same name was a numeric
+    		// and new field type is N, set type to N, but keep old 
+    		// field length
     		case 'N': case 'n': case 'F': case 'f':
     			if (field.fieldtype == 'N') {
     				dbfFieldDef.fieldtype = field.fieldtype;
