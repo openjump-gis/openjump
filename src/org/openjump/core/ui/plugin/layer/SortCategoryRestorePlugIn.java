@@ -47,6 +47,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Category;
 import com.vividsolutions.jump.workbench.model.LayerManager;
@@ -65,7 +66,8 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
  */
 public class SortCategoryRestorePlugIn extends AbstractPlugIn {
 
-	static private WorkbenchContext workbenchContext = null;
+	static private WorkbenchContext workbenchContext = JUMPWorkbench.getInstance().getContext();
+	
 	private static final ImageIcon ICON = null;
 
 	private String menuLabel = "Restore";
