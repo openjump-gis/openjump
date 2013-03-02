@@ -184,7 +184,7 @@ public class QuasimodeTool extends DelegatingTool {
     }
 
     public void keyPressed(KeyEvent e) {
-      keyTimeMap.put(e.getKeyCode(), System.currentTimeMillis());
+      keyTimeMap.put(e.getKeyCode(), 0/*System.currentTimeMillis()*/);
       keyStateChanged(e);
     }
 
@@ -217,14 +217,18 @@ public class QuasimodeTool extends DelegatingTool {
    * This prevents keeping entries where the app lost focus with the key 
    * pressed and java does not receive key released event.
    */
-  public void revalidateQuasiMode(){
-    Iterator it = keyTimeMap.entrySet().iterator();
-    while (it.hasNext()) {
-        Map.Entry pair = (Map.Entry)it.next();
-        //System.out.println(pair.getKey()+"="+((Long)pair.getValue()-System.currentTimeMillis()));
-        if ((Long)pair.getValue() < System.currentTimeMillis()-1000)
-          it.remove(); // avoids a ConcurrentModificationException
-    }
+  private void revalidateQuasiMode(){
+    // TEST: don't overengineer, simply reset remembered keys
+    //       the key listener will switch if necessary
+    keyTimeMap.clear();
+    
+//    Iterator it = keyTimeMap.entrySet().iterator();
+//    while (it.hasNext()) {
+//        Map.Entry pair = (Map.Entry)it.next();
+//        //System.out.println(pair.getKey()+"="+((Long)pair.getValue()-System.currentTimeMillis()));
+//        if ((Long)pair.getValue() < System.currentTimeMillis()-1000)
+//          it.remove(); // avoids a ConcurrentModificationException
+//    }
     setTool(keyTimeMap.keySet());
   }
 
@@ -274,11 +278,13 @@ public class QuasimodeTool extends DelegatingTool {
 
   public void activate(final LayerViewPanel panel) {
     if (panel==null) return;
-    
     this.panel = panel;
-    super.activate(panel);
+
     // check if keys are still pushed
     revalidateQuasiMode();
+
+    super.activate(panel);
+
     // attach our keylistener
     panel.getWorkBenchFrame().addEasyKeyListener(keyListener);
   }
