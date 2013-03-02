@@ -131,13 +131,13 @@ public class RotateSelectedItemTool extends DragTool implements ShortcutsDescrip
   public void activate(LayerViewPanel layerViewPanel) {
     centerCoord = null;
     super.activate(layerViewPanel);
-    System.out.println("rsi register listener " + cursorSwitcher);
+    //System.out.println("rsi register listener " + cursorSwitcher);
     getPanel().getWorkBenchFrame().addEasyKeyListener(cursorSwitcher);
   }
 
   public void deactivate() {
-    super.deactivate();
     getPanel().getWorkBenchFrame().removeEasyKeyListener(cursorSwitcher);
+    super.deactivate();
   }
 
   protected void gestureFinished() throws java.lang.Exception {
