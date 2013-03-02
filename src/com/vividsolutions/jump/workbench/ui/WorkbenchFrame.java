@@ -146,11 +146,9 @@ public class WorkbenchFrame extends JFrame
     // filter how we react on specific key events
     protected boolean processKeyBinding(KeyStroke ks, KeyEvent e,
         int condition, boolean pressed) {
-      // ignore plain RETURNs as raised when accepting geometries 
-      if (ks!=null && ks.getKeyCode()==KeyEvent.VK_ENTER)
-        return false;
-
-      return super.processKeyBinding(ks, e, condition, pressed);
+      // this disables the menu item accelerators to be executed
+      // we simply do not let menubar route the key down to the items
+      return false;  //super.processKeyBinding(ks, e, condition, pressed);
     }
   };
 
@@ -393,12 +391,10 @@ public class WorkbenchFrame extends JFrame
       e.printStackTrace();
     }
 
-    // attach a multi listener
+    // attach a multi listener (plugins use to get notified about key events etc.)
     easyKeyListener = new MultiRecursiveKeyListener(this);
     // create a run plugin via shortcut listener
     shortcutListener = new ShortcutPluginExecuteKeyListener(workbenchContext);
-    // add it to multi listener above
-    addEasyKeyListener(shortcutListener);
 
     // these register handlers for mac menus, need apple stubs avail in 
     // lib/orange*.jar in calsspath to compile
@@ -418,28 +414,41 @@ public class WorkbenchFrame extends JFrame
     // http://tips4java.wordpress.com/2009/09/06/global-event-dispatching/
     // this is a HACK. we intercept registered shortcuts here because
     // - this way we get keyinput regardless which component has focus
-    // - we inhibit the real menu item accelerators, which would react on
-    // every key pressed
-    // - we inhibit ALT-char combinations to execute menu mnemonics although
-    // the combination is actually an registered shortcut
-    // TODO: we should check/reassign menmonics on every shortcut assignment
-    // to prevent dead menemonics
+    // - menu item accelerators are disabled in menubar, we execute them here
+    // - we block ALT-char combinations which can be menu mnemonics by consuming
+    //   the event here if the combination is actually an registered shortcut
+    // TODO: we should check/reassign mnemonics on every shortcut assignment
+    //       to prevent dead mnemonics
     KeyEventDispatcher dispatcher = new KeyEventDispatcher() {
       public boolean dispatchKeyEvent(KeyEvent e) {
-        // who's got the focus
+        // hands up, who's got the focus
         Component c = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
         // traverse through parents, see if we are in a valid one
         boolean filter = false;
-        while (c!=null && (c=c.getParent())!=null){
-          if (c instanceof TaskFrame || 
-              (c instanceof ToolboxDialog && c.equals(EditingPlugIn.getInstance().getToolbox()))){
+        while (c!=null){
+          //System.out.println(c);
+          
+          if (c instanceof TaskFrame 
+              || (c instanceof ToolboxDialog && c.equals(EditingPlugIn.getInstance().getToolbox()))
+              || c instanceof WorkbenchFrame
+              ){
             filter = true;
             break;
           }
+          
+          // we treat windows and jinternalframes as our ultimate parent
+          // else pretty much everything would end up with WorkbenchFrame
+          if (c instanceof Window
+              || c instanceof JInternalFrame
+              )
+            break;
+          
+          c=c.getParent();
         }
+
         // if we are not in one of the containers above we do not use global shortcuts
         if (!filter)
-          return false;
+          return false; // nothing dispatched
         
         switch (e.getID()) {
           case KeyEvent.KEY_PRESSED:
@@ -1331,8 +1340,8 @@ public class WorkbenchFrame extends JFrame
     shortcutListener.add(keyCode, modifiers, plugIn, check);
   }
   
-  public void addKeyboardShortcut(KeyStroke key, PlugIn plugIn) {
-    shortcutListener.add(key, plugIn);
+  public void addKeyboardShortcut(KeyStroke stroke, PlugIn plugIn) {
+    shortcutListener.add(stroke, plugIn);
   }
 
   public PlugIn getKeyboardShortcutPlugin(KeyStroke key){
