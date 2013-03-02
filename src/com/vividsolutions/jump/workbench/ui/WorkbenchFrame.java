@@ -30,13 +30,13 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.DefaultKeyboardFocusManager;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.GraphicsEnvironment;
 import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Window;
@@ -122,10 +122,12 @@ import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.cursortool.editing.EditingPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ChoosableStyle;
 import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
+import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxDialog;
 
 /**
  * This class is responsible for the main window of the JUMP application.
@@ -147,6 +149,7 @@ public class WorkbenchFrame extends JFrame
       // ignore plain RETURNs as raised when accepting geometries 
       if (ks!=null && ks.getKeyCode()==KeyEvent.VK_ENTER)
         return false;
+
       return super.processKeyBinding(ks, e, condition, pressed);
     }
   };
@@ -415,15 +418,30 @@ public class WorkbenchFrame extends JFrame
     // http://tips4java.wordpress.com/2009/09/06/global-event-dispatching/
     // this is a HACK. we intercept registered shortcuts here because
     // - this way we get keyinput regardless which component has focus
-    // - we inhibit the real menu item accelerators, which would react on 
-    //   every key pressed
+    // - we inhibit the real menu item accelerators, which would react on
+    // every key pressed
     // - we inhibit ALT-char combinations to execute menu mnemonics although
-    //   the combination is actually an registered shortcut
-    // TODO: we should check/reassign menmonics on every shortcut assignment 
-    //       to prevent dead menemonics
+    // the combination is actually an registered shortcut
+    // TODO: we should check/reassign menmonics on every shortcut assignment
+    // to prevent dead menemonics
     KeyEventDispatcher dispatcher = new KeyEventDispatcher() {
       public boolean dispatchKeyEvent(KeyEvent e) {
-          switch (e.getID()) {
+        // who's got the focus
+        Component c = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
+        // traverse through parents, see if we are in a valid one
+        boolean filter = false;
+        while ((c=c.getParent())!=null){
+          if (c instanceof TaskFrame || 
+              (c instanceof ToolboxDialog && c.equals(EditingPlugIn.getInstance().getToolbox()))){
+            filter = true;
+            break;
+          }
+        }
+        // if we are not in one of the containers above we do not use global shortcuts
+        if (!filter)
+          return false;
+        
+        switch (e.getID()) {
           case KeyEvent.KEY_PRESSED:
             shortcutListener.keyPressed(e);
             break;
@@ -433,12 +451,13 @@ public class WorkbenchFrame extends JFrame
           case KeyEvent.KEY_TYPED:
             shortcutListener.keyTyped(e);
             break;
-          }
+        }
+        // signaling we dispatched it, or not
         return e.isConsumed();
       }
     };
 
-    DefaultKeyboardFocusManager.getCurrentKeyboardFocusManager().
+    KeyboardFocusManager.getCurrentKeyboardFocusManager().
         addKeyEventDispatcher(dispatcher);
   }
 
