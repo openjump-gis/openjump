@@ -321,8 +321,8 @@ public class FeatureInstaller {
   }
 
   private JMenuItem createMenuItem(String menuItemName, boolean checkBox) {
-    return checkBox ? new JCheckBoxMenuItem(menuItemName) : new JMenuItem(
-        menuItemName);
+    return checkBox ? new JCheckBoxMenuItem(menuItemName) : 
+                      new JMenuItem(menuItemName);
   }
 
   public JMenuItem addMainMenuPlugin(final PlugIn executable,
