@@ -430,7 +430,7 @@ public class WorkbenchFrame extends JFrame
         Component c = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
         // traverse through parents, see if we are in a valid one
         boolean filter = false;
-        while ((c=c.getParent())!=null){
+        while (c!=null && (c=c.getParent())!=null){
           if (c instanceof TaskFrame || 
               (c instanceof ToolboxDialog && c.equals(EditingPlugIn.getInstance().getToolbox()))){
             filter = true;
