@@ -146,6 +146,10 @@ public class WorkbenchFrame extends JFrame
     // filter how we react on specific key events
     protected boolean processKeyBinding(KeyStroke ks, KeyEvent e,
         int condition, boolean pressed) {
+      // catch Alt release events which cause menubar to get focussed
+      // during editing when quasimodes are used
+      if (e.getKeyCode()==KeyEvent.VK_ALT && e.getID()==KeyEvent.KEY_RELEASED)
+        return true;
       // this disables the menu item accelerators to be executed
       // we simply do not let menubar route the key down to the items
       return false;  //super.processKeyBinding(ks, e, condition, pressed);
