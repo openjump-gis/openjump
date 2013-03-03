@@ -60,6 +60,7 @@ import com.vividsolutions.jts.geom.CoordinateFilter;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
@@ -132,12 +133,12 @@ public class RotateSelectedItemTool extends DragTool implements ShortcutsDescrip
     centerCoord = null;
     super.activate(layerViewPanel);
     //System.out.println("rsi register listener " + cursorSwitcher);
-    getPanel().getWorkBenchFrame().addEasyKeyListener(cursorSwitcher);
+    JUMPWorkbench.getInstance().getFrame().addEasyKeyListener(cursorSwitcher);
   }
 
   public void deactivate() {
-    getPanel().getWorkBenchFrame().removeEasyKeyListener(cursorSwitcher);
     super.deactivate();
+    JUMPWorkbench.getInstance().getFrame().removeEasyKeyListener(cursorSwitcher);
   }
 
   protected void gestureFinished() throws java.lang.Exception {
