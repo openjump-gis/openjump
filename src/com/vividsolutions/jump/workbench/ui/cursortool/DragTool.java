@@ -56,6 +56,12 @@ public abstract class DragTool extends AbstractCursorTool {
     protected Coordinate modelDestination = null;
     private boolean dragApproved = false;
 
+    
+    public void deactivate() {
+      cancelGesture();
+      super.deactivate();
+    }
+
     /**
      * Begins handling of the drag. Subclasses can prevent handling of the drag
      * by overriding this method and not calling it.
