@@ -73,13 +73,13 @@ public class ShortcutPluginExecuteKeyListener implements KeyListener {
   public void keyTyped(KeyEvent e) {
   }
 
-  public void keyPressed(KeyEvent e) {
-    // our shortcuts are on release, so consume any competing key pressed event
+  public void keyReleased(KeyEvent e) {
+    // our shortcuts are on pressed, so consume any competing key pressed event
     if ( contains(keyStroke(e.getKeyCode(), e.getModifiers(), false)) )
       e.consume();
   }
 
-  public void keyReleased(KeyEvent e) {
+  public void keyPressed(KeyEvent e) {
     // System.out.println("SCPE src "+e.getSource());
     KeyStroke key = keyStroke(e.getKeyCode(), e.getModifiers(), false);
     PlugIn plugin = getPlugIn(key);
@@ -102,14 +102,12 @@ public class ShortcutPluginExecuteKeyListener implements KeyListener {
       return;
     }
     // #toActionListener handles checking if the plugIn is a
-    // ThreadedPlugIn,
-    // and making calls to UndoableEditReceiver if necessary. [Jon
-    // Aquino 10/15/2003]
+    // ThreadedPlugIn, and making calls to UndoableEditReceiver if necessary.
+    // [Jon Aquino 10/15/2003]
     AbstractPlugIn.toActionListener(plugin, workbenchContext,
         new TaskMonitorManager()).actionPerformed(null);
   }
 
-  @Override
   public String toString() {
     String out = "";
     for (Object e : keyStrokeToPluginMap.entrySet()) {
