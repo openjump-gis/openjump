@@ -345,8 +345,9 @@ public abstract class AbstractCursorTool implements CursorTool {
 	}
 
   protected void clearShape() {
-    if (panel != null)
-      clearShape(getGraphics2D());
+    Graphics2D g;
+    if (panel != null && (g=getGraphics2D())!=null)
+      clearShape(g);
   }
 
 	private Graphics2D getGraphics2D() {
