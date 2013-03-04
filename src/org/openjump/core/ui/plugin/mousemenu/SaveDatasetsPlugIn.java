@@ -158,9 +158,8 @@ public class SaveDatasetsPlugIn extends AbstractPlugIn
             enableCheck);
     }
     
-    public static final ImageIcon ICON = IconLoader.icon("disk_multiple.png");
-    
-    public static final ImageIcon ICON2 = IconLoader.icon("disk_multiple_small.png");
+    public static final ImageIcon ICON = IconLoader.icon("disk_multiple_20.png");
+    public static final ImageIcon ICON2 = IconLoader.icon("disk_multiple_16.png");
     
     public boolean execute(PlugInContext context) throws Exception
     {

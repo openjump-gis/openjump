@@ -94,7 +94,7 @@ public class SaveLayersWithoutDataSourcePlugIn extends AbstractPlugIn {
 	    FeatureInstaller installer = new FeatureInstaller(workbenchContext);
 	    installer.addMainMenuItem(
             this, new String[] {MenuNames.FILE},
-            new JMenuItem(getName(), IconLoader.icon("disk_multiple.png")),
+            new JMenuItem(getName(), IconLoader.icon("disk_multiple_16.png")),
             createEnableCheck(context.getWorkbenchContext()), 9);
         
         fileChooser = new JFileChooser();
