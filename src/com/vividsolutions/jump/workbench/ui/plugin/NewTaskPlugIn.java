@@ -61,14 +61,13 @@ public class NewTaskPlugIn extends AbstractPlugIn {
             final WorkbenchContext workbenchContext) {            
             return new MultiEnableCheck();
     }
-        
-    //[sstein 26.08.2006] added for toolbar
-    public static ImageIcon getIcon() {
-            return IconLoader.icon("layout_add.png");
-    }
     
-    //garuta 02.12.2011 added for file menu
-    public static ImageIcon getIcon2() {
-        return IconLoader.icon("layout_add_small.png");
-}
+    ImageIcon icon16 =  IconLoader.icon("page_oj_16.v2.png");
+    ImageIcon icon20 =  IconLoader.icon("page_oj_20.v3.png");
+    
+    //[sstein 26.08.2006] added for toolbar
+    public ImageIcon getIcon(int size) {
+      return (size>16) ? icon20 : icon16;
+    }
+
 }
