@@ -26,24 +26,23 @@
  */
 package com.vividsolutions.jump.workbench.ui.plugin;
 
+import java.awt.event.KeyEvent;
+import java.io.File;
+
+import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
+
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.util.FileUtil;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
-
-import java.awt.event.KeyEvent;
-import java.io.File;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.ImageIcon;
-import javax.swing.JFileChooser;
-import org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn;
 
 public class SaveProjectAsPlugIn extends AbstractSaveProjectPlugIn {
     
-    public static final ImageIcon ICON = IconLoader.icon("layout_save.png");
+    public static final ImageIcon ICON = IconLoader.icon("disk_oj_dots.png");
     
     public static final String FILE_CHOOSER_DIRECTORY_KEY = 
         SaveProjectAsPlugIn.class.getName() + " - FILE CHOOSER DIRECTORY";
