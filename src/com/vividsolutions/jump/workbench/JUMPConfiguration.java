@@ -737,7 +737,7 @@ public class JUMPConfiguration implements Setup {
         fileMenuPath, MenuNames.FILE_NEW, 0);
     featureInstaller.addMainMenuItem(newTaskPlugIn, new String[] {
         MenuNames.FILE, MenuNames.FILE_NEW }, newTaskPlugIn.getName(), false,
-        newTaskPlugIn.getIcon2(), null);
+        newTaskPlugIn.getIcon(16), null);
 
     featureInstaller.addMenuSeparator(new String[] { MenuNames.FILE,
         MenuNames.FILE_NEW }); // =============================================
@@ -1290,7 +1290,7 @@ public class JUMPConfiguration implements Setup {
   private void configureToolBar(final WorkbenchContext workbenchContext,
       EnableCheckFactory checkFactory) {
     WorkbenchFrame frame = workbenchContext.getWorkbench().getFrame();
-    frame.getToolBar().addPlugIn(NewTaskPlugIn.getIcon(), newTaskPlugIn,
+    frame.getToolBar().addPlugIn(newTaskPlugIn.getIcon(20), newTaskPlugIn,
         NewTaskPlugIn.createEnableCheck(workbenchContext), workbenchContext);
     frame.getToolBar().addSeparator();
     add(new ZoomTool(), workbenchContext);
