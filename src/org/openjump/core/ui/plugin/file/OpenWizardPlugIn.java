@@ -3,9 +3,8 @@ package org.openjump.core.ui.plugin.file;
 import java.awt.event.KeyEvent;
 import java.util.List;
 
-import javax.swing.Icon;
+import javax.swing.ImageIcon;
 
-import org.openjump.core.ui.images.IconLoader;
 import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 import org.openjump.core.ui.plugin.file.open.OpenProjectWizard;
 import org.openjump.core.ui.swing.wizard.WizardGroup;
@@ -22,6 +21,7 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.WorkbenchToolBar;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 public class OpenWizardPlugIn extends AbstractThreadedUiPlugIn {
@@ -29,11 +29,15 @@ public class OpenWizardPlugIn extends AbstractThreadedUiPlugIn {
   private static final String KEY = OpenWizardPlugIn.class.getName();
 
   private WizardGroupDialog dialog;
-
   private WizardGroup lastWizard;
 
+  private static ImageIcon icon16 = IconLoader
+      .icon("fugue/folder-horizontal-open_16.png");
+  private static ImageIcon icon20 = IconLoader
+      .icon("fugue/folder-horizontal-open_20.png");
+  
   public OpenWizardPlugIn() {
-    super(I18N.get(KEY), IconLoader.icon("folder_add_small.png"));
+    super(I18N.get(KEY), icon16);
     this.setShortcutKeys(KeyEvent.VK_O);
     this.setShortcutModifiers(KeyEvent.CTRL_MASK);
   }
@@ -49,7 +53,6 @@ public class OpenWizardPlugIn extends AbstractThreadedUiPlugIn {
     JUMPWorkbench workbench = workbenchContext.getWorkbench();
     WorkbenchFrame frame = workbench.getFrame();
 
-    Icon icon = getIcon();
     String name = getName();
 
     FeatureInstaller featureInstaller = new FeatureInstaller(workbenchContext);
@@ -57,11 +60,11 @@ public class OpenWizardPlugIn extends AbstractThreadedUiPlugIn {
 
     // Add tool-bar Icon
     WorkbenchToolBar toolBar = frame.getToolBar();
-    toolBar.addPlugIn(1, this, IconLoader.icon("folder_add.png"), enableCheck, workbenchContext);
+    toolBar.addPlugIn(1, this, icon20, enableCheck, workbenchContext);
 
     // Add layer pop-up menu
     featureInstaller.addPopupMenuItem(frame.getCategoryPopupMenu(), this, name
-      + "{pos:3}", false, icon, enableCheck);
+      + "{pos:3}", false, icon16, enableCheck);
 
     // shortcut
     AbstractPlugIn.registerShortcuts(this);
