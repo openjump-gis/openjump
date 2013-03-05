@@ -20,11 +20,17 @@ OpenJUMP is distributed under the GPL2 license. A description of this license
 can be found in the "gpl-2.txt" (GPL2) file in the "licenses/" folder.
 
 OpenJUMP uses and distributes the following (in alphabetical order) formatted
-as ( Library name - License name - License file in "licenses/" folder )
+as (Component name - License name - License file in "licenses/" folder or link)
  Apache Tools TAR, BZIP - Apache License Version 2.0 - apache_license-2.0.txt
  BeanShell - LGPL2.1 - lgpl-2.1.txt
  Buoy Framework - Public Domain
  Code2000 Unicode font - GPL2 - gpl-2.txt
+ Icons (some original or based fully or in part on the following)
+   FAMFAMFAM Silk by http://www.famfamfam.com - CC BY 2.5
+     - http://creativecommons.org/licenses/by/2.5/
+   Fugue by Yusuke Kamiyamane http://p.yusukekamiyamane.com - CC BY 3.0
+     - http://creativecommons.org/licenses/by/3.0/
+   OJ icon v3 and others by Edgar Soldin http://soldin.de - GPL2 - gpl-2.txt
  JAI - Java Advanced Imaging Distribution License - jdl-jai.pdf
  JAMA - Public Domain
  Jdom - Apache-style open source jdom license, 
@@ -36,6 +42,9 @@ as ( Library name - License name - License file in "licenses/" folder )
  Junit - Common Public License v1.0 (CPL1) - cpl-1.0.txt
  Jython - Jython license - jython_license.txt
  Log4J - Apache License Version 2.0 - apache_license-2.0.txt
+ Logo
+   Splash Logo designed by Paola Zanetti (paoladorileo<AT>gmail.com)
+   Vertical Design used in the installer by Stefan Steiniger 2012
  Postgresql JDBC driver - Postgresql BSD license - postgresql-BSD_license.txt
  Xerces2 Java Parser - Apache License Version 2.0 - apache_license-2.0.txt
 
@@ -231,7 +240,7 @@ Original development team of JUMP was:
     Paul Ramsey 
 
 OpenJUMP continuous contributors (non exhaustive list in alphabetical order):
-  Edgar Soldin (edso, soldin.de)
+  Edgar Soldin (edso, http://soldin.de)
   Giuseppe Aruta
   Jukka Rahkonen
   Matthias Scholz
