@@ -63,6 +63,7 @@ import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultDesktopManager;
+import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
@@ -123,6 +124,7 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.cursortool.editing.EditingPlugIn;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ChoosableStyle;
@@ -175,6 +177,9 @@ public class WorkbenchFrame extends JFrame
     public boolean execute(PlugInContext context) throws Exception {
       closeApplication();
       return true;
+    }
+    public Icon getIcon() {
+      return IconLoader.icon("famfam/door_in.png");
     }
   };
 
