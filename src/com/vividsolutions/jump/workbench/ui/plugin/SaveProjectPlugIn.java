@@ -41,7 +41,7 @@ import javax.swing.ImageIcon;
 
 public class SaveProjectPlugIn extends AbstractSaveProjectPlugIn {
     
-    public static final ImageIcon ICON = IconLoader.icon("layout.png");
+    public static final ImageIcon ICON = IconLoader.icon("disk_oj.v3.png");
     
     private SaveProjectAsPlugIn saveProjectAsPlugIn;
 
