@@ -16,6 +16,7 @@ import org.openjump.core.model.TaskEvent;
 import org.openjump.core.model.TaskListener;
 import org.openjump.core.ui.images.IconLoader;
 import org.openjump.core.ui.plugin.file.FindFile;
+import org.openjump.core.ui.plugin.file.OpenProjectPlugIn;
 import org.openjump.core.ui.plugin.file.OpenRecentPlugIn;
 import org.openjump.core.ui.swing.wizard.AbstractWizardGroup;
 
@@ -70,7 +71,7 @@ public class OpenProjectWizard extends AbstractWizardGroup {
    * @param workbenchContext The workbench context.
    */
   public OpenProjectWizard(final WorkbenchContext workbenchContext) {
-    super(I18N.get(KEY), IconLoader.icon("folder_layout_add.png"),
+    super(I18N.get(KEY), OpenProjectPlugIn.ICON, 
       SelectProjectFilesPanel.KEY);
     this.workbenchContext = workbenchContext;
     initPanels(workbenchContext);

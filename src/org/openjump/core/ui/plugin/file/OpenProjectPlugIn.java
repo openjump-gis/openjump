@@ -31,7 +31,6 @@ import java.io.File;
 import javax.swing.ImageIcon;
 
 import org.openjump.core.ui.enablecheck.BooleanPropertyEnableCheck;
-import org.openjump.core.ui.images.IconLoader;
 import org.openjump.core.ui.plugin.AbstractWizardPlugin;
 import org.openjump.core.ui.plugin.file.open.OpenProjectWizard;
 
@@ -39,14 +38,15 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 public class OpenProjectPlugIn extends AbstractWizardPlugin {
   private static final String KEY = OpenProjectPlugIn.class.getName();
   private static final String FILE_DOES_NOT_EXIST = I18N.get(KEY
     + ".file-does-not-exist");
-  private static final ImageIcon ICON = IconLoader.icon("folder_layout_add.png");
-      
+  public static final ImageIcon ICON = IconLoader.icon("folder_page_oj_16.v8.png");
+
   private File[] files;
 
   private OpenProjectWizard wizard;
