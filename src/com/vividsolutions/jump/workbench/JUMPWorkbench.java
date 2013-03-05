@@ -95,6 +95,10 @@ public class JUMPWorkbench {
 
   private static ArrayList<Image> appIcons() {
     ArrayList iconlist = new ArrayList();
+    // seems like win7 wants even smaller one for internal frames
+    // so let's use just another different one
+    iconlist.add(IconLoader.image("oj_kang_14.png"));
+    // that's the default for window icons
     iconlist.add(IconLoader.image("oj_16_Kplain2oj.png"));
     iconlist.add(IconLoader.image("oj_24.png"));
     iconlist.add(IconLoader.image("oj_32.png"));
