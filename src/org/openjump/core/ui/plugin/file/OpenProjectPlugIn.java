@@ -45,7 +45,7 @@ public class OpenProjectPlugIn extends AbstractWizardPlugin {
   private static final String KEY = OpenProjectPlugIn.class.getName();
   private static final String FILE_DOES_NOT_EXIST = I18N.get(KEY
     + ".file-does-not-exist");
-  public static final ImageIcon ICON = IconLoader.icon("folder_page_oj_16.v8.png");
+  public static final ImageIcon ICON = IconLoader.icon("folder_page_oj_16.v9.png");
 
   private File[] files;
 
