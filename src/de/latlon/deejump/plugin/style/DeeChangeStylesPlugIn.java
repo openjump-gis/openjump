@@ -47,6 +47,7 @@ import javax.swing.JTabbedPane;
 
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
@@ -62,6 +63,7 @@ import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
+import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStylePanel;
 import com.vividsolutions.jump.workbench.ui.style.DecorationStylePanel;
 import com.vividsolutions.jump.workbench.ui.style.LabelStylePanel;
@@ -117,7 +119,12 @@ public class DeeChangeStylesPlugIn extends AbstractPlugIn {
         // they simply shrink to zero-width. [Jon Aquino]
         DecorationStylePanel decorationStylePanel = new DecorationStylePanel(layer, wbframe.getChoosableStyleClasses());
         decorationStylePanel.setPreferredSize(new Dimension(400, 300));
-        if (layer.getFeatureCollectionWrapper().getFeatureSchema().getAttributeCount() > 1) {
+        FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
+        int numberOfAttributesUsableInColorTheming = schema.getAttributeCount() - 1;
+        if (schema.hasAttribute(BasicStyle.RGB_ATTRIBUTE_NAME)) {
+            numberOfAttributesUsableInColorTheming--;
+        }
+        if (numberOfAttributesUsableInColorTheming >= 1) {
             ColorThemingStylePanel colorThemingStylePanel = new ColorThemingStylePanel(layer, wbcontext);
             colorThemingStylePanel.setPreferredSize(new Dimension(400, 300));
             stylePanels.add(colorThemingStylePanel);

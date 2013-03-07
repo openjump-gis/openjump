@@ -745,16 +745,17 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
 
     private void initAttributeNameComboBox(Layer layer) {
         DefaultComboBoxModel model = new DefaultComboBoxModel();
-        for (int i = 0;
-                i < layer.getFeatureCollectionWrapper().getFeatureSchema()
-                             .getAttributeCount(); i++) {
-            if (i == layer.getFeatureCollectionWrapper().getFeatureSchema()
-                              .getGeometryIndex()) {
+        FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
+        for (int i = 0; i < schema.getAttributeCount(); i++) {
+            if (i == schema.getGeometryIndex()) {
                 continue;
             }
-            String attributeName = layer.getFeatureCollectionWrapper()
-                                        .getFeatureSchema()
-                                        .getAttributeName(i);
+            // [mmichaud 2013-03-07] exclude R_G_B attribute which is reserved to
+            // interactive color setting
+            else if (schema.getAttributeName(i).equals(BasicStyle.RGB_ATTRIBUTE_NAME)) {
+                continue;
+            }
+            String attributeName = schema.getAttributeName(i);
             model.addElement(attributeName);
         }
         attributeNameComboBox.setModel(model);

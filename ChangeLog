@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-03-07 mmichaud <michael.michaud@free.fr>
+  * R_G_B attribute is now excluded from ColourTheming attribute candidates
+
 2013-03-01 mmichaud <michael.michaud@free.fr>
   * fix a problem with shapefilewriter and the use of 
     overrideWithExistingCompatibleDbfFieldDef(patch from Larry Becker)
