@@ -164,6 +164,25 @@ public class QuasimodeTool extends DelegatingTool {
     return getDefaultTool().getName()+"\n"+buf;
   }
   
+  
+  
+  /*
+   * cancel gestures of all quasimode tools.
+   * @see com.vividsolutions.jump.workbench.ui.cursortool.DelegatingTool#cancelGesture()
+   */
+  public void cancelGesture() {
+    // cancel tools
+    for (CursorTool ct : keySpecToToolMap.values()) {
+      ct.cancelGesture();
+    }
+    // cancel default quasimodes if enabled
+    if (useDefaults) {
+      for (CursorTool ct : defaultToolsMap.values()) {
+        ct.cancelGesture();
+      }
+    }
+  }
+
   private CursorTool getTool(Collection<Integer> keys) {
     // tools override defaults
     ModifierKeySet ks = new ModifierKeySet(keys);
