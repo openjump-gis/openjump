@@ -384,10 +384,13 @@ public class LayerViewPanel extends JPanel
       setCursor(newct.getCursor());
       return;
     }
+    // always cancel ongoing gesture on tool switches
+    if (!newct.equals(this.currentCursorTool))
+      this.currentCursorTool.cancelGesture();
     // remove old
     removeCurrentCursorTool();
     // add new
-    currentCursorTool = newct;
+    this.currentCursorTool = newct;
     newct.activate(this);
     setCursor(newct.getCursor());
     addMouseListener(newct);
@@ -400,8 +403,10 @@ public class LayerViewPanel extends JPanel
     CursorTool oldct = this.currentCursorTool;
     //System.out.println("lvp rem "+oldct.getClass().getSimpleName()+"/"+oldct.getName()+"@" + Integer.toHexString(hashCode())+" "+AbstractCursorTool.getPanel(oldct));
     setCursor(null);
+    // remove mouse listeners
     removeMouseListener(oldct);
     removeMouseMotionListener(oldct);
+    // guess what ;)
     oldct.deactivate();
     this.currentCursorTool = dummyCursorTool;
   }
