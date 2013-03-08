@@ -87,6 +87,7 @@ public class AboutDialog extends JDialog {
   
     private JLabel lblJavaVersion = new JLabel();
     private JLabel lblOSVersion = new JLabel();
+    private JLabel lblMaxMemory = new JLabel();
     private JLabel lblTotalMemory = new JLabel();
     private JLabel lblCommittedMemory = new JLabel();
     private JLabel lblFreeMemory = new JLabel();
@@ -216,17 +217,21 @@ public class AboutDialog extends JDialog {
         lbl_os.setFont(lbl_java.getFont());
         panelAdd( lbl_os, infoPanel, 1, 1, GridBagConstraints.WEST);
         
+        JLabel lbl_memmax = createLabel(I18N.get("ui.AboutDialog.maximum-memory"));
+        lbl_memmax.setFont(lbl_java.getFont());
+        panelAdd( lbl_memmax, infoPanel, 1, 2, GridBagConstraints.WEST);
+        
         JLabel lbl_memtotal = createLabel(I18N.get("ui.AboutDialog.total-memory"));
         lbl_memtotal.setFont(lbl_java.getFont());
-        panelAdd( lbl_memtotal, infoPanel, 1, 2, GridBagConstraints.WEST);
+        panelAdd( lbl_memtotal, infoPanel, 1, 3, GridBagConstraints.WEST);
         
         JLabel lbl_memcom = createLabel(I18N.get("ui.AboutDialog.comitted-memory"));
         lbl_memcom.setFont(lbl_java.getFont());
-        panelAdd( lbl_memcom, infoPanel, 1, 3, GridBagConstraints.WEST); 
+        panelAdd( lbl_memcom, infoPanel, 1, 4, GridBagConstraints.WEST); 
         
         JLabel lbl_memfree = createLabel(I18N.get("ui.AboutDialog.free-memory"));
         lbl_memfree.setFont(lbl_java.getFont());
-        panelAdd( lbl_memfree, infoPanel, 1, 4, GridBagConstraints.WEST); 
+        panelAdd( lbl_memfree, infoPanel, 1, 5, GridBagConstraints.WEST); 
 
         lblJavaVersion.setToolTipText("");
         lblJavaVersion.setText("x");
@@ -236,14 +241,17 @@ public class AboutDialog extends JDialog {
         panelAdd( lblOSVersion, infoPanel, 2, 1, GridBagConstraints.WEST);
 
         lblTotalMemory.setText("x");
-        panelAdd( lblTotalMemory, infoPanel, 2, 2, GridBagConstraints.WEST);
+        panelAdd( lblMaxMemory, infoPanel, 2, 2, GridBagConstraints.WEST);
+        
+        lblTotalMemory.setText("x");
+        panelAdd( lblTotalMemory, infoPanel, 2, 3, GridBagConstraints.WEST);
 
         lblCommittedMemory.setText("x");
-        panelAdd( lblCommittedMemory, infoPanel, 2, 3, GridBagConstraints.WEST);
+        panelAdd( lblCommittedMemory, infoPanel, 2, 4, GridBagConstraints.WEST);
 
         lblFreeMemory.setToolTipText("");
         lblFreeMemory.setText("x");
-        panelAdd( lblFreeMemory, infoPanel, 2, 4, GridBagConstraints.WEST);
+        panelAdd( lblFreeMemory, infoPanel, 2, 5, GridBagConstraints.WEST);
 
         btnGC.setText(I18N.get("ui.AboutDialog.garbage-collect"));
         btnGC.addActionListener(new java.awt.event.ActionListener() {
@@ -256,7 +264,7 @@ public class AboutDialog extends JDialog {
                 pnlButtons,
                 new GridBagConstraints(
                     0,
-                    5,
+                    6,
                     3,
                     1,
                     0.0,
@@ -322,23 +330,28 @@ public class AboutDialog extends JDialog {
     }
     
     public void setVisible(boolean b) {
-        if (b) {
-            DecimalFormat format = new DecimalFormat("###,###");
-            lblJavaVersion.setText(System.getProperty("java.version"));
-            lblOSVersion.setText(
-                System.getProperty("os.name")
-                    + " ("
-                    + System.getProperty("os.version")
-                    + ")");
-
-            long totalMem = Runtime.getRuntime().totalMemory();
-            long freeMem = Runtime.getRuntime().freeMemory();
-            lblTotalMemory.setText(format.format(totalMem) + " bytes");
-            lblCommittedMemory.setText(format.format(totalMem - freeMem) + " bytes");
-            lblFreeMemory.setText(format.format(freeMem) + " bytes");
-        }
-
-        super.setVisible(b);
+      if (b) {
+        DecimalFormat format = new DecimalFormat("###,###");
+        lblJavaVersion.setText(System.getProperty("java.vm.name") + " "
+            + System.getProperty("java.version") + " ("
+            + System.getProperty("os.arch") + ")");
+        lblOSVersion.setText(System.getProperty("os.name") + " ("
+            + System.getProperty("os.version") + ")");
+  
+        long maxMem = Runtime.getRuntime().maxMemory();
+        long totalMem = Runtime.getRuntime().totalMemory();
+        long freeMem = Runtime.getRuntime().freeMemory();
+        lblMaxMemory.setText(format.format(maxMem - 1) + " bytes ("
+            + humanReadableByteCount(maxMem, false) + ")");
+        lblTotalMemory.setText(format.format(totalMem) + " bytes ("
+            + humanReadableByteCount(totalMem, false) + ")");
+        lblCommittedMemory.setText(format.format(totalMem - freeMem) + " bytes ("
+            + humanReadableByteCount(totalMem - freeMem, false) + ")");
+        lblFreeMemory.setText(format.format(freeMem) + " bytes ("
+            + humanReadableByteCount(freeMem, false) + ")");
+      }
+  
+      super.setVisible(b);
     }
 
     void okButton_actionPerformed(ActionEvent e) {
@@ -445,4 +458,15 @@ public class AboutDialog extends JDialog {
 
     }
 
+    /*
+     * courtesy of 
+     * http://stackoverflow.com/questions/3758606/how-to-convert-byte-size-into-human-readable-format-in-java
+     */
+    public static String humanReadableByteCount(long bytes, boolean si) {
+        int unit = si ? 1000 : 1024;
+        if (bytes < unit) return bytes + " B";
+        int exp = (int) (Math.log(bytes) / Math.log(unit));
+        String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp-1) + (si ? "" : "i");
+        return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
+    }
 }
