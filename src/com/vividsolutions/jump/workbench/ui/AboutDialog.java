@@ -88,9 +88,10 @@ public class AboutDialog extends JDialog {
     private JLabel lblJavaVersion = new JLabel();
     private JLabel lblOSVersion = new JLabel();
     private JLabel lblMaxMemory = new JLabel();
-    private JLabel lblTotalMemory = new JLabel();
+    //private JLabel lblTotalMemory = new JLabel();
     private JLabel lblCommittedMemory = new JLabel();
-    private JLabel lblFreeMemory = new JLabel();
+    //private JLabel lblFreeMemory = new JLabel();
+    private JLabel lblUserDir = new JLabel();
     private JPanel pnlButtons = new JPanel();
     private JButton btnGC = new JButton();
     private SplashPanel splashPanel;
@@ -221,17 +222,21 @@ public class AboutDialog extends JDialog {
         lbl_memmax.setFont(lbl_java.getFont());
         panelAdd( lbl_memmax, infoPanel, 1, 2, GridBagConstraints.WEST);
         
-        JLabel lbl_memtotal = createLabel(I18N.get("ui.AboutDialog.total-memory"));
-        lbl_memtotal.setFont(lbl_java.getFont());
-        panelAdd( lbl_memtotal, infoPanel, 1, 3, GridBagConstraints.WEST);
+        //JLabel lbl_memtotal = createLabel(I18N.get("ui.AboutDialog.total-memory"));
+        //lbl_memtotal.setFont(lbl_java.getFont());
+        //panelAdd( lbl_memtotal, infoPanel, 1, 3, GridBagConstraints.WEST);
         
         JLabel lbl_memcom = createLabel(I18N.get("ui.AboutDialog.comitted-memory"));
         lbl_memcom.setFont(lbl_java.getFont());
         panelAdd( lbl_memcom, infoPanel, 1, 4, GridBagConstraints.WEST); 
         
-        JLabel lbl_memfree = createLabel(I18N.get("ui.AboutDialog.free-memory"));
-        lbl_memfree.setFont(lbl_java.getFont());
-        panelAdd( lbl_memfree, infoPanel, 1, 5, GridBagConstraints.WEST); 
+        //JLabel lbl_memfree = createLabel(I18N.get("ui.AboutDialog.free-memory"));
+        //lbl_memfree.setFont(lbl_java.getFont());
+        //panelAdd( lbl_memfree, infoPanel, 1, 5, GridBagConstraints.WEST); 
+        
+        JLabel lbl_userdir = createLabel( I18N.get("ui.AboutDialog.user-dir") );
+        lbl_userdir.setFont(lbl_java.getFont());
+        panelAdd( lbl_userdir, infoPanel, 1, 6, GridBagConstraints.WEST);
 
         lblJavaVersion.setToolTipText("");
         lblJavaVersion.setText("x");
@@ -240,18 +245,21 @@ public class AboutDialog extends JDialog {
         lblOSVersion.setText("x"); 
         panelAdd( lblOSVersion, infoPanel, 2, 1, GridBagConstraints.WEST);
 
-        lblTotalMemory.setText("x");
+        lblMaxMemory.setText("x");
         panelAdd( lblMaxMemory, infoPanel, 2, 2, GridBagConstraints.WEST);
         
-        lblTotalMemory.setText("x");
-        panelAdd( lblTotalMemory, infoPanel, 2, 3, GridBagConstraints.WEST);
+        //lblTotalMemory.setText("x");
+        //panelAdd( lblTotalMemory, infoPanel, 2, 3, GridBagConstraints.WEST);
 
         lblCommittedMemory.setText("x");
         panelAdd( lblCommittedMemory, infoPanel, 2, 4, GridBagConstraints.WEST);
 
-        lblFreeMemory.setToolTipText("");
-        lblFreeMemory.setText("x");
-        panelAdd( lblFreeMemory, infoPanel, 2, 5, GridBagConstraints.WEST);
+        //lblFreeMemory.setToolTipText("");
+        //lblFreeMemory.setText("x");
+        //panelAdd( lblFreeMemory, infoPanel, 2, 5, GridBagConstraints.WEST);
+        
+        lblUserDir.setText("x");
+        panelAdd( lblUserDir, infoPanel, 2, 6, GridBagConstraints.WEST);
 
         btnGC.setText(I18N.get("ui.AboutDialog.garbage-collect"));
         btnGC.addActionListener(new java.awt.event.ActionListener() {
@@ -264,7 +272,7 @@ public class AboutDialog extends JDialog {
                 pnlButtons,
                 new GridBagConstraints(
                     0,
-                    6,
+                    7,
                     3,
                     1,
                     0.0,
@@ -343,12 +351,13 @@ public class AboutDialog extends JDialog {
         long freeMem = Runtime.getRuntime().freeMemory();
         lblMaxMemory.setText(format.format(maxMem - 1) + " bytes ("
             + humanReadableByteCount(maxMem, false) + ")");
-        lblTotalMemory.setText(format.format(totalMem) + " bytes ("
-            + humanReadableByteCount(totalMem, false) + ")");
+        //lblTotalMemory.setText(format.format(totalMem) + " bytes ("
+        //    + humanReadableByteCount(totalMem, false) + ")");
         lblCommittedMemory.setText(format.format(totalMem - freeMem) + " bytes ("
             + humanReadableByteCount(totalMem - freeMem, false) + ")");
-        lblFreeMemory.setText(format.format(freeMem) + " bytes ("
-            + humanReadableByteCount(freeMem, false) + ")");
+        //lblFreeMemory.setText(format.format(freeMem) + " bytes ("
+        //    + humanReadableByteCount(freeMem, false) + ")");
+        lblUserDir.setText(formatDirNameForHtml(System.getProperty("user.dir"), 32));
       }
   
       super.setVisible(b);
@@ -456,6 +465,20 @@ public class AboutDialog extends JDialog {
             last_h = getHeight();
         }
 
+    }
+    
+    public static String formatDirNameForHtml(String dir, int maxLength) {
+        String[] path = dir.split("\\\\");
+        StringBuilder multiline = new StringBuilder("<html>");
+        StringBuilder line = new StringBuilder(path[0]);
+        for (int i = 1 ; i < path.length ; i++) {
+            if (line.length() + path[i].length() > maxLength) {
+                multiline.append(line).append("\\<br>");
+                line = new StringBuilder(path[i]);
+            }
+            else line.append("\\").append(path[i]);
+        }
+        return multiline.append("</html>").toString();
     }
 
     /*
