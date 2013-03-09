@@ -136,6 +136,8 @@ public class PasteItemsPlugIn extends AbstractPlugIn {
       execute(new UndoableCommand(getName()) {
       public void execute() {
         layer.getFeatureCollectionWrapper().addAll(featureCopies);
+        context.getLayerViewPanel().getSelectionManager().getFeatureSelection().unselectItems();
+        context.getLayerViewPanel().getSelectionManager().getFeatureSelection().selectItems(layer, featureCopies);
       }
 
       public void unexecute() {

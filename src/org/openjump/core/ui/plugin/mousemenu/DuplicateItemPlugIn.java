@@ -90,7 +90,8 @@ public class DuplicateItemPlugIn extends AbstractPlugIn {
 
 	        return new MultiEnableCheck()
 	            .add(checkFactory.createWindowWithSelectionManagerMustBeActiveCheck())
-	            .add(checkFactory.createAtLeastNItemsMustBeSelectedCheck(1));
+	            .add(checkFactory.createAtLeastNItemsMustBeSelectedCheck(1))
+	            .add(checkFactory.createExactlyOneSelectedLayerMustBeEditableCheck());
 	    }
 	 
  }
