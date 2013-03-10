@@ -50,8 +50,9 @@ public class ScaleBarRenderer extends SimpleRenderer {
      *  Height of the increment boxes, in view-space units.
      */
     private static int BAR_HEIGHT = 10;
-    private static Color FILL2 = new Color(255, 204, 204);
     private static Color FILL1 = Color.white;
+    //private static Color FILL2 = new Color(255, 204, 204);
+    private static Color FILL2 = Color.darkGray;
 
     /**
      *  Distance from the right edge, in view-space units.
@@ -67,7 +68,7 @@ public class ScaleBarRenderer extends SimpleRenderer {
     private static int TEXT_BOTTOM_MARGIN = 1;
     private static int UNIT_TEXT_BOTTOM_MARGIN = 1;
     private static Color TEXT_COLOR = Color.black;
-    private static Color UNIT_TEXT_COLOR = Color.blue;
+    private static Color UNIT_TEXT_COLOR = Color.black;
 
     /**
      *  Distance from the bottom edge, in view-space units.
@@ -149,7 +150,10 @@ public class ScaleBarRenderer extends SimpleRenderer {
                     increment.getExponent(),
                     increment.getUnit()).getAmountString();
         Font font = FONT;
-        g.setColor(TEXT_COLOR);
+        Color scaleColor = ((i % 2) == 0) ? FILL1 : FILL2;
+        float[] hsb = Color.RGBtoHSB(scaleColor.getRed(), scaleColor.getGreen(), scaleColor.getBlue(), null);
+        g.setColor(hsb[2]<0.5 ? Color.white : TEXT_COLOR);
+        //g.setColor(TEXT_COLOR);
 
         int textBottomMargin = TEXT_BOTTOM_MARGIN;
 
@@ -223,10 +227,6 @@ public class ScaleBarRenderer extends SimpleRenderer {
 
 	public static Color getTEXT_COLOR() {
 		return TEXT_COLOR;
-	}
-
-	public static void setTEXT_COLOR(Color text_color) {
-		TEXT_COLOR = text_color;
 	}
 
 	public static int getUNIT_TEXT_BOTTOM_MARGIN() {
