@@ -41,7 +41,9 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -57,7 +59,7 @@ import com.vividsolutions.jump.workbench.ui.renderer.java2D.Java2DConverter;
 public class Viewport implements Java2DConverter.PointConverter {
     static private final int INITIAL_VIEW_ORIGIN_X = 0;
     static private final int INITIAL_VIEW_ORIGIN_Y = 0;
-    private ArrayList listeners = new ArrayList();
+    private List listeners = Collections.synchronizedList(new ArrayList());
     private Java2DConverter java2DConverter;
     private LayerViewPanel panel;
 
@@ -86,11 +88,15 @@ public class Viewport implements Java2DConverter.PointConverter {
     }
 
     public void addListener(ViewportListener l) {
-        listeners.add(l);
+        synchronized(listeners) {
+            listeners.add(l);
+        }
     }
 
     public void removeListener(ViewportListener l) {
-        listeners.remove(l);
+        synchronized(listeners) {
+            listeners.remove(l);
+        }
     }
 
     public Java2DConverter getJava2DConverter() {
@@ -267,9 +273,11 @@ public class Viewport implements Java2DConverter.PointConverter {
     }
 
     private void fireZoomChanged(Envelope modelEnvelope) {
-        for (Iterator i = listeners.iterator(); i.hasNext();) {
-            ViewportListener l = (ViewportListener) i.next();
-            l.zoomChanged(modelEnvelope);
+        synchronized(listeners) {
+            for (Iterator i = listeners.iterator(); i.hasNext();) {
+                ViewportListener l = (ViewportListener) i.next();
+                l.zoomChanged(modelEnvelope);
+            }
         }
     }
 
