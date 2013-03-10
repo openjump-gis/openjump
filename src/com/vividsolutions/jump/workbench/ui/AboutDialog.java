@@ -78,6 +78,8 @@ import com.vividsolutions.jump.workbench.ui.plugin.AboutPlugIn;
 //a smooth sinusoidal interface. [Jon Aquino]
 //<<TODO:AESTHETICS>> The lettering on the image is a bit blocky. Fix. [Jon Aquino]
 public class AboutDialog extends JDialog {
+    
+    private final static String FILESEP = System.getProperty("file.separator");
     private static AboutDialog aboutDialog;
     JPanel buttonPanel = new JPanel();
     JButton okButton = new JButton();
@@ -475,15 +477,16 @@ public class AboutDialog extends JDialog {
     }
     
     public static String formatDirNameForHtml(String dir, int maxLength) {
-        String[] path = dir.split("\\\\");
+        String filesep_regex = FILESEP.replaceAll("\\\\", "\\\\\\\\");
+        String[] path = dir.split(filesep_regex);
         StringBuilder multiline = new StringBuilder("<html>");
         StringBuilder line = new StringBuilder(path[0]);
         for (int i = 1 ; i < path.length ; i++) {
             if (line.length() + path[i].length() > maxLength) {
-                multiline.append(line).append("\\<br>");
+                multiline.append(line).append(FILESEP + "<br>");
                 line = new StringBuilder(path[i]);
             }
-            else line.append("\\").append(path[i]);
+            else line.append(FILESEP).append(path[i]);
         }
         return multiline.append("</html>").toString();
     }
