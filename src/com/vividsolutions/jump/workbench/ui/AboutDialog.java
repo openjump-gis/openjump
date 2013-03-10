@@ -53,6 +53,7 @@ import java.net.URLDecoder;
 import java.text.DecimalFormat;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -88,7 +89,7 @@ public class AboutDialog extends JDialog {
     private JLabel lblJavaVersion = new JLabel();
     private JLabel lblOSVersion = new JLabel();
     private JLabel lblMaxMemory = new JLabel();
-    //private JLabel lblTotalMemory = new JLabel();
+    private JLabel lblTotalMemory = new JLabel();
     private JLabel lblCommittedMemory = new JLabel();
     //private JLabel lblFreeMemory = new JLabel();
     private JLabel lblUserDir = new JLabel();
@@ -222,9 +223,9 @@ public class AboutDialog extends JDialog {
         lbl_memmax.setFont(lbl_java.getFont());
         panelAdd( lbl_memmax, infoPanel, 1, 2, GridBagConstraints.WEST);
         
-        //JLabel lbl_memtotal = createLabel(I18N.get("ui.AboutDialog.total-memory"));
-        //lbl_memtotal.setFont(lbl_java.getFont());
-        //panelAdd( lbl_memtotal, infoPanel, 1, 3, GridBagConstraints.WEST);
+        JLabel lbl_memtotal = createLabel(I18N.get("ui.AboutDialog.total-memory"));
+        lbl_memtotal.setFont(lbl_java.getFont());
+        panelAdd( lbl_memtotal, infoPanel, 1, 3, GridBagConstraints.WEST);
         
         JLabel lbl_memcom = createLabel(I18N.get("ui.AboutDialog.comitted-memory"));
         lbl_memcom.setFont(lbl_java.getFont());
@@ -234,9 +235,15 @@ public class AboutDialog extends JDialog {
         //lbl_memfree.setFont(lbl_java.getFont());
         //panelAdd( lbl_memfree, infoPanel, 1, 5, GridBagConstraints.WEST); 
         
+        panelAdd(Box.createRigidArea(new Dimension(10, 10)), infoPanel, 1, 6,
+            GridBagConstraints.WEST);
+        
         JLabel lbl_userdir = createLabel( I18N.get("ui.AboutDialog.user-dir") );
         lbl_userdir.setFont(lbl_java.getFont());
-        panelAdd( lbl_userdir, infoPanel, 1, 6, GridBagConstraints.WEST);
+        panelAdd( lbl_userdir, infoPanel, 1, 7, GridBagConstraints.WEST);
+        
+        panelAdd(Box.createRigidArea(new Dimension(10, 10)), infoPanel, 1, 8,
+            GridBagConstraints.WEST);
 
         lblJavaVersion.setToolTipText("");
         lblJavaVersion.setText("x");
@@ -248,8 +255,8 @@ public class AboutDialog extends JDialog {
         lblMaxMemory.setText("x");
         panelAdd( lblMaxMemory, infoPanel, 2, 2, GridBagConstraints.WEST);
         
-        //lblTotalMemory.setText("x");
-        //panelAdd( lblTotalMemory, infoPanel, 2, 3, GridBagConstraints.WEST);
+        lblTotalMemory.setText("x");
+        panelAdd( lblTotalMemory, infoPanel, 2, 3, GridBagConstraints.WEST);
 
         lblCommittedMemory.setText("x");
         panelAdd( lblCommittedMemory, infoPanel, 2, 4, GridBagConstraints.WEST);
@@ -259,7 +266,7 @@ public class AboutDialog extends JDialog {
         //panelAdd( lblFreeMemory, infoPanel, 2, 5, GridBagConstraints.WEST);
         
         lblUserDir.setText("x");
-        panelAdd( lblUserDir, infoPanel, 2, 6, GridBagConstraints.WEST);
+        panelAdd( lblUserDir, infoPanel, 2, 7, GridBagConstraints.WEST);
 
         btnGC.setText(I18N.get("ui.AboutDialog.garbage-collect"));
         btnGC.addActionListener(new java.awt.event.ActionListener() {
@@ -272,7 +279,7 @@ public class AboutDialog extends JDialog {
                 pnlButtons,
                 new GridBagConstraints(
                     0,
-                    7,
+                    9,
                     3,
                     1,
                     0.0,
@@ -351,8 +358,8 @@ public class AboutDialog extends JDialog {
         long freeMem = Runtime.getRuntime().freeMemory();
         lblMaxMemory.setText(format.format(maxMem - 1) + " bytes ("
             + humanReadableByteCount(maxMem, false) + ")");
-        //lblTotalMemory.setText(format.format(totalMem) + " bytes ("
-        //    + humanReadableByteCount(totalMem, false) + ")");
+        lblTotalMemory.setText(format.format(totalMem) + " bytes ("
+            + humanReadableByteCount(totalMem, false) + ")");
         lblCommittedMemory.setText(format.format(totalMem - freeMem) + " bytes ("
             + humanReadableByteCount(totalMem - freeMem, false) + ")");
         //lblFreeMemory.setText(format.format(freeMem) + " bytes ("
