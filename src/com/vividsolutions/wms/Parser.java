@@ -54,6 +54,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -292,17 +295,38 @@ public class Parser {
           
           parser.parse( new InputSource( ireader ) );
           doc = parser.getDocument();
+          
       } catch( SAXException saxe ) {
         throw new IOException( saxe.toString() );
+      }
+      
+      // throw error if the xml is not a capability answer
+      if ( XMLTools.simpleXPath( doc, "WMT_MS_Capabilities") == null) {
+        DOMImplementationRegistry registry;
+        String str = "";
+        try {
+          registry = DOMImplementationRegistry.newInstance();
+//          DOMImplementationList list = registry.getDOMImplementationList("LS");
+//          for (int i = 0; i < list.getLength(); i++) {
+//            System.out.println(list.item(i));
+//          }
+
+          DOMImplementationLS impl = (DOMImplementationLS) registry
+              .getDOMImplementation("LS");
+          LSSerializer writer = impl.createLSSerializer();
+          str = writer.writeToString(doc);
+        } catch (Exception e1) {
+          // TODO Auto-generated catch block
+          e1.printStackTrace();
+        }
+        throw new WMSException("Unexpected answer from server. Missing node <WMT_MS_Capabilities>.", str);
       }
       
       // get the title
       try {
         title = ((CharacterData)XMLTools.simpleXPath( doc, "WMT_MS_Capabilities/Service/Title" ).getFirstChild()).getData();
-      } catch (Exception e) {
-        // possible NullPointerException if there is no firstChild()
-        // also possible miscast causing an Exception
-          e.printStackTrace();
+      } catch (NullPointerException e) {
+        title = "not available";
       }
       
       // get the supported file formats			// UT was "WMT_MS_Capabilities/Capability/Request/Map/Format"

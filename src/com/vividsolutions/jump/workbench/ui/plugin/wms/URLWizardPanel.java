@@ -64,6 +64,7 @@ import com.vividsolutions.jump.workbench.ui.InputChangedListener;
 import com.vividsolutions.jump.workbench.ui.wizard.CancelNextException;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
 import com.vividsolutions.wms.MapImageFormatChooser;
+import com.vividsolutions.wms.WMSException;
 import com.vividsolutions.wms.WMService;
 
 public class URLWizardPanel extends JPanel implements WizardPanel {
@@ -222,6 +223,8 @@ public class URLWizardPanel extends JPanel implements WizardPanel {
       dataMap.put(FORMAT_KEY, format);
       dataMap.put(MapLayerWizardPanel.INITIAL_LAYER_NAMES_KEY, null);
       dataMap.put(VERSION_KEY, wmsVersion);
+    } catch (WMSException e) {
+      throw new CancelNextException();
     } catch (IOException e) {
       throw new CancelNextException();
     }

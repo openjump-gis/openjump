@@ -45,11 +45,12 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 
-import net.iharder.Base64;
-
 import javax.swing.JOptionPane;
 
+import net.iharder.Base64;
+
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.ui.ErrorDialog;
 
 /**
  * Represents a remote WMS Service.
@@ -140,6 +141,9 @@ public void initialize() throws IOException {
                                                                   new Object[] { e.getLocalizedMessage() } ),
                                            I18N.get( "com.vividsolutions.wms.WMService.Error" ),
                                            JOptionPane.ERROR_MESSAGE );
+            throw e;
+        } catch (final WMSException e){
+            ErrorDialog.show(null, "WMS Error", e.getMessage(), e.getSource());
             throw e;
         } catch ( IOException e ) {
             JOptionPane.showMessageDialog( null, I18N.getMessage( "com.vividsolutions.wms.WMService.WMS-IO-Error",
