@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-03-12 ede
+  * general shortcut support, shortcut documentation under Help
+  * added -print-properties command line switch
+
 2013-03-09 mmichaud <michael.michaud@free.fr>
   * add createExactlyOneSelectedLayerMustBeEditableCheck in DuplicateItemPlugIn
     to avoid a NPE (no layer selected) and make sure the user knows where 
