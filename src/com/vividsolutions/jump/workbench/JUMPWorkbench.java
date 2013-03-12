@@ -45,6 +45,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+import java.util.TreeSet;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -335,11 +337,14 @@ public class JUMPWorkbench {
         commandLine.printDoc(System.out);
         System.exit(0);
       }
-      
-      if (commandLine.hasOption("version")) {
+      else if (commandLine.hasOption("version")) {
         System.out.println(I18N.get("JUMPWorkbench.jump") + " "
             + I18N.get("ui.AboutDialog.version") + " "
             + JUMPVersion.CURRENT_VERSION);
+        System.exit(0);
+      }
+      else if (commandLine.hasOption("print-properties")) {
+        printProperties();
         System.exit(0);
       }
       
@@ -551,6 +556,15 @@ public class JUMPWorkbench {
   public static final JUMPWorkbench getInstance(){
     return workbench;
   }
+  
+  private static void printProperties(){
+    Properties ps = System.getProperties();
+    TreeSet<String> v = new TreeSet(ps.keySet());
+    for (String key : v) {
+      System.out.println(key+"="+ps.getProperty(key));
+    }
+    //System.getProperties().list(System.out);
+  }
 
   private static void parseCommandLine(String[] args) throws WorkbenchException {
     commandLine = new CommandLine('-');
@@ -579,6 +593,9 @@ public class JUMPWorkbench {
     // add version
     commandLine.addOptionSpec(new OptionSpec(new String[] { "v", "version" },
         0, "show version information"));
+    // show properties (for debugging purposes)
+    commandLine.addOptionSpec(new OptionSpec("print-properties", 0,
+        "print a list of all jre system properties"));
 
     try {
       commandLine.parse(args);
