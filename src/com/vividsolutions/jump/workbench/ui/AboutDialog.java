@@ -366,7 +366,7 @@ public class AboutDialog extends JDialog {
             + humanReadableByteCount(totalMem - freeMem, false) + ")");
         //lblFreeMemory.setText(format.format(freeMem) + " bytes ("
         //    + humanReadableByteCount(freeMem, false) + ")");
-        lblUserDir.setText(formatDirNameForHtml(System.getProperty("user.dir"), 32));
+        lblUserDir.setText(formatDirNameForHtml(System.getProperty("user.dir"), 40));
       }
   
       super.setVisible(b);
@@ -488,6 +488,7 @@ public class AboutDialog extends JDialog {
             }
             else line.append(FILESEP).append(path[i]);
         }
+        multiline.append(line);
         return multiline.append("</html>").toString();
     }
 
