@@ -261,7 +261,7 @@ public class RenderingManager {
   // End: added by Ole*
 
   // this method is called by method render();
-  protected Renderer createRenderer(Object contentID) {
+  public Renderer createRenderer(Object contentID) {
     RendererFactory rendererFactory = getRendererFactory(contentID.getClass());
     if (rendererFactory != null) {
       return rendererFactory.create(contentID, panel, maxFeatures);

@@ -239,6 +239,10 @@ public class BasicStyle implements Style, StrokeFillStyle {
         //width is 1, one of the corners will not be drawn. [Jon Aquino]
         lineStroke = createLineStroke(lineWidth);
     }
+    
+    public void setFractionalLineWidth(float lineWidth) {
+        lineStroke = createLineStroke(lineWidth);
+    }
 
     private BasicStroke createLineStroke(float lineWidth) {
         return (renderingLinePattern && (linePattern.trim().length() != 0) &&
