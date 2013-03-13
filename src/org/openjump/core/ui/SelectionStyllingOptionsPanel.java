@@ -315,6 +315,8 @@ public class SelectionStyllingOptionsPanel extends JPanel implements OptionsPane
 	public void okPressed() {
 		// first store into Blackboard for saving
 		blackboard.put(BB_SELECTION_STYLE_COLOR, lineColorChooserPanel.getColor());
+		blackboard.put(BB_SELECTION_STYLE_FILL_COLOR, fillColorChooserPanel.getColor());
+		blackboard.put(BB_SELECTION_STYLE_FILL_OPACITY, fillColorChooserPanel.getAlpha());
 		blackboard.put(BB_SELECTION_STYLE_POINT_SIZE, pointSizeSlider.getValue());
 		blackboard.put(BB_SELECTION_STYLE_POINT_FORM, ((String[])pointStyleComboBox.getSelectedItem())[1]);
 		// second set the values for the AbstractSelectionRenderer, which is the "rootclass" of all SelectionRenderer's
@@ -332,6 +334,10 @@ public class SelectionStyllingOptionsPanel extends JPanel implements OptionsPane
 	public void init() {
 		Object color = blackboard.get(BB_SELECTION_STYLE_COLOR, DEFAULT_SELECTION_STYLE_COLOR);
 		if (color instanceof Color) lineColorChooserPanel.setColor((Color) color);
+		color = blackboard.get(BB_SELECTION_STYLE_FILL_COLOR, DEFAULT_SELECTION_STYLE_COLOR);
+		if (color instanceof Color) fillColorChooserPanel.setColor((Color) color);
+		Object opacity = blackboard.get(BB_SELECTION_STYLE_FILL_OPACITY, DEFAULT_SELECTION_STYLE_FILL_OPACITY);
+		if (opacity instanceof Integer) fillOpacitySlider.setValue(((Integer) blackboard.get(BB_SELECTION_STYLE_FILL_OPACITY, DEFAULT_SELECTION_STYLE_FILL_OPACITY)).intValue());
 		Object size = blackboard.get(BB_SELECTION_STYLE_POINT_SIZE, DEFAULT_SELECTION_STYLE_POINT_SIZE);
 		if (size instanceof Integer) pointSizeSlider.setValue(((Integer) blackboard.get(BB_SELECTION_STYLE_POINT_SIZE, DEFAULT_SELECTION_STYLE_POINT_SIZE)).intValue());
 		// select the item
