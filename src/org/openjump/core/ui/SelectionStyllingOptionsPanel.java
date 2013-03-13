@@ -30,6 +30,8 @@ import javax.swing.JSlider;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  * OptionsPanel for setting up the size, color and the from of selected features.
@@ -40,17 +42,27 @@ public class SelectionStyllingOptionsPanel extends JPanel implements OptionsPane
 
 	// Blackboard keys
 	public static final String BB_SELECTION_STYLE_COLOR = SelectionStyllingOptionsPanel.class.getName() + " SELECTION_STYLE_COLOR";
+	public static final String BB_SELECTION_STYLE_FILL_COLOR = SelectionStyllingOptionsPanel.class.getName() + " SELECTION_STYLE_FILL_COLOR";
+	public static final String BB_SELECTION_STYLE_FILL_OPACITY = SelectionStyllingOptionsPanel.class.getName() + " SELECTION_STYLE_FILL_OPACITY";
 	public static final String BB_SELECTION_STYLE_POINT_FORM = SelectionStyllingOptionsPanel.class.getName() + " SELECTION_STYLE_POINT_FORM";
 	public static final String BB_SELECTION_STYLE_POINT_SIZE = SelectionStyllingOptionsPanel.class.getName() + " SELECTION_STYLE_POINT_SIZE";
+	
 
 	// Default values
 	public static final Color DEFAULT_SELECTION_STYLE_COLOR = Color.yellow;
+	public static final Color DEFAULT_SELECTION_STYLE_FILL_COLOR = GUIUtil.alphaColor(Color.white, 75);
+	public static final int DEFAULT_SELECTION_STYLE_FILL_OPACITY = 75;
 	public static final String DEFAULT_SELECTION_STYLE_POINT_FORM = VertexStylesFactory.SQUARE_STYLE;
 	public static final Integer DEFAULT_SELECTION_STYLE_POINT_SIZE = 5;
+	
 
 	private JPanel mainPanel;
-    private ColorChooserPanel lineColorChooserPanel;
     private JLabel lineColorLabel;
+    private ColorChooserPanel lineColorChooserPanel;
+    private JLabel fillColorLabel;
+    private ColorChooserPanel fillColorChooserPanel;
+    private JLabel fillOpacityLabel;
+    private JSlider fillOpacitySlider;
     private JComboBox pointStyleComboBox;
     private JLabel pointStyleLabel;
 	private JLabel pointSizeLabel;
@@ -71,15 +83,25 @@ public class SelectionStyllingOptionsPanel extends JPanel implements OptionsPane
         java.awt.GridBagConstraints gridBagConstraints;
 
 		mainPanel = new JPanel();
+		
         lineColorLabel = new JLabel();
-        pointStyleLabel = new JLabel();
         lineColorChooserPanel = new ColorChooserPanel();
-		restoreDefaultsButton = new JButton();
+        
+        fillColorLabel = new JLabel();
+        fillColorChooserPanel = new ColorChooserPanel();
+        fillOpacityLabel = new JLabel();
+        fillOpacitySlider = new JSlider();
+        
+        pointStyleLabel = new JLabel();
+        
+        restoreDefaultsButton = new JButton();
 
 		restoreDefaultsButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
 				lineColorChooserPanel.setColor(DEFAULT_SELECTION_STYLE_COLOR);
+				fillColorChooserPanel.setColor(DEFAULT_SELECTION_STYLE_FILL_COLOR);
+				fillOpacitySlider.setValue(DEFAULT_SELECTION_STYLE_FILL_OPACITY);
 				pointSizeSlider.setValue(DEFAULT_SELECTION_STYLE_POINT_SIZE);
 				// select the default item in the pointStyleComboBox
 				int count = pointStyleComboBox.getItemCount();
@@ -102,6 +124,22 @@ public class SelectionStyllingOptionsPanel extends JPanel implements OptionsPane
 			}
 		});
 		lineColorChooserPanel.setAlpha(255);
+		
+		fillColorChooserPanel.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				ColorChooserPanel ccp = (ColorChooserPanel) e.getSource();
+				ccp.setAlpha(fillOpacitySlider.getValue());
+			}
+		});
+		
+		fillOpacitySlider.addChangeListener(new ChangeListener() {
+		    
+		    public void stateChanged(ChangeEvent e) {
+				fillColorChooserPanel.setAlpha(((JSlider)e.getSource()).getValue());
+			}
+		});
+		
         pointStyleComboBox = new javax.swing.JComboBox();
 		pointStyleComboBox.setRenderer(new ComboRenderer());
 		pointStyleComboBox.setEditable(false);
@@ -134,18 +172,76 @@ public class SelectionStyllingOptionsPanel extends JPanel implements OptionsPane
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 5, 10);
         mainPanel.add(lineColorChooserPanel, gridBagConstraints);
+        
+        // Fillcolor
+        fillColorLabel.setText(I18N.get("ui.SelectionStyllingOptionsPanel.FillColor"));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        mainPanel.add(fillColorLabel, gridBagConstraints);
+
+		gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 5, 10);
+        mainPanel.add(fillColorChooserPanel, gridBagConstraints);
+        
+        // Opacity
+        fillOpacityLabel.setText(I18N.get("ui.SelectionStyllingOptionsPanel.FillOpacity"));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        mainPanel.add(fillOpacityLabel, gridBagConstraints);
+
+        Hashtable opLabelTable = new Hashtable();
+        opLabelTable.put(new Integer(0), new JLabel("0"));
+        //opLabelTable.put(new Integer(32), new JLabel("32"));
+        opLabelTable.put(new Integer(64), new JLabel("64"));
+        //opLabelTable.put(new Integer(96), new JLabel("96"));
+        opLabelTable.put(new Integer(128), new JLabel("128"));
+        //opLabelTable.put(new Integer(160), new JLabel("160"));
+        opLabelTable.put(new Integer(192), new JLabel("192"));
+        //opLabelTable.put(new Integer(224), new JLabel("224"));
+        opLabelTable.put(new Integer(255), new JLabel("255"));
+		fillOpacitySlider.setLabelTable(opLabelTable);
+		fillOpacitySlider.setMinorTickSpacing(1);
+		fillOpacitySlider.setMajorTickSpacing(0);
+		fillOpacitySlider.setPaintLabels(true);
+		fillOpacitySlider.setMinimum(0);
+		fillOpacitySlider.setValue(75);
+		fillOpacitySlider.setMaximum(255);
+		fillOpacitySlider.setSnapToTicks(false);
+		fillOpacitySlider.setPreferredSize(new Dimension(130, 49));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 5, 10);
+        mainPanel.add(fillOpacitySlider, gridBagConstraints);
+        
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 5, 10);
+		mainPanel.add(GUIUtil.createSyncdTextField(fillOpacitySlider, 3), gridBagConstraints);
 
 		// Pointform
         pointStyleLabel.setText(I18N.get("ui.SelectionStyllingOptionsPanel.PointStyle"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         mainPanel.add(pointStyleLabel, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 3;
 		gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
@@ -156,7 +252,7 @@ public class SelectionStyllingOptionsPanel extends JPanel implements OptionsPane
         pointSizeLabel.setText(I18N.get("ui.SelectionStyllingOptionsPanel.PointSize"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 4;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         mainPanel.add(pointSizeLabel, gridBagConstraints);
 
@@ -177,7 +273,7 @@ public class SelectionStyllingOptionsPanel extends JPanel implements OptionsPane
 		pointSizeSlider.setPreferredSize(new Dimension(130, 49));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 4;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 5, 10);
@@ -185,7 +281,7 @@ public class SelectionStyllingOptionsPanel extends JPanel implements OptionsPane
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 4;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 5, 10);
@@ -194,7 +290,7 @@ public class SelectionStyllingOptionsPanel extends JPanel implements OptionsPane
 		// empty fill Panel for nice layout
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridy = 5;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
@@ -204,7 +300,7 @@ public class SelectionStyllingOptionsPanel extends JPanel implements OptionsPane
 		restoreDefaultsButton.setText(I18N.get("ui.SelectionStyllingOptionsPanel.RestoreDefaultsSettings"));
 		gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 6;
 		gridBagConstraints.gridwidth = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         mainPanel.add(restoreDefaultsButton, gridBagConstraints);
@@ -226,6 +322,7 @@ public class SelectionStyllingOptionsPanel extends JPanel implements OptionsPane
 		if (layerViewPanel != null) { // if no project is there the LayerViewPanel is null
 			AbstractSelectionRenderer renderer = (AbstractSelectionRenderer) layerViewPanel.getRenderingManager().getRenderer(FeatureSelectionRenderer.CONTENT_ID);
 			renderer.setSelectionLineColor(lineColorChooserPanel.getColor());
+			renderer.setSelectionFillColor(GUIUtil.alphaColor(fillColorChooserPanel.getColor(), fillColorChooserPanel.getAlpha()));
 			renderer.setSelectionPointSize(pointSizeSlider.getValue());
 			renderer.setSelectionPointForm(((String[])pointStyleComboBox.getSelectedItem())[1]);
 			layerViewPanel.repaint();

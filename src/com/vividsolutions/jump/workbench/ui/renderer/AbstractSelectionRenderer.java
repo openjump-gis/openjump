@@ -69,7 +69,7 @@ public abstract class AbstractSelectionRenderer extends FeatureCollectionRendere
     private Stroke lineStroke = new BasicStroke(2);
     private Color lineColor;
     private Stroke fillStroke = new BasicStroke(1);
-    private Color fillColor;
+    private Color fillColor; 
     private boolean filling = true;
 	private int selectionPointSize = 5;
 	private String selectionPointForm = VertexStylesFactory.SQUARE_STYLE;
@@ -268,6 +268,21 @@ public abstract class AbstractSelectionRenderer extends FeatureCollectionRendere
 		this.selectionPointSize = selectionPointSize;
 		vertexStyle.setSize(selectionPointSize);
 	}
+	
+	/**
+	 * Sets the fillColor variable of selectedFeatures
+	 */
+	 public void setSelectionFillColor (Color color) {
+	     this.fillColor = color;
+	 }
+	 
+	/**
+	 * Get the fillColor variable of selectedFeatures
+	 */
+	 public Color getFillColor () {
+	     return fillColor;
+	 }
+	 
 
 	/**
 	 * Sets the point form. For possible forms please see 

@@ -148,6 +148,10 @@ public class ColorChooserPanel extends JPanel {
     public Color getColor() {
         return color;
     }
+    
+    public int getAlpha() {
+        return alpha;
+    }
 
     //{CLARITY} Might be clearer to say "alpha" rather than "alpha".
     //This occurs in other places too. [Jon Aquino]
