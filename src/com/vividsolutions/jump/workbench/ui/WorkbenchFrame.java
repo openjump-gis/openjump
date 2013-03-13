@@ -94,6 +94,7 @@ import org.apache.log4j.Logger;
 import org.openjump.core.CheckOS;
 import org.openjump.core.model.TaskEvent;
 import org.openjump.core.model.TaskListener;
+import org.openjump.core.ui.util.ScreenScale;
 import org.openjump.swing.factory.component.ComponentFactory;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -1082,6 +1083,7 @@ public class WorkbenchFrame extends JFrame
 
   public void zoomChanged(Envelope modelEnvelope) {
     toolBar.updateEnabledState();
+    scaleLabel.setText("1:" + (int) Math.floor(ScreenScale.getHorizontalMapScale(getActiveTaskFrame().getLayerViewPanel().getViewport())));
   }
 
   void exitMenuItem_actionPerformed(ActionEvent e) {

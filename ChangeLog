@@ -3,6 +3,8 @@
 2013-03-13 mmichaud <michael.michaud@free.fr>
   * extend SelectionStyllingOptionsPanel to support fill color and fill opacity 
     customization
+  * fix a problem in the scale displayed in the status bar (moved the code 
+    from AbstractCursorTool to WorkbenchFrame which is a zoomChanged listener).
   
 2013-03-12 ede
   * general shortcut support, shortcut documentation under Help

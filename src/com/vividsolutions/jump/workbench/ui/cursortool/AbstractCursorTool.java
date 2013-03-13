@@ -109,7 +109,8 @@ public abstract class AbstractCursorTool implements CursorTool {
 		public void cursorPositionChanged(String x, String y) {
 			// show scale view when cursos moves on view      //
 			// [Giuseppe Aruta 2012-feb-18] //
-			getWorkbench().getFrame().setScaleText("1:" + (int) Math.floor(ScreenScale.getHorizontalMapScale(panel.getViewport())));
+			// [Michaël Michaud 2013-03-13] move to workbenchFrame.changeZoom() 
+			// getWorkbench().getFrame().setScaleText("1:" + (int) Math.floor(ScreenScale.getHorizontalMapScale(panel.getViewport())));
 		}
 
 		public void selectionChanged() {
