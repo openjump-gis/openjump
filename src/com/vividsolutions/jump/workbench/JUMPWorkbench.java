@@ -42,17 +42,23 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeSet;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -334,17 +340,17 @@ public class JUMPWorkbench {
       }
 
       if (commandLine.hasOption("help")) {
-        commandLine.printDoc(System.out);
+        printProperly(commandLine.printDoc());
         System.exit(0);
       }
       else if (commandLine.hasOption("version")) {
-        System.out.println(I18N.get("JUMPWorkbench.jump") + " "
+        printProperly(I18N.get("JUMPWorkbench.jump") + " "
             + I18N.get("ui.AboutDialog.version") + " "
             + JUMPVersion.CURRENT_VERSION);
         System.exit(0);
       }
       else if (commandLine.hasOption("print-properties")) {
-        printProperties();
+        printProperties("args[]="+Arrays.toString(args));
         System.exit(0);
       }
       
@@ -557,13 +563,14 @@ public class JUMPWorkbench {
     return workbench;
   }
   
-  private static void printProperties(){
+  private static void printProperties(String in){
     Properties ps = System.getProperties();
     TreeSet<String> v = new TreeSet(ps.keySet());
+    String out = "";
     for (String key : v) {
-      System.out.println(key+"="+ps.getProperty(key));
+      out += key+"="+ps.getProperty(key)+"\n";
     }
-    //System.getProperties().list(System.out);
+    printProperly(in+"\n"+out);
   }
 
   private static void parseCommandLine(String[] args) throws WorkbenchException {
@@ -594,8 +601,8 @@ public class JUMPWorkbench {
     commandLine.addOptionSpec(new OptionSpec(new String[] { "v", "version" },
         0, "show version information"));
     // show properties (for debugging purposes)
-    commandLine.addOptionSpec(new OptionSpec("print-properties", 0,
-        "print a list of all jre system properties"));
+    commandLine.addOptionSpec(new OptionSpec(new String[] { "p",
+        "print-properties" }, 0, "print a list of runtime properties"));
 
     try {
       commandLine.parse(args);
@@ -712,5 +719,35 @@ public class JUMPWorkbench {
       ((JLabel) getComponent()).setText(BUFFER + s
           + ((JLabel) getComponent()).getText());
     }
+  }
+  
+  private static void printProperly(String text) {
+    if (System.console() == null) {
+      // JLabel label = new
+      // JLabel("<html><body style='width:300px'>"+text.replaceAll("\n",
+      // "<br>")+"</body></html>");
+      JTextArea textArea = new JTextArea();
+      JScrollPane scrollPane = new JScrollPane(textArea);
+      // textArea.setLineWrap(true);
+      // textArea.setWrapStyleWord(true);
+      textArea.setEditable(false);
+      textArea.setText(text);
+      scrollPane.setBorder(BorderFactory.createEmptyBorder());
+      // scrollPane.setPreferredSize( new Dimension( 300, 300 ) );
+      JOptionPane pane = new JOptionPane(scrollPane,
+          JOptionPane.INFORMATION_MESSAGE, JOptionPane.DEFAULT_OPTION, IconLoader.icon("oj_32.png"));
+      JDialog d = pane.createDialog(I18N.get("JUMPWorkbench.jump"));
+      // some cute icons
+      ArrayList l = new ArrayList(APP_ICONS);
+      l.add(0, IconLoader.image("information_16x16.png"));
+      d.setIconImages(l);
+      // harmonize background color
+      textArea.setBackground(d.getBackground());
+      d.setResizable(true);
+      d.pack();
+      // GUIUtil.centreOnScreen(d);
+      d.setVisible(true);
+    } else
+      System.out.println(text);
   }
 }
