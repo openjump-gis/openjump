@@ -33,7 +33,6 @@
 package com.vividsolutions.jump.util.commandline;
 
 import java.io.File;
-import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -94,10 +93,9 @@ public class CommandLine {
     return spec != null ? spec.hasOption() : false;
   }
 
-  public void printDoc(PrintStream out) {
+  public String printDoc() {
     OptionSpec os = null;
-    System.out
-        .println("Syntax: oj_starter -option <parameter>... <file>...\n\nOptions:");
+    String out = "Syntax: oj_starter -option <parameter>... <file>...\n\nOptions:\n";
 
     for (Iterator i = optSpecs.iterator(); i.hasNext();) {
       os = (OptionSpec) i.next();
@@ -107,8 +105,9 @@ public class CommandLine {
             + name;
       }
 
-      out.println("  " + names + "\n    " + os.getDesc());
+      out += "  " + names + "\n    " + os.getDesc() + "\n";
     }
+    return out;
   }
 
   public void parse(String[] args) throws ParseException {
