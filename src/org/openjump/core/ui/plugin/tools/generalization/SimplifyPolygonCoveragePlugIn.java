@@ -167,6 +167,16 @@ public class SimplifyPolygonCoveragePlugIn extends AbstractPlugIn implements Thr
 		    		count++;
 					Feature edge = (Feature) iterator.next();
 					Geometry resultgeom = TopologyPreservingSimplifier.simplify(edge.getGeometry(), Math.abs(tolerance));
+					// TODO Here, we take the risk to loose polygons if a polygon
+					// is made of two edges which, after simplification, happen to
+					// be the same/
+					// We could test if the simplificated edge already exist, but
+					// it will not be sufficient as it will depend on the order
+					// edges are processed
+					// A thin triangle which will disappear.
+					// 
+					//      _ _ --  x -- _ _ 
+					//    x------------------x
 					edge.setGeometry(resultgeom);
 				    String mytext =  count + " / " + noItems + " : " + sSimplificationFinalized;
 				    monitor.report(mytext);
