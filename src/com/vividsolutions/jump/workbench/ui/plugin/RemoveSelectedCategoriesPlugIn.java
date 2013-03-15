@@ -39,6 +39,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.Icon;
 import javax.swing.JComponent;
 
 import com.vividsolutions.jts.util.Assert;
@@ -56,6 +57,7 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanel;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 
 public class RemoveSelectedCategoriesPlugIn extends AbstractPlugIn {
@@ -196,5 +198,9 @@ public class RemoveSelectedCategoriesPlugIn extends AbstractPlugIn {
             this.name = name;
             this.index = index;
         }
+    }
+    
+    public Icon getIcon(){
+      return IconLoader.icon("fugue/folder--minus-round.png");
     }
 }
