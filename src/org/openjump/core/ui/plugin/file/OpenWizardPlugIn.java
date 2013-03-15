@@ -34,7 +34,7 @@ public class OpenWizardPlugIn extends AbstractThreadedUiPlugIn {
   private static ImageIcon icon16 = IconLoader
       .icon("fugue/folder-horizontal-open_16.png");
   private static ImageIcon icon20 = IconLoader
-      .icon("fugue/folder-horizontal-open_20.png");
+      .icon("fugue/folder-horizontal-open_24x20.png");
   
   public OpenWizardPlugIn() {
     super(I18N.get(KEY), icon16);
@@ -62,9 +62,9 @@ public class OpenWizardPlugIn extends AbstractThreadedUiPlugIn {
     WorkbenchToolBar toolBar = frame.getToolBar();
     toolBar.addPlugIn(1, this, icon20, enableCheck, workbenchContext);
 
-    // Add layer pop-up menu
-    featureInstaller.addPopupMenuItem(frame.getCategoryPopupMenu(), this, name
-      + "{pos:3}", false, icon16, enableCheck);
+    // Add to category pop-up menu
+    featureInstaller.addPopupMenuPlugin(frame.getCategoryPopupMenu(), this, name
+      + "{pos:4}", false, icon16, enableCheck);
 
     // shortcut
     AbstractPlugIn.registerShortcuts(this);
