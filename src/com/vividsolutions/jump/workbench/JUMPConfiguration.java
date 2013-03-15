@@ -73,7 +73,6 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.plugin.ShortcutEnabled;
 import com.vividsolutions.jump.workbench.ui.ApplicationExitHandler;
 import com.vividsolutions.jump.workbench.ui.AttributeTab;
 import com.vividsolutions.jump.workbench.ui.CloneableInternalFrame;
@@ -418,6 +417,10 @@ public class JUMPConfiguration implements Setup {
             .getCategoryPopupMenu(), addNewLayerPlugIn,
             addNewLayerPlugIn.getName(), false, IconLoader.icon("layers.png"),
             null);
+    
+    featureInstaller
+    .addPopupMenuPlugin(workbenchContext.getWorkbench().getFrame()
+        .getCategoryPopupMenu(), addNewCategoryPlugIn);
 
     // [sstein 20.01.2006] added again after user request
     featureInstaller.addPopupMenuItem(workbenchContext.getWorkbench()
@@ -735,10 +738,11 @@ public class JUMPConfiguration implements Setup {
 
     FeatureInstaller.addMainMenu(featureInstaller,
         fileMenuPath, MenuNames.FILE_NEW, 0);
-    featureInstaller.addMainMenuItem(newTaskPlugIn, new String[] {
-        MenuNames.FILE, MenuNames.FILE_NEW }, newTaskPlugIn.getName(), false,
-        newTaskPlugIn.getIcon(16), null);
-
+    featureInstaller.addMainMenuPlugin(new NewTaskPlugIn() {
+      public String getName() {
+        return I18N.get("ui.WorkbenchFrame.task");
+      }
+    }, new String[] { MenuNames.FILE, MenuNames.FILE_NEW });
     featureInstaller.addMenuSeparator(new String[] { MenuNames.FILE,
         MenuNames.FILE_NEW }); // =============================================
     featureInstaller
@@ -749,14 +753,12 @@ public class JUMPConfiguration implements Setup {
                 I18N.get("com.vividsolutions.jump.workbench.ui.plugin.AddNewLayerPlugIn.name"),
                 IconLoader.icon("layers.png")), checkFactory
                 .createWindowWithLayerViewPanelMustBeActiveCheck());
-    featureInstaller
-        .addMainMenuItem(
-            addNewCategoryPlugIn,
-            new String[] { MenuNames.FILE, MenuNames.FILE_NEW },
-            new JMenuItem(
-                I18N.get("com.vividsolutions.jump.workbench.ui.plugin.AddNewCategoryPlugIn.name"),
-                IconLoader.icon("chart_organisation.png")), checkFactory
-                .createWindowWithLayerViewPanelMustBeActiveCheck());
+    featureInstaller.addMainMenuPlugin(new AddNewCategoryPlugIn() {
+      public String getName() {
+        return I18N
+            .get("com.vividsolutions.jump.workbench.ui.plugin.AddNewCategoryPlugIn.name");
+      }
+    }, new String[] { MenuNames.FILE, MenuNames.FILE_NEW });
 
     featureInstaller.addMenuSeparator(MenuNames.FILE); // =====================
 
