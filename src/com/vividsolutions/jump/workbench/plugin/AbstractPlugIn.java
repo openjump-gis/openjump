@@ -175,7 +175,7 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
       } while (m==null && (c=c.getSuperclass())!=null);
       if (m != null) {
         m.setAccessible(true);
-        return (MultiEnableCheck) m.invoke(this, JUMPWorkbench.getInstance()
+        return (EnableCheck) m.invoke(this, JUMPWorkbench.getInstance()
             .getContext());
       }
     } catch (SecurityException e) {
