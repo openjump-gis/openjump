@@ -151,7 +151,7 @@
 	<plug-in>org.openjump.core.ui.plugin.mousemenu.EditSelectedSidePlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.mousemenu.ReverseOrientationPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.tools.JoinTablePlugIn</plug-in>
-	<plug-in>org.openjump.core.ui.plugin.mousemenu.PasteItemsAtPlugIn</plug-in>
+
 	<!--- =========  EditTools ====================  /-->
 	<plug-in>org.openjump.core.ui.plugin.edittoolbox.CutPolygonSIGLEPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.edittoolbox.AutoCompletePolygonPlugIn</plug-in>
