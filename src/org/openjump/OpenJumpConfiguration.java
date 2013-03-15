@@ -141,6 +141,9 @@ public class OpenJumpConfiguration {
     
     OpenWizardPlugIn open = new OpenWizardPlugIn();
     open.initialize(pluginContext);
+    
+    OpenProjectPlugIn openProject = new OpenProjectPlugIn();
+    openProject.initialize(pluginContext);
 
     OpenFilePlugIn openFile = new OpenFilePlugIn();
     openFile.initialize(pluginContext);
@@ -150,9 +153,6 @@ public class OpenJumpConfiguration {
 
     AddImageLayerPlugIn addImageLayerPlugIn = new AddImageLayerPlugIn();
     addImageLayerPlugIn.initialize(pluginContext);
-
-    OpenProjectPlugIn openProject = new OpenProjectPlugIn();
-    openProject.initialize(pluginContext);
 
     OpenRecentPlugIn openRecent = OpenRecentPlugIn.get(workbenchContext);
     openRecent.initialize(pluginContext);
