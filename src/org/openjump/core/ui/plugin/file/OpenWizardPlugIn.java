@@ -6,7 +6,7 @@ import java.util.List;
 import javax.swing.ImageIcon;
 
 import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
-import org.openjump.core.ui.plugin.file.open.OpenProjectWizard;
+import org.openjump.core.ui.plugin.file.open.OpenFileWizard;
 import org.openjump.core.ui.swing.wizard.WizardGroup;
 import org.openjump.core.ui.swing.wizard.WizardGroupDialog;
 
@@ -82,7 +82,7 @@ public class OpenWizardPlugIn extends AbstractThreadedUiPlugIn {
       lastWizard = wizards.get(0);
       for (WizardGroup wizard : wizards) {
         dialog.addWizard(wizard);
-        if (wizard instanceof OpenProjectWizard) {
+        if (wizard instanceof OpenFileWizard) {
           lastWizard = wizard;
         }
       }

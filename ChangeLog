@@ -1,6 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
 2013-03-13 mmichaud <michael.michaud@free.fr>
+  * change default Open Wizard to Open File (was Open Project) 
+
+2013-03-13 mmichaud <michael.michaud@free.fr>
   * extend SelectionStyllingOptionsPanel to support fill color and fill opacity 
     customization
   * fix a problem in the scale displayed in the status bar (moved the code 
