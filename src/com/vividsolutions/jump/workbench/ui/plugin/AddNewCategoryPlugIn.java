@@ -32,21 +32,28 @@
 
 package com.vividsolutions.jump.workbench.ui.plugin;
 
+import java.awt.event.KeyEvent;
+
+import javax.swing.Icon;
+
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.UndoableCommand;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
+import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
-import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 
 public class AddNewCategoryPlugIn extends AbstractPlugIn {
     private final static String NEW_CATEGORY_NAME = I18N.get("ui.plugin.AbstractNewCategoryPlugIn.new-category");
 
     public AddNewCategoryPlugIn() {
+      this.setShortcutKeys(KeyEvent.VK_L);
+      this.setShortcutModifiers(KeyEvent.CTRL_MASK|KeyEvent.SHIFT_MASK);
     }
 
     public boolean execute(final PlugInContext context)
@@ -85,9 +92,13 @@ public class AddNewCategoryPlugIn extends AbstractPlugIn {
         return newName;
     }
 
-    public MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
-
-        return new MultiEnableCheck().add(checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck());
+    public EnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
+      return EnableCheckFactory.getInstance()
+          .createWindowWithLayerViewPanelMustBeActiveCheck();
     }
+  
+    public Icon getIcon() {
+      return IconLoader.icon("fugue/folder--plus.png");
+    }
+  
 }
