@@ -437,7 +437,7 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
     label.setText("None");
     // label gets an extra left padding
     label.setBorder(new EmptyBorder(new Insets(0, 2, 0, 0)));
-    Insets space_insets = new Insets(2, 2, 2, 0);
+    Insets space_insets = new Insets(1, 2, 1, 0);
     this.add(imageLabel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
         GridBagConstraints.CENTER, GridBagConstraints.NONE, space_insets, 0, 0));
     this.add(colorPanel, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,

@@ -35,11 +35,12 @@ package com.vividsolutions.jump.workbench.ui;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
-import java.util.Date;
+import java.awt.Insets;
 
+import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JTree;
-import javax.swing.UIManager;
+import javax.swing.border.EmptyBorder;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 
@@ -47,6 +48,7 @@ import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.workbench.model.Category;
 import com.vividsolutions.jump.workbench.model.LayerTreeModel;
 import com.vividsolutions.jump.workbench.model.Layerable;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.renderer.LayerRenderer;
 import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
 
@@ -65,6 +67,9 @@ public class LayerTreeCellRenderer implements TreeCellRenderer {
     private DefaultTreeCellRenderer categoryRenderer = new DefaultTreeCellRenderer();
 
     private RenderingManager renderingManager;
+
+    private Icon ctg_open = IconLoader.icon("fugue/folder-open.png");
+    private Icon ctg_closed = IconLoader.icon("fugue/folder.png");
 
     public LayerTreeCellRenderer(RenderingManager renderingManager) {
         this.renderingManager = renderingManager;
@@ -94,13 +99,14 @@ public class LayerTreeCellRenderer implements TreeCellRenderer {
                             expanded, leaf, row, hasFocus);
             categoryRendererComponent.setFont(new JLabel().getFont()
                     .deriveFont(Font.BOLD));
+            categoryRendererComponent.setBorder(new EmptyBorder(new Insets(0, 0, 1, 0)));
             categoryRendererComponent.setText(((Category) node).getName());
             if (expanded) {
-                categoryRendererComponent.setIcon(UIManager
-                        .getIcon("Tree.openIcon"));
+                categoryRendererComponent.setIcon(ctg_open/*UIManager
+                        .getIcon("Tree.openIcon")*/);
             } else {
-                categoryRendererComponent.setIcon(UIManager
-                        .getIcon("Tree.closedIcon"));
+                categoryRendererComponent.setIcon(ctg_closed/*UIManager
+                        .getIcon("Tree.closedIcon")*/);
             }
 
             return categoryRendererComponent;
