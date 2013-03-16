@@ -721,8 +721,18 @@ public class JUMPWorkbench {
     }
   }
   
+  /*
+   * Helper method to print to GUI and Console (e.g. help text)
+   */
   private static void printProperly(String text) {
-    if (System.console() == null) {
+    // we print it to gui and console, just to be sure
+    //if (System.console() == null) {
+      // make sure lnf is set
+      try {
+        initLookAndFeel();
+      } catch (Exception e) {
+        // fail silently
+      }
       // JLabel label = new
       // JLabel("<html><body style='width:300px'>"+text.replaceAll("\n",
       // "<br>")+"</body></html>");
@@ -747,7 +757,7 @@ public class JUMPWorkbench {
       d.pack();
       // GUIUtil.centreOnScreen(d);
       d.setVisible(true);
-    } else
+    //} else
       System.out.println(text);
   }
 }

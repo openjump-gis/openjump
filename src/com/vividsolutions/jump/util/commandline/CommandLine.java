@@ -95,7 +95,7 @@ public class CommandLine {
 
   public String printDoc() {
     OptionSpec os = null;
-    String out = "Syntax: oj_starter -option <parameter>... <file>...\n\nOptions:\n";
+    String out = "Syntax:\n  oj_starter [-option [<parameter>]]... [<project_file>]... [<data_file>]...\n\nOptions:\n";
 
     for (Iterator i = optSpecs.iterator(); i.hasNext();) {
       os = (OptionSpec) i.next();
