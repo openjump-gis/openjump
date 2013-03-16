@@ -16,17 +16,15 @@
  */
 package org.openjump.core.ui.plugin.datastore.postgis;
 
-import com.vividsolutions.jump.workbench.datastore.ConnectionDescriptor;
-
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,15 +34,12 @@ import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.border.TitledBorder;
-import javax.swing.event.AncestorListener;
 import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.datastore.DataStoreConnection;
@@ -52,12 +47,13 @@ import com.vividsolutions.jump.datastore.DataStoreMetadata;
 import com.vividsolutions.jump.datastore.postgis.PostgisDSConnection;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.datastore.ConnectionDescriptor;
 import com.vividsolutions.jump.workbench.datastore.ConnectionManager;
 import com.vividsolutions.jump.workbench.model.Layer;
-import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.ui.*;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.AbstractDriverPanel;
+import com.vividsolutions.jump.workbench.ui.OKCancelPanel;
 import com.vividsolutions.jump.workbench.ui.plugin.datastore.ConnectionPanel;
 
 
@@ -130,7 +126,7 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel implements Actio
 		gbConstraints.anchor = GridBagConstraints.WEST;
 		
 		// title
-		JLabel title = new JLabel("<html><h2>" + I18N.get(TITLE) + "</h2><br/></br></html>");
+		JLabel title = new JLabel("<html><h2>" + TITLE + "</h2><br/></br></html>");
 		gbConstraints.gridx = 0;
 		gbConstraints.gridy = 0;
 		gbConstraints.gridwidth = 3;
