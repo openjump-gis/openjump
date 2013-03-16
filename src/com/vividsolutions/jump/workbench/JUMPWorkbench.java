@@ -43,6 +43,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -61,6 +62,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
+import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.plaf.FontUIResource;
 
@@ -569,6 +571,30 @@ public class JUMPWorkbench {
     String out = "";
     for (String key : v) {
       out += key+"="+ps.getProperty(key)+"\n";
+    }
+    
+    // init lnf for UIDefaults
+    try {
+      initLookAndFeel();
+    } catch (Exception e) {}
+
+    out += "\n\nUIDefaults\n\n";
+    UIDefaults defaults = UIManager.getDefaults();
+    TreeSet ts = new TreeSet(new Comparator() {
+      public int compare(Object a, Object b) {
+         Map.Entry ea = (Map.Entry) a;
+         Map.Entry eb = (Map.Entry) b;
+         return ea.getKey().toString().compareTo(eb.getKey().toString());
+      }
+   });
+   ts.addAll(defaults.entrySet());
+
+   Iterator it = ts.iterator();
+    while (it.hasNext()) {
+        Map.Entry pair = (Map.Entry)it.next();
+        Object key = pair.getKey();
+        Object value = defaults.get(key);
+        out += key +"="+value+"\n";
     }
     printProperly(in+"\n"+out);
   }
