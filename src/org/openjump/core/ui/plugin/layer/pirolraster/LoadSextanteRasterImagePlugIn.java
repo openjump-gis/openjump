@@ -29,6 +29,7 @@ import javax.swing.filechooser.FileFilter;
 import org.openjump.core.rasterimage.GeoTiffConstants;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.WorldFileHandler;
+import org.openjump.core.ui.plugin.file.open.JFCWithEnterAction;
 import org.openjump.io.PropertiesHandler;
 import org.openjump.util.metaData.MetaInformationHandler;
 
@@ -170,7 +171,7 @@ public class LoadSextanteRasterImagePlugIn extends AbstractPlugIn {
     throws Exception {
         reportNothingToUndoYet(context);
         
-        JFileChooser fileChooser = new JFileChooser();
+        JFileChooser fileChooser = new JFCWithEnterAction();
         this.properties = new PropertiesHandler(LoadSextanteRasterImagePlugIn.propertiesFile);
         try {
             this.properties.load();

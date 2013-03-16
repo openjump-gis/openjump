@@ -40,6 +40,7 @@ import org.openjump.swing.listener.InvokeMethodActionListener;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.Blackboard;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.InputChangedListener;
@@ -48,7 +49,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.SaveProjectAsPlugIn;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
 
-public class SelectProjectFilesPanel extends JFileChooser implements WizardPanel {
+public class SelectProjectFilesPanel extends JFCWithEnterAction implements WizardPanel {
 
   public static final String KEY = SelectProjectFilesPanel.class.getName();
 
@@ -71,10 +72,6 @@ public class SelectProjectFilesPanel extends JFileChooser implements WizardPanel
     addChoosableFileFilter(SaveProjectAsPlugIn.JUMP_PROJECT_FILE_FILTER);
     addChoosableFileFilter(GUIUtil.ALL_FILES_FILTER);
     setFileFilter(SaveProjectAsPlugIn.JUMP_PROJECT_FILE_FILTER);
-    // [mmichaud 2011-11-08] start with last used directory 
-    Blackboard blackboard = PersistentBlackboardPlugIn.get(context);
-    String dir = (String)blackboard.get(OpenProjectWizard.FILE_CHOOSER_DIRECTORY_KEY);
-    if (dir != null) setCurrentDirectory(new File(dir));
 
     setControlButtonsAreShown(false);
 
@@ -91,7 +88,19 @@ public class SelectProjectFilesPanel extends JFileChooser implements WizardPanel
     addActionListener(dialogActionListener);
     
   }
+  
+  private boolean initialized = false;
+  
   public void enteredFromLeft(final Map dataMap) {
+    if (!initialized) {
+      // [mmichaud 2011-11-08] start with last used directory
+      Blackboard blackboard = PersistentBlackboardPlugIn.get(JUMPWorkbench
+          .getInstance().getContext());
+      String dir = (String) blackboard
+          .get(OpenProjectWizard.FILE_CHOOSER_DIRECTORY_KEY);
+      if (dir != null)
+        setCurrentDirectory(new File(dir));
+    }
     rescanCurrentDirectory();
   }
 

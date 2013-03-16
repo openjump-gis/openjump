@@ -37,6 +37,7 @@ import java.util.Set;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
+import org.openjump.core.ui.plugin.file.open.JFCWithEnterAction;
 import org.openjump.swing.listener.InvokeMethodActionListener;
 
 import com.vividsolutions.jump.I18N;
@@ -48,7 +49,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
 
-public class SelectRasterImageFilesPanel extends JFileChooser implements WizardPanel {
+public class SelectRasterImageFilesPanel extends JFCWithEnterAction implements WizardPanel {
 
   public static final String KEY = SelectRasterImageFilesPanel.class.getName();
   

@@ -58,6 +58,7 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import org.openjump.core.ui.images.IconLoader;
+import org.openjump.core.ui.plugin.file.open.JFCWithEnterAction;
 
 /**
 * Subclass this to implement a 'Save Project' plugin.
@@ -97,7 +98,7 @@ public class SaveLayersWithoutDataSourcePlugIn extends AbstractPlugIn {
             new JMenuItem(getName(), IconLoader.icon("disk_multiple_16.png")),
             createEnableCheck(context.getWorkbenchContext()), 9);
         
-        fileChooser = new JFileChooser();
+        fileChooser = new JFCWithEnterAction();
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         fileChooser.setDialogTitle(FILECHOOSER);
     }

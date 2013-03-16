@@ -38,7 +38,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
 import org.openjump.core.ui.io.file.FileLayerLoader;
@@ -57,7 +56,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
 
-public class SelectFilesPanel extends JFileChooser implements WizardPanel {
+public class SelectFilesPanel extends JFCWithEnterAction implements WizardPanel {
 
   public static final String KEY = SelectFilesPanel.class.getName();
 
@@ -86,6 +85,7 @@ public class SelectFilesPanel extends JFileChooser implements WizardPanel {
   private WizardDialog dialog;
 
   public SelectFilesPanel(final WorkbenchContext workbenchContext) {
+    super();
     this.workbenchContext = workbenchContext;
   }
 
@@ -221,4 +221,5 @@ public class SelectFilesPanel extends JFileChooser implements WizardPanel {
       listener.inputChanged();
     }
   }
+  
 }

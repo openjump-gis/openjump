@@ -28,6 +28,7 @@ import javax.swing.filechooser.FileFilter;
 import org.openjump.core.apitools.LayerTools;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.WorldFileHandler;
+import org.openjump.core.ui.plugin.file.open.JFCWithEnterAction;
 
 import com.sun.media.jai.codec.TIFFEncodeParam;
 import com.sun.media.jai.codecimpl.TIFFCodec;
@@ -73,7 +74,7 @@ public class SaveRasterImageAsImagePlugIn extends AbstractPlugIn {
 	public boolean execute(PlugInContext context) throws Exception {
 		BufferedImage image;
 		/* standard Java save-dialog: */
-		JFileChooser fc = new JFileChooser();
+		JFileChooser fc = new JFCWithEnterAction();
 		
 		fc.setFileFilter(new FileFilter() {
 				            public boolean accept(File f) {
