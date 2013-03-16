@@ -41,6 +41,8 @@ import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 
+import com.vividsolutions.jts.util.Assert;
+
 /**
  * Singleton for the Internationalization (I18N)
  * 
@@ -192,6 +194,8 @@ public final class I18N {
         LOG.debug(msg);
         System.out.println("Missing translation for '"+key+"' in resource bundle '"+this.resourcePath+"'.");
         missing.add(key);
+        // uncomment and add a search string to get staks telling you where the call came from
+        //Assert.isTrue(!key.contains("Write"));
       }
       String[] labelpath = key.split("\\.");
       return labelpath[labelpath.length - 1];
