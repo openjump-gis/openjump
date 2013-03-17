@@ -1,5 +1,13 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-03-17 Matthias Scholz <ms@jammerhund.de>
+  * Fix some german translations
+  * Fix AboutDialog.formatDirNameForHtml(), because if a HTML text for a JLabel
+    contains a leading "/", their is nothing displayed. This is a well known
+    Java Bug (http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6688690).
+    This bug occurs only under Linux, because every path starts with 
+    a leading "/".
+
 2013-03-17 mmichaud <michael.michaud@free.fr>
   * Fix two problems in SimplifyPolygonCoveragePlugIn : some polygons were 
     missing in the result and sometimes the wrong attributes were transferred

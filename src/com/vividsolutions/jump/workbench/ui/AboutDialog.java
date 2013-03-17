@@ -479,7 +479,7 @@ public class AboutDialog extends JDialog {
     public static String formatDirNameForHtml(String dir, int maxLength) {
         String filesep_regex = FILESEP.replaceAll("\\\\", "\\\\\\\\");
         String[] path = dir.split(filesep_regex);
-        StringBuilder multiline = new StringBuilder("<html>");
+        StringBuilder multiline = new StringBuilder("<html><body>");
         StringBuilder line = new StringBuilder(path[0]);
         for (int i = 1 ; i < path.length ; i++) {
             if (line.length() + path[i].length() > maxLength) {
@@ -489,7 +489,7 @@ public class AboutDialog extends JDialog {
             else line.append(FILESEP).append(path[i]);
         }
         multiline.append(line);
-        return multiline.append("</html>").toString();
+        return multiline.append("</body></html>").toString();
     }
 
     /*
