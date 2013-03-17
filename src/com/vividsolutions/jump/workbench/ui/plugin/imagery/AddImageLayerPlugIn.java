@@ -31,7 +31,7 @@ public class AddImageLayerPlugIn extends AbstractUiPlugIn {
     public void initialize(final PlugInContext context) throws Exception {
         super.initialize(context);
         context.getFeatureInstaller()
-               .addMainMenuItem(new String[]{MenuNames.FILE},this,createEnableCheck(workbenchContext), 4);
+               .addMainMenuItem(new String[]{MenuNames.FILE},this,createEnableCheck(workbenchContext), 5);
     }
 
 	@Override
