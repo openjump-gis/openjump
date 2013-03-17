@@ -39,7 +39,7 @@ import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.MacroPlugIn;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugIn;
-import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.RemoveSelectedLayersPlugIn;
 
 
@@ -50,7 +50,7 @@ public class CutSelectedLayersPlugIn extends MacroPlugIn {
             });
     }
     
-    public static final ImageIcon ICON = IconLoaderFamFam.icon("layers_cut.gif");
+    public static final ImageIcon ICON = IconLoader.icon("famfam/page_white_get.png");
     
     public String getNameWithMnemonic() {
         return StringUtil.replace(getName(), "t", "&t", false);

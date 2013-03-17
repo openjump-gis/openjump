@@ -41,6 +41,7 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 import java.awt.Toolkit;
 import java.awt.datatransfer.Transferable;
@@ -48,6 +49,7 @@ import java.awt.datatransfer.Transferable;
 import java.util.Collection;
 import java.util.Iterator;
 
+import javax.swing.Icon;
 import javax.swing.JComponent;
 
 /**
@@ -119,5 +121,9 @@ public class PasteLayersPlugIn extends LayerableClipboardPlugIn {
                     return null;
                 }
             });
+    }
+    
+    public static Icon getIcon(){
+      return IconLoader.icon("famfam/page_white_put.png");
     }
 }

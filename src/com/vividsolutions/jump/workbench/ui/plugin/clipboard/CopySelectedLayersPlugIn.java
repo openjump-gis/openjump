@@ -31,6 +31,13 @@
  */
 package com.vividsolutions.jump.workbench.ui.plugin.clipboard;
 
+import java.awt.Toolkit;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.swing.ImageIcon;
+
 import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
@@ -39,15 +46,7 @@ import com.vividsolutions.jump.workbench.model.WMSLayer;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
-
-import java.awt.Toolkit;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-
-import javax.swing.ImageIcon;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 
 public class CopySelectedLayersPlugIn extends LayerableClipboardPlugIn {
@@ -57,7 +56,7 @@ public class CopySelectedLayersPlugIn extends LayerableClipboardPlugIn {
     public CopySelectedLayersPlugIn() {
     }
     
-    public static final ImageIcon ICON = IconLoaderFamFam.icon("layers_copy.gif");
+    public static final ImageIcon ICON = IconLoader.icon("famfam/page_white_copy.png");
     
     public String getNameWithMnemonic() {
         return StringUtil.replace(getName(), "C", "&C", false);
