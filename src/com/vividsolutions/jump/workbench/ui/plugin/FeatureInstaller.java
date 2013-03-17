@@ -332,7 +332,7 @@ public class FeatureInstaller {
         null, null, -1);
   }
 
-  /*
+  /**
    * Convenience method without position parameter.
    * 
    * @see #addMainMenuPlugin(final PlugIn executable, final String[] menuPath,

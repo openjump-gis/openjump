@@ -45,7 +45,10 @@ import javax.swing.JComboBox;
 import org.openjump.core.geomutils.algorithm.IntersectGeometries;
 import org.openjump.core.graph.polygongraph.PolygonGraph;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.IntersectionMatrix;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.index.SpatialIndex;
@@ -92,14 +95,16 @@ public class SimplifyPolygonCoveragePlugIn extends AbstractPlugIn implements Thr
     private static String T3="Maximum point displacement in model units";
     private String sSimplificationFinalized="simplification finalized";
     private String sPolygonize="Polygonization";
+    private String sLayerMustBePolygonal="Layer must be a polygonal coverage";
+    private String sAttributeTransferNotExhaustive="Attribute transfer is not exhaustive";
     
     private FeatureCollection regions = null;        
     private Layer input = null;
     private MultiInputDialog dialog;
-    private double tolerance = 0;
+    private double tolerance = 1.0;
         
     public void initialize(PlugInContext context) throws Exception {
-    	
+    
     		this.sName = I18N.get("org.openjump.core.ui.plugin.tools.SimplifyPolygonCoveragePlugIn.Simplify-Polygon-Coverage");
     		this.note = I18N.get("org.openjump.core.ui.plugin.tools.SimplifyPolygonCoveragePlugIn.note");
     		this.sSidebar = I18N.get("org.openjump.core.ui.plugin.tools.SimplifyPolygonCoveragePlugIn.Simplifies-the-outlines-of-polygons-that-have-adjacent-polygons");
@@ -109,17 +114,19 @@ public class SimplifyPolygonCoveragePlugIn extends AbstractPlugIn implements Thr
     	    this.T3=I18N.get("org.openjump.core.ui.plugin.tools.LineSimplifyJTS15AlgorithmPlugIn.Maximum-point-displacement-in-model-units");    
     	    this.sSimplificationFinalized=I18N.get("org.openjump.core.ui.plugin.tools.LineSimplifyJTS15AlgorithmPlugIn.simplification-finalized");
     	    this.sPolygonize=I18N.get("jump.plugin.edit.PolygonizerPlugIn.Polygonization");
+    	    this.sLayerMustBePolygonal = I18N.get("org.openjump.core.ui.plugin.tools.SimplifyPolygonCoveragePlugIn.Layer-Must-Be-Polygonal");
+    	    this.sAttributeTransferNotExhaustive = I18N.get("org.openjump.core.ui.plugin.tools.SimplifyPolygonCoveragePlugIn.Attribute-Transfer-Not-Exhaustive");
     	    
-    	    this.sSidebar = this.sSidebar + " " + this.note;
+    	    this.sSidebar = this.sSidebar + "\n" + this.note;
     	    	
     		FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-	    	featureInstaller.addMainMenuItem(
-	    	        this,								//exe
-	                new String[] {MenuNames.TOOLS, MenuNames.TOOLS_GENERALIZATION}, 	//menu path
+	    	featureInstaller.addMainMenuPlugin(
+	    	        this,
+	                new String[] {MenuNames.TOOLS, MenuNames.TOOLS_GENERALIZATION},
 	                this.sName + "...",
 	                false,			//checkbox
 	                null,			//icon
-	                createEnableCheck(context.getWorkbenchContext())); //enable check
+	                createEnableCheck(context.getWorkbenchContext()));
     }
     
     public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
@@ -145,10 +152,10 @@ public class SimplifyPolygonCoveragePlugIn extends AbstractPlugIn implements Thr
         return true;	    
 	}
 	
-    public void run(TaskMonitor monitor, PlugInContext context) throws Exception{            		
+    public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
 	    	System.gc(); //flush garbage collector
 	    	monitor.allowCancellationRequests();
-		    //final Collection features = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems();
+	    	
 	    	Collection<Feature> features = this.regions.getFeatures();
 	    	Feature firstFeature = (Feature)features.iterator().next();
 	    	if (firstFeature.getGeometry() instanceof Polygon){
@@ -157,6 +164,13 @@ public class SimplifyPolygonCoveragePlugIn extends AbstractPlugIn implements Thr
 		    	PolygonGraph pg = new PolygonGraph(features, monitor);
 		    	FeatureCollection boundaries = pg.getSharedBoundaries();
 		    	boundaries.addAll(pg.getNonSharedBoundaries().getFeatures());
+		    	
+		    	SpatialIndex index = new STRtree();
+		    	for (Iterator iterator = boundaries.iterator(); iterator.hasNext();) {
+		    	    Geometry geom = ((Feature)iterator.next()).getGeometry();
+		    	    index.insert(geom.getEnvelopeInternal(), geom);
+		    	}
+		    	
 		    	if (monitor.isCancelRequested()){
 		    		return;
 		    	}
@@ -167,16 +181,28 @@ public class SimplifyPolygonCoveragePlugIn extends AbstractPlugIn implements Thr
 		    		count++;
 					Feature edge = (Feature) iterator.next();
 					Geometry resultgeom = TopologyPreservingSimplifier.simplify(edge.getGeometry(), Math.abs(tolerance));
-					// TODO Here, we take the risk to loose polygons if a polygon
-					// is made of two edges which, after simplification, happen to
-					// be the same/
-					// We could test if the simplificated edge already exist, but
-					// it will not be sufficient as it will depend on the order
-					// edges are processed
-					// A thin triangle which will disappear.
-					// 
-					//      _ _ --  x -- _ _ 
-					//    x------------------x
+					
+					// [mmichaud 2013-03-16] add a test to check if the edge can 
+					// be safely simplified.
+					// If not we roll back to original edge geometry
+					Envelope env = edge.getGeometry().getEnvelopeInternal();
+					env.expandBy(Math.abs(tolerance));
+					List neighbours = index.query(env);
+					boolean simplify = true;
+					for (Object object : neighbours) {
+					    if (object == edge.getGeometry()) continue;
+					    Geometry neighbour = TopologyPreservingSimplifier.simplify((Geometry)object, Math.abs(tolerance));
+					    IntersectionMatrix im = resultgeom.relate(neighbour);
+					    if (im.matches("0********") || im.matches("1********")) {
+					        simplify = false;
+					        break;
+					    }
+					}
+					if (simplify == false) {
+					    resultgeom = edge.getGeometry();
+					}
+					// end
+					
 					edge.setGeometry(resultgeom);
 				    String mytext =  count + " / " + noItems + " : " + sSimplificationFinalized;
 				    monitor.report(mytext);
@@ -208,7 +234,7 @@ public class SimplifyPolygonCoveragePlugIn extends AbstractPlugIn implements Thr
 		    	context.addLayer(StandardCategoryNames.RESULT, this.input + "-" + sSimplify, resultD);
 	    	}
 	    	else{
-	    		context.getWorkbenchFrame().warnUser("no (simple) polygon geometries found");
+	    		context.getWorkbenchFrame().warnUser(sLayerMustBePolygonal);
 	    	}
     	}
 
@@ -222,75 +248,91 @@ public class SimplifyPolygonCoveragePlugIn extends AbstractPlugIn implements Thr
         catch (IndexOutOfBoundsException e) {
         	//eat it
         }
-	    dialog.addDoubleField(T3,1.0,5);
+	    dialog.addDoubleField(T3, tolerance, 5);
         GUIUtil.centreOnWindow(dialog);
     }	
 
-	public FeatureCollection transferAttributesFromPolysToPolys(FeatureCollection fcA, Collection<Geometry> geometries, PlugInContext context, TaskMonitor monitor){
-		//-- check if the polygon has a correspondent 
-		//	 if yes, transfer the attributes - if no: remove the polygon
+	public FeatureCollection transferAttributesFromPolysToPolys(FeatureCollection fcA, 
+	            Collection<Geometry> geometries, PlugInContext context, TaskMonitor monitor){
 		
-		//-- build a tree for the existing layers first.
-		SpatialIndex treeA = new STRtree();
-		for (Iterator iterator = fcA.iterator(); iterator.hasNext();) {
-			Feature f = (Feature) iterator.next();
-			treeA.insert(f.getGeometry().getEnvelopeInternal(), f);
+		// [2013-03-16 mmichaud and tmichaud] algorithm is changed to match
+		// source geometries to simplified geometries based on the number of
+		// common coordinates 
+		// Old algorithm tried to match simplified geometries to source
+		// geometries based on an intersection between polygon and interior 
+		// point, but it was not reliable as interior points are often out of
+		// the source polygon 
+		SpatialIndex indexB = new STRtree();
+		for (Iterator iterator = geometries.iterator(); iterator.hasNext();) {
+		    Geometry geom = (Geometry) iterator.next();
+		    indexB.insert(geom.getEnvelopeInternal(), geom);
 		}
-		// -- get all intersecting features (usually there should be only one
-		// corresponding feature per layer)
-		// to avoid problems with spatial predicates we do the query for an
-		// internal point of the result polygons
-		// and apply an point in polygon test
-		AttributeMapping mapping = new AttributeMapping(fcA.getFeatureSchema(),
-				new FeatureSchema());
+		AttributeMapping mapping = new AttributeMapping(fcA.getFeatureSchema(), new FeatureSchema());
 		// -- create the empty dataset with the final FeatureSchema
 		FeatureDataset fd = new FeatureDataset(mapping.createSchema("Geometry"));
-		// -- add the features and do the attribute mapping
-		for (Iterator iterator = geometries.iterator(); iterator
-				.hasNext();) {
-			Geometry geom = (Geometry) iterator.next();
-			Point pt = geom.getInteriorPoint();
-			Feature f = new BasicFeature(fd.getFeatureSchema());
-			Feature featureA = null;
-			Feature featureB = null;
-			// -- query Layer A ---
-			List candidatesA = treeA.query(pt.getEnvelopeInternal());
-			int foundCountA = 0;
-			for (Iterator iterator2 = candidatesA.iterator(); iterator2.hasNext();){
-				Feature ftemp = (Feature) iterator2.next();
-				if (ftemp.getGeometry().contains(pt)) {
-					foundCountA++;
-					featureA = ftemp;
-				}
+		for (Iterator iteratorA = fcA.iterator(); iteratorA.hasNext();) {
+			Feature featureA = (Feature) iteratorA.next();
+			Geometry geometryA = featureA.getGeometry();
+			int numGeometries = geometryA.getNumGeometries();
+			// Process each component of multipolygons individually
+			for (int i = 0 ; i < numGeometries ; i++) {
+			    Geometry componentA = geometryA.getGeometryN(i);
+			    if (!(componentA instanceof Polygon)) continue;
+			    List candidates = indexB.query(componentA.getEnvelopeInternal());
+			    Geometry geomB = null;
+			    boolean match = false;
+			    int minCountCommonCoordinates = -1;
+			    for (Iterator iteratorB = candidates.iterator() ; iteratorB.hasNext();) {
+			        Geometry gB = (Geometry)iteratorB.next();
+			        // Find simplified candidate having the more coordinates in
+			        // common with componentA
+			        // This is possible due to the way simplified geometries are
+			        // computed (based on Douglas-Peucker)
+			        // Don't use "=" while testing number of common coordinates
+			        // because sometimes, new coordinates are introduced in the 
+			        // simplification algorithm
+			        int countCommonCoordinates = commonCoordinates((Polygon)componentA, (Polygon)gB);
+			        if (countCommonCoordinates > minCountCommonCoordinates) {
+			            minCountCommonCoordinates = countCommonCoordinates;
+			            geomB = gB;
+			            match = true;
+			        }
+			    }
+			    if (match) {
+			        Feature f = new BasicFeature(fd.getFeatureSchema());
+			        mapping.transferAttributes(featureA, null, f);
+			        f.setGeometry(geomB);
+			        fd.add(f);
+			    }
+			    else {
+			        context.getWorkbenchFrame().warnUser(sAttributeTransferNotExhaustive);
+			    }
+			    if (monitor != null && monitor.isCancelRequested()){
+	    		    return fd;
+	    	    }
 			}
-			if (foundCountA > 1) {
-				if (context != null) {
-					context.getWorkbenchFrame().warnUser(
-							I18N.get("org.openjump.plugin.tools.IntersectPolygonLayersPlugIn.Found-more-than-one-source-feature-in-Layer")
-							+ " " + GenericNames.LAYER_A);
-				}
-			} else if (foundCountA == 0) {
-				if (context != null) {
-					// context.getWorkbenchFrame().warnUser("no corresponding
-					// feature in Layer A");
-				}
-			}
-			if (foundCountA > 0){ 
-				// -- do mapping
-				mapping.transferAttributes(featureA, featureB, f);
-				// -- set Geometry
-				f.setGeometry((Geometry) geom.clone());
-				fd.add(f);
-			}
-//			else{
-//				System.out.println("polygon without correspondent"); 
-//			}
-	    	if (monitor != null){
-	    		if (monitor.isCancelRequested()){
-	    			return fd;
-	    		}
-	    	}
 		}
 		return fd;
+	}
+	
+	
+	/**
+	 * Count the number of coordinates belonging to a and b
+	 * End points which are common to start points are skipped
+	 * Input geometries must not have identical consecutive points 
+	 */
+	private int commonCoordinates(Polygon a, Polygon b) {
+	    Coordinate[] cca = ((Polygon)a.norm()).getExteriorRing().getCoordinates();
+	    Coordinate[] ccb = ((Polygon)b.norm()).getExteriorRing().getCoordinates();
+	    int count = 0;
+	    for (int i = 0 ; i < cca.length-1 ; i++) {
+	        for (int j = 0 ; j < ccb.length-1 ; j++) {
+	            if (cca[i].equals(ccb[j])) {
+	                count++;
+	                break;
+	            }
+	        }
+	    } 
+	    return count;
 	}
 }

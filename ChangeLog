@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-03-17 mmichaud <michael.michaud@free.fr>
+  * Fix two problems in SimplifyPolygonCoveragePlugIn : some polygons were 
+    missing in the result and sometimes the wrong attributes were transferred
+
 2013-03-13 mmichaud <michael.michaud@free.fr>
   * change default Open Wizard to Open File (was Open Project) 
 
