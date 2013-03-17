@@ -778,7 +778,7 @@ public class JUMPWorkbench {
       l.add(0, IconLoader.image("information_16x16.png"));
       d.setIconImages(l);
       // harmonize background color
-      textArea.setBackground(d.getBackground());
+      textArea.setBackground(new JLabel().getBackground());
       d.setResizable(true);
       d.pack();
       // GUIUtil.centreOnScreen(d);
