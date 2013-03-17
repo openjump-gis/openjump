@@ -54,6 +54,8 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 
+import org.openjump.core.ui.plugin.file.open.JFCWithEnterAction;
+
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 
@@ -285,7 +287,7 @@ public class FileNamePanel extends JPanel {
     //<<TODO:FIX>> Sometimes after the Browse button is pressed, the file dialog
     //takes a minute or so to open. [Jon Aquino]
     private File browse() {
-        JFileChooser fileChooser = fileMustExist ? GUIUtil.createJFileChooserWithExistenceChecking() : new JFileChooser();
+        JFileChooser fileChooser = fileMustExist ? GUIUtil.createJFileChooserWithExistenceChecking() : new JFCWithEnterAction();
         fileChooser.setDialogTitle(I18N.get("ui.FileNamePanel.browse"));
 
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);

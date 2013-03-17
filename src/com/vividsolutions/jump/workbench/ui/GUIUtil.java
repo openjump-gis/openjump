@@ -66,6 +66,8 @@ import javax.swing.plaf.basic.BasicComboBoxEditor;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import org.openjump.core.ui.plugin.file.open.JFCWithEnterAction;
+
 //<<TODO:NAMING>> Perhaps rename to WorkbenchUtilities and move to workbench
 // package? [Jon Aquino]
 public class GUIUtil {
@@ -455,7 +457,7 @@ public class GUIUtil {
     }
 
     public static JFileChooser createJFileChooserWithExistenceChecking() {
-        return new JFileChooser() {
+        return new JFCWithEnterAction() {
 
             public void approveSelection() {
                 File[] files = selectedFiles(this);
@@ -483,7 +485,7 @@ public class GUIUtil {
         return new FileChooserWithOverwritePrompting(ext);
     }
 
-    public static class FileChooserWithOverwritePrompting extends JFileChooser {
+    public static class FileChooserWithOverwritePrompting extends JFCWithEnterAction {
 
 	private String ext;
 	
