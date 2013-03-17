@@ -138,15 +138,15 @@ public class OpenJumpConfiguration {
      **************************************************************************/
     //--[sstein 10.July.2008] I leave these plugins in this class, as they seem to me
     //	essential to be removable, similar for the others that are still initialized here
+
+    OpenProjectPlugIn openProject = new OpenProjectPlugIn();
+    openProject.initialize(pluginContext);
+    
+    OpenFilePlugIn openFile = new OpenFilePlugIn();
+    openFile.initialize(pluginContext);
     
     OpenWizardPlugIn open = new OpenWizardPlugIn();
     open.initialize(pluginContext);
-    
-    OpenProjectPlugIn openProject = new OpenProjectPlugIn();
-    openProject.initialize(pluginContext);
-
-    OpenFilePlugIn openFile = new OpenFilePlugIn();
-    openFile.initialize(pluginContext);
     
     RunDatastoreQueryPlugIn runDatastoreQueryPlugIn = new RunDatastoreQueryPlugIn();
     runDatastoreQueryPlugIn.initialize(pluginContext);
@@ -228,7 +228,10 @@ public class OpenJumpConfiguration {
     myMapTipPlugIn.initialize(new PlugInContext(workbenchContext, null, null,
       null, null));
 
-
+    /***************************************************************************
+     * menu LAYER
+     **************************************************************************/
+    
     // -- deeJUMP function by LAT/LON [01.08.2006 sstein]
     //LayerStyle2SLDPlugIn mySytle2SLDplugIn = new LayerStyle2SLDPlugIn();
     //mySytle2SLDplugIn.initialize(new PlugInContext(workbenchContext, null,
@@ -237,7 +240,7 @@ public class OpenJumpConfiguration {
     //new ImportSLDPlugIn().initialize(pluginContext);
     //new ImportArcMapStylePlugIn().initialize(pluginContext);
     
-    pluginContext.getFeatureInstaller().addMenuSeparator(LAYER);
+    //pluginContext.getFeatureInstaller().addMenuSeparator(LAYER);
 
     // --this caused problems with the postgis plugin [sstein]
     // TODO: the problem has been solved (using try/catch) but still class has
@@ -247,10 +250,6 @@ public class OpenJumpConfiguration {
     ShowFullPathPlugIn myFullPathPlugin = new ShowFullPathPlugIn();
     myFullPathPlugin.initialize(new PlugInContext(workbenchContext, null, null,
       null, null));
-	
-    /***************************************************************************
-     * menu LAYER
-     **************************************************************************/
 
     ToggleVisiblityPlugIn myToggleVisPlugIn = new ToggleVisiblityPlugIn();
     myToggleVisPlugIn.initialize(new PlugInContext(workbenchContext, null,

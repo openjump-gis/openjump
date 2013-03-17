@@ -26,6 +26,7 @@
  ******************************************************************************/
 package org.openjump.core.ui.plugin.file;
 
+import java.awt.event.KeyEvent;
 import java.io.File;
 
 import javax.swing.ImageIcon;
@@ -53,6 +54,8 @@ public class OpenProjectPlugIn extends AbstractWizardPlugin {
 
   public OpenProjectPlugIn() {
     super(ICON);
+    this.setShortcutKeys(KeyEvent.VK_O);
+    this.setShortcutModifiers(KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK);
   }
 
   public OpenProjectPlugIn(WorkbenchContext workbenchContext, File file) {
@@ -77,7 +80,7 @@ public class OpenProjectPlugIn extends AbstractWizardPlugin {
     // Add File Menu
     featureInstaller.addMainMenuItem(new String[] {
       MenuNames.FILE
-    }, this, 3);
+    }, this, 1);
 
     wizard = new OpenProjectWizard(workbenchContext);
     setWizard(wizard);

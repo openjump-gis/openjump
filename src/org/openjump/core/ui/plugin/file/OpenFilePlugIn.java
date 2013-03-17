@@ -60,8 +60,6 @@ public class OpenFilePlugIn extends AbstractWizardPlugin {
    */
   public OpenFilePlugIn() {
     super(ICON);
-    this.setShortcutKeys(KeyEvent.VK_O);
-    this.setShortcutModifiers(KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK);
   }
 
   /**
@@ -104,7 +102,7 @@ public class OpenFilePlugIn extends AbstractWizardPlugin {
     // Add File Menu
     featureInstaller.addMainMenuItem(new String[] {
       MenuNames.FILE
-    }, this, 2);
+    }, this, 1);
 
     // Register the Open File Wizard
     OpenFileWizard openFileWizard = new OpenFileWizard(workbenchContext);
