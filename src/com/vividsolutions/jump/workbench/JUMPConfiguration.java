@@ -987,29 +987,6 @@ public class JUMPConfiguration implements Setup {
       throws Exception {
 
     String MENU_LAYER = MenuNames.LAYER;
-    // --[sstein 21Mar2008] -- disabled because of new menu structure by Paul
-    /*
-     * featureInstaller.addLayerViewMenuItem(addNewLayerPlugIn, MENU_LAYER,
-     * addNewLayerPlugIn.getName());
-     * featureInstaller.addLayerViewMenuItem(addDatastoreLayerPlugIn,
-     * MENU_LAYER, addDatastoreLayerPlugIn.getName() + "...");
-     * 
-     * featureInstaller.addLayerViewMenuItem(runDatastoreQueryPlugIn,
-     * MENU_LAYER, runDatastoreQueryPlugIn.getName() + "...");
-     */
-    // --[sstein 21Mar2008] -- disabled because of new menu structure by Paul
-    /*
-     * featureInstaller.addLayerViewMenuItem(addWMSQueryPlugIn, MENU_LAYER,
-     * addWMSQueryPlugIn.getName() + "...");
-     * 
-     * featureInstaller.addLayerViewMenuItem(addImageLayerPlugIn, MENU_LAYER,
-     * addImageLayerPlugIn.getName() + "...");
-     */
-    /*
-     * featureInstaller.addMainMenuItem(addNewCategoryPlugIn, MENU_LAYER,
-     * addNewCategoryPlugIn.getName(), null, addNewCategoryPlugIn
-     * .createEnableCheck(workbenchContext));
-     */
 
     // featureInstaller.addMenuSeparator(MENU_LAYER); // ===================
     featureInstaller.addMainMenuItem(cutSelectedLayersPlugIn,
@@ -1037,6 +1014,10 @@ public class JUMPConfiguration implements Setup {
         new String[] { MENU_LAYER }, new JMenuItem(
             removeSelectedCategoriesPlugIn.getName()),
         removeSelectedCategoriesPlugIn.createEnableCheck(workbenchContext));
+    
+    featureInstaller.addMenuSeparator(MENU_LAYER); // ===================
+    featureInstaller.addMainMenuPlugin(imageLayerManagerPlugIn,
+        new String[] { MENU_LAYER });
   }
 
   // MD - following is proposed new pattern for defining built-in menus
