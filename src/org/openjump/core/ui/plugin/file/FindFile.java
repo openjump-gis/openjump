@@ -8,8 +8,9 @@ import java.util.Vector;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
+import org.openjump.core.ui.plugin.file.open.JFCWithEnterAction;
+
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 
 public class FindFile {
@@ -27,7 +28,7 @@ public class FindFile {
 
     public FindFile(Component window) {
       this.window = window;
-      fileChooser = new JFileChooser();
+      fileChooser = new JFCWithEnterAction();
       fileChooser = GUIUtil.createJFileChooserWithExistenceChecking();
       fileChooser.setDialogTitle(CHOOSE_LOCATION);
       fileChooser.setDialogType(JFileChooser.OPEN_DIALOG);
