@@ -31,7 +31,7 @@ public class RunDatastoreQueryPlugIn extends AbstractAddDatastoreLayerPlugIn {
     public void initialize(final PlugInContext context) throws Exception {
         super.initialize(context);
         context.getFeatureInstaller()
-               .addMainMenuItem(new String[]{MenuNames.FILE},this,3);
+               .addMainMenuItem(new String[]{MenuNames.FILE},this,4);
     }
 
     protected Layerable createLayerable(
