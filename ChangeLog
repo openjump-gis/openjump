@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-03-18 mmichaud <michael.michaud@free.fr>
+  * small fix in Add3DGeometryAttributesPLugIn maxSlope calculation
+
 2013-03-17 Matthias Scholz <ms@jammerhund.de>
   * Fix some german translations
   * Fix AboutDialog.formatDirNameForHtml(), because if a HTML text for a JLabel

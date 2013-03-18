@@ -363,6 +363,7 @@ public class Add3DGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
             for (int i = 0 ; i < g.getNumGeometries() ; i++) {
                 Geometry component = g.getGeometryN(i);
                 if (component.getDimension() == 0) continue;
+                // We first collect sublinestrings having initial and a final z
                 List<ZBoundedSubLineString> list = new ArrayList<ZBoundedSubLineString>();
                 if (component instanceof LineString) {
                     getZBoundedSubLineStrings((LineString)component, list);
@@ -393,7 +394,7 @@ public class Add3DGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
                     else {
                         if (!Double.isNaN(slope) && slope > maxUpslope) maxUpslope = slope;
                     }
-                    if (Double.isNaN(maxSlope)) maxSlope = slope;
+                    if (Double.isNaN(maxSlope)) maxSlope = Math.abs(slope);
                     else {
                         if (!Double.isNaN(slope) && Math.abs(slope) > maxSlope) maxSlope = Math.abs(slope);
                     }
