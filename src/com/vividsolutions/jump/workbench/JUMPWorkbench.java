@@ -46,6 +46,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeSet;
@@ -80,6 +81,7 @@ import com.vividsolutions.jump.util.commandline.ParseException;
 import com.vividsolutions.jump.workbench.driver.DriverManager;
 import com.vividsolutions.jump.workbench.plugin.PlugInManager;
 import com.vividsolutions.jump.workbench.ui.ErrorDialog;
+import com.vividsolutions.jump.workbench.ui.JListTypeAheadKeyListener;
 import com.vividsolutions.jump.workbench.ui.SplashPanel;
 import com.vividsolutions.jump.workbench.ui.SplashWindow;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
@@ -358,6 +360,9 @@ public class JUMPWorkbench {
       
       // Init the L&F before instantiating the progress monitor [Jon Aquino]
       initLookAndFeel();
+      // fix lnf (weird windows non-unicode locale bug)
+      fixLookAndFeel();
+      
       // setFont to switch fonts if defaults cannot display current language
       // early change the default font definition of the jre if necessary, the
       // first internationalized string shown is 'JUMPWorkbench.version' on
@@ -443,6 +448,15 @@ public class JUMPWorkbench {
     });
   }
 
+  private static void fixLookAndFeel() {
+    UIDefaults defaults = UIManager.getDefaults();
+    Font ta_font = (Font)defaults.get("TextArea.font");
+    Font ta_font_enUS = (Font)defaults.get("TextArea.font",new Locale("en", "US"));
+    System.out.println(UIManager.getLookAndFeel()+"/"+ta_font+"/"+ta_font_enUS);
+    if (!ta_font.equals(ta_font_enUS))
+      UIManager.put("TextArea.font",ta_font_enUS);
+  }
+  
   private static void initLookAndFeel() throws Exception {
     if (LangUtil.ifNull(System.getProperty("initLookAndFeel"), "true")
         .toString().equalsIgnoreCase("false")) {
