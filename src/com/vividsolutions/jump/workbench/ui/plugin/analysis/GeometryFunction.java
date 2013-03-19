@@ -237,7 +237,7 @@ public abstract class GeometryFunction
   }
   private static class InteriorPointFunction extends GeometryFunction {
     public InteriorPointFunction() {
-      super("Interior Point", 1, 0);
+      super(I18N.get("ui.plugin.analysis.GeometryFunction.interior-point"), 1, 0);
     }
 
     public Geometry execute(Geometry[] geom, double[] param)
