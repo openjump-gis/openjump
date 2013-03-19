@@ -59,6 +59,7 @@ import java.awt.Insets;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Hashtable;
 
@@ -462,6 +463,7 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
         	Geometry geo = null;
         	boolean multipleGeoTypes = false;
         	boolean multipleSourceTypes = false;
+        	Hashtable<String, Integer> geometryModes = new Hashtable<String,Integer>();
         	
         	for (int l = 0; l < layers.length; l++) {
 	        	
@@ -479,6 +481,11 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
 	        				geoClass = geo.getClass().getName();
 	        			else if (! geo.getClass().getName().equals(geoClass))
 	        				multipleGeoTypes = true;
+	        			
+	        			String geoClassName = geo.getClass().getName();
+	        			int count = geometryModes.get(geoClassName) == null 
+	        							? 0: geometryModes.get(geoClassName);
+	        			geometryModes.put(new String(geoClassName), new Integer(count+1));
 	        		}
 	        	}
 	        		
@@ -502,8 +509,20 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn
        	//determine the geoClass
         	if (numFeatures == 0)
         		geoClass = NO_FEATURES;
-        	else if (multipleGeoTypes)
-        		geoClass = MULTIPLE_GEOMETRY_TYPES;
+        	else if (multipleGeoTypes) {
+        		geoClass = MULTIPLE_GEOMETRY_TYPES + ": ";
+        		int n = geometryModes.size();
+        		Enumeration<Integer> modeCount = geometryModes.elements();
+        		Enumeration<String> modeName = geometryModes.keys();
+        		for (int i = 0; i<n; i++) {
+        			String geometryMode = modeName.nextElement();
+    	        	int dotPos = geometryMode.lastIndexOf(".");    	        	
+    	        	if (dotPos > 0)
+    	        		geometryMode = geometryMode.substring(dotPos + 1);
+        			int geometryModeCount = modeCount.nextElement();
+        			geoClass = geoClass + (i==0 ?" " :", ") + geometryMode + ":" + geometryModeCount;
+        		}
+        	}
         	else if (geoClass.equals(""))
         		geoClass = NULL_GEOMETRIES;
         	else {
