@@ -81,7 +81,6 @@ import com.vividsolutions.jump.util.commandline.ParseException;
 import com.vividsolutions.jump.workbench.driver.DriverManager;
 import com.vividsolutions.jump.workbench.plugin.PlugInManager;
 import com.vividsolutions.jump.workbench.ui.ErrorDialog;
-import com.vividsolutions.jump.workbench.ui.JListTypeAheadKeyListener;
 import com.vividsolutions.jump.workbench.ui.SplashPanel;
 import com.vividsolutions.jump.workbench.ui.SplashWindow;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
@@ -451,10 +450,10 @@ public class JUMPWorkbench {
   private static void fixLookAndFeel() {
     UIDefaults defaults = UIManager.getDefaults();
     Font ta_font = (Font)defaults.get("TextArea.font");
-    Font ta_font_enUS = (Font)defaults.get("TextArea.font",new Locale("en", "US"));
-    System.out.println(UIManager.getLookAndFeel()+"/"+ta_font+"/"+ta_font_enUS);
-    if (!ta_font.equals(ta_font_enUS))
-      UIManager.put("TextArea.font",ta_font_enUS);
+    if (ta_font.getSize()<13){
+      UIManager.put("TextArea.font",ta_font.deriveFont(13f));
+      System.out.println("Info: Fix text area font size bug.");
+    }
   }
   
   private static void initLookAndFeel() throws Exception {
