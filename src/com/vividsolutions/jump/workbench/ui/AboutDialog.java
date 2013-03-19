@@ -182,7 +182,7 @@ public class AboutDialog extends JDialog {
         }
         
         JTextArea readme = new JTextArea(/*urlstring +"\n\n"+*/ result ) ;
-        readme.setFont((new JLabel()).getFont().deriveFont( 12f ));
+        readme.setFont(readme.getFont().deriveFont( 12f ));
         readme.setEditable(false);
         //readme.setAutoscrolls(false);
         // pad text away from the border
