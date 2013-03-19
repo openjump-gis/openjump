@@ -117,7 +117,6 @@ public abstract class UndoableCommand {
             }
 
             public void undo() {
-                System.out.println("layer="+layer + " canceled="+isCanceled());
                 if (isCanceled()) return;
                 super.undo();
                 unexecute();

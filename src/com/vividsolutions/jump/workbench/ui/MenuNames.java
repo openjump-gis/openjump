@@ -97,7 +97,7 @@ public interface MenuNames {
     public static final String DATASTORE = I18N.get("ui.MenuNames.DATASTORE");
     public static final String SCHEMA = I18N.get("ui.MenuNames.SCHEMA");
     
-    public static final String LAYERVIEWPANEL_POPUP = I18N.get("ui.MenuNames.LAYERVIEW_POPUP");
+    public static final String LAYERVIEWPANEL_POPUP = I18N.get("ui.MenuNames.LAYERVIEWPANEL_POPUP");
     public static final String ATTRIBUTEPANEL_POPUP = I18N.get("ui.MenuNames.ATTRIBUTEPANEL_POPUP");
     public static final String LAYERNAMEPANEL_LAYER_POPUP = I18N.get("ui.MenuNames.LAYERNAMEPANEL_LAYER_POPUP");
     public static final String LAYERNAMEPANEL_CATEGORY_POPUP = I18N.get("ui.MenuNames.LAYERNAMEPANEL_CATEGORY_POPUP");

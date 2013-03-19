@@ -999,7 +999,6 @@ public class FeatureCollectionTools extends ToolToMakeYourLifeEasier {
 				i++;
 				//System.out.print(idval + ", ");
 			}
-			System.out.println();
 			returnObject[1] = individualValues;
 			objectsInClass = new ArrayList[individuals.size()]; 
 			//-- create the lists

@@ -255,7 +255,6 @@ public class WMSViewer extends JFrame implements ActionListener, MouseListener {
 
   public void mouseClicked( java.awt.event.MouseEvent mouseEvent ) {
     if( mouseEvent.getComponent() == canvas ) {
-      System.out.println( "click" );
       int x = mouseEvent.getX();
       int y = mouseEvent.getY();
       float xMin = Float.parseFloat( xMinField.getText() );
