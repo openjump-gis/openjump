@@ -121,7 +121,7 @@ Additionally, if you used the installer you should have
   Move it to 'Applications' folder if you like.
 
 Further information can be found in the OJ wiki:
-http://sourceforge.net/apps/mediawiki/jump-pilot/index.php?title=Starting_OpenJUMP
+  http://sourceforge.net/apps/mediawiki/jump-pilot/
 
 
 Startup/Command line options
@@ -207,7 +207,8 @@ for support
   consult the OJ wiki
     http://sourceforge.net/apps/mediawiki/jump-pilot
   use mailing list or trackers
-    http://sourceforge.net/apps/mediawiki/jump-pilot/index.php?title=OpenJUMP_Support
+    http://sourceforge.net/apps/mediawiki/
+            jump-pilot/index.php?title=OpenJUMP_Support
 
 For commercial support, e.g. paid plugin development, contact the developer 
 mailing list http://lists.sourceforge.net/lists/listinfo/jump-pilot-devel .
