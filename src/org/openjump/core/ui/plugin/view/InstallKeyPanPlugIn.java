@@ -40,14 +40,14 @@ public class InstallKeyPanPlugIn extends AbstractPlugIn implements MultiShortcut
     private static final int ZOOM_OUT = 5;
     private static final int ZOOM_FULL = 6;
     
-    public static final String PAN_NORTH = I18N.get("org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn.pan-north");
-    public static final String PAN_EAST  = I18N.get("org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn.pan-east");
-    public static final String PAN_SOUTH = I18N.get("org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn.pan-south");
-    public static final String PAN_WEST  = I18N.get("org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn.pan-west");
-    public static final String ZOOM_IN   = I18N.get("org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn.zoom-in");
-    public static final String ZOOM_OUT  = I18N.get("org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn.zoom-out");
-    public static final String ZOOM_EXT  = I18N.get("org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn.zoom-to-full-extent");
-    public static final String ACCE = I18N.get("org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn.accepted-values");
+    public static final String sPAN_NORTH = I18N.get("org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn.pan-north");
+    public static final String sPAN_EAST  = I18N.get("org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn.pan-east");
+    public static final String sPAN_SOUTH = I18N.get("org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn.pan-south");
+    public static final String sPAN_WEST  = I18N.get("org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn.pan-west");
+    public static final String sZOOM_IN   = I18N.get("org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn.zoom-in");
+    public static final String sZOOM_OUT  = I18N.get("org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn.zoom-out");
+    public static final String sZOOM_EXT  = I18N.get("org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn.zoom-to-full-extent");
+    public static final String sACCEPTED_VALUES = I18N.get("org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn.accepted-values");
 
     /* matrix defining directions */
     private static final int[][] DIRECTIONS = 
@@ -62,13 +62,13 @@ public class InstallKeyPanPlugIn extends AbstractPlugIn implements MultiShortcut
     private static double panPercentage;
     
     AbstractPlugIn[] plugIns = { 
-        new PanHelper("pan-north", NORTH),
-        new PanHelper("pan-east", EAST), 
-        new PanHelper("pan-south", SOUTH),
-        new PanHelper("pan-west", WEST),
-        new PanHelper("zoom-in", ZOOM_IN), new PanHelper("zoom-out", ZOOM_OUT), 
-        new PanHelper("zoom-in", ZOOM_IN), new PanHelper("zoom-out", ZOOM_OUT),
-        new PanHelper("zoom-to-full-extent", ZOOM_FULL) };
+        new PanHelper(sPAN_NORTH, NORTH),
+        new PanHelper(sPAN_EAST, EAST), 
+        new PanHelper(sPAN_SOUTH, SOUTH),
+        new PanHelper(sPAN_WEST, WEST),
+        new PanHelper(sZOOM_IN, ZOOM_IN), new PanHelper(sZOOM_OUT, ZOOM_OUT), 
+        new PanHelper(sZOOM_IN, ZOOM_IN), new PanHelper(sZOOM_OUT, ZOOM_OUT),
+        new PanHelper(sZOOM_EXT, ZOOM_FULL) };
   
     int[] keys = { KeyEvent.VK_UP, KeyEvent.VK_RIGHT, 
         KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, 
@@ -120,8 +120,7 @@ public class InstallKeyPanPlugIn extends AbstractPlugIn implements MultiShortcut
      */
     public void setPanPercentage(double panPercent ) {
         if ( panPercent <= 0 || panPercent > 1d ) {
-            throw new IllegalArgumentException(
-                I18N.get("org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn.accepted-values");
+            throw new IllegalArgumentException(sACCEPTED_VALUES);
         }
         //have percentage, otherwise it's percentage value in each direction
         //making it twice as much!

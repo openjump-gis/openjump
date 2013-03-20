@@ -42,6 +42,7 @@ import java.awt.geom.Point2D;
 import javax.swing.Icon;
 import javax.swing.SwingUtilities;
 
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.MathUtil;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
@@ -53,7 +54,7 @@ public class ZoomTool extends AbstractZoomTool {
      * If the selection box has side length less than this value, the input
      * will be considered to be a click rather than a box.
      */
-    public static final String ZOOM_TOOL_NAME = "Zoom In/Out";
+    public static final String ZOOM_TOOL_NAME = I18N.get("ui.zoom.ZoomTool.zoom-in-out");
 
     public ZoomTool() {                        
         setColor(Color.black);
