@@ -172,8 +172,8 @@ public class AboutDialog extends JDialog {
             in.close();
             result = new String(b, 0, b.length, "ISO-8859-1");
         } catch (Exception e) {
-            // this is normal in development where readme.txt is
-            // located in /etc/readme.txt
+            // this is normal in development where readme.txt is located in 
+            // etc/readme.txt, add 'project_folder/etc' to classpath to circumvent
             StringBuffer buf = new StringBuffer();
             for (int i = 0; i < e.getStackTrace().length; i++)
                 buf.append(e.getStackTrace()[i] + "\n");
@@ -182,16 +182,19 @@ public class AboutDialog extends JDialog {
         }
         
         JTextArea readme = new JTextArea(/*urlstring +"\n\n"+*/ result ) ;
-        readme.setFont(readme.getFont().deriveFont( 12f ));
+        // ensure monospaced typo
+        readme.setFont(new Font("Monospaced",Font.PLAIN,12));
         readme.setEditable(false);
         //readme.setAutoscrolls(false);
         // pad text away from the border
-        readme.setBorder( BorderFactory.createEmptyBorder(10,10,10,10) );
+        readme.setBorder( BorderFactory.createEmptyBorder(20,20,20,20) );
+        JPanel readmeP = new JPanel(); 
+        readmeP.add(readme);
         
-        aboutPanel.add(readme,new GridBagConstraints(0, 1, 1, 1, 0, 0, GridBagConstraints.CENTER,GridBagConstraints.BOTH,
-                new Insets(20, 20, 0, 20), 0, 0));
+        aboutPanel.add(readmeP,new GridBagConstraints(0, 1, 1, 1, 0, 0, GridBagConstraints.CENTER,GridBagConstraints.BOTH,
+                new Insets(20, 0, 5, 0), 0, 0));
         JPanel aboutP2 = new JPanel(new BorderLayout());
-        aboutP2.add(aboutPanel, BorderLayout.NORTH);
+        aboutP2.add(aboutPanel, BorderLayout.CENTER);
         aboutScroll = new JScrollPane(aboutP2);
         aboutScroll.setBorder(BorderFactory.createEmptyBorder());
 
