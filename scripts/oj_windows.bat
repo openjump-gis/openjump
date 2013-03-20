@@ -28,7 +28,7 @@ rem --- are ##M for ## Megabytes, ##G for ## Gigabytes            ---
 rem set JAVA_MEM=-Xms64M -Xmx512M
 
 rem --- uncomment and change your http proxy settings here
-rem set JAVA_OPTS=%JAVA_OPTS% -Dhttp.proxyHost=myproxyserver.com -Dhttp.proxyPort=80 -Dhttp.noProxyHosts="localhost|host.mydomain.com"
+rem set JAVA_OPTS=%JAVA_OPTS% -Dhttp.proxyHost=myproxyserver.com -Dhttp.proxyPort=80 -Dhttp.nonProxyHosts="localhost|host.mydomain.com"
 
 rem --- if the proxy server requires authentication uncomment and edit also these
 rem set JAVA_OPTS=%JAVA_OPTS% -Dhttp.proxyUser=username -Dhttp.proxyPass=password
