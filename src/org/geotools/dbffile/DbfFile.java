@@ -28,7 +28,7 @@ import java.util.Vector;
  *
  */
 public class DbfFile implements DbfConsts {
-    static final boolean DEBUG = false;
+    static final boolean DEBUG = true;
     int dbf_id;
     int last_update_d;
     int last_update_m;
@@ -713,7 +713,7 @@ public class DbfFile implements DbfConsts {
                 System.out.println(last_rec);
             }
 
-            data_offset = file.readShortLE();
+            data_offset = (char)file.readShortLE();
 
             //data_offset=0;
             //System.out.println("x = "+file.readUnsignedByte()+" " +
@@ -726,7 +726,7 @@ public class DbfFile implements DbfConsts {
                 System.out.println(data_offset);
             }
 
-            rec_size = file.readShortLE();
+            rec_size = (char)file.readShortLE();
 
             if (DEBUG) {
                 System.out.print("DbFi>rec_size ");

@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-03-21 mmichaud <michael.michaud@free.fr>
+  * fix in DbfFile appearing with very long header
+  
 2013-03-18 mmichaud <michael.michaud@free.fr>
   * small fix in Add3DGeometryAttributesPLugIn maxSlope calculation
 
