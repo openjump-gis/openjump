@@ -292,9 +292,18 @@ public class SimplifyPolygonCoveragePlugIn extends AbstractPlugIn implements Thr
 			        // because sometimes, new coordinates are introduced in the 
 			        // simplification algorithm
 			        int countCommonCoordinates = commonCoordinates((Polygon)componentA, (Polygon)gB);
-			        if (countCommonCoordinates > minCountCommonCoordinates) {
+			        if (countCommonCoordinates >= minCountCommonCoordinates) {
+			            // if the number of common coordinates is strictly equal
+			            // check that B can really be a simplified version of A
+			            if (countCommonCoordinates == minCountCommonCoordinates) {
+			                if (gB.buffer(Math.abs(tolerance)*1.1).contains(componentA)) {
+			                    geomB = gB;
+			                }
+			            }
+			            else {
+			                geomB = gB;
+			            }
 			            minCountCommonCoordinates = countCommonCoordinates;
-			            geomB = gB;
 			            match = true;
 			        }
 			    }
