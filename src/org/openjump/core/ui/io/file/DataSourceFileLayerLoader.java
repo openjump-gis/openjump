@@ -116,10 +116,11 @@ public class DataSourceFileLayerLoader extends AbstractFileLayerLoader {
         Category category = TaskUtil.getSelectedCategoryName(workbenchContext);
         layerManager.addLayerable(category.getName(), layer);
         layer.setName(layerName);
-        // make sure compressed files are loaded readonly
-        if (CompressedFile.isCompressed(UriUtil.getFileName(uri))) {
-            layer.setReadonly(true);
-        }
+        // make sure compressed files are loaded readonly 
+        // [ede] disabled via request (jukka,03.2013)
+//        if (CompressedFile.isCompressed(UriUtil.getFileName(uri))) {
+//            layer.setReadonly(true);
+//        }
 
         layer.setDataSourceQuery(dataSourceQuery);
         layer.setFeatureCollectionModified(false);
