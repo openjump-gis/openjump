@@ -28,7 +28,7 @@ import java.util.Vector;
  *
  */
 public class DbfFile implements DbfConsts {
-    static final boolean DEBUG = true;
+    static final boolean DEBUG = false;
     int dbf_id;
     int last_update_d;
     int last_update_m;
