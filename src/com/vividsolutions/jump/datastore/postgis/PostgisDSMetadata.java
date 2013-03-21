@@ -160,8 +160,8 @@ public class PostgisDSMetadata implements DataStoreMetadata {
         schema = tableName.substring( 0, dotPos ).toLowerCase();
         table = tableName.substring( dotPos + 1 ).toLowerCase();
     }
-    return "WHERE lower(" + schemaCol + ") = '" + schema + "'"
-          + " AND lower(" + tableCol + ") = '" + table + "'";
+    return "WHERE " + schemaCol + " = '" + schema + "'"
+          + " AND " + tableCol + " = '" + table + "'";
   }
 
   private static class ColumnNameBlock implements ResultSetBlock {

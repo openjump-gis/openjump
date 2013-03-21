@@ -2,6 +2,7 @@
 
 2013-03-21 mmichaud <michael.michaud@free.fr>
   * fix in DbfFile appearing with very long header
+  * retrieving geometry columns in postgis is now case sensitive
   
 2013-03-18 mmichaud <michael.michaud@free.fr>
   * small fix in Add3DGeometryAttributesPLugIn maxSlope calculation
