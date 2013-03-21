@@ -135,6 +135,9 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
                     ERROR, JOptionPane.ERROR_MESSAGE );
             return false;
         }
+        // put the TABLE_KEY value early to make sure it will appear in the 
+        // monitor see also AbstractSaveDatasetAsPlugIn 
+        properties.put(SaveToPostGISDataSource.TABLE_KEY, panel.getTableName());
         return true;
     }
   
