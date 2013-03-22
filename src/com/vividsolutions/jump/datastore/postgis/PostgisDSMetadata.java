@@ -155,10 +155,10 @@ public class PostgisDSMetadata implements DataStoreMetadata {
     // names in public schema and another schema
     int dotPos = tableName.indexOf( "." );
     String schema = "public";
-    String table = tableName.toLowerCase();
+    String table = tableName;
     if (dotPos != -1) {
-        schema = tableName.substring( 0, dotPos ).toLowerCase();
-        table = tableName.substring( dotPos + 1 ).toLowerCase();
+        schema = tableName.substring( 0, dotPos );
+        table = tableName.substring( dotPos + 1 );
     }
     return "WHERE " + schemaCol + " = '" + schema + "'"
           + " AND " + tableCol + " = '" + table + "'";
