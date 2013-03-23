@@ -3,6 +3,7 @@
 2013-03-21 mmichaud <michael.michaud@free.fr>
   * fix : 3608648 can now open a project including broken db connections.
   * ZoomToScalePlugIn now remembers last scale set bythe user
+  * Better error message when DataStoreQueryDataSource raises a SQLException
 
 2013-03-21 mmichaud <michael.michaud@free.fr>
   * fix in DbfFile appearing with very long header

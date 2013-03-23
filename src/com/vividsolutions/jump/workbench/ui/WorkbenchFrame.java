@@ -51,6 +51,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -1055,6 +1056,10 @@ public class WorkbenchFrame extends JFrame
           + I18N.get("ui.WorkbenchFrame.check-for-invalid-geometries");
     } else {
       message = t.getLocalizedMessage();
+    }
+    if (t instanceof SQLException) {
+        Throwable nextT = ((SQLException)t).getNextException();
+        if (nextT != null) message = message + "\n" + nextT.getLocalizedMessage();
     }
     return message + "\n\n (" + StringUtil.toFriendlyName(t.getClass().getName())
       + ")";
