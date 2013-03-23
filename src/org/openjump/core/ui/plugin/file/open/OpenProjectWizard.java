@@ -178,6 +178,7 @@ public class OpenProjectWizard extends AbstractWizardGroup {
   private void initializeDataSources(Task task, WorkbenchContext context) throws Exception {
     LayerManager layerManager = task.getLayerManager();
     List<Layer> layers = layerManager.getLayers();
+    List<Layer> layersToBeRemoved = new ArrayList<Layer>();
     for (Layer layer : layers) {
       DataSourceQuery dataSourceQuery = layer.getDataSourceQuery();
       DataSource dataSource = dataSourceQuery.getDataSource();
@@ -192,12 +193,12 @@ public class OpenProjectWizard extends AbstractWizardGroup {
                 	    I18N.getMessage(KEY + ".opening-datasource-{0}-failed-with-error", 
                 	        new Object[] {/*layer.getDataSourceQuery().toString()*/layer.getName()}) + "<br>" + 
                 	    StringUtil.split(e.getLocalizedMessage(), 80).replaceAll("\n","<br>") + "<br>" +
-                        I18N.get(KEY + ".click-yes-to-continue") + 
+                        I18N.get(KEY + ".click-yes-to-continue-or-no-to-remove-layer") + 
                     "</html>", 
                     "OpenJUMP", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 	
 	    	  if (response != JOptionPane.YES_OPTION) {
-	    	      System.exit(0);
+	    	      layersToBeRemoved.add(layer);
 	    	  }
               else {
                   continue;
@@ -205,6 +206,7 @@ public class OpenProjectWizard extends AbstractWizardGroup {
           }
       }
     }
+    for (Layer layer : layersToBeRemoved) layerManager.remove(layer);
   }
 
   private void loadLayers(LayerManager sourceLayerManager,
