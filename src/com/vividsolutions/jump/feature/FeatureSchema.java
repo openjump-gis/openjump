@@ -269,7 +269,8 @@ public class FeatureSchema implements Cloneable, Serializable {
 	 * @return <tt>TRUE</tt> if the specified attribute is dynamically computed.
 	 */
 	 public boolean isOperation(int attributeIndex) {
-	     return operations.get(attributeIndex) != null;
+	     if (attributeIndex >= 0) return operations.get(attributeIndex) != null;
+	     else return false;
 	 }
 	 
 	/**

@@ -4,6 +4,7 @@ import java.sql.*;
 
 import org.postgresql.PGConnection;
 
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.datastore.AdhocQuery;
 import com.vividsolutions.jump.datastore.DataStoreConnection;
 import com.vividsolutions.jump.datastore.DataStoreException;
@@ -36,7 +37,7 @@ public class PostgisDSConnection
     return dbMetadata;
   }
 
-    public FeatureInputStream execute(Query query) {
+    public FeatureInputStream execute(Query query) throws Exception {
         if (query instanceof FilterQuery) {
             try {
                 return executeFilterQuery((FilterQuery) query);
@@ -47,7 +48,7 @@ public class PostgisDSConnection
         if (query instanceof AdhocQuery) {
             return executeAdhocQuery((AdhocQuery) query);
         }
-        throw new IllegalArgumentException("Unsupported Query type");
+        throw new IllegalArgumentException(I18N.get(this.getClass().getName()+".unsupported-query-type"));
     }
 
   /**
@@ -72,10 +73,13 @@ public class PostgisDSConnection
     return ifs;
   }
 
-  public FeatureInputStream executeAdhocQuery(AdhocQuery query)
+  public FeatureInputStream executeAdhocQuery(AdhocQuery query) throws Exception
   {
     String queryString = query.getQuery();
     PostgisFeatureInputStream ifs = new PostgisFeatureInputStream(connection, queryString);
+    if (ifs.getFeatureSchema().getGeometryIndex() < 0) {
+        throw new Exception(I18N.get(this.getClass().getName()+".resultset-must-have-a-geometry-column"));
+    }
     return ifs;
   }
 

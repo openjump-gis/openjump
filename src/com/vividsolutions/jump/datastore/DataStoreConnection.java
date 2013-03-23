@@ -8,7 +8,7 @@ import com.vividsolutions.jump.io.FeatureInputStream;
 public interface DataStoreConnection
 {
   DataStoreMetadata getMetadata();
-  FeatureInputStream execute(Query query);
+  FeatureInputStream execute(Query query) throws Exception;
   void close() throws DataStoreException;
   boolean isClosed() throws DataStoreException;
 
