@@ -308,12 +308,12 @@ public class NoteTool extends NClickTool {
     Layer noteLayer = new Layer(NOTES, Color.yellow.brighter().brighter(),
     // new FeatureDataset(NoteStyle.createFeatureSchema()), layerManager);
         new FeatureDataset(DEFAULT_SCHEMA), layerManager);
-    noteLayer.setEditable(true);
 
     boolean firingEvents = layerManager.isFiringEvents();
     layerManager.setFiringEvents(false);
     try {
       noteLayer.addStyle(new NoteStyle());
+      noteLayer.setEditable(true);
     } finally {
       layerManager.setFiringEvents(firingEvents);
     }
