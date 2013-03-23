@@ -1,6 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
 2013-03-21 mmichaud <michael.michaud@free.fr>
+  * fix : 3608648 can now open a project including broken db connections.
+
+2013-03-21 mmichaud <michael.michaud@free.fr>
   * fix in DbfFile appearing with very long header
   * retrieving geometry columns in postgis is now case sensitive
   

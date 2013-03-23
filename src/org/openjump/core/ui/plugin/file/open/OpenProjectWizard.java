@@ -30,6 +30,7 @@ import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.util.java2xml.XML2Java;
+import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Category;
@@ -174,15 +175,34 @@ public class OpenProjectWizard extends AbstractWizardGroup {
       }
   }
 
-  private void initializeDataSources(Task task, WorkbenchContext context) {
+  private void initializeDataSources(Task task, WorkbenchContext context) throws Exception {
     LayerManager layerManager = task.getLayerManager();
     List<Layer> layers = layerManager.getLayers();
     for (Layer layer : layers) {
       DataSourceQuery dataSourceQuery = layer.getDataSourceQuery();
       DataSource dataSource = dataSourceQuery.getDataSource();
       if (dataSource instanceof WorkbenchContextReference) {
-        WorkbenchContextReference workbenchRef = (WorkbenchContextReference)dataSource;
-        workbenchRef.setWorkbenchContext(context);
+          try {
+              WorkbenchContextReference workbenchRef = (WorkbenchContextReference)dataSource;
+              workbenchRef.setWorkbenchContext(context);
+          } catch (Exception e) {
+              int response = JOptionPane.showConfirmDialog(
+                    workbenchContext.getWorkbench().getFrame(),
+                    "<html>" +
+                	    I18N.getMessage(KEY + ".opening-datasource-{0}-failed-with-error", 
+                	        new Object[] {/*layer.getDataSourceQuery().toString()*/layer.getName()}) + "<br>" + 
+                	    StringUtil.split(e.getLocalizedMessage(), 80).replaceAll("\n","<br>") + "<br>" +
+                        I18N.get(KEY + ".click-yes-to-continue") + 
+                    "</html>", 
+                    "OpenJUMP", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+	
+	    	  if (response != JOptionPane.YES_OPTION) {
+	    	      System.exit(0);
+	    	  }
+              else {
+                  continue;
+              }
+          }
       }
     }
   }
@@ -226,7 +246,7 @@ public class OpenProjectWizard extends AbstractWizardGroup {
                 I18N.get("ui.plugin.OpenProjectPlugIn.At-least-one-file-in-the-task-could-not-be-found")
                   + "\n"
                   + I18N.get("ui.plugin.OpenProjectPlugIn.Do-you-want-to-locate-it-and-continue-loading-the-task"),
-                "JUMP", JOptionPane.YES_NO_OPTION);
+                "OpenJUMP", JOptionPane.YES_NO_OPTION);
 
               if (response != JOptionPane.YES_OPTION) {
                 break;
@@ -246,7 +266,7 @@ public class OpenProjectWizard extends AbstractWizardGroup {
             } else {
               break;
             }
-          }
+          } 
         }
 
         newLayerManager.addLayerable(sourceLayerCategory.getName(), layerable);
