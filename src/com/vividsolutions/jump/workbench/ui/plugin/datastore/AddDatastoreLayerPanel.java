@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JScrollPane;
@@ -272,7 +273,10 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
 
     private String[] datasetNames(
         final ConnectionDescriptor connectionDescriptor ) throws Exception {
-        if ( !connectionDescriptorToDatasetNamesMap.containsKey( connectionDescriptor ) ) {
+        // [mmichaud 2013-03-23] remove this test to be sure that the list of
+        // tables is always uptodate (hopefully, the query to the metadata
+        // table is always fast)
+        //if ( !connectionDescriptorToDatasetNamesMap.containsKey( connectionDescriptor ) ) {
             // Prompt for a password outside the ThreadedBasePlugIn thread,
             // which is not the GUI thread. [Jon Aquino 2005-03-11]
             new PasswordPrompter().getOpenConnection( connectionManager(),
@@ -296,7 +300,7 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
                 connectionDescriptorToDatasetNamesMap.put( connectionDescriptor,
                     datasetNames );
             }
-        }
+        //}
         return ( String[] ) connectionDescriptorToDatasetNamesMap.get( connectionDescriptor );
     }
 
