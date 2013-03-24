@@ -18,4 +18,11 @@ public class CheckOS {
     	return MAC_OS_X;
     }
     
+    public static boolean isWindows() {
+      return System.getProperty("os.name").toLowerCase().contains("windows");
+    }
+    
+    public static boolean isLinux() {
+      return System.getProperty("os.name").toLowerCase().contains("linux");
+    }
 }

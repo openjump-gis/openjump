@@ -53,6 +53,7 @@ import javax.swing.event.MenuListener;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
+import org.openjump.core.CheckOS;
 import org.openjump.core.ui.plugin.AbstractUiPlugIn;
 import org.openjump.core.ui.swing.listener.EnableCheckMenuItemShownListener;
 
@@ -607,8 +608,7 @@ public class FeatureInstaller {
   // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=7122141
   // we simply leave out the icon, so the tick is displayed instead of the
   // icon with a blue background
-  private boolean vista_checkbox_workaround = System.getProperty("os.name")
-      .toLowerCase().contains("windows")
+  private boolean vista_checkbox_workaround = CheckOS.isWindows()
       && Float.valueOf(System.getProperty("os.version")) >= 6
       && UIManager.getLookAndFeel().getClass().getName()
           .equals("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");

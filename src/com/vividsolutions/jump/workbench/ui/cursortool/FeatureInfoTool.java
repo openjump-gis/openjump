@@ -35,6 +35,7 @@ package com.vividsolutions.jump.workbench.ui.cursortool;
 
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Image;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
@@ -42,11 +43,12 @@ import java.util.Map;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
+import org.openjump.core.CheckOS;
+
 import com.vividsolutions.jump.workbench.model.FenceLayerFinder;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.ui.InfoFrame;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 
 public class FeatureInfoTool extends SpecifyFeaturesTool {
 
@@ -60,7 +62,10 @@ public class FeatureInfoTool extends SpecifyFeaturesTool {
     }
 
     public Cursor getCursor() {
-        return createCursor(IconLoader.icon("information_cursor.png").getImage());
+      // [ede 03.2103] linux currently support only 2 color cursors
+      Image i = !CheckOS.isLinux() ? IconLoader.image("information_cursor.png")
+          : IconLoader.image("information_cursor_2color.gif");
+      return createCursor(i);
     }
     
     protected void gestureFinished() throws Exception {
