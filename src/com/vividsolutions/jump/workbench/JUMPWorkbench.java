@@ -46,7 +46,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeSet;
@@ -177,8 +176,8 @@ public class JUMPWorkbench {
    */
   public static void setIcon(Object o) {
     // attach the right icon, depending on
-    // - availability of method setIconImages (java 1.5 vs. 1.6), 
-    //   several icons for different sizes
+    // - availability of method setIconImages (java 1.5 vs. 1.6),
+    // several icons for different sizes
     // - underlying object type (JFrame, JInternalFrame, others? )
     // let's go
     if (o instanceof JFrame) {
@@ -220,9 +219,8 @@ public class JUMPWorkbench {
   }
 
   /**
-   * @params
-   *          a visible SplashWindow to close when initialization is complete
-   *          and the WorkbenchFrame is opened
+   * @params a visible SplashWindow to close when initialization is complete and
+   *         the WorkbenchFrame is opened
    */
   public JUMPWorkbench(String title, String[] args, final JWindow s,
       TaskMonitor monitor) throws Exception {
@@ -296,7 +294,7 @@ public class JUMPWorkbench {
         extensionsDirectory = null;
       }
     }
-    
+
     // [ede 12.2012] deprecated -project option
     if (commandLine.hasOption(INITIAL_PROJECT_FILE)) {
       String task = commandLine.getOption(INITIAL_PROJECT_FILE).getArg(0);
@@ -338,30 +336,28 @@ public class JUMPWorkbench {
       // load i18n specified in command line ( '-i18n translation' )
       if (commandLine.hasOption(I18N_FILE)) {
         I18N_SETLOCALE = commandLine.getOption(I18N_FILE).getArg(0);
-        // initialize I18N 
+        // initialize I18N
         I18N.setLocale(I18N_SETLOCALE);
       }
 
       if (commandLine.hasOption("help")) {
         printProperly(commandLine.printDoc());
         System.exit(0);
-      }
-      else if (commandLine.hasOption("version")) {
+      } else if (commandLine.hasOption("version")) {
         printProperly(I18N.get("JUMPWorkbench.jump") + " "
             + I18N.get("ui.AboutDialog.version") + " "
             + JUMPVersion.CURRENT_VERSION);
         System.exit(0);
-      }
-      else if (commandLine.hasOption("print-properties")) {
-        printProperties("args[]="+Arrays.toString(args));
+      } else if (commandLine.hasOption("print-properties")) {
+        printProperties("args[]=" + Arrays.toString(args));
         System.exit(0);
       }
-      
+
       // Init the L&F before instantiating the progress monitor [Jon Aquino]
       initLookAndFeel();
       // fix lnf (weird windows non-unicode locale bug)
       fixLookAndFeel();
-      
+
       // setFont to switch fonts if defaults cannot display current language
       // early change the default font definition of the jre if necessary, the
       // first internationalized string shown is 'JUMPWorkbench.version' on
@@ -415,15 +411,14 @@ public class JUMPWorkbench {
    *          notified of progress of plug-in loading
    * @throws Exception
    */
-  static void main(String[] args, String title,
-      JComponent splashComponent, TaskMonitor taskMonitor) throws Exception {
+  static void main(String[] args, String title, JComponent splashComponent,
+      TaskMonitor taskMonitor) throws Exception {
 
     SplashWindow splashWindow = new SplashWindow(splashComponent);
     splashWindow.setVisible(true);
 
     taskMonitor.report(I18N.get("JUMPWorkbench.status.create"));
-    workbench = new JUMPWorkbench(title, args,
-        splashWindow, taskMonitor);
+    workbench = new JUMPWorkbench(title, args, splashWindow, taskMonitor);
 
     taskMonitor.report(I18N.get("JUMPWorkbench.status.configure-core"));
     new JUMPConfiguration().setup(workbench.context);
@@ -449,13 +444,13 @@ public class JUMPWorkbench {
 
   private static void fixLookAndFeel() {
     UIDefaults defaults = UIManager.getDefaults();
-    Font ta_font = (Font)defaults.get("TextArea.font");
-    if (ta_font.getSize()<13){
-      UIManager.put("TextArea.font",ta_font.deriveFont(13f));
+    Font ta_font = (Font) defaults.get("TextArea.font");
+    if (ta_font.getSize() < 11) {
+      UIManager.put("TextArea.font", ta_font.deriveFont(13f));
       System.out.println("Info: Fix text area font size bug.");
     }
   }
-  
+
   private static void initLookAndFeel() throws Exception {
     if (LangUtil.ifNull(System.getProperty("initLookAndFeel"), "true")
         .toString().equalsIgnoreCase("false")) {
@@ -464,7 +459,7 @@ public class JUMPWorkbench {
     // Apple stuff from Raj Singh's startup script [Jon Aquino 10/30/2003]
     System.setProperty("apple.laf.useScreenMenuBar", "true");
     System.setProperty("apple.awt.showGrowBox", "true");
-    
+
     if (UIManager.getLookAndFeel() != null
         && UIManager.getLookAndFeel().getClass().getName()
             .equals(UIManager.getSystemLookAndFeelClassName())) {
@@ -567,49 +562,54 @@ public class JUMPWorkbench {
     return context;
   }
 
-  public static final CommandLine getCommandLine(){
+  public static final CommandLine getCommandLine() {
     return commandLine;
   }
 
   /**
    * @return JUMPWorkbench instance
    */
-  public static final JUMPWorkbench getInstance(){
+  public static final JUMPWorkbench getInstance() {
     return workbench;
   }
-  
-  private static void printProperties(String in){
+
+  private static void printProperties(String in) {
     Properties ps = System.getProperties();
     TreeSet<String> v = new TreeSet(ps.keySet());
     String out = "";
     for (String key : v) {
-      out += key+"="+ps.getProperty(key)+"\n";
+      out += key + "=" + ps.getProperty(key) + "\n";
     }
+
+    out += "\n\napplying default lnf";
     
-    // init lnf for UIDefaults
+    // init lnf for UIDefaults, ignore errors
     try {
       initLookAndFeel();
-    } catch (Exception e) {}
+      out += " - OK\n";
+    } catch (Exception e) {
+      out += "\n\n"+StringUtil.stackTrace(e)+"\n\n";
+    }
 
     out += "\n\nUIDefaults\n\n";
     UIDefaults defaults = UIManager.getDefaults();
     TreeSet ts = new TreeSet(new Comparator() {
       public int compare(Object a, Object b) {
-         Map.Entry ea = (Map.Entry) a;
-         Map.Entry eb = (Map.Entry) b;
-         return ea.getKey().toString().compareTo(eb.getKey().toString());
+        Map.Entry ea = (Map.Entry) a;
+        Map.Entry eb = (Map.Entry) b;
+        return ea.getKey().toString().compareTo(eb.getKey().toString());
       }
-   });
-   ts.addAll(defaults.entrySet());
+    });
+    ts.addAll(defaults.entrySet());
 
-   Iterator it = ts.iterator();
+    Iterator it = ts.iterator();
     while (it.hasNext()) {
-        Map.Entry pair = (Map.Entry)it.next();
-        Object key = pair.getKey();
-        Object value = defaults.get(key);
-        out += key +"="+value+"\n";
+      Map.Entry pair = (Map.Entry) it.next();
+      Object key = pair.getKey();
+      Object value = defaults.get(key);
+      out += key + "=" + value + "\n";
     }
-    printProperly(in+"\n"+out);
+    printProperly(in + "\n" + out);
   }
 
   private static void parseCommandLine(String[] args) throws WorkbenchException {
@@ -759,44 +759,45 @@ public class JUMPWorkbench {
           + ((JLabel) getComponent()).getText());
     }
   }
-  
+
   /*
    * Helper method to print to GUI and Console (e.g. help text)
    */
   private static void printProperly(String text) {
     // we print it to gui and console, just to be sure
-    //if (System.console() == null) {
-      // make sure lnf is set
-      try {
-        initLookAndFeel();
-      } catch (Exception e) {
-        // fail silently
-      }
-      // JLabel label = new
-      // JLabel("<html><body style='width:300px'>"+text.replaceAll("\n",
-      // "<br>")+"</body></html>");
-      JTextArea textArea = new JTextArea();
-      JScrollPane scrollPane = new JScrollPane(textArea);
-      // textArea.setLineWrap(true);
-      // textArea.setWrapStyleWord(true);
-      textArea.setEditable(false);
-      textArea.setText(text);
-      scrollPane.setBorder(BorderFactory.createEmptyBorder());
-      // scrollPane.setPreferredSize( new Dimension( 300, 300 ) );
-      JOptionPane pane = new JOptionPane(scrollPane,
-          JOptionPane.INFORMATION_MESSAGE, JOptionPane.DEFAULT_OPTION, IconLoader.icon("oj_32.png"));
-      JDialog d = pane.createDialog(I18N.get("JUMPWorkbench.jump"));
-      // some cute icons
-      ArrayList l = new ArrayList(APP_ICONS);
-      l.add(0, IconLoader.image("information_16x16.png"));
-      d.setIconImages(l);
-      // harmonize background color
-      textArea.setBackground(new JLabel().getBackground());
-      d.setResizable(true);
-      d.pack();
-      // GUIUtil.centreOnScreen(d);
-      d.setVisible(true);
-    //} else
-      System.out.println(text);
+    // if (System.console() == null) {
+    // make sure lnf is set
+    try {
+      initLookAndFeel();
+    } catch (Exception e) {
+      // fail silently
+    }
+    // JLabel label = new
+    // JLabel("<html><body style='width:300px'>"+text.replaceAll("\n",
+    // "<br>")+"</body></html>");
+    JTextArea textArea = new JTextArea();
+    JScrollPane scrollPane = new JScrollPane(textArea);
+    // textArea.setLineWrap(true);
+    // textArea.setWrapStyleWord(true);
+    textArea.setEditable(false);
+    textArea.setText(text);
+    scrollPane.setBorder(BorderFactory.createEmptyBorder());
+    // scrollPane.setPreferredSize( new Dimension( 300, 300 ) );
+    JOptionPane pane = new JOptionPane(scrollPane,
+        JOptionPane.INFORMATION_MESSAGE, JOptionPane.DEFAULT_OPTION,
+        IconLoader.icon("oj_32.png"));
+    JDialog d = pane.createDialog(I18N.get("JUMPWorkbench.jump"));
+    // some cute icons
+    ArrayList l = new ArrayList(APP_ICONS);
+    l.add(0, IconLoader.image("information_16x16.png"));
+    d.setIconImages(l);
+    // harmonize background color
+    textArea.setBackground(new JLabel().getBackground());
+    d.setResizable(true);
+    d.pack();
+    // GUIUtil.centreOnScreen(d);
+    d.setVisible(true);
+    // } else
+    System.out.println(text);
   }
 }
