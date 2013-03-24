@@ -158,7 +158,7 @@ public class SimplifyPolygonCoveragePlugIn extends AbstractPlugIn implements Thr
 	    	
 	    	Collection<Feature> features = this.regions.getFeatures();
 	    	Feature firstFeature = (Feature)features.iterator().next();
-	    	if (firstFeature.getGeometry() instanceof Polygon){
+	    	if (firstFeature.getGeometry().getDimension() == 2){
 	    		//-- extract the unique boundaries
 		    	monitor.report(sCreateGraph);
 		    	PolygonGraph pg = new PolygonGraph(features, monitor);
@@ -296,7 +296,8 @@ public class SimplifyPolygonCoveragePlugIn extends AbstractPlugIn implements Thr
 			            // if the number of common coordinates is strictly equal
 			            // check that B can really be a simplified version of A
 			            if (countCommonCoordinates == minCountCommonCoordinates) {
-			                if (gB.buffer(Math.abs(tolerance)*1.1).contains(componentA)) {
+			                if (gB.buffer(Math.abs(tolerance)*1.1).contains(componentA) &&
+			                    componentA.buffer(Math.abs(tolerance)*1.1).contains(gB)) {
 			                    geomB = gB;
 			                }
 			            }
