@@ -52,10 +52,12 @@ import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 
 //I wrote Java2XML and XML2Java because I couldn't get Betwixt to do Collections.
@@ -209,6 +211,36 @@ public class XMLBinder {
                 new CustomConverter() {
                     public Object toJava(String value) {
                         return new File(value);
+                    }
+
+                    public String toXML(Object object) {
+                        return object.toString();
+                    }
+                });
+        classToCustomConverterMap.put(Character.class,
+                new CustomConverter() {
+                    public Object toJava(String value) {
+                        return new Character(value.length()>0?value.charAt(0):'\u0000');
+                    }
+
+                    public String toXML(Object object) {
+                        return object.toString();
+                    }
+                });
+        classToCustomConverterMap.put(Charset.class,
+                new CustomConverter() {
+                    public Object toJava(String value) {
+                        return Charset.forName(value);
+                    }
+
+                    public String toXML(Object object) {
+                        return ((Charset)object).name();
+                    }
+                });
+        classToCustomConverterMap.put(Pattern.class,
+                new CustomConverter() {
+                    public Object toJava(String value) {
+                        return Pattern.compile(value);
                     }
 
                     public String toXML(Object object) {

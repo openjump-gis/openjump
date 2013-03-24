@@ -120,9 +120,11 @@ public class OpenProjectWizard extends AbstractWizardGroup {
       blackboard.put(FILE_CHOOSER_DIRECTORY_KEY, file.getAbsoluteFile().getParent());
     
       FileReader reader = new FileReader(file);
+      JUMPWorkbench workbench = null;
+      WorkbenchFrame workbenchFrame = null;
       try {
-        JUMPWorkbench workbench = workbenchContext.getWorkbench();
-        WorkbenchFrame workbenchFrame = workbench.getFrame();
+        workbench = workbenchContext.getWorkbench();
+        workbenchFrame = workbench.getFrame();
         PlugInManager plugInManager = workbench.getPlugInManager();
         ClassLoader pluginClassLoader = plugInManager.getClassLoader();
         sourceTask = (Task)new XML2Java(pluginClassLoader).read(reader,
@@ -162,6 +164,10 @@ public class OpenProjectWizard extends AbstractWizardGroup {
 
         OpenRecentPlugIn.get(workbenchContext).addRecentProject(file);
 
+      }
+      catch (ClassNotFoundException e) {
+          workbenchFrame.log(file.getPath() + " can not be loaded");
+          workbenchFrame.warnUser("Missing class: " + e.getMessage());
       }
       catch (Exception cause) {
         Exception e = new Exception(I18N.getMessage(KEY
