@@ -263,9 +263,9 @@ public class MapLayer {
    * @return a list of the SRS list of this MapLayer and its ancestors
    */
   public Collection getFullSRSList() {
-    ArrayList fullSRSList  = new ArrayList(getSRSList());
+    Set fullSRSList  = new TreeSet(getSRSList());
     if (parent != null) fullSRSList.addAll(parent.getFullSRSList());
-    return CollectionUtil.removeDuplicates(fullSRSList);
+    return fullSRSList;
   }
   
   /**

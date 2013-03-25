@@ -1,6 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
 2013-03-24 mmichaud <michael.michaud@free.fr>
+  * It is now much faster to get the list of available WMS layer from a service
+  
+2013-03-24 mmichaud <michael.michaud@free.fr>
   * Prepare code to accept csv format persistence in projects
 
 2013-03-21 mmichaud <michael.michaud@free.fr>
