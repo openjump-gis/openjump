@@ -1088,7 +1088,10 @@ public class WorkbenchFrame extends JFrame
 
   public void zoomChanged(Envelope modelEnvelope) {
     toolBar.updateEnabledState();
-    scaleLabel.setText("1:" + (int) Math.floor(ScreenScale.getHorizontalMapScale(getActiveTaskFrame().getLayerViewPanel().getViewport())));
+    // May be null during a new project initialization
+    if (getActiveTaskFrame() != null) {
+        scaleLabel.setText("1:" + (int) Math.floor(ScreenScale.getHorizontalMapScale(getActiveTaskFrame().getLayerViewPanel().getViewport())));
+    }
   }
 
   void exitMenuItem_actionPerformed(ActionEvent e) {
