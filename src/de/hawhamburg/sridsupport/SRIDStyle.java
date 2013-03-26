@@ -15,7 +15,9 @@ import com.vividsolutions.jump.workbench.ui.renderer.style.Style;
 /**
  * Ensures that all geometries have a given SRID. Because it is a Style, it will
  * be saved to the task file.
+ * @see {@link org.openjump.core.ccordsys.srid.SRIDStyle}
  */
+@Deprecated
 public class SRIDStyle implements Style {
     private int srid = -1;
     public void paint(Feature f, Graphics2D g, Viewport viewport)
