@@ -180,7 +180,7 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
      * Returns the String displayed in the Format Chooser.
      */
     public String toString() {
-        return "PostGIS Table (new)";
+        return I18N.get(KEY + ".postgis-table");
     }
 
 }
