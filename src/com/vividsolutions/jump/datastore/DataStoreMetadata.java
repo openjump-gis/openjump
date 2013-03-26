@@ -1,6 +1,7 @@
 package com.vividsolutions.jump.datastore;
 
 import com.vividsolutions.jts.geom.Envelope;
+import java.util.List;
 
 /**
  * Metadata about the datasets in the database
@@ -8,7 +9,9 @@ import com.vividsolutions.jts.geom.Envelope;
 public interface DataStoreMetadata
 {
   String[] getDatasetNames();
-  String[] getGeometryAttributeNames(String datasetName);
+  @Deprecated
+  //String[] getGeometryAttributeNames(String datasetName);
+  List<GeometryColumn> getGeometryAttributes(String datasetName);
 
   /**
    * @param datasetName

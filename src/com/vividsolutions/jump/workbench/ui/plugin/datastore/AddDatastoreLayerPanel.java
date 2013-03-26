@@ -3,7 +3,10 @@ package com.vividsolutions.jump.workbench.ui.plugin.datastore;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.DefaultComboBoxModel;
@@ -18,6 +21,7 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.datastore.GeometryColumn;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.util.LangUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -84,10 +88,15 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
         return datasetComboBox.getSelectedItem() != null ?
             ((String)datasetComboBox.getSelectedItem()).trim() : null;
     }
+    
+    public GeometryColumn getGeometryColumn() {
+        return geometryAttributeComboBox.getSelectedItem() != null ?
+            ((GeometryColumn)geometryAttributeComboBox.getSelectedItem()) : null;
+    }
 
     public String getGeometryAttributeName() {
         return geometryAttributeComboBox.getSelectedItem() != null ?
-            ((String)geometryAttributeComboBox.getSelectedItem()).trim() : null;
+            getGeometryColumn().getName().trim() : null;
     }
     
     /**
@@ -217,15 +226,27 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
             return;
         }
         try {
-            String selectedGeometryAttributeName = getGeometryAttributeName();
+            GeometryColumn selectedGeometryColumn = getGeometryColumn();
             geometryAttributeComboBox.setModel( new DefaultComboBoxModel(
-                sortByString( geometryAttributeNames( getDatasetName(),
+                sortGeometryColumns( getGeometryAttributes( getDatasetName(),
                 getConnectionDescriptor() ) ) ) );
-            geometryAttributeComboBox.setSelectedItem( selectedGeometryAttributeName );
+            geometryAttributeComboBox.setSelectedItem( selectedGeometryColumn );
         } catch ( Exception e ) {
             getContext().getErrorHandler().handleThrowable( e );
             geometryAttributeComboBox.setModel( new DefaultComboBoxModel() );
         }
+    }
+    
+    public Object[] sortGeometryColumns(List<GeometryColumn> list) {
+        Collections.sort(list, new Comparator<GeometryColumn>() {
+            public int compare(GeometryColumn o1, GeometryColumn o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+            public boolean equals(Object obj) {
+                return this == obj;
+            }
+        });
+        return list.toArray(new GeometryColumn[list.size()]);
     }
 
     private void populateDatasetComboBox() {
@@ -243,7 +264,7 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
         }
     }
 
-    private String[] geometryAttributeNames( final String datasetName,
+    private List<GeometryColumn> getGeometryAttributes( final String datasetName,
         final ConnectionDescriptor connectionDescriptor ) throws Exception {
         // Prompt for a password outside the ThreadedBasePlugIn thread,
         // which is not the GUI thread. [Jon Aquino 2005-03-16]
@@ -252,7 +273,7 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
         // Retrieve the dataset names using a ThreadedBasePlugIn, so
         // that the user can kill the thread if desired
         // [Jon Aquino 2005-03-16]
-        return ( String[] ) runInKillableThread(
+        return (List<GeometryColumn>) runInKillableThread(
         		I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Retrieving-list-of-geometry-attributes"), getContext(),
             new Block() {
                 public Object yield() throws Exception {
@@ -260,7 +281,7 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
                         return new PasswordPrompter().getOpenConnection(
                             connectionManager(), connectionDescriptor,
                             AddDatastoreLayerPanel.this ).getMetadata()
-                            .getGeometryAttributeNames( datasetName );
+                            .getGeometryAttributes( datasetName );
                     } catch ( Exception e ) {
                         // Can get here if dataset name is not found in the
                         // datastore [Jon Aquino 2005-03-16]

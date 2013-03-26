@@ -11,6 +11,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKBReader;
 import com.vividsolutions.jump.datastore.DataStoreMetadata;
+import com.vividsolutions.jump.datastore.GeometryColumn;
 import com.vividsolutions.jump.datastore.SpatialReferenceSystemID;
 import com.vividsolutions.jump.datastore.jdbc.JDBCUtil;
 import com.vividsolutions.jump.datastore.jdbc.ResultSetBlock;
@@ -67,7 +68,7 @@ public class PostgisDSMetadata implements DataStoreMetadata {
         sql = "SELECT ST_AsBinary(ST_Estimated_Extent( '" + datasetName + "', '" + attributeName + "' ))";
         //sql2 = "SELECT ST_AsBinary(ST_Extent( '" + datasetName + "', '" + attributeName + "' ))";
     }
-    sql2 = "SELECT ST_AsBinary(ST_Extent(\"" + attributeName + "\")) FROM \"" + datasetName + "\"";
+    sql2 = "SELECT ST_AsBinary(ST_Envelope(ST_Extent(\"" + attributeName + "\"))) FROM \"" + datasetName + "\"";
     final ResultSetBlock resultSetBlock = new ResultSetBlock() {
         public void yield( ResultSet resultSet ) throws Exception {
             if ( resultSet.next() ) {
@@ -90,6 +91,7 @@ public class PostgisDSMetadata implements DataStoreMetadata {
     return e[0];
   }
 
+  @Deprecated
   public SpatialReferenceSystemID getSRID(String tableName, String colName)
           throws SQLException {
       String key = tableName + "#" + colName;
@@ -103,6 +105,7 @@ public class PostgisDSMetadata implements DataStoreMetadata {
       return srid;
   }
 
+  @Deprecated
   private String querySRID(String tableName, String colName)
   {
     final StringBuffer srid = new StringBuffer();
@@ -124,6 +127,7 @@ public class PostgisDSMetadata implements DataStoreMetadata {
     return srid.toString();
   }
 
+  @Deprecated
   public String[] getGeometryAttributeNames( String datasetName ) {
     final List geometryAttributeNames = new ArrayList();
     String sql = "SELECT f_geometry_column FROM geometry_columns "
@@ -138,6 +142,25 @@ public class PostgisDSMetadata implements DataStoreMetadata {
       }
     } );
     return ( String[] ) geometryAttributeNames.toArray( new String[]{} );
+  }
+  
+  public List<GeometryColumn> getGeometryAttributes( String datasetName ) {
+    final List<GeometryColumn> geometryAttributes = new ArrayList<GeometryColumn>();
+    String sql = "SELECT f_geometry_column, srid, type FROM geometry_columns "
+               + geomColumnMetadataWhereClause( "f_table_schema", "f_table_name", datasetName );
+    JDBCUtil.execute(
+        conn.getConnection(), sql,
+        new ResultSetBlock() {
+      public void yield( ResultSet resultSet ) throws SQLException {
+        while ( resultSet.next() ) {
+          geometryAttributes.add(new GeometryColumn(
+              resultSet.getString(1),
+              resultSet.getInt(2),
+              resultSet.getString(3)));
+        }
+      }
+    } );
+    return geometryAttributes;
   }
 
 
