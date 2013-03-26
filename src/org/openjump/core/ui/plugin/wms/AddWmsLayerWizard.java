@@ -36,10 +36,13 @@ public class AddWmsLayerWizard extends AbstractWizardGroup {
   private WorkbenchContext workbenchContext;
 
   private String[] cachedURLs = new String[] {
-    "http://wms.latlon.org/?",
-    "http://wms.jpl.nasa.gov/wms.cgi",
     "http://demo.deegree.org/deegree-wms/services",
-	"http://openaerialmap.org/wms/"
+    "http://demo.opengeo.org/geoserver/wms",
+    //"http://wiki.openstreetmap.org/wiki/WMS", // does not work (missing WMT_MS_Capabilities)
+    "http://openaerialmap.org/wms/",
+    "http://wms.jpl.nasa.gov/wms.cgi",
+    //"http://wms.latlon.org/?", // does not work (missing WMT_MS_Capabilities)
+    "http://www.osmgb.org.uk/OSM-GB/wms?SERVICE=WMS&"
   };
 
   private String lastWMSVersion = WMService.WMS_1_1_1;
