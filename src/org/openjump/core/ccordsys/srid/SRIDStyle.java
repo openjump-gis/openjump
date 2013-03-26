@@ -17,7 +17,7 @@ import com.vividsolutions.jump.workbench.ui.renderer.style.Style;
  * be saved to the task file.
  */
 public class SRIDStyle implements Style {
-    private int srid = -1;
+    private int srid = 0;
     public void paint(Feature f, Graphics2D g, Viewport viewport)
             throws Exception {
     }

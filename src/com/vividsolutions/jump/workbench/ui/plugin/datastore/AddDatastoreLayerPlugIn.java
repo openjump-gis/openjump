@@ -14,6 +14,10 @@ import com.vividsolutions.jump.workbench.ui.plugin.OpenProjectPlugIn;
 
 import javax.swing.ImageIcon;
 
+/**
+ * @see {@link org.openjump.core.ui.plugin.datastore.AddDataStoreLayerWizard}
+ */
+@Deprecated 
 public class AddDatastoreLayerPlugIn extends AbstractAddDatastoreLayerPlugIn {
     
     public static final ImageIcon ICON = IconLoader.icon("database_add.png");
@@ -49,12 +53,13 @@ public class AddDatastoreLayerPlugIn extends AbstractAddDatastoreLayerPlugIn {
         DataSourceQuery dsq = new DataSourceQuery(ds, null, panel.getDatasetName());
 
         layer.setDataSourceQuery(dsq);
-        
+
         context.getLayerManager().setFiringEvents(false); // added by michaudm on 2009-04-23
         OpenProjectPlugIn.load( layer,
                                 CoordinateSystemRegistry.instance(context.getWorkbenchContext().getBlackboard()),
                                 new DummyTaskMonitor());
         context.getLayerManager().setFiringEvents(true); // added by michaudm on 2009-04-23
+
         return layer;
     }
 
@@ -65,6 +70,7 @@ public class AddDatastoreLayerPlugIn extends AbstractAddDatastoreLayerPlugIn {
 
     protected Layerable createLayerable(ConnectionPanel panel,
             TaskMonitor monitor, PlugInContext context) throws Exception {
+        System.out.println("createLayerable");
         monitor.report(I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPlugIn.Creating-layer"));
         return createLayer((AddDatastoreLayerPanel) panel, context);
     }

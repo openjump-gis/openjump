@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import javax.swing.SwingUtilities;
 
+import org.openjump.core.ccordsys.srid.SRIDStyle;
 import org.openjump.core.ui.plugin.file.open.ChooseProjectPanel;
 import org.openjump.core.ui.swing.wizard.AbstractWizardGroup;
 
@@ -116,7 +117,14 @@ public class AddDataStoreLayerWizard extends AbstractWizardGroup {
     CoordinateSystemRegistry crsRegistry = CoordinateSystemRegistry.instance(workbenchContext.getBlackboard());
     try {
         layerManager.setFiringEvents(false); // added by michaudm on 2009-04-05
+        // TODO : there is currently two different ways to fix the SRID
+        // May need refactoring there
+        // One is with a CoordinateSystemRegistry stored in the context blacboard
+        // Other is with a "Style" which can be persisted with the layer
         load(layer, crsRegistry, monitor);
+        SRIDStyle sridStyle = new SRIDStyle();
+        sridStyle.setSRID(panel.getGeometryColumn().getSRID());
+        layer.addStyle(sridStyle);
         layerManager.setFiringEvents(true); // added by michaudm on 2009-04-05
     }
     finally {layerManager.setFiringEvents(true);}

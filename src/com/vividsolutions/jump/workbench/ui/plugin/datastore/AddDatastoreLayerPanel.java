@@ -184,13 +184,13 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
             geometryAttributeComboBox.setPreferredSize( new Dimension(
                 MAIN_COLUMN_WIDTH, ( int ) geometryAttributeComboBox.getPreferredSize().getHeight() ) );
             geometryAttributeComboBox.setEditable( true );
-            addSafePopupListener( geometryAttributeComboBox,
-                new Block() {
-                    public Object yield() throws Exception {
-                        populateGeometryAttributeComboBox();
-                        return null;
-                    }
-                } );
+            //addSafePopupListener( geometryAttributeComboBox,
+            //    new Block() {
+            //        public Object yield() throws Exception {
+            //            populateGeometryAttributeComboBox();
+            //            return null;
+            //        }
+            //    } );
         }
         return geometryAttributeComboBox;
     }
