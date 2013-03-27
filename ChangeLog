@@ -1,6 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
-2013-03-24 mmichaud <michael.michaud@free.fr>
+2013-03-27 mmichaud <michael.michaud@free.fr>
+  * Change output resolution of svg drawer from 0.5 to 0.1 pixel
+
+2013-03-27 mmichaud <michael.michaud@free.fr>
   * Improve how buttons of RunDataStoreQuery works
   
 2013-03-24 mmichaud <michael.michaud@free.fr>

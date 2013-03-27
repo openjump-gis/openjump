@@ -29,6 +29,7 @@ import com.vividsolutions.jump.workbench.ui.OKCancelDialog;
 import com.vividsolutions.jump.workbench.ui.renderer.LayerRenderer;
 import com.vividsolutions.jump.workbench.ui.renderer.Renderer;
 import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
+import com.vividsolutions.jump.workbench.ui.renderer.java2D.Java2DConverter;
 
 import java.awt.Font;
 import java.io.File;
@@ -141,7 +142,12 @@ public class SaveImageAsSVGPlugIn extends AbstractPlugIn implements ThreadedPlug
 			}
 		}
 		lvp.repaint();
+		// Change drawing resolution to print to svg (0.5 pixel to 0.1 pixel)
+		Java2DConverter oldConverter = lvp.getViewport().getJava2DConverter();
+		lvp.getViewport().setJava2DConverter(new Java2DConverter(lvp.getViewport(), 0.1));
 		lvp.paintComponent(svgGenerator);
+		// Restore previous rendering resolution
+		lvp.getViewport().setJava2DConverter(oldConverter);
 		//------------------------------
 		//reset the old state of 100 features 
 		for (int i=0; i < layers.size(); i++) {
