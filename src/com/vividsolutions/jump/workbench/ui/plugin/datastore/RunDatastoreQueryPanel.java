@@ -69,23 +69,30 @@ public class RunDatastoreQueryPanel extends ConnectionPanel
 
     private void initialize() {
         JButton jbView = new JButton(I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.View"));
+        jbView.setToolTipText(I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.view-button-help"));
+        final LayerManager layerM = layerManager;
         jbView.addActionListener(new ActionListener() {
             public void actionPerformed( ActionEvent e ) {
-                queryTextArea.replaceSelection("${view:-1}");
+                int currentSRID = layerM.getBlackboard().get("SRID", 0);
+                queryTextArea.replaceSelection("${view:" + currentSRID + "}");
                 queryTextArea.requestFocusInWindow();
             }
         });
         JButton jbFence = new JButton(I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.Fence"));
+        jbFence.setToolTipText(I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.fence-button-help"));
         jbFence.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                queryTextArea.replaceSelection("${fence:-1}");
+                int currentSRID = layerM.getBlackboard().get("SRID", 0);
+                queryTextArea.replaceSelection("${fence:" + currentSRID + "}");
                 queryTextArea.requestFocusInWindow();
             }
         });
         JButton jbSelection = new JButton(I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.Selection"));
+        jbSelection.setToolTipText(I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.selection-button-help"));
         jbSelection.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                queryTextArea.replaceSelection("${selection:-1}");
+                int currentSRID = layerM.getBlackboard().get("SRID", 0);
+                queryTextArea.replaceSelection("${selection:" + currentSRID + "}");
                 queryTextArea.requestFocusInWindow();
             }
         });

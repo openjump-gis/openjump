@@ -3,6 +3,8 @@ package com.vividsolutions.jump.workbench.ui.plugin.datastore;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -35,11 +37,12 @@ public class DataStoreQueryDataSource extends com.vividsolutions.jump.io.datasou
         WorkbenchContextReference {
 
     public static final String DATASET_NAME_KEY = "Dataset Name";
-
     public static final String SQL_QUERY_KEY = "SQL Query";
-
     public static final String CONNECTION_DESCRIPTOR_KEY = "Connection Descriptor";
     
+    public static final Pattern PATTERN_FENCE = Pattern.compile("\\$\\{fence:(-?[0-9]+)\\}");
+    public static final Pattern PATTERN_SELECTION = Pattern.compile("\\$\\{selection:(-?[0-9]+)\\}");
+    public static final Pattern PATTERN_VIEW = Pattern.compile("\\$\\{view:(-?[0-9]+)\\}");
     private WorkbenchContext context;
 
     public DataStoreQueryDataSource() {
@@ -157,26 +160,40 @@ public class DataStoreQueryDataSource extends com.vividsolutions.jump.io.datasou
         }
     }
     
+
     protected static String expandQuery(String query, PlugInContext context) {
         GeometryFactory gf = new GeometryFactory();
         Geometry viewG = gf.toGeometry(context.getLayerViewPanel().getViewport().getEnvelopeInModelCoordinates());
         Geometry fenceG = context.getLayerViewPanel().getFence();
         Geometry selectionG = selection(context);
+        int lastUsedSRID = context.getLayerManager().getBlackboard().get("SRID", 0);
+        String sLastUsedSRID = null;
         if (viewG != null) {
-            query = query.replaceAll("\\$\\{view\\}", "\\${view:-1}");
-            query = query.replaceAll("\\$\\{view(?::(-?[0-9]+))\\}", "ST_GeomFromText('" + viewG.toText() + "',$1)");
+            Matcher matcher = PATTERN_VIEW.matcher(query);
+            if (matcher.find()) sLastUsedSRID = matcher.group(1);
+            matcher.reset();
+            query = matcher.replaceAll("ST_GeomFromText('" + viewG.toText() + "',$1)");
         }
         if (fenceG != null) {
-            query = query.replaceAll("\\$\\{fence\\}", "\\${fence:-1}");
-            query = query.replaceAll("\\$\\{fence(?::(-?[0-9]+))\\}", "ST_GeomFromText('" + fenceG.toText() + "',$1)");
+            Matcher matcher = PATTERN_FENCE.matcher(query);
+            if (matcher.find()) sLastUsedSRID = matcher.group(1);
+            matcher.reset();
+            query = matcher.replaceAll("ST_GeomFromText('" + fenceG.toText() + "',$1)");
         }
         else {
-            query = query.replaceAll("\\$\\{fence\\}", "\\${fence:-1}");
-            query = query.replaceAll("\\$\\{fence(?::(-?[0-9]+))\\}", "ST_GeomFromText('POLYGON EMPTY',$1)");
+            Matcher matcher = PATTERN_FENCE.matcher(query);
+            if (matcher.find()) sLastUsedSRID = matcher.group(1);
+            matcher.reset();
+            query = matcher.replaceAll("ST_GeomFromText('POLYGON EMPTY',$1)");
         }
         if (selectionG != null) {
-            query = query.replaceAll("\\$\\{selection\\}", "\\${selection:-1}");
-            query = query.replaceAll("\\$\\{selection(?::(-?[0-9]+))\\}", "ST_GeomFromText('" + selectionG.toText() + "',$1)");
+            Matcher matcher = PATTERN_SELECTION.matcher(query);
+            if (matcher.find()) sLastUsedSRID = matcher.group(1);
+            matcher.reset();
+            query = matcher.replaceAll("ST_GeomFromText('" + selectionG.toText() + "',$1)");
+        }
+        if (sLastUsedSRID != null && sLastUsedSRID.matches("-?[0-9]+")) {
+            context.getLayerManager().getBlackboard().put("SRID", Integer.parseInt(sLastUsedSRID));
         }
         return query;
     }
