@@ -69,7 +69,7 @@ public class RunDatastoreQueryPanel extends ConnectionPanel
 
     private void initialize() {
         JButton jbView = new JButton(I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.View"));
-        jbView.setToolTipText(I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.view-button-help"));
+        jbView.setToolTipText(I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.View-Help"));
         final LayerManager layerM = layerManager;
         jbView.addActionListener(new ActionListener() {
             public void actionPerformed( ActionEvent e ) {
@@ -79,7 +79,7 @@ public class RunDatastoreQueryPanel extends ConnectionPanel
             }
         });
         JButton jbFence = new JButton(I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.Fence"));
-        jbFence.setToolTipText(I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.fence-button-help"));
+        jbFence.setToolTipText(I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.Fence-Help"));
         jbFence.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 int currentSRID = layerM.getBlackboard().get("SRID", 0);
@@ -88,7 +88,7 @@ public class RunDatastoreQueryPanel extends ConnectionPanel
             }
         });
         JButton jbSelection = new JButton(I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.Selection"));
-        jbSelection.setToolTipText(I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.selection-button-help"));
+        jbSelection.setToolTipText(I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.Selection-Help"));
         jbSelection.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 int currentSRID = layerM.getBlackboard().get("SRID", 0);
