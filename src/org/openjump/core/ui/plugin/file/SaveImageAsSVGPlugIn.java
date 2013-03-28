@@ -147,7 +147,7 @@ public class SaveImageAsSVGPlugIn extends AbstractPlugIn implements ThreadedPlug
 		lvp.repaint();
 		// Change drawing resolution to print to svg (0.5 pixel to 0.1 pixel)
 		Java2DConverter oldConverter = lvp.getViewport().getJava2DConverter();
-		lvp.getViewport().setJava2DConverter(new Java2DConverter(lvp.getViewport(), 0.1));
+		lvp.getViewport().setJava2DConverter(new Java2DConverter(lvp.getViewport(), 0.001));
 		double scale = ScreenScale.getHorizontalMapScale(lvp.getViewport());
 		int resolution = ScreenScale.getResolution();
 		

@@ -2,7 +2,8 @@
 
 2013-03-28 mmichaud <michael.michaud@free.fr>
   * fix Screen Scale and SaveImageAsSVG problem (would need some refactoring 
-    after 1.6 release though)
+    after 1.6 release though). Change resolution to 0.001 pixel size for svg 
+    drawer
   
 2013-03-27 mmichaud <michael.michaud@free.fr>
   * Change output resolution of svg drawer from 0.5 to 0.1 pixel

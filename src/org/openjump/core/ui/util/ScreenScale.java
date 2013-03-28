@@ -31,13 +31,13 @@ public class ScreenScale {
 	// Moreover, it seems that changing the screen resolution does not
 	// change the value returned by Toolkit.getDefaultToolkit().getScreenResolution()
 	//double SCREENRES = Toolkit.getDefaultToolkit().getScreenResolution(); //72 dpi or 96 dpi or ..
-    private static double resolution = 96;
+    private static int resolution = 96;
     
-    public static double getResolution() {
+    public static int getResolution() {
         return resolution;
     } 
     
-    public static void setResolution(double res) {
+    public static void setResolution(int res) {
         resolution = res;
     }
 
