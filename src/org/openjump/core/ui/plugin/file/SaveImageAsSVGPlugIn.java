@@ -26,11 +26,14 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.OKCancelDialog;
+import com.vividsolutions.jump.workbench.ui.Viewport;
 import com.vividsolutions.jump.workbench.ui.renderer.LayerRenderer;
 import com.vividsolutions.jump.workbench.ui.renderer.Renderer;
 import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
 import com.vividsolutions.jump.workbench.ui.renderer.java2D.Java2DConverter;
+import org.openjump.core.ui.util.ScreenScale;
 
+import java.awt.Dimension;
 import java.awt.Font;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -103,7 +106,7 @@ public class SaveImageAsSVGPlugIn extends AbstractPlugIn implements ThreadedPlug
 		 SVGGraphics2D svgGenerator = new SVGGraphics2D(ctx, true);
 		 */
 		SVGGraphics2D svgGenerator = new SVGGraphics2D(document);
-	
+		Viewport viewport = context.getLayerViewPanel().getViewport();
 		
 		// --- Test with changed classes of Openjump and the new maxFeatures 
 		//     field in FeatureCollectionRenderer.class
@@ -145,6 +148,28 @@ public class SaveImageAsSVGPlugIn extends AbstractPlugIn implements ThreadedPlug
 		// Change drawing resolution to print to svg (0.5 pixel to 0.1 pixel)
 		Java2DConverter oldConverter = lvp.getViewport().getJava2DConverter();
 		lvp.getViewport().setJava2DConverter(new Java2DConverter(lvp.getViewport(), 0.1));
+		double scale = ScreenScale.getHorizontalMapScale(lvp.getViewport());
+		ScreenScale.setResolution(90);
+		org.openjump.core.ui.plugin.view.ZoomToScalePlugIn zoomToScalePlugIn = new org.openjump.core.ui.plugin.view.ZoomToScalePlugIn();
+		zoomToScalePlugIn.setScale(scale);
+		zoomToScalePlugIn.execute(context);
+		//double scale = ScreenScale.getHorizontalMapScale(port);
+		//Envelope oldEnvelope = lvp.getViewport().getEnvelopeInModelCoordinates();
+		//double factor = 90/ScreenScale.getResolution(90);
+		//
+		//ScreenScale.setResolution(90);
+		//double xc = 0.5*(oldEnvelope.getMaxX() + oldEnvelope.getMinX());
+        //double yc = 0.5*(oldEnvelope.getMaxY() + oldEnvelope.getMinY());
+        //double xmin = xc - 1/2.0 * factor * oldEnvelope.getWidth();
+        //double xmax = xc + 1/2.0 * factor * oldEnvelope.getWidth();
+        //double ymin = yc - 1/2.0 * factor * oldEnvelope.getHeight();
+        //double ymax = yc + 1/2.0 * factor * oldEnvelope.getHeight();
+        //Coordinate[] coords = new Coordinate[]{new Coordinate(xmin,ymin), 
+        //        								new Coordinate(xmax,ymax)};
+        //Geometry g1 = new GeometryFactory().createLineString(coords);       
+        //port.zoom(g1.getEnvelopeInternal());
+		//lvp.getViewport().zoom(g1.getEnvelopeInternal());
+		
 		lvp.paintComponent(svgGenerator);
 		// Restore previous rendering resolution
 		lvp.getViewport().setJava2DConverter(oldConverter);

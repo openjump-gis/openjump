@@ -60,7 +60,7 @@ import com.vividsolutions.jump.workbench.ui.Viewport;
  * 
  * @author sstein
  */
-public class ZoomToScalePlugIn extends AbstractPlugIn{
+public class ZoomToScalePlugIn extends AbstractPlugIn {
 
     private String T1 = "scale"; //[sstein] this string is not used anymore
     int scale = 25000;
@@ -124,16 +124,17 @@ public class ZoomToScalePlugIn extends AbstractPlugIn{
 	    return true;
 	}
 	
-    private void setDialogValues(MultiInputDialog dialog, PlugInContext context)
-	  {
-        //dialog.addLabel("actual scale in horizontal direction: " + (int)this.oldHorizontalScale);
+    private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
         dialog.addLabel(I18N.get("org.openjump.core.ui.plugin.view.ZoomToScalePlugIn.actual-scale-in-horizontal-direction") + " 1 : " +(int)this.oldHorizontalScale);
-	    //dialog.addLabel("set new scale to zoom:");
 	    dialog.addIntegerField(text, scale, 7, text);	    
-	  }
+	}
 
 	private void getDialogValues(MultiInputDialog dialog) {
 	    this.scale = dialog.getInteger(text);    	    
-	  }
+	}
+	
+	public void setScale(double scale) {
+	    this.scale = (int)scale;
+	}
     
 }
