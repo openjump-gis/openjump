@@ -149,30 +149,17 @@ public class SaveImageAsSVGPlugIn extends AbstractPlugIn implements ThreadedPlug
 		Java2DConverter oldConverter = lvp.getViewport().getJava2DConverter();
 		lvp.getViewport().setJava2DConverter(new Java2DConverter(lvp.getViewport(), 0.1));
 		double scale = ScreenScale.getHorizontalMapScale(lvp.getViewport());
+		int resolution = ScreenScale.getResolution();
+		
 		ScreenScale.setResolution(90);
 		org.openjump.core.ui.plugin.view.ZoomToScalePlugIn zoomToScalePlugIn = new org.openjump.core.ui.plugin.view.ZoomToScalePlugIn();
 		zoomToScalePlugIn.setScale(scale);
 		zoomToScalePlugIn.execute(context);
-		//double scale = ScreenScale.getHorizontalMapScale(port);
-		//Envelope oldEnvelope = lvp.getViewport().getEnvelopeInModelCoordinates();
-		//double factor = 90/ScreenScale.getResolution(90);
-		//
-		//ScreenScale.setResolution(90);
-		//double xc = 0.5*(oldEnvelope.getMaxX() + oldEnvelope.getMinX());
-        //double yc = 0.5*(oldEnvelope.getMaxY() + oldEnvelope.getMinY());
-        //double xmin = xc - 1/2.0 * factor * oldEnvelope.getWidth();
-        //double xmax = xc + 1/2.0 * factor * oldEnvelope.getWidth();
-        //double ymin = yc - 1/2.0 * factor * oldEnvelope.getHeight();
-        //double ymax = yc + 1/2.0 * factor * oldEnvelope.getHeight();
-        //Coordinate[] coords = new Coordinate[]{new Coordinate(xmin,ymin), 
-        //        								new Coordinate(xmax,ymax)};
-        //Geometry g1 = new GeometryFactory().createLineString(coords);       
-        //port.zoom(g1.getEnvelopeInternal());
-		//lvp.getViewport().zoom(g1.getEnvelopeInternal());
-		
 		lvp.paintComponent(svgGenerator);
+		
 		// Restore previous rendering resolution
 		lvp.getViewport().setJava2DConverter(oldConverter);
+		ScreenScale.setResolution(resolution);
 		//------------------------------
 		//reset the old state of 100 features 
 		for (int i=0; i < layers.size(); i++) {
