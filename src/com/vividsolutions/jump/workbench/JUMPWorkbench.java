@@ -443,6 +443,8 @@ public class JUMPWorkbench {
   }
 
   private static void fixLookAndFeel() {
+    // see mailing thread about background
+    // http://www.mail-archive.com/jump-pilot-devel@lists.sourceforge.net/msg12735.html
     UIDefaults defaults = UIManager.getDefaults();
     Font ta_font = (Font) defaults.get("TextArea.font");
     if (ta_font.getSize() < 11) {
