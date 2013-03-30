@@ -33,6 +33,7 @@
 
 package org.openjump.core.ui.plugin.edittoolbox.cursortools;
 
+import java.awt.Point;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -166,13 +167,19 @@ public abstract class ConstrainedMultiClickTool extends AbstractCursorTool
         return retPt;
     }
     
+    protected Point mouseLastLoc;
+    
     protected void mouseLocationChanged(MouseEvent e)
     {
+
+      // cache loc for ENTER key listener below
+      mouseLastLoc = e.getPoint();
 //        if (!altKeyDown) //do this so that we don't get feed back on shape when alt down
 //        {
         try
         {
             if (coordinates.isEmpty()) return;
+            
             
             tentativeCoordinate = doConstraint(e);
             Coordinate startPt = (Coordinate)coordinates.get(coordinates.size() - 1);
@@ -339,19 +346,34 @@ public abstract class ConstrainedMultiClickTool extends AbstractCursorTool
     	{
     	}
 
-    	public void keyReleased(KeyEvent e) 
-    	{
-    		if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE)
-    		{
-    			if (coordinates.size() > 1)
-    				coordinates.remove(coordinates.size() - 1);
-    			panel.repaint();
-    		} else if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
-    			try {
-    				finishGesture();
-    			}catch (Exception ex) {
-    				getPanel().getContext().handleThrowable(ex);
-    			};
-    	}
+      public void keyReleased(KeyEvent e) {
+        // erase segment by segment via BACKSPACE, eventually cancel drawing
+        if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
+          if (coordinates.size() > 1){
+            int rem = coordinates.size() - 1;
+            coordinates.remove(rem);
+            try {
+              redrawShape();
+            } catch (Throwable t) {
+              getPanel().getContext().handleThrowable(t);
+            }
+          }
+          else
+            cancelGesture();
+        }
+        // cancel drawing via ESCAPE
+        else if(e.getKeyCode() == KeyEvent.VK_ESCAPE){
+          cancelGesture();
+        }
+        // approve drawing via ENTER, emulates doubleclick
+        else if(e.getKeyCode() == KeyEvent.VK_ENTER && mouseLastLoc!=null){
+          mousePressed(new MouseEvent(panel, MouseEvent.MOUSE_PRESSED,
+              (long) 0, MouseEvent.BUTTON1_MASK, mouseLastLoc.x,
+              mouseLastLoc.y, 1, false));
+          mouseReleased(new MouseEvent(panel, MouseEvent.MOUSE_RELEASED,
+              (long) 0, MouseEvent.BUTTON1_MASK, mouseLastLoc.x,
+              mouseLastLoc.y, 2, false));
+        }
+      }
     };
 }

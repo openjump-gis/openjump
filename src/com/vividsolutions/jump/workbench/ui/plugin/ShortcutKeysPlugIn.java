@@ -59,6 +59,7 @@ import javax.swing.KeyStroke;
 import javax.swing.MenuElement;
 
 import org.apache.log4j.Logger;
+import org.openjump.core.ui.plugin.edittoolbox.cursortools.ConstrainedMultiClickTool;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
@@ -74,6 +75,7 @@ import com.vividsolutions.jump.workbench.ui.cursortool.CursorTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.DelegatingTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.LeftClickFilter;
 import com.vividsolutions.jump.workbench.ui.cursortool.MultiClickTool;
+import com.vividsolutions.jump.workbench.ui.cursortool.NClickTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.QuasimodeTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.QuasimodeTool.ModifierKeySpec;
 import com.vividsolutions.jump.workbench.ui.cursortool.ShortcutsDescriptor;
@@ -408,6 +410,7 @@ class ShortcutKeysDialog extends JDialog {
     return overviews;
   }
 
+  @SuppressWarnings("unchecked")
   private List<String> buildEditingOverviews(){
     // add doc for each cursortools option in editing toolbar
     LinkedHashMap<Object, LinkedHashMap> editing_options = new LinkedHashMap();
@@ -435,8 +438,13 @@ class ShortcutKeysDialog extends JDialog {
         String out = "";
         for (Object tool : tools) {
           tool = unWrapTool(tool);
-          if (tool instanceof MultiClickTool){
-            out += (out.length()>0?", ":"") + ((MultiClickTool)tool).getName();
+          if ( tool instanceof ConstrainedMultiClickTool
+              || (tool instanceof MultiClickTool && 
+                  !(tool instanceof NClickTool && 
+                  ((NClickTool) tool).numClicks() < 2)) )
+          {
+            out += (out.length() > 0 ? ", " : "")
+                + ((CursorTool) tool).getName();
           }
         }
         return out;

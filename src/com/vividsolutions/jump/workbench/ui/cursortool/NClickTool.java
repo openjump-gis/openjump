@@ -49,6 +49,10 @@ public abstract class NClickTool extends MultiClickTool {
         this.n = n;
     }
     
+    public int numClicks(){
+      return n;
+    }
+    
     protected Coordinate getModelSource() {
         return (Coordinate) getCoordinates().get(0);
     }
