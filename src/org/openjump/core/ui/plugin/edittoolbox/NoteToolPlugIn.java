@@ -42,6 +42,7 @@ import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.cursortool.NoteTool;
+import com.vividsolutions.jump.workbench.ui.cursortool.QuasimodeTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.editing.EditingPlugIn;
 import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxDialog;
 
@@ -81,7 +82,9 @@ public class NoteToolPlugIn extends AbstractPlugIn {
     public void addButton(final PlugInContext context) {
         if (!noteToolButtonAdded) {
             final ToolboxDialog toolbox = ((EditingPlugIn) context.getWorkbenchContext().getBlackboard().get(EditingPlugIn.KEY)).getToolbox(context.getWorkbenchContext());
-            toolbox.add(new NoteTool());
+            // wrap in a qmtool with disabled default modes, 
+            // we don't want e.g. a,x,v to interrupt note adding
+            toolbox.add(new QuasimodeTool(new NoteTool()));
             toolbox.finishAddingComponents();
             toolbox.validate();
             noteToolButtonAdded = true;

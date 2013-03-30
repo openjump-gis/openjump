@@ -150,26 +150,30 @@ public class WorkbenchToolBar extends EnableableToolBar {
         return addCursorTool(tooltip, cursorTool, button);
     }
     
-    private ToolConfig addCursorTool(String tooltip, final CursorTool cursorTool, JToggleButton button) {
-        cursorToolButtonGroup.add(button);
-        cursorToolClassToButtonMap.put(cursorTool.getClass(), button);
-        final QuasimodeTool quasimodeTool = QuasimodeTool.addStandardQuasimodes(cursorTool);
-        add(button, tooltip, cursorTool.getIcon(),
-            new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                  //It's null when the Workbench starts up. [Jon Aquino]
-                  //Or the active frame may not have a LayerViewPanel. [Jon Aquino]
-                  if (layerViewPanelProxy.getLayerViewPanel()!=null)
-                    layerViewPanelProxy.getLayerViewPanel().setCurrentCursorTool(quasimodeTool);
-                  //<<TODO:DESIGN>> We really shouldn't create a new LeftClickFilter on each
-                  //click of the tool button. Not a big deal though. [Jon Aquino]
-                }
-            }, cursorToolEnableCheck);
-        if (cursorToolButtonGroup.getButtonCount() == 1) {
-            cursorToolButtonGroup.setSelected(button.getModel(), true);
-            reClickSelectedCursorToolButton();
-        }            
-        return new ToolConfig(button, quasimodeTool);
+    private ToolConfig addCursorTool(String tooltip, final CursorTool cursorTool,
+        JToggleButton button) {
+      cursorToolButtonGroup.add(button);
+      cursorToolClassToButtonMap.put(cursorTool.getClass(), button);
+  
+      final QuasimodeTool quasimodeTool = cursorTool instanceof QuasimodeTool ? 
+          (QuasimodeTool) cursorTool : QuasimodeTool.addStandardQuasimodes(cursorTool);
+      add(button, tooltip, cursorTool.getIcon(), new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          // It's null when the Workbench starts up. [Jon Aquino]
+          // Or the active frame may not have a LayerViewPanel. [Jon Aquino]
+          if (layerViewPanelProxy.getLayerViewPanel() != null)
+            layerViewPanelProxy.getLayerViewPanel().setCurrentCursorTool(
+                quasimodeTool);
+          // <<TODO:DESIGN>> We really shouldn't create a new LeftClickFilter on
+          // each
+          // click of the tool button. Not a big deal though. [Jon Aquino]
+        }
+      }, cursorToolEnableCheck);
+      if (cursorToolButtonGroup.getButtonCount() == 1) {
+        cursorToolButtonGroup.setSelected(button.getModel(), true);
+        reClickSelectedCursorToolButton();
+      }
+      return new ToolConfig(button, quasimodeTool);
     }
 
     public ButtonGroup getButtonGroup() { return cursorToolButtonGroup; }
