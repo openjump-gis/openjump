@@ -84,9 +84,9 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
  * @author sstein
  *
  **/
-public class SimplifyPolygonCoveragePlugIn extends AbstractPlugIn implements ThreadedPlugIn{
+public class SimplifyPolygonCoveragePlugIn extends AbstractPlugIn implements ThreadedPlugIn {
 
-	private String sName = "Simplify Polygon Coverage";
+	//private String sName = "Simplify Polygon Coverage";
     private String sSidebar ="Simplifies the outlines of polygons that have adjacent polygons."; 
 	private String note = "Note, if the simplification destroys the topology, then try to simplify iteratively.";
     private String sCreateGraph = "create graph";
@@ -105,17 +105,17 @@ public class SimplifyPolygonCoveragePlugIn extends AbstractPlugIn implements Thr
         
     public void initialize(PlugInContext context) throws Exception {
     
-    		this.sName = I18N.get("org.openjump.core.ui.plugin.tools.SimplifyPolygonCoveragePlugIn.Simplify-Polygon-Coverage");
-    		this.note = I18N.get("org.openjump.core.ui.plugin.tools.SimplifyPolygonCoveragePlugIn.note");
-    		this.sSidebar = I18N.get("org.openjump.core.ui.plugin.tools.SimplifyPolygonCoveragePlugIn.Simplifies-the-outlines-of-polygons-that-have-adjacent-polygons");
+    		//this.sName = I18N.get("org.openjump.core.ui.plugin.tools.SimplifyPolygonCoveragePlugIn.Simplify-Polygon-Coverage");
+    		this.note = I18N.get("org.openjump.core.ui.plugin.tools.generalization.SimplifyPolygonCoveragePlugIn.note");
+    		this.sSidebar = I18N.get("org.openjump.core.ui.plugin.tools.generalization.SimplifyPolygonCoveragePlugIn.Simplifies-the-outlines-of-polygons-that-have-adjacent-polygons");
 	        this.sCreateGraph = I18N.get("org.openjump.core.ui.plugin.tools.ExtractCommonBoundaryBetweenPolysPlugIn.create-graph");	        
 	        this.LAYERREGIONS = I18N.get("org.openjump.core.ui.plugin.tools.ExtractCommonBoundaryBetweenPolysPlugIn.select-layer-with-polygons");
     		this.sSimplify = I18N.get("ui.plugin.analysis.GeometryFunction.Simplify-(D-P)");
     	    this.T3=I18N.get("org.openjump.core.ui.plugin.tools.LineSimplifyJTS15AlgorithmPlugIn.Maximum-point-displacement-in-model-units");    
     	    this.sSimplificationFinalized=I18N.get("org.openjump.core.ui.plugin.tools.LineSimplifyJTS15AlgorithmPlugIn.simplification-finalized");
     	    this.sPolygonize=I18N.get("jump.plugin.edit.PolygonizerPlugIn.Polygonization");
-    	    this.sLayerMustBePolygonal = I18N.get("org.openjump.core.ui.plugin.tools.SimplifyPolygonCoveragePlugIn.Layer-Must-Be-Polygonal");
-    	    this.sAttributeTransferNotExhaustive = I18N.get("org.openjump.core.ui.plugin.tools.SimplifyPolygonCoveragePlugIn.Attribute-Transfer-Not-Exhaustive");
+    	    this.sLayerMustBePolygonal = I18N.get("org.openjump.core.ui.plugin.tools.generalization.SimplifyPolygonCoveragePlugIn.Layer-Must-Be-Polygonal");
+    	    this.sAttributeTransferNotExhaustive = I18N.get("org.openjump.core.ui.plugin.tools.generalization.SimplifyPolygonCoveragePlugIn.Attribute-Transfer-Not-Exhaustive");
     	    
     	    this.sSidebar = this.sSidebar + "\n" + this.note;
     	    	
@@ -123,7 +123,7 @@ public class SimplifyPolygonCoveragePlugIn extends AbstractPlugIn implements Thr
 	    	featureInstaller.addMainMenuPlugin(
 	    	        this,
 	                new String[] {MenuNames.TOOLS, MenuNames.TOOLS_GENERALIZATION},
-	                this.sName + "...",
+	                this.getName() + "...",
 	                false,			//checkbox
 	                null,			//icon
 	                createEnableCheck(context.getWorkbenchContext()));
@@ -240,7 +240,7 @@ public class SimplifyPolygonCoveragePlugIn extends AbstractPlugIn implements Thr
 
 	private void initDialog(PlugInContext context) {
     	
-        dialog = new MultiInputDialog(context.getWorkbenchFrame(), this.sName, true);
+        dialog = new MultiInputDialog(context.getWorkbenchFrame(), this.getName(), true);
         dialog.setSideBarDescription(sSidebar);
         try {
         	JComboBox addLayerComboBoxRegions = dialog.addLayerComboBox(this.LAYERREGIONS, context.getCandidateLayer(0), null, context.getLayerManager());
@@ -282,23 +282,32 @@ public class SimplifyPolygonCoveragePlugIn extends AbstractPlugIn implements Thr
 			    Geometry geomB = null;
 			    boolean match = false;
 			    int minCountCommonCoordinates = -1;
+			    double bestSimilarity = 0;
 			    for (Iterator iteratorB = candidates.iterator() ; iteratorB.hasNext();) {
 			        Geometry gB = (Geometry)iteratorB.next();
-			        // Find simplified candidate having the more coordinates in
-			        // common with componentA
-			        // This is possible due to the way simplified geometries are
-			        // computed (based on Douglas-Peucker)
-			        // Don't use "=" while testing number of common coordinates
+			        // Find simplified candidate having the maximum number of 
+			        // coordinates in common with componentA
+			        // This makes sense only because the simplification is based 
+			        // on Douglas-Peucker algorithm)
+			        // Don't use "=" while testing number of common coordinates  
 			        // because sometimes, new coordinates are introduced in the 
 			        // simplification algorithm
+			        // To avoid some pitfalls when simplified edges cross each 
+			        // others, commonCoordinates also check orientation of
+			        // polygons and return a negative value if they have an
+			        // opposite orientation
 			        int countCommonCoordinates = commonCoordinates((Polygon)componentA, (Polygon)gB);
 			        if (countCommonCoordinates >= minCountCommonCoordinates) {
 			            // if the number of common coordinates is strictly equal
 			            // check that B can really be a simplified version of A
 			            if (countCommonCoordinates == minCountCommonCoordinates) {
-			                if (gB.buffer(Math.abs(tolerance)*1.1).contains(componentA) &&
+			                double areaRatio = componentA.getEnvelope().getArea()/gB.getEnvelope().getArea();
+			                double similarity = Math.min(areaRatio, 1.0/areaRatio);
+			                if (similarity > bestSimilarity &&
+			                    gB.buffer(Math.abs(tolerance)*1.1).contains(componentA) &&
 			                    componentA.buffer(Math.abs(tolerance)*1.1).contains(gB)) {
 			                    geomB = gB;
+			                    bestSimilarity = similarity;
 			                }
 			            }
 			            else {
@@ -335,14 +344,20 @@ public class SimplifyPolygonCoveragePlugIn extends AbstractPlugIn implements Thr
 	    Coordinate[] cca = ((Polygon)a.norm()).getExteriorRing().getCoordinates();
 	    Coordinate[] ccb = ((Polygon)b.norm()).getExteriorRing().getCoordinates();
 	    int count = 0;
+	    // orientation = 1 (same orientation or -1 (opposite orientation)
+	    int orientation = 1;
 	    for (int i = 0 ; i < cca.length-1 ; i++) {
 	        for (int j = 0 ; j < ccb.length-1 ; j++) {
 	            if (cca[i].equals(ccb[j])) {
 	                count++;
+	                // we can use i+1 and j+1 without test because the loops
+	                // stops at i (and j) < length-1
+	                if (i > 0 && cca[i-1].equals(ccb[j+1])) orientation = -1;
+	                if (j > 0 && ccb[j-1].equals(cca[i+1])) orientation = -1;
 	                break;
 	            }
 	        }
 	    } 
-	    return count;
+	    return count * orientation;
 	}
 }
