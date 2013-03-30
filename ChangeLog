@@ -1,5 +1,11 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-03-30 ede
+  * make statusbar vertically resizable
+  * all fields resizeable again and tooltipped
+  * statusbar looks better now
+  * minor fixes, cleanup
+
 2013-03-30 mmichaud <michael.michaud@free.fr>
   * bug 3607970 : improve robustness of SimplifyPolygonCoveragePlugIn and 
     normalize I18N

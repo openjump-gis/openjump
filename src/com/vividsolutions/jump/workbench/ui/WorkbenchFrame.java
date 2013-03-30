@@ -77,7 +77,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
-import javax.swing.JTextField;
+import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.MenuElement;
 import javax.swing.MenuSelectionManager;
@@ -190,11 +190,10 @@ public class WorkbenchFrame extends JFrame
   
   // StatusBar
   private JPanel statusPanel = new JPanel();
-  private JTextField messageTextField = new JTextField();
+  private JTextArea messageText = new JTextArea();
   private JLabel timeLabel = new JLabel();
   private JLabel memoryLabel = new JLabel();
-  private JLabel scaleLabel = new JLabel(); // [Giuseppe Aruta 2012-feb-18] new
-                                            // label for scale
+  private JLabel scaleLabel = new JLabel();
   private JLabel coordinateLabel = new JLabel();
 
   private String lastStatusMessage = "";
@@ -326,6 +325,7 @@ public class WorkbenchFrame extends JFrame
       positionStatusBuf.setLength(1);
       positionStatusBuf.append(x).append(" ; ").append(y).append(")");
       coordinateLabel.setText(positionStatusBuf.toString());
+      coordinateLabel.setToolTipText(positionStatusBuf.toString());
     }
 
     public void selectionChanged() {
@@ -377,8 +377,10 @@ public class WorkbenchFrame extends JFrame
     setTitle(title);
     new Timer(1000, new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        memoryLabel.setText(getMBCommittedMemory() + " MB "
-            + I18N.get("ui.WorkbenchFrame.committed-memory"));
+        String msg = getMBCommittedMemory() + " MB "
+            + I18N.get("ui.WorkbenchFrame.committed-memory");
+        memoryLabel.setText(msg);
+        memoryLabel.setToolTipText(msg);
         // memoryLabel.setToolTipText(LayerManager.layerManagerCount() + " "
         // + I18N.get("ui.WorkbenchFrame.layer-manager")
         // + StringUtil.s(LayerManager.layerManagerCount()));
@@ -393,10 +395,11 @@ public class WorkbenchFrame extends JFrame
     toolBar.setTaskMonitorManager(new TaskMonitorManager());
     try {
       jbInit();
-      // configureStatusLabel(messageTextField, 300);
-      configureStatusLabel(timeLabel, 175);
-      configureStatusLabel(scaleLabel, 90); // [Giuseppe Aruta 2012-feb-18]
-      configureStatusLabel(coordinateLabel, 175);
+      configureStatusBarComponent(messageText, 90);
+      configureStatusBarComponent(timeLabel, 90);
+      configureStatusBarComponent(memoryLabel, 90);
+      configureStatusBarComponent(scaleLabel, 90); // [Giuseppe Aruta 2012-feb-18]
+      configureStatusBarComponent(coordinateLabel, 90);
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -438,6 +441,11 @@ public class WorkbenchFrame extends JFrame
         boolean filter = false;
         while (c!=null){
           //System.out.println(c);
+          
+          // ignore statuspanel, copy/paste is available via textfield there
+          if ( c.equals(statusPanel) ){
+            break;
+          }
           
           if (c instanceof TaskFrame 
               || (c instanceof ToolboxDialog && c.equals(EditingPlugIn.getInstance().getToolbox()))
@@ -595,12 +603,12 @@ public class WorkbenchFrame extends JFrame
 
   private void setStatusBarText(String message) {
     // Make message at least a space so that the label won't collapse [Jon Aquino]
-    message = (message == null || message.equals("")) ? " " : message;
-    messageTextField.setText(message);
+    //message = (message == null || message.equals("")) ? " " : message;
+    messageText.setText(message);
   }
 
   private String getStatusBarText() {
-    return messageTextField.getText();
+    return messageText.getText();
   }
 
   /**
@@ -609,9 +617,9 @@ public class WorkbenchFrame extends JFrame
   private void setStatusBarTextHighlighted(boolean highlighted, Color color) {
     // Use #coordinateLabel rather than (unattached) dummy label because
     // dummy label's background does not change when L&F changes. [Jon Aquino]
-    messageTextField.setForeground(highlighted ? Color.black
+    messageText.setForeground(highlighted ? Color.black
       : coordinateLabel.getForeground());
-    messageTextField.setBackground(highlighted ? color
+    messageText.setBackground(highlighted ? color
       : coordinateLabel.getBackground());
   }
 
@@ -1090,7 +1098,7 @@ public class WorkbenchFrame extends JFrame
     toolBar.updateEnabledState();
     // May be null during a new project initialization
     if (getActiveTaskFrame() != null) {
-        scaleLabel.setText("1:" + (int) Math.floor(ScreenScale.getHorizontalMapScale(getActiveTaskFrame().getLayerViewPanel().getViewport())));
+      setScaleText("1:" + (int) Math.floor(ScreenScale.getHorizontalMapScale(getActiveTaskFrame().getLayerViewPanel().getViewport())));
     }
   }
 
@@ -1184,20 +1192,20 @@ public class WorkbenchFrame extends JFrame
     return layerManagers;
   }
 
-  private void configureStatusLabel(JComponent component, int width) {
-    component.setMinimumSize(new Dimension(width, (int)component.getMinimumSize()
-      .getHeight()));
-    component.setMaximumSize(new Dimension(width, (int)component.getMaximumSize()
-      .getHeight()));
-    component.setPreferredSize(new Dimension(width, (int)component.getPreferredSize()
-      .getHeight()));
+  private void configureStatusBarComponent(JComponent component, int width) {
+    component.setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 4));
+    if (width>0){
+      component.setMinimumSize(new Dimension(width, (int)component.getMinimumSize()
+        .getHeight()));
+//      component.setMaximumSize(new Dimension(width, (int)component.getMaximumSize()
+//        .getHeight()));
+//      component.setPreferredSize(new Dimension(width, (int)component.getPreferredSize()
+//        .getHeight()));
+    }
   }
 
   private void jbInit() throws Exception {
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-
-    // TODO: insert icon necessary?
-    // JUMPWorkbench.setIcon( this );
 
     this.addComponentListener(new java.awt.event.ComponentAdapter() {
       public void componentShown(ComponentEvent e) {
@@ -1244,48 +1252,53 @@ public class WorkbenchFrame extends JFrame
         windowMenu_menuSelected(e);
       }
     });
+    
+    // this is important, else resizing in the splitpane is buggy, can only make it larger, see
+    // https://forums.oracle.com/forums/thread.jspa?threadID=1361066
+    messageText.setMinimumSize( new Dimension(50, 1) );
 
-    messageTextField.setOpaque(true);
-    messageTextField.setEditable(false);
-    messageTextField.setToolTipText(I18N.get("ui.WorkbenchFrame.copy-to-clipboard"));
-    messageTextField.setFont(coordinateLabel.getFont());
-    messageTextField.setText(" ");
+    messageText.setLineWrap(true);
+    // mimick a JLabel
+    messageText.setBackground(coordinateLabel.getBackground());
+    messageText.setForeground(coordinateLabel.getForeground());
+    messageText.setFont(coordinateLabel.getFont());
+    messageText.setEditable(false);
 
-    timeLabel.setBorder(BorderFactory.createLoweredBevelBorder());
+    messageText.setToolTipText(I18N.get("ui.WorkbenchFrame.copy-to-clipboard"));
+
     timeLabel.setText(" ");
-
-    memoryLabel.setBorder(BorderFactory.createLoweredBevelBorder());
     memoryLabel.setText(" ");
-
-    // G. Aruta 2012 feb 18//
-    scaleLabel.setBorder(BorderFactory.createLoweredBevelBorder());
     scaleLabel.setText(" ");
-
-    coordinateLabel.setBorder(BorderFactory.createLoweredBevelBorder());
     coordinateLabel.setText(" ");
 
     menuBar.add(fileMenu);
     menuBar.add(windowMenu);
+
     getContentPane().add(toolBar, BorderLayout.NORTH);
-    getContentPane().add(desktopPane, BorderLayout.CENTER);
 
     // [Matthias Scholz 11. Dec 2010] new resizable statusbar
     statusPanel.setLayout(new BorderLayout());
 
-    int dividerSize = 4;
-	statusPanelSplitPane4 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, scaleLabel, coordinateLabel);
+    int dividerSize = 3;
+    statusPanelSplitPane4 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true,
+        scaleLabel, coordinateLabel);
     statusPanelSplitPane4.setDividerSize(dividerSize);
+    statusPanelSplitPane4.setResizeWeight(0);
 
-	statusPanelSplitPane3 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, memoryLabel, statusPanelSplitPane4);
+    statusPanelSplitPane3 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true,
+        memoryLabel, statusPanelSplitPane4);
     statusPanelSplitPane3.setDividerSize(dividerSize);
+    statusPanelSplitPane3.setResizeWeight(0);
 
-	statusPanelSplitPane2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, timeLabel, statusPanelSplitPane3);
+    statusPanelSplitPane2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true,
+        timeLabel, statusPanelSplitPane3);
     statusPanelSplitPane2.setDividerSize(dividerSize);
-    statusPanelSplitPane2.setResizeWeight(1.0);
+    statusPanelSplitPane2.setResizeWeight(0);
 
-	statusPanelSplitPane1 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, messageTextField, statusPanelSplitPane2);
+    statusPanelSplitPane1 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true,
+        messageText, statusPanelSplitPane2);
     statusPanelSplitPane1.setDividerSize(dividerSize);
-    statusPanelSplitPane1.setResizeWeight(1.0);
+    statusPanelSplitPane1.setResizeWeight(1);
 
     // Workaround for java bug 4131528
     statusPanelSplitPane1.setBorder(null);
@@ -1293,7 +1306,14 @@ public class WorkbenchFrame extends JFrame
     statusPanelSplitPane3.setBorder(null);
     statusPanelSplitPane4.setBorder(null);
     statusPanel.add(statusPanelSplitPane1, BorderLayout.CENTER);
-    this.getContentPane().add(statusPanel, BorderLayout.SOUTH);
+    
+    JSplitPane desktopStatusSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, desktopPane, statusPanel);
+    desktopStatusSplit.setDividerSize(dividerSize);
+    desktopStatusSplit.setResizeWeight(1d);
+    getContentPane().add(desktopStatusSplit, BorderLayout.CENTER);
+    
+    //getContentPane().add(desktopPane, BorderLayout.CENTER);
+    //getContentPane().add(statusPanel, BorderLayout.SOUTH);
   }
 
   private void position(JInternalFrame internalFrame) {
