@@ -87,10 +87,10 @@ public class ConstrainedMoveVertexPlugIn extends AbstractPlugIn
         {
             final ToolboxDialog toolbox = ((EditingPlugIn) context.getWorkbenchContext().getBlackboard().get(EditingPlugIn.KEY)).getToolbox(context.getWorkbenchContext());
             toolbox.addToolBar(); //to create a new row
-            QuasimodeTool quasimodeTool = new QuasimodeTool(new ConstrainedMoveVertexTool(new EnableCheckFactory(toolbox.getContext())));
-            quasimodeTool.add(new QuasimodeTool.ModifierKeySpec(true, false, false), null);
-            quasimodeTool.add(new QuasimodeTool.ModifierKeySpec(true, true, false), null);
-            toolbox.add(quasimodeTool, null);            
+//            QuasimodeTool quasimodeTool = new QuasimodeTool(new ConstrainedMoveVertexTool(new EnableCheckFactory(toolbox.getContext())));
+//            quasimodeTool.add(new QuasimodeTool.ModifierKeySpec(true, false, false), null);
+//            quasimodeTool.add(new QuasimodeTool.ModifierKeySpec(true, true, false), null);
+            toolbox.add(new ConstrainedMoveVertexTool(new EnableCheckFactory(toolbox.getContext())), null);            
             toolbox.finishAddingComponents();
             toolbox.validate();
             moveVertexButtonAdded = true;

@@ -103,12 +103,12 @@ public class DrawConstrainedLineStringPlugIn extends AbstractPlugIn
         if (!lineStringButtonAdded)
         {
             final ToolboxDialog toolbox = ((EditingPlugIn) context.getWorkbenchContext().getBlackboard().get(EditingPlugIn.KEY)).getToolbox(context.getWorkbenchContext());
-            QuasimodeTool quasimodeTool = new QuasimodeTool(DrawConstrainedLineStringTool.create(toolbox.getContext()));
-            quasimodeTool.add(new QuasimodeTool.ModifierKeySpec(true, false, false), null);
-            quasimodeTool.add(new QuasimodeTool.ModifierKeySpec(true, true, false), null);
-            quasimodeTool.add(new QuasimodeTool.ModifierKeySpec(false, false, true), new ZoomTool());
-            quasimodeTool.add(new QuasimodeTool.ModifierKeySpec(false, true, true), new PanTool());
-            toolbox.add(quasimodeTool, null);            
+//            QuasimodeTool quasimodeTool = new QuasimodeTool(DrawConstrainedLineStringTool.create(toolbox.getContext()));
+//            quasimodeTool.add(new QuasimodeTool.ModifierKeySpec(true, false, false), null);
+//            quasimodeTool.add(new QuasimodeTool.ModifierKeySpec(true, true, false), null);
+//            quasimodeTool.add(new QuasimodeTool.ModifierKeySpec(false, false, true), new ZoomTool());
+//            quasimodeTool.add(new QuasimodeTool.ModifierKeySpec(false, true, true), new PanTool());
+            toolbox.add(DrawConstrainedLineStringTool.create(toolbox.getContext()), null);            
             toolbox.finishAddingComponents();
             toolbox.validate();
             lineStringButtonAdded = true;

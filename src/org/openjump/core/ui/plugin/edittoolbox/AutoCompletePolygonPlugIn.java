@@ -102,12 +102,12 @@ public class AutoCompletePolygonPlugIn extends AbstractPlugIn
         {
             final ToolboxDialog toolbox = ((EditingPlugIn) context.getWorkbenchContext().getBlackboard().get(EditingPlugIn.KEY)).getToolbox(context.getWorkbenchContext());
             //toolbox.addToolBar(); //to create a new row
-            QuasimodeTool quasimodeTool = new QuasimodeTool(AutoCompletePolygonCursorTool.create(toolbox.getContext()));
-            quasimodeTool.add(new QuasimodeTool.ModifierKeySpec(true, false, false), null);
-            quasimodeTool.add(new QuasimodeTool.ModifierKeySpec(true, true, false), null);
-    		quasimodeTool.add(new QuasimodeTool.ModifierKeySpec(false, false, true), new ZoomTool());
-    		quasimodeTool.add(new QuasimodeTool.ModifierKeySpec(false, true, true), new PanTool());
-            toolbox.add(quasimodeTool, null);            
+//            QuasimodeTool quasimodeTool = new QuasimodeTool(AutoCompletePolygonCursorTool.create(toolbox.getContext()));
+//            quasimodeTool.add(new QuasimodeTool.ModifierKeySpec(true, false, false), null);
+//            quasimodeTool.add(new QuasimodeTool.ModifierKeySpec(true, true, false), null);
+//    		quasimodeTool.add(new QuasimodeTool.ModifierKeySpec(false, false, true), new ZoomTool());
+//    		quasimodeTool.add(new QuasimodeTool.ModifierKeySpec(false, true, true), new PanTool());
+            toolbox.add(AutoCompletePolygonCursorTool.create(toolbox.getContext()), null);            
             toolbox.finishAddingComponents();
             toolbox.validate();
             autoCompleteButtonAdded = true;

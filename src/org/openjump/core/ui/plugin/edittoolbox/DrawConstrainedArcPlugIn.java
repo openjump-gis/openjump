@@ -102,10 +102,10 @@ public class DrawConstrainedArcPlugIn extends AbstractPlugIn
         if (!arcButtonAdded)
         {
             final ToolboxDialog toolbox = ((EditingPlugIn) context.getWorkbenchContext().getBlackboard().get(EditingPlugIn.KEY)).getToolbox(context.getWorkbenchContext());
-            QuasimodeTool quasimodeTool = new QuasimodeTool(DrawConstrainedArcTool.create(toolbox.getContext()));
-            quasimodeTool.add(new QuasimodeTool.ModifierKeySpec(true, false, false), null);
-            quasimodeTool.add(new QuasimodeTool.ModifierKeySpec(true, true, false), null);
-            toolbox.add(quasimodeTool, null);
+//            QuasimodeTool quasimodeTool = new QuasimodeTool(DrawConstrainedArcTool.create(toolbox.getContext()));
+//            quasimodeTool.add(new QuasimodeTool.ModifierKeySpec(true, false, false), null);
+//            quasimodeTool.add(new QuasimodeTool.ModifierKeySpec(true, true, false), null);
+            toolbox.add(DrawConstrainedArcTool.create(toolbox.getContext()), null);
             toolbox.finishAddingComponents();
             toolbox.validate();
             arcButtonAdded = true;

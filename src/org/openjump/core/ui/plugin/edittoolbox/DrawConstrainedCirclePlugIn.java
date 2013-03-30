@@ -105,7 +105,7 @@ public class DrawConstrainedCirclePlugIn extends AbstractPlugIn
             QuasimodeTool quasimodeTool = new QuasimodeTool(DrawConstrainedCircleTool.create(toolbox.getContext()));
             quasimodeTool.add(new QuasimodeTool.ModifierKeySpec(true, false, false), null);
             quasimodeTool.add(new QuasimodeTool.ModifierKeySpec(true, true, false), null);
-            toolbox.add(quasimodeTool, null);
+            toolbox.add(DrawConstrainedCircleTool.create(toolbox.getContext()), null);
             toolbox.finishAddingComponents();
             toolbox.validate();
             circleButtonAdded = true;
