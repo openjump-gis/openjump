@@ -24,6 +24,12 @@ Version ${version.number} ${version.release} rev.${version.revision} (released o
   * add Generate > Create Grid plugin
   * add Generate > Voronoi Diagram plugin
   * add Generate > Triangulation plugin
+  * added -h/-help, -v/-version, -p/-properties command line parameters
+  * load project and data files when given via command line
+  * Include CoverageCleanerPlugIn in Topology extension
+  * general shortcut support, shortcut documentation under Help
+  * Help > About > Info contains more details now 
+  * status bar: enhanced resizablity, tooltips and look
   
   Improvements
   * create a View > Map Decoration submenu including ScaleBarPlugin, 
@@ -44,6 +50,9 @@ Version ${version.number} ${version.release} rev.${version.revision} (released o
   * ViewAttributesPlugIn now saves/restores the window position and size
   * file formats with lower case description are now capitalized so they do not 
     get sorted to the end of the file format list in file chooser any more
+  * allow saving text based decoration styles in a project
+  * change default Open Wizard to Open File (was Open Project)
+  * Postgis Reader/Writer several important fixes
   
   Bug Fixes
   * create Lattice from Raster failed in some cases
@@ -67,6 +76,14 @@ Version ${version.number} ${version.release} rev.${version.revision} (released o
   * id 3526277 : create polygon from closed area sometimes displayed
     the progressbar forever
   * id 3446420 : fix import of zipped shapefiles with XML metadata file
+  * bug 3600776 : regression in LabelStyle (caused by jts update to 1.13)
+  * fix 1447907 : upgrade jdom.jar (1.0b8) to jdom-1.1.3.jar
+  * fix 1472782 : date is now shown with time in attribute table. It is 
+    persisted as timestamp in postgis database and jml files, but time is lost
+    in shapefiles.
+  * bug 3607970 : fix two problems in SimplifyPolygonCoveragePlugIn
+  * bug 3608648 : can now open a project including broken db connections.
+  * fix Screen Scale and SaveImageAsSVG problem
   
   New in PLUS edition
   * add OSX 32bit ECW,JP2 libraries courtesy of gvsigce project
@@ -76,6 +93,8 @@ Version ${version.number} ${version.release} rev.${version.revision} (released o
   * new csv driver with an automatic mode (guess separator) and a customizable 
     mode. The driver creates empty geometries if no geometry is provided.
   * add SkyJUMP pick Color integration to the PLUS version
+  * bump JumpPrinter to 1.83
+  * featreq 3601072 : Replace aggregation-0.2.5 by 0.2.6
 
 --------------------------------------------------------
 Version 1.5.2 (released on 18.may.2012)
