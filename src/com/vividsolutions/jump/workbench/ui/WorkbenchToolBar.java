@@ -156,7 +156,7 @@ public class WorkbenchToolBar extends EnableableToolBar {
       cursorToolClassToButtonMap.put(cursorTool.getClass(), button);
   
       final QuasimodeTool quasimodeTool = cursorTool instanceof QuasimodeTool ? 
-          (QuasimodeTool) cursorTool : QuasimodeTool.addStandardQuasimodes(cursorTool);
+          (QuasimodeTool) cursorTool : QuasimodeTool.createWithDefaults(cursorTool);
       add(button, tooltip, cursorTool.getIcon(), new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           // It's null when the Workbench starts up. [Jon Aquino]

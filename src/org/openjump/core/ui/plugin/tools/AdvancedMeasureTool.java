@@ -304,7 +304,7 @@ public class AdvancedMeasureTool extends PolygonTool implements ActionListener {
 				toolbarButton.setToolTipText(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureTool.distance-measuring"));
 				// activate this tool
 				toolbarButton.setSelected(true);
-				context.getLayerViewPanel().setCurrentCursorTool(QuasimodeTool.addStandardQuasimodes(this));
+				context.getLayerViewPanel().setCurrentCursorTool(QuasimodeTool.createWithDefaults(this));
 			}
 			setCloseRing(false);
 		} else if (e.getSource() == areaMenuItem) { // Area
@@ -314,7 +314,7 @@ public class AdvancedMeasureTool extends PolygonTool implements ActionListener {
 				toolbarButton.setToolTipText(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureTool.area-measuring"));
 				// activate this tool
 				toolbarButton.setSelected(true);
-				context.getLayerViewPanel().setCurrentCursorTool(QuasimodeTool.addStandardQuasimodes(this));
+				context.getLayerViewPanel().setCurrentCursorTool(QuasimodeTool.createWithDefaults(this));
 			}
 			setCloseRing(true);
 		} else if (e.getSource() == optionsMenuItem) { // Options

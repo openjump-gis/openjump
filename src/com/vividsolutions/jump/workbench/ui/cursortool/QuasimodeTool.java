@@ -456,7 +456,7 @@ public class QuasimodeTool extends DelegatingTool {
 
 
 
-  public static QuasimodeTool addStandardQuasimodes(CursorTool tool) {
+  public static QuasimodeTool createWithDefaults(CursorTool tool) {
     QuasimodeTool quasimodeTool = tool instanceof QuasimodeTool ? (QuasimodeTool) tool
         : new QuasimodeTool(tool);
     
