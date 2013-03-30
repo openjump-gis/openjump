@@ -478,7 +478,7 @@ public class QuasimodeTool extends DelegatingTool {
   /*
    * switch using default quasimodes on/off
    */
-  private void useDefaults( boolean onoff ){
+  public void useDefaults( boolean onoff ){
     useDefaults = onoff;
   }
   
