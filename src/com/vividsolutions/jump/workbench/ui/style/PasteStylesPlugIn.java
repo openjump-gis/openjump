@@ -71,11 +71,11 @@ public class PasteStylesPlugIn extends AbstractPlugIn {
 					LabelStyle labelStyle = (LabelStyle) style;
 					if (labelStyle.isEnabled()) {
 						attribName =labelStyle.getAttribute();
-						if (attribName != "") attribList.add(attribName);
+						if (!attribName.equals("")) attribList.add(attribName);
 						attribName =labelStyle.getAngleAttribute();
-						if (attribName != "") attribList.add(attribName);
+						if (!attribName.equals("")) attribList.add(attribName);
 						attribName =labelStyle.getHeightAttribute();
-						if (attribName != "") attribList.add(attribName);
+						if (!attribName.equals("")) attribList.add(attribName);
 					}
 				} else if (style instanceof ColorThemingStyle) {
 					ColorThemingStyle ctStyle = (ColorThemingStyle) style;
@@ -87,6 +87,7 @@ public class PasteStylesPlugIn extends AbstractPlugIn {
 			}
 			for (Iterator i = attribList.iterator(); i.hasNext();) {
 				attribName = (String) i.next();
+				if (attribName.equals(LabelStyle.FID_COLUMN)) continue;
 				//check for attribute in Layer's FeatureSchema and throw exception now if not found.
 				featureSchema.getAttributeIndex(attribName);
 			}

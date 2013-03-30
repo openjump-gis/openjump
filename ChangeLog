@@ -3,6 +3,7 @@
 2013-03-30 mmichaud <michael.michaud@free.fr>
   * bug 3607970 : improve robustness of SimplifyPolygonCoveragePlugIn and 
     normalize I18N
+  * Fix PasteStylePlugIn (was throwing exception with LabelStyle using FID)
 
 2013-03-28 mmichaud <michael.michaud@free.fr>
   * fix Screen Scale and SaveImageAsSVG problem (would need some refactoring 
