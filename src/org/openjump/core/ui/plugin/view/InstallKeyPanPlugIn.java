@@ -11,6 +11,8 @@ import javax.swing.JInternalFrame;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
+import com.vividsolutions.jump.workbench.plugin.EnableCheck;
+import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiShortcutEnabled;
 import com.vividsolutions.jump.workbench.plugin.PlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
@@ -75,6 +77,9 @@ public class InstallKeyPanPlugIn extends AbstractPlugIn implements MultiShortcut
         KeyEvent.VK_PLUS, KeyEvent.VK_MINUS, 
         KeyEvent.VK_ADD, KeyEvent.VK_SUBTRACT, 
         KeyEvent.VK_0 };
+    
+    private static EnableCheck check = EnableCheckFactory.getInstance()
+        .createTaskWindowMustBeActiveCheck();
 
     /**
      * Default constructor 
@@ -177,14 +182,17 @@ public class InstallKeyPanPlugIn extends AbstractPlugIn implements MultiShortcut
         private final int mode;
         private String name;
         public PanHelper( String name, int mode ) {
-            this.mode = mode;
-            this.name = name;
+          this.mode = mode;
+          this.name = name;
         }
         public boolean execute(PlugInContext context) throws Exception {
-            return pan( context.getWorkbenchFrame().getActiveInternalFrame(), mode );
+          return pan( context.getWorkbenchFrame().getActiveInternalFrame(), mode );
         }
         public String getName() {
           return name;
+        }
+        public EnableCheck getEnableCheck(){
+          return check;
         }
     }
 
