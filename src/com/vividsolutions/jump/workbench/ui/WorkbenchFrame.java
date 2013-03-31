@@ -84,6 +84,7 @@ import javax.swing.MenuSelectionManager;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.WindowConstants;
+import javax.swing.border.Border;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
@@ -603,7 +604,7 @@ public class WorkbenchFrame extends JFrame
 
   private void setStatusBarText(String message) {
     // Make message at least a space so that the label won't collapse [Jon Aquino]
-    //message = (message == null || message.equals("")) ? " " : message;
+    message = (message == null || message.equals("")) ? " " : message;
     messageText.setText(message);
   }
 
@@ -1253,23 +1254,27 @@ public class WorkbenchFrame extends JFrame
       }
     });
     
+    messageText.setText(" ");
+    timeLabel.setText(" ");
+    memoryLabel.setText(" ");
+    scaleLabel.setText(" ");
+    coordinateLabel.setText(" ");
+    
     // this is important, else resizing in the splitpane is buggy, can only make it larger, see
     // https://forums.oracle.com/forums/thread.jspa?threadID=1361066
     messageText.setMinimumSize( new Dimension(50, 1) );
 
     messageText.setLineWrap(true);
+    messageText.setWrapStyleWord(true);
+
     // mimick a JLabel
+    messageText.setEditable(false);
     messageText.setBackground(coordinateLabel.getBackground());
     messageText.setForeground(coordinateLabel.getForeground());
+    //messageText.setOpaque(coordinateLabel.isOpaque());
     messageText.setFont(coordinateLabel.getFont());
-    messageText.setEditable(false);
 
     messageText.setToolTipText(I18N.get("ui.WorkbenchFrame.copy-to-clipboard"));
-
-    timeLabel.setText(" ");
-    memoryLabel.setText(" ");
-    scaleLabel.setText(" ");
-    coordinateLabel.setText(" ");
 
     menuBar.add(fileMenu);
     menuBar.add(windowMenu);
@@ -1301,10 +1306,11 @@ public class WorkbenchFrame extends JFrame
     statusPanelSplitPane1.setResizeWeight(1);
 
     // Workaround for java bug 4131528
-    statusPanelSplitPane1.setBorder(null);
-    statusPanelSplitPane2.setBorder(null);
-    statusPanelSplitPane3.setBorder(null);
-    statusPanelSplitPane4.setBorder(null);
+    Border b = BorderFactory.createEmptyBorder(0, 0, 0, 0);
+    statusPanelSplitPane1.setBorder(b);
+    statusPanelSplitPane2.setBorder(b);
+    statusPanelSplitPane3.setBorder(b);
+    statusPanelSplitPane4.setBorder(b);
     statusPanel.add(statusPanelSplitPane1, BorderLayout.CENTER);
     
     JSplitPane desktopStatusSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, desktopPane, statusPanel);
