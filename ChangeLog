@@ -2,6 +2,11 @@
 
 --> Changes.txt updated up to here
 
+2013-03-31 mmichaud <michael.michaud@free.fr>
+  * Improve postgis driver : add a vacumm analyze after creation of a spatial
+    index (SaveToPostGISDataSource). Test if a spatial index exists to choose 
+    the most appropriate way to compute the dataset extent (PostgisDSMetadata)
+
 2013-03-30 ede
   * make statusbar vertically resizable
   * all fields resizeable again and tooltipped

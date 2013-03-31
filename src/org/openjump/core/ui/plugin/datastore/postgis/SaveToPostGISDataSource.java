@@ -186,6 +186,11 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
                             addPrimaryKey(conn, quotedSchemaName, quotedTableName, local_id_key);
                         }
                         conn.commit();
+                        conn.setAutoCommit(true);
+                        // Adding vacuum analyze seems to be necessary to be able to use 
+                        // ST_Estimated_Extent on the newly created table
+                        conn.createStatement().execute("VACUUM ANALYZE " + 
+                            PostGISQueryUtil.compose(quotedSchemaName, quotedTableName));
                     } catch(SQLException e) {
                         throw e;
                     }
@@ -199,7 +204,7 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
                         }
                         truncateTable(conn, quotedSchemaName, quotedTableName);
                         insertInTable(conn, featureCollection, 
-                            quotedSchemaName, quotedTableName, srid!=-1, dim);
+                            quotedSchemaName, quotedTableName, srid>0, dim);
                         conn.commit();
                     } catch(Exception e) {
                         throw e;
@@ -213,7 +218,7 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
                             if (!confirmWriteDespiteDifferentSchemas()) return;
                         }
                         insertInTable(conn, featureCollection, 
-                            quotedSchemaName, quotedTableName, srid!=-1, dim);
+                            quotedSchemaName, quotedTableName, srid>0, dim);
                         conn.commit();
                     } catch(Exception e) {
                         throw e;
@@ -227,7 +232,7 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
                         if (connUtil.compatibleSchemaSubset(quotedSchemaName, quotedTableName, featureSchema).length < featureSchema.getAttributeCount()) {
                             if (!confirmWriteDespiteDifferentSchemas()) return;
                         }
-                        insertUpdateTable(conn, featureCollection, quotedSchemaName, quotedTableName, local_id_key, srid!=-1, dim);
+                        insertUpdateTable(conn, featureCollection, quotedSchemaName, quotedTableName, local_id_key, srid>0, dim);
                         conn.commit();
                     } catch(SQLException e) {
                         throw e;
@@ -240,7 +245,7 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
                         if (connUtil.compatibleSchemaSubset(quotedSchemaName, quotedTableName, featureSchema).length < featureSchema.getAttributeCount()) {
                             if (!confirmWriteDespiteDifferentSchemas()) return;
                         }
-                        insertUpdateTable(conn, featureCollection, quotedSchemaName, quotedTableName, local_id_key, srid!=-1, dim);
+                        insertUpdateTable(conn, featureCollection, quotedSchemaName, quotedTableName, local_id_key, srid>0, dim);
                         deleteNotExistingFeaturesFromTable(conn, featureCollection, quotedSchemaName, quotedTableName, local_id_key);
                         conn.commit();
                     } catch(SQLException e) {
@@ -334,7 +339,7 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
         } catch (SQLException sqle) {
             throw new SQLException("Error executing query: " + PostGISQueryUtil.getAddGeometryColumnStatement(dbSchema, dbTable, geometryColumn, srid, geometryType, dim), sqle);
         }
-        populateTable(conn, fc, dbSchema, dbTable, srid!=-1, dim);
+        populateTable(conn, fc, dbSchema, dbTable, (srid>0), dim);
         try {
             conn.createStatement().execute(PostGISQueryUtil.getAddSpatialIndexStatement(dbSchema, dbTable, geometryColumn));
         } catch (SQLException sqle) {

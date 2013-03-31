@@ -119,9 +119,8 @@ public class PostGISQueryUtil {
     
     
     public static String getAddSpatialIndexStatement(String dbSchema, String dbTable, String geometryColumn) {
-        return "CREATE INDEX \"" + 
-            compose(dbSchema, dbTable).replaceAll("\"","") + "_" + geometryColumn + "_idx\"" + 
-            " ON " + compose(dbSchema, dbTable) + " USING GIST ( \"" + geometryColumn + "\" )"; 
+        return "CREATE INDEX \"" + compose(dbSchema, dbTable).replaceAll("\"","") + "_" + geometryColumn + "_idx\"\n" + 
+               "ON " + compose(dbSchema, dbTable) + " USING GIST ( \"" + geometryColumn + "\" );";
     }
     
     /**
