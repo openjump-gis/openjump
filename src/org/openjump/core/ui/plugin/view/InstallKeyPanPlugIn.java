@@ -184,7 +184,7 @@ public class InstallKeyPanPlugIn extends AbstractPlugIn implements MultiShortcut
             return pan( context.getWorkbenchFrame().getActiveInternalFrame(), mode );
         }
         public String getName() {
-          return I18N.get("org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn.PanHelper."+name);
+          return name;
         }
     }
 
