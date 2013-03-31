@@ -263,7 +263,9 @@ public class MapLayer {
    * @return a list of the SRS list of this MapLayer and its ancestors
    */
   public Collection getFullSRSList() {
-    Set fullSRSList  = new TreeSet(getSRSList());
+    // Change TreeSet to LinkedHashSet in order to preserve the natural order
+    // with layer SRS first ans parent SRS second
+    Set fullSRSList  = new LinkedHashSet(getSRSList());
     if (parent != null) fullSRSList.addAll(parent.getFullSRSList());
     return fullSRSList;
   }
