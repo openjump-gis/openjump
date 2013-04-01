@@ -54,6 +54,8 @@ import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.ui.plugin.AboutPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.OptionsPlugIn;
 
 public class OptionsDialog extends JDialog {
     private JPanel panel1 = new JPanel();
@@ -170,6 +172,12 @@ public class OptionsDialog extends JDialog {
         getContentPane().add(panel1);
         panel1.add(tabbedPane, BorderLayout.CENTER);
         this.getContentPane().add(okCancelPanel, BorderLayout.SOUTH);
+        
+        try {
+          setIconImage(OptionsPlugIn.ICON.getImage());
+        } catch (NoSuchMethodError e) {
+          // IGNORE: this is 1.5 missing setIconImage()
+        }
     }
     public boolean wasOKPressed() {
         return okCancelPanel.wasOKPressed();

@@ -32,6 +32,8 @@
 
 package com.vividsolutions.jump.workbench.ui.plugin;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JInternalFrame;
 
 import com.vividsolutions.jump.I18N;
@@ -48,50 +50,52 @@ import org.openjump.core.ui.DatasetOptionsPanel;
 import org.openjump.core.ui.SelectionStyllingOptionsPanel;
 
 public class OptionsPlugIn extends AbstractPlugIn {
+  
+  public final static ImageIcon ICON = IconLoader.icon("fugue/wrench-screwdriver.png");
 
-    public boolean execute(PlugInContext context) throws Exception {
-        reportNothingToUndoYet(context);
-        GUIUtil.centreOnWindow(dialog(context));
-        dialog(context).setVisible(true);
-        if (dialog(context).wasOKPressed()) {
-            JInternalFrame[] frames = context.getWorkbenchFrame().getInternalFrames();
-            for (int i = 0; i < frames.length; i++) {
-                if (frames[i] instanceof LayerViewPanelProxy) {
-                    ((LayerViewPanelProxy) frames[i])
-                        .getLayerViewPanel()
-                        .getRenderingManager()
-                        .render(
-                        GridRenderer.CONTENT_ID,
-                        true);
-                }
-            }
+  public boolean execute(PlugInContext context) throws Exception {
+    reportNothingToUndoYet(context);
+    GUIUtil.centreOnWindow(dialog(context));
+    dialog(context).setVisible(true);
+    if (dialog(context).wasOKPressed()) {
+      JInternalFrame[] frames = context.getWorkbenchFrame().getInternalFrames();
+      for (int i = 0; i < frames.length; i++) {
+        if (frames[i] instanceof LayerViewPanelProxy) {
+          ((LayerViewPanelProxy) frames[i]).getLayerViewPanel()
+              .getRenderingManager().render(GridRenderer.CONTENT_ID, true);
         }
-        return dialog(context).wasOKPressed();
+      }
     }
-    private OptionsDialog dialog(PlugInContext context) {
-        return OptionsDialog.instance(context.getWorkbenchContext().getWorkbench());
-    }
-    
-    public void initialize(PlugInContext context) throws Exception {
-        dialog(context)
-                .addTab(I18N.get("ui.plugin.OptionsPlugIn.view-edit"), new EditOptionsPanel(context
-                        .getWorkbenchContext().getWorkbench().getBlackboard(), context
-                        .getWorkbenchContext().getWorkbench().getFrame()
-                        .getDesktopPane()))        ;
-        dialog(context)
-                .addTab(I18N.get("ui.plugin.OptionsPlugIn.snap-vertices-tools"), GUIUtil.resize(
-                        IconLoader.icon("QuickSnap.gif"), 16),
-                        new SnapVerticesToolsOptionsPanel(context
-                                .getWorkbenchContext().getWorkbench()
-                                .getBlackboard()))        ;
-		// [Matthias Scholz 3. Sept 2010] SelectionStyllingOptionsPanel added
-		dialog(context)
-                .addTab(I18N.get("ui.plugin.OptionsPlugIn.selection-style"),
-						new SelectionStyllingOptionsPanel(context.getWorkbenchContext()));
-		// [Matthias Scholz 15. Sept 2010] DatasetOptionsPanel added
-		dialog(context)
-                .addTab(I18N.get("ui.DatasetOptionsPanel.datasetOptions"),
-						new DatasetOptionsPanel(context.getWorkbenchContext()));
-    }
+    return dialog(context).wasOKPressed();
+  }
+
+  private OptionsDialog dialog(PlugInContext context) {
+    return OptionsDialog.instance(context.getWorkbenchContext().getWorkbench());
+  }
+
+  public void initialize(PlugInContext context) throws Exception {
+    dialog(context).addTab(
+        I18N.get("ui.plugin.OptionsPlugIn.view-edit"),
+        new EditOptionsPanel(context.getWorkbenchContext().getWorkbench()
+            .getBlackboard(), context.getWorkbenchContext().getWorkbench()
+            .getFrame().getDesktopPane()));
+    dialog(context).addTab(
+        I18N.get("ui.plugin.OptionsPlugIn.snap-vertices-tools"),
+        GUIUtil.resize(IconLoader.icon("QuickSnap.gif"), 16),
+        new SnapVerticesToolsOptionsPanel(context.getWorkbenchContext()
+            .getWorkbench().getBlackboard()));
+    // [Matthias Scholz 3. Sept 2010] SelectionStyllingOptionsPanel added
+    dialog(context).addTab(I18N.get("ui.plugin.OptionsPlugIn.selection-style"),
+        new SelectionStyllingOptionsPanel(context.getWorkbenchContext()));
+    // [Matthias Scholz 15. Sept 2010] DatasetOptionsPanel added
+    dialog(context).addTab(I18N.get("ui.DatasetOptionsPanel.datasetOptions"),
+        new DatasetOptionsPanel(context.getWorkbenchContext()));
+  }
+
+
+  public Icon getIcon(int height) {
+    // just one resolution for now 
+    return ICON;
+  }
 
 }
