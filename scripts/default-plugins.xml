@@ -58,7 +58,7 @@
 	<plug-in>org.openjump.core.ui.plugin.tools.IntersectPolygonLayersPlugIn</plug-in>
 	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.SpatialJoinPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn</plug-in>
-	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.UnionPlugIn</plug-in>
+	<!--plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.UnionPlugIn</plug-in-->
 	
 	<!--- =========  Statistics ====================  /-->
 	<plug-in>org.openjump.core.ui.plugin.tools.statistics.CreateScatterPlotPlugIn</plug-in>
@@ -68,7 +68,7 @@
 	<plug-in>org.openjump.core.ui.plugin.tools.statistics.CalcVarianceAndMeanPerClassPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewPlugIn</plug-in>
 	<!--- =========  Generate ====================  /-->
-	<plug-in>org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn</plug-in>
+	<!--plug-in>org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn</plug-in-->
 	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.test.RandomTrianglesPlugIn</plug-in>
 	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.test.RandomArrowsPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn</plug-in>
