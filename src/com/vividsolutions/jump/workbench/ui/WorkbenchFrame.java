@@ -190,12 +190,9 @@ public class WorkbenchFrame extends JFrame
   private static Logger LOG = Logger.getLogger(WorkbenchFrame.class);
   
   // StatusBar
-  private JPanel statusPanel = new JPanel();
-  private JTextArea messageText = new JTextArea();
-  private JLabel timeLabel = new JLabel();
-  private JLabel memoryLabel = new JLabel();
-  private JLabel scaleLabel = new JLabel();
-  private JLabel coordinateLabel = new JLabel();
+  private JPanel statusPanel;
+  private JTextArea messageText;
+  private JLabel timeLabel, memoryLabel, scaleLabel, coordinateLabel;
 
   private String lastStatusMessage = "";
 
@@ -204,6 +201,9 @@ public class WorkbenchFrame extends JFrame
   private JSplitPane statusPanelSplitPane2;
   private JSplitPane statusPanelSplitPane3;
   private JSplitPane statusPanelSplitPane4;
+  
+  // the vertically resizeable statusbar
+  private JSplitPane desktopStatusSplit;
 
   WorkbenchToolBar toolBar;
 
@@ -376,17 +376,7 @@ public class WorkbenchFrame extends JFrame
 
   public WorkbenchFrame(String title, final WorkbenchContext workbenchContext) throws Exception {
     setTitle(title);
-    new Timer(1000, new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        String msg = getMBCommittedMemory() + " MB "
-            + I18N.get("ui.WorkbenchFrame.committed-memory");
-        memoryLabel.setText(msg);
-        memoryLabel.setToolTipText(msg);
-        // memoryLabel.setToolTipText(LayerManager.layerManagerCount() + " "
-        // + I18N.get("ui.WorkbenchFrame.layer-manager")
-        // + StringUtil.s(LayerManager.layerManagerCount()));
-      }
-    }).start();
+
     this.workbenchContext = workbenchContext;
 
     // set icon for the app frame
@@ -405,6 +395,18 @@ public class WorkbenchFrame extends JFrame
     } catch (Exception e) {
       e.printStackTrace();
     }
+
+    new Timer(1000, new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        String msg = getMBCommittedMemory() + " MB "
+            + I18N.get("ui.WorkbenchFrame.committed-memory");
+        memoryLabel.setText(msg);
+        memoryLabel.setToolTipText(msg);
+        // memoryLabel.setToolTipText(LayerManager.layerManagerCount() + " "
+        // + I18N.get("ui.WorkbenchFrame.layer-manager")
+        // + StringUtil.s(LayerManager.layerManagerCount()));
+      }
+    }).start();
 
     // attach a multi listener (plugins use to get notified about key events etc.)
     easyKeyListener = new MultiRecursiveKeyListener(this);
@@ -638,6 +640,19 @@ public class WorkbenchFrame extends JFrame
     message = (message == null || message.equals("")) ? " " : message;
     scaleLabel.setText(message);
     scaleLabel.setToolTipText(message);
+  }
+
+  // make really extra sure message textarea looks like the jlabel
+  private boolean init_message_lnf = false;
+  
+  public void setVisible(boolean b) {
+    if (b && !init_message_lnf){
+      messageText.setFont(coordinateLabel.getFont());
+      messageText.setBackground(coordinateLabel.getBackground());
+      messageText.setForeground(coordinateLabel.getForeground());
+      init_message_lnf = true;
+    }
+    super.setVisible(b);
   }
 
   public JInternalFrame getActiveInternalFrame() {
@@ -1254,11 +1269,11 @@ public class WorkbenchFrame extends JFrame
       }
     });
     
-    messageText.setText(" ");
-    timeLabel.setText(" ");
-    memoryLabel.setText(" ");
-    scaleLabel.setText(" ");
-    coordinateLabel.setText(" ");
+    messageText = new JTextArea(" ");
+    timeLabel = new JLabel(" ");
+    memoryLabel = new JLabel(" ");
+    scaleLabel = new JLabel(" ");
+    coordinateLabel = new JLabel(" ");
     
     // this is important, else resizing in the splitpane is buggy, can only make it larger, see
     // https://forums.oracle.com/forums/thread.jspa?threadID=1361066
@@ -1269,10 +1284,11 @@ public class WorkbenchFrame extends JFrame
 
     // mimick a JLabel
     messageText.setEditable(false);
-    messageText.setBackground(coordinateLabel.getBackground());
-    messageText.setForeground(coordinateLabel.getForeground());
-    //messageText.setOpaque(coordinateLabel.isOpaque());
-    messageText.setFont(coordinateLabel.getFont());
+// we do this now in setVisible() below
+//    messageText.setBackground(coordinateLabel.getBackground());
+//    messageText.setForeground(coordinateLabel.getForeground());
+//    //messageText.setOpaque(coordinateLabel.isOpaque());
+//    messageText.setFont(coordinateLabel.getFont());
 
     messageText.setToolTipText(I18N.get("ui.WorkbenchFrame.copy-to-clipboard"));
 
@@ -1282,7 +1298,7 @@ public class WorkbenchFrame extends JFrame
     getContentPane().add(toolBar, BorderLayout.NORTH);
 
     // [Matthias Scholz 11. Dec 2010] new resizable statusbar
-    statusPanel.setLayout(new BorderLayout());
+    statusPanel = new JPanel(new BorderLayout());
 
     int dividerSize = 3;
     statusPanelSplitPane4 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true,
@@ -1313,7 +1329,7 @@ public class WorkbenchFrame extends JFrame
     statusPanelSplitPane4.setBorder(b);
     statusPanel.add(statusPanelSplitPane1, BorderLayout.CENTER);
     
-    JSplitPane desktopStatusSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, desktopPane, statusPanel);
+    desktopStatusSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, desktopPane, statusPanel);
     desktopStatusSplit.setDividerSize(dividerSize);
     desktopStatusSplit.setResizeWeight(1d);
     getContentPane().add(desktopStatusSplit, BorderLayout.CENTER);
@@ -1603,7 +1619,7 @@ public class WorkbenchFrame extends JFrame
   public final static String STATUSPANEL_DIVIDER_LOCATION_2 = WorkbenchFrame.class.getName() + " - STATUSPANEL_DIVIDER_LOCATION_2";
   public final static String STATUSPANEL_DIVIDER_LOCATION_3 = WorkbenchFrame.class.getName() + " - STATUSPANEL_DIVIDER_LOCATION_3";
   public final static String STATUSPANEL_DIVIDER_LOCATION_4 = WorkbenchFrame.class.getName() + " - STATUSPANEL_DIVIDER_LOCATION_4";
-  //public final static String STATUSPANEL_DIVIDER_LOCATION_5 = WorkbenchFrame.class.getName() + " - STATUSPANEL_DIVIDER_LOCATION_5";
+  public final static String DESKTOPSTATUS_DIVIDER_LOCATION = WorkbenchFrame.class.getName() + " - DESKTOPSTATUS_DIVIDER_LOCATION";
 
   public void saveWindowState() {
     boolean maximized = (this.getExtendedState() == MAXIMIZED_BOTH);
@@ -1616,10 +1632,11 @@ public class WorkbenchFrame extends JFrame
     blackboard.put(WIDTH_KEY, d.width);
     blackboard.put(HEIGHT_KEY, d.height);
     // save the statuspanel divider locations
-	  blackboard.put(STATUSPANEL_DIVIDER_LOCATION_1, new Integer(statusPanelSplitPane1.getLastDividerLocation()));
-	  blackboard.put(STATUSPANEL_DIVIDER_LOCATION_2, new Integer(statusPanelSplitPane2.getLastDividerLocation()));
-	  blackboard.put(STATUSPANEL_DIVIDER_LOCATION_3, new Integer(statusPanelSplitPane3.getLastDividerLocation()));
-	  blackboard.put(STATUSPANEL_DIVIDER_LOCATION_4, new Integer(statusPanelSplitPane4.getLastDividerLocation()));
+	  blackboard.put(STATUSPANEL_DIVIDER_LOCATION_1, new Integer(statusPanelSplitPane1.getDividerLocation()));
+	  blackboard.put(STATUSPANEL_DIVIDER_LOCATION_2, new Integer(statusPanelSplitPane2.getDividerLocation()));
+	  blackboard.put(STATUSPANEL_DIVIDER_LOCATION_3, new Integer(statusPanelSplitPane3.getDividerLocation()));
+	  blackboard.put(STATUSPANEL_DIVIDER_LOCATION_4, new Integer(statusPanelSplitPane4.getDividerLocation()));
+	  blackboard.put(DESKTOPSTATUS_DIVIDER_LOCATION, new Integer(desktopStatusSplit.getDividerLocation()));
   }
 
   public boolean recallMaximizedState() {
@@ -1669,7 +1686,8 @@ public class WorkbenchFrame extends JFrame
     statusPanelSplitPane2.setDividerLocation(blackboard.get(STATUSPANEL_DIVIDER_LOCATION_2, 200));
     statusPanelSplitPane3.setDividerLocation(blackboard.get(STATUSPANEL_DIVIDER_LOCATION_3, 100));
     statusPanelSplitPane4.setDividerLocation(blackboard.get(STATUSPANEL_DIVIDER_LOCATION_4, 100));
-
+    desktopStatusSplit.setDividerLocation(blackboard.get(DESKTOPSTATUS_DIVIDER_LOCATION, -1));
+    
     Dimension d;
     if (blackboard.get(WIDTH_KEY) == null) {
       d = initWindowSize();
