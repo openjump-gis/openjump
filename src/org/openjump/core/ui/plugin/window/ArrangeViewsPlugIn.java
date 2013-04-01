@@ -1,3 +1,4 @@
+
 package  org.openjump.core.ui.plugin.window;
 
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
@@ -22,17 +23,11 @@ public class ArrangeViewsPlugIn extends AbstractPlugIn
 	
   public static final String NAME = I18N.get("org.openjump.core.ui.plugin.window.ArrangeViewsPlugIn.name");
 
-  /*
-  public static final Icon BLANK_ICON = IconLoader.icon("blank.png");
-
   public static final Icon HORIZONTAL_ICON = IconLoader.icon("application_tile_horizontal.png");
-
   public static final Icon VERTICAL_ICON = IconLoader.icon("application_tile_vertical.png");
-
   public static final Icon CASCADE_ICON = IconLoader.icon("application_cascade.png");
+  public static final Icon ARRANGE_ICON = IconLoader.icon("application_distribute.png");
 
-  public static final Icon ARRANGE_ICON = IconLoader.icon("application_mosaic.png");
-  */
   public static final int HORIZONTAL = 1;
   public static final int VERTICAL = 2;
   public static final int CASCADE = 3;
@@ -219,7 +214,7 @@ public class ArrangeViewsPlugIn extends AbstractPlugIn
       }
     }
   }
-/*
+
   public Icon getIcon()
   {
     Icon icon = null;
@@ -237,11 +232,11 @@ public class ArrangeViewsPlugIn extends AbstractPlugIn
       icon = ARRANGE_ICON;
       break;
     default:
-      icon = BLANK_ICON;
+      icon = null;
     }
 
     return icon;
   }
 
- */
+
 }

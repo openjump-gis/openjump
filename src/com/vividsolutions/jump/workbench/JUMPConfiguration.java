@@ -948,19 +948,16 @@ public class JUMPConfiguration implements Setup {
                 : null;
           }
         });
-    featureInstaller.addMainMenuItem(arrangeHorizontalPlugIn,
-        new String[] { MenuNames.WINDOW }, arrangeHorizontalPlugIn.getName(),
-        false, IconLoader.icon("application_tile_horizontal.png"), null);
 
-    featureInstaller.addMainMenuItem(arrangeVerticalPlugIn,
-        new String[] { MenuNames.WINDOW }, arrangeVerticalPlugIn.getName(),
-        false, IconLoader.icon("application_tile_vertical.png"), null);
-
-    featureInstaller.addMainMenuItem(arrangeCascadePlugIn,
-        new String[] { MenuNames.WINDOW }, arrangeCascadePlugIn.getName(),
-        false, IconLoader.icon("application_cascade.png"), null);
-
-
+      featureInstaller.addMainMenuPlugin(arrangeHorizontalPlugIn,
+          new String[] { MenuNames.WINDOW });
+      featureInstaller.addMainMenuPlugin(arrangeVerticalPlugIn,
+          new String[] { MenuNames.WINDOW });
+      featureInstaller.addMainMenuPlugin(arrangeCascadePlugIn,
+          new String[] { MenuNames.WINDOW });
+      featureInstaller.addMainMenuPlugin(arrangeAllPlugIn,
+          new String[] { MenuNames.WINDOW });
+    
     /**
      * HELP ===================================================================
      */
