@@ -43,6 +43,7 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.cursortool.CursorTool;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxDialog;
 import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxPlugIn;
 
@@ -50,7 +51,7 @@ public class EasyButtonsPlugin extends ToolboxPlugIn {
 
   public static final String TOOLBOX_NAME = I18N
       .get("org.openjump.core.ui.plugin.view.EasyButtonsPlugin.EZ-Buttons");
-  public static final ImageIcon ICON = new ImageIcon(EasyButtonsPlugin.class.getResource("ez.png"));
+  public static final ImageIcon ICON = IconLoader.icon("fugue/keyboard-smiley.png");
 
   private JPopupMenu popup = new JPopupMenu();
 
