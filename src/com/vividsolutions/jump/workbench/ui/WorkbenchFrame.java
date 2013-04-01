@@ -606,8 +606,12 @@ public class WorkbenchFrame extends JFrame
 
   private void setStatusBarText(String message) {
     // Make message at least a space so that the label won't collapse [Jon Aquino]
-    message = (message == null || message.equals("")) ? " " : message;
+    // message = (message == null || message.equals("")) ? " " : message;
     messageText.setText(message);
+    messageText.setToolTipText("<html><body>"
+        + GUIUtil.escapeHTML(message)
+        + "<br><br>"
+        + GUIUtil.escapeHTML(I18N.get("ui.WorkbenchFrame.copy-to-clipboard")) + "</body></html>");
   }
 
   private String getStatusBarText() {
@@ -1289,8 +1293,8 @@ public class WorkbenchFrame extends JFrame
 //    messageText.setForeground(coordinateLabel.getForeground());
 //    //messageText.setOpaque(coordinateLabel.isOpaque());
 //    messageText.setFont(coordinateLabel.getFont());
-
-    messageText.setToolTipText(I18N.get("ui.WorkbenchFrame.copy-to-clipboard"));
+    // init first message with tooltip
+    setStatusBarText("");
 
     menuBar.add(fileMenu);
     menuBar.add(windowMenu);

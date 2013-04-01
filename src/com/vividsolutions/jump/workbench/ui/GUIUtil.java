@@ -127,6 +127,17 @@ public class GUIUtil {
     }
 
     /**
+     * Convenience method by default escaping everything.
+     * 
+     * @param value
+     * @return string or null
+     */
+    public final static String escapeHTML(String value){
+      return escapeHTML( value, true, true );
+    }
+
+    
+    /**
      * Returns a string suitable for embedding as HTML. That is, all characters
      * which have a special meaning in HTML are escaped as character codes.
      * 
