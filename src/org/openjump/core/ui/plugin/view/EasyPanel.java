@@ -40,7 +40,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map.Entry;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -85,16 +88,36 @@ public class EasyPanel extends JPanel {
 
   private JPanel buttonPanel = new JPanel();
   private GridLayout gridLayout1 = new GridLayout();
-  private final int MAX_BUTTONS = 10;
+  private final int MAX_BUTTONS = 12;
   private CustomButton[] buttons = new CustomButton[MAX_BUTTONS];
   private CustomButton activeButton = null;
   private JPopupMenu masterPopup = new JPopupMenu();
   // private JMenu rightClickMenu = new JMenu(RIGHT_CLICK_MENU);
   private ArrayList<JMenuItem> menuItemList = new ArrayList<JMenuItem>();
   private ArrayList<String> menuNameList = new ArrayList<String>();
+  private HashMap<Integer,String> persistentButtonMap;
   private ToolboxDialog toolbox;
 
   public EasyPanel(ToolboxDialog toolbox) {
+
+    Blackboard blackboard = PersistentBlackboardPlugIn.get(toolbox.getContext());
+    Object o = blackboard.get(EZ_LIST_KEY);
+    if (o instanceof List) {
+      // restore old style arraylist entries
+      List<String> list = (List) o;
+      persistentButtonMap = new HashMap<Integer, String>();
+      for (int i = 0; i < list.size(); i++) {
+        persistentButtonMap.put(i, list.get(i));
+      }
+
+      blackboard.put(EZ_LIST_KEY, persistentButtonMap);
+    } else if (o instanceof HashMap) {
+      persistentButtonMap = (HashMap) o;
+    } else {
+      persistentButtonMap = new HashMap();
+      blackboard.put(EZ_LIST_KEY, persistentButtonMap);
+    }
+
     this.toolbox = toolbox;
     this.add(buttonPanel);
     buttonPanel.setLayout(gridLayout1);
@@ -104,6 +127,7 @@ public class EasyPanel extends JPanel {
     populatePopupMenu(toolbox.getContext());
     recallButtonAssignments();
     toolbox.pack();
+    
   }
 
   private void addButtons() {
@@ -122,18 +146,22 @@ public class EasyPanel extends JPanel {
   }
 
   private void recallButtonAssignments() {
-    ArrayList buttonNameList = getPersistentButtonList(toolbox.getContext());
-    int buttonNumber = 0;
-    for (Iterator i = buttonNameList.iterator(); i.hasNext();) {
-      String name = (String) i.next();
+    int buttonNumber; String name;
+    for (Iterator i = persistentButtonMap.entrySet().iterator(); i.hasNext();) {
+      Entry<Integer,String> e = (Entry) i.next();
+      buttonNumber = e.getKey();
+      name = e.getValue();
       int index = menuNameList.indexOf(name);
       if (index > -1) {
         JMenuItem jMenuItemToSet = menuItemList.get(index);
         buttons[buttonNumber].setMenuItem(jMenuItemToSet);
         String buttonName = buttons[buttonNumber].getText();
         buttons[buttonNumber].setText(buttonName);
+      } 
+      // menu entry removed inbetween, hence remove entry from persistent list
+      else {
+        i.remove();
       }
-      buttonNumber++;
     }
   }
 
@@ -245,28 +273,6 @@ public class EasyPanel extends JPanel {
     toolbox.pack();
   }
 
-  private ArrayList getPersistentButtonList(WorkbenchContext context) {
-    Blackboard blackboard = PersistentBlackboardPlugIn.get(context);
-    if (blackboard.get(EZ_LIST_KEY) == null) {
-      ArrayList list = new ArrayList(MAX_BUTTONS);
-      for (int i = 0; i < MAX_BUTTONS; i++) {
-        list.add(new String(UNUSED_BUTTON_NAME + (i + 1)));
-      }
-      blackboard.put(EZ_LIST_KEY, list);
-    }
-    ArrayList list = (ArrayList) blackboard.get(EZ_LIST_KEY);
-    return list;
-  }
-
-  private void setPersistentButtonList(WorkbenchContext context, int index,
-      String buttonName) {
-    ArrayList buttonNameList = getPersistentButtonList(context);
-    if (index < MAX_BUTTONS)
-      buttonNameList.set(index, buttonName);
-    Blackboard blackboard = PersistentBlackboardPlugIn.get(context);
-    blackboard.put(EZ_LIST_KEY, buttonNameList);
-  }
-
   class PopupListener extends MouseAdapter {
     JPopupMenu popup;
 
@@ -328,14 +334,13 @@ public class EasyPanel extends JPanel {
     public void unsetMenuItem() {
       jMenuItem = null;
       this.setText(default_name);
-      setPersistentButtonList(toolbox.getContext(), buttonNumber, default_name);
+      persistentButtonMap.remove(buttonNumber);
     }
 
     public void setMenuItem(JMenuItem jMenuItemToSet) {
       jMenuItem = jMenuItemToSet;
       this.setText(jMenuItem.getText()+" "+getToolTipText());
-      setPersistentButtonList(toolbox.getContext(), buttonNumber,
-          jMenuItem.getText());
+      persistentButtonMap.put(buttonNumber, jMenuItem.getText());
       // ChangeListener isn't fired unless you drop down a menu
       // if (jMenuItem != null) {
       // ChangeListener[] changeListeners = jMenuItem.getChangeListeners();

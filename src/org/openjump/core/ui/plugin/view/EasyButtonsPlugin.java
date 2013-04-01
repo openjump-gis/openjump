@@ -71,7 +71,8 @@ public class EasyButtonsPlugin extends ToolboxPlugIn {
   protected void initializeToolbox(ToolboxDialog toolbox) {
     EasyPanel buttonPanel = new EasyPanel(toolbox);
     toolbox.getCenterPanel().add(buttonPanel, BorderLayout.CENTER);
-    toolbox.setInitialLocation(new GUIUtil.Location(10, true, 270, false));
+    toolbox.setInitialLocation(new GUIUtil.Location(10, true, 10, true));
+    toolbox.setResizable(false);
     try {
       toolbox.setIconImage(ICON.getImage());
     } catch (NoSuchMethodError e) {
