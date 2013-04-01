@@ -354,14 +354,14 @@ class ShortcutKeysDialog extends JDialog {
         else
           description = entry.getValue().toString();
         
-        out += "<tr><td>" + description + "</td><td>"
-            + entry.getKey() + "</td></tr>\n";
+        out += "<tr><td>" + GUIUtil.escapeHTML(description) + "</td><td>"
+            + GUIUtil.escapeHTML(entry.getKey()) + "</td></tr>\n";
       }
       if (out.length() > 0){
 //        overview += "<tr><td colspan=2><b><center>"
 //            + (overview.length()<1 ? "":"&nbsp;<br>") + 
 //            "<u>" + name + "</u></center></b></td></tr>\n" + out;
-        overviews.add("<tr><td colspan=2><b><center><u>" + name
+        overviews.add("<tr><td colspan=2><b><center><u>" + GUIUtil.escapeHTML(name)
             + "</u></center></b></td></tr>\n" + out);
       }
     }
@@ -400,10 +400,10 @@ class ShortcutKeysDialog extends JDialog {
         else
           description = entry.getValue().toString();
         
-        out += "<tr><td>" + description + "</td><td>"
-            + entry.getKey() + "</td></tr>\n";
+        out += "<tr><td>" + GUIUtil.escapeHTML(description) + "</td><td>"
+            + GUIUtil.escapeHTML(entry.getKey()) + "</td></tr>\n";
       }
-      overviews.add("<tr><td colspan=2><b><center><u>" + name
+      overviews.add("<tr><td colspan=2><b><center><u>" + GUIUtil.escapeHTML(name)
           + "</u></center></b></td></tr>\n" + out);
     }
 
@@ -476,18 +476,20 @@ class ShortcutKeysDialog extends JDialog {
           continue;
         tool_out += "<tr><td colspan=3><b>"
             + (tool_out.length()<1 ? "":"&nbsp;<br>") + 
-            "" + shorty.getName() + "</b></td></tr>\n";
+            "" + GUIUtil.escapeHTML(shorty.getName()) + "</b></td></tr>\n";
         Map<QuasimodeTool.ModifierKeySpec, String> options = description;
         for (QuasimodeTool.ModifierKeySpec sc : options.keySet()) {
-          tool_out += "<tr><td>&nbsp;</td><td>" + options.get(sc) + "</td><td>"
-              + sc + "</td></tr>\n";
+          tool_out += "<tr><td>&nbsp;</td><td>"
+              + GUIUtil.escapeHTML(options.get(sc)) + "</td><td>"
+              + GUIUtil.escapeHTML(sc.toString()) + "</td></tr>\n";
         }
       }
       // title glued to first entry so they will not get separated by layout
       if (i==1)
         tool_out = "<tr><td colspan=2><b><center><u>"
-            + I18N.get(ShortcutKeysPlugIn.getClassName() + ".editing-tools-options")
-            + "</u></center></b></td></tr>\n" + tool_out;
+            + GUIUtil.escapeHTML(I18N.get(ShortcutKeysPlugIn.getClassName())
+                + ".editing-tools-options") + "</u></center></b></td></tr>\n"
+            + tool_out;
       if (i<=2){
         entries.add(tool_out);
       }else
