@@ -611,7 +611,9 @@ public class FeatureInstaller {
   private boolean vista_checkbox_workaround = CheckOS.isWindows()
       && Float.valueOf(System.getProperty("os.version")) >= 6
       && UIManager.getLookAndFeel().getClass().getName()
-          .equals("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+          .equals("com.sun.java.swing.plaf.windows.WindowsLookAndFeel")
+      // check windows vista/7 really uses native l&f, not Windows Classic 
+      && UIManager.get("CheckBoxMenuItem.checkIconFactory")!=null;
 
   private void addMenuItemIcon(JMenuItem menuItem, Icon icon) {
     // no icons for radio/checkbox on windows laf on vista+, the "highlighted"
