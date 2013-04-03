@@ -51,6 +51,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 
 import javax.swing.JTextArea;
@@ -120,7 +121,16 @@ public class BeanToolsPlugIn extends AbstractPlugIn {
     private void scanBeanShellDir(final File file, final PlugInContext context) throws IOException {
         // iterates over subdirectories
         if (file.isDirectory()) {
-            for (File f : file.listFiles()) {scanBeanShellDir(f, context);}
+            File[] files = file.listFiles();
+            Arrays.sort(files, new Comparator<File>(){
+                    public int compare(File f1, File f2) {
+                        return f1.getName().compareTo(f2.getName());
+                    }
+                    public boolean equals(Object obj) {
+                        return this == obj;
+                    } 
+            });
+            for (File f : files) {scanBeanShellDir(f, context);}
         }
         // add a menu item for the beanshell script
         else if (file.getName().endsWith(".bsh")) {
