@@ -340,6 +340,10 @@ public class JUMPWorkbench {
         I18N.setLocale(I18N_SETLOCALE);
       }
 
+      // set user agent used by UrlConnection, if not set on cmdline
+      if (System.getProperty("http.agent")==null)
+        System.setProperty("http.agent", JUMPVersion.CURRENT_VERSION);
+
       if (commandLine.hasOption("help")) {
         printProperly(commandLine.printDoc());
         System.exit(0);
@@ -352,7 +356,7 @@ public class JUMPWorkbench {
         printProperties("args[]=" + Arrays.toString(args));
         System.exit(0);
       }
-
+      
       // Init the L&F before instantiating the progress monitor [Jon Aquino]
       initLookAndFeel();
       // fix lnf (weird windows non-unicode locale bug)
