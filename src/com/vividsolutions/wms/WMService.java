@@ -1,7 +1,3 @@
-
-
-
-
 /*
  * The Unified Mapping Platform (JUMP) is an extensible, interactive GUI 
  * for visualizing and manipulating spatial features with geometry and attributes.
@@ -65,6 +61,8 @@ public class WMService {
     
     public static final String WMS_1_1_1 = "1.1.1";
     
+    public static final String WMS_1_3_0 = "1.3.0";
+    
     
   private String serverUrl;
   private String wmsVersion = WMS_1_0_0;
@@ -89,12 +87,12 @@ public class WMService {
     this.cap = null;
   }
 
-  /**
- * @throws IOException
- */
-public void initialize() throws IOException {
-      initialize(false);
-  }
+   /**
+    * @throws IOException
+    */
+    public void initialize() throws IOException {
+        initialize(false);
+    }
   
   /**
    * Connect to the service and get the capabilities.
@@ -103,15 +101,17 @@ public void initialize() throws IOException {
    * @throws IOException 
    */
 	public void initialize(boolean alertDifferingURL) throws IOException {
-//    [UT]
+	    // [UT]
 	    String req = "request=capabilities&WMTVER=1.0";
 	    if( WMS_1_1_0.equals( wmsVersion) ){
 	    	req = "SERVICE=WMS&VERSION=1.1.0&REQUEST=GetCapabilities";
 	    } else if ( WMS_1_1_1.equals( wmsVersion) ){
 	    	req = "SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities";
+	    } else if ( WMS_1_3_0.equals( wmsVersion) ){
+	    	req = "SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities";
 	    }
         
-        try{
+        try {
             String requestUrlString = this.serverUrl + req;
             URL requestUrl = new URL( requestUrlString );
             URLConnection con = requestUrl.openConnection();
@@ -188,7 +188,7 @@ public void initialize() throws IOException {
    *         from this service
    */
   	public MapRequest createMapRequest() {
-//    [UT] 04.02.2005 changed
+  	    // [UT] 04.02.2005 changed
   	    MapRequest mr = new MapRequest( this );
   	    mr.setVersion( this.wmsVersion );
         return mr;
