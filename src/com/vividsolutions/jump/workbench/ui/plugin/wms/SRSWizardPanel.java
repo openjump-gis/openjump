@@ -122,6 +122,7 @@ public class SRSWizardPanel extends JPanel implements WizardPanel {
     public void enteredFromLeft(Map dataMap) {
         this.dataMap = dataMap;
 
+        comboBoxModel.removeAllElements();
         for (Iterator i = getCommonSrsList().iterator();i.hasNext();) {
             String srs = (String) i.next();
             String srsName = SRSUtils.getName( srs );
