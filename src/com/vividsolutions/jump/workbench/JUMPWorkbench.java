@@ -341,8 +341,9 @@ public class JUMPWorkbench {
       }
 
       // set user agent used by UrlConnection, if not set on cmdline
-      if (System.getProperty("http.agent")==null)
-        System.setProperty("http.agent", JUMPVersion.CURRENT_VERSION);
+      if (System.getProperty("http.agent") == null)
+        System.setProperty("http.agent", I18N.get("JUMPWorkbench.jump") + " "
+            + JUMPVersion.CURRENT_VERSION);
 
       if (commandLine.hasOption("help")) {
         printProperly(commandLine.printDoc());
