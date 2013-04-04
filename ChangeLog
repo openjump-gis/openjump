@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-04-04 mmichaud <michael.michaud@free.fr>
+  * add Flatten3DGeometries.bsh BeanTool and improve beantools sorting
+
 2013-04-03 mmichaud <michael.michaud@free.fr>
   * Sort the list of beantools for linux/mac users
   * bug 3608987 finally resolved

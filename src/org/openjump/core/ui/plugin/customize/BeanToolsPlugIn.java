@@ -53,6 +53,8 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JTextArea;
 import javax.swing.event.MenuEvent;
@@ -123,8 +125,14 @@ public class BeanToolsPlugIn extends AbstractPlugIn {
         if (file.isDirectory()) {
             File[] files = file.listFiles();
             Arrays.sort(files, new Comparator<File>(){
+                    Pattern pattern = Pattern.compile(".*?([0-9]+).*");
                     public int compare(File f1, File f2) {
-                        return f1.getName().compareTo(f2.getName());
+                        Matcher m1 = pattern.matcher(f1.getName());
+                        Matcher m2 = pattern.matcher(f2.getName());
+                        if (m1.matches() && m2.matches()) {
+                            return Integer.valueOf(m1.group(1)).compareTo(Integer.valueOf(m2.group(1)));
+                        }
+                        else return f1.getName().compareTo(f2.getName());
                     }
                     public boolean equals(Object obj) {
                         return this == obj;
