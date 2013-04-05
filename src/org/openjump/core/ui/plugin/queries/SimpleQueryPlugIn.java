@@ -3,6 +3,7 @@ package org.openjump.core.ui.plugin.queries;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 import org.openjump.core.ui.plugin.queries.QueryDialog;
 import com.vividsolutions.jump.I18N;
@@ -27,7 +28,7 @@ public class SimpleQueryPlugIn extends AbstractPlugIn {
 
 		    context.getFeatureInstaller().addMainMenuItem(this,
 		        new String[]{MenuNames.TOOLS, MenuNames.TOOLS_QUERIES},
-		        this.getName() + "...", false, null, null);   	   
+		        this.getName() + "...", false, IconLoader.icon("simple_query.png"), null);   	   
     }
                                                       
     public boolean execute(PlugInContext context) throws Exception {

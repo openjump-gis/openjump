@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-04-05  Giuseppe Aruta (giuseppe_aruta@yahoo.it)
+  * Add icons to Style Layer Context Submenu, RasterColorEditor, SearchAllAttribute,
+    SimpleQuery and SpatialQuery plugins
+
 2013-04-04 mmichaud <michael.michaud@free.fr>
   * add Flatten3DGeometries.bsh BeanTool and improve beantools sorting
 

@@ -9,13 +9,14 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 /**
  * 16 sept. 2005
  *
  * @author  Paul PLOUY
  *  			Laboratoire RESO
- *  			université de Rennes 2
+ *  			universitï¿½ de Rennes 2
  *              FRANCE
  * 			modified by Stefan Steiniger (perriger@gmx.de)
  */
@@ -40,7 +41,7 @@ public class RasterColorEditorPlugIn extends AbstractPlugIn {
 				new String[] {MenuNames.RASTER},
 				this.sName + "...", 
 				false,
-				null,
+				IconLoader.icon("color_wheel.png"),
 
 				new MultiEnableCheck()
 				.add(

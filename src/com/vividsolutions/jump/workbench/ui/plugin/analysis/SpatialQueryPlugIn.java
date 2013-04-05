@@ -46,6 +46,7 @@ import com.vividsolutions.jump.workbench.model.*;
 import com.vividsolutions.jump.workbench.plugin.*;
 import com.vividsolutions.jump.workbench.plugin.util.*;
 import com.vividsolutions.jump.workbench.ui.*;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.I18N;
 
@@ -94,12 +95,17 @@ public class SpatialQueryPlugIn extends AbstractPlugIn implements ThreadedPlugIn
   }
 
   public void initialize(PlugInContext context) throws Exception {
-      FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-  	  featureInstaller.addMainMenuItem(
-  	      this,
-  	      new String[] {MenuNames.TOOLS, MenuNames.TOOLS_QUERIES},
-          new JMenuItem(this.getName() + "..."), 
-          createEnableCheck(context.getWorkbenchContext()));
+	  context.getFeatureInstaller().addMainMenuItem(this,
+		        new String[]{MenuNames.TOOLS, MenuNames.TOOLS_QUERIES},
+		        this.getName() + "...", false,  IconLoader.icon("spatial_query.png"), 
+		        createEnableCheck(context.getWorkbenchContext()));  
+	  
+	/*  FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
+	  featureInstaller.addMainMenuItem(
+	      this,
+	      new String[] {MenuNames.TOOLS, MenuNames.TOOLS_QUERIES},
+        new JMenuItem(this.getName() + "..."), 
+        createEnableCheck(context.getWorkbenchContext()));*/
   }
   
   public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {

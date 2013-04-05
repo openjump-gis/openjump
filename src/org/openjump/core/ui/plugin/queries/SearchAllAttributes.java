@@ -50,6 +50,7 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.SelectionManager;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class SearchAllAttributes extends AbstractPlugIn
 {
@@ -84,7 +85,7 @@ public class SearchAllAttributes extends AbstractPlugIn
 	public void initialize(PlugInContext context) throws Exception
 	{
 		context.getFeatureInstaller().addMainMenuItem(this,
-				new String[] { MenuNames.TOOLS,MenuNames.TOOLS_QUERIES}, getName()+"...", false, null, 
+				new String[] { MenuNames.TOOLS,MenuNames.TOOLS_QUERIES}, getName()+"...", false, IconLoader.icon("search.png"),  
 				null);
 	}
 

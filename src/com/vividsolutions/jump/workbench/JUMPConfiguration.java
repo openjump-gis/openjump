@@ -567,7 +567,7 @@ public class JUMPConfiguration implements Setup {
         GUIUtil.toSmallIcon(pasteStylesPlugIn.getIcon()),
         PasteStylesPlugIn.createEnableCheck(workbenchContext));
     FeatureInstaller.childMenuItem(MenuNames.STYLE, layerNamePopupMenu)
-        .setIcon(GUIUtil.toSmallIcon(pasteStylesPlugIn.getIcon()));
+        .setIcon(IconLoader.icon("color_wheel.png"));
 
     featureInstaller.addPopupMenuItem(layerNamePopupMenu,
         refreshDataStoreLayerPlugin, new String[] { MenuNames.DATASTORE },
