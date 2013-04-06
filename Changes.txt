@@ -54,6 +54,7 @@ Version ${version.number} ${version.release} rev.${version.revision} (released o
   * allow saving text based decoration styles in a project
   * change default Open Wizard to Open File (was Open Project)
   * Postgis Reader/Writer several important fixes
+  * Beantools are now properly sorted uneder MacOSX and Linux
   
   Bug Fixes
   * create Lattice from Raster failed in some cases
@@ -85,17 +86,19 @@ Version ${version.number} ${version.release} rev.${version.revision} (released o
   * bug 3607970 : fix two problems in SimplifyPolygonCoveragePlugIn
   * bug 3608648 : can now open a project including broken db connections.
   * fix Screen Scale and SaveImageAsSVG problem
+  * 
   
   New in PLUS edition
   * add OSX 32bit ECW,JP2 libraries courtesy of gvsigce project
   * upgrade from Sextante 0.6 to Sextante 1.0
   * fix bug in DXF reader (text entities were unreadable)
-  * improvements of topology extension (ProjectPointOnLine plugin)
+  * topology extension : improvement (ProjectPointOnLine) and plugin addition
+    (AdjustPolygonBoundaries)
   * new csv driver with an automatic mode (guess separator) and a customizable 
     mode. The driver creates empty geometries if no geometry is provided.
   * add SkyJUMP pick Color integration to the PLUS version
-  * bump JumpPrinter to 1.83
-  * featreq 3601072 : Replace aggregation-0.2.5 by 0.2.6
+  * bump JumpPrinter to 1.85 (several bug fixes)
+  * featreq 3601072 : bump aggregation-0.2.5 to 0.2.7
   * remove PostGIS plugin now replaced by the driver included in OpenJUMP-CORE
 
 --------------------------------------------------------
