@@ -94,18 +94,18 @@ public class SpatialQueryPlugIn extends AbstractPlugIn implements ThreadedPlugIn
   	return I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Spatial-Query");
   }
 
+  public ImageIcon getIcon(){
+    return IconLoader.icon("spatial_query.png");
+  }
+
   public void initialize(PlugInContext context) throws Exception {
-	  context.getFeatureInstaller().addMainMenuItem(this,
-		        new String[]{MenuNames.TOOLS, MenuNames.TOOLS_QUERIES},
-		        this.getName() + "...", false,  IconLoader.icon("spatial_query.png"), 
-		        createEnableCheck(context.getWorkbenchContext()));  
-	  
-	/*  FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-	  featureInstaller.addMainMenuItem(
-	      this,
-	      new String[] {MenuNames.TOOLS, MenuNames.TOOLS_QUERIES},
-        new JMenuItem(this.getName() + "..."), 
-        createEnableCheck(context.getWorkbenchContext()));*/
+//    context.getFeatureInstaller().addMainMenuItem(this,
+//        new String[] { MenuNames.TOOLS, MenuNames.TOOLS_QUERIES },
+//        this.getName() + "...", false, IconLoader.icon("spatial_query.png"),
+//        createEnableCheck(context.getWorkbenchContext()));
+    FeatureInstaller.getInstance().addMainMenuPlugin(this,
+        new String[] { MenuNames.TOOLS, MenuNames.TOOLS_QUERIES });
+
   }
   
   public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
@@ -245,6 +245,3 @@ public class SpatialQueryPlugIn extends AbstractPlugIn implements ThreadedPlugIn
   }
 
 }
-
-
-
