@@ -2,8 +2,9 @@
 
 --> Changes.txt updated up to here
 
-2013-04-04 mmichaud <michael.michaud@free.fr>
+2013-04-06 mmichaud <michael.michaud@free.fr>
   * update JumpPrinter PlugIn from 1.84 to 1.85 (bug fix)
+  * small UI improvement in ConstraintsOptionsPanel
   
 2013-04-05  Giuseppe Aruta (giuseppe_aruta@yahoo.it)
   * Add icons to Style Layer Context Submenu, RasterColorEditor, SearchAllAttribute,

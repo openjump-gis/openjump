@@ -132,6 +132,7 @@ public class EditingPlugIn extends ToolboxPlugIn {
 
     optionsButton.addActionListener(AbstractPlugIn.toActionListener(
         new OptionsPlugIn(), toolbox.getContext(), null));
+    optionsButton.setIcon(IconLoader.icon("fugue/wrench-screwdriver.png"));
     toolbox.getCenterPanel().add(optionsButton, BorderLayout.CENTER);
 
   }

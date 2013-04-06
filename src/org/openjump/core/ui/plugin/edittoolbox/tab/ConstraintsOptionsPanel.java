@@ -43,6 +43,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
@@ -165,16 +167,16 @@ public class ConstraintsOptionsPanel extends JPanel implements OptionsPanel {
             }
         });
         
-        numPartsTextField.addFocusListener(new myFocusListener()
-        {
-            public void focusLost(FocusEvent e)
-            {
-                double newAngle = 360.0 / Double.parseDouble(numPartsTextField.getText());
-                //constrainIncrementalAngleCheckBox.setText("Constrain angle to " + newAngle + " degree increments");
-                //[sstein: 16.10.2005]
-                constrainIncrementalAngleCheckBox.setText(constrainAngleByStepsOf + " " + newAngle + " " + degree);
-            }
-        });
+        //numPartsTextField.addFocusListener(new myFocusListener()
+        //{
+        //    public void focusLost(FocusEvent e)
+        //    {
+        //        double newAngle = 360.0 / Double.parseDouble(numPartsTextField.getText());
+        //        //constrainIncrementalAngleCheckBox.setText("Constrain angle to " + newAngle + " degree increments");
+        //        //[sstein: 16.10.2005]
+        //        constrainIncrementalAngleCheckBox.setText(constrainAngleByStepsOf + " " + newAngle + " " + degree);
+        //    }
+        //});
     }
 
     private void updateEnabled() {
@@ -334,6 +336,17 @@ public class ConstraintsOptionsPanel extends JPanel implements OptionsPanel {
                                   new Insets(0, 0, 0, 0), 0, 0));
         
         numPartsTextField.setHorizontalAlignment(SwingConstants.TRAILING);
+        numPartsTextField.getDocument().addDocumentListener(new DocumentListener() {
+            public void changedUpdate(DocumentEvent e) {updateAngle();}
+            public void insertUpdate(DocumentEvent e) {updateAngle();}
+            public void removeUpdate(DocumentEvent e) {updateAngle();}
+            private void updateAngle() {
+                try {
+                    double newAngle = Math.rint(3600.0 / Double.parseDouble(numPartsTextField.getText()))/10.0;
+                    constrainIncrementalAngleCheckBox.setText(constrainAngleByStepsOf + " " + newAngle + " " + degree);
+                } catch(java.lang.NumberFormatException e) {}
+            }
+        });
         numPartsPanel.setLayout(gridBagLayout4);
         numPartsPreLabel.setText(byDividing360DegreesInto);
         numPartsPostLabel.setText(parts);
