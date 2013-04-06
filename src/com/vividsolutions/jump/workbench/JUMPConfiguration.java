@@ -562,10 +562,8 @@ public class JUMPConfiguration implements Setup {
         new String[] { MenuNames.STYLE }, copyStylesPlugIn.getName(), false,
         GUIUtil.toSmallIcon(copyStylesPlugIn.getIcon()),
         CopyStylesPlugIn.createEnableCheck(workbenchContext));
-    featureInstaller.addPopupMenuItem(layerNamePopupMenu, pasteStylesPlugIn,
-        new String[] { MenuNames.STYLE }, pasteStylesPlugIn.getName(), false,
-        GUIUtil.toSmallIcon(pasteStylesPlugIn.getIcon()),
-        PasteStylesPlugIn.createEnableCheck(workbenchContext));
+    featureInstaller.addPopupMenuPlugin(layerNamePopupMenu, pasteStylesPlugIn,
+        new String[] { MenuNames.STYLE });
     FeatureInstaller.childMenuItem(MenuNames.STYLE, layerNamePopupMenu)
         .setIcon(IconLoader.icon("color_wheel.png"));
 
