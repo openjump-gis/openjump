@@ -8,6 +8,7 @@ import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.LabelStyle;
@@ -40,7 +41,7 @@ public class PasteStylesPlugIn extends AbstractPlugIn {
   }
   
   public ImageIcon getIcon() {
-    return IconLoader.icon("Palette_out.gif");
+    return GUIUtil.toSmallIcon(IconLoader.icon("Palette_out.gif"));
   }
 
   public boolean execute(PlugInContext context) throws Exception
