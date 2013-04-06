@@ -785,6 +785,17 @@ public class FeatureInstaller {
   }
 
   /**
+   * Convenience method for entries with menupath
+   * 
+   * @return menu item
+   */
+  public JMenuItem addPopupMenuPlugin(JPopupMenu popupMenu,
+      PlugIn executable, String[] menuPath) {
+    return addPopupMenuPlugin(popupMenu, executable, menuPath, null, false,
+        null, null);
+  }
+  
+  /**
    * Convenience method for entries without menupath
    * 
    * @param checkBox
