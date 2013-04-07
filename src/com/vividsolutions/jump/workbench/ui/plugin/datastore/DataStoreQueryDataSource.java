@@ -16,6 +16,7 @@ import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.io.FeatureInputStream;
+import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.io.datasource.Connection;
 import com.vividsolutions.jump.io.datasource.DataSource;
 import com.vividsolutions.jump.task.TaskMonitor;
@@ -134,6 +135,7 @@ public class DataStoreQueryDataSource extends com.vividsolutions.jump.io.datasou
         }
         catch(Exception e) {
             context.getWorkbench().getFrame().handleThrowable(e);
+            featureDataset = new FeatureDataset(new FeatureSchema());
         }
         finally {
             if (featureInputStream != null) {
