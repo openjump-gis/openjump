@@ -31,6 +31,7 @@ import com.vividsolutions.jump.workbench.ui.renderer.LayerRenderer;
 import com.vividsolutions.jump.workbench.ui.renderer.Renderer;
 import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
 import com.vividsolutions.jump.workbench.ui.renderer.java2D.Java2DConverter;
+import org.openjump.core.ui.plugin.view.ZoomToScalePlugIn;
 import org.openjump.core.ui.util.ScreenScale;
 
 import java.awt.Dimension;
@@ -152,14 +153,16 @@ public class SaveImageAsSVGPlugIn extends AbstractPlugIn implements ThreadedPlug
 		int resolution = ScreenScale.getResolution();
 		
 		ScreenScale.setResolution(90);
-		org.openjump.core.ui.plugin.view.ZoomToScalePlugIn zoomToScalePlugIn = new org.openjump.core.ui.plugin.view.ZoomToScalePlugIn();
+		ZoomToScalePlugIn zoomToScalePlugIn = new ZoomToScalePlugIn();
 		zoomToScalePlugIn.setScale(scale);
-		zoomToScalePlugIn.execute(context);
+		zoomToScalePlugIn.zoomToNewScale(context);
 		lvp.paintComponent(svgGenerator);
 		
 		// Restore previous rendering resolution
 		lvp.getViewport().setJava2DConverter(oldConverter);
 		ScreenScale.setResolution(resolution);
+	    zoomToScalePlugIn.setScale(scale);
+		zoomToScalePlugIn.zoomToNewScale(context);
 		//------------------------------
 		//reset the old state of 100 features 
 		for (int i=0; i < layers.size(); i++) {
@@ -171,26 +174,6 @@ public class SaveImageAsSVGPlugIn extends AbstractPlugIn implements ThreadedPlug
 			}
 		}		
 		//------------------------------
-
-		/** old working code for original jump
-		// paint using new renderer		
-		LayerViewPanel lvp = context.getLayerViewPanel();
-		RenderingManager rm = lvp.getRenderingManager();
-        Class[] types1 = {Object.class, Renderer.class};
-		List layers = context.getLayerManager().getVisibleLayers(false);
-		for (int i=0; i < layers.size(); i++) {
-			Layer layer = (Layer)layers.get(i);
-			//-- do now this:
-			//   rm.setRenderer(layer,new SvgRenderer(layer, context.getLayerViewPanel()));
-			// but for an invisible method setRenderer()
-			SvgRenderer sr = new SvgRenderer(layer, context.getLayerViewPanel());
-	        Object[] params1 ={layer, sr};
-	        AccessToPrivateMethods.invokePrivateMethod("setRenderer",rm,RenderingManager.class,params1,types1);
-	        sr.createRunnable(); //do paint (also on screen)
-		}				
-		//paint the layerview into the svgGenerator
-		lvp.paintComponent(svgGenerator);
-		**/
 		
 		//Finally, stream out SVG to the your file
 		//Writer out = new FileWriter("MyMoMap.svg");

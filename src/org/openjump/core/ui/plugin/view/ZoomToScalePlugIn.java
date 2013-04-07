@@ -102,9 +102,18 @@ public class ZoomToScalePlugIn extends AbstractPlugIn {
 	        GUIUtil.centreOnWindow(dialog);
 	        dialog.setVisible(true);
 	        if (! dialog.wasOKPressed()) { return false; }
-	        getDialogValues(dialog);               
+	        getDialogValues(dialog);
+	        
+	    zoomToNewScale(context);
         
-	    //-- get zoom factor
+	    return true;
+	}
+	
+	public void zoomToNewScale(PlugInContext context) throws Exception {
+	    Viewport port = context.getLayerViewPanel().getViewport();
+        this.oldHorizontalScale = ScreenScale.getHorizontalMapScale(port);
+        
+        //-- get zoom factor
         double factor = this.scale/this.oldHorizontalScale;
 
         //--calculating new screen using the envelope of the corner LineString 
@@ -116,12 +125,10 @@ public class ZoomToScalePlugIn extends AbstractPlugIn {
         double xmax = xc + 1/2.0 * factor * oldEnvelope.getWidth();
         double ymin = yc - 1/2.0 * factor * oldEnvelope.getHeight();
         double ymax = yc + 1/2.0 * factor * oldEnvelope.getHeight();
-        Coordinate[] coords = new Coordinate[]{new Coordinate(xmin,ymin), 
-                								new Coordinate(xmax,ymax)};
+        Coordinate[] coords = new Coordinate[]{
+            new Coordinate(xmin,ymin), new Coordinate(xmax,ymax)};
         Geometry g1 = new GeometryFactory().createLineString(coords);       
         port.zoom(g1.getEnvelopeInternal());
-        
-	    return true;
 	}
 	
     private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
