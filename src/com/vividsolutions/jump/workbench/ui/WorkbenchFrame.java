@@ -206,6 +206,8 @@ public class WorkbenchFrame extends JFrame
   private JSplitPane desktopStatusSplit;
 
   WorkbenchToolBar toolBar;
+  
+  private static Icon internalFrameDefaultIcon = new JInternalFrame().getFrameIcon();
 
   JMenu windowMenu = (JMenu) FeatureInstaller.installMnemonic(new JMenu(
       MenuNames.WINDOW), menuBar);
@@ -754,7 +756,8 @@ public class WorkbenchFrame extends JFrame
     // activate the topmost frame. Because Swing does not seem to do this
     // automatically. [Jon Aquino]
     // only set icon if none set already
-    if (internalFrame.getFrameIcon() == null)
+    System.out.println(internalFrame.getFrameIcon());
+    if (internalFrame.getFrameIcon().equals(internalFrameDefaultIcon))
       JUMPWorkbench.setIcon(internalFrame);
     // Call JInternalFrame#setVisible before JDesktopPane#add; otherwise, the
     // TreeLayerNamePanel starts too narrow (100 pixels or so) for some reason.

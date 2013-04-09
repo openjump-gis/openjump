@@ -131,7 +131,7 @@ public class InfoFrame extends DetachableInternalFrame implements
         this.setClosable(true);
         this.setMaximizable(true);
         this.setIconifiable(true);
-        this.setFrameIcon(ICON);
+        this.setFrameIcon(GUIUtil.toSmallIcon(ICON, 14));
 
         //This size is chosen so that when the user hits the Info tool, the window
         //fits between the lower edge of the TaskFrame and the lower edge of the

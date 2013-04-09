@@ -125,7 +125,8 @@ public class ViewAttributesPlugIn extends AbstractPlugIn {
 				LayerViewPanelProxy {
 		private LayerManager layerManager;
 		private OneLayerAttributeTab attributeTab;
-		private static ImageIcon ICON = GUIUtil.toSmallIcon(ViewAttributesPlugIn.getIcon());
+		private static ImageIcon ICON12 = IconLoader.icon("Row_14.gif");
+		private static ImageIcon ICON16 = IconLoader.icon("Row_16.gif");
 		public ViewAttributesFrame(final Layer layer, final PlugInContext context) {
 			this.layerManager = context.getLayerManager();
 			addInternalFrameListener(new InternalFrameAdapter() {
@@ -146,7 +147,7 @@ public class ViewAttributesPlugIn extends AbstractPlugIn {
 			setClosable(true);
 			setMaximizable(true);
 			setIconifiable(true);
-			setFrameIcon(ICON);
+			setFrameIcon(ICON12);
 			getContentPane().setLayout(new BorderLayout());
 			attributeTab = new OneLayerAttributeTab(context
 					.getWorkbenchContext(), ((TaskFrameProxy) context
@@ -212,7 +213,7 @@ public class ViewAttributesPlugIn extends AbstractPlugIn {
 		public JFrame getFrame() {
 			// our frame has to be all proxies InfoFrame is
 			JFrame f = new InfoFrame.DetachableInternalFrameWithProxies(this);
-			f.setIconImage(ICON.getImage());
+			f.setIconImage(ICON16.getImage());
 			return f;
 		}
 	}

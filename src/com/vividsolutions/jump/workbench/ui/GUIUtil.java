@@ -732,7 +732,7 @@ public class GUIUtil {
 
     public static ImageIcon resize(ImageIcon icon, int extent) {
         return new ImageIcon(icon.getImage().getScaledInstance(extent, extent,
-                Image.SCALE_FAST));
+                Image.SCALE_SMOOTH));
     }
 
     /**
@@ -740,6 +740,16 @@ public class GUIUtil {
      */
     public static ImageIcon toSmallIcon(ImageIcon icon) {
         return resize(icon, 16);
+    }
+    
+    /**
+     * Resize icon to specified width
+     * @param icon
+     * @param width
+     * @return
+     */
+    public static ImageIcon toSmallIcon(ImageIcon icon, int width) {
+      return resize(icon, width);
     }
 
     public static int swingThreadPriority() {
