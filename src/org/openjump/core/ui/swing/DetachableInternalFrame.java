@@ -1,6 +1,5 @@
 package org.openjump.core.ui.swing;
 
-import com.vividsolutions.jump.I18N;
 import java.awt.Component;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -10,6 +9,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
@@ -20,6 +20,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.plaf.InternalFrameUI;
 import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
+
+import com.vividsolutions.jump.I18N;
 
 /**
  * A detacheable JInternalFrame. DetachableInternalFrame extends JInternalFrame
@@ -167,14 +169,7 @@ public class DetachableInternalFrame extends JInternalFrame {
         this.setLocation(0 - bounds.width, 0 - bounds.height);
 
 		// create a new JFrame instance with the content of the internalframe
-		detachedFrame = new JFrame() {
-
-			@Override
-			protected JRootPane createRootPane() {
-				return DetachableInternalFrame.this.getRootPane();
-			}
-
-		};
+		detachedFrame = getFrame();
 
 		// on closing the detached JFrame, we attach it back to the application
 		// so we define it here
@@ -233,5 +228,16 @@ public class DetachableInternalFrame extends JInternalFrame {
 	 */
 	public void setDetachMenuItemText(String text) {
 		detachMenuItem.setText(text);
+	}
+	
+	public JFrame getFrame() {
+		return new JFrame() {
+
+			@Override
+			protected JRootPane createRootPane() {
+				return DetachableInternalFrame.this.getRootPane();
+			}
+
+		};
 	}
 }

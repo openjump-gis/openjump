@@ -32,7 +32,9 @@
 package com.vividsolutions.jump.workbench.ui;
 
 import java.awt.BorderLayout;
+import java.awt.KeyboardFocusManager;
 import java.awt.Rectangle;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -542,7 +544,7 @@ public class AttributeTab extends JPanel implements LayerNamePanel {
         boolean checkBox,
         Icon icon,
         EnableCheck enableCheck) {
-        new FeatureInstaller(workbenchContext).addPopupMenuItem(
+        FeatureInstaller.getInstance().addPopupMenuItem(
             popupMenu(workbenchContext),
             wrap(plugIn),
             menuItemName,
@@ -552,31 +554,47 @@ public class AttributeTab extends JPanel implements LayerNamePanel {
     }
 
     private static PlugIn wrap(final PlugIn plugIn) {
-        //Can't simply add an ActionListener to the menu item to determine when the
-        //plug-in finishes because ActionListeners are notified last to first (see
-        //AbstractButton#fireActionPerformed). [Jon Aquino]
-        return new PlugIn() {
-            public void initialize(PlugInContext context) throws Exception {
-                plugIn.initialize(context);
+      // Can't simply add an ActionListener to the menu item to determine when the
+      // plug-in finishes because ActionListeners are notified last to first (see
+      // AbstractButton#fireActionPerformed). [Jon Aquino]
+      return new PlugIn() {
+        public void initialize(PlugInContext context) throws Exception {
+          plugIn.initialize(context);
+        }
+  
+        public boolean execute(PlugInContext context) throws Exception {
+          // Save attributeTab before executing plug-in, as it may change active
+          // window. [Jon Aquino]
+          LayerNamePanelProxy lnpp;
+          // check if we are detached
+          Window w = KeyboardFocusManager.getCurrentKeyboardFocusManager()
+              .getFocusedWindow();
+          if (w instanceof InfoFrame.DetachableInternalFrameWithProxies)
+            lnpp = (LayerNamePanelProxy) w;
+          else {
+            lnpp = ((LayerNamePanelProxy) context.getWorkbenchFrame()
+                .getActiveInternalFrame());
+          }
+  
+          LayerNamePanel lnp = lnpp.getLayerNamePanel();
+          if (lnp instanceof AttributeTab) {
+            AttributeTab attributeTab = (AttributeTab) lnp;
+            setEnableLastSelectedLayers(true, attributeTab);
+  
+            try {
+              return plugIn.execute(context);
+            } finally {
+              setEnableLastSelectedLayers(false, attributeTab);
             }
-
-            public boolean execute(PlugInContext context) throws Exception {
-                //Save attributeTab before executing plug-in, as it may change active window. [Jon Aquino]
-                AttributeTab attributeTab = (AttributeTab) ((LayerNamePanelProxy) context
-                    .getWorkbenchFrame().getActiveInternalFrame()).getLayerNamePanel();
-                setEnableLastSelectedLayers(true, attributeTab);
-
-                try {
-                    return plugIn.execute(context);
-                } finally {
-                    setEnableLastSelectedLayers(false, attributeTab);
-                }
-            }
-
-            public String getName() {
-                return plugIn.getName();
-            }
-        };
+  
+          }
+          return false;
+        }
+  
+        public String getName() {
+          return plugIn.getName();
+        }
+      };
     }
 
     private static void setEnableLastSelectedLayers(

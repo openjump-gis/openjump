@@ -30,6 +30,23 @@
  * www.vividsolutions.com
  */
 package com.vividsolutions.jump.workbench.ui;
+import java.awt.BorderLayout;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
+import javax.swing.JPanel;
+import javax.swing.JRootPane;
+import javax.swing.JTabbedPane;
+import javax.swing.event.InternalFrameAdapter;
+import javax.swing.event.InternalFrameEvent;
+
+import org.openjump.core.ui.swing.DetachableInternalFrame;
+
+import sun.misc.InvalidJarIndexException;
+
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.Blackboard;
@@ -46,15 +63,6 @@ import com.vividsolutions.jump.workbench.model.Task;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.ViewAttributesPlugIn;
-import java.awt.BorderLayout;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import javax.swing.JInternalFrame;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import javax.swing.event.InternalFrameAdapter;
-import javax.swing.event.InternalFrameEvent;
-import org.openjump.core.ui.swing.DetachableInternalFrame;
 
 /**
  * Provides proxied (non-spatial) views of a Layer.
@@ -90,6 +98,8 @@ public class InfoFrame extends DetachableInternalFrame implements
     private GeometryInfoTab geometryInfoTab;
     private JTabbedPane tabbedPane = new JTabbedPane();
     private WorkbenchFrame workbenchFrame;
+    private static ImageIcon ICON = IconLoader.icon("information_16x16.png");
+    
     public InfoFrame(
         WorkbenchContext workbenchContext,
         LayerManagerProxy layerManagerProxy,
@@ -121,6 +131,8 @@ public class InfoFrame extends DetachableInternalFrame implements
         this.setClosable(true);
         this.setMaximizable(true);
         this.setIconifiable(true);
+        this.setFrameIcon(ICON);
+
         //This size is chosen so that when the user hits the Info tool, the window
         //fits between the lower edge of the TaskFrame and the lower edge of the
         //WorkbenchFrame. See the call to #setSize in WorkbenchFrame. [Jon Aquino]
@@ -250,8 +262,15 @@ public class InfoFrame extends DetachableInternalFrame implements
     public LayerViewPanel getLayerViewPanel() {
         return getTaskFrame().getLayerViewPanel();
     }
-	
-	/**
+
+    @Override
+    public JFrame getFrame() {
+      // our frame has to be all proxies InfoFrame is
+      JFrame f = new DetachableInternalFrameWithProxies(this);
+      f.setIconImage(ICON.getImage());
+      return f;
+    }
+  /**
 	 * Save's the position and size of the frame to the blackboard
 	 */
 	private void savePositionAndSize() {
@@ -261,4 +280,25 @@ public class InfoFrame extends DetachableInternalFrame implements
 		blackboard.put(BB_FEATUREINFO_WINDOW_POSITION_X, getLocation().x);
 		blackboard.put(BB_FEATUREINFO_WINDOW_POSITION_Y, getLocation().y);
 	}
+	
+    // make JPanels to proxies as used for JInternalFrames, needed for attribute tab popup menu 
+	// add more proxies if needed
+    public static class DetachableInternalFrameWithProxies extends JFrame implements LayerNamePanelProxy {
+  
+      private JInternalFrame frame;
+  
+      public DetachableInternalFrameWithProxies(JInternalFrame f) {
+        super();
+        // override rootpane with the internal frame's
+        setRootPane(f.getRootPane());
+        frame = f;
+      }
+  
+      @Override
+      public LayerNamePanel getLayerNamePanel() {
+        return frame instanceof LayerNamePanelProxy ? ((LayerNamePanelProxy) frame)
+            .getLayerNamePanel() : null;
+      }
+  
+    }
 }

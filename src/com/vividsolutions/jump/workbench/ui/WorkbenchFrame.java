@@ -753,7 +753,9 @@ public class WorkbenchFrame extends JFrame
     // <<TODO:IMPROVE>> Listen for when the frame closes, and when it does,
     // activate the topmost frame. Because Swing does not seem to do this
     // automatically. [Jon Aquino]
-    JUMPWorkbench.setIcon(internalFrame);
+    // only set icon if none set already
+    if (internalFrame.getFrameIcon() == null)
+      JUMPWorkbench.setIcon(internalFrame);
     // Call JInternalFrame#setVisible before JDesktopPane#add; otherwise, the
     // TreeLayerNamePanel starts too narrow (100 pixels or so) for some reason.
     // <<TODO>>Investigate. [Jon Aquino]

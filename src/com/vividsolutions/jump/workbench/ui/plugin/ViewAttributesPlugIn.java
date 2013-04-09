@@ -25,22 +25,44 @@
  * (250)385-6040 www.vividsolutions.com
  */
 package com.vividsolutions.jump.workbench.ui.plugin;
+import java.awt.BorderLayout;
+
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.event.InternalFrameAdapter;
+import javax.swing.event.InternalFrameEvent;
+
+import org.openjump.core.ui.swing.DetachableInternalFrame;
+
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.model.*;
+import com.vividsolutions.jump.workbench.model.CategoryEvent;
+import com.vividsolutions.jump.workbench.model.FeatureEvent;
+import com.vividsolutions.jump.workbench.model.Layer;
+import com.vividsolutions.jump.workbench.model.LayerEvent;
+import com.vividsolutions.jump.workbench.model.LayerEventType;
+import com.vividsolutions.jump.workbench.model.LayerListener;
+import com.vividsolutions.jump.workbench.model.LayerManager;
+import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.ui.*;
+import com.vividsolutions.jump.workbench.ui.CloneableInternalFrame;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.InfoFrame;
+import com.vividsolutions.jump.workbench.ui.LayerNamePanel;
+import com.vividsolutions.jump.workbench.ui.LayerNamePanelProxy;
+import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
+import com.vividsolutions.jump.workbench.ui.LayerViewPanelProxy;
+import com.vividsolutions.jump.workbench.ui.OneLayerAttributeTab;
+import com.vividsolutions.jump.workbench.ui.SelectionManager;
+import com.vividsolutions.jump.workbench.ui.SelectionManagerProxy;
+import com.vividsolutions.jump.workbench.ui.TaskFrame;
+import com.vividsolutions.jump.workbench.ui.TaskFrameProxy;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import java.awt.BorderLayout;
-import javax.swing.ImageIcon;
-import javax.swing.event.InternalFrameAdapter;
-import javax.swing.event.InternalFrameEvent;
-import org.openjump.core.ui.swing.DetachableInternalFrame;
 public class ViewAttributesPlugIn extends AbstractPlugIn {
 	
 	// Blackboard keys
@@ -90,7 +112,7 @@ public class ViewAttributesPlugIn extends AbstractPlugIn {
 				checkFactory.createTaskWindowMustBeActiveCheck()).add(
 				checkFactory.createExactlyNLayersMustBeSelectedCheck(1));
 	}
-	public ImageIcon getIcon() {
+	public static ImageIcon getIcon() {
 		//return IconLoaderFamFam.icon("table.png");
 		return IconLoader.icon("Row.gif");
 	}
@@ -103,6 +125,7 @@ public class ViewAttributesPlugIn extends AbstractPlugIn {
 				LayerViewPanelProxy {
 		private LayerManager layerManager;
 		private OneLayerAttributeTab attributeTab;
+		private static ImageIcon ICON = GUIUtil.toSmallIcon(ViewAttributesPlugIn.getIcon());
 		public ViewAttributesFrame(final Layer layer, final PlugInContext context) {
 			this.layerManager = context.getLayerManager();
 			addInternalFrameListener(new InternalFrameAdapter() {
@@ -123,6 +146,7 @@ public class ViewAttributesPlugIn extends AbstractPlugIn {
 			setClosable(true);
 			setMaximizable(true);
 			setIconifiable(true);
+			setFrameIcon(ICON);
 			getContentPane().setLayout(new BorderLayout());
 			attributeTab = new OneLayerAttributeTab(context
 					.getWorkbenchContext(), ((TaskFrameProxy) context
@@ -183,6 +207,13 @@ public class ViewAttributesPlugIn extends AbstractPlugIn {
 		}
 		public LayerNamePanel getLayerNamePanel() {
 			return attributeTab;
+		}
+		@Override
+		public JFrame getFrame() {
+			// our frame has to be all proxies InfoFrame is
+			JFrame f = new InfoFrame.DetachableInternalFrameWithProxies(this);
+			f.setIconImage(ICON.getImage());
+			return f;
 		}
 	}
 }
