@@ -58,20 +58,24 @@ public class AddNewCategoryPlugIn extends AbstractPlugIn {
 
     public boolean execute(final PlugInContext context)
         throws Exception {
+        reportNothingToUndoYet(context);
         final String categoryName = findNewCategoryName(context.getLayerManager());
-        execute(new UndoableCommand(getName()) {
-                public void execute() {
-                    context.getLayerManager().addCategory(categoryName);
-                }
-
-                public void unexecute() {
-                    Assert.isTrue(context.getLayerManager()
-                                         .getCategory(categoryName).isEmpty(),
-                       I18N.get("ui.plugin.AbstractNewCategoryPlugIn.this-can-happen-when-a-plug-in-calls"));
-                    context.getLayerManager().removeIfEmpty(context.getLayerManager()
-                                                                   .getCategory(categoryName));
-                }
-            }, context);
+        context.getLayerManager().addCategory(categoryName);
+// [2013.04 ede] made adding category unundoable, as adding layer isn't as well and we 
+//               run into problems if categories are renamed with the code below (NPE)
+//        execute(new UndoableCommand(getName()) {
+//                public void execute() {
+//                    context.getLayerManager().addCategory(categoryName);
+//                }
+//
+//                public void unexecute() {
+//                    Assert.isTrue(context.getLayerManager()
+//                                         .getCategory(categoryName).isEmpty(),
+//                       I18N.get("ui.plugin.AbstractNewCategoryPlugIn.this-can-happen-when-a-plug-in-calls"));
+//                    context.getLayerManager().removeIfEmpty(context.getLayerManager()
+//                                                                   .getCategory(categoryName));
+//                }
+//            }, context);
 
         return true;
     }
