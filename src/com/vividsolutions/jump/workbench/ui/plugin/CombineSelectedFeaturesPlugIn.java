@@ -50,6 +50,7 @@ import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -73,7 +74,7 @@ public class CombineSelectedFeaturesPlugIn extends AbstractPlugIn {
     final ArrayList originalFeatures = new ArrayList(context
         .getLayerViewPanel().getSelectionManager()
         .getFeaturesWithSelectedItems());
-    final Feature combinedFeature = combine(originalFeatures);
+    final Feature combinedFeature = combine(originalFeatures, context);
     final Layer layer = (Layer) context.getLayerViewPanel()
         .getSelectionManager().getLayersWithSelectedItems().iterator().next();
     execute(new UndoableCommand(getName()) {
@@ -93,7 +94,7 @@ public class CombineSelectedFeaturesPlugIn extends AbstractPlugIn {
     return true;
   }
 
-  private Feature combine(Collection originalFeatures) {
+  private Feature combine(Collection originalFeatures, PlugInContext context) {
     GeometryFactory factory = new GeometryFactory();
     Feature feature = (Feature) ((Feature) originalFeatures.iterator().next())
         .clone();
@@ -108,9 +109,20 @@ public class CombineSelectedFeaturesPlugIn extends AbstractPlugIn {
               originalFeatures)
               .toArray(new LineString[originalFeatures.size()])));
     } else if (narrowestCollectionClass == MultiPolygon.class) {
-      feature.setGeometry(factory.createMultiPolygon((Polygon[]) FeatureUtil
+      // Conbining adjacent polygons may produce invalid MultiPolygon
+      // In this case, we prefer returning a GeometryCollection 
+      MultiPolygon mp = factory.createMultiPolygon((Polygon[]) FeatureUtil
           .toGeometries(originalFeatures).toArray(
-              new Polygon[originalFeatures.size()])));
+              new Polygon[originalFeatures.size()]));
+      if (mp.isValid()) {
+          feature.setGeometry(mp);
+      }
+      else {
+          context.getWorkbenchFrame().warnUser(I18N.get("com.vividsolutions.jump.workbench.ui.plugin.CombineSelectedFeaturesPlugIn.invalid-multipolygon"));
+          feature.setGeometry(factory.createGeometryCollection((Geometry[]) FeatureUtil
+          .toGeometries(originalFeatures).toArray(
+              new Geometry[originalFeatures.size()])));
+      }
     } else {
       feature
           .setGeometry(factory

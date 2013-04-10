@@ -2,6 +2,10 @@
 
 --> Changes.txt updated up to here
 
+2013-04-10 
+  * bug 3610405 : CombineSelectedFeatures now return a GeometryCollection rather
+    than a invalid MultiPolygon
+
 2013-04-06 mmichaud <michael.michaud@free.fr>
   * update JumpPrinter PlugIn from 1.84 to 1.85 (bug fix)
   * small UI improvement in ConstraintsOptionsPanel

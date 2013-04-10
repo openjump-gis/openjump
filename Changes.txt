@@ -86,7 +86,8 @@ Version ${version.number} ${version.release} rev.${version.revision} (released o
   * bug 3607970 : fix two problems in SimplifyPolygonCoveragePlugIn
   * bug 3608648 : can now open a project including broken db connections.
   * fix Screen Scale and SaveImageAsSVG problem
-  * 
+  * bug 3610405 : CombineSelectedFeatures now return a GeometryCollection rather
+    than a invalid MultiPolygon
   
   New in PLUS edition
   * add OSX 32bit ECW,JP2 libraries courtesy of gvsigce project
