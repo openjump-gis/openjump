@@ -756,7 +756,6 @@ public class WorkbenchFrame extends JFrame
     // activate the topmost frame. Because Swing does not seem to do this
     // automatically. [Jon Aquino]
     // only set icon if none set already
-    System.out.println(internalFrame.getFrameIcon());
     if (internalFrame.getFrameIcon().equals(internalFrameDefaultIcon))
       JUMPWorkbench.setIcon(internalFrame);
     // Call JInternalFrame#setVisible before JDesktopPane#add; otherwise, the
