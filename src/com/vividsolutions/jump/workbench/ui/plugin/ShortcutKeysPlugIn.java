@@ -48,7 +48,7 @@ import javax.swing.Box;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -90,7 +90,7 @@ public class ShortcutKeysPlugIn extends AbstractPlugIn {
   private static Logger LOG = Logger.getLogger(ShortcutKeysPlugIn.class);
 
   public boolean execute(PlugInContext context) throws Exception {
-    ShortcutKeysDialog dlg = ShortcutKeysDialog.instance();
+    ShortcutKeysFrame dlg = ShortcutKeysFrame.instance();
     dlg.setVisible(true);
     return true;
   }
@@ -104,23 +104,24 @@ public class ShortcutKeysPlugIn extends AbstractPlugIn {
   }
 }
 
-class ShortcutKeysDialog extends JDialog {
-  private static ShortcutKeysDialog instance;
+class ShortcutKeysFrame extends JFrame {
+  private static ShortcutKeysFrame instance;
   JLabel shortsLabel = new JLabel();
   JPanel shortsPanel = new JPanel();
   JPanel buttonPanel = new JPanel();
   JButton okButton = new JButton();
 
-  public static ShortcutKeysDialog instance() {
+  public static ShortcutKeysFrame instance() {
+      // create everytime as tools are added during runtime to editingtoolbox
       //if (instance == null) {
-          instance = new ShortcutKeysDialog();
+          instance = new ShortcutKeysFrame();
       //}
       
       return instance;
   }
 
-  private ShortcutKeysDialog() {
-      super(JUMPWorkbench.getInstance().getFrame(), ShortcutKeysPlugIn.NAME, true);
+  private ShortcutKeysFrame() {
+      super (/*JUMPWorkbench.getInstance().getFrame(), */ShortcutKeysPlugIn.NAME/*, true*/);
       // set a frame icon
       try {
           setIconImage(ShortcutKeysPlugIn.ICON.getImage());
@@ -235,7 +236,8 @@ class ShortcutKeysDialog extends JDialog {
 
   public void setVisible(boolean b) {
     if (b){
-      GUIUtil.centreOnWindow(instance);
+      pack();
+      GUIUtil.centre(instance, JUMPWorkbench.getInstance().getFrame());
     }
 
     super.setVisible(b);
@@ -487,8 +489,8 @@ class ShortcutKeysDialog extends JDialog {
       // title glued to first entry so they will not get separated by layout
       if (i==1)
         tool_out = "<tr><td colspan=2><b><center><u>"
-            + GUIUtil.escapeHTML(I18N.get(ShortcutKeysPlugIn.getClassName())
-                + ".editing-tools-options") + "</u></center></b></td></tr>\n"
+            + GUIUtil.escapeHTML(I18N.get(ShortcutKeysPlugIn.getClassName()
+                + ".editing-tools-options")) + "</u></center></b></td></tr>\n"
             + tool_out;
       if (i<=2){
         entries.add(tool_out);
