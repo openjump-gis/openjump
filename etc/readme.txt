@@ -48,16 +48,17 @@ as (Component name - License name - License file in "licenses/" folder or link)
  Postgresql JDBC driver - Postgresql BSD license - postgresql-BSD_license.txt
  Xerces2 Java Parser - Apache License Version 2.0 - apache_license-2.0.txt
 
-Additionally PLUS distributions contain
+Additionally PLUS distribution contains
 ( Component name - License name - License file in "licenses/" folder
    list of files and dependencies with license if any )
  Batik SVG Toolkit - Apache License Version 2.0 - apache_license-2.0.txt
  Geoarbores Vertex Symbols Collection (Giuseppe Aruta) - GPL2 - gpl-2.txt
   lib/ext/VertexImages/*.wkt
- ECW and JPEG2000 Read Support based on ECW SDK 3.3 for windows x86/x64, 
-  linux x86 - ERDAS ECW JPEG2000 SDK license - ecw license.txt
+ ECW and JPEG2000 Read Support based on ECW SDK 3.3 for 
+  Windows x86/x64, Linux, Mac OSX with 32bit java runtime - 
+  ERDAS ECW JPEG2000 SDK license - ecw license.txt
   lib/native/[os/]{jecw-*.jar,NCS*.dll,ermapper.jar}
-  
+
 and the following plugins
  Aggregation PlugIn (Michaël Michaud) - GPL2 - gpl-2.txt
   aggregation-*.jar
@@ -81,9 +82,6 @@ and the following plugins
  Pirol Csv Dataset 
   (de.fhOsnabrueck.jump.pirol.datasources.pirolCSV) - GPL2 - gpl-2.txt
   PirolCsv.jar, pbaseClasses.jar
- PostGIS Driver (Refractions Research/HCU Hamburg, RZCN/E. Lemesre)
-  - GPL2 - gpl-2.txt
-  PostGISPlugIn-*.jar
  Sextante Tools (es.unex.sextante.openjump.extensions) - GPL3 - gpl-3.0.txt
   sextante-binding-*.jar, sextante/*.* 
   TableLayout-*.jar - Clearthought License - clearthought-2.0.txt
