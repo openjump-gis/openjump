@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm applies a convolution using a 3 x 3 kernel defined by the user.&#10;" description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="LAYER" text="input raster layer." description="Layer" type="3">
+		</element>
+		<element name="KERNEL" text="the kernel to use, defined as a fixed table (3 rows x 3 columns)." description="Filter kernel" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="The filtered raster layer.&#10;&#10;The following example shows the effect of a high pass filter" description="User-defined 3 X 3 filter" type="2">
+			<image description="" file="filtro3x3_usuario_tabla.jpg">
+			</image>
+			<image description="Input layer" file="filtro3x3_definido_por_el_usuario1.jpg">
+			</image>
+			<image description="output layer" file="filtro3x3_definido_por_el_usuario2.jpg">
+			</image>
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

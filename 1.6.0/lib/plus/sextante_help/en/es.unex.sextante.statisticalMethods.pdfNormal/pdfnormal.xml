@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm calculates the probability of occurrence of values in each cell of a raster layer, based on the Normal probability distribution.&#10;" description="Description" type="0">
+			<image description="" file="dis_prob_normal3.jpg">
+			</image>
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="INPUT" text="input layer." description="Raster layer" type="3">
+		</element>
+		<element name="MEAN" text="Mean value" description="Mean" type="3">
+		</element>
+		<element name="STDDEV" text="Standard deviation" description="Standard deviation" type="3">
+		</element>
+		<element name="CDF" text="Select this option if you want the resulting values to show the accumulated probability instead of the individual one" description="Cumulated probability" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="PROBABILITY" text="Layer with calculated probability values." description="Result" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

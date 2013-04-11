@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text='Creates a new vector layer based on a regular grid or graticule. The output may be presented as rectangles, lines or points.&#10;&#10;The extent of the area to cover with the graticule should be selected in the "Output region" tab.' description="Description" type="0">
+			<image description="" file="crear_reticula.jpg">
+			</image>
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="XMIN" text="define the Minimum X coordinate." description="X Min" type="3">
+		</element>
+		<element name="XMAX" text="define the Maximum X coordinate." description="X Max" type="3">
+		</element>
+		<element name="YMIN" text="define the Minimum Y coordinate. " description="Y Min" type="3">
+		</element>
+		<element name="YMAX" text="define the Maximum Y coordinate." description="Y Max" type="3">
+		</element>
+		<element name="INTERVALX" text="interval value for X." description="X interval" type="3">
+		</element>
+		<element name="INTERVALY" text="interval value for Y." description="Y interval" type="3">
+		</element>
+		<element name="TYPE" text="The following options are available:&#10;* Rectangles&#10;* L&#237;nes&#10;* Points" description="Type" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="GRATICULE" text="The resulting graticule" description="Graticule" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

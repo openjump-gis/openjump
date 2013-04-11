@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm counts the points in each polygon of a given vector layer" description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="POINTS" text="The input points layer" description="Points" type="3">
+		</element>
+		<element name="POLYGONS" text="The input polygons layer." description="Polygons" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text='The output layer is the same as the input polygons layer, but with an added field named "inner points", which contains the number of points in each polygon.' description="Polygons" type="2">
+			<image description="" file="contar_puntos_en_poligonos1.jpg">
+			</image>
+			<image description="" file="contar_puntos_en_poligonos2.jpg">
+			</image>
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
