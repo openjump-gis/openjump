@@ -294,7 +294,6 @@ public class InfoFrame extends DetachableInternalFrame implements
         frame = f;
       }
   
-      @Override
       public LayerNamePanel getLayerNamePanel() {
         return frame instanceof LayerNamePanelProxy ? ((LayerNamePanelProxy) frame)
             .getLayerNamePanel() : null;
