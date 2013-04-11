@@ -207,7 +207,7 @@ public class WorkbenchFrame extends JFrame
 
   WorkbenchToolBar toolBar;
   
-  private static Icon internalFrameDefaultIcon = new JInternalFrame().getFrameIcon();
+  private static Icon internalFrameDefaultIcon = null;
 
   JMenu windowMenu = (JMenu) FeatureInstaller.installMnemonic(new JMenu(
       MenuNames.WINDOW), menuBar);
@@ -755,7 +755,9 @@ public class WorkbenchFrame extends JFrame
     // <<TODO:IMPROVE>> Listen for when the frame closes, and when it does,
     // activate the topmost frame. Because Swing does not seem to do this
     // automatically. [Jon Aquino]
-    // only set icon if none set already
+    // only set icon if none set already, fetch icon on first addition after lnf is setup properly
+    if (internalFrameDefaultIcon==null)
+      internalFrameDefaultIcon = new JInternalFrame().getFrameIcon();
     if (internalFrame.getFrameIcon().equals(internalFrameDefaultIcon))
       JUMPWorkbench.setIcon(internalFrame);
     // Call JInternalFrame#setVisible before JDesktopPane#add; otherwise, the
