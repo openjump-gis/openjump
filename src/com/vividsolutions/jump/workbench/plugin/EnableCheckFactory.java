@@ -421,22 +421,25 @@ public class EnableCheckFactory {
     }
 
     public EnableCheck createAtLeastNFeaturesMustBeSelectedCheck(final int n) {
-        return new EnableCheck() {
-            public String check(JComponent component) {
-                String msg;
-                if (n == 1) {
-                    msg = get("com.vividsolutions.jump.workbench.plugin.At-least-one-feature-must-be-selected");
-                } else {
-                    msg = getMessage(
-                            "com.vividsolutions.jump.workbench.plugin.At-least-n-features-must-be-selected",
-                            new Object[] { n });
-                }
-                return (n > ((SelectionManagerProxy) workbenchContext
-                        .getWorkbench().getFrame().getActiveInternalFrame())
-                        .getSelectionManager()
-                        .getFeaturesWithSelectedItemsCount()) ? msg : null;
-            }
-        };
+      return new EnableCheck() {
+        public String check(JComponent component) {
+          String msg;
+          if (n == 1) {
+            msg = get("com.vividsolutions.jump.workbench.plugin.At-least-one-feature-must-be-selected");
+          } else {
+            msg = getMessage(
+                "com.vividsolutions.jump.workbench.plugin.At-least-n-features-must-be-selected",
+                new Object[] { n });
+          }
+  
+          JInternalFrame f = workbenchContext.getWorkbench().getFrame()
+              .getActiveInternalFrame();
+  
+          return (f != null && f instanceof SelectionManagerProxy && n > ((SelectionManagerProxy) f)
+              .getSelectionManager().getFeaturesWithSelectedItemsCount()) ? msg
+              : null;
+        }
+      };
     }
 
     public EnableCheck createAtLeastNItemsMustBeSelectedCheck(final int n) {
