@@ -2,6 +2,11 @@
 
 --> Changes.txt updated up to here
 
+2013-04-11 bump  ISA Feature color chooser to 0.6
+  - icons resized on toolbar
+  - new icon for "Choose color option"
+  - (ver 0.6) now menu is dispayed in two columns
+
 2013-04-10 
   * bug 3610405 : CombineSelectedFeatures now return a GeometryCollection rather
     than a invalid MultiPolygon
