@@ -1,0 +1,30 @@
+<component
+  xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/component/1.1.2"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/component/1.1.2 http://maven.apache.org/xsd/component-1.1.2.xsd">
+  <!--files>
+    <file>
+      <source>${project.build.outputDirectory}/language/jump.properties</source>
+      <outputDirectory>language/</outputDirectory>
+      <filtered>true</filtered>
+    </file>
+  </files-->
+  <fileSets>
+    <fileSet>
+      <!-- we add the version patched language files from target/classes -->
+      <directory>${project.build.outputDirectory}</directory>
+      <outputDirectory>/</outputDirectory>
+      <includes>
+        <include>language/**</include>
+      </includes>
+      <filtered>false</filtered>
+    </fileSet>
+    <fileSet>
+      <directory>.</directory>
+      <outputDirectory>/</outputDirectory>
+      <includes>
+        <include>ChangeLog</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</component>

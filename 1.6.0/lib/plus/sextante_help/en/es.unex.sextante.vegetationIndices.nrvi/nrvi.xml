@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm calculates the Normalized Ratio Vegetation Index (NRVI) (Baret and Guyot, 1991). This index is a modification of the RVI (Ratio Vegetation Index) according to the following formula:" description="Description" type="0">
+			<image description="" file="nrvi.jpg">
+			</image>
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="LAYERRED" text="Layer with values corresponding to the spectral reflectance in the red region" description="Red layer" type="3">
+		</element>
+		<element name="BANDRED" text="Band with values corresponding to the spectral reflectance in the red region" description="Red band" type="3">
+		</element>
+		<element name="LAYERNIR" text="Layer with values corresponding to the spectral reflectance in the near infrared region" description="Near infrarred layer" type="3">
+		</element>
+		<element name="BANDNIR" text="Band with values corresponding to the spectral reflectance in the near infrared region" description="Near infrared band" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="NRVI" description="Result" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

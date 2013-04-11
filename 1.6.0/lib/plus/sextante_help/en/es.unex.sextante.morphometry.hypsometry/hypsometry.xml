@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="this algorithm generates a new table that reflects the distribution of elevations within a DEM." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="DEM" text="Digital Elevation Model." description="Elevation" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="A table with the following fields:&#10;* Relative Elevation: the relative elevation (0 = min elevation in the DEM, 100 = max elevation in the DEM) .&#10;* Relative area: the percentage of the total area occupied by the cells with elevation lower than the interval.&#10;* Absolute elevation: the elevation of the interval &#10;* Absolute area: the area occupied by the cells with elevation lower than the interval (in map units)" description="Hypsometry" type="2">
+			<image description="" file="hipsometria.jpg">
+			</image>
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

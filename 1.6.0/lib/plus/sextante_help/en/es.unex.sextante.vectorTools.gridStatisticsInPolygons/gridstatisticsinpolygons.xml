@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithms extends a polygons layer with statistical values from a set of raster layers. For each polygons, values of cells inside them are analyzed, and basic statistical values are computed for each one of the selected raster layers" description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="LAYER" text="The input polygons layer" description="Polygons" type="3">
+		</element>
+		<element name="GRIDS" text="A set of raster layers to analyze" description="Grids" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="The output layer is identical to the input polygons layer, but contains new fields in its attributes table, corresponding to each of the input raster layers.&#10;&#10;For each raster layer, the following fields are added:&#10;* mean&#10;* variance&#10;* minimum value&#10;* maximum value" description="Polygons" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

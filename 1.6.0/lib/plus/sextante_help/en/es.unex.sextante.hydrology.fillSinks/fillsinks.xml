@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm fills pits and sinks from a DEM. This process should be performed before doing any hydrological analysis with a DEM. Otherwise, flow directions cannot be calculated on some cells, and this results in wrong calculations of hydrological parameters such as flow accumulation.&#10;&#10;Pits and sinks are replaced by an inclined plane." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="* O. Planchon and F. Darboux. A fast, simple and versatile algorithm to fill the depressions of digital elevation models. Catena, 46:159-176, 2001." description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="DEM" text="The input Digital Elevation Model." description="Elevation" type="3">
+		</element>
+		<element name="MINSLOPE" text="The angle of the inclined plane used to substitute pits and sinks." description="Min. angle between cells [degrees]" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="The sink-filled DEM. Thise DEM can be safely used for all hydrological analisis." description="Preprocessed" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
