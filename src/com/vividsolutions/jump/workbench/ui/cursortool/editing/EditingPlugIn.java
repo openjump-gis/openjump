@@ -102,9 +102,9 @@ public class EditingPlugIn extends ToolboxPlugIn {
         toolbox.getContext());
     // Null out the quasimodes for [Ctrl] because the Select tools will handle
     // that case. [Jon Aquino]
-    toolbox.add(new QuasimodeTool(new SelectFeaturesTool()));
-    toolbox.add(new QuasimodeTool(new SelectPartsTool()));
-    toolbox.add(new QuasimodeTool(new SelectLineStringsTool()));
+    toolbox.add(new SelectFeaturesTool());
+    toolbox.add(new SelectPartsTool());
+    toolbox.add(new SelectLineStringsTool());
     toolbox.add(new MoveSelectedItemsTool(checkFactory));
 
     toolbox.addToolBar();

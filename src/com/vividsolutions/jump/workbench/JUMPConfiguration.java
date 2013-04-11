@@ -1310,14 +1310,14 @@ public class JUMPConfiguration implements Setup {
         workbenchContext);
     frame.getToolBar().addSeparator();
 
-    QuasimodeTool qt = add(new QuasimodeTool(new SelectFeaturesTool()),
-        workbenchContext);
+    SelectFeaturesTool sft = new SelectFeaturesTool();
+    add( sft, workbenchContext);
     // [mmichaud 2012-07-12] by default, the first CursorTool (zoom) is
     // activated. After that, the SelectTool button will be selected.
     // See also the end of JUMPWorkbench.main() where the SelectFeatureTool
     // will really be activated (it takes place later because it needs the
     // LayerViewPanel to be initialized)
-    frame.getToolBar().getButton(qt.getClass()).doClick();
+    frame.getToolBar().getButton(sft.getClass()).doClick();
 
     frame.getToolBar().addPlugIn(ClearSelectionPlugIn.getIcon(),
         clearSelectionPlugIn,
