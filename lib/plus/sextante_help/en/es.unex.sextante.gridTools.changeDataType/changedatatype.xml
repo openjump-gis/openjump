@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm changes the type of numerical data of a raster image.&#10;&#10;Data types define the range of values that can be stored in a layer, as well as the precision used to store them. " description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="INPUT" text="the raster layer where the type of data should be changed." description="Layer" type="3">
+		</element>
+		<element name="TYPE" text="the type of numerical data to be selected from the following: byte, short, int, float, double.&#10;&#10;* byte: The byte data type is an 8-bit signed two's complement integer. It has a minimum value of -128 and a maximum value of 127 (inclusive).&#10;&#10;*short: The short data type is a 16-bit signed two's complement integer. It has a minimum value of -32,768 and a maximum value of 32,767 (inclusive). &#10;&#10;*int: The int data type is a 32-bit signed two's complement integer. It has a minimum value of -2,147,483,648 and a maximum value of 2,147,483,647 (inclusive). &#10;&#10;* float and double can both store decimal numbers. However, double takes 64 bytes for each number, while float takes just 32. Using float values might help you save memory.&#10;&#10;If you do are not completely sure about what it means to change the data type of your layer, it is recommended not to do it, since you might lose information." description="Data type" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="The new layer with the selected data type." description="Result" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

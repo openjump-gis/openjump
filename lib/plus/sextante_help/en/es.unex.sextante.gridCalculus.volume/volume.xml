@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This tool calculates total volumes for a given DEM and a base elevation level. Four alternatives exist to evaluate the total volume based on how the volumes above and below the base elevation level are considered." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="GRID" text="The Digital Elevation Model." description="Elevation" type="3">
+		</element>
+		<element name="BASE" text="The base elevation level." description="Base level" type="3">
+		</element>
+		<element name="METHOD" text="The method to be used may be selected from the following:&#10;* Only volumes over base level. Will only sum up the volumes over base level. The ones below base level will be ignored. &#10;* Only volumes below base level. Will only sum up volumes below base level. Volumes over base level will be ignored. &#10;* Add the volumes over base level and subtract the volumes below it. &#10;* Add volumes both over and below base level. The volumes over and below the base level are both summed up. Both have a positive sign." description="Method" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="VOL" text="A text containing the calculated volumes. Volumes are expressed in the same units as the layer cell size (cubic units). Both the base elevation level and the values in the DEM are assumed to be in the same units as the cell size (that is, the units used for the X and Y coordinates)" description="Volume" type="2">
+			<image description="" file="calculo_de_volumenes.jpg">
+			</image>
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

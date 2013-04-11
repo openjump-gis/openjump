@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text='This algorithm changes the extent of a raster layer based on a given input vector layer. It calculates the bounding box of that vector layer and then takes just the cells that fall inside of the bounding box.&#10;&#10;Since both the raster layer and the bounding box have a rectangular shape, there is no need to add no-data values to the resulting layer, as it happens when using the "clip grid with polygon layer" algorithm.' description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="V&#237;ctor Olaya" description="Algorithm created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="V&#237;ctor Olaya&#9;" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User notes" type="0">
+		</element>
+		<element name="INPUT" text="The input raster layer to clip" description="Layer to clip" type="3">
+		</element>
+		<element name="POLYGONS" text="The input layer containing polygons. The bounding box used to clip the input layer is calculated from this polygons" description="Polygons" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text='The clipped layer. It covers the minimum area needed to include all polgons in the vector input layer.&#10;&#10;No interpolation is performed to calculate this layer, and the cellsize is exactly the same as the one of the input raster layer.The algorithm simply "removes" those cells outside the calculated bounding box.' description="Clipped layer" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

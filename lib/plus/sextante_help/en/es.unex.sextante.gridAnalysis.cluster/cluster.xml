@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm classifies a group of layers into different classes in such a way that the classes are as homogenous as possible. No information about the classes to define is needed to run the algorithm (as it happens with the supervised classification algorithm), since they are automatically defined " description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text='To balance the weight of the layers, normalizing them using the "0-1" method is recommended. See the associated help file for that algorithm for more information' description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="INPUT" text="bands with variables used for classification" description="Bands" type="3">
+		</element>
+		<element name="NUMCLASS" text="The number of different classes to create" description="Number of classes" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULTLAYER" text="New raster layer with defined classes." description="Clusters" type="2">
+			<image description="" file="clasificacion_no_supervisada_clustering.jpg">
+			</image>
+		</element>
+		<element name="RESULTTABLE" text='The new table contains information about each one of the classes. Each  class  has an identifier (field "Class") and shows the number of cells occupied by it (field "Count"). Also, a new field is added for each input layer used, containing the mean value of that layer in the class' description="Statistics" type="2">
+			<image description="" file="clasificacion_no_supervisada_clustering2.jpg">
+			</image>
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

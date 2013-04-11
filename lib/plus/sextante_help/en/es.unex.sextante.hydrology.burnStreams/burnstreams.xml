@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text='This algorithm modifies a DEM using a vector layer containing a channel network, so that this channel network matches the one that could be extracted analitically from the modified DEM. This procedure can be used to "force" the DEM to generate a given channel network known in advance.&#10;&#10;The process is know as "river burning" and it works lowering the elevation in those cells crossed by the lines in the channel network layer.' description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Algorithm created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User notes" type="0">
+		</element>
+		<element name="STREAMS" text="The channel network to burn onto the DEM" description="Channel network" type="3">
+		</element>
+		<element name="DEM" text="The Digital Elevation Model to modify" description="Elevation" type="3">
+		</element>
+		<element name="DEPTH" text="This parameters indicate the depth (in the same units as the elevation itself in the DEM) of the river burning process. It represents how deep the channel network cell will be excavated below their original elevation." description="Depth" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text='The resulting DEM after "burning" the given channel network onto it' description="Modified DEM" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

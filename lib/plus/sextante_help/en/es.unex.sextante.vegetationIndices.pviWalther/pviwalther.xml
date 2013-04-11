@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm calculates the Perpendicular Vegetation Index (PVI) based on Walter and Shabaani, 1991. These authors assign weight to the red band that intersects with the soil line based on the following formula:" description="Description" type="0">
+			<image description="" file="pvi_walther.jpg">
+			</image>
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="LAYERRED" text="select the raster layer with the red band values." description="Red layer" type="3">
+		</element>
+		<element name="BANDRED" text="select the red band." description="Red band" type="3">
+		</element>
+		<element name="LAYERNIR" text="select the raster layer with the near-infrared values." description="Near infrarred layer" type="3">
+		</element>
+		<element name="BANDNIR" text="select the infrared band." description="Near infrarred layer" type="3">
+		</element>
+		<element name="SLOPE" text="value of line slope that relationship between the slope b and point a intercept parameters, or, relationship between the near-infrared (NIR) and red (R) reflectante of bare soil characterized by slope. The following graphic show soil line slope where you can see relationship between NIR and R image instensity of bare soil or reflectance." description="Soil line slope" type="3">
+			<image description="" file="linea_suelo.png">
+			</image>
+		</element>
+		<element name="INTERCEPT" text="value of vertical distance from point to axis X." description="Soil line intercept" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="" description="Result" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

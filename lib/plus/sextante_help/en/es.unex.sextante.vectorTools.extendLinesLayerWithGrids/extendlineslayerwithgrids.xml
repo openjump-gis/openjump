@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm takes a lines layer and generates a new layer containing the same geometries (lines), but adding new fields to its attributes table, corresponding to the values of a set of input raster layers in the first and last point of each line.&#10;" description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Nacho Varela" description="Algorithm created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="V&#237;ctor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="LAYER" text="The input lines layer" description="Input layer" type="3">
+		</element>
+		<element name="GRIDS" text="A set of raster layers from which to take additional information to add to the input vector layer. These layers will be sampled at first and last points of each input line.&#10;&#10;For each layer selected in this field, two new fields will be added to the attributes table of the resulting layer" description="Raster layers" type="3">
+		</element>
+		<element name="INTERPOLATE" text="If this option is selected, b-spline interpolation is used to calculate values when points do not fall exactly on the center of a pixel. If not, the value of the nearest pixel is used." description="Use interpolation" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="The output layer." description="Lines with extreme points sampled" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
