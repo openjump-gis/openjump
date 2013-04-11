@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration PUBLIC "-//LOGGER" "http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/xml/doc-files/log4j.dtd">
+
+<!-- ===================================================================== -->
+<!--                                                                       -->
+<!--  Log4j Configuration                                                  -->
+<!--                                                                       -->
+<!-- ===================================================================== -->
+
+<!-- $Id$ -->
+
+<!--
+   | For more configuration information and examples see the Jakarta Log4j
+   | website: http://jakarta.apache.org/log4j
+   | example: http://wiki.apache.org/logging-log4j/Log4jXmlFormat
+ -->
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
+
+    
+    <!-- ============================== -->
+    <!-- Append messages to the console -->
+    <!-- ============================== -->
+
+    <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+        <param name="Threshold" value="debug"/>
+        <param name="Target" value="System.out"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <!-- The default pattern: Date Priority [Category] Message\n -->
+            <param name="ConversionPattern" value="%d{ABSOLUTE} %5p (%F:%M:%L) - %m%n"/>
+        </layout>
+    </appender>
+  
+    <!-- ================================= -->
+    <!-- Preserve messages in a local file -->
+    <!-- ================================= -->
+  
+    <appender name="INFO_LOGFILE" class="org.apache.log4j.FileAppender">
+        <param name="Threshold" value="info"/>
+        <param name="File" value="${log.dir}openjump.log"/>
+        <param name="Append" value="true"/> 
+        <layout class="org.apache.log4j.PatternLayout">
+            <!-- Date     : %d{ISO8601} display date in yyyy-MM-dd HH:mm:ss,SSS format -->
+            <!-- Priority : %p display the priority level                              -->
+            <!-- Message  : %m%n displays the log message (%n = os specific newline)   -->
+            <param name="ConversionPattern" value="%d{ISO8601} %5p %m%n"/>
+        </layout>
+    </appender>
+    
+    <appender name="DEBUG_LOGFILE" class="org.apache.log4j.FileAppender">
+        <param name="Threshold" value="debug"/>
+        <param name="File" value="${log.dir}openjump_debug.log"/>
+        <param name="Append" value="false"/> 
+        <layout class="org.apache.log4j.PatternLayout">
+            <!-- Date     : %d{ABSOLUTE} display date in HH:mm:ss,SSS format -->
+            <!-- Priority : %p display the priority level                    -->
+            <!-- Source   : (%F:%M:%L) File, Method, Line (warning:slow)     -->
+            <!-- Message  : %m%n displays the log message (%n = newline)     -->
+            <param name="ConversionPattern" value="%d{ABSOLUTE} %5p (%F:%M:%L) - %m%n"/>
+        </layout>
+    </appender>
+    
+    <!-- ===================================== -->
+    <!-- Send messages to Chainsaw application -->
+    <!-- ===================================== -->
+  
+    <appender name="ChainsawAppender" class="org.apache.log4j.net.SocketAppender">
+        <param name="Threshold" value="debug"/>
+        <param name="RemoteHost" value="localhost"/>
+        <param name="Port" value="4560"/>
+        <param name="LocationInfo" value="true"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <!-- The default pattern: Date Priority [Category] Message\n -->
+            <param name="ConversionPattern" value="%-5p [%t] %c - %m%n"/>
+        </layout>
+    </appender>
+
+    <!-- ============================================ -->
+    <!-- Overload default priority for some pacakages -->
+    <!-- ============================================ -->
+
+    <!--logger name="com.vividsolutions">
+        <priority value="debug"/>
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="SOLUTIONS_FILE"/>
+    </logger-->
+
+    <!--logger name="de">
+        <priority value="debug"/>
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="SOLUTIONS_FILE"/>
+    </logger-->
+    
+    <!--logger name="org">
+        <priority value="debug"/>
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="SOLUTIONS_FILE"/>
+    </logger-->
+
+    <!-- ======================= -->
+    <!-- Setup the Root category -->
+    <!-- ======================= -->
+
+    <root>
+        <!-- all|debug|info|warn|error|fatal|off|null -->
+        <!-- set level to "debug" and uncomment DEBUG_FILE appender for debugging -->
+        <level value="info"/>
+        <!-- <appender-ref ref="CONSOLE"/> -->
+        <appender-ref ref="INFO_LOGFILE"/>
+        <!-- <appender-ref ref="DEBUG_LOGFILE"/> -->
+    </root>
+
+</log4j:configuration>

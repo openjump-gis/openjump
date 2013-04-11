@@ -1,0 +1,48 @@
+////////////////////////////////////////////////////////////////////////////////
+// This script is used to retrieve original shapefile geometries
+// Usecase : show original shapes which may have been corrected by the
+// shapefile reader
+// @author Michael Michaud (2010-03-21)
+////////////////////////////////////////////////////////////////////////////////
+
+layers = wc.layerNamePanel.selectedLayers;
+
+//Check one layer is selected : begin
+if (layers.length != 1) {
+    wc.workbench.frame.warnUser("Exactly one layer must be selected");
+    return;
+}
+layer = layers[0];
+//Check one layer is selected : end
+
+
+//Dialog : begin
+dialog = new com.vividsolutions.jump.workbench.ui.MultiInputDialog(wc.workbench.frame, "", true);
+dialog.addLabel("<html>This script retrieve original non conforming shapefile geometries<br/>which may have been fixed by the shapefile reader</html>");
+dialog.setVisible(true);
+if (!dialog.wasOKPressed()) return;
+//Dialog : end
+
+//Create new FeatureCollection : begin
+fc = new FeatureDataset(layer.featureCollectionWrapper.featureSchema.clone());
+//Create new FeatureCollection : end
+
+//Loop through each feature to retrieve original geometries : begin
+for (f : layer.featureCollectionWrapper.features) {
+    userData = f.geometry.userData;
+    if (userData != null && userData instanceof Geometry) {
+        newf = f.clone();
+        newf.setGeometry(userData);
+        fc.add(newf);
+    }
+}
+//Loop : end
+
+//Add new layer or throw a message : begin
+if (fc.size() > 0) {
+    wc.layerManager.addLayer(
+        com.vividsolutions.jump.workbench.model.StandardCategoryNames.RESULT,
+        layer.name, fc);
+}
+else wc.workbench.frame.warnUser("No invalid geometry detected");
+//Add new layer : end

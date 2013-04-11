@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<jsmoothproject>
+<JVMSearchPath>registry</JVMSearchPath>
+<JVMSearchPath>javahome</JVMSearchPath>
+<JVMSearchPath>jdkpath</JVMSearchPath>
+<JVMSearchPath>jrepath</JVMSearchPath>
+<JVMSearchPath>exepath</JVMSearchPath>
+<JVMSearchPath>jview</JVMSearchPath>
+<arguments>-properties bin/workbench-properties.xml -plug-in-directory lib/ext</arguments>
+<classPath>..\lib\bsh-2.0b4.jar</classPath>
+<classPath>..\lib\Buoy.jar</classPath>
+<classPath>..\lib\Jama-1.0.1.jar</classPath>
+<classPath>..\lib\jdom.jar</classPath>
+<classPath>..\lib\jts-1.7.jar</classPath>
+<classPath>..\lib\jump-api-1.0.1.jar</classPath>
+<classPath>..\lib\jump-workbench-1.0.1.jar</classPath>
+<classPath>..\lib\junit.jar</classPath>
+<classPath>..\lib\log4j-1.2.8.jar</classPath>
+<classPath>..\lib\postgis_1_0_0.jar</classPath>
+<classPath>..\lib\postgresql-8.1dev-403.jdbc2.jar</classPath>
+<classPath>..\lib\xercesImpl.jar</classPath>
+<classPath>..\lib\xml-apis.jar</classPath>
+<classPath>..\lib\batik\batik-awt-util.jar</classPath>
+<classPath>..\lib\batik\batik-dom.jar</classPath>
+<classPath>..\lib\batik\batik-svggen.jar</classPath>
+<classPath>..\lib\batik\batik-util.jar</classPath>
+<classPath>..\lib\batik\batik-xml.jar</classPath>
+<currentDirectory>..</currentDirectory>
+<embeddedJar>false</embeddedJar>
+<executableName>OpenJump.exe</executableName>
+<iconLocation>OpenJump.ico</iconLocation>
+<initialMemoryHeap>268435456</initialMemoryHeap>
+<javaProperties>
+<name>java.library.path</name>
+<value>lib/ext</value>
+</javaProperties>
+<javaProperties>
+<name>log4j.configuration</name>
+<value>file:bin/log4j.xml </value>
+</javaProperties>
+<mainClassName>com.vividsolutions.jump.workbench.JUMPWorkbench</mainClassName>
+<maximumMemoryHeap>268435456</maximumMemoryHeap>
+<maximumVersion></maximumVersion>
+<minimumVersion>1.4.2</minimumVersion>
+<skeletonName>Windowed Wrapper</skeletonName>
+<skeletonProperties>
+<key>Message</key>
+<value>J2SE 5.0+ has not been found on your computer. Do you want to download it?</value>
+</skeletonProperties>
+<skeletonProperties>
+<key>URL</key>
+<value>http://www.java.com</value>
+</skeletonProperties>
+<skeletonProperties>
+<key>SingleProcess</key>
+<value>0</value>
+</skeletonProperties>
+<skeletonProperties>
+<key>Debug</key>
+<value>0</value>
+</skeletonProperties>
+</jsmoothproject>

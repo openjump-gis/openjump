@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<root>
+  <element xml-name="name" java-name="persistentName"/>  
+  <element xml-name="class" java-name="persistentClass"/>    
+</root>

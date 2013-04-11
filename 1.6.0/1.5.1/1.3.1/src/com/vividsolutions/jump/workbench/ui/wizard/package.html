@@ -1,0 +1,159 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+<title>Package com.vividsolutions.jump.workbench.ui.wizard</title>
+</head>
+<body bgcolor="white">
+
+<p>
+A simple package for implementing a wizard GUI framework.
+</p>
+
+There isn't much on the Internet in the way of a free Wizard
+framework. JUMP's looks pretty good!
+
+<p>Creating a Wizard is pretty easy.</p>
+
+<ol>
+
+<li>
+Create a <tt>WizardDialog</tt>, passing in a <tt>Frame</tt>, title, and an
+<tt>ErrorHandler</tt>.
+</li>
+
+<li>
+Initialize the new <tt>WizardDialog</tt>, passing it an array
+of <tt>WizardPanels</tt>.  The first element of the array is the panel
+which is first displayed.
+</li>
+
+<li>
+Set the size of the dialog, and display it, allowing the user to
+interact with it. Check if the user has completed the task by hitting
+"finish".
+</li>
+
+<li>
+Query the various <tt>WizardPanels</tt> to
+obtain the data that the user was prompted for.
+</li>
+</ol>
+
+<h2> Example</h2>
+
+<p>There are several examples applying JUMP's Wizard framework in the
+package <tt>com.vividsolutions.jump.workbench.ui.plugin.wms</tt>. The
+following example is from <tt>AddWMSQueryPlugIn.java</tt>. </p>
+
+<table border='1' cellspacing='0' cellpadding='0' 
+       bgcolor="#cccccc" 
+       style='background: #CCCCCC;border-collapse:collapse;border:none'>
+ <tr>
+  <td width='479' valign='top' >
+  <pre>
+
+  <font face='serif'>
+  // Creates a <tt>WizardDialog</tt> in the current context, with given title.
+  </font>
+    WizardDialog d = 
+            <b>new</b> WizardDialog(context.getWorkbenchFrame(),
+                             "Connect To Web Map Server",
+                             context.getErrorHandler()
+                             );
+
+  <font face='serif'>
+  // Initializes the <tt>WizardDialog</tt> with four <tt>WizardPanels</tt>; the first is the first one to display.
+  </font>
+
+    d.init(<b>new</b> WizardPanel[] {
+                     <b>new</b> URLWizardPanel(cachedURL),
+                     <b>new</b> MapLayerWizardPanel(),
+                     <b>new</b> SRSWizardPanel(), 
+                     <b>new</b> OneSRSWizardPanel()
+             });
+     &nbsp;    
+  <font face='serif'><p>
+    // Sets the size and displays the dialog for the user to interact with it;    
+    // Set size after <tt>#init</tt>, because <tt>#init</tt> calls <tt>#pack</tt>. [Jon Aquino]    
+</p></font>
+     d.setSize(500, 400);    
+     GUIUtil.centreOnWindow(d);    
+     d.setVisible(<b>true</b>);    
+
+     <b>if</b> (!d.wasFinishPressed())  {    
+           <b>return</b> <b>false</b>;    
+     }    
+<p>
+  <font face='serif'>
+    // Subsequently, one can query the components of the Wizard 
+        // for their data as follows:    
+</font>
+</p>
+     WMService wms = (WMService) d.getData(URLWizardPanel.SERVICE_KEY)).getServerUrl();    
+  </pre>
+  </td>
+ </tr>
+</table>
+
+<p>&nbsp;</p>
+
+<h2>Main Classes</h2>
+
+<table border='1' cellspacing='0' cellpadding='3' >
+ <tr bgcolor='#AAAAAA'>
+  <th>
+  <p>Class</p>
+  </th>
+
+  <th>
+  <p>Package</p>
+  </th>
+ </tr>
+
+ <tr>
+  <td>
+  <p><tt>WizardPanel, WizardDialog</tt></p>
+  </td>
+
+  <td>
+  <p><tt>com.vividsolutions.jump.workbench.ui.wizard
+  </tt></p>
+  </td>
+ </tr>
+</table>
+
+<h2>To Do</a></h2>
+
+<p>[1]</a> Another option to consider is JavaWizardComponent (<a
+href="http://jwizardcomponent.sourceforge.net/">http://jwizardcomponent.sourceforge.net/</a>)
+We. haven't tried this yet.</p>
+
+
+<h2>Related Documentation</h2>
+
+For overviews, tutorials, examples, guides, and tool documentation,
+please see:
+
+<ul>
+ <li><a 
+   href = 
+     "http://www.cielosystems.com/CRH/JUMP/doc/JUMP User Guide.pdf">JUMP 
+     Workbench User's Guide</a></li>
+ <li><a 
+    href = 
+     "http://www.cielosystems.com/CRH/JUMP/doc/JUMP Developer Guide.pdf">JUMP 
+     Developer's Guide</a></li>
+ <li><a 
+    href = 
+     "http://www.cielosystems.com/CRH/JUMP/doc/JUMP Technical Report.pdf">JUMP 
+     Technical Report</a></li>
+ <li><a 
+    href = 
+     "http://www.vividsolutions.com/JUMP/bin/JUMP Data Sheet.pdf">JUMP 
+     Data Sheet</a></li>
+</ul>
+
+<!-- Put @see and @since tags down here. -->
+
+</body>
+</html>
