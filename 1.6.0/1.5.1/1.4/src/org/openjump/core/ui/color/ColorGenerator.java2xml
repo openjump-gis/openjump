@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<root>
-  
-  <element xml-name="InputColor" java-name="XMLInputColor"/>
-  <element xml-name="steps" java-name="stepsXML"/>
-  
-</root>
