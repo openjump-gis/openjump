@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm calculates the statistics of a points layer within identified polygons." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="POLYGONS" text="" description="Polygons" type="3">
+		</element>
+		<element name="POINTS" text="" description="Points" type="3">
+		</element>
+		<element name="FIELD" text="select one." description="Field" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="New polygon layer identical to the polygon input layer but with new fields in its attributes table that contain the results of the statistical calculation: total, mean, variance, minimum and maximum number of points contained in each polygon" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="" description="Result" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
