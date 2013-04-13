@@ -256,15 +256,7 @@ public class WorkbenchFrame extends JFrame
   // below. Remove. [Jon Aquino]
   private int envelopeRenderingThreshold = 500;
 
-  private HTMLFrame outputFrame = new HTMLFrame(this) {
-    public void setTitle(String title) {
-      // Don't allow the title of the output frame to be changed.
-    }
-
-    {
-      super.setTitle(I18N.get("ui.WorkbenchFrame.output"));
-    }
-  };
+  private HTMLFrame outputFrame = null;
 
   private TitledPopupMenu layerNamePopupMenu = new TitledPopupMenu() {
     {
@@ -715,6 +707,16 @@ public class WorkbenchFrame extends JFrame
   }
 
   public HTMLFrame getOutputFrame() {
+    if (outputFrame == null)
+      outputFrame = new HTMLFrame(this) {
+        public void setTitle(String title) {
+          // Don't allow the title of the output frame to be changed.
+        }
+
+        {
+          super.setTitle(I18N.get("ui.WorkbenchFrame.output"));
+        }
+      };
     return outputFrame;
   }
 
