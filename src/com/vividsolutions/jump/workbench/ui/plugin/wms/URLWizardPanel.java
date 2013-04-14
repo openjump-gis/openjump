@@ -68,6 +68,7 @@ import com.vividsolutions.wms.WMSException;
 import com.vividsolutions.wms.WMService;
 
 public class URLWizardPanel extends JPanel implements WizardPanel {
+  
   public static final String SERVICE_KEY = "SERVICE";
 
   public static final String FORMAT_KEY = "FORMAT";
@@ -141,7 +142,7 @@ public class URLWizardPanel extends JPanel implements WizardPanel {
       new Insets(0, 0, 0, 0), 0, 0));
     // [UT]
     this.add(createVersionButtons(new String[] {
-      WMService.WMS_1_0_0, WMService.WMS_1_1_0, WMService.WMS_1_1_1
+      WMService.WMS_1_0_0, WMService.WMS_1_1_0, WMService.WMS_1_1_1, WMService.WMS_1_3_0
     }), new GridBagConstraints(1, 3, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
       GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 
@@ -183,15 +184,17 @@ public class URLWizardPanel extends JPanel implements WizardPanel {
   public void exitingToRight() throws IOException, WorkbenchException {
     try {
       LinkedList<String> list = new LinkedList<String>();
-      String url = urls.getSelectedIndex() == -1 ? urls.getEditor()
-        .getItem()
-        .toString() : urls.getItemAt(urls.getSelectedIndex()).toString();
+      String url = urls.getSelectedIndex() == -1 ? 
+          urls.getEditor().getItem().toString() : 
+          urls.getItemAt(urls.getSelectedIndex()).toString();
 
       list.add(url);
 
-      for (int i = 0; i < urls.getItemCount(); ++i)
-        if (i != urls.getSelectedIndex())
+      for (int i = 0; i < urls.getItemCount(); ++i) {
+        if (i != urls.getSelectedIndex()) {
           list.add(urls.getItemAt(i).toString());
+        }
+      }
 
       dataMap.put(URL_KEY, list.toArray(new String[list.size()]));
       // [UT]
@@ -205,8 +208,7 @@ public class URLWizardPanel extends JPanel implements WizardPanel {
       service.initialize(true);
       dataMap.put(SERVICE_KEY, service);
       // [UT] 20.04.2005 added version
-      MapImageFormatChooser formatChooser = new MapImageFormatChooser(
-        wmsVersion);
+      MapImageFormatChooser formatChooser = new MapImageFormatChooser(wmsVersion);
 
       formatChooser.setPreferLossyCompression(false);
       formatChooser.setTransparencyRequired(true);
@@ -287,7 +289,7 @@ public class URLWizardPanel extends JPanel implements WizardPanel {
   // [UT] 20.10.2005
   private Component createLossyCheckBox() {
     JPanel p = new JPanel();
-    JCheckBox checkBox = new JCheckBox("Preferr Lossy images", true);// I18N.get("ui.plugin.wms.URLWizardPanel.select-uniform-resource-locator-url")
+    JCheckBox checkBox = new JCheckBox("Prefer Lossy images", true);// I18N.get("ui.plugin.wms.URLWizardPanel.select-uniform-resource-locator-url")
     // );
     checkBox.setToolTipText("This will try to load JPEG images, if the WMS allows it.");
     checkBox.addActionListener(new ActionListener() {

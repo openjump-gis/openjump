@@ -1,7 +1,3 @@
-
-
-
-
 /*
  * The Unified Mapping Platform (JUMP) is an extensible, interactive GUI 
  * for visualizing and manipulating spatial features with geometry and attributes.
@@ -36,36 +32,47 @@
 
 package com.vividsolutions.wms;
 
+import com.vividsolutions.jts.geom.Envelope;
+
 
 /**
  * Represents a bounding box in a specific projection.
  * A BoundingBox is immutable, so you must create a new BoundingBox object,
  * rather than modify the the values of an existing BoundingBox.
+ * WARNING : until WMS 3.1, xmin, ymin represent minimum longitude and
+ * minimum latitude. From WMS 1.3.0, xmin represents min value for the first
+ * axis of the CoordinateSystem and ymin the min value for the second axis.
+ * This means that for EPSG:4326, we have
+ * WMS 1.1.x : -180, -90, +180, +90
+ * WMS 1.3.0 : -90, -180, +90, +180
  * @author chodgson@refractions.net
  */
 public class BoundingBox {
    
   private String srs;
-  private double minx;
-  private double miny;
-  private double maxx;
-  private double maxy;
-   
-  /** 
-   * Creates a new BoundingBox with the given SRS, minima and maxima.
-   * @param srs a WMS-style SRS string such as "EPSG:1234", or the
-   *             special string "LatLon" for a latitude/longitude box
-   * @param minx the minimum x-value of the bounding box
-   * @param miny the minimum y-value of the bounding box
-   * @param maxx the maximum x-value of the bounding box
-   * @param maxy the maximum y-value of the bounding box
-   */
-  public BoundingBox( String srs, double minx, double miny, double maxx, double maxy ) {
+  // by default, use longitude, latitude order, as per WMS 1.0.x and 1.1.x
+  private AxisOrder axisOrder = AxisOrder.LONLAT;
+  private double westBound;
+  private double southBound;
+  private double eastBound;
+  private double northBound;
+  
+  public BoundingBox( String srs, Envelope envelope ) {
     this.srs = srs;
-    this.minx = minx;
-    this.miny = miny;
-    this.maxx = maxx;
-    this.maxy = maxy;
+    axisOrder = AxisOrder.getAxisOrder(srs);
+    this.westBound  = envelope.getMinX();
+    this.southBound = envelope.getMinY();
+    this.eastBound  = envelope.getMaxX();
+    this.northBound = envelope.getMaxY();
+  }
+  
+  public BoundingBox( String srs, double westBound, double southBound, double eastBound, double northBound ) {
+    this.srs = srs;
+    axisOrder = AxisOrder.getAxisOrder(srs);
+    this.westBound  = westBound;
+    this.southBound = southBound;
+    this.eastBound  = eastBound;
+    this.northBound = northBound;
   }
   
   /**
@@ -76,36 +83,59 @@ public class BoundingBox {
     return srs;
   }
   
-  /**
-   * Gets the BoundingBox's minimum x value.
-   * @return the BoundingBox's minimum x value
-   */
-  public double getMinX() {
-    return minx;
+  public AxisOrder getAxisOrder() {
+     return axisOrder;
   }
   
   /**
-   * Gets the BoundingBox's minimum y value.
-   * @return the BoundingBox's minimum y value
+   * Gets the BoundingBox's minimum westing value.
+   * @return the BoundingBox's minimum westing value
    */
-  public double getMinY() {
-    return miny;
+  public double getWestBound() {
+    return westBound;
   }
   
   /**
-   * Gets the BoundingBox's maximum x value.
-   * @return the BoundingBox's maximum x value
+   * Gets the BoundingBox's minimum southing value.
+   * @return the BoundingBox's minimum southing value
    */
-  public double getMaxX() {
-    return maxx;
+  public double getSouthBound() {
+    return southBound;
   }
   
   /**
-   * Gets the BoundingBox's maximum y value.
-   * @return the BoundingBox's maximum y value
+   * Gets the BoundingBox's maximum easting value.
+   * @return the BoundingBox's maximum easting value
    */
-  public double getMaxY() {
-    return maxy;
+  public double getEastBound() {
+    return eastBound;
+  }
+  
+  /**
+   * Gets the BoundingBox's maximum northing value.
+   * @return the BoundingBox's maximum northing value
+   */
+  public double getNorthBound() {
+    return northBound;
+  }
+  
+  public String getBBox(String wmsVersion) {
+      if (axisOrder == AxisOrder.LONLAT || wmsVersion == WMService.WMS_1_0_0
+          || wmsVersion == WMService.WMS_1_1_0 || wmsVersion == WMService.WMS_1_1_1) {
+          return "BBOX=" + westBound + "," + southBound + "," + eastBound + "," + northBound;
+      } else {
+          return "BBOX=" + southBound + "," + westBound + "," + northBound + "," + eastBound;
+      }
+  }
+  
+  public Envelope getEnvelope() {
+      return new Envelope(westBound, eastBound, southBound, northBound);
+  }
+  
+  public String toString() {
+      return axisOrder == AxisOrder.LATLON ?
+          "BBOX(" + getSRS() + ", " + southBound + ", " + westBound + ", " + northBound + ", " + eastBound + ")"
+          :"BBOX(" + getSRS() + ", " + westBound + ", " + southBound + ", " + eastBound + ", " + northBound + ")";
   }
   
 }

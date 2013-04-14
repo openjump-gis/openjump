@@ -39,6 +39,7 @@ package com.vividsolutions.wms.ui;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 
@@ -224,9 +225,11 @@ public class WMSViewer extends JFrame implements ActionListener, MouseListener {
       canvas.setImage( null );
     } else if( command.equals( "getImage" ) ) {
         MapRequest req = service.createMapRequest();
+        ArrayList<String> layerNames = new ArrayList<String>();
+        for (Object o : layerList.getSelectedValues()) layerNames.add(o.toString());
         req.setImageSize( canvas.getWidth(), canvas.getHeight() );
         req.setFormat( (String)formatCombo.getSelectedItem() );
-        req.setLayers( Arrays.asList( layerList.getSelectedValues() ) );
+        req.setLayerNames(layerNames);
         // req.setBoundingBox( new BoundingBox( "EPSG:42102", 1100000, 430000, 1120000, 450000 ) );
         req.setBoundingBox( new BoundingBox( (String)srsCombo.getSelectedItem(),
                                               Float.parseFloat( xMinField.getText() ),

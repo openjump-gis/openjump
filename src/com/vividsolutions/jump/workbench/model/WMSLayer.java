@@ -47,7 +47,9 @@ import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.ui.LayerNameRenderer;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
+import com.vividsolutions.wms.AxisOrder;
 import com.vividsolutions.wms.BoundingBox;
+import com.vividsolutions.wms.MapLayer;
 import com.vividsolutions.wms.MapRequest;
 import com.vividsolutions.wms.WMService;
 
@@ -55,12 +57,18 @@ import java.net.URL;
 
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
+import java.util.Iterator;
+
+import org.apache.log4j.Logger;
 
 /**
  * A Layerable that retrieves images from a Web Map Server.
  */
 public class WMSLayer extends AbstractLayerable implements Cloneable {
-	private String format;
+    
+    private static Logger LOG = Logger.getLogger(WMSLayer.class);
+	
+    private String format;
 
 	private List<String> layerNames = new ArrayList<String>();
 
@@ -73,7 +81,7 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
 	//-- [sstein 03.Mai.2008] added field to be able to zoom to MrSID layers
     protected Envelope totalBounds = new Envelope();
     
-	private String wmsVersion = WMService.WMS_1_0_0;
+	private String wmsVersion = WMService.WMS_1_1_1;
 
 	protected Reference oldImage;
 	protected URL       oldURL;
@@ -140,8 +148,7 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
 	}
 
 	/**
-	 * @param alpha
-	 *            0-255 (255 is opaque)
+	 * @param alpha 0-255 (255 is opaque)
 	 */
 	public void setAlpha(int alpha) {
 		this.alpha = alpha;
@@ -156,11 +163,8 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
 
 		// look if last request equals new one.
 		// if it does take the image from the cache.
-		if (oldURL == null
-		|| !newURL.equals(oldURL) 
-		|| oldImage == null
-		|| (image = (Image)oldImage.get()) == null
-		) {
+		if (oldURL == null || !newURL.equals(oldURL) || oldImage == null
+		        || (image = (Image)oldImage.get()) == null) {
 			image = request.getImage();
 			MediaTracker mt = new MediaTracker(new JButton());
 			mt.addImage(image, 0);
@@ -178,8 +182,7 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
 	}
 
 	private BoundingBox toBoundingBox(String srs, Envelope e) {
-		return new BoundingBox(srs, e.getMinX(), e.getMinY(), e.getMaxX(), e
-				.getMaxY());
+	    return new BoundingBox(srs, e);
 	}
 
 	public MapRequest createRequest(LayerViewPanel panel) throws IOException {
@@ -189,7 +192,7 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
 		request.setFormat(format);
 		request.setImageWidth(panel.getWidth());
 		request.setImageHeight(panel.getHeight());
-		request.setLayers(layerNames);
+		request.setLayerNames(layerNames);
 		request.setTransparent(true);
 
 		return request;
@@ -255,40 +258,41 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
 		//Called by Java2XML [Jon Aquino 2004-02-23]
 		this.serverURL = serverURL;
 	}
+	
     public String getWmsVersion() {
         return wmsVersion;
     }
+    
     public void setWmsVersion(String wmsVersion) {
         this.wmsVersion = wmsVersion;
     }
     
     //-- [sstein 03.Mai.2008] added method to be able to zoom to MrSID layers
     //   it will probably not work for WMSLayers
-    public Envelope getEnvelope()
-    {
-    	return totalBounds;
-    	
-    	/*WMService serv;
-    	try
-    	{
-    		serv = getService();
-    	}
-    	catch (IOException ex)
-    	{
-    		return null;
-    	}
-    	
-    	BoundingBox bb = serv.getCapabilities().getTopLayer().getBoundingBox();
-    	
-    	//don't know if WMS always returns a bounding box
-    	//so check for the usual failure modes
-    	if (bb == null)
-    		return null;
-    	if ((bb.getMaxX() - bb.getMinX()) <= 0.0)
-    		return null;
-    	if ((bb.getMaxY() - bb.getMinY()) <= 0.0)
-    		return null;
+    public Envelope getEnvelope() {
 
-    	return new Envelope(bb.getMinX(), bb.getMaxX(), bb.getMinY(), bb.getMaxY());*/
+        Envelope envelope = new Envelope();
+        
+        List<String> list = getLayerNames();
+        try {
+            for (int i = 0 ; i < list.size() ; i++) {
+                MapLayer lyr = getService().getCapabilities().getMapLayerByName(list.get(i));
+                BoundingBox bb = lyr.getBoundingBox(getSRS());
+                if (bb != null) envelope.expandToInclude(bb.getEnvelope());
+            }
+            if (envelope.getWidth() == 0.0 || envelope.getHeight() == 0.0) {
+                for (int i = 0 ; i < list.size() ; i++) {
+                    MapLayer lyr = getService().getCapabilities().getMapLayerByName(list.get(i));
+                    if (lyr.getParent() != null) {
+                        BoundingBox bb = lyr.getParent().getBoundingBox(getSRS());
+                        if (bb != null) envelope.expandToInclude(bb.getEnvelope());
+                    }
+                }
+            }
+        } catch(IOException e) {
+            LOG.error( "Exception caught during WMSLayer envelope calculation: " + e.toString() );
+        }
+        return envelope;
     }
+    
 }

@@ -69,6 +69,7 @@ import org.openjump.core.ui.plugin.window.MosaicInternalFramesPlugIn;
 import org.openjump.core.ui.plugin.window.SynchronizationPlugIn;
 import org.openjump.core.ui.plugin.wms.AddWmsLayerWizard;
 import org.openjump.core.ui.plugin.wms.ZoomToWMSPlugIn;
+import org.openjump.core.ui.plugin.wms.ZoomToWMSLayerPlugIn;
 import org.openjump.core.ui.style.decoration.ArrowLineStringMiddlepointStyle;
 import org.openjump.core.ui.style.decoration.SegmentDownhillArrowStyle;
 import org.openjump.core.ui.style.decoration.VertexZValueStyle;
@@ -212,8 +213,12 @@ public class OpenJumpConfiguration {
     myEasyButtonsPlugIn.initialize(new PlugInContext(workbenchContext, null,
     	      null, null, null));
     
-    ZoomToWMSPlugIn myZoomToWMSPlugIn = new ZoomToWMSPlugIn();
-    myZoomToWMSPlugIn.initialize(new PlugInContext(workbenchContext, null,
+    //ZoomToWMSPlugIn myZoomToWMSPlugIn = new ZoomToWMSPlugIn();
+    //myZoomToWMSPlugIn.initialize(new PlugInContext(workbenchContext, null,
+    //  null, null, null));
+    
+    ZoomToWMSLayerPlugIn myZoomToWMSLayerPlugIn = new ZoomToWMSLayerPlugIn();
+    myZoomToWMSLayerPlugIn.initialize(new PlugInContext(workbenchContext, null,
       null, null, null));
 
     ZoomToScalePlugIn myZoomToScalePlugIn = new ZoomToScalePlugIn();

@@ -51,6 +51,7 @@
                 <filename name="**/*.html" casesensitive="no"/>
                 <filename name="**/*.xml" casesensitive="no"/>
                 <filename name="**/*.txt" casesensitive="no"/>
+                <filename name="**/*.csv" casesensitive="no"/>
                 <filename name="**/*.jpg" casesensitive="no"/>
                 <filename name="**/*.xsl" casesensitive="no"/>
                 <filename name="**/*.ttf" casesensitive="no"/>

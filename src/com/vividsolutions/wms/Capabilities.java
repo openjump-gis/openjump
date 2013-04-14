@@ -92,6 +92,24 @@ public class Capabilities {
   }
   
   /**
+   * Get a MapLayer by name
+   */
+   public MapLayer getMapLayerByName(String name) {
+       return getMapLayerByName(topLayer, name);
+   }
+   
+   private MapLayer getMapLayerByName(MapLayer mapLayer, String name) {
+       String mapName = mapLayer.getName();
+       // name is not mandatory for layers which are just containers for sublayers 
+       if (mapName != null && mapName.equals(name)) return mapLayer;
+       for (MapLayer layer : mapLayer.getSubLayerList()) {
+           MapLayer r = getMapLayerByName(layer, name);
+           if (r != null) return r;
+       }
+       return null;
+   }
+  
+  /**
    * Gets the title of the Capabilities.
    * @return the title of the map described by these Capabilities
    */
