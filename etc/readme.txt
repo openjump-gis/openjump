@@ -16,8 +16,8 @@ Contents
 
 1. Licensing
 ------------
-OpenJUMP is distributed under the GPL2 license. A description of this license
-can be found in the "gpl-2.txt" (GPL2) file in the "licenses/" folder.
+OpenJUMP is distributed under the GNU General Public License version 2 (GPLv2).
+The license text can be found in the file "licenses/gpl-2.txt".
 
 OpenJUMP uses and distributes the following (in alphabetical order) formatted
 as (Component name - License name - License file in "licenses/" folder or link)
