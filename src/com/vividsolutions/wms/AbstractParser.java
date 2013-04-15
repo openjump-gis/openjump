@@ -191,11 +191,13 @@ public abstract class AbstractParser implements IParser {
                     } else if( n.getNodeName().equals( "LatLonBoundingBox" ) ) {
                         geographicBBox = latLonBoundingBoxFromNode( n );
                         boundingBoxList.add ( geographicBBox );
+                        boundingBoxList.add ( new BoundingBox("Geographics", geographicBBox.getEnvelope()) );
                     } else if( n.getNodeName().equals( "BoundingBox" ) ) {
                         boundingBoxList.add ( boundingBoxFromNode( n ) );
                     } else if( n.getNodeName().equals( "EX_GeographicBoundingBox" ) ) {
                         geographicBBox = exGeographicBoundingBoxFromNode( n );
                         boundingBoxList.add ( geographicBBox );
+                        boundingBoxList.add ( new BoundingBox("Geographics", geographicBBox.getEnvelope()) );
                     } else if( n.getNodeName().equals( "Layer" ) ) {
                         subLayers.add( wmsLayerFromNode( n ) );
                     }

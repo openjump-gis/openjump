@@ -1,15 +1,6 @@
 package org.openjump.core.ui.plugin.wms;
 
 import java.util.Iterator;
-import java.util.List;
-import javax.swing.*;
-import javax.swing.table.*;
-
-import org.openjump.io.SIDLayer;
-
-import java.util.*;
-import java.awt.*;
-import java.awt.event.*;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;

@@ -210,13 +210,24 @@ public class MapLayer {
      */
     public BoundingBox getBoundingBox(String srs) {
         Envelope envelope = getBoundingBox(srs, this, new Envelope());
-        if (envelope.getWidth() == 0.0 && envelope.getHeight() == 0.0 && null != getParent()) {
-            envelope = getParent().getBoundingBox().getEnvelope();
+        MapLayer p = this;
+        while (envelope.getMinX() > envelope.getMaxX() && p.getParent() != null) {
+            p = p.getParent();
+            for (BoundingBox bb : p.getBoundingBoxList()) {
+                if (srs.equals(bb.getSRS())) {
+                    // if this layer has a bounding box for this srs, return its envelope
+                    envelope.expandToInclude(bb.getEnvelope());
+                    return new BoundingBox(srs, envelope);
+                }
+            }
         }
         return new BoundingBox(srs, envelope);
     }
     
-    
+    /**
+     * Return the envelope of this layer in the wished srs if a BoundingBox in
+     * this srs exists. Else if, layer's children are scanned recursively.
+     */
     public static Envelope getBoundingBox(String srs, MapLayer lyr, Envelope env) {
         for (BoundingBox bb : lyr.getBoundingBoxList()) {
             if (srs.equals(bb.getSRS())) {
