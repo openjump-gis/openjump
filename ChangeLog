@@ -2,6 +2,7 @@
 
 2013-04-15 mmichaud <michael.michaud@free.fr>
   * Fix the new ZoomToWMSLayerPlugIn (multiselection case did not work properly)
+  * Fix encoding problem in AbstractWMSParser
 
 2013-04-14 mmichaud <michael.michaud@free.fr>
   * Improve WMS parser to include WMS 1.3.0 and replace the complex ZoomToWMS 

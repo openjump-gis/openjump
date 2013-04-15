@@ -90,8 +90,7 @@ public abstract class AbstractParser implements IParser {
             DOMParser parser = new DOMParser();
             parser.setFeature("http://xml.org/sax/features/validation", false);
             parser.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-            InputStreamReader ireader = new InputStreamReader(inStream, "UTF-8");
-            parser.parse(new InputSource(ireader));
+            parser.parse(new InputSource(inStream));
             doc = parser.getDocument();
             checkCapabilities(doc);
         } catch(SAXException saxe) {
