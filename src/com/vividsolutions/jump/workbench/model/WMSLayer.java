@@ -77,9 +77,6 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
 	private int alpha = 255;
 
 	private WMService service;
-
-	//-- [sstein 03.Mai.2008] added field to be able to zoom to MrSID layers
-    protected Envelope totalBounds = new Envelope();
     
 	private String wmsVersion = WMService.WMS_1_1_1;
 
@@ -267,8 +264,7 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
         this.wmsVersion = wmsVersion;
     }
     
-    //-- [sstein 03.Mai.2008] added method to be able to zoom to MrSID layers
-    //   it will probably not work for WMSLayers
+
     public Envelope getEnvelope() {
 
         Envelope envelope = new Envelope();
@@ -278,15 +274,8 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
             for (int i = 0 ; i < list.size() ; i++) {
                 MapLayer lyr = getService().getCapabilities().getMapLayerByName(list.get(i));
                 BoundingBox bb = lyr.getBoundingBox(getSRS());
-                if (bb != null) envelope.expandToInclude(bb.getEnvelope());
-            }
-            if (envelope.getWidth() == 0.0 || envelope.getHeight() == 0.0) {
-                for (int i = 0 ; i < list.size() ; i++) {
-                    MapLayer lyr = getService().getCapabilities().getMapLayerByName(list.get(i));
-                    if (lyr.getParent() != null) {
-                        BoundingBox bb = lyr.getParent().getBoundingBox(getSRS());
-                        if (bb != null) envelope.expandToInclude(bb.getEnvelope());
-                    }
+                if (bb != null && bb.getEnvelope().getMinX() < bb.getEnvelope().getMaxX()) {
+                    envelope.expandToInclude(bb.getEnvelope());
                 }
             }
         } catch(IOException e) {
