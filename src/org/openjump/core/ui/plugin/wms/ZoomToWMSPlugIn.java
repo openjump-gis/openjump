@@ -26,7 +26,7 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.table.*;
 
-import org.openjump.io.SIDLayer;
+//import org.openjump.io.SIDLayer;
 
 import java.util.*;
 import java.awt.*;
@@ -101,27 +101,27 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn {
     
     public boolean execute( PlugInContext context ) throws Exception {
         this.context = context;
-        boolean isSIDLayer = false;
+        //boolean isSIDLayer = false;
         final WorkbenchContext wbcontext = context.getWorkbenchContext();
         //-- [sstein 3.Mai.2008] added check for MrSID compatibility
         for (Iterator i = wbcontext.getLayerNamePanel().selectedNodes(WMSLayer.class).iterator(); i.hasNext();)
         {
             WMSLayer layer = (WMSLayer) i.next();
-            if (layer.getClass() == SIDLayer.class)
-            {
-            	isSIDLayer = true;
-            }
+            //if (layer.getClass() == SIDLayer.class)
+            //{
+            //	isSIDLayer = true;
+            //}
         }
-        if (isSIDLayer){
-            reportNothingToUndoYet(context);
-            Envelope env = envelopeOfSelectedLayers(context);
-            
-            if ((env.getHeight() > 0.0) && (env.getWidth() > 0.0))
-            {
-            	context.getLayerViewPanel().getViewport().zoom(EnvelopeUtil.bufferByFraction(env, 0.03));
-            }
-        }
-        else{
+        //if (isSIDLayer){
+        //    reportNothingToUndoYet(context);
+        //    Envelope env = envelopeOfSelectedLayers(context);
+        //    
+        //    if ((env.getHeight() > 0.0) && (env.getWidth() > 0.0))
+        //    {
+        //    	context.getLayerViewPanel().getViewport().zoom(EnvelopeUtil.bufferByFraction(env, 0.03));
+        //    }
+        //}
+        //else{
             ArrayList mapLayerOfChoosenLayers = getMapLayerOfChoosenLayers( context );
             if (mapLayerOfChoosenLayers == null) {
                 return false;
@@ -131,7 +131,7 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn {
 	        Hashtable boundingBoxesForSRS = getBoundingBoxesForSRS( mapLayerOfChoosenLayers,
 	            selectedSRS );
 	        zoomToBoundingBox( context, boundingBoxesForSRS, selectedSRS );
-        }
+        //}
         return true;
     } // End execute ( )
     
