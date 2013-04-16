@@ -45,8 +45,6 @@ import javax.swing.event.InternalFrameEvent;
 
 import org.openjump.core.ui.swing.DetachableInternalFrame;
 
-import sun.misc.InvalidJarIndexException;
-
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.Blackboard;
