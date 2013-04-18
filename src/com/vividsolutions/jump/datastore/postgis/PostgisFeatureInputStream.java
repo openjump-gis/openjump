@@ -90,7 +90,7 @@ public class PostgisFeatureInputStream extends BaseFeatureInputStream {
         }
         catch (SQLException ex) {
             String message = ex.getLocalizedMessage();
-            Throwable nextT = ((SQLException)ex).getNextException();
+            Throwable nextT = ex.getNextException();
             if (nextT != null) message = message + "\n" + nextT.getLocalizedMessage();
             throw new Error(message);
         }

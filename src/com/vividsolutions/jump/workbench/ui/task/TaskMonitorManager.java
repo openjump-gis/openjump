@@ -160,11 +160,10 @@ public class TaskMonitorManager {
                 // [Jon Aquino 2004-09-07]
                 
                 dialog.setVisible( false );
-                dialog.dispose();
-
                 if (throwable != null) {
                     context.getErrorHandler().handleThrowable(throwable);
                 }
+                dialog.dispose();
 
                 // Releases references to the data, to facilitate garbage
                 // collection. [Jon Aquino]

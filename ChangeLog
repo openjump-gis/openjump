@@ -1,6 +1,10 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
 2013-04-15 mmichaud <michael.michaud@free.fr>
+  * Fix bug appeared with recent jre (between 1.7.0_07 and 1.7.0_17) and 
+    preventing error messages to be displayed (reported by Uwe on 2013-04-15)
+
+2013-04-15 mmichaud <michael.michaud@free.fr>
   * Fix the new ZoomToWMSLayerPlugIn (multiselection case did not work properly)
   * Fix encoding problem in AbstractWMSParser
 
