@@ -80,15 +80,7 @@ public class MrSIDImageFactory implements ReferencedImageFactory {
 
 	public boolean isAvailable(WorkbenchContext context) {
 		int i = -1;
-		// [sstein 19.Apr.2008] replaced with old code from AddSIDLayerPlugIn 
-//		try{
-			/*
-			Process p = Runtime.getRuntime().exec(MRSIDINFO+" -h");
-	        p.waitFor();
-	        i = p.exitValue();
-	        p.destroy();
-	        */
-			//-- new
+            // [sstein 19.Apr.2008] replace old code from AddSIDLayerPlugIn 
 			File empty = new File("");
 			String sep = File.separator;
 			try{
@@ -97,40 +89,32 @@ public class MrSIDImageFactory implements ReferencedImageFactory {
 			catch(Exception e){//eat it (the PlugInDirectory may be "null")
 				return false;
 			}
-		    ETC_PATH = WORKING_DIR + "etc" + sep;
-		    TMP_PATH = WORKING_DIR + "etc" + sep + "tmp" + sep;
+			// [mmichaud 2013-04-19] move to lib/native directory
+			ETC_PATH = "lib" + sep + "native" + sep;
+	        TMP_PATH = ETC_PATH + sep + "tmp" + sep;
+		    //ETC_PATH = WORKING_DIR + "etc" + sep;
+		    //TMP_PATH = WORKING_DIR + "etc" + sep + "tmp" + sep;
 	        MRSIDDECODE = ETC_PATH + MRSIDDECODEFILE;
 	        MRSIDINFO = ETC_PATH + MRSIDINFOFILE;
 	        
-            if (!new File(MRSIDDECODE).exists())
-            {
-            	//-- error messages can not be send, as the workbench does not exist yet 
-                //context.getWorkbench().getFrame().warnUser(sErrorSeeOutputWindow);                
-                //context.getWorkbench().getFrame().getOutputFrame().addText(MRSIDDECODE + " " + sNotInstalled);
+	        if (!new File(TMP_PATH).exists()) {
+	            if (!new File(TMP_PATH).mkdir()) {
+	                logger.warn("Could not create " + TMP_PATH + " directory");
+	                return false;
+	            }
+	        }
+	        
+            if (!new File(MRSIDDECODE).exists()) {
             	logger.warn(MRSIDDECODE + " " + sNotInstalled);
                 return false;
             }
             
-            if (!new File(MRSIDINFO).exists())
-            {
-            	//-- error messages can not be send, as the workbench does not exist yet
-                //context.getWorkbench().getFrame().warnUser(sErrorSeeOutputWindow);                
-                //context.getWorkbench().getFrame().getOutputFrame().addText(MRSIDINFO + " " + sNotInstalled);
+            if (!new File(MRSIDINFO).exists()) {
             	logger.warn(MRSIDINFO + " " + sNotInstalled);
                 return false;
             }
          logger.trace("found Mrsid decode files");
          return true;
-        //-- end new stuff   
-//		}catch(IOException e){
-//			// eat it
-//			return false;
-//		} catch (InterruptedException e) {
-//			// eat it
-//			return false;
-//		}
-//        
-//        return i == 0;
 	}
 
 }
