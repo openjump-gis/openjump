@@ -274,7 +274,6 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
             for (int i = 0 ; i < list.size() ; i++) {
                 MapLayer lyr = getService().getCapabilities().getMapLayerByName(list.get(i));
                 BoundingBox bb = lyr.getBoundingBox(getSRS());
-                System.out.println("bb " + bb);
                 if (bb != null && bb.getEnvelope().getMinX() < bb.getEnvelope().getMaxX()) {
                     envelope.expandToInclude(bb.getEnvelope());
                 }
