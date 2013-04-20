@@ -124,12 +124,6 @@ public class MergeSelectedFeaturesPlugIn extends AbstractPlugIn {
 
     execute(new UndoableCommand(getName(), layer) {
       
-      public void dispose() {
-        super.dispose();
-        features.clear();
-        mergedFeature.setGeometry(null);
-      }
-      
       public void execute() {
         getLayer().getFeatureCollectionWrapper().removeAll(features);
         getLayer().getFeatureCollectionWrapper().add(mergedFeature);
