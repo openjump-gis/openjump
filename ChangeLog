@@ -3,6 +3,8 @@
 2013-04-20 mmichaud <michael.michaud@free.fr>
   * Fix a bug reported by Uwe and preventing project containing WMSLayers to be 
     displayed correctly.
+  * Fix a bug throwing an exception when RefreshDataStoreQueryPlugIn is applied 
+    to a in-memory layer
 
 2013-04-19 mmichaud <michael.michaud@free.fr>
   * Change directory from lib/ext/etc to lib/native for MrSID executable

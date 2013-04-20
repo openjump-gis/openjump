@@ -3,6 +3,7 @@ package org.openjump.core.ui.plugin.datastore;
 import com.vividsolutions.jump.coordsys.CoordinateSystemRegistry;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.model.Layer;
@@ -58,6 +59,11 @@ public class RefreshDataStoreQueryPlugIn extends ThreadedBasePlugIn {
     public void run(TaskMonitor monitor, final PlugInContext context) throws Exception {
         Layer[] selectedLayers = context.getSelectedLayers();
 	    for (final Layer layer : selectedLayers) {
+	        
+	        DataSourceQuery dsq = layer.getDataSourceQuery();
+	        if (dsq == null || !(dsq.getDataSource() instanceof DataStoreQueryDataSource)) {
+	            continue;
+	        }
 	        
 	        FeatureSchema oldSchema = layer.getFeatureCollectionWrapper().getFeatureSchema();
 	        
