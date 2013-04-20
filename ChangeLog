@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-04-20 mmichaud <michael.michaud@free.fr>
+  * Fix a bug reported by Uwe and preventing project containing WMSLayers to be 
+    displayed correctly.
+
 2013-04-19 mmichaud <michael.michaud@free.fr>
   * Change directory from lib/ext/etc to lib/native for MrSID executable
     see https://sourceforge.net/apps/mediawiki/jump-pilot/index.php?title=MrSID

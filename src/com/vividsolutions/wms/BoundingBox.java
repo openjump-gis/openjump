@@ -120,8 +120,10 @@ public class BoundingBox {
   }
   
   public String getBBox(String wmsVersion) {
-      if (axisOrder == AxisOrder.LONLAT || wmsVersion == WMService.WMS_1_0_0
-          || wmsVersion == WMService.WMS_1_1_0 || wmsVersion == WMService.WMS_1_1_1) {
+      if (axisOrder.equals(AxisOrder.LONLAT) || 
+              wmsVersion.equals(WMService.WMS_1_0_0) || 
+              wmsVersion.equals(WMService.WMS_1_1_0) || 
+              wmsVersion.equals(WMService.WMS_1_1_1)) {
           return "BBOX=" + westBound + "," + southBound + "," + eastBound + "," + northBound;
       } else {
           return "BBOX=" + southBound + "," + westBound + "," + northBound + "," + eastBound;
