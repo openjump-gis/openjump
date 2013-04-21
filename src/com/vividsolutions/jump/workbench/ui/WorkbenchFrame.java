@@ -537,10 +537,15 @@ public class WorkbenchFrame extends JFrame
     maximumFeatureExtentForEnvelopeRenderingInPixels = newMaximumFeatureExtentForEnvelopeRenderingInPixels;
   }
 
-  public void log(String message) {
-    LOG.info(message);
+  public void log(String message){
+    log(message,this.getClass());
+  }
+
+  public void log(String message, Class clazz) {
+    Logger.getLogger(clazz).info(message);
     log.append(new Date() + "  " + message
         + System.getProperty("line.separator"));
+    System.out.println(message);
   }
 
   public String getLog() {
