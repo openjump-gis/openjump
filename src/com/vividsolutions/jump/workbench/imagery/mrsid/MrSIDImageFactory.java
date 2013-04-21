@@ -31,9 +31,13 @@ package com.vividsolutions.jump.workbench.imagery.mrsid;
  * (250)385-6040
  * www.vividsolutions.com
  */
-import java.io.File;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.HashMap;
 
 import org.apache.log4j.Logger;
+import org.openjump.core.CheckOS;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.JUMPException;
@@ -43,78 +47,111 @@ import com.vividsolutions.jump.workbench.imagery.ReferencedImageFactory;
 
 public class MrSIDImageFactory implements ReferencedImageFactory {
 
-	private Logger logger = Logger.getLogger(MrSIDImageFactory.class);
-			
-	//[sstein 19Apr2008] -- new
-    public static String WORKING_DIR;
-    public static String ETC_PATH;
-    public static String TMP_PATH;
-    public static String MRSIDDECODE;
-    public static String MRSIDINFO;
-    //--
-    public static final String MRSIDDECODEFILE = "mrsidgeodecode.exe";
-    public static final String MRSIDINFOFILE = "mrsidgeoinfo.exe";
-    
-	final static String sNotInstalled=I18N.get("org.openjump.core.ui.plugin.layer.AddSIDLayerPlugIn.not-installed");
-	final static String sErrorSeeOutputWindow =I18N.get("org.openjump.core.ui.plugin.layer.AddSIDLayerPlugIn.Error-See-Output-Window");
-	
-    public String getTypeName() {
-        return "MrSID";
+  private Logger logger = Logger.getLogger(MrSIDImageFactory.class);
+
+  // --
+  public static final String MRSIDDECODE = "mrsidgeodecode";
+  public static final String MRSIDINFO = "mrsidgeoinfo";
+  private static HashMap<String, String> binariesAvailable = new HashMap();
+
+  final static String sNotInstalled = I18N
+      .get("org.openjump.core.ui.plugin.layer.AddSIDLayerPlugIn.not-installed");
+  final static String sErrorSeeOutputWindow = I18N
+      .get("org.openjump.core.ui.plugin.layer.AddSIDLayerPlugIn.Error-See-Output-Window");
+
+  public String getTypeName() {
+    return "MrSID";
+  }
+
+  public ReferencedImage createImage(String location) throws JUMPException {
+    return new MrSIDReferencedImage(SIDInfo.readInfo(location), location);
+  }
+
+  public String getDescription() {
+    return getTypeName();
+  }
+
+  public String[] getExtensions() {
+    return new String[] { "sid" };
+  }
+
+  public boolean isEditableImage(String location) {
+    return false;
+  }
+
+  public boolean isAvailable(WorkbenchContext context) {
+
+    String msg = which(MRSIDDECODE);
+    if (msg != "") {
+      context
+          .getWorkbench()
+          .getFrame()
+          .log(MRSIDDECODE + " " + sNotInstalled + " - " + msg, this.getClass());
+      return false;
     }
 
-    public ReferencedImage createImage(String location) throws JUMPException {
-        return new MrSIDReferencedImage(SIDInfo.readInfo(location),location);
+    msg = which(MRSIDINFO);
+    if (msg != "") {
+      context.getWorkbench().getFrame()
+          .log(MRSIDINFO + " " + sNotInstalled + " - " + msg, this.getClass());
+      return false;
     }
 
-    public String getDescription() {
-        return getTypeName();
+    context.getWorkbench().getFrame()
+        .log("found Mrsid binaries in path", this.getClass());
+    return true;
+  }
+
+  // return empty string on success or error string
+  private String which(String filename) {
+    // return cached result
+    if (binariesAvailable.containsKey(filename))
+      return binariesAvailable.get(filename);
+
+    String[] runStr;
+    if (CheckOS.isLinux()) {
+      runStr = new String[] { "which", filename };
+    } else if (CheckOS.isWindows()) {
+      runStr = new String[] {
+          "cmd",
+          "/C",
+          "@for %i in (" + filename
+              + ".exe) do @if NOT \"%~$PATH:i\"==\"\" echo %~$PATH:i" };
+    } else {
+      return "os not supported.";
     }
 
-    public String[] getExtensions() {
-        return new String[] { "sid" };
+    Process p = null;
+    BufferedReader in = null;
+    try {
+      p = Runtime.getRuntime().exec(runStr);
+      p.waitFor();
+      in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+      String line;
+      if ((line = in.readLine()) != null && !line.trim().isEmpty()) {
+        // cache result
+        binariesAvailable.put(filename, "");
+        return "";
+      }
+      System.out.println(line);
+      binariesAvailable.put(filename, filename + " not in path");
+      return filename + " not in path";
+    } catch (Exception e) {
+      e.printStackTrace();
+      return e.getMessage();
+    } finally {
+      // cleanup
+      try {
+        if (in != null)
+          in.close();
+      } catch (IOException e) {
+        e.printStackTrace();
+      } finally {
+        if (p != null)
+          p.destroy();
+      }
     }
 
-    public boolean isEditableImage(String location) {
-        return false;
-    }
-
-	public boolean isAvailable(WorkbenchContext context) {
-		int i = -1;
-            // [sstein 19.Apr.2008] replace old code from AddSIDLayerPlugIn 
-			File empty = new File("");
-			String sep = File.separator;
-			try{
-				WORKING_DIR = context.getWorkbench().getPlugInManager().getPlugInDirectory() + sep;
-			}
-			catch(Exception e){//eat it (the PlugInDirectory may be "null")
-				return false;
-			}
-			// [mmichaud 2013-04-19] move to lib/native directory
-			ETC_PATH = "lib" + sep + "native" + sep;
-	        TMP_PATH = ETC_PATH + sep + "tmp" + sep;
-		    //ETC_PATH = WORKING_DIR + "etc" + sep;
-		    //TMP_PATH = WORKING_DIR + "etc" + sep + "tmp" + sep;
-	        MRSIDDECODE = ETC_PATH + MRSIDDECODEFILE;
-	        MRSIDINFO = ETC_PATH + MRSIDINFOFILE;
-	        
-	        if (!new File(TMP_PATH).exists()) {
-	            if (!new File(TMP_PATH).mkdir()) {
-	                logger.warn("Could not create " + TMP_PATH + " directory");
-	                return false;
-	            }
-	        }
-	        
-            if (!new File(MRSIDDECODE).exists()) {
-            	logger.warn(MRSIDDECODE + " " + sNotInstalled);
-                return false;
-            }
-            
-            if (!new File(MRSIDINFO).exists()) {
-            	logger.warn(MRSIDINFO + " " + sNotInstalled);
-                return false;
-            }
-         logger.trace("found Mrsid decode files");
-         return true;
-	}
+  }
 
 }

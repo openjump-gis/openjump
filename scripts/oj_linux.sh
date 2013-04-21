@@ -197,6 +197,8 @@ done
 # allow jre to find native libraries in native dir, lib/ext (backwards compatibility)
 # NOTE: mac osx DYLD_LIBRARY_PATH is set in oj_macosx.command only
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$JUMP_NATIVE_DIR:$JUMP_HOME/lib/ext"
+# allow jre to find binaries located under the native folder
+export PATH="$JUMP_NATIVE_DIR:$PATH"
 
 # try to start if no errors so far
 if [ -z "$ERROR" ]; then
