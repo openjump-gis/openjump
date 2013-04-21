@@ -13,6 +13,7 @@
     <url>http://jump-pilot.svn.sourceforge.net/viewvc/jump-pilot/core/trunk/</url>
   </scm>
   <properties>
+    <version.number>0.0.0</version.number>
     <version.release>snapshot</version.release>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
     <project.binaries>**/*.command,**/*.sh,**/*.bat,**/*.exe,**/MacOS/OpenJUMP</project.binaries>
@@ -41,6 +42,7 @@
       </properties>
     </profile>
     <profile>
+      <!-- DEPRECATED: replaced by profile snapshot below -->
       <id>core</id>
       <activation>
         <activeByDefault>true</activeByDefault>
@@ -73,6 +75,7 @@
       </build>
     </profile>
     <profile>
+      <!-- DEPRECATED: replaced by profile snapshot below -->
       <id>plus</id>
       <properties>
         <version.number>${version.datestamp}</version.number>
@@ -103,13 +106,61 @@
       </build>
     </profile>
     <profile>
+      <id>snapshot</id>
+      <properties>
+        <!-- has to be set on maven run with -D version.number=X.X.X -->
+        <version.number>${version.datestamp}</version.number>
+        <version.release>snapshot</version.release>
+        <version.string>${artifactId}-${version.number}-r${version.revision}</version.string>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <configuration>
+              <appendAssemblyId>false</appendAssemblyId>
+            </configuration>
+            <executions>
+              <execution>
+                <id>snap-core</id>
+                <phase>package</phase>
+                <configuration>
+                  <appendAssemblyId>false</appendAssemblyId>
+                  <finalName>${version.string}-CORE</finalName>
+                  <descriptors>
+                    <descriptor>etc/mvn/bin_zip-core_snapshot.xml</descriptor>
+                  </descriptors>
+                </configuration>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>snap-plus</id>
+                <phase>package</phase>
+                <configuration>
+                  <appendAssemblyId>false</appendAssemblyId>
+                  <finalName>${version.string}-PLUS</finalName>
+                  <descriptors>
+                    <descriptor>etc/mvn/bin_zip-plus_snapshot.xml</descriptor>
+                  </descriptors>
+                </configuration>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
       <id>release</id>
       <properties>
         <!-- has to be set on maven run with -D version.number=X.X.X -->
         <version.number>unknown</version.number>
         <version.release>stable</version.release>
         <version.string>${artifactId}-${version.number}-r${version.revision}</version.string>
-        <portable.filename>${artifactId}-Portable-${version.number}-r${version.revision}</portable.filename>
       </properties>
       <build>
         <plugins>
@@ -148,6 +199,18 @@
               </execution>
             </executions>
           </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>portable</id>
+      <properties>
+        <version.number>${version.datestamp}</version.number>
+        <portable.filename>${artifactId}-Portable-${version.number}-r${version.revision}</portable.filename>
+        <portable.filepath>${project.build.directory}/recompress</portable.filepath>
+      </properties>
+      <build>
+        <plugins>
           <plugin>
             <artifactId>maven-antrun-plugin</artifactId>
             <version>1.7</version>
@@ -181,32 +244,30 @@
                       classpath="launcher/p200ant.jar" />
                     <fileset id="jars2pack" dir="${recompress.folder}/">
                       <include name="**/*.jar" />
-                      <!-- exclude signed jars, circumvent security errors e.g. 
-                        "SecurityException: SHA1 digest error" -->
+                      <!-- exclude signed jars, circumvent security errors 
+                        e.g. "SecurityException: SHA1 digest error" -->
                       <exclude name="**/ermapper.jar" />
                     </fileset>
                     <p200ant repack="true">
                       <fileset refid="jars2pack" />
                     </p200ant>
                     <!-- Recompress to distro zips -->
-                    <zip destfile="${recompress.folder}/${portable.filename}-CORE.zip"
+                    <zip
+                      destfile="${recompress.folder}/${portable.filename}-CORE.zip"
                       level="9">
                       <zipfileset dir="${recompress.folder}/core"
-                        prefix="${version.string}-CORE"
-                        excludes="${project.binaries}" />
+                        prefix="${version.string}-CORE" excludes="${project.binaries}" />
                       <zipfileset dir="${recompress.folder}/core"
-                        prefix="${version.string}-CORE"
-                        includes="${project.binaries}"
+                        prefix="${version.string}-CORE" includes="${project.binaries}"
                         filemode="755" />
                     </zip>
-                    <zip destfile="${recompress.folder}/${portable.filename}-PLUS.zip"
+                    <zip
+                      destfile="${recompress.folder}/${portable.filename}-PLUS.zip"
                       level="9">
                       <zipfileset dir="${recompress.folder}/plus"
-                        prefix="${version.string}-PLUS" 
-                        excludes="${project.binaries}" />
+                        prefix="${version.string}-PLUS" excludes="${project.binaries}" />
                       <zipfileset dir="${recompress.folder}/plus"
-                        prefix="${version.string}-PLUS"
-                        includes="${project.binaries}"
+                        prefix="${version.string}-PLUS" includes="${project.binaries}"
                         filemode="755" />
                     </zip>
                   </target>
@@ -244,12 +305,12 @@
                     </delete>
                     <!-- Using an ant task to deflate *.zip -->
                     <unzip
-                      src="${project.build.directory}/${version.string}-CORE.zip"
+                      src="${portable.filepath}/${portable.filename}-CORE.zip"
                       dest="${project.build.directory}/izpack/core/pack0">
                       <cutdirsmapper dirs="1" />
                     </unzip>
                     <unzip
-                      src="${project.build.directory}/${version.string}-PLUS.zip"
+                      src="${portable.filepath}/${portable.filename}-PLUS.zip"
                       dest="${project.build.directory}/izpack/plus/pack0">
                       <cutdirsmapper dirs="1" />
                     </unzip>
@@ -261,19 +322,7 @@
                       includes="**" verbose="true" />
                     <chmod dir="${project.build.directory}/izpack" perm="755" type="file"
                       includes="${project.binaries}" verbose="true" />
-                    <!-- recompress jars -->
-                    <taskdef name="p200ant"
-                      classname="de.matthiasmann.p200ant.P200AntTask"
-                      classpath="launcher/p200ant.jar" />
-                    <fileset id="jars2pack" dir="${project.build.directory}/izpack/">
-                      <include name="**/*.jar" />
-                      <!-- exclude signed jars, circumvent security errors e.g. 
-                        "SecurityException: SHA1 digest error" -->
-                      <exclude name="**/ermapper.jar" />
-                    </fileset>
-                    <p200ant repack="true">
-                      <fileset refid="jars2pack" />
-                    </p200ant>
+
                     <!-- prepare izpack environments -->
                     <!-- jump through hoops to get special chars in readme infopanel 
                       correct -->
