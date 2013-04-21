@@ -46,11 +46,6 @@ public class JUMPException extends Exception {
         super(message);
     }
 
-    public JUMPException(String message, Throwable cause,
-        boolean enableSuppression, boolean writableStackTrace) {
-      super(message, cause, enableSuppression, writableStackTrace);
-    }
-
     public JUMPException(String message, Throwable cause) {
       super(message, cause);
     }
