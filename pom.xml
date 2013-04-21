@@ -205,7 +205,6 @@
     <profile>
       <id>portable</id>
       <properties>
-        <version.number>${version.datestamp}</version.number>
         <portable.filename>${artifactId}-Portable-${version.number}-r${version.revision}</portable.filename>
         <portable.filepath>${project.build.directory}/recompress</portable.filepath>
       </properties>
