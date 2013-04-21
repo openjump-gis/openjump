@@ -3,6 +3,7 @@
 2013-04-21 mmichaud <michael.michaud@free.fr>
   * fix bug 3611412 happening after a MergeSelectedFeatures operation and caused
     by a bad usage of dispose method in UndoableCommand
+  * fix a NullPointerException in ExtractLayersByAttribute
 
 2013-04-20 mmichaud <michael.michaud@free.fr>
   * Fix a bug reported by Uwe and preventing project containing WMSLayers to be 
