@@ -65,7 +65,7 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 /**
- * A¨PlugIn to merge selected features. Polygon are unioned while linestring are
+ * A PlugIn to merge selected features. Polygon are unioned while linestring are
  * merged.
  * 
  * @author Micha&euml;l MICHAUD
@@ -105,7 +105,10 @@ public class MergeSelectedFeaturesPlugIn extends AbstractPlugIn {
     Collection points = new ArrayList();
     Collection linestrings = new ArrayList();
     Collection polygons = new ArrayList();
-    distribute(features, points, linestrings, polygons);
+    for (Iterator it = features.iterator(); it.hasNext();) {
+        Feature feature = (Feature) it.next();
+        distribute(feature.getGeometry(), points, linestrings, polygons);
+    }
 
     // Merge linear features
     LineMerger merger = new LineMerger();
@@ -135,32 +138,26 @@ public class MergeSelectedFeaturesPlugIn extends AbstractPlugIn {
       }
     }, context);
 
-    context.getWorkbenchContext().getLayerViewPanel().getSelectionManager()
-        .clear();
+    context.getWorkbenchContext().getLayerViewPanel().getSelectionManager().clear();
     // select the result so that it is easy to add a explode feature step
     context.getWorkbenchContext().getLayerViewPanel().getSelectionManager()
         .getFeatureSelection().selectItems(layer, mergedFeature);
     return true;
   }
 
-  private void distribute(Collection features, Collection points,
+  private void distribute(Geometry geometry, Collection points,
       Collection linestrings, Collection polygons) {
-    for (Iterator it = features.iterator(); it.hasNext();) {
-      Feature feature = (Feature) it.next();
-      Geometry geometry = feature.getGeometry();
       if (geometry instanceof Point)
-        points.add(geometry);
+          points.add(geometry);
       else if (geometry instanceof LineString)
-        linestrings.add(geometry);
+          linestrings.add(geometry);
       else if (geometry instanceof Polygon)
-        polygons.add(geometry);
+          polygons.add(geometry);
       else if (geometry instanceof GeometryCollection) {
-        for (int i = 0; i < geometry.getNumGeometries(); i++) {
-          distribute(Collections.singletonList(geometry.getGeometryN(i)),
-              points, linestrings, polygons);
-        }
+          for (int i = 0; i < geometry.getNumGeometries(); i++) {
+              distribute(geometry.getGeometryN(i), points, linestrings, polygons);
+          }
       }
-    }
   }
 
 }

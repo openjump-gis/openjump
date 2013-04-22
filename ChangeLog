@@ -1,6 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
 2013-04-21 mmichaud <michael.michaud@free.fr>
+  * fix a bug in MergeSelectedFeatures preventing the merge of MultiGeometries
+
+2013-04-21 mmichaud <michael.michaud@free.fr>
   * fix bug 3611412 happening after a MergeSelectedFeatures operation and caused
     by a bad usage of dispose method in UndoableCommand
   * fix a NullPointerException in ExtractLayersByAttribute
