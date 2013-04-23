@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm simplifies lines, reducing the number of vertices in each of them," description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="LAYER" text="" description="Lines" type="3">
+		</element>
+		<element name="TOLERANCE" text="" description="Tolerance" type="3">
+		</element>
+		<element name="PRESERVE" text="Selecting this option will preserve the topology of the original lines layer ." description="Preserve topology" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="New lines vector layer with the name of the origin layer." description="Generalized lines" type="2">
+			<image description="In red is the layer with the simplified lines from the original lines layer in green." file="Simplificar lineas.jpg">
+			</image>
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

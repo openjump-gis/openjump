@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="Realiza una subdivisi&#243;n en subcuencas de un MDT a partir de un tama&#241;o de cuenca dado. Las cuencas resultantes tendr&#225;n el tama&#241;o especificado." description="Descripci&#243;n" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Informaci&#243;n adicional" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="" description="Algoritmo creado por" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="" description="Ayuda creada por" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="Notas de usuario" type="0">
+		</element>
+		<element name="DEM" text="Un Modelo Digital de Elevaciones" description="MDE" type="3">
+		</element>
+		<element name="SIZE" text="El tama&#241;o deseado para las subcuencas resultantes, expresado en unidades de area de la vista (es decir, si la vista tiene metros como unidad, el &#225;rea de la subcuenca se expresa en en metros cuadrados)." description="Tamano" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Descripci&#243;n general" type="2">
+		</element>
+		<element name="WATERSHEDS" text="La divisi&#243;n en subcuencas. Las celdas de las distintas cuencas tendran un codigo &#250;nico que expresa el identificador de la subcuenca." description="Cuencas" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

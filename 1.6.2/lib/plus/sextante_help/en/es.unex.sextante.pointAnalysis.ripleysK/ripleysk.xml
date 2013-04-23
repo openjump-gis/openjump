@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm computes Ripley's K for a set of points. &#10;&#10;Values produced by this algorithm can be used to identify the type of spatial pattern created by the point process that those input points represent.&#10;" description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="* Ripley, B.D. (1976). The second-order analysis of spatial point processes, Journal of Applied Probability 13, 255&#8211;266.&#10;* http://www.geog.ucsb.edu/~dongmei/ppa/ppa.html" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="POINTS" text="the input points layer" description="Points" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="The new table contain the following fields:&#10;* Distance&#10;* K-function value&#10;* K- function value of a completeley random (Poisson) point process &#10;* L value" description="Ripley's K" type="2">
+			<image description="" file="k_de_ripley.jpg">
+			</image>
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

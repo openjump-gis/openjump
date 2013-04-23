@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<model name="Hypsometry from outlet point" group="Models">
+		<algorithm key="PROC0" alg_cmd_line_name="upslopeareafrompoint" coords="143,167,172,58">
+			<assignment key="OUTLET" assigned_to="INPUT1" />
+			<assignment key="DEM" assigned_to="INPUT0" />
+		</algorithm>
+		<algorithm key="PROC1" alg_cmd_line_name="gridcalculator" coords="30,266,105,58">
+			<assignment key="LAYERS" assigned_to="INNERPARAM0PROC1" />
+			<assignment key="FORMULA" assigned_to="INNERPARAM1PROC1" />
+		</algorithm>
+		<algorithm key="PROC2" alg_cmd_line_name="hypsometry" coords="220,335,82,58">
+			<assignment key="DEM" assigned_to="RESULTPROC1" />
+		</algorithm>
+		<input name="INPUT0" description="DEM" class="class es.unex.sextante.parameters.ParameterRasterLayer" coords="20,20,45,58">
+			<attribute name="mandatory" value="true" />
+		</input>
+		<input name="INPUT1" description="Coordinate" class="class es.unex.sextante.parameters.ParameterPoint" coords="190,24,77,58">
+		</input>
+		<output key="RESULTPROC2" class="class es.unex.sextante.outputs.OutputTable" description="Hypsometry" />
+		<data_object key="INNERPARAM0PROC1" value="RESULTPROC0,INPUT0" description="Multiple Input" />
+		<data_object key="INNERPARAM1PROC1" value="RESULTPROC0 Band 1 * INPUT0 Band 1" description="String" />
+		<data_object key="RESULTPROC0" value="class es.unex.sextante.modeler.elements.ModelElementRasterLayer,1" description='"Upslope area" de Process 0: Uslope area from a single point' />
+		<data_object key="RESULTPROC1" value="class es.unex.sextante.modeler.elements.ModelElementRasterLayer,1" description='"Result" de Process 1: Raster calculator' />
+		<data_object key="RESULTPROC2" value="class es.unex.sextante.modeler.elements.ModelElementTable" description='"Hypsometry" de Hypsometry' />
+	</model>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

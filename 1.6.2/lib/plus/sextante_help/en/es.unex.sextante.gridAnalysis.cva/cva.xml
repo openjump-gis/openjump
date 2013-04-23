@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="The extension Change Vector Analysis (CVA) evaluates a factor that changes over time. It shows the changes that occured on two images (or two bands) taken at two different periods. Four images are necessary, two images taken at an initial date (normally red and infrared bands) and the same images taken at a later date.&#10;&#10;Taking one of the bands (band 1) as the X and the other (band 2) as the Y, will give 4 coordinates and two points (x, y). One of these points represents the initial date while the other represents the final one. The vector linking these points can be expressed in polar coordinates (module, angle)." description="Descripci&#243;n" type="0">
+			<image description="" file="change_vector_analysis.jpg">
+			</image>
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Informaci&#243;n adicional" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extensi&#243;n creada por" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Ayuda creada por" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="Notas de usuario" type="0">
+		</element>
+		<element name="A1" text="select first layer taken at an initial date." description="Capa 1 Inicial" type="3">
+		</element>
+		<element name="A2" text="select second layer taken at an initial date." description="Capa 2 Inicial" type="3">
+		</element>
+		<element name="B1" text="select firts layer taken at a later date." description="Capa 1 Final" type="3">
+		</element>
+		<element name="B2" text="select second layer taken at a later date." description="Capa 2 Final" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Descripci&#243;n general" type="2">
+		</element>
+		<element name="ANGLE" text="" description="&#193;ngulo" type="2">
+		</element>
+		<element name="DIST" text="" description="M&#243;dulo" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

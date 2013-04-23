@@ -1,0 +1,627 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<!--Converted with LaTeX2HTML 2008 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Configuring algorithm providers</TITLE>
+<META NAME="description" CONTENT="Configuring algorithm providers">
+<META NAME="keywords" CONTENT="IntroductionToSEXTANTE">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2008">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="IntroductionToSEXTANTE.css">
+
+</HEAD>
+
+<BODY >
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL CLASS="ChildLinks">
+<LI><A NAME="tex2html283"
+  HREF="node9.html#SECTION00910000000000000000">Introduction</A>
+<LI><A NAME="tex2html284"
+  HREF="node9.html#SECTION00920000000000000000">SAGA</A>
+<LI><A NAME="tex2html285"
+  HREF="node9.html#SECTION00930000000000000000">GRASS</A>
+<UL>
+<LI><A NAME="tex2html286"
+  HREF="node9.html#SECTION00931000000000000000">R</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html287"
+  HREF="node9.html#SECTION00940000000000000000">Some important notes</A>
+<LI><A NAME="tex2html288"
+  HREF="node9.html#SECTION00950000000000000000">More about the GRASS interface</A>
+<UL>
+<LI><A NAME="tex2html289"
+  HREF="node9.html#SECTION00951000000000000000">Usage notes and limitations</A>
+<UL>
+<LI><A NAME="tex2html290"
+  HREF="node9.html#SECTION00951100000000000000">Message output from GRASS modules</A>
+<LI><A NAME="tex2html291"
+  HREF="node9.html#SECTION00951200000000000000">Graphical interface</A>
+<LI><A NAME="tex2html292"
+  HREF="node9.html#SECTION00951300000000000000">Vector data exchange</A>
+<LI><A NAME="tex2html293"
+  HREF="node9.html#SECTION00951400000000000000">Raster data exchange</A>
+<LI><A NAME="tex2html294"
+  HREF="node9.html#SECTION00951500000000000000">Topology</A>
+<LI><A NAME="tex2html295"
+  HREF="node9.html#SECTION00951600000000000000">The GRASS region</A>
+</UL>
+<LI><A NAME="tex2html296"
+  HREF="node9.html#SECTION00952000000000000000">Windows notes</A>
+<LI><A NAME="tex2html297"
+  HREF="node9.html#SECTION00953000000000000000">Notes on specific modules</A>
+<UL>
+<LI><A NAME="tex2html298"
+  HREF="node9.html#SECTION00953100000000000000">r.colors(.stddev)</A>
+<LI><A NAME="tex2html299"
+  HREF="node9.html#SECTION00953200000000000000">r.in/out.gdal</A>
+<LI><A NAME="tex2html300"
+  HREF="node9.html#SECTION00953300000000000000">r.mapcalculator</A>
+<LI><A NAME="tex2html301"
+  HREF="node9.html#SECTION00953400000000000000">r.null</A>
+<LI><A NAME="tex2html302"
+  HREF="node9.html#SECTION00953500000000000000">v.in/out.ogr</A>
+<LI><A NAME="tex2html303"
+  HREF="node9.html#SECTION00953600000000000000">v.surf.bspline</A>
+<LI><A NAME="tex2html304"
+  HREF="node9.html#SECTION00953700000000000000">v.surf.idw</A>
+<LI><A NAME="tex2html305"
+  HREF="node9.html#SECTION00953800000000000000">v.to.3d</A>
+</UL>
+<LI><A NAME="tex2html306"
+  HREF="node9.html#SECTION00954000000000000000">Technical details</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html307"
+  HREF="node9.html#SECTION00960000000000000000">Creating R scripts</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H1><A NAME="SECTION00900000000000000000">
+Configuring algorithm providers</A>
+</H1>
+
+<P>
+
+<H1><A NAME="SECTION00910000000000000000">
+Introduction</A>
+</H1>
+
+<P>
+SEXTANTE can be extended using additional applications, calling them from within SEXTANTE. Currently, GRASS, SAGA and R are supported. This chapter will show you how to do it. Once you have configured the system, you will be able to execute external algorithms from any SEXTANTE component like the toolbox or the graphical modeler, just like you do with any other SEXTANTE geoalgorithm.
+
+<P>
+Certain desktop GIS that incorporate SEXTANTE have third-party applications already preconfigured, so you do not have to configure any of them and their algorithms are available in the SEXTANTE toolbox since the first time you start the program. Using the preconfigured settings is always preferred, so you can (and, unless you are a experienced user, you should) skip this chapter if you are using one of those desktop GIS.
+
+<P>
+
+<H1><A NAME="SECTION00920000000000000000">
+SAGA</A>
+</H1>
+
+<P>
+SAGA binaries have to be installed in the SEXTANTE folder, in a subfolder named <TT>saga</TT>. The folder structure has to be like the following one:
+
+<P>
+<PRE>
+|-[SEXTANTE_folder]
+  |-saga
+    |-description
+    |-dll
+    |-modules
+</PRE>
+
+<P>
+The <TT>description</TT> folder contains the description of SAGA algorithms. It can be obtained from the SEXTANTE SVN repository. It is part of the <TT>sextante_gui</TT> project and it can be found under the <TT>alg_descriptions/grass/descriptions</TT>. All SAGA executables should be in the <TT>saga</TT> folder.
+
+<P>
+SAGA 2.0.7 version is supported. Other versions might be used, but certain algorithms might not work as expected.
+
+<P>
+
+<H1><A NAME="SECTION00930000000000000000">
+GRASS</A>
+</H1>
+
+<P>
+GRASS binaries have to be installed in the SEXTANTE folder, in a subfolder named "grass".
+
+<P>
+The folder structure has to be like the following one:
+<PRE>
+|-[SEXTANTE_folder]
+  |-grass
+    |-bin
+    |-bwidget
+    |-description
+    |- ...
+    |-tools
+</PRE>
+
+<P>
+The <TT>description</TT> folder contains the description of GRASS algorithms. It can be obtained from the SEXTANTE SVN repository. It is part of the <TT>sextante_gui</TT> project and it can be found under <TT>alg_descriptions/grass/descriptions</TT>. All the other folders belong to the GRASS distribution.
+
+<P>
+SAGA 6.4.1 version is supported. Other versions might be used, but certain algorithms might not work as expected.
+
+<P>
+Windows users also need the msys interpreter, which should reside in the SEXTANTE folder, in a subfolder named <TT>msys</TT>.
+
+<P>
+The folder structure in this case has to be like the following one:
+<PRE>
+|-[SEXTANTE_folder]
+  |-grass
+    |-bin
+    |-bwidget
+    |-description
+    |- ... |-tools
+  |-msys
+    |-bin
+    |-etc
+    |-...
+    |var
+</PRE>
+
+<P>
+
+<H2><A NAME="SECTION00931000000000000000">
+R</A>
+</H2>
+
+<P>
+R binaries have to be installed in the SEXTANTE folder, in a subfolder named <TT>r</TT>.
+
+<P>
+The folder structure has to be like the following one:
+
+<P>
+<PRE>
+|-[SEXTANTE_folder]
+  |-r
+    |-bin
+    |-doc
+    |- ...
+    |-src
+</PRE>
+
+<P>
+The SEXTANTE-R integration has been tested with R 2.11.1.
+
+<P>
+Check section <A HREF="#rscripts">7.6</A> for more infor about how to create R scripts and use them from SEXTANTE once you have configured the R-SEXTANTE interface.
+
+<P>
+
+<H1><A NAME="SECTION00940000000000000000">
+Some important notes</A>
+</H1>
+
+<P>
+Although it is recommended to keep third party applications in their default location (under the SEXTANTE folder), you can change that by entering the settings dialog (click on the button in the lower-right part of the SEXTANTE toolbox) and navigating to the corresponding settings group in its lef-hand side. You will find <SPAN  CLASS="textit">GRASS folder</SPAN>, <SPAN  CLASS="textit">R Folder</SPAN> and <SPAN  CLASS="textit">SAGA folder</SPAN> textboxes where you can change the path to each one of the executables for these applications.
+
+<P>
+You can activate or de-activate algorithms from each one of these applications, by clicking on the corresponding check-box (you must activate them the first time, since they are deactivated by default, unless your system is already preconfigured). Note that, even if the folder you enterd is not correct, when a group of algorithms is activated, you will see them in the toolbox and you will be able to call them. In other words, the descriptions of the algorithms are not a part of the third party software, but are incorporated into SEXTANTE. Once you try to execute the algorithm, you will see an error message in case SEXTANTE could not call the software needed to run the requested algorithm.
+
+<P>
+
+<H1><A NAME="SECTION00950000000000000000">
+More about the GRASS interface</A>
+</H1>
+
+<P>
+This section describes some additional configuration items for the SEXTANTE-GRASS interface. It also gives some additional information on the mechanism used by SEXTANTE to integrate GRASS modules, which should be useful for all users, but specially for those familiar with the GRASS command-line interface.
+
+<P>
+Open the settings dialog and select the <SPAN  CLASS="textit">GRASS</SPAN> menu page.  Apart from the folders already explained, there are additional parameters that can be defined.
+
+<P>
+
+<UL>
+<LI>The path to a GRASS mapset. The mapset doesn't have to contain any data at all, since data will be imported automatically each time you execute an algorithm. The GRASS interface is totally ignorant of projection setttings. When data is processed, no reprojection is performed, and layers are assumed to be in the same projection as the mapset itself. So make sure that you only process data with matching spatial reference systems. Otherwise, accurate results cannot be guaranteed.
+  If you do not have a GRASS mapset, you can ask SEXTANTE to create a temporary one for you. Select the corresponding checkbox and a new one will appear instead of the texbox for selecting the mapset folder. In order to create the temporary mapset, SEXTANTE needs to know whether your data will use geographic coordinates (lat/lon) or projected ones. Check the new box accordingly. The temporary mapset and all data in it will automatically be deleted when the processing is done.
+</LI>
+<LI>If you wish to process 3D vector data with GRASS, then you must activate the corresponding setting (3D input data will not automatically be recognized as such).
+</LI>
+<LI>You may also choose to import polygons as polylines instead.
+</LI>
+</UL>
+
+<P>
+
+<H2><A NAME="SECTION00951000000000000000">
+Usage notes and limitations</A>
+</H2>
+
+<P>
+GRASS is a system that consists of hundreds of independent, loosely coupled, programs designed to be run from the command line. There are some complexities in trying to wrap a graphical user interface (GUI) around such an architecture. It can never be done perfectly, but the GRASS-SEXTANTE interface goes to some lengths in order to ensure a smooth user experience.
+
+<P>
+There are several different versions of GRASS available. Currently, the GRASS-SEXTANTE interface has been tested and designed to run with GRASS 6.4. Other GRASS versions may or may not work.
+
+<P>
+If you notice anything wrong with a particular GRASS module, please post a message to the SEXTANTE users mailing list, notifying us of your concern. We will try to fix it for the next release.
+
+<P>
+The current version of the SEXTANTE-GRASS interface offers good support for most of the GRASS raster and vector processing modules. Most significantly, it does not support the imagery (i.*) and voxel (3D raster; r3.*) processing modules. Users who want access to the full power and flexibility of GRASS GIS are advised to install GRASS on an operating system with good POSIX compatibility (such as Linux or Mac OS X) and learn to use it from the command line.
+
+<P>
+Not all GRASS algorithms are available from SEXTANTE. Some of them are not compatible with the architecture of SEXTANTE and its algorithm-definition semantics, while others do not make much sense in the context of SEXTANTE (like, for instance, those used to digitize and create new vector layers). Unsuitable algorithms are automatically removed and will not appear in any SEXTANTE component.
+
+<P>
+
+<H3><A NAME="SECTION00951100000000000000">
+Message output from GRASS modules</A>
+</H3>
+
+<P>
+Many GRASS modules produce verbose and important output as part of their processing. This can be reviewed after a GRASS module has run, by opening the <SPAN  CLASS="textit">GRASS output</SPAN> page of the SEXTANTE History. This is always a good idea, especially when unexpected results occur.
+
+<P>
+Some modules do not output error messages in a standard way, so that errors can be detected and a message displayed by SEXTANTE. If a module produces an empty or no result, check the full GRASS messages transcript in the SEXTANT log browser.
+
+<P>
+
+<H3><A NAME="SECTION00951200000000000000">
+Graphical interface</A>
+</H3>
+
+<P>
+Those GRASS modules that can produce a multitude of optional outputs will be split up into "sibling" algorithm, one for each optional output. Siblings share the same name with the "parent" algorithm (the one with the full set of parameters) but have an additional specifier in "()".
+
+<P>
+Sometimes, a certain option is impossible or pointless to replicate in the GUI and will thus be skipped, leading to discrepancies with the official GRASS module documentation. A prime example is the "layer=" option which many GRASS vector modules employ to let the user switch between different attribute tables connected to the same "layer" (which is actually called a "map" in GRASS lingo).
+
+<P>
+Some modules upload data into existing or new attribute tables for an existing input vector dataset. Such modification will be lost after the GRASS command finishes. We have tried to encapsulate the most important ones using a postprocessing function which will export the new attribute table fields together with a copy of the original input dataset as a new vector layer. In this way, modules such as v.distance become fully functional. However, this is not a universal solutions and some modules that modify the attribute table structure of an existing input vector dataset are still likely to lose these changes.
+
+<P>
+
+<H3><A NAME="SECTION00951300000000000000">
+Vector data exchange</A>
+</H3>
+
+<P>
+The GRASS interface currently uses ESRI Shapefiles as a kind of lowest common denominator to exchange data between SEXTANTE and GRASS. Shapefiles have severe limitations, which may also be felt when processing vector data with the SEXTANTE-GRASS interface. These limitations do not exist in the native GRASS vector models but are caused by having to rely on the much simpler Shapefiles for data exchange.
+
+<P>
+The most obvious limitation is the fact that Shapefiles can only store one type of geometric primitive each (point, line or polygon). The output of GRASS modules that produce multi-type geometries will automatically split into separate files for the primitives.
+
+<P>
+In addition, since Shapefiles use DBase files for attribute data, all limitations associated with that file format also apply.
+
+<P>
+Output vector maps will have a ``cat'' column or (if that already exists) a ``_cat'' column, which are the internal primary keys used by GRASS to link vector objects with attibute table fields. Apart from being a waste of bytes in the output file, GRASS modules will fail to run on input vector maps that already have both ``cat'' and ``_cat'' field. So it is a good idea to delete them manually from the attribute table. Unfortunately, the current official version of GRASS does not yet offer a safe way of doing this automatically.
+
+<P>
+(Please also make sure to read the notes on topology below)
+
+<P>
+
+<H3><A NAME="SECTION00951400000000000000">
+Raster data exchange</A>
+</H3>
+
+<P>
+There are no severe limitations for raster data processing via the SEXTANTE-GRASS interface.
+
+<P>
+However, there is no simple support for setting the GRASS raster MASK yet. If you need one, then you must create a GRASS mapset externally and then create a mask in there. Then use SEXTANTE to connect to that mapset. They mask will now be active for all raster operations carried out through the SEXTANTE GRASS interface.
+
+<P>
+
+<H3><A NAME="SECTION00951500000000000000">
+Topology</A>
+</H3>
+
+<P>
+GRASS is one of the few GIS that insist on keeping a strict topological model for all vector data that goes through it. This ensures reliable operation and correct output, but means that topologically unclean data may be a challenge to process without first cleaning it ("garbage in, garbage out").
+
+<P>
+One common source of problems are overlapping polygons in one input file. The latter are not allowed in the 2D topology model that GRASS uses. GRASS will employ an automated cleaning process on such data which will most likely result in some of the polygons being discarded.
+
+<P>
+Note that the GRASS vector model currently has no valid topological representation for arbitrary 3D polygons (as opposed to simple 3D triangles, so called "faces", which make up meshes such as TINs). Getting such data past the (unfortunately) 2D topological cleaning mechanism of GRASS without having it "butchered" can be a challenge. In those cases where only the geometry information (not the attribute data) is of interest, setting the GRASS interface options to import polygons as polylines may provide a solution.
+
+<P>
+
+<H3><A NAME="SECTION00951600000000000000">
+The GRASS region</A>
+</H3>
+
+<P>
+GRASS GIS offers many ways of setting the computation region's extent and resolution on-the-fly. Doing this is only mandatory for modules with raster output (except raster import modules: r.in.*). But may also be important for some others (such as v.voronoi), whose result depends on the extent of the region, nonetheless. So the region settings are always available on the <SPAN  CLASS="textit">Region</SPAN> tab of each GRASS module's GUI.
+
+<P>
+
+<H2><A NAME="SECTION00952000000000000000">
+Windows notes</A>
+</H2>
+
+<P>
+Due to its design, GRASS does not run as smoothly on Windows as it does on other operating systems, since the latter lacks some POSIX features for inter-process communication. For the user, the most significant effect of this is that SEXTANTE cannot display an accurate progress bar for GRASS commands running on Windows.
+
+<P>
+There is also no support for mapset locking on the Windows platform. So the user must take care not to use a mapset for processing which might be in use by another person at the same time.
+
+<P>
+
+<H2><A NAME="SECTION00953000000000000000">
+Notes on specific modules</A>
+</H2>
+
+<P>
+These are some usage hints for some interesting GRASS modules, which may not be obvious to GRASS novices. They also serve to illustrate common principles of GRASS usage via the SEXTANTE-GRASS interface.
+
+<P>
+
+<H3><A NAME="SECTION00953100000000000000">
+r.colors(.stddev)</A>
+</H3>
+
+<P>
+GRASS provides some beautiful, automatically adjusted color schemes for raster data. You can use ``r.colors'' to pick a scheme, but the new color scheme can only be applied to the result if the GIS that you run SEXTANTE under can handle external color map definitions in the format which the SEXTANTE-GRASS interface uses. At the moment, this is only true for gvSIG.
+
+<P>
+Note also that the result will be returned as a new layer, as the SEXTANTE-GRASS interface cannot directly manipulate the input layer.
+
+<P>
+
+<H3><A NAME="SECTION00953200000000000000">
+r.in/out.gdal</A>
+</H3>
+
+<P>
+Raster data in a variety of formats can be imported and exporting using r.in.gdal and r.out.gdal, respectively. These modules use the geodata drivers provided by the GDAL project<A NAME="tex2html5"
+  HREF="footnode.html#foot1064"><SUP><SPAN CLASS="arabic">7</SPAN>.<SPAN CLASS="arabic">1</SPAN></SUP></A>. See the project's web page for details about the level of support for the different formats.
+
+<P>
+
+<H3><A NAME="SECTION00953300000000000000">
+r.mapcalculator</A>
+</H3>
+
+<P>
+This is a GRASS script that wraps the powerful r.mapcalc tool, which is a commandline-only tool for raster map algebra in GRASS. If you want to get an idea of all its capabilities, find the HTML manual page for r.mapcalc in your local GRASS installation or on the web.
+
+<P>
+How to use r.mapcalculator: Specify up to six input layers to be used and then reference them in the ``formula='' field. You can A,B,C etc . or amap,bmap,cmap etc. Don't worry about putting in quotation marks (``). That will be done automatically. Here is an example of an expression that shows how to use the null() function and the if() conditional function: ``if(A=&gt;500,A,null())''. This will filter out all cells of a DEM (input as map A) that lie below 500 m.
+
+<P>
+
+<H3><A NAME="SECTION00953400000000000000">
+r.null</A>
+</H3>
+
+<P>
+You can very easily set a (range of) cell value(s) to ``no data'' (NULL) usig this module. Note that the result will be returned as a new layer, as the SEXTANTE-GRASS interface cannot directly manipulate the input layer.
+
+<P>
+
+<H3><A NAME="SECTION00953500000000000000">
+v.in/out.ogr</A>
+</H3>
+
+<P>
+You can import and export several vector data formats using the v.in.ogr and v.out.ogr commands. The OGR drivers cater for a number of different vector data sources, so the interface semantics have been built around ``dsn='' (data source) and ``layer='' (layer within a data source) specifiers. The SEXTANTE-GRASS interface will allow you to simply select a file using the file selector behind the ``dsn='' parameter.
+
+<P>
+For exporting data with v.out.ogr, make sure to select the right data format. If you skip the extension, the right one will automatically be added to the output file. For most formats, you can simply enter a path and file name into the ``olayer'' option field. Please consult the GDAL/OGR documentation for individual format details (e.g. set the ``lsco'' option value to ``format=mif'' if you want to create MapInfo ASCII vector output).
+
+<P>
+OGR is a subproject of GDAL, so details about the different formats can be found on the same project page. As with GDAL, the drivers supported will depend on your local version of the GDAL library.
+
+<P>
+Note that due to the use of Shapefiles for data exchange, multiple-geometry-type formats (such as MapInfo) are supported, but they will be split into single-geometry files after import.
+
+<P>
+
+<H3><A NAME="SECTION00953600000000000000">
+v.surf.bspline</A>
+</H3>
+
+<P>
+GRASS has some very flexible modules for spline curves based interpolation. The tricky part of v.surf.bspline is that you have to set the ``layer'' option to 0 if you want to interpolate the the Z coordinates of the input points directly. If you want to interpolate based on an attribute table field, set ``layer=1'' and then enter the name of the field as ``column''.
+
+<P>
+
+<H3><A NAME="SECTION00953700000000000000">
+v.surf.idw</A>
+</H3>
+
+<P>
+This is a very capable, but also complex spline-based interpolation module. Getting high-quality output requires some knowledge about the many different parameters. Note that, due to the SEXTANTE interface semantics, at least on raster layer must be present in your project before the module becomes available.
+
+<P>
+
+<H3><A NAME="SECTION00953800000000000000">
+v.to.3d</A>
+</H3>
+
+<P>
+This module offers a convenient way to cast 2D vector data to 3D (or the other way around). The interface was tweaked a litte so that it can run under SEXTANTE. Enter a constant height value into ``height'', or leave height at the default setting and additionally enter an attribute field name into ``column''. But ``height'' must always be set (at least to some dummy value).
+
+<P>
+Make sure to check the 3D data processing setting in the GRASS settings!
+
+<P>
+
+<H2><A NAME="SECTION00954000000000000000">
+Technical details</A>
+</H2>
+
+<P>
+If you are a GRASS user, it might be useful for you to know how SEXTANTE calls GRASS algorithms and comunicates with the GRASS interface. This can be summarized in the following steps:
+
+<P>
+
+<UL>
+<LI>Importing data. The layers that have been selected as input are imported into the (temporary or existing) GRASS mapset. Not every layer that you can open in your GIS can be used to execute a GRASS algorithm. It must be a file-based layer and it must have a format compatible with the capabilities of the GRASS modules that import external data. Refer to the GRASS help files for further information.
+</LI>
+<LI>Processing. The selected GRASS algorithm is executed.
+</LI>
+<LI>Exporting results. Resulting data are exported to the filenames selected by the user in the input parameters dialog. Only layers (whether raster or vector) are exported. Also, take into account that exporting data also has its limitations, and not all the information generated might be available. For instance, topological information will be lost, since data are exported to Shapefile format, which cannot store it. for further details, check the help file associated with GRASS export modules.
+</LI>
+</UL>
+
+<P>
+All this steps are stored in a batch file that is executed using the GRASS_BATCH_JOB variable. When SEXTANTE invokes GRASS, the commands in the batch file are executed and GRASS closes up automatically after that.
+
+<P>
+
+<H1><A NAME="SECTION00960000000000000000"></A><A NAME="rscripts"></A>
+<BR>
+Creating R scripts
+</H1>
+
+<P>
+R integration in SEXTANTE is different from that of GRASS and SAGA in that there is not a predefined set of algorithms you can run (except for a few examples). Instead, you should write your scripts and call R commands, much like you would do from R. This chapter shows you the syntax to use to call those R commands from SEXTANTE and how to use SEXTANTE objects (layers, tables) in them.
+
+<P>
+To add a new algorithm that calls an R function (or a more complex R script that you have developed and you would like to have available from SEXTANTE), you have to create a script file that tells SEXTANTE how to perform that operation and the corresponding R commands to do so.
+
+<P>
+Script files have the extension <TT>rsx</TT> and creating them is pretty easy if you just have a basic knowledge of R syntax and R scripting. They should be stored int he R scripts folder. You can set this folder in the R settings window (available from the SEXTANTE settings dialog), just like you do with the folder for regular SEXTANTE scripts. You will also find a <SPAN  CLASS="textit">Load scripts</SPAN> button to load scripts in that folder. Check the command-line interface chapter to know more aboout how this works.
+
+<P>
+Let's have a look at a very simple file script file, which calls the R method <TT>spsample</TT> to create a random grid within the boundary of the polygons in a given polygon layer. This method belong to the <TT>maptools</TT> package. Since almost all the algorithms that you might like to incorporate into SEXTANTE will use or generate spatial data, knowledge of spatial packages like <TT>maptools</TT> and, specially, <TT>sp</TT>, is mandatory.
+
+<P>
+<PRE>
+//polyg=vector
+//numpoints=number
+//output=output vector
+//sp=group
+pts=spsample(polyg,numpoints,type="random")
+output=SpatialPointsDataFrame(pts, as.data.frame(pts))
+</PRE>
+
+<P>
+The first lines, which start with a java comment sign (//), tell SEXTANTE the input of the algorithm described in the file and the outputs that it will generate. They all have the following syntax: [name of the input/output parameter]=[type of parameter]
+
+<P>
+Supported types for input parameters are
+
+<P>
+
+<UL>
+<LI><TT>vector</TT>: a vector layer.
+</LI>
+<LI><TT>raster</TT>: a raster layer.
+</LI>
+<LI><TT>table</TT>: a raster layer.
+</LI>
+<LI><TT>string</TT>: a string.
+</LI>
+<LI><TT>number</TT>: a numerical value.
+</LI>
+<LI><TT>field</TT>: a field selected from a vector layer or table. The name of the parent vector layer or table parameter has to be written following the <TT>field</TT> command.
+</LI>
+<LI><TT>multiple raster</TT> or <TT>multiple vector</TT>: a set of several raster or vector layers.
+</LI>
+</UL>
+
+<P>
+Supported types for output parameters are
+
+<P>
+
+<UL>
+<LI><TT>output vector</TT>: a vector layer.
+</LI>
+<LI><TT>output raster</TT>: a vector layer.
+</LI>
+<LI><TT>output table</TT>: a vector layer.
+</LI>
+</UL>
+
+<P>
+you can also use the <TT>group</TT> tag to define the group in the toolbox where this algorithm should be shown. Usually, this should match the package name, for instance <TT>//maptoools=group</TT>
+
+<P>
+When you declare an input parameter, SEXTANTE uses that information for two things: creating the user interface to ask the user for the value of that parameter and creating a corresponding R variable that can be later used as input for R commands
+
+<P>
+In the above example, we are declaring an input of type <TT>vector polygon</TT> named <TT>polyg</TT>. When executing the algorithm, SEXTANTE will open in R the layer selected by the user and store it in a variable also named <TT>polyg</TT>. So the name of a parameter is also the name of the variable that we can use in R for accesing the value of that parameter (thus, you should avoid using reserved R words as parameter names).
+
+<P>
+Spatial elements such as vector and raster layers are read using the <TT>readOGR()</TT> and <TT>readGDAL()</TT> commands (you do not have to worry about adding those commands to your description file, SEXTANTE will do it) and stored as <TT>Spatial*DataFrame</TT> objects. Fields are stored as numbers, representing the 1-based index of the selected field.
+
+<P>
+Knowing that, we can now understand the first line of our example script (the first line not starting with a java comment).
+
+<P>
+<PRE>
+pts=spsample(polyg,numpoints,type="random")
+</PRE>
+
+<P>
+The variable <TT>polygon</TT> already contains a <TT>SpatialPolygonsDataFrame</TT> object, so it can be usedto call the <TT>spsample</TT> method, just like the <TT>numpoints</TT> one, which indicates the number of points to add to the created sample grid.
+
+<P>
+Since we have declared an output of type vector named <TT>out</TT>, we have to create a variable named <TT>out</TT> and store a <TT>Spatial*DataFrame</TT> object in it (in this case, a <TT>SpatialPointsDataFrame</TT>). You can use any name for your intermediate variables. Just make sure that the variable storing your final result has the same name that you used to declare it, and contains a suitable value.
+
+<P>
+In this case, the result obtained from the <TT>spsample</TT> method is not itself a <TT>SpatialPointsDataFrame</TT>, object, but an object of class <TT>ppp</TT>, so we have to convert it explicitly.
+
+<P>
+If you algorithm does not generate any layer, but a text result in the console instead, you have to tell SEXTANTE that you want the console to be shown once the execution is finished. To do so, just start the command lines that produce the results you want to print with the ``<SPAN CLASS="MATH"></SPAN>'' sign. the output of all other lines will not be shown. For instance, here is the description file of an algorithms that performs a normality test on a given field (column) of the attributes of a vector layer:
+
+<P>
+<PRE>
+//layer=vector
+//field=field layer
+//nortest=group
+library(nortest)
+&gt;lillie.test(layer[[field]])
+</PRE>
+
+<P>
+The output ot the last line is printed, but the output of the first is not (and neither are the otputs from other command lines added automatically by SEXTANTE).
+
+<P>
+If your algorithm creates any kind of graphics (using the plot() method), add the following line:
+
+<P>
+<PRE>
+//showplots
+</PRE>
+
+<P>
+This will cause SEXTANTE to redirect all R graphical outputs to a temporary file, which will be later opened once R execution has finished
+
+<P>
+Both graphics and console results will be shown in the SEXTANTE results manager.
+
+<P>
+For all kinds of analysis, SEXTANTE will ask the user to enter a bounding box and an output cellsize to be used by those algorithms that need them (the default option is to take those values from input layers if possible, so there is no need for the user to explicitly set them). These are available also for R algorithms. the bounding box is stores in a variable named <TT>boundingBox</TT> and is of class <TT>matrix</TT>, as returned by the <TT>bbox()</TT> method. The cellsize is stored in a variable named <TT>cellsize</TT>.
+
+<P>
+For more information, please check the script files provided with SEXTANTE. Most of them are rather simple and will greatly help you understand how to create your own ones.
+
+<P>
+A note about libraries: rgdal and maptools libraries are loaded by default so you do not have to add the corresponding <SPAN  CLASS="textit">library()</SPAN> commands. However, other additional libraries that you might need have to be explicitly loaded. Just add the necessary commands at the beginning of your script. You also have to make sure that the corresponding packages are installed in the R distribution used by SEXTANTE (the one under the SEXTANTE folder).
+
+<P>
+
+
+<P>
+<BR><HR>
+<ADDRESS>
+
+</ADDRESS>
+</BODY>
+</HTML>

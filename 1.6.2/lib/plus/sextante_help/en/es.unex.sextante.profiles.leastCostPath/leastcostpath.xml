@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm calculates the least cost path from a given point up to the closest destination point. " description="Description" type="0">
+			<image description="" file="ruta_de_minimo_coste.jpg">
+			</image>
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="ACCCOST" text="An accumulated cost surface, calculated with either anisotropic or isotropic cost algorithms." description="Accumulated cost" type="3">
+		</element>
+		<element name="LAYERS" text="A set of additional layers to study along the least cost path." description="Additional layers" type="3">
+		</element>
+		<element name="POINT" text="The starting point from which the least cost path will be computed. " description="Starting point" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="PROFILELINE" text="A layer with one single line representing the least cost path" description="Route [line]" type="2">
+		</element>
+		<element name="PROFILEPOINTS" text="A points layer with a point in each cell that is crossed along the least cost path. It contains the following fields in its attributes table:&#10;* X: coordinate X of each point.&#10;* Y: coordinate Y of each point.&#10;* Z: coordinate Z of each point.&#10;* Projected distance:  projected covered distance from origin.&#10;* Real distance: real distance covered from origin.&#10;* Values of the selected additional layers." description="Route [points]" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

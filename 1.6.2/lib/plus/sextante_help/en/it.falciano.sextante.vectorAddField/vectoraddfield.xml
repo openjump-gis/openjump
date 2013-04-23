@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm adds a new alphanumerical field to the attribute table associated with a vector layer. Supported field types are integer, double and string." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Antonio Falciano" description="Algorithm created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Antonio Falciano" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="INPUT" text="The input vector layer to which we want to add the field" description="Layer" type="3">
+		</element>
+		<element name="FIELD_NAME" text="The name of the new field (max 10 characters)" description="Field name" type="3">
+		</element>
+		<element name="FIELD_TYPE" text="The type of the new field (integer, double or string)" description="Field type" type="3">
+		</element>
+		<element name="FIELD_LENGTH" text="The length of the new field" description="Field length" type="3">
+		</element>
+		<element name="FIELD_PRECISION" text="The precision of the new field (double only)" description="Field precision (double only)" type="3">
+		</element>
+		<element name="DEFAULT_VALUE" text="The default value of the new field" description="Default value" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="The output vector layer with the new field" description="Result" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm generates a Random DEM based on two parameters that control how the terrain is created." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="RADIUS" text="the radius of the working window (in cells), which represents the area modified in each iteration." description="Radius [cells]" type="3">
+		</element>
+		<element name="ITERATIONS" text="The number of iterations to perform. The larger the number of iterations, the longer it will take to execute the algorithm and the more developed the resulting terrain will be" description="Iterations" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="DEM" text="an artificial Digital Elevation Model." description="Elevation" type="2">
+			<image description="New random DEM (radius 100; iterations 500), with an added shadow to give a better effect of the relief." file="generar_mdt_artificial.jpg">
+			</image>
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
