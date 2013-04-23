@@ -1,5 +1,7 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+* release 1.6.2 ***************************************************************
+
 2013-04-23 mmichaud <michael.michaud@free.fr>
   * set the appropriate srid to the layer after AddDatastoreLayerPlugin
   
