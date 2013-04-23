@@ -12,6 +12,8 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.AddNewLayerPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.OpenProjectPlugIn;
 
+import org.openjump.core.ccordsys.srid.SRIDStyle;
+
 import javax.swing.ImageIcon;
 
 /**
@@ -56,8 +58,11 @@ public class AddDatastoreLayerPlugIn extends AbstractAddDatastoreLayerPlugIn {
 
         context.getLayerManager().setFiringEvents(false); // added by michaudm on 2009-04-23
         OpenProjectPlugIn.load( layer,
-                                CoordinateSystemRegistry.instance(context.getWorkbenchContext().getBlackboard()),
-                                new DummyTaskMonitor());
+                CoordinateSystemRegistry.instance(context.getWorkbenchContext().getBlackboard()),
+                new DummyTaskMonitor());
+        SRIDStyle sridStyle = new SRIDStyle();
+        sridStyle.setSRID(panel.getGeometryColumn().getSRID());
+        layer.addStyle(sridStyle);
         context.getLayerManager().setFiringEvents(true); // added by michaudm on 2009-04-23
 
         return layer;

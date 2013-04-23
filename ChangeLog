@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-04-23 mmichaud <michael.michaud@free.fr>
+  * set the appropriate srid to the layer after AddDatastoreLayerPlugin
+  
 2013-04-21 mmichaud <michael.michaud@free.fr>
   * fix a bug in MergeSelectedFeatures preventing the merge of MultiGeometries
 
