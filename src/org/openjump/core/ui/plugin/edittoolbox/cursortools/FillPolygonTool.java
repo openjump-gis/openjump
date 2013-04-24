@@ -118,7 +118,7 @@ public class FillPolygonTool extends NClickTool {
 		if (new Date().getTime() < END+1000) return;
 		
         Polygon polygon = getPolygon(true);
-        if (INTERRUPTED) {
+        if (INTERRUPTED || polygon == null) {
             context.getWorkbench().getFrame().warnUser(INTERRUPTION);
         }
         else if (!polygon.isEmpty()) {
