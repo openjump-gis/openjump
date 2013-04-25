@@ -231,19 +231,22 @@ goto:eof
 :memory
 if /i NOT "%JAVA_BIN%"=="javaw" echo ---Detect maximum memory limit---
 
+rem --- default java32 limit is 1GB ---
+set /a "JAVA_XMX_X86=1024*1024"
+
 rem --- detect ram size, values are in kB ---
 for /f "delims=" %%l in ('wmic os get FreePhysicalMemory^,TotalVisibleMemorySize /format:list') do >nul 2>&1 set "OS_%%l"
-if NOT DEFINED OS_TotalVisibleMemorySize call :mem_failed Couldn't determine ram size.
+if NOT DEFINED OS_TotalVisibleMemorySize goto mem_failed
+
 rem --- use 100% of ram as default limit (1.124 is a factor to make java64 really use that much) ---
 set /a "JAVA_XMX=%OS_TotalVisibleMemorySize%/1000*1124"
-set /a "JAVA_XMX_X86=1024*1024"
 set /a "JAVA_RAM_QUARTER=%OS_TotalVisibleMemorySize%/4"
 rem --- a. cap to 1GB for 32bit jre ---
 rem --- b. use xmx value if it fits into free space ---
 rem --- c. use freemem value if bigger than 1/4 ram (jre default) ---
 rem --- d. don't set, use jre default (works even though less than 1/4 ram might be free) ---
 
-if NOT DEFINED JAVA_X64 if %JAVA_XMX% GTR %JAVA_XMX_X86% goto :use_cap
+if NOT DEFINED JAVA_X64 if %JAVA_XMX% GTR %JAVA_XMX_X86% goto use_cap
 goto use_max
 rem if %OS_FreePhysicalMemory% GEQ %JAVA_XMX%
 rem if %OS_FreePhysicalMemory% GTR %JAVA_RAM_QUARTER% goto :use_free
@@ -265,7 +268,8 @@ goto:eof
   if /i NOT "%JAVA_BIN%"=="javaw" call echo set %JAVA_MEM_STRING% ^(free memory^)
   goto:eof
 :mem_failed
-  if /i NOT "%JAVA_BIN%"=="javaw" call echo skipped because: %*
+  if /i NOT "%JAVA_BIN%"=="javaw" call echo skipped because: Couldn't determine ram size. Use safe 1GB value.
+  call :xmx %JAVA_XMX_X86%
   goto:eof
 
 :xmx
