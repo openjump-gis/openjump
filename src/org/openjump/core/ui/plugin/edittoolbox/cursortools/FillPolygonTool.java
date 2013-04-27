@@ -84,12 +84,50 @@ public class FillPolygonTool extends NClickTool {
   private static long START = 0;
   private static long END = 0;
   private static boolean INTERRUPTED = false;
+  final OKCancelDialog okCancelDialog;
+  final JDialog progressDialog;
 
   public FillPolygonTool(WorkbenchContext context) {
     super(1);
     featureDrawingUtil = new FeatureDrawingUtil(
         (LayerNamePanelProxy) context.getLayerNamePanel());
     this.context = context;
+    okCancelDialog = new OKCancelDialog(
+          context.getWorkbench().getFrame(),
+          I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.FillPolygonTool"),
+          true, getOKCancelPanel(), null);
+    progressDialog = new JDialog(context.getWorkbench().getFrame(), COMPUTING + "...", true);
+    initProgressDialog();
+  }
+  
+  private JPanel getOKCancelPanel(){
+    JPanel panel = new JPanel(new GridLayout(2, 1));
+    panel.add(new JLabel(AREA_NOT_CLOSED));
+    panel.add(new JLabel(EXTEND_SEARCH));
+    return panel;
+  }
+  
+  private void initProgressDialog() {
+    JProgressBar jpb = new JProgressBar();
+    jpb.setIndeterminate(true);
+    progressDialog.add(jpb);
+    progressDialog.pack();
+    progressDialog.setLocationRelativeTo(context.getWorkbench().getFrame());
+    // check if progressBar has terminated normally or has been interrupted
+    progressDialog.addWindowListener(new WindowAdapter() {
+      public void windowClosing(WindowEvent e) {
+        try {
+          if (START > END) {
+            INTERRUPTED = true;
+          }
+          else {
+            INTERRUPTED = false;
+          }
+        } catch (Exception ex) {
+          ex.printStackTrace();
+        }
+      }
+    });
   }
 
   protected Shape getShape() throws NoninvertibleTransformException {
@@ -118,9 +156,10 @@ public class FillPolygonTool extends NClickTool {
     // If gestureFinished is called less than 1 s after the previous process
     // end, I suppose the click happened during the process and just
     // awaiting turn.
-    if (new Date().getTime() < END + 1000)
+    if (new Date().getTime() < END + 500) {
       return;
-
+    }
+    
     Polygon polygon = getPolygon(true);
     if (INTERRUPTED) {
       context.getWorkbench().getFrame().warnUser(INTERRUPTION);
@@ -128,20 +167,14 @@ public class FillPolygonTool extends NClickTool {
     else if (polygon!=null && !polygon.isEmpty()) {
       UndoableCommand command = featureDrawingUtil.createAddCommand(polygon,
           isRollingBackInvalidEdits(), getPanel(), this);
-      if (command != null)
+      if (command != null) {
         execute(command);
+      }
     }
     else {
-      JPanel panel = new JPanel(new GridLayout(2, 1));
-      panel.add(new JLabel(AREA_NOT_CLOSED));
-      panel.add(new JLabel(EXTEND_SEARCH));
-      OKCancelDialog dialog = new OKCancelDialog(
-          context.getWorkbench().getFrame(),
-          I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.FillPolygonTool"),
-          true, panel, null);
-      GUIUtil.centreOnWindow(dialog);
-      dialog.setVisible(true);
-      if (dialog.wasOKPressed()) {
+      GUIUtil.centreOnWindow(okCancelDialog);
+      okCancelDialog.setVisible(true);
+      if (okCancelDialog.wasOKPressed()) {
         polygon = getPolygon(false);
         if (INTERRUPTED) {
           context.getWorkbench().getFrame().warnUser(INTERRUPTION);
@@ -154,44 +187,15 @@ public class FillPolygonTool extends NClickTool {
       } else {
         context.getWorkbench().getFrame().warnUser(INTERRUPTION);
       }
-      dialog.setVisible(false);
-      dialog.dispose();
     }
-
     INTERRUPTED = false;
   }
 
   protected Polygon getPolygon(final boolean inViewportOnly)
       throws NoninvertibleTransformException {
 
-    final Collection polys = new java.util.ArrayList();
-
-    final JDialog dialog = new JDialog(context.getWorkbench().getFrame(),
-        COMPUTING + "...", true);
-
-    dialog.addWindowListener(new WindowAdapter() {
-      public void windowClosing(WindowEvent e) {
-        try {
-          long timeStamp = new Date().getTime();
-          // if dialog is closed before process END is recorded,
-          // interruption has been requested by the user (see run
-          // method of the Thread where dialog is automatically hidden
-          // "after" END timestamp has been set.
-          if (START > END)
-            INTERRUPTED = true;
-          else
-            INTERRUPTED = false;
-        } catch (Exception ex) {
-          ex.printStackTrace();
-        }
-      }
-    });
-
-    JProgressBar jpb = new JProgressBar();
-    jpb.setIndeterminate(true);
-    dialog.add(jpb);
-    dialog.pack();
-    dialog.setLocationRelativeTo(context.getWorkbench().getFrame());
+    final Collection polys = new java.util.ArrayList(); 
+    INTERRUPTED = false;
 
     final Thread t = new Thread() {
       public void run() {
@@ -200,12 +204,13 @@ public class FillPolygonTool extends NClickTool {
         polygonizer.add(getVisibleGeometries(inViewportOnly));
         polys.addAll(polygonizer.getPolygons());
         END = new Date().getTime();
-        dialog.setVisible(false);
+        // don't know why I need to dispose here not only setVisible(false)
+        if (progressDialog.isShowing()) progressDialog.dispose();
       }
     };
     t.start();
-    dialog.setVisible(true);
-    GUIUtil.centreOnWindow(dialog);
+    progressDialog.setVisible(true);
+    GUIUtil.centreOnWindow(progressDialog);
 
     try {
       t.join();
@@ -224,12 +229,9 @@ public class FillPolygonTool extends NClickTool {
       e.printStackTrace();
     }
 
-    dialog.setVisible(false);
-    dialog.dispose();
-
-    // if process has been INTERRUPTED by a user action
     return null;
   }
+  
 
   private Set<Geometry> getVisibleGeometries(boolean inViewportOnly) {
     List layers = context.getLayerManager().getVisibleLayers(false);
@@ -256,7 +258,6 @@ public class FillPolygonTool extends NClickTool {
         }
       }
     }
-    // System.out.println("geom:" + list);
     return list;
   }
 
