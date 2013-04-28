@@ -31,59 +31,26 @@
  */
 package com.vividsolutions.jump.workbench.ui;
 
-import java.awt.BorderLayout;
-import java.awt.KeyboardFocusManager;
-import java.awt.Rectangle;
-import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.model.*;
+import com.vividsolutions.jump.workbench.plugin.EnableCheck;
+import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
+import com.vividsolutions.jump.workbench.plugin.PlugIn;
+import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.plugin.FeatureInfoPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.awt.event.*;
 import java.awt.geom.NoninvertibleTransformException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JToolBar;
-import javax.swing.SwingUtilities;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
-import org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn;
-import org.openjump.core.ui.plugin.tools.ReplaceValuePlugIn;
-import org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewPlugIn;
-
-import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.model.CategoryEvent;
-import com.vividsolutions.jump.workbench.model.FeatureEvent;
-import com.vividsolutions.jump.workbench.model.Layer;
-import com.vividsolutions.jump.workbench.model.LayerEvent;
-import com.vividsolutions.jump.workbench.model.LayerEventType;
-import com.vividsolutions.jump.workbench.model.LayerListener;
-import com.vividsolutions.jump.workbench.model.LayerManager;
-import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
-import com.vividsolutions.jump.workbench.model.Layerable;
-import com.vividsolutions.jump.workbench.plugin.EnableCheck;
-import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
-import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
-import com.vividsolutions.jump.workbench.plugin.PlugIn;
-import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.ui.GUIUtil;
-import com.vividsolutions.jump.workbench.ui.cursortool.FeatureInfoTool;
-import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import com.vividsolutions.jump.workbench.ui.plugin.FeatureInfoPlugIn;
-import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
-import com.vividsolutions.jump.workbench.ui.plugin.RedoPlugIn;
-import com.vividsolutions.jump.workbench.ui.plugin.UndoPlugIn;
-import com.vividsolutions.jump.workbench.ui.plugin.ViewSchemaPlugIn;
 
 /**
  * Implements an Attribute Tab.
@@ -363,9 +330,25 @@ public class AttributeTab extends JPanel implements LayerNamePanel {
                     errorHandler.handleThrowable(t);
                 }
             }
-        },
-            new MultiEnableCheck().add(taskFrameEnableCheck).add(layersEnableCheck).add(
-                rowsSelectedEnableCheck));
+        }, new MultiEnableCheck().add(taskFrameEnableCheck).add(layersEnableCheck)
+                    .add(rowsSelectedEnableCheck));
+        toolBar
+            .add(
+                new JButton(),
+                I18N.get("ui.AttributeTab.pan-to-selected-rows"),
+                IconLoader.icon("MoveTo.gif"),
+                new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        try {
+                            panel.pan(panel.selectedFeatures());
+                        } catch (Throwable t) {
+                            errorHandler.handleThrowable(t);
+                        }
+                    }
+                }, new MultiEnableCheck().add(taskFrameEnableCheck)
+                                         .add(layersEnableCheck)
+                                         .add(rowsSelectedEnableCheck)
+            );
         toolBar
             .add(
                 new JButton(),

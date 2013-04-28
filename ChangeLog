@@ -4,6 +4,7 @@
   * improve usability of SearchAllAttributesPlugIn : make it possible to switch
     between select and add to selection with the shift key and zoom to selected
     features.
+  * FR 3610851 : add moveto tool in the attribute panel
   
 2013-04-27 mmichaud <michael.michaud@free.fr>
   * try to fix 3611503 in FillPolygonTool
