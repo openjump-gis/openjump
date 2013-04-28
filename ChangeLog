@@ -1,4 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
+
+2013-04-28 mmichaud <michael.michaud@free.fr>
+  * improve usability of SearchAllAttributesPlugIn : make it possible to switch
+    between select and add to selection with the shift key and zoom to selected
+    features.
   
 2013-04-27 mmichaud <michael.michaud@free.fr>
   * try to fix 3611503 in FillPolygonTool

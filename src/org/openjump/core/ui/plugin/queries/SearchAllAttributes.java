@@ -34,11 +34,7 @@
 
 package org.openjump.core.ui.plugin.queries;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.regex.Pattern;
-
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
@@ -51,6 +47,14 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.SelectionManager;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.geom.NoninvertibleTransformException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.regex.Pattern;
 
 public class SearchAllAttributes extends AbstractPlugIn
 {
@@ -76,6 +80,7 @@ public class SearchAllAttributes extends AbstractPlugIn
 	private int patternCaseOption = Pattern.CASE_INSENSITIVE;
 	private boolean wholeWord = false;
 	private boolean regularExpressions = false;
+    private boolean SHIFT = false;
 	
 		
 	private boolean multiWordMatchAnd = true;
@@ -95,11 +100,22 @@ public class SearchAllAttributes extends AbstractPlugIn
 		reportNothingToUndoYet(context);
 		MultiInputDialog dialog = new MultiInputDialog(
 				context.getWorkbenchFrame(), getName(), true);
+        // keep track of wether the SHIFT key has been pressed or not
+        KeyEventPostProcessor kepp = new KeyEventPostProcessor() {
+            public boolean postProcessKeyEvent(KeyEvent e) {
+                if (e.isShiftDown()) SHIFT = true;
+                else SHIFT = false;
+                return true;
+            }
+        };
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventPostProcessor(kepp);
 		setDialogValues(dialog, context);
 		GUIUtil.centreOnWindow(dialog);
 		dialog.setVisible(true);
 		if (! dialog.wasOKPressed()) { return false; }
 		getDialogValues(dialog);
+        SelectionManager selectionManager = context.getLayerViewPanel().getSelectionManager();
+        if (!SHIFT) selectionManager.clear();
 		searchInAttributes(context, searchString);
 		return true;
 	}
@@ -197,8 +213,19 @@ public class SearchAllAttributes extends AbstractPlugIn
 					} catch (NullPointerException ex) {};
 				}
 			}
-			if (selectedFeatures.size() > 0)
+			if (selectedFeatures.size() > 0) {
 				selectionManager.getFeatureSelection().selectItems(layer, selectedFeatures);
+            }
+            Envelope env = new Envelope();
+            for (Feature f : selectedFeatures) {
+                env.expandToInclude(f.getGeometry().getEnvelopeInternal());
+            }
+            try {
+                env.expandBy(env.getWidth()/3.0, env.getHeight()/3.0);
+                context.getLayerViewPanel().getViewport().zoom(env);
+            } catch (NoninvertibleTransformException e) {
+                e.printStackTrace();
+            }
 		}
 	}
 
