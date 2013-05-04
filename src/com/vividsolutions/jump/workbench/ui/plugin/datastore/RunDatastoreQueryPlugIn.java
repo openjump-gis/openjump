@@ -30,8 +30,14 @@ public class RunDatastoreQueryPlugIn extends AbstractAddDatastoreLayerPlugIn {
     
     public void initialize(final PlugInContext context) throws Exception {
         super.initialize(context);
-        context.getFeatureInstaller()
-               .addMainMenuItem(new String[]{MenuNames.FILE},this,4);
+        context.getFeatureInstaller().addMainMenuPlugin(this, 
+            new String[]{MenuNames.FILE}, 
+            getName() + "...", // add "..." as it opens a dialog box
+            false,     // no checkbox
+            getIcon(), // get icon
+            null,      // no unableCheck
+            4);
+               
     }
 
     protected Layerable createLayerable(
