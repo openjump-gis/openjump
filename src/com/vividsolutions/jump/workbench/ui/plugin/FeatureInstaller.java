@@ -1069,13 +1069,24 @@ public class FeatureInstaller {
     return null;
   }
 
+  /**
+   * Create and add a sub menu entry. index < 0 adds it to the end. 
+   * @param featureInstaller
+   * @param menuPath
+   * @param menuName
+   * @param index
+   * @return
+   */
   public static JMenu addMainMenu(FeatureInstaller featureInstaller,
       final String[] menuPath, String menuName, int index) {
     JMenu menu = new JMenu(menuName);
     JMenu parent = featureInstaller.createMenusIfNecessary(
         featureInstaller.menuBarMenu(menuPath[0]),
         featureInstaller.behead(menuPath));
-    parent.insert(menu, index);
+    if (index>=0)
+      parent.insert(menu, index);
+    else
+      parent.add(menu);
     return menu;
   }
 
