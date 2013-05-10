@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-05-10 ede
+  * move 'Combine Layers' to Layer main menu
+  * resorted main menus Edit and Layer for better overview
+
 2013-05-10 mmichaud <michael.michaud@free.fr>
   * upgrading Cadplan JumpPrinter to version 1.86 (PLUS version)
 
