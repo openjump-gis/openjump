@@ -52,90 +52,87 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
  * Sort categories by number of features
  * 
  * @author clark4444
- *
+ * 
  */
 public class SortCategoryByFeaturesPlugIn extends SortCategoryAbstractPlugIn {
-		
-	private static final ImageIcon ICON = null;
-	
-	private String subMenuLabel = "By Features";
-	private String mostLabel = "By Least Number of Features";
-	private String leastLabel = "By Most Number of Features";
-			
-	@Override
-	protected String getSubMenuLabel() {
-		return subMenuLabel;
-	}
-	
-	@Override
-	protected void addMenuOptions(PlugInContext context) {
 
-		this.subMenuLabel = I18N
-				.get("org.openjump.core.ui.plugin.layer.SortCategoryByFeaturesPlugIn.By-Featues");
-		this.mostLabel = I18N
-				.get("org.openjump.core.ui.plugin.layer.SortCategoryByFeaturesPlugIn.By-Least-Number-of-Features");
-		this.leastLabel = I18N
-				.get("org.openjump.core.ui.plugin.layer.SortCategoryByFeaturesPlugIn.By-Most-Number-of-Features");
+  private static final ImageIcon ICON = null;
 
-        FeatureInstaller.addMainMenu(context.getFeatureInstaller(), 
-        		new String[] {MenuNames.LAYER}, menuLabelOnLayer, 5);
-              
-		context.getFeatureInstaller()
-				.addMainMenuItem(
-						this,
-						new String[] { MenuNames.LAYER, menuLabelOnLayer,
-								subMenuLabel }, leastLabel, false, ICON,
-						createEnableCheck(context.getWorkbenchContext()));
+  private String subMenuLabel = "By Features";
+  private String mostLabel = "By Least Number of Features";
+  private String leastLabel = "By Most Number of Features";
 
-		context.getFeatureInstaller()
-				.addMainMenuItem(
-						this,
-						new String[] { MenuNames.LAYER, menuLabelOnLayer,
-								subMenuLabel }, mostLabel, false, ICON,
-						createEnableCheck(context.getWorkbenchContext()));
-	}
-	
-	@Override
-	ArrayList<Layerable> getOrderedLayersInCategory(Category category, String sortLabel) {
-		ArrayList<Layerable> layers = getCategoryArrayList(category);
+  @Override
+  protected String getSubMenuLabel() {
+    return subMenuLabel;
+  }
 
-		if (sortLabel.equals(mostLabel)) {
-			Collections.sort(layers, new LayerableFeatureSort());			
-		}
-		else if (sortLabel.equals(leastLabel)) {
-			Collections.sort(layers, Collections.reverseOrder(new LayerableFeatureSort())); 
-		}
-		else 
-			throw new IllegalStateException();
-		
-		return layers;
-	}
+  @Override
+  protected void addMenuOptions(PlugInContext context) {
 
-	class LayerableFeatureSort implements Comparator<Layerable> {
-		public int compare(Layerable layerable1, Layerable layerable2) {
-			boolean layer1Feature = false;
-			boolean layer2Feature = false;
+    this.subMenuLabel = I18N
+        .get("org.openjump.core.ui.plugin.layer.SortCategoryByFeaturesPlugIn.By-Featues");
+    this.mostLabel = I18N
+        .get("org.openjump.core.ui.plugin.layer.SortCategoryByFeaturesPlugIn.By-Least-Number-of-Features");
+    this.leastLabel = I18N
+        .get("org.openjump.core.ui.plugin.layer.SortCategoryByFeaturesPlugIn.By-Most-Number-of-Features");
 
-			if (layerable1 instanceof Layer) {
-				layer1Feature = true;
-			}
-			if (layerable2 instanceof Layer) {
-				layer2Feature = true;
-			}
+    FeatureInstaller.addMainMenu(context.getFeatureInstaller(),
+        new String[] { MenuNames.LAYER }, menuLabelOnLayer, 7);
 
-			//Both have features
-			if (layer1Feature && layer2Feature) {
-				Layer layer1 = (Layer) layerable1;
-				Layer layer2 = (Layer) layerable2;
-				return layer2.getFeatureCollectionWrapper().size() - layer1.getFeatureCollectionWrapper().size();
-			//not having features
-			} else if (!layer1Feature && !layer2Feature) {
-				return 0;
-			} else if (layer1Feature) {
-				return 1;
-			} else
-				return -1;
+    context.getFeatureInstaller().addMainMenuItem(this,
+        new String[] { MenuNames.LAYER, menuLabelOnLayer, subMenuLabel },
+        leastLabel, false, ICON,
+        createEnableCheck(context.getWorkbenchContext()));
 
-		}
-	}
+    context.getFeatureInstaller().addMainMenuItem(this,
+        new String[] { MenuNames.LAYER, menuLabelOnLayer, subMenuLabel },
+        mostLabel, false, ICON,
+        createEnableCheck(context.getWorkbenchContext()));
+  }
+
+  @Override
+  ArrayList<Layerable> getOrderedLayersInCategory(Category category,
+      String sortLabel) {
+    ArrayList<Layerable> layers = getCategoryArrayList(category);
+
+    if (sortLabel.equals(mostLabel)) {
+      Collections.sort(layers, new LayerableFeatureSort());
+    } else if (sortLabel.equals(leastLabel)) {
+      Collections.sort(layers,
+          Collections.reverseOrder(new LayerableFeatureSort()));
+    } else
+      throw new IllegalStateException();
+
+    return layers;
+  }
+
+  class LayerableFeatureSort implements Comparator<Layerable> {
+    public int compare(Layerable layerable1, Layerable layerable2) {
+      boolean layer1Feature = false;
+      boolean layer2Feature = false;
+
+      if (layerable1 instanceof Layer) {
+        layer1Feature = true;
+      }
+      if (layerable2 instanceof Layer) {
+        layer2Feature = true;
+      }
+
+      // Both have features
+      if (layer1Feature && layer2Feature) {
+        Layer layer1 = (Layer) layerable1;
+        Layer layer2 = (Layer) layerable2;
+        return layer2.getFeatureCollectionWrapper().size()
+            - layer1.getFeatureCollectionWrapper().size();
+        // not having features
+      } else if (!layer1Feature && !layer2Feature) {
+        return 0;
+      } else if (layer1Feature) {
+        return 1;
+      } else
+        return -1;
+
+    }
+  }
 }

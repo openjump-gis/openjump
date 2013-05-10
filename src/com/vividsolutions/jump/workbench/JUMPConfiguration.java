@@ -43,6 +43,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
 
 import org.openjump.OpenJumpConfiguration;
+import org.openjump.core.ui.plugin.edit.InvertSelectionPlugIn;
+import org.openjump.core.ui.plugin.layer.CombineSelectedLayersPlugIn;
 import org.openjump.core.ui.plugin.mousemenu.DuplicateItemPlugIn;
 import org.openjump.core.ui.plugin.mousemenu.MergeSelectedFeaturesPlugIn;
 import org.openjump.core.ui.plugin.mousemenu.PasteItemsAtPlugIn;
@@ -793,23 +795,6 @@ public class JUMPConfiguration implements Setup {
 
     featureInstaller.addMenuSeparator(MenuNames.EDIT); // ===================
 
-    featureInstaller.addMainMenuItem(addNewFeaturesPlugIn,
-        new String[] { MenuNames.EDIT },
-        addNewFeaturesPlugIn.getName() + "...", false,
-        AddNewFeaturesPlugIn.ICON,
-        AddNewFeaturesPlugIn.createEnableCheck(workbenchContext));
-    featureInstaller.addMainMenuItem(editSelectedFeaturePlugIn,
-        new String[] { MenuNames.EDIT }, editSelectedFeaturePlugIn.getName(),
-        false, editSelectedFeaturePlugIn.getIcon(),
-        EditSelectedFeaturePlugIn.createEnableCheck(workbenchContext));
-
-    FeatureInstaller.addMainMenu(featureInstaller,
-        new String[] { MenuNames.EDIT }, MenuNames.SELECTION, 6);
-
-    featureInstaller.addMainMenuItem(clearSelectionPlugIn,
-        new String[] { MenuNames.EDIT }, clearSelectionPlugIn.getName(), false,
-        null, clearSelectionPlugIn.createEnableCheck(workbenchContext));
-    featureInstaller.addMenuSeparator(MenuNames.EDIT); // ===================
     featureInstaller.addMainMenuItem(cutSelectedItemsPlugIn,
         new String[] { MenuNames.EDIT }, cutSelectedItemsPlugIn.getName(),
         false, CutSelectedItemsPlugIn.ICON,
@@ -825,7 +810,30 @@ public class JUMPConfiguration implements Setup {
         new String[] { MenuNames.EDIT }, deleteSelectedItemsPlugIn.getName(),
         false, DeleteSelectedItemsPlugIn.ICON,
         DeleteSelectedItemsPlugIn.createEnableCheck(workbenchContext));
+    
     featureInstaller.addMenuSeparator(MenuNames.EDIT); // ===================
+
+    FeatureInstaller.addMainMenu(featureInstaller,
+         new String[] { MenuNames.EDIT }, MenuNames.SELECTION, -1);
+     
+    featureInstaller.addMainMenuPlugin(new InvertSelectionPlugIn(), new String[] { MenuNames.EDIT });
+
+    featureInstaller.addMainMenuItem(clearSelectionPlugIn,
+        new String[] { MenuNames.EDIT }, clearSelectionPlugIn.getName(), false,
+        null, clearSelectionPlugIn.createEnableCheck(workbenchContext));
+
+    featureInstaller.addMenuSeparator(MenuNames.EDIT); // ===================
+    
+    featureInstaller.addMainMenuItem(addNewFeaturesPlugIn,
+        new String[] { MenuNames.EDIT },
+        addNewFeaturesPlugIn.getName() + "...", false,
+        AddNewFeaturesPlugIn.ICON,
+        AddNewFeaturesPlugIn.createEnableCheck(workbenchContext));
+    featureInstaller.addMainMenuItem(editSelectedFeaturePlugIn,
+        new String[] { MenuNames.EDIT }, editSelectedFeaturePlugIn.getName(),
+        false, editSelectedFeaturePlugIn.getIcon(),
+        EditSelectedFeaturePlugIn.createEnableCheck(workbenchContext));
+
 
     /**
      * VIEW =================================================================
@@ -998,6 +1006,7 @@ public class JUMPConfiguration implements Setup {
         new String[] { MENU_LAYER },
         new JMenuItem(pasteLayersPlugIn.getNameWithMnemonic()),
         pasteLayersPlugIn.createEnableCheck(workbenchContext));
+    featureInstaller.addMainMenuPlugin(new CombineSelectedLayersPlugIn(), new String[] { MENU_LAYER });
 
     featureInstaller.addMenuSeparator(MENU_LAYER); // ===================
     featureInstaller.addMainMenuItem(removeSelectedLayersPlugIn,
@@ -1005,6 +1014,7 @@ public class JUMPConfiguration implements Setup {
         new JMenuItem(removeSelectedLayersPlugIn.getName(),
             RemoveSelectedLayersPlugIn.ICON), removeSelectedLayersPlugIn
             .createEnableCheck(workbenchContext));
+    featureInstaller.addMenuSeparator(MENU_LAYER); // ===================
     featureInstaller.addMainMenuItem(removeSelectedCategoriesPlugIn,
         new String[] { MENU_LAYER }, new JMenuItem(
             removeSelectedCategoriesPlugIn.getName()),
@@ -1015,204 +1025,6 @@ public class JUMPConfiguration implements Setup {
         new String[] { MENU_LAYER });
   }
 
-  // MD - following is proposed new pattern for defining built-in menus
-
-  // [sstein, 15.07.2006] - don't initialize as "static" (!) class variables
-  // because it causes
-  // that the menu names are not translated into the correct language.
-  // I have put them now into the method.
-  // public static String MENU_TOOLS = MenuNames.TOOLS;
-  // public static String MENU_ANALYSIS = MenuNames.TOOLS_ANALYSIS;
-  // public static String[] MENU_TOOLS_ANALYSIS = new String[] { MENU_TOOLS,
-  // MENU_ANALYSIS};
-
-  /*
-   * [sstein 13.Aug.2008] -- initialization now in default-plugins.xml
-   * 
-   * // these must be defined as instance vars for initialization to be
-   * performed //private SpatialQueryPlugIn spatialQueryPlugIn = new
-   * SpatialQueryPlugIn(); //-- sstein: init in file //private
-   * AttributeQueryPlugIn attrQueryPlugIn = new AttributeQueryPlugIn(); //--
-   * sstein: init in file //private SpatialJoinPlugIn spatialJoinPlugIn = new
-   * SpatialJoinPlugIn(); //private UnionPlugIn unionPlugIn = new UnionPlugIn();
-   * //-- sstein: init in file //private GeometryFunctionPlugIn
-   * geometryFunctionPlugIn = new GeometryFunctionPlugIn(); //-- sstein: init in
-   * file //private OverlayPlugIn overlayPlugIn = new OverlayPlugIn(); //--
-   * sstein: init in file //private ConvexHullPlugIn convexHullPI = new
-   * ConvexHullPlugIn(); //-- sstein: init in file //private BufferPlugIn
-   * bufferPlugIn = new BufferPlugIn(); //-- sstein: init in file //private
-   * CalculateAreasAndLengthsPlugIn calculateAreasAndLengthsPlugIn = new
-   * CalculateAreasAndLengthsPlugIn(); //-- sstein: init in file
-   * 
-   * private void configToolsAnalysis(final WorkbenchContext workbenchContext,
-   * final EnableCheckFactory checkFactory, FeatureInstaller featureInstaller)
-   * throws Exception {
-   * 
-   * String MENU_TOOLS = MenuNames.TOOLS; String MENU_ANALYSIS =
-   * MenuNames.TOOLS_ANALYSIS; String[] MENU_TOOLS_ANALYSIS = new String[] {
-   * MENU_TOOLS, MENU_ANALYSIS}; String[] MENU_TOOLS_ANALYSIS_ONE_LAYER = new
-   * String[] { MENU_TOOLS, MENU_ANALYSIS, MenuNames.ONELAYER}; String[]
-   * MENU_TOOLS_ANALYSIS_TWO_LAYER = new String[] { MENU_TOOLS, MENU_ANALYSIS,
-   * MenuNames.TWOLAYERS};
-   * 
-   * featureInstaller .addMainMenuItem( spatialQueryPlugIn, new String[] {
-   * MenuNames.TOOLS, MenuNames.TOOLS_QUERIES}, spatialQueryPlugIn.getName() +
-   * "...", false, null, new MultiEnableCheck() .add( checkFactory
-   * .createWindowWithLayerNamePanelMustBeActiveCheck()) .add( checkFactory
-   * .createAtLeastNLayersMustExistCheck(2)));
-   * 
-   * featureInstaller .addMainMenuItem( attrQueryPlugIn, new String[] {
-   * MenuNames.TOOLS, MenuNames.TOOLS_QUERIES}, attrQueryPlugIn.getName() +
-   * "...", false, null, new MultiEnableCheck() .add( checkFactory
-   * .createWindowWithLayerNamePanelMustBeActiveCheck()) .add( checkFactory
-   * .createAtLeastNLayersMustExistCheck(1)));
-   * 
-   * featureInstaller .addMainMenuItem( geometryFunctionPlugIn,
-   * MENU_TOOLS_ANALYSIS, geometryFunctionPlugIn.getName() + "...", false, null,
-   * new MultiEnableCheck() .add( checkFactory
-   * .createWindowWithLayerNamePanelMustBeActiveCheck()) .add( checkFactory
-   * .createAtLeastNLayersMustExistCheck(1)));
-   * 
-   * //======================================
-   * //featureInstaller.addMenuSeparator(MENU_TOOLS_ANALYSIS); featureInstaller
-   * .addMainMenuItem( unionPlugIn, MENU_TOOLS_ANALYSIS_ONE_LAYER, //maybe move
-   * to analysis join (but currently leave) unionPlugIn.getName() + "...",
-   * false, null, new MultiEnableCheck() .add( checkFactory
-   * .createWindowWithLayerNamePanelMustBeActiveCheck()) .add( checkFactory
-   * .createAtLeastNLayersMustExistCheck(1)));
-   * 
-   * featureInstaller .addMainMenuItem( bufferPlugIn, new String[]
-   * {MenuNames.TOOLS, MenuNames.TOOLS_GENERATE}, bufferPlugIn.getName() +
-   * "...", false, BufferPlugIn.ICON, new MultiEnableCheck() .add( checkFactory
-   * .createWindowWithLayerNamePanelMustBeActiveCheck()) .add( checkFactory
-   * .createAtLeastNLayersMustExistCheck(1)));
-   * 
-   * featureInstaller .addMainMenuItem( convexHullPI, new String[]
-   * {MenuNames.TOOLS, MenuNames.TOOLS_GENERATE}, convexHullPI.getName() +
-   * "...", false, null, ConvexHullPlugIn.getEnableCheck(checkFactory) );
-   * 
-   * //======================================
-   * //featureInstaller.addMenuSeparator(MENU_TOOLS_ANALYSIS); featureInstaller
-   * .addMainMenuItem( overlayPlugIn, MENU_TOOLS_ANALYSIS_TWO_LAYER,
-   * overlayPlugIn.getName() + "...", false, null, new MultiEnableCheck()
-   * .add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
-   * .add(checkFactory.createAtLeastNLayersMustExistCheck(2)));
-   * 
-   * //======================================
-   * //featureInstaller.addMenuSeparator(MENU_TOOLS_ANALYSIS);
-   * 
-   * featureInstaller.addMainMenuItem(calculateAreasAndLengthsPlugIn, new
-   * String[] { MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS, MenuNames.ONELAYER},
-   * calculateAreasAndLengthsPlugIn.getName() + "...", false, null,
-   * calculateAreasAndLengthsPlugIn.createEnableCheck(workbenchContext));
-   * 
-   * new WarpingPlugIn().initialize(new PlugInContext(workbenchContext, null,
-   * null, null, null));
-   * 
-   * new AffineTransformPlugIn().initialize(new PlugInContext( workbenchContext,
-   * null, null, null, null));
-   * 
-   * new RandomTrianglesPlugIn().initialize(new PlugInContext( workbenchContext,
-   * null, null, null, null)); new RandomArrowsPlugIn().initialize(new
-   * PlugInContext(workbenchContext, null, null, null, null));
-   * 
-   * }
-   */
-
-  /*
-   * [sstein 13.Aug.2008] -- initialization now in default-plugins.xml
-   * 
-   * private ExtractSegmentsPlugIn extractSegmentsPlugIn = new
-   * ExtractSegmentsPlugIn(); private LineNoderPlugIn lineNoderPlugIn = new
-   * LineNoderPlugIn(); private PolygonizerPlugIn polygonizerPlugIn = new
-   * PolygonizerPlugIn(); private PrecisionReducerPlugIn precisionReducerPlugIn
-   * = new PrecisionReducerPlugIn(); private AffineTransformationPlugIn
-   * affineTransPlugIn = new AffineTransformationPlugIn();
-   * 
-   * private void configToolsEdit(final WorkbenchContext workbenchContext, final
-   * EnableCheckFactory checkFactory, FeatureInstaller featureInstaller) throws
-   * Exception {
-   * 
-   * String MENU_TOOLS = MenuNames.TOOLS; String MENU_EDIT =
-   * MenuNames.TOOLS_EDIT_GEOMETRY; String[] MENU_TOOLS_EDIT = new String[] {
-   * MENU_TOOLS, MENU_EDIT};
-   * 
-   * featureInstaller.addMainMenuItem(extractSegmentsPlugIn, MENU_TOOLS_EDIT,
-   * extractSegmentsPlugIn.getName() + "...", false, null,
-   * extractSegmentsPlugIn.createEnableCheck(workbenchContext));
-   * 
-   * featureInstaller.addMainMenuItem(lineNoderPlugIn, MENU_TOOLS_EDIT,
-   * lineNoderPlugIn.getName() + "...", false, null,
-   * lineNoderPlugIn.createEnableCheck(workbenchContext));
-   * 
-   * featureInstaller.addMainMenuItem(polygonizerPlugIn, MENU_TOOLS_EDIT,
-   * polygonizerPlugIn.getName() + "...", false, null,
-   * polygonizerPlugIn.createEnableCheck(workbenchContext));
-   * 
-   * featureInstaller.addMainMenuItem(precisionReducerPlugIn, MENU_TOOLS_EDIT,
-   * precisionReducerPlugIn.getName() + "...", false, null,
-   * precisionReducerPlugIn.createEnableCheck(workbenchContext));
-   * 
-   * featureInstaller.addMainMenuItem(affineTransPlugIn, MENU_TOOLS_EDIT,
-   * affineTransPlugIn.getName() + "...", false, null,
-   * affineTransPlugIn.createEnableCheck(workbenchContext));
-   * 
-   * }
-   */
-
-  /*
-   * [sstein 13.Aug.2008] -- initialization now in default-plugins.xml private
-   * ValidateSelectedLayersPlugIn validateSelectedLayersPlugIn = new
-   * ValidateSelectedLayersPlugIn(); private LayerStatisticsPlugIn
-   * layerStatisticsPlugIn = new LayerStatisticsPlugIn(); private
-   * FeatureStatisticsPlugIn featureStatisticsPlugIn = new
-   * FeatureStatisticsPlugIn(); private DiffGeometryPlugIn diffGeometryPlugIn =
-   * new DiffGeometryPlugIn();
-   * 
-   * private void configToolsQA(final WorkbenchContext workbenchContext, final
-   * EnableCheckFactory checkFactory, FeatureInstaller featureInstaller) throws
-   * Exception {
-   * 
-   * String MENU_TOOLS = MenuNames.TOOLS; String MENU_QA = MenuNames.TOOLS_QA;
-   * String[] MENU_TOOLS_QA= new String[] { MENU_TOOLS, MENU_QA};
-   * 
-   * featureInstaller .addMainMenuItem(validateSelectedLayersPlugIn,
-   * MENU_TOOLS_QA, validateSelectedLayersPlugIn.getName() + "...", false, null,
-   * new MultiEnableCheck()
-   * .add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
-   * .add(checkFactory.createAtLeastNLayersMustBeSelectedCheck(1)));
-   * featureInstaller .addMainMenuItem(layerStatisticsPlugIn, MENU_TOOLS_QA,
-   * layerStatisticsPlugIn.getName(), false, null, new MultiEnableCheck()
-   * .add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
-   * .add(checkFactory.createAtLeastNLayersMustBeSelectedCheck(1)));
-   * featureInstaller .addMainMenuItem(featureStatisticsPlugIn, MENU_TOOLS_QA,
-   * featureStatisticsPlugIn.getName(), false, null, new MultiEnableCheck()
-   * .add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
-   * .add(checkFactory.createAtLeastNLayersMustBeSelectedCheck(1)));
-   * 
-   * featureInstaller.addMainMenuItem(diffGeometryPlugIn, MENU_TOOLS_QA,
-   * diffGeometryPlugIn.getName() + "...", false, null, new MultiEnableCheck()
-   * .add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
-   * .add(checkFactory.createAtLeastNLayersMustExistCheck(2)));
-   * 
-   * }
-   */
-  /*
-   * [sstein 13.Aug.2008] -- initialization now in default-plugins.xml private
-   * void configToolsAttributes(final WorkbenchContext workbenchContext, final
-   * EnableCheckFactory checkFactory, FeatureInstaller featureInstaller) throws
-   * Exception {
-   * 
-   * String MENU_TOOLS = MenuNames.TOOLS; String MENU_EAT =
-   * MenuNames.TOOLS_EDIT_ATTRIBUTES; String[] MENU_TOOLS_EAT= new String[] {
-   * MENU_TOOLS, MENU_EAT}; featureInstaller.addMainMenuItem( spatialJoinPlugIn,
-   * MENU_TOOLS_EAT, spatialJoinPlugIn.getName() + "...", false, null, new
-   * MultiEnableCheck()
-   * .add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
-   * .add(checkFactory.createAtLeastNLayersMustExistCheck(2)));
-   * 
-   * }
-   */
   public void configureDatastores(final WorkbenchContext context)
       throws Exception {
 

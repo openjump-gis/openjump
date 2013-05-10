@@ -16,12 +16,10 @@
 	<plug-in>org.openjump.core.ui.plugin.edit.SelectItemsByCircleFromSelectedLayersPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.edit.SelectByTypePlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.edit.SelectLayersWithSelectedItemsPlugIn</plug-in>
-	<plug-in>org.openjump.core.ui.plugin.edit.InvertSelectionPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.layer.ExtractLayerInFence</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.layer.ExtractLayersByAttribute</plug-in>
-	<plug-in>org.openjump.core.ui.plugin.layer.CombineSelectedLayersPlugIn</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.edit.ClipToFencePlugIn</plug-in>
 	<!---  ======================================== /-->
 	<!--  			menu VIEW 						/-->
