@@ -157,8 +157,10 @@ class ShortcutKeysFrame extends JFrame {
       //shortsPanel.add(shortsLabel);
       // add global shortcuts separated into menu categories
       for (String html : buildOverviews()) {
-        shortsPanel.add(buildTableLabel(html));
-        // space different tables
+        for (JLabel lbl : buildTableLabels(html, 3)) {
+          shortsPanel.add(lbl);
+        }
+        // space different overviews
         shortsPanel.add(Box.createRigidArea(new Dimension(10, 10)));
       }
 
@@ -356,7 +358,7 @@ class ShortcutKeysFrame extends JFrame {
         else
           description = entry.getValue().toString();
         
-        out += "<tr><td>" + GUIUtil.escapeHTML(description) + "</td><td>"
+        out += "<tr><td>" + GUIUtil.escapeHTML(description) + "</td><td width=100>"
             + GUIUtil.escapeHTML(entry.getKey()) + "</td></tr>\n";
       }
       if (out.length() > 0){
@@ -513,6 +515,24 @@ class ShortcutKeysFrame extends JFrame {
   
   private JLabel buildTableLabel( String in, int width){
     return new JLabel("<html><body><table width="+width+">\n"+in+"\n</table></body></html>");
+  }
+  
+  // split categories in multiple jlabels (per linecount) so the layout can distribute columns more evenly
+  private List<JLabel> buildTableLabels( String in, int linecount ){
+    String[] lines = in.split("\n");
+    Vector<JLabel> labels = new Vector<JLabel>();
+    String buf = "";
+    for (int i = 0; i < lines.length; i++) {
+      buf += lines[i]+"\n";
+      if ( (i+1)%linecount == 0){
+        labels.add(buildTableLabel(buf));
+        buf = "";
+      }
+    }
+    if (buf.length()>0)
+      labels.add(buildTableLabel(buf));
+
+    return labels;
   }
 
   private String getKeyStrokeText(KeyStroke stroke) {
