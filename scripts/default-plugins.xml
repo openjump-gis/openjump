@@ -24,7 +24,6 @@
 	<!---  ======================================== /-->
 	<!--  			menu VIEW 						/-->
 	<!--- ========================================= /-->		
-	<plug-in>org.openjump.core.ui.plugin.edit.CopyBBoxPlugin</plug-in>
 	<plug-in>org.openjump.core.ui.plugin.view.NorthArrowPlugIn</plug-in>
 	<!---  ======================================== /-->
 	<!--  			menu LAYER 						/-->

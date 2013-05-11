@@ -43,6 +43,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
 
 import org.openjump.OpenJumpConfiguration;
+import org.openjump.core.ui.plugin.edit.CopyBBoxPlugin;
 import org.openjump.core.ui.plugin.edit.InvertSelectionPlugIn;
 import org.openjump.core.ui.plugin.layer.CombineSelectedLayersPlugIn;
 import org.openjump.core.ui.plugin.mousemenu.DuplicateItemPlugIn;
@@ -838,48 +839,7 @@ public class JUMPConfiguration implements Setup {
     /**
      * VIEW =================================================================
      */
-    editingPlugIn.createMainMenuItem(new String[] { MenuNames.VIEW },
-        GUIUtil.toSmallIcon(EditingPlugIn.ICON), workbenchContext);
-    featureInstaller.addMainMenuItem(copyImagePlugIn,
-        new String[] { MenuNames.FILE }, copyImagePlugIn.getName(), false,
-        copyImagePlugIn.ICON,
-        CopyImagePlugIn.createEnableCheck(workbenchContext));
-    featureInstaller.addMenuSeparator(MenuNames.VIEW); // ===================
-    featureInstaller.addMainMenuItem(featureInfoPlugIn,
-        new String[] { MenuNames.VIEW }, featureInfoPlugIn.getName(), false,
-        FeatureInfoPlugIn.ICON,
-        FeatureInfoPlugIn.createEnableCheck(workbenchContext));
-    featureInstaller.addMainMenuItem(
-        verticesInFencePlugIn,
-        new String[] { MenuNames.VIEW },
-        verticesInFencePlugIn.getName(),
-        false,
-        null,
-        new MultiEnableCheck().add(
-            checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck())
-            .add(checkFactory.createFenceMustBeDrawnCheck()));
-    featureInstaller.addMenuSeparator(MenuNames.VIEW); // ===================
-    featureInstaller.addMainMenuItem(zoomToFullExtentPlugIn,
-        new String[] { MenuNames.VIEW }, zoomToFullExtentPlugIn.getName(),
-        false, zoomToFullExtentPlugIn.getIcon16(),
-        zoomToFullExtentPlugIn.createEnableCheck(workbenchContext));
-    featureInstaller.addMainMenuItem(
-        zoomToFencePlugIn,
-        new String[] { MenuNames.VIEW },
-        zoomToFencePlugIn.getName(),
-        false,
-        GUIUtil.toSmallIcon(zoomToFencePlugIn.getIcon()),
-        new MultiEnableCheck().add(
-            checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck())
-            .add(checkFactory.createFenceMustBeDrawnCheck()));
-    featureInstaller.addMainMenuItem(zoomToSelectedItemsPlugIn,
-        new String[] { MenuNames.VIEW }, zoomToSelectedItemsPlugIn.getName(),
-        false, GUIUtil.toSmallIcon(zoomToSelectedItemsPlugIn.getIcon()),
-        ZoomToSelectedItemsPlugIn.createEnableCheck(workbenchContext));
-    featureInstaller.addMainMenuItem(zoomToCoordinatePlugIn,
-        new String[] { MenuNames.VIEW }, zoomToCoordinatePlugIn.getName()
-            + "...", false, null,
-        zoomToCoordinatePlugIn.createEnableCheck(workbenchContext));
+    
     featureInstaller.addMainMenuItem(zoomPreviousPlugIn,
         new String[] { MenuNames.VIEW }, zoomPreviousPlugIn.getName(), false,
         GUIUtil.toSmallIcon(zoomPreviousPlugIn.getIcon()),
@@ -888,7 +848,22 @@ public class JUMPConfiguration implements Setup {
         new String[] { MenuNames.VIEW }, zoomNextPlugIn.getName(), false,
         GUIUtil.toSmallIcon(zoomNextPlugIn.getIcon()),
         zoomNextPlugIn.createEnableCheck(workbenchContext));
+    
     featureInstaller.addMenuSeparator(MenuNames.VIEW); // ===================
+    
+    editingPlugIn.createMainMenuItem(new String[] { MenuNames.VIEW },
+        GUIUtil.toSmallIcon(EditingPlugIn.ICON), workbenchContext);
+    featureInstaller.addMainMenuItem(copyImagePlugIn,
+        new String[] { MenuNames.FILE }, copyImagePlugIn.getName(), false,
+        copyImagePlugIn.ICON,
+        CopyImagePlugIn.createEnableCheck(workbenchContext));
+    
+    featureInstaller.addMainMenuItem(toolTipsPlugIn,
+        new String[] { MenuNames.VIEW }, toolTipsPlugIn.getName(), true,
+        IconLoader.icon("show_tooltip.png"),
+        MapToolTipsPlugIn.createEnableCheck(workbenchContext));
+    zoomBarPlugIn.createMainMenuItem(new String[] { MenuNames.VIEW }, null,
+        workbenchContext);
 
     featureInstaller.addMainMenuItem(
         showScalePlugIn,
@@ -920,12 +895,49 @@ public class JUMPConfiguration implements Setup {
                 return null;
               }
             }));
-    featureInstaller.addMainMenuItem(toolTipsPlugIn,
-        new String[] { MenuNames.VIEW }, toolTipsPlugIn.getName(), true,
-        IconLoader.icon("show_tooltip.png"),
-        MapToolTipsPlugIn.createEnableCheck(workbenchContext));
-    zoomBarPlugIn.createMainMenuItem(new String[] { MenuNames.VIEW }, null,
-        workbenchContext);
+   
+    featureInstaller.addMenuSeparator(MenuNames.VIEW); // ===================
+    
+    featureInstaller.addMainMenuItem(zoomToFullExtentPlugIn,
+        new String[] { MenuNames.VIEW }, zoomToFullExtentPlugIn.getName(),
+        false, zoomToFullExtentPlugIn.getIcon16(),
+        zoomToFullExtentPlugIn.createEnableCheck(workbenchContext));
+    featureInstaller.addMainMenuItem(
+        zoomToFencePlugIn,
+        new String[] { MenuNames.VIEW },
+        zoomToFencePlugIn.getName(),
+        false,
+        GUIUtil.toSmallIcon(zoomToFencePlugIn.getIcon()),
+        new MultiEnableCheck().add(
+            checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck())
+            .add(checkFactory.createFenceMustBeDrawnCheck()));
+    featureInstaller.addMainMenuItem(zoomToSelectedItemsPlugIn,
+        new String[] { MenuNames.VIEW }, zoomToSelectedItemsPlugIn.getName(),
+        false, GUIUtil.toSmallIcon(zoomToSelectedItemsPlugIn.getIcon()),
+        ZoomToSelectedItemsPlugIn.createEnableCheck(workbenchContext));
+    featureInstaller.addMainMenuItem(zoomToCoordinatePlugIn,
+        new String[] { MenuNames.VIEW }, zoomToCoordinatePlugIn.getName()
+            + "...", false, null,
+        zoomToCoordinatePlugIn.createEnableCheck(workbenchContext));
+
+    featureInstaller.addMenuSeparator(MenuNames.VIEW); // ===================
+    
+    featureInstaller.addMainMenuItem(featureInfoPlugIn,
+        new String[] { MenuNames.VIEW }, featureInfoPlugIn.getName(), false,
+        FeatureInfoPlugIn.ICON,
+        FeatureInfoPlugIn.createEnableCheck(workbenchContext));
+    featureInstaller.addMainMenuItem(
+        verticesInFencePlugIn,
+        new String[] { MenuNames.VIEW },
+        verticesInFencePlugIn.getName(),
+        false,
+        null,
+        new MultiEnableCheck().add(
+            checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck())
+            .add(checkFactory.createFenceMustBeDrawnCheck()));
+    featureInstaller.addMainMenuPlugin(new CopyBBoxPlugin(), new String[] { MenuNames.VIEW });
+
+    featureInstaller.addMenuSeparator(MenuNames.VIEW); // ===================
 
     /**
      * LAYER ==================================================================

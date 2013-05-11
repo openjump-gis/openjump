@@ -60,13 +60,18 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 public class CopyBBoxPlugin extends AbstractPlugIn {
 
     @Override
-    public void initialize( PlugInContext context ) {
-        WorkbenchContext wbcontext = context.getWorkbenchContext();
-        FeatureInstaller installer = new FeatureInstaller( wbcontext );
+    public String getName() {
+      return I18N.get( "org.openjump.core.ui.plugin.edit.CopyBBoxPlugin.name" );
+    }
 
-        installer.addMainMenuItem( this, new String[] { MenuNames.VIEW },
-                                                I18N.get( "org.openjump.core.ui.plugin.edit.CopyBBoxPlugin.name" )+"{pos:2}",
-                                                false, null, null );
+    @Override
+    public void initialize( PlugInContext context ) {
+//        WorkbenchContext wbcontext = context.getWorkbenchContext();
+//        FeatureInstaller installer = new FeatureInstaller( wbcontext );
+//
+//        installer.addMainMenuItem( this, new String[] { MenuNames.VIEW },
+//                                                I18N.get( "org.openjump.core.ui.plugin.edit.CopyBBoxPlugin.name" )+"{pos:2}",
+//                                                false, null, null );
     }
 
     @Override

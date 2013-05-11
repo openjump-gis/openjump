@@ -33,6 +33,8 @@
 
 package com.vividsolutions.jump.workbench.ui.zoom;
 
+import java.awt.event.KeyEvent;
+
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 
@@ -52,6 +54,8 @@ import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 
 public class ZoomPreviousPlugIn extends AbstractPlugIn {
     public ZoomPreviousPlugIn() {
+      this.setShortcutKeys(KeyEvent.VK_Z);
+      this.setShortcutModifiers(KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK);
     }
 
     public boolean execute(PlugInContext context) throws Exception {
