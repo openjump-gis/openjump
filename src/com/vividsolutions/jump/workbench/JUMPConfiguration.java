@@ -46,6 +46,7 @@ import org.openjump.OpenJumpConfiguration;
 import org.openjump.core.ui.plugin.edit.CopyBBoxPlugin;
 import org.openjump.core.ui.plugin.edit.InvertSelectionPlugIn;
 import org.openjump.core.ui.plugin.layer.CombineSelectedLayersPlugIn;
+import org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn;
 import org.openjump.core.ui.plugin.mousemenu.DuplicateItemPlugIn;
 import org.openjump.core.ui.plugin.mousemenu.MergeSelectedFeaturesPlugIn;
 import org.openjump.core.ui.plugin.mousemenu.PasteItemsAtPlugIn;
@@ -548,7 +549,9 @@ public class JUMPConfiguration implements Setup {
     featureInstaller.addPopupMenuItem(layerNamePopupMenu, selectablePlugIn,
         selectablePlugIn.getName(), true, selectablePlugIn.ICON,
         selectablePlugIn.createEnableCheck(workbenchContext));
+    
     layerNamePopupMenu.addSeparator(); // ===================
+    
     featureInstaller.addPopupMenuItem(layerNamePopupMenu,
         removeSelectedLayersPlugIn, removeSelectedLayersPlugIn.getName(),
         false, RemoveSelectedLayersPlugIn.ICON,
@@ -556,6 +559,8 @@ public class JUMPConfiguration implements Setup {
 
     layerNamePopupMenu.addSeparator(); // ===================
 
+    featureInstaller.addPopupMenuPlugin(layerNamePopupMenu, new LayerPropertiesPlugIn());
+    
     featureInstaller.addPopupMenuItem(layerNamePopupMenu, zoomToLayerPlugIn,
         zoomToLayerPlugIn.getName(), false, ZoomToLayerPlugIn.ICON,
         zoomToLayerPlugIn.createEnableCheck(workbenchContext));
@@ -624,6 +629,7 @@ public class JUMPConfiguration implements Setup {
         moveDownPlugIn.createEnableCheck(workbenchContext));
 
     layerNamePopupMenu.addSeparator(); // ===================
+    
     featureInstaller.addPopupMenuItem(layerNamePopupMenu,
         cutSelectedLayersPlugIn, cutSelectedLayersPlugIn.getNameWithMnemonic(),
         false, cutSelectedLayersPlugIn.ICON,
@@ -633,8 +639,10 @@ public class JUMPConfiguration implements Setup {
         copySelectedLayersPlugIn.getNameWithMnemonic(), false,
         copySelectedLayersPlugIn.ICON,
         copySelectedLayersPlugIn.createEnableCheck(workbenchContext));
+    featureInstaller.addPopupMenuPlugin(layerNamePopupMenu, new CombineSelectedLayersPlugIn());
 
     layerNamePopupMenu.addSeparator(); // ===================
+    
     featureInstaller.addPopupMenuItem(layerNamePopupMenu, addNewFeaturesPlugIn,
         addNewFeaturesPlugIn.getName() + "...", false,
         AddNewFeaturesPlugIn.ICON,
@@ -653,10 +661,12 @@ public class JUMPConfiguration implements Setup {
     // "Edit" menu
     // but for now put it in separators, to avoid accidental use
     layerNamePopupMenu.addSeparator(); // ===================
+    
     featureInstaller.addPopupMenuItem(layerNamePopupMenu,
         deleteAllFeaturesPlugIn, deleteAllFeaturesPlugIn.getName(), false,
         DeleteAllFeaturesPlugIn.ICON,
         deleteAllFeaturesPlugIn.createEnableCheck(workbenchContext));
+    
     layerNamePopupMenu.addSeparator(); // ===================
 
   }

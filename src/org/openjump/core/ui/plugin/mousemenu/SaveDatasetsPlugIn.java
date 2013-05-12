@@ -153,7 +153,7 @@ public class SaveDatasetsPlugIn extends AbstractPlugIn
         toolBar.addPlugIn(2, this, ICON, enableCheck, workbenchContext);
         
         featureInstaller.addPopupMenuItem(layerNamePopupMenu,
-            this, sSaveSelectedDatasets +"{pos:12}",
+            this, sSaveSelectedDatasets +"{pos:17}",
             false, ICON2,
             enableCheck);
     }
