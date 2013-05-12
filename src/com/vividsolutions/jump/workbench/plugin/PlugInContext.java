@@ -33,6 +33,8 @@
 
 package com.vividsolutions.jump.workbench.plugin;
 
+import java.util.Collection;
+
 import javax.swing.JInternalFrame;
 
 import org.openjump.core.rasterimage.RasterImageLayer;
@@ -44,11 +46,13 @@ import com.vividsolutions.jump.workbench.driver.DriverManager;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
+import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.model.Task;
 import com.vividsolutions.jump.workbench.ui.ErrorHandler;
 import com.vividsolutions.jump.workbench.ui.HTMLFrame;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanel;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
+import com.vividsolutions.jump.workbench.ui.LayerableNamePanel;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
@@ -122,6 +126,17 @@ public class PlugInContext implements LayerManagerProxy {
     //<<TODO:DESIGN>> Return List instead of array [Jon Aquino]
     public Layer[] getSelectedLayers() {
         return getLayerNamePanel().getSelectedLayers();
+    }
+
+    /**
+     * this extends getSelectedLayers() as it returns all selected Layerables
+     * e.g. WMSLayers
+     * @return null or a Collection of Layerables
+     */
+    public Collection<Layerable> getSelectedLayerables() {
+      if ( getLayerNamePanel() instanceof LayerableNamePanel )
+        return ((LayerableNamePanel)getLayerNamePanel()).getSelectedLayerables();
+      return null;
     }
 
     public Envelope getSelectedLayerEnvelope() {

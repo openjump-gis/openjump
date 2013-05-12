@@ -1,4 +1,3 @@
-
 /*
  * The Unified Mapping Platform (JUMP) is an extensible, interactive GUI 
  * for visualizing and manipulating spatial features with geometry and attributes.
@@ -33,7 +32,6 @@
  * www.ashs.isa.com
  */
 
-
 package org.openjump.core.ui.plugin.layer;
 
 import java.util.Collection;
@@ -41,16 +39,15 @@ import java.util.Iterator;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 
-import org.openjump.core.ui.plugin.layer.ToggleVisiblityPlugIn;
-
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
+import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
@@ -58,93 +55,96 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
-public class ToggleVisiblityPlugIn extends AbstractPlugIn
-{   
-	private final static String toggleVisibility =I18N.get("org.openjump.core.ui.plugin.layer.ToggleVisiblityPlugIn.Toggle-Visibility");
-	private final static String errorSeeOutputWindow =I18N.get("org.openjump.core.ui.plugin.layer.ToggleVisiblityPlugIn.Error-See-Output-Window");
-	private final static String layerName = I18N.get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Layer-Name");
+public class ToggleVisiblityPlugIn extends AbstractPlugIn {
+  private final static String toggleVisibility = I18N
+      .get("org.openjump.core.ui.plugin.layer.ToggleVisiblityPlugIn.Toggle-Visibility");
+  private final static String errorSeeOutputWindow = I18N
+      .get("org.openjump.core.ui.plugin.layer.ToggleVisiblityPlugIn.Error-See-Output-Window");
+  private final static String layerName = I18N
+      .get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Layer-Name");
 
-    public void initialize(PlugInContext context) throws Exception
-    {
-        WorkbenchContext workbenchContext = context.getWorkbenchContext();
-        
-        FeatureInstaller featureInstaller = new FeatureInstaller(workbenchContext);
-        JPopupMenu layerNamePopupMenu = workbenchContext.getWorkbench()
-                                                        .getFrame()
-                                                        .getLayerNamePopupMenu();
-        featureInstaller.addPopupMenuItem(layerNamePopupMenu,
-       		 this, toggleVisibility,
-                true,
-                GUIUtil.toSmallIcon((ImageIcon) this.getIcon()),
-                ToggleVisiblityPlugIn.createEnableCheck2(workbenchContext));
-        
-        JPopupMenu wmsLayerNamePopupMenu = workbenchContext.getWorkbench()
-                                                        .getFrame()
-                                                        .getWMSLayerNamePopupMenu();
-        featureInstaller.addPopupMenuItem(wmsLayerNamePopupMenu,
-        		this, toggleVisibility,
-        		true,
-        		GUIUtil.toSmallIcon((ImageIcon) this.getIcon()),
-        		ToggleVisiblityPlugIn.createEnableCheck2(workbenchContext));
+  public void initialize(PlugInContext context) throws Exception {
+    WorkbenchContext workbenchContext = context.getWorkbenchContext();
 
-        
-    }
+    FeatureInstaller featureInstaller = new FeatureInstaller(workbenchContext);
+    JPopupMenu layerNamePopupMenu = workbenchContext.getWorkbench().getFrame()
+        .getLayerNamePopupMenu();
+    featureInstaller.addPopupMenuItem(layerNamePopupMenu, this,
+        toggleVisibility+"{pos:2}", true,
+        GUIUtil.toSmallIcon((ImageIcon) this.getIcon()),
+        ToggleVisiblityPlugIn.createEnableCheck(workbenchContext));
 
-    
+    JPopupMenu wmsLayerNamePopupMenu = workbenchContext.getWorkbench()
+        .getFrame().getWMSLayerNamePopupMenu();
+    featureInstaller.addPopupMenuItem(wmsLayerNamePopupMenu, this,
+        toggleVisibility+"{pos:2}", true,
+        GUIUtil.toSmallIcon((ImageIcon) this.getIcon()),
+        ToggleVisiblityPlugIn.createEnableCheck(workbenchContext));
 
-    
-    public Icon getIcon() {
-        return IconLoader.icon("eye.png");
-    }
-    
-    
-    
-    
-    public boolean execute(PlugInContext context) throws Exception
-    {
-        try
-        {
-            Collection layerCollection = (Collection) context.getWorkbenchContext().getLayerNamePanel().selectedNodes(Layerable.class);
-			boolean firingEvents = context.getLayerManager().isFiringEvents();
-			context.getLayerManager().setFiringEvents(false);
-			try {				
-	            for (Iterator j = layerCollection.iterator(); j.hasNext();)
-	            {
-	            	Layerable layer = (Layerable) j.next();
-//	            	monitor.report(layerName+": " + layer.getName());
-	                layer.setVisible(!layer.isVisible());
-	            }
-			} finally {
-				context.getLayerManager().setFiringEvents(firingEvents);
-				context.getLayerViewPanel().repaint();
-				context.getWorkbenchFrame().repaint();
-			}
-       }
-        catch (Exception e)
-        {
-            context.getWorkbenchFrame().warnUser(errorSeeOutputWindow);
-            context.getWorkbenchFrame().getOutputFrame().createNewDocument();
-            context.getWorkbenchFrame().getOutputFrame().addText("ToggleVisiblityPlugIn Exception:" + e.toString());
-            return false;
+  }
+
+  public Icon getIcon() {
+    return IconLoader.icon("eye.png");
+  }
+
+  public boolean execute(PlugInContext context) throws Exception {
+    try {
+      Collection layerCollection = (Collection) context.getWorkbenchContext()
+          .getLayerNamePanel().selectedNodes(Layerable.class);
+      boolean firingEvents = context.getLayerManager().isFiringEvents();
+      context.getLayerManager().setFiringEvents(false);
+      try {
+        for (Iterator j = layerCollection.iterator(); j.hasNext();) {
+          Layerable layer = (Layerable) j.next();
+          // monitor.report(layerName+": " + layer.getName());
+          layer.setVisible(!layer.isVisible());
         }
-        return true;
-    }    
-    
-    /** @deprecated */
-    public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext)
-    {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);        
-        return new MultiEnableCheck()
-           .add(checkFactory.createWindowWithSelectionManagerMustBeActiveCheck())
-           .add(checkFactory.createAtLeastNLayersMustBeSelectedCheck(1));
+      } finally {
+        context.getLayerManager().setFiringEvents(firingEvents);
+        context.getLayerViewPanel().repaint();
+        context.getWorkbenchFrame().repaint();
+      }
+    } catch (Exception e) {
+      context.getWorkbenchFrame().warnUser(errorSeeOutputWindow);
+      context.getWorkbenchFrame().getOutputFrame().createNewDocument();
+      context.getWorkbenchFrame().getOutputFrame()
+          .addText("ToggleVisiblityPlugIn Exception:" + e.toString());
+      return false;
     }
-    
-    public static MultiEnableCheck createEnableCheck2(WorkbenchContext workbenchContext)
-    {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);        
-        return new MultiEnableCheck()
-           .add(checkFactory.createWindowWithSelectionManagerMustBeActiveCheck())
-           .add(checkFactory.createAtLeastNLayerablesMustBeSelectedCheck(1, Layerable.class));
-    }
-}
+    return true;
+  }
 
+  // /** @deprecated */
+  // public static MultiEnableCheck createEnableCheck(
+  // WorkbenchContext workbenchContext) {
+  // EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+  // return new MultiEnableCheck().add(
+  // checkFactory.createWindowWithSelectionManagerMustBeActiveCheck()).add(
+  // checkFactory.createAtLeastNLayersMustBeSelectedCheck(1));
+  // }
+
+  public static MultiEnableCheck createEnableCheck(
+      final WorkbenchContext workbenchContext) {
+    EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+    MultiEnableCheck mec = new MultiEnableCheck();
+
+    mec.add(checkFactory.createWindowWithSelectionManagerMustBeActiveCheck());
+
+    mec.add(checkFactory.createAtLeastNLayerablesMustBeSelectedCheck(1,
+        Layerable.class));
+
+    // switch checkbox according to layer state
+    mec.add(new EnableCheck() {
+      public String check(JComponent component) {
+        Collection<Layerable> layers = workbenchContext.createPlugInContext()
+            .getSelectedLayerables();
+        Layerable layer = layers.iterator().next();
+        ((JCheckBoxMenuItem) component).setSelected(layer != null
+            && layer.isVisible());
+        return null;
+      }
+    });
+
+    return mec;
+  }
+}

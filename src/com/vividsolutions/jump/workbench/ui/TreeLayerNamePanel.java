@@ -96,7 +96,7 @@ import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
 import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
 
 public class TreeLayerNamePanel extends JPanel implements LayerListener,
-    LayerNamePanel, LayerNamePanelProxy, PopupNodeProxy {
+    LayerNamePanel, LayerableNamePanel, LayerNamePanelProxy, PopupNodeProxy {
   private Map nodeClassToPopupMenuMap = new HashMap();
 
   BorderLayout borderLayout1 = new BorderLayout();
@@ -574,6 +574,10 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
   public static Layer[] selectedLayers(LayerNamePanel layerNamePanel) {
     return (Layer[]) layerNamePanel.selectedNodes(Layer.class).toArray(
         new Layer[] {});
+  }
+
+  public Collection getSelectedLayerables() {
+    return selectedNodes(Layerable.class);
   }
 
   public Collection getSelectedCategories() {
