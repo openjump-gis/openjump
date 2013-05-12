@@ -64,7 +64,7 @@ public class OpenWizardPlugIn extends AbstractThreadedUiPlugIn {
 
     // Add to category pop-up menu
     featureInstaller.addPopupMenuPlugin(frame.getCategoryPopupMenu(), this, name
-      + "{pos:4}", false, icon16, enableCheck);
+      + "{pos:6}", false, icon16, enableCheck);
 
     // shortcut
     AbstractPlugIn.registerShortcuts(this);

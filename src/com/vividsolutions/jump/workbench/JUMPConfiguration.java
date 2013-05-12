@@ -49,6 +49,11 @@ import org.openjump.core.ui.plugin.layer.CombineSelectedLayersPlugIn;
 import org.openjump.core.ui.plugin.mousemenu.DuplicateItemPlugIn;
 import org.openjump.core.ui.plugin.mousemenu.MergeSelectedFeaturesPlugIn;
 import org.openjump.core.ui.plugin.mousemenu.PasteItemsAtPlugIn;
+import org.openjump.core.ui.plugin.mousemenu.category.MoveCategoryOneDown;
+import org.openjump.core.ui.plugin.mousemenu.category.MoveCategoryOneUp;
+import org.openjump.core.ui.plugin.mousemenu.category.MoveCategoryToBottom;
+import org.openjump.core.ui.plugin.mousemenu.category.MoveCategoryToTop;
+import org.openjump.core.ui.plugin.mousemenu.category.SetCategoryVisibilityPlugIn;
 import org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel;
 import org.openjump.core.ui.plugin.tools.AdvancedMeasureTool;
 import org.openjump.core.ui.plugin.tools.ZoomRealtimeTool;
@@ -415,19 +420,22 @@ public class JUMPConfiguration implements Setup {
 
   private void configureCategoryPopupMenu(WorkbenchContext workbenchContext,
       FeatureInstaller featureInstaller) {
-    featureInstaller
-        .addPopupMenuItem(workbenchContext.getWorkbench().getFrame()
-            .getCategoryPopupMenu(), addNewLayerPlugIn,
-            addNewLayerPlugIn.getName(), false, IconLoader.icon("layers.png"),
-            null);
-    
-    featureInstaller
-    .addPopupMenuPlugin(workbenchContext.getWorkbench().getFrame()
-        .getCategoryPopupMenu(), addNewCategoryPlugIn);
+    JPopupMenu menu = workbenchContext.getWorkbench().getFrame()
+        .getCategoryPopupMenu();
 
+    featureInstaller.addPopupMenuPlugin(menu, SetCategoryVisibilityPlugIn
+        .getInstance(workbenchContext.createPlugInContext()));
+
+    featureInstaller
+        .addPopupMenuItem(menu, addNewLayerPlugIn, addNewLayerPlugIn.getName(),
+            false, IconLoader.icon("layers.png"), null);
+
+    featureInstaller.addPopupMenuPlugin(menu, addNewCategoryPlugIn);
+
+    menu.addSeparator(); // ===================
+    
     // [sstein 20.01.2006] added again after user request
-    featureInstaller.addPopupMenuItem(workbenchContext.getWorkbench()
-        .getFrame().getCategoryPopupMenu(), loadDatasetPlugIn,
+    featureInstaller.addPopupMenuItem(menu, loadDatasetPlugIn,
         loadDatasetPlugIn.getName() + "...", false,
         LoadDatasetPlugIn.getIcon(),
         LoadDatasetPlugIn.createEnableCheck(workbenchContext));
@@ -437,12 +445,10 @@ public class JUMPConfiguration implements Setup {
     // loadDatasetFromFilePlugIn.getName() + "...", false, null,
     // LoadDatasetPlugIn.createEnableCheck(workbenchContext));
 
-
     // [sstein 21.Mar.2008] removed since now contained in new open menu
     // [sstein 2.June.2008] added back due to table list history (need to check
     // other way?)
-    featureInstaller.addPopupMenuItem(workbenchContext.getWorkbench()
-        .getFrame().getCategoryPopupMenu(), addDatastoreLayerPlugIn,
+    featureInstaller.addPopupMenuItem(menu, addDatastoreLayerPlugIn,
         addDatastoreLayerPlugIn.getName() + "...", false,
         addDatastoreLayerPlugIn.ICON, null);
     /*
@@ -456,14 +462,22 @@ public class JUMPConfiguration implements Setup {
      * addImageLayerPlugIn.getName() + "...", false, null, null);
      */
 
-    featureInstaller.addPopupMenuItem(workbenchContext.getWorkbench()
-        .getFrame().getCategoryPopupMenu(), pasteLayersPlugIn,
+    featureInstaller.addPopupMenuItem(menu, pasteLayersPlugIn,
         pasteLayersPlugIn.getNameWithMnemonic(), false, null,
         pasteLayersPlugIn.createEnableCheck(workbenchContext));
-    featureInstaller.addPopupMenuItem(workbenchContext.getWorkbench()
-        .getFrame().getCategoryPopupMenu(), removeSelectedCategoriesPlugIn,
+    
+    menu.addSeparator(); // ===================
+    
+    featureInstaller.addPopupMenuItem(menu, removeSelectedCategoriesPlugIn,
         removeSelectedCategoriesPlugIn.getName(), false, null,
         removeSelectedCategoriesPlugIn.createEnableCheck(workbenchContext));
+    
+    menu.addSeparator(); // ===================
+    
+    featureInstaller.addPopupMenuPlugin(menu, new MoveCategoryToTop());
+    featureInstaller.addPopupMenuPlugin(menu, new MoveCategoryOneUp());
+    featureInstaller.addPopupMenuPlugin(menu, new MoveCategoryOneDown());
+    featureInstaller.addPopupMenuPlugin(menu, new MoveCategoryToBottom());
   }
 
   private void configureWMSQueryNamePopupMenu(

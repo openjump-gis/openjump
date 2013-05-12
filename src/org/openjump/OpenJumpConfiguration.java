@@ -485,17 +485,17 @@ public class OpenJumpConfiguration {
      * Category Context menu
      *++++++++++++++++++++++++**/
     
-    // -- Pirol plugins
-    SetCategoryVisibilityPlugIn.getInstance(workbenchContext.createPlugInContext()).initialize(new PlugInContext(workbenchContext,
-    	      null, null, null, null));
-    new MoveCategoryToTop().initialize(new PlugInContext(workbenchContext,
-    	      null, null, null, null));
-    new MoveCategoryOneUp().initialize(new PlugInContext(workbenchContext,
-    	      null, null, null, null));
-    new MoveCategoryOneDown().initialize(new PlugInContext(workbenchContext,
-    	      null, null, null, null));
-    new MoveCategoryToBottom().initialize(new PlugInContext(workbenchContext,
-    	      null, null, null, null));
+//    // -- Pirol plugins
+//    SetCategoryVisibilityPlugIn.getInstance(workbenchContext.createPlugInContext()).initialize(new PlugInContext(workbenchContext,
+//    	      null, null, null, null));
+//    new MoveCategoryToTop().initialize(new PlugInContext(workbenchContext,
+//    	      null, null, null, null));
+//    new MoveCategoryOneUp().initialize(new PlugInContext(workbenchContext,
+//    	      null, null, null, null));
+//    new MoveCategoryOneDown().initialize(new PlugInContext(workbenchContext,
+//    	      null, null, null, null));
+//    new MoveCategoryToBottom().initialize(new PlugInContext(workbenchContext,
+//    	      null, null, null, null));
 
     /***************************************************************************
      * EDITing toolbox
