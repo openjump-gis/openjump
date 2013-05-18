@@ -2,6 +2,7 @@
 
 2013-05-18
   * add project name (aka task name) in the ViewAttribute frame title.
+  * fix bug 3613234 : sorting attributes did not respect comparator contract
   
 2013-05-11 ede
   * carefully reordered main menu View
