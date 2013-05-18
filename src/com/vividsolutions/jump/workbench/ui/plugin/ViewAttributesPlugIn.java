@@ -198,7 +198,7 @@ public class ViewAttributesPlugIn extends AbstractPlugIn {
 			}
 			
 			setTitle(" "+I18N.get("ui.plugin.ViewAttributesPlugIn.attributes")
-					+": "+ layer.getName());
+					+": "+ getTaskFrame().getTask().getName()+":"+layer.getName());
 		}
 		public TaskFrame getTaskFrame() {
 			return attributeTab.getTaskFrame();
