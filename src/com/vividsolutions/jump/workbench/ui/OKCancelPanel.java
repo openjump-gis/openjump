@@ -41,6 +41,10 @@ public class OKCancelPanel extends ButtonPanel {
     public OKCancelPanel() {
         super(new String[] {I18N.get("ui.OKCancelPanel.ok"), I18N.get("ui.OKCancelPanel.cancel")});
     }
+    
+    public OKCancelPanel(String[] buttonNames) {
+        super(buttonNames);
+    }
 
     public boolean wasOKPressed() {
         return getSelectedButton() == getButton(I18N.get("ui.OKCancelPanel.ok"));

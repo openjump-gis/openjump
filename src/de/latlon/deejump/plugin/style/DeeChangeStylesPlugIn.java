@@ -34,6 +34,8 @@ package de.latlon.deejump.plugin.style;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -88,15 +90,16 @@ public class DeeChangeStylesPlugIn extends AbstractPlugIn {
     }
 
     @Override
-    public boolean execute(PlugInContext context) throws Exception {
+    public boolean execute(final PlugInContext context) throws Exception {
         WorkbenchFrame wbframe = context.getWorkbenchFrame();
         WorkbenchContext wbcontext = context.getWorkbenchContext();
         Blackboard blackboard = wbcontext.getWorkbench().getBlackboard();
         Blackboard pb = PersistentBlackboardPlugIn.get(wbcontext);
 
         final Layer layer = context.getSelectedLayer(0);
-        MultiInputDialog dialog = new MultiInputDialog(wbframe, I18N.get("ui.style.ChangeStylesPlugIn.change-styles"),
-                true);
+        final MultiInputDialog dialog = new MultiInputDialog(wbframe,
+            I18N.get("ui.style.ChangeStylesPlugIn.change-styles"), true);
+        dialog.setApplyVisible(true);
         dialog.setInset(0);
         dialog.setSideBarImage(IconLoader.icon("Symbology.gif"));
         dialog.setSideBarDescription(I18N
@@ -104,6 +107,7 @@ public class DeeChangeStylesPlugIn extends AbstractPlugIn {
 
         final ArrayList<StylePanel> stylePanels = new ArrayList<StylePanel>();
         final DeeRenderingStylePanel renderingStylePanel = new DeeRenderingStylePanel(blackboard, layer, pb);
+        final Collection<?> oldStyles = layer.cloneStyles();
 
         stylePanels.add(renderingStylePanel);
         stylePanels.add(new ScaleStylePanel(layer, context.getLayerViewPanel()));
@@ -147,58 +151,82 @@ public class DeeChangeStylesPlugIn extends AbstractPlugIn {
                 public String check(JComponent component) {
                     return stylePanel.validateInput();
                 }
-            } }));
+            }}));
         }
 
         dialog.addRow(tabbedPane);
 
         String selectedTab = (String) blackboard.get(LAST_TAB_KEY, (stylePanels.iterator().next()).getTitle());
+        
+        // To apply styles without quiting the dialog, use a new actionListener
+        dialog.addOKCancelApplyPanelActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e) {
+                if (dialog.wasApplyPressed()) {
+                    testStyles(layer, stylePanels, context);
+                }
+            }
+        });
 
         tabbedPane.setSelectedComponent(find(stylePanels, selectedTab));
         dialog.pack();
         GUIUtil.centreOnWindow(dialog);
         dialog.setVisible(true);
         blackboard.put(LAST_TAB_KEY, ((StylePanel) tabbedPane.getSelectedComponent()).getTitle());
-
+        
         if (dialog.wasOKPressed()) {
-            final Collection<?> oldStyles = layer.cloneStyles();
-            layer.getLayerManager().deferFiringEvents(new Runnable() {
-                public void run() {
-                    for (Iterator<StylePanel> i = stylePanels.iterator(); i.hasNext();) {
-                        StylePanel stylePanel = i.next();
-                        stylePanel.updateStyles();
-                    }
-
-                }
-            });
-
-            // fix the problem with mixing styles
-            layer.getLayerManager().deferFiringEvents(new Runnable() {
-                public void run() {
-                    if (layer.getVertexStyle().isEnabled()) {
-                        layer.getBasicStyle().setRenderingVertices(false);
-                    }
-                }
-            });
-
-            final Collection<?> newStyles = layer.cloneStyles();
-            execute(new UndoableCommand(getName()) {
-                @Override
-                public void execute() {
-                    layer.setStyles(newStyles);
-                }
-
-                @Override
-                public void unexecute() {
-                    layer.setStyles(oldStyles);
-                }
-            }, context);
+            applyStyles(layer, stylePanels, oldStyles, context);
             return true;
-        }else{
+        } else {
         	reportNothingToUndoYet(context);
         }
-
         return false;
+    }
+    
+    // used to apply styles without quiting the ChangeStylesDialog.
+    private void testStyles(final Layer layer, 
+            final ArrayList<StylePanel> stylePanels, final PlugInContext context) {
+        for (Iterator<StylePanel> i = stylePanels.iterator(); i.hasNext();) {
+            StylePanel stylePanel = i.next();
+            stylePanel.updateStyles();
+        }
+        if (layer.getVertexStyle().isEnabled()) {
+            layer.getBasicStyle().setRenderingVertices(false);
+        }
+    }
+    
+    private void applyStyles(final Layer layer, final ArrayList<StylePanel> stylePanels, 
+            final Collection<?> oldStyles, final PlugInContext context) {
+        
+        layer.getLayerManager().deferFiringEvents(new Runnable() {
+            public void run() {
+                for (Iterator<StylePanel> i = stylePanels.iterator(); i.hasNext();) {
+                    StylePanel stylePanel = i.next();
+                    stylePanel.updateStyles();
+                }
+            }
+        });
+        
+        // fix the problem with mixing styles
+        layer.getLayerManager().deferFiringEvents(new Runnable() {
+            public void run() {
+                if (layer.getVertexStyle().isEnabled()) {
+                    layer.getBasicStyle().setRenderingVertices(false);
+                }
+            }
+        });
+
+        final Collection<?> newStyles = layer.cloneStyles();
+        execute(new UndoableCommand(getName()) {
+            @Override
+            public void execute() {
+                layer.setStyles(newStyles);
+            }
+
+            @Override
+            public void unexecute() {
+                layer.setStyles(oldStyles);
+            }
+        }, context);
     }
 
     private Component find(Collection<StylePanel> stylePanels, String title) {

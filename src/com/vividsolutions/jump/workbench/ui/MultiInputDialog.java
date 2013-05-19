@@ -53,7 +53,7 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.CollectionMap;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.LayerNameRenderer;
-import com.vividsolutions.jump.workbench.ui.OKCancelPanel;
+import com.vividsolutions.jump.workbench.ui.OKCancelApplyPanel;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
@@ -87,12 +87,12 @@ public class MultiInputDialog extends AbstractMultiInputDialog {
     //| | | SOUTH : console                                                | | |
     //| | |----------------------------------------------------------------| | |
     //| |--------------------------------------------------------------------| |
-    //| | SOUTH : OKCancelPanel                                              | |
+    //| | SOUTH : OKCancelApplyPanel                                         | |
     //| |                                                                    | |
     //| |--------------------------------------------------------------------| |
     //|------------------------------------------------------------------------|
     
-    // dialogPanel contains everything but the OKCancelPanel
+    // dialogPanel contains everything but the OKCancelApplyPanel
     final private JPanel dialogPanel = new JPanel(new BorderLayout());
         // imagePanel contains an image and a description
         final private MultiInputDialogInfoPanel infoPanel = new MultiInputDialogInfoPanel();
@@ -102,7 +102,7 @@ public class MultiInputDialog extends AbstractMultiInputDialog {
         // consolePanel can show warnings or comments to help the user
         final private MultiInputDialogConsole console = new MultiInputDialogConsole();
     // This panel just contains the OK and the Cancel Buttons
-    final protected OKCancelPanel okCancelPanel = new OKCancelPanel();
+    final protected OKCancelApplyPanel okCancelApplyPanel = new OKCancelApplyPanel();
     private int inset = 0;
     
     protected void setMainComponent() {
@@ -185,12 +185,20 @@ public class MultiInputDialog extends AbstractMultiInputDialog {
         pack();
     }
     
+    public void setApplyVisible(boolean applyVisible) {
+        okCancelApplyPanel.setApplyVisible(applyVisible);
+    }
+    
     public void setCancelVisible(boolean cancelVisible) {
-        okCancelPanel.setCancelVisible(cancelVisible);
+        okCancelApplyPanel.setCancelVisible(cancelVisible);
+    }
+    
+    public boolean wasApplyPressed() {
+        return okCancelApplyPanel.wasApplyPressed();
     }
     
     public boolean wasOKPressed() {
-        return okCancelPanel.wasOKPressed();
+        return okCancelApplyPanel.wasOKPressed();
     }
     
     //Experience suggests that one should avoid using weights when using the
@@ -198,13 +206,13 @@ public class MultiInputDialog extends AbstractMultiInputDialog {
     //hard to track down. [Jon Aquino]
     void jbInit() throws Exception {
 
-        okCancelPanel.addActionListener(new ActionListener() {
+        okCancelApplyPanel.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                okCancelPanel_actionPerformed(e);
+                okCancelApplyPanel_actionPerformed(e);
             }
         });
         //LDB: set the default button for Enter to the OK for all
-		this.getRootPane().setDefaultButton(okCancelPanel.getButton("OK"));
+		this.getRootPane().setDefaultButton(okCancelApplyPanel.getButton(I18N.get("ui.OKCancelPanel.ok")));
                 
         setMainComponent();
         
@@ -214,7 +222,11 @@ public class MultiInputDialog extends AbstractMultiInputDialog {
             dialogPanel.add(mainComponent, BorderLayout.CENTER);
             dialogPanel.add(console, BorderLayout.SOUTH);
                 console.setVisible(false);
-        this.getContentPane().add(okCancelPanel, BorderLayout.SOUTH);
+        this.getContentPane().add(okCancelApplyPanel, BorderLayout.SOUTH);
+    }
+    
+    public void addOKCancelApplyPanelActionListener(ActionListener actionListener) {
+        okCancelApplyPanel.addActionListener(actionListener);
     }
     
     /**
@@ -337,8 +349,11 @@ public class MultiInputDialog extends AbstractMultiInputDialog {
         }
     }
     
-    void okCancelPanel_actionPerformed(ActionEvent e) {
-        if (!okCancelPanel.wasOKPressed() || isInputValid()) {
+    void okCancelApplyPanel_actionPerformed(ActionEvent e) {
+        if (okCancelApplyPanel.wasApplyPressed()) {
+            return;
+        } 
+        else if (!okCancelApplyPanel.wasOKPressed() || isInputValid()) {
             setVisible(false);
             return;
         }
@@ -346,7 +361,8 @@ public class MultiInputDialog extends AbstractMultiInputDialog {
     }
     
     void this_componentShown(ComponentEvent e) {
-        okCancelPanel.setOKPressed(false);
+        okCancelApplyPanel.setOKPressed(false);
+        okCancelApplyPanel.setApplyPressed(false);
     }
     
     private boolean isInputValid() {

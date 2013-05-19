@@ -1,6 +1,10 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
-2013-05-18
+2013-05-19 mmichaud <michael.michaud@free.fr>
+  * add optional 'Apply' button in MultiInputDialog, and use it in 
+    DeeChangeStylesPlugIn
+
+2013-05-18 mmichaud <michael.michaud@free.fr>
   * add project name (aka task name) in the ViewAttribute frame title.
   * fix bug 3613234 : sorting attributes did not respect comparator contract
   
