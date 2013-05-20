@@ -3,6 +3,7 @@ package org.openjump.core.ui.plugin.queries;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
+import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
@@ -31,11 +32,11 @@ public class SimpleQueryPlugIn extends AbstractPlugIn {
                     new String[]{MenuNames.TOOLS, MenuNames.TOOLS_QUERIES},
                     this.getName() + "...", false,
                     IconLoader.icon("simple_query.png"),
-                    createEnableCheck(context.getWorkbenchContext()));
+                    getEnableCheck());
     }
 
-    public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+    public EnableCheck getEnableCheck() {
+        EnableCheckFactory checkFactory = EnableCheckFactory.getInstance();
 
         return new MultiEnableCheck()
                 .add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
