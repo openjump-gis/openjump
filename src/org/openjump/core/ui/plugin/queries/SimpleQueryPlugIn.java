@@ -24,10 +24,10 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
  */ 
 public class SimpleQueryPlugIn extends AbstractPlugIn {
     static QueryDialog queryDialog;
-	
+
     public void initialize(PlugInContext context) throws Exception {
 
-            context.getFeatureInstaller().addMainMenuPlugin(this,
+            context.getFeatureInstaller().addMainMenuPlugin (this,
                     new String[]{MenuNames.TOOLS, MenuNames.TOOLS_QUERIES},
                     this.getName() + "...", false,
                     IconLoader.icon("simple_query.png"),
@@ -54,8 +54,8 @@ public class SimpleQueryPlugIn extends AbstractPlugIn {
         return false;
     }
     
-	public String getName(){
-		return I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.menuitem");
-	}
-	
+    public String getName() {
+      return I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.menuitem");
+    }
+
 }
