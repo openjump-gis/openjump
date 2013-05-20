@@ -1,12 +1,13 @@
 package org.openjump.core.ui.plugin.queries;
 
+import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
+import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
+import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-
-import org.openjump.core.ui.plugin.queries.QueryDialog;
-import com.vividsolutions.jump.I18N;
 
 /**
  * SimpleQueryPlugIn is a query editor and processor.
@@ -26,9 +27,19 @@ public class SimpleQueryPlugIn extends AbstractPlugIn {
 	
     public void initialize(PlugInContext context) throws Exception {
 
-		    context.getFeatureInstaller().addMainMenuItem(this,
-		        new String[]{MenuNames.TOOLS, MenuNames.TOOLS_QUERIES},
-		        this.getName() + "...", false, IconLoader.icon("simple_query.png"), null);   	   
+            context.getFeatureInstaller().addMainMenuPlugin(this,
+                    new String[]{MenuNames.TOOLS, MenuNames.TOOLS_QUERIES},
+                    this.getName() + "...", false,
+                    IconLoader.icon("simple_query.png"),
+                    createEnableCheck(context.getWorkbenchContext()));
+    }
+
+    public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
+        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+
+        return new MultiEnableCheck()
+                .add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
+                .add(checkFactory.createAtLeastNLayersMustExistCheck(1));
     }
                                                       
     public boolean execute(PlugInContext context) throws Exception {
