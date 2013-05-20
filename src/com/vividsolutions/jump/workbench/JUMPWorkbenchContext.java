@@ -32,19 +32,12 @@
 
 package com.vividsolutions.jump.workbench;
 
-import javax.swing.JInternalFrame;
-
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.driver.DriverManager;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
 import com.vividsolutions.jump.workbench.model.Task;
-import com.vividsolutions.jump.workbench.ui.ErrorHandler;
-import com.vividsolutions.jump.workbench.ui.LayerNamePanel;
-import com.vividsolutions.jump.workbench.ui.LayerNamePanelProxy;
-import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
-import com.vividsolutions.jump.workbench.ui.LayerViewPanelProxy;
-import com.vividsolutions.jump.workbench.ui.TaskFrame;
+import com.vividsolutions.jump.workbench.ui.*;
 
 /**
  * Implementation of {@link WorkbenchContext} for the {@link JUMPWorkbench}.

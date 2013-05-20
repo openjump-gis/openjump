@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-05-20 mmichaud <michael.michaud@free.fr>
+  * now, changing active InternalFrame will change activeTaskFrame
+    if internalFrame is a TaskFrameProxy (see also FR 3613274)
+
 2013-05-19 mmichaud <michael.michaud@free.fr>
   * add optional 'Apply' button in MultiInputDialog, and use it in 
     DeeChangeStylesPlugIn
