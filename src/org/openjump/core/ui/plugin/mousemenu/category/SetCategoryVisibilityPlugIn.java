@@ -9,6 +9,7 @@
  */
 package org.openjump.core.ui.plugin.mousemenu.category;
 
+import java.awt.CheckboxMenuItem;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -18,6 +19,7 @@ import java.util.Map;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 import javax.swing.MenuElement;
 
@@ -34,6 +36,7 @@ import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Category;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
+import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
@@ -51,7 +54,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
  */
 public class SetCategoryVisibilityPlugIn extends AbstractPlugIn implements LayerNamePanelListener {
     
-    protected Map cathegory2Visibility = new HashMap();
+    protected Map category2Visibility = new HashMap();
     protected Map layer2Visibility = new HashMap();
     protected PlugInContext context = null;
     
@@ -65,7 +68,7 @@ public class SetCategoryVisibilityPlugIn extends AbstractPlugIn implements Layer
      * Constructor needed to load PlugIn from classes, should NOT be used by any other
      * code --> use getInstance() method instead!!
      */
-    public SetCategoryVisibilityPlugIn(){
+    private SetCategoryVisibilityPlugIn(){
         SetCategoryVisibilityPlugIn.instance = this;
     }
     
@@ -92,34 +95,40 @@ public class SetCategoryVisibilityPlugIn extends AbstractPlugIn implements Layer
         JPopupMenu layerNamePopupMenu = context.getWorkbenchContext().getWorkbench().getFrame().getCategoryPopupMenu();
         FeatureInstaller featInst = context.getFeatureInstaller();
         
-        featInst.addPopupMenuItem(layerNamePopupMenu,
+        this.menuItem = (JCheckBoxMenuItem) featInst.addPopupMenuPlugin(layerNamePopupMenu,
                 this, this.getName() + "...", true,
                 GUIUtil.toSmallIcon((ImageIcon) this.getIcon()),
                 SetCategoryVisibilityPlugIn.createEnableCheck(context.getWorkbenchContext()));
         
-        MenuElement[] elements = layerNamePopupMenu.getSubElements();
-        
-        for (int i=0; i<elements.length; i++){
-            if ( JCheckBoxMenuItem.class.isInstance(elements[i]) ){
-                if ( ((JCheckBoxMenuItem)elements[i]).getText().startsWith(this.getName()) ){
-                    ((JCheckBoxMenuItem)elements[i]).setSelected(true);
-                    this.menuItem = (JCheckBoxMenuItem)elements[i];
-                }
-            }
-        }
+//        MenuElement[] elements = layerNamePopupMenu.getSubElements();
+//        
+//        for (int i=0; i<elements.length; i++){
+//            if ( JCheckBoxMenuItem.class.isInstance(elements[i]) ){
+//                if ( ((JCheckBoxMenuItem)elements[i]).getText().startsWith(this.getName()) ){
+//                    ((JCheckBoxMenuItem)elements[i]).setSelected(true);
+//                    this.menuItem = (JCheckBoxMenuItem)elements[i];
+//                }
+//            }
+//        }
         
 //        context.getLayerNamePanel().addListener(this);
     }
-    
-    
-    
+
     public static MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
         EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
         MultiEnableCheck multiEnableCheck = new MultiEnableCheck();
         
         multiEnableCheck.add( checkFactory.createAtLeastNLayersMustExistCheck(1) );
-        multiEnableCheck.add( checkFactory.createAtLeastNCategoriesMustBeSelectedCheck(1) );
+        //multiEnableCheck.add( checkFactory.createAtLeastNCategoriesMustBeSelectedCheck(1) );
         multiEnableCheck.add( checkFactory.createExactlyNCategoriesMustBeSelectedCheck(1) );
+        
+        // simple hook to switch menuitem states
+        multiEnableCheck.add(new EnableCheck() {
+          public String check(JComponent component) {
+            SetCategoryVisibilityPlugIn.getInstance(workbenchContext.createPlugInContext()).layerSelectionChanged();
+            return null;
+          }
+        });
         
         return multiEnableCheck;
 	}
@@ -130,11 +139,11 @@ public class SetCategoryVisibilityPlugIn extends AbstractPlugIn implements Layer
     
     public boolean execute(PlugInContext context) throws Exception {
         
-        try {
-            context.getLayerNamePanel().addListener(this);
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            context.getLayerNamePanel().addListener(this);
+//        } catch (RuntimeException e) {
+//            e.printStackTrace();
+//        }
         
         Collection selCats = context.getLayerNamePanel().getSelectedCategories();
         
@@ -145,13 +154,13 @@ public class SetCategoryVisibilityPlugIn extends AbstractPlugIn implements Layer
         while(iter.hasNext()){
             cat = (Category)iter.next();
             
-            if (!this.cathegory2Visibility.containsKey(cat)){
-                this.cathegory2Visibility.put(cat, new Boolean(true));
+            if (!this.category2Visibility.containsKey(cat)){
+                this.category2Visibility.put(cat, new Boolean(true));
             }
             
-            visible = (Boolean)this.cathegory2Visibility.get(cat);
-            this.cathegory2Visibility.remove(cat);
-            this.cathegory2Visibility.put(cat, new Boolean(!visible.booleanValue()) );
+            visible = (Boolean)this.category2Visibility.get(cat);
+            this.category2Visibility.remove(cat);
+            this.category2Visibility.put(cat, new Boolean(!visible.booleanValue()) );
             
             this.setLayerVisibility( cat.getLayerables(), !visible.booleanValue() );
         }
@@ -201,36 +210,36 @@ public class SetCategoryVisibilityPlugIn extends AbstractPlugIn implements Layer
         
         while (iter.hasNext()){
             cat = (Category)iter.next();
-            if (this.cathegory2Visibility.containsKey(cat) && !((Boolean)this.cathegory2Visibility.get(cat)).booleanValue()){
+            if (this.category2Visibility.containsKey(cat) && !((Boolean)this.category2Visibility.get(cat)).booleanValue()){
                 this.setLayerVisibility( cat.getLayerables(), false );
             }
         }
     }
     
     public boolean IsCategoryVisible(Category cat){
-        if (this.cathegory2Visibility.containsKey(cat))
-            return ((Boolean)this.cathegory2Visibility.get(cat)).booleanValue();
+        if (this.category2Visibility.containsKey(cat))
+            return ((Boolean)this.category2Visibility.get(cat)).booleanValue();
 
         // by default, there is no invisibilty for categories
         return true;
     }
     
     public void setCategoryVisibility(Category cat, boolean visible){
-        this.cathegory2Visibility.put(cat, new Boolean(visible));
+        this.category2Visibility.put(cat, new Boolean(visible));
         this.checkAndFixInvisibility();
     }
 
     public void layerSelectionChanged() {
         PlugInContext context = PlugInContextTools.getContext(this.context);
-        List cathegories = context.getLayerManager().getCategories();
+        List categories = context.getLayerManager().getCategories();
         
-        Iterator iter = cathegories.iterator();
+        Iterator iter = categories.iterator();
         Category cat;
         
         while (iter.hasNext()){
             cat = (Category)iter.next();
-            if (!this.cathegory2Visibility.containsKey(cat)){
-                this.cathegory2Visibility.put(cat, new Boolean(true));
+            if (!this.category2Visibility.containsKey(cat)){
+                this.category2Visibility.put(cat, new Boolean(true));
             }
         }
         
@@ -240,9 +249,9 @@ public class SetCategoryVisibilityPlugIn extends AbstractPlugIn implements Layer
         
         if (selCats.isEmpty()) return;
         
-        cat = (Category)selCats.toArray()[0];
+        cat = (Category)selCats.iterator().next();
         
-        this.menuItem.setSelected( ((Boolean)this.cathegory2Visibility.get(cat)).booleanValue() );
+        this.menuItem.setSelected( ((Boolean)this.category2Visibility.get(cat)).booleanValue() );
 
     }
 

@@ -1,5 +1,10 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-05-20 ede
+  * bugfix 3613603: NPE thrown by LayerNamePanel
+    https://sourceforge.net/tracker/?func=detail&atid=679906&aid=3613603&group_id=118054
+  * minor performance enhancement for LayerNameTree selection
+
 2013-05-20 mmichaud <michael.michaud@free.fr>
   * now, changing active InternalFrame will change activeTaskFrame
     if internalFrame is a TaskFrameProxy (see also FR 3613274)
@@ -31,7 +36,12 @@
   
 2013-04-27 mmichaud <michael.michaud@free.fr>
   * try to fix 3611503 in FillPolygonTool
-  
+
+2013-04-25 ede
+  oj_windows.bat:
+    survive wmic ram detection errors and start regardless with
+    safe default
+
 * release 1.6.2 ***************************************************************
 
 2013-04-23 mmichaud <michael.michaud@free.fr>
