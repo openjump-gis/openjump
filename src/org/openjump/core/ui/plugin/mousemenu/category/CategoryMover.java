@@ -9,12 +9,12 @@
  */
 package org.openjump.core.ui.plugin.mousemenu.category;
 
-import java.util.List;
-
 import com.vividsolutions.jump.workbench.model.Category;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+
+import java.util.List;
 
 /**
  * Provides methods to move a category including the layers in it within the LayerNamePanel.
@@ -61,7 +61,7 @@ public class CategoryMover {
     public void moveCategoryToPosition(Category cat, int pos){
         LayerManager lm = this.context.getLayerManager();
         
-        boolean catIsVisible = SetCategoryVisibilityPlugIn.getInstance(this.context).IsCategoryVisible(cat);
+        boolean catIsVisible = SetCategoryVisibilityPlugIn.getInstance(/*this.context*/).isCategoryVisible(cat);
         
         lm.setFiringEvents(false);
         
@@ -89,7 +89,7 @@ public class CategoryMover {
         // rebuild category in its new place
         lm.addCategory(cat.getName(), Math.min(pos,categories.size()));
         
-        SetCategoryVisibilityPlugIn.getInstance(this.context).setCategoryVisibility(lm.getCategory(cat.getName()), catIsVisible );
+        SetCategoryVisibilityPlugIn.getInstance(/*this.context*/).setCategoryVisibility(lm.getCategory(cat.getName()), catIsVisible );
         
         for (int i=0; i<layerArray.length; i++){
             lm.addLayerable(cat.getName(), (Layerable)layerArray[i]);
