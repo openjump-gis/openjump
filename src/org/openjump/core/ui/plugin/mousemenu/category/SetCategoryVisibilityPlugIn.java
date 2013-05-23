@@ -52,7 +52,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
  * Daten- und Wissensmanagement
  * 
  */
-public class SetCategoryVisibilityPlugIn extends AbstractPlugIn implements LayerNamePanelListener {
+public class SetCategoryVisibilityPlugIn extends AbstractPlugIn {
     
     protected Map layer2Visibility = new HashMap();
     protected PlugInContext context = null;
