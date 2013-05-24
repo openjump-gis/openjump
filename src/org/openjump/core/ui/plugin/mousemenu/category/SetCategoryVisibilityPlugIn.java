@@ -41,7 +41,9 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.LayerNamePanel;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanelListener;
+import com.vividsolutions.jump.workbench.ui.PopupNodeProxy;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 /**
@@ -123,21 +125,46 @@ public class SetCategoryVisibilityPlugIn extends AbstractPlugIn {
     
     public boolean execute(PlugInContext context) throws Exception {
         
-        Collection selCats = context.getLayerNamePanel().getSelectedCategories();
+        LayerNamePanel lnp = context.getLayerNamePanel();
+        Collection selCats = lnp.getSelectedCategories();
         Iterator iter = selCats.iterator();
 
         Boolean visible = null;
+        // get what to do from selected/clicked category
+        Category cat_clicked = getClickedCategory();
+        if (cat_clicked != null)
+          visible = !isCategoryVisible(cat_clicked);
         Category cat;
         while(iter.hasNext()){
             cat = (Category)iter.next();
-            // first selected defines visible state to inverse
+            // if still not set, first selected defines visible state to inverse
+            // NOTE: getSelectedCategories() does not necessarily give 
+            //       the last clicked category as first item
             if (visible==null)
               visible = !isCategoryVisible(cat);
-            // set visibility
-            this.setLayersVisibility( cat.getLayerables(), visible );
+            // set visibility only if necessary
+            if (isCategoryVisible(cat)!=visible)
+              this.setLayersVisibility( cat.getLayerables(), visible );
         }
         
         return true;
+    }
+    
+    private Category getClickedCategory() {
+      // refresh context
+      PlugInContext context = PlugInContextTools.getContext(this.context);
+      LayerNamePanel lnp = context.getLayerNamePanel();
+      Collection selCats = lnp.getSelectedCategories();
+      Iterator iter = selCats.iterator();
+
+      // use clicked category or first selected
+      if (lnp instanceof PopupNodeProxy) {
+        Object o = ((PopupNodeProxy)lnp).getPopupNode();
+        if (o instanceof Category)
+          return (Category)o;
+      }
+      
+      return selCats.isEmpty() ? null : (Category)selCats.iterator().next();
     }
     
     private boolean isCategoryVisible(Category cat) {
@@ -191,15 +218,12 @@ public class SetCategoryVisibilityPlugIn extends AbstractPlugIn {
     }
     
     public void updateMenuItem() {
-        // refresh context
-        PlugInContext context = PlugInContextTools.getContext(this.context);
-        Collection selCats = context.getLayerNamePanel().getSelectedCategories();
-        if (selCats.isEmpty()) return;
+      // get what to do from selected/clicked category
+      Category cat_clicked = getClickedCategory();
+      if (cat_clicked == null) return;
         
-        Category cat = (Category)selCats.iterator().next();
-        // get saved value
-        boolean visible = isCategoryVisible(cat);
-        this.menuItem.setSelected( visible );
+      boolean visible = isCategoryVisible(cat_clicked);
+      this.menuItem.setSelected( visible );
     }
 
 }
