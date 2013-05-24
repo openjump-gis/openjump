@@ -255,9 +255,13 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
         }
         try {
             String selectedDatasetName = getDatasetName();
-            datasetComboBox.setModel( new DefaultComboBoxModel(
-                sortByString( datasetNames( getConnectionDescriptor() ) ) ) );
-            datasetComboBox.setSelectedItem( selectedDatasetName );
+            String[] datasetNames = datasetNames( getConnectionDescriptor() );
+            // avoid a NPE, if there are no spatial enabled tables in this database
+            if (datasetNames != null) {
+                datasetComboBox.setModel( new DefaultComboBoxModel(
+                    sortByString( datasetNames) ) );
+                datasetComboBox.setSelectedItem( selectedDatasetName );
+            }
         } catch ( Exception e ) {
             getContext().getErrorHandler().handleThrowable( e );
             datasetComboBox.setModel( new DefaultComboBoxModel() );

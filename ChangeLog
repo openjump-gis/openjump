@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-05-24 Matthias Scholz <ms@jammerhund.de>
+  * AddDatastoreLayerPanel.populateDatasetComboBox():
+      avoid a NPE, if there are no spatial enabled tables in this database
+
 2013-05-21 mmichaud <michael.michaud@free.fr>
   * second tentative to fix 3613603
 
