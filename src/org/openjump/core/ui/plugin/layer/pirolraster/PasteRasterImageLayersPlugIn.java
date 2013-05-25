@@ -31,25 +31,21 @@
  */
 package org.openjump.core.ui.plugin.layer.pirolraster;
 
-import java.awt.Toolkit;
-import java.awt.datatransfer.Transferable;
-import java.util.Collection;
-import java.util.Iterator;
-
-import javax.swing.JComponent;
-
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.model.Category;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
-import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.plugin.clipboard.CollectionOfLayerablesTransferable;
+
+import java.awt.*;
+import java.awt.datatransfer.Transferable;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
 * 
@@ -90,16 +86,14 @@ public class PasteRasterImageLayersPlugIn extends LayerableClipboardPlugIn {
                 CollectionOfLayerablesTransferable.COLLECTION_OF_LAYERABLES_FLAVOR);
         //Cache selected category because selection will change (to layer) after adding first layer
         //if no other layers exist. [Jon Aquino]
-        //-- [sstein] 28.Feb.20009 - just paste to System-Category, without category info 
-        //Category selectedCategory =
-        //    ((Category) context.getLayerNamePanel().getSelectedCategories().iterator().next());
+        //-- [sstein] 28.Feb.2009 - just paste to System-Category, without category info
+        //can't choose the target category as this menu is active because a Raster image is selected
         for (Iterator i = layerables.iterator(); i.hasNext();) {
             Layerable layerable = (Layerable) i.next();
             Layerable clone = cloneLayerable(layerable);
-            clone.setLayerManager(context.getLayerManager());            
-            //context.getLayerManager().addLayerable(selectedCategory.getName(), clone);
+            clone.setLayerManager(context.getLayerManager());
             context.getLayerManager().addLayerable(StandardCategoryNames.SYSTEM, clone);
-            clone.setName(context.getLayerManager().uniqueLayerName(clone.getName()));            
+            clone.setName(context.getLayerManager().uniqueLayerName(clone.getName()));
         }
         
       return true;

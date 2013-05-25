@@ -31,13 +31,6 @@
  */
 package org.openjump.core.ui.plugin.layer.pirolraster;
 
-import java.awt.Toolkit;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-
-import org.openjump.core.rasterimage.RasterImageLayer;
-
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
@@ -48,6 +41,12 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.plugin.clipboard.CollectionOfLayerablesTransferable;
 import com.vividsolutions.jump.workbench.ui.plugin.clipboard.DummyClipboardOwner;
+import org.openjump.core.rasterimage.RasterImageLayer;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
 
 public class CopySelectedRasterImageLayersPlugIn extends LayerableClipboardPlugIn {
@@ -84,7 +83,7 @@ public class CopySelectedRasterImageLayersPlugIn extends LayerableClipboardPlugI
             if (!(layerable instanceof Layer || layerable instanceof WMSLayer || layerable instanceof RasterImageLayer)) {
                 continue;
             }
-
+System.out.println(((Layerable)cloneLayerable(layerable)).getName());
             clones.add(cloneLayerable(layerable));
         }
 

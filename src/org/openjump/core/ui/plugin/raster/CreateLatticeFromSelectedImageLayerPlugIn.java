@@ -40,33 +40,23 @@
 
 package org.openjump.core.ui.plugin.raster;
 
-import java.awt.geom.Point2D;
-
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.feature.*;
+import com.vividsolutions.jump.task.TaskMonitor;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
+import com.vividsolutions.jump.workbench.plugin.*;
+import com.vividsolutions.jump.workbench.ui.MenuNames;
+import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import org.openjump.core.apitools.LayerTools;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer;
 import org.openjump.core.rasterimage.sextante.rasterWrappers.GridWrapperNotInterpolated;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.feature.AttributeType;
-import com.vividsolutions.jump.feature.BasicFeature;
-import com.vividsolutions.jump.feature.Feature;
-import com.vividsolutions.jump.feature.FeatureCollection;
-import com.vividsolutions.jump.feature.FeatureDataset;
-import com.vividsolutions.jump.feature.FeatureSchema;
-import com.vividsolutions.jump.task.TaskMonitor;
-import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
-import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
-import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
-import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
-import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.plugin.ThreadedPlugIn;
-import com.vividsolutions.jump.workbench.ui.MenuNames;
-import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
+import java.awt.geom.Point2D;
 
 /**
  * Creates a lattice for the current selected raster image
@@ -140,7 +130,8 @@ public class CreateLatticeFromSelectedImageLayerPlugIn extends AbstractPlugIn im
 		
 		//-- create a sextante raster layer since it is easier to handle
 		OpenJUMPSextanteRasterLayer rstLayer = new OpenJUMPSextanteRasterLayer();
-		rstLayer.create(rLayer);
+		// [mmichaud 2013-05-25] false : this is a temporary image not a file based image
+        rstLayer.create(rLayer, false);
 		// create a gridwrapper to later access the cells
 		GridWrapperNotInterpolated gwrapper = new GridWrapperNotInterpolated(rstLayer, rstLayer.getLayerGridExtent());
 		//-- create the FeatureSchema

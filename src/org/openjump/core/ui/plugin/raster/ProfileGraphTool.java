@@ -33,43 +33,29 @@
 
 package org.openjump.core.ui.plugin.raster;
 
-import java.awt.BorderLayout;
-import java.awt.Cursor;
-import java.awt.event.MouseEvent;
-import java.awt.geom.NoninvertibleTransformException;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JInternalFrame;
-
+import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.feature.*;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
+import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
+import com.vividsolutions.jump.workbench.ui.cursortool.MultiClickTool;
 import org.openjump.core.apitools.LayerTools;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer;
 import org.openjump.core.rasterimage.sextante.rasterWrappers.GridExtent;
 import org.openjump.core.ui.plot.Plot2DPanelOJ;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.feature.AttributeType;
-import com.vividsolutions.jump.feature.BasicFeature;
-import com.vividsolutions.jump.feature.Feature;
-import com.vividsolutions.jump.feature.FeatureCollection;
-import com.vividsolutions.jump.feature.FeatureDataset;
-import com.vividsolutions.jump.feature.FeatureSchema;
-import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
-import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
-import com.vividsolutions.jump.workbench.ui.cursortool.MultiClickTool;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.geom.NoninvertibleTransformException;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class ProfileGraphTool extends MultiClickTool 
 {
@@ -157,7 +143,8 @@ public class ProfileGraphTool extends MultiClickTool
             return;
         }
 		this.rstLayer = new OpenJUMPSextanteRasterLayer();
-		this.rstLayer.create(rLayer);
+        // [mmichaud 2013-05-25] false : this is a temporary image not a file based image
+		this.rstLayer.create(rLayer, false);
 		this.rstLayer.setFullExtent(); // not sure why this needs to be done but it seems to 
 									   // be necessary (otherwise I get an NPE when 
 		                               // doing this.rstLayer.getWindowCellSize())		

@@ -1,42 +1,20 @@
 
 package org.openjump.core.ui.plugin.raster.color;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.LayoutManager;
-
-import java.awt.event.ActionEvent;
-import java.awt.geom.NoninvertibleTransformException;
-
-import javax.swing.JComboBox;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JColorChooser;
-import javax.swing.JDialog;
-
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-
-import javax.swing.JTextField;
-import javax.swing.border.Border;
-
-import org.openjump.core.rasterimage.RasterImageLayer;
-import org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer;
-
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.ColorChooserPanel;
 import com.vividsolutions.jump.workbench.ui.ColorPanel;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
-
 import com.vividsolutions.jump.workbench.ui.OKCancelPanel;
+import org.openjump.core.rasterimage.RasterImageLayer;
+import org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer;
+
+import javax.swing.*;
+import javax.swing.border.Border;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.geom.NoninvertibleTransformException;
 
 /**
  * 15 sept. 2005
@@ -187,8 +165,9 @@ public class RasterColorEditorDialog extends JDialog {
                 .setToolTipText(sToolTip); //$NON-NLS-1$
         colorScaleChooser.setBorder(borderRaised);
         mainPanel.add(colorScaleChooser, c);
-        OpenJUMPSextanteRasterLayer ojraster = new OpenJUMPSextanteRasterLayer(); 
-        ojraster.create(layer);
+        OpenJUMPSextanteRasterLayer ojraster = new OpenJUMPSextanteRasterLayer();
+        // [mmichaud 2013-05-25] false : this is a temporary image not a file based image
+        ojraster.create(layer, false);
         fromValue = new JTextField(Double.toString(ojraster.getMinValue()), 15);
         fromValueLabel = new JLabel(sFromValue); //$NON-NLS-1$
 
