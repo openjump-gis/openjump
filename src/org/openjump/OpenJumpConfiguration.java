@@ -15,8 +15,6 @@
  */
 package org.openjump;
 
-import static com.vividsolutions.jump.workbench.ui.MenuNames.LAYER;
-
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
@@ -53,11 +51,6 @@ import org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn;
 import org.openjump.core.ui.plugin.layer.ToggleVisiblityPlugIn;
 import org.openjump.core.ui.plugin.layer.pirolraster.RasterImageContextMenu;
 import org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn;
-import org.openjump.core.ui.plugin.mousemenu.category.MoveCategoryOneDown;
-import org.openjump.core.ui.plugin.mousemenu.category.MoveCategoryOneUp;
-import org.openjump.core.ui.plugin.mousemenu.category.MoveCategoryToBottom;
-import org.openjump.core.ui.plugin.mousemenu.category.MoveCategoryToTop;
-import org.openjump.core.ui.plugin.mousemenu.category.SetCategoryVisibilityPlugIn;
 import org.openjump.core.ui.plugin.style.ImportArcMapStylePlugIn;
 import org.openjump.core.ui.plugin.style.ImportSLDPlugIn;
 import org.openjump.core.ui.plugin.view.EasyButtonsPlugin;
@@ -65,10 +58,7 @@ import org.openjump.core.ui.plugin.view.MapToolTipPlugIn;
 import org.openjump.core.ui.plugin.view.ShowFullPathPlugIn;
 import org.openjump.core.ui.plugin.view.ShowScalePlugIn;
 import org.openjump.core.ui.plugin.view.ZoomToScalePlugIn;
-import org.openjump.core.ui.plugin.window.MosaicInternalFramesPlugIn;
-import org.openjump.core.ui.plugin.window.SynchronizationPlugIn;
 import org.openjump.core.ui.plugin.wms.AddWmsLayerWizard;
-import org.openjump.core.ui.plugin.wms.ZoomToWMSPlugIn;
 import org.openjump.core.ui.plugin.wms.ZoomToWMSLayerPlugIn;
 import org.openjump.core.ui.style.decoration.ArrowLineStringMiddlepointStyle;
 import org.openjump.core.ui.style.decoration.SegmentDownhillArrowStyle;
@@ -94,7 +84,6 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.registry.Registry;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
-import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.datastore.RunDatastoreQueryPlugIn;
@@ -390,16 +379,6 @@ public class OpenJumpConfiguration {
     /***************************************************************************
      * menu WINDOW
      **************************************************************************/
-
-    MosaicInternalFramesPlugIn mosaicInternalFramesPlugIn = new MosaicInternalFramesPlugIn();
-    mosaicInternalFramesPlugIn.initialize(new PlugInContext(workbenchContext, null, null,
-      null, null));
-
-    SynchronizationPlugIn synchronizationPlugIn = new SynchronizationPlugIn("");
-    synchronizationPlugIn.initialize(new PlugInContext(workbenchContext, null, null,
-      null, null));
-
-    pluginContext.getFeatureInstaller().addMenuSeparator(MenuNames.WINDOW);
 
     /***************************************************************************
      * menu HELP

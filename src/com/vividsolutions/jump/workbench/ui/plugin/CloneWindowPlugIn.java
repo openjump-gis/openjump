@@ -33,12 +33,18 @@
 
 package com.vividsolutions.jump.workbench.ui.plugin;
 
+import javax.swing.Icon;
+import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
 
+import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
+import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.CloneableInternalFrame;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanelProxy;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 
 public class CloneWindowPlugIn extends AbstractPlugIn {
@@ -61,4 +67,20 @@ public class CloneWindowPlugIn extends AbstractPlugIn {
 
         return true;
     }
+
+    @Override
+    public EnableCheck getEnableCheck() {
+      return new EnableCheck() {
+        public String check(JComponent component) {
+          return JUMPWorkbench.getInstance().getFrame().getActiveInternalFrame() instanceof CloneableInternalFrame 
+              ? null : I18N.get("JUMPConfiguration.not-available-for-the-current-window");
+        }
+      };
+    }
+
+    @Override
+    public Icon getIcon(int height) {
+      return IconLoader.icon("application_duplicate.png");
+    }
+
 }

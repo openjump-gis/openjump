@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-05-26 ede
+  * main menu Window, put "Clone' before 'Synchronization', as they belong together
+
 2013-05-25 mmichaud <michael.michaud@free.fr>
   * 3613870 fixed : cloning sextante raster layer was creating a unique name
   * 3612322 fixed :  "Create point grid", "Create lattice" and "Raster profile"

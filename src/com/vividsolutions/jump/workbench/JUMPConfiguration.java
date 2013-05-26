@@ -63,6 +63,8 @@ import org.openjump.core.ui.plugin.view.SuperZoomPanTool;
 import org.openjump.core.ui.plugin.view.helpclassescale.InstallShowScalePlugIn;
 import org.openjump.core.ui.plugin.view.helpclassescale.ShowScaleRenderer;
 import org.openjump.core.ui.plugin.window.ArrangeViewsPlugIn;
+import org.openjump.core.ui.plugin.window.MosaicInternalFramesPlugIn;
+import org.openjump.core.ui.plugin.window.SynchronizationPlugIn;
 
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
@@ -979,26 +981,27 @@ public class JUMPConfiguration implements Setup {
         GUIUtil.toSmallIcon(generateLogPlugIn.getIcon()), null);
     featureInstaller.addMenuSeparator(MenuNames.WINDOW); // ===================
 
-    featureInstaller.addMainMenuItem(cloneWindowPlugIn,
-        new String[] { MenuNames.WINDOW }, cloneWindowPlugIn.getName(), false,
-        IconLoader.icon("application_duplicate.png"), new EnableCheck() {
+    featureInstaller.addMainMenuPlugin(arrangeHorizontalPlugIn,
+        new String[] { MenuNames.WINDOW });
+    featureInstaller.addMainMenuPlugin(arrangeVerticalPlugIn,
+        new String[] { MenuNames.WINDOW });
+    featureInstaller.addMainMenuPlugin(arrangeCascadePlugIn,
+        new String[] { MenuNames.WINDOW });
+    featureInstaller.addMainMenuPlugin(arrangeAllPlugIn,
+        new String[] { MenuNames.WINDOW });
+    
+    new MosaicInternalFramesPlugIn().initialize(new PlugInContext(workbenchContext, null, null,
+        null, null));
+    
+    featureInstaller.addMenuSeparator(MenuNames.WINDOW); // ===================
+    
+    featureInstaller.addMainMenuPlugin(cloneWindowPlugIn,
+        new String[] { MenuNames.WINDOW });
+    
+    new SynchronizationPlugIn("").initialize(new PlugInContext(workbenchContext, null, null,
+      null, null));
 
-          public String check(JComponent component) {
-            return (!(workbenchContext.getWorkbench().getFrame()
-                .getActiveInternalFrame() instanceof CloneableInternalFrame)) ? I18N
-                .get("JUMPConfiguration.not-available-for-the-current-window")
-                : null;
-          }
-        });
-
-      featureInstaller.addMainMenuPlugin(arrangeHorizontalPlugIn,
-          new String[] { MenuNames.WINDOW });
-      featureInstaller.addMainMenuPlugin(arrangeVerticalPlugIn,
-          new String[] { MenuNames.WINDOW });
-      featureInstaller.addMainMenuPlugin(arrangeCascadePlugIn,
-          new String[] { MenuNames.WINDOW });
-      featureInstaller.addMainMenuPlugin(arrangeAllPlugIn,
-          new String[] { MenuNames.WINDOW });
+    featureInstaller.addMenuSeparator(MenuNames.WINDOW); // ===================
     
     /**
      * HELP ===================================================================
