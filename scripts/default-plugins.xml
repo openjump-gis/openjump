@@ -123,6 +123,7 @@
  	<plug-in> org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn</plug-in>
  	<plug-in> org.openjump.core.ui.plugin.raster.ProfileGraphPlugIn</plug-in>
  	<plug-in> org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn</plug-in>
+ 	<plug-in> org.openjump.core.ui.plugin.raster.RasterQueryPlugIn</plug-in>
 	<!---  ======================================== /-->
 	<!--  			CUSTOMIZE 						/-->
 	<!--- ========================================= /-->

@@ -16,6 +16,7 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
 import org.openjump.core.rasterimage.RasterImageLayer;
+import org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn;
 
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
@@ -101,7 +102,15 @@ public class RasterImageContextMenu extends TitledPopupMenu {
         toggleRasterImageVisibility.setMenuItem(menuItem);
         
         this.addSeparator(); // ===================
-        
+        /*
+         * Giuseppe Aruta 2013_05_27 Add RasterImagePropertiesPlugIn
+         */
+        RasterImageLayerPropertiesPlugIn rasterImageLayerPropertiesPlugIn = new RasterImageLayerPropertiesPlugIn();
+        featureInstaller.addPopupMenuItem(this,
+        		rasterImageLayerPropertiesPlugIn , rasterImageLayerPropertiesPlugIn .getName() + "...", false,
+                rasterImageLayerPropertiesPlugIn.getIcon(),
+                null);
+               
         ChangeRasterImagePropertiesPlugIn changeRasterImagePropertiesPlugIn = new ChangeRasterImagePropertiesPlugIn();
         featureInstaller.addPopupMenuItem(this,
                 changeRasterImagePropertiesPlugIn, changeRasterImagePropertiesPlugIn.getName() + "...",
