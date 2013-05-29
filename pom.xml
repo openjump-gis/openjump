@@ -159,7 +159,7 @@
       <properties>
         <!-- has to be set on maven run with -D version.number=X.X.X -->
         <version.number>unknown</version.number>
-        <version.release>stable</version.release>
+        <version.release>release</version.release>
         <version.string>${artifactId}-${version.number}-r${version.revision}</version.string>
       </properties>
       <build>
