@@ -1,5 +1,7 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+* release 1.6.3 ***************************************************************
+
 2013-05-27 Giuseppe Aruta (giuseppe_aruta@yahoo.it)
    * Add two simple plugins for Sextante raster layers
    * a) RasterLayerPropertiesPlugin which displays raster properties (extension, name, bands, etc), 
