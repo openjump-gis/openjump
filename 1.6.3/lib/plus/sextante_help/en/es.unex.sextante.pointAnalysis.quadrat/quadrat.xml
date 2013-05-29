@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="this algorithm performs point pattern analysis using quadrant analysis.&#10;&#10;It divides the region occupied by the set of input points and counts the number of events that occur in each quadrant.&#10;" description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="* http://www.geog.ucsb.edu/~dongmei/ppa/ppa.html" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="POINTS" text="the input points layer" description="Points" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="Statistical value from the quadrant analysis" description="Statistics" type="2">
+			<image description="" file="analisis_por_cuadrantes.jpg">
+			</image>
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

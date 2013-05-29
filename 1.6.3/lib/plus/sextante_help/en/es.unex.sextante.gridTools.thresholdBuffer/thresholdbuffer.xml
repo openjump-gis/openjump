@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm creates a buffer area using an ancillary threshold layer. Buffers grow out of feature cells unless a given griteria is met. Resulting buffer areas do not have a constant width, and their shape depends on the values of the threshold layer." description="Description" type="0">
+			<image description="Example. Input layer: channel network. Threshold parameter layer: slope. Threshold type: absolute. Absolute threshold: 0.15" file="zona_de_influencia_mediante_umbral.jpg">
+			</image>
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="FEATURES" text="The raster layer whith the features to buffer. These should be represented by non-zero values. All cells not representing a feature to buffer should have a zero value or the no-data value of the layer" description="Layer" type="3">
+		</element>
+		<element name="VALUES" text="The layer contaning the threshold variable." description="Threshold parameter" type="3">
+		</element>
+		<element name="THRESHOLD" text='This layer contains the threshold that should be applied to each feature cell when computing its buffer. If you want to use a constant threshold, do not select a layer in this field and enter a global value in the "Global threshold" field.' description="Threshold values" type="3">
+		</element>
+		<element name="METHOD" text="There are two available methods.&#10;&#10;In both cases, the buffer expands from each feature cell towards the surrounding cells, stopping only when the values of a surrounding cell does not meet the condition set by the chosen method.&#10;&#10;* Absolute: surrounding cells will become part of the buffer if the value of the threshold parameter in that cell is lower than the threshold.&#10;* Relative to the value of the cell:  surrounding cells will become part of the buffer if the difference between its value and the value of the initial feature cell in the threshold layer is less than the threshold. " description="Threshold" type="3">
+		</element>
+		<element name="GLOBAL_THRESHOLD" text="If no threshold layer is used, you should enter a global threshold in this field." description="Global threshold" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="BUFFER_LAYER" text="The buffer layer, containing the follwoing values&#10;* 0: cells outside of the buffer.&#10;* 1: original feature cells&#10;* 2: cells in the buffer. " description="Buffer" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

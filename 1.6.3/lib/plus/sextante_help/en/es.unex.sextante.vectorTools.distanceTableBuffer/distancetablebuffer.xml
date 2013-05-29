@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This layer creates buffers around the features of an input layer. Each buffer can have an arbitrary number of rings, and the distance from the base feature to each ring boundary is defined using a table, thus allowing the creation of rings with different sizes.&#10;&#10;" description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="" description="Algorithm created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User notes" type="0">
+		</element>
+		<element name="LAYER" text="The input layer with features to be buffered." description="Input layer" type="3">
+		</element>
+		<element name="DISTANCES" text="The table with distances. Distances are measured from the feature to the boundary of the buffer ring. That means that to create 3 rings of the same size (for, instance, 1), the table should contain the values 1, 2, 3 and not 1, 1, 1." description="Distance table" type="3">
+		</element>
+		<element name="NOTROUNDED" text="If this option is selected, buffer polygons will not be rounded." description="Do not round resulting polygons" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="The resulting layer with buffer polygons." description="Buffer" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
