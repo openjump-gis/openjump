@@ -35,14 +35,10 @@ package org.openjump.core.ui.plugin.tools;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.operation.linemerge.LineMerger;
 import com.vividsolutions.jts.operation.union.UnaryUnionOp;
-import com.vividsolutions.jump.feature.AttributeType;
-import com.vividsolutions.jump.feature.BasicFeature;
-import com.vividsolutions.jump.feature.Feature;
-import com.vividsolutions.jump.feature.FeatureCollection;
-import com.vividsolutions.jump.feature.FeatureDataset;
-import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.task.TaskMonitor;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
@@ -50,26 +46,16 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.AttributeTypeFilter;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
-import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.clipboard.PasteItemsPlugIn;
-import com.vividsolutions.jump.workbench.WorkbenchContext;
+import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
+
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import javax.swing.ImageIcon;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
+import java.util.*;
 
 /**
  * UnionByAttribute plugin is used to union features in a Layer or to Dissolve
@@ -105,11 +91,6 @@ public class UnionByAttributePlugIn extends AbstractThreadedUiPlugIn {
     private GeometryFactory factory;
     
     public UnionByAttributePlugIn() {
-        //super(
-        //    //I18N.get("ui.plugin.analysis.UnionByAttributePlugIn") + "...",
-        //    getName() + "...",
-        //    IconLoader.icon("union_layer_icon.gif")
-        //);
     }
     
     public String getName() {
@@ -118,11 +99,11 @@ public class UnionByAttributePlugIn extends AbstractThreadedUiPlugIn {
     
     @Override
     public void initialize(PlugInContext context) throws Exception {
-        context.getFeatureInstaller().addMainMenuItem(
-            new String[] { MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
-            this,
-            new JMenuItem(getName()+"...", IconLoader.icon("union_layer_icon.gif")),
-            createEnableCheck(context.getWorkbenchContext()), -1);
+        context.getFeatureInstaller().addMainMenuPlugin(
+                this,
+                new String[]{MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
+                getName() + "...", false, IconLoader.icon("union_layer_icon.gif"),
+                createEnableCheck(context.getWorkbenchContext()), -1);
     }
     
     public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
@@ -352,13 +333,11 @@ public class UnionByAttributePlugIn extends AbstractThreadedUiPlugIn {
     
    /**
     * New method for union. Uses new UnaryUnionOp which is much more
-    * efficient for large datasets.
+    * efficient than Geometry.union() for large datasets.
     */
     private Feature union(PlugInContext context, TaskMonitor monitor, FeatureCollection fc) {
-        Collection points      = new ArrayList();
-        Collection lineStrings = new ArrayList();
-        Collection polygons    = new ArrayList();
-        Collection geoms       = new ArrayList();
+        // Eliminate invalid geomeries and log their fid
+        Collection geometries  = new ArrayList();
         for (Iterator it = fc.iterator() ; it.hasNext() ; ) {
             Feature f = (Feature) it.next();
             Geometry g = f.getGeometry();
@@ -369,50 +348,49 @@ public class UnionByAttributePlugIn extends AbstractThreadedUiPlugIn {
                     I18N.getMessage("ui.plugin.analysis.UnionByAttributePlugIn.exclusion", new Object[]{f.getID()}));
                 continue;
             }
-            else if (g.isEmpty()) continue;
-            else if (g instanceof Point) points.add(g);
-            else if (g instanceof LineString) lineStrings.add(g);
-            else if (g instanceof Polygon) polygons.add(g);
-            else if (g instanceof GeometryCollection) {
-                Geometry gc = (GeometryCollection)g;
-                for (int j = 0 ; j < gc.getNumGeometries() ; j++) {
-                    Geometry gp = gc.getGeometryN(j);
-                    if (gp instanceof Point) points.add(gp);
-                    else if (gp instanceof LineString) lineStrings.add(gp);
-                    else if (gp instanceof Polygon) polygons.add(gp);
-                    else;
-                }
-            }
+            else geometries.add(g);
         }
-        Geometry gp;
-        if (points.size()>0 && null != (gp = UnaryUnionOp.union(points))) {
-            geoms.add(gp);
+        Geometry unioned = UnaryUnionOp.union(geometries);
+        // Post process linestring if merged is wanted
+        if (merge_linestrings) {
+            geometries.clear();
+            List points      = new ArrayList();
+            List lineStrings = new ArrayList();
+            List polygons    = new ArrayList();
+            decompose(unioned, points, lineStrings, polygons);
+            LineMerger merger = new LineMerger();
+            merger.add(lineStrings);
+            geometries.addAll(points);
+            geometries.addAll(merger.getMergedLineStrings());
+            geometries.addAll(polygons);
+            unioned = unioned.getFactory().buildGeometry(geometries);
         }
-        else if (lineStrings.size()>0) {
-            gp = UnaryUnionOp.union(lineStrings);
-            if (gp != null && merge_linestrings) {
-                LineMerger merger = new LineMerger();
-                merger.add(gp);
-                geoms.addAll(merger.getMergedLineStrings());
-            }
-            else if (gp != null) geoms.add(gp);
-        }
-        if (polygons.size()>0 && null != (gp = UnaryUnionOp.union(polygons))) {
-            geoms.add(gp);
-        }
-        
         FeatureSchema schema = fc.getFeatureSchema();
         Feature feature = new BasicFeature(schema);
-        if (geoms.size()==0) {
+        if (geometries.size()==0) {
             feature.setGeometry(factory.createGeometryCollection(new Geometry[]{}));
         }
         else {
-            feature.setGeometry(UnaryUnionOp.union(geoms));
+            feature.setGeometry(unioned);
         }
         if (aggregate_unused_fields) {
             feature = aggregateValues(context, fc, feature);
         }
         return feature;
+    }
+
+    private void decompose(Geometry geometry, List dim0, List dim1, List dim2) {
+        if (geometry instanceof GeometryCollection) {
+            for (int i = 0 ; i < geometry.getNumGeometries() ; i++) {
+                decompose(geometry.getGeometryN(i), dim0, dim1, dim2);
+            }
+        }
+        else if (geometry.getDimension() == 2) dim2.add(geometry);
+        else if (geometry.getDimension() == 1) dim1.add(geometry);
+        else if (geometry.getDimension() == 0) dim0.add(geometry);
+        else {
+            assert false : "Should never reach here";
+        };
     }
     
     private Feature aggregateValues(PlugInContext context, FeatureCollection fc, Feature feature) {
