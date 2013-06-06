@@ -42,6 +42,7 @@ import org.openjump.core.ui.swing.VertexStylePanel;
  *			- font color
  * - vertex
  *		- display distance per vertex?
+ *          - display distance relative?
  *			- font and size
  *			- font color
  *		- paint vertex?
@@ -65,6 +66,7 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 	public static final String BB_SUMMARY_FONT_COLOR = AdvancedMeasureOptionsPanel.class.getName() + " - SUMMARY_FONT_COLOR";
 	// vertex
 	public static final String BB_VERTEX_PAINT_DISTANCE = AdvancedMeasureOptionsPanel.class.getName() + " - VERTEX_PAINT_DISTANCE";
+	public static final String BB_VERTEX_PAINT_DISTANCE_RELATIVE = AdvancedMeasureOptionsPanel.class.getName() + " - VERTEX_PAINT_DISTANCE_RELATIVE";
 	public static final String BB_VERTEX_FONT = AdvancedMeasureOptionsPanel.class.getName() + " - VERTEX_FONT";
 	public static final String BB_VERTEX_FONT_COLOR = AdvancedMeasureOptionsPanel.class.getName() + " - VERTEX_FONT_COLOR";
 	public static final String BB_VERTEX_PAINT = AdvancedMeasureOptionsPanel.class.getName() + " - VERTEX_PAINT";
@@ -88,6 +90,7 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 	public static final boolean DEFAULT_SUMMARY_PAINT_AREA = true;
 	// vertex
 	public static final boolean DEFAULT_VERTEX_PAINT_DISTANCE = true;
+	public static final boolean DEFAULT_VERTEX_PAINT_DISTANCE_RELATIVE = false;
 	public static final Font DEFAULT_VERTEX_FONT = new Font("Dialog", Font.PLAIN, 12);
 	public static final Color DEFAULT_VERTEX_FONT_COLOR = Color.black;
 	public static final boolean DEFAULT_VERTEX_PAINT = true;
@@ -115,6 +118,7 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 
 	// vertex widgets
 	private JCheckBox paintVertexDistanceCheckBox;
+	private JCheckBox paintVertexDistanceRelativeCheckBox;
 	private JButton vertexFontButton;
 	private JButton vertexFontColorButton;
 	private JCheckBox paintVertexCheckBox;
@@ -273,12 +277,15 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 		vertexPanel.add(vertexContentPanel, gridBagConstraints);
 		vertexFontButton = new JButton(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.choose-font"));
 		vertexFontColorButton = new JButton(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.choose-color"));
+		paintVertexDistanceRelativeCheckBox = new JCheckBox(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.paint-vertex-distance-relative"));
+		paintVertexDistanceRelativeCheckBox.setSelected(DEFAULT_VERTEX_PAINT_DISTANCE_RELATIVE);
 
 		// checkbox for paint the distance per vertex
 		paintVertexDistanceCheckBox = new JCheckBox(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.paint-vertex-distance"));
 		paintVertexDistanceCheckBox.addChangeListener(new ChangeListener() {
 
 			public void stateChanged(ChangeEvent e) {
+                paintVertexDistanceRelativeCheckBox.setEnabled(paintVertexDistanceCheckBox.isSelected());
 				vertexFontButton.setEnabled(paintVertexDistanceCheckBox.isSelected());
 				vertexFontColorButton.setEnabled(paintVertexDistanceCheckBox.isSelected());
 			}
@@ -291,11 +298,19 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         vertexContentPanel.add(paintVertexDistanceCheckBox, gridBagConstraints);
 
+		// checkbox for paint the relative distance per vertex
+		gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+		gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        vertexContentPanel.add(paintVertexDistanceRelativeCheckBox, gridBagConstraints);
+
 		// font label
 		JLabel vertexFontLabel = new JLabel(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.font"));
 		gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 26, 0, 0);
         vertexContentPanel.add(vertexFontLabel, gridBagConstraints);
@@ -310,7 +325,7 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 		});
 		gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
 		gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 5, 10);
@@ -320,7 +335,7 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 		JLabel vertexFontColorLabel = new JLabel(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.fontcolor"));
 		gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 26, 0, 0);
         vertexContentPanel.add(vertexFontColorLabel, gridBagConstraints);
@@ -333,7 +348,7 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 		});
 		gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
 		gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 5, 10);
@@ -352,7 +367,7 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 		paintVertexCheckBox.setSelected(DEFAULT_VERTEX_PAINT);
 		gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridy = 4;
 		gridBagConstraints.gridwidth = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         vertexContentPanel.add(paintVertexCheckBox, gridBagConstraints);
@@ -361,7 +376,7 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 		JLabel vertexStyleLabel = new JLabel(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.vertexstyle"));
 		gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 5;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 26, 0, 0);
         vertexContentPanel.add(vertexStyleLabel, gridBagConstraints);
@@ -376,7 +391,7 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 		// vertex style button
 		gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 5;
 		gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 5, 10);
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
@@ -549,6 +564,7 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 		blackboard.put(BB_VERTEX_FONT, vertexFont);
 		blackboard.put(BB_VERTEX_FONT_COLOR, vertexFontColor);
 		blackboard.put(BB_VERTEX_PAINT_DISTANCE, paintVertexDistanceCheckBox.isSelected());
+		blackboard.put(BB_VERTEX_PAINT_DISTANCE_RELATIVE, paintVertexDistanceRelativeCheckBox.isSelected());
 
 		blackboard.put(BB_VERTEX_PAINT, paintVertexCheckBox.isSelected());
 		blackboard.put(BB_VERTEX_FIRST_COLOR, vertexStylePanelFirst.getVertexColor());
@@ -578,6 +594,7 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 			style.setVertexFont(vertexFont);
 			style.setVertexFontColor(vertexFontColor);
 			style.setVertexPaintDistance(paintVertexDistanceCheckBox.isSelected());
+            style.setVertexPaintDistanceRelative(paintVertexDistanceRelativeCheckBox.isSelected());
 			// vertex painting
 			style.setVertexPaint(paintVertexCheckBox.isSelected());
 			style.setVertexFirstColor(vertexStylePanelFirst.getVertexColor());
@@ -611,6 +628,7 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 		if (color instanceof Color) summaryFontColor = (Color) color;
 		// vertex settings
 		paintVertexDistanceCheckBox.setSelected(blackboard.get(BB_VERTEX_PAINT_DISTANCE, DEFAULT_VERTEX_PAINT_DISTANCE));
+		paintVertexDistanceRelativeCheckBox.setSelected(blackboard.get(BB_VERTEX_PAINT_DISTANCE_RELATIVE, DEFAULT_VERTEX_PAINT_DISTANCE_RELATIVE));
 		font = blackboard.get(BB_VERTEX_FONT, DEFAULT_VERTEX_FONT);
 		if (font instanceof Font) vertexFont = (Font) font;
 		color = blackboard.get(BB_VERTEX_FONT_COLOR, DEFAULT_VERTEX_FONT_COLOR);

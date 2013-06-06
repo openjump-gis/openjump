@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-06-06 Matthias Scholz <ms@jammerhund.de>
+  * Small enhancement of the mesarement tool:
+    now you can show the distance between the vertices in a relative mode too.
+
 2013-06-02 mmichaud <michael.michaud@free.fr>
   * Fix a bug in Union/Merge plugin and improve it so that it
     can be up to 2 times faster (avoid computing union 2 times)

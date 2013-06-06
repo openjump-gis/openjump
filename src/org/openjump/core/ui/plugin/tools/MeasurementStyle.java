@@ -1,6 +1,7 @@
 package org.openjump.core.ui.plugin.tools;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
@@ -14,6 +15,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.font.TextLayout;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.text.DecimalFormat;
 
@@ -37,6 +39,7 @@ public class MeasurementStyle implements Style {
 	private Color summaryColor = AdvancedMeasureOptionsPanel.DEFAULT_SUMMARY_COLOR;
 	// vertex variables
 	private boolean vertexPaintDistance = AdvancedMeasureOptionsPanel.DEFAULT_VERTEX_PAINT_DISTANCE;
+	private boolean vertexPaintDistanceRelative = AdvancedMeasureOptionsPanel.DEFAULT_VERTEX_PAINT_DISTANCE_RELATIVE;
 	private Font vertexFont = new Font("Dialog", Font.PLAIN, 12);
 	private Color vertexFontColor = AdvancedMeasureOptionsPanel.DEFAULT_VERTEX_FONT_COLOR;
 	private boolean vertexPaint = AdvancedMeasureOptionsPanel.DEFAULT_VERTEX_PAINT;
@@ -97,16 +100,41 @@ public class MeasurementStyle implements Style {
 					vertexStyleFollowing.paint(g, centerPoint);
 				}
 				if (vertexPaintDistance) {
-					actualLength += coordinates[i].distance(coordinates[i-1]);
+                    double angle = 0;
+                    // check for relative distance mode
+                    if (vertexPaintDistanceRelative) {
+                        actualLength = coordinates[i].distance(coordinates[i-1]);
+                        // compute the rotation of this part
+                        LineSegment lineSegment = new LineSegment(coordinates[i], coordinates[i -1]);
+                        angle = lineSegment.angle() * -1;
+                        // for relative distance the optimal text position is between the two points
+                        centerPoint = viewport.toViewPoint(LineSegment.midPoint(coordinates[i], coordinates[i -1]));
+                    } else {
+                        actualLength += coordinates[i].distance(coordinates[i-1]);
+                    }
 					layout = new TextLayout(decimalFormat.format(actualLength) + "m", vertexFont, g.getFontRenderContext());
 					g.setColor(vertexFontColor);
-					layout.draw(g, (float) centerPoint.getX() - layout.getAdvance() / 2, (float) centerPoint.getY() - layout.getAscent());
+                    // in relative mode we paint the distance on the centerPoint and in absolute mode above of the centerPoint
+                    if (vertexPaintDistanceRelative) {
+                        // save transformation
+                        AffineTransform transform = g.getTransform();
+                        g.rotate(angle, centerPoint.getX(), centerPoint.getY());
+                        // next line would paint the text on the line
+                        // layout.draw(g, (float) centerPoint.getX() - layout.getAdvance() / 2, (float) centerPoint.getY() + layout.getAscent() / 2);
+                        // but for a better view we paint above the line
+                        layout.draw(g, (float) centerPoint.getX() - layout.getAdvance() / 2, (float) centerPoint.getY() - 3);
+                        // after rotate and draw, restore transformation
+                        g.setTransform(transform);
+                    } else {
+                        layout.draw(g, (float) centerPoint.getX() - layout.getAdvance() / 2, (float) centerPoint.getY() - layout.getAscent());
+                    }
 				}
 			} else {
 				if (vertexPaint) {
 					vertexStyleFirst.paint(g, centerPoint);
 				}
-				if (vertexPaintDistance) {
+                // in relative distance mode we do not have a distance to the previous, because its the first point
+				if (vertexPaintDistance && !vertexPaintDistanceRelative) {
 				layout = new TextLayout(decimalFormat.format(actualLength) + "m", vertexFont, g.getFontRenderContext());
 					g.setColor(vertexFontColor);
 					layout.draw(g, (float) centerPoint.getX() - layout.getAdvance() / 2, (float) centerPoint.getY() + layout.getAscent() + 5);
@@ -390,6 +418,20 @@ public class MeasurementStyle implements Style {
 		this.vertexFollowingSize = vertexFollowingSize;
 		vertexStyleFollowing.setSize(vertexFollowingSize);
 	}
+
+    /**
+     * @return the vertexPaintDistanceRelative
+     */
+    public boolean isVertexPaintDistanceRelative() {
+        return vertexPaintDistanceRelative;
+    }
+
+    /**
+     * @param vertexPaintDistanceRelative the vertexPaintDistanceRelative to set
+     */
+    public void setVertexPaintDistanceRelative(boolean vertexPaintDistanceRelative) {
+        this.vertexPaintDistanceRelative = vertexPaintDistanceRelative;
+    }
 
 
 }

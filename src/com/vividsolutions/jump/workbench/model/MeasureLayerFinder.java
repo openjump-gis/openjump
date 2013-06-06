@@ -71,6 +71,7 @@ public class MeasureLayerFinder extends SystemLayerFinder {
 		if (color instanceof Color) measurementStyle.setSummaryColor((Color) color);
 		// vertex
 		measurementStyle.setVertexPaintDistance(blackboard.get(AdvancedMeasureOptionsPanel.BB_VERTEX_PAINT_DISTANCE, AdvancedMeasureOptionsPanel.DEFAULT_VERTEX_PAINT_DISTANCE));
+        measurementStyle.setVertexPaintDistanceRelative(blackboard.get(AdvancedMeasureOptionsPanel.BB_VERTEX_PAINT_DISTANCE_RELATIVE, AdvancedMeasureOptionsPanel.DEFAULT_VERTEX_PAINT_DISTANCE_RELATIVE));
 		font = blackboard.get(AdvancedMeasureOptionsPanel.BB_VERTEX_FONT, AdvancedMeasureOptionsPanel.DEFAULT_VERTEX_FONT);
 		if (font instanceof Font) measurementStyle.setVertexFont((Font) font);
 		color = blackboard.get(AdvancedMeasureOptionsPanel.BB_VERTEX_FONT_COLOR, AdvancedMeasureOptionsPanel.DEFAULT_VERTEX_FONT_COLOR);
