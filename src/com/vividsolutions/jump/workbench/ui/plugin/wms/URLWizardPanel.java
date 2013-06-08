@@ -32,31 +32,6 @@
 
 package com.vividsolutions.jump.workbench.ui.plugin.wms;
 
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.io.IOException;
-import java.net.URL;
-import java.util.LinkedList;
-import java.util.Map;
-
-import javax.swing.ButtonGroup;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.SwingUtilities;
-
-import org.openjump.swing.listener.InvokeMethodItemListener;
-import org.openjump.swing.listener.InvokeMethodKeyTypedListener;
-
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchException;
 import com.vividsolutions.jump.workbench.ui.InputChangedFirer;
@@ -66,6 +41,19 @@ import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
 import com.vividsolutions.wms.MapImageFormatChooser;
 import com.vividsolutions.wms.WMSException;
 import com.vividsolutions.wms.WMService;
+import org.openjump.swing.listener.InvokeMethodItemListener;
+import org.openjump.swing.listener.InvokeMethodKeyTypedListener;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.net.URL;
+import java.util.LinkedList;
+import java.util.Map;
 
 public class URLWizardPanel extends JPanel implements WizardPanel {
   
@@ -117,7 +105,7 @@ public class URLWizardPanel extends JPanel implements WizardPanel {
   void jbInit() throws Exception {
     urlLabel.setText("URL:");
     this.setLayout(gridBagLayout1);
-    urls.setPreferredSize(new Dimension(300, 21));
+    //urls.setPreferredSize(new Dimension(300, 21));
     urlLabel.addMouseListener(new MouseAdapter() {
       public void mouseClicked(MouseEvent e) {
         if (SwingUtilities.isRightMouseButton(e) && e.getClickCount() == 3) {
@@ -132,20 +120,20 @@ public class URLWizardPanel extends JPanel implements WizardPanel {
       "fire", true));
 
     this.add(urlLabel, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0,
-      GridBagConstraints.CENTER, GridBagConstraints.NONE,
-      new Insets(0, 0, 0, 4), 0, 0));
-    this.add(urls, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0,
-      GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0,
-        0, 0, 4), 0, 0));
-    this.add(fillerPanel, new GridBagConstraints(2, 10, 1, 1, 1.0, 1.0,
-      GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-      new Insets(0, 0, 0, 0), 0, 0));
-    // [UT]
+      GridBagConstraints.WEST, GridBagConstraints.NONE,
+      new Insets(8, 2, 2, 2), 0, 0));
+    this.add(urls, new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0,
+      GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+      new Insets(8, 2, 2, 2), 0, 0));
+    //// [UT]
     this.add(createVersionButtons(new String[] {
       WMService.WMS_1_0_0, WMService.WMS_1_1_0, WMService.WMS_1_1_1, WMService.WMS_1_3_0
-    }), new GridBagConstraints(1, 3, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
-      GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-
+    }), new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0,
+            GridBagConstraints.WEST, GridBagConstraints.NONE,
+            new Insets(2, 2, 2, 2), 0, 0));
+    this.add(fillerPanel, new GridBagConstraints(2, 3, 1, 1, 0.1, 1.0,
+        GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        new Insets(0, 0, 0, 0), 0, 0));
     // [UT] 20.10.2005 not added yet; need more testing
     /*
      * this.add(createLossyCheckBox(), new GridBagConstraints(1, 4, 1, 1, 0.0,
