@@ -1,13 +1,5 @@
 package org.openjump.core.ui.plugin.wms;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import org.openjump.core.ui.plugin.file.open.ChooseProjectPanel;
-import org.openjump.core.ui.swing.wizard.AbstractWizardGroup;
-
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -26,6 +18,13 @@ import com.vividsolutions.jump.workbench.ui.plugin.wms.URLWizardPanel;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
 import com.vividsolutions.wms.MapLayer;
 import com.vividsolutions.wms.WMService;
+import org.openjump.core.ui.plugin.file.open.ChooseProjectPanel;
+import org.openjump.core.ui.swing.wizard.AbstractWizardGroup;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class AddWmsLayerWizard extends AbstractWizardGroup {
     
@@ -39,9 +38,9 @@ public class AddWmsLayerWizard extends AbstractWizardGroup {
     "http://demo.deegree.org/deegree-wms/services",
     "http://demo.opengeo.org/geoserver/wms",
     //"http://wiki.openstreetmap.org/wiki/WMS", // does not work (missing WMT_MS_Capabilities)
-    "http://openaerialmap.org/wms/",
+    //"http://openaerialmap.org/wms/",          // does not work (2013-06-09)
     "http://wms.jpl.nasa.gov/wms.cgi",
-    //"http://wms.latlon.org/?", // does not work (missing WMT_MS_Capabilities)
+    //"http://wms.latlon.org/?",                // does not work (missing WMT_MS_Capabilities)
     "http://www.osmgb.org.uk/OSM-GB/wms?SERVICE=WMS&"
   };
 

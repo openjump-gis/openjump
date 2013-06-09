@@ -3,6 +3,7 @@
 2013-06-09 mmichaud <michael.michaud@free.fr>
   * port of Larry's code on RenderingManager for a better support of
     printing capabilities
+  * remove http://openaerialmap.org/wms from wms url list
 
 2013-06-09 Matthias Scholz <ms@jammerhund.de>
   * Improved vertex distance mode in the measurement tool. Now the new relative
