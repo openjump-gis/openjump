@@ -277,17 +277,15 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 		vertexPanel.add(vertexContentPanel, gridBagConstraints);
 		vertexFontButton = new JButton(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.choose-font"));
 		vertexFontColorButton = new JButton(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.choose-color"));
+		paintVertexDistanceCheckBox = new JCheckBox(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.paint-vertex-distance"));
 		paintVertexDistanceRelativeCheckBox = new JCheckBox(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.paint-vertex-distance-relative"));
-		paintVertexDistanceRelativeCheckBox.setSelected(DEFAULT_VERTEX_PAINT_DISTANCE_RELATIVE);
 
 		// checkbox for paint the distance per vertex
-		paintVertexDistanceCheckBox = new JCheckBox(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.paint-vertex-distance"));
 		paintVertexDistanceCheckBox.addChangeListener(new ChangeListener() {
 
 			public void stateChanged(ChangeEvent e) {
-                paintVertexDistanceRelativeCheckBox.setEnabled(paintVertexDistanceCheckBox.isSelected());
-				vertexFontButton.setEnabled(paintVertexDistanceCheckBox.isSelected());
-				vertexFontColorButton.setEnabled(paintVertexDistanceCheckBox.isSelected());
+				vertexFontButton.setEnabled(paintVertexDistanceCheckBox.isSelected() | paintVertexDistanceRelativeCheckBox.isSelected());
+				vertexFontColorButton.setEnabled(paintVertexDistanceCheckBox.isSelected() | paintVertexDistanceRelativeCheckBox.isSelected());
 			}
 		});
 		paintVertexDistanceCheckBox.setSelected(DEFAULT_VERTEX_PAINT_DISTANCE);
@@ -299,6 +297,14 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
         vertexContentPanel.add(paintVertexDistanceCheckBox, gridBagConstraints);
 
 		// checkbox for paint the relative distance per vertex
+		paintVertexDistanceRelativeCheckBox.addChangeListener(new ChangeListener() {
+
+			public void stateChanged(ChangeEvent e) {
+				vertexFontButton.setEnabled(paintVertexDistanceCheckBox.isSelected() | paintVertexDistanceRelativeCheckBox.isSelected());
+				vertexFontColorButton.setEnabled(paintVertexDistanceCheckBox.isSelected() | paintVertexDistanceRelativeCheckBox.isSelected());
+			}
+		});
+		paintVertexDistanceRelativeCheckBox.setSelected(DEFAULT_VERTEX_PAINT_DISTANCE_RELATIVE);
 		gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;

@@ -99,42 +99,55 @@ public class MeasurementStyle implements Style {
 				if (vertexPaint && (area > 0 && i < numberOfCoordinates - 1 || area == 0)) {
 					vertexStyleFollowing.paint(g, centerPoint);
 				}
+                g.setColor(vertexFontColor);
+                double partLength = coordinates[i].distance(coordinates[i-1]);
 				if (vertexPaintDistance) {
-                    double angle = 0;
-                    // check for relative distance mode
-                    if (vertexPaintDistanceRelative) {
-                        actualLength = coordinates[i].distance(coordinates[i-1]);
-                        // compute the rotation of this part
-                        LineSegment lineSegment = new LineSegment(coordinates[i], coordinates[i -1]);
-                        angle = lineSegment.angle() * -1;
-                        // for relative distance the optimal text position is between the two points
-                        centerPoint = viewport.toViewPoint(LineSegment.midPoint(coordinates[i], coordinates[i -1]));
-                    } else {
-                        actualLength += coordinates[i].distance(coordinates[i-1]);
+                    actualLength += partLength; 
+        			layout = new TextLayout(decimalFormat.format(actualLength) + "m", vertexFont, g.getFontRenderContext());
+                    layout.draw(g, (float) centerPoint.getX() - layout.getAdvance() / 2, (float) centerPoint.getY() - layout.getAscent());
+                }
+                if (vertexPaintDistanceRelative) {
+                    boolean rotateText = false;
+                    double angle;
+                    // compute the rotation of this part
+                    LineSegment lineSegment = new LineSegment(coordinates[i], coordinates[i -1]);
+                    /*
+                     * The angle() method returns a counterclockwise angle in radians from -PI to PI (-180° to 180°).
+                     * Graphics2D.rotate use clockwise angle from 0 to 2PI.
+                     * So we must invert (* -1) and shift the range ( + Math.PI) to get the same.
+                     */
+                    angle = lineSegment.angle() * -1 + Math.PI;
+                    // take care, that the text is not upside down
+                    // from PI/2 (90°) to PI*1.5 (270°) we rotate for PI (180°)
+                    if (angle > Math.PI / 2 && angle < Math.PI * 1.5) {
+                        angle += Math.PI;
+                        rotateText = true; // indicator for decision of outside printing, see below
                     }
-					layout = new TextLayout(decimalFormat.format(actualLength) + "m", vertexFont, g.getFontRenderContext());
-					g.setColor(vertexFontColor);
-                    // in relative mode we paint the distance on the centerPoint and in absolute mode above of the centerPoint
-                    if (vertexPaintDistanceRelative) {
-                        // save transformation
-                        AffineTransform transform = g.getTransform();
-                        g.rotate(angle, centerPoint.getX(), centerPoint.getY());
-                        // next line would paint the text on the line
-                        // layout.draw(g, (float) centerPoint.getX() - layout.getAdvance() / 2, (float) centerPoint.getY() + layout.getAscent() / 2);
-                        // but for a better view we paint above the line
+                    // for relative distance the optimal text position is between the two points
+                    centerPoint = viewport.toViewPoint(LineSegment.midPoint(coordinates[i], coordinates[i -1]));
+                    // save transformation
+                    AffineTransform transform = g.getTransform();
+                    g.rotate(angle, centerPoint.getX(), centerPoint.getY());
+                    layout = new TextLayout(decimalFormat.format(partLength) + "m", vertexFont, g.getFontRenderContext());
+                    // next line would paint the text on the line
+                    // layout.draw(g, (float) centerPoint.getX() - layout.getAdvance() / 2, (float) centerPoint.getY() + layout.getAscent() / 2);
+                    // but for a better view we paint above the line
+                    // The text should allways outside of the geometry. This is looks like better for areas!
+                    // We distinguish this by the rotation decision for the upside down problem above.
+                    if (rotateText) {
+                        layout.draw(g, (float) centerPoint.getX() - layout.getAdvance() / 2, (float) centerPoint.getY() + layout.getAscent());
+                    } else {
                         layout.draw(g, (float) centerPoint.getX() - layout.getAdvance() / 2, (float) centerPoint.getY() - 3);
-                        // after rotate and draw, restore transformation
-                        g.setTransform(transform);
-                    } else {
-                        layout.draw(g, (float) centerPoint.getX() - layout.getAdvance() / 2, (float) centerPoint.getY() - layout.getAscent());
                     }
-				}
+                    // after rotate and draw, restore transformation
+                    g.setTransform(transform);
+                }
 			} else {
 				if (vertexPaint) {
 					vertexStyleFirst.paint(g, centerPoint);
 				}
                 // in relative distance mode we do not have a distance to the previous, because its the first point
-				if (vertexPaintDistance && !vertexPaintDistanceRelative) {
+				if (vertexPaintDistance) {
 				layout = new TextLayout(decimalFormat.format(actualLength) + "m", vertexFont, g.getFontRenderContext());
 					g.setColor(vertexFontColor);
 					layout.draw(g, (float) centerPoint.getX() - layout.getAdvance() / 2, (float) centerPoint.getY() + layout.getAscent() + 5);
