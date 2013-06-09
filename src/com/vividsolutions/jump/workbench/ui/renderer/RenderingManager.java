@@ -32,24 +32,29 @@
 
 package com.vividsolutions.jump.workbench.ui.renderer;
 
-import java.awt.Graphics2D;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.swing.Timer;
-
 import com.vividsolutions.jump.util.OrderedMap;
 import com.vividsolutions.jump.workbench.model.Layerable;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 
+import javax.swing.Timer;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.*;
+import java.util.List;
+
+/**
+ * RenderingManager is in charge of rendering a map to the LayerViewPanel,
+ * to a file (image, pdf...) or to external device (printer).
+ */
+// 2013 mmichaud added single_thread rendering mode (from Larry's code)
+// 2007 pdaustin added RendererFactory framework
+// 2006 sstein added better handling of custom layerables (from Ole's code)
 public class RenderingManager {
 
-  // [sstein: 20.01.2006] added for Ole
+  // [sstein: 20.01.2006] added for Ole : better handling of custom layers
+  // Replaced by CLASS_RENDERER_FACTORY_MAP
   /** @deprecated */
   protected static HashMap layerableClassToRendererFactoryMap = new HashMap();
 
@@ -63,10 +68,6 @@ public class RenderingManager {
    * 100 features.
    */
   private int maxFeatures = 100; // this variable will be used for
-
-  // LayerRenderer.class which extends
-  // FeatureCollectionRenderer.class
-  // default in FeatureCollectionRenderer is 100 features.
 
   /**
    * @see ThreadQueue
@@ -113,7 +114,44 @@ public class RenderingManager {
     }
   });
 
-  private boolean paintingEnabled = true;
+    private boolean paintingEnabled = true;
+
+    // [mmichaud 2013-06-09] port of SkyJUMP code which introduced several rendering
+    // modes which can be used depending on the purpose (e.g. INTERACTIVE for screen
+    // display, SINGLE_THREAD_QUEUE for printing purpose).
+	public final static int INTERACTIVE = 0;
+	public final static int SINGLE_THREAD_QUEUE = 1;
+	public final static int EXECUTE_ON_EVENT_THREAD = 2;
+
+	private int renderingMode = INTERACTIVE;
+	private Runnable notifyWhenDone = null;
+
+	/**
+	 * Set the rendering mode
+	 * @param mode : INTERACTIVE, SINGLE_THREAD_QUEUE, or EXECUTE_ON_EVENT_THREAD
+	 */
+	public void setRenderingMode(int mode){
+		renderingMode = mode;
+		notifyWhenDone = null;
+	}
+	/**
+	 * Set the rendering mode
+	 * @parem notify : Runnable that will be executed after rendering completes
+	 * depending on the mode
+	 * @param mode : INTERACTIVE, SINGLE_THREAD_QUEUE, or EXECUTE_ON_EVENT_THREAD
+	 */
+	public void setRenderingMode(Runnable notify, int mode){
+		renderingMode = mode;
+		notifyWhenDone = notify;
+	}
+
+	/**
+	 * @return rendering mode:
+	 * INTERACTIVE, SINGLE_THREAD_QUEUE, or EXECUTE_ON_EVENT_THREAD
+	 */
+	public int getRenderingMode(){
+		return renderingMode;
+	}
 
   public RenderingManager(final LayerViewPanel panel) {
     this.panel = panel;
@@ -160,6 +198,10 @@ public class RenderingManager {
       Object contentID = i.next();
       render(contentID);
     }
+
+    if (notifyWhenDone != null) {
+        defaultRendererThreadQueue.add(notifyWhenDone);
+    }
   }
 
   protected List contentIDs() {
@@ -204,19 +246,37 @@ public class RenderingManager {
     if (clearImageCache) {
       getRenderer(contentID).clearImageCache();
     }
+
     Runnable runnable = getRenderer(contentID).createRunnable();
     if (runnable != null) {
       // Before I would create threads that did nothing. Now I never do
       // that -- I just return null. A dozen threads that do nothing make
       // the system sluggish. [Jon Aquino]
-      ((contentID instanceof Layerable && ((Layerable)contentID).getBlackboard()
-        .get(USE_MULTI_RENDERING_THREAD_QUEUE_KEY, false)) ? multiRendererThreadQueue
-        : defaultRendererThreadQueue).add(runnable);
+      if ((getRenderingMode() == INTERACTIVE)){
+            ((contentID instanceof Layerable && ((Layerable) contentID)
+                    .getBlackboard().get(USE_MULTI_RENDERING_THREAD_QUEUE_KEY,
+                            false)) ? multiRendererThreadQueue
+                    : defaultRendererThreadQueue).add(runnable);
+      }
+      else  {
+          //run all renders sequentially
+          if ((getRenderingMode() == SINGLE_THREAD_QUEUE)){
+              defaultRendererThreadQueue.add(runnable);  //in a single background thread
+          } else { //EXECUTE_ON_EVENT_THREAD
+              try {
+                  GUIUtil.invokeOnEventThread(runnable);  //in the Event Thread
+              } catch (Throwable t) {}
+          }
+      }
     }
 
     if (!repaintTimer.isRunning()) {
-      repaintPanel();
-      repaintTimer.start();
+      if (getRenderingMode() != EXECUTE_ON_EVENT_THREAD) {
+          repaintPanel();
+      }
+      if (getRenderingMode() == INTERACTIVE){
+          repaintTimer.start();
+      }
     }
   }
 
@@ -260,7 +320,12 @@ public class RenderingManager {
 
   // End: added by Ole*
 
-  // this method is called by method render();
+    /**
+     * Creates a Renderer suitable for this contentID.
+     * this method is called by method render().
+     * @param contentID
+     * @return a Renderer to render this content
+     */
   public Renderer createRenderer(Object contentID) {
     RendererFactory rendererFactory = getRendererFactory(contentID.getClass());
     if (rendererFactory != null) {

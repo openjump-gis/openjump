@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-06-09 mmichaud <michael.michaud@free.fr>
+  * port of Larry's code on RenderingManager for a better support of
+    printing capabilities
+
 2013-06-09 Matthias Scholz <ms@jammerhund.de>
   * Improved vertex distance mode in the measurement tool. Now the new relative
     mode and the cumulative mode are independent usable. Take care that the 

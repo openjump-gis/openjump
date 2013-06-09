@@ -34,21 +34,17 @@
 
 package org.openjump.core.ui.plugin.file;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.geom.NoninvertibleTransformException;
-import java.awt.image.BufferedImage;
-import java.util.Collection;
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.util.Assert;
-import com.vividsolutions.jump.workbench.model.Layer;
-import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.model.LayerManager;
-import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
-import com.vividsolutions.jump.workbench.ui.renderer.ThreadQueue;
+import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanelContext;
+import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
+import com.vividsolutions.jump.workbench.ui.renderer.ThreadQueue;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.Collection;
 
 /**
  * Renders layers as an Image, which can then be saved to a file or printed.
