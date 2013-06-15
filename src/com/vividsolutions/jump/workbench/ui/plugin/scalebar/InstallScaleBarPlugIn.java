@@ -38,7 +38,7 @@ public class InstallScaleBarPlugIn extends InstallRendererPlugIn {
 	protected Renderer.Factory createFactory(final TaskFrame frame) {
 		return new Renderer.Factory() {
 			public Renderer create() {
-				return new ScaleBarRenderer(frame.getLayerViewPanel());
+				return new ScaleBarRenderer(frame.getLayerViewPanel(), frame);
 			}
 		};
 	}

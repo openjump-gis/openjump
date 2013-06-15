@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-06-15 mmichaud <michael.michaud@free.fr>
+  * ScaleBar is now Task dependent (as in SkyJUMP, but it cannot display
+    non-meter units yet)
+
 2013-06-09 mmichaud <michael.michaud@free.fr>
   * port of Larry's code on RenderingManager for a better support of
     printing capabilities

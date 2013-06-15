@@ -32,17 +32,14 @@
 
 package com.vividsolutions.jump.workbench.ui.plugin.scalebar;
 
-import java.awt.*;
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.font.TextLayout;
-import java.awt.geom.Rectangle2D;
-
 import com.vividsolutions.jump.util.MathUtil;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
+import com.vividsolutions.jump.workbench.ui.TaskFrame;
 import com.vividsolutions.jump.workbench.ui.renderer.SimpleRenderer;
+
+import java.awt.*;
+import java.awt.font.TextLayout;
+import java.awt.geom.Rectangle2D;
 
 public class ScaleBarRenderer extends SimpleRenderer {
     public static String CONTENT_ID = "SCALE_BAR";
@@ -79,8 +76,14 @@ public class ScaleBarRenderer extends SimpleRenderer {
     private static Font FONT = new Font("Dialog", Font.PLAIN, 10);
     private static Font UNIT_FONT = new Font("Dialog", Font.BOLD, 11);
 
-    public ScaleBarRenderer(LayerViewPanel panel) {
+    //private Collection metricUnits = new MetricSystem(1).createUnits();
+    //private Collection englishUnits = new EnglishSystem(1).createUnits();
+    //private Collection zoomUnits = metricUnits;
+    private TaskFrame taskFrame = null;
+
+    public ScaleBarRenderer(LayerViewPanel panel, TaskFrame taskFrame) {
         super(CONTENT_ID, panel);
+        this.taskFrame = taskFrame;
     }
 
     public static boolean isEnabled(LayerViewPanel panel) {
