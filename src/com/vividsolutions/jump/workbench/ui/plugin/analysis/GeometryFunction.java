@@ -33,16 +33,22 @@
 
 package com.vividsolutions.jump.workbench.ui.plugin.analysis;
 
-import java.util.*;
-import com.vividsolutions.jts.algorithm.*;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
-import com.vividsolutions.jts.simplify.*;
-import com.vividsolutions.jts.operation.linemerge.*;
-import com.vividsolutions.jts.operation.polygonize.*;
-
-import com.vividsolutions.jump.algorithm.Densifier;
+import com.vividsolutions.jts.algorithm.ConvexHull;
+import com.vividsolutions.jts.algorithm.MinimumBoundingCircle;
+import com.vividsolutions.jts.algorithm.MinimumDiameter;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.operation.linemerge.LineMerger;
+import com.vividsolutions.jts.operation.linemerge.LineSequencer;
+import com.vividsolutions.jts.operation.polygonize.Polygonizer;
+import com.vividsolutions.jts.simplify.DouglasPeuckerSimplifier;
+import com.vividsolutions.jts.simplify.TopologyPreservingSimplifier;
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.algorithm.Densifier;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * A function object for {@link Geometry} functions (which return a Geometry).
@@ -83,7 +89,10 @@ public abstract class GeometryFunction
     new LineMergeFunction(),
     new LineSequenceFunction(),
     new PolygonizeFunction(),
-    new ReverseLinestringFunction()
+    new ReverseLinestringFunction(),
+    new MinimumBoundingCircleFunction(),
+    new MinimumDiameterFunction(),
+    new MinimumBoundingRectangleFunction()
   };
 
   public static List getNames()
@@ -359,7 +368,8 @@ public abstract class GeometryFunction
 	      return clone.reverse();
 	  }
   }
-  
+
+  // added on 2012-04-13 by mmichaud
   private static class DensifyFunction extends GeometryFunction {
 	  public DensifyFunction() {
 		  super(I18N.get("ui.plugin.analysis.GeometryFunction.Densify"), 1, 1);
@@ -370,5 +380,41 @@ public abstract class GeometryFunction
 	      return Densifier.densify(geom[0], param[0]);
 	  }
   }
+
+    // added on 2013-06-17 by mmichaud
+    private static class MinimumBoundingCircleFunction extends GeometryFunction {
+        public MinimumBoundingCircleFunction() {
+            super(I18N.get("ui.plugin.analysis.GeometryFunction.Minimum-Bounding-Circle"), 1, 0);
+        }
+
+        public Geometry execute(Geometry[] geom, double[] param)
+        {
+            return new MinimumBoundingCircle(geom[0]).getCircle();
+        }
+    }
+
+    // added on 2013-06-17 by mmichaud
+    private static class MinimumDiameterFunction extends GeometryFunction {
+        public MinimumDiameterFunction() {
+            super(I18N.get("ui.plugin.analysis.GeometryFunction.Minimum-Diameter"), 1, 0);
+        }
+
+        public Geometry execute(Geometry[] geom, double[] param)
+        {
+            return new MinimumDiameter(geom[0]).getDiameter();
+        }
+    }
+
+    // added on 2013-06-17 by mmichaud
+    private static class MinimumBoundingRectangleFunction extends GeometryFunction {
+        public MinimumBoundingRectangleFunction() {
+            super(I18N.get("ui.plugin.analysis.GeometryFunction.Minimum-Bounding-Rectangle"), 1, 0);
+        }
+
+        public Geometry execute(Geometry[] geom, double[] param)
+        {
+            return new MinimumDiameter(geom[0]).getMinimumRectangle();
+        }
+    }
   
 }

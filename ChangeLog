@@ -1,5 +1,11 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-06-17 mmichaud <michael.michaud@free.fr>
+  * Add 3 functions from JTS in Tools > Analysis > GeometryFunction :
+    - MinimumBoundingCircle
+    - MinimumDiameter
+    - MinimumBoundingRectangle
+
 2013-06-15 mmichaud <michael.michaud@free.fr>
   * ScaleBar is now Task dependent (as in SkyJUMP, but it cannot display
     non-meter units yet)
