@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-06-19 mmichaud <michael.michaud@free.fr>
+  * add 4 wms addresses in the WMS URL chooser
+
 2013-06-17 mmichaud <michael.michaud@free.fr>
   * Add 3 functions from JTS in Tools > Analysis > GeometryFunction :
     - MinimumBoundingCircle
