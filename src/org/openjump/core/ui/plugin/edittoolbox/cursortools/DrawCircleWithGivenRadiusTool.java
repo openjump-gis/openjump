@@ -37,25 +37,14 @@
 package org.openjump.core.ui.plugin.edittoolbox.cursortools;
 
 import java.awt.BasicStroke;
-import java.awt.Container;
 import java.awt.Cursor;
-import java.awt.Frame;
 import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
 
-import javax.swing.AbstractButton;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-
-//import org.openjump.core.ui.MultiInputDialogWithoutCancel;
-import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -67,11 +56,6 @@ import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.operation.buffer.BufferOp;
 import com.vividsolutions.jts.operation.valid.IsValidOp;
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.feature.Feature;
-import com.vividsolutions.jump.feature.FeatureCollection;
-import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.model.Layer;
-import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanelProxy;
@@ -81,12 +65,9 @@ import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.cursortool.AbstractCursorTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.CursorTool;
-import com.vividsolutions.jump.workbench.ui.cursortool.DragTool;
-import com.vividsolutions.jump.workbench.ui.cursortool.MultiClickTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.NClickTool;
-import com.vividsolutions.jump.workbench.ui.cursortool.editing.DrawPointTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.editing.FeatureDrawingUtil;
-import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+//import org.openjump.core.ui.MultiInputDialogWithoutCancel;
 
 public class DrawCircleWithGivenRadiusTool extends NClickTool{
 	
