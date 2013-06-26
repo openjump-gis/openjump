@@ -78,7 +78,7 @@ public class OpenJUMPSextanteRasterLayer extends AbstractSextanteRasterLayer{
 					/ (double)m_Raster.getWidth());
 			m_LayerExtent.setXRange(env.getMinX(), env.getMaxX());
 			m_LayerExtent.setYRange(env.getMinY(), env.getMaxY());
-			m_dNoDataValue = DEFAULT_NO_DATA_VALUE;
+			m_dNoDataValue = layer.getNoDataValue();
 		}
 		else{	
 			RasterImageLayer rasterLayer = new RasterImageLayer(layer.getName(),
@@ -102,7 +102,7 @@ public class OpenJUMPSextanteRasterLayer extends AbstractSextanteRasterLayer{
 					/ (double)m_Raster.getWidth());
 			m_LayerExtent.setXRange(env.getMinX(), env.getMaxX());
 			m_LayerExtent.setYRange(env.getMinY(), env.getMaxY());
-			m_dNoDataValue = DEFAULT_NO_DATA_VALUE;
+			m_dNoDataValue = layer.getNoDataValue();
 		}
 
 	}

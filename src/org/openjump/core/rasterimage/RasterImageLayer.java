@@ -11,6 +11,7 @@ package org.openjump.core.rasterimage;
 
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.noding.NodableSegmentString;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -115,7 +116,11 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
     protected Color transparentColor = null;
     protected boolean transparencyColorNeedsToBeApplied = false;
 
-    /**
+    //-- [sstein 26 June 2013] new as with ASCII grid imports nodata values can be defined
+    protected static double noDataValue = Double.NaN;
+    //-- end
+
+	/**
      * for java2xml
      */
     public RasterImageLayer() {
@@ -682,7 +687,9 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
        		 	Raster rData = pImage.copyData();  //copy data so we do not get a ref
                 rasterData = rData;
                 //-- sstein end
-
+                
+                noDataValue = gf.getNoData();
+                
                 // This rescales values
                 // See http://www.lac.inpe.br/JIPCookbook/2200-display-surrogate.jsp
 
@@ -730,10 +737,11 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
 
                 javax.media.jai.PlanarImage pImage = ga.getPlanarImage();
                 //-- [sstein 3 Aug 2010]
-                //   dealing now with an Image that will be modified for better dislay
+                //   dealing now with an Image that will be modified for better display
        		 	Raster rData = pImage.copyData();  //copy data so we do not get a ref
                 rasterData = rData;
                 //-- sstein end
+                noDataValue = ga.getNoData();
 
                 // This rescales values
                 // See http://www.lac.inpe.br/JIPCookbook/2200-display-surrogate.jsp
@@ -1612,5 +1620,14 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
 	 */
 	public void setRasterDataChanged(boolean rasterDataChanged) {
 		this.rasterDataChanged = rasterDataChanged;
+	}
+	
+    /**
+     * Default value is NaN. The value can be different when data have been read, 
+     * for example, from (ESRI) ASCII grid images
+     * @return value that is written when a cell does not contain data
+     */
+    public double getNoDataValue() {
+		return noDataValue;
 	}
 }
