@@ -65,26 +65,9 @@ import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxDialog;
 public class DrawCircleWithGivenRadiusPlugIn extends AbstractPlugIn{
 	
     private boolean circleButtonAdded = false;
-    private String T1 = "diameter";
-    private String T2 = "Points";
-    private String sidebarstring ="";
-	private double diameter = 50;
-	private int points = 8; //points per cirlce quarter
 	
     public void initialize(final PlugInContext context) throws Exception {
 
-		//this.T1 = I18N.get("org.openjump.core.ui.plugin.edit.SelectItemsByCirlceFromSelectedLayersPlugIn.cirlce-diameter") + ":";
-    	this.T1 = "Circle Diameter";
-    	this.T2 = "Number of segments per circle quarter";
-		this.sidebarstring = "Draw a circle by specifiying the radius, the number of points per circle quarter and the center position by mouse click";
-		/**
-	    context.getFeatureInstaller().addMainMenuItem(this,
-		        new String[] {MenuNames.TOOLS, MenuNames.TOOLS_GENERATE},
-				"Draw Cirlce for Given Radius", 
-				false, //icon
-				null, //icon
-	            createEnableCheck(context.getWorkbenchContext())); //enable check
-	    **/
 	      //add a listener so that when the toolbox dialog opens the constrained tools will be added
         //we can't just add the tools directly at this point since the toolbox isn't ready yet
 
@@ -115,56 +98,14 @@ public class DrawCircleWithGivenRadiusPlugIn extends AbstractPlugIn{
         return new MultiEnableCheck()
 						.add(checkFactory.createSelectedLayersMustBeEditableCheck());        
     }
-
-	public boolean makeDialogThings(PlugInContext context) throws Exception{
-	    this.reportNothingToUndoYet(context);
-	    MultiInputDialog dialog = new MultiInputDialog(
-	            context.getWorkbenchFrame(), getName(), true);
-	        setDialogValues(dialog, context);
-	        GUIUtil.centreOnWindow(dialog);
-	        dialog.setVisible(true);
-	        if (! dialog.wasOKPressed()) { return false; }
-	        getDialogValues(dialog);
-	        return true;	
-	}
-	
-    private void setDialogValues(MultiInputDialog dialog, PlugInContext context)
-	  {    	
-	    dialog.setSideBarDescription(this.sidebarstring);
-	    dialog.addDoubleField(T1,this.diameter,7,T1); 
-	    dialog.addIntegerField(T2,this.points, 8,T2);
-	  }
-
-	private void getDialogValues(MultiInputDialog dialog) {
-	    this.diameter = dialog.getDouble(T1);
-	    this.points = dialog.getInteger(T2); 
-	  }
 	
     
 	public boolean execute(PlugInContext context) throws Exception{	    
         try
         {
-        	/**
-        	this.makeDialogThings(context);
-        	Envelope viewportEnvelope = context.getLayerViewPanel().getViewport().getEnvelopeInModelCoordinates();
-        	double x = viewportEnvelope.getMinX() + viewportEnvelope.getWidth()/2;
-        	double y = viewportEnvelope.getMinY() + viewportEnvelope.getHeight()/2;
-        	Coordinate initCoords = new Coordinate(x,y);
-        	TestDrawCircleByRadiusTool circleTool = new TestDrawCircleByRadiusTool(context, Math.abs(this.diameter), 
-        										Math.abs(this.points), initCoords);
-        	
-            context.getLayerViewPanel().setCurrentCursorTool(circleTool);
-            **/
             CursorTool circleTool = DrawCircleWithGivenRadiusTool.create((LayerNamePanelProxy) context.getActiveInternalFrame());
             context.getLayerViewPanel().setCurrentCursorTool(circleTool); 
-            
-            //-- if an toolbar item should be added use the following? 
-            /**
-            QuasimodeTool tool = new QuasimodeTool(sit).add(
-                    new QuasimodeTool.ModifierKeySpec(true, false, false), null);
-            WorkbenchContext wbcontext = context.getWorkbenchContext();
-            wbcontext.getWorkbench().getFrame().getToolBar().addCursorTool(tool).getQuasimodeTool();
-            **/     
+
         }
         catch (Exception e)
         {

@@ -97,20 +97,16 @@ public class DrawCircleWithGivenRadiusTool extends NClickTool{
     private FeatureDrawingUtil featureDrawingUtil;    
     private Shape selectedFeaturesShape;
     private GeometryFactory geometryFactory = new GeometryFactory();
-    private boolean valuesWereSet = false;
-    private double radius= 50.0; //in m
-    private Point mp = null;
+    private static double radius= 50.0; //in m
     private int points = 8;
-    private double tolerance = 0.1;
-    private int deactivateCount = 0;	
-	//private String T1 = "Circle Radius";
+    private static double tolerance = 0.1;
+    //private String T1 = "Circle Radius";
 	private String T1 = I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawCircleWithGivenRadiusTool.Cirlce-Radius") + ":";
 	//private String T2 = "Number of segments per circle quarter";
 	private String T2 = I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawCircleWithGivenRadiusTool.Number-of-segments-per-circle-quarter") + ":";
 	//private String name = "Draw circle with given radius and center.";
 	private String name = I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawCircleWithGivenRadiusTool.Draw-circle-with-given-radius-and-center");
-	//private String sidebarstring = "Draws a circle by specifiying the radius, the number of segments per circle quarter and the center position by mouse click";
-	//private String sidebarstring = I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawCircleWithGivenRadiusTool.Draws-a-circle-by-specifiying-the-radius-the-number-of-segments-per-circle-quarter-and-the-centre-position-by-mouse-click");
+	//private String sidebarstring = "Draws a circle by specifying the radius, the number of segments per circle quarter and the center position by mouse click";
 	private String sidebarstring = I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawCircleWithGivenRadiusTool.Draws-a-circle-by-specifiying-the-radius-and-the-circle-accuracy-and-the-centre-position-by-mouse-click");
 	private String sAccuracy = I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawCircleWithGivenRadiusTool.Circle-Accuracy");
 	private String sReset = I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawCircleWithGivenRadiusTool.too-small-tolerance-reset-to-300-segments");
@@ -141,9 +137,8 @@ public class DrawCircleWithGivenRadiusTool extends NClickTool{
         reportNothingToUndoYet();
         
     	Point p = new GeometryFactory().createPoint(this.getModelDestination());
-    	this.mp = p;
     	//-- calculate number of points per quarter
-    	double tmp = Math.acos((this.radius-this.tolerance)/this.radius);
+    	double tmp = Math.acos((DrawCircleWithGivenRadiusTool.radius-DrawCircleWithGivenRadiusTool.tolerance)/DrawCircleWithGivenRadiusTool.radius);
     	if (tmp != 0){
     		int pts = (int)Math.floor((Math.PI/tmp)/4.0);
     		if(pts < 3){
@@ -157,7 +152,7 @@ public class DrawCircleWithGivenRadiusTool extends NClickTool{
     	}    	 
     	//-------------------
     													//points-1 = segments
-    	Geometry circle = BufferOp.bufferOp(p,this.radius,this.points-1);
+    	Geometry circle = BufferOp.bufferOp(p,DrawCircleWithGivenRadiusTool.radius,this.points-1);
     	this.checkCircle(circle);
     	
     	if (circle instanceof Polygon){ 
@@ -244,8 +239,7 @@ public class DrawCircleWithGivenRadiusTool extends NClickTool{
     private void calculateCircle(Coordinate middlePoint, LayerViewPanel panel){
         //--calculate circle;
     	Point p = new GeometryFactory().createPoint(middlePoint);
-    	this.mp = p;
-    	Geometry buffer = p.buffer(this.radius);   	
+    	Geometry buffer = p.buffer(DrawCircleWithGivenRadiusTool.radius);   	
 
     	Geometry[] geomArray = new Geometry[1];
     	geomArray[0] = buffer;
@@ -273,13 +267,13 @@ public class DrawCircleWithGivenRadiusTool extends NClickTool{
 	
     private void setDialogValues(MultiInputDialog dialog) {    	
 	    dialog.setSideBarDescription(this.sidebarstring);
-	    dialog.addDoubleField(T1,this.radius,7,T1); 
-	    dialog.addDoubleField(this.sAccuracy,this.tolerance, 7,this.sAccuracy);
+	    dialog.addDoubleField(T1,DrawCircleWithGivenRadiusTool.radius,7,T1); 
+	    dialog.addDoubleField(this.sAccuracy,DrawCircleWithGivenRadiusTool.tolerance, 7,this.sAccuracy);
     }
 
     private void getDialogValues(MultiInputDialog dialog) {
-        this.radius = dialog.getDouble(T1);
-        this.tolerance = dialog.getDouble(this.sAccuracy); 
+        DrawCircleWithGivenRadiusTool.radius = dialog.getDouble(T1);
+        DrawCircleWithGivenRadiusTool.tolerance = dialog.getDouble(this.sAccuracy); 
     }
 	
     //----------- from drag tool ------------//
