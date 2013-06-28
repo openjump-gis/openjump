@@ -1,14 +1,5 @@
 package org.openjump.core.ui.plugin.queries;
 
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
-import java.util.List;
-import java.util.regex.Pattern;
-
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jump.feature.Feature;
@@ -17,10 +8,17 @@ import com.vividsolutions.jump.util.FlexibleDateParser;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.regex.Pattern;
+
 /**
  * Condition
  * @author Michael MICHAUD
- * @version 0.2.3
+ * @version 0.3.0
+ * version 0.3.0 (2013-06-28)
+ *     add relate operator
  * version 0.2.3 (2012-03-05)
  *     change TFFTFF*** to TFF*FF*** for the strictIntersection test
  * version 0.2.2 (2010-01-27)
@@ -204,11 +202,12 @@ public class Condition  {
                 else if (op==Operator.CONTA && g.contains(p)) return true;
                 else if (op==Operator.WITHI && g.within(p)) return true;
                 else if (op==Operator.WSTRI && g.relate(p, "TFF*FF***")) return true;
-                else if (op==Operator.WDIST && g.distance(p)<op.arg) return true;
+                else if (op==Operator.WDIST && g.distance(p) < Double.parseDouble(op.arg.toString())) return true;
                 else if (op==Operator.TOUCH && g.touches(p)) return true;
                 else if (op==Operator.CROSS && g.crosses(p)) return true;
                 else if (op==Operator.OVERL && g.overlaps(p)) return true;
                 else if (op==Operator.DISJO && g.disjoint(p)) return true;
+                else if (op==Operator.RELAT && g.relate(p, op.arg.toString())) return true;
                 else;
             }
             return false;
@@ -224,11 +223,12 @@ public class Condition  {
                     else if (op==Operator.CONTA && g.contains(p)) return true;
                     else if (op==Operator.WITHI && g.within(p)) return true;
                     else if (op==Operator.WSTRI && g.relate(p, "TFF*FF***")) return true;
-                    else if (op==Operator.WDIST && g.distance(p)<op.arg) return true;
+                    else if (op==Operator.WDIST && g.distance(p) < Double.parseDouble(op.arg.toString())) return true;
                     else if (op==Operator.TOUCH && g.touches(p)) return true;
                     else if (op==Operator.CROSS && g.crosses(p)) return true;
                     else if (op==Operator.OVERL && g.overlaps(p)) return true;
                     else if (op==Operator.DISJO && g.disjoint(p)) return true;
+                    else if (op==Operator.RELAT && g.relate(p, op.arg.toString())) return true;
                     else;
                 }
                 return false;
@@ -245,11 +245,12 @@ public class Condition  {
                     else if (op==Operator.CONTA && g.contains(p)) return true;
                     else if (op==Operator.WITHI && g.within(p)) return true;
                     else if (op==Operator.WSTRI && g.relate(p, "TFF*FF***")) return true;
-                    else if (op==Operator.WDIST && g.distance(p)<op.arg) return true;
+                    else if (op==Operator.WDIST && g.distance(p) < Double.parseDouble(op.arg.toString())) return true;
                     else if (op==Operator.TOUCH && g.touches(p)) return true;
                     else if (op==Operator.CROSS && g.crosses(p)) return true;
                     else if (op==Operator.OVERL && g.overlaps(p)) return true;
                     else if (op==Operator.DISJO && g.disjoint(p)) return true;
+                    else if (op==Operator.RELAT && g.relate(p, op.arg.toString())) return true;
                     else;
                 }
                 return false;
@@ -264,11 +265,12 @@ public class Condition  {
                 else if (op==Operator.CONTA && g.contains(p)) return true;
                 else if (op==Operator.WITHI && g.within(p)) return true;
                 else if (op==Operator.WSTRI && g.relate(p, "TFF*FF***")) return true;
-                else if (op==Operator.WDIST && g.distance(p)<op.arg) return true;
+                else if (op==Operator.WDIST && g.distance(p) < Double.parseDouble(op.arg.toString())) return true;
                 else if (op==Operator.TOUCH && g.touches(p)) return true;
                 else if (op==Operator.CROSS && g.crosses(p)) return true;
                 else if (op==Operator.OVERL && g.overlaps(p)) return true;
                 else if (op==Operator.DISJO && g.disjoint(p)) return true;
+                else if (op==Operator.RELAT && g.relate(p, op.arg.toString())) return true;
                 else;
             }
             return false;

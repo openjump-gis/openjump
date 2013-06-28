@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-06-28 mmichaud <michael.michaud@free.fr>
+  * add relate (DE-9IM) operator in Simple Query PlugIn
+    (and improve syntax error handling for operators having arguments)
+
 2013-06-19 mmichaud <michael.michaud@free.fr>
   * add 4 wms addresses in the WMS URL chooser
 

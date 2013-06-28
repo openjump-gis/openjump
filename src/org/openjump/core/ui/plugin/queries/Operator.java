@@ -10,7 +10,7 @@ import com.vividsolutions.jump.I18N;
 public class Operator {
     private String key;
     public char type;  // B=boolean, N=numeric, S=string, E=enumeration, G=geometric
-    public double arg = -1d; // arguments for the within distance function
+    public Object arg; // arguments for the within distance and the relate functions
     
     // OPERATOR FOR BOOLEAN VALUES AND DATES
     public final static Operator BEQ = new Operator("beq", 'B');
@@ -44,6 +44,7 @@ public class Operator {
     public final static Operator CROSS = new Operator("cross", 'G');
     public final static Operator OVERL = new Operator("overl", 'G');
     public final static Operator DISJO = new Operator("disjo", 'G');
+    public final static Operator RELAT = new Operator("relat", 'G', "FF*F1****");
     
     public static Operator[] BOOLEAN_OP = new Operator[] {BEQ, BNE};
     
@@ -56,7 +57,7 @@ public class Operator {
     };
         
     public static Operator[] GEOMETRIC_OP = new Operator[] {
-        INTER, CONTA, WITHI, WSTRI, WDIST, TOUCH, CROSS, OVERL, DISJO
+        INTER, CONTA, WITHI, WSTRI, WDIST, TOUCH, CROSS, OVERL, DISJO, RELAT
     };  
     
     public Operator(String key, char type) {
@@ -64,7 +65,7 @@ public class Operator {
         this.type = type;
     }
     
-    public Operator(String key, char type, double arg) {
+    public Operator(String key, char type, Object arg) {
         this.key = key;
         this.type = type;
         this.arg = arg;
@@ -72,8 +73,8 @@ public class Operator {
     
     public String toString() {
         StringBuffer sb = new StringBuffer(I18N.get("org.openjump.core.ui.plugin.queries.Operator."+key));
-        if(arg<0.0) {return sb.toString();}
-        else {return sb.toString() + " ("+arg+")";}
+        if(arg == null) {return sb.toString();}
+        else {return sb.toString() + " (" + arg + ")";}
     }
 
 }

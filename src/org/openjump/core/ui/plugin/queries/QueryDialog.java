@@ -1,50 +1,29 @@
 package org.openjump.core.ui.plugin.queries;
 
-import java.awt.Color;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.TreeSet;
-
-import javax.swing.BorderFactory;
-import javax.swing.border.Border;
-
-import buoy.event.*;
+import buoy.event.CommandEvent;
+import buoy.event.MouseEnteredEvent;
+import buoy.event.ValueChangedEvent;
+import buoy.event.WindowClosingEvent;
 import buoy.widget.*;
-
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.feature.AttributeType;
-import com.vividsolutions.jump.feature.BasicFeature;
-import com.vividsolutions.jump.feature.Feature;
-import com.vividsolutions.jump.feature.FeatureCollection;
-import com.vividsolutions.jump.feature.FeatureDataset;
-import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.util.CollectionMap;
-import com.vividsolutions.jump.workbench.model.CategoryEvent;
-import com.vividsolutions.jump.workbench.model.FeatureEvent;
-import com.vividsolutions.jump.workbench.model.Layer;
-import com.vividsolutions.jump.workbench.model.LayerEvent;
-import com.vividsolutions.jump.workbench.model.LayerListener;
-import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
-import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
+import com.vividsolutions.jump.workbench.model.*;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.FeatureSelection;
 import com.vividsolutions.jump.workbench.ui.InfoFrame;
 import com.vividsolutions.jump.workbench.ui.LayerNameRenderer;
 import com.vividsolutions.jump.workbench.ui.TaskFrame;
+
+import javax.swing.*;
+import javax.swing.border.Border;
+import java.awt.*;
+import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -55,6 +34,7 @@ import com.vividsolutions.jump.workbench.ui.TaskFrame;
  * version 0.2 (16 Oct 2005)
  * version 0.2.1 (10 aug 2007)
  * version 0.3.0 (04 sept 2010) complete rewrite of functionChenged and operatorChanged methods
+ * version 0.4.0 (28 june 2013) add relate method based on the DE-9IM matrix
  */ 
 public class QueryDialog extends BDialog {
     
@@ -649,7 +629,7 @@ public class QueryDialog extends BDialog {
         }
     }
     
-    public void operatorChanged() {
+    public boolean operatorChanged() {
         //Operator newop = (Operator)operatorCB.getSelectedValue();
         String newopstring = operatorCB.getSelectedValue().toString();
         try {
@@ -667,20 +647,41 @@ public class QueryDialog extends BDialog {
                     updateValues();
                 }
                 operator = newop;
-                if (operator == Operator.WDIST) {
+                if (operator == Operator.WDIST || operator == Operator.RELAT) {
                     operatorCB.setEditable(true);
                 }
                 else {
                     operatorCB.setEditable(false);
                 }
             }
-            else if (operatorCB.getSelectedValue() instanceof String) {
+            if (operatorCB.getSelectedValue() instanceof String) {
                 if (operator==Operator.WDIST) {
                     //operatorCB.setEditable(true); // added on 2007-07-02 (bug fix)
                     String f = operatorCB.getSelectedValue().toString();
-                    String sub = f.substring(f.lastIndexOf('(')+1, f.lastIndexOf(')'));
-                    Operator.WDIST.arg = Double.parseDouble(sub);
-                    operatorCB.setSelectedValue(Operator.WDIST);
+                    Pattern regex = Pattern.compile(".*\\(([0-9]+(\\.[0-9]+)?)\\)");
+                    Matcher matcher = regex.matcher(f);
+                    if (matcher.matches()) {
+                        Operator.WDIST.arg = Double.parseDouble(matcher.group(1));
+                        operatorCB.setSelectedValue(Operator.WDIST);
+                    }
+                    else {
+                        context.getWorkbenchFrame().warnUser(I18N.getMessage("org.openjump.core.ui.plugin.queries.SimpleQuery.illegal-argument-for", operator));
+                        return false;
+                    }
+                }
+                // added on 2013-06-28
+                else if (operator==Operator.RELAT) {
+                    String f = operatorCB.getSelectedValue().toString();
+                    Pattern regex = Pattern.compile(".*\\(([012TFtf\\*]{9})\\)");
+                    Matcher matcher = regex.matcher(f);
+                    if (matcher.matches()) {
+                        Operator.RELAT.arg = matcher.group(1);
+                        operatorCB.setSelectedValue(Operator.RELAT);
+                    }
+                    else {
+                        context.getWorkbenchFrame().warnUser(I18N.getMessage("org.openjump.core.ui.plugin.queries.SimpleQuery.illegal-argument-for", operator));
+                        return false;
+                    }
                 }
                 else {
                     operatorCB.setEditable(false);
@@ -690,7 +691,9 @@ public class QueryDialog extends BDialog {
         }
         catch(Exception e) {
             context.getWorkbenchFrame().toMessage(e);
+            return false;
         }
+        return true;
         
     }
     
@@ -838,7 +841,7 @@ public class QueryDialog extends BDialog {
         String operatorName = prop.getProperty("operator_name");
         operatorCB.setSelectedIndex(operatorIndex%operatorCB.getItemCount());
         if(!operatorName.equals(operatorCB.getSelectedValue().toString())) {
-            if (operatorCB.getItem(operatorIndex)==Operator.WDIST) {
+            if (operatorCB.getItem(operatorIndex)==Operator.WDIST || operatorCB.getItem(operatorIndex)==Operator.RELAT) {
                 operatorCB.setEditable(true);
                 operatorCB.setSelectedValue(operatorName);
             }
@@ -895,7 +898,12 @@ public class QueryDialog extends BDialog {
     
     
     void executeQuery() {
-        final QueryDialog queryDialog = this; 
+        final QueryDialog queryDialog = this;
+        // dirty patch to avoid executing query if the operator combobox is in an invalid state
+        // some operators are editable. If the user enter an invalid operator parameter, and then
+        // click execute, the new user edited operator is evaluated before execution
+        // @TODO improve semantic of operatorChange retrun value
+        if (!operatorChanged()) return;
         Runnable runnable = new Runnable() {
             public void run() {
                 // runningQuery is set to true while the query is running
