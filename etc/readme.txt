@@ -91,7 +91,7 @@ and the following plugins
  Vertex Note (com.cadplan.jump) - GPL2 - gpl-2.txt
  Vertex Symbols (com.cadplan.jump) - GPL2 - gpl-2.txt
   VertexSymbols.jar
-  iText-2.1.5.jar - LGPL2.1 - lgpl-2.1.txt
+  itext-2.1.7.jar - LGPL2.1 - lgpl-2.1.txt
 
 
 2. Installation instructions
