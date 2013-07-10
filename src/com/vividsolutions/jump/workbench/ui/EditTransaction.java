@@ -32,17 +32,15 @@
 
 package com.vividsolutions.jump.workbench.ui;
 
-import java.util.*;
-
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.UndoableCommand;
-import com.vividsolutions.jump.workbench.ui.SelectionManager;
+
+import java.util.*;
 
 /**
  * Takes care of "rollback" (if any geometries are invalid) and undo,
@@ -177,7 +175,7 @@ public class EditTransaction {
         SelectionEditor editor,
         SelectionManagerProxy selectionManagerProxy,
         Layer layer) {
-        Map featureToNewGeometryMap = new HashMap();
+        Map featureToNewGeometryMap = new LinkedHashMap();
         SelectionManager selectionManager = selectionManagerProxy.getSelectionManager();
         for (Iterator i = selectionManager.getFeaturesWithSelectedItems(layer)
                                                    .iterator(); i.hasNext(); ) {
@@ -374,7 +372,7 @@ public class EditTransaction {
     }
 
     private Map<Integer,Geometry> geometryClones(Collection features) {
-        Map<Integer,Geometry> geometryClones = new HashMap<Integer,Geometry>();
+        Map<Integer,Geometry> geometryClones = new LinkedHashMap<Integer,Geometry>();
         for (Iterator i = features.iterator(); i.hasNext();) {
             Feature feature = (Feature) i.next();
             // [mmichaud 2011-09-17] Tried to get rid of clone, but some
