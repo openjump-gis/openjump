@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-07-13 mmichaud <michael.michaud@free.fr>
+  * Replace HashMap by LinkedHashMap in FeatureDataset#removeAll
+    so that feature order is preserved after feature deletion.
+
 2013-07-10 mmichaud <michael.michaud@free.fr>
   * Replace HashMap by LinkedHashMap in EditTransaction so that
     feature order is preserved as much as possible after transactions

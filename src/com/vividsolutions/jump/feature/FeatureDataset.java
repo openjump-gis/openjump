@@ -33,10 +33,10 @@
 
 package com.vividsolutions.jump.feature;
 
+import com.vividsolutions.jts.geom.Envelope;
+
 import java.io.Serializable;
 import java.util.*;
-
-import com.vividsolutions.jts.geom.Envelope;
 
 
 /**
@@ -208,8 +208,9 @@ public class FeatureDataset implements FeatureCollection, Serializable {
     // the removeAll performance if c is large
     // note that the semantic is slightly changed as the FID is used to identify 
     // features to remove rather than object Equality
+    // [michaudm 2013-07-13] change HashMap to LinkedHashMap to preserve feature order
     public void removeAll(Collection c) {
-        java.util.Map<Integer,Feature> map = new java.util.HashMap<Integer,Feature>();
+        Map<Integer,Feature> map = new LinkedHashMap<Integer,Feature>();
         for (Iterator i = features.iterator(); i.hasNext(); ) {
             Feature f = (Feature)i.next();
             map.put(f.getID(), f);

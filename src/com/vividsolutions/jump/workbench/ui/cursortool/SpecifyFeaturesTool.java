@@ -32,21 +32,14 @@
 
 package com.vividsolutions.jump.workbench.ui.cursortool;
 
-import java.awt.event.MouseEvent;
-import java.awt.geom.NoninvertibleTransformException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.geom.EnvelopeIntersector;
 import com.vividsolutions.jump.workbench.model.Layer;
+
+import java.awt.event.MouseEvent;
+import java.awt.geom.NoninvertibleTransformException;
+import java.util.*;
 
 /**
  * Allows the user to specify features by clicking on them or drawing a box
@@ -70,8 +63,8 @@ public abstract class SpecifyFeaturesTool extends DragTool {
 		HashSet intersectingFeatures = new HashSet();
 		List candidateFeatures = layer.getFeatureCollectionWrapper().query(
 				envelope);
-		String a = "" + layer.getFeatureCollectionWrapper().getUltimateWrappee();
-		String b = "" + layer.getFeatureCollectionWrapper().getUltimateWrappee().size();
+		//String a = "" + layer.getFeatureCollectionWrapper().getUltimateWrappee();
+		//String b = "" + layer.getFeatureCollectionWrapper().getUltimateWrappee().size();
 		for (Iterator i = candidateFeatures.iterator(); i.hasNext();) {
 			Feature feature = (Feature) i.next();
 
@@ -99,7 +92,7 @@ public abstract class SpecifyFeaturesTool extends DragTool {
 	}
 
 	protected Set specifiedFeatures() throws NoninvertibleTransformException {
-		HashSet allFeatures = new HashSet();
+		HashSet allFeatures = new LinkedHashSet();
 
 		for (Iterator i = layerToSpecifiedFeaturesMap().values().iterator(); i
 				.hasNext();) {
