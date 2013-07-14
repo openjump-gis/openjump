@@ -1,5 +1,14 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-07-14 mmichaud <michael.michaud@free.fr>
+  * Bug 295 and 326 : better error handling in xml2java and in
+    OpenProjectWizard so that a project file ca be completely parsed
+    even if a third party class needed to read a datasource is not
+    found. It is now possible
+    - to save a csv file in a project file (jmp)
+    - to read it back from the project
+    - to read other layers if csv driver is missing
+
 2013-07-13 mmichaud <michael.michaud@free.fr>
   * Replace HashMap by LinkedHashMap in FeatureDataset#removeAll
     so that feature order is preserved after feature deletion.

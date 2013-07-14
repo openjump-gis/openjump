@@ -25,27 +25,17 @@
  * (250)385-6040 www.vividsolutions.com
  */
 package com.vividsolutions.jump.util.java2xml;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.Reader;
-import java.io.StringReader;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
-
+import com.vividsolutions.jts.util.Assert;
+import com.vividsolutions.jump.util.StringUtil;
 import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 
-import com.vividsolutions.jts.util.Assert;
-import com.vividsolutions.jump.util.StringUtil;
+import javax.xml.namespace.QName;
+import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.*;
 public class XML2Java extends XMLBinder {
     private ArrayList listeners = new ArrayList();
     private ClassLoader classLoader = getClass().getClassLoader();
@@ -98,14 +88,19 @@ public class XML2Java extends XMLBinder {
             }
             private void normalTagSpecFound(String xmlName, String javaName,
                     List specChildElements) throws Exception {
-                setValuesFromTags(object, setter(object.getClass(), javaName),
+                try {
+                    setValuesFromTags(object, setter(object.getClass(), javaName),
                         tag.getChildren(xmlName));
-                //The parent may specify additional tags for itself in the
-                // children. [Jon Aquino]
-                for (Iterator i = tag.getChildren(xmlName).iterator(); i
-                        .hasNext();) {
-                    Element childTag = (Element) i.next();
-                    read(childTag, object, specChildElements);
+                    //The parent may specify additional tags for itself in the
+                    // children. [Jon Aquino]
+                    for (Iterator i = tag.getChildren(xmlName).iterator(); i.hasNext();) {
+                        Element childTag = (Element) i.next();
+                        read(childTag, object, specChildElements);
+                    }
+
+                } catch(ClassNotFoundException e) {
+                    // Here, we don't throw e so that the parsing process can go on
+                    //throw e;
                 }
             }
             public void tagSpecFound(String xmlName, String javaName,
@@ -166,7 +161,13 @@ public class XML2Java extends XMLBinder {
                 throw new XMLBinderException("Expected <" + tag.getName()
                         + "> to have 'class' attribute but found none");
             }
-            return read(tag, Class.forName(tag.getAttributeValue("class"), true, classLoader));
+            try {
+                return read(tag, Class.forName(tag.getAttributeValue("class"), true, classLoader));
+            } catch (ClassNotFoundException e) {
+                LOG.error("Could not find class for " + tag, e);
+                System.out.println("Class not found for tag " + tag.getName() + ": " + tag.getAttribute("class").getValue());
+                throw e;
+            }
         }
         fireCreatingObject(c);
         if (hasCustomConverter(c)) {

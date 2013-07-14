@@ -1,25 +1,5 @@
 package org.openjump.core.ui.plugin.file.open;
 
-import java.awt.Dimension;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-
-import org.openjump.core.model.TaskEvent;
-import org.openjump.core.model.TaskListener;
-import org.openjump.core.ui.images.IconLoader;
-import org.openjump.core.ui.plugin.file.FindFile;
-import org.openjump.core.ui.plugin.file.OpenProjectPlugIn;
-import org.openjump.core.ui.plugin.file.OpenRecentPlugIn;
-import org.openjump.core.ui.swing.wizard.AbstractWizardGroup;
-
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.coordsys.CoordinateSystemRegistry;
@@ -29,15 +9,11 @@ import com.vividsolutions.jump.io.datasource.DataSource;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.util.Blackboard;
-import com.vividsolutions.jump.util.java2xml.XML2Java;
 import com.vividsolutions.jump.util.StringUtil;
+import com.vividsolutions.jump.util.java2xml.XML2Java;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.model.Category;
-import com.vividsolutions.jump.workbench.model.Layer;
-import com.vividsolutions.jump.workbench.model.LayerManager;
-import com.vividsolutions.jump.workbench.model.Layerable;
-import com.vividsolutions.jump.workbench.model.Task;
+import com.vividsolutions.jump.workbench.model.*;
 import com.vividsolutions.jump.workbench.plugin.PlugInManager;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.TaskFrame;
@@ -45,6 +21,22 @@ import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.WorkbenchContextReference;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
+import org.openjump.core.model.TaskEvent;
+import org.openjump.core.model.TaskListener;
+import org.openjump.core.ui.plugin.file.FindFile;
+import org.openjump.core.ui.plugin.file.OpenProjectPlugIn;
+import org.openjump.core.ui.plugin.file.OpenRecentPlugIn;
+import org.openjump.core.ui.swing.wizard.AbstractWizardGroup;
+
+import javax.swing.*;
+import java.awt.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class OpenProjectWizard extends AbstractWizardGroup {
   /** The key for the wizard. */
@@ -167,7 +159,7 @@ public class OpenProjectWizard extends AbstractWizardGroup {
       }
       catch (ClassNotFoundException e) {
           workbenchFrame.log(file.getPath() + " can not be loaded");
-          workbenchFrame.warnUser("Missing class: " + e.getMessage());
+          workbenchFrame.warnUser("Missing class: " + e.getCause());
       }
       catch (Exception cause) {
         Exception e = new Exception(I18N.getMessage(KEY
@@ -188,6 +180,13 @@ public class OpenProjectWizard extends AbstractWizardGroup {
     for (Layer layer : layers) {
       DataSourceQuery dataSourceQuery = layer.getDataSourceQuery();
       DataSource dataSource = dataSourceQuery.getDataSource();
+      if (dataSource == null) {
+        context.getWorkbench().getFrame().warnUser(I18N.getMessage(KEY + ".datasource-not-found",
+                new Object[]{layer.getName()}));
+        //context.getWorkbench().getFrame().warnUser("DataSource not found for " + layer.getName());
+        layerManager.remove(layer);
+        continue;
+      }
       if (dataSource instanceof WorkbenchContextReference) {
           try {
               WorkbenchContextReference workbenchRef = (WorkbenchContextReference)dataSource;
@@ -274,7 +273,7 @@ public class OpenProjectWizard extends AbstractWizardGroup {
             } else {
               break;
             }
-          } 
+          }
         }
 
         newLayerManager.addLayerable(sourceLayerCategory.getName(), layerable);
