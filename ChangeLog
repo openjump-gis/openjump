@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-07-29 mmichaud <michael.michaud@free.fr>
+  * Make AutoAssignAttributePlugIn undoable
+
 2013-07-14 mmichaud <michael.michaud@free.fr>
   * Bug 295 and 326 : better error handling in xml2java and in
     OpenProjectWizard so that a project file ca be completely parsed

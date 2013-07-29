@@ -31,44 +31,25 @@
  * (850)862-7321
  */
 package org.openjump.core.ui.plugin.tools;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JTextField;
-
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureSchema;
-import com.vividsolutions.jump.util.Blackboard;
-import com.vividsolutions.jump.util.CollectionUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.model.FeatureEventType;
 import com.vividsolutions.jump.workbench.model.Layer;
-import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
+import com.vividsolutions.jump.workbench.model.UndoableCommand;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.ui.AttributeTypeFilter;
-import com.vividsolutions.jump.workbench.ui.GUIUtil;
-import com.vividsolutions.jump.workbench.ui.GenericNames;
-import com.vividsolutions.jump.workbench.ui.LayerNamePanelProxy;
-import com.vividsolutions.jump.workbench.ui.MenuNames;
-import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
-
+import com.vividsolutions.jump.workbench.ui.*;
 import org.openjump.core.ui.plugin.AbstractUiPlugIn;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.*;
 
 /**
 * Based on CalculateAreasAndLengthsPlugIn.
@@ -118,9 +99,9 @@ public class AutoAssignAttributePlugIn extends AbstractUiPlugIn {
 	    
 	public void initialize(PlugInContext context) throws Exception {
 	    
-	    context.getFeatureInstaller().addMainMenuItem(
+	    context.getFeatureInstaller().addMainMenuPlugin(this,
 	    	  new String[] { MenuNames.TOOLS, MenuNames.TOOLS_EDIT_ATTRIBUTES}, 
-	    	  this,
+	    	  this.getName(), false, null,
 	    	  createEnableCheck(context.getWorkbenchContext()));
 	      
         SELECTED_CHECK_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Selected-features-only");
@@ -153,6 +134,7 @@ public class AutoAssignAttributePlugIn extends AbstractUiPlugIn {
 			return false;
 		}
 		getDialogValues(dialog);
+        reportNothingToUndoYet(context);
 		assignValues(context);
 		return true;
 	}
@@ -276,7 +258,7 @@ public class AutoAssignAttributePlugIn extends AbstractUiPlugIn {
 			if (numeric.length() == 0)
 				autoInc = 0;
 			else
-				autoInc = new Integer(numeric).intValue();
+				autoInc = Integer.parseInt(numeric);
 		} else
 	    	autoInc = 0;
     }
@@ -365,41 +347,73 @@ public class AutoAssignAttributePlugIn extends AbstractUiPlugIn {
     	}
     	return "";
     }
-     
+
     private void assignValues(PlugInContext context) {
-    	Iterator iterator;
-    	if (selectedFeaturesOnly) {
-    		Collection layers = context.getLayerViewPanel().getSelectionManager()
-    		.getLayersWithSelectedItems();
-    		if (layers.size() > 1) {
-    			context.getWorkbenchFrame().warnUser(SELECT_ONLY_ON_ONE_LAYER);
-    		}
-    		iterator = context.getLayerViewPanel().getSelectionManager()
-    		.getFeaturesWithSelectedItems().iterator();
-    	} else {
-    		iterator = layer.getFeatureCollectionWrapper().getFeatures().iterator();
-    	}
-    	for (Iterator i = iterator; i.hasNext(); ) {
-    		Feature feature = (Feature) i.next();
-    		String s = textToAssign;
-    		if (autoIncrement) {
-    		    s = pattern;
-    			String value = "" + autoInc;
-    			autoInc += incValue;
-    			if (numeric.length() == 0)
-    				s = value;
-    			else
-    				s = pattern.replaceFirst(numeric, value);
-    		} else if (assignFromSource) {
+        //Iterator iterator;
+        final Collection newFeatures = new ArrayList<Feature>();
+        final Collection oldFeatures = new ArrayList<Feature>();
+        final Collection<Feature> features;
+        if (selectedFeaturesOnly) {
+            Collection layers = context.getLayerViewPanel().getSelectionManager()
+                    .getLayersWithSelectedItems();
+            if (layers.size() > 1) {
+                context.getWorkbenchFrame().warnUser(SELECT_ONLY_ON_ONE_LAYER);
+            }
+            features = context.getLayerViewPanel().getSelectionManager()
+                    .getFeaturesWithSelectedItems();
+        } else {
+            features = layer.getFeatureCollectionWrapper().getFeatures();
+        }
+        context.getLayerManager().getUndoableEditReceiver().startReceiving();
+        for (Iterator i = features.iterator(); i.hasNext(); ) {
+            Feature feature = (Feature) i.next();
+            String s;
+            if (autoIncrement) {
+                String value = "" + autoInc;
+                autoInc += incValue;
+                if (numeric.length() == 0)
+                    s = value;
+                else
+                    s = pattern.replaceFirst(numeric, value);
+            } else if (assignFromSource) {
                 s = feature.getAttribute(sourceAttribute).toString();
             } else {
                 s = textToAssign;
             }
-    		Object object = ((Converter) typeToConverterMap.get(destinationAttributeType)).convert(s);
-    		feature.setAttribute(targetAttribute, object);
-
-    	}
+            Object object = ((Converter) typeToConverterMap.get(destinationAttributeType)).convert(s);
+            oldFeatures.add(feature.clone(false));
+            Feature newFeature = feature.clone(false);
+            newFeature.setAttribute(targetAttribute, object);
+            newFeatures.add(newFeature);
+        }
+        layer.getLayerManager().getUndoableEditReceiver().startReceiving();
+        try {
+            UndoableCommand command =
+                    new UndoableCommand(I18N.get(AutoAssignAttributePlugIn.class.getName())) {
+                        public void execute() {
+                            Iterator i = newFeatures.iterator();
+                            for (Feature f : features) {
+                                f.setAttribute(targetAttribute, ((Feature)i.next()).getAttribute(targetAttribute));
+                            }
+                            layer.getLayerManager().fireFeaturesAttChanged(features,
+                                    FeatureEventType.ATTRIBUTES_MODIFIED, layer, oldFeatures);
+                        }
+                        public void unexecute() {
+                            Iterator i = oldFeatures.iterator();
+                            for (Feature f : features) {
+                                f.setAttribute(targetAttribute, ((Feature)i.next()).getAttribute(targetAttribute));
+                            }
+                            layer.getLayerManager().fireFeaturesAttChanged(features,
+                                    FeatureEventType.ATTRIBUTES_MODIFIED, layer, newFeatures);
+                        }
+                    };
+            command.execute();
+            layer.getLayerManager().getUndoableEditReceiver().receive(command.toUndoableEdit());
+        } finally {
+            layer.getLayerManager().getUndoableEditReceiver().stopReceiving();
+        }
     }
+
 
     public MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
         EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
