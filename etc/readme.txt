@@ -77,6 +77,8 @@ and the following plugins
   JumpFillPattern.jar
  KML Driver (skyjump) - GPL2 - gpl-2.txt
   kml-driver-*.jar
+ OSM Driver (Stefan Steiniger) - GPL2 - gpl-2.txt
+  oj_osm_reader_v*.jar
  Printer (com.cadplan.jump) - GPL2 - gpl-2.txt
   jumpPrinter.jar
  Pirol Csv Dataset 
