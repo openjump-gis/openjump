@@ -36,35 +36,31 @@ import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.index.strtree.STRtree;
 import com.vividsolutions.jts.noding.*;
 import com.vividsolutions.jts.noding.snapround.MCIndexSnapRounder;
-import com.vividsolutions.jts.operation.linemerge.LineMerger;
 import com.vividsolutions.jts.operation.polygonize.Polygonizer;
 import com.vividsolutions.jts.precision.CoordinatePrecisionReducerFilter;
-import com.vividsolutions.jts.util.*;
-import com.vividsolutions.jump.feature.Feature;
-import com.vividsolutions.jump.feature.FeatureCollection;
-import com.vividsolutions.jump.feature.FeatureDataset;
-import com.vividsolutions.jump.feature.FeatureDatasetFactory;
-import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.task.*;
-import com.vividsolutions.jump.workbench.*;
-import com.vividsolutions.jump.workbench.model.*;
-import com.vividsolutions.jump.workbench.plugin.*;
-import com.vividsolutions.jump.workbench.ui.*;
+import com.vividsolutions.jump.feature.*;
+import com.vividsolutions.jump.task.TaskMonitor;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.model.Layer;
+import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
+import com.vividsolutions.jump.workbench.model.UndoableCommand;
+import com.vividsolutions.jump.workbench.plugin.EnableCheck;
+import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
+import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
+import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.GenericNames;
+import com.vividsolutions.jump.workbench.ui.MenuNames;
+import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import com.vividsolutions.jump.workbench.ui.plugin.*;
+import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
+import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
+
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
-import java.util.Collection;
-
-import javax.swing.ImageIcon;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JMenuItem;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
-import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 
 
 /**
@@ -97,7 +93,7 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
     private final static String POLYGON_OPTIONS         = I18N.get("jump.plugin.edit.NoderPlugIn.polygon-options");
                                                         
     private final static String ADVANCED_OPTIONS        = I18N.get("jump.plugin.edit.NoderPlugIn.advanced-options");
-    private final static String NODING_METHOD           = I18N.get("jump.plugin.edit.NoderPlugIn.noding-method");
+    //private final static String NODING_METHOD           = I18N.get("jump.plugin.edit.NoderPlugIn.noding-method");
     private final static String SNAP_ROUNDING           = I18N.get("jump.plugin.edit.NoderPlugIn.snap-rounding");
     private final static String SNAP_ROUNDING_TOOLTIP   = I18N.get("jump.plugin.edit.NoderPlugIn.snap-rounding-makes-noding-algorithm-fully-robust");
     private final static String SNAP_ROUNDING_DP        = I18N.get("jump.plugin.edit.NoderPlugIn.snap-rounding-decimal-places");
@@ -126,7 +122,7 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
     private boolean use_selected = false;
     private String layerName;
     private GeometryFactory gf;
-    private FeatureSchema schema_preserve_attributes;
+    //private FeatureSchema schema_preserve_attributes;
     
     private boolean find_intersections = true;
     private Processor line_processor = Processor.SPLIT;
@@ -144,9 +140,9 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
   
     public void initialize(PlugInContext context) throws Exception {
         	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-    		featureInstaller.addMainMenuItem(
+    		featureInstaller.addMainMenuPlugin(this,
               new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY},
-              this, new JMenuItem(getName() + "..."),
+              getName() + "...", false, null,
               createEnableCheck(context.getWorkbenchContext()), -1);  
     }
   
@@ -214,7 +210,7 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
                 new PrecisionModel(Math.pow(10.0, (double)snap_rounding_dp)));
         }
         else {
-            gf = ((Feature)inputAll.iterator().next()).getGeometry().getFactory();
+            gf = (inputAll.iterator().next()).getGeometry().getFactory();
         }
         
         monitor.report(I18N.get("jump.plugin.edit.NoderPlugIn.noding"));
@@ -233,7 +229,7 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
         
         
         if (find_intersections) {
-            FeatureCollection nodes = null;
+            FeatureCollection nodes;
             // If the user does not want to split features, find intersections will
             // only find places where a vertex is missing (intersections located in
             // the interior of a segment)
@@ -258,7 +254,7 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
         }
         
         // If neither process lines nor process polygons is checked, do nothing
-        //if (do_not_process_lines && do_not_process_polygons) {
+        // if (do_not_process_lines && do_not_process_polygons) {
         if (line_processor == Processor.DO_NOT_PROCESS && polygon_processor == Processor.DO_NOT_PROCESS) {
         }
         
@@ -275,7 +271,7 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
                                    .getFeature2SegmentStringTreeMap(nodedSubstring);
             FeatureCollection fc = new FeatureDataset(
                 inputFeatures.keySet().iterator().next().getFeatureCollectionWrapper().getFeatureSchema());
-            final Collection<Feature> updatedFeatures = new ArrayList<Feature>();
+            //final Collection<Feature> updatedFeatures = new ArrayList<Feature>();
 
             //if (node_lines || node_polygons) {
             if (line_processor == Processor.NODE || polygon_processor == Processor.NODE) {
@@ -343,7 +339,7 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
             } else context.getWorkbenchFrame().warnUser(I18N.get("jump.plugin.edit.NoderPlugIn.no-output-data"));
         }
         
-        if (monitor.isCancelRequested()) return;
+        //if (monitor.isCancelRequested()) return;
     }
     
     private Noder getScaledNoder() {
@@ -479,7 +475,7 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
             if (metadata.getFeature().getGeometry() instanceof Lineal) {
                 cc = CoordinateArrays.atLeastNCoordinatesOrNothing(2, cc);
                 if (cc.length > 1) {
-                    Feature feature = (Feature)metadata.getFeature().clone(false);
+                    Feature feature = metadata.getFeature().clone(false);
                     feature.setGeometry(gf.createLineString(cc));
                     list.add(feature);
                     outputFeatures.get(featureToLayer.get(metadata.getFeature())).add(feature);
@@ -509,7 +505,7 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
     }
     
     /**
-     * @param monitor
+     * @param monitor the task monitor
      * @param geomStructureMap a Map with source features as keys and 
      * hierarchically organized noded segment strings as values
      * @param index index of noded segment strings 
@@ -692,9 +688,9 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
         dialog.addSubTitle(PROCESSING);
         dialog.addCheckBox(FIND_INTERSECTIONS, find_intersections, FIND_DESCRIPTION);
         dialog.addComboBox(LINE_OPTIONS, line_processor, 
-            Arrays.asList(new Processor[]{Processor.DO_NOT_PROCESS, Processor.NODE, Processor.SPLIT}), "");
+            Arrays.asList(Processor.DO_NOT_PROCESS, Processor.NODE, Processor.SPLIT), "");
         dialog.addComboBox(POLYGON_OPTIONS, polygon_processor, 
-            Arrays.asList(new Processor[]{Processor.DO_NOT_PROCESS, Processor.NODE, Processor.SPLIT}), "");
+            Arrays.asList(Processor.DO_NOT_PROCESS, Processor.NODE, Processor.SPLIT), "");
         
         dialog.addSeparator();
         dialog.addSubTitle(ADVANCED_OPTIONS);
