@@ -32,19 +32,8 @@
 
 package com.vividsolutions.jump.workbench.ui.plugin.analysis;
 
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
-import javax.swing.JMenuItem;
-
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureDataset;
@@ -54,12 +43,18 @@ import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.model.UndoableCommand;
 import com.vividsolutions.jump.workbench.plugin.*;
-import com.vividsolutions.jump.workbench.plugin.util.*;
+import com.vividsolutions.jump.workbench.plugin.util.LayerNameGenerator;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
-import com.vividsolutions.jump.I18N;
+
+import javax.swing.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Provides basic functions for computation with {@link Geometry} objects.
@@ -120,10 +115,9 @@ public class GeometryFunctionPlugIn extends AbstractPlugIn
 
   public void initialize(PlugInContext context) throws Exception {
     	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-  		featureInstaller.addMainMenuItem(
-  		    this,
-  		    new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
-  		    new JMenuItem(this.getName() + "..."),
+  		featureInstaller.addMainMenuPlugin(this,
+            new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
+  		    this.getName() + "...", false, null,
   		    createEnableCheck(context.getWorkbenchContext()));
         registerFunctions(context);
   }
@@ -190,7 +184,7 @@ public class GeometryFunctionPlugIn extends AbstractPlugIn
     monitor.report(I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Executing-function") + " " + functionToRun.getName() + "...");
 
     ArrayList modifiedFeatures = new ArrayList();
-    Collection resultFeatures = null;
+    Collection resultFeatures;
     int nArgs = functionToRun.getGeometryArgumentCount();
 
     if (nArgs == 2) {
@@ -402,6 +396,7 @@ public class GeometryFunctionPlugIn extends AbstractPlugIn
 
     paramField = dialog.addDoubleField(PARAM, params[0], 10);
 
+    if (maskLayer == null) maskLayer = context.getLayerManager().size() > 1 ? context.getCandidateLayer(1) : srcLayer;
     layer2ComboBox = dialog.addLayerComboBox(MASK_LAYER, maskLayer,
     		I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.The-Mask-layer-must-contain-a-single-feature,-which-is-used-as-the-second-operand-for-binary-functions"),
         context.getLayerManager()  );

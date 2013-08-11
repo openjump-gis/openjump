@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-08-11 mmichaud <michael.michaud@free.fr>
+  * Fix a bug in GeometryFunctionPlugIn where mask layer was not
+    initialized.
+
 2013-08-07 sstein <sstein@geo.uzh.ch>
   * New OpenStreetMap *.osm file reader added to OpenJUMP PLUS.
   
