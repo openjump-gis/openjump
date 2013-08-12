@@ -103,14 +103,14 @@ public class ExtractLayersByGeometry extends AbstractThreadedUiPlugIn {
   private final static String AREA = I18N
       .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.area");
   private final static String MIXED = I18N
-	      .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.mixed");
+      .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.mixed");
   private final static String sExplodeGeoms = I18N
-	      .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.explode-geometry-collections-recursively");
+      .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.explode-geometry-collections-recursively");
   private final static String LAYER1 = GenericNames.SELECT_LAYER;
-  
+
   public boolean doExplodeGeometryCollections = true;
   public Layer layer1 = null;
-  
+
   public ExtractLayersByGeometry() {
 
   }
@@ -127,7 +127,7 @@ public class ExtractLayersByGeometry extends AbstractThreadedUiPlugIn {
     // -- [sstein] this shouldn't be here, but as we try to use now the
     // default-plugins.xml for configuration, we need to add the submenu init
     // in the first loaded submenu function
-    //featureInstaller.addMenuSeparator(MenuNames.EDIT);
+    // featureInstaller.addMenuSeparator(MenuNames.EDIT);
     FeatureInstaller.addMainMenu(featureInstaller,
         new String[] { MenuNames.EDIT }, MenuNames.EXTRACT, -1);
     // --
@@ -145,33 +145,32 @@ public class ExtractLayersByGeometry extends AbstractThreadedUiPlugIn {
   }
 
   public boolean execute(PlugInContext context) throws Exception {
-		MultiInputDialog dialog = new MultiInputDialog(context
-				.getWorkbenchFrame(), getName(), true);
-		if(layer1 == null){
-			layer1 = context.getCandidateLayer(0);
-		}
-		setDialogValues(dialog, context);
-		GUIUtil.centreOnWindow(dialog);
-		dialog.setVisible(true);
-		if (!dialog.wasOKPressed()) {
-			return false;
-		}
-		getDialogValues(dialog);
-		return true;
+    MultiInputDialog dialog = new MultiInputDialog(context.getWorkbenchFrame(),
+        getName(), true);
+    if (layer1 == null) {
+      layer1 = context.getCandidateLayer(0);
+    }
+    setDialogValues(dialog, context);
+    GUIUtil.centreOnWindow(dialog);
+    dialog.setVisible(true);
+    if (!dialog.wasOKPressed()) {
+      return false;
+    }
+    getDialogValues(dialog);
+    return true;
   }
 
-  @Override
   public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
-		monitor.allowCancellationRequests();
-	    if (layer1 != null) {
-	    	if (!compatibleFeatures(layer1))
-	    		splitLayer(monitor, context, layer1, this.doExplodeGeometryCollections);
-	    	else{
-	    		context.getWorkbenchFrame().warnUser(ONLY_ONE_GEOMETRY_TYPE_FOUND);
-	    	}
-	    }
+    monitor.allowCancellationRequests();
+    if (layer1 != null) {
+      if (!compatibleFeatures(layer1))
+        splitLayer(monitor, context, layer1, this.doExplodeGeometryCollections);
+      else {
+        context.getWorkbenchFrame().warnUser(ONLY_ONE_GEOMETRY_TYPE_FOUND);
+      }
+    }
   }
-  
+
   public String getName() {
     return EXTRACT_LAYERS_BY_GEOMETRY_TYPE + "...";
   }
@@ -179,17 +178,18 @@ public class ExtractLayersByGeometry extends AbstractThreadedUiPlugIn {
   public static final ImageIcon ICON = IconLoader.icon("extract.gif");
 
   private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
-	  dialog.setSideBarDescription(EXTRACT_LAYERS_BY_GEOMETRY_TYPE);
-	  dialog.addLayerComboBox(LAYER1, layer1, context.getLayerManager());
-	  dialog.addCheckBox(sExplodeGeoms, doExplodeGeometryCollections);
+    dialog.setSideBarDescription(EXTRACT_LAYERS_BY_GEOMETRY_TYPE);
+    dialog.addLayerComboBox(LAYER1, layer1, context.getLayerManager());
+    dialog.addCheckBox(sExplodeGeoms, doExplodeGeometryCollections);
   }
 
   private void getDialogValues(MultiInputDialog dialog) {
-	  this.layer1 = dialog.getLayer(LAYER1);
-	  this.doExplodeGeometryCollections = dialog.getBoolean(sExplodeGeoms);
+    this.layer1 = dialog.getLayer(LAYER1);
+    this.doExplodeGeometryCollections = dialog.getBoolean(sExplodeGeoms);
   }
 
-  private List splitLayer(TaskMonitor monitor, PlugInContext context, Layer layer, boolean doExplodeGeoms) {
+  private List splitLayer(TaskMonitor monitor, PlugInContext context,
+      Layer layer, boolean doExplodeGeoms) {
     ArrayList newLayers = new ArrayList();
 
     ArrayList emptyFeatures = new ArrayList();
@@ -206,27 +206,26 @@ public class ExtractLayersByGeometry extends AbstractThreadedUiPlugIn {
         .getSelectedCategories();
 
     for (Iterator i = featureList.iterator(); i.hasNext();) {
-      if(monitor.isCancelRequested()){
-    	  break;
+      if (monitor.isCancelRequested()) {
+        break;
       }
       Feature feature = (Feature) i.next();
       Geometry geo = feature.getGeometry();
       BitSet currFeatureBit = new BitSet();
       currFeatureBit = setBit(currFeatureBit, geo);
       if (geo instanceof GeometryCollection) {
-    	  if(doExplodeGeoms == true){
-		        explodeGeometryCollection(featureSchema, emptyFeatures, pointFeatures,
-		            lineFeatures, polyFeatures, (GeometryCollection) geo, feature);
-    	  }
-    	  else{
-    		  GeometryCollection geomcoll = (GeometryCollection)geo;
-    		  if (geomcoll.isEmpty() == true){
-    			  emptyFeatures.add(feature.clone(true)); 
-    		  }
-    		  else{
-    			  mixedFeatures.add(feature.clone(true)); 
-    		  }
-    	  }
+        if (doExplodeGeoms == true) {
+          explodeGeometryCollection(featureSchema, emptyFeatures,
+              pointFeatures, lineFeatures, polyFeatures,
+              (GeometryCollection) geo, feature);
+        } else {
+          GeometryCollection geomcoll = (GeometryCollection) geo;
+          if (geomcoll.isEmpty() == true) {
+            emptyFeatures.add(feature.clone(true));
+          } else {
+            mixedFeatures.add(feature.clone(true));
+          }
+        }
       } else if (currFeatureBit.get(pointBit)) {
         pointFeatures.add(feature.clone(true));
       } else if (currFeatureBit.get(lineBit)) {
@@ -283,18 +282,18 @@ public class ExtractLayersByGeometry extends AbstractThreadedUiPlugIn {
       newLayers.add(polyLayer);
       polyFeatureCollection.addAll(polyFeatures);
     }
-    
+
     if (mixedFeatures.size() > 0) {
-        Layer mixedLayer = context.addLayer(
-            selectedCategories.isEmpty() ? StandardCategoryNames.RESULT
-                : selectedCategories.iterator().next().toString(),
-            layer.getName() + "_" + MIXED, new FeatureDataset(featureSchema));
-        mixedLayer.setStyles(layer.cloneStyles());
-        FeatureCollection mixedFeatureCollection = mixedLayer
-            .getFeatureCollectionWrapper();
-        newLayers.add(mixedLayer);
-        mixedFeatureCollection.addAll(mixedFeatures);
-      }
+      Layer mixedLayer = context.addLayer(
+          selectedCategories.isEmpty() ? StandardCategoryNames.RESULT
+              : selectedCategories.iterator().next().toString(),
+          layer.getName() + "_" + MIXED, new FeatureDataset(featureSchema));
+      mixedLayer.setStyles(layer.cloneStyles());
+      FeatureCollection mixedFeatureCollection = mixedLayer
+          .getFeatureCollectionWrapper();
+      newLayers.add(mixedLayer);
+      mixedFeatureCollection.addAll(mixedFeatures);
+    }
     context.getLayerViewPanel().repaint();
     return newLayers;
   }
@@ -317,7 +316,7 @@ public class ExtractLayersByGeometry extends AbstractThreadedUiPlugIn {
 
         if (geometry instanceof GeometryCollection) {
           explodeGeometryCollection(fs, emptyFeatures, pointFeatures,
-              lineFeatures, polyFeatures,(GeometryCollection) geometry,
+              lineFeatures, polyFeatures, (GeometryCollection) geometry,
               feature);
         } else {
           Feature newFeature = feature.clone(false);
