@@ -1,5 +1,10 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-08-12 sstein <sstein@geo.uzh.ch>
+  * Changed ExtractLayersByGeometry plugin to give the user the choice to
+   explode GeometryCollections recursively or write them into a new
+   result layer called "MyLayerName-mixed".
+  
 2013-08-12 mmichaud <michael.michaud@free.fr>
   * Fix a bug in SpatiaQueryPlugIn where mask layer was not
     initialized.
