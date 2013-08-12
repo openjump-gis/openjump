@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-08-12 mmichaud <michael.michaud@free.fr>
+  * Fix a bug in SpatiaQueryPlugIn where mask layer was not
+    initialized.
+
 2013-08-11 mmichaud <michael.michaud@free.fr>
   * Fix a bug in GeometryFunctionPlugIn where mask layer was not
     initialized.

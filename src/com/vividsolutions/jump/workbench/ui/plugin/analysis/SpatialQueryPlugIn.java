@@ -33,22 +33,21 @@
 
 package com.vividsolutions.jump.workbench.ui.plugin.analysis;
 
-import java.util.*;
-
-import java.awt.event.*;
-import javax.swing.*;
-
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jump.feature.*;
-import com.vividsolutions.jump.task.*;
+import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.feature.FeatureCollection;
+import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.model.*;
+import com.vividsolutions.jump.workbench.model.Layer;
+import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.plugin.*;
-import com.vividsolutions.jump.workbench.plugin.util.*;
 import com.vividsolutions.jump.workbench.ui.*;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
-import com.vividsolutions.jump.I18N;
+
+import javax.swing.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.Collection;
 
 /**
 * Queries a layer by a spatial predicate.
@@ -202,6 +201,8 @@ public class SpatialQueryPlugIn extends AbstractPlugIn implements ThreadedPlugIn
     dialog.addLayerComboBox(SRC_LAYER, initLayer, context.getLayerManager());
     JComboBox functionComboBox = dialog.addComboBox(PREDICATE, funcNameToRun, functionNames, null);
     functionComboBox.addItemListener(new MethodItemListener());
+
+    if (maskLyr == null) maskLyr = context.getLayerManager().size() > 1 ? context.getCandidateLayer(1) : srcLayer;
     dialog.addLayerComboBox(MASK_LAYER, maskLyr, context.getLayerManager());
 
     paramField = dialog.addDoubleField(PARAM, params[0], 10);
