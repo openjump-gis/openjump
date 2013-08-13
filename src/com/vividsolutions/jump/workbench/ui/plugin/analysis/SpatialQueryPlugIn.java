@@ -98,10 +98,6 @@ public class SpatialQueryPlugIn extends AbstractPlugIn implements ThreadedPlugIn
   }
 
   public void initialize(PlugInContext context) throws Exception {
-//    context.getFeatureInstaller().addMainMenuItem(this,
-//        new String[] { MenuNames.TOOLS, MenuNames.TOOLS_QUERIES },
-//        this.getName() + "...", false, IconLoader.icon("spatial_query.png"),
-//        createEnableCheck(context.getWorkbenchContext()));
     FeatureInstaller.getInstance().addMainMenuPlugin(this,
         new String[] { MenuNames.TOOLS, MenuNames.TOOLS_QUERIES });
 
@@ -116,21 +112,11 @@ public class SpatialQueryPlugIn extends AbstractPlugIn implements ThreadedPlugIn
   }
   
   public boolean execute(PlugInContext context) throws Exception {
-  	//[sstein] added again for correct language setting
-    //UPDATE_SRC = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Select-features-in-the-source-layer");
-    //CREATE_LYR = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Create-a-new-layer-for-the-results");
-    //MASK_LAYER = GenericNames.MASK_LAYER;
-    //SRC_LAYER = GenericNames.SOURCE_LAYER;
-    //PREDICATE = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Relation");
-    //PARAM = GenericNames.PARAMETER;
-    //DIALOG_COMPLEMENT = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Complement-Result");
-    //ALLOW_DUPS = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Allow-Duplicates-in-Result");
-    
     dialog = new MultiInputDialog(context.getWorkbenchFrame(), getName(), true);
     setDialogValues(dialog, context);
     GUIUtil.centreOnWindow(dialog);
     dialog.setVisible(true);
-    if (! dialog.wasOKPressed()) { return false; }
+    if (!dialog.wasOKPressed()) return false;
     getDialogValues(dialog);
     return true;
   }
