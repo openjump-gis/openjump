@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-08-12 mmichaud <michael.michaud@free.fr>
+  * Updated JumpChart from cadplan (version from july 2013)
+
 2013-08-12 sstein <sstein@geo.uzh.ch>
   * Changed ExtractLayersByGeometry plugin to give the user the choice to
    explode GeometryCollections recursively or write them into a new
