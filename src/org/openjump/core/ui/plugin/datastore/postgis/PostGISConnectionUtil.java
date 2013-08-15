@@ -1,5 +1,8 @@
 package org.openjump.core.ui.plugin.datastore.postgis;
 
+import com.vividsolutions.jump.feature.AttributeType;
+import com.vividsolutions.jump.feature.FeatureSchema;
+
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -8,9 +11,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.vividsolutions.jump.feature.AttributeType;
-import com.vividsolutions.jump.feature.FeatureSchema;
 
 /**
  * static methods to help formatting sql statements for PostGIS
@@ -29,8 +29,8 @@ public class PostGISConnectionUtil {
     public int getGeometryDimension(String dbSchema, String dbTable, int defaultDim) {
         try {
             StringBuilder query = new StringBuilder("SELECT coord_dimension FROM geometry_columns WHERE ");
-            if (dbSchema != null) query.append("f_table_schema = '" + dbSchema + "' AND ");
-            query.append("f_table_name = '" + dbTable + "';");
+            if (dbSchema != null) query.append("f_table_schema = '").append(dbSchema).append("' AND ");
+            query.append("f_table_name = '").append(dbTable).append("';");
             ResultSet rs = connection.createStatement().executeQuery(query.toString());
             if (rs.next()) return rs.getInt(1);
             else return defaultDim;
@@ -45,8 +45,8 @@ public class PostGISConnectionUtil {
     public int getGeometrySrid(String dbSchema, String dbTable, int defaultSrid) {
         try {
             StringBuilder query = new StringBuilder("SELECT srid FROM geometry_columns WHERE ");
-            if (dbSchema != null) query.append("f_table_schema = '" + dbSchema + "' AND ");
-            query.append("f_table_name = '" + dbTable + "';");
+            if (dbSchema != null) query.append("f_table_schema = '").append(dbSchema).append("' AND ");
+            query.append("f_table_name = '").append(dbTable).append("';");
             ResultSet rs = connection.createStatement().executeQuery(query.toString());
             if (rs.next()) return rs.getInt(1);
             else return defaultSrid;
@@ -56,8 +56,7 @@ public class PostGISConnectionUtil {
     }
     
     /** 
-     * Returns a list of attributes compatibe between postgis table and
-     * featureSchema.
+     * Returns a list of attributes compatible between postgis table and featureSchema.
      */
     public String[] compatibleSchemaSubset(String dbSchema, String dbTable, 
                               FeatureSchema featureSchema) throws SQLException {

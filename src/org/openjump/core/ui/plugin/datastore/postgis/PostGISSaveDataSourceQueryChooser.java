@@ -16,26 +16,17 @@
  */
 package org.openjump.core.ui.plugin.datastore.postgis;
 
-import java.awt.Component;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.swing.ButtonGroup;
-import javax.swing.JOptionPane;
-import javax.swing.JRadioButton;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.workbench.datasource.DataSourceQueryChooser;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-
 import org.openjump.core.ccordsys.srid.SRIDStyle;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.*;
+import java.util.List;
 
 /**
  * A DataSourceQueryChooser for writing to a PostGIS data source.
@@ -53,13 +44,7 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
 	private PlugInContext context;
     private PostGISSaveDriverPanel panel;
     private SaveToPostGISDataSource dataSource;
-    private HashMap properties;
-    
-    ButtonGroup methodButtons;
-    JRadioButton insertButton;
-    JRadioButton updateButton;
-    JTextArea help;
-    JTextField uniqueField;
+    private Map<String,Object> properties;
   
     /**
      * Creates a new query chooser.
@@ -69,14 +54,13 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
         this.dataSource = dataSource;
         this.context = context;
         panel = new PostGISSaveDriverPanel(context);
-        properties = new HashMap();
+        properties = new HashMap<String,Object>();
     }
   
     /**
      * @see com.vividsolutions.jump.workbench.datasource.DataSourceQueryChooser#getComponent()
      */
     public Component getComponent() {
-        //panel.changeTableName((String)properties.get(SaveToPostGISDataSource.TABLE_KEY));
         return panel; 
     }
   
@@ -94,7 +78,7 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
             (String)properties.get(SaveToPostGISDataSource.TABLE_KEY)
         );    
         query.setProperties(getProperties());
-        List queries = new ArrayList();
+        List<DataSourceQuery> queries = new ArrayList<DataSourceQuery>();
         queries.add(query);
       
         return queries;
@@ -127,7 +111,7 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
                     ERROR, JOptionPane.ERROR_MESSAGE );
             return false;
         }
-        else if ((panel.getLocalId() == null || panel.getLocalId().trim().length() == 0) && 
+        else if ((panel.getPrimaryKey() == null || panel.getPrimaryKey().trim().length() == 0) &&
             (panel.getSaveMethod().equals(SaveToPostGISDataSource.SAVE_METHOD_UPDATE) || 
              panel.getSaveMethod().equals(SaveToPostGISDataSource.SAVE_METHOD_DELETE))) { 
                 JOptionPane.showMessageDialog(panel, 
@@ -144,22 +128,21 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
     /**
      * Reads all the connection + query properties from the ui.
      */
-    protected HashMap getProperties() {
-        if (properties == null) properties = new HashMap();
+    protected Map getProperties() {
+        if (properties == null) properties = new HashMap<String,Object>();
         properties.put(SaveToPostGISDataSource.CONNECTION_DESCRIPTOR_KEY, panel.getConnectionDescriptor());
         properties.put(SaveToPostGISDataSource.TABLE_KEY, panel.getTableName());
         properties.put(SaveToPostGISDataSource.SAVE_METHOD_KEY, panel.getSaveMethod());
-        properties.put(SaveToPostGISDataSource.LOCAL_ID_KEY, panel.getLocalId());
-        properties.put(SaveToPostGISDataSource.USE_DB_ID_KEY, panel.isCreateDbIdColumnSelected());
+        properties.put(SaveToPostGISDataSource.PRIMARY_KEY, panel.getPrimaryKey());
+        properties.put(SaveToPostGISDataSource.USE_DB_PRIMARY_KEY, panel.isCreatePrimaryKeyColumnSelected());
         Layer[] layers = context.getWorkbenchContext().getLayerNamePanel().getSelectedLayers();
         if (layers.length == 1) {
             properties.put(SaveToPostGISDataSource.DATASET_NAME_KEY, layers[0].getName());
-            FeatureSchema schema = layers[0].getFeatureCollectionWrapper().getFeatureSchema();
-            String[] schema_table = PostGISQueryUtil.divideTableName(panel.getTableName());
+            //FeatureSchema schema = layers[0].getFeatureCollectionWrapper().getFeatureSchema();
+            String[] schema_table = PostGISQueryUtil.splitTableName(panel.getTableName());
             
             properties.put(SaveToPostGISDataSource.SQL_QUERY_KEY, "SELECT * FROM " +
-                PostGISQueryUtil.compose(schema_table[0], schema_table[1]) + 
-                " LIMIT 100000");
+                PostGISQueryUtil.compose(schema_table[0], schema_table[1]) + " LIMIT 100000");
             // OpenJUMP has now a better support of Coordinate System at
             // FeatureCollection and FeatureSchema level, but this one is simple
             // and makes it easy to set the SRID the user want before an update

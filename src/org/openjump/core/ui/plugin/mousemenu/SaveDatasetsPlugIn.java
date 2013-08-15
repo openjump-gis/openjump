@@ -36,46 +36,16 @@
 
 package org.openjump.core.ui.plugin.mousemenu;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
-import javax.swing.filechooser.FileFilter;
-
-import org.openjump.core.geomutils.GeoUtils;
-import org.openjump.core.ui.images.IconLoader;
-
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollectionWrapper;
 import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.feature.FeatureSchema;
-import com.vividsolutions.jump.io.DriverProperties;
-import com.vividsolutions.jump.io.FMEGMLWriter;
-import com.vividsolutions.jump.io.GMLWriter;
-import com.vividsolutions.jump.io.JMLWriter;
-import com.vividsolutions.jump.io.ShapefileWriter;
-import com.vividsolutions.jump.io.WKTWriter;
+import com.vividsolutions.jump.io.*;
 import com.vividsolutions.jump.io.datasource.DataSource;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.io.datasource.StandardReaderWriterFileDataSource;
-import com.vividsolutions.jump.task.DummyTaskMonitor;
 import com.vividsolutions.jump.util.FileUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.datasource.DataSourceQueryChooserManager;
@@ -83,17 +53,22 @@ import com.vividsolutions.jump.workbench.datasource.SaveFileDataSourceQueryChoos
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
-import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
-import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
-import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
-import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.plugin.*;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.WorkbenchToolBar;
-import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.plugin.SaveProjectAsPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.SaveProjectPlugIn;
+import org.openjump.core.geomutils.GeoUtils;
+import org.openjump.core.ui.images.IconLoader;
+
+import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.*;
 
 public class SaveDatasetsPlugIn extends AbstractPlugIn
 {
@@ -258,7 +233,8 @@ public class SaveDatasetsPlugIn extends AbstractPlugIn
                 	}
                 	else
                 	{
-                		if (ds.getProperties().get("File") == null)
+                		//if (ds.getProperties().get("File") == null)
+                        if (!ds.isWritable())
                 		{
                 			writeSaveMsg = true;
                 		}
@@ -433,7 +409,7 @@ public class SaveDatasetsPlugIn extends AbstractPlugIn
             {
             	Layer layer = (Layer) layerList.get(i);
     			
-    			if (WriteLayer(context, layer))
+    			if (writeLayer(context, layer))
     			{
     				layer.setFeatureCollectionModified(false);
     				context.getWorkbenchFrame().getOutputFrame().addText(sSavedLayer + ": " + layer.getName());
@@ -493,11 +469,47 @@ public class SaveDatasetsPlugIn extends AbstractPlugIn
     {
     	saveAll = true;
     }
+
+    private boolean writeLayer(PlugInContext context, Layer layer) {
+        DataSourceQuery dsq = layer.getDataSourceQuery();
+        String filename = null;
+        if (dsq.getDataSource().getProperties().get("File") != null) {
+            filename = dsq.getDataSource().getProperties().get("File").toString();
+        }
+        if (dsq.getDataSource().isWritable()) {
+            if (filename != null) {
+                return writeLayer(context, layer, filename);
+            }
+            else {
+                return writeLayer(context, layer, layer.getDataSourceQuery().getDataSource());
+            }
+        }
+        else { // read-only datasource
+
+            filename = pathToSaveReadOnlySources + layer.getName() + extToSaveReadOnlySources;
+
+            //the following shouldn't happen
+            if (pathToSaveReadOnlySources.equals(""))
+            {
+                context.getWorkbenchFrame().getOutputFrame().addText(sNoOutputDir + ": " + layer.getName());
+                context.getWorkbenchFrame().warnUser(sWarningSeeOutputWindow);
+                return false;
+            }
+            if (extToSaveReadOnlySources.equals(""))
+            {
+                context.getWorkbenchFrame().getOutputFrame().addText(sNoOutputFileExt + ": " + layer.getName());
+                context.getWorkbenchFrame().warnUser(sWarningSeeOutputWindow);
+                return false;
+            }
+            return writeLayer(context, layer, filename);
+        }
+    }
     
-    private boolean WriteLayer(PlugInContext context, Layer layer)
-    {
+    private boolean writeLayer(PlugInContext context, Layer layer, String filename) {
+
+        DataSourceQuery dsq = layer.getDataSourceQuery();
+        /*
     	String filename = "";
-    	DataSourceQuery dsq = layer.getDataSourceQuery();
 		if (dsq.getDataSource().isWritable())
 		{
 			filename = dsq.getDataSource().getProperties().get("File").toString();
@@ -520,6 +532,7 @@ public class SaveDatasetsPlugIn extends AbstractPlugIn
 	    		return false;				
 			}
 		}
+		*/
 		
     	DriverProperties dp = new DriverProperties();
     	dp.set("File", filename);
@@ -625,8 +638,20 @@ public class SaveDatasetsPlugIn extends AbstractPlugIn
     		context.getWorkbenchFrame().warnUser(sErrorSeeOutputWindow);
     		context.getWorkbenchFrame().getOutputFrame().createNewDocument();
     		context.getWorkbenchFrame().getOutputFrame().addText("SaveDatasetsPlugIn:WriteLayer Exception:" + e.toString());
+            context.getWorkbenchFrame().getOutputFrame().addText(Arrays.toString(e.getStackTrace()));
     		return false;
 		}
+    }
+
+    private boolean writeLayer(PlugInContext context, Layer layer, DataSource dataSource) {
+        try {
+            dataSource.getConnection().executeUpdate(null, layer.getFeatureCollectionWrapper(),
+                    new com.vividsolutions.jump.task.DummyTaskMonitor());
+        } catch(Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
     
     private boolean CompatibleFeatures(Layer layer)

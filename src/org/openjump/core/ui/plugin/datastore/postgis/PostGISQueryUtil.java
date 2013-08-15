@@ -1,29 +1,25 @@
 package org.openjump.core.ui.plugin.datastore.postgis;
 
-import java.sql.Types;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKBWriter;
-
 import com.vividsolutions.jump.coordsys.CoordinateSystem;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureSchema;
 
+import java.sql.Types;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+
 /**
  * static methods to help formatting sql statements for PostGIS
  */
 public class PostGISQueryUtil {
     
-    private static final WKBWriter WRITER   = new WKBWriter(2, false);
+    //private static final WKBWriter WRITER   = new WKBWriter(2, false);
 	private static final WKBWriter WRITER2D = new WKBWriter(2, false);
 	private static final WKBWriter WRITER3D = new WKBWriter(3, false);
 	private static final WKBWriter WRITER2D_SRID = new WKBWriter(2, true);
@@ -41,10 +37,10 @@ public class PostGISQueryUtil {
 	 * <li>2_table -> [null, "2_table"]</li>
 	 * </ul>
 	 */
-	public static String[] divideTableName(String fullName) {
+	public static String[] splitTableName(String fullName) {
 
 	    if (isQuoted(fullName)) {
-	        return divideQuotedTableName(fullName);
+	        return splitQuotedTableName(fullName);
 	    }
 	    int index = fullName.indexOf(".");
 	    // no schema
@@ -63,7 +59,7 @@ public class PostGISQueryUtil {
 	    }
 	}
 	
-	private static String[] divideQuotedTableName(String fullName) {
+	private static String[] splitQuotedTableName(String fullName) {
 	    int index = fullName.indexOf("\".\"");
 	    if (index > -1) {
 	        return new String[]{
@@ -126,26 +122,38 @@ public class PostGISQueryUtil {
     /**
      * Returns the comma-separated list of attributes included in schema.
      * @param schema the FeatureSchema
-     * @param incudeDataType if true, each attribute name is immediately 
-     *        followed by its corresponding sql datatype
+     * @param includeSQLDataType if true, each attribute name is immediately
+     *        followed by its corresponding sql DataType
      * @param includeGeometry if true, the geometry attribute is included
      */
     public static String createColumnList(FeatureSchema schema, 
                           boolean includeSQLDataType, boolean includeGeometry) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         int count = 0;
         for (int i = 0 ; i < schema.getAttributeCount() ; i++) {
             AttributeType type = schema.getAttributeType(i);
             if (type == AttributeType.GEOMETRY && !includeGeometry) continue;
             String name = schema.getAttributeName(i);
             if (0 < count++) sb.append(", ");
-            sb.append("\"" + name + "\"");
+            sb.append("\"").append(name).append("\"");
             if (includeSQLDataType) sb.append(" ").append(getSQLType(type));
         }
         return sb.toString();
     }
-    
-    
+
+    public static String createColumnList(FeatureSchema schema, String... exclude) {
+        StringBuilder sb = new StringBuilder();
+        List<String> excludeList = Arrays.asList(exclude);
+        int count = 0;
+        for (int i = 0 ; i < schema.getAttributeCount() ; i++) {
+            String name = schema.getAttributeName(i);
+            if (excludeList.contains(name)) continue;
+            if (0 < count++) sb.append(", ");
+            sb.append("\"").append(name).append("\"");
+        }
+        return sb.toString();
+    }
+
     public static String escapeApostrophes(String value) {
         return value.replaceAll("'", "''");
     }
@@ -168,7 +176,7 @@ public class PostGISQueryUtil {
      * Returns the OpenJUMP AttributeType matching this sql data type
      */
     public static AttributeType getAttributeType(int sqlType, String sqlName) {
-        if (sqlType == Types.BIGINT)     return AttributeType.INTEGER;
+        if (sqlType == Types.BIGINT)     return AttributeType.OBJECT;
         // PostGIS geometries are stored as OTHER (type=1111) not BINARY (type=-2)
         if (sqlType == Types.BINARY && 
             sqlName.toLowerCase().equals("geometry")) return AttributeType.GEOMETRY;
@@ -197,7 +205,6 @@ public class PostGISQueryUtil {
         if (sqlType == Types.OTHER && 
             sqlName.toLowerCase().equals("geometry")) return AttributeType.GEOMETRY;
         else if (sqlType == Types.OTHER) return AttributeType.OBJECT;
-        if (sqlType == Types.OTHER)      return AttributeType.OBJECT;
         if (sqlType == Types.REAL)       return AttributeType.DOUBLE;
         if (sqlType == Types.REF)        return AttributeType.OBJECT;
         if (sqlType == Types.ROWID)      return AttributeType.INTEGER;
@@ -233,7 +240,7 @@ public class PostGISQueryUtil {
     
     
     public static byte[] getByteArrayFromGeometry(Geometry geom, boolean hasSrid, int dimension) {
-		WKBWriter writer = WRITER;
+		WKBWriter writer;
 		if (hasSrid) {
 			writer = dimension==3? WRITER3D_SRID : WRITER2D_SRID;
 		}
@@ -266,7 +273,6 @@ public class PostGISQueryUtil {
     
     private static int getGeometryDimension(Geometry g) {
         Coordinate[] cc = g.getCoordinates();
-        int d = 2;
         for (Coordinate c : cc) {
             if (!Double.isNaN(c.z)) return 3;
         }
@@ -275,22 +281,22 @@ public class PostGISQueryUtil {
     
     
     /**
-     * Get this FeatureCollection geometry type
+     * Get this FeatureCollection geometry type.
+     * Returns defaultType if coll is empty or if coll contains two geometries
+     * with different types.
      */
     public static String getGeometryType(FeatureCollection coll, String defaultType) {
         if (coll.size() > 0) {
             Feature f = (Feature)coll.iterator().next();
             String firstGeometryType = f.getGeometry().getGeometryType();
-            boolean homogeneous = true;
             for (Iterator it = coll.iterator() ; it.hasNext() ; ) {
                 f = (Feature)it.next();
                 if (!f.getGeometry().getGeometryType().equals(firstGeometryType)) {
                     return defaultType;
                 }
             }
-            if (homogeneous) return firstGeometryType;
-            else return defaultType;
-        } 
+            return firstGeometryType;
+        }
         else return defaultType;
     }
     

@@ -16,35 +16,9 @@
  */
 package org.openjump.core.ui.plugin.datastore.postgis;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JTextArea;
-import javax.swing.event.AncestorEvent;
-import javax.swing.event.AncestorListener;
-
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.datastore.DataStoreConnection;
 import com.vividsolutions.jump.datastore.DataStoreMetadata;
-import com.vividsolutions.jump.datastore.postgis.PostgisDSConnection;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -55,6 +29,17 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.AbstractDriverPanel;
 import com.vividsolutions.jump.workbench.ui.OKCancelPanel;
 import com.vividsolutions.jump.workbench.ui.plugin.datastore.ConnectionPanel;
+
+import javax.swing.*;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -80,9 +65,8 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel implements Actio
 	static final String DELETE  = I18N.get(KEY + ".insert-update-or-delete");
 
 	//static final String GEOMETRY_COLUMN = I18N.get(KEY + ".geometry-Column");
-	static final String LOCAL_ID     = I18N.get(KEY + ".local-id");
-	static final String NO_LOCAL_ID  = I18N.get(KEY + ".no-local-id");
-	static final String CREATE_DB_ID = I18N.get(KEY + ".create-db-id");
+	static final String CHOOSE_PK    = I18N.get(KEY + ".primary_key");
+	static final String CREATE_DB_PK = I18N.get(KEY + ".create-database-primary-key");
 	
 	// UI elements
     private ButtonGroup methodButtons;
@@ -91,13 +75,13 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel implements Actio
     private JRadioButton insertButton;
     private JRadioButton updateButton;
     private JRadioButton deleteButton;
-    private JLabel geometryColumnLabel;
-    private JLabel localIdLabel;
+    //private JLabel geometryColumnLabel;
+    private JLabel primaryKeyLabel;
     private JTextArea help;
-    private JComboBox localIdComboBox;
+    private JComboBox primaryKeyComboBox;
     private ConnectionPanel connectionPanel;
     private JComboBox tableComboBox;
-    private JCheckBox createDbIdCheckBox;
+    private JCheckBox createPrimaryKeyCheckBox;
     private OKCancelPanel okCancelPanel;
     
     // context variables
@@ -121,8 +105,8 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel implements Actio
 		GridBagLayout gbLayout = new GridBagLayout();
 		GridBagConstraints gbConstraints = new GridBagConstraints();
 		setLayout(gbLayout);
-		Insets insets = new Insets(2, 2, 2, 2);
-		gbConstraints.insets = insets;
+
+		gbConstraints.insets = new Insets(2, 2, 2, 2);
 		gbConstraints.anchor = GridBagConstraints.WEST;
 		
 		// title
@@ -161,7 +145,7 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel implements Actio
 		tableComboBox.setPrototypeDisplayValue("abcdefghijklmnopqrstuvwxyz");
 		tableComboBox.addActionListener(new ActionListener(){
 		    public void actionPerformed(ActionEvent e) {
-		        resetIdChooser();
+		        resetPKChooser();
 		    }
 		});
 		gbConstraints.gridx = 1;
@@ -210,7 +194,7 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel implements Actio
 		gbConstraints.gridy = 10;
 		gbLayout.setConstraints(updateButton, gbConstraints);
 		add(updateButton);
-		
+
 		deleteButton = new JRadioButton(DELETE);
 		deleteButton.setActionCommand(SaveToPostGISDataSource.SAVE_METHOD_DELETE);
 		deleteButton.addActionListener(this);
@@ -226,27 +210,26 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel implements Actio
 		methodButtons.add(updateButton);
 		methodButtons.add(deleteButton);
 		methodButtons.setSelected(createButton.getModel(), true);
-		
-		localIdLabel = new JLabel(LOCAL_ID);
-		localIdLabel.setEnabled(true);
+
+		primaryKeyLabel = new JLabel(CHOOSE_PK);
+        primaryKeyLabel.setEnabled(true);
 		gbConstraints.gridx = 0;
 		gbConstraints.gridy = 12;
-		gbLayout.setConstraints(localIdLabel, gbConstraints);
-		add(localIdLabel);
-		localIdComboBox = new JComboBox(new Object[0]);
-		localIdComboBox.setPrototypeDisplayValue("abcdefghijklmnopqrstuvwxyz");
-		localIdComboBox.setEnabled(true);
+		gbLayout.setConstraints(primaryKeyLabel, gbConstraints);
+		add(primaryKeyLabel);
+        primaryKeyComboBox = new JComboBox(new Object[0]);
+        primaryKeyComboBox.setPrototypeDisplayValue("abcdefghijklmnopqrstuvwxyz");
+        primaryKeyComboBox.setEnabled(false);
 		gbConstraints.gridx = 1;
-		gbLayout.setConstraints(localIdComboBox, gbConstraints);
-		add(localIdComboBox);
-		
-		// Not yet activated
-		createDbIdCheckBox = new JCheckBox(CREATE_DB_ID);
-		createDbIdCheckBox.setEnabled(createButton.isSelected());
-		gbConstraints.gridx = 1;
+		gbLayout.setConstraints(primaryKeyComboBox, gbConstraints);
+		add(primaryKeyComboBox);
+
+        createPrimaryKeyCheckBox = new JCheckBox(CREATE_DB_PK);
+        createPrimaryKeyCheckBox.setEnabled(createButton.isSelected());
+		gbConstraints.gridx = 0;
 		gbConstraints.gridy = 13;
-		gbLayout.setConstraints(createDbIdCheckBox, gbConstraints);
-		//add(createDbIdCheckBox);
+		gbLayout.setConstraints(createPrimaryKeyCheckBox, gbConstraints);
+		add(createPrimaryKeyCheckBox);
 		
 		JPanel helpPanel = new JPanel();
 		helpPanel.setBorder(BorderFactory.createBevelBorder(2, Color.BLACK, Color.GRAY));
@@ -279,7 +262,7 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel implements Actio
 	            connectionChanged();
 	            String layerName = layers[0].getName();
 	            // if selected layer has changed, refresh tableList state
-	            if (!layerName.equals(lastUsedLayerName) || lastUsedLayerName == null) {
+	            if (!layerName.equals(lastUsedLayerName)) {
 	                lastUsedLayerName = layerName;
 	                layerChanged();
 	            }
@@ -352,15 +335,15 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel implements Actio
 	}
 	
 	
-	public String getLocalId() {
-	    Object selection = localIdComboBox.getSelectedItem();
+	public String getPrimaryKey() {
+	    Object selection = primaryKeyComboBox.getSelectedItem();
 	    if (selection == null) return null;
-	    else if (selection.equals(NO_LOCAL_ID)) return SaveToPostGISDataSource.NO_LOCAL_ID;
+	    //else if (selection.equals(NO_PK)) return SaveToPostGISDataSource.NO_LOCAL_ID;
 		else return selection.toString();
 	}
 	
-	public boolean isCreateDbIdColumnSelected() {
-	    return createDbIdCheckBox.isSelected();
+	public boolean isCreatePrimaryKeyColumnSelected() {
+	    return createPrimaryKeyCheckBox.isSelected();
 	}
 	
 
@@ -379,42 +362,43 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel implements Actio
 	        //    }
 	        //} 
 			tableComboBox.setEditable(true);
-			localIdLabel.setEnabled(true);
-			resetIdChooser();
-			localIdComboBox.setEnabled(true);
-			createDbIdCheckBox.setEnabled(true);
+            primaryKeyLabel.setEnabled(false);
+			resetPKChooser();
+            primaryKeyComboBox.setEnabled(false);
+            //createPrimaryKeyCheckBox.setEnabled(!hasPrimaryKey());
+            createPrimaryKeyCheckBox.setEnabled(false);
 			help.setText(CREATE_HELP_STRING);
 		}
 		if(action.equals(SaveToPostGISDataSource.SAVE_METHOD_REPLACE)) {
 			tableComboBox.setEditable(false);
-			localIdLabel.setEnabled(false);
+            primaryKeyLabel.setEnabled(false);
 			//resetIdChooser();
-			localIdComboBox.setEnabled(false);
-			createDbIdCheckBox.setEnabled(false);
+            primaryKeyComboBox.setEnabled(false);
+            createPrimaryKeyCheckBox.setEnabled(false);
 			help.setText(REPLACE_HELP_STRING);
 		}
 		if(action.equals(SaveToPostGISDataSource.SAVE_METHOD_INSERT)) {
 			tableComboBox.setEditable(false);
-			localIdLabel.setEnabled(false);
-			resetIdChooser();
-			localIdComboBox.setEnabled(false);
-			createDbIdCheckBox.setEnabled(false);
+            primaryKeyLabel.setEnabled(false);
+            resetPKChooser();
+            primaryKeyComboBox.setEnabled(false);
+            createPrimaryKeyCheckBox.setEnabled(false);
 			help.setText(INSERT_HELP_STRING);
 		}
 		if(action.equals(SaveToPostGISDataSource.SAVE_METHOD_UPDATE)) {
 			tableComboBox.setEditable(false);
-			localIdLabel.setEnabled(true);
-			resetIdChooser();
-			localIdComboBox.setEnabled(true);
-			createDbIdCheckBox.setEnabled(false);
+            primaryKeyLabel.setEnabled(true);
+            resetPKChooser();
+            primaryKeyComboBox.setEnabled(true);
+            createPrimaryKeyCheckBox.setEnabled(false);
 			help.setText(UPDATE_HELP_STRING);
 		}
 		if(action.equals(SaveToPostGISDataSource.SAVE_METHOD_DELETE)) {
 			tableComboBox.setEditable(false);
-			localIdLabel.setEnabled(true);
-			resetIdChooser();
-			localIdComboBox.setEnabled(true);
-			createDbIdCheckBox.setEnabled(false);
+            primaryKeyLabel.setEnabled(true);
+            resetPKChooser();
+            primaryKeyComboBox.setEnabled(true);
+            createPrimaryKeyCheckBox.setEnabled(false);
 			help.setText(DELETE_HELP_STRING);
 		}
 	}
@@ -452,24 +436,22 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel implements Actio
 	}
 	
 	// Warning : nothing says this is a PostGIS connection
-	private Connection getConnection() {
-	    Connection connection = null;
-	    try {
-	        DataStoreConnection dsConnection = getDSConnection();
-	        if (dsConnection == null || !(dsConnection instanceof PostgisDSConnection)) return null;
-	        connection = ((PostgisDSConnection)dsConnection).getConnection();
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
-	    return connection;
-	}
+	//private Connection getConnection() {
+	//    Connection connection = null;
+	//    try {
+	//        DataStoreConnection dsConnection = getDSConnection();
+	//        if (dsConnection == null || !(dsConnection instanceof PostgisDSConnection)) return null;
+	//        connection = ((PostgisDSConnection)dsConnection).getConnection();
+	//    } catch (Exception e) {
+	//        e.printStackTrace();
+	//    }
+	//    return connection;
+	//}
 	
 	// Update table list to choose from, using database metadata
 	// Eventually add source layer name to the list if create option is selected
 	private void updateTableList(DataStoreMetadata metadata) {
 	    //System.out.println("update table list");
-	    // get previously selected table to detect change 
-	    String previousSelection = (String)tableComboBox.getSelectedItem();
 	    Layer[] layers = wbContext.getLayerNamePanel().getSelectedLayers();
 	    // If create option is selected, default table name will be the layer name
 	    if (layers.length == 1 && createButton.isSelected()) {
@@ -487,29 +469,32 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel implements Actio
 	    this.validate();
 	    
 	    if (tableComboBox.getSelectedItem() != null) {
-	        resetIdChooser();
+	        resetPKChooser();
 	    }
 	}
 
-	
-	private void resetIdChooser() {
-	    Object oldValue = localIdComboBox.getSelectedItem();
+	// Initialization of the primary key combo box
+	private void resetPKChooser() {
+        // Remember last PK choosen
+	    Object oldValue = primaryKeyComboBox.getSelectedItem();
 	    Layer[] layers = wbContext.getLayerNamePanel().getSelectedLayers();
 	    if (layers.length == 1) {
 	        FeatureSchema schema = layers[0].getFeatureCollectionWrapper().getFeatureSchema();
 	        List<String> list = new ArrayList<String>();
-	        if (getSaveMethod().equals(SaveToPostGISDataSource.SAVE_METHOD_CREATE)) {
-	            list.add(NO_LOCAL_ID);
-	        }
+	        //if (getSaveMethod().equals(SaveToPostGISDataSource.SAVE_METHOD_CREATE)) {
+	        //    list.add(NO_PK);
+	        //}
 	        for (int i = 0 ; i < schema.getAttributeCount() ; i++) {
 	            if (schema.getAttributeType(i) == AttributeType.STRING ||
-	                schema.getAttributeType(i) == AttributeType.INTEGER) {
+	                schema.getAttributeType(i) == AttributeType.INTEGER ||
+                    schema.getAttributeType(i) == AttributeType.OBJECT ||
+                    schema.getExternalPrimaryKeyIndex() == i) {
 	                list.add(schema.getAttributeName(i));
 	            }
 	        }
-	        localIdComboBox.setModel(new DefaultComboBoxModel(list.toArray(new String[list.size()])));
+            primaryKeyComboBox.setModel(new DefaultComboBoxModel(list.toArray(new String[list.size()])));
 	        if (oldValue != null && list.contains(oldValue.toString())) {
-	            localIdComboBox.setSelectedItem(oldValue);
+                primaryKeyComboBox.setSelectedItem(oldValue);
 	        }
 	        this.validate();
 	    }
@@ -527,9 +512,16 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel implements Actio
 	            return;
 	        }
 	        else if (compare == 0) return;
-	        else continue;
 	    }
 	    model.insertElementAt(item, model.getSize());
 	}
+
+    private boolean hasPrimaryKey() {
+        Layer[] layers = wbContext.getLayerNamePanel().getSelectedLayers();
+        if (layers.length == 1) {
+            return layers[0].getFeatureCollectionWrapper().getFeatureSchema().getExternalPrimaryKeyIndex() >= 0;
+        }
+        else return false;
+    }
 
 }

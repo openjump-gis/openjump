@@ -18,14 +18,16 @@ package org.openjump.core.ui.plugin.datastore.postgis;
 
 import com.vividsolutions.jump.io.datasource.DataSource;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
+
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A query performed against a PostGIS data source. 
  */
 public class SaveToPostGISDataSourceQuery extends DataSourceQuery {
 
-    private HashMap properties = null;
+    private Map properties = null;
   
     /**
      * Creates a new query.
@@ -51,7 +53,7 @@ public class SaveToPostGISDataSourceQuery extends DataSourceQuery {
      * Property map for the query object.
      * For defined keys see: {@link SaveToPostGISDataSource}
      */
-    public void setProperties(HashMap properties) {
-        this.properties = (HashMap)properties.clone();  
+    public void setProperties(Map properties) {
+        this.properties = new HashMap(properties);
     }
 }  
