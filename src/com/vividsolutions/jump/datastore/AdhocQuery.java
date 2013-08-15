@@ -6,7 +6,9 @@ package com.vividsolutions.jump.datastore;
  * all datastores.
  */
 public class AdhocQuery implements Query {
+
     private String queryString;
+    private String primaryKey;
 
     public AdhocQuery(String queryString) {
         this.queryString = queryString;
@@ -14,6 +16,14 @@ public class AdhocQuery implements Query {
 
     public String getQuery() {
         return queryString;
+    }
+
+    public void setPrimaryKey(String primaryKey) {
+        this.primaryKey = primaryKey;
+    }
+
+    public String getPrimaryKey() {
+        return primaryKey;
     }
 
 }

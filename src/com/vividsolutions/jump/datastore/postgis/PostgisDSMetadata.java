@@ -1,20 +1,18 @@
 package com.vividsolutions.jump.datastore.postgis;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKBReader;
 import com.vividsolutions.jump.datastore.DataStoreMetadata;
 import com.vividsolutions.jump.datastore.GeometryColumn;
+import com.vividsolutions.jump.datastore.PrimaryKeyColumn;
 import com.vividsolutions.jump.datastore.SpatialReferenceSystemID;
 import com.vividsolutions.jump.datastore.jdbc.JDBCUtil;
 import com.vividsolutions.jump.datastore.jdbc.ResultSetBlock;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
 
 
 public class PostgisDSMetadata implements DataStoreMetadata {
@@ -47,7 +45,7 @@ public class PostgisDSMetadata implements DataStoreMetadata {
         }
       }
     } );
-    return ( String[] ) datasetNames.toArray( new String[]{} );
+    return ( String[] ) datasetNames.toArray(new String[datasetNames.size()]);
   }
 
 
@@ -55,8 +53,8 @@ public class PostgisDSMetadata implements DataStoreMetadata {
     
     final Envelope[] e = new Envelope[]{null};
     
-    String schema = null;
-    String table = null;
+    String schema;
+    String table;
     if (datasetName.indexOf('.') != -1) {
         String[] parts = datasetName.split("\\.", 2);
         schema = parts[0];
@@ -115,9 +113,7 @@ public class PostgisDSMetadata implements DataStoreMetadata {
           String srid = querySRID(tableName, colName);
           sridMap.put(key, new SpatialReferenceSystemID(srid));
       }
-      SpatialReferenceSystemID srid = (SpatialReferenceSystemID) sridMap
-              .get(key);
-      return srid;
+      return (SpatialReferenceSystemID)sridMap.get(key);
   }
 
   @Deprecated
@@ -156,7 +152,7 @@ public class PostgisDSMetadata implements DataStoreMetadata {
         }
       }
     } );
-    return ( String[] ) geometryAttributeNames.toArray( new String[]{} );
+    return ( String[] ) geometryAttributeNames.toArray(new String[geometryAttributeNames.size()]);
   }
   
   public List<GeometryColumn> getGeometryAttributes( String datasetName ) {
@@ -176,6 +172,50 @@ public class PostgisDSMetadata implements DataStoreMetadata {
       }
     } );
     return geometryAttributes;
+  }
+
+    /**
+     * Returns PRIMARY KEY columns of dataset names.
+     * @param datasetName name of the table (optionally prefixed by the schema name)
+     * @return the list of columns involved in the Primary Key (generally, a single column)
+     */
+  public List<PrimaryKeyColumn> getPrimaryKeyColumns (String datasetName) {
+      final List<PrimaryKeyColumn> identifierColumns = new ArrayList<PrimaryKeyColumn>();
+      // query taken from http://www.alberton.info/postgresql_meta_info.html#.UewsFG29b0Q
+      String sql =
+          "SELECT kcu.column_name, col.data_type" +
+          " FROM information_schema.table_constraints tc" +
+          " LEFT JOIN information_schema.key_column_usage kcu" +
+          " ON tc.constraint_catalog = kcu.constraint_catalog" +
+          " AND tc.constraint_schema = kcu.constraint_schema" +
+          " AND tc.constraint_name = kcu.constraint_name" +
+          " LEFT JOIN information_schema.referential_constraints rc" +
+          " ON tc.constraint_catalog = rc.constraint_catalog" +
+          " AND tc.constraint_schema = rc.constraint_schema" +
+          " AND tc.constraint_name = rc.constraint_name" +
+          " LEFT JOIN information_schema.constraint_column_usage ccu" +
+          " ON rc.unique_constraint_catalog = ccu.constraint_catalog" +
+          " AND rc.unique_constraint_schema = ccu.constraint_schema" +
+          " AND rc.unique_constraint_name = ccu.constraint_name" +
+          " LEFT JOIN information_schema.columns col" +
+          " ON kcu.table_catalog = col.table_catalog" +
+          " AND kcu.table_schema = col.table_schema" +
+          " AND kcu.table_name = col.table_name" +
+          " AND kcu.column_name = col.column_name " +
+          geomColumnMetadataWhereClause( "col.table_schema", "col.table_name", datasetName ) +
+          " AND tc.constraint_type = 'PRIMARY KEY';";
+      JDBCUtil.execute(
+              conn.getConnection(), sql,
+              new ResultSetBlock() {
+                  public void yield( ResultSet resultSet ) throws SQLException {
+                      while ( resultSet.next() ) {
+                          identifierColumns.add(new PrimaryKeyColumn(
+                                  resultSet.getString(1),
+                                  resultSet.getString(2)));
+                      }
+                  }
+              } );
+      return identifierColumns;
   }
 
 
@@ -219,7 +259,7 @@ public class PostgisDSMetadata implements DataStoreMetadata {
       while ( resultSet.next() ) {
         colList.add( resultSet.getString( 1 ) );
       }
-      colName = ( String[] ) colList.toArray( new String[0] );
+      colName = ( String[] ) colList.toArray(new String[colList.size()]);
     }
   }
   

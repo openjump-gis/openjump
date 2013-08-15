@@ -1,34 +1,28 @@
 package com.vividsolutions.jump.workbench.ui.plugin.datastore;
 
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.operation.union.UnaryUnionOp;
+import com.vividsolutions.jump.datastore.AdhocQuery;
+import com.vividsolutions.jump.feature.Feature;
+import com.vividsolutions.jump.feature.FeatureCollection;
+import com.vividsolutions.jump.feature.FeatureDataset;
+import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.io.FeatureInputStream;
+import com.vividsolutions.jump.io.datasource.Connection;
+import com.vividsolutions.jump.task.TaskMonitor;
+import com.vividsolutions.jump.util.CollectionUtil;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.datastore.ConnectionDescriptor;
+import com.vividsolutions.jump.workbench.datastore.ConnectionManager;
+import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.plugin.WorkbenchContextReference;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.operation.union.UnaryUnionOp;
-
-import com.vividsolutions.jump.datastore.AdhocQuery;
-import com.vividsolutions.jump.datastore.FilterQuery;
-import com.vividsolutions.jump.feature.Feature;
-import com.vividsolutions.jump.feature.FeatureCollection;
-import com.vividsolutions.jump.feature.FeatureDataset;
-import com.vividsolutions.jump.io.FeatureInputStream;
-import com.vividsolutions.jump.feature.FeatureSchema;
-import com.vividsolutions.jump.io.datasource.Connection;
-import com.vividsolutions.jump.io.datasource.DataSource;
-import com.vividsolutions.jump.task.TaskMonitor;
-import com.vividsolutions.jump.util.CollectionUtil;
-import com.vividsolutions.jump.util.LangUtil;
-import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.datastore.ConnectionDescriptor;
-import com.vividsolutions.jump.workbench.datastore.ConnectionManager;
-import com.vividsolutions.jump.workbench.model.cache.CachingFeatureCollection;
-import com.vividsolutions.jump.workbench.model.cache.DynamicFeatureCollection;
-import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.ui.plugin.WorkbenchContextReference;
 
 /**
  * Implements the DataSource interface in order to persist a query issued
@@ -40,6 +34,7 @@ public class DataStoreQueryDataSource extends com.vividsolutions.jump.io.datasou
     public static final String DATASET_NAME_KEY = "Dataset Name";
     public static final String SQL_QUERY_KEY = "SQL Query";
     public static final String CONNECTION_DESCRIPTOR_KEY = "Connection Descriptor";
+    public static final String PRIMARY_KEY_KEY = "Primary Key";
     
     public static final Pattern PATTERN_FENCE = Pattern.compile("\\$\\{fence:(-?[0-9]+)\\}");
     public static final Pattern PATTERN_SELECTION = Pattern.compile("\\$\\{selection:(-?[0-9]+)\\}");
@@ -122,10 +117,13 @@ public class DataStoreQueryDataSource extends com.vividsolutions.jump.io.datasou
         if (driver.contains("Postgis") && query.matches("(?s).*\\$\\{[^\\{\\}]*\\}.*")) {
             query = expandQuery(query, context.createPlugInContext());
         }
-        
+        AdhocQuery adhocQuery = new AdhocQuery(query);
+        if (getProperties().get(PRIMARY_KEY_KEY) != null) {
+            adhocQuery.setPrimaryKey((String)getProperties().get(PRIMARY_KEY_KEY));
+        }
         try {
             featureInputStream = ConnectionManager.instance(context)
-                .getOpenConnection(connectionDescriptor).execute(new AdhocQuery(query));
+                .getOpenConnection(connectionDescriptor).execute(adhocQuery);
             featureDataset = new FeatureDataset(featureInputStream.getFeatureSchema());
             int i = 0;
             while (featureInputStream.hasNext()) {

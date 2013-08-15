@@ -31,14 +31,13 @@
  */
 package com.vividsolutions.jump.io.datasource;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.log4j.Logger;
-
 import com.vividsolutions.jump.coordsys.CoordinateSystem;
 import com.vividsolutions.jump.coordsys.CoordinateSystemRegistry;
 import com.vividsolutions.jump.feature.FeatureCollection;
+import org.apache.log4j.Logger;
+
+import java.util.HashMap;
+import java.util.Map;
 /**
  * A file, database, web service, or other source of data. To be savable to a
  * project file, a DataSource must not be an anonymous class (because the class
@@ -47,9 +46,10 @@ import com.vividsolutions.jump.feature.FeatureCollection;
  * having #setProperties called).
  */
 public abstract class DataSource {
+
 	private static Logger LOG = Logger.getLogger(DataSource.class);
 	
-    private HashMap properties;
+    private Map properties;
 
     /**
      * Sets properties required to open a DataSource, such as username, password,
@@ -95,7 +95,7 @@ public abstract class DataSource {
     public FeatureCollection installCoordinateSystem(FeatureCollection queryResult, 
             										CoordinateSystemRegistry registry) {
         if (queryResult == null) { return queryResult; }
-        String coordinateSystemName = null;
+        String coordinateSystemName;
         try {
             coordinateSystemName = (String) getProperties().get(COORDINATE_SYSTEM_KEY);
         } catch (NullPointerException e){

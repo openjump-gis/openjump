@@ -1,8 +1,5 @@
 package com.vividsolutions.jump.workbench.ui.plugin.datastore;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import com.vividsolutions.jump.datastore.FilterQuery;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.io.datasource.Connection;
@@ -16,6 +13,9 @@ import com.vividsolutions.jump.workbench.datastore.ConnectionManager;
 import com.vividsolutions.jump.workbench.model.cache.CachingFeatureCollection;
 import com.vividsolutions.jump.workbench.model.cache.DynamicFeatureCollection;
 import com.vividsolutions.jump.workbench.ui.plugin.WorkbenchContextReference;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Adapts the DataStore API to the DataSource API.
@@ -33,7 +33,7 @@ public class DataStoreDataSource extends DataSource implements
 
     public static final String CONNECTION_DESCRIPTOR_KEY = "Connection Descriptor";
 
-    private WorkbenchContext context;
+    protected WorkbenchContext context;
 
     public DataStoreDataSource() {
         // Called by Java2XML [Jon Aquino 2005-03-16]

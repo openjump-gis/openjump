@@ -1,12 +1,13 @@
 package com.vividsolutions.jump.datastore.postgis;
 
-import java.sql.*;
-
-import org.postgresql.*;
-
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.io.BaseFeatureInputStream;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * Reads features from a PostgreSQL/PostGIS database.
@@ -24,10 +25,17 @@ public class PostgisFeatureInputStream extends BaseFeatureInputStream {
     private PostgisResultSetConverter mapper;
 
     int geometryColIndex = -1;
+    String externalIdentifier = null;  // added on 2013-08-07
 
     public PostgisFeatureInputStream(Connection conn, String queryString) {
         this.conn = conn;
         this.queryString = queryString;
+    }
+
+    public PostgisFeatureInputStream(Connection conn, String queryString, String externalIdentifier) {
+        this.conn = conn;
+        this.queryString = queryString;
+        this.externalIdentifier = externalIdentifier;
     }
 
     /**
@@ -58,6 +66,9 @@ public class PostgisFeatureInputStream extends BaseFeatureInputStream {
         }
         mapper = new PostgisResultSetConverter(conn, rs);
         featureSchema = mapper.getFeatureSchema();
+        if (externalIdentifier != null) {
+            featureSchema.setExternalPrimaryKeyIndex(featureSchema.getAttributeIndex(externalIdentifier));
+        }
     }
     
     protected Feature readNext() throws Exception {

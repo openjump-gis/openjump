@@ -1,12 +1,16 @@
 package com.vividsolutions.jump.datastore.postgis;
 
-import java.sql.*;
+import com.vividsolutions.jump.datastore.jdbc.ValueConverter;
+import com.vividsolutions.jump.datastore.jdbc.ValueConverterFactory;
+import com.vividsolutions.jump.feature.AttributeType;
+import com.vividsolutions.jump.feature.BasicFeature;
+import com.vividsolutions.jump.feature.Feature;
+import com.vividsolutions.jump.feature.FeatureSchema;
 
-import org.postgresql.*;
-
-import com.vividsolutions.jump.feature.*;
-import com.vividsolutions.jump.datastore.*;
-import com.vividsolutions.jump.datastore.jdbc.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 
 /**
  * Implements the mapping between a result set and

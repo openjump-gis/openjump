@@ -16,6 +16,7 @@ public class FilterQuery implements Query {
    * Not all query processors need this.
    */
   private String geomAttrName = null;
+  private String primaryKey = null;
   /**
    * For those query processors which need a CRS
    */
@@ -37,6 +38,8 @@ public class FilterQuery implements Query {
 
   public void setGeometryAttributeName(String geomAttrName) { this.geomAttrName = geomAttrName; }
   public String getGeometryAttributeName() { return geomAttrName; }
+  public void setPrimaryKey(String primaryKey) { this.primaryKey = primaryKey; }
+  public String getPrimaryKey() { return primaryKey; }
 
   /**
    * Sets the SpatialReferenceSystem for a query.

@@ -1,41 +1,31 @@
 package com.vividsolutions.jump.datastore.postgis;
 
-import java.sql.*;
-
-import org.postgresql.PGConnection;
-
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.datastore.AdhocQuery;
-import com.vividsolutions.jump.datastore.DataStoreConnection;
-import com.vividsolutions.jump.datastore.DataStoreException;
-import com.vividsolutions.jump.datastore.DataStoreMetadata;
-import com.vividsolutions.jump.datastore.FilterQuery;
-import com.vividsolutions.jump.datastore.Query;
-import com.vividsolutions.jump.datastore.SpatialReferenceSystemID;
+import com.vividsolutions.jump.datastore.*;
 import com.vividsolutions.jump.io.FeatureInputStream;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  */
-public class PostgisDSConnection
-    implements DataStoreConnection
-{
-  private PostgisDSMetadata dbMetadata;
-  private Connection connection;
+public class PostgisDSConnection implements DataStoreConnection {
 
-  public PostgisDSConnection(Connection conn) {
-    connection = conn;
-    dbMetadata = new PostgisDSMetadata(this);
-  }
+    private PostgisDSMetadata dbMetadata;
+    private Connection connection;
 
-  public Connection getConnection()
-  {
-    return connection;
-  }
+    public PostgisDSConnection(Connection conn) {
+        connection = conn;
+        dbMetadata = new PostgisDSMetadata(this);
+    }
 
-  public DataStoreMetadata getMetadata()
-  {
-    return dbMetadata;
-  }
+    public Connection getConnection() {
+        return connection;
+    }
+
+    public DataStoreMetadata getMetadata() {
+        return dbMetadata;
+    }
 
     public FeatureInputStream execute(Query query) throws Exception {
         if (query instanceof FilterQuery) {
@@ -51,54 +41,52 @@ public class PostgisDSConnection
         throw new IllegalArgumentException(I18N.get(this.getClass().getName()+".unsupported-query-type"));
     }
 
-  /**
-   * Executes a filter query.
-   *
-   * The SRID is optional for queries - it will be determined automatically
-   * from the table metadata if not supplied.
-   *
-   * @param query the query to execute
-   * @return the results of the query
- * @throws SQLException
-   */
-  public FeatureInputStream executeFilterQuery(FilterQuery query) throws SQLException
-  {
-    SpatialReferenceSystemID srid = dbMetadata.getSRID(query.getDatasetName(), query.getGeometryAttributeName());
-    String[] colNames = dbMetadata.getColumnNames(query.getDatasetName());
+    /**
+     * Executes a filter query.
+     *
+     * The SRID is optional for queries - it will be determined automatically
+     * from the table metadata if not supplied.
+     *
+     * @param query the query to execute
+     * @return the results of the query
+     * @throws SQLException
+     */
+    public FeatureInputStream executeFilterQuery(FilterQuery query) throws SQLException {
 
-    PostgisSQLBuilder builder = new PostgisSQLBuilder(srid, colNames);
-    String queryString = builder.getSQL(query);
+        SpatialReferenceSystemID srid = dbMetadata.getSRID(query.getDatasetName(), query.getGeometryAttributeName());
+        String[] colNames = dbMetadata.getColumnNames(query.getDatasetName());
 
-    PostgisFeatureInputStream ifs = new PostgisFeatureInputStream(connection, queryString);
-    return ifs;
-  }
+        PostgisSQLBuilder builder = new PostgisSQLBuilder(srid, colNames);
+        String queryString = builder.getSQL(query);
 
-  public FeatureInputStream executeAdhocQuery(AdhocQuery query) throws Exception
-  {
-    String queryString = query.getQuery();
-    PostgisFeatureInputStream ifs = new PostgisFeatureInputStream(connection, queryString);
-    if (ifs.getFeatureSchema().getGeometryIndex() < 0) {
-        throw new Exception(I18N.get(this.getClass().getName()+".resultset-must-have-a-geometry-column"));
+        // [mmichaud 2013-08-07] add a parameter for database primary key name
+        PostgisFeatureInputStream ifs = new PostgisFeatureInputStream(connection, queryString, query.getPrimaryKey());
+        return ifs;
     }
-    return ifs;
-  }
 
-
-  public void close()
-      throws DataStoreException
-  {
-    try {
-      connection.close();
+    public FeatureInputStream executeAdhocQuery(AdhocQuery query) throws Exception {
+        String queryString = query.getQuery();
+        PostgisFeatureInputStream ifs = new PostgisFeatureInputStream(connection, queryString, query.getPrimaryKey());
+        if (ifs.getFeatureSchema().getGeometryIndex() < 0) {
+            throw new Exception(I18N.get(this.getClass().getName()+".resultset-must-have-a-geometry-column"));
+        }
+        return ifs;
     }
-    catch (Exception ex) { throw new DataStoreException(ex); }
-  }
 
-  public boolean isClosed() throws DataStoreException {
-    try {
-        return connection.isClosed();
-    } catch (SQLException e) {
-        throw new DataStoreException(e);
+
+    public void close() throws DataStoreException {
+        try {
+            connection.close();
+        }
+        catch (Exception ex) { throw new DataStoreException(ex); }
     }
-  }
+
+    public boolean isClosed() throws DataStoreException {
+        try {
+            return connection.isClosed();
+        } catch (SQLException e) {
+            throw new DataStoreException(e);
+        }
+    }
 
 }
