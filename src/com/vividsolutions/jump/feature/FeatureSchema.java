@@ -30,40 +30,47 @@
  * www.vividsolutions.com
  */
 package com.vividsolutions.jump.feature;
-import java.io.Serializable;
-import java.lang.Object;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 import com.vividsolutions.jts.util.Assert;
+import com.vividsolutions.jts.util.AssertionFailedException;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.coordsys.CoordinateSystem;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Metadata for a FeatureCollection: attribute names and types.
  * @see FeatureCollection
  */
 public class FeatureSchema implements Cloneable, Serializable {
+
     private static final long serialVersionUID = -8627306219650589202L;
-    //<<TODO:QUESTION>> Is this an efficient implementation? Must cast the Integer to
-    //an int. [Jon Aquino]
+
     private CoordinateSystem coordinateSystem = CoordinateSystem.UNSPECIFIED;
-    private HashMap attributeNameToIndexMap = new HashMap();
+    private Map<String,Integer> attributeNameToIndexMap = new HashMap<String,Integer>();
     private int geometryIndex = -1;
+    private int externalPKIndex = -1;    // [mmichaud 2013-07-21] database id used in client-server environment
     private int attributeCount = 0;
-    private ArrayList attributeNames = new ArrayList();
-    private ArrayList attributeTypes = new ArrayList();
-    private ArrayList<Boolean> attributeReadOnly = new ArrayList<Boolean>();
+    private List<String> attributeNames = new ArrayList<String>();
+    private List<AttributeType> attributeTypes = new ArrayList<AttributeType>();
+    private List<Boolean> attributeReadOnly = new ArrayList<Boolean>();
     // [mmichaud 2012-10-13] add Operation capability for dynamic attributes 
     private ArrayList<Operation> operations = new ArrayList<Operation>();
 
-    //todo Deep-copy! [Jon Aquino]
-    //deep copy done 25. Juli 2005 [sstein] 
+
+    /**
+     * Return a deep copy of this FeatureSchema.
+     */
     public Object clone() {
         try {
     		FeatureSchema fs = new FeatureSchema();
     		for (int i = 0; i < this.attributeCount; i++) {
-    			AttributeType at = (AttributeType)this.attributeTypes.get(i);
-    			String aname = (String)this.attributeNames.get(i);
+    			AttributeType at = this.attributeTypes.get(i);
+    			String aname = this.attributeNames.get(i);
     			fs.addAttribute(aname,at);
     			fs.setAttributeReadOnly(i, isAttributeReadOnly(i));
     			fs.setOperation(i, getOperation(i));
@@ -80,18 +87,19 @@ public class FeatureSchema implements Cloneable, Serializable {
     /**
      * Returns the zero-based index of the attribute with the given name
      * (case-sensitive)
-     *@throws  IllegalArgumentException  if attributeName is unrecognized
+     * @throws  IllegalArgumentException  if attributeName is unrecognized
      */
     public int getAttributeIndex(String attributeName) {
         //<<TODO:RECONSIDER>> Attribute names are currently case sensitive.
         //I wonder whether or not this is desirable. [Jon Aquino]
-        Integer index = (Integer) attributeNameToIndexMap.get(attributeName);
+        Integer index = attributeNameToIndexMap.get(attributeName);
         if (index == null) {
             throw new IllegalArgumentException(
                 I18N.get("feature.FeatureSchema.unrecognized-attribute-name")+" " + attributeName);
         }
-        return index.intValue();
+        return index;
     }
+
     /**
      * Returns whether this FeatureSchema has an attribute with this name
      * @param attributeName the name to look up
@@ -100,6 +108,7 @@ public class FeatureSchema implements Cloneable, Serializable {
     public boolean hasAttribute(String attributeName) {
         return attributeNameToIndexMap.get(attributeName) != null;
     }
+
     /**
 	 * Returns the attribute index of the Geometry, or -1 if there is no
 	 * Geometry attribute
@@ -107,19 +116,22 @@ public class FeatureSchema implements Cloneable, Serializable {
     public int getGeometryIndex() {
         return geometryIndex;
     }
+
     /**
      * Returns the (case-sensitive) name of the attribute at the given zero-based index.
      */    
     public String getAttributeName(int attributeIndex) {
-        return (String) attributeNames.get(attributeIndex);
+        return attributeNames.get(attributeIndex);
     }
+
     /**
      * Returns whether the attribute at the given zero-based index is a string,
      * integer, double, etc.
      */
     public AttributeType getAttributeType(int attributeIndex) {
-        return (AttributeType) attributeTypes.get(attributeIndex);
+        return attributeTypes.get(attributeIndex);
     }
+
     /**
      * Returns whether the attribute with the given name (case-sensitive) is a string,
      * integer, double, etc.
@@ -127,6 +139,7 @@ public class FeatureSchema implements Cloneable, Serializable {
     public AttributeType getAttributeType(String attributeName) {
         return getAttributeType(getAttributeIndex(attributeName));
     }
+
     /**
      * Returns the total number of spatial and non-spatial attributes in this
      * FeatureSchema. There are 0 or 1 spatial attributes and 0 or more
@@ -135,6 +148,7 @@ public class FeatureSchema implements Cloneable, Serializable {
     public int getAttributeCount() {
         return attributeCount;
     }
+
     /**
      * Adds an attribute with the given case-sensitive name. 
      * @throws AssertionFailedException if a second Geometry is being added
@@ -145,14 +159,14 @@ public class FeatureSchema implements Cloneable, Serializable {
             geometryIndex = attributeCount;
         }
         attributeNames.add(attributeName);
-        attributeNameToIndexMap.put(attributeName, new Integer(attributeCount));
+        attributeNameToIndexMap.put(attributeName, attributeCount);
         attributeTypes.add(attributeType);
-        // default to current implementation - all attributes are editable 
-        // (not readonly)
+        // default to current implementation - all attributes are editable (not readonly)
         attributeReadOnly.add(false);
         operations.add(null);
         attributeCount++;
     }
+
     /**
      * Add a dynamic attribute to this FeatureSchema
      * A dynamic attribute is a readOnly attribute which is dynamically
@@ -163,20 +177,22 @@ public class FeatureSchema implements Cloneable, Serializable {
                 AttributeType attributeType, Operation operation) {
         Assert.isTrue(attributeType != AttributeType.GEOMETRY);
         attributeNames.add(attributeName);
-        attributeNameToIndexMap.put(attributeName, new Integer(attributeCount));
+        attributeNameToIndexMap.put(attributeName, attributeCount);
         attributeTypes.add(attributeType);
         attributeReadOnly.add(true);
         operations.add(operation);
         attributeCount++;
     
     }
+
     /**
      * Returns whether the two FeatureSchemas have the same attribute names
      * with the same types and in the same order.
      */
     public boolean equals(Object other) {
-        return this.equals(other, false);
+        return other != null && other instanceof FeatureSchema && this.equals(other, false);
     }
+
     /**
      * Returns whether the two FeatureSchemas have the same attribute names
      * with the same types and (optionally) in the same order.
@@ -192,7 +208,7 @@ public class FeatureSchema implements Cloneable, Serializable {
             return false;
         }
         for (int i = 0; i < attributeNames.size(); i++) {
-            String attributeName = (String) attributeNames.get(i);
+            String attributeName = attributeNames.get(i);
             if (!otherFeatureSchema.attributeNames.contains(attributeName)) {
                 return false;
             }
@@ -207,6 +223,7 @@ public class FeatureSchema implements Cloneable, Serializable {
         }
         return true;
     }
+
     /**
      * Sets the CoordinateSystem associated with this FeatureSchema, but does
      * not perform any reprojection.
@@ -269,8 +286,7 @@ public class FeatureSchema implements Cloneable, Serializable {
 	 * @return <tt>TRUE</tt> if the specified attribute is dynamically computed.
 	 */
 	 public boolean isOperation(int attributeIndex) {
-	     if (attributeIndex >= 0) return operations.get(attributeIndex) != null;
-	     else return false;
+	     return attributeIndex >= 0 && operations.get(attributeIndex) != null;
 	 }
 	 
 	/**
@@ -289,5 +305,59 @@ public class FeatureSchema implements Cloneable, Serializable {
 	 public Operation getOperation(int attributeIndex) {
 	     return operations.get(attributeIndex);
 	 }
+
+    /**
+     * Returns the attribute index of the externalId attribute, or -1 if there is no
+     * externalId.
+     */
+    public int getExternalPrimaryKeyIndex() {
+        return externalPKIndex;
+    }
+
+    public void setExternalPrimaryKeyIndex(int index) {
+        assert index < getAttributeCount();
+        AttributeType attributeType = this.getAttributeType(index);
+        if (attributeType == AttributeType.INTEGER ||
+                attributeType == AttributeType.STRING ||
+                attributeType == AttributeType.OBJECT) {
+            this.externalPKIndex = index;
+            setAttributeReadOnly(index, true);
+        } else {
+            throw new IllegalArgumentException("Primary Key must be of type String, Integer or Object");
+        }
+    }
+
+    /**
+     * Add an attribute containing an external identifier.
+     * This attribute is read-only fo OpenJUMP. It is the responsability of the external
+     * datastore to write in this attribute.
+     * @param attributeName name of the external id
+     * @param attributeType type of the external id
+     * @throws IllegalArgumentException if the attributeType of the id is not one of
+     * Integer, String or Object (for Long)
+     */
+    public void addExternalPrimaryKey(String attributeName, AttributeType attributeType) {
+        if (attributeType == AttributeType.INTEGER ||
+                attributeType == AttributeType.STRING ||
+                attributeType == AttributeType.OBJECT) {
+            addAttribute(attributeName, attributeType);
+            setAttributeReadOnly(getAttributeIndex(attributeName), true);
+        } else {
+            throw new IllegalArgumentException("Primary Key must be of type String, Integer or Object");
+        }
+    }
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder("FeatureSchema (").append(getCoordinateSystem()).append(")");
+        for (int i = 0 ; i < getAttributeCount() ; i++) {
+            if (geometryIndex==i) sb.append("\n\tGeometry: ");
+            else if (externalPKIndex==i) sb.append("\n\tExternalId: ");
+            else sb.append("\n\t");
+            sb.append(getAttributeName(i)).append(" ").append(attributeTypes.get(i));
+            if (operations.get(i) != null) sb.append(" [operation]");
+            else if (attributeReadOnly.get(i)) sb.append(" [read only]");
+        }
+        return sb.toString();
+    }
 
 }
