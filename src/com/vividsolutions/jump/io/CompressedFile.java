@@ -38,12 +38,22 @@
 
 package com.vividsolutions.jump.io;
 
+import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.zip.*;
+import java.util.Arrays;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
-import org.apache.tools.tar.TarEntry;
-import org.apache.tools.tar.TarInputStream;
+import org.apache.commons.compress.archivers.tar.*;
+import org.apache.commons.compress.archivers.zip.*;
+import org.apache.commons.compress.archivers.sevenz.*;
+import org.apache.commons.compress.compressors.bzip2.*;
+import org.apache.commons.compress.compressors.xz.*;
+import org.apache.commons.compress.compressors.gzip.*;
+
+import com.vividsolutions.jump.util.FileUtil;
 
 /**
  * Utility class for dealing with compressed files.
@@ -193,16 +203,21 @@ public class CompressedFile {
 
     //System.out.println(filePath + " extract " + compressedEntry);
 
-    if (compressedEntry != null && isTar(filePath)) {
-      InputStream is = new FileInputStream(filePath);
+    if (isTar(filePath)) {
+      InputStream is = new BufferedInputStream( new FileInputStream(filePath) );
       if (filePath.toLowerCase().endsWith("gz"))
-        is = new java.util.zip.GZIPInputStream(is);
-      else if (filePath.matches(".*bz2?"))
-        is = new org.apache.tools.bzip2.CBZip2InputStream(is);
-      TarInputStream tis = new TarInputStream(is);
-
-      TarEntry entry;
-      while ((entry = tis.getNextEntry()) != null) {
+        is = new GzipCompressorInputStream(is, true);
+      else if (filePath.matches("(?i).*bz2?"))
+        is = new BZip2CompressorInputStream(is, true);
+      else if (filePath.matches("(?i).*xz"))
+        is = new XZCompressorInputStream(is, true);
+      
+      TarArchiveInputStream tis = new TarArchiveInputStream(is);
+      if (compressedEntry == null)
+        return is;
+      
+      TarArchiveEntry entry;
+      while ((entry = tis.getNextTarEntry()) != null) {
         if (entry.getName().equals(compressedEntry))
           return tis;
       }
@@ -213,24 +228,42 @@ public class CompressedFile {
 
     else if (compressedEntry == null && isGZip(filePath)) {
       // gz compressed file -- easy
-      InputStream IS_low = new FileInputStream(filePath);
-      return (new java.util.zip.GZIPInputStream(IS_low));
+      InputStream is = new BufferedInputStream(new FileInputStream(filePath));
+      return new GzipCompressorInputStream(is,true);
     }
     
     else if (compressedEntry == null && isBZip(filePath)) {
       // bz compressed file -- easy
-      InputStream is = new FileInputStream(filePath);
-      return new org.apache.tools.bzip2.CBZip2InputStream(is);
+      InputStream is = new BufferedInputStream( new FileInputStream(filePath) );
+      return new BZip2CompressorInputStream(is,true);
+      //return new org.itadaki.bzip2.BZip2InputStream(is, false);
+    }
+
+    else if (compressedEntry == null && isXZ(filePath)) {
+      InputStream is = new BufferedInputStream( new FileInputStream(filePath) );
+      return new XZCompressorInputStream(is, true);
     }
 
     else if (compressedEntry != null && isZip(filePath)) {
 
       ZipFile zipFile = new ZipFile(filePath);
-      ZipEntry zipEntry = zipFile.getEntry(compressedEntry);
+      ZipArchiveEntry zipEntry = zipFile.getEntry(compressedEntry);
       // System.out.println(zipEntry + "->" + fname);
       if (zipEntry != null) 
         return zipFile.getInputStream(zipEntry);
 
+      throw new Exception("couldn't find entry '" + compressedEntry + "' in compressed file: "
+          + filePath);
+    }
+    
+    else if (compressedEntry != null && isSevenZ(filePath)) {
+
+      SevenZFileGiveStream sevenZFile = new SevenZFileGiveStream(new File(filePath));
+      SevenZArchiveEntry entry;
+      while ((entry = sevenZFile.getNextEntry()) != null) {
+        if (entry.getName().equals(compressedEntry))
+          return sevenZFile.getCurrentEntryInputStream();
+      }
       throw new Exception("couldn't find entry '" + compressedEntry + "' in compressed file: "
           + filePath);
     }
@@ -254,7 +287,7 @@ public class CompressedFile {
   }
 
   public static boolean isTar(String filePath) {
-    return filePath.matches("(?i).*\\.(tar|(tar\\.|t)(gz|bz2?))");
+    return filePath.matches("(?i).*\\.(tar|(tar\\.|t)(gz|bz2?|xz))");
   }
 
   public static boolean isGZip(String filePath) {
@@ -264,13 +297,34 @@ public class CompressedFile {
   public static boolean isBZip(String filePath) {
     return filePath.matches("(?i).*(?!\\.tar)\\.bz2?");
   }
-  
+
+  public static boolean isXZ(String filePath) {
+    return filePath.matches("(?i).*(?!\\.tar)\\.(xz)");
+  }
+
+  public static boolean isSevenZ(String filePath) {
+    return filePath.matches("(?i).*(?!\\.tar)\\.(7z)");
+  }
+
   // archives contain multiple items
   public static String[] getArchiveExtensions() {
-    return  new String[]{ "zip", "tgz", "tar.gz", "tar.bz", "tar.bz2", "tbz", "tbz2" };
+    return  new String[]{ "zip", "tgz", "tar.gz", "tar.bz", "tar.bz2", "tbz", "tbz2", "txz", "tar.xz", "7z" };
   }
   // file is one plainly compressed file
   public static String[] getFileExtensions() {
-    return  new String[]{ "gz", "bz", "bz2" };
+    return  new String[]{ "gz", "bz", "bz2", "xz" };
+  }
+  
+  public static boolean hasCompressedFileExtension(String filename) {
+    return Arrays.asList(CompressedFile.getFileExtensions()).contains(
+        FileUtil.getExtension(new File(filename)).toLowerCase());
+  }
+  
+  public static boolean hasArchiveExtension(String filename) {
+    for (String ext : getArchiveExtensions()) {
+      if (filename.toLowerCase().endsWith(ext))
+        return true;
+    }
+    return false;
   }
 }

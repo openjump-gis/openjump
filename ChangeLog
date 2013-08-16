@@ -1,5 +1,13 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-08-16 ede
+  * update compressed files / archive open support
+    - use latest apache commons compress lib
+    - some speedup for file reading
+    - add support for xz (xz, txz, tar.xz)
+    - add preliminary support for 7zip (only LZMA2 & BZIP compression for now)
+    - reworked naming of layers opened from compressed files or archives
+
 2013-08-12 mmichaud <michael.michaud@free.fr>
   * Updated JumpChart from cadplan (version from july 2013)
 

@@ -93,12 +93,19 @@ public class DataSourceFileLayerLoader extends AbstractFileLayerLoader {
     DataSource dataSource = (DataSource)LangUtil.newInstance(dataSourceClass);
     Map<String, Object> properties = toProperties(uri, options);
     dataSource.setProperties(properties);
-    String filename = UriUtil.getFileNameWithoutExtension(uri);
-    String layerName = filename;
-    if (uri.getScheme().equals("zip"))
-      layerName = UriUtil.getZipEntryName(uri)+" ("+filename+")";
+    String filename = UriUtil.getFileName(uri);
+    String layerName = UriUtil.getFileNameWithoutExtension(uri);
+    // layername for archive members is "filename.ext (archive.ext)"
+    if (CompressedFile.hasArchiveExtension(filename))
+      layerName = UriUtil.getZipEntryName(uri) + " ("
+          + filename + ")";
+    // remove format extension for compressed files, but hint compressed file in braces
+    else if (CompressedFile.hasCompressedFileExtension(filename)) {
+      layerName = layerName.substring(0, layerName.lastIndexOf('.')) + " ("
+          + filename + ")";
+    }
     DataSourceQuery dataSourceQuery = new DataSourceQuery(dataSource, null,
-      filename);
+      layerName);
     ArrayList exceptions = new ArrayList();
     monitor.report("Loading " + layerName + "...");
 

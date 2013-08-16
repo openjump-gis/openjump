@@ -21,7 +21,8 @@ The license text can be found in the file "licenses/gpl-2.txt".
 
 OpenJUMP uses and distributes the following (in alphabetical order) formatted
 as (Component name - License name - License file in "licenses/" folder or link)
- Apache Tools TAR, BZIP - Apache License Version 2.0 - apache_license-2.0.txt
+ Apache Apache Commons Compress - Apache License Version 2.0 
+     - apache_license-2.0.txt
  BeanShell - LGPL2.1 - lgpl-2.1.txt
  Buoy Framework - Public Domain
  Code2000 Unicode font - GPL2 - gpl-2.txt
@@ -47,6 +48,7 @@ as (Component name - License name - License file in "licenses/" folder or link)
    Vertical Design used in the installer by Stefan Steiniger 2012
  Postgresql JDBC driver - Postgresql BSD license - postgresql-BSD_license.txt
  Xerces2 Java Parser - Apache License Version 2.0 - apache_license-2.0.txt
+ XZ for Java - Public Domain
 
 Additionally PLUS distribution contains
 ( Component name - License name - License file in "licenses/" folder
@@ -73,6 +75,10 @@ and the following plugins
   jgrapht-*.jar - LGPL2 - lgpl-2.1.txt
  Jump Chart (com.cadplan.jump) - GPL2 - gpl-2.txt
   JumpChart.jar
+ JUMP DB Query Plugin (Larry Reeder) - GPL3 - gpl-3.0.txt
+  jumpdbquery-0.9.jar, dbquery.properties
+  gt2-oracle-spatial-2.3.2.jar - LGPL2.1 - lgpl-2.1.txt
+  jsyntaxpane-0.9.6.jar - Apache License Version 2.0 - apache_license-2.0.txt
  Jump Fill Pattern (com.cadplan.jump) - GPL2 - gpl-2.txt
   JumpFillPattern.jar
  KML Driver (skyjump) - GPL2 - gpl-2.txt

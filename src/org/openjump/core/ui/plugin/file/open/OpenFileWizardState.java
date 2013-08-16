@@ -27,7 +27,6 @@
 package org.openjump.core.ui.plugin.file.open;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -38,15 +37,17 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.Map.Entry;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
-import org.apache.tools.tar.TarEntry;
-import org.apache.tools.tar.TarInputStream;
+import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
+import org.apache.commons.compress.archivers.sevenz.SevenZFile;
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.openjump.core.ui.io.file.FileLayerLoader;
 import org.openjump.core.ui.io.file.Option;
 import org.openjump.util.UriUtil;
@@ -121,9 +122,9 @@ public class OpenFileWizardState {
           try {
             ZipFile zipFile = new ZipFile(file);
             URI fileUri = file.toURI();
-            Enumeration entries = zipFile.entries();
+            Enumeration entries = zipFile.getEntries();
             while (entries.hasMoreElements()) {
-              ZipEntry entry = (ZipEntry)entries.nextElement();
+              ZipArchiveEntry entry = (ZipArchiveEntry)entries.nextElement();
               if (!entry.isDirectory()) {
                 URI entryUri = UriUtil.getUri(file, entry.getName());
                 String entryExt = UriUtil.getFileExtension(entryUri);
@@ -135,18 +136,13 @@ public class OpenFileWizardState {
             errorHandler.handleThrowable(e);
           }
         }
-        // tar.gz compressed files
+        // tar[.gz,.bz...] (un)compressed archive files
         else if (CompressedFile.isTar(file.getName())) {
           try {
-            //System.out.println(file.getName());
-            InputStream is = new FileInputStream(file);
-            if (file.getName().toLowerCase().endsWith("gz"))
-              is = new java.util.zip.GZIPInputStream(is);
-            else if (file.getName().matches(".*bz2?"))
-              is = new org.apache.tools.bzip2.CBZip2InputStream(is);
-            TarInputStream tis = new TarInputStream(is);
-            TarEntry entry;
-            while ((entry = tis.getNextEntry()) != null) {
+            InputStream is = CompressedFile.openFile(file.getAbsolutePath(), null);
+            TarArchiveEntry entry;
+            TarArchiveInputStream tis = new TarArchiveInputStream(is);
+            while ((entry = tis.getNextTarEntry()) != null) {
               if (!entry.isDirectory()) {
                 URI entryUri = UriUtil.getUri(file, entry.getName());
 
@@ -155,16 +151,37 @@ public class OpenFileWizardState {
               }
             }
             tis.close();
+          } catch (Exception e) {
+            errorHandler.handleThrowable(e);
+          }
+        }
+        // 7zip compressed files
+        else if (CompressedFile.isSevenZ(file.getName())) {
+          try {
+            //System.out.println(file.getName());
+            SevenZFile sevenZFile = new SevenZFile(file);
+            SevenZArchiveEntry entry;
+            while ((entry = sevenZFile.getNextEntry()) != null) {
+              if (!entry.isDirectory()) {
+                URI entryUri = UriUtil.getUri(file, entry.getName());
+
+                String entryExt = UriUtil.getFileExtension(entryUri);
+                addFile(entryExt, entryUri);
+              }
+            }
+            sevenZFile.close();
           } catch (IOException e) {
             errorHandler.handleThrowable(e);
           }
         }
         // compressed files
-        else if (CompressedFile.isGZip(file.getName()) || CompressedFile.isBZip(file.getName())) {
+        else if ( CompressedFile.hasCompressedFileExtension(file.getName()) ) {
           String[] parts = file.getName().split("\\.");
           if (parts.length>2)
             addFile(parts[parts.length-2], file.toURI());
-        }else {
+        }
+        // anything else is a plain data file
+        else {
           URI fileUri = file.toURI();
           addFile(FileUtil.getExtension(file), fileUri);
         }
