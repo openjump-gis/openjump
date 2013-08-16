@@ -805,9 +805,7 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-compress</artifactId>
-      <version>1.6-SNAPSHOT</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/lib/commons-compress-1.6-20130810.172126-39.jar</systemPath>
+      <version>1.6-20130810.172126-39</version>
     </dependency>
     <dependency>
       <groupId>org.tukaani</groupId>
