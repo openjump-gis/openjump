@@ -28,6 +28,7 @@ package org.openjump.core.ui.io.file;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -38,6 +39,7 @@ import java.util.List;
 public abstract class AbstractFileLayerLoader implements FileLayerLoader {
   /** The descriptive name of the file format (e.g. ESRI Shapefile). */
   private String description;
+  boolean unsorted = true;
 
   /** The list of file extensions supported by the plug-in. */
   private List<String> extensions = new ArrayList<String>();
@@ -73,7 +75,11 @@ public abstract class AbstractFileLayerLoader implements FileLayerLoader {
    * @return The list of file extensions.
    */
   public Collection<String> getFileExtensions() {
-    return extensions;
+    if (unsorted) {
+      Collections.sort(extensions);
+      unsorted = false;
+    }
+    return new ArrayList<String>(extensions);
   }
 
   /**
@@ -83,6 +89,7 @@ public abstract class AbstractFileLayerLoader implements FileLayerLoader {
    * @return true on success
    */
   public boolean addFileExtensions(final List<String> newexts) {
+      unsorted = true;
       return extensions.addAll(newexts);
   }
 

@@ -181,9 +181,8 @@ public class FileUtil {
         }
     }
     
-    public static String getExtension(File f) {
+    public static String getExtension(String s) {
         String ext = "";
-        String s = f.getName();
         int i = s.lastIndexOf('.');
 
         if ((i > 0) && (i < (s.length() - 1))) {
@@ -191,7 +190,12 @@ public class FileUtil {
         }
 
         return ext;
-    }    
+    }
+    
+    public static String getExtension(File f) {
+      String s = f.getName();
+      return getExtension(s);
+  }
 
     public static File addExtensionIfNone(File file, String extension) {
         if (getExtension(file).length() > 0) {

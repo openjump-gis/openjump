@@ -47,6 +47,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jump.feature.BasicFeature;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureDataset;
+import com.vividsolutions.jump.io.CompressedFile;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.imagery.ImageryLayerDataset;
@@ -82,43 +83,14 @@ public class ReferencedImageFactoryFileLayerLoader extends
   }
 
   public boolean open(TaskMonitor monitor, URI uri, Map<String, Object> options) throws Exception{
-    File file;
-    if (uri.getScheme().equals("zip")) {
-      try {
-        File zipFileName = org.openjump.util.UriUtil.getZipFile(uri);
-        String entryPath = UriUtil.getZipEntryFilePath(uri);
-        String entryFileName = UriUtil.getFileName(uri);
-        String entryBaseName = UriUtil.getFileNameWithoutExtension(uri);
-        ZipFile zipFile = new ZipFile(zipFileName);
-        try {
-          monitor.report("Decompressing: " + entryFileName);
-          file = unzip(zipFile, entryPath, entryFileName);
-          if (getFileExtensions() != null) {
-            for (String extension : getFileExtensions()) {
-              monitor.report("Decompressing: " + entryBaseName + "."
-                + extension);
-              unzip(zipFile, entryPath, entryBaseName + "." + extension);
-            }
-          }
-        } finally {
-          zipFile.close();
-        }
-      } catch (Exception e) {
-        monitor.report(e);
-        return false;
-      }
-    } else {
-      file = new File(uri);
-    }
-
     LayerManager layerManager = workbenchContext.getLayerManager();
 
     layerManager.setFiringEvents(false);
-    Layer layer = createLayer(layerManager, file);
+    Layer layer = createLayer(layerManager, uri);
     layerManager.setFiringEvents(true);
     
     Feature feature;
-    feature = createFeature(imageFactory, file,
+    feature = createFeature(imageFactory, uri.toString(),
             getImageryLayerDataset(layer));
 
     // only add layer if no exception occured
@@ -129,7 +101,7 @@ public class ReferencedImageFactoryFileLayerLoader extends
     // setFeatureCollectionModified(false) to solve BUG ID: 3424399
     layer.setFeatureCollectionModified(false);
     String imageFilePath = (String)feature.getAttribute(ImageryLayerDataset.ATTR_FILE);
-    if (imageFactory.isEditableImage(imageFilePath)) {
+    if (imageFactory.isEditableImage(uri.toString())) {
       layer.setSelectable(true);
       layer.setEditable(true);
       layer.setReadonly(false);
@@ -141,73 +113,16 @@ public class ReferencedImageFactoryFileLayerLoader extends
     return true;
   }
 
-  private File unzip(ZipFile zipFile, String path, String name)
-    throws IOException {
-    String entryName;
-    if (path != null) {
-      entryName = path + "/" + name;
-    } else {
-      entryName = name;
-    }
-    ZipEntry entry = zipFile.getEntry(entryName);
-    if (entry != null) {
-      File file = new File(System.getProperty("java.io.tmpdir"), name);
-      file.deleteOnExit();
-      InputStream in = zipFile.getInputStream(entry);
-
-      ReadableByteChannel rc = null;
-      FileOutputStream out = null;
-
-      try {
-        rc = Channels.newChannel(in);
-        out = new FileOutputStream(file);
-        FileChannel fc = out.getChannel();
-
-        // read into the buffer
-        long count = 0;
-        int attempts = 0;
-        long sz = entry.getSize();
-        while (count < sz) {
-          long written = fc.transferFrom(rc, count, sz);
-          count += written;
-
-          if (written == 0) {
-            attempts++;
-            if (attempts > 100) {
-              throw new IOException("Error writing to file " + file);
-            }
-          } else {
-            attempts = 0;
-          }
-        }
-
-        out.close();
-        out = null;
-      } finally {
-        if (out != null) {
-          try {
-            out.close();
-          } catch (Exception ex) {
-          }
-        }
-      }
-      return file;
-    } else {
-      return null;
-    }
-
-  }
-
   private ImageryLayerDataset getImageryLayerDataset(Layer layer) {
     ReferencedImageStyle irs = (ReferencedImageStyle)layer.getStyle(ReferencedImageStyle.class);
     return irs.getImageryLayerDataset();
   }
 
   private Feature createFeature(ReferencedImageFactory referencedImageFactory,
-    File file, ImageryLayerDataset imageryLayerDataset) throws Exception {
+    String uri, ImageryLayerDataset imageryLayerDataset) throws Exception {
 
     Feature feature = new BasicFeature(ImageryLayerDataset.getSchema());
-    feature.setAttribute(ImageryLayerDataset.ATTR_FILE, file.getPath());
+    feature.setAttribute(ImageryLayerDataset.ATTR_FILE, uri);
     feature.setAttribute(ImageryLayerDataset.ATTR_FORMAT,
       referencedImageFactory.getTypeName());
     feature.setAttribute(ImageryLayerDataset.ATTR_FACTORY,
@@ -217,8 +132,10 @@ public class ReferencedImageFactoryFileLayerLoader extends
     return feature;
   }
 
-  private Layer createLayer(LayerManager layerManager, File file) {
-    Layer layer = new ReferencedImageLayer(file.getName(), Color.black, new FeatureDataset(
+  private Layer createLayer(LayerManager layerManager, URI uri) {
+    String layerName = CompressedFile.createLayerName(uri);
+
+    Layer layer = new ReferencedImageLayer(layerName, Color.black, new FeatureDataset(
       ImageryLayerDataset.getSchema()), layerManager);
     layer.setEditable(true);
     layer.getBasicStyle().setEnabled(false);

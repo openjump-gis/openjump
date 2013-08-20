@@ -126,7 +126,7 @@ public class OpenFileWizardState {
             while (entries.hasMoreElements()) {
               ZipArchiveEntry entry = (ZipArchiveEntry)entries.nextElement();
               if (!entry.isDirectory()) {
-                URI entryUri = UriUtil.getUri(file, entry.getName());
+                URI entryUri = UriUtil.createZipUri(file, entry.getName());
                 String entryExt = UriUtil.getFileExtension(entryUri);
                 //System.out.println(entryUri+"<->"+entryExt);
                 addFile(entryExt, entryUri);
@@ -144,7 +144,7 @@ public class OpenFileWizardState {
             TarArchiveInputStream tis = new TarArchiveInputStream(is);
             while ((entry = tis.getNextTarEntry()) != null) {
               if (!entry.isDirectory()) {
-                URI entryUri = UriUtil.getUri(file, entry.getName());
+                URI entryUri = UriUtil.createZipUri(file, entry.getName());
 
                 String entryExt = UriUtil.getFileExtension(entryUri);
                 addFile(entryExt, entryUri);
@@ -163,7 +163,7 @@ public class OpenFileWizardState {
             SevenZArchiveEntry entry;
             while ((entry = sevenZFile.getNextEntry()) != null) {
               if (!entry.isDirectory()) {
-                URI entryUri = UriUtil.getUri(file, entry.getName());
+                URI entryUri = UriUtil.createZipUri(file, entry.getName());
 
                 String entryExt = UriUtil.getFileExtension(entryUri);
                 addFile(entryExt, entryUri);

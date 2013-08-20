@@ -32,104 +32,148 @@ package com.vividsolutions.jump.workbench.imagery.graphic;
  * www.vividsolutions.com
  */
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.openjump.util.UriUtil;
+
+import com.vividsolutions.jump.io.CompressedFile;
+import com.vividsolutions.jump.util.FileUtil;
 
 public class WorldFile {
 
-	public static final WorldFile DEFAULT = new WorldFile();
-	
-	private String filename;
-	private float xSize = 1;
-	private float ySize = -1;
-	private float rowRotation = 0;
-	private float colRotation = 0;
-	
-	private double xUpperLeft = 0.5;
-	private double yUpperLeft = -0.5;
+  public static final WorldFile DEFAULT = new WorldFile();
 
-	private WorldFile(){
-	}
-	
-	/**
-	 * bpw: bip, bmp
-	 * gfw: gif
-	 * tfw: tif
-	 * jgw: jpg
-	 * 
-	 * wld: universal
-	 * 
-	 * @param file
-	 * @return a WorldFile
-	 */
-	public static WorldFile read(File file) throws IOException{
+  private String filename;
+  private float xSize = 1;
+  private float ySize = -1;
+  private float rowRotation = 0;
+  private float colRotation = 0;
 
-        FileReader fin = new FileReader(file);
-        BufferedReader in = new BufferedReader(fin);
-        String lineIn = in.readLine();
-        int line = 0;
-        
-        WorldFile wf = new WorldFile();
-        wf.filename = file.getPath();
-        
-        while((in.ready() || lineIn!=null) && line < 6){
-        	if(lineIn!=null && !"".equals(lineIn)){
-	        	switch(line){
-	        	case 0:
-	        		wf.xSize = Float.valueOf(lineIn.trim()).floatValue();
-	        		break;
-	        	case 1:
-	        		wf.rowRotation = Float.valueOf(lineIn.trim()).floatValue();
-	        		break;
-	        	case 2:
-	        		wf.colRotation = Float.valueOf(lineIn.trim()).floatValue();
-	        		break;
-	        	case 3:
-	        		wf.ySize = Float.valueOf(lineIn.trim()).floatValue();
-	        		break;
-	        	case 4:
-	        		wf.xUpperLeft = Double.valueOf(lineIn.trim()).doubleValue();
-	        		break;
-	        	case 5:
-	        		wf.yUpperLeft = Double.valueOf(lineIn.trim()).doubleValue();
-	        		break;
-	        	}
-        	}
-        	line++;
-        	lineIn = null;
-        	if(in.ready())
-        		lineIn = in.readLine();
+  private double xUpperLeft = 0.5;
+  private double yUpperLeft = -0.5;
+
+  private static WorldFile read(InputStream is) throws IOException {
+    BufferedReader br = new BufferedReader(new InputStreamReader(is));
+    return read(br);
+  }
+
+  /**
+   * bpw: bip, bmp gfw: gif tfw: tif jgw: jpg
+   * 
+   * wld: universal
+   * 
+   * @param file
+   * @return a WorldFile
+   */
+  private static WorldFile read(BufferedReader in) throws IOException {
+
+    // FileReader fin = new FileReader(file);
+    // BufferedReader in = new BufferedReader(fin);
+    String lineIn = in.readLine();
+    int line = 0;
+
+    WorldFile wf = new WorldFile();
+    // wf.filename = file.getPath();
+
+    while ((in.ready() || lineIn != null) && line < 6) {
+      if (lineIn != null && !"".equals(lineIn)) {
+        switch (line) {
+        case 0:
+          wf.xSize = Float.valueOf(lineIn.trim()).floatValue();
+          break;
+        case 1:
+          wf.rowRotation = Float.valueOf(lineIn.trim()).floatValue();
+          break;
+        case 2:
+          wf.colRotation = Float.valueOf(lineIn.trim()).floatValue();
+          break;
+        case 3:
+          wf.ySize = Float.valueOf(lineIn.trim()).floatValue();
+          break;
+        case 4:
+          wf.xUpperLeft = Double.valueOf(lineIn.trim()).doubleValue();
+          break;
+        case 5:
+          wf.yUpperLeft = Double.valueOf(lineIn.trim()).doubleValue();
+          break;
         }
-        
-        return wf;
-	}
+      }
+      line++;
+      lineIn = null;
+      if (in.ready())
+        lineIn = in.readLine();
+    }
 
-	public float getColRotation() {
-		return colRotation;
-	}
+    return wf;
+  }
 
-	public String getFilename() {
-		return filename;
-	}
+  public float getColRotation() {
+    return colRotation;
+  }
 
-	public float getRowRotation() {
-		return rowRotation;
-	}
+  public String getFilename() {
+    return filename;
+  }
 
-	public float getXSize() {
-		return xSize;
-	}
+  public float getRowRotation() {
+    return rowRotation;
+  }
 
-	public double getXUpperLeft() {
-		return xUpperLeft;
-	}
+  public float getXSize() {
+    return xSize;
+  }
 
-	public float getYSize() {
-		return ySize;
-	}
+  public double getXUpperLeft() {
+    return xUpperLeft;
+  }
 
-	public double getYUpperLeft() {
-		return yUpperLeft;
-	}
+  public float getYSize() {
+    return ySize;
+  }
+
+  public double getYUpperLeft() {
+    return yUpperLeft;
+  }
+
+  public static List<String> generateWorldFileExtensions(String img_ext) {
+    ArrayList<String> exts = new ArrayList();
+    exts.add(img_ext.substring(0, 1) + img_ext.substring(2) + "w");
+    exts.add(img_ext + "w");
+    exts.add("wld");
+    return exts;
+  }
+
+  public static WorldFile create(String location) {
+    try {
+      URI origuri = new URI(location);
+      String fileName = CompressedFile.getTargetFileWithPath(origuri);
+      fileName = UriUtil.getFileName(fileName);
+      for (String ext : generateWorldFileExtensions(FileUtil
+          .getExtension(fileName))) {
+        String wf_name = UriUtil.removeExtension(fileName) + "." + ext;
+        URI wf_uri = CompressedFile.replaceTargetFileName(origuri, wf_name);
+        InputStream is = null;
+        try {
+          // System.out.println(origuri);
+          System.out.println(wf_uri);
+          is = CompressedFile.openFile(wf_uri);
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+        if (is != null)
+          return read(is);
+      }
+    } catch (URISyntaxException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return new WorldFile();
+  }
 }

@@ -24,7 +24,7 @@ public final class UriUtil {
    * @param entry The ZIP entry.
    * @return The URI.
    */
-  public static URI getUri(final File file, final String entry) {
+  public static URI createZipUri(final File file, final String entry) {
     try {
       //final String entryName = entry.getName();
       final URI fileUri = file.toURI();
@@ -35,6 +35,14 @@ public final class UriUtil {
       throw new IllegalArgumentException("Cannot create URI for " + file + "!/"
         + entry);
     }
+  }
+  
+  public static URI createZipUri(final String file, final String entry) {
+    return createZipUri(new File(file), entry);
+  }
+  
+  public static URI createFileUri( final String file ) {
+    return new File(file).toURI();
   }
 
   /**
@@ -138,5 +146,25 @@ public final class UriUtil {
     } else {
       return null;
     }
+  }
+  
+  public static String getFilePath(final URI uri) {
+    return getZipFilePath(uri);
+  }
+  
+  public static String getFileName(final String path) {
+    final int slashIndex = path.lastIndexOf('/');
+    return slashIndex > -1 ? path.substring(slashIndex) : path;
+  }
+  
+  public static String getPath(final String path) {
+    final int slashIndex = path.lastIndexOf('/');
+    return slashIndex > -1 ? path.substring(0,slashIndex) : "";
+  }
+  
+  public static String removeExtension(final String path) {
+    final int slashIndex = path.lastIndexOf('/');
+    final int dotIndex = path.lastIndexOf('.');
+    return slashIndex < dotIndex ? path.substring(0,dotIndex) : path;
   }
 }

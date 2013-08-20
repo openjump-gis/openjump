@@ -78,7 +78,9 @@ import com.vividsolutions.jump.workbench.imagery.ReferencedImageFactory;
 import com.vividsolutions.jump.workbench.imagery.ecw.ECWImageFactory;
 import com.vividsolutions.jump.workbench.imagery.ecw.JPEG2000ImageFactory;
 import com.vividsolutions.jump.workbench.imagery.geotiff.GeoTIFFImageFactory;
-import com.vividsolutions.jump.workbench.imagery.graphic.GraphicImageFactory;
+import com.vividsolutions.jump.workbench.imagery.graphic.CommonsImageFactory;
+import com.vividsolutions.jump.workbench.imagery.graphic.IOGraphicImageFactory;
+import com.vividsolutions.jump.workbench.imagery.graphic.JAIGraphicImageFactory;
 import com.vividsolutions.jump.workbench.imagery.mrsid.MrSIDImageFactory;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.registry.Registry;
@@ -628,10 +630,12 @@ public class OpenJumpConfiguration {
     }
     // supersedes com.vividsolutions.jump.workbench.ui.plugin.imagery.InstallReferencedImageFactoriesPlugin
     // register layerloader with worldfile support and plain factories for imagelayermanager
-    addImageFactory(workbenchContext, registry, new GraphicImageFactory(),
+    addImageFactory(workbenchContext, registry, new IOGraphicImageFactory(), null);
+    addImageFactory(workbenchContext, registry, new JAIGraphicImageFactory(),
       new String[] {
         "wld", "bpw", "jpw", "gfw"
       });
+    addImageFactory(workbenchContext, registry, new CommonsImageFactory(), null);
     addImageFactory(workbenchContext, registry, new ECWImageFactory(), null);
     addImageFactory(workbenchContext, registry, new JPEG2000ImageFactory(), null);
     addImageFactory(workbenchContext, registry, new GeoTIFFImageFactory(),

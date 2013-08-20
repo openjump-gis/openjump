@@ -41,8 +41,12 @@ package com.vividsolutions.jump.io;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -52,6 +56,7 @@ import org.apache.commons.compress.archivers.sevenz.*;
 import org.apache.commons.compress.compressors.bzip2.*;
 import org.apache.commons.compress.compressors.xz.*;
 import org.apache.commons.compress.compressors.gzip.*;
+import org.openjump.util.UriUtil;
 
 import com.vividsolutions.jump.util.FileUtil;
 
@@ -175,6 +180,14 @@ public class CompressedFile {
   // throw new Exception("couldnt determine compressed file type for file "
   // + compressedFile + "- should end in .zip or .gz");
   // }
+  
+  public static InputStream openFile(String uri_string) throws URISyntaxException, Exception {
+    return openFile(new URI(uri_string));
+  }
+  
+  public static InputStream openFile(URI uri) throws Exception{
+    return openFile( UriUtil.getZipFilePath(uri), UriUtil.getZipEntryName(uri) );
+  }
 
   /**
    * Utility file open function - handles compressed and un-compressed files.
@@ -201,7 +214,7 @@ public class CompressedFile {
       throws Exception {
     String extension;
 
-    //System.out.println(filePath + " extract " + compressedEntry);
+    System.out.println(filePath + " extract " + compressedEntry);
 
     if (isTar(filePath)) {
       InputStream is = new BufferedInputStream( new FileInputStream(filePath) );
@@ -222,8 +235,9 @@ public class CompressedFile {
           return tis;
       }
 
-      throw new Exception("couldn't find entry '" + compressedEntry + "' in compressed file: "
+      System.out.println("couldn't find entry '" + compressedEntry + "' in compressed file: "
           + filePath);
+      return null;
     }
 
     else if (compressedEntry == null && isGZip(filePath)) {
@@ -248,12 +262,13 @@ public class CompressedFile {
 
       ZipFile zipFile = new ZipFile(filePath);
       ZipArchiveEntry zipEntry = zipFile.getEntry(compressedEntry);
-      // System.out.println(zipEntry + "->" + fname);
+
       if (zipEntry != null) 
         return zipFile.getInputStream(zipEntry);
 
-      throw new Exception("couldn't find entry '" + compressedEntry + "' in compressed file: "
+      System.out.println("couldn't find entry '" + compressedEntry + "' in compressed file: "
           + filePath);
+      return null;
     }
     
     else if (compressedEntry != null && isSevenZ(filePath)) {
@@ -264,8 +279,9 @@ public class CompressedFile {
         if (entry.getName().equals(compressedEntry))
           return sevenZFile.getCurrentEntryInputStream();
       }
-      throw new Exception("couldn't find entry '" + compressedEntry + "' in compressed file: "
+      System.out.println("couldn't find entry '" + compressedEntry + "' in compressed file: "
           + filePath);
+      return null;
     }
     // return plain stream if no compressedEntry
     else if (compressedEntry == null) {
@@ -326,5 +342,43 @@ public class CompressedFile {
         return true;
     }
     return false;
+  }
+  
+  public static String getTargetFileWithPath( URI uri ){
+    String filepath = UriUtil.getFilePath(uri);
+    String entry = UriUtil.getZipEntryName(uri);
+    if (hasArchiveExtension(filepath)) {
+      return entry;
+    }
+    return filepath;
+  }
+
+  public static URI replaceTargetFileWithPath( URI uri, String location){
+    String filepath = UriUtil.getZipFilePath(uri);
+    String entry = UriUtil.getZipEntryName(uri);
+    if (hasArchiveExtension(filepath)) {
+      return UriUtil.createZipUri(filepath, location);
+    }
+    return UriUtil.createFileUri(location);
+  }
+  
+  public static URI replaceTargetFileName( URI uri, String filename ){
+    String oldpath = UriUtil.getPath(getTargetFileWithPath(uri));
+    return replaceTargetFileWithPath( uri, oldpath + filename );
+  }
+  
+  public static String createLayerName( URI uri ){
+    String filename = UriUtil.getFileName(uri); 
+    String layerName = UriUtil.getFileNameWithoutExtension(uri);
+    // layername for archive members is "filename.ext (archive.ext)"
+    if (CompressedFile.hasArchiveExtension(filename))
+      layerName = UriUtil.getZipEntryName(uri) + " ("
+          + filename + ")";
+    // remove format extension for compressed files, but hint compressed file in braces
+    else if (CompressedFile.hasCompressedFileExtension(filename)) {
+      layerName = layerName.substring(0, layerName.lastIndexOf('.')) + " ("
+          + filename + ")";
+    }
+    return layerName;
   }
 }
