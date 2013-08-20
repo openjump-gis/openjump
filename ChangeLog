@@ -1,5 +1,27 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-08-20 ede
+  * enhance image loading support
+    - add 2 new readers
+        Image (Commons) based on apache commons imaging
+        Image (ImageIO) based on jre imageio
+    - renamed old reader based on JAI to
+        Image (JAI)
+    - readers should be able to open archives now and find worldfiles
+      in there or in their basefolder
+    - readers gather their supported formats now internally, so the file
+      extension list has not to be hardcoded anymore. here's a list on my 
+
+IOGraphicImageFactory: [jpg, bmp, wbmp, jpeg, png, gif]
+JAIGraphicImageFactory: [bmp, fpx, jpg, pnm, wbmp, tif, jpeg, png, gif, tiff]
+CommonsImageFactory: [jpeg, tif, icns, ico, pbm, xpm, jb2, rgbe, jbig2, pcx, 
+psd, wbmp, tga, tiff, hdr, pam, xbm, jpg, bmp, pnm, png, ppm, dcx, pgm, gif]
+
+    - ImageIO and JAI supported formats may differ according to installed jre
+      or jai codec jars in classpath
+    - Commons supported formats are listed here
+        http://commons.apache.org/proper/commons-imaging/formatsupport.html
+
 2013-08-16 ede
   * update compressed files / archive open support
     - use latest apache commons compress lib
