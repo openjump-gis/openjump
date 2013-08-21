@@ -34,12 +34,16 @@ package com.vividsolutions.jump.workbench.imagery.geotiff;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.image.renderable.ParameterBlock;
+import java.io.InputStream;
+import java.net.URI;
 
 import javax.media.jai.JAI;
 import javax.media.jai.RenderedOp;
 
+import com.sun.media.jai.codec.SeekableStream;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jump.io.CompressedFile;
 
 public abstract class GeoReferencedRaster
 {
@@ -67,9 +71,17 @@ public abstract class GeoReferencedRaster
    * Basic fetchRasters retrieves a raster from a file. To get a raster from
    * somewhere else, override this method in subclasses.
    */
-  protected void fetchRaster() throws Exception
-  {
-    src = JAI.create("fileload", imageFileLocation);
+  protected void fetchRaster() throws Exception {
+    URI uri = new URI(imageFileLocation);
+    // JAI loading streams is slower than fileload, hence we check if we really
+    // try to open a compressed file first
+    if (CompressedFile.isArchive(uri) || CompressedFile.isCompressed(uri)) {
+      InputStream is = CompressedFile.openFile(uri);
+      SeekableStream iss = SeekableStream.wrapInputStream(is, true);
+      src = JAI.create("stream", iss);
+    } else {
+      src = JAI.create("fileload", uri.getPath());
+    }
   }
 
   protected void readRasterfile() throws Exception

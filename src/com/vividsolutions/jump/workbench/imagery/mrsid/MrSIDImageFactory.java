@@ -32,15 +32,20 @@ package com.vividsolutions.jump.workbench.imagery.mrsid;
  * www.vividsolutions.com
  */
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 import org.openjump.core.CheckOS;
+import org.openjump.util.UriUtil;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.JUMPException;
+import com.vividsolutions.jump.io.CompressedFile;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImage;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageFactory;
@@ -63,8 +68,13 @@ public class MrSIDImageFactory implements ReferencedImageFactory {
     return "MrSID";
   }
 
-  public ReferencedImage createImage(String location) throws JUMPException {
-    return new MrSIDReferencedImage(SIDInfo.readInfo(location), location);
+  public ReferencedImage createImage(String location) throws Exception {
+    URI uri = new URI(location);
+    if (CompressedFile.isArchive(uri) || CompressedFile.isCompressed(uri))
+      throw new JUMPException("Compressed files not supported for this format.");
+    
+    String filepath = new File( UriUtil.getFilePath(uri) ).getAbsolutePath();
+    return new MrSIDReferencedImage(SIDInfo.readInfo(filepath), filepath);
   }
 
   public String getDescription() {
@@ -97,7 +107,7 @@ public class MrSIDImageFactory implements ReferencedImageFactory {
       return false;
     }
 
-    context.getWorkbench().getFrame()
+    JUMPWorkbench.getInstance().getFrame()
         .log("found Mrsid binaries in path", this.getClass());
     return true;
   }

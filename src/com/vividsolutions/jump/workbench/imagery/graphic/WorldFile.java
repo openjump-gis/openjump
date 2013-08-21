@@ -32,6 +32,7 @@ package com.vividsolutions.jump.workbench.imagery.graphic;
  * www.vividsolutions.com
  */
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -141,39 +142,53 @@ public class WorldFile {
     return yUpperLeft;
   }
 
-  public static List<String> generateWorldFileExtensions(String img_ext) {
-    ArrayList<String> exts = new ArrayList();
-    exts.add(img_ext.substring(0, 1) + img_ext.substring(2) + "w");
+  public static List<String> generateWorldFileExtensions(String filename) {
+    ArrayList<String> exts = new ArrayList<String>();
+    String img_ext;
+    if ( CompressedFile.hasCompressedFileExtension(filename) ) 
+      img_ext = FileUtil.getExtension(UriUtil.removeExtension(filename));
+    else
+      img_ext = FileUtil.getExtension(filename);
+    if (img_ext.length()>=3)
+      exts.add(img_ext.substring(0, 1) + img_ext.substring(2) + "w");
     exts.add(img_ext + "w");
     exts.add("wld");
     return exts;
   }
 
   public static WorldFile create(String location) {
+    InputStream is = find(location);
+    if (is != null)
+      try {
+        return read(is);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    return new WorldFile();
+  }
+  
+  public static InputStream find(String location) {
     try {
       URI origuri = new URI(location);
       String fileName = CompressedFile.getTargetFileWithPath(origuri);
       fileName = UriUtil.getFileName(fileName);
-      for (String ext : generateWorldFileExtensions(FileUtil
-          .getExtension(fileName))) {
+      for (String ext : generateWorldFileExtensions(fileName)) {
         String wf_name = UriUtil.removeExtension(fileName) + "." + ext;
         URI wf_uri = CompressedFile.replaceTargetFileName(origuri, wf_name);
         InputStream is = null;
         try {
-          // System.out.println(origuri);
-          System.out.println(wf_uri);
-          is = CompressedFile.openFile(wf_uri);
-        } catch (Exception e) {
-          e.printStackTrace();
+          System.out.println("WF try open: "+wf_uri);
+          return is = CompressedFile.openFile(wf_uri);
+        } catch (FileNotFoundException e) {
+          // we gracefully ignore missing world files
         }
-        if (is != null)
-          return read(is);
       }
+      System.out.println("WF failed to find world file for: "+location);
     } catch (URISyntaxException e) {
       e.printStackTrace();
     } catch (IOException e) {
       e.printStackTrace();
     }
-    return new WorldFile();
+    return null;
   }
 }

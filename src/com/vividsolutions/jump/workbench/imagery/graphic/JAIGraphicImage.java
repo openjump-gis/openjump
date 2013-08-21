@@ -96,6 +96,7 @@ public class JAIGraphicImage  extends AbstractGraphicImage
   }
 
   protected void initImage() {
+    BufferedImage image = getImage();
     if (image != null)
       return;
     InputStream is = null;

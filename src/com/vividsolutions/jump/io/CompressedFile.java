@@ -42,20 +42,23 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
-import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import org.apache.commons.compress.archivers.tar.*;
-import org.apache.commons.compress.archivers.zip.*;
-import org.apache.commons.compress.archivers.sevenz.*;
-import org.apache.commons.compress.compressors.bzip2.*;
-import org.apache.commons.compress.compressors.xz.*;
-import org.apache.commons.compress.compressors.gzip.*;
+import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
+import org.apache.commons.compress.archivers.sevenz.SevenZFileGiveStream;
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipFile;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
 import org.openjump.util.UriUtil;
 
 import com.vividsolutions.jump.util.FileUtil;
@@ -185,7 +188,7 @@ public class CompressedFile {
     return openFile(new URI(uri_string));
   }
   
-  public static InputStream openFile(URI uri) throws Exception{
+  public static InputStream openFile(URI uri) throws IOException{
     return openFile( UriUtil.getZipFilePath(uri), UriUtil.getZipEntryName(uri) );
   }
 
@@ -211,8 +214,7 @@ public class CompressedFile {
    *          </p>
    */
   public static InputStream openFile(String filePath, String compressedEntry)
-      throws Exception {
-    String extension;
+      throws IOException {
 
     System.out.println(filePath + " extract " + compressedEntry);
 
@@ -235,9 +237,7 @@ public class CompressedFile {
           return tis;
       }
 
-      System.out.println("couldn't find entry '" + compressedEntry + "' in compressed file: "
-          + filePath);
-      return null;
+      throw createArchiveFNFE(filePath, compressedEntry);
     }
 
     else if (compressedEntry == null && isGZip(filePath)) {
@@ -266,9 +266,7 @@ public class CompressedFile {
       if (zipEntry != null) 
         return zipFile.getInputStream(zipEntry);
 
-      System.out.println("couldn't find entry '" + compressedEntry + "' in compressed file: "
-          + filePath);
-      return null;
+      throw createArchiveFNFE(filePath, compressedEntry);
     }
     
     else if (compressedEntry != null && isSevenZ(filePath)) {
@@ -279,9 +277,7 @@ public class CompressedFile {
         if (entry.getName().equals(compressedEntry))
           return sevenZFile.getCurrentEntryInputStream();
       }
-      System.out.println("couldn't find entry '" + compressedEntry + "' in compressed file: "
-          + filePath);
-      return null;
+      throw createArchiveFNFE(filePath, compressedEntry);
     }
     // return plain stream if no compressedEntry
     else if (compressedEntry == null) {
@@ -289,15 +285,25 @@ public class CompressedFile {
     }
 
     else {
-      throw new Exception("Couldn't determine compressed file type for file '"
+      throw new IOException("Couldn't determine compressed file type for file '"
           + filePath + "' supposedly containing '"+compressedEntry+"'.");
     }
   }
 
-  public static boolean isCompressed(String filePath) {
-    return isZip(filePath) || isTar(filePath) || isGZip(filePath) || isBZip(filePath);
-  }
+//  public static boolean isCompressed(String filePath) {
+//    return isZip(filePath) || isTar(filePath) || isGZip(filePath) || isBZip(filePath);
+//  }
 
+  public static boolean isCompressed(URI uri) {
+    String filepath = UriUtil.getFilePath(uri);
+    return hasCompressedFileExtension(filepath);
+  }
+  
+  public static boolean isArchive(URI uri) {
+    String filepath = UriUtil.getFilePath(uri);
+    return hasArchiveFileExtension(filepath);
+  }
+  
   public static boolean isZip(String filePath) {
     return filePath.matches(".*\\.(?i:zip)");
   }
@@ -336,7 +342,7 @@ public class CompressedFile {
         FileUtil.getExtension(new File(filename)).toLowerCase());
   }
   
-  public static boolean hasArchiveExtension(String filename) {
+  public static boolean hasArchiveFileExtension(String filename) {
     for (String ext : getArchiveExtensions()) {
       if (filename.toLowerCase().endsWith(ext))
         return true;
@@ -347,7 +353,7 @@ public class CompressedFile {
   public static String getTargetFileWithPath( URI uri ){
     String filepath = UriUtil.getFilePath(uri);
     String entry = UriUtil.getZipEntryName(uri);
-    if (hasArchiveExtension(filepath)) {
+    if (hasArchiveFileExtension(filepath)) {
       return entry;
     }
     return filepath;
@@ -356,7 +362,7 @@ public class CompressedFile {
   public static URI replaceTargetFileWithPath( URI uri, String location){
     String filepath = UriUtil.getZipFilePath(uri);
     String entry = UriUtil.getZipEntryName(uri);
-    if (hasArchiveExtension(filepath)) {
+    if (hasArchiveFileExtension(filepath)) {
       return UriUtil.createZipUri(filepath, location);
     }
     return UriUtil.createFileUri(location);
@@ -371,7 +377,7 @@ public class CompressedFile {
     String filename = UriUtil.getFileName(uri); 
     String layerName = UriUtil.getFileNameWithoutExtension(uri);
     // layername for archive members is "filename.ext (archive.ext)"
-    if (CompressedFile.hasArchiveExtension(filename))
+    if (CompressedFile.hasArchiveFileExtension(filename))
       layerName = UriUtil.getZipEntryName(uri) + " ("
           + filename + ")";
     // remove format extension for compressed files, but hint compressed file in braces
@@ -380,5 +386,10 @@ public class CompressedFile {
           + filename + ")";
     }
     return layerName;
+  }
+  
+  private static FileNotFoundException createArchiveFNFE( String archive, String entry ){
+    return new FileNotFoundException("Couldn't find entry '" + entry + "' in compressed file: "
+        + archive);
   }
 }

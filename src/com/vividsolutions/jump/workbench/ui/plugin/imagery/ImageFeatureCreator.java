@@ -168,30 +168,30 @@ public class ImageFeatureCreator {
     }
 
 
-    private Feature createFeature(
-        ReferencedImageFactory referencedImageFactory,
-        File file,
-        ImageryLayerDataset imageryLayerDataset ) {
-
-        Feature feature = new BasicFeature( ImageryLayerDataset.getSchema() );
-        feature.setAttribute( ImageryLayerDataset.ATTR_FILE, file.getPath() );
-        feature.setAttribute( ImageryLayerDataset.ATTR_FORMAT,
-                              getReferencedImageFactoryProper( referencedImageFactory, file ).getTypeName() );
-        feature.setAttribute( ImageryLayerDataset.ATTR_FACTORY,
-            getReferencedImageFactoryProper( referencedImageFactory, file ).getClass().getName() );
-        // Set Geometry to an empty Geometry, in case an exception occurs before
-        // the Geometry is actually set. [Jon Aquino 2005-04-12]
-        feature.setGeometry( new GeometryFactory().createPoint( ( Coordinate ) null ) );
-        // Set the Geometry. [Jon Aquino 2005-04-12]
-        try {
-            imageryLayerDataset.createImage( feature );			
-		
+    private Feature createFeature(ReferencedImageFactory referencedImageFactory,
+        File file, ImageryLayerDataset imageryLayerDataset) {
+  
+      Feature feature = new BasicFeature(ImageryLayerDataset.getSchema());
+      feature
+          .setAttribute(ImageryLayerDataset.ATTR_FILE, file.toURI().toString());
+      feature.setAttribute(ImageryLayerDataset.ATTR_FORMAT,
+          getReferencedImageFactoryProper(referencedImageFactory, file)
+              .getTypeName());
+      feature.setAttribute(ImageryLayerDataset.ATTR_FACTORY,
+          getReferencedImageFactoryProper(referencedImageFactory, file)
+              .getClass().getName());
+      // Set Geometry to an empty Geometry, in case an exception occurs before
+      // the Geometry is actually set. [Jon Aquino 2005-04-12]
+      feature.setGeometry(new GeometryFactory().createPoint((Coordinate) null));
+      // Set the Geometry. [Jon Aquino 2005-04-12]
+      try {
+        imageryLayerDataset.createImage(feature);
         // or set error message as feat attrib
-        } catch (Exception e) {
-			feature.setAttribute(ImageryLayerDataset.ATTR_ERROR,  
-					WorkbenchFrame.toMessage(e) + "\n\n" + StringUtil.stackTrace(e));
-	        e.printStackTrace();
-		}
+      } catch (Exception e) {
+        feature.setAttribute(ImageryLayerDataset.ATTR_ERROR,
+            WorkbenchFrame.toMessage(e) + "\n\n" + StringUtil.stackTrace(e));
+        e.printStackTrace();
+      }
 
         return feature;
     }

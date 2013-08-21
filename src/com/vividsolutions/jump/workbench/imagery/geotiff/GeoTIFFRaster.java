@@ -32,6 +32,7 @@ package com.vividsolutions.jump.workbench.imagery.geotiff;
  * www.vividsolutions.com
  */
 import java.awt.geom.AffineTransform;
+import java.io.InputStream;
 import java.util.List;
 
 import org.geotiff.image.jai.GeoTIFFDescriptor;
@@ -41,6 +42,7 @@ import org.libtiff.jai.codec.XTIFFField;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jump.util.FileUtil;
+import com.vividsolutions.jump.workbench.imagery.graphic.WorldFile;
 
 public class GeoTIFFRaster extends GeoReferencedRaster {
   private final String MSG_GENERAL = "This is not a valid GeoTIFF file.";
@@ -138,10 +140,10 @@ public class GeoTIFFRaster extends GeoReferencedRaster {
 
   private void parseWorldFile() throws Exception {
     // Get the name of the tiff worldfile.
-    String name = worldFileName();
-
+    //String name = worldFileName();
+    InputStream is = WorldFile.find(fileName);
     // Read the tags from the tiff worldfile.
-    List lines = FileUtil.getContents(name);
+    List lines = FileUtil.getContents(is);
     double[] tags = new double[6];
     for (int i = 0; i < 6; i++) {
       String line = (String) lines.get(i);

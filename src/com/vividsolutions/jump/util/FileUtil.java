@@ -40,6 +40,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -47,36 +48,46 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import com.vividsolutions.jump.io.CompressedFile;
+
 /**
  * File-related utility functions.
  */
 public class FileUtil {
-    /**
-     * Reads a text file.
-     * 
-     * @param textFileName
-     *                   the pathname of the file to open
-     * @return the lines of the text file
-     * @throws FileNotFoundException
-     *                    if the text file is not found
-     * @throws IOException
-     *                    if the file is not found or another I/O error occurs
-     */
-    public static List getContents(String textFileName)
-            throws FileNotFoundException, IOException {
-        List contents = new ArrayList();
-        FileReader fileReader = new FileReader(textFileName);
-        BufferedReader bufferedReader = new BufferedReader(fileReader);
-        String line = bufferedReader.readLine();
+//    /**
+//     * Reads a text file.
+//     * 
+//     * @param textFileName
+//     *                   the pathname of the file to open
+//     * @return the lines of the text file
+//     * @throws FileNotFoundException
+//     *                    if the text file is not found
+//     * @throws IOException
+//     *                    if the file is not found or another I/O error occurs
+//     */
+//    public static List getContents(InputStream is)
+//            throws FileNotFoundException, IOException {
+//        List contents = new ArrayList();
+//        FileReader fileReader = new FileReader(textFileName);
+//        BufferedReader bufferedReader = new BufferedReader (fileReader);
+//        String line = bufferedReader.readLine();
+//
+//        while (line != null) {
+//            contents.add(line);
+//            line = bufferedReader.readLine();
+//        }
+//
+//        return contents;
+//    }
 
-        while (line != null) {
-            contents.add(line);
-            line = bufferedReader.readLine();
-        }
-
-        return contents;
+    public static List getContents(String filename) throws IOException {
+      return getContents(new FileInputStream(filename));
     }
-
+    
+    public static List getContents(URI uri) throws IOException {
+      return getContents(CompressedFile.openFile(uri));
+    }
+      
     /**
      * Saves the String to a file with the given filename.
      * 

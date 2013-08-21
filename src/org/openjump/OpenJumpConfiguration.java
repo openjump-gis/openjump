@@ -631,17 +631,14 @@ public class OpenJumpConfiguration {
     // supersedes com.vividsolutions.jump.workbench.ui.plugin.imagery.InstallReferencedImageFactoriesPlugin
     // register layerloader with worldfile support and plain factories for imagelayermanager
     addImageFactory(workbenchContext, registry, new IOGraphicImageFactory(), null);
-    addImageFactory(workbenchContext, registry, new JAIGraphicImageFactory(),
+    addImageFactory(workbenchContext, registry, new JAIGraphicImageFactory(), null /*
       new String[] {
         "wld", "bpw", "jpw", "gfw"
-      });
+      }*/);
     addImageFactory(workbenchContext, registry, new CommonsImageFactory(), null);
     addImageFactory(workbenchContext, registry, new ECWImageFactory(), null);
     addImageFactory(workbenchContext, registry, new JPEG2000ImageFactory(), null);
-    addImageFactory(workbenchContext, registry, new GeoTIFFImageFactory(),
-      new String[] {
-        "tfw"
-      });
+    addImageFactory(workbenchContext, registry, new GeoTIFFImageFactory(), null);
     addImageFactory(workbenchContext, registry, new MrSIDImageFactory(), null);
 
     //

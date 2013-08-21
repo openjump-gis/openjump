@@ -31,15 +31,19 @@ package com.vividsolutions.jump.workbench.imagery.ecw;
  * (250)385-6040
  * www.vividsolutions.com
  */
+import java.io.File;
+import java.net.URI;
 import java.nio.charset.Charset;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.JUMPException;
+import com.vividsolutions.jump.io.CompressedFile;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImage;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageFactory;
 
 import org.apache.log4j.Logger;
+import org.openjump.util.UriUtil;
 
 /**
  */
@@ -60,9 +64,16 @@ public class ECWImageFactory implements ReferencedImageFactory {
     }
 
     public ReferencedImage createImage(String location) throws Exception {
+        //if(true)throw new Exception("foobar");
+      
+        URI uri = new URI(location);
+        if (CompressedFile.isArchive(uri) || CompressedFile.isCompressed(uri))
+          throw new JUMPException("Compressed files not supported for this format.");
+        
+        String filepath = new File( UriUtil.getFilePath(uri) ).getAbsolutePath();
         // prevent a weird bug of the ecw libs not being able to handle accented
         // and extended chars in general
-        if (!Charset.forName("ISO-8859-1").newEncoder().canEncode(location)) {
+        if (!Charset.forName("ISO-8859-1").newEncoder().canEncode(filepath)) {
             String hint = location.replaceAll("[^\\u0000-\\u00FF]", "?");
             throw new ECWLoadException(
                     I18N.getMessage(
@@ -70,7 +81,7 @@ public class ECWImageFactory implements ReferencedImageFactory {
                             new Object[] { hint }));
         }
 
-        return new ECWImage(location);
+        return new ECWImage(filepath);
     }
 
     public String getDescription() {
