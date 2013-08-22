@@ -157,17 +157,16 @@ public class WorldFile {
   }
 
   public static WorldFile create(String location) {
-    InputStream is = find(location);
-    if (is != null)
-      try {
-        return read(is);
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
+    try {
+      InputStream is = find(location);
+      return read(is);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
     return new WorldFile();
   }
   
-  public static InputStream find(String location) {
+  public static InputStream find(String location) throws FileNotFoundException {
     try {
       URI origuri = new URI(location);
       String fileName = CompressedFile.getTargetFileWithPath(origuri);
@@ -183,12 +182,11 @@ public class WorldFile {
           // we gracefully ignore missing world files
         }
       }
-      System.out.println("WF failed to find world file for: "+location);
     } catch (URISyntaxException e) {
       e.printStackTrace();
     } catch (IOException e) {
       e.printStackTrace();
     }
-    return null;
+    throw new FileNotFoundException("WF failed to find world file for: "+location);
   }
 }

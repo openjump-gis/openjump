@@ -35,6 +35,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.JUMPException;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImage;
+import com.vividsolutions.jump.workbench.imagery.ReferencedImageException;
 import com.vividsolutions.jump.workbench.ui.Viewport;
 
 /**
@@ -73,13 +74,13 @@ public class GeoTIFFImage
     }
   }
 
-  public void paint(Feature f, java.awt.Graphics2D g, Viewport viewport) throws JUMPException
+  public void paint(Feature f, java.awt.Graphics2D g, Viewport viewport) throws ReferencedImageException
   {
     try {
       rasterPainter.paint(g, viewport);
     }
     catch (Exception ex) {
-        throw new JUMPException(ex.getMessage());
+        throw new ReferencedImageException(ex);
     }
   }
 

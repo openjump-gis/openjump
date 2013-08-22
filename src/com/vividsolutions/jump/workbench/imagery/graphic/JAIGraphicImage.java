@@ -67,13 +67,17 @@ package com.vividsolutions.jump.workbench.imagery.graphic;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.media.jai.JAI;
+import javax.media.jai.RenderedOp;
 
 import com.sun.media.jai.codec.ImageCodec;
 import com.sun.media.jai.codec.SeekableStream;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.io.CompressedFile;
+import com.vividsolutions.jump.workbench.imagery.ReferencedImageException;
 
 /**
  * An image whose source is a bitmap
@@ -95,38 +99,43 @@ public class JAIGraphicImage  extends AbstractGraphicImage
     super(location, wf);
   }
 
-  protected void initImage() {
+  protected void initImage() throws ReferencedImageException {
     BufferedImage image = getImage();
     if (image != null)
       return;
-    InputStream is = null;
-    SeekableStream iss = null;
+    InputStream is = null, is2 = null;
     try {
-      is = CompressedFile.openFile(getUri());
-      iss = SeekableStream.wrapInputStream(is, true);
-      image = JAI.create("stream", iss).getAsBufferedImage();
-      System.out.println("JAIGI: init "+getUri());
-      setImage(image);
+      URI uri = new URI(getUri());
+      // JAI loading streams is slower than fileload, hence we check if we really
+      // try to open a compressed file first
+      RenderedOp src;
+      if (CompressedFile.isArchive(uri) || CompressedFile.isCompressed(uri)) {
+        is = CompressedFile.openFile(uri);
+        if (!(is instanceof SeekableStream))
+          is = SeekableStream.wrapInputStream(is, true);
+        src = JAI.create("stream", is);
+      } else {
+        src = JAI.create("fileload", uri.getPath());
+      }
+      setImage(src.getAsBufferedImage());
       
-      InputStream is2 = CompressedFile.openFile(getUri());
-      SeekableStream iss2 = SeekableStream.wrapInputStream(is2, true);
-      String[] decs = ImageCodec.getDecoderNames(iss2);
+      is2 = CompressedFile.openFile(getUri());
+      is2 = SeekableStream.wrapInputStream(is2, true);
+      String[] decs = ImageCodec.getDecoderNames((SeekableStream)is2);
       // we assume JAI uses the first listed decoder
       if (decs.length > 0)
         setType(decs[0]);
+      // close second stream early
+      close(is2);
       
-      try {
-        iss.close();
-        is.close();
-      } catch (IOException e) {
-        // ignore
-        e.printStackTrace();
-      }
-      
-    } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-      return;
+    } catch (URISyntaxException e) {
+      throw new ReferencedImageException("Could not open image file "+getUri(), e);
+    } catch (IOException e) {
+      throw new ReferencedImageException("Could not open image file "+getUri(), e);
+    } finally {
+      // close streams on any failure
+      close(is);
+      close(is2);
     }
   }
 }

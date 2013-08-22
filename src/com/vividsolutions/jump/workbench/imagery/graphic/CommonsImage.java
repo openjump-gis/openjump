@@ -75,6 +75,7 @@ import org.openjump.util.UriUtil;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.io.CompressedFile;
+import com.vividsolutions.jump.workbench.imagery.ReferencedImageException;
 
 /**
  * An image whose source is a bitmap
@@ -89,7 +90,7 @@ public class CommonsImage extends AbstractGraphicImage
     super(location, wf);
   }
 
-  protected void initImage() {
+  protected void initImage() throws ReferencedImageException {
     BufferedImage image = getImage();
     if (image != null)
       return;
@@ -100,23 +101,15 @@ public class CommonsImage extends AbstractGraphicImage
       ImageInfo info = Imaging.getImageInfo(is, UriUtil
           .getFileName(CompressedFile.getTargetFileWithPath(new URI(uri))));
       type = info.getFormatName();
-      is.close();
+      close(is);
       is = CompressedFile.openFile(uri);
       image = Imaging.getBufferedImage(is);
-      is.close();
+      close(is);
       setImage(image);
     } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-      return;
+      throw new ReferencedImageException(e);
     } finally {
-      if (is != null)
-        try {
-          is.close();
-        } catch (IOException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
-        }
+      close(is);
     }
   }
 

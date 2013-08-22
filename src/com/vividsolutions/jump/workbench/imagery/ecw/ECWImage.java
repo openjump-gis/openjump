@@ -42,6 +42,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.JUMPException;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImage;
+import com.vividsolutions.jump.workbench.imagery.ReferencedImageException;
 import com.vividsolutions.jump.workbench.ui.Viewport;
 
 import java.awt.Graphics2D;
@@ -99,7 +100,7 @@ public class ECWImage
       Feature    f,
       Graphics2D g, 
       Viewport   viewport        
-  ) throws JUMPException
+  ) throws ReferencedImageException
   {
       Envelope viewportEnv = viewport.getEnvelopeInModelCoordinates();
 
@@ -220,7 +221,7 @@ public class ECWImage
       }
       catch (Exception e) {
           validSetView = false;
-          throw new JUMPException(e.getMessage());
+          throw new ReferencedImageException(e);
       }
   }
 

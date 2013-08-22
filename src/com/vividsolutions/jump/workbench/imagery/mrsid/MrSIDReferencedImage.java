@@ -85,6 +85,7 @@ import com.vividsolutions.jump.JUMPException;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImage;
+import com.vividsolutions.jump.workbench.imagery.ReferencedImageException;
 import com.vividsolutions.jump.workbench.ui.Viewport;
 
 public class MrSIDReferencedImage extends WindowAdapter implements
@@ -129,8 +130,7 @@ public class MrSIDReferencedImage extends WindowAdapter implements
     return new Envelope(xm, xM, ym, yM);
   }
 
-  public void paint(Feature f, Graphics2D g, Viewport viewport)
-      throws JUMPException {
+  public void paint(Feature f, Graphics2D g, Viewport viewport) throws ReferencedImageException {
 
     // view and panel refer to the workbench portion with which the user is
     // interacting
@@ -351,7 +351,7 @@ public class MrSIDReferencedImage extends WindowAdapter implements
 
         } catch (Throwable t) {
           t.printStackTrace();
-          throw new JUMPException(t);
+          throw new ReferencedImageException(t);
         }
       }
     }

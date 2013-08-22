@@ -48,7 +48,7 @@ public class JAIGraphicImageFactory implements ReferencedImageFactory {
     return "Image (JAI)";
   }
 
-  public ReferencedImage createImage(String location) {
+  public ReferencedImage createImage(String location) throws Exception {
     return new JAIGraphicImage(location, null);
   }
 

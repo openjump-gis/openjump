@@ -40,9 +40,9 @@ import com.vividsolutions.jump.feature.Feature;
  * An image which is referenced to a specific coordinate envelope
  */
 public interface ReferencedImage {
-  Envelope getEnvelope();
+  Envelope getEnvelope() throws ReferencedImageException;
   
-  void paint(Feature f, java.awt.Graphics2D g, Viewport viewport) throws JUMPException;
+  void paint(Feature f, java.awt.Graphics2D g, Viewport viewport) throws ReferencedImageException;
   
   String getType();
 }

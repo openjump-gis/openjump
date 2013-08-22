@@ -32,6 +32,7 @@ package com.vividsolutions.jump.workbench.imagery.geotiff;
  * www.vividsolutions.com
  */
 import java.awt.geom.AffineTransform;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -92,9 +93,10 @@ public class GeoTIFFRaster extends GeoReferencedRaster {
       tags[5] = fieldModelGeoTransform.getAsDouble(7); // y-coordinate of the
                                                        // center of the upper
                                                        // left pixel
-      setCoorRasterTiff_tiepointLT(new Coordinate(0, 0));
-      setCoorModel_tiepointLT(new Coordinate(0, 0));
-      setAffineTransformation(new AffineTransform(tags));
+//      setCoorRasterTiff_tiepointLT(new Coordinate(-0.5, -0,5));
+//      setCoorModel_tiepointLT(new Coordinate(0, 0));
+//      setAffineTransformation(new AffineTransform(tags));
+      setEnvelope(tags);
     } else {
 
       // Get the number of modeltiepoints
@@ -138,7 +140,7 @@ public class GeoTIFFRaster extends GeoReferencedRaster {
     return fileName.substring(0, posDot) + ".tfw";
   }
 
-  private void parseWorldFile() throws Exception {
+  private void parseWorldFile() throws IOException {
     // Get the name of the tiff worldfile.
     //String name = worldFileName();
     InputStream is = WorldFile.find(fileName);
@@ -149,35 +151,46 @@ public class GeoTIFFRaster extends GeoReferencedRaster {
       String line = (String) lines.get(i);
       tags[i] = Double.parseDouble(line);
     }
-    setCoorRasterTiff_tiepointLT(new Coordinate(0, 0));
+//    setCoorRasterTiff_tiepointLT(new Coordinate(0, 0));
+//    setCoorModel_tiepointLT(new Coordinate(0, 0));
+//    setAffineTransformation(new AffineTransform(tags));
+    setEnvelope(tags);
+  }
+  
+  private void setEnvelope(double[] tags) {
+    setCoorRasterTiff_tiepointLT(new Coordinate(-0.5, -0.5));
     setCoorModel_tiepointLT(new Coordinate(0, 0));
     setAffineTransformation(new AffineTransform(tags));
   }
-
+  
   protected void readRasterfile() throws Exception {
-    // ImageCodec originalCodec = ImageCodec.getCodec("tiff");
     super.readRasterfile();
 
-    // Get access to the tags and geokeys.
-    // First, get the TIFF directory
-    GeoTIFFDirectory dir = (GeoTIFFDirectory) src.getProperty("tiff.directory");
-    if (dir == null) {
-      throw new Exception("This is not a (geo)tiff file.");
-    }
-
     try {
-      // Try to parse any embedded geotiff tags.
-      parseGeoTIFFDirectory(dir);
-    } catch (Exception E) {
-      // Embedded geotiff tags have not been found. Try
-      // to use a geotiff world file.
-      try {
-        parseWorldFile();
-      } catch (Exception e) {
-        throw new Exception("Neither geotiff tags nor valid worldfile found.\n"
-            + MSG_GENERAL);
+      // Get access to the tags and geokeys.
+      // First, try to get the TIFF directory
+      Object dir = src.getProperty("tiff.directory");
+      if (dir instanceof GeoTIFFDirectory) {
+        parseGeoTIFFDirectory((GeoTIFFDirectory)dir);
+        // still with us? must have succeeded
+        return;
       }
+    } catch (Exception e) {
+      e.printStackTrace();
     }
+     
+    // Embedded geotiff tags have not been found.
+    // Try to find a world file.
+    try {
+      parseWorldFile();
+      // still with us? must have succeeded
+      return;
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    
+    throw new Exception("Neither geotiff tags nor valid worldfile found for file '"+fileName+"'.\n"
+        + MSG_GENERAL);
   }
 
 }

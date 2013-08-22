@@ -31,17 +31,15 @@ package com.vividsolutions.jump.workbench.imagery.geotiff;
  * (250)385-6040
  * www.vividsolutions.com
  */
-import com.vividsolutions.jump.JUMPException;
-import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImage;
-import com.vividsolutions.jump.workbench.imagery.ReferencedImageFactory;
+import com.vividsolutions.jump.workbench.imagery.graphic.JAIGraphicImageFactory;
 
 /**
  * A factory for GeoTIFF images.
  */
-public class GeoTIFFImageFactory implements ReferencedImageFactory {
+public class GeoTIFFImageFactory extends JAIGraphicImageFactory {
 
-    public static final String TYPE_NAME = "GeoTIFF";
+    public static final String TYPE_NAME = "GeoImage";
 
     public GeoTIFFImageFactory() {
     }
@@ -50,31 +48,12 @@ public class GeoTIFFImageFactory implements ReferencedImageFactory {
         return TYPE_NAME;
     }
 
-    public ReferencedImage createImage(String location) throws JUMPException {
+    public ReferencedImage createImage(String location) throws Exception {
         return new GeoTIFFImage(location);
     }
 
     public String getDescription() {
-        return "Geographically Registered Tagged Image File Format";
+        return "GeoImage (JAI)";
     }
 
-    public String[] getExtensions() {
-        return new String[] { "tif", "tiff" };
-    }
-
-    public boolean isEditableImage(String location) {
-        return false;
-    }
-
-	public boolean isAvailable(WorkbenchContext context) {
-		Class c = null;
-		try{
-			c = this.getClass().getClassLoader().loadClass("javax.media.jai.JAI");
-		}catch(ClassNotFoundException e){
-			// eat it
-			return false;
-		}
-		
-		return c != null;
-	}
 }

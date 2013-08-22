@@ -77,8 +77,9 @@ public abstract class GeoReferencedRaster
     // try to open a compressed file first
     if (CompressedFile.isArchive(uri) || CompressedFile.isCompressed(uri)) {
       InputStream is = CompressedFile.openFile(uri);
-      SeekableStream iss = SeekableStream.wrapInputStream(is, true);
-      src = JAI.create("stream", iss);
+      if (!(is instanceof SeekableStream))
+        is = SeekableStream.wrapInputStream(is, true);
+      src = JAI.create("stream", is);
     } else {
       src = JAI.create("fileload", uri.getPath());
     }

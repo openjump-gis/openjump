@@ -184,7 +184,7 @@ public class CompressedFile {
   // + compressedFile + "- should end in .zip or .gz");
   // }
   
-  public static InputStream openFile(String uri_string) throws URISyntaxException, Exception {
+  public static InputStream openFile(String uri_string) throws URISyntaxException, IOException {
     return openFile(new URI(uri_string));
   }
   

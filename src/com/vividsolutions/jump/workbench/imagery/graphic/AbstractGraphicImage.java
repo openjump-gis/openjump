@@ -68,10 +68,13 @@ import java.awt.AlphaComposite;
 import java.awt.Composite;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImage;
+import com.vividsolutions.jump.workbench.imagery.ReferencedImageException;
 import com.vividsolutions.jump.workbench.ui.Viewport;
 
 /**
@@ -99,13 +102,13 @@ public abstract class AbstractGraphicImage implements ReferencedImage
 
   }
 
-  public Envelope getEnvelope() {
+  public Envelope getEnvelope() throws ReferencedImageException {
     if (env == null)
       env = computeEnvelope();
     return env;
   }
 
-  private Envelope computeEnvelope() {
+  private Envelope computeEnvelope() throws ReferencedImageException {
 
     double xm, xM, ym, yM;
 
@@ -120,7 +123,7 @@ public abstract class AbstractGraphicImage implements ReferencedImage
     return new Envelope(xm, xM, ym, yM);
   }
 
-  public void paint(Feature f, java.awt.Graphics2D g, Viewport viewport) {
+  public void paint(Feature f, java.awt.Graphics2D g, Viewport viewport) throws ReferencedImageException {
 
     initImage();
 
@@ -279,5 +282,12 @@ public abstract class AbstractGraphicImage implements ReferencedImage
     this.image = image;
   }
 
-  protected abstract void initImage();
+  protected abstract void initImage() throws ReferencedImageException;
+  
+  protected void close(InputStream is){
+    try {
+      if (is instanceof InputStream)
+        is.close();
+    } catch (IOException e) {}
+  }
 }
