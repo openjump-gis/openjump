@@ -173,11 +173,9 @@ public abstract class GeoReferencedRaster
 
   void setEnvelope()
   {
-//    try
-//    {
       Coordinate coorRaster_imageLB = new Coordinate(
-          coorRasterTiff_tiepointLT.x, src.getHeight() - 1, 0);
-      Coordinate coorRaster_imageRT = new Coordinate(src.getWidth() - 1, 0, 0);
+          coorRasterTiff_tiepointLT.x, src.getHeight(), 0);
+      Coordinate coorRaster_imageRT = new Coordinate(src.getWidth(), 0, 0);
       Coordinate coorModel_imageLB = rasterToModelSpace(coorRaster_imageLB);
       Coordinate coorModel_imageRT = rasterToModelSpace(coorRaster_imageRT);
 
