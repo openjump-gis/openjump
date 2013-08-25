@@ -106,11 +106,12 @@ public class PostGISQueryUtil {
     
     /**
      * Returns the CREATE TABLE statement corresponding to this feature schema.
-     * The statement does not include geometry column.
+     * The statement includes column names and data types, but neither geometry
+     * column nor primary key.
      */
     public static String getCreateTableStatement(FeatureSchema fSchema, String dbSchema, String dbTable) {
         return "CREATE TABLE " + compose(dbSchema, dbTable) + 
-               " (" + createColumnList(fSchema, true, false) + ");";
+               " (" + createColumnList(fSchema, true, false, false) + ");";
     }
     
     
@@ -127,12 +128,15 @@ public class PostGISQueryUtil {
      * @param includeGeometry if true, the geometry attribute is included
      */
     public static String createColumnList(FeatureSchema schema, 
-                          boolean includeSQLDataType, boolean includeGeometry) {
+                          boolean includeSQLDataType,
+                          boolean includeGeometry,
+                          boolean includeExternalPK) {
         StringBuilder sb = new StringBuilder();
         int count = 0;
         for (int i = 0 ; i < schema.getAttributeCount() ; i++) {
             AttributeType type = schema.getAttributeType(i);
             if (type == AttributeType.GEOMETRY && !includeGeometry) continue;
+            if (!includeExternalPK && schema.getExternalPrimaryKeyIndex() == i) continue;
             String name = schema.getAttributeName(i);
             if (0 < count++) sb.append(", ");
             sb.append("\"").append(name).append("\"");
@@ -141,18 +145,18 @@ public class PostGISQueryUtil {
         return sb.toString();
     }
 
-    public static String createColumnList(FeatureSchema schema, String... exclude) {
-        StringBuilder sb = new StringBuilder();
-        List<String> excludeList = Arrays.asList(exclude);
-        int count = 0;
-        for (int i = 0 ; i < schema.getAttributeCount() ; i++) {
-            String name = schema.getAttributeName(i);
-            if (excludeList.contains(name)) continue;
-            if (0 < count++) sb.append(", ");
-            sb.append("\"").append(name).append("\"");
-        }
-        return sb.toString();
-    }
+    //public static String createColumnList(FeatureSchema schema, String... exclude) {
+    //    StringBuilder sb = new StringBuilder();
+    //    List<String> excludeList = Arrays.asList(exclude);
+    //    int count = 0;
+    //    for (int i = 0 ; i < schema.getAttributeCount() ; i++) {
+    //        String name = schema.getAttributeName(i);
+    //        if (excludeList.contains(name)) continue;
+    //        if (0 < count++) sb.append(", ");
+    //        sb.append("\"").append(name).append("\"");
+    //    }
+    //    return sb.toString();
+    //}
 
     public static String escapeApostrophes(String value) {
         return value.replaceAll("'", "''");

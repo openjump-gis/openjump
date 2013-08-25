@@ -366,7 +366,7 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel implements Actio
 			resetPKChooser();
             primaryKeyComboBox.setEnabled(false);
             //createPrimaryKeyCheckBox.setEnabled(!hasPrimaryKey());
-            createPrimaryKeyCheckBox.setEnabled(false);
+            createPrimaryKeyCheckBox.setEnabled(true);
 			help.setText(CREATE_HELP_STRING);
 		}
 		if(action.equals(SaveToPostGISDataSource.SAVE_METHOD_REPLACE)) {

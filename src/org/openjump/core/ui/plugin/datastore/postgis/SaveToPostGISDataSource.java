@@ -190,6 +190,10 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
                         truncateTable(conn, quotedSchemaName, quotedTableName);
                         insertInTable(conn, featureCollection, quotedSchemaName, quotedTableName, primary_key, srid>0, dim);
                         conn.commit();
+                        conn.setAutoCommit(true);
+                        if (featureSchema.getExternalPrimaryKeyIndex() > -1) {
+                            reloadDataFromDataStore(this, connectionDescriptor, quotedSchemaName, quotedTableName, DEFAULT_PK_NAME, monitor);
+                        }
                     } catch(Exception e) {
                         throw e;
                     }
@@ -201,9 +205,12 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
                         if (connUtil.compatibleSchemaSubset(quotedSchemaName, quotedTableName, featureSchema).length < featureSchema.getAttributeCount()) {
                             if (!confirmWriteDespiteDifferentSchemas()) return;
                         }
-                        insertInTable(conn, featureCollection, 
-                            quotedSchemaName, quotedTableName, primary_key, srid>0, dim);
+                        insertInTable(conn, featureCollection, quotedSchemaName, quotedTableName, primary_key, srid>0, dim);
                         conn.commit();
+                        conn.setAutoCommit(true);
+                        if (featureSchema.getExternalPrimaryKeyIndex() > -1) {
+                            reloadDataFromDataStore(this, connectionDescriptor, quotedSchemaName, quotedTableName, DEFAULT_PK_NAME, monitor);
+                        }
                     } catch(Exception e) {
                         throw e;
                     }
@@ -218,6 +225,10 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
                         }
                         insertUpdateTable(conn, featureCollection, quotedSchemaName, quotedTableName, primary_key, srid>0, dim);
                         conn.commit();
+                        conn.setAutoCommit(true);
+                        if (featureSchema.getExternalPrimaryKeyIndex() > -1) {
+                            reloadDataFromDataStore(this, connectionDescriptor, quotedSchemaName, quotedTableName, DEFAULT_PK_NAME, monitor);
+                        }
                     } catch(SQLException e) {
                         throw e;
                     }
@@ -281,7 +292,7 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
     private void deleteTableQuery(java.sql.Connection connection, 
                           String dbSchema, String dbTable) throws SQLException {
         try {
-            // Try to delete table AND corresponding rows in geometry_columns table
+            // Try to delete dbTable AND the corresponding rows in geometry_columns table
             if (dbSchema == null) {
                 connection.createStatement().execute("SELECT DropGeometryTable( '" + 
                     unquote(dbTable) + "' );");
@@ -337,26 +348,29 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
      * Add an automatically named primary key constraint to the table.
      */
     private void addDBPrimaryKey(java.sql.Connection conn, String dbSchema,
-                               String dbTable, String key) throws SQLException {
+                               String dbTable, String primaryKey) throws SQLException {
         String tableName = dbSchema == null ? dbTable : dbSchema + "." + dbTable;
         String sql_test_seq = "SELECT * FROM information_schema.sequences\n" +
                 "    WHERE sequence_schema = 'public' AND sequence_name = 'openjump_dbid_sequence';";
         String sql_create_seq = "CREATE SEQUENCE openjump_dbid_sequence;";
         String sql_create_dbid = "ALTER TABLE " + tableName + " ADD COLUMN \"" +
-                key + "\" BIGINT DEFAULT nextval('openjump_dbid_sequence') PRIMARY KEY;";
+                primaryKey + "\" BIGINT DEFAULT nextval('openjump_dbid_sequence') PRIMARY KEY;";
         boolean sequence_already_exists;
+        // check if openjump_dbid_sequence already exists
         try {
             sequence_already_exists = conn.createStatement().executeQuery(sql_test_seq).next();
         } catch (SQLException sqle) {
             throw new SQLException("Error executing query: " + sql_test_seq, sqle);
         }
         if (!sequence_already_exists) {
+            // create the sequence
             try {
                 conn.createStatement().execute(sql_create_seq);
             } catch (SQLException sqle) {
                 throw new SQLException(sql_create_seq, sqle);
             }
         }
+        // add the column based on openjump_dbid_sequence
         try {
             conn.createStatement().execute(sql_create_dbid);
         } catch (SQLException sqle) {
@@ -407,10 +421,8 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
         // WARNING : OBJECT is not necessarilly of type Long
         else if (fc.getFeatureSchema().getAttributeType(primaryKey) == AttributeType.OBJECT) {
             if (fc.size()>0) {
-                Iterator it = fc.getFeatures().iterator();
-                while (it.hasNext()) {
-                    Feature f = (Feature)it.next();
-                    Object o = f.getAttribute(primaryKey);
+                for (Object f : fc.getFeatures()) {
+                    Object o = ((Feature)f).getAttribute(primaryKey);
                     if (o == null) continue;
                     if (o instanceof Integer || o instanceof Long || o instanceof BigInteger) {
                         numeric = true;
@@ -443,9 +455,10 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
         FeatureSchema schema = feature.getSchema();
         StringBuilder sb = new StringBuilder("INSERT INTO " + tableName + "(");
         //sb.append(PostGISQueryUtil.createColumnList(schema, false, true)).append(") VALUES(");
-        sb.append(PostGISQueryUtil.createColumnList(schema, primaryKey)).append(") VALUES(");
+        sb.append(PostGISQueryUtil.createColumnList(schema, false, true, false)).append(") VALUES(");
         for (int i = 0 ; i < schema.getAttributeCount() ; i++) {
-            if (schema.getAttributeName(i).equals(primaryKey)) continue;
+            //if (schema.getAttributeName(i).equals(primaryKey)) continue;
+            if (schema.getExternalPrimaryKeyIndex() == i) continue;
             sb.append(i==0?"?":",?");
         }
         sb.append(")");
@@ -461,9 +474,11 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
         String sFid = fid instanceof String ? "'" + fid + "'" : ""+fid;
         StringBuilder sb = new StringBuilder("UPDATE " + tableName + " SET (");
         //sb.append(PostGISQueryUtil.createColumnList(schema, false, true)).append(") = (");
-        sb.append(PostGISQueryUtil.createColumnList(schema, primaryKey)).append(") = (");
+        //sb.append(PostGISQueryUtil.createColumnList(schema, primaryKey)).append(") = (");
+        sb.append(PostGISQueryUtil.createColumnList(schema, false, true, false)).append(") = (");
         for (int i = 0 ; i < schema.getAttributeCount() ; i++) {
-            if (schema.getAttributeName(i).equals(primaryKey)) continue;
+            //if (schema.getAttributeName(i).equals(primaryKey)) continue;
+            if (schema.getExternalPrimaryKeyIndex() == i) continue;
             sb.append(i==0?"?":",?");
         }
         sb.append(") WHERE \"").append(primaryKey).append("\" = ").append(sFid).append(";");
@@ -474,25 +489,35 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
     private PreparedStatement setAttributeValues(PreparedStatement pstmt, 
                 Feature feature, String primaryKey, boolean hasSrid, int dim) throws SQLException {
         FeatureSchema schema = feature.getSchema();
+        //System.out.println("Primary key : " + primaryKey);
+        //System.out.println(schema);
+        int shift = 1;
         for (int i = 0 ; i < schema.getAttributeCount() ; i++) {
-            if (schema.getAttributeName(i).equals(primaryKey)) continue;
+            //if (schema.getAttributeName(i).equals(primaryKey) && schema.getExternalPrimaryKeyIndex() == i) {
+            if (schema.getExternalPrimaryKeyIndex() == i) {
+                shift--;
+                continue;
+                //pstmt.setObject(i+shift, null);
+            }
             AttributeType type = schema.getAttributeType(i);
-            if (feature.getAttribute(i) == null)     pstmt.setObject(i+1, null);
-            else if (type == AttributeType.STRING)   pstmt.setString(i+1, feature.getString(i));
-            else if (type == AttributeType.GEOMETRY) pstmt.setBytes(i+1, PostGISQueryUtil.getByteArrayFromGeometry((Geometry)feature.getAttribute(i), hasSrid, dim));
-            else if (type == AttributeType.INTEGER)  pstmt.setInt(i+1, feature.getInteger(i));
-            else if (type == AttributeType.DOUBLE)   pstmt.setDouble(i+1, feature.getDouble(i));
-            else if (type == AttributeType.DATE)     pstmt.setTimestamp(i+1, new Timestamp(((Date)feature.getAttribute(i)).getTime()));
-            else if (type == AttributeType.OBJECT)   pstmt.setObject(i+1, feature.getAttribute(i));
+            if (feature.getAttribute(i) == null)     pstmt.setObject(i+shift, null);
+            else if (type == AttributeType.STRING)   pstmt.setString(i+shift, feature.getString(i));
+            else if (type == AttributeType.GEOMETRY) pstmt.setBytes(i+shift, PostGISQueryUtil.getByteArrayFromGeometry((Geometry)feature.getAttribute(i), hasSrid, dim));
+            else if (type == AttributeType.INTEGER)  pstmt.setInt(i+shift, feature.getInteger(i));
+            else if (type == AttributeType.DOUBLE)   pstmt.setDouble(i+shift, feature.getDouble(i));
+            else if (type == AttributeType.DATE)     pstmt.setTimestamp(i+shift, new Timestamp(((Date)feature.getAttribute(i)).getTime()));
+            else if (type == AttributeType.OBJECT)   pstmt.setObject(i+shift, feature.getAttribute(i));
             else throw new IllegalArgumentException("" + type + " is an unknown AttributeType !");
         }
         return pstmt;
     }
     
     private void reloadDataFromDataStore(Connection conn, ConnectionDescriptor connectionDescriptor,
-                                         String quotedSchemaName, String quotedTableName, String dbid, TaskMonitor monitor) throws Exception {
+                                         String quotedSchemaName, String quotedTableName, String dbid,
+                                         TaskMonitor monitor) throws Exception {
+        String tableKey = quotedTableName == null ? quotedTableName : quotedSchemaName + "." + quotedTableName;
         setProperties(CollectionUtil.createMap(new Object[]{
-                TABLE_KEY, quotedTableName,
+                TABLE_KEY, tableKey,
                 PRIMARY_KEY_KEY, dbid,
                 SQL_QUERY_KEY, "SELECT * FROM " + quotedTableName,
                 CONNECTION_DESCRIPTOR_KEY, connectionDescriptor,
