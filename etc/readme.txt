@@ -32,6 +32,12 @@ as (Component name - License name - License file in "licenses/" folder or link)
    Fugue by Yusuke Kamiyamane http://p.yusukekamiyamane.com - CC BY 3.0
      - http://creativecommons.org/licenses/by/3.0/
    OJ icon v3 and others by Edgar Soldin http://soldin.de - GPL2 - gpl-2.txt
+ ImageIO Ext - LGPL3 - lgpl-3.0.txt
+   except the following dependencies/components:
+   commons-codec, commons-io, commons-lang, commons-logging 
+   - Apache License Version 2.0 - apache_license-2.0.txt
+   imageio-ext-streams - partly LGPL2 or 3 - imageio-ext-streams-LICENSE.txt
+   imageio-ext-tiff - BSD style license - imageio-ext-tiff-BSD-LICENSE.txt
  JAI core, codec - Java Advanced Imaging Distribution License - jdl-jai.pdf
  JAI imageio core - BSD style license - jai-core.BSD-LICENSE.txt
  JAMA - Public Domain
@@ -55,6 +61,11 @@ Additionally PLUS distribution contains
 ( Component name - License name - License file in "licenses/" folder
    list of files and dependencies with license if any )
  Batik SVG Toolkit - Apache License Version 2.0 - apache_license-2.0.txt
+ ImageIO Ext (mainly libs needing native support) - LGPL3 - lgpl-3.0.txt
+  except the following dependencies/components:
+  imageio-ext-imagereadmt - BSD style license -
+   imageio-ext-imagereadmt-BSD-LICENSE.txt
+  turbojpeg-wrapper - BSD style license - LICENSE.libjpegturbo.txt
  Geoarbores Vertex Symbols Collection (Giuseppe Aruta) - GPL2 - gpl-2.txt
   lib/ext/VertexImages/*.wkt
  ECW and JPEG2000 Read Support based on ECW SDK 3.3 for 
