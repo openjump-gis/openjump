@@ -68,8 +68,8 @@ import java.awt.AlphaComposite;
 import java.awt.Composite;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.io.Closeable;
 import java.io.IOException;
-import java.io.InputStream;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.feature.Feature;
@@ -284,9 +284,9 @@ public abstract class AbstractGraphicImage implements ReferencedImage
 
   protected abstract void initImage() throws ReferencedImageException;
   
-  protected void close(InputStream is){
+  public static void close(Closeable is){
     try {
-      if (is instanceof InputStream)
+      if (is instanceof Closeable)
         is.close();
     } catch (IOException e) {}
   }

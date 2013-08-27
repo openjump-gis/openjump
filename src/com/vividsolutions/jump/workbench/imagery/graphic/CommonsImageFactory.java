@@ -61,7 +61,7 @@ public class CommonsImageFactory extends JAIGraphicImageFactory {
         addExtension(ext);
       }
 
-      //System.out.println(this.getClass().getName()+": "+extensions);
+//      System.out.println(this.getClass().getName()+": "+extensions);
       return true;
     } catch (ClassNotFoundException e) {
       // eat it

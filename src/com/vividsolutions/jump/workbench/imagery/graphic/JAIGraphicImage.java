@@ -125,6 +125,7 @@ public class JAIGraphicImage  extends AbstractGraphicImage
       // we assume JAI uses the first listed decoder
       if (decs.length > 0)
         setType(decs[0]);
+      //System.out.println(Arrays.toString(decs));
       // close second stream early
       close(is2);
       

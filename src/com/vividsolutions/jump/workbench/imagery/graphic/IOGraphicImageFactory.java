@@ -43,21 +43,15 @@ public class IOGraphicImageFactory extends JAIGraphicImageFactory {
     return "Image (ImageIO)";
   }
 
-  public ReferencedImage createImage(String location) {
+  public ReferencedImage createImage(String location) throws Exception {
     return new IOGraphicImage(location, null);
   }
 
   public boolean isAvailable(WorkbenchContext context) {
     for (String ext : ImageIO.getReaderFileSuffixes()) {
-      ext = ext.toLowerCase();
-      if (ext.matches("tiff?"))
-        extensions.addAll(Arrays.asList(new String[] { "tiff", "tif" }));
-      else if (ext.matches("jpe?g?"))
-        extensions.addAll(Arrays.asList(new String[] { "jpeg", "jpg" }));
-      else
-        extensions.add(ext);
+      addExtension(ext);
     }
-    //System.out.println(this.getClass().getName()+": "+extensions);
+//    System.out.println(this.getClass().getName()+": "+extensions);
     return true;
   }
 

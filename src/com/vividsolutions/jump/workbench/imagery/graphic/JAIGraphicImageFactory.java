@@ -73,11 +73,12 @@ public class JAIGraphicImageFactory implements ReferencedImageFactory {
 
       for (Enumeration e = ImageCodec.getCodecs(); e.hasMoreElements();) {
         ImageCodec codec = (ImageCodec) e.nextElement();
+//        System.out.println("JAIGF: "+codec);
         String ext = codec.getFormatName().toLowerCase();
         addExtension(ext);
       }
       
-      //System.out.println(this.getClass().getName()+": "+extensions);
+//      System.out.println(this.getClass().getName()+": "+extensions);
       return true;
     } catch (ClassNotFoundException e) {
       // eat it
@@ -87,6 +88,11 @@ public class JAIGraphicImageFactory implements ReferencedImageFactory {
   }
   
   protected void addExtension( String ext ){
+    if (ext==null || ext.equals(""))
+      //ignore empty extensions
+      return;
+    
+    ext = ext.toLowerCase();
     if (ext.matches("tiff?"))
       extensions.addAll(Arrays.asList(new String[] { "tiff", "tif" }));
     else if (ext.matches("jpe?g?"))
