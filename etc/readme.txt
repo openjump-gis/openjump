@@ -32,8 +32,8 @@ as (Component name - License name - License file in "licenses/" folder or link)
    Fugue by Yusuke Kamiyamane http://p.yusukekamiyamane.com - CC BY 3.0
      - http://creativecommons.org/licenses/by/3.0/
    OJ icon v3 and others by Edgar Soldin http://soldin.de - GPL2 - gpl-2.txt
- JAI imageio core - BSD style license - jai-core.BSD-LICENSE.txt
  JAI core, codec - Java Advanced Imaging Distribution License - jdl-jai.pdf
+ JAI imageio core - BSD style license - jai-core.BSD-LICENSE.txt
  JAMA - Public Domain
  Jdom - Apache-style open source jdom license, 
        with the acknowledgment clause removed - jdom_license.txt
