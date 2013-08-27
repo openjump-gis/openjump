@@ -28,5 +28,12 @@
       <directory>lib/plus</directory>
       <outputDirectory>/lib/ext</outputDirectory>
     </fileSet>
+    <fileSet>
+      <directory>lib/imageio-ext.plus</directory>
+      <outputDirectory>/lib</outputDirectory>
+      <includes>
+        <include>*</include>
+      </includes>
+    </fileSet>
   </fileSets>
 </component>

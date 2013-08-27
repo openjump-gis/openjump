@@ -92,6 +92,13 @@
         <include>*.txt</include>
       </includes>
     </fileSet>
+    <fileSet>
+      <directory>lib/imageio-ext</directory>
+      <outputDirectory>/lib</outputDirectory>
+      <includes>
+        <include>*</include>
+      </includes>
+    </fileSet>
   </fileSets>
   <files>
     <file>
