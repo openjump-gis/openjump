@@ -73,8 +73,8 @@ public class PostgisDataStoreDriver
     DriverManager.registerDriver(driver);
 
     // mmichaud 2013-08-27 workaround for ticket #330
-    String savePreferIPv4Stack = System.getProperty("java.net.preferIPv4Stack");
-    String savePreferIPv6Addresses = System.getProperty("java.net.preferIPv6Addresses");
+    String savePreferIPv4Stack = System.getProperty("java.net.preferIPv4Stack", "false");
+    String savePreferIPv6Addresses = System.getProperty("java.net.preferIPv6Addresses", "false");
     System.setProperty("java.net.preferIPv4Stack", "true");
     System.setProperty("java.net.preferIPv6Addresses", "false");
     Connection conn = DriverManager.getConnection(url, user, password);
