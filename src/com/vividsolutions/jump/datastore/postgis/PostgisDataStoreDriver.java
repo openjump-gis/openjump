@@ -73,13 +73,23 @@ public class PostgisDataStoreDriver
     DriverManager.registerDriver(driver);
 
     // mmichaud 2013-08-27 workaround for ticket #330
-    String savePreferIPv4Stack = System.getProperty("java.net.preferIPv4Stack", "false");
-    String savePreferIPv6Addresses = System.getProperty("java.net.preferIPv6Addresses", "false");
+    String savePreferIPv4Stack = System.getProperty("java.net.preferIPv4Stack");
+    String savePreferIPv6Addresses = System.getProperty("java.net.preferIPv6Addresses");
     System.setProperty("java.net.preferIPv4Stack", "true");
     System.setProperty("java.net.preferIPv6Addresses", "false");
+
     Connection conn = DriverManager.getConnection(url, user, password);
-    System.setProperty("java.net.preferIPv4Stack", savePreferIPv4Stack);
-    System.setProperty("java.net.preferIPv6Addresses", savePreferIPv6Addresses);
+
+    if (savePreferIPv4Stack == null) {
+        System.getProperties().remove("java.net.preferIPv4Stack");
+    } else {
+        System.setProperty("java.net.preferIPv4Stack", savePreferIPv4Stack);
+    }
+    if (savePreferIPv6Addresses == null) {
+        System.getProperties().remove("java.net.preferIPv6Addresses");
+    } else {
+        System.setProperty("java.net.preferIPv6Addresses", savePreferIPv6Addresses);
+    }
     return new PostgisDSConnection(conn);
   }
   public boolean isAdHocQuerySupported() {
