@@ -768,9 +768,10 @@ public class LayerViewPanel extends JPanel
 
 	public void flash(final GeometryCollection geometryCollection)
 			throws NoninvertibleTransformException {
-		flash(getViewport().getJava2DConverter().toShape(geometryCollection),
-				Color.red, new BasicStroke(5, BasicStroke.CAP_ROUND,
-						BasicStroke.JOIN_ROUND), 100);
+		Shape s = getViewport().getJava2DConverter().toShape(geometryCollection);
+		if (s != null)
+			flash(s, Color.red, new BasicStroke(5, BasicStroke.CAP_ROUND,
+					BasicStroke.JOIN_ROUND), 100);
 	}
 
 	public void setDeferLayerEvents(boolean defer)
