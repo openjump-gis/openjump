@@ -26,6 +26,7 @@ as (Component name - License name - License file in "licenses/" folder or link)
  BeanShell - LGPL2.1 - lgpl-2.1.txt
  Buoy Framework - Public Domain
  Code2000 Unicode font - GPL2 - gpl-2.txt
+ Extensible-TIFF-JAI (xtiff jai) - MIT License - MIT-license.txt
  Icons (some original or based fully or in part on the following)
    FAMFAMFAM Silk by http://www.famfamfam.com - CC BY 2.5
      - http://creativecommons.org/licenses/by/2.5/
