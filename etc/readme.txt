@@ -21,11 +21,10 @@ The license text can be found in the file "licenses/gpl-2.txt".
 
 OpenJUMP uses and distributes the following (in alphabetical order) formatted
 as (Component name - License name - License file in "licenses/" folder or link)
- Apache Apache Commons Compress - Apache License Version 2.0 
-     - apache_license-2.0.txt
  BeanShell - LGPL2.1 - lgpl-2.1.txt
  Buoy Framework - Public Domain
  Code2000 Unicode font - GPL2 - gpl-2.txt
+ Commons Compress - Apache License Version 2.0 - apache_license-2.0.txt
  Extensible-TIFF-JAI (xtiff jai) - MIT License - MIT-license.txt
  Icons (some original or based fully or in part on the following)
    FAMFAMFAM Silk by http://www.famfamfam.com - CC BY 2.5
