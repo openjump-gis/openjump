@@ -42,6 +42,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import javax.swing.JInternalFrame;
+import javax.xml.namespace.QName;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.FileUtil;
@@ -76,7 +77,8 @@ public abstract class AbstractSaveProjectPlugIn extends AbstractPlugIn {
         }
         task.setSavedViewEnvelope(frame.getContext().getLayerViewPanel()
             	.getViewport().getEnvelopeInModelCoordinates());
-
+        task.setProperty(new QName(Task.PROJECT_FILE_KEY), file.getAbsolutePath());
+        
         StringWriter stringWriter = new StringWriter();
 
         try {

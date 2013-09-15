@@ -66,6 +66,12 @@ public class Task implements LayerManagerProxy {
 
   /** The map of task properties. */
   private Map<QName, Object> properties = new HashMap<QName, Object>();
+  
+  /** 
+   * Project File property, 
+   * Used to determine whether a project file has been moved away from its original location
+   */
+  public static final String PROJECT_FILE_KEY = "Project File";
 
   // No parameters so it can be created by Java2XML.
   public Task() {

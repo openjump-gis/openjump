@@ -29,6 +29,8 @@ import org.openjump.core.ui.plugin.file.OpenRecentPlugIn;
 import org.openjump.core.ui.swing.wizard.AbstractWizardGroup;
 
 import javax.swing.*;
+import javax.xml.namespace.QName;
+
 import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -221,6 +223,27 @@ public class OpenProjectWizard extends AbstractWizardGroup {
     WorkbenchFrame workbenchFrame = workbench.getFrame();
     FindFile findFile = new FindFile(workbenchFrame);
     boolean displayDialog = true;
+    
+    String oldProjectPath = sourceTask.getProperty(new QName(Task.PROJECT_FILE_KEY));
+    boolean updateResources = false;
+    boolean updateOnlyMissingResources = false;
+    File oldProjectFile = null;
+    if(oldProjectPath != null && !oldProjectPath.equals("")){
+        oldProjectFile = new File(oldProjectPath);
+        if(!oldProjectFile.equals(newTask.getProjectFile())){
+    		JCheckBox checkbox = new JCheckBox(I18N.get("ui.plugin.OpenProjectPlugIn.Only-for-missing-resources"));  
+            String message = I18N.get("ui.plugin.OpenProjectPlugIn."
+                    + "The-project-has-been-moved-Do-you-want-to-update-paths-below-the-project-folder");  
+            Object[] params = {message, checkbox};  
+            int answer = JOptionPane.showConfirmDialog(workbenchFrame, 
+                    params, "OpenJUMP", JOptionPane.YES_NO_OPTION);
+            if(answer == JOptionPane.YES_OPTION){
+                updateResources = true;
+                if(checkbox.isSelected())
+                    updateOnlyMissingResources = true;
+            }            
+        }
+    }
 
     try {				
     List<Category> categories = sourceLayerManager.getCategories();
@@ -242,6 +265,13 @@ public class OpenProjectWizard extends AbstractWizardGroup {
 
         if (layerable instanceof Layer) {
           Layer layer = (Layer)layerable;
+          File layerFile = getLayerFileProperty(layer);
+          if(!updateOnlyMissingResources || !layerFile.exists()){
+              if(updateResources && layerFile != null && isLocatedBellow(oldProjectFile.getParentFile(), layerFile)) {
+                  File newLayerFile = updateResourcePath(oldProjectFile, newTask.getProjectFile(), layerFile);
+                  setLayerFileProperty(layer, newLayerFile);
+              }
+          }
           try {
             load(layer, registry, monitor);
           } catch (FileNotFoundException ex) {
@@ -263,7 +293,7 @@ public class OpenProjectWizard extends AbstractWizardGroup {
             DataSourceQuery dataSourceQuery = layer.getDataSourceQuery();
             DataSource dataSource = dataSourceQuery.getDataSource();
             Map properties = dataSource.getProperties();
-            String fname = properties.get("File").toString();
+            String fname = properties.get(DataSource.FILE_KEY).toString();
             String filename = findFile.getFileName(fname);
             if (filename.length() > 0) {
               // set the new source for this layer
@@ -323,5 +353,45 @@ public class OpenProjectWizard extends AbstractWizardGroup {
       connection.close();
     }
   }
+  
+  
+  private File updateResourcePath(File oldProjectFile, File newProjectFile, File layerFile) {
+      String oldParent = oldProjectFile.getParentFile().getAbsolutePath();
+      String newParent = newProjectFile.getParentFile().getAbsolutePath();
+      String child = layerFile.getAbsolutePath();
+      String relativePath = child.substring(oldParent.length()+1);
+         return new File(newParent, relativePath);
+   }
+
+   private boolean isLocatedBellow(File parentDir, File layerFile) {
+      if(layerFile == null)
+          return false;
+      for (File layerParent = layerFile.getParentFile(); layerParent != null; layerParent = layerParent.getParentFile()) {
+        if(layerParent.equals(parentDir))
+          return true;
+      }
+      
+      return false;
+  }
+
+    private File getLayerFileProperty(Layer layer) {
+      DataSourceQuery dataSourceQuery = layer.getDataSourceQuery();
+      DataSource dataSource = dataSourceQuery.getDataSource();
+      Map properties = dataSource.getProperties();
+      Object property = properties.get(DataSource.FILE_KEY);
+      if(property == null || property.toString().equals(""))
+          return null;
+      File layerFile = new File(property.toString());
+      return layerFile;
+   }
+
+   private void setLayerFileProperty(Layer layer, File file) {
+      DataSourceQuery dataSourceQuery = layer.getDataSourceQuery();
+      DataSource dataSource = dataSourceQuery.getDataSource();
+      Map properties = dataSource.getProperties();
+      properties.put(DataSource.FILE_KEY, file.getAbsolutePath());
+   }
+  
+
 
 }
