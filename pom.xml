@@ -843,7 +843,7 @@
        <artifactId>jai_imageio</artifactId>
        <version>1.1</version>
      </dependency>
-     <!-- we only provide the imageio-ext jars here for compilation
+     <!-- we provide the imageio-ext jars here for compilation only,
           for runtime they are packaged from lib/imageio-ext/ for 
           easier updating and splitting between CORE and PLUS -->
      <dependency>
