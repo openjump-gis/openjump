@@ -48,12 +48,16 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
+import org.openjump.core.ui.io.file.DataSourceFileLayerLoader;
 import org.openjump.core.ui.io.file.FileLayerLoader;
 import org.openjump.core.ui.io.file.Option;
+import org.openjump.core.ui.plugin.file.InstallDummyReaderPlugIn.DummyDataSource;
 import org.openjump.util.UriUtil;
 
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.io.CompressedFile;
 import com.vividsolutions.jump.util.FileUtil;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.ui.ErrorHandler;
 
 public class OpenFileWizardState {
@@ -62,6 +66,12 @@ public class OpenFileWizardState {
   private String currentPanel;
 
   private FileLayerLoader fileLayerLoader;
+  
+  public static FileLayerLoader IGNORELOADER = new DataSourceFileLayerLoader(
+    JUMPWorkbench.getInstance().getContext(),
+    DummyDataSource.class, 
+    I18N.get(OpenFileWizardState.class.getName()+".dummy-loader-description"),
+    Arrays.asList(new String[]{"*"}));
 
   private Map<String, Set<FileLayerLoader>> extensionLoaderMap = new HashMap<String, Set<FileLayerLoader>>();
 
@@ -219,6 +229,7 @@ public class OpenFileWizardState {
         files.remove(file);
       }
     }
+
     fileLoaderMap.put(file, fileLayerLoader);
     Set<URI> files = fileLoaderFiles.get(fileLayerLoader);
     if (files == null) {
@@ -241,6 +252,7 @@ public class OpenFileWizardState {
       loaders = new HashSet<FileLayerLoader>();
       extensionLoaderMap.put(extension, loaders);
     }
+    
     return loaders;
   }
 

@@ -45,4 +45,6 @@ public interface ReferencedImage {
   void paint(Feature f, java.awt.Graphics2D g, Viewport viewport) throws ReferencedImageException;
   
   String getType();
+  
+  String getLoader();
 }

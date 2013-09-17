@@ -70,7 +70,7 @@ public class BasicFeature extends AbstractBasicFeature implements Serializable {
     			for (int i=0; i<attributes.length; i++) {
     				if ( attributesOld[i] != null && attributesOld[i] != attributes[i]) {
     					modified = true;
-    				}	        	                                  
+    				}
     			}
     		}
     }
@@ -131,5 +131,4 @@ public class BasicFeature extends AbstractBasicFeature implements Serializable {
     	this.modified = modified;
     	modCount = 0;
     }
-    
  }

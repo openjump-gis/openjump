@@ -50,9 +50,9 @@ import javax.swing.tree.TreeCellRenderer;
 import org.openjump.core.rasterimage.RasterImageLayer;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.imagery.ReferencedImagesLayer;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.Layerable;
-import com.vividsolutions.jump.workbench.model.ReferencedImageLayer;
 import com.vividsolutions.jump.workbench.model.WMSLayer;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.wms.MapLayerPanel;
@@ -96,7 +96,8 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
 
   private JLabel imageLabel = new JLabel();
   private ImageIcon wmsIcon = MapLayerPanel.ICON;
-  private ImageIcon rasterIcon = IconLoader.icon("maps_13.png");
+  private ImageIcon multiRasterIcon = IconLoader.icon("maps_13.png");
+  private ImageIcon rasterIcon = IconLoader.icon("map_13.png");
   private ImageIcon sextante_rasterIcon = IconLoader.icon("mapSv2_13.png");
 
   public LayerNameRenderer() {
@@ -295,8 +296,11 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
     imageLabel.setVisible(false);
     // or colorpanel for vector layers
     colorPanel.setVisible(false);
-    if (showImageLabel && layerable instanceof ReferencedImageLayer) {
-      imageLabel.setIcon(rasterIcon);
+    if (showImageLabel && layerable instanceof ReferencedImagesLayer) {
+      // switch icon accoring to contained image count
+      imageLabel.setIcon(((ReferencedImagesLayer) layerable)
+          .getFeatureCollectionWrapper().size() > 1 ? multiRasterIcon
+          : rasterIcon);
       imageLabel.setVisible(true);
     } else if (showColorPanel && layerable instanceof Layer) {
       colorPanel.init((Layer) layerable, isSelected, list.getBackground(),

@@ -85,7 +85,7 @@ import com.vividsolutions.jump.workbench.imagery.ReferencedImageException;
  * Much of this code was donated by Larry Becker and Robert Littlefield of
  * Integrated Systems Analysts, Inc.
  */
-public class JAIGraphicImage  extends AbstractGraphicImage
+public class JAIGraphicImage extends AbstractGraphicImage
 
 {
   protected String uri;
@@ -95,7 +95,7 @@ public class JAIGraphicImage  extends AbstractGraphicImage
   protected Envelope env;
   protected String type = null;
 
-  public JAIGraphicImage(String location, WorldFile wf){
+  public JAIGraphicImage(String location, WorldFile wf) {
     super(location, wf);
   }
 
@@ -106,8 +106,8 @@ public class JAIGraphicImage  extends AbstractGraphicImage
     InputStream is = null, is2 = null;
     try {
       URI uri = new URI(getUri());
-      // JAI loading streams is slower than fileload, hence we check if we really
-      // try to open a compressed file first
+      // JAI loading streams is slower than fileload, hence check if we
+      // are really trying to open a compressed file first
       RenderedOp src;
       if (CompressedFile.isArchive(uri) || CompressedFile.isCompressed(uri)) {
         is = CompressedFile.openFile(uri);
@@ -118,21 +118,24 @@ public class JAIGraphicImage  extends AbstractGraphicImage
         src = JAI.create("fileload", uri.getPath());
       }
       setImage(src.getAsBufferedImage());
-      
+      close(is);
+
       is2 = CompressedFile.openFile(getUri());
       is2 = SeekableStream.wrapInputStream(is2, true);
-      String[] decs = ImageCodec.getDecoderNames((SeekableStream)is2);
+      String[] decs = ImageCodec.getDecoderNames((SeekableStream) is2);
       // we assume JAI uses the first listed decoder
       if (decs.length > 0)
         setType(decs[0]);
-      //System.out.println(Arrays.toString(decs));
+      // System.out.println(Arrays.toString(decs));
       // close second stream early
       close(is2);
-      
+
     } catch (URISyntaxException e) {
-      throw new ReferencedImageException("Could not open image file "+getUri(), e);
+      throw new ReferencedImageException("Could not open image file "
+          + getUri(), e);
     } catch (IOException e) {
-      throw new ReferencedImageException("Could not open image file "+getUri(), e);
+      throw new ReferencedImageException("Could not open image file "
+          + getUri(), e);
     } finally {
       // close streams on any failure
       close(is);

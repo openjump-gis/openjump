@@ -26,8 +26,8 @@ import org.openjump.core.ui.io.file.DataSourceFileLayerLoader;
  */
 public class InstallDummyReaderPlugIn extends AbstractPlugIn {
 
-    private static final String KEY = InstallDummyReaderPlugIn.class.getName();
-    private static final String DUMMY_READER = I18N.get(KEY + ".dummy-reader");
+    private static final String KEY = DummyDataSource.class.getName();
+    public static final String DUMMY_READER_DESC = I18N.get(KEY)+".description";
 
     /**
      * Construct the main Open File plug-in.
@@ -45,12 +45,12 @@ public class InstallDummyReaderPlugIn extends AbstractPlugIn {
      * @exception Exception If there was an error initialising the plug-in.
      */
     public void initialize(final PlugInContext context) throws Exception {
-        context.getWorkbenchContext().getRegistry().createEntry(FileLayerLoader.KEY,
-            new DataSourceFileLayerLoader(
-                context.getWorkbenchContext(),
-                DummyDataSource.class, 
-                DUMMY_READER, 
-                Arrays.asList(new String[]{"xml", "txt"})));
+//        context.getWorkbenchContext().getRegistry().createEntry(FileLayerLoader.KEY,
+//            new DataSourceFileLayerLoader(
+//                context.getWorkbenchContext(),
+//                DummyDataSource.class, 
+//                DUMMY_READER, 
+//                Arrays.asList(new String[]{"*"})));
     }
     
     public static class DummyDataSource extends DataSource {

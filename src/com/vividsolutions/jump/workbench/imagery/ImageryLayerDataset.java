@@ -40,68 +40,141 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.util.StringUtil;
+import com.vividsolutions.jump.workbench.imagery.geoimg.GeoImageFactory;
+import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 
 public class ImageryLayerDataset {
-    public static final String ATTR_GEOMETRY = "GEOMETRY";
-    public static final String ATTR_FILE = "IMAGEFILE";
-    public static final String ATTR_FORMAT = "IMAGEFORMAT";
-    public static final String ATTR_ERROR = "IMAGEERROR";
-    public static final String ATTR_TYPE = "IMAGETYPE";
-    public static final String ATTR_FACTORY = "IMAGEFACT";
+  private static String prefix = "IMG.";
+  public static final String ATTR_GEOMETRY = prefix+"GEOMETRY";
+  public static final String ATTR_URI = prefix + "URI";
+  // public static final String ATTR_FORMAT = "IMAGEFORMAT";
+  public static final String ATTR_FACTORY = prefix + "FACTORY";
+  public static final String ATTR_ERROR = prefix + "ERROR";
+  public static final String ATTR_TYPE = prefix + "TYPE";
+  public static final String ATTR_LOADER = prefix + "LOADER";
 
+  private Map<Feature, ReferencedImage> featureToReferencedImageMap = new WeakHashMap();
 
-    public static FeatureSchema SCHEMA = new FeatureSchema() {
-        {
-            addAttribute(ATTR_GEOMETRY, AttributeType.GEOMETRY);
-            addAttribute(ATTR_FILE, AttributeType.STRING);
-            addAttribute(ATTR_FORMAT, AttributeType.STRING);
-            addAttribute(ATTR_FACTORY, AttributeType.STRING);
-            addAttribute(ATTR_ERROR, AttributeType.STRING);
-            addAttribute(ATTR_TYPE, AttributeType.STRING);
-        }
-    };
-
-    public static FeatureSchema getSchema() {
-        return SCHEMA;
+  public static FeatureSchema SCHEMA = new FeatureSchema() {
+    {
+      addAttribute(ATTR_GEOMETRY, AttributeType.GEOMETRY);
+      addAttribute(ATTR_URI, AttributeType.STRING);
+      // addAttribute(ATTR_FORMAT, AttributeType.STRING);
+      addAttribute(ATTR_FACTORY, AttributeType.STRING);
+      addAttribute(ATTR_ERROR, AttributeType.STRING);
+      addAttribute(ATTR_TYPE, AttributeType.STRING);
+      addAttribute(ATTR_LOADER, AttributeType.STRING);
     }
+  };
 
-    public void createImage(Feature feature) throws Exception{
-        String factoryClassPath = (String) feature.getString(ATTR_FACTORY);
-        String imageFilePath = (String) feature.getString(ATTR_FILE);
-        GeometryFactory geometryFactory = new GeometryFactory();
+  public static FeatureSchema getSchema() {
+    return SCHEMA;
+  }
 
-        // experimental change, handle errors further up [ede] 12.09.2011 
-        //try {
-            ReferencedImageFactory imageFactory = ( ReferencedImageFactory )
-                        Class.forName( factoryClassPath ).newInstance();
-            ReferencedImage referencedImage = imageFactory.createImage(imageFilePath);
+  private void removeImage(Feature feature) {
+    featureToReferencedImageMap.remove(feature);
+  }
 
-            featureToReferencedImageMap.put(feature, referencedImage);
-            Envelope env = referencedImage.getEnvelope();
-            Geometry boundingBox = geometryFactory.toGeometry(env);
-            feature.setGeometry(boundingBox);
-            
-            feature.setAttribute(ATTR_TYPE,referencedImage.getType());
-        //}catch (Exception e) {
-        //  always throw ECWLoadExceptions as they are fatal
-        //	if ( e instanceof ECWLoadException )
-        //		throw e;
-        //    feature.setAttribute(ATTR_ERROR, e.toString());
-        //   e.printStackTrace();
-        //}
+  private void addImage(Feature feature, ReferencedImage referencedImage) {
+    featureToReferencedImageMap.put(feature, referencedImage);
+  }
+
+  public ReferencedImage referencedImage(Feature feature) throws Exception {
+    if (!(feature.getString(ATTR_ERROR) == null || feature
+        .getString(ATTR_ERROR).equals(""))) {
+      return null;
     }
-
-    public ReferencedImage referencedImage(Feature feature) throws Exception{
-        if (!(feature.getString(ATTR_ERROR) == null
-                || feature.getString(ATTR_ERROR).equals(""))) {
-            return null;
-        }
-        if (!featureToReferencedImageMap.containsKey(feature)) {
-            createImage(feature);
-        }
-        // Will be null if an exception occurs [Jon Aquino 2005-04-12]
-        return (ReferencedImage) featureToReferencedImageMap.get(feature);
+    if (!featureToReferencedImageMap.containsKey(feature)) {
+      createImage(feature);
     }
+    // Will be null if an exception occurs [Jon Aquino 2005-04-12]
+    return (ReferencedImage) featureToReferencedImageMap.get(feature);
+  }
 
-    private Map featureToReferencedImageMap = new WeakHashMap();
+  public void createImage(Feature feature) throws Exception {
+    createImage(feature, this);
+  }
+
+  public static void createImage(Feature feature, ImageryLayerDataset ils)
+      throws Exception {
+    String factoryClassPath = (String) feature.getString(ATTR_FACTORY);
+    String loaderClassPath = (String) feature.getString(ATTR_LOADER);
+    String imageFilePath = (String) feature.getString(ATTR_URI);
+    GeometryFactory geometryFactory = new GeometryFactory();
+
+    ReferencedImageFactory imageFactory = createFeatureFactory(feature);
+    ReferencedImage referencedImage = imageFactory.createImage(imageFilePath);
+
+    ils.addImage(feature, referencedImage);
+    Envelope env = referencedImage.getEnvelope();
+    Geometry boundingBox = geometryFactory.toGeometry(env);
+    // set dummy geometry (used to manipulate image)
+    feature.setGeometry(boundingBox);
+    // set an informational type value
+    feature.setAttribute(ATTR_TYPE, referencedImage.getType());
+  }
+
+  public void dispose() {
+    featureToReferencedImageMap.clear();
+    featureToReferencedImageMap = null;
+  }
+
+  public static Feature saveFeatureError(Feature feature, Throwable t) {
+    feature.setAttribute(ImageryLayerDataset.ATTR_ERROR,
+        WorkbenchFrame.toMessage(t) + "\n\n" + StringUtil.stackTrace(t));
+    return feature;
+  }
+
+  /**
+   * set a features attributes saving the assigned ReferencedImageFactory
+   * 
+   * @param feature
+   * @param imageFactory
+   * @return
+   */
+  public static Feature saveFeatureFactory(Feature feature,
+      ReferencedImageFactory imageFactory) {
+    feature.setAttribute(ImageryLayerDataset.ATTR_FACTORY, imageFactory
+        .getClass().getName());
+    if (imageFactory instanceof GeoImageFactory) {
+      Object loader = ((GeoImageFactory) imageFactory).getLoader();
+      if (loader != null)
+        feature.setAttribute(ImageryLayerDataset.ATTR_LOADER, loader.getClass()
+            .getName());
+    }
+    return feature;
+  }
+
+  /**
+   * create a ReferencedImageFactory from the attributes of the given feature
+   * 
+   * @param feature
+   * @return
+   * @throws ClassNotFoundException
+   * @throws InstantiationException
+   * @throws IllegalAccessException
+   */
+  public static ReferencedImageFactory createFeatureFactory(Feature feature)
+      throws ClassNotFoundException, InstantiationException,
+      IllegalAccessException {
+    String factoryClassPath = (String) feature.getString(ATTR_FACTORY);
+    String loaderClassPath = (String) feature.getString(ATTR_LOADER);
+    Class imageFactoryClass = Class.forName(factoryClassPath);
+    ReferencedImageFactory imageFactory = (ReferencedImageFactory) imageFactoryClass
+        .newInstance();
+
+    // set preselected loader for GeoImageFactory explicitly
+    if (!loaderClassPath.isEmpty() && imageFactory instanceof GeoImageFactory) {
+      try {
+        Class loaderClass = Class.forName(loaderClassPath);
+        Object loader = loaderClass.newInstance();
+        ((GeoImageFactory) imageFactory).setLoader(loader);
+      } catch (ClassNotFoundException e) {
+        // TODO: handle exception
+        System.out.println("ILDS: TODO - show user warning - "+e);
+      }
+    }
+    return imageFactory;
+  }
 }

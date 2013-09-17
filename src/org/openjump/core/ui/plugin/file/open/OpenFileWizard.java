@@ -16,6 +16,7 @@ import org.openjump.core.ui.swing.wizard.AbstractWizardGroup;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.registry.Registry;
 import com.vividsolutions.jump.workbench.ui.ErrorHandlerV2;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
@@ -32,6 +33,8 @@ public class OpenFileWizard extends AbstractWizardGroup {
 
   private File[] files;
 
+  private Class loaderFilter = null;
+
   private ChooseProjectPanel chooseProjectPanel;
 
   private SelectFilesPanel selectFilesPanel;
@@ -39,30 +42,50 @@ public class OpenFileWizard extends AbstractWizardGroup {
   private SelectFileLoaderPanel selectFileLoaderPanel;
 
   private SelectFileOptionsPanel selectFileOptionsPanel;
+  
+  private Layerable layer;
+
+  public Layerable getLayer() {
+    return layer;
+  }
+
+  public void setLayer(Layerable layer) {
+    this.layer = layer;
+  }
 
   /**
    * Construct a new OpenFileWizard.
    * 
-   * @param workbenchContext The workbench context.
+   * @param workbenchContext
+   *          The workbench context.
    */
   public OpenFileWizard(final WorkbenchContext workbenchContext) {
-    super(I18N.get(KEY), IconLoader.icon("folder_page.png"), SelectFilesPanel.KEY);
+    super(I18N.get(KEY), IconLoader.icon("folder_page.png"),
+        SelectFilesPanel.KEY);
     initPanels(workbenchContext);
   }
 
   public OpenFileWizard(final WorkbenchContext workbenchContext,
-    final File[] files) {
+      final File[] files) {
     this.files = files;
   }
 
+  public OpenFileWizard(final WorkbenchContext workbenchContext,
+      final Class loaderFilter) {
+    this.loaderFilter = loaderFilter;
+    initPanels(workbenchContext);
+  }
+
   public void initialize(final WorkbenchContext workbenchContext,
-    WizardDialog dialog) {
+      WizardDialog dialog) {
     this.workbenchContext = workbenchContext;
     initPanels(workbenchContext);
     state = new OpenFileWizardState(workbenchContext.getErrorHandler());
     Registry registry = workbenchContext.getRegistry();
     List<FileLayerLoader> loaders = registry.getEntries(FileLayerLoader.KEY);
     for (FileLayerLoader fileLayerLoader : loaders) {
+      if (loaderFilter != null && !loaderFilter.isInstance(fileLayerLoader))
+        continue;
       state.addFileLoader(fileLayerLoader);
     }
     if (selectFilesPanel != null) {
@@ -76,17 +99,17 @@ public class OpenFileWizard extends AbstractWizardGroup {
     }
   }
 
-  private void initPanels(final WorkbenchContext workbenchContext) {
+  protected void initPanels(final WorkbenchContext workbenchContext) {
     if (selectFileLoaderPanel == null) {
       if (files == null) {
         chooseProjectPanel = new ChooseProjectPanel(workbenchContext,
-          SelectFilesPanel.KEY);
+            SelectFilesPanel.KEY);
         addPanel(chooseProjectPanel);
-        selectFilesPanel = new SelectFilesPanel(workbenchContext);
+        selectFilesPanel = new SelectFilesPanel(workbenchContext, loaderFilter);
         addPanel(selectFilesPanel);
       } else {
         chooseProjectPanel = new ChooseProjectPanel(workbenchContext,
-          SelectFileLoaderPanel.KEY);
+            SelectFileLoaderPanel.KEY);
         addPanel(chooseProjectPanel);
       }
       selectFileLoaderPanel = new SelectFileLoaderPanel();
@@ -104,18 +127,19 @@ public class OpenFileWizard extends AbstractWizardGroup {
       firstId = SelectFilesPanel.KEY;
     }
     if (!chooseProjectPanel.hasActiveTaskFrame()
-      && chooseProjectPanel.hasTaskFrames()) {
+        && chooseProjectPanel.hasTaskFrames()) {
       chooseProjectPanel.setNextID(firstId);
       return chooseProjectPanel.getID();
     } else {
       return firstId;
     }
   }
- 
+
   /**
    * Load the files selected in the wizard.
    * 
-   * @param monitor The task monitor.
+   * @param monitor
+   *          The task monitor.
    */
   public void run(WizardDialog dialog, TaskMonitor monitor) throws Exception {
     chooseProjectPanel.activateSelectedProject();
@@ -127,6 +151,8 @@ public class OpenFileWizard extends AbstractWizardGroup {
         URI uri = entry.getKey();
         FileLayerLoader loader = entry.getValue();
         Map<String, Object> options = state.getOptions(uri);
+        if (layer!=null)
+          options.put("LAYER", layer);
         try {
           if (loader.open(monitor, uri, options)) {
             if (uri.getScheme().equals("zip")) {

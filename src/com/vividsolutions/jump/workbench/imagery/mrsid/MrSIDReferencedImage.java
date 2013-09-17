@@ -64,6 +64,8 @@ package com.vividsolutions.jump.workbench.imagery.mrsid;
  * (850)862-7321
  * www.ashs.isa.com
  */
+import it.geosolutions.imageio.utilities.ImageIOUtilities;
+
 import java.awt.AlphaComposite;
 import java.awt.Composite;
 import java.awt.Graphics2D;
@@ -81,15 +83,15 @@ import javax.media.jai.RenderedOp;
 
 import com.sun.media.jai.codec.FileSeekableStream;
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jump.JUMPException;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImage;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageException;
+import com.vividsolutions.jump.workbench.model.Disposable;
 import com.vividsolutions.jump.workbench.ui.Viewport;
 
 public class MrSIDReferencedImage extends WindowAdapter implements
-    ReferencedImage {
+    ReferencedImage, Disposable {
 
   private SIDInfo sidInfo;
   private String sidFilename;
@@ -107,15 +109,7 @@ public class MrSIDReferencedImage extends WindowAdapter implements
 
   public void windowClosing(WindowEvent e) {
     // cleanup
-    try {
-      if (oldFileStream != null)
-        oldFileStream.close();
-    } catch (IOException e1) {
-      // TODO Auto-generated catch block
-      e1.printStackTrace();
-    }
-    if (oldJpgFile != null)
-      oldJpgFile.delete();
+    dispose();
   }
 
   public Envelope getEnvelope() {
@@ -363,6 +357,24 @@ public class MrSIDReferencedImage extends WindowAdapter implements
 
   public String getType() {
     return "MrSID";
+  }
+
+  public String getLoader() {
+    return MrSIDImageFactory.MRSIDDECODE;
+  }
+
+  public void dispose() {
+    if (oldImage!=null)
+      ImageIOUtilities.disposeImage(oldImage);
+    try {
+      if (oldFileStream != null)
+        oldFileStream.close();
+    } catch (IOException e1) {
+      // TODO Auto-generated catch block
+      e1.printStackTrace();
+    }
+    if (oldJpgFile != null)
+      oldJpgFile.delete();
   }
 
 }

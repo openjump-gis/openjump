@@ -31,78 +31,47 @@ package com.vividsolutions.jump.workbench.imagery.graphic;
  * (250)385-6040
  * www.vividsolutions.com
  */
-import java.net.URI;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashSet;
 
 import com.sun.media.jai.codec.ImageCodec;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImage;
-import com.vividsolutions.jump.workbench.imagery.ReferencedImageFactory;
 
-public class JAIGraphicImageFactory implements ReferencedImageFactory {
+public class JAIGraphicImageFactory extends AbstractGraphicImageFactory {
   protected HashSet extensions = new HashSet();
 
   public String getTypeName() {
-    return "Image (JAI)";
+    return "JAI";
   }
 
   public ReferencedImage createImage(String location) throws Exception {
     return new JAIGraphicImage(location, null);
   }
 
-  public String getDescription() {
-    return getTypeName();
-  }
-
-  public String[] getExtensions() {
-    return (String[]) extensions.toArray(new String[] {});
-  }
-
-  public boolean isEditableImage(String location) {
-    return true;
-  }
-
   public boolean isAvailable(WorkbenchContext context) {
     Class c = null, c2 = null;
     try {
       c = this.getClass().getClassLoader().loadClass("javax.media.jai.JAI");
-      c2 = this.getClass().getClassLoader().loadClass("com.sun.media.jai.codec.ImageCodec");
-      if (c==null || c2==null) return false;
+      c2 = this.getClass().getClassLoader()
+          .loadClass("com.sun.media.jai.codec.ImageCodec");
+      if (c == null || c2 == null)
+        return false;
 
       for (Enumeration e = ImageCodec.getCodecs(); e.hasMoreElements();) {
         ImageCodec codec = (ImageCodec) e.nextElement();
-//        System.out.println("JAIGF: "+codec);
+        // System.out.println("JAIGF: "+codec);
         String ext = codec.getFormatName().toLowerCase();
         addExtension(ext);
       }
-      
-//      System.out.println(this.getClass().getName()+": "+extensions);
+
+      // System.out.println(this.getClass().getName()+": "+extensions);
       return true;
     } catch (ClassNotFoundException e) {
       // eat it
     }
 
     return false;
-  }
-  
-  protected void addExtension( String ext ){
-    if (ext==null || ext.equals(""))
-      //ignore empty extensions
-      return;
-    
-    ext = ext.toLowerCase();
-    if (ext.matches("tiff?"))
-      extensions.addAll(Arrays.asList(new String[] { "tiff", "tif" }));
-    else if (ext.matches("jpe?g?"))
-      extensions.addAll(Arrays.asList(new String[] { "jpeg", "jpg" }));
-    else if (ext.matches("jb(?:ig)2"))
-      extensions.addAll(Arrays.asList(new String[] { "jbig2", "jb2" }));
-    else if (ext.matches("rgbe"))
-      extensions.addAll(Arrays.asList(new String[] { ext, "hdr" }));
-    else
-      extensions.add(ext);
   }
 
 }

@@ -32,28 +32,25 @@ package com.vividsolutions.jump.workbench.imagery.ecw;
  * www.vividsolutions.com
  */
  
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
-import java.awt.geom.Rectangle2D;
-import java.awt.geom.Point2D;
-
 import com.vividsolutions.jts.geom.Envelope;
-
-import com.vividsolutions.jump.JUMPException;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImage;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageException;
+import com.vividsolutions.jump.workbench.model.Disposable;
 import com.vividsolutions.jump.workbench.ui.Viewport;
-
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Color;
 
 /**
  * A {@link ReferencedImage} for ECW files
  */
 public class ECWImage
-    implements ReferencedImage
+    implements ReferencedImage, Disposable
 {
 
   private Envelope imageEnv = new Envelope();
@@ -63,6 +60,7 @@ public class ECWImage
   private int[] bandlist;
   private boolean validSetView = false;
   private Envelope lastViewportEnv = new Envelope();
+  private BufferedImage ecwImage;
 
   // debugging only
   // int count = 0;
@@ -178,7 +176,7 @@ public class ECWImage
               width  = width  <= nbColumns ? width  : nbColumns;
               height = height <= nbLines   ? height : nbLines;
 
-              BufferedImage ecwImage = new BufferedImage(
+              ecwImage = new BufferedImage(
                       width, height, BufferedImage.TYPE_INT_RGB);
 
               int [] pRGBArray = new int[width];
@@ -226,10 +224,20 @@ public class ECWImage
   }
 
   public void close() {
+    if (renderer!=null)
       renderer.close(true);
   }
 
   public String getType() {
       return "ECW";
+  }
+  
+  public String getLoader() {
+    return renderer!=null ? renderer.toString() : "null";
+  }
+
+  public void dispose() {
+    close();
+    renderer = null;
   }
 }

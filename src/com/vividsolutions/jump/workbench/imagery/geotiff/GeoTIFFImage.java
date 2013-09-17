@@ -39,53 +39,45 @@ import com.vividsolutions.jump.workbench.imagery.ReferencedImageException;
 import com.vividsolutions.jump.workbench.ui.Viewport;
 
 /**
- * <p> </p>
- * <p> </p>
- * <p>Copyright: Copyright (c) 2002</p>
- * <p>Company: </p>
- * @author unascribed
- * @version 1.0
+ * legacy GeoTIFF reader
  */
-public class GeoTIFFImage
-    implements ReferencedImage
-{
+public class GeoTIFFImage implements ReferencedImage {
   private GeoTIFFRaster gtr;
   private RasterPainter rasterPainter;
 
-  public GeoTIFFImage(String location) throws JUMPException
-  {
+  public GeoTIFFImage(String location) throws JUMPException {
     init(location);
   }
 
-  public Envelope getEnvelope()
-  {
+  public Envelope getEnvelope() {
     return gtr.getEnvelope();
   }
 
-  private void init(String location) throws JUMPException
-  {
+  private void init(String location) throws JUMPException {
     try {
       gtr = new GeoTIFFRaster(location);
       rasterPainter = new RasterPainter(gtr);
-    }
-    catch (Exception ex) {
+    } catch (Exception ex) {
       gtr = null;
       throw new JUMPException(ex.getMessage());
     }
   }
 
-  public void paint(Feature f, java.awt.Graphics2D g, Viewport viewport) throws ReferencedImageException
-  {
+  public void paint(Feature f, java.awt.Graphics2D g, Viewport viewport)
+      throws ReferencedImageException {
     try {
       rasterPainter.paint(g, viewport);
-    }
-    catch (Exception ex) {
-        throw new ReferencedImageException(ex);
+    } catch (Exception ex) {
+      throw new ReferencedImageException(ex);
     }
   }
 
-	public String getType() {
-		return "GeoTiff";
-	}
+  public String getType() {
+    return "GeoTiff";
+  }
+
+  public String getLoader() {
+    return "null";
+  }
 
 }

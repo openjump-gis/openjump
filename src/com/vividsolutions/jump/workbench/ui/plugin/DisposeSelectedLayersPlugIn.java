@@ -1,5 +1,3 @@
-package com.vividsolutions.jump.workbench.imagery.graphic;
-
 /*
  * The Unified Mapping Platform (JUMP) is an extensible, interactive GUI 
  * for visualizing and manipulating spatial features with geometry and attributes.
@@ -31,30 +29,29 @@ package com.vividsolutions.jump.workbench.imagery.graphic;
  * (250)385-6040
  * www.vividsolutions.com
  */
-import java.util.Arrays;
 
-import javax.imageio.ImageIO;
+package com.vividsolutions.jump.workbench.ui.plugin;
 
-import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.imagery.ReferencedImage;
+import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.model.LayerManager;
+import com.vividsolutions.jump.workbench.model.Layerable;
+import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 
-public class IOGraphicImageFactory extends AbstractGraphicImageFactory {
-  public String getTypeName() {
-    return "ImageIO";
-  }
+public class DisposeSelectedLayersPlugIn extends RemoveSelectedLayersPlugIn {
 
-  public ReferencedImage createImage(String location) throws Exception {
-    return new IOGraphicImage(location, null);
-  }
-
-  public boolean isAvailable(WorkbenchContext context) {
-    for (String ext : ImageIO.getReaderFileSuffixes()) {
-      addExtension(ext);
-    }
-//    System.out.println(this.getClass().getName() + ": "
-//        + Arrays.toString(getExtensions()));
+  public boolean execute(PlugInContext context) throws Exception {
+    Layerable[] selectedLayers = (Layerable[]) (context.getLayerNamePanel())
+        .selectedNodes(Layerable.class).toArray(new Layerable[] {});
+    LayerManager lmgr = context.getLayerManager();
+    lmgr.dispose(selectedLayers);
 
     return true;
+  }
+
+  // using the same name as remove plugin, as a users remove in ui is
+  // essentially a remove/dispose combination
+  public String getName() {
+    return I18N.get(getClass().getSuperclass().getCanonicalName());
   }
 
 }

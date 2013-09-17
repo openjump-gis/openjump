@@ -1630,4 +1630,9 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
     public double getNoDataValue() {
 		return noDataValue;
 	}
+    
+  public void dispose() {
+    // TODO: probably a good idea to remove resources when the layer is closed up
+    // dunno what is needed to clean up Sextante though, hence leave it for now
+  }
 }

@@ -65,6 +65,7 @@ package com.vividsolutions.jump.workbench.imagery.graphic;
  * www.ashs.isa.com
  */
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -82,9 +83,10 @@ import com.vividsolutions.jump.workbench.imagery.ReferencedImageException;
  * Much of this code was donated by Larry Becker and Robert Littlefield of
  * Integrated Systems Analysts, Inc.
  */
-public class IOGraphicImage extends JAIGraphicImage
+public class IOGraphicImage extends AbstractGraphicImage
 
 {
+  InputStream is = null;
 
   public IOGraphicImage(String uri, WorldFile wf) {
     super(uri, wf);
@@ -94,22 +96,51 @@ public class IOGraphicImage extends JAIGraphicImage
     BufferedImage image = getImage();
     if (image != null)
       return;
-    InputStream is = null;
+
     try {
-      String uri = getUri();
-      is = CompressedFile.openFile(uri);
-      image = ImageIO.read(is);
-      if (image==null)
+      URI uri = new URI(getUri());
+      // is = CompressedFile.openFile(uri);
+      // image = ImageIO.read(new File(new URI(getUri()))); //.read(is);
+
+      // loading streams is slower than files, hence we check if we really
+      // try to open a compressed file first
+      if (CompressedFile.isArchive(uri) || CompressedFile.isCompressed(uri)) {
+        is = CompressedFile.openFile(uri);
+        image = ImageIO.read(is);
+        close(is);
+      } else {
+        // create a File object, native loaders like ecw, mrsid seem to insist
+        // on it
+        // error was:
+        // "Unable to create a valid ImageInputStream for the provided input:"
+        // took me two days to debug this.. pfffhhhh
+        // if you find this workaround because of the full error string above,
+        // that was intentional
+        // please send your praises to edgar AT soldin DOT de, would love to
+        // hear from you
+        image = ImageIO.read(new File(uri));
+      }
+
+      if (image == null)
         throw new IOException("ImageIO read returned null");
       setImage(image);
-      setType(FileUtil.getExtension(CompressedFile.getTargetFileWithPath(new URI(uri))));
+      // infos are difficult to come by, set at least file extension
+      setType(FileUtil.getExtension(CompressedFile.getTargetFileWithPath(uri)));
     } catch (URISyntaxException e) {
-      throw new ReferencedImageException("Could not open image file "+getUri(), e);
+      throw new ReferencedImageException("Could not open image file "
+          + getUri(), e);
     } catch (IOException e) {
-      throw new ReferencedImageException("Could not open image file "+getUri(), e);
+      throw new ReferencedImageException("Could not open image file "
+          + getUri(), e);
     } finally {
       // close streams on any failure
       close(is);
     }
+
+  }
+
+  // img flushing in super suffices
+  public void dispose() {
+    super.dispose();
   }
 }

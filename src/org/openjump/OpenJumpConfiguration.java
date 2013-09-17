@@ -29,7 +29,6 @@ import org.openjump.core.rasterimage.RasterImageLayerRendererFactory;
 import org.openjump.core.ui.DatasetOptionsPanel;
 import org.openjump.core.ui.io.file.DataSourceFileLayerLoader;
 import org.openjump.core.ui.io.file.FileLayerLoader;
-import org.openjump.core.ui.io.file.ReferencedImageFactoryFileLayerLoader;
 import org.openjump.core.ui.plugin.datastore.AddDataStoreLayerWizard;
 import org.openjump.core.ui.plugin.datastore.RefreshDataStoreQueryPlugIn;
 import org.openjump.core.ui.plugin.edittoolbox.ConstrainedMoveVertexPlugIn;
@@ -75,12 +74,12 @@ import com.vividsolutions.jump.workbench.datasource.DataSourceQueryChooser;
 import com.vividsolutions.jump.workbench.datasource.DataSourceQueryChooserManager;
 import com.vividsolutions.jump.workbench.datasource.FileDataSourceQueryChooser;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageFactory;
+import com.vividsolutions.jump.workbench.imagery.ReferencedImageFactoryFileLayerLoader;
 import com.vividsolutions.jump.workbench.imagery.ecw.ECWImageFactory;
 import com.vividsolutions.jump.workbench.imagery.ecw.JPEG2000ImageFactory;
+import com.vividsolutions.jump.workbench.imagery.geoimg.GeoImageFactoryFileLayerLoader;
 import com.vividsolutions.jump.workbench.imagery.geotiff.GeoTIFFImageFactory;
 import com.vividsolutions.jump.workbench.imagery.graphic.CommonsImageFactory;
-import com.vividsolutions.jump.workbench.imagery.graphic.IOGraphicImageFactory;
-import com.vividsolutions.jump.workbench.imagery.graphic.JAIGraphicImageFactory;
 import com.vividsolutions.jump.workbench.imagery.mrsid.MrSIDImageFactory;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.registry.Registry;
@@ -89,7 +88,6 @@ import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.datastore.RunDatastoreQueryPlugIn;
-import com.vividsolutions.jump.workbench.ui.plugin.imagery.AddImageLayerPlugIn;
 import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
 
 import de.latlon.deejump.plugin.SaveLegendPlugIn;
@@ -142,9 +140,6 @@ public class OpenJumpConfiguration {
     
     RunDatastoreQueryPlugIn runDatastoreQueryPlugIn = new RunDatastoreQueryPlugIn();
     runDatastoreQueryPlugIn.initialize(pluginContext);
-
-    AddImageLayerPlugIn addImageLayerPlugIn = new AddImageLayerPlugIn();
-    addImageLayerPlugIn.initialize(pluginContext);
 
     OpenRecentPlugIn openRecent = OpenRecentPlugIn.get(workbenchContext);
     openRecent.initialize(pluginContext);
@@ -628,20 +623,19 @@ public class OpenJumpConfiguration {
         registry.createEntry(FileLayerLoader.KEY, fileLoader);
       }
     }
-    // supersedes com.vividsolutions.jump.workbench.ui.plugin.imagery.InstallReferencedImageFactoriesPlugin
-    // register layerloader with worldfile support and plain factories for imagelayermanager
-    addImageFactory(workbenchContext, registry, new IOGraphicImageFactory(), null);
-    addImageFactory(workbenchContext, registry, new JAIGraphicImageFactory(), null /*
-      new String[] {
-        "wld", "bpw", "jpw", "gfw"
-      }*/);
+    // the next two factories are deprecated. the same and better functionality is in GeoImageFactoryFileLayerLoader
+    //addImageFactory(workbenchContext, registry, new IOGraphicImageFactory(), null);
+    //addImageFactory(workbenchContext, registry, new JAIGraphicImageFactory(), null);
     addImageFactory(workbenchContext, registry, new CommonsImageFactory(), null);
     addImageFactory(workbenchContext, registry, new ECWImageFactory(), null);
     addImageFactory(workbenchContext, registry, new JPEG2000ImageFactory(), null);
     addImageFactory(workbenchContext, registry, new GeoTIFFImageFactory(), null);
     addImageFactory(workbenchContext, registry, new MrSIDImageFactory(), null);
 
-    //
+    // register revamped geoimage
+    // addImageFactory(workbenchContext, registry, new GeoImageFactory(), null);
+    GeoImageFactoryFileLayerLoader.register(workbenchContext);
+
     DataSourceQueryChooserManager manager = DataSourceQueryChooserManager.get(workbenchContext.getWorkbench()
       .getBlackboard());
     for (DataSourceQueryChooser chooser : (List<DataSourceQueryChooser>)manager.getLoadDataSourceQueryChoosers()) {

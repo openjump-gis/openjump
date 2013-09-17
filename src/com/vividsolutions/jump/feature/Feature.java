@@ -150,4 +150,5 @@ public interface Feature extends Cloneable, Comparable {
 	 * A low-level accessor that is not normally used.
 	 */
 	public abstract Object[] getAttributes();
+
 }

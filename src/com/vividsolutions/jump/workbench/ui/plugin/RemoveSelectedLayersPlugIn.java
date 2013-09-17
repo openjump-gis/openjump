@@ -36,6 +36,7 @@ package com.vividsolutions.jump.workbench.ui.plugin;
 import javax.swing.ImageIcon;
 
 import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
@@ -49,28 +50,21 @@ public class RemoveSelectedLayersPlugIn extends AbstractPlugIn {
     }
 
     public boolean execute(PlugInContext context) throws Exception {
-        // Changed on 2007-05-21 to use the new LayerManager()[Michael Michaud]
-        remove(context, (Layerable[]) (context.getLayerNamePanel()).selectedNodes(
-                Layerable.class).toArray(new Layerable[] {  }));
-        System.gc();
-        return true;
-    }
+      // Changed on 2007-05-21 to use the new LayerManager()[Michael Michaud]
+      // remove(context, (Layerable[])
+      // (context.getLayerNamePanel()).selectedNodes(
+      // Layerable.class).toArray(new Layerable[] { }));
+  
+      Layerable[] selectedLayers = (Layerable[]) (context.getLayerNamePanel())
+          .selectedNodes(Layerable.class).toArray(new Layerable[] {});
+      LayerManager lmgr = context.getLayerManager();
+      lmgr.remove(selectedLayers);
 
-    public void remove(PlugInContext context, Layerable[] selectedLayers) {
-        for (int i = 0; i < selectedLayers.length; i++) {
-            // SIGLE start [obedel]
-            // dispose layer immediately
-            //selectedLayers[i].getLayerManager().remove(selectedLayers[i]);
-            // ... becomes ...
-            // Changed again by [Michael Michaud] on 2007-05-21 to solve the memory leak
-            // thanks to the new LayerManager.dispose(PlugInContext, Layerable) method
-            selectedLayers[i].getLayerManager()
-                             .dispose(context.getWorkbenchFrame(), selectedLayers[i]);
-            // SIGLE end
-        }
-        //Don't call LayerManager#setFiringEvents and
-        //LayerManager#fireModelChanged, so that each
-        //removed node is individually removed from the tree. [Jon Aquino]
+      return true;
+    }
+    
+    public ImageIcon getIcon(){
+      return IconLoader.icon("cross.png");
     }
 
     public MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
@@ -81,6 +75,4 @@ public class RemoveSelectedLayersPlugIn extends AbstractPlugIn {
                 1, Layerable.class));
     }
     
-    public static final ImageIcon ICON = IconLoader.icon("cross.png");
-
 }

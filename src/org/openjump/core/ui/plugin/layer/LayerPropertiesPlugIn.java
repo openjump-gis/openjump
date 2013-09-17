@@ -32,9 +32,40 @@
  */
 package org.openjump.core.ui.plugin.layer;
 
-import com.vividsolutions.jts.util.Assert;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.nio.charset.Charset;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
+import javax.swing.SwingConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.feature.Feature;
+import com.vividsolutions.jump.feature.FeatureCollectionWrapper;
+import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
@@ -44,39 +75,9 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
+import com.vividsolutions.jump.workbench.ui.renderer.style.AlphaSetting;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStyle;
-import com.vividsolutions.jump.feature.FeatureCollectionWrapper;
-import com.vividsolutions.jump.feature.Feature;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jump.io.datasource.*;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Hashtable;
-
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
-import javax.swing.JSlider;
-import javax.swing.SwingConstants;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.ChangeEvent;
-import java.text.*;
-import java.util.Map;
+import com.vividsolutions.jump.workbench.ui.renderer.style.Style;
 
 public class LayerPropertiesPlugIn extends AbstractPlugIn {
   private final static String LAST_TAB_KEY = LayerPropertiesPlugIn.class
@@ -301,17 +302,26 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn {
   }
 
   public static int getAlpha(Layer layer) {
+    // colortheming rules over all, why exactly?
     ColorThemingStyle cts = getColorThemingStyleIfEnabled(layer);
-    int alpha = 0;
-    if (cts == null)
-      alpha = layer.getBasicStyle().getAlpha();
-    else
-      alpha = cts.getDefaultStyle().getAlpha();
-    return alpha;
+    if (cts != null)
+      return cts.getDefaultStyle().getAlpha();
+    
+    List<Style> styles = layer.getStylesIfEnabled(AlphaSetting.class);
+    for (Style style : styles) {
+      // first one rules
+      return ((AlphaSetting)style).getAlpha();
+    }
+    // by default return 50%
+    return 128;
   }
 
   public static void setAlpha(Layer layer, int alpha) {
-    layer.getBasicStyle().setAlpha(alpha);
+    List<Style> styles = layer.getStyles(AlphaSetting.class);
+    for (Style style : styles) {
+      ((AlphaSetting)style).setAlpha(alpha);
+    }
+    
     ColorThemingStyle cts = getColorThemingStyleIfEnabled(layer);
     if (cts != null)
       cts.setAlpha(alpha);
@@ -655,18 +665,14 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn {
           PROPORTIONAL_TRANSPARENCY_ADJUSTER, SwingConstants.CENTER);
       transparencySliderLabel.setAlignmentX(CENTER_ALIGNMENT);
       box.add(transparencySliderLabel);
+      // initialize slider, mapping is 0=>-100... 50=>0... 100=>100
       Hashtable labelTable = new Hashtable();
-      labelTable.put(new Integer(0), new JLabel("100"));
-      labelTable.put(new Integer(10), new JLabel("80"));
-      labelTable.put(new Integer(20), new JLabel("60"));
-      labelTable.put(new Integer(30), new JLabel("40"));
-      labelTable.put(new Integer(40), new JLabel("20"));
-      labelTable.put(new Integer(50), new JLabel("0"));
-      labelTable.put(new Integer(60), new JLabel("20"));
-      labelTable.put(new Integer(70), new JLabel("40"));
-      labelTable.put(new Integer(80), new JLabel("60"));
-      labelTable.put(new Integer(90), new JLabel("80"));
-      labelTable.put(new Integer(100), new JLabel("100"));
+      int value = 0;
+      for (int i = -100; i <= 100 && i >= -100; i += 20) {
+        labelTable.put(new Integer(value), new JLabel(new Integer(i).toString()));
+        value += 10;
+      }
+
       transparencySlider.setPreferredSize(new Dimension(250, 50));
       transparencySlider.setPaintLabels(true);
       transparencySlider.setPaintTicks(true);
@@ -692,10 +698,10 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn {
 
               if (sliderVal < 50) {
                 percentChg = ((50 - sliderVal) / 50d);
-                newTrans = currTrans - (currTrans * percentChg);
+                newTrans = currTrans + ((255 - currTrans) * percentChg);
               } else if (sliderVal > 50) {
                 percentChg = (sliderVal - 50) / 50d;
-                newTrans = currTrans + ((255 - currTrans) * percentChg);
+                newTrans = currTrans - (currTrans * percentChg);
               }
 
               setAlpha(layer, 255 - (int) newTrans);

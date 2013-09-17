@@ -31,52 +31,61 @@ package com.vividsolutions.jump.workbench.imagery;
  * (250)385-6040
  * www.vividsolutions.com
  */
-import com.vividsolutions.jump.JUMPException;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.ui.Viewport;
+import com.vividsolutions.jump.workbench.ui.renderer.style.AlphaSetting;
 import com.vividsolutions.jump.workbench.ui.renderer.style.Style;
 
 /**
  * A JUMP style that will paint images
  */
-public class ReferencedImageStyle implements Style {
-    boolean enabled = true;
+public class ReferencedImageStyle implements Style, AlphaSetting {
+  boolean enabled = true;
+  int alpha = 255;
 
-    public ReferencedImageStyle() {
+  public ReferencedImageStyle() {
+  }
+
+  private ImageryLayerDataset imageryLayerDataset = new ImageryLayerDataset();
+
+  public void paint(Feature f, java.awt.Graphics2D g, Viewport viewport)
+      throws Exception {
+    if (imageryLayerDataset.referencedImage(f) == null) {
+      return;
     }
 
-    private ImageryLayerDataset imageryLayerDataset = new ImageryLayerDataset();
+    ReferencedImage img = imageryLayerDataset.referencedImage(f);
+    if (img instanceof AlphaSetting)
+      ((AlphaSetting) img).setAlpha(alpha);
+    img.paint(f, g, viewport);
 
-    public void paint(Feature f, java.awt.Graphics2D g, Viewport viewport)
-            throws Exception {
-        if (imageryLayerDataset.referencedImage(f) == null) {
-            return;
-        }
-        try{
-        	imageryLayerDataset.referencedImage(f).paint(f, g, viewport);
-        }catch(JUMPException e){
-        	f.setAttribute(ImageryLayerDataset.ATTR_ERROR,e.getMessage());
-        	viewport.getPanel().getContext().setStatusMessage("Error reading image.");  
-        }
-    }
+  }
 
-    public void initialize(Layer l) {
-    }
+  public void initialize(Layer l) {
+  }
 
-    public Object clone() {
-        return new ReferencedImageStyle();
-    }
+  public Object clone() {
+    return new ReferencedImageStyle();
+  }
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
+  public void setEnabled(boolean enabled) {
+    this.enabled = enabled;
+  }
 
-    public boolean isEnabled() {
-        return enabled;
-    }
+  public boolean isEnabled() {
+    return enabled;
+  }
 
-    public ImageryLayerDataset getImageryLayerDataset() {
-        return imageryLayerDataset;
-    }
+  public ImageryLayerDataset getImageryLayerDataset() {
+    return imageryLayerDataset;
+  }
+
+  public int getAlpha() {
+    return alpha;
+  }
+
+  public void setAlpha(int alpha) {
+    this.alpha = alpha;
+  }
 }

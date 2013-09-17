@@ -51,7 +51,7 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.Viewport;
 
 
-public class BasicStyle implements Style, StrokeFillStyle {
+public class BasicStyle implements Style, StrokeFillStyle, AlphaSetting {
 	/* Giuseppe Aruta 11-june-2012
 	 * Added code from SkyJUMP BasicStyle to enable color chooser plugin
 	 */

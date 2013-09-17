@@ -39,6 +39,7 @@ import org.openjump.util.UriUtil;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.coordsys.CoordinateSystemRegistry;
+import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.io.CompressedFile;
 import com.vividsolutions.jump.io.datasource.Connection;
@@ -47,6 +48,10 @@ import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.util.LangUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.imagery.ImageryLayerDataset;
+import com.vividsolutions.jump.workbench.imagery.ReferencedImageFactory;
+import com.vividsolutions.jump.workbench.imagery.ReferencedImageFactoryFileLayerLoader;
+import com.vividsolutions.jump.workbench.imagery.ReferencedImageStyle;
 import com.vividsolutions.jump.workbench.model.Category;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManager;
@@ -102,15 +107,64 @@ public class DataSourceFileLayerLoader extends AbstractFileLayerLoader {
 
     Connection connection = dataSourceQuery.getDataSource().getConnection();
     try {
+      LayerManager layerManager = workbenchContext.getLayerManager();
       FeatureCollection dataset = dataSourceQuery.getDataSource()
         .installCoordinateSystem(
           connection.executeQuery(dataSourceQuery.getQuery(), exceptions,
             monitor),
           CoordinateSystemRegistry.instance(workbenchContext.getBlackboard()));
       if (dataset != null) {
-        LayerManager layerManager = workbenchContext.getLayerManager();
-        Layer layer = new Layer(layerName,
-          layerManager.generateLayerFillColor(), dataset, layerManager);
+        Layer layer = null;
+        for (Feature f : (List<Feature>)dataset.getFeatures()) {
+          // restore referenced image feature, if one
+          Feature img_f = null;
+          String fname = (String) f.getAttribute(ImageryLayerDataset.ATTR_FACTORY);
+          if (fname != null && !fname.isEmpty()) {
+            ReferencedImageFactory factory = null;
+
+            try {
+              factory = ImageryLayerDataset.createFeatureFactory(f);
+            } catch (Exception e) {
+              // TODO Auto-generated catch block
+              e.printStackTrace();
+              continue;
+            }
+
+            // create an image layer
+            if (layer == null) {
+              layerManager.setFiringEvents(false);
+              layer = ReferencedImageFactoryFileLayerLoader.createLayer(
+                  layerManager, uri);
+              layer.setFeatureCollection(dataset);
+              layerManager.setFiringEvents(true);
+            }
+            ReferencedImageStyle irs = (ReferencedImageStyle) layer
+                .getStyle(ReferencedImageStyle.class);
+            ImageryLayerDataset ilds = irs.getImageryLayerDataset();
+            
+            try {
+              img_f = ReferencedImageFactoryFileLayerLoader
+                  .createImageFeature(
+                      factory,
+                      new URI((String) f
+                          .getAttribute(ImageryLayerDataset.ATTR_URI)), ilds);
+              // restore previously saved geometry
+              img_f.setGeometry(f.getGeometry());
+            } catch (Exception e) {
+              // TODO Auto-generated catch block
+              e.printStackTrace();
+            }
+          }
+          
+          if (img_f!=null){
+            dataset.remove(f);
+            dataset.add(img_f);
+          }
+        }
+        
+        if (layer == null)
+          layer = new Layer(layerName, layerManager.generateLayerFillColor(),
+              dataset, layerManager);
         Category category = TaskUtil.getSelectedCategoryName(workbenchContext);
         layerManager.addLayerable(category.getName(), layer);
         layer.setName(layerName);

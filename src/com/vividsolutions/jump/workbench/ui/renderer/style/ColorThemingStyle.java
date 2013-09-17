@@ -43,7 +43,7 @@ import com.vividsolutions.jump.util.LangUtil;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.Viewport;
-public class ColorThemingStyle implements Style {
+public class ColorThemingStyle implements Style, AlphaSetting {
 	public ColorThemingStyle() {
 		//Parameterless constructor for Java2XML. [Jon Aquino]
 	}
@@ -236,4 +236,8 @@ public class ColorThemingStyle implements Style {
 	public void setDefaultStyle(BasicStyle defaultStyle) {
 		this.defaultStyle = defaultStyle;
 	}
+
+  public int getAlpha() {
+    return defaultStyle.getAlpha();
+  }
 }

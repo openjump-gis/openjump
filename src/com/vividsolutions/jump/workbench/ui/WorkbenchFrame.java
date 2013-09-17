@@ -1234,6 +1234,17 @@ public class WorkbenchFrame extends JFrame
     scaleLabel = new JLabel(" ");
     coordinateLabel = new JLabel(" ");
     
+    // gc shortcut: a doubleclick on the memorylabel starts gc'ing
+    memoryLabel.addMouseListener(new MouseAdapter() {
+      public void mouseClicked(MouseEvent e) {
+        if (e.getClickCount() != 2)
+          return;
+        
+        Runtime.getRuntime().gc();
+        setStatusMessage(I18N.get(this.getClass()+".started-garbage-collection"),2000);
+      }
+    });
+    
     // this is important, else resizing in the splitpane is buggy, can only make it larger, see
     // https://forums.oracle.com/forums/thread.jspa?threadID=1361066
     messageText.setMinimumSize( new Dimension(50, 1) );

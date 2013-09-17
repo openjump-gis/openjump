@@ -86,6 +86,8 @@ import com.vividsolutions.jump.workbench.imagery.ReferencedImageException;
 public class CommonsImage extends AbstractGraphicImage
 
 {
+  InputStream is = null;
+  
   public CommonsImage(String location, WorldFile wf) {
     super(location, wf);
   }
@@ -94,7 +96,7 @@ public class CommonsImage extends AbstractGraphicImage
     BufferedImage image = getImage();
     if (image != null)
       return;
-    InputStream is = null;
+
     String uri = getUri();
     try {
       is = CompressedFile.openFile(uri);

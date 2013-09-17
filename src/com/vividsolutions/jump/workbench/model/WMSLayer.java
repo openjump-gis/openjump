@@ -283,5 +283,10 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
         }
         return envelope;
     }
+
+    public void dispose() {
+      // TODO: probably a good idea to remove resources when the layer is closed up
+      // dunno what is needed to clean up WMS though, hence leave it for now
+    }
     
 }

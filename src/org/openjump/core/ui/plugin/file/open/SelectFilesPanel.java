@@ -84,11 +84,18 @@ public class SelectFilesPanel extends JFCWithEnterAction implements WizardPanel 
 
   private WizardDialog dialog;
 
+  private Class loaderFilter;
+
   public SelectFilesPanel(final WorkbenchContext workbenchContext) {
     super();
     this.workbenchContext = workbenchContext;
   }
 
+  public SelectFilesPanel(final WorkbenchContext workbenchContext, final Class loaderFilter) {
+    this(workbenchContext);
+    this.loaderFilter = loaderFilter;
+  }
+  
   public OpenFileWizardState getState() {
     return state;
   }
@@ -136,6 +143,8 @@ public class SelectFilesPanel extends JFCWithEnterAction implements WizardPanel 
     filters.put(packedFilter.getDescription(), packedFilter);
 
     for (Object loader : loaders) {
+      if (loaderFilter != null && !loaderFilter.isInstance(loader))
+        continue;
       final FileLayerLoader fileLayerLoader = (FileLayerLoader)loader;
       FileFilter filter = new FileLayerLoaderExtensionFilter(fileLayerLoader);
       allExtensions.addAll(fileLayerLoader.getFileExtensions());

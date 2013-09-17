@@ -33,27 +33,28 @@ package com.vividsolutions.jump.workbench.imagery.geotiff;
  */
 import com.vividsolutions.jump.workbench.imagery.ReferencedImage;
 import com.vividsolutions.jump.workbench.imagery.graphic.JAIGraphicImageFactory;
+import com.vividsolutions.jump.workbench.model.Prioritized;
 
 /**
  * A factory for GeoTIFF images.
  */
 public class GeoTIFFImageFactory extends JAIGraphicImageFactory {
 
-    public static final String TYPE_NAME = "GeoImage";
+  public static final String DESC = "Referenced Image [legacy]";
 
-    public GeoTIFFImageFactory() {
-    }
+  public GeoTIFFImageFactory() {
+  }
 
-    public String getTypeName() {
-        return TYPE_NAME;
-    }
+  public String getDescription() {
+    return DESC + " (" + getTypeName() + ")";
+  }
 
-    public ReferencedImage createImage(String location) throws Exception {
-        return new GeoTIFFImage(location);
-    }
+  public ReferencedImage createImage(String location) throws Exception {
+    return new GeoTIFFImage(location);
+  }
 
-    public String getDescription() {
-        return "GeoImage (JAI)";
-    }
+  public int getPriority() {
+    return Prioritized.NOPRIORITY / 10;
+  }
 
 }

@@ -36,9 +36,9 @@ import org.apache.commons.imaging.ImageFormat;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImage;
 
-public class CommonsImageFactory extends JAIGraphicImageFactory {
+public class CommonsImageFactory extends AbstractGraphicImageFactory {
   public String getTypeName() {
-    return "Image (Commons)";
+    return "Commons";
   }
 
   public ReferencedImage createImage(String location) {

@@ -32,11 +32,16 @@
 package com.vividsolutions.jump.workbench.model;
 
 import java.awt.Color;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.SwingUtilities;
 
 import com.vividsolutions.jts.util.Assert;
+import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureCollectionWrapper;
 import com.vividsolutions.jump.feature.FeatureDataset;
@@ -45,7 +50,11 @@ import com.vividsolutions.jump.feature.Operation;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.ui.plugin.AddNewLayerPlugIn;
-import com.vividsolutions.jump.workbench.ui.renderer.style.*;
+import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
+import com.vividsolutions.jump.workbench.ui.renderer.style.LabelStyle;
+import com.vividsolutions.jump.workbench.ui.renderer.style.SquareVertexStyle;
+import com.vividsolutions.jump.workbench.ui.renderer.style.Style;
+import com.vividsolutions.jump.workbench.ui.renderer.style.VertexStyle;
 
 /**
  * Adds colour, line-width, and other stylistic information to a Feature
@@ -326,9 +335,39 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy {
 		return null;
 	}
 
-	public List getStyles() {
+    /**
+     * get a list of all enabled styles matching the parameter class
+     */
+    public List<Style> getStylesIfEnabled(Class filter) {
+      List<Style> enabledStyles = new ArrayList();
+      final List<Style> someStyles = getStyles(filter);
+      for (Style style : someStyles) {
+          if (((Style) style).isEnabled())
+            enabledStyles.add(style);
+      }
+      return Collections.unmodifiableList(enabledStyles);
+    }
+
+    /**
+     * get a list of all styles
+     */
+	public List<Style> getStyles() {
 		return Collections.unmodifiableList(styles);
 	}
+
+    /**
+     * get a list of all styles matching the parameter class
+     */	
+    public List<Style> getStyles(Class filter) {
+      List<Style> someStyles = new ArrayList();
+      final Collection<Style> currentStyles = getStyles();
+      for (Style style : currentStyles) {
+        if (style instanceof Style && filter.isInstance(style)) {
+          someStyles.add(style);
+        }
+      }
+      return Collections.unmodifiableList(someStyles);
+    }
 
 	public boolean hasReadableDataSource() {
 		return dataSourceQuery != null
@@ -348,20 +387,26 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy {
 		fireAppearanceChanged();
 	}
 
-	/**
-	 * Releases references to the data, to facilitate garbage collection.
-	 * Important for MDI apps like the JUMP Workbench. Called when the last
-	 * JInternalFrame viewing the LayerManager is closed (i.e. internal frame's
-	 * responsibility). To conserve memory, if layers are frequently added and
-	 * removed from the LayerManager, parties may want to call #dispose
-	 * themselves rather than waiting for the internal frame to be closed.
-	 */
-	public void dispose() {
-		//Don't just call FeatureCollection#removeAll, because it may be a
-		// database
-		//table, and we don't want to delete its contents! [Jon Aquino]
-		setFeatureCollection(AddNewLayerPlugIn.createBlankFeatureCollection());
-	}
+    /**
+     * Releases references to the data, to facilitate garbage collection.
+     * Important for MDI apps like the JUMP Workbench. Called when the last
+     * JInternalFrame viewing the LayerManager is closed (i.e. internal frame's
+     * responsibility). To conserve memory, if layers are frequently added and
+     * removed from the LayerManager, parties may want to call #dispose themselves
+     * rather than waiting for the internal frame to be closed.
+     */
+    public void dispose() {
+      // dispose features if disposable nature
+      Collection features = getFeatureCollectionWrapper().getFeatures();
+      for (Iterator iter = features.iterator(); iter.hasNext();) {
+        Feature feature = (Feature) iter.next();
+        if (feature instanceof Disposable)
+          ((Disposable)feature).dispose();
+      }
+      // Don't just call FeatureCollection#removeAll, because it may be a
+      // database table, and we don't want to delete its contents! [Jon Aquino]
+      setFeatureCollection(AddNewLayerPlugIn.createBlankFeatureCollection());
+    }
 
 	public void removeStyle(Style p) {
 		Assert.isTrue(styles.remove(p));

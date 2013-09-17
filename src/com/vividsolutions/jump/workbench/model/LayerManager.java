@@ -306,16 +306,41 @@ public class LayerManager {
         return false;
     }
 
+    /**
+     * convenience method
+     * @param layerable
+     */
     public void remove(Layerable layerable) {
-        for (Iterator i = categories.iterator(); i.hasNext();) {
-            Category c = (Category) i.next();
+      remove(new Layerable[]{layerable}, false);
+    }
+    
+    /**
+     * remove, but do not dispose layer (as used e.g. by MoveLayerPlugin)
+     */
+    public void remove(Layerable[] layerables) {
+      remove(layerables, false);
+    }
+    
+    /**
+     * remove a layer, optionally dispose it and it's features
+     */
+    private void remove(Layerable[] layerables, boolean dispose) {
+      for (int i = 0; i < layerables.length; i++) {
+        Layerable layerable = layerables[i];
+        // iterate over cats to find layer
+        for (Iterator j = categories.iterator(); j.hasNext();) {
+            Category c = (Category) j.next();
             int index = c.indexOf(layerable);
 
             if (index != -1) {
                 c.remove(layerable);
+                if (dispose && layerable instanceof Disposable)
+                  ((Disposable)layerable).dispose();
                 fireLayerChanged(layerable, LayerEventType.REMOVED, c, index);
             }
         }
+      }
+      System.gc();
     }
 
     public void removeIfEmpty(Category category) {
@@ -328,6 +353,31 @@ public class LayerManager {
         fireCategoryChanged(category, CategoryEventType.REMOVED, categoryIndex);
     }
 
+    public void dispose() {
+      for (Iterator i = layerReferencesToDispose.iterator(); i.hasNext();) {
+        WeakReference reference = (WeakReference) i.next();
+        Layer layer = (Layer) reference.get();
+  
+        if (layer != null) {
+          layer.dispose();
+        }
+      }
+  
+      layerManagerCount--;
+  
+      // Undo actions may be holding on to expensive resources; therefore, send
+      // #die to each to request that the resources be freed. [Jon Aquino]
+      undoableEditReceiver.getUndoManager().discardAllEdits();
+    }
+  
+    public void dispose(Layerable l){
+      dispose(new Layerable[]{l});
+    }
+    
+    public void dispose(Layerable[] ls){
+      remove(ls, true);
+    }
+    
     public int indexOf(Category category) {
         return categories.indexOf(category);
     }
@@ -627,97 +677,6 @@ public class LayerManager {
 
         return visibleLayers;
     }
-    
-   /**
-    * The old method dispose(Layerable layerable) is deprecated.
-    * It has been replaced by dispose(WorkbenchFrame frame, Layerable layerable)
-    * I add it again for compatibility issues with some older plugins (Pirol's
-    * raster PlugIn)
-    * I'll remove this method as soon as no more plugin use it
-    * @deprecated
-    */
-    public void dispose(Layerable layerable) {
-        for (Iterator i = categories.iterator(); i.hasNext();) {
-            Category c = (Category) i.next();
-            // deleting the layer from the category
-            int index = c.indexOf(layerable);
-            if (index != -1) {
-                c.remove(layerable);
-                for (Iterator j = layerReferencesToDispose.iterator(); j.hasNext();) {
-                    WeakReference reference = (WeakReference) j.next();
-                    Layer layer = (Layer) reference.get();
-                    if (layer == layerable)
-                    {
-                        // removing the reference to layer
-                        layer.dispose();
-                        layerManagerCount--;
-                    }
-                }
-                // changing appearance of layer tree
-                fireLayerChanged(layerable, LayerEventType.REMOVED, c, index);
-            }
-        }
-    }
-
-   /**
-    * SIGLE [obedel] on 2005 then [mmichaud] on 2007-05-22
-    * To free the memory allocated for a layer
-    * Called by RemoveSelectedLayersPlugin
-    * @param frame the worbench frame
-    * @param layerable the layerable to remove
-    */
-    public void dispose(WorkbenchFrame frame, Layerable layerable) {
-        // removing all LayerRenderers for this Layer
-        // replaced by listener in LayerViewPanel [2012-01-05]
-        //JInternalFrame[] internalFrames = frame.getInternalFrames();
-        //for (int i = 0 ; i < internalFrames.length ; i++) {
-        //    JInternalFrame internalFrame = internalFrames[i];
-        //    if (internalFrame instanceof LayerViewPanelProxy) {
-        //        ((LayerViewPanelProxy)internalFrame).getLayerViewPanel()
-        //                                            .getRenderingManager()
-        //                                            .removeLayerRenderer(layerable);
-        //    }
-        //    //layerViewPanel.getRenderingManager().removeLayerRenderer(layerable);
-        //}
-    	for (Iterator i = categories.iterator(); i.hasNext();) {
-            Category c = (Category) i.next();
-            // deleting the layer from the category
-            int index = c.indexOf(layerable);
-            if (index != -1) {
-                c.remove(layerable);
-                for (Iterator j = layerReferencesToDispose.iterator(); j.hasNext();) {
-            		WeakReference reference = (WeakReference) j.next();
-                   	Layer layer = (Layer) reference.get();
-                   	if (layer == layerable) 
-                   	{
-                		// removing the reference to layer
-                   		layer.dispose();
-                	   	layerManagerCount--; 	
-                	}
-                }
-                // changing appearance of layer tree
-                fireLayerChanged(layerable, LayerEventType.REMOVED, c, index);
-            }
-        }
-    }
-    
-    public void dispose() {
-        for (Iterator i = layerReferencesToDispose.iterator(); i.hasNext();) {
-            WeakReference reference = (WeakReference) i.next();
-            Layer layer = (Layer) reference.get();
-
-            if (layer != null) {
-                layer.dispose();
-            }
-        }
-
-        layerManagerCount--;
-
-        //Undo actions may be holding on to expensive resources; therefore, send
-        //#die to each to request that the resources be freed. [Jon Aquino]
-        undoableEditReceiver.getUndoManager().discardAllEdits();
-    }
-    
     
     public static int layerManagerCount() {
         return layerManagerCount;

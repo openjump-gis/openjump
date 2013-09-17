@@ -75,7 +75,9 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImage;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageException;
+import com.vividsolutions.jump.workbench.model.Disposable;
 import com.vividsolutions.jump.workbench.ui.Viewport;
+import com.vividsolutions.jump.workbench.ui.renderer.style.AlphaSetting;
 
 /**
  * An image whose source is a bitmap
@@ -83,7 +85,8 @@ import com.vividsolutions.jump.workbench.ui.Viewport;
  * Much of this code was donated by Larry Becker and Robert Littlefield of
  * Integrated Systems Analysts, Inc.
  */
-public abstract class AbstractGraphicImage implements ReferencedImage
+public abstract class AbstractGraphicImage implements ReferencedImage,
+    Disposable, AlphaSetting
 
 {
   protected String uristring;
@@ -91,7 +94,11 @@ public abstract class AbstractGraphicImage implements ReferencedImage
   protected WorldFile wf;
   protected boolean initialload;
   protected Envelope env;
-  protected String type = null;
+  // info vars to be set by implementers
+  protected String type = "";
+  protected String loader = "";
+
+  int alpha = 255;
 
   public AbstractGraphicImage(String location, WorldFile wf) {
     this.wf = wf;
@@ -123,7 +130,8 @@ public abstract class AbstractGraphicImage implements ReferencedImage
     return new Envelope(xm, xM, ym, yM);
   }
 
-  public void paint(Feature f, java.awt.Graphics2D g, Viewport viewport) throws ReferencedImageException {
+  public void paint(Feature f, java.awt.Graphics2D g, Viewport viewport)
+      throws ReferencedImageException {
 
     initImage();
 
@@ -244,16 +252,18 @@ public abstract class AbstractGraphicImage implements ReferencedImage
       // which define the edges of the pixel space so that we have
       // to add 1 to the right bottom coordinate of the source rectangle
       // since jpgRightPixel & jpgBotPixel are defined in terms of array element
-      // position
-      // any questions, see Java documentation for Graphics object
+      // position any questions? see Java documentation for Graphics object
       Composite composite = g.getComposite();
       // [mmichaud 2012-10-10] fix bug 3525977: PNG rasters with void pixels not
       // displayed
       // g.setComposite(AlphaComposite.Src);
-      g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
-      g.drawImage(image, image_x, image_y, image_x
-          + image_w, image_y + image_h, jpgLeftPixel, jpgTopPixel,
-          jpgRightPixel + 1, jpgBotPixel + 1, viewport.getPanel());
+      g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
+          1f * alpha / 255));
+      //System.out.println(1f * alpha / 255 + "/" + alpha);
+
+      g.drawImage(image, image_x, image_y, image_x + image_w,
+          image_y + image_h, jpgLeftPixel, jpgTopPixel, jpgRightPixel + 1,
+          jpgBotPixel + 1, viewport.getPanel());
       g.setComposite(composite);
     }
   }
@@ -270,6 +280,10 @@ public abstract class AbstractGraphicImage implements ReferencedImage
     return type;
   }
 
+  public String getLoader() {
+    return loader;
+  }
+
   public String getUri() {
     return uristring;
   }
@@ -283,11 +297,26 @@ public abstract class AbstractGraphicImage implements ReferencedImage
   }
 
   protected abstract void initImage() throws ReferencedImageException;
-  
-  public static void close(Closeable is){
+
+  public static void close(Closeable is) {
     try {
       if (is instanceof Closeable)
         is.close();
-    } catch (IOException e) {}
+    } catch (IOException e) {
+    }
+  }
+
+  public void dispose() {
+    image.flush();
+    image = null;
+    wf = null;
+  }
+
+  public int getAlpha() {
+    return alpha;
+  }
+
+  public void setAlpha(int alpha) {
+    this.alpha = alpha;
   }
 }

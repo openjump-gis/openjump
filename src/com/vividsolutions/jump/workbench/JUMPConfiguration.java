@@ -86,7 +86,6 @@ import com.vividsolutions.jump.workbench.plugin.PlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.ApplicationExitHandler;
 import com.vividsolutions.jump.workbench.ui.AttributeTab;
-import com.vividsolutions.jump.workbench.ui.CloneableInternalFrame;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
@@ -112,6 +111,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.CombineSelectedFeaturesPlugIn
 import com.vividsolutions.jump.workbench.ui.plugin.CopySchemaPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.DeleteAllFeaturesPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.DeleteSelectedItemsPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.DisposeSelectedLayersPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.EditSelectedFeaturePlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.EditablePlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.ExplodeSelectedFeaturesPlugIn;
@@ -129,7 +129,6 @@ import com.vividsolutions.jump.workbench.ui.plugin.PasteSchemaPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.RedoPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.RemoveSelectedCategoriesPlugIn;
-import com.vividsolutions.jump.workbench.ui.plugin.RemoveSelectedLayersPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.SaveImageAsPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.SaveProjectAsPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.SaveProjectPlugIn;
@@ -284,7 +283,7 @@ public class JUMPConfiguration implements Setup {
 
   private DeleteSelectedItemsPlugIn deleteSelectedItemsPlugIn = new DeleteSelectedItemsPlugIn();
 
-  private RemoveSelectedLayersPlugIn removeSelectedLayersPlugIn = new RemoveSelectedLayersPlugIn();
+  private DisposeSelectedLayersPlugIn disposeSelectedLayersPlugIn = new DisposeSelectedLayersPlugIn();
 
   private RemoveSelectedCategoriesPlugIn removeSelectedCategoriesPlugIn = new RemoveSelectedCategoriesPlugIn();
 
@@ -508,10 +507,8 @@ public class JUMPConfiguration implements Setup {
         copySelectedLayersPlugIn.getNameWithMnemonic(), false,
         copySelectedLayersPlugIn.ICON,
         copySelectedLayersPlugIn.createEnableCheck(workbenchContext));
-    featureInstaller.addPopupMenuItem(wmsLayerNamePopupMenu,
-        removeSelectedLayersPlugIn, removeSelectedLayersPlugIn.getName(),
-        false, RemoveSelectedLayersPlugIn.ICON,
-        removeSelectedLayersPlugIn.createEnableCheck(workbenchContext));
+    featureInstaller.addPopupMenuPlugin(wmsLayerNamePopupMenu,
+        disposeSelectedLayersPlugIn);
   }
 
   private void configureAttributePopupMenu(
@@ -554,10 +551,8 @@ public class JUMPConfiguration implements Setup {
     
     layerNamePopupMenu.addSeparator(); // ===================
     
-    featureInstaller.addPopupMenuItem(layerNamePopupMenu,
-        removeSelectedLayersPlugIn, removeSelectedLayersPlugIn.getName(),
-        false, RemoveSelectedLayersPlugIn.ICON,
-        removeSelectedLayersPlugIn.createEnableCheck(workbenchContext));
+    featureInstaller.addPopupMenuPlugin(layerNamePopupMenu,
+        disposeSelectedLayersPlugIn);
 
     layerNamePopupMenu.addSeparator(); // ===================
 
@@ -1048,12 +1043,10 @@ public class JUMPConfiguration implements Setup {
     featureInstaller.addMainMenuPlugin(new CombineSelectedLayersPlugIn(), new String[] { MENU_LAYER });
 
     featureInstaller.addMenuSeparator(MENU_LAYER); // ===================
-    featureInstaller.addMainMenuItem(removeSelectedLayersPlugIn,
-        new String[] { MENU_LAYER },
-        new JMenuItem(removeSelectedLayersPlugIn.getName(),
-            RemoveSelectedLayersPlugIn.ICON), removeSelectedLayersPlugIn
-            .createEnableCheck(workbenchContext));
+    featureInstaller.addMainMenuPlugin(disposeSelectedLayersPlugIn,
+        new String[] { MENU_LAYER });
     featureInstaller.addMenuSeparator(MENU_LAYER); // ===================
+    
     featureInstaller.addMainMenuItem(removeSelectedCategoriesPlugIn,
         new String[] { MENU_LAYER }, new JMenuItem(
             removeSelectedCategoriesPlugIn.getName()),
