@@ -17,6 +17,7 @@
     <version.release>snapshot</version.release>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
     <project.binaries>**/*.command,**/*.sh,**/*.bat,**/*.exe,**/MacOS/OpenJUMP</project.binaries>
+    <imageio-ext.version>1.1.7</imageio-ext.version>
   </properties>
   <profiles>
     <profile>
@@ -658,14 +659,14 @@
       <name>Central Maven 2 Repository</name>
       <url>http://central.maven.org/maven2</url>
     </repository>
-    <repository>
+    <!--repository>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
       <id>geotools</id>
       <name>Geotools repository</name>
       <url>http://maven.geotools.fr/repository</url>
-    </repository>
+    </repository-->
     <repository>
       <id>cam</id>
       <name>Cambridge Maven 2 Repository</name>
@@ -692,10 +693,14 @@
       <name>Open Source Geospatial Foundation Repository</name>
       <url>http://download.osgeo.org/webdav/geotools/</url>
     </repository>
-    <!-- below the home of imageio-ext, not really needed as files are added manually in ect/mvn/*.cmp files -->
+    <!-- below the home of imageio-ext, needed for local compilation only
+         for distribution jars are added manually in etc/mvn/*.cmp files -->
     <repository>
-      <id>geosolutions</id>
-      <name>GeoSolutions libraries repository</name>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <id>imageio-ext-repository</id>
+      <name>imageio-ext Repository</name>
       <url>http://maven.geo-solutions.it/</url>
     </repository>
   </repositories>
@@ -837,6 +842,27 @@
        <groupId>javax.media</groupId>
        <artifactId>jai_imageio</artifactId>
        <version>1.1</version>
+     </dependency>
+     <!-- we only provide the imageio-ext jars here for compilation
+          for runtime they are packaged from lib/imageio-ext/ for 
+          easier updating and splitting between CORE and PLUS -->
+     <dependency>
+       <groupId>it.geosolutions.imageio-ext</groupId>
+       <artifactId>imageio-ext-utilities</artifactId>
+       <version>${imageio-ext.version}</version>
+       <scope>provided</scope>
+     </dependency>
+     <dependency>
+       <groupId>it.geosolutions.imageio-ext</groupId>
+       <artifactId>imageio-ext-gdalframework</artifactId>
+       <version>${imageio-ext.version}</version>
+       <scope>provided</scope>
+     </dependency>
+     <dependency>
+       <groupId>it.geosolutions.imageio-ext</groupId>
+       <artifactId>imageio-ext-geocore</artifactId>
+       <version>${imageio-ext.version}</version>
+       <scope>provided</scope>
      </dependency>
   </dependencies>
 </project>
