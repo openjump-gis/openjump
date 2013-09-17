@@ -66,7 +66,6 @@ import com.sun.media.jai.codec.SeekableStream;
 import com.vividsolutions.jump.io.CompressedFile;
 import com.vividsolutions.jump.util.FileUtil;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
-import com.vividsolutions.jump.workbench.imagery.ImageryLayerDataset;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageException;
 import com.vividsolutions.jump.workbench.model.Disposable;
 
@@ -275,7 +274,7 @@ public abstract class GeoRaster implements Disposable {
 
   public void dispose() {
     if (src instanceof RenderedImage) {
-      ImageryLayerDataset.disposeImage(src);
+      ImageIOUtilities.disposeImage(src);
       src = null;
     }
     if (src_reader instanceof ImageReader) {

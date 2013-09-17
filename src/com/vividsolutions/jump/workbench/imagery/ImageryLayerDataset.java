@@ -31,18 +31,9 @@ package com.vividsolutions.jump.workbench.imagery;
  * (250)385-6040
  * www.vividsolutions.com
  */
-import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
-import javax.media.jai.PlanarImage;
-import javax.media.jai.ROI;
-import javax.media.jai.RenderedOp;
-
-import com.sun.media.jai.operator.ImageReadDescriptor;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -186,71 +177,4 @@ public class ImageryLayerDataset {
     }
     return imageFactory;
   }
-  
-  /**
-   * shamelessly stolen from ImageIO-Ext's ImageIOUtilities
-   * @param rOp
-   */
-  public static void disposeImage(RenderedImage rOp) {
-    if (rOp != null) {
-        if (rOp instanceof RenderedOp) {
-            RenderedOp renderedOp = (RenderedOp) rOp;
-
-            final int nSources = renderedOp.getNumSources();
-            if (nSources > 0) {
-                for (int k = 0; k < nSources; k++) {
-                    Object source = null;
-                    try {
-                        source = renderedOp.getSourceObject(k);
-
-                    } catch (ArrayIndexOutOfBoundsException e) {
-                        // Ignore
-                    }
-                    if (source != null) {
-                        if (source instanceof RenderedOp) {
-                            disposeImage((RenderedOp) source);
-                        } else if (source instanceof BufferedImage) {
-                            ((BufferedImage) source).flush();
-                            source = null;
-                        }
-                    }
-                }
-            } else {
-                // get the reader
-                Object imageReader = rOp.getProperty(ImageReadDescriptor.PROPERTY_NAME_IMAGE_READER);
-                if (imageReader != null && imageReader instanceof ImageReader) {
-                    final ImageReader reader = (ImageReader) imageReader;
-                    final ImageInputStream stream = (ImageInputStream) reader.getInput();
-                    try {
-                        stream.close();
-                    } catch (Throwable e) {
-                        // swallow this
-                    }
-                    try {
-                        reader.dispose();
-                    } catch (Throwable e) {
-                        // swallow this
-                    }
-                }
-            }
-            final Object roi = rOp.getProperty("ROI");
-            if (roi != null && (roi instanceof ROI || roi instanceof RenderedImage)) {
-                ROI roiImage = (ROI) roi;
-                PlanarImage image = roiImage.getAsImage();
-                if (image != null) {
-                    image.dispose();
-                    image = null;
-                    roiImage = null;
-                }
-            }
-
-            if (rOp instanceof PlanarImage) {
-                ((PlanarImage) rOp).dispose();
-            } else if (rOp instanceof BufferedImage) {
-                ((BufferedImage) rOp).flush();
-                rOp = null;
-            }
-        }
-    }
-}
 }

@@ -64,6 +64,8 @@ package com.vividsolutions.jump.workbench.imagery.mrsid;
  * (850)862-7321
  * www.ashs.isa.com
  */
+import it.geosolutions.imageio.utilities.ImageIOUtilities;
+
 import java.awt.AlphaComposite;
 import java.awt.Composite;
 import java.awt.Graphics2D;
@@ -83,7 +85,6 @@ import com.sun.media.jai.codec.FileSeekableStream;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
-import com.vividsolutions.jump.workbench.imagery.ImageryLayerDataset;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImage;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageException;
 import com.vividsolutions.jump.workbench.model.Disposable;
@@ -364,7 +365,7 @@ public class MrSIDReferencedImage extends WindowAdapter implements
 
   public void dispose() {
     if (oldImage!=null)
-      ImageryLayerDataset.disposeImage(oldImage);
+      ImageIOUtilities.disposeImage(oldImage);
     try {
       if (oldFileStream != null)
         oldFileStream.close();
