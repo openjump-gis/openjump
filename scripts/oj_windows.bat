@@ -109,9 +109,31 @@ rem --- 7 Version 6.1 ---
 for /f "delims=" %%v in ('ver^|findstr /REC:" 6.1.[0-9\.]*]"') do (
   set "ID=seven"
 )
-rem -- add native as fallthrough and lib\ext the legacy value --
-set "NATIVEPATH=%NATIVE%\%ID%%X64%;%NATIVE%\%ID%;%NATIVE%"
+rem --- 8 Version 6.2 ---
+for /f "delims=" %%v in ('ver^|findstr /REC:" 6.2.[0-9\.]*]"') do (
+  set "ID=eight"
+)
+rem --- 8.1 Version 6.3 ---
+for /f "delims=" %%v in ('ver^|findstr /REC:" 6.3.[0-9\.]*]"') do (
+  set "ID=eightone"
+)
+rem -- add native as fallthrough and lib\ext the legacy value and default system path --
+if DEFINED X64 set "NATIVEPATH=%NATIVE%\%ID%%X64%"
+set "NATIVEPATH=%NATIVEPATH%;%NATIVE%\%ID%;%NATIVE%"
 set "PATH=%NATIVEPATH%;%LIB%\ext;%PATH%"
+
+rem -- set GDAL vars --
+if DEFINED JAVA_X64 (
+  set "GDAL_FOLDER=gdal-win-x64"
+) else (
+  set "GDAL_FOLDER=gdal-win-x86"
+)
+set "GDAL_FOLDER=lib\native\%GDAL_FOLDER%"
+if EXIST "%GDAL_FOLDER%" (
+  set "GDAL_DATA=%GDAL_FOLDER%\bin\gdal-data"
+  set "GDAL_DRIVER_PATH=%GDAL_FOLDER%\bin\gdal\plugins"
+  set "PATH=%GDAL_FOLDER%\bin;%GDAL_FOLDER%\bin\gdal\java;%PATH%"
+)
 
 rem -- debug info --
 if /i NOT "%JAVA_BIN%"=="javaw" echo ---PATH--- & echo %PATH%
