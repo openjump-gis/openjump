@@ -161,7 +161,7 @@ public abstract class GeoRaster implements Disposable {
         type = src_reader.getFormatName();
         loader = src_reader.getClass().getCanonicalName();
 
-        System.out.println("G2RR: " + src_reader);
+       // System.out.println("G2RR: " + src_reader);
         try {
           src = JAI.create("ImageRead", pbjImageRead);
 
@@ -327,11 +327,11 @@ public abstract class GeoRaster implements Disposable {
 
       boolean canDec = canDecode(provider, uri);
       boolean hasExt = hasFileExtension(provider, uri);
-      String canRead = canDec ? "jupp" : "noe";
-      if (canDec || hasExt)
-        System.out.println(provider + "(" + canRead + "/" + hasExt + ") = "
-            + provider.getDescription(Locale.getDefault()) + " / "
-            + Arrays.toString(provider.getFileSuffixes()));
+//      String canRead = canDec ? "jupp" : "noe";
+//      if (canDec || hasExt)
+//        System.out.println(provider + "(" + canRead + "/" + hasExt + ") = "
+//            + provider.getDescription(Locale.getDefault()) + " / "
+//            + Arrays.toString(provider.getFileSuffixes()));
 
       // either decoding or extension suffice for our purposes
       if (!canDec && !hasExt)

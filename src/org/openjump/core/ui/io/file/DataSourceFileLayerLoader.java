@@ -118,7 +118,10 @@ public class DataSourceFileLayerLoader extends AbstractFileLayerLoader {
         for (Feature f : (List<Feature>)dataset.getFeatures()) {
           // restore referenced image feature, if one
           Feature img_f = null;
-          String fname = (String) f.getAttribute(ImageryLayerDataset.ATTR_FACTORY);
+          // is there a img factory saved? if so we got an img feature
+          String fname = f.getSchema().hasAttribute(
+              ImageryLayerDataset.ATTR_FACTORY) ? f
+              .getString(ImageryLayerDataset.ATTR_FACTORY) : null;
           if (fname != null && !fname.isEmpty()) {
             ReferencedImageFactory factory = null;
 
