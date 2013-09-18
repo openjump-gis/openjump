@@ -45,11 +45,12 @@ import com.vividsolutions.jump.workbench.imagery.geoimg.GeoImageFactory;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 
 public class ImageryLayerDataset {
-  private static String prefix = "IMG.";
-  public static final String ATTR_GEOMETRY = prefix+"GEOMETRY";
+  // keeping attribute names short makes them survive even saving in SHP files
+  private static String prefix = "";
+  public static final String ATTR_GEOMETRY = prefix+"GEOM";
   public static final String ATTR_URI = prefix + "URI";
   // public static final String ATTR_FORMAT = "IMAGEFORMAT";
-  public static final String ATTR_FACTORY = prefix + "FACTORY";
+  public static final String ATTR_FACTORY = prefix + "FACT";
   public static final String ATTR_ERROR = prefix + "ERROR";
   public static final String ATTR_TYPE = prefix + "TYPE";
   public static final String ATTR_LOADER = prefix + "LOADER";
