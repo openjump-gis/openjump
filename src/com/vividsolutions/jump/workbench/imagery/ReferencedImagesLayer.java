@@ -12,7 +12,7 @@ import com.vividsolutions.jump.workbench.model.LayerManager;
 
 // this is just a dummy to make layers created with referenced images 
 // distinguishable from plain vector layers
-public class ReferencedImagesLayer extends Layer {
+public class ReferencedImagesLayer extends Layer implements Disposable {
 
   public ReferencedImagesLayer() {
     super();
