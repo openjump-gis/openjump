@@ -7,10 +7,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * static methods to help formatting sql statements for PostGIS
@@ -66,8 +63,13 @@ public class PostGISConnectionUtil {
                 PostGISQueryUtil.unquote(dbTable), null);
         Map<String,AttributeType> map = new HashMap<String,AttributeType>();
         while (rs.next()) {
-            map.put(rs.getString("COLUMN_NAME"),
-                PostGISQueryUtil.getAttributeType(rs.getInt("DATA_TYPE"), rs.getString("TYPE_NAME")));
+            String name = rs.getString("COLUMN_NAME");
+            AttributeType type = PostGISQueryUtil.getAttributeType(rs.getInt("DATA_TYPE"), rs.getString("TYPE_NAME"));
+            // Only one attribute must use the AttributeType.GEOMETRY
+            if (type == AttributeType.GEOMETRY && featureSchema.getAttributeType(name) != AttributeType.GEOMETRY) {
+                map.put(name, AttributeType.OBJECT);
+            }
+            else map.put(name, type);
         }
         List<String> subset = new ArrayList<String>();
         for (int i = 0 ; i < featureSchema.getAttributeCount() ; i++) {
