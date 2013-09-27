@@ -81,8 +81,8 @@ public class PostgisResultSetConverter
           featureSchema.addAttribute(colName, mapper[i].getType());
         }
         else {
-          mapper[i] = ValueConverterFactory.STRING_MAPPER;
-          featureSchema.addAttribute(colName, AttributeType.STRING);
+          mapper[i] = odm.WKB_OBJECT_MAPPER;
+          featureSchema.addAttribute(colName, AttributeType.OBJECT);
         }
       }
       else {
