@@ -42,7 +42,8 @@ public class DbfFile implements DbfConsts {
     private long filesize;
     private int numfields;
     private Map<String,String> uniqueStrings;
-    private DbfFieldDef[] fielddef;
+
+    public DbfFieldDef[] fielddef;
 
     public static final SimpleDateFormat DATE_PARSER = new SimpleDateFormat("yyyyMMdd") {
         {
@@ -170,6 +171,7 @@ public class DbfFile implements DbfConsts {
     private void init(EndianDataInputStream sfile)
             throws IOException {
 
+        new DbfFileHeader(sfile);
         // A map to store a unique reference for identical field value
         uniqueStrings = new HashMap<String,String>();
         int widthsofar;
@@ -232,7 +234,7 @@ public class DbfFile implements DbfConsts {
      * @param row - the row to fetch
      * @exception java.io.IOException on read error.
      */
-    public Vector ParseDbfRecord(int row) throws java.io.IOException {
+    public Vector ParseDbfRecord(long row) throws java.io.IOException {
         return ParseRecord(GetDbfRec(row));
     }
 

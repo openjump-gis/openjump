@@ -446,7 +446,7 @@ public class ShapefileWriter implements JUMPWriter {
                 if (fromFile.fieldnumdec > 0)
                     fields[f] = fromFile;
                f++;
-            } else if (columnType == AttributeType.STRING) {
+            } else if (columnType == AttributeType.STRING || columnType == AttributeType.OBJECT) {
                 int maxlength = findMaxStringLength(featureCollection, t);
 
                 if (maxlength > 255) {
@@ -560,7 +560,7 @@ public class ShapefileWriter implements JUMPWriter {
                     } else {
                         DBFrow.add(DbfFile.DATE_PARSER.format((Date)a));
                     }                    
-                } else if (columnType == AttributeType.STRING) {
+                } else if (columnType == AttributeType.STRING || columnType == AttributeType.OBJECT) {
                     Object a = feature.getAttribute(u);
 
                     if (a == null) {
