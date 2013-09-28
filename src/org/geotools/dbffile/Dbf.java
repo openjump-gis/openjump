@@ -20,7 +20,9 @@ import com.vividsolutions.jump.io.EndianDataInputStream;
  * Computaional Geography, University of Leeds, LS2 9JT, 1998.
  * <br>
  * mod to getStringCol by James Macgill.
+ * @deprecated see DbfFile
  */
+@Deprecated
 public class Dbf implements DbfConsts{
     static final boolean DEBUG=false;
     static final String DBC="Dbf->";
