@@ -31,14 +31,36 @@ package com.vividsolutions.jump.workbench.imagery.geoimg;
  * (250)385-6040
  * www.vividsolutions.com
  */
+import it.geosolutions.imageio.gdalframework.GDALImageReaderSpi;
+import it.geosolutions.imageio.gdalframework.GDALUtilities;
+
+import java.io.File;
+import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 
 import javax.imageio.ImageIO;
+import javax.imageio.spi.IIORegistry;
+import javax.imageio.spi.ImageReaderSpi;
+
+import org.gdal.gdal.Driver;
+import org.gdal.gdal.gdal;
+import org.gdal.gdalconst.gdalconst;
+import org.geotiff.image.jai.GeoTIFFDescriptor;
+import org.geotiff.image.jai.GeoTIFFFactory;
+import org.libtiff.jai.codec.XTIFFDirectory;
+import org.libtiff.jai.codecimpl.XTIFFCodec;
+import org.libtiff.jai.operator.XTIFFDescriptor;
 
 import com.sun.media.jai.codec.ImageCodec;
+import com.vividsolutions.jump.util.SortedList;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImage;
 import com.vividsolutions.jump.workbench.imagery.graphic.AbstractGraphicImageFactory;
+import com.vividsolutions.jump.workbench.imagery.imageio.JP2GDALEcwImageReaderSpi;
+import com.vividsolutions.jump.workbench.imagery.imageio.JP2GDALOpenJPEGImageReaderSpi;
 import com.vividsolutions.jump.workbench.model.Prioritized;
 
 /**
@@ -56,11 +78,53 @@ public class GeoImageFactory extends AbstractGraphicImageFactory {
   }
 
   public GeoImageFactory() {
+    // register optional codecs TODO: how to register them more effortlessly?
+    IIORegistry.getDefaultInstance().registerServiceProvider(
+        new JP2GDALOpenJPEGImageReaderSpi());
+    IIORegistry.getDefaultInstance().registerServiceProvider(
+        new JP2GDALEcwImageReaderSpi());
+
+    // initialize extensions
+    final Iterator<? extends ImageReaderSpi> iter = IIORegistry
+        .getDefaultInstance().getServiceProviders(ImageReaderSpi.class, true);
+    for (; iter.hasNext();) {
+      ImageReaderSpi reader = (ImageReaderSpi) iter.next();
+      String[] exts = reader.getFileSuffixes();
+      // this is mainly for the NITF imageio-ext reader, which has one empty ext
+      // supposedly because too much file extensions (?) exist for this format
+      if (exts.length == 0
+          || (exts.length == 1 && exts[0] instanceof String && exts[0].trim()
+              .isEmpty()))
+        addExtension("*");
+      else
+        addExtensions(Arrays.asList(exts));
+    }
+
+    // add plain JAI codecs extensions
+    for (Enumeration<ImageCodec> e = ImageCodec.getCodecs(); e.hasMoreElements();) {
+      ImageCodec codec = (ImageCodec) e.nextElement();
+      String ext = codec.getFormatName().toLowerCase();
+      addExtension(ext);
+    }
+
   }
 
-  // enforce a specific loader
+  // GeoImageFactory with an enforced specific loader
   public GeoImageFactory(Object loader) {
     this.loader = loader;
+    if (loader instanceof ImageCodec) {
+      String ext = ((ImageCodec) loader).getFormatName().toLowerCase();
+      addExtension(ext);
+    } else if (loader instanceof ImageReaderSpi) {
+      ImageReaderSpi reader = (ImageReaderSpi) loader;
+      String[] exts = reader.getFileSuffixes();
+      if (exts.length == 0
+          || (exts.length == 1 && exts[0] instanceof String && exts[0].trim()
+              .isEmpty()))
+        addExtension("*");
+      else
+        addExtensions(Arrays.asList(exts));
+    }
   }
 
   public String getTypeName() {
@@ -76,39 +140,88 @@ public class GeoImageFactory extends AbstractGraphicImageFactory {
     return getTypeName() + " " + loaderString();
   }
 
+  /**
+   * prepare a proper description of a forced loader
+   * currently "(description, version x.x, vendor)"
+   */
   private String loaderString() {
     // a specified loader
-    if (loader != null)
-      return "(" + loader.getClass().getName() + ")";
+    if (loader != null) {
+      String loaderString ="";
+      // imageIO readers
+      if (loader instanceof ImageReaderSpi) {
+         loaderString = ((ImageReaderSpi) loader).getDescription(Locale
+            .getDefault());
+        loaderString = loaderString.replace(
+            "Java Advanced Imaging Image I/O Tools", "ImageIO");
+        
+        if (loader instanceof GDALImageReaderSpi) 
+          loaderString = "GDAL " + loaderString;
+        // always include version info
+        if (!loaderString.toLowerCase().contains("version"))
+          loaderString += ", version " + ((ImageReaderSpi) loader).getVersion();
+        
+        loaderString += ", "+((ImageReaderSpi) loader).getVendorName();
+      } 
+      // JAI codecs
+      else if (loader instanceof ImageCodec) {
+        loaderString = "JAI " + ((ImageCodec) loader).getFormatName().toUpperCase();
+      }
+      // all else by classname
+      else {
+        loaderString = loader.getClass().getName();
+      }
+      
+      return "("+loaderString+")";
+    }
     // or automatic
-    else
-      return "(ImageIO[ext],JAI)";
+    return "(ImageIO[ext],JAI)";
   }
 
-  // we have priority over them all
+  // returns the priority of this factory
   public int getPriority() {
     // the autoload (w/o defined loader) has topmost priority
     if (loader == null)
       return 0;
 
-    String name = loader.getClass().getName();
-    if (name.startsWith("it.geosolutions.imageioimpl"))
-      return 10;
-    else if (name.startsWith("com.sun.media.imageioimpl"))
-      return 20;
+    return getPriority(loader);
+  }
 
-    // return prio or hardcoded 50% priority,
+  // return a pririty for the given loader object
+  public static int getPriority(Object loader) {
+    String name = loader.getClass().getName();
+    
+    // some special cases
+    if (loader instanceof JP2GDALOpenJPEGImageReaderSpi)
+      return Prioritized.NOPRIORITY; // currently very unstable
+    if (name.equals("it.geosolutions.imageio.plugins.jp2ecw.JP2GDALEcwImageReaderSpi"))
+      return Prioritized.NOPRIORITY; // replaced by our patched version under com.vividsolutions.jump.workbench.imagery
+    
+    // we've got some patched
+    if (name.startsWith("com.vividsolutions.jump.workbench.imagery"))
+      return 10;
+    // prefer imageio-ext readers
+    else if (name.startsWith("it.geosolutions.imageio")){
+      // prefer plain java readers
+      if (loader instanceof GDALImageReaderSpi)
+        return 25;
+      return 20;
+    }
+    // next are sun's imageio readers
+    else if (name.startsWith("com.sun.media.imageio"))
+      return 30;
+    // next in line are all other imageio readers
+    else if (loader instanceof ImageReaderSpi)
+      return 40;
+
+    // return prio or hardcoded 100 priority,
     // after all GeoImage is supposed to be superior
-    return Prioritized.NOPRIORITY / 2;
+    return 100;
   }
 
   public boolean isAvailable(WorkbenchContext context) {
-    // add imageio[-ext] formats
-    for (String ext : ImageIO.getReaderFileSuffixes()) {
-      addExtension(ext);
-    }
 
-    // add plain JAI codecs
+    // check JAI availability (usually part of jdk)
     Class c = null, c2 = null;
     try {
       c = this.getClass().getClassLoader().loadClass("javax.media.jai.JAI");
@@ -116,20 +229,36 @@ public class GeoImageFactory extends AbstractGraphicImageFactory {
           .loadClass("com.sun.media.jai.codec.ImageCodec");
       if (c == null || c2 == null)
         return false;
-
-      for (Enumeration e = ImageCodec.getCodecs(); e.hasMoreElements();) {
-        ImageCodec codec = (ImageCodec) e.nextElement();
-        String ext = codec.getFormatName().toLowerCase();
-        addExtension(ext);
-      }
     } catch (ClassNotFoundException e) {
-      // eat it
+      return false;
     }
-
-    // System.out.println(this.getClass().getName() + ": "
-    // + Arrays.toString(getExtensions()));
-
+    
+    // register xtiff codec, mainly for reading geotiff tags
+    if (ImageCodec.getCodec("xtiff") == null) {
+      GeoTIFFDescriptor.register();
+    }
+    
+    // set up imagio caching, not sure if this really has an effect
+    File temp = new File(System.getProperty("java.io.tmpdir"));
+    System.out.println("GIF temp: "+temp);
+    ImageIO.setCacheDirectory(temp);
+    ImageIO.setUseCache(true);
+    
+    // print a list of available GDAL drivers
+    List a = new SortedList();
+    for (int i = 0; GDALUtilities.isGDALAvailable()
+        && i < gdal.GetDriverCount(); i++) {
+      Driver d = gdal.GetDriver(i);
+      String e = d.GetMetadataItem(gdalconst.GDAL_DMD_EXTENSION);
+      a.add(d.getShortName() + "(" + e + ")");
+    }
+    for (Object n : a) {
+      System.out.print(n + ",");
+    }
+    System.out.println();
+    
     // imageio is part of jdk, so assume we are avail
     return true;
   }
+  
 }

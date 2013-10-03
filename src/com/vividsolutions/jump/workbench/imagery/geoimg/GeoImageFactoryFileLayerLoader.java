@@ -46,20 +46,21 @@ public class GeoImageFactoryFileLayerLoader extends
       return;
 
     Registry registry = wbc.getRegistry();
+    // create generic autoloader
     GeoImageFactoryFileLayerLoader gifll = new GeoImageFactoryFileLayerLoader(
         wbc, gif, null);
     registry.createEntry(FileLayerLoader.KEY, gifll);
-    // register as imagefactory (Imagelayermanager), reuse existing factory
-    registry.createEntry(ReferencedImageFactory.REGISTRY_CLASSIFICATION,
-        gifll.getImageFactory());
+    
+    // create/register all fixed loader filelayerloaders
+    List<Object> loaders = GeoRaster.listAllReaders();
+    for (Object loader : loaders) {
+      gif = new GeoImageFactory(loader);
+      gifll = new GeoImageFactoryFileLayerLoader(
+          wbc, gif, null);
+      System.out.println("GIFFLL: register "+gifll+"/"+gifll.getFileExtensions());
+      registry.createEntry(FileLayerLoader.KEY, gifll);
+    }
+    
   }
 
-  public static void main(String[] args) {
-    GeoImageFactoryFileLayerLoader gifll = new GeoImageFactoryFileLayerLoader(
-        new JUMPWorkbenchContext(null), new GeoImageFactory(new Object()), null);
-    GeoImageFactoryFileLayerLoader gifll2 = new GeoImageFactoryFileLayerLoader(
-        new JUMPWorkbenchContext(null), new GeoImageFactory(new Object()), null);
-
-    System.out.println(gifll.equals(gifll2));
-  }
 }

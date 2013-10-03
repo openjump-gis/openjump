@@ -321,7 +321,8 @@ public class ImageLayerManagerPlugIn extends AbstractPlugIn {
     }
 
     private void appendMetadata(Feature imageFeat, StringBuffer buf) {
-      buf.append(I18N.get("ui.plugin.imagery.ImageLayerManagerDialog.Filename")
+      buf.append("  "
+          + I18N.get("ui.plugin.imagery.ImageLayerManagerDialog.Uri")
           + ": \t" + imageFeat.getAttribute(ImageryLayerDataset.ATTR_URI)
           + "\n");
       // buf.append("  "+I18N.get("ui.plugin.imagery.ImageLayerManagerDialog.Format")+": \t"

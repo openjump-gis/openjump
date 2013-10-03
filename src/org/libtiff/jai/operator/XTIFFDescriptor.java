@@ -131,8 +131,9 @@ public class  XTIFFDescriptor extends OperationDescriptorImpl
         reg.registerOperationDescriptor(odesc,"tiff");
         reg.registerRIF("tiff", "org.libtiff.jai", odesc);
 
-          // re-register the tiff codec
-        ImageCodec.unregisterCodec("tiff");
+        // [ede] do _not_ unregister suns codec!!!
+        //ImageCodec.unregisterCodec("tiff");
+        // register xtiff codec
         ImageCodec.registerCodec(new XTIFFCodec());
 
    }

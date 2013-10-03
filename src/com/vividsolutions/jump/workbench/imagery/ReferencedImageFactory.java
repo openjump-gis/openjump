@@ -31,7 +31,6 @@ package com.vividsolutions.jump.workbench.imagery;
  * (250)385-6040
  * www.vividsolutions.com
  */
-import com.vividsolutions.jump.JUMPException;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 
 /**
@@ -43,7 +42,7 @@ public interface ReferencedImageFactory {
 
   String getTypeName();
 
-  ReferencedImage createImage(String location) throws Exception;
+  ReferencedImage createImage(String uri_string) throws Exception;
 
   public String getDescription();
 

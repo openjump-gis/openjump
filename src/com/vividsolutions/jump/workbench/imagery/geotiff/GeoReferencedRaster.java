@@ -34,16 +34,22 @@ package com.vividsolutions.jump.workbench.imagery.geotiff;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.image.renderable.ParameterBlock;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.media.jai.JAI;
 import javax.media.jai.RenderedOp;
 
+import com.sun.media.jai.codec.ImageCodec;
 import com.sun.media.jai.codec.SeekableStream;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.io.CompressedFile;
+import com.vividsolutions.jump.util.FileUtil;
 
 public abstract class GeoReferencedRaster
 {
@@ -75,15 +81,59 @@ public abstract class GeoReferencedRaster
     URI uri = new URI(imageFileLocation);
     // JAI loading streams is slower than fileload, hence we check if we really
     // try to open a compressed file first
-    if (CompressedFile.isArchive(uri) || CompressedFile.isCompressed(uri)) {
-      InputStream is = CompressedFile.openFile(uri);
-      if (!(is instanceof SeekableStream))
-        is = SeekableStream.wrapInputStream(is, true);
-      src = JAI.create("stream", is);
-    } else {
-      src = JAI.create("fileload", uri.getPath());
-    }
+//    if (CompressedFile.isArchive(uri) || CompressedFile.isCompressed(uri)) {
+//      InputStream is = CompressedFile.openFile(uri);
+//      if (!(is instanceof SeekableStream))
+//        is = SeekableStream.wrapInputStream(is, true);
+//      src = JAI.create("stream", is);
+//    } else {
+//      src = JAI.create("fileload", uri.getPath());
+//    }
+    createJAIRenderedOP(uri);
   }
+    
+  protected void createJAIRenderedOP(URI uri)
+        throws IOException {
+      // create a temp stream to find all candidate codecs
+      SeekableStream is = SeekableStream.wrapInputStream(CompressedFile.openFile(uri),
+          true);
+      String[] decs = ImageCodec.getDecoderNames((SeekableStream) is);
+      FileUtil.close(is);
+
+      List<ImageCodec> removed_codecs = new ArrayList<ImageCodec>();
+      try {
+        // remove all codecs except xtiff
+        if (Arrays.asList(decs).contains("xtiff")) {
+          for (String name : decs) {
+            ImageCodec candidate_codec = ImageCodec.getCodec(name);
+            if (name!="xtiff") {
+              ImageCodec.unregisterCodec(name);
+              removed_codecs.add(candidate_codec);
+              System.out.println("removed " + name);
+            }
+          }
+        }
+        SeekableStream is2 = SeekableStream.wrapInputStream(CompressedFile.openFile(uri),
+            true);
+        decs = ImageCodec.getDecoderNames((SeekableStream) is2);
+        FileUtil.close(is2);
+        System.out.println(Arrays.toString(decs));
+        if (CompressedFile.isArchive(uri) || CompressedFile.isCompressed(uri)) {
+          InputStream input = CompressedFile.openFile(uri);
+          if (!(input instanceof SeekableStream))
+            input = SeekableStream.wrapInputStream((InputStream) input, true);
+          src = JAI.create("stream", input);
+        } else {
+          src = JAI.create("fileload", uri.getPath());
+        }
+      } finally {
+        // reregister removed codecs
+        for (ImageCodec imageCodec : removed_codecs) {
+          System.out.println("reregister: "+imageCodec.getFormatName());
+          ImageCodec.registerCodec(imageCodec);
+        }
+      }
+    }
 
   protected void readRasterfile() throws Exception
   {

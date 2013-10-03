@@ -170,6 +170,7 @@ public class SelectFilesPanel extends JFCWithEnterAction implements WizardPanel 
     setControlButtonsAreShown(false);
 
     addPropertyChangeListener(new PropertyChangeListener() {
+      // user selected something in the fc
       public void propertyChange(PropertyChangeEvent evt) {
         FileLayerLoader fileLayerLoader = null;
         File[] files = getSelectedFiles();

@@ -32,11 +32,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -53,13 +51,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SpringLayout;
 
+import org.openjump.core.ui.io.file.AbstractFileLayerLoader;
 import org.openjump.core.ui.io.file.FileLayerLoader;
 import org.openjump.swing.util.SpringUtilities;
 
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.workbench.JUMPWorkbench;
-import com.vividsolutions.jump.workbench.imagery.geoimg.GeoImageFactoryFileLayerLoader;
-import com.vividsolutions.jump.workbench.model.Prioritized;
 import com.vividsolutions.jump.workbench.ui.InputChangedListener;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
 
@@ -208,57 +204,15 @@ public class SelectFileLoaderPanel extends JPanel implements WizardPanel {
       String extension = entry.getKey();
       Set<URI> extensionFiles = entry.getValue();
       Set<FileLayerLoader> lm = state.getExtensionLoaderMap().get(extension);
+      // try wildcard readers
+      if (lm==null || lm.size()<1)
+        lm = state.getExtensionLoaderMap().get("*");
       
-      HashMap<String, FileLayerLoader> lm2 = new HashMap<String, FileLayerLoader>();
-      for (FileLayerLoader fileLayerLoader : lm) {
-        if (fileLayerLoader instanceof GeoImageFactoryFileLayerLoader) {
-          try {
-            for (URI uri : extensionFiles) {
-              List<FileLayerLoader> ls = ((GeoImageFactoryFileLayerLoader) fileLayerLoader)
-                  .getValidImageSubFactories(uri);
-              for (FileLayerLoader l : ls) {
-                lm2.put(l.getDescription(), l);
-              }
-            }
-          } catch (IOException e) {
-            JUMPWorkbench.getInstance().getFrame().handleThrowable(e);
-          }
-        } else {
-          lm2.put(fileLayerLoader.getDescription(), fileLayerLoader);
-        }
-      }
-      
-      List<FileLayerLoader> lml = new ArrayList(lm2.values());
+      List<FileLayerLoader> lml = new ArrayList(lm);
       // sort by prio & alphab
-      Collections.sort(lml, new Comparator<FileLayerLoader>() {
-        public int compare(FileLayerLoader f1, FileLayerLoader f2) {
-          int result = comparePrios(f1, f2);
-          if (result!=0)
-            return result;
-          
-          // else sort naturally
-          return f1.getDescription().compareToIgnoreCase(f2.getDescription());
-        }
-        
-        private int comparePrios(FileLayerLoader f1, FileLayerLoader f2) {
-          Prioritized p1 = (f1 instanceof Prioritized) ? (Prioritized) f1
-              : null;
-          Prioritized p2 = (f2 instanceof Prioritized) ? (Prioritized) f2
-              : null;
-
-          int prioint1 = (p1 == null) ? Prioritized.NOPRIORITY : p1
-              .getPriority();
-          int prioint2 = (p2 == null) ? Prioritized.NOPRIORITY : p2
-              .getPriority();
-          if (prioint1 < prioint2)
-            return -1;
-          else if (prioint1 > prioint2)
-            return 1;
-
-          return 0;
-        }
-      });
-      lml.add( 1, OpenFileWizardState.IGNORELOADER );
+      Collections.sort(lml, AbstractFileLayerLoader.PRIO_COMPARATOR);
+      // always add the ignore loader, preferrably at second position
+      lml.add(lml.size() > 1 ? 1 : 0, OpenFileWizardState.IGNORELOADER);
       addFiles( extension, extensionFiles, new LinkedHashSet<FileLayerLoader>(lml) );
     }
   }

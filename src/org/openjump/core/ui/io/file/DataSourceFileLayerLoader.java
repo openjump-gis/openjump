@@ -41,6 +41,7 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.coordsys.CoordinateSystemRegistry;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
+import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.io.CompressedFile;
 import com.vividsolutions.jump.io.datasource.Connection;
 import com.vividsolutions.jump.io.datasource.DataSource;
@@ -49,7 +50,6 @@ import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.util.LangUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.imagery.ImageryLayerDataset;
-import com.vividsolutions.jump.workbench.imagery.ReferencedImageFactory;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageFactoryFileLayerLoader;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageStyle;
 import com.vividsolutions.jump.workbench.model.Category;
@@ -113,58 +113,37 @@ public class DataSourceFileLayerLoader extends AbstractFileLayerLoader {
           connection.executeQuery(dataSourceQuery.getQuery(), exceptions,
             monitor),
           CoordinateSystemRegistry.instance(workbenchContext.getBlackboard()));
+      boolean layer_changed = false;
       if (dataset != null) {
         Layer layer = null;
         for (Feature f : (List<Feature>)dataset.getFeatures()) {
+
           // restore referenced image feature, if one
           Feature img_f = null;
-          // is there a img factory saved? if so we got an img feature
-          String fname = f.getSchema().hasAttribute(
-              ImageryLayerDataset.ATTR_FACTORY) ? f
-              .getString(ImageryLayerDataset.ATTR_FACTORY) : null;
-          if (fname != null && !fname.isEmpty()) {
-            ReferencedImageFactory factory = null;
-
-            try {
-              factory = ImageryLayerDataset.createFeatureFactory(f);
-            } catch (Exception e) {
-              // TODO Auto-generated catch block
-              e.printStackTrace();
-              continue;
-            }
-
+          FeatureCollection img_fs = new FeatureDataset(ImageryLayerDataset.SCHEMA);
+          if ( ImageryLayerDataset.isImageFeature(f)) {
             // create an image layer
             if (layer == null) {
               layerManager.setFiringEvents(false);
               layer = ReferencedImageFactoryFileLayerLoader.createLayer(
                   layerManager, uri);
-              layer.setFeatureCollection(dataset);
+              layer.setFeatureCollection(img_fs);
               layerManager.setFiringEvents(true);
             }
             ReferencedImageStyle irs = (ReferencedImageStyle) layer
                 .getStyle(ReferencedImageStyle.class);
             ImageryLayerDataset ilds = irs.getImageryLayerDataset();
             
-            try {
-              img_f = ReferencedImageFactoryFileLayerLoader
-                  .createImageFeature(
-                      factory,
-                      new URI((String) f
-                          .getAttribute(ImageryLayerDataset.ATTR_URI)), ilds);
-              // restore previously saved geometry
-              img_f.setGeometry(f.getGeometry());
-            } catch (Exception e) {
-              // TODO Auto-generated catch block
-              e.printStackTrace();
-            }
+            // old datasets are converted to new ones, so they must be saved again
+            // signal by setting layer_changed to true
+            layer_changed = layer_changed || ImageryLayerDataset.isOldImageFeature(f);
+            img_f = ReferencedImageFactoryFileLayerLoader.createImageFeature(f, ilds);
+            img_fs.add(img_f);
           }
           
-          if (img_f!=null){
-            dataset.remove(f);
-            dataset.add(img_f);
-          }
         }
         
+        // create a layer to fill in new features
         if (layer == null)
           layer = new Layer(layerName, layerManager.generateLayerFillColor(),
               dataset, layerManager);
@@ -178,7 +157,7 @@ public class DataSourceFileLayerLoader extends AbstractFileLayerLoader {
 //        }
 
         layer.setDataSourceQuery(dataSourceQuery);
-        layer.setFeatureCollectionModified(false);
+        layer.setFeatureCollectionModified(layer_changed);
       }
     } finally {
       connection.close();

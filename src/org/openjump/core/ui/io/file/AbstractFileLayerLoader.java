@@ -29,7 +29,10 @@ package org.openjump.core.ui.io.file;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+
+import com.vividsolutions.jump.workbench.model.Prioritized;
 
 /**
  * A base implementation of {@link FileLayerLoader}.
@@ -46,6 +49,19 @@ public abstract class AbstractFileLayerLoader implements FileLayerLoader {
 
   /** The list of Options supported by the plug-in. */
   private List<Option> optionMetadata = new ArrayList<Option>();
+  
+  // a comparator respecting prioritized filelayerloaders
+  public static final Comparator PRIO_COMPARATOR = new Comparator<FileLayerLoader>() {
+    public int compare(FileLayerLoader f1, FileLayerLoader f2) {
+      int result = Prioritized.COMPARATOR.compare(f1, f2);
+      if (result != 0)
+        return result;
+
+      // else sort naturally by description text
+      return f1.getDescription().compareToIgnoreCase(f2.getDescription());
+    }
+
+  };
 
   /**
    * Construct a new AbstractFileLayerLoader with a description and list of

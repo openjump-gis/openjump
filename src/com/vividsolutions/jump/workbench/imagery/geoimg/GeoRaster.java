@@ -31,8 +31,11 @@ package com.vividsolutions.jump.workbench.imagery.geoimg;
  * (250)385-6040
  * www.vividsolutions.com
  */
+import it.geosolutions.imageio.gdalframework.GDALImageReaderSpi;
+import it.geosolutions.imageio.gdalframework.GDALUtilities;
 import it.geosolutions.imageio.utilities.ImageIOUtilities;
 
+import java.awt.RenderingHints;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.ParameterBlock;
 import java.io.BufferedInputStream;
@@ -45,21 +48,28 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
+import java.util.Map.Entry;
 import java.util.Vector;
 
+import javax.imageio.ImageIO;
 import javax.imageio.ImageReadParam;
 import javax.imageio.ImageReader;
 import javax.imageio.spi.IIORegistry;
 import javax.imageio.spi.ImageReaderSpi;
-import javax.imageio.spi.ImageReaderWriterSpi;
-import javax.imageio.stream.FileImageInputStream;
+import javax.imageio.stream.ImageInputStream;
 import javax.media.jai.JAI;
 import javax.media.jai.ParameterBlockJAI;
+import javax.media.jai.RecyclingTileFactory;
 import javax.media.jai.RenderedOp;
+import javax.media.jai.TileCache;
 import javax.media.jai.util.ImagingListener;
+
+import org.gdal.gdal.gdal;
 
 import com.sun.media.jai.codec.ImageCodec;
 import com.sun.media.jai.codec.SeekableStream;
@@ -68,6 +78,7 @@ import com.vividsolutions.jump.util.FileUtil;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageException;
 import com.vividsolutions.jump.workbench.model.Disposable;
+import com.vividsolutions.jump.workbench.model.Prioritized;
 
 public abstract class GeoRaster implements Disposable {
   protected String imageFileLocation;
@@ -75,9 +86,11 @@ public abstract class GeoRaster implements Disposable {
   protected RenderedOp src = null;
   private ImageReader src_reader = null;
   private Object src_input = null;
-  // XTIFFDirectory dir = null;
   protected String type = null;
   protected String loader = null;
+  protected RenderingHints cache_hints;
+  private TileCache cache;
+  private RecyclingTileFactory rtf;
 
   // Image enhancement
   double[] min;
@@ -114,7 +127,7 @@ public abstract class GeoRaster implements Disposable {
    * @throws ReferencedImageException
    */
   protected void fetchRaster() throws ReferencedImageException {
-    URI uri;
+    final URI uri;
     try {
       uri = new URI(imageFileLocation);
     } catch (URISyntaxException e) {
@@ -129,10 +142,28 @@ public abstract class GeoRaster implements Disposable {
 
     try {
       // route, if fixed_reader was set
-      List affirmed_readers;
+      List<ImageReaderSpi> affirmed_readers;
       // default case, auto detection
-      if (fixed_reader == null)
-        affirmed_readers = listValidImageIOReaders(uri, null);
+      if (fixed_reader == null) {
+        affirmed_readers = new ArrayList(listValidImageIOReaders(uri, null));
+        // sort readers by priority
+        Collections.sort(affirmed_readers, new Comparator<ImageReaderSpi>() {
+          public int compare(final ImageReaderSpi o1, final ImageReaderSpi o2) {
+            final Prioritized p1 = new Prioritized() {
+              public int getPriority() {
+                return GeoImageFactory.getPriority(o1);
+              }
+            };
+            final Prioritized p2 = new Prioritized() {
+              public int getPriority() {
+                return GeoImageFactory.getPriority(o2);
+              }
+            };
+            System.out.println(o1+"="+p1.getPriority()+"/"+o2+"="+p2.getPriority());
+            return Prioritized.COMPARATOR.compare(p1, p2);
+          }
+        });
+      }
       // fixed reader is imageio reader
       else if (fixed_reader instanceof ImageReaderSpi)
         affirmed_readers = Arrays
@@ -147,32 +178,32 @@ public abstract class GeoRaster implements Disposable {
       for (Iterator<ImageReaderSpi> i = affirmed_readers.listIterator(); i
           .hasNext();) {
 
-        src_input = createInput(uri);
-        pbjImageRead.setParameter("Input", src_input);
         ImageReaderSpi readerSpi = ((ImageReaderSpi) i.next());
-        // enforce a reader for TESTING
-        // reader = (new
-        // it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReaderSpi()).createReaderInstance(input);
-        src_reader = readerSpi.createReaderInstance(src_input);
-        // src_reader.setInput(src_input);
-        pbjImageRead.setParameter("reader", src_reader);
+
+        src_input = createInput(uri, readerSpi);
+
+        src_reader = readerSpi.createReaderInstance(/* src_input */);
+        System.out.println("GR fetch: " + src_reader + "/" + src_input);
+        src_reader.setInput(src_input);
+        pbjImageRead.setParameter("Input", src_input);
+        pbjImageRead.setParameter("Reader", src_reader);
 
         // set info vars
         type = src_reader.getFormatName();
         loader = src_reader.getClass().getCanonicalName();
-
-       // System.out.println("G2RR: " + src_reader);
+        
         try {
-          src = JAI.create("ImageRead", pbjImageRead);
+          src = JAI.create("ImageRead", pbjImageRead, null);
 
           // success OR dispose & try plain JAI below
-          if (src != null)
+          if (src != null && src.getWidth() > 0)
             return;
           else
             dispose();
         } catch (Exception e) {
           // TODO: handle more gracefully, continue with next reader on error
-          e.printStackTrace();
+          // e.printStackTrace();
+          System.out.println("GRR fail: " + e.getMessage());
           dispose();
         }
       }
@@ -184,7 +215,7 @@ public abstract class GeoRaster implements Disposable {
     // readers apply, OK it is unlikely, but what the hell
     try {
       if (fixed_reader == null || fixed_reader instanceof ImageCodec)
-        createJAIRenderedOP(uri);
+        createJAIRenderedOP( uri, (ImageCodec)fixed_reader);
     } catch (IOException e) {
       throw new ReferencedImageException(e);
     }
@@ -258,17 +289,67 @@ public abstract class GeoRaster implements Disposable {
   protected String getLoader() {
     return loader;
   }
+  
+  public RenderingHints createCacheRenderingHints() {
+    if (src instanceof RenderedOp && src.getWidth() > 2000
+        && src.getHeight() > 2000 && cache_hints == null) {
+      // use 64MB for images, default 16MB is kinda small
+      cache = JAI.createTileCache(1024 * 1024 * 64L);
+      // create hints
+      cache_hints = new RenderingHints(JAI.KEY_TILE_CACHE, cache);
+      rtf = new RecyclingTileFactory();
+      cache_hints.put(JAI.KEY_TILE_CACHE, cache);
+      cache_hints.put(JAI.KEY_TILE_FACTORY, rtf);
+      cache_hints.put(JAI.KEY_TILE_RECYCLER, rtf);
+      cache_hints.put(JAI.KEY_CACHED_TILE_RECYCLING_ENABLED, Boolean.TRUE);
+    }
+    return cache_hints != null ? (RenderingHints) cache_hints.clone() : null;
+  }
 
-  protected void createJAIRenderedOP(URI uri) throws IOException {
-    // JAI loading streams is slower than fileload, hence we check if we really
-    // try to open a compressed file first
+  protected void createJAIRenderedOP(URI uri, ImageCodec codec)
+      throws IOException {
+    // create an input
     Object input = createInput(uri);
-    if (input instanceof InputStream) {
-      if (!(input instanceof SeekableStream))
-        input = SeekableStream.wrapInputStream((InputStream) input, true);
-      src = JAI.create("stream", input);
+    // create a temp stream to find all candidate codecs if codec was given
+    String[] decs;
+    if (codec instanceof ImageCodec) {
+      SeekableStream is2 = SeekableStream.wrapInputStream(
+          createInputStream(uri), true);
+      decs = ImageCodec.getDecoderNames((SeekableStream) is2);
+      disposeInput(is2);
     } else {
-      src = JAI.create("fileload", uri.getPath());
+      decs = new String[] {};
+    }
+
+    List<ImageCodec> removed_codecs = new ArrayList<ImageCodec>();
+    try {
+      // remove all codecs except selected
+      for (String name : decs) {
+        ImageCodec candidate_codec = ImageCodec.getCodec(name);
+        if (!codec.getClass().isAssignableFrom(candidate_codec.getClass())) {
+          ImageCodec.unregisterCodec(name);
+          removed_codecs.add(candidate_codec);
+          System.out.println("removed " + name);
+        }
+      }
+//      SeekableStream is2 = SeekableStream.wrapInputStream(createInputStream(uri), true);
+//      decs = ImageCodec.getDecoderNames((SeekableStream) is2);
+//      System.out.println(Arrays.toString(decs));
+//      disposeInput(is2);
+
+      if (input instanceof InputStream) {
+        if (!(input instanceof SeekableStream))
+          input = SeekableStream.wrapInputStream((InputStream) input, true);
+        src = JAI.create("stream", input);
+      } else {
+        src = JAI.create("fileload", uri.getPath());
+      }
+    } finally {
+      // reregister removed codecs
+      for (ImageCodec imageCodec : removed_codecs) {
+        System.out.println("reregister " + imageCodec.getFormatName());
+        ImageCodec.registerCodec(imageCodec);
+      }
     }
   }
 
@@ -283,27 +364,33 @@ public abstract class GeoRaster implements Disposable {
       src_reader = null;
     }
     disposeInput(src_input);
+    
+    if (cache instanceof TileCache)
+      cache.flush();
+    
+    if (rtf instanceof RecyclingTileFactory)
+      rtf.flush();
   }
 
   public void log(String msg) {
     JUMPWorkbench.getInstance().getFrame().log(msg, this.getClass());
   }
 
-  static protected boolean canDecode(ImageReaderSpi provider, URI uri)
-      throws IOException {
-    Object input = createInput(uri);
-
-    boolean canDec = false;
-    // some readers insist on a filestream for checking (e.g. tif, png)
-    if (input instanceof File) {
-      FileImageInputStream fis = new FileImageInputStream((File) input);
-      canDec = canDec || provider.canDecodeInput(fis);
-      disposeInput(fis);
-    }
-    // while some others like a file object (e.g. ecw, mrsid)
-    // we simply try both and regard only a successful answer
-    return provider.canDecodeInput(input) || canDec;
-  }
+  // static protected boolean canDecode(ImageReaderSpi provider, URI uri)
+  // throws IOException {
+  // Object input = createInput(uri);
+  //
+  // boolean canDec = false;
+  // // some readers insist on a filestream for checking (e.g. tif, png)
+  // if (input instanceof File) {
+  // FileImageInputStream fis = new FileImageInputStream((File) input);
+  // canDec = canDec || provider.canDecodeInput(fis);
+  // disposeInput(fis);
+  // }
+  // // while some others like a file object (e.g. ecw, mrsid)
+  // // we simply try both and regard only a successful answer
+  // return provider.canDecodeInput(input) || canDec;
+  // }
 
   static protected boolean hasFileExtension(ImageReaderSpi provider, URI uri) {
     return hasFileExtension(provider,
@@ -314,42 +401,77 @@ public abstract class GeoRaster implements Disposable {
     return Arrays.asList(provider.getFileSuffixes()).contains(ext);
   }
 
+  static protected boolean hasNoFileExtensions(ImageReaderSpi provider) {
+    String[] exts = provider.getFileSuffixes();
+    return exts.length == 0
+        || (exts.length == 1 && exts[0] instanceof String && exts[0].trim()
+            .isEmpty());
+  }
+  
+  // limit cache to last 10 entries
+  static private LinkedHashMap<URI, List<ImageReaderSpi>> validIOReaderCache = new LinkedHashMap<URI, List<ImageReaderSpi>>() {
+    protected boolean removeEldestEntry(Entry<URI, List<ImageReaderSpi>> arg0) {
+      return size() > 10;
+    }
+  };
+
+  /**
+   * create a list of ImageReaderSpi's supposedly able to open the URI
+   * @param provider
+   * @param uri
+   * @return
+   */
   static protected List<ImageReaderSpi> listValidImageIOReaders(URI uri,
       Class filter) throws IOException {
+
+    resetGDALReaderSelection();
+
     // fetch all readers
-    final Iterator<? extends ImageReaderWriterSpi> iter = IIORegistry
-        .getDefaultInstance().getServiceProviders(ImageReaderSpi.class, true);
+     final Iterator<? extends ImageReaderSpi> iter = IIORegistry
+     .getDefaultInstance().getServiceProviders(ImageReaderSpi.class, true);
+     
     // iterate all readers and return only valid ones
     ImageReaderSpi provider;
-    Vector<ImageReaderSpi> affirmed_readers = new Vector<ImageReaderSpi>();
+    List<ImageReaderSpi> affirmed_readers = new Vector<ImageReaderSpi>();
     while (iter.hasNext()) {
-      provider = (ImageReaderSpi) iter.next();
-
-      boolean canDec = canDecode(provider, uri);
-      boolean hasExt = hasFileExtension(provider, uri);
-//      String canRead = canDec ? "jupp" : "noe";
-//      if (canDec || hasExt)
-//        System.out.println(provider + "(" + canRead + "/" + hasExt + ") = "
-//            + provider.getDescription(Locale.getDefault()) + " / "
-//            + Arrays.toString(provider.getFileSuffixes()));
-
-      // either decoding or extension suffice for our purposes
-      if (!canDec && !hasExt)
-        continue;
+      provider = iter.next();
 
       if (filter != null && !(filter.isInstance(provider)))
         continue;
 
-      // prefer imageio ext reader for tif
-      if (Arrays.asList(provider.getFileSuffixes()).contains("tif")
-          && provider.getPluginClassName().startsWith("it.geosolutions."))
-        affirmed_readers.add(0, provider);
-      else
-        affirmed_readers.add(provider);
+      // imageio-ext is botched here. actually it registers loaders, that don't
+      // check if they are really existing in the underlying gdal build
+      // no prob, we simply do the checking here then
+      if (provider instanceof GDALImageReaderSpi
+          && !((GDALImageReaderSpi) provider).isAvailable() ) {
+        continue;
+      }
+
+      Object input = createInput(uri, provider);
+      boolean canDec = /*provider instanceof GDALImageReaderSpi ||*/
+                        provider.canDecodeInput(input);
+      disposeInput(input);
+      boolean hasNoExts = hasNoFileExtensions(provider);
+      boolean hasExt = hasFileExtension(provider, uri);
+
+      // either decoding or extension suffice for our purposes
+      if (!canDec && !hasExt /*&& !hasNoExts*/)
+        continue;
+
+      affirmed_readers.add(provider);
     }
+    // make list readonly for cache
+    affirmed_readers = Collections.unmodifiableList(affirmed_readers);
+
+    validIOReaderCache.put(uri, affirmed_readers);
+
+    // return a copy of the cached list
     return affirmed_readers;
   }
 
+  /**
+   * create a list of ImageCodec's supposedly able to open URI
+   */
   static protected List<ImageCodec> listValidJAICodecs(URI uri)
       throws IOException {
     InputStream is = createInputStream(uri);
@@ -365,15 +487,45 @@ public abstract class GeoRaster implements Disposable {
     return l;
   }
 
+  /**
+   * create a list of JAI ImageCodec's and ImageIO readers supposedly able to open URI
+   */
   static public List<Object> listValidReaders(URI uri) throws IOException {
-    List l = listValidImageIOReaders(uri, null);
+    List<Object> l = new ArrayList(listValidImageIOReaders(uri, null));
     l.addAll(listValidJAICodecs(uri));
     return l;
   }
+  
+  /**
+   * list all JAI ImageCodec's and ImageIO readers available in this jre
+   */
+  static public List<Object> listAllReaders() {
+    List<Object> loaders = new ArrayList();
+    // add imageio readers
+    Iterator<? extends ImageReaderSpi> iter = IIORegistry
+        .getDefaultInstance().getServiceProviders(ImageReaderSpi.class, true);
+    while (iter.hasNext()) {
+      ImageReaderSpi provider = iter.next();
+      // imageio-ext is botched here. actually it registers loaders, that don't
+      // check if they are really existing in the loaded gdal build
+      if (provider instanceof GDALImageReaderSpi
+          && !((GDALImageReaderSpi) provider).isAvailable() ) {
+        continue;
+      }
+      loaders.add(provider);
+    }
+    // add JAI codecs
+    loaders.addAll(Collections.list(ImageCodec.getCodecs()));
+    return loaders;
+  }
 
   static protected Object createInput(URI uri) throws IOException {
-    // InputStream is = CompressedFile.openFile(uri);
-    // ImageInputStream iis = new MemoryCacheImageInputStream(is);
+    return createInput(uri, null);
+  }
+
+  static protected Object createInput(URI uri, Object loader)
+      throws IOException {
+
     Object input;
     if (CompressedFile.isArchive(uri) || CompressedFile.isCompressed(uri)) {
       InputStream src_is;
@@ -382,16 +534,42 @@ public abstract class GeoRaster implements Disposable {
       input = src_is;
     } else {
       // create a File object, native loaders like ecw, mrsid seem to insist on
-      // it
-      // error was:
+      // it, error was:
       // "Unable to create a valid ImageInputStream for the provided input:"
       // took me two days to debug this.. pfffhhhh
       // if you find this workaround because of the full error string above,
-      // that was intentional
-      // please send your praises to edgar AT soldin DOT de, would love to hear
-      // from you
+      // that was intentional, enjoy ede
+      // UPDATE: check below, turns out ImageReaderSpi's actually tell you what
+      // input they'd like to have
       input = new File(uri);
     }
+
+    if (loader == null)
+      return input;
+
+    if (loader instanceof ImageReaderSpi) {
+      // how may i serve you today?
+      Class[] clazzes = ((ImageReaderSpi) loader).getInputTypes();
+      List<Class> intypes = clazzes != null ? Arrays.asList(clazzes)
+          : new ArrayList();
+      //System.out.println("GR in types: " + intypes);
+      for (Class clazz : intypes) {
+        // already reader compliant? off you f***
+        if (clazz.isInstance(input))
+          return input;
+        // want an ImageInputStream? try to build one..
+        if (ImageInputStream.class.equals(clazz)) {
+          // this returns null if it can't build one from given input
+          ImageInputStream iis = ImageIO.createImageInputStream(input);
+          if (iis != null)
+            return iis;
+        }
+      }
+
+      throw new IOException("Couldn't create an input for '" + uri
+          + "' accepted by reader '" + loader + "'");
+    }
+
     return input;
   }
 
@@ -409,4 +587,10 @@ public abstract class GeoRaster implements Disposable {
       FileUtil.close((Closeable) input);
   }
 
+  static void resetGDALReaderSelection() {
+    if (!GDALUtilities.isGDALAvailable())
+      return;
+    gdal.SetConfigOption("GDAL_SKIP", "");
+    gdal.AllRegister();
+  }
 }

@@ -133,18 +133,42 @@ public class ReferencedImageFactoryFileLayerLoader extends
     Feature feature = new ReferencedImageFeature(
         ImageryLayerDataset.getSchema());
     feature.setAttribute(ImageryLayerDataset.ATTR_URI, uri.toString());
-    ImageryLayerDataset.saveFeatureFactory(feature, referencedImageFactory);
+    ImageryLayerDataset.saveFeatureImgAttribs(feature, referencedImageFactory);
     feature.setGeometry(new GeometryFactory().createPoint((Coordinate) null));
     return feature;
   }
 
+  /**
+   * try to create an image feature from the given basic feature
+   * @param f_orig
+   * @return
+   */
+  public static Feature createImageFeature(Feature f_orig,
+      ImageryLayerDataset imageryLayerDataset) {
+    
+    Feature f_new = new ReferencedImageFeature(
+        ImageryLayerDataset.getSchema());
+    // copy attribs over to new feature
+    ImageryLayerDataset.saveFeatureImgAttribs(f_new, f_orig);
+
+    try {
+      imageryLayerDataset.attachImage(f_new);
+    } catch (Exception e) {
+      e.printStackTrace();
+      ImageryLayerDataset.saveFeatureError(f_new, e);
+      // save a dummy geometry
+      f_new.setGeometry(new GeometryFactory().createPoint(new Coordinate())); 
+    }
+    return f_new;
+  }
+  
   static public Feature createImageFeature(
       ReferencedImageFactory referencedImageFactory, URI uri,
       ImageryLayerDataset imageryLayerDataset) throws Exception {
 
     Feature feature = createBaseFeature(referencedImageFactory, uri);
     // attach the image
-    imageryLayerDataset.createImage(feature);
+    imageryLayerDataset.attachImage(feature);
     return feature;
   }
 
@@ -155,7 +179,7 @@ public class ReferencedImageFactoryFileLayerLoader extends
       public Object yield(Object uri) {
         Feature feature = createBaseFeature(referencedImageFactory, (URI) uri);
         try {
-          imageryLayerDataset.createImage(feature);
+          imageryLayerDataset.attachImage(feature);
         } catch (Exception e) {
           ImageryLayerDataset.saveFeatureError(feature, e);
         }

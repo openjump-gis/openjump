@@ -31,6 +31,7 @@ package com.vividsolutions.jump.workbench.imagery;
  * (250)385-6040
  * www.vividsolutions.com
  */
+import java.io.File;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -46,15 +47,23 @@ import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 
 public class ImageryLayerDataset {
   // keeping attribute names short makes them survive even saving in SHP files
-  private static String prefix = "";
-  public static final String ATTR_GEOMETRY = prefix+"GEOM";
-  public static final String ATTR_URI = prefix + "URI";
-  // public static final String ATTR_FORMAT = "IMAGEFORMAT";
-  public static final String ATTR_FACTORY = prefix + "FACT";
-  public static final String ATTR_ERROR = prefix + "ERROR";
-  public static final String ATTR_TYPE = prefix + "TYPE";
-  public static final String ATTR_LOADER = prefix + "LOADER";
+  private static String prefix = "IMG";
+  // keep them at max. 8 chars length for compatibility
+  public static final String ATTR_GEOMETRY = prefix + "_GEOM";
+  public static final String ATTR_URI =      prefix + "_URI";
+  public static final String ATTR_FACTORY =  prefix + "_FACT";
+  public static final String ATTR_ERROR =    prefix + "ERROR";
+  public static final String ATTR_TYPE =     prefix + "_TYPE";
+  public static final String ATTR_LOADER =   prefix + "LOADR";
 
+  // deprecated old field names, used to import old saved datasets
+  public static final String OLD_ATTR_GEOMETRY = "GEOMETRY";
+  public static final String OLD_ATTR_FILE = "IMAGEFILE";
+  public static final String OLD_ATTR_FORMAT = "IMAGEFORMAT";
+  public static final String OLD_ATTR_ERROR = "IMAGEERROR";
+  public static final String OLD_ATTR_TYPE = "IMAGETYPE";
+  public static final String OLD_ATTR_FACTORY = "IMAGEFACT";
+  
   private Map<Feature, ReferencedImage> featureToReferencedImageMap = new WeakHashMap();
 
   public static FeatureSchema SCHEMA = new FeatureSchema() {
@@ -87,20 +96,18 @@ public class ImageryLayerDataset {
       return null;
     }
     if (!featureToReferencedImageMap.containsKey(feature)) {
-      createImage(feature);
+      attachImage(feature);
     }
     // Will be null if an exception occurs [Jon Aquino 2005-04-12]
     return (ReferencedImage) featureToReferencedImageMap.get(feature);
   }
 
-  public void createImage(Feature feature) throws Exception {
-    createImage(feature, this);
+  public void attachImage(Feature feature) throws Exception {
+    attachImage(feature, this);
   }
 
-  public static void createImage(Feature feature, ImageryLayerDataset ils)
+  public static void attachImage(Feature feature, ImageryLayerDataset ils)
       throws Exception {
-    String factoryClassPath = (String) feature.getString(ATTR_FACTORY);
-    String loaderClassPath = (String) feature.getString(ATTR_LOADER);
     String imageFilePath = (String) feature.getString(ATTR_URI);
     GeometryFactory geometryFactory = new GeometryFactory();
 
@@ -134,7 +141,7 @@ public class ImageryLayerDataset {
    * @param imageFactory
    * @return
    */
-  public static Feature saveFeatureFactory(Feature feature,
+  public static Feature saveFeatureImgAttribs(Feature feature,
       ReferencedImageFactory imageFactory) {
     feature.setAttribute(ImageryLayerDataset.ATTR_FACTORY, imageFactory
         .getClass().getName());
@@ -143,6 +150,34 @@ public class ImageryLayerDataset {
       if (loader != null)
         feature.setAttribute(ImageryLayerDataset.ATTR_LOADER, loader.getClass()
             .getName());
+    }
+    return feature;
+  }
+  
+  /**
+   * copy img attributes from an imprint feature
+   * @param feature
+   * @param imprint
+   * @return
+   */
+  public static Feature saveFeatureImgAttribs(Feature feature, Feature imprint) {
+    if (ImageryLayerDataset.isOldImageFeature(imprint)) {
+      // copy factory
+      feature.setAttribute(ImageryLayerDataset.ATTR_FACTORY,
+          imprint.getString(ImageryLayerDataset.OLD_ATTR_FACTORY));
+      // convert old file to uri
+      feature.setAttribute(ImageryLayerDataset.ATTR_URI,
+          new File(imprint.getString(ImageryLayerDataset.OLD_ATTR_FILE)).toURI().toString());
+    }
+    else if (ImageryLayerDataset.isNewImageFeature(imprint)) {
+      // copy factory & loader
+      feature.setAttribute(ImageryLayerDataset.ATTR_FACTORY,
+          imprint.getString(ImageryLayerDataset.ATTR_FACTORY));
+      feature.setAttribute(ImageryLayerDataset.ATTR_LOADER,
+          imprint.getString(ImageryLayerDataset.ATTR_LOADER));
+      // and src uri
+      feature.setAttribute(ImageryLayerDataset.ATTR_URI,
+         imprint.getString(ImageryLayerDataset.ATTR_URI));
     }
     return feature;
   }
@@ -168,8 +203,28 @@ public class ImageryLayerDataset {
     // set preselected loader for GeoImageFactory explicitly
     if (!loaderClassPath.isEmpty() && imageFactory instanceof GeoImageFactory) {
       try {
+        String loaderParam = "";
+        if (loaderClassPath.contains("|")){
+          String[] parts = loaderClassPath.split("|",1);
+          loaderClassPath = parts[0];
+          loaderParam = parts[1];
+        }
+        
         Class loaderClass = Class.forName(loaderClassPath);
-        Object loader = loaderClass.newInstance();
+        Object loader = null;
+//        if (loaderParam.isEmpty())
+          loader = loaderClass.newInstance();
+//        else {
+//          try {
+//            Constructor c;
+//            c = loaderClass.getDeclaredConstructor(Object.class);
+//            loader = c.newInstance(loaderParam);
+//          } catch (Exception e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//          }
+//        }
+
         ((GeoImageFactory) imageFactory).setLoader(loader);
       } catch (ClassNotFoundException e) {
         // TODO: handle exception
@@ -178,4 +233,29 @@ public class ImageryLayerDataset {
     }
     return imageFactory;
   }
+  
+  public static boolean isImageFeature(Feature f) {
+    return isNewImageFeature(f) || isOldImageFeature(f);
+  }
+  
+  public static boolean isNewImageFeature(Feature f) {
+    String[] attribs = new String[] { ATTR_URI, ATTR_FACTORY,
+        ATTR_ERROR, ATTR_TYPE, ATTR_LOADER };
+    for (String key : attribs) {
+      if (!f.getSchema().hasAttribute(key))
+        return false;
+    }
+    return true;
+  }
+  
+  public static boolean isOldImageFeature(Feature f) {
+    String[] attribs = new String[] { OLD_ATTR_FILE,
+        OLD_ATTR_FORMAT, OLD_ATTR_ERROR, OLD_ATTR_TYPE, OLD_ATTR_FACTORY };
+    for (String key : attribs) {
+      if (!f.getSchema().hasAttribute(key))
+        return false;
+    }
+    return true;
+  }
+
 }

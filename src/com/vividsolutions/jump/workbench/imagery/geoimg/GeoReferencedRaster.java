@@ -34,7 +34,6 @@ package com.vividsolutions.jump.workbench.imagery.geoimg;
 
 import it.geosolutions.imageio.core.CoreCommonImageMetadata;
 import it.geosolutions.imageio.gdalframework.GDALImageReaderSpi;
-import it.geosolutions.imageio.stream.input.ImageInputStreamAdapter;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
@@ -48,7 +47,6 @@ import java.util.List;
 import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.spi.ImageReaderSpi;
-import javax.imageio.stream.ImageInputStream;
 import javax.media.jai.RenderedOp;
 
 import org.libtiff.jai.codec.XTIFF;
@@ -94,13 +92,7 @@ public class GeoReferencedRaster extends GeoRaster {
       throws ReferencedImageException {
     super(location, reader);
     fileName = imageFileLocation;
-    registerWithJAI();
     readRasterfile();
-  }
-
-  private void registerWithJAI() {
-    // Register the GeoTIFF descriptor with JAI.
-    // GeoTIFFDescriptor.register();
   }
 
   private void parseGeoTIFFDirectory(URI uri) throws ReferencedImageException {
@@ -202,39 +194,24 @@ public class GeoReferencedRaster extends GeoRaster {
     // gdal geo info
     List<ImageReaderSpi> readers;
     Exception ex = null;
+    Object input = null;
     try {
       readers = listValidImageIOReaders(uri, GDALImageReaderSpi.class);
       for (ImageReaderSpi readerSpi : readers) {
-        Object input = createInput(uri);
-        ImageReader reader = readerSpi.createReaderInstance(input);
+        input = createInput(uri, readerSpi);
+        ImageReader reader = readerSpi.createReaderInstance();
         IIOMetadata metadata = null;
         // try with file or stream
         try {
           reader.setInput(input);
           metadata = reader.getImageMetadata(0);
-          reader.reset();
-          reader.dispose();
         } catch (IllegalArgumentException e) {
           log("fail " + readerSpi + "/" + input + " -> " + e);
-        }
-        // retry with image stream
-        if (metadata == null) {
-          InputStream s = null;
-          ImageInputStream is = null;
-          try {
-            s = createInputStream(uri);
-            is = new ImageInputStreamAdapter(s);
-            reader.setInput(is);
-            metadata = reader.getImageMetadata(0);
-          } catch (IllegalArgumentException e) {
-            log("fail " + readerSpi + "/" + is + " -> ");
-            e.printStackTrace();
-          } finally {
-            reader.reset();
-            reader.dispose();
-            disposeInput(is);
-            disposeInput(s);
-          }
+        } catch (RuntimeException e) {
+          log("fail " + readerSpi + "/" + input + " -> " + e);
+        } finally {
+          reader.dispose();
+          disposeInput(input);
         }
 
         if (!(metadata instanceof CoreCommonImageMetadata)) {
@@ -272,17 +249,6 @@ public class GeoReferencedRaster extends GeoRaster {
     }
 
     throw new ReferencedImageException("no gdal metadata retrieved.", ex);
-  }
-
-  /**
-   * @return filename of the tiff worldfile
-   */
-  private String worldFileName() {
-    int posDot = fileName.lastIndexOf('.');
-    if (posDot == -1) {
-      posDot = fileName.length();
-    }
-    return fileName.substring(0, posDot) + ".tfw";
   }
 
   private void parseWorldFile() throws IOException {
@@ -331,6 +297,7 @@ public class GeoReferencedRaster extends GeoRaster {
       log("Worldfile geo metadata unavailable: " + e.getMessage());
     }
 
+    //if (false)
     try {
       // Get access to the tags and geokeys.
       // First, try to get the TIFF directory

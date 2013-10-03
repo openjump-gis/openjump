@@ -51,7 +51,8 @@ public class XTIFFCodec extends ImageCodec {
     }
 
     public String getFormatName() {
-        return "tiff";
+        // [ede] changed to allow coexistence with sun tiff codec
+        return "xtiff";
     }
 
     public Class getEncodeParamClass() {

@@ -34,7 +34,6 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -96,34 +95,38 @@ public class OpenFileWizardState {
   public void setupFileLoaders(File[] files, FileLayerLoader fileLayerLoader) {
     Set<File> fileSet = new TreeSet<File>(Arrays.asList(files));
     multiLoaderFiles.clear();
+    // explicit loader chosen
     if (fileLayerLoader != null) {
       fileLoaderMap.clear();
       for (File file : fileSet) {
         setFileLoader(file.toURI(), fileLayerLoader);
       }
-    } else {
-      // Remove entries where there are no files
-      for (Iterator<Entry<URI, FileLayerLoader>> iterator = fileLoaderMap.entrySet()
-        .iterator(); iterator.hasNext();) {
-        Entry<URI, FileLayerLoader> entry = iterator.next();
-        URI fileUri = entry.getKey();
-        File file;
+    } 
+    else {
+      // Remove old entries in fileloadermap
+      fileLoaderMap.clear();
+//      for (Iterator<Entry<URI, FileLayerLoader>> iterator = fileLoaderMap.entrySet()
+//        .iterator(); iterator.hasNext();) {
+//        Entry<URI, FileLayerLoader> entry = iterator.next();
+//        URI fileUri = entry.getKey();
+//        File file;
 
-        if (fileUri.getScheme().equals("zip")) {
-          file = UriUtil.getZipFile(fileUri);
-        } else {
-          file = new File(fileUri);
-        }
-        if (!fileSet.contains(file)) {
-          FileLayerLoader loader = entry.getValue();
-          fileLoaderFiles.get(loader);
-          Set<URI> loaderFiles = fileLoaderFiles.get(loader);
-          if (loaderFiles != null) {
-            loaderFiles.remove(fileUri);
-          }
-          iterator.remove();
-        }
-      }
+//        if (fileUri.getScheme().equals("zip")) {
+//          file = UriUtil.getZipFile(fileUri);
+//        } else {
+//          file = new File(fileUri);
+//        }
+//        
+//        if (!fileSet.contains(file)) {
+//          FileLayerLoader loader = entry.getValue();
+//          fileLoaderFiles.get(loader);
+//          Set<URI> loaderFiles = fileLoaderFiles.get(loader);
+//          if (loaderFiles != null) {
+//            loaderFiles.remove(fileUri);
+//          }
+//          iterator.remove();
+//        }
+//      }
 
       // manually add compressed files here
       for (File file : files) {
@@ -201,10 +204,20 @@ public class OpenFileWizardState {
 
   private void addFile(String extension, URI fileUrl) {
     Set<FileLayerLoader> loaders = getFileLoaders(extension);
+    
+    // try wildcard loaders, only if none of the other extension matched
+    if (loaders.size() < 1) {
+      loaders = getFileLoaders("*");
+    }
+    
+    // this file only has one matching loader
     if (loaders.size() == 1) {
       FileLayerLoader loader = loaders.iterator().next();
       setFileLoader(fileUrl, loader);
-    } else if (!loaders.isEmpty()) {
+    } 
+    // oh no! :) we got multiple loaders to offer
+    // save in a special map and fetch loaders later (again)
+    else if (!loaders.isEmpty()) {
       Set<URI> extensionFiles = multiLoaderFiles.get(extension);
       if (extensionFiles == null) {
         extensionFiles = new TreeSet<URI>();
@@ -240,14 +253,18 @@ public class OpenFileWizardState {
   }
 
   public void addFileLoader(final FileLayerLoader fileLayerLoader) {
+    // loader for each ext in the extensionLoaderMap
     for (String extension : fileLayerLoader.getFileExtensions()) {
-      Set<FileLayerLoader> extensionLoaders = getFileLoaders(extension);
-      extensionLoaders.add(fileLayerLoader);
+//      if (extension.equals("*"))
+//      System.out.println("OFWS: add "+extension+"/"+fileLayerLoader);
+      Set<FileLayerLoader> state_extensionLoaders = getFileLoaders(extension);
+      state_extensionLoaders.add(fileLayerLoader);
     }
   }
 
   public Set<FileLayerLoader> getFileLoaders(String extension) {
     Set<FileLayerLoader> loaders = extensionLoaderMap.get(extension);
+    //System.out.println(extensionLoaderMap);
     if (loaders == null) {
       loaders = new HashSet<FileLayerLoader>();
       extensionLoaderMap.put(extension, loaders);
@@ -268,7 +285,8 @@ public class OpenFileWizardState {
     if (currentPanel.equals(SelectFilesPanel.KEY)) {
       if (fileLayerLoader == null && !multiLoaderFiles.isEmpty()) {
         return SelectFileLoaderPanel.class.getName();
-      } else {
+      } 
+      else {
         return getNextPanel(SelectFileLoaderPanel.class.getName());
       }
     } else if (currentPanel.equals(SelectFileLoaderPanel.KEY)) {

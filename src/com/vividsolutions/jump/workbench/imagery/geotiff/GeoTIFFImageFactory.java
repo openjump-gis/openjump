@@ -40,7 +40,7 @@ import com.vividsolutions.jump.workbench.model.Prioritized;
  */
 public class GeoTIFFImageFactory extends JAIGraphicImageFactory {
 
-  public static final String DESC = "Referenced Image [legacy]";
+  public static final String DESC = "GeoTIFF plus";
 
   public GeoTIFFImageFactory() {
   }
@@ -54,7 +54,7 @@ public class GeoTIFFImageFactory extends JAIGraphicImageFactory {
   }
 
   public int getPriority() {
-    return Prioritized.NOPRIORITY / 10;
+    return Prioritized.NOPRIORITY;
   }
 
 }

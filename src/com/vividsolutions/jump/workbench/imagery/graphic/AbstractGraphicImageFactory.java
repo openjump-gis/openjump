@@ -32,6 +32,7 @@ package com.vividsolutions.jump.workbench.imagery.graphic;
  * www.vividsolutions.com
  */
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -73,7 +74,7 @@ abstract public class AbstractGraphicImageFactory implements
       return;
 
     ext = ext.toLowerCase();
-    if (ext.matches("tiff?"))
+    if (ext.matches("x?tiff?"))
       extensions.addAll(Arrays.asList(new String[] { "tiff", "tif" }));
     else if (ext.matches("jpe?g?"))
       extensions.addAll(Arrays.asList(new String[] { "jpeg", "jpg" }));
@@ -83,6 +84,12 @@ abstract public class AbstractGraphicImageFactory implements
       extensions.addAll(Arrays.asList(new String[] { ext, "hdr" }));
     else
       extensions.add(ext);
+  }
+  
+  protected void addExtensions(Collection<String> exts){
+    for (String ext : exts) {
+      addExtension(ext);
+    }
   }
 
   public int getPriority() {
