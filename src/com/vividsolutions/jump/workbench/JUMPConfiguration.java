@@ -149,6 +149,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.clipboard.PasteLayersPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.datastore.AddDatastoreLayerPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.datastore.InstallDatastoreLayerRendererHintsPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.datastore.RefreshDataStoreLayerPlugin;
+import com.vividsolutions.jump.workbench.ui.plugin.imagery.AddImageLayerPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.imagery.ImageLayerManagerPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.scalebar.InstallScaleBarPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.scalebar.ScaleBarPlugIn;
@@ -355,6 +356,8 @@ public class JUMPConfiguration implements Setup {
   // InstallReferencedImageFactoriesPlugin();
 
   private ImageLayerManagerPlugIn imageLayerManagerPlugIn = new ImageLayerManagerPlugIn();
+  
+  private AddImageLayerPlugIn addImageLayerPlugIn = new AddImageLayerPlugIn();
 
   private RefreshDataStoreLayerPlugin refreshDataStoreLayerPlugin = new RefreshDataStoreLayerPlugin();
 
@@ -1053,8 +1056,11 @@ public class JUMPConfiguration implements Setup {
         removeSelectedCategoriesPlugIn.createEnableCheck(workbenchContext));
     
     featureInstaller.addMenuSeparator(MENU_LAYER); // ===================
+    featureInstaller.addMainMenuPlugin(addImageLayerPlugIn,
+        new String[] { MENU_LAYER });
     featureInstaller.addMainMenuPlugin(imageLayerManagerPlugIn,
         new String[] { MENU_LAYER });
+    featureInstaller.addMenuSeparator(MENU_LAYER); // ===================
   }
 
   public void configureDatastores(final WorkbenchContext context)
