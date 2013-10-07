@@ -186,6 +186,18 @@ public class ShapefileReader implements JUMPReader {
                 featureCollection.add(feature);
             }
 
+            // [mmichaud 2013-10-07] if the number of shapes is greater than the number of records
+            // it is better to go on and create features with a geometry and null attributes
+            if (collection.getNumGeometries() > mydbf.getLastRec()) {
+                LOG.error("Error reading \"" + shpFileName + "\" : number of shapes in .shp > number of records in .dbf");
+                for (int x = mydbf.getLastRec() ; x < collection.getNumGeometries() ; x++) {
+                    Feature feature = new BasicFeature(fs);
+                    Geometry geo = collection.getGeometryN(x);
+                    feature.setGeometry(geo);
+                    featureCollection.add(feature);
+                }
+            }
+
             mydbf.close();
             deleteTmpDbf(); // delete dbf file if it was decompressed
         }
