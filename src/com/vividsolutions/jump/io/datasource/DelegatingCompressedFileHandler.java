@@ -31,17 +31,13 @@
  */
 package com.vividsolutions.jump.io.datasource;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 import com.vividsolutions.jump.feature.FeatureCollection;
-import com.vividsolutions.jump.io.CompressedFile;
+import com.vividsolutions.jump.io.AbstractJUMPReader;
 import com.vividsolutions.jump.io.DriverProperties;
 import com.vividsolutions.jump.io.JUMPReader;
-import com.vividsolutions.jump.util.FileUtil;
-import com.vividsolutions.jump.util.StringUtil;
 
 /**
  * If the file is a .zip or .gz file, mangles the DriverProperties into the format
@@ -52,7 +48,7 @@ import com.vividsolutions.jump.util.StringUtil;
  * data before handing it to the JUMPReader. Anyway, developers should now be
  * writing DataSources instead of JUMPReaders.
  */
-public class DelegatingCompressedFileHandler implements JUMPReader {
+public class DelegatingCompressedFileHandler extends AbstractJUMPReader {
 
     private Collection endings;
 
@@ -77,7 +73,9 @@ public class DelegatingCompressedFileHandler implements JUMPReader {
     public FeatureCollection read(DriverProperties dp) throws Exception {
       // TODO: write a clean zip datasource some time
       //mangle(dp, "File", "CompressedFile", endings);
-      return reader.read(dp);
+      FeatureCollection fc = reader.read(dp);
+      getExceptions().addAll(reader.getExceptions());
+      return fc;
     }
 
     // [ede 05.2012]

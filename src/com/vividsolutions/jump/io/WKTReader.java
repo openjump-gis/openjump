@@ -67,7 +67,7 @@ import com.vividsolutions.jump.feature.*;
  *</p>
  *
  */
-public class WKTReader implements JUMPReader {
+public class WKTReader extends AbstractJUMPReader {
     private GeometryFactory geometryFactory = new GeometryFactory();
     private com.vividsolutions.jts.io.WKTReader wktReader = new com.vividsolutions.jts.io.WKTReader(geometryFactory);
 

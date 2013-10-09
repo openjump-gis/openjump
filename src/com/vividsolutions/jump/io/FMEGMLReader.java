@@ -58,7 +58,7 @@ import java.io.InputStreamReader;
  * the schema specified in the input file.
  */
 // TODO : I18N
-public class FMEGMLReader implements JUMPReader {
+public class FMEGMLReader extends AbstractJUMPReader {
     /** Creates new FMEGMLReader */
     public FMEGMLReader() {
     }

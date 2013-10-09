@@ -81,7 +81,7 @@ import com.vividsolutions.jump.feature.FeatureCollection;
  * <br>
  * <br>
  */
-public class JMLReader implements JUMPReader {
+public class JMLReader extends AbstractJUMPReader {
     /** Creates new JMLReader */
     public JMLReader() {
     }

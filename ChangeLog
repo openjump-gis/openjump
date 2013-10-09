@@ -1,6 +1,11 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
 2013-10-07 mmichaud <michael.michaud@free.fr>
+  * JUMPReader now store Exceptions instead of throwing them immediately
+    so that the reading process can continue (as for new DataSource framework)
+    WARNING : the change may break external drivers.
+
+2013-10-07 mmichaud <michael.michaud@free.fr>
   * can now read all geometries in a shapefile having more shapes in the .shp
     than records in the .dbf
 

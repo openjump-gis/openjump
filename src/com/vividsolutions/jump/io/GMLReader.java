@@ -40,6 +40,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import java.io.*;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
@@ -229,7 +230,9 @@ import java.util.StringTokenizer;
  *
  */
 public class GMLReader extends DefaultHandler implements JUMPReader {
+
     static int STATE_GET_COLUMNS = 3;
+    Collection<Exception> exceptions;
 
     /**
      *  STATE   MEANING <br>
@@ -1013,5 +1016,13 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
 		{
     		return 0;
 		}
+    }
+
+    /**
+     * @return exceptions collected during the reading process.
+     */
+    public Collection<Exception> getExceptions() {
+        if (exceptions == null) exceptions = new ArrayList<Exception>();
+        return exceptions;
     }
 }

@@ -40,6 +40,8 @@ package com.vividsolutions.jump.io;
 
 import com.vividsolutions.jump.feature.FeatureCollection;
 
+import java.util.Collection;
+
 /**
  * Interface for JUMPReader classes. Note: This is the old I/O API. Developers
  * writing new I/O classes are encouraged to use the new API
@@ -52,4 +54,9 @@ public interface JUMPReader {
 	 * and any other parameters.
 	 */
     FeatureCollection read(DriverProperties dp) throws Exception;
+
+    /**
+     * @return exceptions collected during the reading process.
+     */
+    Collection<Exception> getExceptions();
 }

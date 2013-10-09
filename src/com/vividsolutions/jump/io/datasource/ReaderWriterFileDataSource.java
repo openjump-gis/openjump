@@ -34,7 +34,6 @@ package com.vividsolutions.jump.io.datasource;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.vividsolutions.jump.coordsys.CoordinateSystem;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.io.DriverProperties;
 import com.vividsolutions.jump.io.JUMPReader;
@@ -58,7 +57,9 @@ public class ReaderWriterFileDataSource extends DataSource {
         return new Connection() {
             public FeatureCollection executeQuery(String query, Collection exceptions, TaskMonitor monitor) {
                 try {
-					return reader.read(getReaderDriverProperties());
+                    FeatureCollection fc = reader.read(getReaderDriverProperties());
+                    exceptions.addAll(reader.getExceptions());
+					return fc;
                 } catch (Exception e) {
                     exceptions.add(e);
                     return null;

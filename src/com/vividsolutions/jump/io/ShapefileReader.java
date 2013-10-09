@@ -38,6 +38,9 @@ package com.vividsolutions.jump.io;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.geotools.dbffile.DbfFile;
@@ -87,13 +90,16 @@ import com.vividsolutions.jump.feature.*;
  *  </table>
 
  */
-public class ShapefileReader implements JUMPReader {
+public class ShapefileReader extends AbstractJUMPReader {
+
     private File delete_this_tmp_dbf = null;
 
     private static Logger LOG = Logger.getLogger(ShapefileReader.class);
+
     public static final String FILE_PROPERTY_KEY = "File";
     public static final String DEFAULT_VALUE_PROPERTY_KEY = "DefaultValue";
     public static final String COMPRESSED_FILE_PROPERTY_KEY = "CompressedFile";
+
 
     /** Creates new ShapeReader */
     public ShapefileReader() {
@@ -108,6 +114,8 @@ public class ShapefileReader implements JUMPReader {
      */
     public FeatureCollection read(DriverProperties dp)
         throws IllegalParametersException, Exception {
+
+        getExceptions().clear();
 
         // ATTENTION: this can contain a zip file path as well
         String shpFileName = dp.getProperty(FILE_PROPERTY_KEY);
@@ -160,9 +168,9 @@ public class ShapefileReader implements JUMPReader {
             // There is a DBF file so we have to set the Charset to use and
             // to associate the attributes in the DBF file with the features.
             
-            if (mydbf.getLastRec()-1 > collection.getNumGeometries()) {
-                throw new ShapefileException("Error : shp shape number does not match dbf record number");
-            }
+            //if (mydbf.getLastRec()-1 > collection.getNumGeometries()) {
+            //    throw new ShapefileException("Error : shp shape number does not match dbf record number");
+            //}
             int numfields = mydbf.getNumFields();
 
             for (int j = 0; j < numfields; j++) {
@@ -172,7 +180,7 @@ public class ShapefileReader implements JUMPReader {
 
             featureCollection = new FeatureDataset(fs);
 
-            for (int x = 0; x < mydbf.getLastRec(); x++) {
+            for (int x = 0; x < Math.min(mydbf.getLastRec(), collection.getNumGeometries()); x++) {
                 Feature feature = new BasicFeature(fs);
                 Geometry geo = collection.getGeometryN(x);
                 //StringBuffer s = mydbf.GetDbfRec(x); //[sstein 9.Sept.08]
@@ -189,10 +197,31 @@ public class ShapefileReader implements JUMPReader {
             // [mmichaud 2013-10-07] if the number of shapes is greater than the number of records
             // it is better to go on and create features with a geometry and null attributes
             if (collection.getNumGeometries() > mydbf.getLastRec()) {
-                LOG.error("Error reading \"" + shpFileName + "\" : number of shapes in .shp > number of records in .dbf");
+                String message = I18N.getMessage("com.vividsolutions.jump.io.ShapefileReader.shp-gt-dbf",
+                        new Object[]{shpFileName, collection.getNumGeometries(), mydbf.getLastRec()});
+                LOG.error(message);
+                getExceptions().add(new Exception(message));
                 for (int x = mydbf.getLastRec() ; x < collection.getNumGeometries() ; x++) {
                     Feature feature = new BasicFeature(fs);
                     Geometry geo = collection.getGeometryN(x);
+                    feature.setGeometry(geo);
+                    featureCollection.add(feature);
+                }
+            }
+            if (collection.getNumGeometries() < mydbf.getLastRec()) {
+                String message = I18N.getMessage("com.vividsolutions.jump.io.ShapefileReader.shp-lt-dbf",
+                        new Object[]{shpFileName, collection.getNumGeometries(), mydbf.getLastRec()});
+                LOG.error(message);
+                getExceptions().add(new Exception(message));
+                List emptyList = new ArrayList();
+                for (int x = collection.getNumGeometries() ; x < mydbf.getLastRec() ; x++) {
+                    Feature feature = new BasicFeature(fs);
+                    Geometry geo = factory.buildGeometry(emptyList);
+                    byte[] s = mydbf.GetDbfRec(x); //[sstein 9.Sept.08]
+
+                    for (int y = 0; y < numfields; y++) {
+                        feature.setAttribute(y + 1, mydbf.ParseRecordColumn(s, y));
+                    }
                     feature.setGeometry(geo);
                     featureCollection.add(feature);
                 }
