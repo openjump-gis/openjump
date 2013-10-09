@@ -4,6 +4,7 @@
   * JUMPReader now store Exceptions instead of throwing them immediately
     so that the reading process can continue (as for new DataSource framework)
     WARNING : the change may break external drivers.
+    Add a new Dxf driver compatible with the JUMPReader interface change
 
 2013-10-07 mmichaud <michael.michaud@free.fr>
   * can now read all geometries in a shapefile having more shapes in the .shp
