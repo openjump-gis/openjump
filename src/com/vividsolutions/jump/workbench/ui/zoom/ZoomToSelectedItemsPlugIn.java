@@ -80,7 +80,7 @@ public class ZoomToSelectedItemsPlugIn extends AbstractPlugIn {
             EnvelopeUtil.bufferByFraction(
                 envelope(geometries),
                 zoomBufferAsExtentFraction(geometries));
-
+        /*
         if ((proposedEnvelope.getWidth()
             > panel.getLayerManager().getEnvelopeOfAllLayers().getWidth())
             || (proposedEnvelope.getHeight()
@@ -95,6 +95,7 @@ public class ZoomToSelectedItemsPlugIn extends AbstractPlugIn {
                     EnvelopeUtil.centre(envelope(geometries)),
                     EnvelopeUtil.centre(proposedEnvelope)));
         }
+        */
 
         panel.getViewport().zoom(proposedEnvelope);
         //Wait until the zoom is complete before executing the flash. [Jon Aquino]
@@ -134,16 +135,35 @@ public class ZoomToSelectedItemsPlugIn extends AbstractPlugIn {
         //features combined can be a huge zoomBuffer if the features are far
         //apart. But if you consider the average extent of the individual features,
         //you don't need to think about how far apart the features are. [Jon Aquino]
-        double zoomBuffer = 2 * averageExtent(geometries);
+
+        double averageExtent = averageExtent(geometries);
         double averageFullExtent = averageFullExtent(geometries);
 
         if (averageFullExtent == 0) {
-            //Point feature. Just return 0. Rely on EnvelopeUtil#buffer to choose
-            //a reasonable buffer for point features. [Jon Aquino]
+            // The collections contains a single point feature or several
+            // points with equal geometry :
+            // Just return 0. Rely on EnvelopeUtil#buffer to choose
+            // a reasonable buffer for point features. [Jon Aquino]
             return 0;
         }
 
-        return zoomBuffer / averageFullExtent;
+        else if (averageExtent == 0) {
+            // The collection contains several distinct points :
+            // Return a bufferFraction of 0.1
+            return 0.1;
+        }
+
+        else {
+            // the smaller geometries are compared to fullExtent, the smaller the bufferFraction
+            // the smaller geometries are compared to fullExtent, the greater the buffer is
+            // Exemple :
+            // single geometry :
+            // average geometry envelope = 1, fullEnvelope = 1 -> bufferFraction = 0.5 (buffer = 0.5)
+            // average geometry envelope = 1, fullEnvelope = 16 -> bufferFraction = 0.5 / 4 (buffer = 4)
+            // average geometry envelope = 1, fullEnvelope = 256 -> bufferFraction = 0.5 / 16 (buffer = 16)
+            return 0.5 * Math.sqrt(averageExtent/averageFullExtent);
+        }
+        //return averageExtent / averageFullExtent;
     }
 
     private double averageExtent(Collection geometries) {

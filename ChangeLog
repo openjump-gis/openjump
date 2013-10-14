@@ -1,5 +1,10 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-10-14
+  * Small improvement in ZoomToSelectedItemsPlugIn : zoom level is
+    calculated with a buffer which size depends both on the global
+    selection envelope and on individual features size.
+
 2013-10-07 mmichaud <michael.michaud@free.fr>
   * JUMPReader now store Exceptions instead of throwing them immediately
     so that the reading process can continue (as for new DataSource framework)
