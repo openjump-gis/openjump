@@ -11,10 +11,11 @@ JAVA_LOOKANDFEEL=""
 ## some parameters to make OJ shiny ;)
 JAVA_OPTS_OVERRIDE="-Xdock:name=OpenJUMP -Xdock:icon=./bin/OpenJUMP.app/Contents/Resources/appIcon.icns"
 
-# Export environment variables for C-coded functions.
+## Export environment variables for C-coded functions.
 export DYLD_LIBRARY_PATH="$DYLD_LIBRARY_PATH:./lib/native:./lib/ext"
-# we have only x86 compiled osx native libs, try force 32bit jre
-JAVA_OPTS_OVERRIDE="$JAVA_OPTS_OVERRIDE -d32"
+## we have only x86 compiled osx native libs, try force 32bit jre
+## disabled as default, as it limits memory usage
+#JAVA_OPTS_OVERRIDE="$JAVA_OPTS_OVERRIDE -d32"
 
 ## run the real magic now
 . "$CDIR/oj_linux.sh" "$@"
