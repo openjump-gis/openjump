@@ -71,6 +71,14 @@ public class DataStoreDataSource extends DataSource implements
         setWorkbenchContext(context);
     }
 
+    public void setWhereClause(String whereClause) {
+        getProperties().put(WHERE_CLAUSE_KEY, whereClause);
+    }
+
+    public void setMaxFeature(int maxFeatures) {
+        getProperties().put(MAX_FEATURES_KEY, maxFeatures);
+    }
+
     public boolean isWritable() {
         return false;
     }
@@ -112,7 +120,7 @@ public class DataStoreDataSource extends DataSource implements
         };
     }
 
-    protected FeatureCollection createFeatureCollection() {
+    protected FeatureCollection createFeatureCollection() throws Exception {
         FilterQuery query = new FilterQuery();
         query.setDatasetName((String)getProperties().get(DATASET_NAME_KEY));
         query.setGeometryAttributeName((String)getProperties().get(
@@ -130,6 +138,10 @@ public class DataStoreDataSource extends DataSource implements
                 .setCachingByEnvelope(((Boolean) LangUtil.ifNull(
                         getProperties().get(CACHING_KEY), Boolean.TRUE))
                         .booleanValue());
+    }
+
+    protected WorkbenchContext getWorkbenchContext() {
+        return context;
     }
 
     public void setWorkbenchContext(WorkbenchContext context) {
