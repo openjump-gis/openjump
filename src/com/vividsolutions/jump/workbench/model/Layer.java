@@ -207,7 +207,8 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy {
 				});
 
 		if ((getLayerManager() != null)
-				&& getLayerManager().getLayers().contains(this)) {
+				&& getLayerManager().getLayers().contains(this)
+                && getLayerManager().isFiringEvents()) {
 			//Don't fire APPEARANCE_CHANGED immediately, to avoid the
 			//following problem:
 			//(1) Add fence layer

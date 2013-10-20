@@ -6,6 +6,8 @@
     the use of ST_Estimated_Extent.
     Now, some data can be excluded from "zoom on layer", but it
     will always be seen after a zoom out or a pan.
+  * Fix Layer : setFeatureCollection must not emit FeatureEvent
+    if LayerManager.isFiringEvent is off.
 
 2013-10-14 mmichaud <michael.michaud@free.fr>
   * Small improvement in ZoomToSelectedItemsPlugIn : zoom level is
