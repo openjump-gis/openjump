@@ -52,14 +52,22 @@ public class DynamicFeatureCollection implements FeatureCollection {
   public List query(Envelope envelope) {
     final Object myQueryContext = new Object();
     currentQueryContext = myQueryContext;
-    
-    Envelope layerExtents = getEnvelope();
-    if(layerExtents == null || layerExtents.isNull() || layerExtents.contains(envelope)){
+
+    // [mmichaud 2013-10-20] remove the test using dataset envelope.
+    // Indeed, dataset envelope is generally computed using ST_Estimated_Extent,
+    // which is fast, but may be false.
+    // Using a false envelope is not too severe as long as it is used in functions
+    // like "zoom on the whole layer", but if used in this function, it can prevent
+    // the loading of some data (last data added to the table, and not yet used
+    // in the database statistics)
+
+    //Envelope layerExtents = getEnvelope();
+    //if(layerExtents == null || layerExtents.isNull() || layerExtents.contains(envelope)){
     	spatialQuery.setFilterGeometry(new GeometryFactory().toGeometry(envelope));
-    }else{
+    //}else{
     	// we are asking for too much data ...
-    	spatialQuery.setFilterGeometry(new GeometryFactory().toGeometry(layerExtents.intersection(envelope)));
-    }
+    //	spatialQuery.setFilterGeometry(new GeometryFactory().toGeometry(layerExtents.intersection(envelope)));
+    //}
     
     // Q: When do we close the stream? A: When a new stream is
     // requested. Implication: You cannot have two streams active from

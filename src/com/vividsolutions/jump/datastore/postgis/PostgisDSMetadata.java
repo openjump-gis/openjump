@@ -64,19 +64,13 @@ public class PostgisDSMetadata implements DataStoreMetadata {
         schema = "public";
         table = datasetName;
     }
-    // There are two methods to compute the extent, depending on whether a spatial
-    // index exists (use ST_Estimated_Extent which is much faster) or not (use
-    // ST_Extent which implies a full scan of the table)
+    // There are two methods to compute the extent,
+    // ST_EstimatedExtent is fast but not precise (last entered data may be excluded
+    // until the next ANALYZE)
+    // ST_Extent is slow but precise (scan over the whole table)
     String sql1 = "SELECT ST_AsBinary(ST_Estimated_Extent( '" + schema + "', '" + table +"', '" + attributeName + "' ));";
     String sql2 = "SELECT ST_AsBinary(ST_Envelope(ST_Extent(\"" + attributeName + "\"))) FROM \"" + schema + "\".\"" + table + "\";";
-    boolean indexed = false;
-    // Try to determine if attributeName is indexed
-    try {
-        indexed = isIndexed(schema, table, attributeName);
-    }
-    catch(SQLException ex) {
-        ex.printStackTrace();
-    }
+
     final ResultSetBlock resultSetBlock = new ResultSetBlock() {
         public void yield( ResultSet resultSet ) throws Exception {
             if ( resultSet.next() ) {
@@ -91,15 +85,15 @@ public class PostgisDSMetadata implements DataStoreMetadata {
         }
     };
     try {
-        JDBCUtil.execute(conn.getConnection(), (indexed?sql1:sql2), resultSetBlock);
-    } catch (Exception ex1) {
-        if (indexed) {
-            // If attributeName is indexed but indexed has not been initialized
-            // (no VACUUM ANALYZE) ST_Estimated_Extent throws an exception.
-            // In this case, try the second method using ST_Extent
-            JDBCUtil.execute(conn.getConnection(), sql2, resultSetBlock);
+        JDBCUtil.execute(conn.getConnection(), (sql1), resultSetBlock);
+        if (e[0] == null || e[0].isNull()) {
+            JDBCUtil.execute(conn.getConnection(), (sql2), resultSetBlock);
         }
-        else ex1.printStackTrace();
+    } catch (Exception ex1) {
+        // If attributeName is indexed but indexed has not been initialized
+        // (no VACUUM ANALYZE) ST_Estimated_Extent may throw an exception.
+        // In this case, try the second method using ST_Extent
+        JDBCUtil.execute(conn.getConnection(), sql2, resultSetBlock);
     }
     return e[0];
   }
@@ -266,8 +260,13 @@ public class PostgisDSMetadata implements DataStoreMetadata {
       
     /**
      * Use PostgreSQL metadata to know if schema.table.column is spatially 
-     * indexed (or involved in an index).
+     * indexed (or involved in a spatial index).
+     *
+     * @deprecated initially thought that statistic used by ST_Estimated_Extent was
+     * depending on whether a spatial index exists or not. Finally, statistics and
+     * index seem to be two independant things
      */
+    @Deprecated
     public String getGeometryIndicesQuery(String schema, String table, String column) {
         return "SELECT n.nspname, t.relname, a.attname, c.relname\n" +
                "FROM pg_index i\n" +
