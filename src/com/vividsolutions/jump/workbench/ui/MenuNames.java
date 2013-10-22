@@ -52,6 +52,7 @@ public interface MenuNames {
     public static final String TOOLS_ANALYSIS = I18N.get("ui.MenuNames.TOOLS.ANALYSIS");
     public static final String TOOLS_GENERALIZATION = I18N.get("ui.MenuNames.TOOLS.GENERALIZATION");
     public static final String TOOLS_GENERATE = I18N.get("ui.MenuNames.TOOLS.GENERATE");
+    public static final String TOOLS_LINEARREFERENCING = I18N.get("ui.MenuNames.TOOLS.LINEARREFERENCING");
     public static final String TOOLS_JOIN = I18N.get("ui.MenuNames.TOOLS.JOIN");
     public static final String TOOLS_QA = I18N.get("ui.MenuNames.TOOLS.QA");
     public static final String TOOLS_WARP = I18N.get("ui.MenuNames.TOOLS.WARP");
