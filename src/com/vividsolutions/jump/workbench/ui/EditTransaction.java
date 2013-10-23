@@ -487,6 +487,20 @@ public class EditTransaction {
         //proposedGeometries.put(feature.getID(), feature.getGeometry().getFactory().createGeometryCollection(new Geometry[0]));
         proposedGeometries.put(feature.getID(), EMPTY_GEOMETRY);
     }
+
+    public void modifyFeatureGeometry(Feature feature, Geometry newGeometry) {
+        if (newGeometry == null || newGeometry.isEmpty()) {
+            if (allowAddingAndRemovingFeatures) {
+                features.add(feature);
+                originalGeometries.put(feature.getID(), feature.getGeometry());
+                proposedGeometries.put(feature.getID(), EMPTY_GEOMETRY);
+            }
+        } else {
+            features.add(feature);
+            originalGeometries.put(feature.getID(), feature.getGeometry());
+            proposedGeometries.put(feature.getID(), newGeometry);
+        }
+    }
     
     public Layer getLayer() {
         return layer;

@@ -3,6 +3,9 @@
 2013-10-22 mmichaud <michael.michaud@free.fr>
   * Fix AbstractBasicFeature : clone function does not clone
     externalPrimaryKey any more
+  * Add changeFeature method to EditTransaction
+  * Change transaction management in GeometryFunctionPlugIn (modification
+    instead of creation/deletion) and fix small bugs.
 
 2013-10-20 mmichaud <michael.michaud@free.fr>
   * fix a bug in PostGISDSMetadata and DynamicFeatureCollection

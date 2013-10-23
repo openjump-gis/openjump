@@ -44,6 +44,7 @@ import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.model.UndoableCommand;
 import com.vividsolutions.jump.workbench.plugin.*;
 import com.vividsolutions.jump.workbench.plugin.util.LayerNameGenerator;
+import com.vividsolutions.jump.workbench.ui.EditTransaction;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
@@ -55,6 +56,7 @@ import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 
 /**
  * Provides basic functions for computation with {@link Geometry} objects.
@@ -65,8 +67,8 @@ import java.util.Iterator;
  *
  * @see GeometryFunction
  */
-public class GeometryFunctionPlugIn extends AbstractPlugIn
-                                    implements ThreadedPlugIn {
+public class GeometryFunctionPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
+
   public static final String GEOMETRY_FUNCTION_REG_KEY = "Geometry Function Registry Key";
   
   //-- [sstein 15.02.2006]
@@ -86,7 +88,6 @@ public class GeometryFunctionPlugIn extends AbstractPlugIn
   private Collection functions;
   private MultiInputDialog dialog;
   private Layer srcLayer, maskLayer;
-  //private String funcNameToRun;
   private GeometryFunction functionToRun = null;
   private boolean exceptionThrown = false;
 
@@ -141,7 +142,7 @@ public class GeometryFunctionPlugIn extends AbstractPlugIn
   }
   
   public boolean execute(PlugInContext context) throws Exception {
-    //-- [sstein 16.07.2006] put here again for langugae settings
+    //-- [sstein 16.07.2006] put here again for language settings
     sErrorsFound = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.errors-found-while-executing-function");
     sFunction = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.function");
     sFeatures = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.features");
@@ -168,29 +169,30 @@ public class GeometryFunctionPlugIn extends AbstractPlugIn
   }
 
 
-  public void run(TaskMonitor monitor, PlugInContext context)
-      throws Exception {
+  public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
+
     monitor.allowCancellationRequests();
 
     // input-proofing
     if (functionToRun == null) return;
     if (srcLayer == null) return;
-    if ( (updateSource || addToSource)
-          && ! srcLayer.isEditable()) {
+    if ((updateSource || addToSource)
+          && !srcLayer.isEditable()) {
       context.getWorkbenchFrame().warnUser(srcLayer.getName() + " " + I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.is-not-editable"));
       return;
     }
 
     monitor.report(I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Executing-function") + " " + functionToRun.getName() + "...");
 
-    ArrayList modifiedFeatures = new ArrayList();
     Collection resultFeatures;
     int nArgs = functionToRun.getGeometryArgumentCount();
+
+    Collection fc1 = getFeaturesToProcess(srcLayer, context);
+    EditTransaction transaction = new EditTransaction(new LinkedHashSet<Feature>(), "Geometry function", srcLayer, true, true, context.getLayerViewPanel().getContext());
 
     if (nArgs == 2) {
       if (maskLayer == null) return;
 
-      Collection fc1 = getFeaturesToProcess(srcLayer, context);
       Collection fc2 = getFeaturesToProcess(maskLayer, context);
 
       // check for valid size of input
@@ -199,60 +201,32 @@ public class GeometryFunctionPlugIn extends AbstractPlugIn
         return;
       }
       Geometry geomMask = ((Feature) fc2.iterator().next()).getGeometry();
-
-      resultFeatures = runGeometryMethodWithMask(monitor, fc1, geomMask, functionToRun, modifiedFeatures);
+      resultFeatures = runGeometryMethodWithMask(monitor, fc1, geomMask, functionToRun, transaction);
     } else {
-      Collection fc1 = getFeaturesToProcess(srcLayer, context);
-      resultFeatures = runGeometryMethod(monitor, fc1, functionToRun, modifiedFeatures);
+      resultFeatures = runGeometryMethod(monitor, fc1, functionToRun, transaction);
     }
 
     // this will happen if plugin was cancelled
     if (resultFeatures == null) return;
 
-    if (modifiedFeatures.size() == 0) {
+    if ((createLayer && resultFeatures.size() == 0) ||
+        (updateSource && transaction.getFeatures().size() == 0) ||
+        (addToSource && transaction.getFeatures().size() == 0)) {
       context.getWorkbenchFrame().warnUser(I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.No-geometries-were-processed"));
       return;
     }
 
     if (createLayer) {
       String outputLayerName = LayerNameGenerator.generateOperationOnLayerName(
-          functionToRun.toString(),
-          srcLayer.getName());
+          functionToRun.toString(), srcLayer.getName());
       FeatureCollection resultFC = new FeatureDataset(srcLayer.getFeatureCollectionWrapper().getFeatureSchema());
       resultFC.addAll(resultFeatures);
       context.getLayerManager().addCategory(categoryName);
       context.addLayer(categoryName, outputLayerName, resultFC);
     } else if (updateSource) {
-        final Collection undoableNewFeatures = resultFeatures;
-        final Collection undoableModifiedFeatures = modifiedFeatures;
-
-        UndoableCommand cmd = new UndoableCommand( getName() ) {
-            public void execute() {
-                srcLayer.getFeatureCollectionWrapper().removeAll( undoableModifiedFeatures );
-                srcLayer.getFeatureCollectionWrapper().addAll( undoableNewFeatures );
-            }
-
-            public void unexecute() {
-                srcLayer.getFeatureCollectionWrapper().removeAll( undoableNewFeatures );
-                srcLayer.getFeatureCollectionWrapper().addAll( undoableModifiedFeatures );
-            }
-        };
-
-        execute( cmd, context );
+        transaction.commit();
     } else if (addToSource) {
-        final Collection undoableFeatures = resultFeatures;
-
-        UndoableCommand cmd = new UndoableCommand( getName() ) {
-            public void execute() {
-                srcLayer.getFeatureCollectionWrapper().addAll( undoableFeatures );
-            }
-
-            public void unexecute() {
-                srcLayer.getFeatureCollectionWrapper().removeAll( undoableFeatures );
-            }
-        };
-
-        execute( cmd, context );
+        transaction.commit();
     }
 
     if (exceptionThrown) {
@@ -280,9 +254,10 @@ public class GeometryFunctionPlugIn extends AbstractPlugIn
 
 
   private Collection getFeaturesToProcess(Layer lyr, PlugInContext context){
-    if (useSelected)
+    if (useSelected && lyr.equals(srcLayer)) {
       return context.getLayerViewPanel()
                         .getSelectionManager().getFeaturesWithSelectedItems(lyr);
+    }
     return lyr.getFeatureCollectionWrapper().getFeatures();
   }
 
@@ -292,8 +267,7 @@ public class GeometryFunctionPlugIn extends AbstractPlugIn
                                        Collection fcA,
                                        Geometry geomB,
                                        GeometryFunction func,
-                                       Collection modifiedFeatures
-                                       ) {
+                                       EditTransaction transaction) {
     exceptionThrown = false;
     Collection resultColl = new ArrayList();
     int total = fcA.size();
@@ -309,9 +283,9 @@ public class GeometryFunctionPlugIn extends AbstractPlugIn
       geoms[1] = geomB;
       Geometry result = execute(func, geoms, params);
 
-      saveResult(fa, result, resultColl, modifiedFeatures);
-
+      saveResult(fa, result, resultColl, transaction);
     }
+
     return resultColl;
   }
 
@@ -319,8 +293,7 @@ public class GeometryFunctionPlugIn extends AbstractPlugIn
   private Collection runGeometryMethod(TaskMonitor monitor,
                                        Collection fc,
                                        GeometryFunction func,
-                                       Collection modifiedFeatures
-                                       ){
+                                       EditTransaction transaction){
     exceptionThrown = false;
     Collection resultColl = new ArrayList();
     int total = fc.size();
@@ -337,21 +310,28 @@ public class GeometryFunctionPlugIn extends AbstractPlugIn
       geoms[0] = gSrc;
       Geometry result = execute(func, geoms, params);
 
-      saveResult(fSrc, result, resultColl, modifiedFeatures);
+      saveResult(fSrc, result, resultColl, transaction);
     }
 
     return resultColl;
   }
 
-  private void saveResult(Feature srcFeat, Geometry resultGeom, Collection resultColl, Collection modifiedFeatures) {
-    if (resultGeom == null || resultGeom.isEmpty()) {
-        // do nothing
-    } else {
-      Feature fNew = srcFeat.clone(true);
-      fNew.setGeometry(resultGeom);
-      resultColl.add(fNew);
-      modifiedFeatures.add(srcFeat);
-    }
+  private void saveResult(Feature srcFeat, Geometry resultGeom, Collection resultColl, EditTransaction transaction) {
+      if (createLayer || addToSource) {
+        // [mmichaud 2013-10-22] change true to false
+        // as the geometry will be changed anyway
+        Feature fNew = srcFeat.clone(false);
+        fNew.setGeometry(resultGeom);
+        if (resultGeom != null && !resultGeom.isEmpty()) {
+            if (createLayer) {
+                resultColl.add(fNew);
+            }
+            else if (addToSource) transaction.createFeature(fNew);
+        }
+      }
+      else if (updateSource) {
+          transaction.modifyFeatureGeometry(srcFeat, resultGeom);
+      }
   }
 
   private Geometry execute(GeometryFunction func, Geometry[] geoms, double[] params){
@@ -368,8 +348,6 @@ public class GeometryFunctionPlugIn extends AbstractPlugIn
 
   private JComboBox layer2ComboBox;
   private JTextField paramField;
-  private JLabel labelField;
-//  private JCheckBox replaceSrcChkBox;
   private JRadioButton updateSourceRB;
   private JRadioButton createNewLayerRB;
   private JRadioButton addToSourceRB;
@@ -386,7 +364,7 @@ public class GeometryFunctionPlugIn extends AbstractPlugIn
     //Set initial layer values to the first and second layers in the layer list.
     //In #initialize we've already checked that the number of layers >= 1. [Jon Aquino]
     if (srcLayer == null) srcLayer = context.getCandidateLayer(0);
-    dialog.addLayerComboBox(SRC_LAYER, srcLayer,
+    final JComboBox srcLayerComboBox = dialog.addLayerComboBox(SRC_LAYER, srcLayer,
     		I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.The-Source-layer-features-provide-the-first-operand-for-the-chosen-function"),
                             context.getLayerManager());
 
@@ -400,7 +378,8 @@ public class GeometryFunctionPlugIn extends AbstractPlugIn
     layer2ComboBox = dialog.addLayerComboBox(MASK_LAYER, maskLayer,
     		I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.The-Mask-layer-must-contain-a-single-feature,-which-is-used-as-the-second-operand-for-binary-functions"),
         context.getLayerManager()  );
-    dialog.addCheckBox(SELECTED_ONLY, useSelected);
+    final JCheckBox useSelectedCheckBox =  dialog.addCheckBox(SELECTED_ONLY, useSelected);
+    useSelectedCheckBox.setEnabled(getSelectedFeatures((Layer)srcLayerComboBox.getSelectedItem(), context).size() > 0);
 
     final String OUTPUT_GROUP = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Match-Type");
     createNewLayerRB = dialog.addRadioButton(CREATE_LYR, OUTPUT_GROUP, true,
