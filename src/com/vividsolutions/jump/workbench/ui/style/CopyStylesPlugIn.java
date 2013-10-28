@@ -20,6 +20,9 @@ import javax.swing.ImageIcon;
 public class CopyStylesPlugIn extends AbstractPlugIn {
 
   static Collection stylesBuffer = null;
+  static boolean isScaleDependentRenderingEnabled = false;
+  static double minScale = 1.0;
+  static double maxScale = 1.0;
 
   public CopyStylesPlugIn() {
   }
@@ -43,6 +46,9 @@ public class CopyStylesPlugIn extends AbstractPlugIn {
   	reportNothingToUndoYet(context);
     final Layer layer = context.getSelectedLayer(0);
     stylesBuffer = layer.cloneStyles();
+    isScaleDependentRenderingEnabled = layer.isScaleDependentRenderingEnabled();
+    minScale = layer.getMinScale() == null ? 1.0 : layer.getMinScale();
+    maxScale = layer.getMaxScale() == null ? 1.0 : layer.getMaxScale();
     return true;
   }
 }

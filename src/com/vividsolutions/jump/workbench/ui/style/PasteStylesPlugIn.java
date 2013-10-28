@@ -3,6 +3,8 @@ package com.vividsolutions.jump.workbench.ui.style;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.imagery.ReferencedImageStyle;
+import com.vividsolutions.jump.workbench.imagery.ReferencedImagesLayer;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
@@ -50,18 +52,27 @@ public class PasteStylesPlugIn extends AbstractPlugIn {
       return false;
     Layer[] selectedLayers = context.getSelectedLayers();
     for (int i = 0; i < selectedLayers.length; i++) {
-      validateStyleForLayer(selectedLayers[i]); //throws exception if bad
       pasteStyles(selectedLayers[i]);
     }
     return true;
   }
 
-  private void pasteStyles(Layer layer)
+  private void pasteStyles(Layer layer) throws Exception
   {
-    layer.setStyles(CopyStylesPlugIn.stylesBuffer);
+    layer.setScaleDependentRenderingEnabled(CopyStylesPlugIn.isScaleDependentRenderingEnabled);
+    layer.setMaxScale(CopyStylesPlugIn.maxScale);
+    layer.setMinScale(CopyStylesPlugIn.minScale);
+    if (CopyStylesPlugIn.stylesBuffer.size() > 0 &&
+          CopyStylesPlugIn.stylesBuffer.iterator().next() instanceof ReferencedImageStyle) {
+        // don't try to copy style from image layer
+    } else {
+        validateStyleForLayer(layer); //throws exception if bad
+        layer.setStyles(CopyStylesPlugIn.stylesBuffer);
+    }
   }
   
-  private void validateStyleForLayer(Layer layer) {
+  private void validateStyleForLayer(Layer layer) throws IllegalArgumentException {
+        if (layer instanceof ReferencedImagesLayer) return;
 		String attribName = "";
 		try {
 			FeatureSchema featureSchema = layer.getFeatureCollectionWrapper().getFeatureSchema();

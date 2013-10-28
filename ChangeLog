@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-10-28 mmichaud <michael.michaud@free.fr>
+  * Fix bug #345 : copy/paste between Layer and ReferencedImagesLayer
+    now preserve min/max scale
+
 2013-10-22 mmichaud <michael.michaud@free.fr>
   * Fix AbstractBasicFeature : clone function does not clone
     externalPrimaryKey any more
