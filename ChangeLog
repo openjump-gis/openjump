@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-10-30 mmichaud <michael.michaud@free.fr>
+  * Add the database source in the LayerProperties panel if the datasource
+    is a datastore
+
 2013-10-28 mmichaud <michael.michaud@free.fr>
   * Fix bug #345 : copy/paste between Layer and ReferencedImagesLayer
     now preserve min/max scale

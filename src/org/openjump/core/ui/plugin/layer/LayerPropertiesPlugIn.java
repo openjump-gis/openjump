@@ -67,6 +67,7 @@ import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollectionWrapper;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.datastore.ConnectionDescriptor;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
@@ -75,6 +76,7 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.plugin.datastore.DataStoreDataSource;
 import com.vividsolutions.jump.workbench.ui.renderer.style.AlphaSetting;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.Style;
@@ -553,9 +555,13 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn {
             multipleSourceTypes = true;
 
           Object fnameObj = dsq.getDataSource().getProperties().get("File");
+          if (fnameObj == null) {
+              fnameObj = dsq.getDataSource().getProperties().get(DataStoreDataSource.CONNECTION_DESCRIPTOR_KEY);
+          }
 
-          if (fnameObj != null)
+          if (fnameObj != null) {
             sourcePath = fnameObj.toString();
+          }
         }
       } // end of looping through all the layers
 
