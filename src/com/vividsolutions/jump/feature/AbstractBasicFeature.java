@@ -189,16 +189,25 @@ public abstract class AbstractBasicFeature implements Feature, Serializable {
      * @return a new Feature with the same attributes as this Feature
      */
     public Feature clone(boolean deep) {
-        return clone(this, deep);
+        return clone(this, deep, true);
     }
-    
-    public static BasicFeature clone(Feature feature, boolean deep) {
+    /**
+     * Clones this Feature.
+     * @param deep whether or not to clone the geometry
+     * @param copyPK whether or not to copy external PK attribute if exists
+     * @return a new Feature with the same attributes as this Feature
+     */
+    public Feature clone(boolean deep, boolean copyPK) {
+        return clone(this, deep, copyPK);
+    }
+
+    public static BasicFeature clone(Feature feature, boolean deep, boolean copyPK) {
         BasicFeature clone = new BasicFeature(feature.getSchema());
         for (int i = 0; i < feature.getSchema().getAttributeCount(); i++) {
             if (feature.getSchema().getAttributeType(i) == AttributeType.GEOMETRY) {
                 clone.setAttribute(i, deep ? feature.getGeometry().clone() : feature.getGeometry());
             } else if (feature.getSchema().getExternalPrimaryKeyIndex() == i) {
-                // do not clone the Primary Key
+                if (copyPK) clone.setAttribute(i, feature.getAttribute(i));
             } else {
                 clone.setAttribute(i, feature.getAttribute(i));
             }

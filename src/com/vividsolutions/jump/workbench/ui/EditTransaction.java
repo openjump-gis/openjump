@@ -357,6 +357,7 @@ public class EditTransaction {
         UndoableCommand command = new UndoableCommand(name, layer) {
             public void dispose() {
                 super.dispose();
+                features.clear();
                 proposedGeometries.clear();
                 originalGeometries.clear();
             }
@@ -416,7 +417,8 @@ public class EditTransaction {
                 featuresToRemove.add(feature);
             } else {
                 modifiedFeatures.add(feature);
-                modifiedFeaturesOldClones.add(feature.clone());
+                // clone feature including geometry, and PK to preserve genealogy
+                modifiedFeaturesOldClones.add(feature.clone(true, true));
                 feature.setGeometry(newGeometry);
             }
         }

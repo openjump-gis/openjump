@@ -327,6 +327,10 @@ public class FeatureSchema implements Cloneable, Serializable {
         }
     }
 
+    public void removeExternalPrimaryKey() {
+        this.externalPKIndex = -1;
+    }
+
     /**
      * Add an attribute containing an external identifier.
      * This attribute is read-only fo OpenJUMP. It is the responsability of the external
