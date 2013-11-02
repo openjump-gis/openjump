@@ -51,6 +51,8 @@ import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
@@ -109,6 +111,7 @@ public class GeometryFunctionPlugIn extends AbstractPlugIn implements ThreadedPl
   }
 
   private boolean addToSourceAllowed = true;
+  private boolean editSourceAllowed  = false;
 
   public void setAddToSourceAllowed(boolean value) {
     addToSourceAllowed = value;
@@ -318,9 +321,10 @@ public class GeometryFunctionPlugIn extends AbstractPlugIn implements ThreadedPl
 
   private void saveResult(Feature srcFeat, Geometry resultGeom, Collection resultColl, EditTransaction transaction) {
       if (createLayer || addToSource) {
-        // [mmichaud 2013-10-22] change true to false
+        // [mmichaud 2013-10-25] change deep parameter from true to false
         // as the geometry will be changed anyway
-        Feature fNew = srcFeat.clone(false);
+        // second argument prevent the copy of the external PK attribute
+        Feature fNew = srcFeat.clone(false, false);
         fNew.setGeometry(resultGeom);
         if (resultGeom != null && !resultGeom.isEmpty()) {
             if (createLayer) {
@@ -353,7 +357,7 @@ public class GeometryFunctionPlugIn extends AbstractPlugIn implements ThreadedPl
   private JRadioButton addToSourceRB;
 
 
-  private void setDialogValues(MultiInputDialog dialog, PlugInContext context)
+  private void setDialogValues(final MultiInputDialog dialog, PlugInContext context)
   {
     //dialog.setSideBarImage(new ImageIcon(getClass().getResource("DiffSegments.png")));
     dialog.setSideBarDescription(
@@ -364,9 +368,16 @@ public class GeometryFunctionPlugIn extends AbstractPlugIn implements ThreadedPl
     //Set initial layer values to the first and second layers in the layer list.
     //In #initialize we've already checked that the number of layers >= 1. [Jon Aquino]
     if (srcLayer == null) srcLayer = context.getCandidateLayer(0);
+    editSourceAllowed = srcLayer.isEditable();
     final JComboBox srcLayerComboBox = dialog.addLayerComboBox(SRC_LAYER, srcLayer,
     		I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.The-Source-layer-features-provide-the-first-operand-for-the-chosen-function"),
                             context.getLayerManager());
+    srcLayerComboBox.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+            srcLayer = dialog.getLayer(SRC_LAYER);
+            editSourceAllowed = srcLayer.isEditable();
+        }
+    });
 
     JComboBox functionComboBox = dialog.addComboBox(METHODS, functionToRun,
         functions, null);
@@ -386,8 +397,9 @@ public class GeometryFunctionPlugIn extends AbstractPlugIn implements ThreadedPl
     		I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Create-a-new-layer-for-the-results"));
     updateSourceRB = dialog.addRadioButton(UPDATE_SRC, OUTPUT_GROUP, false,
     		I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Replace-the-geometry-of-Source-features-with-the-result-geometry") + "  ");
+    updateSourceRB.setEnabled(editSourceAllowed);
 
-    if ( addToSourceAllowed ) {
+    if ( addToSourceAllowed && editSourceAllowed) {
         addToSourceRB = dialog.addRadioButton(ADD_TO_SRC, OUTPUT_GROUP, false,
                 I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Add-the-result-geometry-to-the-Source-layer")+"  ");
     }
