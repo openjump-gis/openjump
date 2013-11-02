@@ -3,6 +3,9 @@
 2013-11-02 mmichaud <michael.michaud@free.fr>
   * LayerManager#dispose now set firingEvents to false before disposing
     each layer. This avoid creation of many useless FeatureEvents
+  * Add a clone method to Feature to preserve external PK
+  * Change attribute edition/undo/redo in LayerTableModel so that the
+    fid is preserved.
 
 2013-10-30 mmichaud <michael.michaud@free.fr>
   * Add the database source in the LayerProperties panel if the datasource

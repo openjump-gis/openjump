@@ -175,19 +175,27 @@ public class LayerTableModel extends ColumnBasedTableModel {
                   return value;
                 }
 
-                protected void setValue(Object value, final Feature feature) {
-                    final Feature oldAttributes = (Feature) feature.clone();
-                    final Feature newAttributes = (Feature) feature.clone();
-                    newAttributes.setAttribute(j, value);
+                protected void setValue(final Object value, final Feature feature) {
+                    final Object oldValue = feature.getAttribute(j);
                     layer.getLayerManager().getUndoableEditReceiver().startReceiving();
                     try {
                         UndoableCommand command =
                             new UndoableCommand(I18N.get("ui.plugin.LayerTableModel.edit")+" " + schema.getAttributeName(j)) {
                             public void execute() {
-                                setAttributesOf(feature, newAttributes);
+                                Feature oldClone = (Feature)feature.clone();
+                                feature.setAttribute(j, value);
+                                layer.getLayerManager().fireFeaturesAttChanged(
+                                        Arrays.asList(new Feature[] { feature }),
+                                        FeatureEventType.ATTRIBUTES_MODIFIED,
+                                        layer, Arrays.asList(new Feature[] { oldClone }));
                             }
                             public void unexecute() {
-                                setAttributesOf(feature, oldAttributes);
+                                Feature oldClone = (Feature)feature.clone();
+                                feature.setAttribute(j, oldValue);
+                                layer.getLayerManager().fireFeaturesAttChanged(
+                                        Arrays.asList(new Feature[] { feature }),
+                                        FeatureEventType.ATTRIBUTES_MODIFIED,
+                                        layer, Arrays.asList(new Feature[] { oldClone }));
                             }
                         };
                         command.execute();
