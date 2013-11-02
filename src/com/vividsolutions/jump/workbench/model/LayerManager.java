@@ -354,6 +354,7 @@ public class LayerManager {
     }
 
     public void dispose() {
+      this.setFiringEvents(false);
       for (Iterator i = layerReferencesToDispose.iterator(); i.hasNext();) {
         WeakReference reference = (WeakReference) i.next();
         Layer layer = (Layer) reference.get();
