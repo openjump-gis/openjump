@@ -35,9 +35,9 @@ package com.vividsolutions.jump.workbench.plugin;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
 import java.util.Arrays;
 import java.util.Vector;
 
@@ -193,10 +193,10 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
 
   public Icon getIcon(Dimension dim) {
     Icon icon = null;
+    Class c = this.getClass();
     // find old method
     try {
       Method m = null;
-      Class c = this.getClass();
       do {
         try {
           //System.out.println("ap check "+c);
@@ -211,6 +211,20 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
     } catch (IllegalArgumentException e) {
     } catch (IllegalAccessException e) {
     } catch (InvocationTargetException e) {
+    }
+    // find old field
+    if (icon==null) {
+      c = this.getClass();
+      try {
+        Field f = c.getDeclaredField("ICON");
+        if (Icon.class.isAssignableFrom(f.getType()))
+          icon = (Icon) f.get(this);
+      } catch (NoSuchFieldException e) {
+      } catch (SecurityException e) {
+      } catch (IllegalArgumentException e) {
+      } catch (IllegalAccessException e) {
+      }
+      
     }
     // resize if requested (currently only one via height param)
     if (icon!=null && icon instanceof ImageIcon
