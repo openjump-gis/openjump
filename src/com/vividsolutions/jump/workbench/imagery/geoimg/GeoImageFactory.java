@@ -240,22 +240,23 @@ public class GeoImageFactory extends AbstractGraphicImageFactory {
     
     // set up imagio caching, not sure if this really has an effect
     File temp = new File(System.getProperty("java.io.tmpdir"));
-    System.out.println("GIF temp: "+temp);
-    ImageIO.setCacheDirectory(temp);
-    ImageIO.setUseCache(true);
-    
+//    System.out.println("GIF temp: "+temp);
+    if (temp.isDirectory() && temp.exists()) {
+      ImageIO.setCacheDirectory(temp);
+      ImageIO.setUseCache(true);
+    }
     // print a list of available GDAL drivers
-    List a = new SortedList();
-    for (int i = 0; GDALUtilities.isGDALAvailable()
-        && i < gdal.GetDriverCount(); i++) {
-      Driver d = gdal.GetDriver(i);
-      String e = d.GetMetadataItem(gdalconst.GDAL_DMD_EXTENSION);
-      a.add(d.getShortName() + "(" + e + ")");
-    }
-    for (Object n : a) {
-      System.out.print(n + ",");
-    }
-    System.out.println();
+//    List a = new SortedList();
+//    for (int i = 0; GDALUtilities.isGDALAvailable()
+//        && i < gdal.GetDriverCount(); i++) {
+//      Driver d = gdal.GetDriver(i);
+//      String e = d.GetMetadataItem(gdalconst.GDAL_DMD_EXTENSION);
+//      a.add(d.getShortName() + "(" + e + ")");
+//    }
+//    for (Object n : a) {
+//      System.out.print(n + ",");
+//    }
+//    System.out.println();
     
     // imageio is part of jdk, so assume we are avail
     return true;

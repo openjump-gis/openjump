@@ -57,7 +57,7 @@ public class GeoImageFactoryFileLayerLoader extends
       gif = new GeoImageFactory(loader);
       gifll = new GeoImageFactoryFileLayerLoader(
           wbc, gif, null);
-      System.out.println("GIFFLL: register "+gifll+"/"+gifll.getFileExtensions());
+//      System.out.println("GIFFLL: register "+gifll+"/"+gifll.getFileExtensions());
       registry.createEntry(FileLayerLoader.KEY, gifll);
     }
     
