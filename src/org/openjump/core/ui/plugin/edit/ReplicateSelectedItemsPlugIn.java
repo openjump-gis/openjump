@@ -59,6 +59,7 @@ import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
@@ -157,10 +158,11 @@ public class ReplicateSelectedItemsPlugIn extends AbstractPlugIn implements Thre
 	    //-- get selected items
 	    final Collection features = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems();
 
-	    if (newLayer == false){	    	
-	    	EditTransaction transaction = new EditTransaction(features, this.getName(), this.itemlayer,
-						this.isRollingBackInvalidEdits(context), true, context.getWorkbenchFrame());
-	    	//Collection actualLayerFeatures = this.itemlayer.getFeatureCollectionWrapper().getFeatures();
+        if (newLayer == false){
+
+            EditTransaction transaction = new EditTransaction(new ArrayList(), this.getName(), this.itemlayer,
+                    this.isRollingBackInvalidEdits(context), true, context.getWorkbenchFrame());
+
 	    	FeatureCollection actualLayerFeatures = this.itemlayer.getFeatureCollectionWrapper().getWrappee();
 	    	FeatureSchema fschema = this.itemlayer.getFeatureCollectionWrapper().getFeatureSchema();
 	    	//-- check if schema is the same if yes add the feature (or change Schema)
@@ -169,8 +171,10 @@ public class ReplicateSelectedItemsPlugIn extends AbstractPlugIn implements Thre
 	    	while (iter.hasNext()){
 	    		i++;
 	    		fi = (Feature)iter.next();
-	    	    if(fschema.equals(fi.getSchema())){ 
-					actualLayerFeatures.add((Feature)fi.clone());
+	    	    if(fschema.equals(fi.getSchema())){
+                    Feature feature = (Feature)fi.clone();
+                    transaction.createFeature(feature);
+					actualLayerFeatures.add(feature);
 	    		}
 	    	    else{
 	    	    	context.getWorkbenchFrame().setStatusMessage(
@@ -182,6 +186,7 @@ public class ReplicateSelectedItemsPlugIn extends AbstractPlugIn implements Thre
 	    	    	if (this.copyAsGeometry == true){
 	    	    		Geometry geom = (Geometry)fi.getGeometry().clone();
 	    	    		Feature newFeature = FeatureUtil.toFeature(geom, fschema);
+                        transaction.createFeature(newFeature);
 	    	    		actualLayerFeatures.add(newFeature);
 	    	    	}
 	    	    }
@@ -198,8 +203,9 @@ public class ReplicateSelectedItemsPlugIn extends AbstractPlugIn implements Thre
 	    	while (iter.hasNext()){
 	    		i++;
 	    		fi = (Feature)iter.next();
-	    	    if(f.getSchema().equals(fi.getSchema())){ 
-					myCollA.add((Feature)fi.clone());
+	    	    if(f.getSchema().equals(fi.getSchema())){
+                    Feature feature = (Feature)fi.clone();
+					myCollA.add(feature);
 	    		}
 	    	    else{
 	    	    	context.getWorkbenchFrame().setStatusMessage(
