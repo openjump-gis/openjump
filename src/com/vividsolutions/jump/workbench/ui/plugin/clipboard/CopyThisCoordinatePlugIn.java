@@ -31,22 +31,25 @@
  */
 package com.vividsolutions.jump.workbench.ui.plugin.clipboard;
 
-import com.vividsolutions.jts.geom.Coordinate;
+import java.awt.Toolkit;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
 
+import javax.swing.Icon;
+
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-
-import java.awt.Toolkit;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.UnsupportedFlavorException;
-
-import java.io.IOException;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 
 public class CopyThisCoordinatePlugIn extends AbstractPlugIn {
+    public Icon ICON = IconLoader.icon("crosshair.png");
+  
     public boolean execute(PlugInContext context) throws Exception {
         final Coordinate c =
             context.getLayerViewPanel().getViewport().toModelCoordinate(

@@ -425,7 +425,7 @@ public class SaveDatasetsPlugIn extends AbstractPlugIn
             {
             	if (context.getTask().getProjectFile() != null)
             	{
-            		new SaveProjectPlugIn(new SaveProjectAsPlugIn()).execute(context);
+            		new SaveProjectPlugIn().execute(context);
             		context.getWorkbenchFrame().getOutputFrame().addText("\n " + sSavedTask +": " + context.getTask().getProjectFile().getName());
             	}
             }

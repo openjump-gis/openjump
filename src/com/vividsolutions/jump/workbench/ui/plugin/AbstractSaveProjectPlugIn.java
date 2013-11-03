@@ -50,83 +50,105 @@ import com.vividsolutions.jump.util.java2xml.Java2XML;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.Task;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
+import com.vividsolutions.jump.workbench.plugin.EnableCheck;
+import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
+import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 
 /**
-* Subclass this to implement a 'Save Project' plugin.
-*/
+ * Subclass this to implement a 'Save Project' plugin.
+ */
 public abstract class AbstractSaveProjectPlugIn extends AbstractPlugIn {
-    public AbstractSaveProjectPlugIn() {
+  public AbstractSaveProjectPlugIn() {
+  }
+
+  @Override
+  public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
+    context.getFeatureInstaller().addMainMenuPlugin(this,
+        new String[] { MenuNames.FILE });
+  }
+
+  protected void save(Task task, File file, WorkbenchFrame frame)
+      throws Exception {
+    // First use StringWriter to make sure no errors occur before we touch the
+    // original file -- we don't want to damage the original if an error occurs.
+    // [Jon Aquino]
+    JInternalFrame taskWindow = frame.getActiveInternalFrame();
+    task.setMaximized(taskWindow.isMaximum());
+    if (taskWindow.isMaximum()) { // save the rectangle that it would be
+                                  // restored to
+      Rectangle normalBounds = taskWindow.getNormalBounds();
+      task.setTaskWindowLocation(new Point(normalBounds.x, normalBounds.y));
+      task.setTaskWindowSize(new Dimension(normalBounds.width,
+          normalBounds.height));
+    } else {
+      task.setTaskWindowLocation(taskWindow.getLocation());
+      task.setTaskWindowSize(taskWindow.getSize());
+    }
+    task.setSavedViewEnvelope(frame.getContext().getLayerViewPanel()
+        .getViewport().getEnvelopeInModelCoordinates());
+    task.setProperty(new QName(Task.PROJECT_FILE_KEY), file.getAbsolutePath());
+
+    StringWriter stringWriter = new StringWriter();
+
+    try {
+      new Java2XML().write(task, "project", stringWriter);
+    } finally {
+      stringWriter.flush();
     }
 
-    protected void save(Task task, File file, WorkbenchFrame frame)
-        throws Exception {
-        //First use StringWriter to make sure no errors occur before we touch the
-        //original file -- we don't want to damage the original if an error occurs.
-        //[Jon Aquino]
-    	JInternalFrame taskWindow = frame.getActiveInternalFrame();
-        task.setMaximized(taskWindow.isMaximum());
-        if (taskWindow.isMaximum()) {  //save the rectangle that it would be restored to
-        	Rectangle normalBounds = taskWindow.getNormalBounds();
-        	task.setTaskWindowLocation(new Point(normalBounds.x,normalBounds.y));
-        	task.setTaskWindowSize(new Dimension(normalBounds.width,normalBounds.height));
-        } else {
-        	task.setTaskWindowLocation(taskWindow.getLocation());
-        	task.setTaskWindowSize(taskWindow.getSize());
-        }
-        task.setSavedViewEnvelope(frame.getContext().getLayerViewPanel()
-            	.getViewport().getEnvelopeInModelCoordinates());
-        task.setProperty(new QName(Task.PROJECT_FILE_KEY), file.getAbsolutePath());
-        
-        StringWriter stringWriter = new StringWriter();
+    FileUtil.setContents(file.getAbsolutePath(), stringWriter.toString());
+    task.setName(GUIUtil.nameWithoutExtension(file));
+    task.setProjectFile(file);
 
-        try {
-            new Java2XML().write(task, "project", stringWriter);
-        } finally {
-            stringWriter.flush();
+    ArrayList ignoredLayers = new ArrayList(ignoredLayers(task));
+
+    if (!ignoredLayers.isEmpty()) {
+      String warning = I18N
+          .get("ui.plugin.AbstractSaveProjectPlugIn.some-layers-were-not-saved-to-the-task-file")
+          + " ";
+
+      for (int i = 0; i < ignoredLayers.size(); i++) {
+        Layer ignoredLayer = (Layer) ignoredLayers.get(i);
+
+        if (i > 0) {
+          // warning += "; ";
+          warning += "\n";
         }
 
-        FileUtil.setContents(file.getAbsolutePath(), stringWriter.toString());
-        task.setName(GUIUtil.nameWithoutExtension(file));
-        task.setProjectFile(file);
+        warning += ignoredLayer.getName();
+      }
 
-        ArrayList ignoredLayers = new ArrayList(ignoredLayers(task));
+      warning += " ("
+          + I18N
+              .get("ui.plugin.AbstractSaveProjectPlugIn.data-source-is-write-only")
+          + ")";
 
-        if (!ignoredLayers.isEmpty()) {
-            String warning = I18N.get("ui.plugin.AbstractSaveProjectPlugIn.some-layers-were-not-saved-to-the-task-file")+" ";
+      // frame.warnUser(warning);
+      frame.log(warning);
+    }
+  }
 
-            for (int i = 0; i < ignoredLayers.size(); i++) {
-                Layer ignoredLayer = (Layer) ignoredLayers.get(i);
+  protected Collection ignoredLayers(Task task) {
+    ArrayList ignoredLayers = new ArrayList();
 
-                if (i > 0) {
-                    //warning += "; ";
-                    warning += "\n";
-                }
+    for (Iterator i = task.getLayerManager().getLayers().iterator(); i
+        .hasNext();) {
+      Layer layer = (Layer) i.next();
 
-                warning += ignoredLayer.getName();
-            }
-            
-            warning += " ("+I18N.get("ui.plugin.AbstractSaveProjectPlugIn.data-source-is-write-only")+")";
-
-            //frame.warnUser(warning);
-            frame.log(warning);
-        }
+      if (!layer.hasReadableDataSource()) {
+        ignoredLayers.add(layer);
+      }
     }
 
-    protected Collection ignoredLayers(Task task) {
-        ArrayList ignoredLayers = new ArrayList();
+    return ignoredLayers;
+  }
 
-        for (Iterator i = task.getLayerManager().getLayers().iterator();
-                i.hasNext();) {
-            Layer layer = (Layer) i.next();
-
-            if (!layer.hasReadableDataSource()) {
-                ignoredLayers.add(layer);
-            }
-        }
-
-        return ignoredLayers;
-    }
-
+  @Override
+  public EnableCheck getEnableCheck() {
+    return EnableCheckFactory.getInstance().createTaskWindowMustBeActiveCheck();
+  }
 }

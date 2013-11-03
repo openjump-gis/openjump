@@ -37,6 +37,7 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
+import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.ValidatingTextField;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
@@ -169,7 +170,13 @@ public class SaveImageAsPlugIn extends ExportImagePlugIn {
     private static final String FORMAT_KEY = "FORMAT";
     private static final String LAST_FILENAME_KEY = "LAST FILENAME";
     
-    
+    @Override
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+      context.getFeatureInstaller().addMainMenuPlugin(this, new String[] {
+          MenuNames.FILE, MenuNames.FILE_SAVEVIEW });
+    }
+
     public boolean execute(PlugInContext context) throws Exception {
         this.workbenchContext = context.getWorkbenchContext();
    		fence = context.getLayerViewPanel().getFence();	

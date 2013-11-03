@@ -51,15 +51,13 @@ import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 
 public class OpenRecentPlugIn extends AbstractUiPlugIn {
   private static final String KEY = OpenRecentPlugIn.class.getName();
-
   private static final String RECENT_FILES_KEY = KEY + ".FILES";
-
   private static final String RECENT_PROJECTS_KEY = KEY + ".PROJECTS";
 
   public static OpenRecentPlugIn get(final WorkbenchContext context) {
     Blackboard blackboard = context.getBlackboard();
     synchronized (KEY) {
-      OpenRecentPlugIn plugin = (OpenRecentPlugIn)blackboard.get(KEY);
+      OpenRecentPlugIn plugin = (OpenRecentPlugIn) blackboard.get(KEY);
       if (plugin == null) {
         plugin = new OpenRecentPlugIn();
         blackboard.put(KEY, plugin);
@@ -79,9 +77,6 @@ public class OpenRecentPlugIn extends AbstractUiPlugIn {
 
   private FeatureInstaller featureInstaller;
 
-  private OpenRecentPlugIn() {
-  }
-
   public void initialize(PlugInContext context) throws Exception {
     super.initialize(context);
     featureInstaller = context.getFeatureInstaller();
@@ -89,13 +84,10 @@ public class OpenRecentPlugIn extends AbstractUiPlugIn {
     recentFiles = getFileNames(RECENT_FILES_KEY);
     recentProjects = getFileNames(RECENT_PROJECTS_KEY);
     FeatureInstaller featureInstaller = context.getFeatureInstaller();
-    recentMenu = FeatureInstaller.addMainMenu(featureInstaller, new String[] {
-      MenuNames.FILE
-    }, getName(), 4);
+    recentMenu = FeatureInstaller.addMainMenu(featureInstaller,
+        new String[] { MenuNames.FILE }, getName(), -1);
     InvokeMethodPropertyChangeListener listener = new InvokeMethodPropertyChangeListener(
-      this, "updateFileAndProjectMenu", new Object[] {
-        recentMenu
-      }, true);
+        this, "updateFileAndProjectMenu", new Object[] { recentMenu }, true);
     addPropertyChangeListener(listener);
     updateFileAndProjectMenu(recentMenu);
   }
@@ -110,7 +102,7 @@ public class OpenRecentPlugIn extends AbstractUiPlugIn {
 
   private synchronized Set<String> getFileNames(String key) {
     Blackboard blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
-    Set<String> fileNames = (Set<String>)blackboard.get(key);
+    Set<String> fileNames = (Set<String>) blackboard.get(key);
     if (fileNames == null) {
       fileNames = new LinkedHashSet<String>();
       blackboard.put(key, fileNames);
@@ -131,7 +123,7 @@ public class OpenRecentPlugIn extends AbstractUiPlugIn {
   }
 
   private synchronized void addRecent(final Set<String> files,
-    final String key, final File file) {
+      final String key, final File file) {
     try {
 
       String fileName = file.getCanonicalPath();
@@ -143,7 +135,7 @@ public class OpenRecentPlugIn extends AbstractUiPlugIn {
     } catch (IOException e) {
     }
     firePropertyChange(new PropertyChangeEvent(OpenRecentPlugIn.class, key,
-      null, files));
+        null, files));
   }
 
   private void addPropertyChangeListener(final PropertyChangeListener listener) {
@@ -163,9 +155,7 @@ public class OpenRecentPlugIn extends AbstractUiPlugIn {
   }
 
   public synchronized void updateFileAndProjectMenu(final JMenu recentMenu) {
-    String[] menuPath = new String[] {
-      MenuNames.FILE, getName()
-    };
+    String[] menuPath = new String[] { MenuNames.FILE, getName() };
 
     for (MenuListener listener : recentMenu.getMenuListeners()) {
       recentMenu.removeMenuListener(listener);
@@ -177,8 +167,10 @@ public class OpenRecentPlugIn extends AbstractUiPlugIn {
     Collections.reverse(files);
     for (String fileName : files) {
       File file = new File(fileName);
-      OpenFilePlugIn openFilePlugin = new OpenFilePlugIn(workbenchContext, file);
-      featureInstaller.addMainMenuItem(menuPath, openFilePlugin);
+      // use proxy cause OpenFilePlugin is forced to File menupath in default-plugins.xml
+      OpenRecentFilePlugin openFilePlugin = new OpenRecentFilePlugin(
+          workbenchContext, file);
+      featureInstaller.addMainMenuPlugin(openFilePlugin, menuPath);
     }
     List<String> projects = getRecentProjects();
     if (!files.isEmpty() && !projects.isEmpty()) {
@@ -187,9 +179,10 @@ public class OpenRecentPlugIn extends AbstractUiPlugIn {
     Collections.reverse(projects);
     for (String fileName : projects) {
       File file = new File(fileName);
-      OpenProjectPlugIn openProjectPlugin = new OpenProjectPlugIn(
-        workbenchContext, file);
-      featureInstaller.addMainMenuItem(menuPath, openProjectPlugin);
+      // use proxy cause OpenProjectPlugin is forced to File menupath in default-plugins.xml
+      OpenRecentProjectPlugin openProjectPlugin = new OpenRecentProjectPlugin(
+          workbenchContext, file);
+      featureInstaller.addMainMenuPlugin(openProjectPlugin, menuPath);
     }
   }
 
@@ -204,4 +197,29 @@ public class OpenRecentPlugIn extends AbstractUiPlugIn {
   //
   // recentMenu.add(menuItem);
   // }
+
+  class OpenRecentFilePlugin extends OpenFilePlugIn {
+
+    public OpenRecentFilePlugin(WorkbenchContext workbenchContext, File file) {
+      super(workbenchContext, file);
+    }
+
+    public OpenRecentFilePlugin(WorkbenchContext workbenchContext, File[] files) {
+      super(workbenchContext, files);
+    }
+
+  }
+
+  class OpenRecentProjectPlugin extends OpenProjectPlugIn {
+
+    public OpenRecentProjectPlugin(WorkbenchContext workbenchContext, File file) {
+      super(workbenchContext, file);
+    }
+
+    public OpenRecentProjectPlugin(WorkbenchContext workbenchContext,
+        File[] files) {
+      super(workbenchContext, files);
+    }
+
+  }
 }

@@ -43,6 +43,7 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
+import com.vividsolutions.jump.workbench.plugin.CheckBoxed;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
@@ -50,11 +51,20 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.cursortool.editing.EditingPlugIn;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
-public class EditablePlugIn extends AbstractPlugIn {
+public class EditablePlugIn extends AbstractPlugIn implements CheckBoxed {
 
     private EditingPlugIn editingPlugIn;
 
     public static final ImageIcon ICON = IconLoader.icon("edit.gif");
+    
+    public EditablePlugIn(EditingPlugIn editingPlugIn) {
+      this.editingPlugIn = editingPlugIn;
+    }
+  
+    public EditablePlugIn() {
+      super();
+      this.editingPlugIn = EditingPlugIn.getInstance();
+    }
 
     public boolean execute(PlugInContext context) throws Exception {
         reportNothingToUndoYet(context);
@@ -95,10 +105,6 @@ public class EditablePlugIn extends AbstractPlugIn {
         });
 
         return mec;
-    }
-
-    public EditablePlugIn(EditingPlugIn editingPlugIn) {
-        this.editingPlugIn = editingPlugIn;
     }
 
 }

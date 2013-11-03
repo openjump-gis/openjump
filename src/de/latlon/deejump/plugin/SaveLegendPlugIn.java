@@ -113,17 +113,17 @@ public class SaveLegendPlugIn extends AbstractPlugIn {
 				null);
 		*/
 		
-        EnableCheckFactory enableCheckFactory = new EnableCheckFactory(context
-                .getWorkbenchContext());
-        EnableCheck enableCheck = new MultiEnableCheck().add(
-                enableCheckFactory
-                        .createWindowWithLayerManagerMustBeActiveCheck()).add(
-                enableCheckFactory.createExactlyNLayersMustBeSelectedCheck(1));
-        
-        context.getFeatureInstaller().addPopupMenuItem(
-            context.getWorkbenchFrame().getLayerNamePopupMenu(),
-            this, new String[]{MenuNames.STYLE},
-            this.getName() + "...", false, getIcon(), enableCheck);
+//        EnableCheckFactory enableCheckFactory = new EnableCheckFactory(context
+//                .getWorkbenchContext());
+//        EnableCheck enableCheck = new MultiEnableCheck().add(
+//                enableCheckFactory
+//                        .createWindowWithLayerManagerMustBeActiveCheck()).add(
+//                enableCheckFactory.createExactlyNLayersMustBeSelectedCheck(1));
+//        
+//        context.getFeatureInstaller().addPopupMenuItem(
+//            context.getWorkbenchFrame().getLayerNamePopupMenu(),
+//            this, new String[]{MenuNames.STYLE},
+//            this.getName() + "...", false, getIcon(), enableCheck);
 	}
 	
 	public ImageIcon getIcon() {

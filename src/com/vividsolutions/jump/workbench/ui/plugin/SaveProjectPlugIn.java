@@ -39,14 +39,12 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import javax.swing.ImageIcon;
 
-public class SaveProjectPlugIn extends AbstractSaveProjectPlugIn {
+public class SaveProjectPlugIn extends SaveProjectAsPlugIn {
     
     public static final ImageIcon ICON = IconLoader.icon("disk_oj.v3.png");
-    
-    private SaveProjectAsPlugIn saveProjectAsPlugIn;
 
-    public SaveProjectPlugIn(SaveProjectAsPlugIn saveProjectAsPlugIn) {
-        this.saveProjectAsPlugIn = saveProjectAsPlugIn;
+    public SaveProjectPlugIn() {
+        super();
         this.setShortcutKeys(KeyEvent.VK_S);
         this.setShortcutModifiers(KeyEvent.CTRL_MASK);
     }
@@ -59,7 +57,7 @@ public class SaveProjectPlugIn extends AbstractSaveProjectPlugIn {
         reportNothingToUndoYet(context);
 
         if (context.getTask().getProjectFile() == null) {
-            return saveProjectAsPlugIn.execute(context);
+            return super.execute(context);
         }
 
         save(context.getTask(), context.getTask().getProjectFile(),

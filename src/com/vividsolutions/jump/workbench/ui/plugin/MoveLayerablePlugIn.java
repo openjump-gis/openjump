@@ -32,6 +32,7 @@
 
 package com.vividsolutions.jump.workbench.ui.plugin;
 
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 
@@ -50,49 +51,9 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class MoveLayerablePlugIn extends AbstractPlugIn {
     
-    public static final ImageIcon UPICON = IconLoader.icon("arrow_up.png");
-    public static final ImageIcon DOWNICON = IconLoader.icon("arrow_down.png");
+    public static final ImageIcon UPICON = IconLoader.icon("bullet_arrow_up.png");;
+    public static final ImageIcon DOWNICON = IconLoader.icon("bullet_arrow_down.png");
 
-   public static final MoveLayerablePlugIn UP = new MoveLayerablePlugIn(-1) {
-        public String getName() {
-            return I18N.get("ui.plugin.MoveLayerablePlugIn.move-layer-up");
-        }
-
-        public MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
-            return super.createEnableCheck(workbenchContext).add(new EnableCheck() {
-                public String check(JComponent component) {
-                    return (index(selectedLayerable(workbenchContext.getLayerNamePanel())) == 0)
-                        ? I18N.get("ui.plugin.MoveLayerablePlugIn.layer-is-already-at-the-top")
-                        : null;
-                }
-            });
-        }
-    };
-
-    public static final MoveLayerablePlugIn DOWN = new MoveLayerablePlugIn(1) {
-        public String getName() {
-            return I18N.get("ui.plugin.MoveLayerablePlugIn.move-layer-down");
-        }
-
-        public MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
-            return super.createEnableCheck(workbenchContext).add(new EnableCheck() {
-                public String check(JComponent component) {
-                    return (
-                        index(selectedLayerable(workbenchContext.getLayerNamePanel()))
-                            == (workbenchContext
-                                .getLayerViewPanel()
-                                .getLayerManager()
-                                .getCategory(
-                                    selectedLayerable(workbenchContext.getLayerNamePanel()))
-                                .getLayerables()
-                                .size()
-                                - 1))
-                        ? I18N.get("ui.plugin.MoveLayerablePlugIn.layer-is-already-at-the-bottom")
-                        : null;
-                }
-            });
-        }
-    };
 
     private int displacement;
 
@@ -136,5 +97,59 @@ public class MoveLayerablePlugIn extends AbstractPlugIn {
         return new MultiEnableCheck()
             .add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
             .add(checkFactory.createExactlyNLayerablesMustBeSelectedCheck(1, Layerable.class));
+    
+    
     }
+    
+    public static class MoveLayerableUpPlugIn extends MoveLayerablePlugIn {
+      public static final Icon ICON = MoveLayerablePlugIn.UPICON;
+  
+      public MoveLayerableUpPlugIn() {
+        super(-1);
+      }
+  
+      public String getName() {
+        return I18N.get("ui.plugin.MoveLayerablePlugIn.move-layer-up");
+      }
+  
+      public MultiEnableCheck createEnableCheck(
+          final WorkbenchContext workbenchContext) {
+        return super.createEnableCheck(workbenchContext).add(new EnableCheck() {
+          public String check(JComponent component) {
+            return (index(selectedLayerable(workbenchContext.getLayerNamePanel())) == 0) ? I18N
+                .get("ui.plugin.MoveLayerablePlugIn.layer-is-already-at-the-top")
+                : null;
+          }
+        });
+      }
+    };
+  
+    public static class MoveLayerableDownPlugIn extends MoveLayerablePlugIn {
+      public static final Icon ICON = MoveLayerablePlugIn.DOWNICON;
+  
+      public MoveLayerableDownPlugIn() {
+        super(+1);
+      }
+  
+      public String getName() {
+        return I18N.get("ui.plugin.MoveLayerablePlugIn.move-layer-down");
+      }
+  
+      public MultiEnableCheck createEnableCheck(
+          final WorkbenchContext workbenchContext) {
+        return super.createEnableCheck(workbenchContext).add(new EnableCheck() {
+          public String check(JComponent component) {
+            return (index(selectedLayerable(workbenchContext.getLayerNamePanel())) == (workbenchContext
+                .getLayerViewPanel()
+                .getLayerManager()
+                .getCategory(
+                    selectedLayerable(workbenchContext.getLayerNamePanel()))
+                .getLayerables().size() - 1)) ? I18N
+                .get("ui.plugin.MoveLayerablePlugIn.layer-is-already-at-the-bottom")
+                : null;
+          }
+        });
+      }
+    }
+
 }

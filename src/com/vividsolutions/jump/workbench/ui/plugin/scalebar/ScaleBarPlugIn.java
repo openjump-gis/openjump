@@ -32,17 +32,47 @@
 
 package com.vividsolutions.jump.workbench.ui.plugin.scalebar;
 
-import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
-import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import javax.swing.Icon;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComponent;
 
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
+import com.vividsolutions.jump.workbench.plugin.EnableCheck;
+import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
+import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
+import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class ScaleBarPlugIn extends AbstractPlugIn {
-    public boolean execute(PlugInContext context) throws Exception {
-        reportNothingToUndoYet(context);
-        ScaleBarRenderer.setEnabled(!ScaleBarRenderer.isEnabled(
-                context.getLayerViewPanel()), context.getLayerViewPanel());
-        context.getLayerViewPanel().getRenderingManager().render(ScaleBarRenderer.CONTENT_ID);
+  public static final Icon ICON = IconLoader.icon("show_scale.png");
 
-        return true;
-    }
+  public boolean execute(PlugInContext context) throws Exception {
+    reportNothingToUndoYet(context);
+    ScaleBarRenderer.setEnabled(
+        !ScaleBarRenderer.isEnabled(context.getLayerViewPanel()),
+        context.getLayerViewPanel());
+    context.getLayerViewPanel().getRenderingManager()
+        .render(ScaleBarRenderer.CONTENT_ID);
+
+    return true;
+  }
+
+  @Override
+  public EnableCheck getEnableCheck() {
+    EnableCheckFactory checkFactory = EnableCheckFactory.getInstance();
+    final WorkbenchContext workbenchContext = JUMPWorkbench.getInstance()
+        .getContext();
+    return new MultiEnableCheck().add(
+        checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck()).add(
+        new EnableCheck() {
+          public String check(JComponent component) {
+            ((JCheckBoxMenuItem) component).setSelected(ScaleBarRenderer
+                .isEnabled(workbenchContext.getLayerViewPanel()));
+            return null;
+          }
+        });
+  }
+
 }

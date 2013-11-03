@@ -56,6 +56,10 @@ public class SynchronizationPlugIn extends AbstractUiPlugIn {
 
     static ViewportListener vpl;
 
+    public SynchronizationPlugIn() {
+      super();
+    }
+
     public SynchronizationPlugIn(String name) {
         super(name);
     }

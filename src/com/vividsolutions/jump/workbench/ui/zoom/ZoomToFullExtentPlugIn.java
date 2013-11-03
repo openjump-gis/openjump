@@ -33,6 +33,8 @@
 
 package com.vividsolutions.jump.workbench.ui.zoom;
 
+import java.awt.Dimension;
+
 import javax.swing.ImageIcon;
 
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -54,8 +56,11 @@ public class ZoomToFullExtentPlugIn extends AbstractPlugIn {
         return true;
     }
 
-    public ImageIcon getIcon() {
-      return IconLoader.icon("globe3_20.png");
+    public ImageIcon getIcon(Dimension dim) {
+      if (dim.height>16)
+        return IconLoader.icon("globe3_20.png");
+      else
+        return getIcon16();
     }
 
     public ImageIcon getIcon16() {

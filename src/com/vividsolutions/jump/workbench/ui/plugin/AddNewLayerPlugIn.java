@@ -31,6 +31,11 @@
  */
 package com.vividsolutions.jump.workbench.ui.plugin;
 
+import java.awt.event.KeyEvent;
+import java.util.Collection;
+
+import javax.swing.Icon;
+
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.FeatureCollection;
@@ -38,37 +43,48 @@ import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
+import com.vividsolutions.jump.workbench.plugin.EnableCheck;
+import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.cursortool.editing.EditingPlugIn;
-
-import java.awt.event.KeyEvent;
-import java.util.Collection;
-
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class AddNewLayerPlugIn extends AbstractPlugIn {
-    public AddNewLayerPlugIn() {
-      this.setShortcutKeys(KeyEvent.VK_L);
-      this.setShortcutModifiers(KeyEvent.CTRL_MASK);
-    }
+  public final Icon ICON = IconLoader.icon("famfam/page_white_add.png");
+  
+  public AddNewLayerPlugIn() {
+    this.setShortcutKeys(KeyEvent.VK_L);
+    this.setShortcutModifiers(KeyEvent.CTRL_MASK);
+  }
 
-    public static FeatureCollection createBlankFeatureCollection() {
-        FeatureSchema featureSchema = new FeatureSchema();
-        featureSchema.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
-        return new FeatureDataset(featureSchema);
-    }
+  public static FeatureCollection createBlankFeatureCollection() {
+    FeatureSchema featureSchema = new FeatureSchema();
+    featureSchema.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
+    return new FeatureDataset(featureSchema);
+  }
 
-    public boolean execute(PlugInContext context) throws Exception {
-        reportNothingToUndoYet(context);
-        Collection selectedCategories = context.getLayerNamePanel()
-                                               .getSelectedCategories();
-        context.addLayer(selectedCategories.isEmpty()
-            ? StandardCategoryNames.WORKING
-            : selectedCategories.iterator().next().toString(), I18N.get("ui.plugin.AddNewLayerPlugIn.new"),
+  public boolean execute(PlugInContext context) throws Exception {
+    reportNothingToUndoYet(context);
+    Collection selectedCategories = context.getLayerNamePanel()
+        .getSelectedCategories();
+    context
+        .addLayer(
+            selectedCategories.isEmpty() ? StandardCategoryNames.WORKING
+                : selectedCategories.iterator().next().toString(),
+            I18N.get("ui.plugin.AddNewLayerPlugIn.new"),
             createBlankFeatureCollection()).setFeatureCollectionModified(false)
-               .setEditable(true);
-        ((EditingPlugIn) context.getWorkbenchContext().getBlackboard().get(EditingPlugIn.KEY)).getToolbox(context.getWorkbenchContext())
-         .setVisible(true);
+        .setEditable(true);
+    ((EditingPlugIn) context.getWorkbenchContext().getBlackboard()
+        .get(EditingPlugIn.KEY)).getToolbox(context.getWorkbenchContext())
+        .setVisible(true);
 
-        return true;
-    }
+    return true;
+  }
+
+  @Override
+  public EnableCheck getEnableCheck() {
+    return EnableCheckFactory.getInstance()
+        .createWindowWithLayerViewPanelMustBeActiveCheck();
+  }
+
 }

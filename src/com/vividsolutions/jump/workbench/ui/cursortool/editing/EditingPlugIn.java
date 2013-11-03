@@ -32,7 +32,6 @@
 package com.vividsolutions.jump.workbench.ui.cursortool.editing;
 
 import java.awt.BorderLayout;
-import java.awt.event.KeyEvent;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -40,6 +39,7 @@ import javax.swing.JButton;
 import org.openjump.core.ui.plugin.edittoolbox.cursortools.ScaleSelectedItemsTool;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
@@ -47,7 +47,6 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.cursortool.CursorTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.NodeLineStringsTool;
-import com.vividsolutions.jump.workbench.ui.cursortool.QuasimodeTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.SelectFeaturesTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.SelectLineStringsTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.SelectPartsTool;
@@ -59,11 +58,11 @@ import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxPlugIn;
 
 public class EditingPlugIn extends ToolboxPlugIn {
   private static EditingPlugIn instance = null;
-  
+
   /**
    * please use getInstance() to get unique runtime instance.
    */
-  private EditingPlugIn() {
+  public EditingPlugIn() {
     super();
   }
 
@@ -77,27 +76,35 @@ public class EditingPlugIn extends ToolboxPlugIn {
 
   public static final String KEY = EditingPlugIn.class.getName();
 
-  private JButton optionsButton;
-  
-  private WorkbenchContext wbc;
+  private static JButton optionsButton;
+
+  private static WorkbenchContext wbc;
 
   public void initialize(PlugInContext context) throws Exception {
     wbc = context.getWorkbenchContext();
-    wbc.getWorkbench().getBlackboard().put(KEY, this);
     optionsButton = new JButton(
         I18N.get("ui.cursortool.editing.EditingPlugIn.options"));
   }
 
+  public boolean execute(PlugInContext context) throws Exception {
+    reportNothingToUndoYet(context);
+    ToolboxDialog toolbox = getInstance().getToolbox(
+        context.getWorkbenchContext());
+    toolbox.setVisible(!toolbox.isVisible());
+    return true;
+  }
+
   protected void initializeToolbox(ToolboxDialog toolbox) {
-    // add easylistener to switch QuasiModeTools also when focus is still on Toolbox
+    // add easylistener to switch QuasiModeTools also when focus is still on
+    // Toolbox
     wbc.getWorkbench().getFrame().addEasyKeyListenerToComp(toolbox);
-    
+
     // The auto-generated title "Editing Toolbox" is too long to fit. [Jon
     // Aquino]
     toolbox.setTitle(I18N.get("ui.cursortool.editing.EditingPlugIn.editing"));
     toolbox.setResizable(false);
     toolbox.setInitialLocation(new GUIUtil.Location(20, true, 20, false));
-    
+
     EnableCheckFactory checkFactory = new EnableCheckFactory(
         toolbox.getContext());
     // Null out the quasimodes for [Ctrl] because the Select tools will handle
@@ -137,10 +144,12 @@ public class EditingPlugIn extends ToolboxPlugIn {
 
   }
 
-  public static EditingPlugIn getInstance(){
-    if (instance==null)
-      instance=new EditingPlugIn();
+  public static EditingPlugIn getInstance() {
+    if (instance == null) {
+      instance = new EditingPlugIn();
+      JUMPWorkbench.getInstance().getBlackboard().put(KEY, instance);
+    }
     return instance;
   }
-  
+
 }

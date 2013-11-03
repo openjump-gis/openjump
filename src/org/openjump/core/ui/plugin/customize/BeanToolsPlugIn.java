@@ -89,22 +89,20 @@ public class BeanToolsPlugIn extends AbstractPlugIn {
     private FeatureInstaller featureInstaller;
     
     public void initialize(PlugInContext context) throws Exception {
-    	File plugInDirectory = context.getWorkbenchContext()
-    	                              .getWorkbench()
-    	                              .getPlugInManager()
-    	                              .getPlugInDirectory();
-    	if (null == plugInDirectory || !plugInDirectory.exists()) {
-    		LOG.debug("BeanTools plugin has not been initialized : the plugin directory is missing");
-    		return;
-    	}
-        beanShellDirName = plugInDirectory.getPath() +  File.separator +
-            I18N.get("ui.plugin.customize.BeanToolsPlugIn.BeanTools");
-        File beanShellDir = new File(beanShellDirName);
-        featureInstaller = context.getFeatureInstaller();
-        taskMonitorManager = new TaskMonitorManager();
-        if (beanShellDir.exists()) {
-            scanBeanShellDir(beanShellDir, context);
-        }
+      File plugInDirectory = context.getWorkbenchContext().getWorkbench()
+          .getPlugInManager().getPlugInDirectory();
+      if (null == plugInDirectory || !plugInDirectory.exists()) {
+        LOG.debug("BeanTools plugin has not been initialized : the plugin directory is missing");
+        return;
+      }
+      beanShellDirName = plugInDirectory.getPath() + File.separator
+          + I18N.get("ui.plugin.customize.BeanToolsPlugIn.BeanTools");
+      File beanShellDir = new File(beanShellDirName);
+      featureInstaller = context.getFeatureInstaller();
+      taskMonitorManager = new TaskMonitorManager();
+      if (beanShellDir.exists()) {
+        scanBeanShellDir(beanShellDir, context);
+      }
     }
     
    /**
@@ -150,7 +148,9 @@ public class BeanToolsPlugIn extends AbstractPlugIn {
                 menu = (JMenu) featureInstaller.installMnemonic(new JMenu(I18N.get(MenuNames.CUSTOMIZE)), featureInstaller.menuBar());
                 featureInstaller.menuBar().add(menu);
             }
-            JMenu parent = featureInstaller.createMenusIfNecessary(menu, ancestors.split(File.separator.replace("\\","\\\\")));
+            JMenu parent = (JMenu) featureInstaller.createMenusIfNecessary(
+                FeatureInstaller.wrapMenu(menu),
+                ancestors.split(File.separator.replace("\\", "\\\\"))).getWrappee();
             final JMenuItem menuItem = featureInstaller.installMnemonic(new JMenuItem(shellName), parent);
             final ActionListener listener = AbstractPlugIn.toActionListener(this, context.getWorkbenchContext(), taskMonitorManager);
             menuItem.addActionListener(new ActionListener() {

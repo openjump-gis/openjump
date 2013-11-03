@@ -77,9 +77,10 @@ public class CopySelectedLayersPlugIn extends LayerableClipboardPlugIn {
         for (Iterator i = layerables.iterator(); i.hasNext();) {
             Layerable layerable = (Layerable) i.next();
 
-            if (!(layerable instanceof Layer || layerable instanceof WMSLayer)) {
-                continue;
-            }
+            // [ede 11.2013] commented out, the user know why his selected layer did not copy
+//            if (!(layerable instanceof Layer || layerable instanceof WMSLayer)) {
+//                continue;
+//            }
 
             clones.add(cloneLayerable(layerable));
         }

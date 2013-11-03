@@ -100,9 +100,7 @@ public class OpenFilePlugIn extends AbstractWizardPlugin {
     FeatureInstaller featureInstaller = new FeatureInstaller(workbenchContext);
 
     // Add File Menu
-    featureInstaller.addMainMenuItem(new String[] {
-      MenuNames.FILE
-    }, this, 1);
+    featureInstaller.addMainMenuPlugin(this, new String[] {MenuNames.FILE});
 
     // Register the Open File Wizard
     OpenFileWizard openFileWizard = new OpenFileWizard(workbenchContext);

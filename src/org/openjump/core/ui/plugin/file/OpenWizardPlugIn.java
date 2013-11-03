@@ -56,15 +56,14 @@ public class OpenWizardPlugIn extends AbstractThreadedUiPlugIn {
     String name = getName();
 
     FeatureInstaller featureInstaller = new FeatureInstaller(workbenchContext);
-    featureInstaller.addMainMenuItem(new String[] {MenuNames.FILE}, this, 1);
+    featureInstaller.addMainMenuPlugin(this, new String[] {MenuNames.FILE});
 
     // Add tool-bar Icon
     WorkbenchToolBar toolBar = frame.getToolBar();
     toolBar.addPlugIn(1, this, icon20, enableCheck, workbenchContext);
 
     // Add to category pop-up menu
-    featureInstaller.addPopupMenuPlugin(frame.getCategoryPopupMenu(), this, name
-      + "{pos:6}", false, icon16, enableCheck);
+    featureInstaller.addPopupMenuPlugin(frame.getCategoryPopupMenu(), this, name, false, icon16, enableCheck);
 
     // shortcut
     AbstractPlugIn.registerShortcuts(this);

@@ -71,13 +71,13 @@ public class InvertSelectionPlugIn extends AbstractPlugIn {
     }
 
     public void initialize(PlugInContext context) throws Exception {
-        context.getFeatureInstaller().addMainMenuItem(this,
-            new String[]
-                {MenuNames.EDIT},
-                name+"{pos:6}",
-                false,
-                null,
-                createEnableCheck(context.getWorkbenchContext())); //enable check
+//        context.getFeatureInstaller().addMainMenuItem(this,
+//            new String[]
+//                {MenuNames.EDIT},
+//                name+"{pos:6}",
+//                false,
+//                null,
+//                createEnableCheck(context.getWorkbenchContext())); //enable check
     }
 
     public boolean execute(final PlugInContext context) throws Exception {

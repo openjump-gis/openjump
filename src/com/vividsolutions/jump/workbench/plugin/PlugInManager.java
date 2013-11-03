@@ -31,7 +31,14 @@ import java.io.FileFilter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -43,6 +50,7 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.WorkbenchProperties;
 
 /**
  * Loads plug-ins (or more precisely, Extensions), and any JAR files that they
@@ -90,44 +98,123 @@ public class PlugInManager {
         this.plugInDirectory = plugInDirectory;
     }
 
-    // pretty much the main method, finds and loads extensions from 
-    //  plugin dir 
-    // and 
-    //  plugins/extensions defined in workbench properties (developers use this)
+    // pretty much the main method, finds and loads extensions from
+    // plugin dir
+    // and
+    // plugins/extensions defined in workbench properties (developers use this)
     public void load() throws Exception {
-        // load plugins from workbench-properties
-        loadPlugInClasses(context.getWorkbench().getProperties()
-                .getPlugInClasses(getClassLoader()));
-
-        long start;
-        
-        //Find the configurations right away so they get reported to the splash
-        //screen ASAP. [Jon Aquino]
+      // load plugins from workbench-properties
+      loadPlugIns(context.getWorkbench().getProperties());
+  
+      long start;
+  
+      // Find the configurations right away so they get reported to the splash
+      // screen ASAP. [Jon Aquino]
       if (plugInDirectory != null) {
-          start = secondsSince(0);
-          configurations.addAll(findConfigurations(plugInDirectory));
-          System.out.println("Finding all OJ extensions took "
-              + secondsSinceString(start) + "s");
-        }
-        
-        configurations.addAll(findConfigurations(context.getWorkbench()
-                .getProperties().getConfigurationClasses()));
-        
         start = secondsSince(0);
-        loadConfigurations();
-        System.out.println("Loading all OJ extensions took " + secondsSinceString(start) + "s");
+        configurations.addAll(findConfigurations(plugInDirectory));
+        System.out.println("Finding all OJ extensions took "
+            + secondsSinceString(start) + "s");
+      }
+  
+      configurations.addAll(findConfigurations(context.getWorkbench()
+          .getProperties().getConfigurationClasses()));
+  
+      start = secondsSince(0);
+      loadConfigurations();
+      System.out.println("Loading all OJ extensions took "
+          + secondsSinceString(start) + "s");
     }
 
     private void loadConfigurations() throws Exception {
+      PlugInContext pc = context.createPlugInContext();
       for (Iterator i = configurations.iterator(); i.hasNext();) {
         Configuration configuration = (Configuration) i.next();
         monitor.report(LOADING + " " + name(configuration) + " "
             + version(configuration));
         long start = secondsSince(0);
-        configuration
-            .configure(new PlugInContext(context, null, null, null, null));
-        System.out.println("Loading " + name(configuration) + " "
-            + version(configuration) + " took " + secondsSinceString(start) + "s");
+        configuration.configure(pc);
+        System.out
+            .println("Loading " + name(configuration) + " "
+                + version(configuration) + " took " + secondsSinceString(start)
+                + "s");
+      }
+    }
+    
+    private void loadPlugIns(WorkbenchProperties props) {
+      PlugInContext pc = context.createPlugInContext();
+      // List<String> classNames = props.getPlugInClassNames();
+      Map<String, Map<String, String>> pluginSettings = props
+          .getSettings(new String[]{WorkbenchProperties.KEY_PLUGIN});
+      int i = 0;
+      for (String className : pluginSettings.keySet()) {
+//        System.out.println(i++ + "/"+ className);
+        String initSetting = pluginSettings.get(className).get(
+            WorkbenchProperties.ATTR_INITIALIZE);
+        if (initSetting instanceof String
+            && initSetting.equals(WorkbenchProperties.ATTR_VALUE_FALSE))
+          continue;
+        
+        monitor.report(LOADING + " " + className);
+        Class plugInClass = null;
+        try {
+          long start = secondsSince(0);
+          plugInClass = Class.forName(className);
+          PlugIn plugIn = (PlugIn) plugInClass.newInstance();
+          plugIn.initialize(pc);
+          
+          // get plugin's menu settings
+          Map<String, Map> menuSettings = props.getSettings(new String[] {
+              WorkbenchProperties.KEY_PLUGIN, className,
+              WorkbenchProperties.KEY_MENUS});
+          
+          // interpret menu settings
+          for (Map.Entry<String, Map> entry : menuSettings.entrySet()) {
+            
+            String menuKey = entry.getKey();
+            if (pc.getFeatureInstaller().fetchMenuForKey(menuKey)==null)
+              continue;
+            
+            // install me to menu?
+            String installSetting = props.getSetting(new String[] {
+                WorkbenchProperties.KEY_PLUGIN, className,
+                WorkbenchProperties.KEY_MENUS,
+                menuKey,
+                WorkbenchProperties.ATTR_INSTALL});
+//            String orderSetting = props.getSetting(new String[] {
+//                WorkbenchProperties.KEY_PLUGIN, className,
+//                WorkbenchProperties.KEY_MENUS,
+//                menuKey,
+//                WorkbenchProperties.ATTR_ORDERID});
+            // log (order) info
+//            context
+//                .getWorkbench()
+//                .getFrame()
+//                .log(
+//                    "install " + className + " to " + menuKey + " = "
+//                        + installSetting + " with orderid = " + orderSetting);
+            // install, or not
+            if (installSetting.equals(WorkbenchProperties.ATTR_VALUE_TRUE))
+              pc.getFeatureInstaller().addMenuPlugin(menuKey, plugIn);
+          }
+
+          // register shortcuts of plugins
+          AbstractPlugIn.registerShortcuts(plugIn);
+          
+          
+          context
+              .getWorkbench()
+              .getFrame()
+              .log(
+                  "Loading " + className + " took " + secondsSinceString(start)
+                      + "s");
+          
+        } catch (Exception e) {
+          context.getErrorHandler().handleThrowable(e);
+          context.getWorkbench().getFrame()
+              .log(className + " " + NOT_INITIALIZED, this.getClass());
+          e.printStackTrace();
+        }
       }
     }
 
@@ -176,24 +263,6 @@ public class PlugInManager {
             //        + version(configuration));
         }
         return configurations;
-    }
-
-    private void loadPlugInClasses(List plugInClasses) throws Exception {
-        PlugInContext pc = new PlugInContext(context, null, null, null, null);
-        for (Iterator i = plugInClasses.iterator(); i.hasNext();) {
-            Class plugInClass = null;
-            try {
-                plugInClass = (Class) i.next();
-                PlugIn plugIn = (PlugIn) plugInClass.newInstance();
-                plugIn.initialize(pc);
-                // register shortcuts of plugins
-                AbstractPlugIn.registerShortcuts(plugIn);
-            } catch (NoClassDefFoundError e) {
-                LOG.warn(plugInClass + " " + NOT_INITIALIZED);
-                LOG.info(e);
-                System.out.println(plugInClass + " " + NOT_INITIALIZED);
-            }
-        }
     }
 
     FileFilter jarfilter = new FileFilter(){

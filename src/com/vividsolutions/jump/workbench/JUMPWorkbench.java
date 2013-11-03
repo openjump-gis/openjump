@@ -85,6 +85,7 @@ import com.vividsolutions.jump.workbench.ui.SplashWindow;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.skin.InstallSkinsPlugIn;
 
 /**
  * This class is responsible for setting up and displaying the main JUMP
@@ -144,29 +145,7 @@ public class JUMPWorkbench {
   private WorkbenchContext context = new JUMPWorkbenchContext(this);
   private WorkbenchFrame frame;
   private DriverManager driverManager = new DriverManager(frame);
-  private WorkbenchProperties dummyProperties = new WorkbenchProperties() {
-    public List getPlugInClasses() {
-      return new ArrayList();
-    }
-
-    public List getPlugInClasses(ClassLoader classLoader) {
-      return new ArrayList();
-    }
-
-    public List getInputDriverClasses() {
-      return new ArrayList();
-    }
-
-    public List getOutputDriverClasses() {
-      return new ArrayList();
-    }
-
-    public List getConfigurationClasses() {
-      return new ArrayList();
-    }
-  };
-
-  private WorkbenchProperties properties = dummyProperties;
+  private WorkbenchProperties properties;
   private PlugInManager plugInManager;
   private Blackboard blackboard = new Blackboard();
 
@@ -262,15 +241,16 @@ public class JUMPWorkbench {
             + propertiesFile);
       }
     }
-    // -- [sstein 6.July.2008] start new
-    if ((defaultFileExists) && (propertiesFileExists)) {
-      properties = new WorkbenchPropertiesFile(defaultFile, propertiesFile,
-          frame);
-    } else if (defaultFileExists) {
-      properties = new WorkbenchPropertiesFile(defaultFile, frame);
-    } else if (propertiesFileExists) {
-      properties = new WorkbenchPropertiesFile(propertiesFile, frame);
-    }
+    
+    // list the properties files to use
+    List<File> files = new ArrayList<File>();
+    if (defaultFileExists)
+      files.add(defaultFile);
+    if (propertiesFileExists)
+      files.add(propertiesFile);
+    // build our wbprops from the files
+    properties = new WorkbenchPropertiesFile(files, frame);
+    
     // -- end new
     File extensionsDirectory = null;
     if (commandLine.hasOption(PLUG_IN_DIRECTORY_OPTION)) {
@@ -426,16 +406,31 @@ public class JUMPWorkbench {
     workbench = new JUMPWorkbench(title, args, splashWindow, taskMonitor);
 
     taskMonitor.report(I18N.get("JUMPWorkbench.status.configure-core"));
-    new JUMPConfiguration().setup(workbench.context);
-    // must wait until after setup initializes the persistent blackboard to
-    // recall settings
+    // first things first, make persistent data available early
+    PersistentBlackboardPlugIn persistentBlackboard = new PersistentBlackboardPlugIn();
+    persistentBlackboard.initialize(workbench.context.createPlugInContext());
+
+    // this restores the saved laf, so it must be loaded early
+    new InstallSkinsPlugIn().initialize(workbench.context.createPlugInContext());
     final WorkbenchFrame frame = workbench.getFrame();
+    
+    // now setup our configuration
+    // TODO: clean up and merge with postExtensionInitialization below or even better put into xml config
+    new JUMPConfiguration().setup(workbench.context);
+    
     taskMonitor.report(I18N.get("JUMPWorkbench.status.restore-state"));
     frame.restore();
 
+    // load plugin/extensions via plugin mgr.
     taskMonitor.report(I18N.get("JUMPWorkbench.status.load-extensions"));
     workbench.context.getWorkbench().getPlugInManager().load();
+    
+    // some more intialization 
+    // TODO: clean up and merge with setup above or even better put into xml config
+    taskMonitor.report(I18N.get("JUMPWorkbench.status.initialize-datasources"));
     OpenJumpConfiguration.postExtensionInitialization(workbench.context);
+    
+    taskMonitor.report(I18N.get("JUMPWorkbench.status.show-workbench"));
     workbench.getFrame().setVisible(true);
     // Activate SelectFeaturesTool cursor after opening a new session.
     // See also JUMPConfiguration.configureToolBar() where the select

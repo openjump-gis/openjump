@@ -1101,6 +1101,11 @@ public class WorkbenchFrame extends JFrame
     // After this point no new menus can be added
     if (addedMenuItems == -1) {
       addedMenuItems = windowMenu.getItemCount();
+      // always add a separator between menu entries and frame list
+      if (addedMenuItems>0){
+        windowMenu.addSeparator();
+        addedMenuItems++;
+      }
     }
     while (windowMenu.getItemCount() > addedMenuItems) {
       windowMenu.remove(windowMenu.getItemCount() - 1);

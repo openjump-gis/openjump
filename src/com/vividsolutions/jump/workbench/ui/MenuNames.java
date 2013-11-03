@@ -37,7 +37,7 @@ import com.vividsolutions.jump.I18N;
  * First level menus names of JUMP
  * @author Basile Chandesris - <chandesris@pt-consulting.lu>
  */
-public interface MenuNames {
+public class MenuNames {
     public static final String FILE = I18N.get("ui.MenuNames.FILE");
     public static final String FILE_NEW = I18N.get("ui.MenuNames.FILE.NEW");
     public static final String FILE_SAVEVIEW = I18N.get("ui.MenuNames.FILE.SAVEVIEW");
@@ -97,6 +97,7 @@ public interface MenuNames {
     public static final String STYLE = I18N.get("ui.MenuNames.STYLE");
     public static final String DATASTORE = I18N.get("ui.MenuNames.DATASTORE");
     public static final String SCHEMA = I18N.get("ui.MenuNames.SCHEMA");
+    public static final String ZOOM = I18N.get("ui.MenuNames.ZOOM");
     
     public static final String LAYERVIEWPANEL_POPUP = I18N.get("ui.MenuNames.LAYERVIEWPANEL_POPUP");
     public static final String ATTRIBUTEPANEL_POPUP = I18N.get("ui.MenuNames.ATTRIBUTEPANEL_POPUP");

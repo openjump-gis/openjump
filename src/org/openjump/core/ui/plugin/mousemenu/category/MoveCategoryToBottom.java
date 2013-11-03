@@ -23,6 +23,7 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 /**
@@ -57,7 +58,7 @@ public class MoveCategoryToBottom extends AbstractPlugIn {
     }
     
     public Icon getIcon() {
-        return new ImageIcon(getClass().getResource("bullet_arrow_bottom.png"));
+        return IconLoader.icon("bullet_arrow_bottom.png");
     }
     
     public String getName(){

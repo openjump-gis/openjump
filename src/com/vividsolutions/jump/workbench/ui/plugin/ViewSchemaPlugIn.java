@@ -103,6 +103,10 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
         this.editingPlugIn = editingPlugIn;
     }
 
+    public ViewSchemaPlugIn() {
+      this.editingPlugIn = EditingPlugIn.getInstance();
+    }
+    
     public String getName() {
         return I18N.get("ui.plugin.ViewSchemaPlugIn.view-edit-schema");
     }

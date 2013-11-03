@@ -64,7 +64,7 @@ public class RemoveSelectedLayersPlugIn extends AbstractPlugIn {
     }
     
     public ImageIcon getIcon(){
-      return IconLoader.icon("cross.png");
+      return IconLoader.icon("famfam/cross.png");
     }
 
     public MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {

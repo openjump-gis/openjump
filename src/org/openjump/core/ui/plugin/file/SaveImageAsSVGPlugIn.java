@@ -10,7 +10,6 @@
 package org.openjump.core.ui.plugin.file;
 
 import com.vividsolutions.jts.geom.Envelope;
-
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.util.StringUtil;
@@ -31,6 +30,7 @@ import com.vividsolutions.jump.workbench.ui.renderer.LayerRenderer;
 import com.vividsolutions.jump.workbench.ui.renderer.Renderer;
 import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
 import com.vividsolutions.jump.workbench.ui.renderer.java2D.Java2DConverter;
+
 import org.openjump.core.ui.plugin.view.ZoomToScalePlugIn;
 import org.openjump.core.ui.util.ScreenScale;
 
@@ -62,19 +62,26 @@ public class SaveImageAsSVGPlugIn extends AbstractPlugIn implements ThreadedPlug
 	public SaveImageAsSVGPlugIn() {
 	}
 
-	public void initialize(PlugInContext context) throws Exception {
-    	
-		context.getFeatureInstaller().addMainMenuItem(this,		        
-      	      new String[] {
-		          MenuNames.FILE, MenuNames.FILE_SAVEVIEW
-		        }, 
-		        I18N.get("org.openjump.core.ui.plugin.file.SaveImageAsSVGPlugIn.save-image-in-svg-format") + "..." + "{pos:10}",
-				false, 
-				null, 
-                createEnableCheck(context.getWorkbenchContext())); //enable check
-	}
+  public void initialize(PlugInContext context) throws Exception {
+    // context.getFeatureInstaller().addMainMenuItem(this,
+    // new String[] {
+    // MenuNames.FILE, MenuNames.FILE_SAVEVIEW
+    // },
+    // I18N.get("org.openjump.core.ui.plugin.file.SaveImageAsSVGPlugIn.save-image-in-svg-format")
+    // + "..." + "{pos:10}",
+    // false,
+    // null,
+    // createEnableCheck(context.getWorkbenchContext())); //enable check
+    context.getFeatureInstaller().addMainMenuPlugin(this,
+        new String[] { MenuNames.FILE, MenuNames.FILE_SAVEVIEW });
+  }
+  
+  public String getName() {
+    return I18N
+        .get("org.openjump.core.ui.plugin.file.SaveImageAsSVGPlugIn.save-image-in-svg-format");
+  }
 
-	public boolean execute(PlugInContext context) throws Exception {
+  public boolean execute(PlugInContext context) throws Exception {
 		JFileChooser fc = GUIUtil.createJFileChooserWithOverwritePrompting("svg");
 		// Show save dialog; this method does not return until the dialog is closed
 		fc.showSaveDialog(context.getWorkbenchFrame());

@@ -78,10 +78,8 @@ public class OpenProjectPlugIn extends AbstractWizardPlugin {
     FeatureInstaller featureInstaller = context.getFeatureInstaller();
 
     // Add File Menu
-    featureInstaller.addMainMenuItem(new String[] {
-      MenuNames.FILE
-    }, this, 1);
-
+    featureInstaller.addMainMenuPlugin(this, new String[] {MenuNames.FILE});
+    
     wizard = new OpenProjectWizard(workbenchContext);
     setWizard(wizard);
     OpenWizardPlugIn.addWizard(workbenchContext, wizard);

@@ -62,6 +62,7 @@ public class SaveProjectAsPlugIn extends AbstractSaveProjectPlugIn {
     }
 
     public void initialize(PlugInContext context) throws Exception {
+        super.initialize(context);
         //Don't initialize fileChooser at field declaration; otherwise get
         // intermittent
         //exceptions:

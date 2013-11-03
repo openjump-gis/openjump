@@ -19,9 +19,7 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.swing.JPopupMenu;
-
-import org.openjump.core.ccordsys.srid.EnsureAllLayersHaveSRIDStylePlugIn;
+//import org.openjump.core.ccordsys.srid.EnsureAllLayersHaveSRIDStylePlugIn;
 import org.openjump.core.feature.BeanshellAttributeOperationFactory;
 import org.openjump.core.rasterimage.AddRasterImageLayerWizard;
 import org.openjump.core.rasterimage.RasterImageLayer;
@@ -30,35 +28,35 @@ import org.openjump.core.ui.DatasetOptionsPanel;
 import org.openjump.core.ui.io.file.DataSourceFileLayerLoader;
 import org.openjump.core.ui.io.file.FileLayerLoader;
 import org.openjump.core.ui.plugin.datastore.AddDataStoreLayerWizard;
-import org.openjump.core.ui.plugin.datastore.RefreshDataStoreQueryPlugIn;
-import org.openjump.core.ui.plugin.edittoolbox.ConstrainedMoveVertexPlugIn;
-import org.openjump.core.ui.plugin.edittoolbox.DrawCircleWithGivenRadiusPlugIn;
-import org.openjump.core.ui.plugin.edittoolbox.DrawConstrainedArcPlugIn;
-import org.openjump.core.ui.plugin.edittoolbox.DrawConstrainedCirclePlugIn;
-import org.openjump.core.ui.plugin.edittoolbox.DrawConstrainedLineStringPlugIn;
-import org.openjump.core.ui.plugin.edittoolbox.DrawConstrainedPolygonPlugIn;
-import org.openjump.core.ui.plugin.edittoolbox.RotateSelectedItemPlugIn;
-import org.openjump.core.ui.plugin.edittoolbox.SelectOneItemPlugIn;
+//import org.openjump.core.ui.plugin.datastore.RefreshDataStoreQueryPlugIn;
+//import org.openjump.core.ui.plugin.edittoolbox.ConstrainedMoveVertexPlugIn;
+//import org.openjump.core.ui.plugin.edittoolbox.DrawCircleWithGivenRadiusPlugIn;
+//import org.openjump.core.ui.plugin.edittoolbox.DrawConstrainedArcPlugIn;
+//import org.openjump.core.ui.plugin.edittoolbox.DrawConstrainedCirclePlugIn;
+//import org.openjump.core.ui.plugin.edittoolbox.DrawConstrainedLineStringPlugIn;
+//import org.openjump.core.ui.plugin.edittoolbox.DrawConstrainedPolygonPlugIn;
+//import org.openjump.core.ui.plugin.edittoolbox.RotateSelectedItemPlugIn;
+//import org.openjump.core.ui.plugin.edittoolbox.SelectOneItemPlugIn;
 import org.openjump.core.ui.plugin.file.DataSourceQueryChooserOpenWizard;
-import org.openjump.core.ui.plugin.file.FileDragDropPlugin;
-import org.openjump.core.ui.plugin.file.OpenFilePlugIn;
-import org.openjump.core.ui.plugin.file.OpenProjectPlugIn;
-import org.openjump.core.ui.plugin.file.OpenRecentPlugIn;
+//import org.openjump.core.ui.plugin.file.FileDragDropPlugin;
+//import org.openjump.core.ui.plugin.file.OpenFilePlugIn;
+//import org.openjump.core.ui.plugin.file.OpenProjectPlugIn;
+//import org.openjump.core.ui.plugin.file.OpenRecentPlugIn;
 import org.openjump.core.ui.plugin.file.OpenWizardPlugIn;
-import org.openjump.core.ui.plugin.layer.ChangeSRIDPlugIn;
-import org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn;
-import org.openjump.core.ui.plugin.layer.ToggleVisiblityPlugIn;
+//import org.openjump.core.ui.plugin.layer.ChangeSRIDPlugIn;
+//import org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn;
+//import org.openjump.core.ui.plugin.layer.ToggleVisiblityPlugIn;
 import org.openjump.core.ui.plugin.layer.pirolraster.RasterImageContextMenu;
-import org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn;
-import org.openjump.core.ui.plugin.style.ImportArcMapStylePlugIn;
-import org.openjump.core.ui.plugin.style.ImportSLDPlugIn;
-import org.openjump.core.ui.plugin.view.EasyButtonsPlugin;
-import org.openjump.core.ui.plugin.view.MapToolTipPlugIn;
-import org.openjump.core.ui.plugin.view.ShowFullPathPlugIn;
-import org.openjump.core.ui.plugin.view.ShowScalePlugIn;
-import org.openjump.core.ui.plugin.view.ZoomToScalePlugIn;
+//import org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn;
+//import org.openjump.core.ui.plugin.style.ImportArcMapStylePlugIn;
+//import org.openjump.core.ui.plugin.style.ImportSLDPlugIn;
+//import org.openjump.core.ui.plugin.view.EasyButtonsPlugin;
+//import org.openjump.core.ui.plugin.view.MapToolTipPlugIn;
+//import org.openjump.core.ui.plugin.view.ShowFullPathPlugIn;
+//import org.openjump.core.ui.plugin.view.ShowScalePlugIn;
+//import org.openjump.core.ui.plugin.view.ZoomToScalePlugIn;
 import org.openjump.core.ui.plugin.wms.AddWmsLayerWizard;
-import org.openjump.core.ui.plugin.wms.ZoomToWMSLayerPlugIn;
+//import org.openjump.core.ui.plugin.wms.ZoomToWMSLayerPlugIn;
 import org.openjump.core.ui.style.decoration.ArrowLineStringMiddlepointStyle;
 import org.openjump.core.ui.style.decoration.SegmentDownhillArrowStyle;
 import org.openjump.core.ui.style.decoration.VertexZValueStyle;
@@ -84,14 +82,13 @@ import com.vividsolutions.jump.workbench.imagery.mrsid.MrSIDImageFactory;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.registry.Registry;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
-import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
-import com.vividsolutions.jump.workbench.ui.plugin.datastore.RunDatastoreQueryPlugIn;
+//import com.vividsolutions.jump.workbench.ui.plugin.datastore.RunDatastoreQueryPlugIn;
 import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
 
-import de.latlon.deejump.plugin.SaveLegendPlugIn;
-import de.latlon.deejump.plugin.style.LayerStyle2SLDPlugIn;
+//import de.latlon.deejump.plugin.SaveLegendPlugIn;
+//import de.latlon.deejump.plugin.style.LayerStyle2SLDPlugIn;
 
 /**
  * This class loads all OpenJUMP plugins. The method
@@ -129,23 +126,23 @@ public class OpenJumpConfiguration {
     //--[sstein 10.July.2008] I leave these plugins in this class, as they seem to me
     //	essential to be removable, similar for the others that are still initialized here
 
-    OpenProjectPlugIn openProject = new OpenProjectPlugIn();
-    openProject.initialize(pluginContext);
+//    OpenProjectPlugIn openProject = new OpenProjectPlugIn();
+//    openProject.initialize(pluginContext);
+//    
+//    OpenFilePlugIn openFile = new OpenFilePlugIn();
+//    openFile.initialize(pluginContext);
     
-    OpenFilePlugIn openFile = new OpenFilePlugIn();
-    openFile.initialize(pluginContext);
+//    OpenWizardPlugIn open = new OpenWizardPlugIn();
+//    open.initialize(pluginContext);
     
-    OpenWizardPlugIn open = new OpenWizardPlugIn();
-    open.initialize(pluginContext);
-    
-    RunDatastoreQueryPlugIn runDatastoreQueryPlugIn = new RunDatastoreQueryPlugIn();
-    runDatastoreQueryPlugIn.initialize(pluginContext);
+//    RunDatastoreQueryPlugIn runDatastoreQueryPlugIn = new RunDatastoreQueryPlugIn();
+//    runDatastoreQueryPlugIn.initialize(pluginContext);
 
-    OpenRecentPlugIn openRecent = OpenRecentPlugIn.get(workbenchContext);
-    openRecent.initialize(pluginContext);
+//    OpenRecentPlugIn openRecent = OpenRecentPlugIn.get(workbenchContext);
+//    openRecent.initialize(pluginContext);
 
-    FileDragDropPlugin fileDragDropPlugin = new FileDragDropPlugin();
-    fileDragDropPlugin.initialize(pluginContext);
+//    FileDragDropPlugin fileDragDropPlugin = new FileDragDropPlugin();
+//    fileDragDropPlugin.initialize(pluginContext);
 
     //-- [sstein 10.July.2008] now initialized with default-plugins.xml file
     /*
@@ -195,29 +192,29 @@ public class OpenJumpConfiguration {
     /*
     new CopyBBoxPlugin().initialize(new PlugInContext(workbenchContext, null, null, null, null));
     */
-    EasyButtonsPlugin myEasyButtonsPlugIn = new EasyButtonsPlugin();
-    myEasyButtonsPlugIn.initialize(new PlugInContext(workbenchContext, null,
-    	      null, null, null));
+//    EasyButtonsPlugin myEasyButtonsPlugIn = new EasyButtonsPlugin();
+//    myEasyButtonsPlugIn.initialize(new PlugInContext(workbenchContext, null,
+//    	      null, null, null));
     
     //ZoomToWMSPlugIn myZoomToWMSPlugIn = new ZoomToWMSPlugIn();
     //myZoomToWMSPlugIn.initialize(new PlugInContext(workbenchContext, null,
     //  null, null, null));
     
-    ZoomToWMSLayerPlugIn myZoomToWMSLayerPlugIn = new ZoomToWMSLayerPlugIn();
-    myZoomToWMSLayerPlugIn.initialize(new PlugInContext(workbenchContext, null,
-      null, null, null));
-
-    ZoomToScalePlugIn myZoomToScalePlugIn = new ZoomToScalePlugIn();
-    myZoomToScalePlugIn.initialize(new PlugInContext(workbenchContext, null,
-      null, null, null));
-
-    ShowScalePlugIn myShowScalePlugIn = new ShowScalePlugIn();
-    myShowScalePlugIn.initialize(new PlugInContext(workbenchContext, null,
-      null, null, null));
-
-    MapToolTipPlugIn myMapTipPlugIn = new MapToolTipPlugIn();
-    myMapTipPlugIn.initialize(new PlugInContext(workbenchContext, null, null,
-      null, null));
+//    ZoomToWMSLayerPlugIn myZoomToWMSLayerPlugIn = new ZoomToWMSLayerPlugIn();
+//    myZoomToWMSLayerPlugIn.initialize(new PlugInContext(workbenchContext, null,
+//      null, null, null));
+//
+//    ZoomToScalePlugIn myZoomToScalePlugIn = new ZoomToScalePlugIn();
+//    myZoomToScalePlugIn.initialize(new PlugInContext(workbenchContext, null,
+//      null, null, null));
+//
+//    ShowScalePlugIn myShowScalePlugIn = new ShowScalePlugIn();
+//    myShowScalePlugIn.initialize(new PlugInContext(workbenchContext, null,
+//      null, null, null));
+//
+//    MapToolTipPlugIn myMapTipPlugIn = new MapToolTipPlugIn();
+//    myMapTipPlugIn.initialize(new PlugInContext(workbenchContext, null, null,
+//      null, null));
 
     /***************************************************************************
      * menu LAYER
@@ -238,13 +235,13 @@ public class OpenJumpConfiguration {
     // to be
     // changed using LayerListener LayerEventType.ADDED event instead of
     // layerSelectionChanged() from LayerNamePanelListener
-    ShowFullPathPlugIn myFullPathPlugin = new ShowFullPathPlugIn();
-    myFullPathPlugin.initialize(new PlugInContext(workbenchContext, null, null,
-      null, null));
-
-    ToggleVisiblityPlugIn myToggleVisPlugIn = new ToggleVisiblityPlugIn();
-    myToggleVisPlugIn.initialize(new PlugInContext(workbenchContext, null,
-      null, null, null));
+//    ShowFullPathPlugIn myFullPathPlugin = new ShowFullPathPlugIn();
+//    myFullPathPlugin.initialize(new PlugInContext(workbenchContext, null, null,
+//      null, null));
+//
+//    ToggleVisiblityPlugIn myToggleVisPlugIn = new ToggleVisiblityPlugIn();
+//    myToggleVisPlugIn.initialize(new PlugInContext(workbenchContext, null,
+//      null, null, null));
 
     //-- [sstein 21March2008] unnecessary with new menu structure
     //	 MRSIDtype is added with new open file dialog (see below)
@@ -254,9 +251,9 @@ public class OpenJumpConfiguration {
       null, null));
 	*/
     
-    ChangeSRIDPlugIn myChangeSRIDPlugIn = new ChangeSRIDPlugIn();
-    myChangeSRIDPlugIn.initialize(new PlugInContext(workbenchContext, null,
-      null, null, null));
+//    ChangeSRIDPlugIn myChangeSRIDPlugIn = new ChangeSRIDPlugIn();
+//    myChangeSRIDPlugIn.initialize(new PlugInContext(workbenchContext, null,
+//      null, null, null));
 
     /***************************************************************************
      * menu TOOLS
@@ -384,8 +381,8 @@ public class OpenJumpConfiguration {
     /***************************************************************************
      * Right click menus
      **************************************************************************/
-    JPopupMenu popupMenu = LayerViewPanel.popupMenu();
-    popupMenu.addSeparator();
+//    JPopupMenu popupMenu = LayerViewPanel.popupMenu();
+//    popupMenu.addSeparator();
     
     //-- [sstein 10.July.2008] now initialized with default-plugins.xml file
     /*
@@ -401,27 +398,27 @@ public class OpenJumpConfiguration {
     selectLayersWithSelectedItemsPlugIn.initialize(new PlugInContext(
       workbenchContext, null, null, null, null));
 	*/
-    //-- [sstein 10.July.2008] leave them, as they seem to be essential
-    SaveDatasetsPlugIn mySaveDataSetPlugIn = new SaveDatasetsPlugIn();
-    mySaveDataSetPlugIn.initialize(new PlugInContext(workbenchContext, null,
-      null, null, null));
-
-    LayerPropertiesPlugIn myLayerPropertiesPlugIn = new LayerPropertiesPlugIn();
-    myLayerPropertiesPlugIn.initialize(new PlugInContext(workbenchContext,
-      null, null, null, null));	
+//    //-- [sstein 10.July.2008] leave them, as they seem to be essential
+//    SaveDatasetsPlugIn mySaveDataSetPlugIn = new SaveDatasetsPlugIn();
+//    mySaveDataSetPlugIn.initialize(new PlugInContext(workbenchContext, null,
+//      null, null, null));
+//
+//    LayerPropertiesPlugIn myLayerPropertiesPlugIn = new LayerPropertiesPlugIn();
+//    myLayerPropertiesPlugIn.initialize(new PlugInContext(workbenchContext,
+//      null, null, null, null));	
+//    
+//    //ChangeLayerableNamePlugIn changeLayerableNamePlugIn = new ChangeLayerableNamePlugIn();
+//    //changeLayerableNamePlugIn.initialize(new PlugInContext(workbenchContext,
+//    //  null, null, null, null));
+//    
+//    RefreshDataStoreQueryPlugIn refreshDataStoreQueryPlugIn = new RefreshDataStoreQueryPlugIn();
+//    refreshDataStoreQueryPlugIn.initialize(new PlugInContext(workbenchContext,
+//      null, null, null, null));
     
-    //ChangeLayerableNamePlugIn changeLayerableNamePlugIn = new ChangeLayerableNamePlugIn();
-    //changeLayerableNamePlugIn.initialize(new PlugInContext(workbenchContext,
-    //  null, null, null, null));
-    
-    RefreshDataStoreQueryPlugIn refreshDataStoreQueryPlugIn = new RefreshDataStoreQueryPlugIn();
-    refreshDataStoreQueryPlugIn.initialize(new PlugInContext(workbenchContext,
-      null, null, null, null));
-    
-    // -- deeJUMP function by LAT/LON [01.08.2006 sstein]
-    new LayerStyle2SLDPlugIn().initialize(pluginContext);
-    new ImportSLDPlugIn().initialize(pluginContext);
-    new ImportArcMapStylePlugIn().initialize(pluginContext);
+//    // -- deeJUMP function by LAT/LON [01.08.2006 sstein]
+//    new LayerStyle2SLDPlugIn().initialize(pluginContext);
+//    new ImportSLDPlugIn().initialize(pluginContext);
+//    new ImportArcMapStylePlugIn().initialize(pluginContext);
     
     //featureInstaller.addPopupMenuItem(layerNamePopupMenu, refreshDataStoreQueryPlugin,
     //        new String[]{MenuNames.DATASTORE}, refreshDataStoreQueryPlugin.getName() + "...", false, RefreshDataStoreQueryPlugin.ICON,
@@ -430,10 +427,6 @@ public class OpenJumpConfiguration {
     //-- [sstein 22.Feb.2009]
     //-- adds renderer for (Pirol/Sextante) raster images
     //RenderingManager.putRendererForLayerable(RasterImageLayer.class, new RasterImageLayerRendererFactory(pluginContext.getWorkbenchContext()));
-    // [mmichaud 2012-09-01] changed how RasterImageLayerRendererFactory is initialized to fix bug 3526653
-    RenderingManager.setRendererFactory(RasterImageLayer.class, new RasterImageLayerRendererFactory()); 
-    //-- adds the context menu for (Pirol/Sextante) Raster Images
-    pluginContext.getWorkbenchFrame().getNodeClassToPopupMenuMap().put(RasterImageLayer.class, RasterImageContextMenu.getInstance(pluginContext));
     
     //-- [sstein 10.July.2008] now initialized with default-plugins.xml file
     /*
@@ -441,10 +434,10 @@ public class OpenJumpConfiguration {
     myEditSidePlugin.initialize(new PlugInContext(workbenchContext, null, null,
       null, null));
 	*/
-    // -- deeJUMP plugin
-    SaveLegendPlugIn saveLegend = new SaveLegendPlugIn();
-    saveLegend.initialize(new PlugInContext(workbenchContext, null, null, null,
-      null));
+//    // -- deeJUMP plugin
+//    SaveLegendPlugIn saveLegend = new SaveLegendPlugIn();
+//    saveLegend.initialize(new PlugInContext(workbenchContext, null, null, null,
+//      null));
 
     // -- SIGLE plugin
     //-- [sstein 10.July.2008] now initialized with default-plugins.xml file
@@ -479,37 +472,37 @@ public class OpenJumpConfiguration {
     
     //-- [sstein 10.July.2008] leave them, as they seem to be essential
     //   note: it is intended to replace the original JUMP edition tools with the constrained tools
-    DrawConstrainedPolygonPlugIn myConstrainedPolygonPlugIn = new DrawConstrainedPolygonPlugIn();
-    myConstrainedPolygonPlugIn.initialize(new PlugInContext(workbenchContext,
-      null, null, null, null));
-
-    DrawConstrainedLineStringPlugIn myConstrainedLSPlugIn = new DrawConstrainedLineStringPlugIn();
-    myConstrainedLSPlugIn.initialize(new PlugInContext(workbenchContext, null,
-      null, null, null));
-
-    DrawConstrainedCirclePlugIn myConstrainedCPlugIn = new DrawConstrainedCirclePlugIn();
-    myConstrainedCPlugIn.initialize(new PlugInContext(workbenchContext, null,
-      null, null, null));
-
-    DrawConstrainedArcPlugIn myConstrainedArcPlugIn = new DrawConstrainedArcPlugIn();
-    myConstrainedArcPlugIn.initialize(new PlugInContext(workbenchContext, null,
-      null, null, null));
-
-    ConstrainedMoveVertexPlugIn myCMVPlugIn = new ConstrainedMoveVertexPlugIn();
-    myCMVPlugIn.initialize(new PlugInContext(workbenchContext, null, null,
-      null, null));
-
-    RotateSelectedItemPlugIn myRotateSIPlugIn = new RotateSelectedItemPlugIn();
-    myRotateSIPlugIn.initialize(new PlugInContext(workbenchContext, null, null,
-      null, null));
-
-    SelectOneItemPlugIn mySelectOnePlugin = new SelectOneItemPlugIn();
-    mySelectOnePlugin.initialize(new PlugInContext(workbenchContext, null,
-      null, null, null));
-
-    DrawCircleWithGivenRadiusPlugIn drawCirclePlugin = new DrawCircleWithGivenRadiusPlugIn();
-    drawCirclePlugin.initialize(new PlugInContext(workbenchContext, null, null,
-      null, null));
+//    DrawConstrainedPolygonPlugIn myConstrainedPolygonPlugIn = new DrawConstrainedPolygonPlugIn();
+//    myConstrainedPolygonPlugIn.initialize(new PlugInContext(workbenchContext,
+//      null, null, null, null));
+//
+//    DrawConstrainedLineStringPlugIn myConstrainedLSPlugIn = new DrawConstrainedLineStringPlugIn();
+//    myConstrainedLSPlugIn.initialize(new PlugInContext(workbenchContext, null,
+//      null, null, null));
+//
+//    DrawConstrainedCirclePlugIn myConstrainedCPlugIn = new DrawConstrainedCirclePlugIn();
+//    myConstrainedCPlugIn.initialize(new PlugInContext(workbenchContext, null,
+//      null, null, null));
+//
+//    DrawConstrainedArcPlugIn myConstrainedArcPlugIn = new DrawConstrainedArcPlugIn();
+//    myConstrainedArcPlugIn.initialize(new PlugInContext(workbenchContext, null,
+//      null, null, null));
+//
+//    ConstrainedMoveVertexPlugIn myCMVPlugIn = new ConstrainedMoveVertexPlugIn();
+//    myCMVPlugIn.initialize(new PlugInContext(workbenchContext, null, null,
+//      null, null));
+//
+//    RotateSelectedItemPlugIn myRotateSIPlugIn = new RotateSelectedItemPlugIn();
+//    myRotateSIPlugIn.initialize(new PlugInContext(workbenchContext, null, null,
+//      null, null));
+//
+//    SelectOneItemPlugIn mySelectOnePlugin = new SelectOneItemPlugIn();
+//    mySelectOnePlugin.initialize(new PlugInContext(workbenchContext, null,
+//      null, null, null));
+//
+//    DrawCircleWithGivenRadiusPlugIn drawCirclePlugin = new DrawCircleWithGivenRadiusPlugIn();
+//    drawCirclePlugin.initialize(new PlugInContext(workbenchContext, null, null,
+//      null, null));
 
     //-- [sstein 10.July.2008] now initialized with default-plugins.xml file
     //   as these are advanced editing tools [i.e. more for experts?]
@@ -539,11 +532,11 @@ public class OpenJumpConfiguration {
     new InstallKeyPanPlugIn().initialize(new PlugInContext(workbenchContext,
       null, null, null, null));
 	*/
-    // -- enables to store the SRID = EPSG code as style for every Layer
-    // since it is stored as style it should be saved in the project file
-    EnsureAllLayersHaveSRIDStylePlugIn ensureLayerSRIDPlugin = new EnsureAllLayersHaveSRIDStylePlugIn();
-    ensureLayerSRIDPlugin.initialize(new PlugInContext(workbenchContext, null,
-      null, null, null));
+//    // -- enables to store the SRID = EPSG code as style for every Layer
+//    // since it is stored as style it should be saved in the project file
+//    EnsureAllLayersHaveSRIDStylePlugIn ensureLayerSRIDPlugin = new EnsureAllLayersHaveSRIDStylePlugIn();
+//    ensureLayerSRIDPlugin.initialize(new PlugInContext(workbenchContext, null,
+//      null, null, null));
 
     /***************************************************************************
      * Decoration
@@ -567,21 +560,6 @@ public class OpenJumpConfiguration {
     workbenchContext.getBlackboard().put(
       EditTransaction.ROLLING_BACK_INVALID_EDITS_KEY, true);
 
-    /***************************************************************************
-     * Open Wizards
-     **************************************************************************/
-    AddDataStoreLayerWizard addDataStoreLayerWizard = new AddDataStoreLayerWizard(
-      workbenchContext);
-    OpenWizardPlugIn.addWizard(workbenchContext, addDataStoreLayerWizard);
-
-    AddWmsLayerWizard addWmsLayerWizard = new AddWmsLayerWizard(
-      workbenchContext);
-    OpenWizardPlugIn.addWizard(workbenchContext, addWmsLayerWizard);
-    
-    //[sstein] 22.Feb.2009 -- added to load Pirol/Sextante images
-    AddRasterImageLayerWizard addRasterImageLayerWizard = new AddRasterImageLayerWizard(
-    		workbenchContext);
-    OpenWizardPlugIn.addWizard(workbenchContext, addRasterImageLayerWizard);
     
     /***************************************************************************
      * testing
@@ -595,6 +573,29 @@ public class OpenJumpConfiguration {
 
   public static void postExtensionInitialization(
     WorkbenchContext workbenchContext) {
+    
+    /***************************************************************************
+     * Open Wizards
+     **************************************************************************/
+    AddDataStoreLayerWizard addDataStoreLayerWizard = new AddDataStoreLayerWizard(
+      workbenchContext);
+    OpenWizardPlugIn.addWizard(workbenchContext, addDataStoreLayerWizard);
+
+    AddWmsLayerWizard addWmsLayerWizard = new AddWmsLayerWizard(
+      workbenchContext);
+    OpenWizardPlugIn.addWizard(workbenchContext, addWmsLayerWizard);
+    
+    //[sstein] 22.Feb.2009 -- added to load Pirol/Sextante images
+    AddRasterImageLayerWizard addRasterImageLayerWizard = new AddRasterImageLayerWizard(
+        workbenchContext);
+    OpenWizardPlugIn.addWizard(workbenchContext, addRasterImageLayerWizard);
+    
+    // [mmichaud 2012-09-01] changed how RasterImageLayerRendererFactory is initialized to fix bug 3526653
+    RenderingManager.setRendererFactory(RasterImageLayer.class, new RasterImageLayerRendererFactory()); 
+    
+    //-- adds the context menu for (Pirol/Sextante) Raster Images
+    workbenchContext.getWorkbench().getFrame().getNodeClassToPopupMenuMap().put(RasterImageLayer.class, RasterImageContextMenu.getInstance(workbenchContext.createPlugInContext()));
+    
     Registry registry = workbenchContext.getRegistry();
     List loadChoosers = DataSourceQueryChooserManager.get(
       workbenchContext.getBlackboard()).getLoadDataSourceQueryChoosers();

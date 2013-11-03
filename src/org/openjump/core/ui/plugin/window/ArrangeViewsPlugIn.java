@@ -1,78 +1,89 @@
+package org.openjump.core.ui.plugin.window;
 
-package  org.openjump.core.ui.plugin.window;
+import java.awt.Dimension;
+import java.beans.PropertyVetoException;
+import java.util.Vector;
 
-import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import javax.swing.Icon;
+import javax.swing.JDesktopPane;
+import javax.swing.JInternalFrame;
+
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
+import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import java.awt.Dimension;
-import java.beans.PropertyVetoException;
-import java.util.Vector;
-import javax.swing.Icon;
-import javax.swing.JDesktopPane;
-import javax.swing.JInternalFrame;
-import com.vividsolutions.jump.I18N;
 
-public class ArrangeViewsPlugIn extends AbstractPlugIn
-{
-	
-  public static final String NAME = I18N.get("org.openjump.core.ui.plugin.window.ArrangeViewsPlugIn.name");
+public class ArrangeViewsPlugIn extends AbstractPlugIn {
 
-  public static final Icon HORIZONTAL_ICON = IconLoader.icon("application_tile_horizontal.png");
-  public static final Icon VERTICAL_ICON = IconLoader.icon("application_tile_vertical.png");
-  public static final Icon CASCADE_ICON = IconLoader.icon("application_cascade.png");
-  public static final Icon ARRANGE_ICON = IconLoader.icon("application_distribute.png");
+  public static final String NAME = I18N
+      .get("org.openjump.core.ui.plugin.window.ArrangeViewsPlugIn.name");
+
+  public static final Icon HORIZONTAL_ICON = IconLoader
+      .icon("application_tile_horizontal.png");
+  public static final Icon VERTICAL_ICON = IconLoader
+      .icon("application_tile_vertical.png");
+  public static final Icon CASCADE_ICON = IconLoader
+      .icon("application_cascade.png");
+  public static final Icon ARRANGE_ICON = IconLoader
+      .icon("application_distribute.png");
 
   public static final int HORIZONTAL = 1;
   public static final int VERTICAL = 2;
   public static final int CASCADE = 3;
   public static final int ARRANGE = 4;
   private static JDesktopPane desktopPane;
-  private int arrangeType = 1;
+  private int arrangeType = 0;
 
-  public ArrangeViewsPlugIn(int type)
-  {
+  public ArrangeViewsPlugIn() {
+  }
+
+  public ArrangeViewsPlugIn(int type) {
     this.arrangeType = type;
   }
 
-  public void initialize(PlugInContext context)
-    throws Exception
-  {
+  public void initialize(PlugInContext context) throws Exception {
     if (desktopPane == null)
       desktopPane = context.getWorkbenchFrame().getDesktopPane();
+
+    for (int i = 1; i <= 4; i++) {
+      context.getFeatureInstaller().addMainMenuPlugin(
+          new ArrangeViewsPlugIn(i), new String[] { MenuNames.WINDOW });
+    }
   }
 
-  public boolean execute(PlugInContext context)
-    throws Exception
-  {
+  public boolean execute(PlugInContext context) throws Exception {
     reportNothingToUndoYet(context);
 
-    tileFrames(this.arrangeType);
+    if (this.arrangeType != 0)
+      tileFrames(this.arrangeType);
 
     return true;
   }
 
-  public String getName()
-  {
+  public String getName() {
     String name = "";
 
     switch (this.arrangeType) {
     case 1:
-      name = I18N.get("org.openjump.core.ui.plugin.window.ArrangeViewsPlugIn.distribute-views-horizontally");
+      name = I18N
+          .get("org.openjump.core.ui.plugin.window.ArrangeViewsPlugIn.distribute-views-horizontally");
       break;
     case 2:
-      name = I18N.get("org.openjump.core.ui.plugin.window.ArrangeViewsPlugIn.distribute-views-vertically");
+      name = I18N
+          .get("org.openjump.core.ui.plugin.window.ArrangeViewsPlugIn.distribute-views-vertically");
       break;
     case 3:
-      name = I18N.get("org.openjump.core.ui.plugin.window.ArrangeViewsPlugIn.cascade-views");
+      name = I18N
+          .get("org.openjump.core.ui.plugin.window.ArrangeViewsPlugIn.cascade-views");
       break;
     case 4:
-      name = I18N.get("org.openjump.core.ui.plugin.window.ArrangeViewsPlugIn.arrange-views");
+      name = I18N
+          .get("org.openjump.core.ui.plugin.window.ArrangeViewsPlugIn.arrange-views");
       break;
     default:
       name = NAME;
@@ -81,18 +92,17 @@ public class ArrangeViewsPlugIn extends AbstractPlugIn
     return name;
   }
 
-  public static EnableCheck createEnableCheck(WorkbenchContext workbenchContext)
-  {
+  public static EnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
     EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
 
     MultiEnableCheck check = new MultiEnableCheck();
-    check.add(checkFactory.createWindowWithAssociatedTaskFrameMustBeActiveCheck());
+    check.add(checkFactory
+        .createWindowWithAssociatedTaskFrameMustBeActiveCheck());
 
     return check;
   }
 
-  private void tileFrames(int style)
-  {
+  private void tileFrames(int style) {
     Dimension deskDim = desktopPane.getSize();
     int deskWidth = deskDim.width;
     int deskHeight = deskDim.height;
@@ -107,17 +117,14 @@ public class ArrangeViewsPlugIn extends AbstractPlugIn
     int frameCounter = 0;
     Vector frameVec = new Vector(1, 1);
     boolean areIcons = false;
-    for (int i = 0; i < frameCount; i++)
-    {
+    for (int i = 0; i < frameCount; i++) {
       if ((!frames[i].isResizable()) && (frames[i].isMaximum()))
-        try
-        {
+        try {
           frames[i].setMaximum(false);
+        } catch (PropertyVetoException localPropertyVetoException) {
         }
-        catch (PropertyVetoException localPropertyVetoException)
-        {
-        }
-      if ((frames[i].isVisible()) && (!frames[i].isIcon()) && (frames[i].isResizable())) {
+      if ((frames[i].isVisible()) && (!frames[i].isIcon())
+          && (frames[i].isResizable())) {
         frameVec.addElement(frames[i]);
         frameCounter++;
       } else if (frames[i].isIcon()) {
@@ -129,7 +136,7 @@ public class ArrangeViewsPlugIn extends AbstractPlugIn
     switch (style) {
     case 2:
       for (int i = 0; i < frameCounter; i++) {
-        JInternalFrame temp = (JInternalFrame)frameVec.elementAt(i);
+        JInternalFrame temp = (JInternalFrame) frameVec.elementAt(i);
         frameWidth = deskWidth;
         frameHeight = deskHeight / frameCounter;
         temp.reshape(xpos, ypos, frameWidth, frameHeight);
@@ -139,7 +146,7 @@ public class ArrangeViewsPlugIn extends AbstractPlugIn
       break;
     case 1:
       for (int i = 0; i < frameCounter; i++) {
-        JInternalFrame temp = (JInternalFrame)frameVec.elementAt(i);
+        JInternalFrame temp = (JInternalFrame) frameVec.elementAt(i);
         frameWidth = deskWidth / frameCounter;
         frameHeight = deskHeight;
         if (temp.isResizable())
@@ -152,9 +159,9 @@ public class ArrangeViewsPlugIn extends AbstractPlugIn
       break;
     case 3:
       for (int i = 0; i < frameCounter; i++) {
-        JInternalFrame temp = (JInternalFrame)frameVec.elementAt(i);
-        frameWidth = (int)(deskWidth * scale);
-        frameHeight = (int)(deskHeight * scale);
+        JInternalFrame temp = (JInternalFrame) frameVec.elementAt(i);
+        frameWidth = (int) (deskWidth * scale);
+        frameHeight = (int) (deskHeight * scale);
         if (temp.isResizable())
           temp.reshape(xpos, ypos, frameWidth, frameHeight);
         else
@@ -162,15 +169,15 @@ public class ArrangeViewsPlugIn extends AbstractPlugIn
         temp.moveToFront();
         xpos += spacer;
         ypos += spacer;
-        if ((xpos + frameWidth > deskWidth) || (ypos + frameHeight > deskHeight - 50)) {
+        if ((xpos + frameWidth > deskWidth)
+            || (ypos + frameHeight > deskHeight - 50)) {
           xpos = 0;
           ypos = 0;
         }
       }
       break;
     case 4:
-      int row = new Long(Math.round(Math.sqrt(frameCounter)))
-        .intValue();
+      int row = new Long(Math.round(Math.sqrt(frameCounter))).intValue();
       if (row == 0)
         break;
       int col = frameCounter / row;
@@ -181,7 +188,8 @@ public class ArrangeViewsPlugIn extends AbstractPlugIn
       frameWidth = deskWidth / col;
       frameHeight = deskHeight / row;
       int i = 0;
-      while (true) { JInternalFrame temp = (JInternalFrame)frameVec.elementAt(i);
+      while (true) {
+        JInternalFrame temp = (JInternalFrame) frameVec.elementAt(i);
         if (rowCount <= row - rem) {
           if (temp.isResizable())
             temp.reshape(xpos, ypos, frameWidth, frameHeight);
@@ -207,16 +215,15 @@ public class ArrangeViewsPlugIn extends AbstractPlugIn
             xpos = 0;
           }
         }
-        i++; if (i >= frameCounter)
-        {
+        i++;
+        if (i >= frameCounter) {
           break;
         }
       }
     }
   }
 
-  public Icon getIcon()
-  {
+  public Icon getIcon() {
     Icon icon = null;
     switch (this.arrangeType) {
     case 1:
@@ -238,5 +245,27 @@ public class ArrangeViewsPlugIn extends AbstractPlugIn
     return icon;
   }
 
+  public static class ArrangeHorizontalPlugIn extends ArrangeViewsPlugIn {
+    public ArrangeHorizontalPlugIn() {
+      super(1);
+    }
+  }
 
+  public static class ArrangeVerticalPlugIn extends ArrangeViewsPlugIn {
+    public ArrangeVerticalPlugIn() {
+      super(2);
+    }
+  }
+
+  public static class ArrangeCascadePlugIn extends ArrangeViewsPlugIn {
+    public ArrangeCascadePlugIn() {
+      super(3);
+    }
+  }
+
+  public static class ArrangeAllPlugIn extends ArrangeViewsPlugIn {
+    public ArrangeAllPlugIn() {
+      super(4);
+    }
+  }
 }

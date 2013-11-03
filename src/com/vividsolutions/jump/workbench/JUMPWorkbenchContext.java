@@ -73,8 +73,8 @@ public class JUMPWorkbenchContext extends WorkbenchContext {
   }
 
   public LayerNamePanel getLayerNamePanel() {
-    return getActiveTaskFrame() instanceof LayerNamePanelProxy ? 
-        ((LayerNamePanelProxy) getActiveTaskFrame()).getLayerNamePanel() : null;
+    return getActiveTaskFrame() instanceof LayerNamePanelProxy ? ((LayerNamePanelProxy) getActiveTaskFrame())
+        .getLayerNamePanel() : null;
   }
 
   public LayerManager getLayerManager() {
@@ -89,6 +89,9 @@ public class JUMPWorkbenchContext extends WorkbenchContext {
 
   // ask workbench to give us the active taskframe
   private TaskFrame getActiveTaskFrame() {
-    return workbench.getFrame().getActiveTaskFrame();
+    if (workbench.getFrame() instanceof WorkbenchFrame)
+      return workbench.getFrame().getActiveTaskFrame();
+
+    return null;
   }
 }

@@ -1,4 +1,3 @@
-
 /*
  * The Unified Mapping Platform (JUMP) is an extensible, interactive GUI 
  * for visualizing and manipulating spatial features with geometry and attributes.
@@ -33,7 +32,6 @@
  * www.ashs.isa.com
  */
 
-
 package org.openjump.core.ui.plugin.view;
 
 import java.awt.Component;
@@ -56,123 +54,122 @@ import com.vividsolutions.jump.workbench.ui.LayerViewPanelListener;
 import com.vividsolutions.jump.workbench.ui.TaskFrame;
 
 public class ShowFullPathPlugIn extends AbstractPlugIn {
-    
-    PlugInContext gContext;
-	final static String sErrorSeeOutputWindow =I18N.get("org.openjump.core.ui.plugin.view.ShowFullPathPlugIn.Error-See-Output-Window");
-	final static String sNumberSelected = I18N.get("org.openjump.core.ui.plugin.view.ShowFullPathPlugIn.NumberSelected");
-	
-    private LayerNamePanelListener layerNamePanelListener =
-    new LayerNamePanelListener()
-    {
-        public void layerSelectionChanged()
-        {
-            Collection layerCollection = (Collection) gContext.getWorkbenchContext().getLayerNamePanel().getLayerManager().getLayers();
-            for (Iterator i = layerCollection.iterator(); i.hasNext();)
-            {
-                Layer layer = (Layer) i.next();
-                if (layer.hasReadableDataSource())
-                {
-                    DataSourceQuery dsq = layer.getDataSourceQuery();
-                    String fname = "";
-                    Object fnameObj = dsq.getDataSource().getProperties().get("File");
-                    if (fnameObj != null) fname = fnameObj.toString();
-                    //layer.setDescription(fname);
-                    
-                	Object archiveObj = layer.getBlackboard().get("ArchiveFileName");
-                	//if (archiveObj != null) layer.setDescription(archiveObj.toString());
-                }
-            }            
-        }
-    };
-   
-    private LayerViewPanelListener layerViewPanelListener =
-    new LayerViewPanelListener()
-    {
-        public void selectionChanged()
-        {
-        	LayerViewPanel panel = gContext.getWorkbenchContext().getLayerViewPanel();
-        	if (panel == null) { return; } //[Jon Aquino 2005-08-04]
-        	Collection selectedFeatures = panel.getSelectionManager().getSelectedItems();
-        	int numSel = selectedFeatures.size();
-        	int numPts = 0;
-        	for (Iterator i = selectedFeatures.iterator(); i.hasNext();)
-        		numPts += ((Geometry)i.next()).getNumPoints();
-            
-            //LDB added the following to simulate 4D Draw Coordinates Panel
-            Envelope env = envelope(panel.getSelectionManager().getSelectedItems());
-            String sx = panel.format(env.getWidth());
-            String sy = panel.format(env.getHeight());
-            //gContext.getWorkbenchFrame().setTimeMessage(sNumberSelected + " " + numSel);
-            gContext.getWorkbenchFrame().setTimeMessage(sNumberSelected + " " +  numSel + " [" + numPts + " pts]");
-        }
-        
-        public void cursorPositionChanged(String x, String y)
-        {
-            
-        }
-        
-        public void painted(Graphics graphics)
-        {
-            
-        }
-    };
-            
-    public void initialize(PlugInContext context) throws Exception
-    {
-    	gContext = context;
 
-	    /**** original *********************************/
-        context.getWorkbenchFrame().getDesktopPane().addContainerListener(
-        new ContainerListener()
-        {
-            public void componentAdded(ContainerEvent e)
-            {                              
-                Component child = e.getChild();
-                if (child.getClass().getName().equals("com.vividsolutions.jump.workbench.ui.TaskFrame"))
-                {
-                    ((TaskFrame)child).getLayerNamePanel().addListener(layerNamePanelListener);
-                    ((TaskFrame)child).getLayerViewPanel().addListener(layerViewPanelListener);                    
-            	}
+  PlugInContext gContext;
+  final static String sErrorSeeOutputWindow = I18N
+      .get("org.openjump.core.ui.plugin.view.ShowFullPathPlugIn.Error-See-Output-Window");
+  final static String sNumberSelected = I18N
+      .get("org.openjump.core.ui.plugin.view.ShowFullPathPlugIn.NumberSelected");
+
+  private LayerNamePanelListener layerNamePanelListener = new LayerNamePanelListener() {
+    public void layerSelectionChanged() {
+      Collection layerCollection = (Collection) gContext.getWorkbenchContext()
+          .getLayerNamePanel().getLayerManager().getLayers();
+      for (Iterator i = layerCollection.iterator(); i.hasNext();) {
+        Layer layer = (Layer) i.next();
+        if (layer.hasReadableDataSource()) {
+          DataSourceQuery dsq = layer.getDataSourceQuery();
+          String fname = "";
+          Object fnameObj = dsq.getDataSource().getProperties().get("File");
+          if (fnameObj != null)
+            fname = fnameObj.toString();
+          // layer.setDescription(fname);
+
+          Object archiveObj = layer.getBlackboard().get("ArchiveFileName");
+          // if (archiveObj != null)
+          // layer.setDescription(archiveObj.toString());
+        }
+      }
+    }
+  };
+
+  private LayerViewPanelListener layerViewPanelListener = new LayerViewPanelListener() {
+    public void selectionChanged() {
+      LayerViewPanel panel = gContext.getWorkbenchContext().getLayerViewPanel();
+      if (panel == null) {
+        return;
+      } // [Jon Aquino 2005-08-04]
+      Collection selectedFeatures = panel.getSelectionManager()
+          .getSelectedItems();
+      int numSel = selectedFeatures.size();
+      int numPts = 0;
+      for (Iterator i = selectedFeatures.iterator(); i.hasNext();)
+        numPts += ((Geometry) i.next()).getNumPoints();
+
+      // LDB added the following to simulate 4D Draw Coordinates Panel
+      Envelope env = envelope(panel.getSelectionManager().getSelectedItems());
+      String sx = panel.format(env.getWidth());
+      String sy = panel.format(env.getHeight());
+      // gContext.getWorkbenchFrame().setTimeMessage(sNumberSelected + " " +
+      // numSel);
+      gContext.getWorkbenchFrame().setTimeMessage(
+          sNumberSelected + " " + numSel + " [" + numPts + " pts]");
+    }
+
+    public void cursorPositionChanged(String x, String y) {
+
+    }
+
+    public void painted(Graphics graphics) {
+
+    }
+  };
+
+  public void initialize(PlugInContext context) throws Exception {
+    gContext = context;
+
+    /**** original *********************************/
+    context.getWorkbenchFrame().getDesktopPane()
+        .addContainerListener(new ContainerListener() {
+          public void componentAdded(ContainerEvent e) {
+            Component child = e.getChild();
+            if (child.getClass().getName()
+                .equals("com.vividsolutions.jump.workbench.ui.TaskFrame")) {
+              ((TaskFrame) child).getLayerNamePanel().addListener(
+                  layerNamePanelListener);
+              ((TaskFrame) child).getLayerViewPanel().addListener(
+                  layerViewPanelListener);
             }
-            
-            public void componentRemoved(ContainerEvent e)
-            {
-                Component child = e.getChild();
-                if (child.getClass().getName().equals("com.vividsolutions.jump.workbench.ui.TaskFrame"))
-                {
-                    ((TaskFrame)child).getLayerNamePanel().removeListener(layerNamePanelListener);
-                    ((TaskFrame)child).getLayerViewPanel().removeListener(layerViewPanelListener);
-            	}
+          }
+
+          public void componentRemoved(ContainerEvent e) {
+            Component child = e.getChild();
+            if (child.getClass().getName()
+                .equals("com.vividsolutions.jump.workbench.ui.TaskFrame")) {
+              ((TaskFrame) child).getLayerNamePanel().removeListener(
+                  layerNamePanelListener);
+              ((TaskFrame) child).getLayerViewPanel().removeListener(
+                  layerViewPanelListener);
             }
+          }
         });
-    }
-    
-    
-    public boolean execute(PlugInContext context) throws Exception
-    {
-        try
-        {
-            return true;
-        }
-        catch (Exception e)
-        {
-            context.getWorkbenchFrame().warnUser(I18N.get("org.openjump.core.ui.plugin.layer.AddSIDLayerPlugIn.Error-See-Output-Window"));
-            context.getWorkbenchFrame().getOutputFrame().createNewDocument();
-            context.getWorkbenchFrame().getOutputFrame().addText("ShowFullPathPlugIn Exception:" + e.toString());
-            return false;
-        }
-    }
-    
-    private Envelope envelope(Collection geometries) {
-        Envelope envelope = new Envelope();
+  }
 
-        for (Iterator i = geometries.iterator(); i.hasNext();) {
-            Geometry geometry = (Geometry) i.next();
-            envelope.expandToInclude(geometry.getEnvelopeInternal());
-        }
-
-        return envelope;
+  public boolean execute(PlugInContext context) throws Exception {
+    try {
+      return true;
     }
-    
+    catch (Exception e) {
+      context
+          .getWorkbenchFrame()
+          .warnUser(
+              I18N.get("org.openjump.core.ui.plugin.layer.AddSIDLayerPlugIn.Error-See-Output-Window"));
+      context.getWorkbenchFrame().getOutputFrame().createNewDocument();
+      context.getWorkbenchFrame().getOutputFrame()
+          .addText("ShowFullPathPlugIn Exception:" + e.toString());
+      return false;
+    }
+  }
+
+  private Envelope envelope(Collection geometries) {
+    Envelope envelope = new Envelope();
+
+    for (Iterator i = geometries.iterator(); i.hasNext();) {
+      Geometry geometry = (Geometry) i.next();
+      envelope.expandToInclude(geometry.getEnvelopeInternal());
+    }
+
+    return envelope;
+  }
+
 }
-

@@ -180,7 +180,7 @@ public class EasyPanel extends JPanel {
 
   private void populatePopupMenu(WorkbenchContext context) {
     JMenuItem unsetter = new JMenuItem(UNSET_BUTTON);
-    unsetter.setIcon(IconLoader.icon("cross.png"));
+    unsetter.setIcon(IconLoader.icon("famfam/cross.png"));
     unsetter.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         menuItemActionPerformed(e);

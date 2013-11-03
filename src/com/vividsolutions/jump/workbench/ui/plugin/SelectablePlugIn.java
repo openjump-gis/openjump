@@ -42,14 +42,14 @@ import javax.swing.JComponent;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
+import com.vividsolutions.jump.workbench.plugin.CheckBoxed;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.ui.cursortool.editing.EditingPlugIn;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
-public class SelectablePlugIn extends AbstractPlugIn {
+public class SelectablePlugIn extends AbstractPlugIn implements CheckBoxed{
    
  
     public static final ImageIcon ICON = IconLoader.icon("SmallSelect.gif");

@@ -65,7 +65,7 @@ public class RasterImageContextMenu extends TitledPopupMenu {
     private RasterImageContextMenu(PlugInContext context) {
         super();
         
-        FeatureInstaller featureInstaller = context.getFeatureInstaller();
+//        FeatureInstaller featureInstaller = context.getFeatureInstaller();
         final WorkbenchFrame wbFrame = context.getWorkbenchFrame();
         
         this.addPopupMenuListener(new PopupMenuListener() {
@@ -80,104 +80,105 @@ public class RasterImageContextMenu extends TitledPopupMenu {
             }
         });
         
+        // [ede 11.2013] moved everything below into default-plugins.xml
         
-        ToggleRasterImageVisibility toggleRasterImageVisibility = new ToggleRasterImageVisibility(context.getWorkbenchContext());
-        this.addPopupMenuListener(toggleRasterImageVisibility);
-        featureInstaller.addPopupMenuItem(this,
-                toggleRasterImageVisibility, toggleRasterImageVisibility.getName(),
-                true, null, null);
+//        ToggleRasterImageVisibility toggleRasterImageVisibility = new ToggleRasterImageVisibility(context.getWorkbenchContext());
+//        this.addPopupMenuListener(toggleRasterImageVisibility);
+//        featureInstaller.addPopupMenuItem(this,
+//                toggleRasterImageVisibility, toggleRasterImageVisibility.getName(),
+//                true, null, null);
+//        
+//        MenuElement[] elements = this.getSubElements();
+//        JCheckBoxMenuItem menuItem = null;
+//        
+//        for (int i=0; i<elements.length; i++){
+//            if ( JCheckBoxMenuItem.class.isInstance(elements[i]) ){
+//                if ( ((JCheckBoxMenuItem)elements[i]).getText().startsWith(toggleRasterImageVisibility.getName()) ){
+//                    ((JCheckBoxMenuItem)elements[i]).setSelected(true);
+//                    menuItem = (JCheckBoxMenuItem)elements[i];
+//                }
+//            }
+//        }
+//        
+//        toggleRasterImageVisibility.setMenuItem(menuItem);
         
-        MenuElement[] elements = this.getSubElements();
-        JCheckBoxMenuItem menuItem = null;
-        
-        for (int i=0; i<elements.length; i++){
-            if ( JCheckBoxMenuItem.class.isInstance(elements[i]) ){
-                if ( ((JCheckBoxMenuItem)elements[i]).getText().startsWith(toggleRasterImageVisibility.getName()) ){
-                    ((JCheckBoxMenuItem)elements[i]).setSelected(true);
-                    menuItem = (JCheckBoxMenuItem)elements[i];
-                }
-            }
-        }
-        
-        toggleRasterImageVisibility.setMenuItem(menuItem);
-        
-        this.addSeparator(); // ===================
-        /*
-         * Giuseppe Aruta 2013_05_27 Add RasterImagePropertiesPlugIn
-         */
-        RasterImageLayerPropertiesPlugIn rasterImageLayerPropertiesPlugIn = new RasterImageLayerPropertiesPlugIn();
-        featureInstaller.addPopupMenuItem(this,
-        		rasterImageLayerPropertiesPlugIn , rasterImageLayerPropertiesPlugIn .getName() + "...", false,
-                rasterImageLayerPropertiesPlugIn.getIcon(),
-                null);
-               
-        ChangeRasterImagePropertiesPlugIn changeRasterImagePropertiesPlugIn = new ChangeRasterImagePropertiesPlugIn();
-        featureInstaller.addPopupMenuItem(this,
-                changeRasterImagePropertiesPlugIn, changeRasterImagePropertiesPlugIn.getName() + "...",
-                false, null, null);
-        
-        ExtractSelectedPartOfImage extractPartPlugIn = new ExtractSelectedPartOfImage();
-        featureInstaller.addPopupMenuItem(this,
-                extractPartPlugIn, extractPartPlugIn.getName() + "...", false,
-                //GUIUtil.toSmallIcon((ImageIcon) extractPartPlugIn.getIcon()),
-                null,
-                ExtractSelectedPartOfImage.createEnableCheck(context.getWorkbenchContext()));
-        
-        SaveRasterImageAsImagePlugIn saveRasterImageAsImagePlugIn = new SaveRasterImageAsImagePlugIn();
-        featureInstaller.addPopupMenuItem(this, 
-                saveRasterImageAsImagePlugIn, saveRasterImageAsImagePlugIn.getName() + "...",false,
-                null,SaveRasterImageAsImagePlugIn.createEnableCheck(context.getWorkbenchContext()));
-        
-        this.addSeparator(); // ===================
-        
-        ZoomToRasterImagePlugIn zoomToRasterImagePlugIn = new ZoomToRasterImagePlugIn();
-        featureInstaller.addPopupMenuItem(this, 
-                zoomToRasterImagePlugIn, zoomToRasterImagePlugIn.getName(),false,
-                null,null);
-        
-        this.addSeparator(); // ===================
-        
-        WarpImageToFencePlugIn warpImageToFencePlugIn = new WarpImageToFencePlugIn();
-        featureInstaller.addPopupMenuItem(this, 
-                warpImageToFencePlugIn, warpImageToFencePlugIn.getName() + "...",false,
-                null,WarpImageToFencePlugIn.createEnableCheck(context.getWorkbenchContext()));
-        
-        ExportEnvelopeAsGeometryPlugIn exportEnvelopeAsGeometryPlugIn = new ExportEnvelopeAsGeometryPlugIn();
-        featureInstaller.addPopupMenuItem(this, 
-                exportEnvelopeAsGeometryPlugIn, exportEnvelopeAsGeometryPlugIn.getName(),false,
-                null,null);
-        
-        this.addSeparator(); // ===================
-        
-        MoveLayerablePlugIn moveUpPlugIn = MoveLayerablePlugIn.UP;
-        featureInstaller.addPopupMenuItem(this, moveUpPlugIn,
-                moveUpPlugIn.getName() + "...", false, null, moveUpPlugIn.createEnableCheck(context.getWorkbenchContext()));
-        
-        MoveLayerablePlugIn moveDownPlugIn = MoveLayerablePlugIn.DOWN;
-        featureInstaller.addPopupMenuItem(this, moveDownPlugIn,
-                moveDownPlugIn.getName() + "...", false, null, moveDownPlugIn.createEnableCheck(context.getWorkbenchContext()));
-        
-        this.addSeparator(); // ===================
-        
-        CutSelectedRasterImageLayersPlugIn cutSelectedRasterImageLayersPlugIn = new CutSelectedRasterImageLayersPlugIn();
-        featureInstaller.addPopupMenuItem(this,
-                cutSelectedRasterImageLayersPlugIn, cutSelectedRasterImageLayersPlugIn.getName(), false, null,
-                cutSelectedRasterImageLayersPlugIn.createEnableCheck(context.getWorkbenchContext()));
-        
-        CopySelectedRasterImageLayersPlugIn copySelectedRasterImageLayersPlugIn = new CopySelectedRasterImageLayersPlugIn();
-        featureInstaller.addPopupMenuItem(this,
-                copySelectedRasterImageLayersPlugIn, copySelectedRasterImageLayersPlugIn.getName(), false, null,
-                copySelectedRasterImageLayersPlugIn.createEnableCheck(context.getWorkbenchContext()));
-        
-        PasteRasterImageLayersPlugIn pasteRasterImageLayersPlugIn = new PasteRasterImageLayersPlugIn();
-        featureInstaller.addPopupMenuItem(this,
-        		pasteRasterImageLayersPlugIn, pasteRasterImageLayersPlugIn.getName(), false, null,
-        		pasteRasterImageLayersPlugIn.createEnableCheck(context.getWorkbenchContext()));
-        
-        RemoveSelectedRasterImageLayersPlugIn removeSelectedLayersPlugIn = new RemoveSelectedRasterImageLayersPlugIn();
-        featureInstaller.addPopupMenuItem(this,
-                removeSelectedLayersPlugIn, removeSelectedLayersPlugIn.getName(), 
-                false, null, removeSelectedLayersPlugIn.createEnableCheck(context.getWorkbenchContext()));
+//        this.addSeparator(); // ===================
+//        /*
+//         * Giuseppe Aruta 2013_05_27 Add RasterImagePropertiesPlugIn
+//         */
+//        RasterImageLayerPropertiesPlugIn rasterImageLayerPropertiesPlugIn = new RasterImageLayerPropertiesPlugIn();
+//        featureInstaller.addPopupMenuItem(this,
+//        		rasterImageLayerPropertiesPlugIn , rasterImageLayerPropertiesPlugIn .getName() + "...", false,
+//                rasterImageLayerPropertiesPlugIn.getIcon(),
+//                null);
+//               
+//        ChangeRasterImagePropertiesPlugIn changeRasterImagePropertiesPlugIn = new ChangeRasterImagePropertiesPlugIn();
+//        featureInstaller.addPopupMenuItem(this,
+//                changeRasterImagePropertiesPlugIn, changeRasterImagePropertiesPlugIn.getName() + "...",
+//                false, null, null);
+//        
+//        ExtractSelectedPartOfImage extractPartPlugIn = new ExtractSelectedPartOfImage();
+//        featureInstaller.addPopupMenuItem(this,
+//                extractPartPlugIn, extractPartPlugIn.getName() + "...", false,
+//                //GUIUtil.toSmallIcon((ImageIcon) extractPartPlugIn.getIcon()),
+//                null,
+//                ExtractSelectedPartOfImage.createEnableCheck(context.getWorkbenchContext()));
+//        
+//        SaveRasterImageAsImagePlugIn saveRasterImageAsImagePlugIn = new SaveRasterImageAsImagePlugIn();
+//        featureInstaller.addPopupMenuItem(this, 
+//                saveRasterImageAsImagePlugIn, saveRasterImageAsImagePlugIn.getName() + "...",false,
+//                null,SaveRasterImageAsImagePlugIn.createEnableCheck(context.getWorkbenchContext()));
+//        
+//        this.addSeparator(); // ===================
+//        
+//        ZoomToRasterImagePlugIn zoomToRasterImagePlugIn = new ZoomToRasterImagePlugIn();
+//        featureInstaller.addPopupMenuItem(this, 
+//                zoomToRasterImagePlugIn, zoomToRasterImagePlugIn.getName(),false,
+//                null,null);
+//        
+//        this.addSeparator(); // ===================
+//        
+//        WarpImageToFencePlugIn warpImageToFencePlugIn = new WarpImageToFencePlugIn();
+//        featureInstaller.addPopupMenuItem(this, 
+//                warpImageToFencePlugIn, warpImageToFencePlugIn.getName() + "...",false,
+//                null,WarpImageToFencePlugIn.createEnableCheck(context.getWorkbenchContext()));
+//        
+//        ExportEnvelopeAsGeometryPlugIn exportEnvelopeAsGeometryPlugIn = new ExportEnvelopeAsGeometryPlugIn();
+//        featureInstaller.addPopupMenuItem(this, 
+//                exportEnvelopeAsGeometryPlugIn, exportEnvelopeAsGeometryPlugIn.getName(),false,
+//                null,null);
+//        
+//        this.addSeparator(); // ===================
+//        
+//        MoveLayerablePlugIn moveUpPlugIn = new MoveLayerablePlugIn.MoveLayerableUpPlugIn();
+//        featureInstaller.addPopupMenuItem(this, moveUpPlugIn,
+//                moveUpPlugIn.getName() + "...", false, null, moveUpPlugIn.createEnableCheck(context.getWorkbenchContext()));
+//        
+//        MoveLayerablePlugIn moveDownPlugIn = new MoveLayerablePlugIn.MoveLayerableDownPlugIn();
+//        featureInstaller.addPopupMenuItem(this, moveDownPlugIn,
+//                moveDownPlugIn.getName() + "...", false, null, moveDownPlugIn.createEnableCheck(context.getWorkbenchContext()));
+//        
+//        this.addSeparator(); // ===================
+//        
+//        CutSelectedRasterImageLayersPlugIn cutSelectedRasterImageLayersPlugIn = new CutSelectedRasterImageLayersPlugIn();
+//        featureInstaller.addPopupMenuItem(this,
+//                cutSelectedRasterImageLayersPlugIn, cutSelectedRasterImageLayersPlugIn.getName(), false, null,
+//                cutSelectedRasterImageLayersPlugIn.createEnableCheck(context.getWorkbenchContext()));
+//        
+//        CopySelectedRasterImageLayersPlugIn copySelectedRasterImageLayersPlugIn = new CopySelectedRasterImageLayersPlugIn();
+//        featureInstaller.addPopupMenuItem(this,
+//                copySelectedRasterImageLayersPlugIn, copySelectedRasterImageLayersPlugIn.getName(), false, null,
+//                copySelectedRasterImageLayersPlugIn.createEnableCheck(context.getWorkbenchContext()));
+//        
+//        PasteRasterImageLayersPlugIn pasteRasterImageLayersPlugIn = new PasteRasterImageLayersPlugIn();
+//        featureInstaller.addPopupMenuItem(this,
+//        		pasteRasterImageLayersPlugIn, pasteRasterImageLayersPlugIn.getName(), false, null,
+//        		pasteRasterImageLayersPlugIn.createEnableCheck(context.getWorkbenchContext()));
+//        
+//        RemoveSelectedRasterImageLayersPlugIn removeSelectedLayersPlugIn = new RemoveSelectedRasterImageLayersPlugIn();
+//        featureInstaller.addPopupMenuItem(this,
+//                removeSelectedLayersPlugIn, removeSelectedLayersPlugIn.getName(), 
+//                false, null, removeSelectedLayersPlugIn.createEnableCheck(context.getWorkbenchContext()));
     }
 
 }

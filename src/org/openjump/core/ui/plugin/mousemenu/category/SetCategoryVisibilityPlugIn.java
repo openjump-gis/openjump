@@ -9,7 +9,6 @@
  */
 package org.openjump.core.ui.plugin.mousemenu.category;
 
-import java.awt.CheckboxMenuItem;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,15 +20,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
-import javax.swing.MenuElement;
 
 import org.apache.log4j.Logger;
 import org.openjump.core.apitools.PlugInContextTools;
-
-import de.fho.jump.pirol.plugins.EditAttributeByFormula.EditAttributeByFormulaPlugIn;
-import de.fho.jump.pirol.utilities.debugOutput.DebugUserIds;
-import de.fho.jump.pirol.utilities.debugOutput.PersonalLogger;
-import de.fho.jump.pirol.utilities.plugIns.StandardPirolPlugIn;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -42,8 +35,8 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanel;
-import com.vividsolutions.jump.workbench.ui.LayerNamePanelListener;
 import com.vividsolutions.jump.workbench.ui.PopupNodeProxy;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 /**
@@ -69,7 +62,7 @@ public class SetCategoryVisibilityPlugIn extends AbstractPlugIn {
      * Constructor needed to load PlugIn from classes, should NOT be used by any other
      * code --> use getInstance() method instead!!
      */
-    private SetCategoryVisibilityPlugIn(){
+    public SetCategoryVisibilityPlugIn(){
         SetCategoryVisibilityPlugIn.instance = this;
     }
     
@@ -120,7 +113,7 @@ public class SetCategoryVisibilityPlugIn extends AbstractPlugIn {
 	}
     
     public Icon getIcon() {
-        return new ImageIcon(getClass().getResource("eye.png"));
+        return IconLoader.icon("eye.png");
     }
     
     public boolean execute(PlugInContext context) throws Exception {
