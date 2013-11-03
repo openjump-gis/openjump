@@ -52,7 +52,7 @@
   * can now read all geometries in a shapefile having more shapes in the .shp
     than records in the .dbf
 
-2013-08-20 ede, happy "German Unity Day" update
+2013-10-03 ede, happy "German Unity Day" update
   * general performance enhancement for Referenced Image loader, loading is as slow as before but scaling, panning etc. should be much faster
   * all Referenced Image readers selectable/visible in OpenFileWizard now
   * reactivating workbench with bigger Referenced Image visible does not freeze workbench anymore
