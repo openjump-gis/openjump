@@ -1,5 +1,18 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-11-03 ede - xmlize configuration commit
+  - moved pretty much all plugins from JUMPConf and OJConf 
+    into default-plugins.xml
+  - reworked WorkbenchPropertiesFile, WorkbenchProperties, PluginMgr, 
+    FeatureInstaller to allow menu reordering, separator inserting, 
+    renaming, moving, icon changing etc. via xml file definition
+  - some icon modifications
+  - place PLUS's Jump DBQuery plugin via xml properly in File menu, 
+    added nice icon
+  - lot's of minor mods to plugins so the integration into xml above 
+    went more smoothly (e.g. enable check adding, icon setting, 
+    adding missing constructors ...)
+
 2013-11-03
   * OpenFileWizard : deactivate setFiringEvents during file loading
     improves dramatically performance when loading many layers (ex.
