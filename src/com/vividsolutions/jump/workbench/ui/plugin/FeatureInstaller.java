@@ -46,6 +46,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
@@ -431,6 +432,11 @@ public class FeatureInstaller {
     if (!iconSetting.isEmpty())
       icon = IconLoader.icon(iconSetting);
 
+    // make sure the icon is max 16x16
+    if (icon != null && icon instanceof ImageIcon && icon.getIconHeight() > 16) {
+      icon = GUIUtil.resize((ImageIcon) icon, 16);
+    }
+    
     // add icon or get/add from Iconified interfaced plugin
     addMenuItemIcon(
         menuItem,
