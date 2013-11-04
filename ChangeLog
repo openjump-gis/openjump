@@ -1,5 +1,10 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-11-04 mmichaud <michael.michaud@free.fr>
+  * Add two plugins related to linear referencing :
+    - LinearReferencingOnLayerPlugIn
+    - LinearReferencingOnSelectionPlugIn
+
 2013-11-03 ede - xmlize configuration commit
   - moved pretty much all plugins from JUMPConf and OJConf 
     into default-plugins.xml
@@ -13,7 +18,7 @@
     went more smoothly (e.g. enable check adding, icon setting, 
     adding missing constructors ...)
 
-2013-11-03
+2013-11-03 mmichaud <michael.michaud@free.fr>
   * OpenFileWizard : deactivate setFiringEvents during file loading
     improves dramatically performance when loading many layers (ex.
     100 image files loaded in seconds instead of minutes - see ticket
