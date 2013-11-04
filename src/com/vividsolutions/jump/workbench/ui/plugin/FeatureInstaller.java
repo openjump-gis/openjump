@@ -433,7 +433,7 @@ public class FeatureInstaller {
       icon = IconLoader.icon(iconSetting);
 
     // make sure the icon is max 16x16
-    if (icon != null && icon instanceof ImageIcon && icon.getIconHeight() > 16) {
+    if (icon instanceof ImageIcon && icon.getIconHeight() > 16) {
       icon = GUIUtil.resize((ImageIcon) icon, 16);
     }
     

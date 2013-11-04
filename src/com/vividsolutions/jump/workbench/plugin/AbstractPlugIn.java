@@ -227,9 +227,9 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
       
     }
     // resize if requested (currently only one via height param)
-    if (icon!=null && icon instanceof ImageIcon
-          && dim!=null && icon.getIconHeight()!=dim.height ){
-      icon = GUIUtil.resize((ImageIcon)icon, dim.height);
+    if (icon instanceof ImageIcon && dim != null
+        && icon.getIconHeight() != dim.height) {
+      icon = GUIUtil.resize((ImageIcon) icon, dim.height);
     }
     
     return icon;
