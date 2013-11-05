@@ -1631,8 +1631,17 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
 		return noDataValue;
 	}
     
-  public void dispose() {
+    /**
+     * TODO: sstein test - 25.Sept.2013
+     * @return
+     */
+    public int getNumBands(){
+    	int numbands= this.image.getSampleModel().getNumBands();
+    	return numbands;
+    }
+    
+    public void dispose() {
     // TODO: probably a good idea to remove resources when the layer is closed up
     // dunno what is needed to clean up Sextante though, hence leave it for now
-  }
+    }
 }
