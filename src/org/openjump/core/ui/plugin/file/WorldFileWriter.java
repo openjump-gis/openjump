@@ -27,8 +27,15 @@ public class WorldFileWriter {
         double xres = view_res;   // pixel size in the x-direction in map units/pixel
         double yres = -view_res;  // pixel size in the y-direction in map units, almost always negative
         double halfPixel = 0.5 * view_res;
+        
+        ///Giuseppe Aruta (2013-11-6) 
+        ///Applied a patch for a better correction of half pixel displacement
+        /*
         double ulx = vpEnvelope.getMinX() + halfPixel;  // x-coordinate of the center of the upper left pixel
         double uly = vpEnvelope.getMaxY() - halfPixel;  // y-coordinate of the center of the upper left pixe
+        */       
+        double ulx = vpEnvelope.getMinX() + (xres/2);  // x-coordinate of the center of the upper left pixel
+        double uly = vpEnvelope.getMaxY() + (yres/2);  // y-coordinate of the center of the upper left pixe
                
     	PrintWriter outputStream = null;
           	
