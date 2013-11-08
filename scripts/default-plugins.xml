@@ -599,6 +599,12 @@
 	<plug-in>
 		org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn
 	</plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.generate.LinearReferencingOnLayerPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.generate.LinearReferencingOnSelectionPlugIn
+    </plug-in>
 
 	<!--- ========= WARP ==================== / -->
 	<plug-in>
