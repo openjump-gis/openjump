@@ -772,7 +772,7 @@ public class WorkbenchFrame extends JFrame
         updatingTitle = true;
         try {
           String newTitle = i.getTitle();
-          if (newTitle.charAt(0) == '*') {
+          if (newTitle.length() > 0 && newTitle.charAt(0) == '*') {
             newTitle = newTitle.substring(1);
           }
           if (!internalFrame.getLayerManager()
