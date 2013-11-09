@@ -369,12 +369,12 @@ public class ImageLayerManagerPlugIn extends AbstractPlugIn {
 
     private void loadImages() {
 
-      WorkbenchFrame workbenchFrame = context.getWorkbenchFrame();
-      WorkbenchContext workbenchContext = context.getWorkbenchContext();
+      final WorkbenchFrame workbenchFrame = context.getWorkbenchFrame();
+      final WorkbenchContext workbenchContext = context.getWorkbenchContext();
 
-      WizardDialog dialog = new WizardDialog(workbenchFrame, getName(),
+      final WizardDialog dialog = new WizardDialog(workbenchFrame, getName(),
           context.getErrorHandler());
-      OpenFileWizard wizard = new OpenFileWizard(workbenchContext,
+      final OpenFileWizard wizard = new OpenFileWizard(workbenchContext,
           ReferencedImageFactoryFileLayerLoader.class);
       wizard.setLayer((ReferencedImagesLayer) layer);
       // OpenReferencedImageWizard wizard = new
@@ -390,17 +390,23 @@ public class ImageLayerManagerPlugIn extends AbstractPlugIn {
       GUIUtil.centreOnWindow(dialog);
       dialog.setVisible(true);
       boolean result = dialog.wasFinishPressed();
-
+      // [mmichaud 2013-11-09] threading image loading makes it faster and more responsive
       try {
-        wizard.run(dialog,
-            new TaskMonitorDialog(workbenchFrame, context.getErrorHandler()));
+          Thread t = new Thread() {
+              public void run() {
+                  try {
+                    wizard.run(dialog,
+                          new TaskMonitorDialog(workbenchFrame, context.getErrorHandler()));
+                    updateImages();
+                    imagesPaths.setListData(images);
+                  } catch(Exception e) {throw new Error(e);}
+              }
+          };
+          t.start();
       } catch (Exception e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
       }
-
-      updateImages();
-      imagesPaths.setListData(images);
     }
 
     private class DeleteButtonListener implements ActionListener {

@@ -1,5 +1,12 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-11-09 mmichaud <michael.michaud@free.fr>
+  * OpenFileWizard : replaced LayerManager#setFiringEvents(false) by
+    LayerViewPanel#setDeferLayerEvents(true) to avoid side effects
+    (see #348)
+  * ImageLayerManagerPlugIn : now more responsive when 50 or more
+    images are loaded at the same time.
+
 2013-11-04 mmichaud <michael.michaud@free.fr>
   * Add two plugins related to linear referencing :
     - LinearReferencingOnLayerPlugIn
@@ -22,7 +29,7 @@
   * OpenFileWizard : deactivate setFiringEvents during file loading
     improves dramatically performance when loading many layers (ex.
     100 image files loaded in seconds instead of minutes - see ticket
-    #343)
+    #343) - see also fixed made on 2013-11-09
 
 2013-11-02 mmichaud <michael.michaud@free.fr>
   * LayerManager#dispose now set firingEvents to false before disposing
