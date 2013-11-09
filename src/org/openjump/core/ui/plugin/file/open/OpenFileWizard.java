@@ -144,10 +144,10 @@ public class OpenFileWizard extends AbstractWizardGroup {
   public void run(WizardDialog dialog, TaskMonitor monitor) throws Exception {
     chooseProjectPanel.activateSelectedProject();
     Set<File> openedFiles = new LinkedHashSet<File>();
-    boolean firingEventsBeforeLoading = workbenchContext.getLayerManager().isFiringEvents();
+    //boolean firingEventsBeforeLoading = workbenchContext.getLayerManager().isFiringEvents();
     try {
       monitor.allowCancellationRequests();
-      workbenchContext.getLayerManager().setFiringEvents(false);
+      //workbenchContext.getLayerManager().setFiringEvents(false);
       Map<URI, FileLayerLoader> fileLoaders = state.getFileLoaders();
       for (Entry<URI, FileLayerLoader> entry : fileLoaders.entrySet()) {
         URI uri = entry.getKey();
@@ -170,7 +170,7 @@ public class OpenFileWizard extends AbstractWizardGroup {
       }
     } finally {
       state = null;
-      workbenchContext.getLayerManager().setFiringEvents(firingEventsBeforeLoading);
+      //workbenchContext.getLayerManager().setFiringEvents(firingEventsBeforeLoading);
       OpenRecentPlugIn recentPlugin = OpenRecentPlugIn.get(workbenchContext);
       for (File file : openedFiles) {
         recentPlugin.addRecentFile(file);
