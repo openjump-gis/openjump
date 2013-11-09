@@ -37,6 +37,7 @@ import org.openjump.core.ui.plugin.datastore.AddDataStoreLayerWizard;
 //import org.openjump.core.ui.plugin.edittoolbox.DrawConstrainedPolygonPlugIn;
 //import org.openjump.core.ui.plugin.edittoolbox.RotateSelectedItemPlugIn;
 //import org.openjump.core.ui.plugin.edittoolbox.SelectOneItemPlugIn;
+import org.openjump.core.ui.plugin.datastore.AddWritableDataStoreLayerWizard;
 import org.openjump.core.ui.plugin.file.DataSourceQueryChooserOpenWizard;
 //import org.openjump.core.ui.plugin.file.FileDragDropPlugin;
 //import org.openjump.core.ui.plugin.file.OpenFilePlugIn;
@@ -589,6 +590,11 @@ public class OpenJumpConfiguration {
     AddRasterImageLayerWizard addRasterImageLayerWizard = new AddRasterImageLayerWizard(
         workbenchContext);
     OpenWizardPlugIn.addWizard(workbenchContext, addRasterImageLayerWizard);
+
+    // [mmichaud 2013-11-08] add new AddWritableDataStoreLayerWizard
+      AddWritableDataStoreLayerWizard addWritableDataStoreLayerWizard = new AddWritableDataStoreLayerWizard(
+              workbenchContext);
+      OpenWizardPlugIn.addWizard(workbenchContext, addWritableDataStoreLayerWizard);
     
     // [mmichaud 2012-09-01] changed how RasterImageLayerRendererFactory is initialized to fix bug 3526653
     RenderingManager.setRendererFactory(RasterImageLayer.class, new RasterImageLayerRendererFactory()); 

@@ -6,6 +6,8 @@
     (see #348)
   * ImageLayerManagerPlugIn : now more responsive when 50 or more
     images are loaded at the same time.
+  * Add new PostGIS driver with read/write capabilities (transaction
+    management).
 
 2013-11-04 mmichaud <michael.michaud@free.fr>
   * Add two plugins related to linear referencing :
