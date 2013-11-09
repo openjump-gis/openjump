@@ -251,6 +251,13 @@ public class PostGISQueryUtil {
 		else writer = dimension==3? WRITER3D : WRITER2D;
 		return writer.write(geom);
 	}
+
+    public static byte[] getByteArrayFromGeometry(Geometry geom, int srid, int dimension) {
+        WKBWriter writer;
+        geom.setSRID(srid);
+        writer = dimension==3? WRITER3D_SRID : WRITER2D_SRID;
+        return writer.write(geom);
+    }
     
     
     /**
