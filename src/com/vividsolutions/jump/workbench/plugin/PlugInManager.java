@@ -126,18 +126,25 @@ public class PlugInManager {
           + secondsSinceString(start) + "s");
     }
 
-    private void loadConfigurations() throws Exception {
+    private void loadConfigurations() {
       PlugInContext pc = context.createPlugInContext();
       for (Iterator i = configurations.iterator(); i.hasNext();) {
         Configuration configuration = (Configuration) i.next();
         monitor.report(LOADING + " " + name(configuration) + " "
             + version(configuration));
         long start = secondsSince(0);
-        configuration.configure(pc);
-        System.out
-            .println("Loading " + name(configuration) + " "
-                + version(configuration) + " took " + secondsSinceString(start)
-                + "s");
+        try {
+          configuration.configure(pc);
+          System.out
+          .println("Loading " + name(configuration) + " "
+              + version(configuration) + " took " + secondsSinceString(start)
+              + "s");
+        }
+        catch (Throwable e) {
+          context.getErrorHandler().handleThrowable(e);
+          context.getWorkbench().getFrame()
+              .log(configuration.getClass().getName() + " " + NOT_INITIALIZED, this.getClass());
+        }
       }
     }
     
@@ -156,6 +163,7 @@ public class PlugInManager {
           continue;
         
         monitor.report(LOADING + " " + className);
+
         Class plugInClass = null;
         try {
           long start = secondsSince(0);
@@ -201,7 +209,6 @@ public class PlugInManager {
           // register shortcuts of plugins
           AbstractPlugIn.registerShortcuts(plugIn);
           
-          
           context
               .getWorkbench()
               .getFrame()
@@ -209,11 +216,10 @@ public class PlugInManager {
                   "Loading " + className + " took " + secondsSinceString(start)
                       + "s");
           
-        } catch (Exception e) {
+        } catch (Throwable e) {
           context.getErrorHandler().handleThrowable(e);
           context.getWorkbench().getFrame()
               .log(className + " " + NOT_INITIALIZED, this.getClass());
-          e.printStackTrace();
         }
       }
     }
@@ -243,26 +249,22 @@ public class PlugInManager {
         return "";
     }
 
-    private Collection findConfigurations(List classes) throws Exception {
-        ArrayList configurations = new ArrayList();
-        for (Iterator i = classes.iterator(); i.hasNext();) {
-            Class c = (Class) i.next();
-            /*if ( c.newInstance() instanceof Configuration ) { //(!Configuration.class.isAssignableFrom(c)) {
-                continue;
-            }*/
-            //LOG.debug(FOUND + " " + c.getName());
-            //System.out.println(FOUND + " " + c.getName());
-            //monitor.report(FOUND + " " + c.getName());
-            try {
-              Configuration configuration = (Configuration) c.newInstance();
-              configurations.add(configuration);              
-            }
-            // well, no extension then ;)
-            catch (Exception e) {}
-            //monitor.report(LOADING + " " + name(configuration) + " "
-            //        + version(configuration));
+    /**
+     * filter all Configurations from a list of Class objects
+     * @param classes
+     * @return
+     * @throws Exception
+     */
+    private Collection findConfigurations(List<Class> classes) throws Exception {
+      ArrayList configurations = new ArrayList();
+      for (Iterator i = classes.iterator(); i.hasNext();) {
+        Class c = (Class) i.next();
+        if ( Configuration.class.isAssignableFrom(c) ) {
+          Configuration configuration = (Configuration) c.newInstance();
+          configurations.add(configuration);
         }
-        return configurations;
+      }
+      return configurations;
     }
 
     FileFilter jarfilter = new FileFilter(){
