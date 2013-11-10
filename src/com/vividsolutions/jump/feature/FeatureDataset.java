@@ -196,13 +196,6 @@ public class FeatureDataset implements FeatureCollection, Serializable {
             }            
         }
     }
-
-    /*public void removeAll(Collection features) {
-        System.out.println("debut removeAll:"+System.currentTimeMillis());
-        this.features.removeAll(features);
-        invalidateEnvelope();
-        System.out.println("  fin removeAll:"+System.currentTimeMillis());
-    }*/
     
     // [michaudm 2009-05-16] creating a map on the fly improves dramatically
     // the removeAll performance if c is large

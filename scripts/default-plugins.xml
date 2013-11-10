@@ -1004,6 +1004,12 @@
 			<layername-popup install="true" />
 		</menus>
 	</plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.datastore.postgis2.SaveToPostGISPlugIn
+        <menus>
+            <layername-popup install="true" />
+        </menus>
+    </plug-in>
 	<plug-in>
 		com.vividsolutions.jump.workbench.ui.plugin.MoveLayerablePlugIn$MoveLayerableUpPlugIn
 		<menus>
@@ -1448,6 +1454,11 @@
 		org.openjump.core.ui.plugin.edittoolbox.FillPolygonPlugIn
 	</plug-in>
 
+
+    <!-- ================ Toolbar ================================== -->
+    <plug-in>
+        org.openjump.core.ui.plugin.datastore.transaction.DataStoreTransactionManagerPlugIn
+    </plug-in>
 
 </workbench>
 

@@ -59,7 +59,32 @@
             <param name="ConversionPattern" value="%d{ABSOLUTE} %5p (%F:%M:%L) - %m%n"/>
         </layout>
     </appender>
-    
+
+
+    <!-- ===================================== -->
+    <!-- Messages related to database transactions -->
+    <!-- ===================================== -->
+
+    <appender name="DB_LOGFILE" class="org.apache.log4j.FileAppender">
+        <param name="Threshold" value="trace"/>
+        <param name="File" value="${log.dir}openjump_db.log"/>
+        <param name="Append" value="false"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <!-- Date     : %d{ABSOLUTE} display date in HH:mm:ss,SSS format -->
+            <!-- Priority : %p display the priority level                    -->
+            <!-- Source   : (%F:%M:%L) File, Method, Line (warning:slow)     -->
+            <!-- Message  : %m%n displays the log message (%n = newline)     -->
+            <param name="ConversionPattern" value="%d{ABSOLUTE} %5p (%F:%M:%L) - %m%n"/>
+        </layout>
+    </appender>
+
+    <logger name="org.openjump.core.ui.plugin.datastore">
+        <level value="trace"/>
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="DB_LOGFILE"/>
+    </logger>
+
+
     <!-- ===================================== -->
     <!-- Send messages to Chainsaw application -->
     <!-- ===================================== -->

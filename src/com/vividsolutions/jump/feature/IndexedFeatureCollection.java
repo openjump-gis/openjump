@@ -82,8 +82,7 @@ public class IndexedFeatureCollection extends FeatureCollectionWrapper {
     }
 
     public List query(Envelope env) {
-        //System.out.println("FC size = " + base.size());
-        //System.out.println("Quadtree size = " + quadtreeIndex.size());
+
         // index query returns list of *potential* overlaps (e.g. it is a primary filter)
         List candidate = spatialIndex.query(env);
 
