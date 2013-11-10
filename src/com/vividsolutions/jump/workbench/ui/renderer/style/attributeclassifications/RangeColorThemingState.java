@@ -101,7 +101,6 @@ public class RangeColorThemingState implements ColorThemingStylePanel.State {
         double range = max-min;
         for (int i = 0 ; i < maxFilteredSize ; i++) {
             double threshold = min + range*i/maxFilteredSize;
-            System.out.println("  threshold: " + threshold);
             if (attributeValues.first() instanceof Double) {
                 // [mmichaud 2013-11-10] se discussion about #347
                 //filteredValues.add(attributeValues.tailSet(new Double(threshold)).first());
