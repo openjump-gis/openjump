@@ -2,6 +2,7 @@
 
 2013-11-10 mmichaud <michael.michaud@free.fr>
   * Fix #347 about RangeColorTheming (aka equal intervals)
+  * Fix #340 JTreeLayerName can now autoscroll when layers are moved up or down
 
 2013-11-09 mmichaud <michael.michaud@free.fr>
   * OpenFileWizard : replaced LayerManager#setFiringEvents(false) by

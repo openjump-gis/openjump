@@ -53,15 +53,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTree;
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
-import javax.swing.ToolTipManager;
+import javax.swing.*;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
@@ -490,6 +482,15 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
     scrollPane.setBorder(BorderFactory.createEtchedBorder());
     scrollPane.getViewport().add(tree);
     this.add(scrollPane, BorderLayout.CENTER);
+
+    // [mmichaud 2013-11-10] Makes the TreeLayerName auto-scrollable
+    tree.addMouseMotionListener(new MouseMotionAdapter() {
+        @Override
+        public void mouseDragged(MouseEvent e) {
+            Rectangle r = new Rectangle(e.getX(), e.getY(), 1, 1);
+            ((JComponent)e.getSource()).scrollRectToVisible(r);
+        }
+    });
   }
 
   void tree_mouseReleased(MouseEvent e) {
