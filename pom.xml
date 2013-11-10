@@ -809,7 +809,7 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-compress</artifactId>
-      <version>1.6</version>
+      <version>1.6-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.tukaani</groupId>
