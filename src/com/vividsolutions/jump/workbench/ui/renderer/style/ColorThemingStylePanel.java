@@ -941,9 +941,10 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         }
         stopCellEditing();
         tableModel().clear();
+        Collection filteredAttributeValues = filteredAttributeValues();
         tableModel().setMaps(
-                toAttributeValueToBasicStyleMap(filteredAttributeValues()),
-                toAttributeValueToLabelMap(filteredAttributeValues()));
+                toAttributeValueToBasicStyleMap(filteredAttributeValues),
+                toAttributeValueToLabelMap(filteredAttributeValues));
         tableModel().sort(tableModel().wasLastSortAscending());
         applyColorScheme();
     }

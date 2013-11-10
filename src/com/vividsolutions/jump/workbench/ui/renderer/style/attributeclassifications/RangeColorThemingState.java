@@ -68,18 +68,24 @@ import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStylePane
 import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingTableModel.AttributeValueTableModelEvent;
 
 public class RangeColorThemingState implements ColorThemingStylePanel.State {
+
     private ColorThemingStylePanel stylePanel;
+
     private static final String RANGE_COUNT_KEY =
         RangeColorThemingState.class.getName() + " - RANGE COUNT";
+
     public String getAllOtherValuesDescription() {
         return I18N.get("ui.renderer.style.RangeColorThemingState.values-below-these-values");
     }
+
     public String getAttributeValueColumnTitle() {
         return I18N.get("ui.renderer.style.RangeColorThemingState.minimum-attribute-values");
     }
+
     private int getRangeCount() {
         return ((Integer) comboBox.getSelectedItem()).intValue();
     }
+
     public Collection filterAttributeValues(SortedSet attributeValues) {
         //-1 because one row in the table is reserved for "all other values". [Jon Aquino]
         int maxFilteredSize = getRangeCount() - 1;
@@ -95,20 +101,22 @@ public class RangeColorThemingState implements ColorThemingStylePanel.State {
         double range = max-min;
         for (int i = 0 ; i < maxFilteredSize ; i++) {
             double threshold = min + range*i/maxFilteredSize;
+            System.out.println("  threshold: " + threshold);
             if (attributeValues.first() instanceof Double) {
-                filteredValues.add(attributeValues.tailSet(new Double(threshold)).first());
+                // [mmichaud 2013-11-10] se discussion about #347
+                //filteredValues.add(attributeValues.tailSet(new Double(threshold)).first());
+                filteredValues.add(new Double(threshold));
             }
             else if (attributeValues.first() instanceof Integer) {
-                filteredValues.add(attributeValues.tailSet(new Integer((int)threshold)).first());
+                // [mmichaud 2013-11-10] se discussion about #347
+                //filteredValues.add(attributeValues.tailSet(new Integer((int)threshold)).first());
+                filteredValues.add(new Integer((int)threshold));
             }
             else {}
         }
-        //CollectionUtil.stretch(
-        //    attributeValueList,
-        //    filteredValues,
-        //    maxFilteredSize);
         return filteredValues;
     }
+
     private JPanel panel = new JPanel(new GridBagLayout()) {
         public void setEnabled(boolean enabled) {
             comboBox.setEnabled(enabled);
@@ -184,7 +192,9 @@ public class RangeColorThemingState implements ColorThemingStylePanel.State {
             }
         });
     }
+
     private JButton reverseButton = new JButton(I18N.get("ui.renderer.style.RangeColorThemingState.reverse-colors"));
+
     private void addComboBoxItems() {
         int maxColorSchemeSize = -1;
         for (Iterator i = ColorScheme.rangeColorSchemeNames().iterator();
@@ -203,12 +213,17 @@ public class RangeColorThemingState implements ColorThemingStylePanel.State {
             comboBoxModel.addElement(new Integer(i));
         }
     }
+
     private DefaultComboBoxModel comboBoxModel = new DefaultComboBoxModel();
+
     private JComboBox comboBox = new JComboBox(comboBoxModel);
+
     private JLabel label = new JLabel(I18N.get("ui.renderer.style.RangeColorThemingState.range-count"));
+
     public JComponent getPanel() {
         return panel;
     }
+
     public Map fromExternalFormat(Map attributeValueToObjectMap) {
         //Table takes values, not ranges. [Jon Aquino]
         TreeMap newMap = new TreeMap();
@@ -222,6 +237,7 @@ public class RangeColorThemingState implements ColorThemingStylePanel.State {
         }
         return newMap;
     }
+
     public Map toExternalFormat(Map attributeValueToObjectMap) {
         if (attributeValueToObjectMap.isEmpty()) {
             return attributeValueToObjectMap;
@@ -255,6 +271,7 @@ public class RangeColorThemingState implements ColorThemingStylePanel.State {
             attributeValueToObjectMap.get(previousValue));
         return newMap;
     }
+
     public void applyColorScheme(ColorScheme colorScheme) {
         stylePanel.tableModel().apply(
             new ColorScheme(
@@ -265,9 +282,11 @@ public class RangeColorThemingState implements ColorThemingStylePanel.State {
                     stylePanel.tableModel().getRowCount())),
             false);
     }
+
     public Collection getColorSchemeNames() {
         return ColorScheme.rangeColorSchemeNames();
     }
+
     private TableModelListener tableModelListener = new TableModelListener() {
         public void tableChanged(TableModelEvent e) {
             if (e
@@ -279,6 +298,7 @@ public class RangeColorThemingState implements ColorThemingStylePanel.State {
             }
         }
     };
+
     private int row(Object attributeValue) {
         for (int i = 0; i < stylePanel.tableModel().getRowCount(); i++) {
             Object otherAttributeValue =
@@ -296,14 +316,17 @@ public class RangeColorThemingState implements ColorThemingStylePanel.State {
         Assert.shouldNeverReachHere();
         return -1;
     }
+
     public void activate() {
         stylePanel.tableModel().addTableModelListener(tableModelListener);
     }
+
     public void deactivate() {
         stylePanel.tableModel().removeTableModelListener(tableModelListener);
     }
 
     private boolean reversingColorScheme = false;
+
     public ColorScheme filterColorScheme(ColorScheme colorScheme) {
         if (!reversingColorScheme) {
             return colorScheme;

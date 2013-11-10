@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-11-10 mmichaud <michael.michaud@free.fr>
+  * Fix #347 about RangeColorTheming (aka equal intervals)
+
 2013-11-09 mmichaud <michael.michaud@free.fr>
   * OpenFileWizard : replaced LayerManager#setFiringEvents(false) by
     LayerViewPanel#setDeferLayerEvents(true) to avoid side effects
