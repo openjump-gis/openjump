@@ -656,23 +656,10 @@
   </build>
   <repositories>
     <repository>
-      <id>refractions</id>
-      <name>Refractions Research Maven 2 Repository</name>
-      <url>http://lists.refractions.net/m2</url>
-    </repository>
-    <repository>
       <id>maven central</id>
       <name>Central Maven 2 Repository</name>
       <url>http://central.maven.org/maven2</url>
     </repository>
-    <!--repository>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <id>geotools</id>
-      <name>Geotools repository</name>
-      <url>http://maven.geotools.fr/repository</url>
-    </repository-->
     <repository>
       <id>cam</id>
       <name>Cambridge Maven 2 Repository</name>
@@ -681,7 +668,7 @@
     <repository>
       <id>openjump</id>
       <name>OpenJUMP Maven 2 Repository</name>
-      <url>http://jump-pilot.svn.sourceforge.net/svnroot/jump-pilot/maven-repository/</url>
+      <url>http://jump-pilot.sourceforge.net/repository/</url>
     </repository>
     <repository>
       <id>mvn-adamgent</id>
@@ -822,7 +809,7 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-compress</artifactId>
-      <version>1.6-SNAPSHOT</version>
+      <version>1.6</version>
     </dependency>
     <dependency>
       <groupId>org.tukaani</groupId>
