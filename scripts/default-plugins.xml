@@ -1005,10 +1005,7 @@
 		</menus>
 	</plug-in>
     <plug-in>
-        org.openjump.core.ui.plugin.datastore.postgis2.SaveToPostGISPlugIn
-        <menus>
-            <layername-popup install="true" />
-        </menus>
+        org.openjump.core.ui.plugin.datastore.postgis2.SaveToPostGIS2PlugIn
     </plug-in>
 	<plug-in>
 		com.vividsolutions.jump.workbench.ui.plugin.MoveLayerablePlugIn$MoveLayerableUpPlugIn
