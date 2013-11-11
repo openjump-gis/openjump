@@ -9,7 +9,7 @@ import org.openjump.core.ui.plugin.datastore.WritableDataStoreDataSource;
  * This plugin is a write-only driver for a data source backed by an PostGIS
  * database.
  */
-public class SaveToPostGISPlugIn implements PlugIn {
+public class SaveToPostGIS2PlugIn implements PlugIn {
 
     private PostGISSaveDataSourceQueryChooser saveChooser;
 

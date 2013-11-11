@@ -151,9 +151,7 @@ public class AddWritableDataStoreLayerWizard extends AbstractWizardGroup {
             layerManager.setFiringEvents(true); // added by michaudm on 2009-04-05
         }
         finally {layerManager.setFiringEvents(true);}
-        //DataStoreTransactionManager txManager = DataStoreTransactionManager.getTransactionManager(workbenchContext.getTask());
         DataStoreTransactionManager.getTransactionManager().registerLayer(layer, workbenchContext.getTask());
-        //txManager.addLayer(layer);
         return layer;
     }
 

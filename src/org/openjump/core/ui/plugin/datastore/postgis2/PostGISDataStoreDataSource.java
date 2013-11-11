@@ -48,7 +48,7 @@ public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
 
     //@TODO This method needs to be decomposed and cleaned
     protected FeatureCollection createFeatureCollection() throws Exception {
-
+        LOG.debug("createFeatureCollection()");
         ConnectionDescriptor connectionDescriptor =
                 (ConnectionDescriptor)getProperties().get(CONNECTION_DESCRIPTOR_KEY);
 
@@ -105,9 +105,7 @@ public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
         FeatureInputStream featureInputStream = null;
         FeatureDataset featureDataset = null;
         try {
-            LOG.debug("Connection opened: " + !conn.isClosed());
-            featureInputStream = ConnectionManager.instance(context)
-                    .getOpenConnection(connectionDescriptor).execute(adhocQuery);
+            featureInputStream = pgConnection.execute(adhocQuery);
             featureDataset = new FeatureDataset(featureInputStream.getFeatureSchema());
             featureDataset.getFeatureSchema().setExternalPrimaryKeyIndex(
                     featureDataset.getFeatureSchema().getAttributeIndex(PK)

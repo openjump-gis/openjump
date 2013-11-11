@@ -11,6 +11,7 @@ import com.vividsolutions.jump.datastore.postgis.PostgisDataStoreDriver;
 import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.io.FeatureInputStream;
 import com.vividsolutions.jump.io.datasource.Connection;
+import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.parameter.ParameterList;
 import com.vividsolutions.jump.parameter.ParameterListSchema;
 import com.vividsolutions.jump.task.TaskMonitor;
@@ -23,7 +24,9 @@ import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.ui.plugin.datastore.DataStoreDataSource;
 import org.apache.log4j.Logger;
 import org.openjump.core.ui.plugin.datastore.postgis.PostGISConnectionUtil;
-import org.openjump.core.ui.plugin.datastore.postgis.PostGISQueryUtil;import org.openjump.core.ui.plugin.datastore.transaction.Evolution;
+import org.openjump.core.ui.plugin.datastore.postgis.PostGISQueryUtil;
+import org.openjump.core.ui.plugin.datastore.transaction.DataStoreTransactionManager;
+import org.openjump.core.ui.plugin.datastore.transaction.Evolution;
 import org.openjump.core.ui.plugin.datastore.transaction.EvolutionOperationException;
 
 import javax.swing.*;
@@ -218,68 +221,6 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
     public abstract void finalizeUpdate(java.sql.Connection conn,
             String quotedSchemaName, String quotedTableName) throws Exception;
 
-    /*
-    protected FeatureCollection createFeatureCollection() throws Exception {
-
-        ConnectionDescriptor connectionDescriptor =
-                (ConnectionDescriptor)getProperties().get(CONNECTION_DESCRIPTOR_KEY);
-
-        // Schema name, table name and geometry column name are needed
-        // to get the database srid associated to this FeatureCollection
-        String[] fullName = PostGISQueryUtil.splitTableName((String)getProperties().get(DATASET_NAME_KEY));
-        String schemaName = fullName[0];
-        String tableName = fullName[1];
-        String geometryColumn = (String)getProperties().get(GEOMETRY_ATTRIBUTE_NAME_KEY);
-
-        PostgisDSConnection pgConnection =
-                (PostgisDSConnection)new PostgisDataStoreDriver()
-                        .createConnection(connectionDescriptor.getParameterList());
-        java.sql.Connection conn = pgConnection.getConnection();
-        int table_srid = getTableSRID(conn, schemaName, tableName, geometryColumn);
-
-        // Set the query string, including extension restriction if needed
-        boolean limited_to_view = (Boolean)getProperties().get(LIMITED_TO_VIEW);
-        String extent = limited_to_view ? " AND (\"" + geometryColumn + "\" && ST_GeomFromText('" +
-                getViewEnvelope().toText() + "'," + table_srid + "))" : "";
-        String whereClause = (String)getProperties().get(WHERE_CLAUSE_KEY);
-        whereClause = (whereClause == null || whereClause.length() == 0) ? "true" : "(" + whereClause + ")";
-        String query = "SELECT * FROM \"" + unquote((String)getProperties().get(DATASET_NAME_KEY)) + "\" WHERE " + whereClause + extent + ";";
-        LOG.debug(query);
-
-        AdhocQuery adhocQuery = new AdhocQuery(query);
-        String PK = (String)getProperties().get(EXTERNAL_ID_KEY);
-        if (getProperties().get(EXTERNAL_ID_KEY) != null) {
-            adhocQuery.setPrimaryKey(PK);
-        }
-
-        FeatureInputStream featureInputStream = null;
-        FeatureDataset featureDataset = null;
-        try {
-            featureInputStream = ConnectionManager.instance(context)
-                    .getOpenConnection(connectionDescriptor).execute(adhocQuery);
-            featureDataset = new FeatureDataset(featureInputStream.getFeatureSchema());
-            featureDataset.getFeatureSchema().setExternalPrimaryKeyIndex(
-                    featureDataset.getFeatureSchema().getAttributeIndex(PK)
-            );
-            while (featureInputStream.hasNext()) {
-                featureDataset.add( featureInputStream.next() );
-            }
-            return featureDataset;
-        }
-        catch(Exception e) {
-            context.getWorkbench().getFrame().handleThrowable(e);
-            featureDataset = new FeatureDataset(new FeatureSchema());
-        }
-        finally {
-            if (featureInputStream != null) {
-                try {featureInputStream.close();}
-                catch(Exception e){}
-            }
-        }
-        return featureDataset;
-
-    }
-    */
 
     private void commit(java.sql.Connection conn, String dbSchema, String dbTable,
                         String keyName, int srid, int dim) throws Exception {
@@ -532,10 +473,19 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
     protected abstract void addDBPrimaryKey(java.sql.Connection conn, String dbSchema,
                                  String dbTable, String primaryKey) throws SQLException;
 
+    // @TODO Bad design : it should be possible to do this kind of post-processing
+    // in the loader (where layer name is known rather than in the datasource)
     private void reloadDataFromDataStore(Connection conn, TaskMonitor monitor) throws Exception {
         Layer[] selectedLayers = JUMPWorkbench.getInstance().getContext().getLayerNamePanel().getSelectedLayers();
         if (selectedLayers != null && selectedLayers.length == 1) {
             selectedLayers[0].setFeatureCollection(conn.executeQuery(null, monitor));
+            // We connect to a new table : create the transaction manager to listen to it
+            //if ((Boolean)getProperties().get(WritableDataStoreDataSource.CREATE_TABLE)) {
+            //    selectedLayers[0].setDataSourceQuery(new DataSourceQuery(this, null, selectedLayers[0].getName()));
+            //    DataStoreTransactionManager.getTransactionManager().registerLayer(selectedLayers[0],
+            //        JUMPWorkbench.getInstance().getContext().getTask());
+            //    getProperties().put(CREATE_TABLE, false);
+            //}
         }
     }
 
