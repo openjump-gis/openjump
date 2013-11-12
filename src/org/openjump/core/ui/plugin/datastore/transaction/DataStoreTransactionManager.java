@@ -49,6 +49,7 @@ public class DataStoreTransactionManager {
             task.getLayerManager().addLayerListener(getLayerListener());
         }
         registeredLayers.put(layer, task);
+        LOG.info("Register layer '" + layer.getName() + "' (" + task.getName() + ") in the DataStoreTransactionManager");
     }
 
     private boolean containsLayerManager(Task task) {
@@ -120,7 +121,13 @@ public class DataStoreTransactionManager {
             }
             public void layerChanged(LayerEvent e) {
                 if (e.getType() == LayerEventType.REMOVED) {
+                    if (e.getLayerable() instanceof Layer && ((Layer) e.getLayerable()).getDataSourceQuery() != null) {
+                        if (((Layer) e.getLayerable()).getDataSourceQuery().getDataSource() instanceof WritableDataStoreDataSource) {
+                            ((WritableDataStoreDataSource)((Layer) e.getLayerable()).getDataSourceQuery().getDataSource()).getUncommittedEvolutions().clear();
+                        }
+                    }
                     registeredLayers.remove(e.getLayerable());
+                    LOG.info("Unregister layer " + e.getLayerable().getName() + " from the DataStoreTransactionManager");
                 }
             }
         };
@@ -153,6 +160,10 @@ public class DataStoreTransactionManager {
         DataSource source = layer.getDataSourceQuery().getDataSource();
         if (source instanceof WritableDataStoreDataSource) {
             WritableDataStoreDataSource writableSource = (WritableDataStoreDataSource)source;
+            // @TODO rework how CREATE_TABLE property is managed
+            // CREATE_TABLE should have been turned to off before, but I could not make it work
+            // (see also WritableDataStoreDataSource#reloadDataFromDataStore)
+            source.getProperties().put(WritableDataStoreDataSource.CREATE_TABLE, false);
             try {
                 LOG.info("Commit layer \"" + layer.getName() + "\"");
                 writableSource.getConnection().executeUpdate(null,layer.getFeatureCollectionWrapper(), new DummyTaskMonitor());

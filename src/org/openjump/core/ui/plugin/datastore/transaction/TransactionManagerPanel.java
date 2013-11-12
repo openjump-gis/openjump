@@ -97,14 +97,13 @@ public class TransactionManagerPanel extends JPanel  implements WorkbenchContext
 
         this.add(panel);
 
-        updateListener(context.getTask());
+        //updateListener(context.getTask());
     }
 
     /**
-     * Remove the layerListener displaying all feature events in the text area
-     * create a new one and add it to the current TaskFrame.
-     * This method ensure all current TaskFrame listen to feature events, even
-     * if a new Task has been created since the plugin initialization or execution.
+     * Remove the layerListener displaying feature events in the text area
+     * create a new one and add it to the TaskFrame associated to task.
+     * This method keep TransactionManagerPanel in sync with current TaskFrame.
      */
     public void updateListener(final Task task) {
         if (task == null) return;
@@ -135,7 +134,9 @@ public class TransactionManagerPanel extends JPanel  implements WorkbenchContext
         };
         for (JInternalFrame iframe : JUMPWorkbench.getInstance().getFrame().getInternalFrames()) {
             if (iframe instanceof TaskFrame) {
-                ((TaskFrame)iframe).getTask().getLayerManager().addLayerListener(layerListener);
+                if (((TaskFrame)iframe).getTask() == task) {
+                    ((TaskFrame)iframe).getTask().getLayerManager().addLayerListener(layerListener);
+                }
             }
         }
         updateTextArea(task);
@@ -146,9 +147,10 @@ public class TransactionManagerPanel extends JPanel  implements WorkbenchContext
         for (Layer layer : transactionManager.getLayers()) {
             // @TODO is it safe to use != ?
             if (transactionManager.getTask(layer) != task) continue;
-            if (layer.getDataSourceQuery().getDataSource() instanceof WritableDataStoreDataSource) {
+            DataSource source = layer.getDataSourceQuery().getDataSource();
+            if (source instanceof WritableDataStoreDataSource) {
                 int c = 0, m = 0, s = 0;
-                for (Evolution evo : ((WritableDataStoreDataSource)layer.getDataSourceQuery().getDataSource()).getUncommittedEvolutions()) {
+                for (Evolution evo : ((WritableDataStoreDataSource)source).getUncommittedEvolutions()) {
                     if (evo.getType() == Evolution.Type.CREATION) c++;
                     if (evo.getType() == Evolution.Type.SUPPRESSION) s++;
                     if (evo.getType() == Evolution.Type.MODIFICATION) m++;

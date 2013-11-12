@@ -62,7 +62,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
     public static final String CREATE_TABLE      = "Create table";
     public static final String CREATE_PK         = "Create PK";
 
-    final static public String DEFAULT_PK_NAME   = "dbid";
+    final static public String DEFAULT_PK_NAME   = "gid";
 
     // Ordered Map of evolutions
     // Map is indexed by FID in order to merge successive evolutions of a feature efficiently
@@ -161,7 +161,8 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                 java.sql.Connection conn = pgConnection.getConnection();
                 try {
                     conn.setAutoCommit(false);
-                    if ((Boolean)getProperties().get(WritableDataStoreDataSource.CREATE_TABLE)) {
+                    if ((Boolean)getProperties().get(CREATE_TABLE)) {
+                        LOG.debug("Update mode: create table");
                         boolean exists = tableExists(conn, unquote(quotedSchemaName), unquote(quotedTableName));
                         if (exists && !confirmOverwrite()) return;
                         if (exists) {
@@ -185,6 +186,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                         }
                     }
                     else {
+                        LOG.debug("Update mode: update table");
                         FeatureSchema featureSchema = featureCollection.getFeatureSchema();
                         PostGISConnectionUtil connUtil = new PostGISConnectionUtil(conn);
                         if (connUtil.compatibleSchemaSubset(quotedSchemaName, quotedTableName, featureSchema)
@@ -478,14 +480,27 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
     private void reloadDataFromDataStore(Connection conn, TaskMonitor monitor) throws Exception {
         Layer[] selectedLayers = JUMPWorkbench.getInstance().getContext().getLayerNamePanel().getSelectedLayers();
         if (selectedLayers != null && selectedLayers.length == 1) {
-            selectedLayers[0].setFeatureCollection(conn.executeQuery(null, monitor));
-            // We connect to a new table : create the transaction manager to listen to it
-            //if ((Boolean)getProperties().get(WritableDataStoreDataSource.CREATE_TABLE)) {
-            //    selectedLayers[0].setDataSourceQuery(new DataSourceQuery(this, null, selectedLayers[0].getName()));
-            //    DataStoreTransactionManager.getTransactionManager().registerLayer(selectedLayers[0],
-            //        JUMPWorkbench.getInstance().getContext().getTask());
-            //    getProperties().put(CREATE_TABLE, false);
-            //}
+            boolean oldFiringEvents = JUMPWorkbench.getInstance().getContext().getLayerManager().isFiringEvents();
+            JUMPWorkbench.getInstance().getContext().getLayerManager().setFiringEvents(false);
+            try {
+                selectedLayers[0].setFeatureCollection(conn.executeQuery(null, monitor));
+                // We connect to a new table : the transaction manager must listen to it
+                if ((Boolean)getProperties().get(CREATE_TABLE)) {
+                    // @TODO re-consider how CREATE_TABLE property is managed
+                    // WARNING changing CREATE_TABLE to false here is useless, because the save as process
+                    // is not yet finished, and the method PostGISSaveDataSourceQueryChooser#getProperties()
+                    // which returns CREATE_TABLE=true is called later on (property CREATE_TABLE=true) will
+                    // be re-applied to the dataSource
+                    // CREATE_PROPERTY=false is finally applied in the DataStoreTransactionManager#commit
+                    // procedure
+                    //getProperties().put(CREATE_TABLE, false);
+                    selectedLayers[0].setDataSourceQuery(new DataSourceQuery(this, null, selectedLayers[0].getName()));
+                    DataStoreTransactionManager.getTransactionManager().registerLayer(selectedLayers[0],
+                        JUMPWorkbench.getInstance().getContext().getTask());
+                }
+            } finally {
+                JUMPWorkbench.getInstance().getContext().getLayerManager().setFiringEvents(oldFiringEvents);
+            }
         }
     }
 

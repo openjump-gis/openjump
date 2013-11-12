@@ -6,6 +6,7 @@ import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.workbench.datasource.DataSourceQueryChooser;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import org.apache.log4j.Logger;
 import org.openjump.core.ccordsys.srid.SRIDStyle;
 import org.openjump.core.ui.plugin.datastore.WritableDataStoreDataSource;
 
@@ -58,8 +59,10 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
         // Get the name of the table to update
         String updateQuery = (String)properties.get(WritableDataStoreDataSource.DATASET_NAME_KEY);
         // Create a DataSourceQuery from a datasource, and a query
+        // It is very important to create a new PostGISDataStoreDataSource here,
+        // otherwise, all layers saved as PostGIS table use the same PostGISDataStoreDataSource
         SaveToPostGISDataSourceQuery query = new SaveToPostGISDataSourceQuery(
-                getDataSource(), updateQuery,
+                new PostGISDataStoreDataSource(), updateQuery,
                 (String)properties.get(WritableDataStoreDataSource.DATASET_NAME_KEY)
         );
         query.setProperties(getProperties());

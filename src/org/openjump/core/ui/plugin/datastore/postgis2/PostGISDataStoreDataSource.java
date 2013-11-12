@@ -48,7 +48,7 @@ public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
 
     //@TODO This method needs to be decomposed and cleaned
     protected FeatureCollection createFeatureCollection() throws Exception {
-        LOG.debug("createFeatureCollection()");
+        LOG.debug("Create new FeatureCollection from " + getProperties().get(DATASET_NAME_KEY));
         ConnectionDescriptor connectionDescriptor =
                 (ConnectionDescriptor)getProperties().get(CONNECTION_DESCRIPTOR_KEY);
 
@@ -80,7 +80,6 @@ public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
         String[] columns = ((PostgisDSMetadata)pgConnection.getMetadata()).getColumnNames(PostGISQueryUtil.unquote(tableName));
         for (String col : columns) {
             if (col.equals(geometryColumn)) continue;
-            //if (col.equals(PK)) continue;
             sb.append(", \"").append(col).append("\"");
         }
         sb.append(" FROM \"")
@@ -194,27 +193,8 @@ public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
     protected void addDBPrimaryKey(java.sql.Connection conn, String dbSchema,
                                  String dbTable, String primaryKey) throws SQLException {
         String tableName = dbSchema == null ? dbTable : dbSchema + "." + dbTable;
-        String sql_test_seq = "SELECT * FROM information_schema.sequences\n" +
-                "    WHERE sequence_schema = 'public' AND sequence_name = 'openjump_dbid_sequence';";
-        String sql_create_seq = "CREATE SEQUENCE openjump_dbid_sequence;";
         String sql_create_dbid = "ALTER TABLE " + tableName + " ADD COLUMN \"" +
-                primaryKey + "\" BIGINT DEFAULT nextval('openjump_dbid_sequence') PRIMARY KEY;";
-        boolean sequence_already_exists;
-        // check if openjump_dbid_sequence already exists
-        try {
-            sequence_already_exists = conn.createStatement().executeQuery(sql_test_seq).next();
-        } catch (SQLException sqle) {
-            throw new SQLException("Error executing query: " + sql_test_seq, sqle);
-        }
-        if (!sequence_already_exists) {
-            // create the sequence
-            try {
-                conn.createStatement().execute(sql_create_seq);
-            } catch (SQLException sqle) {
-                throw new SQLException(sql_create_seq, sqle);
-            }
-        }
-        // add the column based on openjump_dbid_sequence
+                primaryKey + "\" serial NOT NULL PRIMARY KEY;";
         try {
             conn.createStatement().execute(sql_create_dbid);
         } catch (SQLException sqle) {
@@ -231,7 +211,5 @@ public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
         if (rs.next()) return rs.getInt(1);
         else return 0;
     }
-
-
 
 }
