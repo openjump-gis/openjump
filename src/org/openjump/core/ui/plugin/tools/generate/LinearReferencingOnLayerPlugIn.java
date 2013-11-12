@@ -42,7 +42,7 @@ public class LinearReferencingOnLayerPlugIn extends AbstractLinearReferencingPlu
     private String PATH_SECTION_TOOLTIP;
     private String PATH_SECTION_ATTRIBUTE;
 
-    Layer layer;
+    String layer_name;
     boolean use_attribute_as_path_identifier = false;
     String path_identifier_attribute;
     boolean use_attribute_to_order_path_sections = false;
@@ -89,7 +89,6 @@ public class LinearReferencingOnLayerPlugIn extends AbstractLinearReferencingPlu
 
         super.execute(context);
 
-        if (layer == null) layer = context.getCandidateLayer(0);
         MultiTabInputDialog dialog = new MultiTabInputDialog(
                 context.getWorkbenchFrame(), getName(), MAIN_OPTIONS, true);
         setDialogValues(dialog, context);
@@ -112,6 +111,7 @@ public class LinearReferencingOnLayerPlugIn extends AbstractLinearReferencingPlu
         featureSchema.addAttribute("OFFSET", AttributeType.DOUBLE);
         FeatureCollection resultFC = new FeatureDataset(featureSchema);
 
+        Layer layer = context.getLayerManager().getLayer(layer_name);
         List<Geometry> geometries = prepareGeometries(layer.getFeatureCollectionWrapper().getFeatures());
 
         for (Geometry geometry : geometries) {
@@ -123,8 +123,11 @@ public class LinearReferencingOnLayerPlugIn extends AbstractLinearReferencingPlu
             }
             // do nothing if geometry is a point
         }
-
-        context.addLayer(categoryName, "Linear-Referencing", resultFC);
+        if (resultFC.size() > 0) {
+            context.addLayer(categoryName, "Linear-Referencing", resultFC);
+        } else {
+            context.getWorkbenchFrame().warnUser(EMPTY_RESULT);
+        }
     }
 
     private List<Geometry> prepareGeometries(List<Feature> features) {
@@ -181,6 +184,8 @@ public class LinearReferencingOnLayerPlugIn extends AbstractLinearReferencingPlu
     private void setDialogValues(final MultiTabInputDialog dialog, PlugInContext context) {
 
         // first pane
+        Layer layer = context.getLayerManager().getLayer(layer_name);
+        if (layer == null) layer = context.getCandidateLayer(0);
         dialog.setSideBarDescription(DESCRIPTION);
         dialog.addLayerComboBox(SOURCE_LAYER, layer, null, context.getLayerManager().getLayers());
         dialog.addSubTitle(DISTANCE_UNIT);
@@ -234,6 +239,7 @@ public class LinearReferencingOnLayerPlugIn extends AbstractLinearReferencingPlu
     }
 
     private void getDialogValues(MultiInputDialog dialog) {
+        layer_name = dialog.getLayer(SOURCE_LAYER).getName();
         map_unit = dialog.getBoolean(MAP_UNIT);
         linestring_fraction = dialog.getBoolean(LINESTRING_FRACTION);
         distance = dialog.getDouble(DISTANCE);

@@ -40,6 +40,8 @@ public abstract class AbstractLinearReferencingPlugIn  extends AbstractThreadedU
     protected String REPEAT_DISTANCE;
     protected String ADD_END_POINT;
 
+    protected String EMPTY_RESULT;
+
 
     protected boolean map_unit = true;
     protected boolean linestring_fraction = false;
@@ -74,6 +76,7 @@ public abstract class AbstractLinearReferencingPlugIn  extends AbstractThreadedU
         REPEAT_DISTANCE     = I18N.get(KEY + ".repeat-distance");
         ADD_END_POINT       = I18N.get(KEY + ".add-end-point");
 
+        EMPTY_RESULT        = I18N.get(KEY + ".empty-result");
         return true;
     }
 
