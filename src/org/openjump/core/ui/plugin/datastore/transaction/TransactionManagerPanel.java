@@ -59,6 +59,7 @@ public class TransactionManagerPanel extends JPanel  implements WorkbenchContext
         panel.add(experimental, c);
 
         JButton inspectButton = new JButton(I18N.get(KEY + ".inspect"));
+        inspectButton.setToolTipText(I18N.get(KEY + ".inspect-tooltip"));
         inspectButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 transactionManager.inspect(getTaskFrame());
@@ -71,6 +72,7 @@ public class TransactionManagerPanel extends JPanel  implements WorkbenchContext
         panel.add(inspectButton, c);
 
         JButton updateButton = new JButton(I18N.get(KEY + ".update"));
+        updateButton.setToolTipText(I18N.get(KEY + ".update-tooltip"));
         updateButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 transactionManager.update(getTaskFrame());
@@ -81,6 +83,7 @@ public class TransactionManagerPanel extends JPanel  implements WorkbenchContext
         panel.add(updateButton, c);
 
         JButton commitButton = new JButton(I18N.get(KEY + ".commit"));
+        commitButton.setToolTipText(I18N.get(KEY + ".commit-tooltip"));
         commitButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {

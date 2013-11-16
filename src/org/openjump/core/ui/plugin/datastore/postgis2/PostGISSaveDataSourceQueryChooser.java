@@ -52,7 +52,7 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
     }
 
     /**
-     * Since the ui does not allow for loading of multiple tables,
+     * Since the user interface does not allow for loading of multiple tables,
      * the returned collection only contains a single element.
      * @see com.vividsolutions.jump.workbench.datasource.DataSourceQueryChooser#getDataSourceQueries()
      */
@@ -103,15 +103,15 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
             return false;
         }
 
-        // put the TABLE_KEY value early to make sure it will appear in the
-        // monitor see also AbstractSaveDatasetAsPlugIn
+        // put the TABLE_KEY value early to make sure it will appear in the monitor
+        // see also AbstractSaveDatasetAsPlugIn
         properties.put(WritableDataStoreDataSource.DATASET_NAME_KEY, panel.getTableName());
         properties.put(WritableDataStoreDataSource.CREATE_PK, panel.isCreatePrimaryKeyColumnSelected());
         return true;
     }
 
     /**
-     * Reads all the connection + query properties from the ui.
+     * Reads the connection descriptor and the query properties from the user interface.
      */
     protected Map getProperties() {
         if (properties == null) properties = new HashMap<String,Object>();
@@ -134,8 +134,6 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
             SRIDStyle sridStyle = (SRIDStyle)layers[0].getStyle(SRIDStyle.class);
             properties.put(WritableDataStoreDataSource.SRID_KEY, sridStyle.getSRID());
         }
-        //@TODO change the CREATE_TABLE mechanism
-        //properties.put(WritableDataStoreDataSource.CREATE_TABLE, true);
         properties.put(WritableDataStoreDataSource.LIMITED_TO_VIEW, false);
         properties.put(WritableDataStoreDataSource.MAX_FEATURES_KEY, Integer.MAX_VALUE);
         properties.put(WritableDataStoreDataSource.WHERE_CLAUSE_KEY, "");

@@ -475,9 +475,8 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
         addRow(I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Identifier"), getIdentifierAttributeComboBox(), null, false );
         addRow(I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Max-Features"), getMaxFeaturesTextField(), null, false);
         addRow(I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Where"), sp, null, true );
-        //addRow(I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Caching"), getCachingCheckBox(), null, false );
-        addRow(I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Caching"), getLimitedToViewCheckBox(), null, false );
-        addRow(I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Caching"), getManageConflictsCheckBox(), null, true );
+        addRow(I18N.get(""), getLimitedToViewCheckBox(), null, false );
+        addRow(I18N.get(""), getManageConflictsCheckBox(), null, true );
     }
 
     /**

@@ -25,8 +25,7 @@ import java.awt.event.ActionListener;
 import java.util.*;
 
 /**
- * This class contains the user interface elements to save a layer into a
- * PostGIS table.
+ * Panel containing user interface elements to save a layer into a PostGIS table.
  */
 public class PostGISSaveDriverPanel extends AbstractDriverPanel {
 

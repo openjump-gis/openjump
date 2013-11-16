@@ -69,7 +69,8 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
     // Map is indexed by FID in order to merge successive evolutions of a feature efficiently
     final private LinkedHashMap<Integer,Evolution> evolutions = new LinkedHashMap<Integer,Evolution>();
 
-    boolean tableAlreadyCreated;
+    // See setTableAlreadyCreated()
+    private boolean tableAlreadyCreated;
 
     public WritableDataStoreDataSource() {
         // Called by Java2XML [Jon Aquino 2005-03-16]
@@ -116,6 +117,15 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
         getProperties().put(SRID_KEY, srid);
     }
 
+    /**
+     * Add this attribute to decide if executeUpdate must write a new table
+     * or commit to an existing table.
+     * Note : I tried first to set this property in the DataSourceQuery properties,
+     * but properties are set through the "load" or "save as" dialog box and are not
+     * supposed to change (I tried to change the value at the end of an executeUpdate,
+     * but initial properties set in the dialog box are re-applied and overwrite
+     * changed value after that).
+     */
     public void setTableAlreadyCreated(boolean tableAlreadyCreated) {
         this.tableAlreadyCreated = tableAlreadyCreated;
     }
@@ -159,7 +169,6 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                 String quotedTableName = quote(datasetName[1]);
                 boolean createPrimaryKey = (Boolean)getProperties().get(WritableDataStoreDataSource.CREATE_PK);
                 int srid = getProperties().get(SRID_KEY)==null ? 0 : (Integer)getProperties().get(SRID_KEY);
-                //int dim = getGeometryDimension(featureCollection, 3);
                 int dim = getProperties().get(GEOM_DIM_KEY)==null?
                         getGeometryDimension(featureCollection, 3) :
                         (Integer)getProperties().get(GEOM_DIM_KEY);
@@ -243,7 +252,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                 insertStatement(conn, evolution.getNewFeature(), dbSchema, dbTable, keyName, srid, dim).executeUpdate();
                 LOG.info("  create new feature " + evolution.getNewFeature().getID()+"/");
             } else if (evolution.getType() == Evolution.Type.SUPPRESSION) {
-                deleteStatement(conn, evolution.getOldFeature(), keyName, dbSchema, dbTable, srid, dim).executeUpdate();
+                deleteStatement(conn, evolution.getOldFeature(), keyName, dbSchema, dbTable).executeUpdate();
                 LOG.info("  delete " + evolution.getOldFeature().getID() + "/" + evolution.getOldFeature().getAttribute(keyName));
             } else if (evolution.getType() == Evolution.Type.MODIFICATION) {
                 Feature oldFeature = evolution.getOldFeature();
@@ -334,9 +343,8 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
 
     // @TODO Remove unused parameters srid and dim ?
     private PreparedStatement deleteStatement(java.sql.Connection conn, Feature feature, String keyName,
-                                              String dbSchema, String dbTable, int srid, int dim) throws SQLException {
+                                              String dbSchema, String dbTable) throws SQLException {
         String tableName = dbSchema == null ? dbTable : dbSchema + "." + dbTable;
-        FeatureSchema schema = feature.getSchema();
         PreparedStatement pstmt = conn.prepareStatement("DELETE FROM " + tableName + " WHERE \"" + keyName + "\" = ?");
         pstmt.setObject(1,feature.getAttribute(keyName));
         LOG.debug(pstmt);
@@ -496,14 +504,6 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                 selectedLayers[0].setFeatureCollection(conn.executeQuery(null, monitor));
                 // We connect to a new table : the transaction manager must listen to it
                 if (!tableAlreadyCreated) {
-                    // @TODO re-consider how CREATE_TABLE property is managed
-                    // WARNING changing CREATE_TABLE to false here is useless, because the save as process
-                    // is not yet finished, and the method PostGISSaveDataSourceQueryChooser#getProperties()
-                    // which returns CREATE_TABLE=true is called later on (property CREATE_TABLE=true) will
-                    // be re-applied to the dataSource
-                    // CREATE_PROPERTY=false is finally applied in the DataStoreTransactionManager#commit
-                    // procedure
-                    //selectedLayers[0].setDataSourceQuery(new DataSourceQuery(this, null, selectedLayers[0].getName()));
                     DataStoreTransactionManager.getTransactionManager().registerLayer(selectedLayers[0],
                         JUMPWorkbench.getInstance().getContext().getTask());
                     tableAlreadyCreated = true;
