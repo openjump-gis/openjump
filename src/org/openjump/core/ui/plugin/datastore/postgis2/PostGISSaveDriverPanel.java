@@ -34,12 +34,14 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel {
 
     static final String TITLE   = I18N.get(KEY + ".title");
 
-    static final String CREATE_DB_PK = I18N.get(KEY + ".create-database-primary-key");
+    static final String WRITE_3D_GEOM   = I18N.get(KEY + ".write-3d-geometries");
+    static final String CREATE_DB_PK    = I18N.get(KEY + ".create-database-primary-key");
 
     // UI elements
     private ConnectionPanel connectionPanel;
     private JComboBox tableComboBox;
     private JCheckBox createPrimaryKeyCheckBox;
+    private JCheckBox write3dGeomCheckBox;
     private OKCancelPanel okCancelPanel;
 
     // context variables
@@ -83,44 +85,43 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel {
             }
         });
         // listen to ancestor to re-init the layer name when the source layer changes
-        addAncestorListener(new DPAncestorListener());
-
-        gbConstraints.gridx = 0;
-        gbConstraints.gridy = 1;
-        gbConstraints.gridwidth = 3;
-        //gbConstraints.gridheight = 1;
+        addAncestorListener(new PanelAncestorListener());
+        gbConstraints.gridy += 1;
         gbLayout.setConstraints(connectionPanel, gbConstraints);
         add(connectionPanel);
 
         // table
         JLabel tableLabel = new JLabel("Table");
         gbConstraints.gridx = 0;
-        gbConstraints.gridy = 2;
+        gbConstraints.gridy += 1;
         gbConstraints.gridwidth = 1;
         gbLayout.setConstraints(tableLabel, gbConstraints);
         add(tableLabel);
+
         tableComboBox = new JComboBox(tableList);
         tableComboBox.setPrototypeDisplayValue("abcdefghijklmnopqrstuvwxyz");
-        // tableComboBox.addActionListener(new ActionListener(){
-        //     public void actionPerformed(ActionEvent e) {
-        //         resetPKChooser();
-        //     }
-        // });
         gbConstraints.gridx = 1;
-        gbConstraints.gridy = 2;
         gbLayout.setConstraints(tableComboBox, gbConstraints);
         add(tableComboBox);
 
+        // Primary key checkbox
         createPrimaryKeyCheckBox = new JCheckBox(CREATE_DB_PK);
         createPrimaryKeyCheckBox.setSelected(true);
         gbConstraints.gridx = 0;
-        gbConstraints.gridy = 3;
+        gbConstraints.gridy += 1;
         gbLayout.setConstraints(createPrimaryKeyCheckBox, gbConstraints);
         add(createPrimaryKeyCheckBox);
 
+        // Geometry dimension key checkbox
+        write3dGeomCheckBox = new JCheckBox(WRITE_3D_GEOM);
+        write3dGeomCheckBox.setSelected(false);
+        gbConstraints.gridy += 1;
+        gbLayout.setConstraints(write3dGeomCheckBox, gbConstraints);
+        add(write3dGeomCheckBox);
+
     }
 
-    class DPAncestorListener implements AncestorListener {
+    class PanelAncestorListener implements AncestorListener {
         // called when the panel or an ancestor is made visible
         // call layerChanged if the source layer has changed since last call
         public void ancestorAdded(AncestorEvent e) {
@@ -175,33 +176,21 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel {
 
 
     public String getTableName() {
-        //System.out.println("table name : " + tableComboBox.getSelectedItem().toString());
         layer2TableMap.put(lastUsedLayerName, tableComboBox.getSelectedItem().toString());
         return tableComboBox.getSelectedItem().toString();
     }
-
-
-    //public String getSaveMethod() {
-    //    return methodButtons.getSelection().getActionCommand();
-    //}
-
-
-    //public String getPrimaryKey() {
-    //    Object selection = primaryKeyComboBox.getSelectedItem();
-    //    if (selection == null) return null;
-    //        //else if (selection.equals(NO_PK)) return SaveToPostGISDataSource.NO_LOCAL_ID;
-    //    else return selection.toString();
-    //}
 
     public boolean isCreatePrimaryKeyColumnSelected() {
         return createPrimaryKeyCheckBox.isSelected();
     }
 
+    public boolean writeCreate3dGeometriesSelected() {
+        return write3dGeomCheckBox.isSelected();
+    }
+
     // Called if the source layer has changed
     // Select the create option and choose the layer name as table name
     private void layerChanged() {
-        //System.out.println("layer changed");
-        //createButton.setSelected(true);
         addItemToTableList(tableList, lastUsedLayerName);
     }
 
@@ -245,10 +234,8 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel {
     // Update table list to choose from, using database metadata
     // Eventually add source layer name to the list if create option is selected
     private void updateTableList(DataStoreMetadata metadata) {
-        //System.out.println("update table list");
         Layer[] layers = wbContext.getLayerNamePanel().getSelectedLayers();
-        // If create option is selected, default table name will be the layer name
-        if (layers.length == 1 /*&& createButton.isSelected()*/) {
+        if (layers.length == 1) {
             String layerName = layers[0].getName();
             addItemToTableList(tableList, layerName);
             tableComboBox.setSelectedItem(layerName);

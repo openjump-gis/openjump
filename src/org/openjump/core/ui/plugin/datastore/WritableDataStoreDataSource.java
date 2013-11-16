@@ -59,15 +59,17 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
     // Update options (write to database) : don't translate, these are map keys
     public static final String EXTERNAL_PK_KEY   = "External PK";
     public static final String SRID_KEY          = "SRID";
-    public static final String CREATE_TABLE      = "Create table";
+    public static final String GEOM_DIM_KEY      = "Dimension";
+    //public static final String TABLE_CREATED     = "Table created";
     public static final String CREATE_PK         = "Create PK";
 
-    final static public String DEFAULT_PK_NAME   = "gid";
+    public static final String DEFAULT_PK_NAME   = "gid";
 
     // Ordered Map of evolutions
     // Map is indexed by FID in order to merge successive evolutions of a feature efficiently
     final private LinkedHashMap<Integer,Evolution> evolutions = new LinkedHashMap<Integer,Evolution>();
 
+    boolean tableAlreadyCreated;
 
     public WritableDataStoreDataSource() {
         // Called by Java2XML [Jon Aquino 2005-03-16]
@@ -96,8 +98,8 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
         getProperties().put(MAX_FEATURES_KEY, Integer.MAX_VALUE);
         getProperties().put(LIMITED_TO_VIEW, false);
         getProperties().put(MANAGE_CONFLICTS, false);
-        // This parameter must be set to true to create a new table from a layer
-        getProperties().put(CREATE_TABLE, false);
+
+        //getProperties().put(CREATE_TABLE, false);
         getProperties().put(CREATE_PK, false);
         getProperties().put(SRID_KEY, 0);
     }
@@ -112,6 +114,10 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
 
     public void setSRID(int srid) {
         getProperties().put(SRID_KEY, srid);
+    }
+
+    public void setTableAlreadyCreated(boolean tableAlreadyCreated) {
+        this.tableAlreadyCreated = tableAlreadyCreated;
     }
 
     public boolean isWritable() {
@@ -153,7 +159,10 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                 String quotedTableName = quote(datasetName[1]);
                 boolean createPrimaryKey = (Boolean)getProperties().get(WritableDataStoreDataSource.CREATE_PK);
                 int srid = getProperties().get(SRID_KEY)==null ? 0 : (Integer)getProperties().get(SRID_KEY);
-                int dim = getGeometryDimension(featureCollection, 3);
+                //int dim = getGeometryDimension(featureCollection, 3);
+                int dim = getProperties().get(GEOM_DIM_KEY)==null?
+                        getGeometryDimension(featureCollection, 3) :
+                        (Integer)getProperties().get(GEOM_DIM_KEY);
 
                 PostgisDSConnection pgConnection =
                         (PostgisDSConnection)new PostgisDataStoreDriver()
@@ -161,7 +170,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                 java.sql.Connection conn = pgConnection.getConnection();
                 try {
                     conn.setAutoCommit(false);
-                    if ((Boolean)getProperties().get(CREATE_TABLE)) {
+                    if (!tableAlreadyCreated) {
                         LOG.debug("Update mode: create table");
                         boolean exists = tableExists(conn, unquote(quotedSchemaName), unquote(quotedTableName));
                         if (exists && !confirmOverwrite()) return;
@@ -184,6 +193,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                             conn.commit();
                             reloadDataFromDataStore(this, monitor);
                         }
+                        tableAlreadyCreated = true;
                     }
                     else {
                         LOG.debug("Update mode: update table");
@@ -366,7 +376,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
     protected abstract int getTableSRID(java.sql.Connection conn,
                                         String dbSchema, String dbTable, String column) throws SQLException;
 
-    protected Geometry getViewEnvelope() throws Exception {
+    protected Geometry getViewEnvelope() {
         return new GeometryFactory().toGeometry(
                 JUMPWorkbench.getInstance().getFrame().getActiveTaskFrame()
                         .getLayerViewPanel().getViewport().getEnvelopeInModelCoordinates()
@@ -485,7 +495,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
             try {
                 selectedLayers[0].setFeatureCollection(conn.executeQuery(null, monitor));
                 // We connect to a new table : the transaction manager must listen to it
-                if ((Boolean)getProperties().get(CREATE_TABLE)) {
+                if (!tableAlreadyCreated) {
                     // @TODO re-consider how CREATE_TABLE property is managed
                     // WARNING changing CREATE_TABLE to false here is useless, because the save as process
                     // is not yet finished, and the method PostGISSaveDataSourceQueryChooser#getProperties()
@@ -493,10 +503,10 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                     // be re-applied to the dataSource
                     // CREATE_PROPERTY=false is finally applied in the DataStoreTransactionManager#commit
                     // procedure
-                    //getProperties().put(CREATE_TABLE, false);
-                    selectedLayers[0].setDataSourceQuery(new DataSourceQuery(this, null, selectedLayers[0].getName()));
+                    //selectedLayers[0].setDataSourceQuery(new DataSourceQuery(this, null, selectedLayers[0].getName()));
                     DataStoreTransactionManager.getTransactionManager().registerLayer(selectedLayers[0],
                         JUMPWorkbench.getInstance().getContext().getTask());
+                    tableAlreadyCreated = true;
                 }
             } finally {
                 JUMPWorkbench.getInstance().getContext().getLayerManager().setFiringEvents(oldFiringEvents);

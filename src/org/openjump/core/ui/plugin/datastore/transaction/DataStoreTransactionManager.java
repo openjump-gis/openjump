@@ -161,9 +161,10 @@ public class DataStoreTransactionManager {
         if (source instanceof WritableDataStoreDataSource) {
             WritableDataStoreDataSource writableSource = (WritableDataStoreDataSource)source;
             // @TODO rework how CREATE_TABLE property is managed
+
             // CREATE_TABLE should have been turned to off before, but I could not make it work
             // (see also WritableDataStoreDataSource#reloadDataFromDataStore)
-            source.getProperties().put(WritableDataStoreDataSource.CREATE_TABLE, false);
+            //source.getProperties().put(WritableDataStoreDataSource.CREATE_TABLE, false);
             try {
                 LOG.info("Commit layer \"" + layer.getName() + "\"");
                 writableSource.getConnection().executeUpdate(null,layer.getFeatureCollectionWrapper(), new DummyTaskMonitor());

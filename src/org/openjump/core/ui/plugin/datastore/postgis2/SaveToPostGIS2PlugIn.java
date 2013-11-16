@@ -6,8 +6,10 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import org.openjump.core.ui.plugin.datastore.WritableDataStoreDataSource;
 
 /**
- * This plugin is a write-only driver for a data source backed by an PostGIS
+ * This plugin is a write-only driver for a data source backed by a PostGIS
  * database.
+ * Note : it uses the same WritableDataStoreDataSource as the
+ * {@link org.openjump.core.ui.plugin.datastore.AddWritableDataStoreLayerWizard}
  */
 public class SaveToPostGIS2PlugIn implements PlugIn {
 

@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-11-16 mmichaud <michael.michaud@free.fr>
+  * Add 2D/3D option for new Save As PostGIS Table
+
 2013-11-12 mmichaud <michael.michaud@free.fr>
   * Fix in linear referencing plugin
 

@@ -8,6 +8,7 @@ import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import org.apache.log4j.Logger;
 import org.openjump.core.ccordsys.srid.SRIDStyle;
+import org.openjump.core.ui.plugin.datastore.DataStoreDataSourceFactory;
 import org.openjump.core.ui.plugin.datastore.WritableDataStoreDataSource;
 
 import javax.swing.*;
@@ -16,7 +17,7 @@ import java.util.*;
 import java.util.List;
 
 /**
- * A DataSourceQueryChooser for writing to a PostGIS data source.
+ * A DataSourceQueryChooser to write to a PostGIS DataSource.
  */
 public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser {
 
@@ -62,10 +63,12 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
         // It is very important to create a new PostGISDataStoreDataSource here,
         // otherwise, all layers saved as PostGIS table use the same PostGISDataStoreDataSource
         SaveToPostGISDataSourceQuery query = new SaveToPostGISDataSourceQuery(
-                new PostGISDataStoreDataSource(), updateQuery,
+                new PostGISDataStoreDataSource(),
+                updateQuery,
                 (String)properties.get(WritableDataStoreDataSource.DATASET_NAME_KEY)
         );
         query.setProperties(getProperties());
+        ((WritableDataStoreDataSource)query.getDataSource()).setTableAlreadyCreated(false);
         List<DataSourceQuery> queries = new ArrayList<DataSourceQuery>();
         queries.add(query);
 
@@ -100,15 +103,6 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
             return false;
         }
 
-        // else if ((panel.getPrimaryKey() == null || panel.getPrimaryKey().trim().length() == 0) &&
-        //         (panel.getSaveMethod().equals(RWDataStoreDataSource.SAVE_METHOD_UPDATE) ||
-        //                 panel.getSaveMethod().equals(RWDataStoreDataSource.SAVE_METHOD_DELETE))) {
-        //     JOptionPane.showMessageDialog(panel,
-        //             UNIQUE_IDENTIFIER_NEEDED,
-        //             ERROR, JOptionPane.ERROR_MESSAGE );
-        //     return false;
-        // }
-
         // put the TABLE_KEY value early to make sure it will appear in the
         // monitor see also AbstractSaveDatasetAsPlugIn
         properties.put(WritableDataStoreDataSource.DATASET_NAME_KEY, panel.getTableName());
@@ -123,35 +117,28 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
         if (properties == null) properties = new HashMap<String,Object>();
         properties.put(WritableDataStoreDataSource.CONNECTION_DESCRIPTOR_KEY, panel.getConnectionDescriptor());
         properties.put(WritableDataStoreDataSource.DATASET_NAME_KEY, panel.getTableName());
-        //properties.put(RWDataStoreDataSource.SAVE_METHOD_KEY, panel.getSaveMethod());
-        //properties.put(RWDataStoreDataSource.PRIMARY_KEY, panel.getPrimaryKey());
         properties.put(WritableDataStoreDataSource.CREATE_PK, panel.isCreatePrimaryKeyColumnSelected());
+        properties.put(WritableDataStoreDataSource.GEOM_DIM_KEY, panel.writeCreate3dGeometriesSelected()?3:2);
         if (panel.isCreatePrimaryKeyColumnSelected()) {
             properties.put(WritableDataStoreDataSource.EXTERNAL_PK_KEY, WritableDataStoreDataSource.DEFAULT_PK_NAME);
         }
         Layer[] layers = context.getWorkbenchContext().getLayerNamePanel().getSelectedLayers();
         if (layers.length == 1) {
-            //properties.put(RWDataStoreDataSource.DATASET_NAME_KEY, layers[0].getName());
             FeatureSchema schema = layers[0].getFeatureCollectionWrapper().getFeatureSchema();
-            //String[] schema_table = PostGISQueryUtil.splitTableName(panel.getTableName());
             properties.put(WritableDataStoreDataSource.GEOMETRY_ATTRIBUTE_NAME_KEY,
                     schema.getAttributeName(schema.getGeometryIndex()));
-
-            //properties.put(RWDataStoreDataSource.SQL_QUERY_KEY, "SELECT * FROM " +
-            //        PostGISQueryUtil.compose(schema_table[0], schema_table[1]) + " LIMIT 100000");
 
             // OpenJUMP has now a better support of Coordinate System at
             // FeatureCollection and FeatureSchema level, but this one is simple
             // and makes it easy to set the SRID the user want before an update
             SRIDStyle sridStyle = (SRIDStyle)layers[0].getStyle(SRIDStyle.class);
             properties.put(WritableDataStoreDataSource.SRID_KEY, sridStyle.getSRID());
-            //properties.put(SaveToPostGISDataSource.MAX_FEATURES_KEY, 100000);
-            //properties.put(SaveToPostGISDataSource.WHERE_CLAUSE_KEY, "");
-            //properties.put(SaveToPostGISDataSource.CACHING_KEY, false);
         }
-        properties.put(WritableDataStoreDataSource.CREATE_TABLE, true);
+        //@TODO change the CREATE_TABLE mechanism
+        //properties.put(WritableDataStoreDataSource.CREATE_TABLE, true);
         properties.put(WritableDataStoreDataSource.LIMITED_TO_VIEW, false);
         properties.put(WritableDataStoreDataSource.MAX_FEATURES_KEY, Integer.MAX_VALUE);
+        properties.put(WritableDataStoreDataSource.WHERE_CLAUSE_KEY, "");
         properties.put(WritableDataStoreDataSource.MANAGE_CONFLICTS, true);
         return properties;
     }

@@ -10,22 +10,20 @@ import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.io.FeatureInputStream;
 import com.vividsolutions.jump.workbench.datastore.ConnectionDescriptor;
-import com.vividsolutions.jump.workbench.datastore.ConnectionManager;
 import org.apache.log4j.Logger;
 import org.openjump.core.ui.plugin.datastore.WritableDataStoreDataSource;
 import org.openjump.core.ui.plugin.datastore.postgis.PostGISQueryUtil;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 import static org.openjump.core.ui.plugin.datastore.postgis.PostGISQueryUtil.compose;
 import static org.openjump.core.ui.plugin.datastore.postgis.PostGISQueryUtil.unquote;
 
 /**
- * Writable DataStoreDataSource for PostGIS.
+ * A {@link WritableDataStoreDataSource} for PostGIS.
  */
 public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
 
@@ -35,68 +33,46 @@ public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
         // Called by Java2XML [Jon Aquino 2005-03-16]
     }
 
-    public PostGISDataStoreDataSource(ConnectionDescriptor connectionDescriptor,
-            String datasetName, String geometryAttributeName, String identifierAttributeName) {
+    public PostGISDataStoreDataSource(
+            ConnectionDescriptor connectionDescriptor,
+            String datasetName,
+            String geometryAttributeName,
+            String identifierAttributeName) {
         super(connectionDescriptor, datasetName, geometryAttributeName, identifierAttributeName);
     }
 
-    public void finalizeUpdate(java.sql.Connection conn, String quotedSchemaName, String quotedTableName) throws Exception {
+    /**
+     * After a new postgis table has been create, it is useful to execute a VACUUM ANALYZE
+     * in order to update indexes and get a precise estimated_extent.
+     * @param conn
+     * @param quotedSchemaName
+     * @param quotedTableName
+     * @throws Exception
+     */
+    public void finalizeUpdate(Connection conn, String quotedSchemaName, String quotedTableName) throws Exception {
         conn.createStatement().execute("VACUUM ANALYZE " +
                                    PostGISQueryUtil.compose(quotedSchemaName, quotedTableName));
         LOG.debug("VACUUM ANALYZE " + PostGISQueryUtil.compose(quotedSchemaName, quotedTableName));
     }
 
-    //@TODO This method needs to be decomposed and cleaned
     protected FeatureCollection createFeatureCollection() throws Exception {
+
         LOG.debug("Create new FeatureCollection from " + getProperties().get(DATASET_NAME_KEY));
         ConnectionDescriptor connectionDescriptor =
                 (ConnectionDescriptor)getProperties().get(CONNECTION_DESCRIPTOR_KEY);
 
-        // Schema name, table name and geometry column name are needed
-        // to get the database srid associated to this FeatureCollection
-        String[] datasetName = PostGISQueryUtil.splitTableName((String)getProperties().get(DATASET_NAME_KEY));
-        String schemaName = datasetName[0];
-        String tableName = datasetName[1];
-        String geometryColumn = (String)getProperties().get(GEOMETRY_ATTRIBUTE_NAME_KEY);
-
-        // get the srid to use for this dataset and geometry column
         PostgisDSConnection pgConnection =
                 (PostgisDSConnection)new PostgisDataStoreDriver()
                         .createConnection(connectionDescriptor.getParameterList());
-        java.sql.Connection conn = pgConnection.getConnection();
-        int table_srid = getTableSRID(conn, schemaName, tableName, geometryColumn);
 
-        // Set the query string, including semantic and geometric conditions as needd
-        boolean limited_to_view = (Boolean)getProperties().get(LIMITED_TO_VIEW);
-        String extent = limited_to_view ? " AND (\"" + geometryColumn + "\" && ST_GeomFromText('" +
-                getViewEnvelope().toText() + "'," + table_srid + "))" : "";
-        String whereClause = (String)getProperties().get(WHERE_CLAUSE_KEY);
-        whereClause = (whereClause == null || whereClause.length() == 0) ? "true" : "(" + whereClause + ")";
+        boolean hasPK = getProperties().get(EXTERNAL_PK_KEY) != null;
         String PK = (String)getProperties().get(EXTERNAL_PK_KEY);
-        int max_features = (Integer)getProperties().get(MAX_FEATURES_KEY);
-
-        StringBuffer sb = new StringBuffer("SELECT \"").append(geometryColumn).append("\"");
-        //@TODO This method should be available in DataStoreMetadata to avoid the cast
-        String[] columns = ((PostgisDSMetadata)pgConnection.getMetadata()).getColumnNames(PostGISQueryUtil.unquote(tableName));
-        for (String col : columns) {
-            if (col.equals(geometryColumn)) continue;
-            sb.append(", \"").append(col).append("\"");
-        }
-        sb.append(" FROM \"")
-          .append(unquote((String)getProperties().get(DATASET_NAME_KEY)))
-          .append("\" WHERE ")
-          .append(whereClause)
-          .append(extent)
-          .append(" LIMIT " + max_features)
-          .append(";");
-        //String query = "SELECT * FROM \"" + unquote((String)getProperties().get(DATASET_NAME_KEY)) + "\" WHERE " + whereClause + extent + ";";
-        String query = sb.toString();
+        String query = buildQueryString(pgConnection);
         LOG.debug(query);
 
         // Create the adhoc query corresponding to this datasource
         AdhocQuery adhocQuery = new AdhocQuery(query);
-
-        if (getProperties().get(EXTERNAL_PK_KEY) != null) {
+        if (hasPK) {
             adhocQuery.setPrimaryKey(PK);
         }
 
@@ -106,9 +82,11 @@ public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
         try {
             featureInputStream = pgConnection.execute(adhocQuery);
             featureDataset = new FeatureDataset(featureInputStream.getFeatureSchema());
-            featureDataset.getFeatureSchema().setExternalPrimaryKeyIndex(
-                    featureDataset.getFeatureSchema().getAttributeIndex(PK)
-            );
+            if (hasPK) {
+                featureDataset.getFeatureSchema().setExternalPrimaryKeyIndex(
+                        featureDataset.getFeatureSchema().getAttributeIndex(PK)
+                );
+            }
             while (featureInputStream.hasNext()) {
                 featureDataset.add( featureInputStream.next() );
             }
@@ -120,24 +98,52 @@ public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
             }
             featureDataset = new FeatureDataset(new FeatureSchema());
         }
-        finally {
-            //if (featureInputStream != null) {
-            //    try {featureInputStream.close();}
-            //    catch(Exception e){
-            //        LOG.error("Error closing FeatureInputStream : " +
-            //                getProperties().get(DATASET_NAME_KEY) + " (" +
-            //                getProperties().get(CONNECTION_DESCRIPTOR_KEY) + ")", e);
-            //    }
-            //}
-        }
         return featureDataset;
 
     }
 
+    private String buildQueryString(PostgisDSConnection pgConnection) throws SQLException {
+
+        String geometryColumn = (String)getProperties().get(GEOMETRY_ATTRIBUTE_NAME_KEY);
+        String[] datasetName = PostGISQueryUtil.splitTableName((String)getProperties().get(DATASET_NAME_KEY));
+        String schemaName = datasetName[0];
+        String tableName = datasetName[1];
+
+        //@TODO This method should be available in DataStoreMetadata to avoid the cast
+        String[] columns = ((PostgisDSMetadata)pgConnection.getMetadata()).getColumnNames(PostGISQueryUtil.unquote(tableName));
+
+        Connection conn = pgConnection.getConnection();
+
+        int table_srid = getTableSRID(conn, schemaName, tableName, geometryColumn);
+
+        boolean limited_to_view = (Boolean)getProperties().get(LIMITED_TO_VIEW);
+        String extent = limited_to_view ? " AND (\"" + geometryColumn + "\" && ST_GeomFromText('" +
+                getViewEnvelope().toText() + "'," + table_srid + "))" : "";
+
+        String whereClause = (String)getProperties().get(WHERE_CLAUSE_KEY);
+        whereClause = (whereClause == null || whereClause.length() == 0) ? "true" : "(" + whereClause + ")";
+
+        int max_features = (Integer)getProperties().get(MAX_FEATURES_KEY);
+
+        StringBuffer sb = new StringBuffer("SELECT \"").append(geometryColumn).append("\"");
+        for (String col : columns) {
+            if (col.equals(geometryColumn)) continue;
+            sb.append(", \"").append(col).append("\"");
+        }
+        sb.append(" FROM \"")
+                .append(unquote((String)getProperties().get(DATASET_NAME_KEY)))
+                .append("\" WHERE ")
+                .append(whereClause)
+                .append(extent)
+                .append(" LIMIT " + max_features)
+                .append(";");
+        return sb.toString();
+    }
+
 
     /**
-     * Execute a query against this connection to delete the reference to this
-     * table in the PostGIS's geometry_columns table.
+     * Execute a query on this connection to DROP this table as well as
+     * its reference in the PostGIS's geometry_columns table (PostGIS < 2).
      */
     protected void deleteTableQuery(java.sql.Connection connection,
                                   String dbSchema, String dbTable) throws SQLException {
@@ -202,6 +208,8 @@ public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
         }
     }
 
+    // Find_SRID replaced ST_Find_SRID in PostGIS 1.4
+    // @TODO for backward compatibility it could be useful to implement a 1.3 compatibility mode
     protected int getTableSRID(java.sql.Connection conn, String dbSchema, String dbTable, String column) throws SQLException {
         String sql = dbSchema == null ?
                 "SELECT Find_SRID('public', '" + unquote(dbTable) + "', '" + unquote(column) + "');" :

@@ -116,7 +116,7 @@ public class AddWritableDataStoreLayerWizard extends AbstractWizardGroup {
         WritableDataStoreDataSource ds =
                 DataStoreDataSourceFactory.createWritableDataStoreDataSource(
                         connectionDescriptor, datasetName, geometryAttributeName,
-                        identifierAttributeName);
+                        identifierAttributeName, true);
         ds.setMaxFeature(limit);
         ds.setWhereClause(whereClause);
         ds.setLimitedToView(limitedToView);
@@ -168,6 +168,7 @@ public class AddWritableDataStoreLayerWizard extends AbstractWizardGroup {
                 TaskMonitor monitor) throws Exception {
         Connection connection = dataSource.getConnection();
         try {
+            //dataSource.getProperties().put(WritableDataStoreDataSource.TABLE_CREATED,true);
             return dataSource.installCoordinateSystem(connection.executeQuery(query,
                     monitor), registry);
         } finally {

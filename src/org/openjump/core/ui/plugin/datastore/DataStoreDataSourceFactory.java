@@ -18,12 +18,14 @@ public class DataStoreDataSourceFactory {
             ConnectionDescriptor connectionDescriptor,
             String datasetName,
             String geometryAttributeName,
-            String externalPKName)  throws Exception {
+            String externalPKName,
+            boolean tableAlreadyCreated)  throws Exception {
         WritableDataStoreDataSource source;
         String driverName = connectionDescriptor.getDataStoreDriverClassName();
         if (driverName.equals("com.vividsolutions.jump.datastore.postgis.PostgisDataStoreDriver")) {
             source = new PostGISDataStoreDataSource(
                     connectionDescriptor, datasetName, geometryAttributeName, externalPKName);
+            source.setTableAlreadyCreated(tableAlreadyCreated);
         } else {
             throw new Exception(I18N.getMessage(KEY + ".no-writable-datastore-datasource", driverName));
         }
