@@ -534,7 +534,7 @@ public abstract class AbstractCursorTool implements CursorTool {
     this.panel = panel;
   }
 
-  private static String name(CursorTool tool) {
+  public static String name(CursorTool tool) {
     try {
       String key = tool.getClass().getName();
       Class c;

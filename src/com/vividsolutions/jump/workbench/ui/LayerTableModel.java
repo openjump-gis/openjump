@@ -291,7 +291,7 @@ public class LayerTableModel extends ColumnBasedTableModel {
     //    }
     //}
     
-    private void removeAll(Collection featuresToRemove) {
+    public void removeAll(Collection featuresToRemove) {
         List<Integer> idsToRemove = new ArrayList<Integer>();
         for (Iterator it = featuresToRemove.iterator() ; it.hasNext() ; ) {
             idsToRemove.add(((Feature)it.next()).getID());
