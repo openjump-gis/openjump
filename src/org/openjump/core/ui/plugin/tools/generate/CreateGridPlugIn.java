@@ -51,6 +51,7 @@ public class CreateGridPlugIn extends AbstractUiPlugIn {
     private final static String ALL_LAYERS        = I18N.get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.all-layers");
     private final static String SELECTED_LAYERS   = I18N.get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.selected-layers");
     private final static String SELECTED_FEATURES = I18N.get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.selected-features");
+    private final static String VIEW 			  = I18N.get("ui.MenuNames.VIEW");
     private final static String SYNCHRONIZE       = I18N.get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.synchronize");
     private final static String DX                = I18N.get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.dx");
     private final static String DY                = I18N.get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.dy");
@@ -112,7 +113,7 @@ public class CreateGridPlugIn extends AbstractUiPlugIn {
         final JComboBox extentComboBox = dialog.addComboBox(
             EXTENT,
             extent,
-            Arrays.asList(ALL_LAYERS, SELECTED_LAYERS, SELECTED_FEATURES),
+            Arrays.asList(ALL_LAYERS, SELECTED_LAYERS, SELECTED_FEATURES, VIEW),
             null);
         final JCheckBox synchronizeCheckBox = dialog.addCheckBox(SYNCHRONIZE, synchronize);
         final JTextField dxField = dialog.addDoubleField(DX, dx, 12);
@@ -192,7 +193,10 @@ public class CreateGridPlugIn extends AbstractUiPlugIn {
                 env.expandToInclude(feature.getGeometry().getEnvelopeInternal());
             }
         }
-        else {
+            else if (extent.equals(VIEW)) {
+            	env =context.getWorkbenchContext().getLayerViewPanel().getViewport().getEnvelopeInModelCoordinates();
+                
+        } else {
             Assert.shouldNeverReachHere();
         }
         return env;
