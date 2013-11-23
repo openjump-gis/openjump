@@ -122,9 +122,11 @@ public class WMService {
             String requestUrlString = this.serverUrl + req;
             URL requestUrl = new URL( requestUrlString );
             URLConnection con = requestUrl.openConnection();
-            if(requestUrl.getUserInfo() != null)
+            if(requestUrl.getUserInfo() != null) {
                 con.setRequestProperty("Authorization", "Basic " +
                         Base64.encodeBytes(requestUrl.getUserInfo().getBytes()));
+                con.setRequestProperty("Host", requestUrl.getHost());
+            }
             //Parser p = new Parser();
             cap = parser.parseCapabilities( this, con.getInputStream() );
             String url1 = cap.getService().getServerUrl();
