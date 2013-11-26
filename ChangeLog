@@ -1,5 +1,11 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-11-16 Giuseppe Aruta <giuseppe.aruta@gmal.com>
+  * Add MoveSelectedLayerPlugin. Move selected layers to Category
+	Adapted from Skyjump MoveSelectedLayers PlugIn to OpenJUMP
+	- Internationalized
+	- Extended the Plugin to work with WMS layers and Sextante Raster layers
+
 2013-11-16 mmichaud <michael.michaud@free.fr>
   * Add 2D/3D option for new Save As PostGIS Table
 

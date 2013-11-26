@@ -471,13 +471,6 @@
 		</menus>
 	</plug-in>
 
-    <plug-in>
-        org.openjump.core.ui.plugin.layer.ChangeSRIDPlugIn
-        <menus>
-            <main-menu menupath="MenuNames.LAYER" />
-        </menus>
-    </plug-in>
-
 
 
 	<!-- ====================== CUSTOMIZE menu ================================== -->
@@ -1011,15 +1004,19 @@
 			<layername-popup install="true" />
 		</menus>
 	</plug-in>
-    <plug-in>
-        org.openjump.core.ui.plugin.datastore.postgis2.SaveToPostGIS2PlugIn
-    </plug-in>
 	<plug-in>
 		com.vividsolutions.jump.workbench.ui.plugin.MoveLayerablePlugIn$MoveLayerableUpPlugIn
 		<menus>
 			<layername-popup install="true" />
 		</menus>
 	</plug-in>
+       
+       <plug-in>
+		org.openjump.core.ui.plugin.layer.MoveSelectedLayersPlugIn
+		<menus>
+			<layername-popup install="true" />
+		</menus>
+	</plug-in> 
 	<plug-in>
 		com.vividsolutions.jump.workbench.ui.plugin.MoveLayerablePlugIn$MoveLayerableDownPlugIn
 		<menus>
@@ -1112,6 +1109,12 @@
 
 	<plug-in>
 		com.vividsolutions.jump.workbench.ui.plugin.MoveLayerablePlugIn$MoveLayerableUpPlugIn
+		<menus>
+			<layername-popup-wms install="true" />
+		</menus>
+	</plug-in>
+       <plug-in>
+		org.openjump.core.ui.plugin.layer.MoveSelectedLayersPlugIn
 		<menus>
 			<layername-popup-wms install="true" />
 		</menus>
@@ -1218,6 +1221,13 @@
 			<layername-popup-raster install="true" />
 		</menus>
 	</plug-in>
+        <plug-in>
+		org.openjump.core.ui.plugin.layer.MoveSelectedLayersPlugIn
+		<menus>
+			<layername-popup-raster install="true" />
+		</menus>
+	</plug-in>
+
 	<plug-in>
 		com.vividsolutions.jump.workbench.ui.plugin.MoveLayerablePlugIn$MoveLayerableDownPlugIn
 		<menus>
@@ -1459,10 +1469,4 @@
 	</plug-in>
 
 
-    <!-- ================ Toolbar ================================== -->
-    <plug-in>
-        org.openjump.core.ui.plugin.datastore.transaction.DataStoreTransactionManagerPlugIn
-    </plug-in>
-
 </workbench>
-
