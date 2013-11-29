@@ -76,7 +76,11 @@ public class SaveImageAsPlugIn extends ExportImagePlugIn {
     		}
     		try {
     			int i = Integer.parseInt(text);
-    			return i<=4000;
+                long maxMemory = Runtime.getRuntime().maxMemory();
+                // max = 5000 px for 1 G
+                // max = 10000 px for 4 G
+                int maxSize = 5*(int)Math.sqrt(maxMemory/1000);
+    			return i <= maxSize;
     		} catch (NumberFormatException e) {
     			return false;
     		}
