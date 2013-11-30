@@ -470,8 +470,12 @@
 			<main-menu menupath="MenuNames.LAYER/MenuNames.STYLE" />
 		</menus>
 	</plug-in>
-
-
+    <plug-in>
+        org.openjump.core.ui.plugin.layer.ChangeSRIDPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.LAYER" />
+        </menus>
+    </plug-in>
 
 	<!-- ====================== CUSTOMIZE menu ================================== -->
 	<plug-in>
@@ -983,6 +987,14 @@
 			<layername-popup menupath="MenuNames.STYLE" />
 		</menus>
 	</plug-in>
+
+    <!--plug-in>
+        org.openjump.core.ui.plugin.layer.ReprojectionPlugIn
+        <menus>
+            <layername-popup install="false" />
+        </menus>
+    </plug-in-->
+
 	<plug-in>
 		org.openjump.core.ui.plugin.datastore.EditDataStoreQueryPlugIn
 	</plug-in>
@@ -1004,6 +1016,9 @@
 			<layername-popup install="true" />
 		</menus>
 	</plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.datastore.postgis2.SaveToPostGIS2PlugIn
+    </plug-in>
 	<plug-in>
 		com.vividsolutions.jump.workbench.ui.plugin.MoveLayerablePlugIn$MoveLayerableUpPlugIn
 		<menus>
@@ -1468,5 +1483,9 @@
 		org.openjump.core.ui.plugin.edittoolbox.FillPolygonPlugIn
 	</plug-in>
 
+    <!-- ================ Toolbar ================================== -->
+    <plug-in>
+        org.openjump.core.ui.plugin.datastore.transaction.DataStoreTransactionManagerPlugIn
+    </plug-in>
 
 </workbench>
