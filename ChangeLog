@@ -1,5 +1,17 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-11-30 Matthias Scholz <ms@jammerhund.de>
+  * Some improvements for SaveLegendPlugin:
+    - code cleanup: fix imports and @Overrides
+    - ask befor overwrite an existing file
+    - fileselection for PNG and only files
+    - moved fileChooser variable from saveLegend() to a class variable, thereby
+      the last directory is remembered
+    - all selected layers will now be saved, not only one
+    - avoid "terrible" filechooser hight through to many selected layers or 
+      themed layers
+    - for normal, non themed layers the fill and line color is now visible
+
 2013-11-29 mmichaud <michael.michaud@free.fr>
   * #199 save raster as can save larger images if memory is available
 
