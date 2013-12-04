@@ -1246,7 +1246,7 @@ public class WorkbenchFrame extends JFrame
           return;
         
         Runtime.getRuntime().gc();
-        setStatusMessage(I18N.get(this.getClass()+".started-garbage-collection"),2000);
+        setStatusMessage(I18N.get("ui.WorkbenchFrame.started-garbage-collection"),2000);
       }
     });
     
