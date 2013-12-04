@@ -492,8 +492,8 @@ public class FeatureInstaller {
       }
     }
 
-    if (plugin.getClass().getName().contains("PasteSchema"))
-      System.out.println(fetchKeyForMenu(menu.getWrappee()));
+//    if (plugin.getClass().getName().contains("PasteSchema"))
+//      System.out.println(fetchKeyForMenu(menu.getWrappee()));
 
     List<String> posListFromProps = calculateNewPosition(menu, menu, plugin);
         //getPositionListFromProps(menu, plugin);
@@ -1183,8 +1183,8 @@ public class FeatureInstaller {
     if (pluginPos < 0)
       return new ArrayList();
 
-    if (p.getClass().getName().contains("PasteSchema"))
-      System.out.println("check " + p.getName());
+//    if (p.getClass().getName().contains("PasteSchema"))
+//      System.out.println("check " + p.getName());
 
     // look for components with bigger position values than us
     // return the bigger position list to insert us in
