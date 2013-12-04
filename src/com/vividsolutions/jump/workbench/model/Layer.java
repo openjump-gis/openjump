@@ -64,7 +64,7 @@ import com.vividsolutions.jump.workbench.ui.renderer.style.VertexStyle;
  * prefer #addAll and #removeAll to #add and #remove -- fewer events will be
  * fired.
  */
-public class Layer extends AbstractLayerable implements LayerManagerProxy {
+public class Layer extends AbstractLayerable implements LayerManagerProxy, Disposable {
     
 	public static final String FIRING_APPEARANCE_CHANGED_ON_ATTRIBUTE_CHANGE = Layer.class
 			.getName()
