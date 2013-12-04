@@ -90,10 +90,9 @@ public class SaveProjectAsPlugIn extends AbstractSaveProjectPlugIn {
         fileChooser.setFileFilter(JUMP_PROJECT_FILE_FILTER);
         Blackboard blackboard = PersistentBlackboardPlugIn.get(context.getWorkbenchContext());
         String dir = (String)blackboard.get(FILE_CHOOSER_DIRECTORY_KEY);
-        if (dir != null) {
+        if (dir != null && new File(dir).exists()) {
             fileChooser.setCurrentDirectory(new File(dir));
         }
-        
     }
     
     public String getName() {
