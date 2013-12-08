@@ -18,7 +18,8 @@ import junit.framework.TestCase;
 public class GMLWriterTestCase extends TestCase {
     private TestWriter writer = new TestWriter();
     private GeometryFactory factory = new GeometryFactory();
-    private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+    //private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+    private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
     public GMLWriterTestCase(String arg0) {
         super(arg0);
@@ -37,7 +38,7 @@ public class GMLWriterTestCase extends TestCase {
         doAssert("", null, AttributeType.DOUBLE);
         doAssert("4", new Integer(4), AttributeType.INTEGER);
         doAssert("", null, AttributeType.INTEGER);
-        doAssert("1921-04-18", dateFormatter.parse("1921-04-18"), AttributeType.DATE);
+        doAssert(dateFormatter.format(new SimpleDateFormat("yyyy-MM-dd").parse("1921-04-18")), dateFormatter.parse("1921-04-18"), AttributeType.DATE);
         doAssert("", null, AttributeType.DATE);
 
         try {
