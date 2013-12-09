@@ -108,6 +108,7 @@ public class DataSourceFileLayerLoader extends AbstractFileLayerLoader {
     Connection connection = dataSourceQuery.getDataSource().getConnection();
     try {
       LayerManager layerManager = workbenchContext.getLayerManager();
+      layerName = layerManager.uniqueLayerName(layerName);
       FeatureCollection dataset = dataSourceQuery.getDataSource()
         .installCoordinateSystem(
           connection.executeQuery(dataSourceQuery.getQuery(), exceptions,

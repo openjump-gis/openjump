@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-12-10 mmichaud <m.michael.michaud@orange.fr>
+  * Fix #352 : Layers loaded from file can have duplicate names
+
 2013-11-30 Matthias Scholz <ms@jammerhund.de>
   * Some improvements for SaveLegendPlugin:
     - code cleanup: fix imports and @Overrides
