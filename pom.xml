@@ -696,6 +696,15 @@
       <name>imageio-ext Repository</name>
       <url>http://maven.geo-solutions.it/</url>
     </repository>
+    <!-- we got our custommade jts 1.14 snapshot from here, thx Michael Bedward -->
+    <repository>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <id>sonatype-snapshots</id>
+      <name>sonatype-snapshots</name>
+      <url>http://oss.sonatype.org/content/repositories/snapshots/</url>
+    </repository>
   </repositories>
   <dependencies>
     <dependency>
@@ -707,7 +716,7 @@
     <dependency>
       <groupId>com.vividsolutions</groupId>
       <artifactId>jts</artifactId>
-      <version>1.13</version>
+      <version>1.14-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
