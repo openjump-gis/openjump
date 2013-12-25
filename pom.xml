@@ -716,7 +716,7 @@
     <dependency>
       <groupId>com.vividsolutions</groupId>
       <artifactId>jts</artifactId>
-      <version>1.14-SNAPSHOT</version>
+      <version>1.14-20131224.000718-1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
