@@ -27,7 +27,7 @@ JAVA_MAXMEM=${JAVA_MAXMEM--Xmx512M}
 end(){
   # show error for some time to prohibit window closing on X
   if [ "$ERROR" != "0" ]; then
-    sleep 15
+    read -p "press Enter to finish"
     exit 1
   else
     exit 0
@@ -126,7 +126,9 @@ done
  echo "The found java binary '$JAVA' is no executable file." && ERROR=1 && end
 
 # java version check
-JAVA_VERSION=$("$JAVA" -version 2>&1 | awk -F'"' '/^java version/{print $2}' | awk -F'.' '{print $1"."$2}')
+JAVA_VERSIONSTRING="$("$JAVA" -version 2>&1)"
+JAVA_VERSION=$(echo $JAVA_VERSIONSTRING | awk -F'"' '/^java version/{print $2}' | awk -F'.' '{print $1"."$2}')
+JAVA_ARCH=$(echo $JAVA_VERSIONSTRING | grep -q -i 64-bit && echo x64 || echo x86)
 JAVA_NEEDED="1.5"
 if ! awk "BEGIN{if($JAVA_VERSION < $JAVA_NEEDED)exit 1}"; then
   echo "Your java version '$JAVA_VERSION' is insufficient to run openjump.
@@ -186,19 +188,22 @@ JAVA_OPTS="$JAVA_OPTS -Djump.home=."
 JAVA_OPTS="$JAVA_OPTS $JAVA_OPTS_OVERRIDE"
 
 # extract zipped files in native dir (our way to ship symlinks to desktops)
-for file in "$JUMP_NATIVE_DIR/"*.tar.gz "$JUMP_NATIVE_DIR/"*.tgz
+for filepath in $(find "$JUMP_NATIVE_DIR/" -name '*.tgz' -o -name '*.tar.gz')
 do
-  file=$(basename "$file")
+  file=$(basename "$filepath")
+  folder=$(dirname "$filepath")
   done=".$file.unzipped"
+
   # we create a marker file symbolizing previous successful extraction
-  ( cd "$JUMP_NATIVE_DIR/"; [ -f "$file" ] && [ ! -f "$done" ] && tar -xvf "$file" && touch "$done" );
+  ( cd "$folder/"; [ -f "$file" ] && [ ! -f "$done" ] && tar -xvf "$file" && touch "$done" );
 done
 
 # allow jre to find native libraries in native dir, lib/ext (backwards compatibility)
 # NOTE: mac osx DYLD_LIBRARY_PATH is set in oj_macosx.command only
-export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$JUMP_NATIVE_DIR:$JUMP_HOME/lib/ext"
+export LD_LIBRARY_PATH="$JUMP_NATIVE_DIR/gdal-lnx-$JAVA_ARCH:$JUMP_NATIVE_DIR/linux-$JAVA_ARCH:$JUMP_NATIVE_DIR:$JUMP_HOME/lib/ext":$LD_LIBRARY_PATH
 # allow jre to find binaries located under the native folder
 export PATH="$JUMP_NATIVE_DIR:$PATH"
+export GDAL_DATA=$JUMP_NATIVE_DIR/gdal-lnx-data
 
 # try to start if no errors so far
 if [ -z "$ERROR" ]; then
