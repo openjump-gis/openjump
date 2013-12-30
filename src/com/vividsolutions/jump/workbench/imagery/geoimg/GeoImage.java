@@ -89,7 +89,7 @@ public class GeoImage implements ReferencedImage, Disposable, AlphaSetting {
   /**
    * actually paint the image to the viewport
    */
-  public void paint(Feature f, java.awt.Graphics2D g, Viewport viewport)
+  public synchronized void paint(Feature f, java.awt.Graphics2D g, Viewport viewport)
       throws ReferencedImageException {
 
     try {
