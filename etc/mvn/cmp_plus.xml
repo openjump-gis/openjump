@@ -31,9 +31,11 @@
     <fileSet>
       <directory>lib/imageio-ext.plus</directory>
       <outputDirectory>/lib</outputDirectory>
-      <includes>
-        <include>*</include>
-      </includes>
+      <!-- bindings are gdal version specific, 
+           so we only use the imageio one as a stub -->
+      <excludes>
+        <exclude>*gdal-bindings*</exclude>
+      </excludes>
     </fileSet>
   </fileSets>
 </component>
