@@ -32,34 +32,25 @@ package com.vividsolutions.jump.workbench.imagery.geoimg;
  * www.vividsolutions.com
  */
 import it.geosolutions.imageio.gdalframework.GDALImageReaderSpi;
-import it.geosolutions.imageio.gdalframework.GDALUtilities;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 
 import javax.imageio.ImageIO;
 import javax.imageio.spi.IIORegistry;
 import javax.imageio.spi.ImageReaderSpi;
 
-import org.gdal.gdal.Driver;
-import org.gdal.gdal.gdal;
-import org.gdal.gdalconst.gdalconst;
 import org.geotiff.image.jai.GeoTIFFDescriptor;
-import org.geotiff.image.jai.GeoTIFFFactory;
-import org.libtiff.jai.codec.XTIFFDirectory;
-import org.libtiff.jai.codecimpl.XTIFFCodec;
-import org.libtiff.jai.operator.XTIFFDescriptor;
 
 import com.sun.media.jai.codec.ImageCodec;
-import com.vividsolutions.jump.util.SortedList;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImage;
 import com.vividsolutions.jump.workbench.imagery.graphic.AbstractGraphicImageFactory;
 import com.vividsolutions.jump.workbench.imagery.imageio.JP2GDALEcwImageReaderSpi;
+import com.vividsolutions.jump.workbench.imagery.imageio.JP2GDALJasperImageReaderSpi;
 import com.vividsolutions.jump.workbench.imagery.imageio.JP2GDALOpenJPEGImageReaderSpi;
 import com.vividsolutions.jump.workbench.model.Prioritized;
 
@@ -83,6 +74,8 @@ public class GeoImageFactory extends AbstractGraphicImageFactory {
         new JP2GDALOpenJPEGImageReaderSpi());
     IIORegistry.getDefaultInstance().registerServiceProvider(
         new JP2GDALEcwImageReaderSpi());
+    IIORegistry.getDefaultInstance().registerServiceProvider(
+        new JP2GDALJasperImageReaderSpi());
 
     // initialize extensions
     final Iterator<? extends ImageReaderSpi> iter = IIORegistry
