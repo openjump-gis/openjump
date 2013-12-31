@@ -11,3 +11,10 @@ gvsig
  
 libecwj2-3.3-2006-09-06-src.zip
  contains original ecw sdk 3.3 sources and license
+
+libecwj2-3.3.tar.gz
+ patched sdk 3.3 sources, were used to compile ecw linux x86,x64 libs
+
+libjni-ecw-gvsig2.0.0.tar.gz
+ latest version of the ecw jni sources from gvsig
+ were used to compile jecw linux x86,x64 libs
