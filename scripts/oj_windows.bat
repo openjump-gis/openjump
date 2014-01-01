@@ -122,19 +122,6 @@ if DEFINED X64 set "NATIVEPATH=%NATIVE%\%ID%%X64%"
 set "NATIVEPATH=%NATIVEPATH%;%NATIVE%\%ID%;%NATIVE%"
 set "PATH=%NATIVEPATH%;%LIB%\ext;%PATH%"
 
-rem -- set GDAL vars --
-if DEFINED JAVA_X64 (
-  set "GDAL_FOLDER=gdal-win-x64"
-) else (
-  set "GDAL_FOLDER=gdal-win-x86"
-)
-set "GDAL_FOLDER=lib\native\%GDAL_FOLDER%"
-if EXIST "%GDAL_FOLDER%" (
-  set "GDAL_DATA=%GDAL_FOLDER%\bin\gdal-data"
-  set "GDAL_DRIVER_PATH=%GDAL_FOLDER%\bin\gdal\plugins"
-  set "PATH=%GDAL_FOLDER%\bin;%GDAL_FOLDER%\bin\gdal\java;%PATH%"
-)
-
 rem -- debug info --
 if /i NOT "%JAVA_BIN%"=="javaw" echo ---PATH--- & echo %PATH%
 
@@ -150,6 +137,20 @@ for %%i in ("%LIB%\*.jar" "%LIB%\*.zip" "%NATIVE%\%ID%%X64%\*.jar" "%NATIVE%\%ID
   rem [Jon Aquino]
 
   call :setclass
+)
+
+rem -- set GDAL vars --
+if DEFINED JAVA_X64 (
+  set "GDAL_FOLDER=gdal-win-x64"
+) else (
+  set "GDAL_FOLDER=gdal-win-x86"
+)
+set "GDAL_FOLDER=lib\native\%GDAL_FOLDER%"
+if EXIST "%GDAL_FOLDER%" (
+  set "GDAL_DATA=%GDAL_FOLDER%\bin\gdal-data"
+  set "GDAL_DRIVER_PATH=%GDAL_FOLDER%\bin\gdal\plugins"
+  set "PATH=%GDAL_FOLDER%\bin;%GDAL_FOLDER%\bin\gdal\java;%PATH%"
+  set "set CLASSPATH=%GDAL_FOLDER%\bin\gdal\java\gdal.jar;%CLASSPATH%"
 )
 
 rem -- debug info --
@@ -221,7 +222,7 @@ set SETTINGS_HOME=
 goto:eof
 
 :setclass
-set CLASSPATH=%CLASSPATH%;%jarfile%
+set "CLASSPATH=%CLASSPATH%;%jarfile%"
 set jarfile=
 goto:eof
 

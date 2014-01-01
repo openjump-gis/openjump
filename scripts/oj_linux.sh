@@ -200,10 +200,15 @@ done
 
 # allow jre to find native libraries in native dir, lib/ext (backwards compatibility)
 # NOTE: mac osx DYLD_LIBRARY_PATH is set in oj_macosx.command only
-export LD_LIBRARY_PATH="$JUMP_NATIVE_DIR/gdal-lnx-$JAVA_ARCH:$JUMP_NATIVE_DIR/linux-$JAVA_ARCH:$JUMP_NATIVE_DIR:$JUMP_HOME/lib/ext":$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH="$JUMP_NATIVE_DIR/linux-$JAVA_ARCH:$JUMP_NATIVE_DIR:$JUMP_HOME/lib/ext":$LD_LIBRARY_PATH
 # allow jre to find binaries located under the native folder
 export PATH="$JUMP_NATIVE_DIR:$PATH"
-export GDAL_DATA=$JUMP_NATIVE_DIR/gdal-lnx-data
+
+# generate gdal settings
+export GDAL_DATA=$JUMP_NATIVE_DIR/gdal-linux-data
+GDALPATH=$JUMP_NATIVE_DIR/gdal-linux-$JAVA_ARCH
+export LD_LIBRARY_PATH=$GDALPATH:$GDALPATH/lib:$GDALPATH/java:$LD_LIBRARY_PATH
+CLASSPATH=$GDALPATH/java/gdal.jar:$CLASSPATH
 
 # try to start if no errors so far
 if [ -z "$ERROR" ]; then
