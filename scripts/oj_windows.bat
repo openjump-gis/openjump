@@ -150,7 +150,8 @@ if EXIST "%GDAL_FOLDER%" (
   set "GDAL_DATA=%GDAL_FOLDER%\bin\gdal-data"
   set "GDAL_DRIVER_PATH=%GDAL_FOLDER%\bin\gdal\plugins"
   set "PATH=%GDAL_FOLDER%\bin;%GDAL_FOLDER%\bin\gdal\java;%PATH%"
-  set "set CLASSPATH=%GDAL_FOLDER%\bin\gdal\java\gdal.jar;%CLASSPATH%"
+  rem --- gdal binding is version specific, prioritize the one delivered with native libs ---
+  set "CLASSPATH=%GDAL_FOLDER%\bin\gdal\java\gdal.jar;%CLASSPATH%"
 )
 
 rem -- debug info --
