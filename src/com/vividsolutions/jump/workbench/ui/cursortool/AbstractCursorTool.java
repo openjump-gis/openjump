@@ -56,7 +56,6 @@ import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
-import org.openjump.core.ui.util.ScreenScale;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jump.I18N;
@@ -83,6 +82,14 @@ import com.vividsolutions.jump.workbench.ui.snap.SnapToVerticesPolicy;
  * A tool that draws an XOR visual indicator. Subclasses need not keep track of
  * the XOR state of the indicator -- that logic is all handled by this class.
  * Even if the LayerViewPanel is repainted while the XOR indicator is on-screen.
+ * You can use a java.awt.Shape for a simple visual indicator such as a Rectangle
+ * or Ellipse for example. For more complex indicators you can use a
+ * java.awt.Image. Here you can build complex geometric stuff with
+ * filling, transparency and so on. Real photos are possible too.
+ * For the use of an image as a visual indicator you have to override the
+ * {@link #getImage()}, {@link #getImagePosition()} methods for generating the
+ * image to be draw. Instead to call {@link #redrawShape()}, you have to use the
+ * {@link #redrawImage()} method.
  */
 public abstract class AbstractCursorTool implements CursorTool {
 	private static Logger LOG = Logger.getLogger(AbstractCursorTool.class);
@@ -100,6 +107,10 @@ public abstract class AbstractCursorTool implements CursorTool {
 	private boolean filling = false;
 
 	private Shape lastShapeDrawn;
+    
+    private Image lastImageDrawn = null;
+    
+    private Point lastMousePosition = null; 
 	
 	// special check for linux because of the painting bug in the JVM
 	protected boolean isLinuxOS = System.getProperty("os.name").toLowerCase().startsWith("linux");
@@ -338,6 +349,31 @@ public abstract class AbstractCursorTool implements CursorTool {
 	 * @return null if nothing should be drawn
 	 */
 	protected abstract Shape getShape() throws Exception;
+    
+    /**
+     * This method have to return an Image as a visual indicator.
+     * Usually this method should to be abstract. But if we do this here, many
+     * other derived classes have to implement this method. Thereby we would
+     * break the compatibility for many other classes in OJ and 3rd party
+     * plugins.
+     * 
+     * @return a Image or null if nothing should be drawn.
+     */
+    protected Image getImage() {
+        return null;
+    }
+    
+    /**
+     * This method have to return the position for the Image. The position is
+     * the top left corner of the image for the Graphics2D.drawImage() method.
+     * This method is called after the {@link #getImage()} method.
+     * For the abstract problematic please see {@link #getImage()}.
+     * 
+     * @return the position for the Image
+     */
+    protected Point getImagePosition() {
+        return null;
+    }
 
 	protected void cleanup(Graphics2D graphics) {
 		graphics.setPaintMode();
@@ -349,6 +385,15 @@ public abstract class AbstractCursorTool implements CursorTool {
     Graphics2D g;
     if (panel != null && (g=getGraphics2D())!=null)
       clearShape(g);
+  }
+
+  /**
+   * Clears an previously painted image from screen.
+   */
+  protected void clearImage() {
+    Graphics2D g;
+    if (panel != null && (g=getGraphics2D())!=null)
+      clearImage(g);
   }
 
 	private Graphics2D getGraphics2D() {
@@ -371,12 +416,28 @@ public abstract class AbstractCursorTool implements CursorTool {
 
 	public void cancelGesture() {
 		clearShape();
+        clearImage();
 	}
 
 	protected void drawShapeXOR(Graphics2D g) throws Exception {
 		Shape newShape = getShape();
 		drawShapeXOR(newShape, g);
 		lastShapeDrawn = newShape;
+	}
+
+    /**
+     * Draw the image in XOR mode at the specified position on screen.
+     * The position and the image is remembered for a later clear.
+     * 
+     * @param g
+     * @throws Exception 
+     */
+    protected void drawImageXOR(Graphics2D g) throws Exception {
+        Image newImage = getImage();
+        Point newPosition = getImagePosition();
+		drawImageXOR(newImage, newPosition, g);
+        lastImageDrawn = newImage;
+        lastMousePosition = newPosition;
 	}
 
   protected void drawShapeXOR(Shape shape, Graphics2D graphics) {
@@ -392,8 +453,8 @@ public abstract class AbstractCursorTool implements CursorTool {
         } else {
           graphics.draw(shape);
         }
+          }
       }
-    } 
     // easy workaround for 
     //  java.lang.InternalError: Unable to Stroke shape (attempt to 
     //  validate Pipe with invalid SurfaceData)
@@ -406,9 +467,32 @@ public abstract class AbstractCursorTool implements CursorTool {
       cleanup(graphics);
     }
   }
+  
+  /**
+   * Draw an image in XOR mode on screen.
+   * 
+   * @param image the image to be draw
+   * @param position the position
+   * @param graphics the Graphics2D
+   */
+  protected void drawImageXOR(Image image, Point position, Graphics2D graphics) {
+    if (image != null && position != null) {
+        setup(graphics);
+        graphics.drawImage(image, (int) position.getX(), (int) position.getY(), null);
+    }
+  }
 
 	protected void redrawShape() throws Exception {
 		redrawShape(getGraphics2D());
+	}
+
+    /**
+     * Redraws the image on screen.
+     * 
+     * @throws Exception 
+     */
+	protected void redrawImage() throws Exception {
+		redrawImage(getGraphics2D());
 	}
 
 	protected Coordinate snap(Point2D viewPoint)
@@ -429,13 +513,43 @@ public abstract class AbstractCursorTool implements CursorTool {
 			return;
 		}
 
-		drawShapeXOR(lastShapeDrawn, graphics);
+        drawShapeXOR(lastShapeDrawn, graphics);
 		setShapeOnScreen(false);
+	}
+
+    /**
+     * Clears an previously painted image from screen.
+     * 
+     * @param graphics 
+     */
+	private void clearImage(Graphics2D graphics) {
+		if (!shapeOnScreen) {
+			return;
+		}
+
+        drawImageXOR(lastImageDrawn, lastMousePosition, graphics);
+        setShapeOnScreen(false);
 	}
 
 	private void redrawShape(Graphics2D graphics) throws Exception {
 		clearShape(graphics);
 		drawShapeXOR(graphics);
+
+		//<<TODO:INVESTIGATE>> Race conditions on the shapeOnScreen field?
+		//Might we need synchronization? [Jon Aquino]
+		setShapeOnScreen(true);
+	}
+
+    /**
+     * Redraws the image on screen. This means the clearing the old image and
+     * draw the actual image.
+     * 
+     * @param graphics the Graphics2D
+     * @throws Exception 
+     */
+    private void redrawImage(Graphics2D graphics) throws Exception {
+		clearImage(graphics);
+		drawImageXOR(graphics);
 
 		//<<TODO:INVESTIGATE>> Race conditions on the shapeOnScreen field?
 		//Might we need synchronization? [Jon Aquino]

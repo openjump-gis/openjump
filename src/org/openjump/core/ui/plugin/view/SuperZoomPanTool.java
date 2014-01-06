@@ -20,6 +20,7 @@ import com.vividsolutions.jump.workbench.ui.cursortool.DragTool;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import java.awt.BasicStroke;
 import java.awt.Dimension;
+import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
@@ -27,8 +28,10 @@ import java.awt.Transparency;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.image.BufferedImage;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+import org.apache.log4j.Logger;
 import org.openjump.core.ui.util.ScreenScale;
 
 /**
@@ -48,6 +51,15 @@ public class SuperZoomPanTool extends DragTool implements MouseWheelListener {
 	public static Cursor CURSOR_ZOOM = createCursor(IconLoader.icon("MagnifyCursor.gif").getImage());
 	public static Cursor CURSOR_PAN = createCursor(IconLoader.icon("Hand.gif").getImage());
 	public static Cursor CURSOR_WHEEL = createCursor(IconLoader.icon("MagnifyAreaCursor.gif").getImage());
+    
+    /**
+     * The visual indicator (area of interest) is painted as a Shape.
+     */
+    public static final int INDICATOR_MODE_SHAPE = 1;
+    /**
+     * The visual indicator (area of interest) is painted as an Image.
+     */
+    public static final int INDICATOR_MODE_IMAGE = 2;
 	
 	private boolean dragging = false;
 	private Image origImage;
@@ -59,6 +71,8 @@ public class SuperZoomPanTool extends DragTool implements MouseWheelListener {
 	private boolean mouseWheelListenerAdded = false;
 	private boolean isAnimatingZoom = false;
 	private Timer zoomPanClickTimer = null;
+    private int indicatorMode = INDICATOR_MODE_IMAGE;
+    private Point imagePosition = null;
 
 	public SuperZoomPanTool() {
 	}
@@ -107,7 +121,7 @@ public class SuperZoomPanTool extends DragTool implements MouseWheelListener {
 		getWorkbench().getContext().getLayerViewPanel().setCursor(CURSOR_WHEEL);
 		getWorkbench().getFrame().setTimeMessage("1:" + (int) Math.floor(ScreenScale.getHorizontalMapScale(panel.getViewport()) / scale));
 		try {
-			redrawShape();
+            redrawIndicator();
 		} catch (Exception ex) {
 			getPanel().getContext().handleThrowable(ex);
 		}
@@ -129,13 +143,98 @@ public class SuperZoomPanTool extends DragTool implements MouseWheelListener {
 		}
 	}
 
-	@Override
+    @Override
+    protected Image getImage() {
+        if (wheelMode) {
+            // size of the area for text info such as scale etc.
+            int textAreaWidth = 200;
+            int textAreaHeight = 64;
+
+            // offset of the textArea from the mouse position aka. the middle point of the zoomArea
+            int textAreaOffsetX = 10;
+            int textAreaOffsetY = 10;
+
+            Dimension onScreenRectangleDimension = getPanel().getSize();
+            onScreenRectangleDimension.setSize(onScreenRectangleDimension.getWidth() * 1 / scale, onScreenRectangleDimension.getHeight() * 1 / scale);
+            // size of the new zoom level rectangle
+            int zoomAreaWidth = (int) onScreenRectangleDimension.getWidth();
+            int zoomAreaHeight = (int) onScreenRectangleDimension.getHeight();
+
+            /* Compute the image size. This depends on the zoomArea size.
+             * If the textArea plus textAreaOffset fits into the zoomArea,
+             * the image size is eqal the zoomArea size. But if not, the
+             * image size have to grow up.
+             */
+            int biWidth = zoomAreaWidth / 2 + textAreaOffsetX + textAreaWidth <= zoomAreaWidth ? zoomAreaWidth : zoomAreaWidth / 2 + textAreaOffsetX + textAreaWidth;
+            int biHeight = zoomAreaHeight / 2 + textAreaOffsetY + textAreaHeight <= zoomAreaHeight ? zoomAreaHeight : zoomAreaHeight / 2 + textAreaOffsetY + textAreaHeight;
+
+            // create the image
+            BufferedImage image = new BufferedImage(biWidth, biHeight, BufferedImage.TYPE_INT_ARGB_PRE);
+            Graphics2D imageG2d = image.createGraphics();
+            // fill the whole zoomArea
+            imageG2d.setColor(Color.yellow);
+            imageG2d.fillRect(0, 0, zoomAreaWidth, zoomAreaHeight);
+            // draw the enclosing zoom rectangle
+            imageG2d.setColor(Color.red);
+            imageG2d.drawRect(0, 0, zoomAreaWidth - 1, zoomAreaHeight - 1);
+            imageG2d.drawRect(1, 1, zoomAreaWidth - 3, zoomAreaHeight - 3);
+
+            // draw the textArea stuff
+            // fill the whole textArea
+            imageG2d.setColor(new Color(180,200,0));
+            imageG2d.fillRect(zoomAreaWidth / 2 + textAreaOffsetX, zoomAreaHeight / 2 + textAreaOffsetY, textAreaWidth, textAreaHeight);
+            // draw a border around the textArea
+            imageG2d.setColor(Color.black);
+            imageG2d.drawRect(zoomAreaWidth / 2 + textAreaOffsetX, zoomAreaHeight / 2 + textAreaOffsetY, textAreaWidth - 1, textAreaHeight -1);
+            // draw the map scale
+            imageG2d.setColor(Color.black);
+            imageG2d.drawString(I18N.get("org.openjump.core.ui.plugin.view.ZoomToScalePlugIn.scale") + " 1:" + (int) Math.floor(ScreenScale.getHorizontalMapScale(panel.getViewport()) / scale), zoomAreaWidth / 2 + textAreaOffsetX + 5, zoomAreaHeight / 2 + textAreaOffsetY + 14);
+            // draw the tool hint with a simple linebreaker, because drawString do not make this
+            int hintX = zoomAreaWidth / 2 + textAreaOffsetX + 5;
+            int hintOffsetX = 0;
+            int hintY = zoomAreaHeight / 2 + textAreaOffsetY + 32;
+            FontMetrics fm = imageG2d.getFontMetrics();
+            String hintString = I18N.get("org.openjump.core.ui.plugin.view.SuperZoomPanTool.wheelmode-message");
+            for (String word : hintString.split(" ")) {
+                word += " ";
+                if (hintX + hintOffsetX + fm.stringWidth(word)> hintX + textAreaWidth -2) {
+                    // \n
+                    hintY += 14;
+                    // \r
+                    hintOffsetX = 0;
+                }
+                imageG2d.drawString(word, hintX + hintOffsetX, hintY);
+                hintOffsetX += fm.stringWidth(word);
+            }
+
+            // free resources
+            imageG2d.dispose();
+
+            // imagePosition is the center of the zoomArea rectangle
+            imagePosition = new Point((int) mousePosition.getX() - zoomAreaWidth / 2, (int) mousePosition.getY() - zoomAreaHeight / 2);
+
+            return image;
+        } else {
+            imagePosition = null;
+            return null;
+        }
+
+    }
+
+    @Override
+    protected Point getImagePosition() {
+        return imagePosition;
+    }
+    
+    
+    
+    @Override
 	public void mouseMoved(MouseEvent e) {
 		super.mouseMoved(e);
 		try {
 			mousePosition = e.getPoint();
-			redrawShape();
-		} catch (Exception ex) {
+            redrawIndicator();
+        } catch (Exception ex) {
 			getPanel().getContext().handleThrowable(ex);
 		}
 	}
@@ -161,7 +260,7 @@ public class SuperZoomPanTool extends DragTool implements MouseWheelListener {
 			try {
 				// the following redrawShape() clears the Shape from screen,
 				// because wheelMode is false.
-				redrawShape();
+                redrawIndicator();
 			} catch (Exception ex) {
 				getPanel().getContext().handleThrowable(ex);
 			}
@@ -262,7 +361,7 @@ public class SuperZoomPanTool extends DragTool implements MouseWheelListener {
 			getWorkbench().getContext().getLayerViewPanel().setCursor(CURSOR_WHEEL);
 			try {
 				mousePosition = e.getPoint();
-				redrawShape();
+                redrawIndicator();
 			} catch (Exception ex) {
 				getPanel().getContext().handleThrowable(ex);
 			}
@@ -363,4 +462,42 @@ public class SuperZoomPanTool extends DragTool implements MouseWheelListener {
     	vp.zoom(zoomModelEnvelope);   		
     }
 
+    /**
+     * Redraws the visual indicator. This can be a Shape or an Image. It depends
+     * of the indicatorMode value.
+     */
+    public void redrawIndicator() {
+        try {
+            switch (getIndicatorMode()) {
+                case INDICATOR_MODE_SHAPE:
+                    redrawShape();
+                    break;
+                case INDICATOR_MODE_IMAGE:
+                    redrawImage();
+                    break;
+                default:
+                    Logger.getLogger(SuperZoomPanTool.class).warn("Unknown indicatorMode " + getIndicatorMode() + "!");
+            }
+        } catch (Exception e) {
+            Logger.getLogger(SuperZoomPanTool.class).error("Unable to redraw the visual indicator!", e);
+        }
+    }
+
+    /**
+     * @return the indicatorMode
+     */
+    public int getIndicatorMode() {
+        return indicatorMode;
+    }
+
+    /**
+     * Sets the indicatorMode. Valid values are {@link #INDICATOR_MODE_SHAPE},
+     * {@link #INDICATOR_MODE_IMAGE}.
+     * @param indicatorMode the indicatorMode to set
+     */
+    public void setIndicatorMode(int indicatorMode) {
+        if (indicatorMode == INDICATOR_MODE_SHAPE || indicatorMode == INDICATOR_MODE_IMAGE) {
+            this.indicatorMode = indicatorMode;
+        }
+    }
 }
