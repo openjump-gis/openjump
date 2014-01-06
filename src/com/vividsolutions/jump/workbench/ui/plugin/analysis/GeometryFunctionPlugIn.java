@@ -399,10 +399,11 @@ public class GeometryFunctionPlugIn extends AbstractPlugIn implements ThreadedPl
     		I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Replace-the-geometry-of-Source-features-with-the-result-geometry") + "  ");
     updateSourceRB.setEnabled(editSourceAllowed);
 
-    if ( addToSourceAllowed && editSourceAllowed) {
-        addToSourceRB = dialog.addRadioButton(ADD_TO_SRC, OUTPUT_GROUP, false,
-                I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Add-the-result-geometry-to-the-Source-layer")+"  ");
-    }
+    //if ( addToSourceAllowed && editSourceAllowed) {
+    addToSourceRB = dialog.addRadioButton(ADD_TO_SRC, OUTPUT_GROUP, false,
+            I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Add-the-result-geometry-to-the-Source-layer")+"  ");
+    addToSourceRB.setEnabled(addToSourceAllowed && editSourceAllowed);
+    //}
 
     updateUIForMethod(functionToRun);
   }
