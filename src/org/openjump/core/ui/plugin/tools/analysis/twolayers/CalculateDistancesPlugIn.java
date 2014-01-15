@@ -48,6 +48,7 @@ import com.vividsolutions.jts.algorithm.distance.DiscreteHausdorffDistance;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.operation.distance.DistanceOp;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
@@ -87,6 +88,11 @@ public class CalculateDistancesPlugIn extends ThreadedBasePlugIn{
 	private String sDIST_OP = 				I18N.get("org.openjump.core.ui.plugin.tools.CalculateDistancesPlugIn.select-distance-operation-for-non-point-geometries");	
 	private String distresult = 			I18N.get("org.openjump.core.ui.plugin.tools.CalculateDistancesPlugIn.distances-result");
 	private String notimplemented = 		I18N.get("org.openjump.core.ui.plugin.tools.CalculateDistancesPlugIn.not-implemented");
+	
+	private String sMonitorMsg = "origins evaluated";
+	private String sCalcCentroidDist = "calculate centroid distance";
+	private String sCalcHausdorffDsit = "calculate Hausdorff distance (a maximal distance)";
+	private String sGenerateLines = "generate line distance geometries to first destination";
 		
 	//-- vars
 	private Layer orgLayer = null;
@@ -95,7 +101,7 @@ public class CalculateDistancesPlugIn extends ThreadedBasePlugIn{
 	private String destAttrName = "";
 	public boolean calcCentroidDistance = true;
 	public boolean calcHausdorffDistance = true;
-	public boolean displayHausdorffDistanceGeometry = true;
+	public boolean displayLineGeoms = true;
 	    
 	private MultiInputDialog dialog;	
 	private PlugInContext pcontext = null;
@@ -149,7 +155,8 @@ public class CalculateDistancesPlugIn extends ThreadedBasePlugIn{
 		FeatureCollection destinationFeatures = this.destLayer.getFeatureCollectionWrapper();	
 				
 		FeatureDataset results = calcDistances(originFeatures, destinationFeatures, this.orgAttrName,
-		        						this.destAttrName, this.calcCentroidDistance, monitor);
+		        						this.destAttrName, this.calcCentroidDistance, 
+		        						this.calcHausdorffDistance, this.displayLineGeoms, monitor);
 		if(results.size() > 0){
 			context.addLayer(StandardCategoryNames.RESULT, distresult, results);
 		}
@@ -165,10 +172,14 @@ public class CalculateDistancesPlugIn extends ThreadedBasePlugIn{
 	
 	private FeatureDataset calcDistances(FeatureCollection originFeatures,
 			FeatureCollection destinationFeatures, String orgAttrName, String destAttrName,
-			boolean calcCentroidDistance, TaskMonitor monitor) {
+			boolean calcCentroidDist, boolean calcHausdorffDist, boolean displayLines, 
+			TaskMonitor monitor) {
+		
+		monitor.allowCancellationRequests();
 		
 		//-- evaluate the number of destinations so we can generate the new schema
 		int numDest = destinationFeatures.size();
+		int numOrigins = originFeatures.size();
 		FeatureSchema newFs = new FeatureSchema();
 		newFs.addAttribute("geometry", AttributeType.GEOMETRY);
 		newFs.addAttribute(orgAttrName, originFeatures.getFeatureSchema().getAttributeType(orgAttrName));
@@ -176,10 +187,10 @@ public class CalculateDistancesPlugIn extends ThreadedBasePlugIn{
 			Feature destF = (Feature) iterator.next();
 			Object destFid = destF.getAttribute(destAttrName);
 			newFs.addAttribute(destFid.toString() + "_sd", AttributeType.DOUBLE);
-			if(this.calcCentroidDistance == true){
+			if(calcCentroidDist == true){
 				newFs.addAttribute(destFid.toString() + "_sdc", AttributeType.DOUBLE);
 			}
-			if(this.calcHausdorffDistance ==  true){
+			if(calcHausdorffDist ==  true){
 				newFs.addAttribute(destFid.toString() + "_sdh", AttributeType.DOUBLE);
 			}
 		}
@@ -188,28 +199,38 @@ public class CalculateDistancesPlugIn extends ThreadedBasePlugIn{
 		GeometryFactory gf = new GeometryFactory();
 		
 		//-- now calculate the distances
+		int numItemsProcessed = 0;
 		for (Iterator iterator = originFeatures.iterator(); iterator.hasNext();) {
 			Feature orgF = (Feature) iterator.next();
+			
+			monitor.report(numItemsProcessed, numDest, sMonitorMsg);
 			
 			Feature newFeature = new BasicFeature(newFs);
 			// set identifier in first row 
 			newFeature.setAttribute(orgAttrName, orgF.getAttribute(orgAttrName));
-					
+			// create empty geometry
+			Geometry multiline = gf.createGeometryCollection(null);
+			LineString sdline = null;
+			LineString sdcline = null;
+			LineString sdhline = null;
+			
+			// loop over destinations
 			int counter = 1;
 			for (Iterator iterator2 = destinationFeatures.iterator(); iterator2.hasNext();) {
 				Feature destF = (Feature) iterator2.next();
 				Object destfid = destF.getAttribute(destAttrName);
 				//-- calculate object distance
 				double objectDist = 0;
-				Geometry dline = gf.createGeometryCollection(null); 
+
 				try{
 					DistanceOp dops = new DistanceOp(orgF.getGeometry(), destF.getGeometry());
 					objectDist = dops.distance();
 					// get geometry of connection - but only for first destination
-					if(counter == 1){
-						Coordinate[] coords = dops.nearestPoints();
-						dline = gf.createLineString(coords);
-						newFeature.setGeometry(dline);
+					if(displayLines == true){
+						if(counter == 1){
+							Coordinate[] coords = dops.nearestPoints();
+							sdline = gf.createLineString(coords);
+						}
 					}
 				}
 				catch(Exception e){
@@ -218,11 +239,17 @@ public class CalculateDistancesPlugIn extends ThreadedBasePlugIn{
 				newFeature.setAttribute(destfid.toString() + "_sd", objectDist);
 				
 				//-- calculate centroid distance
-				if(this.calcCentroidDistance == true){
+				if(calcCentroidDist == true){
 					double centroidDist = 0;
 					try{
 						DistanceOp dopc = new DistanceOp(orgF.getGeometry().getCentroid(), destF.getGeometry().getCentroid());
 						centroidDist = dopc.distance();
+						if(displayLines == true){
+							if(counter == 1){
+								Coordinate[] coords = dopc.nearestPoints();
+								sdcline = gf.createLineString(coords);
+							}
+						}
 					}
 					catch(Exception e){
 						centroidDist = Double.NaN;
@@ -231,16 +258,15 @@ public class CalculateDistancesPlugIn extends ThreadedBasePlugIn{
 				}
 				
 				//-- calculate hausdorff distance
-				if(this.calcHausdorffDistance == true){
+				if(calcHausdorffDist == true){
 					double hausdDist = 0;
 					try{						
 						DiscreteHausdorffDistance doph = new DiscreteHausdorffDistance(orgF.getGeometry(), destF.getGeometry());
 						hausdDist = doph.distance();
-						if(this.displayHausdorffDistanceGeometry == true){
+						if(displayLineGeoms == true){
 							if(counter == 1){
 								Coordinate[] coords = doph.getCoordinates();
-								dline = gf.createLineString(coords);
-								newFeature.setGeometry(dline);
+								sdhline = gf.createLineString(coords);
 							}
 						}
 					}
@@ -249,10 +275,28 @@ public class CalculateDistancesPlugIn extends ThreadedBasePlugIn{
 					}
 					newFeature.setAttribute(destfid.toString() + "_sdh", hausdDist);
 				}
-				
+				if(counter == 1){
+					int arraySize = 1;
+					if(sdcline != null) arraySize++;
+					if(sdhline != null) arraySize++;
+					LineString[] lineStringArray = new LineString[arraySize];
+					int idx = 0;
+					lineStringArray[idx] = sdline;
+					if(sdcline != null){
+						idx++;
+						lineStringArray[idx] = sdcline;
+					}
+					if(sdhline != null){
+						idx++;
+						lineStringArray[idx] = sdhline;
+					}
+					multiline = gf.createMultiLineString(lineStringArray);
+					newFeature.setGeometry(multiline);
+				}
 				counter = counter + 1;
 			}
 			resultDistFeatures.add(newFeature);
+			numItemsProcessed++;
 		}
 		
 		return resultDistFeatures;
@@ -294,6 +338,10 @@ public class CalculateDistancesPlugIn extends ThreadedBasePlugIn{
 		attribboxBDest = this.dialog.addComboBox(sTGT_UniqueIdAttrib,attrValueDest,attCollDest,"");
 		updateUIForAttributesDest();
 		
+		//-- checkboxes for output options
+		this.dialog.addCheckBox(sCalcCentroidDist, calcCentroidDistance);
+		this.dialog.addCheckBox(sCalcHausdorffDsit, calcHausdorffDistance);
+		this.dialog.addCheckBox(sGenerateLines, displayLineGeoms);
 	}
 	
 	private void updateUIForAttributesOrg(){	
@@ -339,6 +387,9 @@ public class CalculateDistancesPlugIn extends ThreadedBasePlugIn{
 		this.destLayer = dialog.getLayer(sTGT_LAYER);
 		this.orgAttrName = (String) attribboxAOrg.getSelectedItem();
 		this.destAttrName = (String) attribboxBDest.getSelectedItem();
+		this.calcCentroidDistance = dialog.getBoolean(sCalcCentroidDist);
+		this.calcHausdorffDistance = dialog.getBoolean(sCalcHausdorffDsit);
+		this.displayLineGeoms = dialog.getBoolean(sGenerateLines);
 	}
 	
 	
