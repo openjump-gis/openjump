@@ -87,12 +87,11 @@ public class CalculateDistancesPlugIn extends ThreadedBasePlugIn{
 	private String sTGT_UniqueIdAttrib = 	I18N.get("org.openjump.core.ui.plugin.tools.CalculateDistancesPlugIn.select-unique-attribute-for-destination-identification");
 	private String sDIST_OP = 				I18N.get("org.openjump.core.ui.plugin.tools.CalculateDistancesPlugIn.select-distance-operation-for-non-point-geometries");	
 	private String distresult = 			I18N.get("org.openjump.core.ui.plugin.tools.CalculateDistancesPlugIn.distances-result");
-	private String notimplemented = 		I18N.get("org.openjump.core.ui.plugin.tools.CalculateDistancesPlugIn.not-implemented");
-	
-	private String sMonitorMsg = "origins evaluated";
-	private String sCalcCentroidDist = "calculate centroid distance";
-	private String sCalcHausdorffDsit = "calculate Hausdorff distance (a maximal distance)";
-	private String sGenerateLines = "generate line distance geometries to first destination";
+	private String notimplemented = 		I18N.get("org.openjump.core.ui.plugin.tools.CalculateDistancesPlugIn.not-implemented");	
+	private String sMonitorMsg = 			I18N.get("org.openjump.core.ui.plugin.tools.CalculateDistancesPlugIn.origins-evaluated");
+	private String sCalcCentroidDist = 		I18N.get("org.openjump.core.ui.plugin.tools.CalculateDistancesPlugIn.calculate-centroid-distance");
+	private String sCalcHausdorffDsit = 	I18N.get("org.openjump.core.ui.plugin.tools.CalculateDistancesPlugIn.calculate-Hausdorff-distance-a-maximal-distance");
+	private String sGenerateLines = 		I18N.get("org.openjump.core.ui.plugin.tools.CalculateDistancesPlugIn.generate-line-distance-geometries-to-first-destination");
 		
 	//-- vars
 	private Layer orgLayer = null;
@@ -107,8 +106,11 @@ public class CalculateDistancesPlugIn extends ThreadedBasePlugIn{
 	private PlugInContext pcontext = null;
 		
 	public void initialize(PlugInContext context) throws Exception {
-		this.sidebartext = "Calculates distance between the geometries in 2 different datasets. It-returns (i) the shortest disstance (sd), the shortest distance between centroids (sds), and the Hausdorff distance (sdh).";
-
+		/*
+		this.sidebartext = "Calculates distance between the geometries in 2 different datasets. " +
+				"It returns (i) the shortest disstance (sd), (ii) the shortest distance between centroids (sdc), " +
+				"and (iii) the Hausdorff distance (sdh, a maximum distance).";
+		*/
 		FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
 		featureInstaller.addMainMenuPlugin(
 				this,				
@@ -236,7 +238,7 @@ public class CalculateDistancesPlugIn extends ThreadedBasePlugIn{
 				catch(Exception e){
 					objectDist = Double.NaN;
 				}
-				newFeature.setAttribute(destfid.toString() + "_sd", objectDist);
+				newFeature.setAttribute("sd_" + destfid.toString(), objectDist);
 				
 				//-- calculate centroid distance
 				if(calcCentroidDist == true){
@@ -254,7 +256,7 @@ public class CalculateDistancesPlugIn extends ThreadedBasePlugIn{
 					catch(Exception e){
 						centroidDist = Double.NaN;
 					}
-					newFeature.setAttribute(destfid.toString() + "_sdc", centroidDist);
+					newFeature.setAttribute("sdc_" + destfid.toString(), centroidDist);
 				}
 				
 				//-- calculate hausdorff distance
@@ -273,7 +275,7 @@ public class CalculateDistancesPlugIn extends ThreadedBasePlugIn{
 					catch(Exception e){
 						hausdDist = Double.NaN;
 					}
-					newFeature.setAttribute(destfid.toString() + "_sdh", hausdDist);
+					newFeature.setAttribute("sdh_" + destfid.toString(), hausdDist);
 				}
 				if(counter == 1){
 					int arraySize = 1;
@@ -339,8 +341,11 @@ public class CalculateDistancesPlugIn extends ThreadedBasePlugIn{
 		updateUIForAttributesDest();
 		
 		//-- checkboxes for output options
+		this.dialog.addSeparator();
+		this.dialog.addLabel(sDIST_OP + ":");
 		this.dialog.addCheckBox(sCalcCentroidDist, calcCentroidDistance);
 		this.dialog.addCheckBox(sCalcHausdorffDsit, calcHausdorffDistance);
+		this.dialog.addSeparator();
 		this.dialog.addCheckBox(sGenerateLines, displayLineGeoms);
 	}
 	
