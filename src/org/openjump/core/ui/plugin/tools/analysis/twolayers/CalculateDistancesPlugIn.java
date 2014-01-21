@@ -212,6 +212,8 @@ public class CalculateDistancesPlugIn extends ThreadedBasePlugIn{
 			newFeature.setAttribute(orgAttrName, orgF.getAttribute(orgAttrName));
 			// create empty geometry
 			Geometry multiline = gf.createGeometryCollection(null);
+			newFeature.setGeometry(multiline);
+			
 			LineString sdline = null;
 			LineString sdcline = null;
 			LineString sdhline = null;
@@ -277,7 +279,7 @@ public class CalculateDistancesPlugIn extends ThreadedBasePlugIn{
 					}
 					newFeature.setAttribute("sdh_" + destfid.toString(), hausdDist);
 				}
-				if(counter == 1){
+				if((counter == 1) && (displayLineGeoms == true)){
 					int arraySize = 1;
 					if(sdcline != null) arraySize++;
 					if(sdhline != null) arraySize++;
