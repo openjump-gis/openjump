@@ -188,12 +188,12 @@ public class CalculateDistancesPlugIn extends ThreadedBasePlugIn{
 		for (Iterator iterator = destinationFeatures.iterator(); iterator.hasNext();) {
 			Feature destF = (Feature) iterator.next();
 			Object destFid = destF.getAttribute(destAttrName);
-			newFs.addAttribute(destFid.toString() + "_sd", AttributeType.DOUBLE);
+			newFs.addAttribute("sd_" + destFid.toString(), AttributeType.DOUBLE);
 			if(calcCentroidDist == true){
-				newFs.addAttribute(destFid.toString() + "_sdc", AttributeType.DOUBLE);
+				newFs.addAttribute("sdc_" + destFid.toString(), AttributeType.DOUBLE);
 			}
 			if(calcHausdorffDist ==  true){
-				newFs.addAttribute(destFid.toString() + "_sdh", AttributeType.DOUBLE);
+				newFs.addAttribute("sdh_" + destFid.toString(), AttributeType.DOUBLE);
 			}
 		}
 		
