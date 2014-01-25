@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2014-01-25 mmichaud <m.michael.michaud@orange.fr>
+  * Fixed a bug #354 : OpenRecentPlugIn broken.
+
 2014-01-15 mentaer <sstein@geo.uzh.ch>
   * New analysis tool (CalculateDistancesPlugIn) to calculate distances between 
     two sets of geometries. Calculates shortest distance, centroid distance and 

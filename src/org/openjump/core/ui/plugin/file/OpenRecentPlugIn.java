@@ -54,12 +54,13 @@ public class OpenRecentPlugIn extends AbstractUiPlugIn {
   private static final String RECENT_FILES_KEY = KEY + ".FILES";
   private static final String RECENT_PROJECTS_KEY = KEY + ".PROJECTS";
 
-  public static OpenRecentPlugIn get(final WorkbenchContext context) {
+  public static OpenRecentPlugIn get(final WorkbenchContext context) throws Exception {
     Blackboard blackboard = context.getBlackboard();
     synchronized (KEY) {
       OpenRecentPlugIn plugin = (OpenRecentPlugIn) blackboard.get(KEY);
       if (plugin == null) {
         plugin = new OpenRecentPlugIn();
+        plugin.initialize(context.createPlugInContext());
         blackboard.put(KEY, plugin);
       }
       return plugin;
