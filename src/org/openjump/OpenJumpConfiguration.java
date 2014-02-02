@@ -640,7 +640,6 @@ public class OpenJumpConfiguration {
     addImageFactory(workbenchContext, registry, new MrSIDImageFactory(), null);
 
     // register revamped geoimage
-    // addImageFactory(workbenchContext, registry, new GeoImageFactory(), null);
     GeoImageFactoryFileLayerLoader.register(workbenchContext);
 
     DataSourceQueryChooserManager manager = DataSourceQueryChooserManager.get(workbenchContext.getWorkbench()
