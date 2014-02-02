@@ -120,23 +120,28 @@ public class  XTIFFDescriptor extends OperationDescriptorImpl
          * A convenience method for registering XTIFF methods into JAI,
          * for extended classes of XTIFFDescriptor.
          */
-   public static void register(XTIFFDescriptor odesc) {
-
-        OperationRegistry reg=JAI.getDefaultInstance().getOperationRegistry();
-
-         // override tiff operation
-        reg.unregisterOperationDescriptor("tiff");
-
-          // ...and register tiff with the new desc
-        reg.registerOperationDescriptor(odesc,"tiff");
-        reg.registerRIF("tiff", "org.libtiff.jai", odesc);
-
-        // [ede] do _not_ unregister suns codec!!!
-        //ImageCodec.unregisterCodec("tiff");
-        // register xtiff codec
-        ImageCodec.registerCodec(new XTIFFCodec());
-
-   }
+    public static void register(XTIFFDescriptor odesc) {
+  
+      OperationRegistry reg = JAI.getDefaultInstance().getOperationRegistry();
+  
+      // [ede 02.2014] commented the following as it makes xtiff preferred
+      //               but xtiff fails to read e.g. int tiffs for sextante
+      // // override tiff operation
+      // reg.unregisterOperationDescriptor("tiff");
+      //
+      // // ...and register tiff with the new desc
+      // reg.registerOperationDescriptor(odesc,"tiff");
+      // reg.registerRIF("tiff", "org.libtiff.jai", odesc);
+  
+      // [ede] do _not_ unregister suns codec!!!
+      ImageCodec tifcodec = ImageCodec.getCodec("tiff");
+      ImageCodec.unregisterCodec("tiff");
+      // register xtiff codec
+      ImageCodec.registerCodec(new XTIFFCodec());
+      // reregister original codec, so it becomes preferred again
+      ImageCodec.registerCodec(tifcodec);
+  
+    }
         /**
          * A convenience method for registering the default XTIFF
          * methods into JAI.
