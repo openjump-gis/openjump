@@ -88,9 +88,11 @@ and the following plugins
  Jump Chart (com.cadplan.jump) - GPL2 - gpl-2.txt
   JumpChart.jar
  JUMP DB Query Plugin (Larry Reeder) - GPL3 - gpl-3.0.txt
-  jumpdbquery-0.9.jar, dbquery.properties
-  gt2-oracle-spatial-2.3.2.jar - LGPL2.1 - lgpl-2.1.txt
-  jsyntaxpane-0.9.6.jar - Apache License Version 2.0 - apache_license-2.0.txt
+  jumpdbquery-*.jar, dbquery.properties
+  jsyntaxpane-*.jar - Apache License Version 2.0 - apache_license-2.0.txt
+  gt2-oracle-spatial-*.jar - LGPL2.1 - lgpl-2.1.txt
+  mysql-connector-java-*.jar - GPL2 - gpl-2.txt
+  sqlite-jdbc-*.jar - Apache License Version 2.0 - apache_license-2.0.txt
  Jump Fill Pattern (com.cadplan.jump) - GPL2 - gpl-2.txt
   JumpFillPattern.jar
  KML Driver (skyjump) - GPL2 - gpl-2.txt
