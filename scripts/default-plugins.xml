@@ -470,12 +470,12 @@
 			<main-menu menupath="MenuNames.LAYER/MenuNames.STYLE" />
 		</menus>
 	</plug-in>
-    <plug-in>
-        org.openjump.core.ui.plugin.layer.ChangeSRIDPlugIn
-        <menus>
-            <main-menu menupath="MenuNames.LAYER" />
-        </menus>
-    </plug-in>
+	<plug-in>
+		org.openjump.core.ui.plugin.layer.ChangeSRIDPlugIn
+		<menus>
+			<main-menu menupath="MenuNames.LAYER" />
+		</menus>
+	</plug-in>
 
 	<!-- ====================== CUSTOMIZE menu ================================== -->
 	<plug-in>
@@ -556,9 +556,9 @@
 		org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn
 	</plug-in>
 	<plug-in>
-	    org.openjump.core.ui.plugin.tools.analysis.twolayers.CalculateDistancesPlugIn
-    </plug-in>
-    	    
+		org.openjump.core.ui.plugin.tools.analysis.twolayers.CalculateDistancesPlugIn
+	</plug-in>
+
 	<!--plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.UnionPlugIn</plug-in -->
 
 	<!--- ========= Statistics ==================== / -->
@@ -607,12 +607,12 @@
 	<plug-in>
 		org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn
 	</plug-in>
-    <plug-in>
-        org.openjump.core.ui.plugin.tools.generate.LinearReferencingOnLayerPlugIn
-    </plug-in>
-    <plug-in>
-        org.openjump.core.ui.plugin.tools.generate.LinearReferencingOnSelectionPlugIn
-    </plug-in>
+	<plug-in>
+		org.openjump.core.ui.plugin.tools.generate.LinearReferencingOnLayerPlugIn
+	</plug-in>
+	<plug-in>
+		org.openjump.core.ui.plugin.tools.generate.LinearReferencingOnSelectionPlugIn
+	</plug-in>
 
 	<!--- ========= WARP ==================== / -->
 	<plug-in>
@@ -899,7 +899,34 @@
 	<separator />
 
 	<plug-in>
+		com.vividsolutions.jump.workbench.ui.plugin.clipboard.CutSelectedLayersPlugIn
+		<menus>
+			<layername-popup install="true" />
+		</menus>
+	</plug-in>
+	<plug-in>
+		com.vividsolutions.jump.workbench.ui.plugin.clipboard.CopySelectedLayersPlugIn
+		<menus>
+			<layername-popup install="true" />
+		</menus>
+	</plug-in>
+	<plug-in>
+		com.vividsolutions.jump.workbench.ui.plugin.clipboard.PasteItemsPlugIn
+		<menus>
+			<layername-popup install="true" />
+		</menus>
+	</plug-in>
+
+	<separator />
+
+	<plug-in>
 		com.vividsolutions.jump.workbench.ui.plugin.DisposeSelectedLayersPlugIn
+		<menus>
+			<layername-popup install="true" />
+		</menus>
+	</plug-in>
+	<plug-in>
+		com.vividsolutions.jump.workbench.ui.plugin.DeleteAllFeaturesPlugIn
 		<menus>
 			<layername-popup install="true" />
 		</menus>
@@ -925,6 +952,7 @@
 			<layername-popup install="true" />
 		</menus>
 	</plug-in>
+
 	<!-- view/edit, copy, paste schema -->
 
 	<plug-in>
@@ -965,7 +993,7 @@
 		</menus>
 	</plug-in>
 
-	<separator />
+	<!-- separator / -->
 
 	<plug-in>
 		de.latlon.deejump.plugin.style.LayerStyle2SLDPlugIn
@@ -992,12 +1020,8 @@
 		</menus>
 	</plug-in>
 
-    <!--plug-in>
-        org.openjump.core.ui.plugin.layer.ReprojectionPlugIn
-        <menus>
-            <layername-popup install="false" />
-        </menus>
-    </plug-in-->
+	<!--plug-in> org.openjump.core.ui.plugin.layer.ReprojectionPlugIn <menus> <layername-popup 
+		install="false" /> </menus> </plug-in -->
 
 	<plug-in>
 		org.openjump.core.ui.plugin.datastore.EditDataStoreQueryPlugIn
@@ -1020,36 +1044,14 @@
 			<layername-popup install="true" />
 		</menus>
 	</plug-in>
-    <plug-in>
-        org.openjump.core.ui.plugin.datastore.postgis2.SaveToPostGIS2PlugIn
-    </plug-in>
 	<plug-in>
-		com.vividsolutions.jump.workbench.ui.plugin.MoveLayerablePlugIn$MoveLayerableUpPlugIn
-		<menus>
-			<layername-popup install="true" />
-		</menus>
-	</plug-in>
-       
-       <plug-in>
-		org.openjump.core.ui.plugin.layer.MoveSelectedLayersPlugIn
-		<menus>
-			<layername-popup install="true" />
-		</menus>
-	</plug-in> 
-	<plug-in>
-		com.vividsolutions.jump.workbench.ui.plugin.MoveLayerablePlugIn$MoveLayerableDownPlugIn
-		<menus>
-			<layername-popup install="true" />
-		</menus>
+		org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn
 	</plug-in>
 	<plug-in>
-		com.vividsolutions.jump.workbench.ui.plugin.clipboard.CutSelectedLayersPlugIn
-		<menus>
-			<layername-popup install="true" />
-		</menus>
+		org.openjump.core.ui.plugin.datastore.postgis2.SaveToPostGIS2PlugIn
 	</plug-in>
 	<plug-in>
-		com.vividsolutions.jump.workbench.ui.plugin.clipboard.CopySelectedLayersPlugIn
+		org.openjump.core.ui.plugin.layer.CombineSelectedLayersPlugIn
 		<menus>
 			<layername-popup install="true" />
 		</menus>
@@ -1059,15 +1061,6 @@
 		<menus>
 			<layername-popup install="true" />
 		</menus>
-	</plug-in>
-	<plug-in>
-		com.vividsolutions.jump.workbench.ui.plugin.clipboard.PasteItemsPlugIn
-		<menus>
-			<layername-popup install="true" />
-		</menus>
-	</plug-in>
-	<plug-in>
-		org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn
 	</plug-in>
 	<plug-in>
 		org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn
@@ -1082,6 +1075,26 @@
 		</menus>
 	</plug-in>
 
+	<separator />
+
+	<plug-in>
+		com.vividsolutions.jump.workbench.ui.plugin.MoveLayerablePlugIn$MoveLayerableUpPlugIn
+		<menus>
+			<layername-popup install="true" />
+		</menus>
+	</plug-in>
+	<plug-in>
+		org.openjump.core.ui.plugin.layer.MoveSelectedLayersPlugIn
+		<menus>
+			<layername-popup install="true" />
+		</menus>
+	</plug-in>
+	<plug-in>
+		com.vividsolutions.jump.workbench.ui.plugin.MoveLayerablePlugIn$MoveLayerableDownPlugIn
+		<menus>
+			<layername-popup install="true" />
+		</menus>
+	</plug-in>
 
 	<!-- ================ WMS LayerName Popup Menu =============================== -->
 	<plug-in>
@@ -1132,7 +1145,7 @@
 			<layername-popup-wms install="true" />
 		</menus>
 	</plug-in>
-       <plug-in>
+	<plug-in>
 		org.openjump.core.ui.plugin.layer.MoveSelectedLayersPlugIn
 		<menus>
 			<layername-popup-wms install="true" />
@@ -1240,7 +1253,7 @@
 			<layername-popup-raster install="true" />
 		</menus>
 	</plug-in>
-        <plug-in>
+	<plug-in>
 		org.openjump.core.ui.plugin.layer.MoveSelectedLayersPlugIn
 		<menus>
 			<layername-popup-raster install="true" />
@@ -1487,9 +1500,9 @@
 		org.openjump.core.ui.plugin.edittoolbox.FillPolygonPlugIn
 	</plug-in>
 
-    <!-- ================ Toolbar ================================== -->
-    <plug-in>
-        org.openjump.core.ui.plugin.datastore.transaction.DataStoreTransactionManagerPlugIn
-    </plug-in>
+	<!-- ================ Toolbar ================================== -->
+	<plug-in>
+		org.openjump.core.ui.plugin.datastore.transaction.DataStoreTransactionManagerPlugIn
+	</plug-in>
 
 </workbench>
