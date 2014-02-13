@@ -15,43 +15,33 @@ unzipped folder in the JUMP_HOME/lib/ext folder.
 Install Database Drivers
 ------------------------
 The OpenJump database query plugin currently supports four databases:
-Oracle, MySQL, PostgreSQL, and Spatialite.
+Oracle, MySQL, PostgreSQL, and Spatialite.  Some database functionality
+requires installation of additional software.  See below for instructions.
 
-MySQL
------
-If you are going to be querying MySQL databases, get the MySQL drivers from
-http://dev.mysql.com/downloads/connector/j/5.0.html.   Download the appropriate
-package for your database version, uncompress it, and copy the 
-mysql-connector-java jar into the JUMP_HOME/lib/ext folder.
+SpatiaLite
+----------
+The plugin  by default supports SQLite and SpatiaLite geometries encoded 
+by the Geopackage specification, FDO RFC 16, and native Spatialite.  
+However, if you want to use Spatialite functions, you need to tell 
+the DB Query Plugin to load the Spatialite drivers.  First, install the 
+SpatiaLite drivers, including all dependencies as described in 
+http://www.gaia-gis.it/spatialite-2.3.1/binaries.html. Then tell the Db Query
+Plugin to load the SpatiaLite drivers by appending 
+"?spatialite=/path/to/spatialite.dll" to the JDBC url.  
 
 Oracle
 ------
 If you want to query an Oracle database, download the Oracle JDBC drivers
-from http://www.oracle.com/technology/software/tech/java/sqlj_jdbc/index.html.
+from http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html.
 You'll need an OTN account to download the drivers, but you can get one for free
-from Oracle.  Read and accept the Oracle license, download ojdbc14.jar, and
+from Oracle.  Read and accept the Oracle license, download ojdbc6.jar, and
 place it in the JUMP_HOME/lib/ext folder.
 
-PostGIS
--------
-If you want to query PostgreSQL with the PostGIS addon,  get the 
-PostgreSQL JDBC driver at http://jdbc.postgresql.org/download.html.
-Download the appropriate JDBC driver for your version of
-Postgres.  You'll also need the PostGIS JDBC driver.  Download postgis.jar
-from here: http://www.postgis.org/download/, and place it in the 
-JUMP_HOME/lib/ext folder.
+MySQL and PostGreSQL
+--------------------
+MySQL and PostGreSQL drivers are included in the plugin and/or OpenJump itself.
+No special steps are needed to query MySQL and PostGreSQL databases.
 
-SpatiaLite
-----------
-Finally, support has been added for SpatiaLite. Download the Xerial SQLite JDBC
-driver at https://bitbucket.org/xerial/sqlite-jdbc.  The JUMP DB Query Plugin
-will be able to extract the geometric information from a spatialite DB with 
-just the SQLite JDBC driver.  However, if you want to use Spatialite functions,
-you need to tell the DB Query Plugin to load the Spatialite drivers.  First, 
-install the SpatiaLite drivers, including all dependencies as described in 
-http://www.gaia-gis.it/spatialite-2.3.1/binaries.html. Then tell the Db Query
-Plugin to load the SpatiaLite drivers by appending 
-"?spatialite=/path/to/spatialite.dll" to the JDBC url.  
 
 Update dbquery.properties
 -------------------------

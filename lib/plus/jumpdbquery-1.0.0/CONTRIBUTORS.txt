@@ -17,3 +17,6 @@ Giuseppe Aruta - Italian and Spanish
 Jukka Rahkonen - Finnish
 Michaël Michaud - French
 
+Also, thanks to Wei GuoBing for suggestions on determining if a column
+in an Oracle table is a spatial type. 
+
