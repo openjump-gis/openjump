@@ -15,8 +15,10 @@ import org.openjump.core.ui.plugin.datastore.WritableDataStoreDataSource;
 import org.openjump.core.ui.plugin.datastore.postgis.PostGISQueryUtil;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.Iterator;
 
 import static org.openjump.core.ui.plugin.datastore.postgis.PostGISQueryUtil.compose;
@@ -189,10 +191,20 @@ public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
 
     private void populateTable(java.sql.Connection conn, FeatureCollection fc,
                                String dbSchema, String dbTable, String primaryKey, int srid, int dim) throws SQLException {
+        PreparedStatement statement = insertStatement(conn, fc.getFeatureSchema(), dbSchema, dbTable, primaryKey, srid, dim);
+        int count = 0;
         for (Iterator it = fc.iterator() ; it.hasNext() ; ) {
             Feature f = (Feature)it.next();
-            insertStatement(conn, f, dbSchema, dbTable, primaryKey, srid, dim).executeUpdate();
+            //insertStatement(conn, f, dbSchema, dbTable, primaryKey, srid, dim).executeUpdate();
+            statement = setAttributeValues(statement, f, srid, dim, primaryKey);
+            statement.addBatch();
+            if (count++ % 10000 == 0) {
+                statement.executeBatch();
+                statement.clearBatch();
+            }
         }
+        statement.executeBatch();
+        statement.clearBatch();
     }
 
 

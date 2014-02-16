@@ -43,6 +43,9 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.cts.CRSFactory;
+import org.cts.crs.CoordinateReferenceSystem;
+import org.cts.registry.RegistryManager;
 import org.geotools.dbffile.DbfFile;
 import org.geotools.shapefile.Shapefile;
 import org.geotools.shapefile.ShapefileException;
@@ -93,12 +96,14 @@ import com.vividsolutions.jump.feature.*;
 public class ShapefileReader extends AbstractJUMPReader {
 
     private File delete_this_tmp_dbf = null;
+    private File delete_this_tmp_prj = null;
 
     private static Logger LOG = Logger.getLogger(ShapefileReader.class);
 
     public static final String FILE_PROPERTY_KEY = "File";
     public static final String DEFAULT_VALUE_PROPERTY_KEY = "DefaultValue";
     public static final String COMPRESSED_FILE_PROPERTY_KEY = "CompressedFile";
+    public static final String COORDINATE_REFERENCE_SYSTEM = "CoordinateReferenceSystem";
 
 
     /** Creates new ShapeReader */
@@ -137,6 +142,11 @@ public class ShapefileReader extends AbstractJUMPReader {
         String charsetName = dp.getProperty("charset");
         if (charsetName == null) charsetName = Charset.defaultCharset().name();
         DbfFile mydbf = getDbfFile(shpFileName, dp.getProperty(COMPRESSED_FILE_PROPERTY_KEY), Charset.forName(charsetName));
+        CoordinateReferenceSystem crs = getPrj(shpFileName, dp.getProperty(COMPRESSED_FILE_PROPERTY_KEY));
+        if (crs != null) dp.put(COORDINATE_REFERENCE_SYSTEM, crs);
+        System.out.println(crs);
+        //System.out.println(crs.getCode());
+
         GeometryFactory factory = new GeometryFactory();
         GeometryCollection collection = null;
         try {
@@ -229,6 +239,7 @@ public class ShapefileReader extends AbstractJUMPReader {
 
             mydbf.close();
             deleteTmpDbf(); // delete dbf file if it was decompressed
+            deleteTmpPrj(); // delete dbf file if it was decompressed
         }
 
         return featureCollection;
@@ -311,11 +322,75 @@ public class ShapefileReader extends AbstractJUMPReader {
         return null;
     }
 
+    private CoordinateReferenceSystem getPrj(String srcFileName, String compressedFname) throws Exception {
+        try {
+            Class.forName( "org.cts.CRSFactory" );
+        } catch( ClassNotFoundException e ) {
+            return null;
+        }
+        if (srcFileName.matches("(?i).*\\.shp$")) {
+            // replace file name extension of compressedFname (probably .shp) with .dbf
+            srcFileName = srcFileName.replaceAll("\\.[^.]*$", ".prj");
+            File prjFile = new File(srcFileName);
+            if (prjFile.exists()) {
+                //return new PrjFile(srcFileName);
+                return new CRSFactory().createFromPrj(new File(srcFileName));
+            }
+        }
+        // if we are in an archive that can hold multiple files compressedFname is defined and a String
+        else if (CompressedFile.hasArchiveFileExtension(srcFileName) && compressedFname instanceof String) {
+
+            byte[] b = new byte[16000];
+            int len;
+            boolean keepGoing = true;
+
+            // copy the file then use that copy
+            File file = File.createTempFile("prj", ".prj");
+            FileOutputStream out = new FileOutputStream(file);
+
+            // replace file name extension of compressedFname (probably .shp) with .dbf
+            compressedFname = compressedFname.replaceAll("\\.[^.]*$", ".prj");
+
+            try {
+                InputStream in = CompressedFile.openFile(srcFileName,compressedFname);
+
+                while (keepGoing) {
+                    len = in.read(b);
+
+                    if (len > 0) {
+                        out.write(b, 0, len);
+                    }
+
+                    keepGoing = (len != -1);
+                }
+
+                in.close();
+                out.close();
+
+                CoordinateReferenceSystem crs = new CRSFactory().createFromPrj(file);
+                delete_this_tmp_prj = file; // to be deleted later on
+                return crs;
+            } catch (Exception e) {
+                String msg = e.getMessage();
+                LOG.info(msg);
+                System.err.println(msg);
+            }
+        }
+
+        return null;
+    }
 
     private void deleteTmpDbf() {
         if (delete_this_tmp_dbf != null) {
             delete_this_tmp_dbf.delete();
             delete_this_tmp_dbf = null;
+        }
+    }
+
+    private void deleteTmpPrj() {
+        if (delete_this_tmp_prj != null) {
+            delete_this_tmp_prj.delete();
+            delete_this_tmp_prj = null;
         }
     }
 }

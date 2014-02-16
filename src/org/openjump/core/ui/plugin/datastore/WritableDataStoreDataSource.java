@@ -249,7 +249,9 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
         LOG.info("Evolutions to commit to " + dbSchema + "." + dbTable + " (PK=" + keyName +")");
         for (Evolution evolution : evolutions.values()) {
             if (evolution.getType() == Evolution.Type.CREATION) {
-                insertStatement(conn, evolution.getNewFeature(), dbSchema, dbTable, keyName, srid, dim).executeUpdate();
+                PreparedStatement pstmt = insertStatement(conn, evolution.getNewFeature().getSchema(),                        dbSchema, dbTable, keyName, srid, dim);
+                pstmt = setAttributeValues(pstmt, evolution.getNewFeature(), srid, dim, keyName);
+                pstmt.execute();
                 LOG.info("  create new feature " + evolution.getNewFeature().getID()+"/");
             } else if (evolution.getType() == Evolution.Type.SUPPRESSION) {
                 deleteStatement(conn, evolution.getOldFeature(), keyName, dbSchema, dbTable).executeUpdate();
@@ -274,6 +276,25 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
         evolutions.clear();
     }
 
+    protected PreparedStatement insertStatement(java.sql.Connection conn, FeatureSchema schema,
+                                                String dbSchema, String dbTable, String keyName,
+                                                int srid, int dim) throws SQLException {
+        String tableName = dbSchema == null ? dbTable : dbSchema + "." + dbTable;
+        StringBuilder sb = new StringBuilder("INSERT INTO " + tableName + "(");
+
+        sb.append(PostGISQueryUtil.createColumnList(schema, false, true, false)).append(") VALUES(");
+        int nbValues = schema.getAttributeCount();
+        if (keyName != null && schema.hasAttribute(keyName)) nbValues --;
+        for (int i = 0 ; i < nbValues ; i++) {
+            sb.append(i==0?"?":",?");
+        }
+        sb.append(");");
+        PreparedStatement pstmt = conn.prepareStatement(sb.toString());
+        //LOG.debug(pstmt);
+        return pstmt;
+    }
+
+    /*
     protected PreparedStatement insertStatement(java.sql.Connection conn, Feature feature,
                                                 String dbSchema, String dbTable, String keyName,
                                                 int srid, int dim) throws SQLException {
@@ -289,10 +310,11 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
         }
         sb.append(");");
         PreparedStatement pstmt = conn.prepareStatement(sb.toString());
-        pstmt = setAttributeValues(pstmt, feature, srid, dim, keyName);
-        LOG.debug(pstmt);
+        //pstmt = setAttributeValues(pstmt, feature, srid, dim, keyName);
+        //LOG.debug(pstmt);
         return pstmt;
     }
+    */
 
     /*
     private PreparedStatement updateStatement(java.sql.Connection conn, Feature feature, String keyName,
@@ -314,6 +336,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
         return setAttributeValues(pstmt, feature, hasSrid, dim, keyName);
     }
     */
+
 
     private PreparedStatement updateOneAttributeStatement(java.sql.Connection conn, Feature feature, int attribute,
                 String keyName, String dbSchema, String dbTable, int srid, int dim) throws SQLException {
@@ -341,9 +364,8 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
         return pstmt;
     }
 
-    // @TODO Remove unused parameters srid and dim ?
-    private PreparedStatement deleteStatement(java.sql.Connection conn, Feature feature, String keyName,
-                                              String dbSchema, String dbTable) throws SQLException {
+    private PreparedStatement deleteStatement(java.sql.Connection conn,
+                Feature feature, String keyName, String dbSchema, String dbTable) throws SQLException {
         String tableName = dbSchema == null ? dbTable : dbSchema + "." + dbTable;
         PreparedStatement pstmt = conn.prepareStatement("DELETE FROM " + tableName + " WHERE \"" + keyName + "\" = ?");
         pstmt.setObject(1,feature.getAttribute(keyName));
@@ -352,7 +374,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
     }
 
     protected PreparedStatement setAttributeValues(PreparedStatement pstmt,
-                                                 Feature feature, int srid, int dim, String...exclude) throws SQLException {
+                Feature feature, int srid, int dim, String...exclude) throws SQLException {
         FeatureSchema schema = feature.getSchema();
         List<String> excludeList = Arrays.asList(exclude);
         int index = 1;
