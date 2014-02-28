@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2014-02-28 Matthias Scholz <ms@jammerhund.de>
+  * SaveLegendPlugIn now prints the word "Project" in front of the projectname
+    in the rootnode and is correct left aligned.
+
 2014-01-25 mmichaud <m.michael.michaud@orange.fr>
   * Fixed a bug #354 : OpenRecentPlugIn broken.
 

@@ -193,7 +193,7 @@ public class SaveLegendPlugIn extends AbstractPlugIn {
 		
 		JTree tree = treePanel.getTree();
         // create root node which gets the project name
-        DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(layers[0].getTask().getName());
+        DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(I18N.get("ui.WorkbenchFrame.task") + " " + layers[0].getTask().getName());
         // lopp through all given layers
 		for (int l = 0; l < layers.length; l++) {
             Layer layer = layers[l];
@@ -274,7 +274,7 @@ public class SaveLegendPlugIn extends AbstractPlugIn {
     					(LayerTreeModel.ColorThemingValue)userObject;
             		
             		txt = entry.toString();
-            		
+                    colorPanel.setPreferredSize(new Dimension(10, 10)); // reset the size in case we had previous a projektname for example
             		BasicStyle style = entry.getStyle();
             		colorPanel.setLineColor(style.isRenderingLine()
             				? GUIUtil.alphaColor(style.getLineColor(), style
@@ -288,6 +288,7 @@ public class SaveLegendPlugIn extends AbstractPlugIn {
             	} else if (userObject instanceof Layer) {
                         Layer layer = (Layer)userObject;
                         txt = layer.getName();
+                        colorPanel.setPreferredSize(new Dimension(10, 10)); // reset the size in case we had previous a projektname for example
                         BasicStyle style = layer.getBasicStyle();
                         colorPanel.setLineColor(style.isRenderingLine()
             				? GUIUtil.alphaColor(style.getLineColor(), style
@@ -300,8 +301,7 @@ public class SaveLegendPlugIn extends AbstractPlugIn {
                 // and finally the rest (projectname...)
             	} else {
                     txt = (String)userObject;
-                    colorPanel.setFillColor( Color.white );
-            		colorPanel.setLineColor( Color.white );
+                    colorPanel.setPreferredSize(new Dimension(0, 0)); // no colorPanel for a left alignment
                 }
             	
                 label.setText( txt );
