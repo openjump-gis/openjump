@@ -31,7 +31,7 @@ is_number(){
 end(){
   # show error for some time to prohibit window closing on X
   if [ "$ERROR" != "0" ]; then
-    read -p "press Enter to finish"
+    read -p "press Enter to finish" foobar
     exit 1
   else
     exit 0
@@ -141,11 +141,11 @@ Please provide an at least version '$JAVA_NEEDED' java runtime."
 fi
 
 # detect RAM size in bytes
-RAM_SIZE=${RAM_SIZE-$(awk '/MemTotal/{print $2*1024}' /proc/meminfo)}
+RAM_SIZE=${RAM_SIZE-$(expr "$(awk '/MemTotal/{print $2}' /proc/meminfo)" \* 1024)}
 if [ -n "$JAVA_MAXMEM" ]; then
   echo "max. memory limit defined via JAVA_MAXMEM=$JAVA_MAXMEM"
 elif ! is_number "$RAM_SIZE"; then
-  echo "failed to detect system RAM size, use default max. memory limit of 512 MiB"
+  echo "failed to detect system RAM size, using default max. memory limit of 512 MiB"
   JAVA_MAXMEM="-Xmx512M"
 else
   # calculate 80% RAM (in bytes)
