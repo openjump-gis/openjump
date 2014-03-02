@@ -140,7 +140,7 @@ Please provide an at least version '$JAVA_NEEDED' java runtime."
   ERROR=1
 fi
 
-# detect RAM size in bytes
+# use previously set or detect RAM size in bytes
 RAM_SIZE=${RAM_SIZE-$(expr "$(awk '/MemTotal/{print $2}' /proc/meminfo)" \* 1024)}
 if [ -n "$JAVA_MAXMEM" ]; then
   echo "max. memory limit defined via JAVA_MAXMEM=$JAVA_MAXMEM"
