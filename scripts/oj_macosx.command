@@ -17,5 +17,8 @@ export DYLD_LIBRARY_PATH="$DYLD_LIBRARY_PATH:./lib/native:./lib/ext"
 ## disabled as default, as it limits memory usage
 #JAVA_OPTS_OVERRIDE="$JAVA_OPTS_OVERRIDE -d32"
 
+## Detect RAM size in bytes
+RAM_SIZE=`sysctl -a|awk '/^hw.memsize:/{print $2}'`
+
 ## run the real magic now
 . "$CDIR/oj_linux.sh" "$@"

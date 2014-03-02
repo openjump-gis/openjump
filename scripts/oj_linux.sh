@@ -21,7 +21,11 @@
 MAIN="com.vividsolutions.jump.workbench.JUMPWorkbench"
 JAVA_SAXDRIVER=${JAVA_SAXDRIVER-org.apache.xerces.parsers.SAXParser}
 JAVA_LOOKANDFEEL=${JAVA_LOOKANDFEEL-javax.swing.plaf.metal.MetalLookAndFeel}
-JAVA_MAXMEM=${JAVA_MAXMEM--Xmx512M}
+
+## check if $1 is a number utility function
+is_number(){
+  expr "$1" : '^[0-9][0-9]*$' > /dev/null 2>&1
+}
 
 ## end function, delays closing of terminal
 end(){
@@ -134,6 +138,37 @@ if ! awk "BEGIN{if($JAVA_VERSION < $JAVA_NEEDED)exit 1}"; then
   echo "Your java version '$JAVA_VERSION' is insufficient to run openjump.
 Please provide an at least version '$JAVA_NEEDED' java runtime."
   ERROR=1
+fi
+
+# detect RAM size in bytes
+RAM_SIZE=${RAM_SIZE-$(awk '/MemTotal/{print $2*1024}' /proc/meminfo)}
+if [ -n "$JAVA_MAXMEM" ]; then
+  echo "max. memory limit defined via JAVA_MAXMEM=$JAVA_MAXMEM"
+elif ! is_number "$RAM_SIZE"; then
+  echo "failed to detect system RAM size, use default max. memory limit of 512 MiB"
+  JAVA_MAXMEM="-Xmx512M"
+else
+  # calculate 80% RAM (in bytes)
+  MEM_80PCT=`expr "$RAM_SIZE" \* 80 / 100`
+  # calculate RAM size minus 1GiB, for big RAM machines we protect max. 1GiB
+  # e.g. for 80% of 16GiB not to waste 3.2GiB
+  MEM_MINUS1GB=`expr "$RAM_SIZE" - \( 1024 \* 1024 \* 1024 \)`
+  # use whatever is bigger
+  if [ "$MEM_80PCT" -gt "$MEM_MINUS1GB" ]; then
+    MEM_MAX="$MEM_80PCT"
+  else
+    MEM_MAX="$MEM_MINUS1GB"
+  fi
+
+  # limit 32bit jre to 3GiB = 3221225472 bytes
+  if [ "$JAVA_ARCH" != "x64" ] && [ "$MEM_MAX" -gt "3221225472" ]; then
+    MEM_MAX=3221225472
+  fi
+
+  MEM_MAX_MB=`expr $MEM_MAX / 1024 / 1024`
+  JAVA_MAXMEM="-Xmx${MEM_MAX_MB}M"
+  # output info
+  echo limit max. memory to $MEM_MAX_MB MiB
 fi
 
 # always print java infos
