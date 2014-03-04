@@ -1,5 +1,10 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2014-03-02 ede
+  * add RAM size detection to mac/linux start scripts
+    - uses either 80% or size-1GiB, whichever is bigger
+    - uses max. 3GiB for 32bit jre's
+
 2014-02-28 Matthias Scholz <ms@jammerhund.de>
   * SaveLegendPlugIn now prints the word "Project" in front of the projectname
     in the rootnode and is correct left aligned.
