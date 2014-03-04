@@ -143,10 +143,19 @@ public class GeoImageFactory extends AbstractGraphicImageFactory {
       String loaderString ="";
       // imageIO readers
       if (loader instanceof ImageReaderSpi) {
-         loaderString = ((ImageReaderSpi) loader).getDescription(Locale
-            .getDefault());
-        loaderString = loaderString.replace(
-            "Java Advanced Imaging Image I/O Tools", "ImageIO");
+        // workaround for nasty mac error preventing startup
+        // "java.lang.NoSuchMethodError: com.sun.media.imageioimpl.common.PackageUtil.getSpecificationTitle()"
+        try {
+          loaderString = ((ImageReaderSpi) loader).getDescription(Locale
+              .getDefault());
+          loaderString = loaderString.replace(
+              "Java Advanced Imaging Image I/O Tools", "ImageIO");
+        }
+        catch (NoSuchMethodError e) {
+          loaderString = loader.getClass().getSimpleName();
+          loaderString = loaderString.replace("ImageReaderSpi", "");
+          loaderString += " (" + loader.getClass().getPackage().getName() + ")";
+        }
         
         if (loader instanceof GDALImageReaderSpi) 
           loaderString = "GDAL " + loaderString;
