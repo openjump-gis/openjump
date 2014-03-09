@@ -97,7 +97,6 @@ public class AboutDialog extends JDialog {
     private JLabel lblUserDir = new JLabel();
     private JPanel pnlButtons = new JPanel();
     private JButton btnGC = new JButton();
-    private SplashPanel splashPanel;
     
     private WorkbenchContext wbc;
 
@@ -144,8 +143,8 @@ public class AboutDialog extends JDialog {
         JPanel aboutPanel = new JPanel(new GridBagLayout());
 
         ImageIcon splash = JUMPWorkbench.splashImage();
-        this.splashPanel =
-                new SplashPanel(splash, I18N.get("ui.AboutDialog.version")+" " + JUMPVersion.CURRENT_VERSION);
+        JPanel splashPanel =
+                new SplashPanelV2(splash, I18N.get("ui.AboutDialog.version")+" " + JUMPVersion.CURRENT_VERSION);
         aboutPanel.add(splashPanel,new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.NORTH,GridBagConstraints.NONE,
                 new Insets(0, 0, 0, 0), 0, 0));
 /*

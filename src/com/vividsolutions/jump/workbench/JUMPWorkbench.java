@@ -34,10 +34,8 @@ package com.vividsolutions.jump.workbench;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
 import java.awt.GridLayout;
 import java.awt.Image;
-import java.awt.Insets;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -80,7 +78,7 @@ import com.vividsolutions.jump.util.commandline.ParseException;
 import com.vividsolutions.jump.workbench.driver.DriverManager;
 import com.vividsolutions.jump.workbench.plugin.PlugInManager;
 import com.vividsolutions.jump.workbench.ui.ErrorDialog;
-import com.vividsolutions.jump.workbench.ui.SplashPanel;
+import com.vividsolutions.jump.workbench.ui.SplashPanelV2;
 import com.vividsolutions.jump.workbench.ui.SplashWindow;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
@@ -99,7 +97,7 @@ public class JUMPWorkbench {
     // Lazily initialize it, as it may not even be called (e.g. EZiLink),
     // and we want the splash screen to appear ASAP [Jon Aquino]
     if (splashImage == null) {
-      splashImage = IconLoader.icon("splash.png");
+      splashImage = IconLoader.icon("splash3.png");
     }
     return splashImage;
   }
@@ -351,12 +349,13 @@ public class JUMPWorkbench {
 
       ProgressMonitor progressMonitor = (ProgressMonitor) progressMonitorClass
           .newInstance();
-      SplashPanel splashPanel = new SplashPanel(splashImage(),
+      SplashPanelV2 splashPanel = new SplashPanelV2(splashImage(),
           I18N.get("ui.AboutDialog.version") + " "
               + JUMPVersion.CURRENT_VERSION);
-      splashPanel.add(progressMonitor, new GridBagConstraints(0, 10, 1, 1, 1,
-          0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
-          new Insets(0, 0, 0, 10), 0, 0));
+//      splashPanel.add(progressMonitor, new GridBagConstraints(0, 10, 1, 1, 1,
+//          0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
+//          new Insets(0, 0, 0, 10), 0, 0));
+      splashPanel.addProgressMonitor(progressMonitor);
 
       main(args, I18N.get("JUMPWorkbench.jump"), splashPanel, progressMonitor);
       System.out.println("OJ start took "

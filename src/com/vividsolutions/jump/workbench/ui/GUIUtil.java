@@ -31,42 +31,80 @@
  */
 package com.vividsolutions.jump.workbench.ui;
 
-import com.vividsolutions.jts.util.Assert;
-
-import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.util.FileUtil;
-import com.vividsolutions.jump.util.StringUtil;
-import com.vividsolutions.jump.workbench.datasource.FileDataSourceQueryChooser;
-import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-
-import java.awt.*;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Image;
+import java.awt.KeyboardFocusManager;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.Transferable;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ContainerAdapter;
+import java.awt.event.ContainerEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.font.TextLayout;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-
 import java.io.File;
-
 import java.lang.reflect.InvocationTargetException;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
-import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.BorderFactory;
+import javax.swing.GrayFilter;
+import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JDesktopPane;
+import javax.swing.JFileChooser;
+import javax.swing.JInternalFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JSlider;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.KeyStroke;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
+import javax.swing.UIManager;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.InternalFrameEvent;
+import javax.swing.event.InternalFrameListener;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.plaf.basic.BasicComboBoxEditor;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import org.openjump.core.ui.plugin.file.open.JFCWithEnterAction;
+
+import com.vividsolutions.jts.util.Assert;
+import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.util.FileUtil;
+import com.vividsolutions.jump.util.StringUtil;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 //<<TODO:NAMING>> Perhaps rename to WorkbenchUtilities and move to workbench
 // package? [Jon Aquino]
@@ -1317,4 +1355,44 @@ public class GUIUtil {
         component.setFont(component.getFont().deriveFont(
                 (float) component.getFont().getSize() - 2));
     }
+    
+  public static GraphicsDevice getDefaultScreenDevice() {
+    // Determine what the default GraphicsDevice can support.
+    GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+    GraphicsDevice gd = ge.getDefaultScreenDevice();
+    return gd;
+  }
+
+  public final static int UNIFORM_TRANSLUCENCY = 0;
+  public final static int PERPIXEL_TRANSLUCENCY = 1;
+  public final static int SHAPED_WINDOW = 2;
+
+  private static boolean isWindowTranslucencySupported(int type) {
+    boolean supported = false;
+    try {
+      GraphicsDevice.WindowTranslucency[] kinds = new GraphicsDevice.WindowTranslucency[] {
+          GraphicsDevice.WindowTranslucency.TRANSLUCENT,
+          GraphicsDevice.WindowTranslucency.PERPIXEL_TRANSLUCENT,
+          GraphicsDevice.WindowTranslucency.PERPIXEL_TRANSPARENT };
+      supported = getDefaultScreenDevice().isWindowTranslucencySupported(
+          kinds[type]);
+    }
+    catch (Exception e) {}
+    catch (NoClassDefFoundError e) {}
+
+    return supported;
+  }
+
+  public static boolean isUniformTranslucencySupported() {
+    return isWindowTranslucencySupported(UNIFORM_TRANSLUCENCY);
+  }
+
+  public static boolean isPerPixelTranslucencySupported() {
+    return isWindowTranslucencySupported(PERPIXEL_TRANSLUCENCY);
+  }
+
+  public static boolean isShapedWindowSupported() {
+    return isWindowTranslucencySupported(SHAPED_WINDOW);
+  }
+
 }

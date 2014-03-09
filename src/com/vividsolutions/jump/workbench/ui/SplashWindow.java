@@ -32,6 +32,7 @@
 package com.vividsolutions.jump.workbench.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -48,7 +49,10 @@ public class SplashWindow extends JWindow {
     public SplashWindow(JComponent contents) {
         super();
         setCursor(new Cursor(Cursor.WAIT_CURSOR));
-        getContentPane().add(contents, BorderLayout.CENTER);
+        if (GUIUtil.isPerPixelTranslucencySupported())
+          setBackground(new Color(255,255,255,0));
+        setContentPane(contents);
+        //getContentPane().add(contents, BorderLayout.CENTER);
         pack();
 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
