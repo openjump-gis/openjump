@@ -57,7 +57,8 @@ public class SplashPanelV2 extends JPanel {
       setBackground(new Color(255, 255, 255, 0));
     JPanel img_panel = new JPanel(new BorderLayout());
     JLabel img_label = new JLabel(image /* IconLoader.icon("splash3.png") */);
-    img_panel.setBackground(new Color(255, 255, 255, 0));
+    if (GUIUtil.isPerPixelTranslucencySupported())
+      img_panel.setBackground(new Color(255, 255, 255, 0));
     img_panel.add(img_label);
 
     txt_panel = new JPanel(new GridBagLayout());
