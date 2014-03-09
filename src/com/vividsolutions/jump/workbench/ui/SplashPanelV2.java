@@ -62,15 +62,17 @@ public class SplashPanelV2 extends JPanel {
 
     txt_panel = new JPanel(new GridBagLayout());
     txt_panel.setBackground(Color.white);
-    JLabel cap_label = new JLabel(caption/* "Version 1.0" */);
+    JLabel cap_label = new JLabel(caption /* "Version 1.0" */);
     cap_label
         .setFont(cap_label.getFont().deriveFont(java.awt.Font.BOLD, 20.0f));
     cap_label.setForeground(Color.lightGray);
     // make sure the version string is not wider than the logo img
-    cap_label
-        .setPreferredSize(new Dimension(img_label.getPreferredSize().width - 20,
-            cap_label.getPreferredSize().height));
+    if (cap_label.getPreferredSize().width > img_label.getPreferredSize().width)
+      cap_label.setPreferredSize(new Dimension(
+          img_label.getPreferredSize().width - 20,
+          cap_label.getPreferredSize().height));
 
+    // replaced by progressmonitor below
     JLabel stat_label = new JLabel("some info");
 
     txt_panel.add(cap_label, new GridBagConstraints(0, 0, 1, 1, 1, 1,
@@ -94,7 +96,7 @@ public class SplashPanelV2 extends JPanel {
 
   public void addProgressMonitor(JComponent pm) {
     txt_panel.add(pm, new GridBagConstraints(0, 1, 1, 1, 1, 1,
-        GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0,
-            10), 0, 0));
+        GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 4,
+            0), 0, 0));
   }
 }
