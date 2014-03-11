@@ -199,7 +199,7 @@ public class JUMPWorkbench {
    * @params a visible SplashWindow to close when initialization is complete and
    *         the WorkbenchFrame is opened
    */
-  public JUMPWorkbench(String title, String[] args, final JWindow s,
+  public JUMPWorkbench(String title, String[] args, final Component s,
       TaskMonitor monitor) throws Exception {
 
     frame = new WorkbenchFrame(title, context);

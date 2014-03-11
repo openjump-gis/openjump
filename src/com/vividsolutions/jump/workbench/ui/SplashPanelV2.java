@@ -46,18 +46,18 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 
-import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import org.openjump.core.CheckOS;
 
 public class SplashPanelV2 extends JPanel {
   JPanel txt_panel;
 
   public SplashPanelV2(Icon image, String caption) {
     super(new BorderLayout());
-    if (GUIUtil.isPerPixelTranslucencySupported())
+    if (transparentSplash())
       setBackground(new Color(255, 255, 255, 0));
     JPanel img_panel = new JPanel(new BorderLayout());
     JLabel img_label = new JLabel(image /* IconLoader.icon("splash3.png") */);
-    if (GUIUtil.isPerPixelTranslucencySupported())
+    if (transparentSplash())
       img_panel.setBackground(new Color(255, 255, 255, 0));
     img_panel.add(img_label);
 
@@ -89,15 +89,19 @@ public class SplashPanelV2 extends JPanel {
     add(img_panel, BorderLayout.NORTH);
     add(txt_panel, BorderLayout.SOUTH);
 
-    int alpha = GUIUtil.isPerPixelTranslucencySupported() ? 0 : 255;
+    int alpha = transparentSplash() ? 0 : 255;
     setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED, new Color(
         255, 255, 255, alpha), new Color(255, 255, 255, alpha), new Color(103,
         101, 98, alpha), new Color(148, 145, 140, alpha)));
   }
-
+  
   public void addProgressMonitor(JComponent pm) {
     txt_panel.add(pm, new GridBagConstraints(0, 1, 1, 1, 1, 1,
         GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 4,
             0), 0, 0));
+  }
+
+  public static boolean transparentSplash() {
+    return GUIUtil.isPerPixelTranslucencySupported() && !CheckOS.isLinux();
   }
 }

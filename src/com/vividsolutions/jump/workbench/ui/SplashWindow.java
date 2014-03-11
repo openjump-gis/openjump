@@ -38,23 +38,27 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 
 import javax.swing.JComponent;
-import javax.swing.JWindow;
+import javax.swing.JFrame;
 
 
 /**
  * Based on "Java Tip 104: Make a splash with Swing" by Tony Colston
  * (http://www.javaworld.com/javaworld/javatips/jw-javatip104.html)
  */
-public class SplashWindow extends JWindow {
+public class SplashWindow extends JFrame {
     public SplashWindow(JComponent contents) {
         super();
+        setUndecorated(true);
         setCursor(new Cursor(Cursor.WAIT_CURSOR));
-        if (GUIUtil.isPerPixelTranslucencySupported())
+        if (SplashPanelV2.transparentSplash())
           setBackground(new Color(255,255,255,0));
         setContentPane(contents);
         //getContentPane().add(contents, BorderLayout.CENTER);
         pack();
 
+        //System.out.println("SPLASH "+GUIUtil.isPerPixelTranslucencySupported()+"/"+
+        //GUIUtil.isShapedWindowSupported()+"/"+GUIUtil.isUniformTranslucencySupported());
+        
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         Dimension labelSize = contents.getPreferredSize();
         setLocation((screenSize.width / 2) - (labelSize.width / 2),
