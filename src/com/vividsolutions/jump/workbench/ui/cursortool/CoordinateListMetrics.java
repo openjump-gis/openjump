@@ -32,7 +32,9 @@
 package com.vividsolutions.jump.workbench.ui.cursortool;
 
 import java.util.*;
+
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.geom.Angle;
@@ -46,6 +48,7 @@ import com.vividsolutions.jump.geom.Angle;
 public class CoordinateListMetrics
 {
 	String sArea = I18N.get("ui.cursortool.CoordinateListMetrics.Area");
+	String sAzimuth = I18N.get("ui.cursortool.CoordinateListMetrics.Azimuth");
 	String sAngle = I18N.get("ui.cursortool.CoordinateListMetrics.Angle");
 	String sDistance = I18N.get("ui.cursortool.CoordinateListMetrics.Distance"); 
 	
@@ -77,6 +80,8 @@ public class CoordinateListMetrics
   /**
    * Get's the the coordinates metrics with the option to compute the distance
    * for a closed geometry.
+   * 14-3-2014 (Giuseppe Aruta) Added compute of last distance (between last point 
+   *            and the cursor and the compute of azimuth
    *
    * @param coordinates
    * @param panel
@@ -87,9 +92,15 @@ public class CoordinateListMetrics
   {
     double dist = distance(coordinates, closedDistance);
     String dispStr = sDistance + ": " + panel.format(dist);
+    
+    double distlast = distancelast(coordinates, closedDistance);
+    dispStr += " (" + panel.format(distlast)+")";
 
     double angle = angle(coordinates);
     dispStr += "   " + sAngle + ": " + panel.format(angle);
+    
+    double azimuth = azimuth(coordinates);
+    dispStr += "   " + sAzimuth + ": " + panel.format(azimuth);
 
     if (coordinates.size() > 2) {
       double area = area(coordinates);
@@ -170,4 +181,63 @@ public class CoordinateListMetrics
     return -signedArea;
   }
 
+  /**
+   * Giuseppe Aruta (Peppe - ma15569) 03-14-2014
+   * Computes the angle facing North (upper side of the view)
+   *
+   * @param coordinates
+   * @return the angle in degrees
+   */
+  public static double azimuth(List coordinates, boolean closedDistance)
+  	{
+	  	int size = coordinates.size();
+	  	if (size <= 1) return 0.0D;
+	  	Coordinate p1 = (Coordinate)coordinates.get(size - 2);
+	  	Coordinate p2 = (Coordinate)coordinates.get(size - 1);
+	  	if (size > 2) {
+		} else {
+		}
+	  	double d = 0.0D;
+	  	LineSegment ls = new LineSegment(p1, p2);
+	  	d = ls.angle();
+	  	double DEG = 90.0D - d * 57.295779513082323D;
+	  	double DEG1 = DEG;
+	  	if (DEG < 0.0D)
+	  		DEG1 += 360.0D;
+	  	return DEG1;
+  		}
+
+  	public double azimuth(List coordinates) {
+  		return azimuth(coordinates, false);
+  	}
+  
+
+  	 /**
+     * Giuseppe Aruta (Peppe - ma15569) 03-14-2014
+     * Computes the angle between the last drawn segment 
+     * and the position of the cursor
+     *
+     * @param coordinates
+     * @param closedDistance
+     * @return the the distance between coordinates of last point and coordinates of cursor
+     */
+  public static double distancelast(List coordinates, boolean closedDistance)
+	   {
+	     double distance = 0.0D;
+	    double lastSegmentLength = 0.0D;
+    for (int i = 1; i < coordinates.size(); i++)
+	     {
+	      distance += ((Coordinate)coordinates.get(i - 1)).distance((Coordinate)coordinates.get(i));
+	      if (i == coordinates.size() - 1) {lastSegmentLength = ((Coordinate)coordinates.get(i - 1)).
+	    		  distance((Coordinate)coordinates.get(i));
+	       }
+	     }
+	    return lastSegmentLength;
+	  }
+
+   public double distancelast(List coordinates)
+	   {
+	     return distancelast(coordinates, false);
+	   	}
+  
 }
