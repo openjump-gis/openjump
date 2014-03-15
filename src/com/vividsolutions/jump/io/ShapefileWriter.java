@@ -677,6 +677,10 @@ public class ShapefileWriter implements JUMPWriter {
         for (Iterator i = fc.iterator(); i.hasNext();) {
             geom = ((Feature) i.next()).getGeometry();
 
+            // If geometry is empty, we should be able
+            // to write it in any kind of shapefile
+            if (geom.isEmpty()) continue;
+
             if (onlyPoints && !(geom instanceof Point)) {
                 onlyPoints = false;
             }
@@ -721,6 +725,8 @@ public class ShapefileWriter implements JUMPWriter {
 		//System.out.println("ShapeFileWriter: start mixed-geom-test");
 	    for (Iterator iter = featureCollection.iterator(); iter.hasNext();) {
 			Feature myf = (Feature) iter.next();
+            // mmichaud 2014-03-15 consider that empty geometries are un-typed
+            if (myf.getGeometry().isEmpty()) continue;
 			if (i==0){
 				firstClass = myf.getGeometry().getClass();
 				firstGeom = myf.getGeometry();
