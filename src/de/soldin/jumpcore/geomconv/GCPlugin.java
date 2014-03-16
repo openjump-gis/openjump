@@ -533,15 +533,15 @@ public class GCPlugin extends ExtCorePlugIn {
 		String name = isArray ? cparams[0].getComponentType()
 				.getName() : cparams[0].getName();
 		// made from one coord, probably point ;)
-		if (!isArray
-				&& name.equals("com.vividsolutions.jts.geom.Coordinate")) {
-			// System.out.println("eine koordinate");
-			if (geom_src.getCoordinates().length == 1) {
-				geom_new = (Geometry) method.invoke(factory,
-						new Object[] { geom_src
-								.getCoordinates()[0] });
-			} else {
-				warnUser(_("only-one-coordinate",type));
+		if (!isArray && name.equals("com.vividsolutions.jts.geom.Coordinate")) {
+			// factory method needs exactly one coord or null
+			if (geom_src.getCoordinates().length > 1) {
+				warnUser(_("only-one-coordinate", type));
+			}
+			else {
+				Object coord = geom_src.getCoordinates().length < 1 ? null : geom_src
+						.getCoordinates()[0];
+				geom_new = (Geometry) method.invoke(factory, new Object[] { coord });
 			}
 		}
 		// simple geometries made from coord[]
