@@ -91,7 +91,7 @@ public class WorkbenchPropertiesFile implements WorkbenchProperties {
         xmlAddToMap(root, properties, -1);
       }
     }
-    System.out.println("WBPF properties: " + properties);
+    //System.out.println("WBPF properties: " + properties);
   }
 
   private Integer xmlAddToMap(Element root_element, HashMap map, Integer i) {
