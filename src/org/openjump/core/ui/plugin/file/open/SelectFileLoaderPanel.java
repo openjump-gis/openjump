@@ -199,20 +199,23 @@ public class SelectFileLoaderPanel extends JPanel implements WizardPanel {
   public void enteredFromLeft(Map dataMap) {
     mainPanel.removeAll();
     state.setCurrentPanel(SelectFileLoaderPanel.class.getName());
-    Map<String, Set<URI>> multiLoaderFiles = state.getMultiLoaderFiles();
+    Map<String, Set<URI>> multiLoaderFiles = state. getMultiLoaderFiles();
     for (Entry<String, Set<URI>> entry : multiLoaderFiles.entrySet()) {
       String extension = entry.getKey();
       Set<URI> extensionFiles = entry.getValue();
       Set<FileLayerLoader> lm = state.getExtensionLoaderMap().get(extension);
       // try wildcard readers
-      if (lm==null || lm.size()<1)
+      boolean only_wildcard = lm==null || lm.size()<1;
+      if (only_wildcard)
         lm = state.getExtensionLoaderMap().get("*");
       
       List<FileLayerLoader> lml = new ArrayList(lm);
       // sort by prio & alphab
       Collections.sort(lml, AbstractFileLayerLoader.PRIO_COMPARATOR);
       // always add the ignore loader, preferrably at second position
-      lml.add(lml.size() > 1 ? 1 : 0, OpenFileWizardState.IGNORELOADER);
+      // except if only wildcard readers were added, these have to be 
+      // handpicked by the user
+      lml.add(lml.size() > 1 && !only_wildcard ? 1 : 0, OpenFileWizardState.IGNORELOADER);
       addFiles( extension, extensionFiles, new LinkedHashSet<FileLayerLoader>(lml) );
     }
   }
