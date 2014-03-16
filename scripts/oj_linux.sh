@@ -38,6 +38,20 @@ end(){
   fi
 }
 
+extract_libs(){
+  [ ! -d "$1" ] && echo Missing extraction folder && return 1
+  # extract zipped files in native dir (our way to ship symlinks to desktops)
+  for filepath in $(find "$1/" -name '*.tgz' -o -name '*.tar.gz')
+  do
+    file=$(basename "$filepath")
+    folder=$(dirname "$filepath")
+    done=".$file.unzipped"
+
+    # we create a marker file symbolizing previous successful extraction
+    ( cd "$folder/"; [ -f "$file" ] && [ ! -f "$done" ] && tar -xvf "$file" && touch "$done" );
+  done
+}
+
 postinstall(){
   [ ! -d "$1" ] && echo Missing app folder && exit 1
   # fix permissions
@@ -45,6 +59,8 @@ postinstall(){
   find "$1" -type d -exec chmod 755 {} \; &&\
   find "$1" -type f \( -name \*.sh -o -name \*.command -o -name script -o -name OpenJUMP \) -print -exec chmod 755 {} \; &&\
   echo permissions fixed
+  extract_libs "$1/lib/native" &&\
+  echo native libs extracted
   which xdg-desktop-menu && xdg-desktop-menu forceupdate && echo reloaded desktop
 }
 
@@ -222,16 +238,8 @@ JAVA_OPTS="$JAVA_OPTS -Djump.home=."
 [ -n "$JAVA_LOOKANDFEEL" ] && JAVA_OPTS="$JAVA_OPTS -Dswing.defaultlaf=$JAVA_LOOKANDFEEL"
 JAVA_OPTS="$JAVA_OPTS $JAVA_OPTS_OVERRIDE"
 
-# extract zipped files in native dir (our way to ship symlinks to desktops)
-for filepath in $(find "$JUMP_NATIVE_DIR/" -name '*.tgz' -o -name '*.tar.gz')
-do
-  file=$(basename "$filepath")
-  folder=$(dirname "$filepath")
-  done=".$file.unzipped"
-
-  # we create a marker file symbolizing previous successful extraction
-  ( cd "$folder/"; [ -f "$file" ] && [ ! -f "$done" ] && tar -xvf "$file" && touch "$done" );
-done
+# in case some additional archives were placed in native dir inbetween
+extract_libs "$JUMP_NATIVE_DIR"
 
 # allow jre to find native libraries in native dir, lib/ext (backwards compatibility)
 # NOTE: mac osx DYLD_LIBRARY_PATH is set in oj_macosx.command only
