@@ -36,9 +36,9 @@ import com.vividsolutions.jump.workbench.ui.style.BasicStylePanel;
  * <code>VertexStyleChooser</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author:$
+ * @author last edited by: $Author$
  * 
- * @version $Revision:$, $Date:$
+ * @version $Revision$, $Date$
  */
 public class VertexStyleChooser extends JPanel {
 

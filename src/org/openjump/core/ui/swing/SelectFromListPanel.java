@@ -58,9 +58,9 @@ import javax.swing.JScrollPane;
  * <code>SelectFromListPanel</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author:$
+ * @author last edited by: $Author$
  * 
- * @version $Revision:$, $Date:$
+ * @version $Revision$, $Date$
  */
 public class SelectFromListPanel extends JPanel {
 
