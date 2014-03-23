@@ -102,8 +102,8 @@ public class JUMPWorkbench {
     return splashImage;
   }
 
-  private static ArrayList<Image> appIcons() {
-    ArrayList iconlist = new ArrayList();
+  private static final ArrayList<Image> appIcons() {
+    ArrayList<Image> iconlist = new ArrayList<Image>();
     // seems like win7 wants even smaller one for internal frames
     // so let's use just another different one
     iconlist.add(IconLoader.image("oj_kang_14.v2.png"));
