@@ -1500,6 +1500,10 @@
 		org.openjump.core.ui.plugin.edittoolbox.FillPolygonPlugIn
 	</plug-in>
 
+    <plug-in>
+        org.openjump.core.ui.plugin.view.ViewOptionsPlugIn
+    </plug-in>
+
 	<!-- ================ Toolbar ================================== -->
 	<plug-in>
 		org.openjump.core.ui.plugin.datastore.transaction.DataStoreTransactionManagerPlugIn

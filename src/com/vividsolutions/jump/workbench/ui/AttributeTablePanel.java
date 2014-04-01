@@ -36,24 +36,15 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -61,6 +52,7 @@ import javax.swing.event.TableColumnModelEvent;
 import javax.swing.event.TableColumnModelListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
@@ -68,6 +60,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
+import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.util.FlexibleDateParser;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.CategoryEvent;
@@ -79,6 +72,7 @@ import com.vividsolutions.jump.workbench.model.LayerListener;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.EditSelectedFeaturePlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 
 /**
  * Implements an AttributeTable panel. Table-size changes are absorbed by the
@@ -91,6 +85,11 @@ public class AttributeTablePanel extends JPanel {
 	 * The property name of the columns width map in the project file (resides in the data-source subtree).
 	 */
 	public static final String ATTRIBUTE_COLUMNS_WIDTH_MAP = "AttributeColumnsWidthMap";
+
+    private static SimpleDateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.sss");
+
+    ImageIcon nullObject = IconLoader.icon("null1.png");
+    ImageIcon nullString = IconLoader.icon("null1.png");
 
     public static interface FeatureEditor {
 
@@ -145,7 +144,65 @@ public class AttributeTablePanel extends JPanel {
             if (!isEditButtonColumn(column)) {
                 JComponent renderer = (JComponent) super.getCellRenderer(row,
                         column);
-                setDefaultRenderer(Date.class, new FlexibleDateParser.CellRenderer());
+                // Get the prefered date formatter from the PersistentBlackboard
+                final Blackboard blackBoard = PersistentBlackboardPlugIn.get(workbenchContext);
+                DateFormat _formatter = DEFAULT_DATE_FORMAT;
+                try {
+                    _formatter = blackBoard.get("DATE_FORMAT_KEY") == null ?
+                            DEFAULT_DATE_FORMAT :
+                            new SimpleDateFormat(blackBoard.get("DATE_FORMAT_KEY").toString());
+                } catch (IllegalArgumentException e) {
+                    _formatter = DEFAULT_DATE_FORMAT;
+                }
+                // We need a final formatter to be used in innerClass
+                final DateFormat formatter = _formatter;
+
+                setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+                    public void setValue(Object value) {
+                        if (value == null) {
+                            setIcon(nullObject);
+                            setHorizontalAlignment(SwingConstants.CENTER);
+                        }
+                        else setText(value.toString());
+                    }
+                });
+                setDefaultRenderer(Date.class, new DefaultTableCellRenderer() {
+                    public void setValue(Object value) {
+                        if (value == null) {
+                            setIcon(nullString);
+                            setHorizontalAlignment(SwingConstants.CENTER);
+                        }
+                        else setText(formatter.format(value));
+                    }
+                });
+                setDefaultRenderer(String.class, new DefaultTableCellRenderer() {
+                    public void setValue(Object value) {
+                        if (value == null) {
+                            setIcon(nullString);
+                            setHorizontalAlignment(SwingConstants.CENTER);
+                        }
+                        else setText(value.toString());
+                    }
+                });
+                setDefaultRenderer(Integer.class, new DefaultTableCellRenderer() {
+                    public void setValue(Object value) {
+                        if (value == null) {
+                            setIcon(nullString);
+                            setHorizontalAlignment(SwingConstants.CENTER);
+                        }
+                        else setText(value.toString());
+                    }
+                });
+                setDefaultRenderer(Double.class, new DefaultTableCellRenderer() {
+                    public void setValue(Object value) {
+                        if (value == null) {
+                            setIcon(nullString);
+                            setHorizontalAlignment(SwingConstants.CENTER);
+                        }
+                        else setText(value.toString());
+                    }
+                });
+
 				if (AttributeTablePanel.this.getModel().getLayer().isEditable()
 						&& !AttributeTablePanel.this.getModel()
 							.isCellEditable(row, column))
