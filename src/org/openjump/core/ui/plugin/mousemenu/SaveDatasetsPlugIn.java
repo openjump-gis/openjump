@@ -908,7 +908,7 @@ public class SaveDatasetsPlugIn extends AbstractPlugIn
     	}
     }
 
-    private void writeProjectionFile(PlugInContext context, Layer outputLayer)throws IOException, FileNotFoundException
+    private void writeProjectionFile(PlugInContext context, Layer outputLayer)throws IOException
 	{	//per LDB projection files only associated with .shp files; confirmed 8/16/05
     	DataSourceQuery dsqOut = outputLayer.getDataSourceQuery();
     	
@@ -930,7 +930,7 @@ public class SaveDatasetsPlugIn extends AbstractPlugIn
     				{
     					Layer layer = (Layer) i.next();
     					DataSourceQuery dsq = layer.getDataSourceQuery();
-    					if (dsq != null)
+    					if (dsq != null && dsq.getDataSource().getProperties().get("File") != null)
     					{
     						String inputFileName = dsq.getDataSource().getProperties().get("File").toString();
     						
