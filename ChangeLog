@@ -1,7 +1,7 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
 2014-03-30 mmichaud <m.michael.michaud@orange.fr>
-  * Fix a NPE happening on project containing file-based and
+  * Fix bug #355 happening on project containing file-based and
     datastore-based layers (reported by Bernd Wehle on 2014-03-24)
 
 2014-03-30 mmichaud <m.michael.michaud@orange.fr>
