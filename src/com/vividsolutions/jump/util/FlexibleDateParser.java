@@ -79,11 +79,14 @@ public class FlexibleDateParser {
     //The problems vanished when I turned it into a static class. I didn't
     //investigate further. [Jon Aquino]
     public static final class CellEditor extends DefaultCellEditor {
-        public CellEditor() {
+        public CellEditor(DateFormat formatter) {
             super(new JTextField());
+            //Same formatter as used by JTable.DateRenderer. [Jon Aquino]
+            this.formatter = formatter;
         }
         private Object value;
         private FlexibleDateParser parser = new FlexibleDateParser();
+        DateFormat formatter;
 
         public boolean stopCellEditing() {
             try {
@@ -121,9 +124,6 @@ public class FlexibleDateParser {
         public Object getCellEditorValue() {
             return value;
         }
-
-        //Same formatter as used by JTable.DateRenderer. [Jon Aquino]
-        private DateFormat formatter = DateFormat.getDateTimeInstance();
     };
     
     public static final class CellRenderer extends DefaultTableCellRenderer {

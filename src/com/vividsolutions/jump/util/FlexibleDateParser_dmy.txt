@@ -28,7 +28,9 @@ dd/MM/yyyy HH:mm:ss
 MM/dd/yyyy
 MM/dd/yyyy HH:mm:ss
 
+yyyy-MM-dd HH:mm:ss.SSS
 yyyy-MM-dd HH:mm:ss
+yyyy-MM-dd'T'HH:mm:ss.SSS
 yyyy-MM-dd'T'HH:mm:ss
 # most informative format conforming the ISO 8601
 yyyy-MM-dd'T'HH:mm:ss.SSSZ

@@ -73,6 +73,7 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.EditSelectedFeaturePlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
+import org.openjump.core.ui.plugin.view.ViewOptionsPlugIn;
 
 /**
  * Implements an AttributeTable panel. Table-size changes are absorbed by the
@@ -85,8 +86,11 @@ public class AttributeTablePanel extends JPanel {
 	 * The property name of the columns width map in the project file (resides in the data-source subtree).
 	 */
 	public static final String ATTRIBUTE_COLUMNS_WIDTH_MAP = "AttributeColumnsWidthMap";
+    public static final String DATE_FORMAT_KEY = ViewOptionsPlugIn.DATE_FORMAT_KEY;
 
     private static SimpleDateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.sss");
+
+    private Blackboard blackboard;
 
     ImageIcon nullObject = IconLoader.icon("null1.png");
     ImageIcon nullString = IconLoader.icon("null1.png");
@@ -130,7 +134,18 @@ public class AttributeTablePanel extends JPanel {
             //#so that it will work for table-size changes. [Jon Aquino]
             setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
             GUIUtil.doNotRoundDoubles(this);
-            setDefaultEditor(Date.class, new FlexibleDateParser.CellEditor());
+            System.out.println("blackboard " + blackboard);
+            System.out.println("workbenchContext " + workbenchContext);
+            blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
+            DateFormat formatter;
+            try {
+                formatter = blackboard.get(DATE_FORMAT_KEY) == null ?
+                        DEFAULT_DATE_FORMAT :
+                        new SimpleDateFormat(blackboard.get(DATE_FORMAT_KEY).toString());
+            } catch (IllegalArgumentException e) {
+                formatter = DEFAULT_DATE_FORMAT;
+            }
+            setDefaultEditor(Date.class, new FlexibleDateParser.CellEditor(formatter));
         }
 
         //Row-stripe colour recommended in
@@ -145,12 +160,12 @@ public class AttributeTablePanel extends JPanel {
                 JComponent renderer = (JComponent) super.getCellRenderer(row,
                         column);
                 // Get the prefered date formatter from the PersistentBlackboard
-                final Blackboard blackBoard = PersistentBlackboardPlugIn.get(workbenchContext);
-                DateFormat _formatter = DEFAULT_DATE_FORMAT;
+                Blackboard blackBoard = PersistentBlackboardPlugIn.get(workbenchContext);
+                DateFormat _formatter;
                 try {
-                    _formatter = blackBoard.get("DATE_FORMAT_KEY") == null ?
+                    _formatter = blackboard.get(DATE_FORMAT_KEY) == null ?
                             DEFAULT_DATE_FORMAT :
-                            new SimpleDateFormat(blackBoard.get("DATE_FORMAT_KEY").toString());
+                            new SimpleDateFormat(blackboard.get(DATE_FORMAT_KEY).toString());
                 } catch (IllegalArgumentException e) {
                     _formatter = DEFAULT_DATE_FORMAT;
                 }
@@ -175,6 +190,9 @@ public class AttributeTablePanel extends JPanel {
                         else setText(formatter.format(value));
                     }
                 });
+                // Set default editor here too, as we want date display and date editing
+                // to be synchronized
+                setDefaultEditor(Date.class, new FlexibleDateParser.CellEditor(formatter));
                 setDefaultRenderer(String.class, new DefaultTableCellRenderer() {
                     public void setValue(Object value) {
                         if (value == null) {
@@ -270,38 +288,9 @@ public class AttributeTablePanel extends JPanel {
     }
   }
 
-    private MyTable table = new MyTable();
+    private MyTable table;
 
-    private TableCellRenderer headerRenderer = new TableCellRenderer() {
-
-        private Icon clearIcon = IconLoader.icon("Clear.gif");
-
-        private Icon downIcon = IconLoader.icon("Down.gif");
-
-        private TableCellRenderer originalRenderer = table.getTableHeader()
-                .getDefaultRenderer();
-
-        private Icon upIcon = IconLoader.icon("Up.gif");
-
-        public Component getTableCellRendererComponent(JTable table,
-                Object value, boolean isSelected, boolean hasFocus, int row,
-                int column) {
-            JLabel label = (JLabel) originalRenderer
-                    .getTableCellRendererComponent(table, value, isSelected,
-                            hasFocus, row, column);
-            if ((getModel().getSortedColumnName() == null)
-                    || !getModel().getSortedColumnName().equals(
-                            table.getColumnName(column))) {
-                label.setIcon(clearIcon);
-            } else if (getModel().isSortAscending()) {
-                label.setIcon(upIcon);
-            } else {
-                label.setIcon(downIcon);
-            }
-            label.setHorizontalTextPosition(SwingConstants.LEFT);
-            return label;
-        }
-    };
+    private TableCellRenderer headerRenderer;
 
     private LayerNameRenderer layerListCellRenderer;
 
@@ -313,7 +302,7 @@ public class AttributeTablePanel extends JPanel {
 
     public AttributeTablePanel(final LayerTableModel model, boolean addScrollPane,
             final WorkbenchContext workbenchContext) {
-        this();
+        this(workbenchContext);
         // this panel is exactly for this layer
         this.layer = model.getLayer();
         if (addScrollPane) {
@@ -378,7 +367,7 @@ public class AttributeTablePanel extends JPanel {
                 }
             });
             updateLabel();
-            this.workbenchContext = workbenchContext;
+            //this.workbenchContext = workbenchContext;
             table.setSelectionModel(new SelectionModelWrapper(this));
             table.getTableHeader().setDefaultRenderer(headerRenderer);
             initColumnWidths();
@@ -457,10 +446,43 @@ public class AttributeTablePanel extends JPanel {
         }
     }
 
-    private AttributeTablePanel() {
+    private AttributeTablePanel(final WorkbenchContext workbenchContext) {
       layerListCellRenderer = new LayerNameRenderer();
       layerListCellRenderer.setCheckBoxVisible(false);
       layerListCellRenderer.setProgressIconLabelVisible(false);
+      this.workbenchContext = workbenchContext;
+      blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
+      table = new MyTable();
+      headerRenderer = new TableCellRenderer() {
+
+          private Icon clearIcon = IconLoader.icon("Clear.gif");
+
+          private Icon downIcon = IconLoader.icon("Down.gif");
+
+          private TableCellRenderer originalRenderer = table.getTableHeader()
+                  .getDefaultRenderer();
+
+          private Icon upIcon = IconLoader.icon("Up.gif");
+
+          public Component getTableCellRendererComponent(JTable table,
+                                                         Object value, boolean isSelected, boolean hasFocus, int row,
+                                                         int column) {
+              JLabel label = (JLabel) originalRenderer
+                      .getTableCellRendererComponent(table, value, isSelected,
+                              hasFocus, row, column);
+              if ((getModel().getSortedColumnName() == null)
+                      || !getModel().getSortedColumnName().equals(
+                      table.getColumnName(column))) {
+                  label.setIcon(clearIcon);
+              } else if (getModel().isSortAscending()) {
+                  label.setIcon(upIcon);
+              } else {
+                  label.setIcon(downIcon);
+              }
+              label.setHorizontalTextPosition(SwingConstants.LEFT);
+              return label;
+          }
+      };
       try {
         jbInit();
       } catch (Exception e) {

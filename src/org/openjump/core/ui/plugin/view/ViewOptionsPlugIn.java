@@ -4,9 +4,11 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.InfoFrame;
 import com.vividsolutions.jump.workbench.ui.OptionsDialog;
 import com.vividsolutions.jump.workbench.ui.OptionsPanel;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.ViewAttributesPlugIn;
 
 import javax.swing.*;
 import java.text.SimpleDateFormat;
@@ -18,7 +20,7 @@ public class ViewOptionsPlugIn extends AbstractPlugIn {
 
     private static String VIEW_OPTIONS = I18N.get("org.openjump.core.ui.plugin.view.ViewOptionsPlugIn");
 
-    private static final String DATE_FORMAT_KEY = ViewOptionsPlugIn.class.getName() + " - DATE_FORMAT_KEY";
+    public static final String DATE_FORMAT_KEY = ViewOptionsPlugIn.class.getName() + " - DATE_FORMAT_KEY";
 
     private static final String DATE_FORMAT = I18N.get("org.openjump.core.ui.plugin.view.ViewOptionsPlugIn.Date-format");
     private JComboBox dateFormatChooser;
@@ -29,8 +31,8 @@ public class ViewOptionsPlugIn extends AbstractPlugIn {
 
         // Most useful formats for english and european speakers
         dateFormatChooser = new JComboBox(new String[]{
-                "yyyy-MM-dd hh:mm:ss.sss",
-                "yyyy-MM-ddThh:mm:ss.sss",
+                "yyyy-MM-dd hh:mm:ss.SSS",
+                "yyyy-MM-dd'T'hh:mm:ss.SSS",
                 "yyyy-MM-dd",
                 "hh:mm:ss",
                 "dd/MM/yyyy",
@@ -67,6 +69,12 @@ public class ViewOptionsPlugIn extends AbstractPlugIn {
             // If ok pressed,save the format in Workbench.xml configuration file
             Blackboard blackBoard = PersistentBlackboardPlugIn.get(context.getWorkbenchContext());
             blackBoard.put(DATE_FORMAT_KEY, dateFormatChooser.getSelectedItem().toString());
+            JInternalFrame[] frames = context.getWorkbenchFrame().getInternalFrames();
+            for (JInternalFrame frame : frames) {
+                if (frame instanceof InfoFrame || frame instanceof ViewAttributesPlugIn.ViewAttributesFrame) {
+                    frame.repaint();
+                }
+            }
         }
 
         public void init() {
