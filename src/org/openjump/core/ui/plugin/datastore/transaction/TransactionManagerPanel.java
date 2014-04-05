@@ -138,7 +138,11 @@ public class TransactionManagerPanel extends JPanel  implements WorkbenchContext
         for (JInternalFrame iframe : JUMPWorkbench.getInstance().getFrame().getInternalFrames()) {
             if (iframe instanceof TaskFrame) {
                 if (((TaskFrame)iframe).getTask() == task) {
-                    ((TaskFrame)iframe).getTask().getLayerManager().addLayerListener(layerListener);
+                    LayerManager manager = ((TaskFrame)iframe).getTask().getLayerManager();
+                    // In case of cloned windows, add the listener only once
+                    manager.removeLayerListener(layerListener);
+                    manager.addLayerListener(layerListener);
+                    //((TaskFrame)iframe).getTask().getLayerManager().addLayerListener(layerListener);
                 }
             }
         }
