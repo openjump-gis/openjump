@@ -307,7 +307,7 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
         this.layer = layer;
         setSynchronizingLineColor(layer.isSynchronizingLineColor());
         vertexCheckBox.setSelected(layer.getVertexStyle().isEnabled());
-        vertexSlider.setValue(layer.getVertexStyle().getSize());
+        vertexSlider.setValue(sizeToSlider(layer.getVertexStyle().getSize()));
         if (layer.getVertexStyle().isEnabled()) {
             fillCheckBox.setSelected(layer.getVertexStyle().getFilling());
         }
