@@ -53,13 +53,7 @@ import java.awt.geom.Point2D;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
-import javax.swing.BorderFactory;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSlider;
-import javax.swing.JTextArea;
-import javax.swing.ScrollPaneConstants;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -256,10 +250,11 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
         vertexStyleChooser.setStylePanel(this);
 
         Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
-        labelTable.put(new Integer(5), new JLabel("5"));
-        labelTable.put(new Integer(10), new JLabel("10"));
-        labelTable.put(new Integer(15), new JLabel("15"));
-        labelTable.put(new Integer(20), new JLabel("20"));
+        labelTable.put(new Integer(0), new JLabel("" + sizeFromSlider(0)));
+        labelTable.put(new Integer(25), new JLabel("" + sizeFromSlider(25)));
+        labelTable.put(new Integer(50), new JLabel("" + sizeFromSlider(50)));
+        labelTable.put(new Integer(75), new JLabel("" + sizeFromSlider(75)));
+        labelTable.put(new Integer(100), new JLabel("" + sizeFromSlider(100)));
         vertexSlider.setLabelTable(labelTable);
         setBasicStyle(layer.getBasicStyle());
 
@@ -338,9 +333,9 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
         vertexSlider.setMinorTickSpacing(1);
         vertexSlider.setMajorTickSpacing(0);
         vertexSlider.setPaintLabels(true);
-        vertexSlider.setMinimum(4);
-        vertexSlider.setValue(4);
-        vertexSlider.setMaximum(20);
+        vertexSlider.setMinimum(0);
+        vertexSlider.setValue(0);
+        vertexSlider.setMaximum(100);
         vertexSlider.setSnapToTicks(true);
         vertexSlider.setPreferredSize(SLIDER_DIMENSION);
 //        fillPatternTipLabel.setFont(new java.awt.Font("SansSerif", 2, 10));
@@ -351,10 +346,29 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
 //        fillPatternTipLabel.setLineWrap(true);
 //        fillPatternTipLabel.setWrapStyleWord(true);
 
+        final JTextField vertexSize = new JTextField(""+sizeFromSlider(), 3);
+        vertexSize.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    int newValue = Integer.parseInt(vertexSize.getText());
+                    if (newValue < sizeFromSlider(0) || newValue > sizeFromSlider(100)) throw new NumberFormatException();
+                    vertexSlider.setValue(sizeToSlider(newValue));
+                } catch (NumberFormatException nfe) {
+                    vertexSize.setText("" + sizeFromSlider());
+                }
+            }
+        });
+        vertexSlider.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                vertexSize.setText("" + sizeFromSlider());
+            }
+        });
+
         centerPanel.add(vertexSlider, new GridBagConstraints(1, 35, 1, 1, 0.0, 0.0, WEST, NONE, new Insets(2, 2, 2, 2),
                 0, 0));
-        centerPanel.add(GUIUtil.createSyncdTextField(vertexSlider, SLIDER_TEXT_FIELD_COLUMNS), new GridBagConstraints(
-                2, 35, 1, 1, 0.0, 0.0, WEST, NONE, new Insets(2, 2, 2, 2), 0, 0));
+        centerPanel.add(vertexSize, new GridBagConstraints(2, 35, 1, 1, 0.0, 0.0, WEST, NONE, new Insets(2, 2, 2, 2), 0, 0));
+        //centerPanel.add(GUIUtil.createSyncdTextField(vertexSlider, SLIDER_TEXT_FIELD_COLUMNS), new GridBagConstraints(
+        //        2, 35, 1, 1, 0.0, 0.0, WEST, NONE, new Insets(2, 2, 2, 2), 0, 0));
         centerPanel.add(vertexCheckBox, new GridBagConstraints(0, 35, 2, 1, 0.0, 0.0, WEST, NONE,
                 new Insets(2, 2, 2, 2), 0, 0));
         centerPanel.add(new JLabel(I18N.get("ui.style.RenderingStylePanel.preview")), new GridBagConstraints(0, 40, 3,
@@ -404,7 +418,7 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
     VertexStyle getVertexStyle() {
         VertexStyle vertexStyle = (VertexStyle) layer.getVertexStyle().clone();
         vertexStyle.setEnabled(vertexCheckBox.isSelected());
-        vertexStyle.setSize(vertexSlider.getValue());
+        vertexStyle.setSize(sizeFromSlider());
         vertexStyle.setFilling(fillCheckBox.isSelected());
         return vertexStyle;
     }
@@ -447,6 +461,18 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
 
     void showVerticesCheckBox_actionPerformed(ItemEvent e) {
         updateControls();
+    }
+
+    private int sizeFromSlider() {
+        return sizeFromSlider(vertexSlider.getValue());
+    }
+
+    private int sizeFromSlider(int i) {
+        return (int)(Math.rint(Math.pow(1.6, ((double)i)/10.0))) + 3;
+    }
+
+    private int sizeToSlider(int i) {
+        return (int)Math.rint(10*Math.log(((double)i-3))/Math.log(1.6));
     }
 
 }
