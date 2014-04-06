@@ -40,10 +40,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -225,6 +222,10 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
           return;
         }
 
+        if (tree.isEditing()) {
+            return;
+        }
+
         Object node = movingTreePath.getLastPathComponent();
         TreePath tpDestination = tree.getClosestPathForLocation(e.getX(),
             e.getY());
@@ -310,16 +311,20 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
           return;
         }
 
-        int rowOld = tree.getRowForPath(movingTreePath);
+        if (tree.isEditing()) {
+            return;
+        }
+
+        // int rowOld = tree.getRowForPath(movingTreePath);
         rowNew = tree.getClosestRowForLocation(e.getX(), e.getY());
         // rowOld = tree.getRowForPath(movingTreePath);
         // if the dragging of a row hasn't moved outside of the bounds
         // of the currently selected row, don't show the horizontal drag
         // bar.
-        if (rowNew == lastHoveringRow || rowNew == rowOld - 1
-            || rowNew == rowOld) {
-          return;
-        }
+        //if (rowNew == lastHoveringRow/* || rowNew == rowOld - 1
+        //    || rowNew == rowOld*/) {
+        //  return;
+        //}
 
         if (!(tree.getPathForRow(rowNew).getLastPathComponent() instanceof Layer)) {
           tree.expandRow(rowNew);
@@ -340,13 +345,17 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
           firstTimeDragging = false;
         }
         // XOR drawing mode of horizontal drag bar
-        g2.fill(dragBar);
-        dragBar.setLocation(0,
-            tree.getRowBounds(rowNew).y + tree.getRowBounds(rowNew).height - 3);
-        g2.fill(dragBar);
-        lastHoveringRow = rowNew;
+        else if (rowNew != lastHoveringRow) {
+            g2.setXORMode(Color.WHITE);
+            g2.fill(dragBar);
+            dragBar.setLocation(0,
+                    tree.getRowBounds(rowNew).y + tree.getRowBounds(rowNew).height - 3);
+            g2.fill(dragBar);
+            lastHoveringRow = rowNew;
+        }
       }
     });
+
     tree.setCellEditor(cellEditor);
     tree.setInvokesStopCellEditing(true);
     tree.setBackground(getBackground());
