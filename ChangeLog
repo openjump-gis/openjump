@@ -1,6 +1,10 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
 2014-04-06 mmichaud <m.michael.michaud@orange.fr>
+  * Fix #356 commit from a WritableDataStoreDataSource layer was not working
+    if the layer was opened from a file project.
+
+2014-04-06 mmichaud <m.michael.michaud@orange.fr>
   * Fix #88 replace vertex size slider by a logarithmic slider
 
 2014-04-06 mmichaud <m.michael.michaud@orange.fr>

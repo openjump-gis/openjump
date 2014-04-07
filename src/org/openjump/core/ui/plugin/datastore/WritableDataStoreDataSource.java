@@ -70,7 +70,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
     final private LinkedHashMap<Integer,Evolution> evolutions = new LinkedHashMap<Integer,Evolution>();
 
     // See setTableAlreadyCreated()
-    private boolean tableAlreadyCreated;
+    private boolean tableAlreadyCreated = true;
 
     public WritableDataStoreDataSource() {
         // Called by Java2XML [Jon Aquino 2005-03-16]
