@@ -41,6 +41,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -545,7 +546,8 @@ public class FeatureInstaller {
       itemRoot.insert(menuItem, pos);
 
     // update separators
-    updateSeparatorsFromProps2(menu, menu);
+    if (isSeparatingEnabled())
+      updateSeparatorsFromProps(menu, menu);
 
     // fetch a check, if none already
     enableCheck = enableCheck == null && plugin instanceof EnableChecked ? ((EnableChecked) plugin)
@@ -970,8 +972,26 @@ public class FeatureInstaller {
 //
 //    }
 //  }
+  
+  // disabled by default, autoseparating is enabled via PluginMgr during startup
+  private static boolean separatingEnabled = false;
 
-  private void updateSeparatorsFromProps2(Menu menuRoot, Menu menuWrap) {
+  public boolean isSeparatingEnabled() {
+    return separatingEnabled;
+  }
+
+  public void setSeparatingEnabled(boolean onoff) {
+    separatingEnabled = onoff;
+  }
+
+  public void updateSeparatorsInAllMenus(){
+    for (Iterator iterator = getAllMenus().iterator(); iterator.hasNext();) {
+      Menu menu = (Menu) iterator.next();
+      updateSeparatorsFromProps(menu, menu);
+    }
+  }
+
+  private void updateSeparatorsFromProps(Menu menuRoot, Menu menuWrap) {
 
     WorkbenchProperties wbProps = workbenchContext.getWorkbench()
         .getProperties();
@@ -990,7 +1010,7 @@ public class FeatureInstaller {
         item1Pos = getHighestMenuItemPositionRecursive(menuRoot,
             wrapMenu((JMenu) c1));
         // update separators in submenu
-        updateSeparatorsFromProps2(menuRoot, wrapMenu((JMenu) c1));
+        updateSeparatorsFromProps(menuRoot, wrapMenu((JMenu) c1));
       }
       else if (c1 instanceof JMenuItem) {
         PlugIn p1 = pluginFromMenuItem((JMenuItem) c1);
@@ -1014,7 +1034,7 @@ public class FeatureInstaller {
       for (; j < menuWrap.getComponentCount(); j++) {
         Component c2 = menuWrap.getComponent(j);
         if (c2 instanceof JMenu) {
-          item2Pos = getHighestMenuItemPositionRecursive(menuRoot,
+          item2Pos = getLowestMenuItemPositionRecursive(menuRoot,
               wrapMenu((JMenu) c2));
         }
         else if (c2 instanceof JMenuItem) {
@@ -1081,6 +1101,34 @@ public class FeatureInstaller {
           pos = subPos > pos ? subPos : pos;
         }
       }
+    }
+
+    return pos;
+  }
+  
+  private int getLowestMenuItemPositionRecursive(Menu root, Menu menu) {
+    int pos = -1;
+    for (int j = 0; j < menu.getComponentCount(); j++) {
+      Component c = menu.getComponent(j);
+      int subPos = -1;
+      if (c instanceof JMenu) {
+        subPos = getLowestMenuItemPositionRecursive(root,
+            wrapMenu((JMenu) c));
+      }
+      else if (c instanceof JMenuItem) {
+        PlugIn p = pluginFromMenuItem((JMenuItem) c);
+        if (p instanceof PlugIn) {
+//          if ( ((PlugIn)p).getName().toLowerCase().contains("beanshelleditor") )
+//            System.out.println();;
+          String posSetting = fetchPluginMenuSetting(root.getWrappee(), p, WorkbenchProperties.ATTR_ORDERID);
+          //System.out.println(((PlugIn)p).getName()+"='"+posSetting+"'"+posSetting.isEmpty());
+          if (!posSetting.isEmpty())
+            subPos = Integer.parseInt(posSetting);
+        }
+      }
+      
+      if ( subPos >= 0 && ( pos < 0 || subPos < pos ) )
+          pos = subPos;
     }
 
     return pos;
@@ -1321,6 +1369,21 @@ public class FeatureInstaller {
           .createPlugInContext()));
 
     return menu;
+  }
+  
+  private List<Menu> getAllMenus(){
+    List<Menu> menus = new Vector();
+    String[] keys = new String[] { WorkbenchProperties.KEY_MAINMENU,
+        WorkbenchProperties.KEY_CATEGORYPOPUP,
+        WorkbenchProperties.KEY_LAYERNAMEPOPUP,
+        WorkbenchProperties.KEY_LAYERVIEWPOPUP,
+        WorkbenchProperties.KEY_LAYERNAMEPOPUP_WMS,
+        WorkbenchProperties.KEY_ATTRIBUTETABPOPUP,
+        WorkbenchProperties.KEY_LAYERNAMEPOPUP_RASTER };
+    for (int i = 0; i < keys.length; i++) {
+      menus.add(fetchMenuForKey(keys[i]));
+    }
+    return menus;
   }
 
   private String fetchPluginMenuSetting(Object menu, PlugIn plugin,

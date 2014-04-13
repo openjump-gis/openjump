@@ -51,6 +51,7 @@ import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.WorkbenchProperties;
+import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 /**
  * Loads plug-ins (or more precisely, Extensions), and any JAR files that they
@@ -124,6 +125,12 @@ public class PlugInManager {
       loadConfigurations();
       System.out.println("Loading all OJ extensions took "
           + secondsSinceString(start) + "s");
+      
+      // enable autoseparating in installer for plugins possibly installed later on
+      FeatureInstaller.getInstance().setSeparatingEnabled(true);
+      // for performance reasons we separate menu entries once
+      // after all plugins/extensions were installed
+      FeatureInstaller.getInstance().updateSeparatorsInAllMenus();
     }
 
     private void loadConfigurations() {
