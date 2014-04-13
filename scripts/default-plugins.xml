@@ -46,6 +46,9 @@
 	<plug-in>
 		com.vividsolutions.jump.workbench.ui.zoom.InstallZoomBarPlugIn
 	</plug-in>
+	<plug-in>
+		org.openjump.core.ui.plugin.datastore.postgis2.SaveToPostGIS2PlugIn
+	</plug-in>
 
 	<!-- load wizards -->
 	<!-- <plug-in> -->
@@ -131,6 +134,13 @@
 	</plug-in>
 	<plug-in>
 		com.vividsolutions.jump.workbench.ui.plugin.clipboard.CopyImagePlugIn
+	</plug-in>
+
+	<plug-in initialize="false">
+		com.cadplan.jump.PrinterPlugIn
+		<menus>
+			<main-menu name="I18N.com.cadplan.jump.PrinterPlugIn" menupath="MenuNames.FILE/MenuNames.PRINT" />
+		</menus>
 	</plug-in>
 
 	<!-- ====================== EDIT menu =================================== -->
@@ -993,7 +1003,7 @@
 		</menus>
 	</plug-in>
 
-	<!-- separator / -->
+	<separator />
 
 	<plug-in>
 		de.latlon.deejump.plugin.style.LayerStyle2SLDPlugIn
@@ -1038,6 +1048,9 @@
 			<layername-popup install="true" />
 		</menus>
 	</plug-in>
+
+	<separator />
+
 	<plug-in>
 		com.vividsolutions.jump.workbench.datasource.SaveDatasetAsPlugIn
 		<menus>
@@ -1047,9 +1060,9 @@
 	<plug-in>
 		org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn
 	</plug-in>
-	<plug-in>
-		org.openjump.core.ui.plugin.datastore.postgis2.SaveToPostGIS2PlugIn
-	</plug-in>
+
+	<separator />
+
 	<plug-in>
 		org.openjump.core.ui.plugin.layer.CombineSelectedLayersPlugIn
 		<menus>
@@ -1500,9 +1513,9 @@
 		org.openjump.core.ui.plugin.edittoolbox.FillPolygonPlugIn
 	</plug-in>
 
-    <plug-in>
-        org.openjump.core.ui.plugin.view.ViewOptionsPlugIn
-    </plug-in>
+	<plug-in>
+		org.openjump.core.ui.plugin.view.ViewOptionsPlugIn
+	</plug-in>
 
 	<!-- ================ Toolbar ================================== -->
 	<plug-in>

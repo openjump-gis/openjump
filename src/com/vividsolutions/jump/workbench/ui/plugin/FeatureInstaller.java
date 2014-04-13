@@ -457,8 +457,8 @@ public class FeatureInstaller {
       menuItem.setText(plugin.getName());
     }
 
-    if (plugin.getClass().getName().contains("OpenFile"))
-      System.out.println();
+//    if (plugin.getClass().getName().contains("Printer"))
+//      System.out.println(plugin.getClass().getName());
 
     // regex pattern to strip position setting from strings
     Pattern posPattern = Pattern.compile("^(.*)\\{(?:pos\\:)?(\\d+)\\}$");
@@ -496,8 +496,10 @@ public class FeatureInstaller {
 //    if (plugin.getClass().getName().contains("PasteSchema"))
 //      System.out.println(fetchKeyForMenu(menu.getWrappee()));
 
-    List<String> posListFromProps = calculateNewPosition(menu, menu, plugin);
-        //getPositionListFromProps(menu, plugin);
+//    System.out.println(plugin.getName()+"-> "+Arrays.toString(menuPath));
+    List<String> posListFromProps = calculateNewPosition(menu,
+        new ArrayList<String>(Arrays.asList(menuPath)), menu, plugin);
+
     // cut to menupath length
     if (posListFromProps.size()>0) {
       menuPathPositions = new String[menuPath.length+1];
@@ -514,7 +516,7 @@ public class FeatureInstaller {
     Menu itemRoot = createMenusIfNecessary(menu, menuPath, menuPathPositions);
     
     // recalculate item position in item root
-    List posList = calculateNewPosition(menu, itemRoot, plugin);
+    List posList = calculateNewPosition(menu, new ArrayList(), itemRoot, plugin);
     int pos = posList.isEmpty() ? -1 : Integer.parseInt(posList.get(0).toString());
     
 //    // we got a forced position?
@@ -1134,91 +1136,106 @@ public class FeatureInstaller {
     return pos;
   }
 
-  private List getPositionListFromProps(Menu menu, PlugIn executable) {
-    String menuKey = fetchKeyForMenu(menu.getWrappee());
-    // unconfigured menu ?
-    if (menuKey.isEmpty())
-      return new ArrayList();
-
-    WorkbenchProperties wbProps = workbenchContext.getWorkbench()
-        .getProperties();
-    List<String> list = getMenuListFromSettings(menu.getWrappee());
-
-    List posList = getPositionListRecursive(list, menu, executable);
-
-    return posList;
-  }
+//  private List getPositionListFromProps(Menu menu, PlugIn executable) {
+//    String menuKey = fetchKeyForMenu(menu.getWrappee());
+//    // unconfigured menu ?
+//    if (menuKey.isEmpty())
+//      return new ArrayList();
+//
+//    WorkbenchProperties wbProps = workbenchContext.getWorkbench()
+//        .getProperties();
+//    List<String> list = getMenuListFromSettings(menu.getWrappee());
+//
+//    List posList = getPositionListRecursive(list, menu, executable);
+//
+//    return posList;
+//  }
   
+//  /**
+//   * calculates a list of ints signalling where to insert a given plugin
+//   */
+//  private List<Object> getPositionListRecursive(List configPosList, Menu menu,
+//      PlugIn p) {
+//
+//    int pluginPos = getPositionFromList(configPosList, p.getClass().getName());
+//    // this plugin's pos is unconfigured
+//    if (pluginPos < 0)
+//      return new ArrayList();
+//
+////    if (p.getClass().getName().contains("MoveCat"))
+////      System.out.println("check " + p.getName());
+//
+//    // look for components with bigger position values than us
+//    // return the bigger position list to insert us in
+//    List computedPosList = new ArrayList();
+//    int lastPos = -1;
+//    for (int i = 0; i < menu.getComponentCount(); i++) {
+//      Component c = menu.getComponent(i);
+//      if (c instanceof JMenu) {
+//        List computedPosSubList = getPositionListRecursive(configPosList,
+//            wrapMenu((JMenu) c), p);
+//        if (computedPosSubList.size() > 0) {
+//          computedPosList.add(i);
+//          computedPosList.addAll(computedPosSubList);
+//          break;
+//        }
+//      }
+//
+//      PlugIn p2 = pluginFromMenuItem(c);
+//      // pluginless item e.g. separator
+//      if (p2 == null)
+//        continue;
+//
+//      int itemPos = getPositionFromList(configPosList, p2.getClass().getName());
+//      // unconfigured item
+//      if (itemPos < 0)
+//        continue;
+//
+//      // actually add the item
+//      if (itemPos > pluginPos) {
+//        // search for defined separator inbetween both configured items
+//        boolean isConfigSeparated = configPosList.subList(pluginPos, itemPos)
+//            .contains(WorkbenchProperties.KEY_SEPARATOR);
+//        // search for actual separators inbetween menu candidate positions
+//        boolean foundSeparators = false;
+//        for (int j = lastPos; lastPos >= 0 && j < i; j++) {
+//          if (menu.getComponent(j) instanceof Separator) {
+//            foundSeparators = true;
+//            break;
+//          }
+//        }
+//        // add either here or there
+//        int pos = foundSeparators && isConfigSeparated ? lastPos + 1 : i;
+//        computedPosList.add(pos);
+//        break;
+//      }
+//      else {
+//        // when did we last see a configured item, we might want to be inserted
+//        // after
+//        // it but before any separators, unconfgd. items between the two items
+//        lastPos = i;
+//      }
+//    }
+//
+//    return computedPosList;
+//  }
+
   /**
-   * calculates a list of ints signalling where to insert a given plugin
+   * calculates the plugin's position and return a position list as follows
+   * assuming the plugin would go under File->Print->PrinterPlugin it could
+   * return [0,3,0] which would mean that File should be inserted at the 
+   * beginning, Print at position 3 and the plugin at the beginning of their
+   * respective parent menu.
+   * an empty list means the plugin and it's sub paths should be appended to 
+   * their respective parent menus.
+   * 
+   * @param parent - the absolute parent menu
+   * @param menuPath - the relative menupath list in the menu to be placed in
+   * @param menu - the menu to be placed in
+   * @param p - the plugin
+   * @return List<String> - list of positions or empty list
    */
-  private List<Object> getPositionListRecursive(List configPosList, Menu menu,
-      PlugIn p) {
-
-    int pluginPos = getPositionFromList(configPosList, p.getClass().getName());
-    // this plugin's pos is unconfigured
-    if (pluginPos < 0)
-      return new ArrayList();
-
-//    if (p.getClass().getName().contains("MoveCat"))
-//      System.out.println("check " + p.getName());
-
-    // look for components with bigger position values than us
-    // return the bigger position list to insert us in
-    List computedPosList = new ArrayList();
-    int lastPos = -1;
-    for (int i = 0; i < menu.getComponentCount(); i++) {
-      Component c = menu.getComponent(i);
-      if (c instanceof JMenu) {
-        List computedPosSubList = getPositionListRecursive(configPosList,
-            wrapMenu((JMenu) c), p);
-        if (computedPosSubList.size() > 0) {
-          computedPosList.add(i);
-          computedPosList.addAll(computedPosSubList);
-          break;
-        }
-      }
-
-      PlugIn p2 = pluginFromMenuItem(c);
-      // pluginless item e.g. separator
-      if (p2 == null)
-        continue;
-
-      int itemPos = getPositionFromList(configPosList, p2.getClass().getName());
-      // unconfigured item
-      if (itemPos < 0)
-        continue;
-
-      // actually add the item
-      if (itemPos > pluginPos) {
-        // search for defined separator inbetween both configured items
-        boolean isConfigSeparated = configPosList.subList(pluginPos, itemPos)
-            .contains(WorkbenchProperties.KEY_SEPARATOR);
-        // search for actual separators inbetween menu candidate positions
-        boolean foundSeparators = false;
-        for (int j = lastPos; lastPos >= 0 && j < i; j++) {
-          if (menu.getComponent(j) instanceof Separator) {
-            foundSeparators = true;
-            break;
-          }
-        }
-        // add either here or there
-        int pos = foundSeparators && isConfigSeparated ? lastPos + 1 : i;
-        computedPosList.add(pos);
-        break;
-      }
-      else {
-        // when did we last see a configured item, we might want to be inserted
-        // after
-        // it but before any separators, unconfgd. items between the two items
-        lastPos = i;
-      }
-    }
-
-    return computedPosList;
-  }
-
-  private List<String> calculateNewPosition(Menu parent, Menu menu,
+  private List<String> calculateNewPosition(Menu parent, List menuPath, Menu menu,
       PlugIn p) {
     
     WorkbenchProperties wbProps = workbenchContext.getWorkbench()
@@ -1231,7 +1248,7 @@ public class FeatureInstaller {
     if (pluginPos < 0)
       return new ArrayList();
 
-//    if (p.getClass().getName().contains("PasteSchema"))
+//    if (p.getClass().getName().contains("Printer"))
 //      System.out.println("check " + p.getName());
 
     // look for components with bigger position values than us
@@ -1244,7 +1261,11 @@ public class FeatureInstaller {
       
       // check if this menu contains a later item
       if (c instanceof JMenu) {
-        List computedPosSubList = calculateNewPosition(parent,
+        List menuSubPath = new ArrayList<String>(menuPath);
+        if (!menuSubPath.isEmpty()){
+          menuSubPath.remove(0);
+        }
+        List computedPosSubList = calculateNewPosition(parent, menuSubPath,
             wrapMenu((JMenu) c), p);
         if (computedPosSubList.size() > 0) {
           
@@ -1262,6 +1283,11 @@ public class FeatureInstaller {
           computedPosList.addAll(computedPosSubList);
           break;
         }
+        
+        // look no further, we are to inserted into _this_ menu, hence if we found no
+        // pos placed behind us thus far it is because we're the last one for this menu
+        if ( ! menuPath.isEmpty() && ((JMenu) c).getText().equals(menuPath.get(0)) )
+          break;
       }
       else {
         // is this item a plugin?
@@ -1317,6 +1343,9 @@ public class FeatureInstaller {
         lastPos = i;
       }
     }
+    
+//    if (p.getName().contains("Printer"))
+//      System.out.println(p.getName()+"-> "+computedPosList);
 
     return computedPosList;
   }
