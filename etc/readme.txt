@@ -57,6 +57,13 @@ as (Component name - License name - License file in "licenses/" folder or link)
  Xerces2 Java Parser - Apache License Version 2.0 - apache_license-2.0.txt
  XZ for Java - Public Domain
 
+and the following plugins
+( Component name - License name - License file in "licenses/" folder
+   list of files and dependencies with license if any )
+ SkyPrinter - GPL2 - gpl-2.txt
+  SkyPrinterPlugIn-*.jar
+  itext-*.jar - LGPL2.1 - lgpl-2.1.txt
+
 Additionally PLUS distribution contains
 ( Component name - License name - License file in "licenses/" folder
    list of files and dependencies with license if any )
@@ -100,7 +107,8 @@ and the following plugins
  OSM Driver (Stefan Steiniger) - GPL2 - gpl-2.txt
   oj_osm_reader_v*.jar
  Printer (com.cadplan.jump) - GPL2 - gpl-2.txt
-  jumpPrinter.jar
+  jumpPrinter.jar (needs Vertex Symbols extension)
+  itext-*.jar - LGPL2.1 - lgpl-2.1.txt
  Pirol Csv Dataset 
   (de.fhOsnabrueck.jump.pirol.datasources.pirolCSV) - GPL2 - gpl-2.txt
   PirolCsv.jar, pbaseClasses.jar
@@ -113,7 +121,7 @@ and the following plugins
  Vertex Note (com.cadplan.jump) - GPL2 - gpl-2.txt
  Vertex Symbols (com.cadplan.jump) - GPL2 - gpl-2.txt
   VertexSymbols.jar
-  itext-2.1.7.jar - LGPL2.1 - lgpl-2.1.txt
+  itext-*.jar - LGPL2.1 - lgpl-2.1.txt
 
 
 2. Installation instructions
