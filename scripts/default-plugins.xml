@@ -139,9 +139,15 @@
 	<plug-in initialize="false">
 		com.cadplan.jump.PrinterPlugIn
 		<menus>
-			<main-menu name="I18N.com.cadplan.jump.PrinterPlugIn" menupath="MenuNames.FILE/MenuNames.PRINT" />
+			<main-menu name="I18N.ui.MenuNames.PRINT.Cadplan" menupath="MenuNames.FILE/MenuNames.PRINT" />
 		</menus>
 	</plug-in>
+  <plug-in initialize="false">
+    com.isa.jump.plugin.PrintPlugIn
+    <menus>
+      <main-menu name="I18N.ui.MenuNames.PRINT.SkyPrinter" menupath="MenuNames.FILE/MenuNames.PRINT" />
+    </menus>
+  </plug-in>
 
 	<!-- ====================== EDIT menu =================================== -->
 	<plug-in>
