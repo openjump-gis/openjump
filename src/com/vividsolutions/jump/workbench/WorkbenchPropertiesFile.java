@@ -119,8 +119,8 @@ public class WorkbenchPropertiesFile implements WorkbenchProperties {
       // deal with lists
       boolean isList = map.containsKey("type")
           && map.get("type").toString().toLowerCase().equals("list");
-      if (elementName.equals("item"))
-        System.out.println();
+//      if (elementName.equals("item"))
+//        System.out.println();
       if (isList) {
         Object existingEntry = map.get("list");
         List existingList;

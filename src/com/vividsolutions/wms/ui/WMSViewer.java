@@ -238,7 +238,7 @@ public class WMSViewer extends JFrame implements ActionListener, MouseListener {
                                               Float.parseFloat( yMaxField.getText() ) ) );
         Image mapImage;
         try {
-          System.out.println("Url: " + req.getURL());
+//          System.out.println("Url: " + req.getURL());
           mapImage = req.getImage();
         }
         catch (Exception e) {

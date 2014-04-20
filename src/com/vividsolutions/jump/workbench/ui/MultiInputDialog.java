@@ -515,7 +515,7 @@ public class MultiInputDialog extends AbstractMultiInputDialog {
         JButton button2 = d.addButton("Second button", "OK", "");
         GUIUtil.centreOnScreen(d);
         d.setVisible(true);
-        System.out.println(d.getLayer("LayerField"));
+//        System.out.println(d.getLayer("LayerField"));
         System.exit(0);
     }
 }

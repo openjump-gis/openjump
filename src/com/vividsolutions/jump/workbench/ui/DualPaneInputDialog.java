@@ -213,7 +213,7 @@ public class DualPaneInputDialog extends MultiInputDialog {
         d.addRow();
         d.setVisible(true);
         GUIUtil.centreOnScreen(d);
-        System.out.println(d.getLayer("LayerField"));
+//        System.out.println(d.getLayer("LayerField"));
         System.exit(0);
     }
 }

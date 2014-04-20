@@ -75,7 +75,7 @@ public class AddDatastoreLayerPlugIn extends AbstractAddDatastoreLayerPlugIn {
 
     protected Layerable createLayerable(ConnectionPanel panel,
             TaskMonitor monitor, PlugInContext context) throws Exception {
-        System.out.println("createLayerable");
+//        System.out.println("createLayerable");
         monitor.report(I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPlugIn.Creating-layer"));
         return createLayer((AddDatastoreLayerPanel) panel, context);
     }
