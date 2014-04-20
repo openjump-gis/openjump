@@ -109,7 +109,7 @@ public abstract class GeoReferencedRaster
             if (name!="xtiff") {
               ImageCodec.unregisterCodec(name);
               removed_codecs.add(candidate_codec);
-              System.out.println("removed " + name);
+//              System.out.println("removed " + name);
             }
           }
         }
@@ -129,7 +129,7 @@ public abstract class GeoReferencedRaster
       } finally {
         // reregister removed codecs
         for (ImageCodec imageCodec : removed_codecs) {
-          System.out.println("reregister: "+imageCodec.getFormatName());
+//          System.out.println("reregister: "+imageCodec.getFormatName());
           ImageCodec.registerCodec(imageCodec);
         }
       }

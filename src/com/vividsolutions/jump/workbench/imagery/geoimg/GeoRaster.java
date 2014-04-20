@@ -159,7 +159,7 @@ public abstract class GeoRaster implements Disposable {
                 return GeoImageFactory.getPriority(o2);
               }
             };
-            System.out.println(o1+"="+p1.getPriority()+"/"+o2+"="+p2.getPriority());
+//            System.out.println(o1+"="+p1.getPriority()+"/"+o2+"="+p2.getPriority());
             return Prioritized.COMPARATOR.compare(p1, p2);
           }
         });
@@ -183,7 +183,7 @@ public abstract class GeoRaster implements Disposable {
         src_input = createInput(uri, readerSpi);
 
         src_reader = readerSpi.createReaderInstance(/* src_input */);
-        System.out.println("GR fetch: " + src_reader + "/" + src_input);
+//        System.out.println("GR fetch: " + src_reader + "/" + src_input);
         src_reader.setInput(src_input);
         pbjImageRead.setParameter("Input", src_input);
         pbjImageRead.setParameter("Reader", src_reader);
@@ -203,7 +203,7 @@ public abstract class GeoRaster implements Disposable {
         } catch (Exception e) {
           // TODO: handle more gracefully, continue with next reader on error
           // e.printStackTrace();
-          System.out.println("GRR fail: " + e.getMessage());
+//          System.out.println("GRR fail: " + e.getMessage());
           dispose();
         }
       }
@@ -329,7 +329,7 @@ public abstract class GeoRaster implements Disposable {
         if (!codec.getClass().isAssignableFrom(candidate_codec.getClass())) {
           ImageCodec.unregisterCodec(name);
           removed_codecs.add(candidate_codec);
-          System.out.println("removed " + name);
+//          System.out.println("removed " + name);
         }
       }
 //      SeekableStream is2 = SeekableStream.wrapInputStream(createInputStream(uri), true);
@@ -347,7 +347,7 @@ public abstract class GeoRaster implements Disposable {
     } finally {
       // reregister removed codecs
       for (ImageCodec imageCodec : removed_codecs) {
-        System.out.println("reregister " + imageCodec.getFormatName());
+//        System.out.println("reregister " + imageCodec.getFormatName());
         ImageCodec.registerCodec(imageCodec);
       }
     }

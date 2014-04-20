@@ -143,7 +143,7 @@ public class MrSIDImageFactory implements ReferencedImageFactory {
         binariesAvailable.put(filename, "");
         return "";
       }
-      System.out.println(line);
+//      System.out.println(line);
       binariesAvailable.put(filename, filename + " not in path");
       return filename + " not in path";
     } catch (Exception e) {
