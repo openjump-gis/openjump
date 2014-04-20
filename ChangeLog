@@ -1,5 +1,12 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2014-04.20 ede
+  * fix "attribute window context menu shows while multi selecting on mac"
+    https://sourceforge.net/p/jump-pilot/bugs/338/
+
+2014-04.19 ede
+  * CORE contains printing capability to PDF, Printer now (SkyPrinter)
+
 2014-04-06 mmichaud <m.michael.michaud@orange.fr>
   * Fix #356 commit from a WritableDataStoreDataSource layer was not working
     if the layer was opened from a file project.
