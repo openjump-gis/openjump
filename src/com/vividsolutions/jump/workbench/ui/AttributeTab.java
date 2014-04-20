@@ -122,7 +122,9 @@ public class AttributeTab extends JPanel implements LayerNamePanel {
                     getTablePanel(layerTableModel.getLayer());
                 MouseListener mouseListener = new MouseAdapter() {
                     public void mouseReleased(MouseEvent e) {
-                        if (!SwingUtilities.isRightMouseButton(e)) {
+                        // [ede 04.2014] use isPopupTrigger which is 
+                        // supposed to be _really_ crossplatform
+                        if (!e.isPopupTrigger()) {
                             return;
                         }
 
