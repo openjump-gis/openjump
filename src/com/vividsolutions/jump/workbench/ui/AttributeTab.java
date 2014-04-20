@@ -45,6 +45,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.NoninvertibleTransformException;
@@ -120,32 +121,40 @@ public class AttributeTab extends JPanel implements LayerNamePanel {
 
                 final AttributeTablePanel tablePanel =
                     getTablePanel(layerTableModel.getLayer());
+                
                 MouseListener mouseListener = new MouseAdapter() {
-                    public void mouseReleased(MouseEvent e) {
-                        // [ede 04.2014] use isPopupTrigger which is 
-                        // supposed to be _really_ crossplatform
-                        if (!e.isPopupTrigger()) {
-                            return;
-                        }
-
-                        popupMenu(workbenchContext).setTitle(
-                            tablePanel.getModel().getLayer().getName());
-                        lastSelectedLayers =
-                            new Layer[] { tablePanel.getModel().getLayer()};
-
-                        //Call #setEnableLastSelectedLayers here for EnableChecks that
-                        //call #getSelectedLayers. [Jon Aquino]                                        
-                        setEnableLastSelectedLayers(true, AttributeTab.this);
-
-                        try {
-                            popupMenu(workbenchContext).show(
-                                tablePanel.getLayerNameRenderer(),
-                                e.getX(),
-                                e.getY());
-                        } finally {
-                            setEnableLastSelectedLayers(false, AttributeTab.this);
-                        }
+                  public void mousePressed(MouseEvent e) {
+                    // popup triggers are pressed on Linux/OSX, released on Windows
+                    _mouseReleased(e);
+                  }
+        
+                  public void mouseReleased(MouseEvent e) {
+                    _mouseReleased(e);
+                  }
+        
+                  private void _mouseReleased(MouseEvent e) {
+                    // [ede 04.2014] use isPopupTrigger which is
+                    // supposed to be _really_ crossplatform
+                    if (!e.isPopupTrigger()) {
+                      return;
                     }
+        
+                    popupMenu(workbenchContext).setTitle(
+                        tablePanel.getModel().getLayer().getName());
+                    lastSelectedLayers = new Layer[] { tablePanel.getModel().getLayer() };
+        
+                    // Call #setEnableLastSelectedLayers here for EnableChecks that
+                    // call #getSelectedLayers. [Jon Aquino]
+                    setEnableLastSelectedLayers(true, AttributeTab.this);
+        
+                    try {
+                      popupMenu(workbenchContext).show(
+                          tablePanel, e.getX()+10, e.getY());
+                    }
+                    finally {
+                      setEnableLastSelectedLayers(false, AttributeTab.this);
+                    }
+                  }
                 };
 
                 tablePanel.addMouseListener(mouseListener);
