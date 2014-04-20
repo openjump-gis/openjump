@@ -148,6 +148,7 @@ public class AttributeTab extends JPanel implements LayerNamePanel {
                     setEnableLastSelectedLayers(true, AttributeTab.this);
         
                     try {
+                      // place the popup 10px to the right as to circumvent accidental interaction with it
                       popupMenu(workbenchContext).show(
                           tablePanel, e.getX()+10, e.getY());
                     }

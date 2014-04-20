@@ -531,7 +531,8 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
     tree.getSelectionModel().addSelectionPath(popupPath);
 
     if (getPopupMenu(popupNode.getClass()) != null) {
-      getPopupMenu(popupNode.getClass()).show(e.getComponent(), e.getX(),
+      // place the popup 10px to the right as to circumvent accidental interaction with it
+      getPopupMenu(popupNode.getClass()).show(e.getComponent(), e.getX()+10,
           e.getY());
     }
   }
