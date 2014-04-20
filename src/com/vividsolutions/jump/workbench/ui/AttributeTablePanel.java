@@ -134,8 +134,8 @@ public class AttributeTablePanel extends JPanel {
             //#so that it will work for table-size changes. [Jon Aquino]
             setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
             GUIUtil.doNotRoundDoubles(this);
-            System.out.println("blackboard " + blackboard);
-            System.out.println("workbenchContext " + workbenchContext);
+//            System.out.println("blackboard " + blackboard);
+//            System.out.println("workbenchContext " + workbenchContext);
             blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
             DateFormat formatter;
             try {
