@@ -44,10 +44,7 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.Enumeration;
@@ -355,6 +352,43 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
                     vertexSlider.setValue(sizeToSlider(newValue));
                 } catch (NumberFormatException nfe) {
                     vertexSize.setText("" + sizeFromSlider());
+                }
+            }
+        });
+        // vertexSize textArea and vertexSlider synchronization
+        vertexSize.addKeyListener(new KeyListener() {
+            public void keyTyped(KeyEvent e) {}
+            public void keyPressed(KeyEvent e) {}
+            public void keyReleased(KeyEvent e) {
+                String oldValue = vertexSize.getText();
+                int newValue = 0;
+                try {
+                    newValue = Integer.parseInt(oldValue);
+                    if (newValue < sizeFromSlider(0) || newValue > sizeFromSlider(100)) throw new Exception();
+                    vertexSlider.setValue(sizeToSlider(newValue));
+                }
+                catch (NumberFormatException nfe) {
+                    // Make it possible to empty textArea to type a new number starting with 1, 2 or 3
+                    if (vertexSize.getText().equals("")) {
+                        //vertexSize.setText("" + sizeFromSlider(0));
+                        vertexSlider.setValue(0);
+                    }
+                    // If text area contains a non numeric text, keep the previous value
+                    else {
+                        vertexSize.setText("" + sizeFromSlider(vertexSlider.getValue()));
+                    }
+                }
+                catch (Exception ex) {
+                    // Make it possible to type 1, 2 or 3, even if it is out of the range
+                    // as it maybe the first of a longer number
+                    if (newValue < sizeFromSlider(0) ) {
+                        //vertexSize.setText("" + sizeFromSlider(0));
+                        vertexSlider.setValue(0);
+                    }
+                    else if (newValue > sizeFromSlider(100) ) {
+                        vertexSize.setText("" + sizeFromSlider(100));
+                        vertexSlider.setValue(100);
+                    }
                 }
             }
         });
