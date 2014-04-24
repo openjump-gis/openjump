@@ -79,10 +79,17 @@ public class ViewOptionsPlugIn extends AbstractPlugIn {
 
         public void init() {
             // Init formatter from the Workbench.xml configuration file
-            dateFormatChooser.setSelectedItem(
-                    PersistentBlackboardPlugIn
-                        .get(context.getWorkbenchContext())
-                        .get(DATE_FORMAT_KEY));
+            Object persistedFormat = PersistentBlackboardPlugIn
+                    .get(context.getWorkbenchContext())
+                    .get(DATE_FORMAT_KEY);
+            if (persistedFormat != null) {
+                dateFormatChooser.setSelectedItem(
+                        PersistentBlackboardPlugIn
+                                .get(context.getWorkbenchContext())
+                                .get(DATE_FORMAT_KEY));
+            } else {
+                dateFormatChooser.setSelectedIndex(0);
+            }
         }
     }
 }
