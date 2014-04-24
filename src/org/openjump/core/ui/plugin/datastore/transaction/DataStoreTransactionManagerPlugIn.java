@@ -57,8 +57,9 @@ public class DataStoreTransactionManagerPlugIn extends ToolboxPlugIn implements 
     }
 
     public void initialize(final PlugInContext context) throws Exception {
-        context.getWorkbenchFrame().getToolBar().addPlugIn(
-                IconLoader.icon("database_writable_add.png"), this, null, context.getWorkbenchContext());
+        ImageIcon icon = GUIUtil.resize(IconLoader.icon("database_writable_add.png"), 20);
+        context.getWorkbenchFrame().getToolBar().addPlugIn(30, this,
+                icon, null, context.getWorkbenchContext());
 
         setWorkbenchContext(context.getWorkbenchContext());
 
