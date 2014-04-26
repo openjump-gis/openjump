@@ -299,8 +299,10 @@ public class ScaleSelectedItemsTool extends DragTool implements ShortcutsDescrip
 		    	this.setMousePos(getPanel().getViewport().toModelCoordinate(e.getPoint())); //-- includes snap
 		        double dxMouse=Math.abs(this.center.x- this.mousePos.x);        
 		        double dyMouse=Math.abs(this.center.y- this.mousePos.y);
-		        this.xscale = dxMouse / this.originalBBox.getEnvelopeInternal().getWidth();
-		        this.yscale = dyMouse / this.originalBBox.getEnvelopeInternal().getHeight();
+                double envWidth = this.originalBBox.getEnvelopeInternal().getWidth();
+                double envHeight = this.originalBBox.getEnvelopeInternal().getHeight();
+		        this.xscale = envWidth == 0.0 ? 1.0 : dxMouse / envWidth;
+		        this.yscale = envHeight == 0.0 ? 1.0 : dyMouse / envHeight;
 		        //-- attention: key must be pressed before mouse button is pressed
 		        //   otherwise it wont be recognized
 		        if (e.isShiftDown()){

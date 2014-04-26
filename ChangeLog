@@ -1,10 +1,13 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
-2014-04.20 ede
+2014-04-26 mmichaud <m.michael.michaud@orange.fr>
+  * Fix #358 : resizing a horizontal / vertival line was not possible
+
+2014-04-20 ede
   * fix "attribute window context menu shows while multi selecting on mac"
     https://sourceforge.net/p/jump-pilot/bugs/338/
 
-2014-04.19 ede
+2014-04-19 ede
   * CORE contains printing capability to PDF, Printer now (SkyPrinter)
 
 2014-04-06 mmichaud <m.michael.michaud@orange.fr>
