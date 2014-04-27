@@ -58,7 +58,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
@@ -170,7 +169,7 @@ public class JUMPWorkbench {
       } catch (Exception e) {
         // case java 1.5-, is really bad with transparent pngs, so we stick with
         // the old gif
-        f.setIconImage((Image) APP_ICON.getImage());
+        f.setIconImage(APP_ICON.getImage());
       }
     } else if (o instanceof javax.swing.JInternalFrame) {
       javax.swing.JInternalFrame f = (javax.swing.JInternalFrame) o;
@@ -196,7 +195,7 @@ public class JUMPWorkbench {
   }
 
   /**
-   * @params a visible SplashWindow to close when initialization is complete and
+   * @param s a visible SplashWindow to close when initialization is complete and
    *         the WorkbenchFrame is opened
    */
   public JUMPWorkbench(String title, String[] args, final Component s,
@@ -250,7 +249,7 @@ public class JUMPWorkbench {
     properties = new WorkbenchPropertiesFile(files, frame);
     
     // -- end new
-    File extensionsDirectory = null;
+    File extensionsDirectory;
     if (commandLine.hasOption(PLUG_IN_DIRECTORY_OPTION)) {
       extensionsDirectory = new File(commandLine.getOption(
           PLUG_IN_DIRECTORY_OPTION).getArg(0));
@@ -386,9 +385,6 @@ public class JUMPWorkbench {
    *          main application arguments
    * @param title
    *          application title
-   * @param setup
-   *          an object implementing the Setup interface (e.g.
-   *          JUMPConfiguration)
    * @param splashComponent
    *          a component to open until the workbench frame is displayed
    * @param taskMonitor
@@ -734,7 +730,7 @@ public class JUMPWorkbench {
   private static class SingleLineProgressMonitor extends ProgressMonitor {
     public SingleLineProgressMonitor() {
       super(new JLabel(" "));
-      ((JLabel) getComponent()).setFont(((JLabel) getComponent()).getFont()
+      getComponent().setFont(getComponent().getFont()
           .deriveFont(Font.BOLD));
       ((JLabel) getComponent()).setHorizontalAlignment(JLabel.LEFT);
     }
@@ -750,7 +746,7 @@ public class JUMPWorkbench {
 
     public HorizontallyScrollingProgressMonitor() {
       super(new JLabel(" "));
-      ((JLabel) getComponent()).setFont(((JLabel) getComponent()).getFont()
+      getComponent().setFont(getComponent().getFont()
           .deriveFont(Font.BOLD));
       ((JLabel) getComponent()).setHorizontalAlignment(JLabel.RIGHT);
     }
