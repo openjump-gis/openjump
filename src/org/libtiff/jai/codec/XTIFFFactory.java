@@ -42,7 +42,7 @@ import com.sun.media.jai.codec.SeekableStream;
  * @see XTIFFField
  * @see XTIFFDirectory
  */
-public class XTIFFFactory extends Object 
+public class XTIFFFactory
 implements java.io.Serializable
 {
 	/**

@@ -165,7 +165,7 @@ public class Dbf implements DbfConsts{
         
         /**
          * Reads the header of a dbf file.
-         * @param LEDataInputStream file Stream attached to the input file
+         * @param file file Stream attached to the input file
          * @exception IOException read error.
          */
         public  DbfFileHeader(EndianDataInputStream file) throws IOException {

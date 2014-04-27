@@ -55,7 +55,7 @@ import com.sun.media.jai.codec.SeekableStream;
  * @see XTIFFTileCodec
  * @see XTIFFFactory
  */
-public class XTIFFDirectory extends Object implements java.io.Serializable {
+public class XTIFFDirectory implements java.io.Serializable {
     
     private int imageType;
 

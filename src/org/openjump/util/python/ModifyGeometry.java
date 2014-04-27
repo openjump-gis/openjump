@@ -47,7 +47,7 @@ import com.vividsolutions.jump.workbench.ui.EditTransaction;
 import com.vividsolutions.jump.workbench.ui.GeometryEditor;
 import com.vividsolutions.jump.workbench.model.UndoableEditReceiver;
 
-public class ModifyGeometry extends java.lang.Object
+public class ModifyGeometry
 {
 	private static WorkbenchContext workbenchContext = null;
     private String name;

@@ -34,7 +34,7 @@ package org.libtiff.jai.codec;
  * @see XTIFFDirectory
  */
 
-public class XTIFFField extends Object 
+public class XTIFFField
 implements java.io.Serializable,Comparable 
 {
 
