@@ -90,6 +90,11 @@ public class OpenWizardPlugIn extends AbstractThreadedUiPlugIn {
     dialog.setSelectedWizard(lastWizard);
     dialog.pack();
     GUIUtil.centreOnWindow(dialog);
+    // [mmichaud 2014-05-01] Setting focusable to false fixes a nasty bug
+    // (#359) appeared with java 8 in AddWritableDataStoreLayerPanel and
+    // AddDatastoreLayerPanel (dataset popup is closed immediately after
+    // opening by an event related to this dialog...)
+    dialog.setFocusable(false);
     dialog.setVisible(true);
     lastWizard = dialog.getSelectedWizard();
     if (dialog.wasFinishPressed()) {
