@@ -713,12 +713,13 @@
       <version>1.2.16</version>
       <scope>compile</scope>
     </dependency>
-    <dependency>
+    <!--dependency>
       <groupId>com.vividsolutions</groupId>
       <artifactId>jts</artifactId>
       <version>1.14-20131224.000718-1</version>
+      <version>1.14-20140423</version>
       <scope>compile</scope>
-    </dependency>
+    </dependency-->
     <dependency>
       <groupId>org.beanshell</groupId>
       <artifactId>bsh</artifactId>
