@@ -1,38 +1,123 @@
 Version ${version.number} ${version.release} rev.${version.revision} (released on ${version.buildDate})
 
+Version 1.7.0 release rev.39xx (released on dd. May 2014)
+
   New Features
-  * improve usability of SearchAllAttributesPlugIn : make it possible to switch
-    between select and add to selection with the shift key and zoom to selected
-    features.
-  * FR 3610851: add moveto tool in the attribute panel
-  * Add two simple plugins for Sextante raster layers
-      RasterLayerPropertiesPlugin which displays raster properties (extension, 
-        name, bands, etc), to Sextante Raster Layer Context menu
-      RasterQueryPlugIn to inspect pixels on raster layer, 
-        to Raster Toolbar menu
+  * add printing capability to PDF, Printer in OJ CORE (SkyPrinter)
+  * add Calculate Distances plugin: calculate distances between two sets of geometries
+  * add Move Selected Layer Plugin
+  * add new PostGIS driver with writable capabilities
+  * add plugins for Linear Referencing (menu tools > generate)
+  * enhance image loading support
+    - add new readers based on Image Commons (Apache) and ImageIO
+    - image readers should be able to open archives (images + worldfiles)
+    - readers gather supported formats internally :
+        IOGraphicImageFactory: [jpg, bmp, wbmp, jpeg, png, gif]
+        JAIGraphicImageFactory: [bmp, fpx, jpg, pnm, wbmp, tif, jpeg, png, gif, tiff, xtiff]
+        CommonsImageFactory: supported formats listed in
+        http://commons.apache.org/proper/commons-imaging/formatsupport.html
+    - add GDAL OpenJPEG J2K reader, terribly slow/unstable though
+  * add relate (DE-9IM) operator in Simple Query plugin
+  * Analysis > Geometry function: add 3 functions from JTS
+    - MinimumBoundingCircle
+    - MinimumDiameter
+    - MinimumBoundingRectangle
   
   Improvements
-  * move 'Combine Layers' to Layer main menu
-  * resorted main menus Edit and Layer for better overview
-  * carefully reordered main menu View
-  * zoomPrevious/NextPlugIn have shortcuts Ctrl+Shift+Y/Z now
-  * add project name (aka task name) in the ViewAttribute frame title.
-  * minor performance enhancement for LayerNameTree selection
-  * main menu Window, put "Clone' before 'Synchronization', as they belong together
+  * bug 88: replace vertex size slider by a logarithmic slider
+  * add an option to customize date display in attribute panel
+  * display an icon for null values in attribute panel
+  * beautify the logo splash
+  * add RAM size detection to mac/linux start scripts
+  * update JTS to 1.14(beta): fix bugs in spatiallite geometry handling and
+    in linear referencing
+  * save legend plugin : now prints the word "Project" in front of the projectname
+  * save legend plugin : many other enhancements
+  * add 2D/3D option for new Save As PostGIS Table
+  * renamed 'Referenced Image [legacy]' to 'GeoTIFF plus (JAI)'
+  * move most plugins from conf java file to default-plugins.xml
+  * reworked plugin management to be able to use default-plugins.xml extensively
+  * openfile much faster when loading many layers (ex. 100 images)
+  * enhance clone, undo, redo to manage PK and FID in a consistent way
+  * add database source in LayerProperties panel if datasource is a datastore
+  * enhance transaction management in GeometryFunctionPlugIn
+  * add external PK in FeatureSchema to manage PostGIS data
+  * ZoomToSelectedItemsPlugIn : better scale calculation
+  * can read inconsistent shapefile/dbf where shape number <> record number
+  * reference image loader is faster
+  * can read dbf files > 2 Gb
+  * attributes with type Object can now be saved to dbf using toString()
+  * enhance compressed files / archive open support
+      - add support for xz (xz, txz, tar.xz)
+      - add preliminary support for 7zip (only LZMA2 & BZIP compression for now)
+      - reworked naming of layers opened from compressed files or archives
+  * ExtractLayersByGeometry: can explode GeometryCollection recursively
+  * AutoAssignAttribute: changes are now undoable
+  * a csv file can now be saved to and read from a project file
+  * feature order is now preserved after transactions (ex. delete)
+  * update default addresses in the WMS chooser
+  * ScaleBar is now task dependant
+  * measurement tool: add relative distance between vertices
   
   Bug Fixes
-  * fixed startup issue on windows machines, survive wmic ram detection errors
-  * bug 3611503: Create polygon from closed area tool freezes OJ
-  * bug 3613234 : sorting attributes did not respect comparator contract
-  * bug 3613603: NPE thrown by LayerNamePanel
-  * AddDatastoreLayerPanel.populateDatasetComboBox():
-    avoid a NPE, if there are no spatial enabled tables in this database
+  * bug 359: AddDataStore & AddWritableDataStore panel not working with java 8
+  * bug 358: resizing a horizontal / vertival line was not possible
+  * bug 338: attribute window context menu shows while multi selecting on mac
+  * bug 320: mouse drag in the layerNamePanel could break the application
+  * bug 355: project containing both file-based and datastore-based layers
+  * bug 354: OpenRecentPlugIn broken.
+  * fix a NPE in non editable GeometryFunctionPlugIn (regression)
+  * bug 352: layers loaded from files could have duplicate names
+  * bug 199: save raster as can now save larger images if memory is available
+  * bug 327: header problem in WMS requests
+  * bug 347: about RangeColorTheming (aka equal intervals)
+  * bug 340 JTreeLayerName can now autoscroll when layers are moved up or down
+  * bug 348: in OpenFileWizard
+  * bug #345 : copy/paste to ReferencedImagesLayer now preserve min/max scale
+  * bug fixed in PostGISDSMetadata and DynamicFeatureCollection (some
+    data were never loaded because of the use of ST_Estimated_Extent)
+  * bug fixed in SpatiaQueryPlugIn (mask layer not always initialized)
+  * bug fixed in GeometryFunctionPlugIn (mask layer not always initialized)
+  * bug 295 and 326: better error handling in project persistence mechanism
+  * Union/Merge plugin: make it more reliable and faster
+
+  PLUS version, OTHER extensions
+  * Fix Road matcher to (make it compatible with OpenJUMP 1.7)
+  * add Jump DBQuery in PLUS
+  * update dxf driver ni PLUS (make it compatible with OpenJUMP 1.7)
+  * update jumpchart from cadplan in PLUS
+  * new OpenStreetMap (.osm) file reader in PLUS
+
+
+Version 1.6.3 release rev.3576 (released on 29. May 2013)
+
+  New Features
+  * Add RasterLayerProperties for Sextante raster layers
+  * Add RasterQueryPlugIn to inspect pixels on Sextante raster layer
+  * Add move to tool in attribute panel
+
+  Improvements
+  * menu Window, put 'Clone' before 'Synchronization'
+  * LayerNameTree selection : performance enhancement
+  * add 'Apply' button in change style dialog
+  * add project name (aka task name) in the ViewAttribute frame title.
+  * zoomPrevious/NextPlugIn have shortcuts Ctrl+Shift+Y/Z now
+  * re-order menus Edit, Layer and View
+  * searchAllAttributesPlugIn : shift (add to selection), zoom to selection
+  * move 'Combine Layers' to Layer main menu
+
+  Bug Fixes
   * bug 3613870: cloning sextante raster layer was creating a unique name
-  * bug 3612322: "Create point grid", "Create lattice" and "Raster profile"
-    do not throw a NPE on a pasted Sextante Raster Layer any more
-  
+  * bug 3612322: NPE in "Create point grid", "Create lattice" and "Raster profile"
+  * fix NPE in add new DataStore (no spatial table in the DB)
+  * bug 3613603: NPE thrown by LayerNamePanel
+  * bug 3613234: sorting attributes did not respect comparator contract
+  * bug 3611503: FillPolygonTool
+  * fix a regression in windows .bat
+
   New in PLUS
   * upgrading Cadplan JumpPrinter to version 1.86 (PLUS version)
+
 
 Version 1.6.2 release rev.3528 (released on 23. April 2013)
 

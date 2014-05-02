@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2014-05-01 mmichaud <m.michael.michaud@orange.fr>
+  * Fix #359 : AddDataStore and AddWritableDataStore panel was not working
+    with java 8
+
 2014-04-26 mmichaud <m.michael.michaud@orange.fr>
   * Fix #358 : resizing a horizontal / vertival line was not possible
 
@@ -74,13 +78,12 @@
 2013-11-30 Matthias Scholz <ms@jammerhund.de>
   * Some improvements for SaveLegendPlugin:
     - code cleanup: fix imports and @Overrides
-    - ask befor overwrite an existing file
+    - ask before overwrite an existing file
     - fileselection for PNG and only files
     - moved fileChooser variable from saveLegend() to a class variable, thereby
       the last directory is remembered
     - all selected layers will now be saved, not only one
-    - avoid "terrible" filechooser hight through to many selected layers or 
-      themed layers
+    - avoid "terrible" filechooser height with too many layers or themed layers
     - for normal, non themed layers the fill and line color is now visible
 
 2013-11-29 mmichaud <michael.michaud@free.fr>
@@ -149,8 +152,7 @@
     fid is preserved.
 
 2013-10-30 mmichaud <michael.michaud@free.fr>
-  * Add the database source in the LayerProperties panel if the datasource
-    is a datastore
+  * Add database source in LayerProperties panel if datasource is a datastore
 
 2013-10-28 mmichaud <michael.michaud@free.fr>
   * Fix bug #345 : copy/paste between Layer and ReferencedImagesLayer
@@ -299,7 +301,7 @@ psd, wbmp, tga, tiff, hdr, pam, xbm, jpg, bmp, pnm, png, ppm, dcx, pgm, gif]
     hints.
 
 2013-06-06 Matthias Scholz <ms@jammerhund.de>
-  * Small enhancement of the mesarement tool:
+  * Small enhancement of the measurement tool:
     now you can show the distance between the vertices in a relative mode too.
 
 2013-06-02 mmichaud <michael.michaud@free.fr>
@@ -309,13 +311,13 @@ psd, wbmp, tga, tiff, hdr, pam, xbm, jpg, bmp, pnm, png, ppm, dcx, pgm, gif]
 * release 1.6.3 ***************************************************************
 
 2013-05-27 Giuseppe Aruta (giuseppe_aruta@yahoo.it)
-   * Add two simple plugins for Sextante raster layers
+   * Add two simple plugins for Sextante raster layers to Raster Toolbar menu
    * a) RasterLayerPropertiesPlugin which displays raster properties (extension,
         name, bands, etc), to Sextante Raster Layer Context menu
-   * b) RasterQueryPlugIn to inspect pixels on raster layer, to Raster Toolbar menu
+   * b) RasterQueryPlugIn to inspect pixels on Sextante raster layer
 
 2013-05-26 ede
-  * main menu Window, put "Clone' before 'Synchronization', as they belong together
+  * main menu Window, put 'Clone' before 'Synchronization', as they belong together
 
 2013-05-25 mmichaud <michael.michaud@free.fr>
   * 3613870 fixed : cloning sextante raster layer was creating a unique name
