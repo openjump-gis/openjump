@@ -69,12 +69,12 @@ public class ECWImageFactory implements ReferencedImageFactory {
         URI uri = new URI(location);
         if (CompressedFile.isArchive(uri) || CompressedFile.isCompressed(uri))
           throw new JUMPException("Compressed files not supported for this format.");
-        
-        String filepath = new File( UriUtil.getFilePath(uri) ).getAbsolutePath();
+
+        String filepath = new File( uri ).getCanonicalPath();
         // prevent a weird bug of the ecw libs not being able to handle accented
         // and extended chars in general
         if (!Charset.forName("US-ASCII").newEncoder().canEncode(filepath)) {
-            String hint = location.replaceAll("[^\\u0000-\\u007F]", "?");
+            String hint = filepath.replaceAll("[^\\u0000-\\u007F]", "?");
             throw new ECWLoadException(
                     I18N.getMessage(
                             "com.vividsolutions.jump.workbench.imagery.ecw.path-contains-nonansi-chars",
