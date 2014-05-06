@@ -73,8 +73,8 @@ public class ECWImageFactory implements ReferencedImageFactory {
         String filepath = new File( UriUtil.getFilePath(uri) ).getAbsolutePath();
         // prevent a weird bug of the ecw libs not being able to handle accented
         // and extended chars in general
-        if (!Charset.forName("ISO-8859-1").newEncoder().canEncode(filepath)) {
-            String hint = location.replaceAll("[^\\u0000-\\u00FF]", "?");
+        if (!Charset.forName("US-ASCII").newEncoder().canEncode(filepath)) {
+            String hint = location.replaceAll("[^\\u0000-\\u007F]", "?");
             throw new ECWLoadException(
                     I18N.getMessage(
                             "com.vividsolutions.jump.workbench.imagery.ecw.path-contains-nonansi-chars",
