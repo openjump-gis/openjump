@@ -744,9 +744,9 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>postgresql</groupId>
+      <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
-      <version>9.2-1002.jdbc4</version>
+      <version>9.3-1101-jdbc4</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
