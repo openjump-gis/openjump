@@ -37,12 +37,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
 
-import javax.swing.ImageIcon;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
-
+import javax.swing.*;
 
 
 import org.openjump.sigle.utilities.gui.DialogUtil;
@@ -55,6 +50,8 @@ import com.vividsolutions.jump.workbench.model.*;
 import com.vividsolutions.jump.workbench.plugin.*;
 import com.vividsolutions.jump.workbench.ui.*;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+
+import static com.vividsolutions.jump.I18N.get;
 
 
 /**
@@ -149,7 +146,10 @@ public class ReplaceValuePlugIn
 	  if (useSelected){
 
 		  Collection featureSelected = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems(layer); ;
-
+          if (featureSelected.size() == 0) {
+              context.getWorkbenchFrame().warnUser(I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Layer-has-no-feature-selected"));
+              return;
+          }
 		  //System.out.println("Feature selected");
 		  monitor.report(I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Replacing-values"));
 		  if (byAttribute) {
@@ -244,7 +244,7 @@ public class ReplaceValuePlugIn
 
   }
   
-  private void  replaceValue(Collection selectedFC, String attrName, String value){
+  private void replaceValue(Collection selectedFC, String attrName, String value){
 
 	  AttributeType type;
 	  type = ((Feature) selectedFC.iterator().next()).getSchema().getAttributeType(attrName);
@@ -309,12 +309,34 @@ public class ReplaceValuePlugIn
 
   }
 
-  public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
+  public static MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
   	EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
   	
   	return new MultiEnableCheck()
-		.add(checkFactory.createAtLeastNLayersMustExistCheck(1))
-		.add(checkFactory.createSelectedLayersMustBeEditableCheck());
+		//.add(checkFactory.createAtLeastNLayersMustExistCheck(1))
+        //.add(checkFactory.createExactlyNLayersMustBeSelectedCheck(1))
+		//.add(checkFactory.createSelectedLayersMustBeEditableCheck());
+        .add(checkFactory.createExactlyOneSelectedLayerMustBeEditableCheck())
+        .add(new EnableCheck(){
+            public String check(JComponent component) {
+                Layer[] layers = workbenchContext.getLayerNamePanel().getSelectedLayers();
+                Layer layer = null;
+                for (Layer lyr : layers) {
+                    if (lyr.isEditable()) {
+                        layer = lyr;
+                        break;
+                    }
+                }
+                if (layer == null) return I18N.get("com.vividsolutions.jump.workbench.plugin.Exactly-one-selected-layer-must-be-editable");
+                if (layer.getFeatureCollectionWrapper().getFeatureSchema().getAttributeCount() < 2) {
+                    return I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Layer-has-no-attribute");
+                }
+                if (layer.getFeatureCollectionWrapper().size() == 0) {
+                    return I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Layer-has-no-feature");
+                }
+                return null;
+            }
+        });
   }
 
 }
