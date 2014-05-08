@@ -84,6 +84,9 @@ import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
  * @author Micha&euml;l Michaud (refactoring, adding options of JTS 1.12)
  */
 public class BufferPlugIn extends AbstractThreadedUiPlugIn {
+
+  private static final int LEFT = 1;
+  private static final int RIGHT = 2;
 	
   private String MAIN_OPTIONS;
   private String PROCESSED_DATA;
@@ -107,7 +110,7 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
   private String CAP_FLAT;
   private String CAP_ROUND;
   private String CAP_SQUARE;
-  
+
   private String JOIN_STYLE_TITLE;
   private String JOIN_STYLE;
   private String JOIN_BEVEL;
@@ -115,26 +118,26 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
   private String JOIN_ROUND;
   private String MITRE_LIMIT;
   
-  private String SINGLE_SIDED;
+  private String LEFT_SINGLE_SIDED;
+  private String RIGHT_SINGLE_SIDED;
 
   private List endCapStyles;
   private List joinStyles;
 
   private Layer layer;
-  private double bufferDistance   = 1.0;
-  private int endCapStyleCode     = BufferParameters.CAP_ROUND;
-  private int joinStyleCode       = BufferParameters.JOIN_ROUND;;
-  private double mitreLimit       = 10.0;
-  private boolean singleSided     = false;
-  //private boolean exceptionThrown = false;
-  private int exceptionNumber     = 0;
-  private boolean useSelected     = false;
-  private int quadrantSegments    = 8;
-  private boolean unionResult     = false;
-  private String sideBarText      = "";
-  private boolean copyAttributes  = true;
-  private boolean fromAttribute   = false;
-  private int attributeIndex      = 0;
+  private double bufferDistance    = 1.0;
+  private int endCapStyleCode      = BufferParameters.CAP_ROUND;
+  private int joinStyleCode        = BufferParameters.JOIN_ROUND;;
+  private double mitreLimit        = 10.0;
+  private boolean leftSingleSided  = false;
+  private boolean rightSingleSided = false;
+  private boolean useSelected      = false;
+  private int quadrantSegments     = 8;
+  private boolean unionResult      = false;
+  private String sideBarText       = "";
+  private boolean copyAttributes   = true;
+  private boolean fromAttribute    = false;
+  private int attributeIndex       = 0;
 
     public BufferPlugIn() {
         super(
@@ -200,7 +203,8 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
         JOIN_ROUND = I18N.get("ui.plugin.analysis.BufferPlugIn.join-round");
         MITRE_LIMIT = I18N.get("ui.plugin.analysis.BufferPlugIn.mitre-join-limit");
         
-        SINGLE_SIDED = I18N.get("ui.plugin.analysis.BufferPlugIn.single-sided");
+        LEFT_SINGLE_SIDED = I18N.get("ui.plugin.analysis.BufferPlugIn.left-single-sided");
+        RIGHT_SINGLE_SIDED = I18N.get("ui.plugin.analysis.BufferPlugIn.right-single-sided");
 
 	  
 	    endCapStyles = new ArrayList();
@@ -266,10 +270,20 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
         		Feature sourceFeature = (Feature) iSource.next();
         		Geometry gResult = (Geometry) iResult.next();
         		if (!(gResult == null || gResult.isEmpty())) {
-        			Feature newFeature = sourceFeature.clone(true);
+        			Feature newFeature = sourceFeature.clone(false);
         			newFeature.setGeometry(gResult);
         			resultFeatureColl.add(newFeature);
         		}
+                // If both left and right side buffer have been computed
+                // we have 2 features in resultGeomColl for every single feature in InputFD
+                if (leftSingleSided && rightSingleSided) {
+                    gResult = (Geometry) iResult.next();
+                    if (!(gResult == null || gResult.isEmpty())) {
+                        Feature newFeature = sourceFeature.clone(false);
+                        newFeature.setGeometry(gResult);
+                        resultFeatureColl.add(newFeature);
+                    }
+                }
         		if (monitor.isCancelRequested()) break;
         	}
         	resultFC = resultFeatureColl;
@@ -308,13 +322,15 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
     }
 
     private Collection runBuffer(TaskMonitor monitor, PlugInContext context, FeatureCollection fcA) throws Exception {
-        exceptionNumber = 0;
         int total = fcA.size();
         int count = 0;
         Collection resultColl = new ArrayList();
         BufferParameters bufferParameters = 
             new BufferParameters(quadrantSegments, endCapStyleCode, joinStyleCode, mitreLimit);
-        bufferParameters.setSingleSided(singleSided);
+        bufferParameters.setSingleSided(leftSingleSided || rightSingleSided);
+        int side = 0;
+        if (leftSingleSided) side += LEFT;
+        if (rightSingleSided) side += RIGHT;
         for (Iterator ia = fcA.iterator(); ia.hasNext(); ) {
             monitor.report(count++, total, I18N.get("com.vividsolutions.jump.qa.diff.DiffGeometry.features"));
             if (monitor.isCancelRequested()) break;
@@ -328,8 +344,18 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
            		    bufferDistance = ((Integer) o).doubleValue();
             }
             try {
-                Geometry result = runBuffer(ga, bufferParameters);
-                resultColl.add(result);
+                if (side == 0) {
+                    Geometry result = runBuffer(ga, bufferParameters, 0);
+                    resultColl.add(result);
+                }
+                if ((side & LEFT) == LEFT) {
+                    Geometry result = runBuffer(ga, bufferParameters, LEFT);
+                    resultColl.add(result);
+                }
+                if ((side & RIGHT) == RIGHT) {
+                    Geometry result = runBuffer(ga, bufferParameters, RIGHT);
+                    resultColl.add(result);
+                }
             } catch (Exception e) {
                 String errorMessage = I18N.getMessage(
                     "ui.plugin.analysis.BufferPlugIn.error-found",
@@ -341,16 +367,19 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
         return resultColl;
     }
 
-    private Geometry runBuffer(Geometry a, BufferParameters param) 
-                                           throws TopologyException, Exception {
-        Geometry result = null;
+    private Geometry runBuffer(Geometry a, BufferParameters param, int side) throws Exception {
+        Geometry result;
         // Simplifying a with a Douglas-Peucker simplifier can eliminate
         // useless aligned vertices which can cause exceptions
         // see Bugs item #3488976
-        // Hopefully, the overhead is be small compared to buffer computation
+        // Hopefully, the overhead is small compared to buffer computation
         a = DouglasPeuckerSimplifier.simplify(a, 0.0);
         BufferOp bufOp = new BufferOp(a, param);
-        result = bufOp.getResultGeometry(bufferDistance);
+        if ((side == LEFT && bufferDistance < 0) || (side == RIGHT && bufferDistance > 0)) {
+            result = bufOp.getResultGeometry(-bufferDistance);
+        } else{
+            result = bufOp.getResultGeometry(bufferDistance);
+        }
         return result;
     }
 
@@ -392,14 +421,15 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
         
         dialog.addSeparator();
         //dialog.addSubTitle(SINGLE_SIDED);
-        final JCheckBox singleSidedCheckBox = dialog.addCheckBox(SINGLE_SIDED, singleSided);
+        final JCheckBox leftSingleSidedCheckBox = dialog.addCheckBox(LEFT_SINGLE_SIDED, leftSingleSided);
+        final JCheckBox rightSingleSidedCheckBox = dialog.addCheckBox(RIGHT_SINGLE_SIDED, rightSingleSided);
         dialog.addRow(new javax.swing.JPanel());
         
         mitreLimitTextField.setEnabled(joinStyleCode == BufferParameters.JOIN_MITRE);
         quadrantSegmentsIntegerField.setEnabled(
                     (endCapStyleCode == BufferParameters.CAP_ROUND) ||
                     (joinStyleCode == BufferParameters.JOIN_ROUND));
-        endCapComboBox.setEnabled(!singleSided);
+        endCapComboBox.setEnabled(!(leftSingleSided || rightSingleSided));
         copyAttributesCheckBox.setEnabled(!unionResult);
         
         updateIcon(dialog);
@@ -433,7 +463,12 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
                 updateControls(dialog);
             }
         });
-        singleSidedCheckBox.addActionListener(new ActionListener() {
+        leftSingleSidedCheckBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                updateControls(dialog);
+            }
+        });
+        rightSingleSidedCheckBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 updateControls(dialog);
             }
@@ -450,7 +485,8 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
 	    quadrantSegments = dialog.getInteger(QUADRANT_SEGMENTS);
 	    joinStyleCode = joinStyleCode(dialog.getText(JOIN_STYLE));
 	    mitreLimit = dialog.getDouble(MITRE_LIMIT);
-	    singleSided = dialog.getBoolean(SINGLE_SIDED);
+	    leftSingleSided = dialog.getBoolean(LEFT_SINGLE_SIDED);
+        rightSingleSided = dialog.getBoolean(RIGHT_SINGLE_SIDED);
 	    unionResult = dialog.getBoolean(UNION_RESULT);
 	    copyAttributes = dialog.getBoolean(COPY_ATTRIBUTES);
 	    if (!useSelected) {
@@ -519,16 +555,16 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
                     (joinStyleCode == BufferParameters.JOIN_ROUND));
         dialog.setFieldEnabled(MITRE_LIMIT, 
                      joinStyleCode == BufferParameters.JOIN_MITRE);
-        dialog.setFieldEnabled(END_CAP_STYLE, !singleSided);
+        dialog.setFieldEnabled(END_CAP_STYLE, !(leftSingleSided || rightSingleSided));
     }
     
     private void updateIcon(MultiInputDialog dialog) {
         StringBuffer fileName = new StringBuffer("Buffer");
         if (unionResult) fileName.append("Union");
-        if (singleSided) fileName.append("SingleSided");
-        if (!singleSided && endCapStyleCode == BufferParameters.CAP_FLAT) fileName.append("Flat");
-        else if (!singleSided && endCapStyleCode == BufferParameters.CAP_ROUND) fileName.append("Round");
-        else if (!singleSided && endCapStyleCode == BufferParameters.CAP_SQUARE) fileName.append("Square");
+        if (leftSingleSided || rightSingleSided) fileName.append("SingleSided");
+        if (!leftSingleSided && !rightSingleSided && endCapStyleCode == BufferParameters.CAP_FLAT) fileName.append("Flat");
+        else if (!leftSingleSided && !rightSingleSided && endCapStyleCode == BufferParameters.CAP_ROUND) fileName.append("Round");
+        else if (!leftSingleSided && !rightSingleSided && endCapStyleCode == BufferParameters.CAP_SQUARE) fileName.append("Square");
         if (joinStyleCode == BufferParameters.JOIN_BEVEL) fileName.append("Bevel");
         else if (joinStyleCode == BufferParameters.JOIN_ROUND) fileName.append("Round");
         else if (joinStyleCode == BufferParameters.JOIN_MITRE) fileName.append("Mitre");

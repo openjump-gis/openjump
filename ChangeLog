@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2014-05-08 mmichaud <m.michael.michaud@orange.fr>
+  * Improve Buffer plugin according to FR 204
+    (separate left/right sigle sided buffer)
+
 2014-05-07 mmichaud <m.michael.michaud@orange.fr>
   * Fix #362 : NPE in ReplaceAttributePlugIn
 

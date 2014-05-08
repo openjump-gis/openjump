@@ -24,6 +24,7 @@ Version 1.7.0 release rev.39xx (released on dd. May 2014)
     - MinimumBoundingRectangle
   
   Improvements
+  * FR 204: separate left/right single sided buffer option of Buffer PlugIn
   * bug 88: replace vertex size slider by a logarithmic slider
   * add an option to customize date display in attribute panel
   * display an icon for null values in attribute panel
