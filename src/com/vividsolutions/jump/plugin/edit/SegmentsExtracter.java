@@ -56,11 +56,13 @@ public class SegmentsExtracter
 
   private Set segmentSet = new TreeSet();
   // Segments are added to a TreeMap (LineSegment is Comparable)
-  private Map segmentMap = new TreeMap();
+  private Map<LineSegment,SegmentCount> segmentMap = new TreeMap<LineSegment,SegmentCount>();
+  private Map<LineSegment,List<Feature>> sourceMap;
   // private LineSegment querySegment = new LineSegment();
   private boolean countZeroLengthSegments = true;
   private TaskMonitor monitor;
   private Geometry fence = null;
+  private boolean normalize = false;
   // private LineSegmentEnvelopeIntersector lineEnvInt;
 
   public SegmentsExtracter() {
@@ -75,13 +77,22 @@ public class SegmentsExtracter
     this.monitor = monitor;
   }
 
-/*
+
   public void setFence(Geometry fence)
   {
     this.fence = fence;
     //lineEnvInt = new LineSegmentEnvelopeIntersector();
   }
-*/
+
+  public SegmentsExtracter normalizeSegments() {
+    normalize = true;
+    return this;
+  }
+
+  public SegmentsExtracter keepSource() {
+      sourceMap = new HashMap<LineSegment,List<Feature>>();
+      return this;
+  }
 
   public void add(FeatureCollection fc)
   {
@@ -108,56 +119,79 @@ public class SegmentsExtracter
       Coordinate[] coord = (Coordinate[]) i.next();
       for (int j = 0; j < coord.length - 1; j++) {
         // skip if using fence AND seg is not in fence
-      /*
-      if (fence != null) {
-        LineString segLine = factory.createLineString(new Coordinate[] { coord[j], coord[j + 1] });
-        if (! fence.intersects(segLine))
-          continue;
-      }
-      */
-        add(coord[j], coord[j + 1]);
+        if (fence != null) {
+          LineString segLine = factory.createLineString(new Coordinate[] { coord[j], coord[j + 1] });
+          if (! fence.intersects(segLine))
+            continue;
+        }
+        add(f, coord[j], coord[j + 1]);
       }
     }
   }
 
-  public void add(Coordinate p0, Coordinate p1)
+  public void add(Feature f, Coordinate p0, Coordinate p1)
   {
     // check for zero-length segment
     boolean isZeroLength = p0.equals(p1);
-    if (! countZeroLengthSegments && isZeroLength)
+    if (!countZeroLengthSegments && isZeroLength)
       return;
 
     LineSegment lineseg = new LineSegment(p0, p1);
-    lineseg.normalize();
-
-    SegmentCount count = (SegmentCount) segmentMap.get(lineseg);
+    if (normalize) lineseg.normalize();
+    SegmentCount count = segmentMap.get(lineseg);
     if (count == null) {
       segmentMap.put(lineseg, new SegmentCount(1));
     }
     else {
       count.increment();
     }
-    
+    if (sourceMap != null) {
+        List<Feature> features = sourceMap.get(lineseg);
+        if (features == null) {
+            features = new ArrayList<Feature>();
+        }
+        features.add(f);
+        sourceMap.put(lineseg, features);
+    }
     //segmentSet.add(lineseg);
   }
 
-  public Collection getSegments()
+  public Collection<LineSegment> getSegments()
   {
-        return segmentMap.keySet();
+    return segmentMap.keySet();
+  }
+
+  public Collection<LineSegment> getAllSegments()
+  {
+    List<LineSegment> list = new ArrayList<LineSegment>(segmentMap.size());
+    for (Map.Entry<LineSegment,SegmentCount> entry : segmentMap.entrySet()) {
+      for (int i = 0 ; i < entry.getValue().count ; i++) {
+        list.add(entry.getKey());
+      }
+    }
+    return list;
   }
   
-  public Collection getSegments(int minOccurs, int maxOccurs)
+  public Collection<LineSegment> getSegments(int minOccurs, int maxOccurs)
   {
-      List segmentList = new ArrayList();
-      for (Iterator it = segmentMap.entrySet().iterator() ; it.hasNext() ; ) {
-          Map.Entry entry = (Map.Entry)it.next();
-          LineSegment ls = (LineSegment)entry.getKey();
-          int count = ((SegmentCount)entry.getValue()).getCount();
-          if (count>=minOccurs && count<=maxOccurs) {
-              segmentList.add(ls);
-          }
+    List<LineSegment> segmentList = new ArrayList<LineSegment>();
+    for (Iterator it = segmentMap.entrySet().iterator() ; it.hasNext() ; ) {
+      Map.Entry entry = (Map.Entry)it.next();
+      LineSegment ls = (LineSegment)entry.getKey();
+      int count = ((SegmentCount)entry.getValue()).getCount();
+      if (count>=minOccurs && count<=maxOccurs) {
+        segmentList.add(ls);
       }
-      return segmentList;
+    }
+    return segmentList;
+  }
+
+  public Map<LineSegment,List<Feature>> getSegmentSource() {
+    return sourceMap;
+  }
+
+  public List<Feature> getSegmentSource(LineSegment lineSegment) {
+    return sourceMap.get(lineSegment);
   }
   
   public class SegmentCount {

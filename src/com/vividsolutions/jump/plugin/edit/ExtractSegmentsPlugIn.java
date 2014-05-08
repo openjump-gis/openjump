@@ -31,12 +31,13 @@
  */
 package com.vividsolutions.jump.plugin.edit;
 
-import java.awt.Color;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JMenuItem;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.*;
 
 import com.vividsolutions.jump.I18N;
@@ -46,7 +47,6 @@ import com.vividsolutions.jump.workbench.plugin.*;
 import com.vividsolutions.jump.workbench.ui.*;
 import com.vividsolutions.jump.workbench.ui.plugin.*;
 import com.vividsolutions.jump.feature.*;
-import com.vividsolutions.jts.util.*;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.operation.linemerge.LineMerger;
 import com.vividsolutions.jump.geom.*;
@@ -57,33 +57,72 @@ public class ExtractSegmentsPlugIn extends AbstractThreadedUiPlugIn {
     
   private final static String LAYER = I18N.get("ui.MenuNames.LAYER");
 
-  private static Collection toLineStrings(Collection segments) {
+  private static FeatureCollection toLineStrings(Collection segments) {
+    FeatureSchema schema = new FeatureSchema();
+    schema.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
     GeometryFactory fact = new GeometryFactory();
-    List lineStringList = new ArrayList();
+    //List lineStringList = new ArrayList();
+    FeatureDataset dataset = new FeatureDataset(schema);
     for (Iterator i = segments.iterator(); i.hasNext();) {
       LineSegment seg = (LineSegment) i.next();
       LineString ls = LineSegmentUtil.asGeometry(fact, seg);
-      lineStringList.add(ls);
+      //lineStringList.add(ls);
+      BasicFeature f = new BasicFeature(schema);
+      f.setGeometry(ls);
+      dataset.add(f);
     }
-    return lineStringList;
+    return dataset;
+  }
+
+  private static FeatureCollection toLineStrings(Collection segments, Map<LineSegment,List<Feature>> map) {
+    assert map != null;
+    assert map.size() > 0 : "no segment/feature map";
+    assert map.get(map.keySet().iterator().next()) != null : "first segment does not map any feature";
+    assert map.get(map.keySet().iterator().next()).size() > 0 : "first segment does not map any feature";
+    FeatureSchema schema = map.get(map.keySet().iterator().next()).get(0).getSchema();
+    GeometryFactory fact = new GeometryFactory();
+    List lineStringList = new ArrayList();
+    FeatureDataset dataset = new FeatureDataset(schema);
+    for (Iterator i = segments.iterator(); i.hasNext();) {
+      LineSegment seg = (LineSegment) i.next();
+      List<Feature> features = map.get(seg);
+      LineString ls = LineSegmentUtil.asGeometry(fact, seg);
+      for (Feature f : features) {
+          Feature bf = (Feature)f.clone(false);
+          bf.setGeometry(ls);
+          dataset.add(bf);
+      }
+      //lineStringList.add(ls);
+    }
+    return dataset;
   }
   
-  private static Collection toMergedLineStrings(Collection segments) {
+  private static FeatureCollection toMergedLineStrings(Collection segments) {
+    FeatureSchema schema = new FeatureSchema();
+    schema.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
     GeometryFactory fact = new GeometryFactory();
     LineMerger lineMerger = new LineMerger(); 
     for (Iterator i = segments.iterator(); i.hasNext();) {
       LineSegment seg = (LineSegment) i.next();
       lineMerger.add(LineSegmentUtil.asGeometry(fact, seg));
     }
-    return lineMerger.getMergedLineStrings();
+    FeatureDataset dataset = new FeatureDataset(schema);
+    for (Object o : lineMerger.getMergedLineStrings()) {
+        BasicFeature bf = new BasicFeature(schema);
+        bf.setGeometry((Geometry)o);
+        dataset.add(bf);
+    }
+    return dataset;
   }
 
   //private MultiInputDialog dialog;
   private String layerName;
-  private boolean uniqueSegmentsOnly;
-  private boolean mergeResultingSegments;
-  private int inputEdgeCount = 0;
-  private int uniqueSegmentCount = 0;
+  private boolean removeDoubledSegments     = false;
+  private boolean makeDoubledSegmentsUnique = false;
+  private boolean mergeResultingSegments    = false;
+  private boolean keepAttributes            = false;
+  private int inputEdgeCount                = 0;
+  private int uniqueSegmentCount            = 0;
 
   public ExtractSegmentsPlugIn() { }
 
@@ -132,27 +171,53 @@ public class ExtractSegmentsPlugIn extends AbstractThreadedUiPlugIn {
     Layer layer = context.getLayerManager().getLayer(layerName);
     FeatureCollection lineFC = layer.getFeatureCollectionWrapper();
     inputEdgeCount = lineFC.size();
-
+    if (inputEdgeCount == 0) {
+        context.getWorkbenchFrame().warnUser("jump.plugin.edit.ExtractSegmentsPlugIn.No-edge-to-process");
+        return;
+    }
     //UniqueSegmentsExtracter extracter = new UniqueSegmentsExtracter(monitor);
     SegmentsExtracter extracter = new SegmentsExtracter(monitor);
-    extracter.add(lineFC);
-    Collection uniqueFSList = uniqueSegmentsOnly ? extracter.getSegments(1,1)
-                                                 : extracter.getSegments();
-    uniqueSegmentCount = uniqueFSList.size();
-    Collection linestringList = mergeResultingSegments ? toMergedLineStrings(uniqueFSList)
-                                                       : toLineStrings(uniqueFSList);
+    Collection<LineSegment> segmentList = null;
+    FeatureCollection result = null;
+    if (removeDoubledSegments || makeDoubledSegmentsUnique || mergeResultingSegments) {
+        extracter.normalizeSegments();
+        extracter.add(lineFC);
+        segmentList = removeDoubledSegments ?
+                extracter.getSegments(1,1)
+                : extracter.getSegments();
+        if (mergeResultingSegments) result = toMergedLineStrings(segmentList);
+        else result = toLineStrings(segmentList);
+    }
+    // previous options and keepAttributes are mutually exclusive
+    else if (keepAttributes) {
+        extracter.keepSource();
+        extracter.add(lineFC);
+        segmentList = extracter.getSegments();
+        result = toLineStrings(segmentList, extracter.getSegmentSource());
+    }
+    else {
+        extracter.add(lineFC);
+        segmentList = extracter.getAllSegments();
+        result = toLineStrings(segmentList);
+    }
+    //Collection uniqueFSList = removeDoubledSegments ? extracter.getSegments(1,1)
+    //                                             : extracter.getSegments();
+    uniqueSegmentCount = segmentList.size();
+    //Collection linestringList = mergeResultingSegments ?
+    //        toMergedLineStrings(uniqueFSList)
+    //        : toLineStrings(uniqueFSList, extracter.getSegmentSource());
 
     if (monitor.isCancelRequested()) return;
-    createLayers(context, linestringList);
+    createLayers(context, result);
   }
 
-  private void createLayers(PlugInContext context, Collection linestringList)
+  private void createLayers(PlugInContext context, FeatureCollection result)
          throws Exception {
-    FeatureCollection lineStringFC = FeatureDatasetFactory.createFromGeometry(linestringList);
+    //FeatureCollection lineStringFC = FeatureDatasetFactory.createFromGeometry(linestringList);
     context.addLayer(
         StandardCategoryNames.RESULT,
         layerName + " " + I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Extracted-Segs"),
-        lineStringFC);
+        result);
     createOutput(context);
   }
 
@@ -171,19 +236,53 @@ public class ExtractSegmentsPlugIn extends AbstractThreadedUiPlugIn {
   private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
     dialog.setSideBarImage(new ImageIcon(getClass().getResource("ExtractSegments.png")));
     dialog.setSideBarDescription(I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Extracts-all-unique-line-segments-from-a-dataset"));
-    JComboBox layerComboBox = dialog.addLayerComboBox(LAYER, context.getCandidateLayer(0), null, context.getLayerManager());
-    JCheckBox oneTimeCheckBox = dialog.addCheckBox(
-        I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Remove-doubled-segments"),false);
-    JCheckBox mergeCheckBox = dialog.addCheckBox(
-        I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Merge-resulting-segments"),false);
+    final JComboBox layerComboBox = dialog.addLayerComboBox(LAYER, context.getCandidateLayer(0), null, context.getLayerManager());
+    final JCheckBox removeDoubleSegmentsCheckBox = dialog.addCheckBox(
+        I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Remove-doubled-segments"),removeDoubledSegments);
+    final JCheckBox makeDoubleSegmentsUniqueCheckBox = dialog.addCheckBox(
+              I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Make-doubled-segments-unique"),makeDoubledSegmentsUnique);
+    final JCheckBox mergeCheckBox = dialog.addCheckBox(
+        I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Merge-resulting-segments"),mergeResultingSegments);
+    final JCheckBox keepAttributesCheckBox = dialog.addCheckBox(
+              I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Keep-attributes"),keepAttributes);
+    keepAttributesCheckBox.setEnabled(!removeDoubledSegments && !mergeResultingSegments && !makeDoubledSegmentsUnique);
+
+    removeDoubleSegmentsCheckBox.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        boolean a = removeDoubleSegmentsCheckBox.isSelected();
+        boolean b = mergeCheckBox.isSelected();
+        boolean c = makeDoubleSegmentsUniqueCheckBox.isSelected();
+        keepAttributesCheckBox.setEnabled(!a && !b && !c);
+      }
+    });
+    mergeCheckBox.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        boolean a = removeDoubleSegmentsCheckBox.isSelected();
+        boolean b = mergeCheckBox.isSelected();
+        boolean c = makeDoubleSegmentsUniqueCheckBox.isSelected();
+        keepAttributesCheckBox.setEnabled(!a && !b && !c);
+      }
+    });
+    makeDoubleSegmentsUniqueCheckBox.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        boolean a = removeDoubleSegmentsCheckBox.isSelected();
+        boolean b = mergeCheckBox.isSelected();
+        boolean c = makeDoubleSegmentsUniqueCheckBox.isSelected();
+        keepAttributesCheckBox.setEnabled(!a && !b && !c);
+      }
+    });
   }
 
   private void getDialogValues(MultiInputDialog dialog) {
     Layer layer = dialog.getLayer(LAYER);
     layerName = layer.getName();
-    uniqueSegmentsOnly = dialog.getBoolean(
+    removeDoubledSegments = dialog.getBoolean(
         I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Remove-doubled-segments"));
+    makeDoubledSegmentsUnique = dialog.getBoolean(
+              I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Make-doubled-segments-unique"));
     mergeResultingSegments = dialog.getBoolean(
         I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Merge-resulting-segments"));
+    keepAttributes = dialog.getBoolean(
+              I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Keep-attributes"));
   }
 }

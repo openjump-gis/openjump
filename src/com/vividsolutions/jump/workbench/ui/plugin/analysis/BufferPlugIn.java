@@ -196,7 +196,7 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
 	    CAP_ROUND = I18N.get("ui.plugin.analysis.BufferPlugIn.cap-round");
 	    CAP_SQUARE = I18N.get("ui.plugin.analysis.BufferPlugIn.cap-square");
 	    
-	    JOIN_STYLE_TITLE = I18N.get("ui.plugin.analysis.BufferPlugIn.join-style-subtitle");
+	    //JOIN_STYLE_TITLE = I18N.get("ui.plugin.analysis.BufferPlugIn.join-style-subtitle");
 	    JOIN_STYLE = I18N.get("ui.plugin.analysis.BufferPlugIn.join-style");
         JOIN_BEVEL = I18N.get("ui.plugin.analysis.BufferPlugIn.join-bevel");
         JOIN_MITRE = I18N.get("ui.plugin.analysis.BufferPlugIn.join-mitre");
