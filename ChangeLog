@@ -5,6 +5,7 @@
     (separate left/right sigle sided buffer)
   * Improve extract segments plugin. It can now make the most basic
     operation (extract each segment of each feature) and keep attributes.
+  * Fix #364 AutoAssignAttribute : make it possible to set a date
 
 2014-05-07 mmichaud <m.michael.michaud@orange.fr>
   * Fix #362 : NPE in ReplaceAttributePlugIn

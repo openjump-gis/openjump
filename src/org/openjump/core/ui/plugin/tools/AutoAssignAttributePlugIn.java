@@ -35,6 +35,7 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.util.FlexibleDateParser;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.FeatureEventType;
 import com.vividsolutions.jump.workbench.model.Layer;
@@ -49,11 +50,13 @@ import org.openjump.core.ui.plugin.AbstractUiPlugIn;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.ParseException;
 import java.util.*;
 
 /**
-* Based on CalculateAreasAndLengthsPlugIn.
-*
+* Assign a value to an attribute on a set of features.
+* Value may be computed (auto-increment), copied from another
+* attribute or set by the user
 */
 public class AutoAssignAttributePlugIn extends AbstractUiPlugIn {
     
@@ -160,8 +163,8 @@ public class AutoAssignAttributePlugIn extends AbstractUiPlugIn {
         dialog.setFieldVisible(SELECTED_CHECK_BOX, selectionExists);
         final JComboBox targetAttributeComboBox = 
             dialog.addAttributeComboBox(TARGET_ATTRIBUTE_COMBO_BOX, LAYER_COMBO_BOX,
-                                        AttributeTypeFilter.NUMSTRING_FILTER, 
-                                        "");
+                    new AttributeTypeFilter(AttributeTypeFilter.DATE | AttributeTypeFilter.STRING |
+                    AttributeTypeFilter.DOUBLE | AttributeTypeFilter.INTEGER), "");
         for (int i = 0 ; i < targetAttributeComboBox.getModel().getSize() ; i++) {
             Object item = targetAttributeComboBox.getModel().getElementAt(i);
             if (item.equals(targetAttribute)) targetAttributeComboBox.setSelectedIndex(i);
@@ -330,6 +333,18 @@ public class AutoAssignAttributePlugIn extends AbstractUiPlugIn {
                 	//if (s.length() == 0) 
                 	//	return new Double(0);
                     //return new Double(parseNumber(d));
+                }
+            });
+            put(AttributeType.DATE, new Converter() {
+                final FlexibleDateParser parser = new FlexibleDateParser();
+                public Object convert(String d) {
+                    if (d==null) return null;
+                    try {
+                        //return new Double(d);
+                        return parser.parse(d, true);
+                    } catch(ParseException nfe) {
+                        return null;
+                    }
                 }
             });
         }
