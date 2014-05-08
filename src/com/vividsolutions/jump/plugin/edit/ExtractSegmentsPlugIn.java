@@ -31,10 +31,7 @@
  */
 package com.vividsolutions.jump.plugin.edit;
 
-import javax.swing.ImageIcon;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JMenuItem;
+import javax.swing.*;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -120,6 +117,7 @@ public class ExtractSegmentsPlugIn extends AbstractThreadedUiPlugIn {
   private boolean removeDoubledSegments     = false;
   private boolean makeDoubledSegmentsUnique = false;
   private boolean mergeResultingSegments    = false;
+  private boolean keepAllSegments           = true;
   private boolean keepAttributes            = false;
   private int inputEdgeCount                = 0;
   private int uniqueSegmentCount            = 0;
@@ -179,7 +177,7 @@ public class ExtractSegmentsPlugIn extends AbstractThreadedUiPlugIn {
     SegmentsExtracter extracter = new SegmentsExtracter(monitor);
     Collection<LineSegment> segmentList = null;
     FeatureCollection result = null;
-    if (removeDoubledSegments || makeDoubledSegmentsUnique || mergeResultingSegments) {
+    if (removeDoubledSegments || makeDoubledSegmentsUnique) {
         extracter.normalizeSegments();
         extracter.add(lineFC);
         segmentList = removeDoubledSegments ?
@@ -187,26 +185,18 @@ public class ExtractSegmentsPlugIn extends AbstractThreadedUiPlugIn {
                 : extracter.getSegments();
         if (mergeResultingSegments) result = toMergedLineStrings(segmentList);
         else result = toLineStrings(segmentList);
-    }
-    // previous options and keepAttributes are mutually exclusive
-    else if (keepAttributes) {
-        extracter.keepSource();
+    } else if (keepAllSegments) {
+        if (keepAttributes) extracter.keepSource();
         extracter.add(lineFC);
-        segmentList = extracter.getSegments();
-        result = toLineStrings(segmentList, extracter.getSegmentSource());
+        if (keepAttributes) {
+            segmentList = extracter.getSegments();
+            result = toLineStrings(segmentList, extracter.getSegmentSource());
+        } else {
+            segmentList = extracter.getAllSegments();
+            result = toLineStrings(segmentList);
+        }
     }
-    else {
-        extracter.add(lineFC);
-        segmentList = extracter.getAllSegments();
-        result = toLineStrings(segmentList);
-    }
-    //Collection uniqueFSList = removeDoubledSegments ? extracter.getSegments(1,1)
-    //                                             : extracter.getSegments();
     uniqueSegmentCount = segmentList.size();
-    //Collection linestringList = mergeResultingSegments ?
-    //        toMergedLineStrings(uniqueFSList)
-    //        : toLineStrings(uniqueFSList, extracter.getSegmentSource());
-
     if (monitor.isCancelRequested()) return;
     createLayers(context, result);
   }
@@ -237,38 +227,47 @@ public class ExtractSegmentsPlugIn extends AbstractThreadedUiPlugIn {
     dialog.setSideBarImage(new ImageIcon(getClass().getResource("ExtractSegments.png")));
     dialog.setSideBarDescription(I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Extracts-all-unique-line-segments-from-a-dataset"));
     final JComboBox layerComboBox = dialog.addLayerComboBox(LAYER, context.getCandidateLayer(0), null, context.getLayerManager());
-    final JCheckBox removeDoubleSegmentsCheckBox = dialog.addCheckBox(
-        I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Remove-doubled-segments"),removeDoubledSegments);
-    final JCheckBox makeDoubleSegmentsUniqueCheckBox = dialog.addCheckBox(
-              I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Make-doubled-segments-unique"),makeDoubledSegmentsUnique);
+    final JRadioButton removeDoubleSegmentsCheckBox = dialog.addRadioButton(
+            I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Remove-doubled-segments"),
+            "group1", removeDoubledSegments, null);
+    final JRadioButton makeDoubleSegmentsUniqueCheckBox = dialog.addRadioButton(
+            I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Make-doubled-segments-unique"),
+            "group1", makeDoubledSegmentsUnique, null);
+    final JRadioButton keepAllSegmentsCheckBox = dialog.addRadioButton(
+              I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Keep-all-segments"),
+            "group1", keepAllSegments, null);
     final JCheckBox mergeCheckBox = dialog.addCheckBox(
-        I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Merge-resulting-segments"),mergeResultingSegments);
+              I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Merge-resulting-segments"),mergeResultingSegments);
+    mergeCheckBox.setEnabled(removeDoubledSegments || makeDoubledSegmentsUnique);
     final JCheckBox keepAttributesCheckBox = dialog.addCheckBox(
               I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Keep-attributes"),keepAttributes);
-    keepAttributesCheckBox.setEnabled(!removeDoubledSegments && !mergeResultingSegments && !makeDoubledSegmentsUnique);
+    keepAttributesCheckBox.setEnabled(keepAllSegments);
 
     removeDoubleSegmentsCheckBox.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         boolean a = removeDoubleSegmentsCheckBox.isSelected();
-        boolean b = mergeCheckBox.isSelected();
-        boolean c = makeDoubleSegmentsUniqueCheckBox.isSelected();
-        keepAttributesCheckBox.setEnabled(!a && !b && !c);
-      }
-    });
-    mergeCheckBox.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        boolean a = removeDoubleSegmentsCheckBox.isSelected();
-        boolean b = mergeCheckBox.isSelected();
-        boolean c = makeDoubleSegmentsUniqueCheckBox.isSelected();
-        keepAttributesCheckBox.setEnabled(!a && !b && !c);
+        boolean b = makeDoubleSegmentsUniqueCheckBox.isSelected();
+        boolean c = keepAllSegmentsCheckBox.isSelected();
+        mergeCheckBox.setEnabled(a || b);
+        keepAttributesCheckBox.setEnabled(c);
       }
     });
     makeDoubleSegmentsUniqueCheckBox.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         boolean a = removeDoubleSegmentsCheckBox.isSelected();
-        boolean b = mergeCheckBox.isSelected();
-        boolean c = makeDoubleSegmentsUniqueCheckBox.isSelected();
-        keepAttributesCheckBox.setEnabled(!a && !b && !c);
+        boolean b = makeDoubleSegmentsUniqueCheckBox.isSelected();
+        boolean c = keepAllSegmentsCheckBox.isSelected();
+        mergeCheckBox.setEnabled(a || b);
+        keepAttributesCheckBox.setEnabled(c);
+      }
+    });
+    keepAllSegmentsCheckBox.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        boolean a = removeDoubleSegmentsCheckBox.isSelected();
+        boolean b = makeDoubleSegmentsUniqueCheckBox.isSelected();
+        boolean c = keepAllSegmentsCheckBox.isSelected();
+        mergeCheckBox.setEnabled(a || b);
+        keepAttributesCheckBox.setEnabled(c);
       }
     });
   }
@@ -280,6 +279,8 @@ public class ExtractSegmentsPlugIn extends AbstractThreadedUiPlugIn {
         I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Remove-doubled-segments"));
     makeDoubledSegmentsUnique = dialog.getBoolean(
               I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Make-doubled-segments-unique"));
+    keepAllSegments = dialog.getBoolean(
+            I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Keep-all-segments"));
     mergeResultingSegments = dialog.getBoolean(
         I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Merge-resulting-segments"));
     keepAttributes = dialog.getBoolean(
