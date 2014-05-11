@@ -1,0 +1,3 @@
+The Junit  junit-4.4 library is licensed under the Junit license.
+The geotools gt2-oracle-spatial-2.3.2.jar library is licensed under LGPL.
+jsyntaxpane is licensed by Apache License 2.0

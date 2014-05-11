@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="Given a set of points and one layer of unitary cost, this algorithm calculates the cost from each one of the points to each cell and assigns the sum of all costs to thgiven cell. This parameter might be used to estimate influences and effects of these points on the surrounding cells." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="COST" text="the layer that contains the friction surface (isotropic unitary cost)" description="Unitary cost" type="3">
+		</element>
+		<element name="FEATURES" text="Points to consider must be represented by cells with valid values. The remaining cells should have a no-data value." description="Origin/destination points" type="3">
+		</element>
+		<element name="THRESHOLD" text="if the existing minimum difference between routes wants to be marked, add a value . If the difference is less than the threshold, the route is considered identical and is not recalculated. If it has a value of 0, as it has occured by default, there is maximum precision, just like the length of the process. " description="Threshold for route separation" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="ACCCOST" text="" description="Accumulated cost" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

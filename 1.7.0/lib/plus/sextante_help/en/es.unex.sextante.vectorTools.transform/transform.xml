@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm applies an affine transformation to all the geometries of a given vector layer." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="" description="Algorithm created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="LAYER" text="The layer to transform" description="Input layer" type="3">
+		</element>
+		<element name="DISTANCEX" text="The distance for translation along the X axis" description="Translation X" type="3">
+		</element>
+		<element name="DISTANCEY" text="The distance for translation along the Y axis" description="Translation Y" type="3">
+		</element>
+		<element name="ANGLE" text="The angle to rotate geometries" description="Rotation angle" type="3">
+		</element>
+		<element name="SCALEX" text="The scale factor along the X axis" description="Scale factor (X)" type="3">
+		</element>
+		<element name="SCALEY" text="The scale factor along the X axis" description="Scale Factor (Y)" type="3">
+		</element>
+		<element name="ANCHORX" text="The X coordinate of the location of the anchor point for rotation" description="Anchor point X" type="3">
+		</element>
+		<element name="ANCHORY" text="The X coordinate of the location of the anchor point for rotation" description="Anchor point Y" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="The transformed layer." description="Capa_transformada" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

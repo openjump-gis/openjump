@@ -1,0 +1,38 @@
+///////////////////////////////////////////////////////////////
+//
+// RE-INITIALIZE BEAN TOOLS PLUGIN
+//
+// IF YOU PUT A NEW SCRIPT FILE INTO THE BeanTools DIR,
+// RUN THIS SCRIPT INSTEAD OF RESTARTING OPEN JUMP
+//
+// Michael Michaud 2007-03-15
+//
+///////////////////////////////////////////////////////////////
+
+// import statements
+import com.vividsolutions.jump.workbench.ui.MenuNames;
+import com.vividsolutions.jump.I18N;
+import org.openjump.core.ui.plugin.customize.BeanToolsPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
+
+// Remove the BeanTools menu
+context = wc.createPlugInContext();
+featureInstaller = context.getFeatureInstaller();
+menuCustom = featureInstaller.menuBarMenu(I18N.get(MenuNames.CUSTOMIZE));
+menu = new FeatureInstaller.Menu() {
+	void add(JMenuItem menuItem) {menuCustom.add(menuItem);}
+	void insert(JMenuItem menuItem, int i) {menuCustom.insert(menuItem,i);}
+	void remove(int i) {menuCustom.remove(i);}
+	String getText() {return menuCustom.getText();}
+	int getComponentCount(){return menuCustom.getComponentCount();}
+	Component getComponent(int i) {return menuCustom.getComponent(i);}
+	JComponent getWrappee() {return menuCustom;}
+	void addSeparator() {return;}
+	void insertSeparator(int i) {return;}
+};
+item = featureInstaller.childMenuItem(I18N.get("ui.plugin.BeanToolsPlugIn.BeanTools"), menu);
+menuCustom.remove(item);
+
+// Reinitialize the plugin
+plugin = new BeanToolsPlugIn();
+plugin.initialize(context);

@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="The extension Analytical Hierarchy Process(AHP) (Saaty, 1977) is used to calculate relative weights in order to combine several factors. This algorithm uses the input layers and a table with a number of factors (equal to the number of layers), comparing their comparative weights to calculate a new layer as a linear combination  of the input layers.  " description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="INPUT" text="one or various layers." description="Layers" type="3">
+		</element>
+		<element name="PAIRWISE" text="A table determining the relevance of each factor contained in the input layers by comparing them one by one. The table should have n rows and n columns, n being the number of factors (this is, of layers) to which  comparative values will be assigned. It is recommended that these values  are established between 1 and 9 according on the following rules:&#10;* 1 = The same importance&#10;* 3 = Moderate predominance of one value over another&#10;* 5 = Strong predominance&#10;* 7 = Very Strong Predominance&#10;* 9 = Extreme Predominance&#10;* 2, 4, 6, 8 = Intermediate Values" description="Pairwise comparisons" type="3">
+			<image description="Example of matrix table for three layers" file="jerarquias_analisiticas_ahp.jpg">
+			</image>
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="Result of the linear combination of the input layers based on the weights established by the analytical hierarchy process." description="Result" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
