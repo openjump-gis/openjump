@@ -1,5 +1,7 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+* release 1.7.0 ***************************************************************
+
 2014-05-08 mmichaud <m.michael.michaud@orange.fr>
   * Improve Buffer plugin according to FR 204
     (separate left/right sigle sided buffer)

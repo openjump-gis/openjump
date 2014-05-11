@@ -1,7 +1,5 @@
 Version ${version.number} ${version.release} rev.${version.revision} (released on ${version.buildDate})
 
-Version 1.7.0 release rev.39xx (released on dd. May 2014)
-
   New Features
   * add printing capability to PDF, Printer in OJ CORE (SkyPrinter)
   * add Calculate Distances plugin: calculate distances between two sets of geometries
@@ -14,9 +12,12 @@ Version 1.7.0 release rev.39xx (released on dd. May 2014)
     - readers gather supported formats internally :
         IOGraphicImageFactory: [jpg, bmp, wbmp, jpeg, png, gif]
         JAIGraphicImageFactory: [bmp, fpx, jpg, pnm, wbmp, tif, jpeg, png, gif, tiff, xtiff]
-        CommonsImageFactory: supported formats listed in
-        http://commons.apache.org/proper/commons-imaging/formatsupport.html
-    - add GDAL OpenJPEG J2K reader, terribly slow/unstable though
+        CommonsImageFactory: [psd and others], see
+          http://commons.apache.org/proper/commons-imaging/formatsupport.html
+    - with GDAL read support for Windows/Linux (slow/unstable in part) [jp2, ecw, mrsid and others], see
+        https://github.com/geosolutions-it/imageio-ext/wiki/GDAL-framework-and-plugins#gdal-supported-formats
+      needs downloadable extra libraries and OJ PLUS, see
+        http://sourceforge.net/apps/mediawiki/jump-pilot/index.php?title=Working_with_Raster#Referenced_Image_reader
   * add relate (DE-9IM) operator in Simple Query plugin
   * Analysis > Geometry function: add 3 functions from JTS
     - MinimumBoundingCircle
@@ -86,8 +87,8 @@ Version 1.7.0 release rev.39xx (released on dd. May 2014)
 
   PLUS version, OTHER extensions
   * Fix Road matcher to (make it compatible with OpenJUMP 1.7)
-  * add Jump DBQuery in PLUS
-  * update dxf driver ni PLUS (make it compatible with OpenJUMP 1.7)
+  * add Jump DBQuery
+  * update dxf driver in PLUS (make it compatible with OpenJUMP 1.7)
   * update jumpchart from cadplan in PLUS
   * new OpenStreetMap (.osm) file reader in PLUS
 
