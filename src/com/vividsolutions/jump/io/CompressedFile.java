@@ -65,7 +65,7 @@ import com.vividsolutions.jump.util.FileUtil;
 
 /**
  * Utility class for dealing with compressed files.
- * @see #isCompressed(String)
+ * @see #isCompressed(URI)
  * 
  * @author dblasby
  * @author ede
@@ -201,16 +201,16 @@ public class CompressedFile {
    *          name of the compressed file.
    * 
    *          <p>
-   *          If compressedFile = null, opens a FileInputStream on fname
+   *          If compressedEntry = null, opens a FileInputStream on filePath
    *          </p>
    * 
    *          <p>
-   *          compressedFile ends in ".zip" - opens the compressed Zip and
-   *          lookes for the file called fname
+   *          If filePath ends in ".zip" - opens the compressed Zip and
+   *          looks for the file called compressedEntry
    *          </p>
    * 
    *          <p>
-   *          compressedFile ends in ".gz" - opens the compressed .gz file.
+   *          If filePath ends in ".gz" - opens the compressed .gz file.
    *          </p>
    */
   public static InputStream openFile(String filePath, String compressedEntry)
@@ -361,7 +361,6 @@ public class CompressedFile {
 
   public static URI replaceTargetFileWithPath( URI uri, String location){
     String filepath = UriUtil.getZipFilePath(uri);
-    String entry = UriUtil.getZipEntryName(uri);
     if (hasArchiveFileExtension(filepath)) {
       return UriUtil.createZipUri(filepath, location);
     }
