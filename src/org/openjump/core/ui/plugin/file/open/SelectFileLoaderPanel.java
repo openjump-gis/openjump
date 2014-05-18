@@ -199,7 +199,7 @@ public class SelectFileLoaderPanel extends JPanel implements WizardPanel {
   public void enteredFromLeft(Map dataMap) {
     mainPanel.removeAll();
     state.setCurrentPanel(SelectFileLoaderPanel.class.getName());
-    Map<String, Set<URI>> multiLoaderFiles = state. getMultiLoaderFiles();
+    Map<String, Set<URI>> multiLoaderFiles = state.getMultiLoaderFiles();
     for (Entry<String, Set<URI>> entry : multiLoaderFiles.entrySet()) {
       String extension = entry.getKey();
       Set<URI> extensionFiles = entry.getValue();

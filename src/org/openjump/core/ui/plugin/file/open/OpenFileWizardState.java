@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -315,15 +316,15 @@ public class OpenFileWizardState {
   }
 
   public Map<String, Set<URI>> getMultiLoaderFiles() {
-    return multiLoaderFiles;
+    return Collections.unmodifiableMap(multiLoaderFiles);
   }
 
   public Map<URI, FileLayerLoader> getFileLoaders() {
-    return fileLoaderMap;
+    return Collections.unmodifiableMap(fileLoaderMap);
   }
 
   public Map<FileLayerLoader, Set<URI>> getFileLoaderFiles() {
-    return fileLoaderFiles;
+    return Collections.unmodifiableMap(fileLoaderFiles);
   }
 
   public FileLayerLoader getFileLoader(URI file) {
