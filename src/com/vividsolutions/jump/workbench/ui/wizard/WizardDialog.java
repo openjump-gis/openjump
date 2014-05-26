@@ -297,8 +297,18 @@ public class WizardDialog extends JDialog implements WizardContext,
   }
 
   public void previous() {
-    WizardPanel prevPanel = (WizardPanel)completedWizardPanels.remove(completedWizardPanels.size() - 1);
-    setCurrentWizardPanel(prevPanel);
+    try {
+      WizardPanel prevPanel = (WizardPanel)completedWizardPanels.remove(completedWizardPanels.size() - 1);
+      setCurrentWizardPanel(prevPanel);
+
+      // only WizardPanelV2 supports enteredFromRight() method
+      if (prevPanel instanceof WizardPanelV2) {
+        ((WizardPanelV2)prevPanel).enteredFromRight();   
+      }
+    }
+    catch (Throwable x) {
+      errorHandler.handleThrowable(x);
+    }
 
     // Don't init panel if we're going back. [Jon Aquino]
   }

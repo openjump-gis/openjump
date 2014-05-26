@@ -54,9 +54,14 @@ import com.vividsolutions.jump.workbench.registry.Registry;
 import com.vividsolutions.jump.workbench.ui.InputChangedListener;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
-import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
+import com.vividsolutions.jump.workbench.ui.wizard.WizardPanelV2;
 
-public class SelectFilesPanel extends JFCWithEnterAction implements WizardPanel {
+public class SelectFilesPanel extends JFCWithEnterAction implements WizardPanelV2 {
+
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1081945397331254012L;
 
   public static final String KEY = SelectFilesPanel.class.getName();
 
@@ -85,8 +90,6 @@ public class SelectFilesPanel extends JFCWithEnterAction implements WizardPanel 
   private WizardDialog dialog;
 
   private Class loaderFilter;
-  
-  private PropertyChangeListener changeListener;
 
   public SelectFilesPanel(final WorkbenchContext workbenchContext) {
     super();
@@ -171,9 +174,16 @@ public class SelectFilesPanel extends JFCWithEnterAction implements WizardPanel 
 
     setControlButtonsAreShown(false);
 
-    changeListener = new PropertyChangeListener() {
+    
+    PropertyChangeListener changeListener = new PropertyChangeListener() {
       // user selected something in the fc
       public void propertyChange(PropertyChangeEvent evt) {
+        // only listen to fc changes while we're on _this_ panel
+        // OSX fc weirdly fires events even when we're on the next panel
+        if (state.getCurrentPanel() != KEY){
+          return;
+        }
+          
         FileLayerLoader fileLayerLoader = null;
         File[] files = getSelectedFiles();
         FileFilter selectedFileFilter = getFileFilter();
@@ -185,6 +195,7 @@ public class SelectFilesPanel extends JFCWithEnterAction implements WizardPanel 
         fireInputChanged();
       }
     };
+    addPropertyChangeListener(changeListener);    
 
     addActionListener(new InvokeMethodActionListener(dialog, "next"));
   }
@@ -192,15 +203,15 @@ public class SelectFilesPanel extends JFCWithEnterAction implements WizardPanel 
   public void enteredFromLeft(final Map dataMap) {
     initialize();
     rescanCurrentDirectory();
-    // only listen to fc changes while we're on _this_ panel
-    // OSX fc weirdly fires events even when we're on the next panel
-    addPropertyChangeListener(changeListener);
+    state.setCurrentPanel(KEY);
+  }
+  
+  public void enteredFromRight() throws Exception {
+    // reset state's cur panel for the prop listener above to react properly
     state.setCurrentPanel(KEY);
   }
 
   public void exitingToRight() throws Exception {
-    // see above enteredFromLeft()
-    removePropertyChangeListener(changeListener);
     blackboard.put(LoadFileDataSourceQueryChooser.FILE_CHOOSER_DIRECTORY_KEY,
       getCurrentDirectory().getAbsolutePath());
   }

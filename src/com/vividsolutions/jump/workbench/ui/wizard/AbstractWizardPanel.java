@@ -9,7 +9,7 @@ import javax.swing.JPanel;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.ui.InputChangedListener;
 
-public class AbstractWizardPanel extends JPanel implements WizardPanel {
+public class AbstractWizardPanel extends JPanel implements WizardPanelV2 {
   private Set<InputChangedListener> listeners = new LinkedHashSet<InputChangedListener>();
 
   private String id;
@@ -59,6 +59,9 @@ public class AbstractWizardPanel extends JPanel implements WizardPanel {
 
   public void enteredFromLeft(final Map data) {
     this.data = data;
+  }
+  
+  public void enteredFromRight() throws Exception { 
   }
 
   public Map getData() {
