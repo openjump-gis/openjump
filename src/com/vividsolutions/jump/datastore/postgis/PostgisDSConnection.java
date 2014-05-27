@@ -60,8 +60,7 @@ public class PostgisDSConnection implements DataStoreConnection {
         String queryString = builder.getSQL(query);
 
         // [mmichaud 2013-08-07] add a parameter for database primary key name
-        PostgisFeatureInputStream ifs = new PostgisFeatureInputStream(connection, queryString, query.getPrimaryKey());
-        return ifs;
+        return new PostgisFeatureInputStream(connection, queryString, query.getPrimaryKey());
     }
 
     public FeatureInputStream executeAdhocQuery(AdhocQuery query) throws Exception {

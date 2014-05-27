@@ -2,7 +2,6 @@ package com.vividsolutions.jump.datastore;
 
 import com.vividsolutions.jump.parameter.ParameterList;
 import com.vividsolutions.jump.parameter.ParameterListSchema;
-import com.vividsolutions.jump.workbench.datastore.ConnectionManager;
 
 /**
  * A driver for a given type of datastore

@@ -1,7 +1,6 @@
 package com.vividsolutions.jump.datastore.postgis;
 
 import com.vividsolutions.jump.datastore.jdbc.ValueConverter;
-import com.vividsolutions.jump.datastore.jdbc.ValueConverterFactory;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.BasicFeature;
 import com.vividsolutions.jump.feature.Feature;

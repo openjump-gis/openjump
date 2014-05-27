@@ -7,8 +7,6 @@ import com.vividsolutions.jump.datastore.*;
 import com.vividsolutions.jump.parameter.ParameterList;
 import com.vividsolutions.jump.parameter.ParameterListSchema;
 
-import org.postgresql.PGConnection;
-
 /**
  * A driver for supplying {@link PostgisDSConnection}s
  */
@@ -40,7 +38,7 @@ public class PostgisDataStoreDriver
     String.class,
     String.class
     };
-  private final ParameterListSchema schema = new ParameterListSchema(paramNames, paramClasses);;
+  private final ParameterListSchema schema = new ParameterListSchema(paramNames, paramClasses);
 
   public PostgisDataStoreDriver() {
   }

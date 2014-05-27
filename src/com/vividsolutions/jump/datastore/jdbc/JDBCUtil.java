@@ -1,7 +1,6 @@
 package com.vividsolutions.jump.datastore.jdbc;
 
 import java.sql.*;
-import com.vividsolutions.jump.datastore.*;
 
 /**
  * Utilities for JDBC.
