@@ -1,5 +1,14 @@
 Version ${version.number} ${version.release} rev.${version.revision} (released on ${version.buildDate})
 
+  Fix
+  * fix nasty OSX bug preventing users to open files
+
+  PLUS version, OTHER extensions
+  * fix ProjectPointsOnLinesPlugIn (Topology extension)
+  * improves CSV reader (can now read csv in a zip file)
+
+Version 1.7.0 release rev.3977 (released on 11. May 2014)
+
   New Features
   * add printing capability to PDF, Printer in OJ CORE (SkyPrinter)
   * add Calculate Distances plugin: calculate distances between two sets of geometries
