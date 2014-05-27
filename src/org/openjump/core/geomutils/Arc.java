@@ -39,7 +39,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Polygon;
 
-public class Arc extends java.lang.Object
+public class Arc
 {
     protected Coordinate center = new Coordinate(0,0);
     protected Coordinate start = new Coordinate(0,0);
