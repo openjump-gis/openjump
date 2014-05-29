@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm calculates the area upslope of each cell, that is, the area of all the cells that flow into it." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="* A.M. Felicisimo. Modelos digitales del terreno. Introducci&#243;n y aplicaciones en las ciencias ambientales. Pentalfa Ediciones, 1994. &#10;* P Holmgren. Multiple flow direction algorithms for runoff modelling in grid based elevation models: Anempirical evaluation. Hydrological processes, 8:327-334, 1994. &#10;* D.G. Tarboton. A new method for the determination of flow directions and upslope areas in grid digitalelevation models. Water Resources Research, 33(2):309-319, 1997." description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="DEM" text="Digital Elevation Model." description="Elevation" type="3">
+		</element>
+		<element name="WEIGHTS" text="if a layer is selected in this field, each of the cells upslope will be weighted based on the value of the cell in this layer. If this is not selected, each cell will have its own area as its weight.&#10;&#10;Notice that selecting a layer in this field will cause the resulting flow accumulation layer to have values not representing an area, but a parameter with the same units as the selected weight layer" description="Weight" type="3">
+		</element>
+		<element name="METHOD" text="The following methods are available&#10;* D8: the flow will go from the center of one cell  to the center of one (and only one) around it. (O'Callaghan &amp; Mark 1984).&#10;* Rho8: the same as above but adding a stocastic component that in theory improves it. The flow direction is determined based on a random parameter that depends on the difference between the aspect and the direction towards the adjacent cells in the given direction. (Fairfield &amp; Leymarie 1991).&#10;* DInfinity: the flow goes from the center of one cell up to the center of two contiguous cells around it,  (Tarboton 1998).&#10;* MFD (Multiple Flow Direction): Models a bidimensional flow. Flow can move to several cells from a given one.(Multiple Flow Direction Algorithms)." description="Method" type="3">
+		</element>
+		<element name="CONVERGENCE" text="Convergence factor for the MFD method" description="Convergence factor (MFD)" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="FLOWACC" text="The values of accumulated flow are expressed in areal units. If a layer is used for weighing, the units of the result layer will be the same as the units of that layer." description="Flow accumulation" type="2">
+			<image description="Method D8" file="acumulacion de flujo_D8.jpg">
+			</image>
+			<image description="Method Rho8" file="acumulacion de flujo_Rho8.jpg">
+			</image>
+			<image description="Method DInfinity" file="acumulacion de flujo_Dinfinity.jpg">
+			</image>
+			<image description="Method MFD" file="acumulacion de flujo_MFD.jpg">
+			</image>
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

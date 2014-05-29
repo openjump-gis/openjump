@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm performs multiple regression analysis, studying the relation between several variables.&#10;&#10;It takes a points layer containing information about a quantitative variable, and generates a raster layer of values of that variable, estimating its values from a set of independent variables (predictors) on which the main variable shows some dependency. " description="Description" type="0">
+			<image description="" file="regresion_mul1.jpg">
+			</image>
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="POINTS" text="The points layer with the dependent variable" description="Points" type="3">
+		</element>
+		<element name="FIELD" text="The attribute that will be used to extract the values for the analysis." description="Field" type="3">
+		</element>
+		<element name="INPUT" text="Layers with independent variables" description="Predictors" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESIDUALS" text="Points layer with the same points as the input layer and the following attributes:&#10;*Predicted value at the point&#10;*Known value at the point&#10;*Difference between these two values" description="Residuals" type="2">
+		</element>
+		<element name="RESULT" text="The output layer with the estimated values of the dependent variable." description="Result" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

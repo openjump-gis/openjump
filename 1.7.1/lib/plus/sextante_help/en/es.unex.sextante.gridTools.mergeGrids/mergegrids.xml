@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text='This algorithm merges several raster layers.&#10;&#10;The user must define an output region and the algorithm will fill it with the values from the set of input layers. If no layer has valid values on a given cell, that cell will be assigned the no-data value. If, on the other hand, several layers have values at a given output cell, the average value of all of them will be used.&#10;&#10;If the "adjust to input layers" method is selected to define the output extent, the resulting layer will have te minimum extension needed to cover all the input layers. The smallest cellsize of them all wil be used fot the output layer.&#10;&#10;All layers to be merged must have the same number of bands, which will also be the number of bands of the resulting layer.' description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="INPUT" text="The set of layers to merge." description="Layers" type="3">
+		</element>
+		<element name="METHOD" text="The interpolation method to use to calculate values from input layers at a given output cell." description="Interpolation method" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="The resulting layer, created by merging the input ones." description="Merged grids" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

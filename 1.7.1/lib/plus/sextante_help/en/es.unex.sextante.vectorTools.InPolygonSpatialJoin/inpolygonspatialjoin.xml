@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm extends the attributes table of a polygons layer using the information from the features in an additional layer that are contained within each polygon.&#10;&#10;For each numerical field, several statistics can be selected.  The resulting layer will have new fields in its attributes table, containing those statistical values, calculated from the features that fall within each polygon." description="Description" type="0">
+			<image description="" file="panel.png">
+			</image>
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Algorithm created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User notes" type="0">
+		</element>
+		<element name="POLYGONS" text="The polygons layer to extend" description="Polygons_layer" type="3">
+		</element>
+		<element name="POINTS" text="The secondary layer. Values from features of this layer contained in each polygon of the main layer will be used to calculate statistical values to be associated to each one of those polygons." description="Secondary_layer" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="The resulting layer, with additional values in its attributes table." description="Result" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

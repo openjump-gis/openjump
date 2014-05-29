@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm computes the visual exposure of a set of features." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="* http://www.innovativegis.com/basis/MapAnalysis/Topic15/Topic15.htm" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="DEM" text="Digital Elevation Model. " description="Elevation" type="3">
+		</element>
+		<element name="FEATURES" text="Cells representing features should have any value except zero or the no-data value. This value will be used as the elevation of the feature itself at that cell." description="Elements" type="3">
+		</element>
+		<element name="WEIGHTS" text="Layer with weights to be assigned to each cell." description="Weights" type="3">
+		</element>
+		<element name="METHOD" text="the two following methods are available&#10;* Irradiate values: The emitter cells (feature cells as defined in the elements layer) add their weight value to all cells seen from them.&#10;* Collect values: The emitter cells (feature cells as defined in the elements layer) collect weight values from all seen cells. Thus, only feature cells will have non-zero values in the resulting layer" description="Method" type="3">
+		</element>
+		<element name="RADIUS" text="Maximum visibility distance." description="Radius" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="The value in each cell represents the number of times it is seen from feature cells or the number of cell seen from it, depending on the selected method" description="Visual exposure" type="2">
+			<image description="" file="Exposicion visual.jpg">
+			</image>
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text='This algorithm completes the information of one raster layer that has cells without data. The information to complete the cells without data is taken from the surrounding cells using interpolation methods.&#10;&#10;The folowing example shows a layer with elevation values that was created by rasterizing a vector layer with contour lines. Only cells under those contour lines contain elevation values, while the remaining ones have no-data values.&#10;&#10;By running the "void filling" algorithm, a DEM with values in all of its cells is obtained.' description="Description" type="0">
+			<image description="Layer with no-data values" file="tofill.png">
+			</image>
+			<image description="Filled layer" file="filled.png">
+			</image>
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="INPUT" text="the layer with cells without data." description="Layer" type="3">
+		</element>
+		<element name="THRESHOLD" text="A tension threshold for the spline interpolation method used to calculate missing data" description="Tension threshold" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="Output raster layer in which no cells appear without data." description="Filled layer" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
