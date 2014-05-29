@@ -1,10 +1,14 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
 
+2014-05-08 mmichaud <m.michael.michaud@orange.fr>
+  * Add lineWidth option to ColorThemingPanel
+
+
 * release 1.7.1 ***************************************************************
 
 2014-05-18 ede
-  *fix nasty OSX bug preventing users to open files
+  * Fix nasty OSX bug preventing users to open files
 
 
 * release 1.7.0 ***************************************************************

@@ -97,6 +97,10 @@ public class BasicStyleListCellRenderer implements ListCellRenderer {
     public void setAlpha(int alpha) {
         this.alpha = alpha;
     }
+    private int lineWidth = 1;
+    public void setLineWidth(int lineWidth) {
+        this.lineWidth = lineWidth;
+    }
     public Component getListCellRendererComponent(
         JList list,
         Object value,
@@ -134,6 +138,10 @@ public class BasicStyleListCellRenderer implements ListCellRenderer {
                     : (isSelected
                         ? list.getSelectionBackground()
                         : list.getBackground()));
+        colorPanel.setLineWidth(
+            basicStyle instanceof BasicStyle
+                ? basicStyle.getLineWidth()
+                : 0);
         if (isSelected) {
             colorPanel.setForeground(list.getSelectionForeground());
             colorPanel.setBackground(list.getSelectionBackground());

@@ -122,17 +122,21 @@ import com.vividsolutions.jump.workbench.ui.style.StylePanel;
  * <li>a slider to set the transparency</li>
  * </ul>
  *
- * @author </p>jonathan aquino (original author)
- * @author </p>obedel and ebocher (2005 - added Quantile Color Theming)
- * @author </p>ssteiniger (2009 - added 3 more range-based classification methods)
- * @author </p>mmichaud (2011 - debug, remove deprecated code and comments, give
- *         priority to attribute value choice instead of classification choice)
+ * @author <p>jonathan aquino (original author)</p>
+ * @author <p>obedel and ebocher (2005 - added Quantile Color Theming)</p>
+ * @author <p>ssteiniger (2009 - added 3 more range-based classification methods)</p>
+ * @author <p>mmichaud (2011 - debug, remove deprecated code and comments, give
+ *         priority to attribute value choice instead of classification choice)</p>
+ *         <p>(2014 - add lineWidth parameter</p>
  */
 public class ColorThemingStylePanel extends JPanel implements StylePanel {
+
     private static final String CUSTOM_ENTRY = I18N.get("ui.renderer.style.ColorThemingPanel.custom");
     public static final String TITLE = I18N.get("ui.renderer.style.ColorThemingPanel.colour-theming");
-    public static final String COLOR_SCHEME_KEY = ColorThemingStylePanel.class.getName() +
-        " - COLOR SCHEME";
+    public static final String COLOR_SCHEME_KEY = ColorThemingStylePanel.class.getName() + " - COLOR SCHEME";
+
+    protected static final Dimension SLIDER_DIMENSION = new Dimension(130, 28);
+    protected static final int SLIDER_TEXT_FIELD_COLUMNS = 3;
     
     private WorkbenchContext workbenchContext;
     private Layer layer;
@@ -151,9 +155,14 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
 	private JLabel colorSchemeLabel = new JLabel();
     private JComboBox colorSchemeComboBox = new JComboBox();
     
-    // jPanel2 contains the scrollPane (table, add/remove plugin and transparency slider)
+    // jPanel2 contains the scrollPane (table), add/remove plugin and transparency slider)
     private JPanel jPanel2 = new JPanel();
     private JScrollPane scrollPane = new JScrollPane();
+    protected JLabel transparencyLabel = new JLabel();
+    private JSlider transparencySlider = new JSlider();
+    protected JLabel lineWidthLabel = new JLabel();
+    private JSlider lineWidthSlider = new JSlider();
+
     private DefaultTableCellRenderer allOtherValuesRenderer = new DefaultTableCellRenderer();
     // main table displaying color theming
     private JTable table = new JTable() {
@@ -335,7 +344,6 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
             }
         };
 
-    private JSlider transparencySlider = new JSlider();
     
     //Maintain a blackboard for error messages instead of running all
     //validations whenever we need to check for messages -- some validations
@@ -389,12 +397,13 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
             setState(state);
             initColorSchemeComboBox(layer.getLayerManager());
             initTransparencySlider(layer);
+            initLineWidthSlider(layer);
             initToolBar();
             enableColorThemingCheckBox.setSelected(ColorThemingStyle.get(layer)
                                                                     .isEnabled());
             updateComponents();
-            GUIUtil.sync(basicStylePanel.getTransparencySlider(),
-                transparencySlider);
+            GUIUtil.sync(basicStylePanel.getTransparencySlider(), transparencySlider);
+            GUIUtil.sync(basicStylePanel.getLineWidthSlider(), lineWidthSlider);
             basicStylePanel.setSynchronizingLineColor(layer.isSynchronizingLineColor());
         } catch (Exception e) {
             e.printStackTrace();
@@ -435,6 +444,7 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
                             .getAttributeValueToLabelMap()), tableModel()
                     .getDefaultStyle()));
             ColorThemingStyle.get(layer).setAlpha(getAlpha());
+            ColorThemingStyle.get(layer).setLineWidth(getLineWidth());
             ColorThemingStyle.get(layer).setEnabled(
                     enableColorThemingCheckBox.isSelected());
             layer.getBasicStyle().setEnabled(
@@ -473,15 +483,27 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         return layer;
     }
 
+
     private void initTransparencySlider(Layer layer) {
         transparencySlider.setValue(transparencySlider.getMaximum() -
-            ColorThemingStyle.get(layer).getDefaultStyle().getAlpha());
+                ColorThemingStyle.get(layer).getDefaultStyle().getAlpha());
         transparencySlider.addChangeListener(new ChangeListener() {
-                public void stateChanged(ChangeEvent e) {
-                    basicStyleListCellRenderer.setAlpha(getAlpha());
-                }
-            });
+            public void stateChanged(ChangeEvent e) {
+                basicStyleListCellRenderer.setAlpha(getAlpha());
+            }
+        });
         basicStyleListCellRenderer.setAlpha(getAlpha());
+    }
+
+    private void initLineWidthSlider(Layer layer) {
+        lineWidthSlider.setValue(lineWidthSlider.getMaximum() -
+                ColorThemingStyle.get(layer).getDefaultStyle().getLineWidth());
+        lineWidthSlider.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                basicStyleListCellRenderer.setLineWidth(getLineWidth());
+            }
+        });
+        basicStyleListCellRenderer.setLineWidth(getLineWidth());
     }
 
     private boolean colorThemingStyleHasRanges(Layer layer) {
@@ -562,6 +584,8 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
                 (attributeNameComboBox.getItemCount() > 0));
             transparencySlider.setEnabled(enableColorThemingCheckBox.isSelected() &&
                 (attributeNameComboBox.getItemCount() > 0));
+            lineWidthSlider.setEnabled(enableColorThemingCheckBox.isSelected() &&
+                    (attributeNameComboBox.getItemCount() > 0));
             statusLabel.setEnabled(enableColorThemingCheckBox.isSelected());
             toolBar.updateEnabledState();
 
@@ -593,8 +617,10 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
      */
     private BasicStyle promptBasicStyle(BasicStyle basicStyle) {
         int originalTransparencySliderValue = transparencySlider.getValue();
+        int originalLineWidthSliderValue = lineWidthSlider.getValue();
         basicStylePanel.setBasicStyle(basicStyle);
         basicStylePanel.getTransparencySlider().setValue(originalTransparencySliderValue);
+        basicStylePanel.getLineWidthSlider().setValue(originalLineWidthSliderValue);
 
         OKCancelPanel okCancelPanel = new OKCancelPanel();
         final JDialog dialog = new JDialog((JDialog) SwingUtilities.windowForComponent(
@@ -613,6 +639,7 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
 
         if (!okCancelPanel.wasOKPressed()) {
             transparencySlider.setValue(originalTransparencySliderValue);
+            lineWidthSlider.setValue(originalLineWidthSliderValue);
         }
 
         return okCancelPanel.wasOKPressed() ? basicStylePanel.getBasicStyle()
@@ -743,6 +770,10 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         return transparencySlider.getMaximum() - transparencySlider.getValue();
     }
 
+    private int getLineWidth() {
+        return lineWidthSlider.getValue();
+    }
+
     private void initAttributeNameComboBox(Layer layer) {
         DefaultComboBoxModel model = new DefaultComboBoxModel();
         FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
@@ -803,17 +834,33 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
             });
 
 		initClassificationComboBox(getAttributeType());
+        transparencyLabel.setText(I18N.get("ui.style.BasicStylePanel.transparency"));
         transparencySlider.setMaximum(255);
-        transparencySlider.setPreferredSize(new Dimension(75, 24));
-
+        transparencySlider.setPreferredSize(SLIDER_DIMENSION);
         //Don't get squished by overlong status messages. [Jon Aquino]
-        transparencySlider.setMinimumSize(new Dimension(75, 24));
+        transparencySlider.setMinimumSize(SLIDER_DIMENSION);
         transparencySlider.setToolTipText(I18N.get("ui.renderer.style.ColorThemingPanel.transparency"));
         transparencySlider.addChangeListener(new javax.swing.event.ChangeListener() {
                 public void stateChanged(ChangeEvent e) {
                     transparencySlider_stateChanged(e);
                 }
             });
+
+        lineWidthLabel.setText(I18N.get("ui.style.BasicStylePanel.line-width"));
+        lineWidthSlider.setMajorTickSpacing(5);
+        lineWidthSlider.setMinorTickSpacing(1);
+        lineWidthSlider.setMaximum(30);
+        lineWidthSlider.setPreferredSize(SLIDER_DIMENSION);
+
+        //Don't get squished by overlong status messages. [Jon Aquino]
+        lineWidthSlider.setMinimumSize(SLIDER_DIMENSION);
+        //lineWidthSlider.setToolTipText(I18N.get("ui.style.BasicStylePanel.line-width"));
+        lineWidthSlider.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                lineWidthSlider_stateChanged(e);
+            }
+        });
+
         this.add(jPanel1,
             new GridBagConstraints(0, 2, 1, 1, 1.0, 0.0,
                 GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
@@ -860,22 +907,41 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
             new GridBagConstraints(0, 4, 1, 1, 1.0, 1.0,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(2, 2, 2, 2), 0, 0));
+
         this.add(jPanel2,
             new GridBagConstraints(0, 5, 1, 1, 1.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
                 new Insets(0, 0, 0, 0), 0, 0));
         jPanel2.add(statusLabel,
-            new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0,
+            new GridBagConstraints(1, 0, 2, 1, 1.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
                 new Insets(0, 0, 0, 0), 0, 0));
         jPanel2.add(toolBar,
-            new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0,
-                GridBagConstraints.CENTER, GridBagConstraints.NONE,
-                new Insets(0, 0, 0, 0), 0, 0));
-        jPanel2.add(transparencySlider,
             new GridBagConstraints(3, 0, 1, 1, 0.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE,
                 new Insets(0, 0, 0, 0), 0, 0));
+        jPanel2.add(transparencyLabel,
+                new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0,
+                        GridBagConstraints.WEST, GridBagConstraints.NONE,
+                        new Insets(0, 0, 0, 0), 0, 0));
+        jPanel2.add(transparencySlider,
+            new GridBagConstraints(2, 1, 1, 1, 0.0, 0.0,
+                GridBagConstraints.WEST, GridBagConstraints.NONE,
+                new Insets(0, 0, 0, 0), 0, 0));
+        jPanel2.add(GUIUtil.createSyncdTextField(transparencySlider, SLIDER_TEXT_FIELD_COLUMNS),
+                new GridBagConstraints(3, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
+                        new Insets(0, 0, 0, 0), 0, 0));
+        jPanel2.add(lineWidthLabel,
+                new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0,
+                        GridBagConstraints.WEST, GridBagConstraints.NONE,
+                        new Insets(0, 0, 0, 0), 0, 0));
+        jPanel2.add(lineWidthSlider,
+                new GridBagConstraints(2, 2, 1, 1, 0.0, 0.0,
+                        GridBagConstraints.WEST, GridBagConstraints.NONE,
+                        new Insets(0, 0, 0, 0), 0, 0));
+        jPanel2.add(GUIUtil.createSyncdTextField(lineWidthSlider, SLIDER_TEXT_FIELD_COLUMNS),
+                new GridBagConstraints(3, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
+                        new Insets(0, 0, 0, 0), 0, 0));
 
         scrollPane.getViewport().add(table);
     }
@@ -1093,8 +1159,16 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         repaint();
     }
 
+    void lineWidthSlider_stateChanged(ChangeEvent e) {
+        repaint();
+    }
+
     public JSlider getTransparencySlider() {
         return transparencySlider;
+    }
+
+    public JSlider getLineWidthSlider() {
+        return lineWidthSlider;
     }
 
     public JTable getTable() {

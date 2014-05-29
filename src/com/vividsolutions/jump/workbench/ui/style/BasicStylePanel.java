@@ -489,6 +489,10 @@ public class BasicStylePanel extends JPanel {
         return transparencyPanel.getSlider();
     }
 
+    public JSlider getLineWidthSlider() {
+        return lineWidthSlider;
+    }
+
     protected void setAlpha(int alpha) {
         transparencyPanel.getSlider().setValue(255 - alpha);
     }
