@@ -34,8 +34,6 @@ package com.vividsolutions.jump.workbench.ui.renderer.style;
 
 import java.awt.Graphics2D;
 
-import javax.swing.Icon;
-
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.ui.Viewport;
