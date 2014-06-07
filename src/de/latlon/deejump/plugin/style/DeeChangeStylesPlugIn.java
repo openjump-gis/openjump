@@ -39,7 +39,6 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -63,7 +62,6 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStylePanel;
@@ -108,12 +106,10 @@ public class DeeChangeStylesPlugIn extends AbstractPlugIn {
         final ArrayList<StylePanel> stylePanels = new ArrayList<StylePanel>();
         final DeeRenderingStylePanel renderingStylePanel = new DeeRenderingStylePanel(blackboard, layer, pb);
         final Collection<?> oldStyles = layer.cloneStyles();
-
         stylePanels.add(renderingStylePanel);
         stylePanels.add(new ScaleStylePanel(layer, context.getLayerViewPanel()));
 
-        // Only set preferred size for DecorationStylePanel or
-        // ColorThemingStylePanel;
+        // Only set preferred size for DecorationStylePanel or ColorThemingStylePanel;
         // otherwise they will grow to the height of the screen. But don't set
         // the preferred size of LabelStylePanel to (400, 300) -- in fact, it
         // needs
@@ -144,14 +140,13 @@ public class DeeChangeStylesPlugIn extends AbstractPlugIn {
 
         JTabbedPane tabbedPane = new JTabbedPane();
 
-        for (Iterator<StylePanel> i = stylePanels.iterator(); i.hasNext();) {
-            final StylePanel stylePanel = i.next();
+        for (final StylePanel stylePanel : stylePanels) {
             tabbedPane.add((Component) stylePanel, stylePanel.getTitle());
-            dialog.addEnableChecks(stylePanel.getTitle(), Arrays.asList(new EnableCheck[] { new EnableCheck() {
+            dialog.addEnableChecks(stylePanel.getTitle(), Arrays.asList(new EnableCheck() {
                 public String check(JComponent component) {
                     return stylePanel.validateInput();
                 }
-            }}));
+            }));
         }
 
         dialog.addRow(tabbedPane);
@@ -185,8 +180,7 @@ public class DeeChangeStylesPlugIn extends AbstractPlugIn {
     // used to apply styles without quiting the ChangeStylesDialog.
     private void testStyles(final Layer layer, 
             final ArrayList<StylePanel> stylePanels, final PlugInContext context) {
-        for (Iterator<StylePanel> i = stylePanels.iterator(); i.hasNext();) {
-            StylePanel stylePanel = i.next();
+        for (final StylePanel stylePanel : stylePanels) {
             stylePanel.updateStyles();
         }
         if (layer.getVertexStyle().isEnabled()) {
@@ -199,8 +193,7 @@ public class DeeChangeStylesPlugIn extends AbstractPlugIn {
         
         layer.getLayerManager().deferFiringEvents(new Runnable() {
             public void run() {
-                for (Iterator<StylePanel> i = stylePanels.iterator(); i.hasNext();) {
-                    StylePanel stylePanel = i.next();
+                for (final StylePanel stylePanel : stylePanels) {
                     stylePanel.updateStyles();
                 }
             }
@@ -230,9 +223,7 @@ public class DeeChangeStylesPlugIn extends AbstractPlugIn {
     }
 
     private Component find(Collection<StylePanel> stylePanels, String title) {
-        for (Iterator<StylePanel> i = stylePanels.iterator(); i.hasNext();) {
-            StylePanel stylePanel = i.next();
-
+        for (final StylePanel stylePanel : stylePanels) {
             if (stylePanel.getTitle().equals(title)) {
                 return (Component) stylePanel;
             }
@@ -251,21 +242,16 @@ public class DeeChangeStylesPlugIn extends AbstractPlugIn {
         return IconLoader.icon("Palette.gif");
     }
 
-    /**
-     * @param workbenchContext
-     * @return the enable check
-     */
     public MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
         EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
 
+        // ScaledStylePanel assumes that the active window has a LayerViewPanel. [Jon Aquino 2005-08-09]
         return new MultiEnableCheck().add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
-        // ScaledStylePanel assumes that the active window has a
-                // LayerViewPanel. [Jon Aquino
-                // 2005-08-09]
                 .add(checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck()).add(
                         checkFactory.createExactlyNLayersMustBeSelectedCheck(1));
     }
 
+    // DummyColorThemingStylePanel created when no attribute is available for classification
     private class DummyColorThemingStylePanel extends JPanel implements StylePanel {
 
         private static final long serialVersionUID = 2217457292163045134L;
