@@ -384,8 +384,8 @@ public class GUIUtil {
     }
 
     public static Color alphaColor(Color color, int alpha) {
-        return new Color(color.getRed(), color.getGreen(), color.getBlue(),
-                alpha);
+        if (color == null) return null;
+        return new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
     }
 
     /**
