@@ -32,26 +32,17 @@
 package com.vividsolutions.jump.workbench.ui.renderer.style;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.TreeSet;
-
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.ListCellRenderer;
 
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.util.CollectionMap;
 import com.vividsolutions.jump.util.FileUtil;
-import com.vividsolutions.jump.util.OrderedMap;
-import com.vividsolutions.jump.workbench.ui.GUIUtil;
 
 /**
  * The colour schemes were taken from the following sources:
@@ -67,25 +58,26 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
  * </ul>
  */
 public class ColorScheme {
+
     public static ColorScheme create(String name) {
         Assert.isTrue(nameToColorsMap().keySet().contains(name));
         return new ColorScheme(name, nameToColorsMap().getItems(name));
     }
-    private static ArrayList rangeColorSchemeNames;
-    private static ArrayList discreteColorSchemeNames;
+
+    private static ArrayList<String> rangeColorSchemeNames;
+
+    private static ArrayList<String> discreteColorSchemeNames;
+
     private static void load() {
         try {
-            rangeColorSchemeNames = new ArrayList();
-            discreteColorSchemeNames = new ArrayList();
+            rangeColorSchemeNames = new ArrayList<String>();
+            discreteColorSchemeNames = new ArrayList<String>();
             nameToColorsMap = new CollectionMap();
             InputStream inputStream =
                 ColorScheme.class.getResourceAsStream("ColorScheme.txt");
             try {
-                for (Iterator i = FileUtil.getContents(inputStream).iterator();
-                    i.hasNext();
-                    ) {
-                    String line = (String) i.next();
-                    add(line);
+                for (Object line : FileUtil.getContents(inputStream)) {
+                    add((String)line);
                 }
             } finally {
                 inputStream.close();
@@ -94,6 +86,7 @@ public class ColorScheme {
             Assert.shouldNeverReachHere(e.toString());
         }
     }
+
     private static void add(String line) {
         StringTokenizer tokenizer = new StringTokenizer(line, ",");
         String name = tokenizer.nextToken();
@@ -105,31 +98,39 @@ public class ColorScheme {
             nameToColorsMap().addItem(name, Color.decode("#" + hex));
         }
     }
+
     private static CollectionMap nameToColorsMap() {
         if (nameToColorsMap == null) {
             load();
         }
         return nameToColorsMap;
     }
+
     private static CollectionMap nameToColorsMap;
+
     public static Collection rangeColorSchemeNames() {
         if (rangeColorSchemeNames == null) {
             load();
         }
         return Collections.unmodifiableList(rangeColorSchemeNames);
     }
+
     public static Collection discreteColorSchemeNames() {
         if (discreteColorSchemeNames == null) {
             load();
         }
         return Collections.unmodifiableList(discreteColorSchemeNames);
     }    
-    private String name;
+
+    final private String name;
+
     public ColorScheme(String name, Collection colors) {
         this.name = name;
-        this.colors = new ArrayList(colors);
+        this.colors = new ArrayList<Color>(colors);
     }
+
     private int lastColorReturned = -1;
+
     public int getLastColorReturned() {
         return lastColorReturned;
     }
@@ -138,17 +139,17 @@ public class ColorScheme {
         this.lastColorReturned = lastColorReturned;
     }
 
-    private List colors;
+    final private List<Color> colors;
 
     public Color next() {
         lastColorReturned++;
         if (lastColorReturned >= colors.size()) {
             lastColorReturned = 0;
         }
-        return (Color) colors.get(lastColorReturned);
+        return colors.get(lastColorReturned);
     }
 
-    public List getColors() {
+    public List<Color> getColors() {
         return Collections.unmodifiableList(colors);
     }
 
