@@ -41,15 +41,13 @@ import java.awt.geom.RectangularShape;
 import org.openjump.util.SLDImporter.SizedStrokeFillStyle;
 
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.Viewport;
 
 public abstract class VertexStyle implements Style, SizedStrokeFillStyle {
-    // UT
-    // protected RectangularShape shape;
+
     protected Shape shape;
 
     protected int size = 4;
@@ -62,13 +60,11 @@ public abstract class VertexStyle implements Style, SizedStrokeFillStyle {
 
     private boolean filling = true;
 
-    // UT
     private Color strokeColor;
 
     protected VertexStyle() {
     }
 
-    // UT made RectangularShape shape a Shape
     protected VertexStyle(Shape shape) {
         this.shape = shape;
     }
@@ -101,9 +97,6 @@ public abstract class VertexStyle implements Style, SizedStrokeFillStyle {
         strokeColor = GUIUtil.alphaColor(c, alpha);
     }
 
-    /**
-     * @return the color
-     */
     public Color getLineColor() {
         return strokeColor;
     }
@@ -141,13 +134,13 @@ public abstract class VertexStyle implements Style, SizedStrokeFillStyle {
         Coordinate[] coordinates = f.getGeometry().getCoordinates();
         g.setColor(fillColor);
 
-        for (int i = 0; i < coordinates.length; i++) {
-            if (!viewport.getEnvelopeInModelCoordinates().contains(coordinates[i])) {
+        for (Coordinate c : coordinates) {
+            if (!viewport.getEnvelopeInModelCoordinates().contains(c)) {
                 // Otherwise get "sun.dc.pr.PRException: endPath: bad path"
                 // exception [Jon Aquino 10/22/2003]
                 continue;
             }
-            paint(g, viewport.toViewPoint(new Point2D.Double(coordinates[i].x, coordinates[i].y)));
+            paint(g, viewport.toViewPoint(new Point2D.Double(c.x, c.y)));
         }
     }
 
@@ -166,9 +159,6 @@ public abstract class VertexStyle implements Style, SizedStrokeFillStyle {
                 getSize());
     }
 
-    /**
-     * @param filling
-     */
     public void setFilling(boolean filling) {
         this.filling = filling;
     }
@@ -181,9 +171,6 @@ public abstract class VertexStyle implements Style, SizedStrokeFillStyle {
     }
     
     protected void render(Graphics2D g) {
-        // UT was
-        // g.fill(shape);
-
 		// [Matthias Scholz 3. Sept. 2010] outline draw and fill interchanged for right display
         // deeJUMP
         if (filling) {
@@ -195,12 +182,14 @@ public abstract class VertexStyle implements Style, SizedStrokeFillStyle {
     }
 
     public Object clone() {
-        try {
-            return super.clone();
-        } catch (CloneNotSupportedException e) {
-            Assert.shouldNeverReachHere();
-
-            return null;
-        }
+        VertexStyle vStyle = new VertexStyle(){
+            {this.shape = VertexStyle.this.shape;}
+        };
+        vStyle.setSize(size);
+        vStyle.setLineColor(getLineColor());
+        vStyle.setEnabled(isEnabled());
+        vStyle.setFilling(getFilling());
+        vStyle.setAlpha(alpha);
+        return vStyle;
     }
 }
