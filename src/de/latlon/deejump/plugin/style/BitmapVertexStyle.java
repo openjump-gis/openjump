@@ -102,7 +102,7 @@ public class BitmapVertexStyle extends VertexStyle {
     @Override
     public void setFillColor(Color c) {
         super.setFillColor(c);
-        if (fileName.toLowerCase().endsWith(".svg")) {
+        if (fileName != null && fileName.toLowerCase().endsWith(".svg")) {
             setFileName(fileName);
         }
     }
@@ -110,7 +110,7 @@ public class BitmapVertexStyle extends VertexStyle {
     @Override
     public void setLineColor(Color c) {
         super.setLineColor(c);
-        if (fileName.toLowerCase().endsWith(".svg")) {
+        if (fileName != null && fileName.toLowerCase().endsWith(".svg")) {
             setFileName(fileName);
         }
     }
