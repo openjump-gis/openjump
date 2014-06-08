@@ -38,6 +38,7 @@ import java.awt.Shape;
 import java.awt.geom.Point2D;
 import java.awt.geom.RectangularShape;
 
+import de.latlon.deejump.plugin.style.VertexStylesFactory;
 import org.openjump.util.SLDImporter.SizedStrokeFillStyle;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -182,14 +183,17 @@ public abstract class VertexStyle implements Style, SizedStrokeFillStyle {
     }
 
     public Object clone() {
-        VertexStyle vStyle = new VertexStyle(){
-            {this.shape = VertexStyle.this.shape;}
-        };
-        vStyle.setSize(size);
-        vStyle.setLineColor(getLineColor());
-        vStyle.setEnabled(isEnabled());
-        vStyle.setFilling(getFilling());
-        vStyle.setAlpha(alpha);
+        VertexStyle vStyle = null;
+        try {
+            vStyle = this.getClass().newInstance();
+            vStyle.setSize(size);
+            vStyle.setLineColor(getLineColor());
+            vStyle.setEnabled(isEnabled());
+            vStyle.setFilling(getFilling());
+            vStyle.setAlpha(alpha);
+        }
+        catch(InstantiationException e) {}
+        catch(IllegalAccessException e) {}
         return vStyle;
     }
 }
