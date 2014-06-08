@@ -1,7 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2014-06-08 mmichaud <m.michael.michaud@orange.fr>
+  * Add "display vertex" in ColorThemingPanel (vertexStyleEnabled attribute)
 
-2014-05-08 mmichaud <m.michael.michaud@orange.fr>
+2014-05-29 mmichaud <m.michael.michaud@orange.fr>
   * Add lineWidth option to ColorThemingPanel
 
 

@@ -190,7 +190,7 @@ public class DeeChangeStylesPlugIn extends AbstractPlugIn {
     
     private void applyStyles(final Layer layer, final ArrayList<StylePanel> stylePanels, 
             final Collection<?> oldStyles, final PlugInContext context) {
-        
+
         layer.getLayerManager().deferFiringEvents(new Runnable() {
             public void run() {
                 for (final StylePanel stylePanel : stylePanels) {

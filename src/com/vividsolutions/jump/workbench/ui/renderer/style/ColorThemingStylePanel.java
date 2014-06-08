@@ -44,16 +44,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Collection;
-import java.util.EventObject;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.Vector;
+import java.util.*;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultCellEditor;
@@ -118,8 +109,9 @@ import com.vividsolutions.jump.workbench.ui.style.StylePanel;
  * <li>a combobox to choose Classification Method plus additional parameters
  * in case of range-based classification</li>
  * <li>a combobox to choose a Color Scheme</li>
- * <li>an table to display colors with two plugins to add/remove lines</li>
+ * <li>a table to display colors with two plugins to add/remove lines</li>
  * <li>a slider to set the transparency</li>
+ * <li>a slider to set lineWidth</li>
  * </ul>
  *
  * @author <p>jonathan aquino (original author)</p>
@@ -127,45 +119,47 @@ import com.vividsolutions.jump.workbench.ui.style.StylePanel;
  * @author <p>ssteiniger (2009 - added 3 more range-based classification methods)</p>
  * @author <p>mmichaud (2011 - debug, remove deprecated code and comments, give
  *         priority to attribute value choice instead of classification choice)</p>
- *         <p>(2014 - add lineWidth parameter</p>
+ *         <p>(2014 - add lineWidth parameter and vetexStyleEnabled</p>
  */
 public class ColorThemingStylePanel extends JPanel implements StylePanel {
 
     private static final String CUSTOM_ENTRY = I18N.get("ui.renderer.style.ColorThemingPanel.custom");
     public static final String TITLE = I18N.get("ui.renderer.style.ColorThemingPanel.colour-theming");
-    public static final String COLOR_SCHEME_KEY = ColorThemingStylePanel.class.getName() + " - COLOR SCHEME";
+    private static final String COLOR_SCHEME_KEY = ColorThemingStylePanel.class.getName() + " - COLOR SCHEME";
 
-    protected static final Dimension SLIDER_DIMENSION = new Dimension(130, 28);
-    protected static final int SLIDER_TEXT_FIELD_COLUMNS = 3;
+    private static final Dimension SLIDER_DIMENSION = new Dimension(130, 28);
+    private static final int SLIDER_TEXT_FIELD_COLUMNS = 3;
     
     private WorkbenchContext workbenchContext;
     private Layer layer;
     
     // jPanel1 contains enable, attribute, classification and color scheme options
-    private JPanel jPanel1 = new JPanel();
-    private JCheckBox enableColorThemingCheckBox = new JCheckBox();
-    
-    private JLabel attributeLabel = new JLabel();
-    private JComboBox attributeNameComboBox = new JComboBox();
-    private String lastAttributeName;
-    
-    private JLabel classificationLabel = new JLabel(I18N.get("ui.renderer.style.ColorThemingStylePanel.Classification-Method"));
-    private JComboBox classificationComboBox = new JComboBox();
-    
-	private JLabel colorSchemeLabel = new JLabel();
-    private JComboBox colorSchemeComboBox = new JComboBox();
-    
-    // jPanel2 contains the scrollPane (table), add/remove plugin and transparency slider)
-    private JPanel jPanel2 = new JPanel();
-    private JScrollPane scrollPane = new JScrollPane();
-    protected JLabel transparencyLabel = new JLabel();
-    private JSlider transparencySlider = new JSlider();
-    protected JLabel lineWidthLabel = new JLabel();
-    private JSlider lineWidthSlider = new JSlider();
+    final private JPanel jPanel1 = new JPanel();
+    final private JCheckBox enableColorThemingCheckBox = new JCheckBox();
 
-    private DefaultTableCellRenderer allOtherValuesRenderer = new DefaultTableCellRenderer();
+    final private JLabel attributeLabel = new JLabel();
+    final private JComboBox<String> attributeNameComboBox = new JComboBox<String>();
+    private String lastAttributeName;
+
+    final private JLabel classificationLabel = new JLabel(I18N.get("ui.renderer.style.ColorThemingStylePanel.Classification-Method"));
+    final private JComboBox<String> classificationComboBox = new JComboBox<String>();
+
+    final private JLabel colorSchemeLabel = new JLabel();
+    final private JComboBox<String> colorSchemeComboBox = new JComboBox<String>();
+    
+    // jPanel2 contains the scrollPane (table), add/remove plugin, transparency and lineWidth slider)
+    final private JPanel jPanel2 = new JPanel();
+    final private JScrollPane scrollPane = new JScrollPane();
+    final private JLabel transparencyLabel = new JLabel();
+    final private JSlider transparencySlider = new JSlider();
+    final private JLabel lineWidthLabel = new JLabel();
+    final private JSlider lineWidthSlider = new JSlider();
+    final private JLabel vertexStyleLabel = new JLabel(I18N.get("ui.renderer.style.ColorThemingStylePanel.display-vertices"));
+    final private JCheckBox vertexStyleEnableCheckBox = new JCheckBox();
+
+    final private DefaultTableCellRenderer allOtherValuesRenderer = new DefaultTableCellRenderer();
     // main table displaying color theming
-    private JTable table = new JTable() {
+    final private JTable table = new JTable() {
         
             public TableCellRenderer getCellRenderer(int row, int column) {
                 TableCellRenderer renderer = getCellRendererProper(row, column);
@@ -190,25 +184,25 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
             }
         };
 
-    private JLabel statusLabel = new JLabel() {
+    final private JLabel statusLabel = new JLabel() {
             public void setText(String text) {
                 super.setText(text);
                 setToolTipText(text);
             }
         };
 
-    private EnableableToolBar toolBar = new EnableableToolBar();
+    final private EnableableToolBar toolBar = new EnableableToolBar();
     
     private boolean updatingComponents = false;
     private boolean initializing = false;
-    private BasicStyleListCellRenderer basicStyleListCellRenderer = new BasicStyleListCellRenderer();
-    public BasicStylePanel basicStylePanel;
-    
-    private TableCellEditor basicStyleTableCellEditor = new TableCellEditor() {
-            private DefaultComboBoxModel comboBoxModel = new DefaultComboBoxModel();
-            private BasicStyle originalStyle;
-            private DefaultCellEditor editor;
-            private JComboBox comboBox = new JComboBox(comboBoxModel) {
+    final private BasicStyleListCellRenderer basicStyleListCellRenderer = new BasicStyleListCellRenderer();
+    private BasicStylePanel basicStylePanel;
+
+    final private TableCellEditor basicStyleTableCellEditor = new TableCellEditor() {
+        final private DefaultComboBoxModel<Object> comboBoxModel = new DefaultComboBoxModel<Object>();
+        private BasicStyle originalStyle;
+        final private DefaultCellEditor editor;
+        final private JComboBox<Object> comboBox = new JComboBox<Object>(comboBoxModel) {
                 public void setSelectedItem(Object anObject) {
                     if (anObject != CUSTOM_ENTRY) {
                         super.setSelectedItem(anObject);
@@ -238,11 +232,7 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
                 //will not show up as the selected item in the combo box. [Jon Aquino]
                 comboBoxModel.addElement(value);
 
-                for (Iterator i = ColorScheme.create(
-                            (String) colorSchemeComboBox.getSelectedItem())
-                                             .getColors().iterator();
-                        i.hasNext();) {
-                    Color color = (Color) i.next();
+                for (Color color : ColorScheme.create((String)colorSchemeComboBox.getSelectedItem()).getColors()) {
                     BasicStyle bs = new BasicStyle(color);
                     bs.setLineWidth(getLayer().getBasicStyle().getLineWidth());
                     bs.setLineWidth(getLayer().getBasicStyle().getLineWidth());
@@ -289,10 +279,9 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
             }
         };
 
-    private DefaultComboBoxModel comboBoxModel = new DefaultComboBoxModel();
     private ColorScheme colorSchemeForInserts = null;
-    
-    private MyPlugIn insertPlugIn = new MyPlugIn() {
+
+    final private MyPlugIn insertPlugIn = new MyPlugIn() {
             public String getName() {
                 return I18N.get("ui.renderer.style.ColorThemingPanel.insert-row");
             }
@@ -325,7 +314,7 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
             }
         };
 
-    private MyPlugIn deletePlugIn = new MyPlugIn() {
+    final private MyPlugIn deletePlugIn = new MyPlugIn() {
             public String getName() {
                 return I18N.get("ui.renderer.style.ColorThemingPanel.delete-row");
             }
@@ -348,9 +337,9 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
     //Maintain a blackboard for error messages instead of running all
     //validations whenever we need to check for messages -- some validations
     //may be expensive. [Jon Aquino]
-    private HashSet errorMessages = new HashSet();
-    
-    private DiscreteColorThemingState discreteColorThemingState = new DiscreteColorThemingState(table);
+    final private HashSet<ErrorMessage> errorMessages = new HashSet<ErrorMessage>();
+
+    final private DiscreteColorThemingState discreteColorThemingState = new DiscreteColorThemingState(table);
     private RangeColorThemingState rangeColorThemingState;
 	private QuantileColorThemingState quantileColorThemingState;
 	private MeanSTDevColorThemingState meanSTDevColorThemingState;
@@ -398,9 +387,10 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
             initColorSchemeComboBox(layer.getLayerManager());
             initTransparencySlider(layer);
             initLineWidthSlider(layer);
+            initVertexStyleEnabled(layer);
             initToolBar();
-            enableColorThemingCheckBox.setSelected(ColorThemingStyle.get(layer)
-                                                                    .isEnabled());
+            enableColorThemingCheckBox.setSelected(ColorThemingStyle.get(layer).isEnabled());
+            //vertexStyleEnableCheckBox.setSelected(ColorThemingStyle.get(layer).isVertexStyleEnabled());
             updateComponents();
             GUIUtil.sync(basicStylePanel.getTransparencySlider(), transparencySlider);
             GUIUtil.sync(basicStylePanel.getLineWidthSlider(), lineWidthSlider);
@@ -445,10 +435,14 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
                     .getDefaultStyle()));
             ColorThemingStyle.get(layer).setAlpha(getAlpha());
             ColorThemingStyle.get(layer).setLineWidth(getLineWidth());
+            ColorThemingStyle.get(layer).setVertexStyleEnabled(isVertexStyleEnabled());
             ColorThemingStyle.get(layer).setEnabled(
                     enableColorThemingCheckBox.isSelected());
             layer.getBasicStyle().setEnabled(
                     !enableColorThemingCheckBox.isSelected());
+            // sync ColorTheming vertexStyle with vertexStyle before disabling vertexStyle
+            //ColorThemingStyle.get(layer)
+            //        .setVertexStyleEnabled(layer.getVertexStyle().isEnabled());
             // fix bug 3091363 and part of 3043312
             layer.getVertexStyle().setEnabled(
                     layer.getVertexStyle().isEnabled() &&
@@ -471,7 +465,7 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
 
     private void stopCellEditing() {
         if (table.getCellEditor() instanceof DefaultCellEditor) {
-            ((DefaultCellEditor) table.getCellEditor()).stopCellEditing();
+            table.getCellEditor().stopCellEditing();
         }
     }
 
@@ -504,6 +498,11 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
             }
         });
         basicStyleListCellRenderer.setLineWidth(getLineWidth());
+    }
+
+    private void initVertexStyleEnabled(Layer layer) {
+        vertexStyleEnableCheckBox.setSelected(
+                ColorThemingStyle.get(layer).isVertexStyleEnabled() || layer.getVertexStyle().isEnabled());
     }
 
     private boolean colorThemingStyleHasRanges(Layer layer) {
@@ -743,12 +742,9 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
     
     private boolean colorThemingAttributeValid(Layer layer) {
         if (ColorThemingStyle.get(layer).getAttributeName() == null) { return false;}
-        //Schema won't have attribute name if user has deleted the attribute.
-        //[Jon Aquino]
-        if (!layer.getFeatureCollectionWrapper().getFeatureSchema()
-          .hasAttribute(ColorThemingStyle.get(layer)
-                                             .getAttributeName())) { return false;}
-        return true;
+        //Schema won't have attribute name if user has deleted the attribute [Jon Aquino]
+        return layer.getFeatureCollectionWrapper().getFeatureSchema()
+          .hasAttribute(ColorThemingStyle.get(layer).getAttributeName());
     }
 
     private void initColorSchemeComboBox(LayerManager layerManager) {
@@ -774,8 +770,12 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         return lineWidthSlider.getValue();
     }
 
+    private boolean isVertexStyleEnabled() {
+        return vertexStyleEnableCheckBox.isSelected();
+    }
+
     private void initAttributeNameComboBox(Layer layer) {
-        DefaultComboBoxModel model = new DefaultComboBoxModel();
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<String>();
         FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
         for (int i = 0; i < schema.getAttributeCount(); i++) {
             if (i == schema.getGeometryIndex()) {
@@ -790,25 +790,22 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
             model.addElement(attributeName);
         }
         attributeNameComboBox.setModel(model);
-        if (model.getSize() == 0) {
-            //Can get here if the only attribute is the geometry. [Jon Aquino]
-            return;
-        }
-        else if (model.getIndexOf(lastAttributeName) >= 0) {
-            attributeNameComboBox.setSelectedItem(lastAttributeName);
-        }
-        else if (ColorThemingStyle.get(layer).getAttributeName() == null) {
-            attributeNameComboBox.setSelectedIndex(0);
-            lastAttributeName = getAttributeName();
-        }
-        else {
-            attributeNameComboBox.setSelectedItem(
-                ColorThemingStyle.get(layer).getAttributeName());
-            lastAttributeName = getAttributeName();
+        // At least one attribute different from Geometry
+        if (model.getSize() > 0) {
+            if (model.getIndexOf(lastAttributeName) >= 0) {
+                attributeNameComboBox.setSelectedItem(lastAttributeName);
+            } else if (ColorThemingStyle.get(layer).getAttributeName() == null) {
+                attributeNameComboBox.setSelectedIndex(0);
+                lastAttributeName = getAttributeName();
+            } else {
+                attributeNameComboBox.setSelectedItem(
+                        ColorThemingStyle.get(layer).getAttributeName());
+                lastAttributeName = getAttributeName();
+            }
         }
     }
 
-    private void jbInit() throws Exception {
+    private void jbInit() {
         this.setLayout(new GridBagLayout());
         jPanel1.setLayout(new GridBagLayout());
         jPanel2.setLayout(new GridBagLayout());
@@ -829,7 +826,14 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
             });
         enableColorThemingCheckBox.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    enableColorThemingCheckBox_actionPerformed(e);
+                    if (enableColorThemingCheckBox.isSelected()) {
+                        enableColorThemingCheckBox_actionPerformed(e);
+                    } else {
+                        layer.getVertexStyle().setEnabled(
+                                ((ColorThemingStyle)layer.getStyle(ColorThemingStyle.class)).isVertexStyleEnabled());
+                    }
+                    //((ColorThemingStyle)layer.getStyle(ColorThemingStyle.class))
+                    //        .setVertexStyleEnabled(layer.getVertexStyle().isEnabled());
                 }
             });
 
@@ -858,6 +862,12 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         lineWidthSlider.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 lineWidthSlider_stateChanged(e);
+            }
+        });
+
+        vertexStyleEnableCheckBox.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent e) {
+                vertexStyleEnabled_stateChanged(e);
             }
         });
 
@@ -942,6 +952,14 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         jPanel2.add(GUIUtil.createSyncdTextField(lineWidthSlider, SLIDER_TEXT_FIELD_COLUMNS),
                 new GridBagConstraints(3, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
                         new Insets(0, 0, 0, 0), 0, 0));
+        jPanel2.add(vertexStyleLabel,
+                new GridBagConstraints(1, 3, 1, 1, 0.0, 0.0,
+                        GridBagConstraints.WEST, GridBagConstraints.NONE,
+                        new Insets(0, 0, 0, 0), 0, 0));
+        jPanel2.add(vertexStyleEnableCheckBox,
+                new GridBagConstraints(2, 3, 1, 1, 0.0, 0.0,
+                        GridBagConstraints.WEST, GridBagConstraints.NONE,
+                        new Insets(0, 0, 0, 0), 0, 0));
 
         scrollPane.getViewport().add(table);
     }
@@ -988,11 +1006,12 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         return (ColorThemingTableModel) table.getModel();
     }
 
-    private SortedSet getNonNullAttributeValues() {
-        TreeSet values = new TreeSet();
-        for (Iterator i = layer.getFeatureCollectionWrapper().getFeatures()
-                               .iterator(); i.hasNext();) {
-            Feature feature = (Feature) i.next();
+    private SortedSet<Object> getNonNullAttributeValues() {
+        TreeSet<Object> values = new TreeSet<Object>();
+        //for (Iterator i = layer.getFeatureCollectionWrapper().getFeatures()
+        //                       .iterator(); i.hasNext();) {
+        for (Object obj : layer.getFeatureCollectionWrapper().getFeatures()) {
+            Feature feature = (Feature)obj;
             if (feature.getAttribute(getAttributeName()) != null) {
                 values.add(ColorThemingStyle.trimIfString(feature.getAttribute(getAttributeName())));
             }
@@ -1007,7 +1026,7 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         }
         stopCellEditing();
         tableModel().clear();
-        Collection filteredAttributeValues = filteredAttributeValues();
+        Collection<Object> filteredAttributeValues = filteredAttributeValues();
         tableModel().setMaps(
                 toAttributeValueToBasicStyleMap(filteredAttributeValues),
                 toAttributeValueToLabelMap(filteredAttributeValues));
@@ -1015,29 +1034,28 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         applyColorScheme();
     }
 
-    private Collection filteredAttributeValues() {
+    private Collection<Object> filteredAttributeValues() {
         return state.filterAttributeValues(getNonNullAttributeValues());
     }
     
-    private Map toAttributeValueToLabelMap(Collection attributeValues) {
-        Map attributeValueToAttributeValueMap = new TreeMap();
-        for (Iterator i = attributeValues.iterator(); i.hasNext(); ) {
-            Object attributeValue = i.next();
-            attributeValueToAttributeValueMap.put(attributeValue, attributeValue);
+    private Map<Object,String> toAttributeValueToLabelMap(Collection<Object> attributeValues) {
+        Map<Object,Object> attributeValueToValueMap = new TreeMap<Object,Object>();
+        for (Object value : attributeValues) {
+            attributeValueToValueMap.put(value, value);
         }
-        Map attributeValueToLabelMap = CollectionUtil.inverse(state.toExternalFormat(attributeValueToAttributeValueMap));
-        for (Iterator i = attributeValueToLabelMap.keySet().iterator(); i.hasNext(); ) {
-            Object attributeValue = i.next();
-            attributeValueToLabelMap.put(attributeValue, attributeValueToLabelMap.get(attributeValue).toString());
+        attributeValueToValueMap =
+                CollectionUtil.inverse(state.toExternalFormat(attributeValueToValueMap));
+        Map<Object,String> attributeValueToLabelMap = new HashMap<Object,String>();
+        for (Object value : attributeValueToValueMap.keySet()) {
+            attributeValueToLabelMap.put(value, attributeValueToValueMap.get(value).toString());
         }
         return attributeValueToLabelMap;
     }
     
-    private Map toAttributeValueToBasicStyleMap(Collection attributeValues) {
-        Map attributeValueToBasicStyleMap = new TreeMap();
-        for (Iterator i = attributeValues.iterator(); i.hasNext();) {
-            Object attributeValue = i.next();
-            attributeValueToBasicStyleMap.put(attributeValue, getLayer().getBasicStyle());
+    private Map<Object,Style> toAttributeValueToBasicStyleMap(Collection<Object> attributeValues) {
+        Map<Object,Style> attributeValueToBasicStyleMap = new TreeMap<Object,Style>();
+        for (Object value : attributeValues) {
+            attributeValueToBasicStyleMap.put(value, getLayer().getBasicStyle());
         }
         return attributeValueToBasicStyleMap;
     }    
@@ -1067,12 +1085,12 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
     public void applyColorScheme() {
         stopCellEditing();
         state.applyColorScheme(state.filterColorScheme(ColorScheme.create(
-                    (String) colorSchemeComboBox.getSelectedItem())));
+                (String)colorSchemeComboBox.getSelectedItem())));
     }
 
     private void cancelCellEditing() {
         if (table.getCellEditor() instanceof DefaultCellEditor) {
-            ((DefaultCellEditor) table.getCellEditor()).cancelCellEditing();
+            table.getCellEditor().cancelCellEditing();
         }
     }
 
@@ -1137,8 +1155,8 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         initializing = true;
 
         try {
-            colorSchemeComboBox.setModel(new DefaultComboBoxModel(
-                    new Vector(state.getColorSchemeNames())));
+            colorSchemeComboBox.setModel(new DefaultComboBoxModel<String>(
+                    new Vector<String>(state.getColorSchemeNames())));
             //colorSchemeComboBox.setPrototypeDisplayValue("01234567890123456789012345678901");
             //The colour scheme may not be present if it was taken from the
             //set of discrete colour schemes but the combo box currently contains
@@ -1161,6 +1179,10 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
 
     void lineWidthSlider_stateChanged(ChangeEvent e) {
         repaint();
+    }
+
+    void vertexStyleEnabled_stateChanged(ItemEvent e) {
+        //repaint();
     }
 
     public JSlider getTransparencySlider() {
@@ -1188,7 +1210,7 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
 
         public void applyColorScheme(ColorScheme scheme);
 
-        public Collection filterAttributeValues(SortedSet attributeValues);
+        public Collection<Object> filterAttributeValues(SortedSet<Object> attributeValues);
 
         public String getAttributeValueColumnTitle();
 
@@ -1207,11 +1229,11 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         public abstract Icon getIcon();
     }
 
-    // TODO this class does not depend on this package, it couldbe moved to
+    // TODO this class does not depend on this package, it could be moved to
     // com.vividsolutions.jump.util
     private class ErrorMessage {
-        private String commonPart;
-        private String specificPart;
+        final private String commonPart;
+        final private String specificPart;
 
         public ErrorMessage(String commonPart) {
             this(commonPart, "");
@@ -1227,7 +1249,8 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         }
 
         public boolean equals(Object obj) {
-            return commonPart.equals(((ErrorMessage) obj).commonPart);
+            return obj instanceof ErrorMessage &&
+                    commonPart.equals(((ErrorMessage) obj).commonPart);
         }
 
         public String toString() {
@@ -1239,20 +1262,19 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
     // return an ordered map (value -> count of corresponding features)
     // Erwan Bocher [20/01/2005]
     // Add button to calculate range and populateTable
-    public SortedMap getAttributeValuesCount() {
-        TreeMap values = new TreeMap();
+    public SortedMap<Object,Object> getAttributeValuesCount() {
+        TreeMap<Object,Object> values = new TreeMap<Object,Object>();
 
-        for (Iterator i = layer.getFeatureCollectionWrapper().getFeatures()
-                               .iterator(); i.hasNext();) {
-            Feature feature = (Feature) i.next();
+        for (Object obj : layer.getFeatureCollectionWrapper().getFeatures()) {
+            Feature feature = (Feature)obj;
 
             if (feature.getAttribute(getAttributeName()) != null) {
                 Object key = ColorThemingStyle.trimIfString(feature.getAttribute(getAttributeName()));
             	Integer count = (Integer) values.get(key);
-                if (count==null)
-                	values.put(key,new Integer(1));
+                if (count == null)
+                	values.put(key, new Integer(1));
                 else
-                	values.put(key,new Integer(count.intValue()+1));
+                	values.put(key, new Integer(count.intValue()+1));
             }
         }
         return values;
@@ -1266,27 +1288,27 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
 				setState(discreteColorThemingState);
 				break;
 			case EQUAL_INTERVAL:
-			    setState((State) rangeColorThemingState);
+			    setState(rangeColorThemingState);
 				break;
 			case QUANTILE: //i.e. equal number
-				    setState((State) quantileColorThemingState);
+				    setState(quantileColorThemingState);
 				break;
 			case MEAN_STDEV: 
-				    setState((State) meanSTDevColorThemingState);
+				    setState(meanSTDevColorThemingState);
 				break;
 			case MAX_BREAKS:
-				    setState((State) maxBreaksColorThemingState);
+				    setState(maxBreaksColorThemingState);
 				break;
 			case JENKS:
-				    setState((State) jenksColorThemingState);
+				    setState(jenksColorThemingState);
 				break;
 			}
 			populateTable();
 			applyColorScheme();
 		}
 	}
-	
-	private ActionClassification classificationListener = new ActionClassification();
+
+    final private ActionClassification classificationListener = new ActionClassification();
 
 	private static final int UNIQUE_VALUE = 0;
 

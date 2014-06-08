@@ -25,25 +25,21 @@
  * (250)385-6040 www.vividsolutions.com
  */
 package com.vividsolutions.jump.workbench.ui.renderer.style;
-import java.awt.BasicStroke;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Stroke;
-import java.util.*;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import javax.swing.Icon;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.util.LangUtil;
 import com.vividsolutions.jump.workbench.model.Layer;
-import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.Viewport;
+
+
 public class ColorThemingStyle implements Style, AlphaSetting {
+
 	public ColorThemingStyle() {
 		//Parameterless constructor for Java2XML. [Jon Aquino]
 	}
@@ -54,24 +50,24 @@ public class ColorThemingStyle implements Style, AlphaSetting {
 	 */
 	public void setAlpha(int alpha) {
 		defaultStyle.setAlpha(alpha);
-		for (Iterator i = attributeValueToBasicStyleMap.values().iterator(); i
-				.hasNext();) {
-			BasicStyle style = (BasicStyle) i.next();
+		for (Object obj : attributeValueToBasicStyleMap.values()) {
+			BasicStyle style = (BasicStyle) obj;
 			style.setAlpha(alpha);
 		}
 	}
+
 	/**
 	 * Call this method after calling #setAttributeValueToBasicStyleMap rather
 	 * than before.
 	 */
 	public void setLineWidth(int lineWidth) {
 		defaultStyle.setLineWidth(lineWidth);
-		for (Iterator i = attributeValueToBasicStyleMap.values().iterator(); i
-				.hasNext();) {
-			BasicStyle style = (BasicStyle) i.next();
+		for (Object obj : attributeValueToBasicStyleMap.values()) {
+			BasicStyle style = (BasicStyle) obj;
 			style.setLineWidth(lineWidth);
 		}
 	}
+
 	/**
 	 * @param defaultStyle
 	 *                  <code>null</code> to prevent drawing features with a null
@@ -85,31 +81,38 @@ public class ColorThemingStyle implements Style, AlphaSetting {
         // [sstein: 2.Dec.06] i guess this constructor comes from Erwan to
         // allow different types of classing
     }
+
 	public ColorThemingStyle(String attributeName,
 			Map attributeValueToBasicStyleMap, Map attributeValueToLabelMap, BasicStyle defaultStyle) {
 		setAttributeName(attributeName);
 		setAttributeValueToBasicStyleMap(attributeValueToBasicStyleMap);
         setAttributeValueToLabelMap(attributeValueToLabelMap);
 		setDefaultStyle(defaultStyle);
-	}    
+	}
+
 	private static Map attributeValueToLabelMap(Map attributeValueToBasicStyleMap) {
         // Be sure to use the same Map class -- it may be a RangeTreeMap [Jon Aquino 2005-07-30]
         Map attributeValueToLabelMap = (Map) LangUtil.newInstance(attributeValueToBasicStyleMap.getClass());
-        for (Iterator i = attributeValueToBasicStyleMap.keySet().iterator(); i.hasNext(); ) {
-            Object value = i.next();
+        for (Object value : attributeValueToBasicStyleMap.keySet()) {
             attributeValueToLabelMap.put(value, value.toString());
         }
         return attributeValueToLabelMap;
     }
 
     private BasicStyle defaultStyle;
+
+    private boolean vertexStyleEnabled;
+
 	public void paint(Feature f, Graphics2D g, Viewport viewport)
 			throws Exception {
 		getStyle(f).paint(f, g, viewport);
+        if (vertexStyleEnabled) {
+            getVertexStyle(f).paint(f, g, viewport);
+        }
 	}
-	private BasicStyle getStyle(Feature feature) {
-		//Attribute name will be null if a layer has only a spatial attribute.
-		// [Jon Aquino]
+
+    private BasicStyle getStyle(Feature feature) {
+		//Attribute name will be null if a layer has only a spatial attribute [Jon Aquino]
 		//If we can't find an attribute with this name, just use the
 		//defaultStyle. The attribute may have been deleted. [Jon Aquino]
 		// If the attribute data type for color theming has been changed -
@@ -125,37 +128,67 @@ public class ColorThemingStyle implements Style, AlphaSetting {
 							.get(trimIfString(feature.getAttribute(attributeName)))
 							: defaultStyle;
 		}
-		catch (ClassCastException e)
-		{
+		catch (ClassCastException e) {
 			// Do Nothing
-		}; /*try*/
+		}
 		
 		return style == null ? defaultStyle : style;
 	}
+
+    private VertexStyle getVertexStyle(Feature feature) {
+        // If layer has an active vertex style, change this style according
+        // to the BasicStyle color
+        BasicStyle basicStyle = getStyle(feature);
+        if (!isVertexStyleEnabled()) {
+            return null;
+        }
+        else {
+            VertexStyle vertexStyle = (VertexStyle) layer.getVertexStyle().clone();
+            try {
+                if (attributeName != null && feature.getSchema().hasAttribute(attributeName) &&
+                        feature.getAttribute(attributeName) != null) {
+                    vertexStyle.setLineWidth(basicStyle.getLineWidth());
+                    vertexStyle.setAlpha(basicStyle.getAlpha());
+                    vertexStyle.setFillColor(basicStyle.getFillColor());
+                    vertexStyle.setFilling(basicStyle.isRenderingFill());
+                    vertexStyle.setLineColor(basicStyle.getLineColor());
+                }
+            } catch (ClassCastException e) {
+                // Do Nothing
+            }
+
+            return vertexStyle;
+        }
+    }
+
 	public static Object trimIfString(Object object) {
-		return object != null && object instanceof String ? ((String) object)
-				.trim() : object;
+		return (object != null && object instanceof String) ?
+                ((String) object).trim() : object;
 	}
+
 	private Layer layer;
-	private Map attributeValueToBasicStyleMap  = new HashMap(); //[sstein 2.Dec.06] added = new Hashmap
+
+    private Map attributeValueToBasicStyleMap  = new HashMap(); //[sstein 2.Dec.06] added = new Hashmap
+
     private Map attributeValueToLabelMap;
-	private String attributeName;
+
+    private String attributeName;
+
 	//[sstein 2.Dec.06] note: some things here are different. I am not sure if the changes
-	// come from changes by VividSolution or preparations for different classing by Erwan  
+	// come from changes by VividSolution or preparations for different classing by Erwan
+    @Override
 	public Object clone() {
 		try {
 			ColorThemingStyle clone = (ColorThemingStyle) super.clone();
 			//Deep-copy the map, to facilitate undo. [Jon Aquino]
-            clone.attributeValueToBasicStyleMap = (Map) attributeValueToBasicStyleMap.getClass()
+            clone.attributeValueToBasicStyleMap = attributeValueToBasicStyleMap.getClass()
 					.newInstance();
-			for (Iterator i = attributeValueToBasicStyleMap.keySet().iterator(); i
-					.hasNext();) {
-				Object attribute = (Object) i.next();
+			for (Object attribute : attributeValueToBasicStyleMap.keySet()) {
                 clone.attributeValueToBasicStyleMap.put(attribute,
 						((BasicStyle) attributeValueToBasicStyleMap
 								.get(attribute)).clone());
 			}
-            clone.attributeValueToLabelMap = (Map) attributeValueToLabelMap.getClass().newInstance();
+            clone.attributeValueToLabelMap = attributeValueToLabelMap.getClass().newInstance();
             clone.attributeValueToLabelMap.putAll(attributeValueToLabelMap);
 			return clone;
 		} catch (InstantiationException e) {
@@ -169,13 +202,15 @@ public class ColorThemingStyle implements Style, AlphaSetting {
 			return null;
 		}
 	}
+
 	/**
 	 * @return null if the layer has no non-spatial attributes
 	 */
 	public String getAttributeName() {
 		return attributeName;
 	}
-	/**
+
+    /**
 	 * You can set the keys to Ranges if the Map is a Range.RangeTreeMap. But
 	 * don't mix Ranges and non-Ranges -- the UI expects homogeneity in this
 	 * regard (i.e. to test whether or not there are ranges, only the first
@@ -184,6 +219,7 @@ public class ColorThemingStyle implements Style, AlphaSetting {
 	public void setAttributeValueToBasicStyleMap(Map attributeValueToBasicStyleMap) {
 		this.attributeValueToBasicStyleMap = attributeValueToBasicStyleMap;
 	}
+
     /**
      * You can set the keys to Ranges if the Map is a Range.RangeTreeMap. But
      * don't mix Ranges and non-Ranges -- the UI expects homogeneity in this
@@ -193,6 +229,7 @@ public class ColorThemingStyle implements Style, AlphaSetting {
     public void setAttributeValueToLabelMap(Map attributeValueToLabelMap) {
         this.attributeValueToLabelMap = attributeValueToLabelMap;
     }
+
 	public void setAttributeName(String attributeName) {
 		this.attributeName = attributeName;
 	}
@@ -213,7 +250,7 @@ public class ColorThemingStyle implements Style, AlphaSetting {
 		return enabled;
 	}
 	public static ColorThemingStyle get(Layer layer) {
-		if ((ColorThemingStyle) layer.getStyle(ColorThemingStyle.class) == null) {
+		if (layer.getStyle(ColorThemingStyle.class) == null) {
 			ColorThemingStyle colorThemingStyle = new ColorThemingStyle(
 					pickNonSpatialAttributeName(layer
 							.getFeatureCollectionWrapper().getFeatureSchema()),
@@ -230,14 +267,25 @@ public class ColorThemingStyle implements Style, AlphaSetting {
 		}
 		return null;
 	}
-	public BasicStyle getDefaultStyle() {
+
+    public BasicStyle getDefaultStyle() {
 		return defaultStyle;
 	}
-	public void setDefaultStyle(BasicStyle defaultStyle) {
+
+    public void setDefaultStyle(BasicStyle defaultStyle) {
 		this.defaultStyle = defaultStyle;
 	}
 
-  public int getAlpha() {
-    return defaultStyle.getAlpha();
-  }
+    public boolean isVertexStyleEnabled() {
+        return vertexStyleEnabled;
+    }
+
+    public void setVertexStyleEnabled(boolean vertexStyleEnabled) {
+        this.vertexStyleEnabled = vertexStyleEnabled;
+    }
+
+    public int getAlpha() {
+        return defaultStyle.getAlpha();
+    }
+
 }

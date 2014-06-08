@@ -59,7 +59,7 @@ public class VertexStyleChooser extends JPanel {
         STYLE_NAMES = Collections.unmodifiableList(TEMP_STYLE_NAMES);
     }
 
-    private JComboBox pointTypeComboBox;
+    private JComboBox<String> pointTypeComboBox;
 
     private JButton bitmapChangeButton;
 
@@ -122,7 +122,7 @@ public class VertexStyleChooser extends JPanel {
             sizeSlider = new JSlider(); // [sstein] init only if needed
         }
         sizeSlider.setBorder(BorderFactory.createTitledBorder("Point size: "));
-        if (this.activateOwnSlider == true) {
+        if (this.activateOwnSlider) {
             Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
             labelTable.put(new Integer(5), new JLabel("5"));
             labelTable.put(new Integer(10), new JLabel("10"));
@@ -148,43 +148,30 @@ public class VertexStyleChooser extends JPanel {
         sliderPanel.add(sizeSlider);
         setLayout(new BorderLayout());
         add(oberstPanel, BorderLayout.NORTH);
-        if (this.activateOwnSlider == true) {
+        if (this.activateOwnSlider) {
             add(sliderPanel, BorderLayout.CENTER);
         }
 
     }
 
-    /**
-     * @param actionListener
-     */
     public void addActionListener(ActionListener actionListener) {
         pointTypeComboBox.addActionListener(actionListener);
         bitmapChangeButton.addActionListener(actionListener);
-
     }
 
-    /**
-     * @param actionListener
-     */
     public void removeActionListener(ActionListener actionListener) {
         pointTypeComboBox.removeActionListener(actionListener);
         bitmapChangeButton.removeActionListener(actionListener);
     }
 
-    /**
-     * @param cl
-     */
     public void addChangeListener(ChangeListener cl) {
-        if (this.activateOwnSlider == true) {
+        if (this.activateOwnSlider) {
             this.sizeSlider.addChangeListener(cl);
         }
     }
 
-    /**
-     * @param cl
-     */
     public void removeChangeListener(ChangeListener cl) {
-        if (this.activateOwnSlider == true) {
+        if (this.activateOwnSlider) {
             this.sizeSlider.removeChangeListener(cl);
         }
     }
@@ -241,7 +228,7 @@ public class VertexStyleChooser extends JPanel {
         super.setEnabled(enabled);
         this.pointTypeComboBox.setEnabled(enabled);
         this.bitmapChangeButton.setEnabled(enabled);
-        if (this.activateOwnSlider == true) {
+        if (this.activateOwnSlider) {
             this.sizeSlider.setEnabled(enabled);
         }
     }
@@ -262,12 +249,10 @@ public class VertexStyleChooser extends JPanel {
         vertexStyle.setSize(sizeSlider.getValue());
         vertexStyle.setFillColor(stylePanel.getBasicStyle().getFillColor());
         vertexStyle.setLineColor(stylePanel.getBasicStyle().getLineColor());
+        vertexStyle.setFilling(stylePanel.getBasicStyle().isRenderingFill());
         return vertexStyle;
     }
 
-    /**
-     * @param currentVertexStyle
-     */
     public void setSelectedStyle(String currentVertexStyle) {
         int nameIndex = STYLE_NAMES.indexOf(currentVertexStyle);
         if (nameIndex > -1 && nameIndex < STYLE_NAMES.size()) {
