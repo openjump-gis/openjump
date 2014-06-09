@@ -732,7 +732,8 @@ public class SLDImporter {
             String att = getElement(".//ogc:PropertyName", featureTypeStyle, NSCONTEXT).getTextContent();
             style.setAttributeName(att);
 
-            HashMap<Object, StrokeFillStyle> map = new HashMap<Object, StrokeFillStyle>();
+            //HashMap<Object, StrokeFillStyle> map = new HashMap<Object, StrokeFillStyle>();
+            HashMap<Object, BasicStyle> map = new HashMap<Object, BasicStyle>();
             HashMap<Object, String> labelMap = new HashMap<Object, String>();
 
             LinkedList<Element> rules = getElements("sld:Rule", featureTypeStyle, NSCONTEXT);

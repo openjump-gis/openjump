@@ -17,6 +17,7 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ColorScheme;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStyle;
+import com.vividsolutions.jump.workbench.ui.renderer.style.Style;
 
 public class TestColorThemingPlugIn extends AbstractPlugIn {
 
@@ -67,7 +68,7 @@ public class TestColorThemingPlugIn extends AbstractPlugIn {
 		Layer layer = context.getLayerManager().getLayer("Random Triangles");
 		ColorScheme colorScheme = ColorScheme.create(colorSchemeName);
 		layer.setName("(" + colorScheme.getColors().size() + ") " + colorSchemeName);
-		Map attributeToStyleMap = new HashMap();
+		Map<Object,BasicStyle> attributeToStyleMap = new HashMap<Object,BasicStyle>();
 		for (Iterator i = cities.iterator(); i.hasNext(); ) {
 			String city = (String) i.next();
 			attributeToStyleMap.put(city, new BasicStyle(colorScheme.next()));

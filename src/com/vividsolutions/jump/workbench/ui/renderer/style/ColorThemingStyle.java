@@ -37,7 +37,9 @@ import com.vividsolutions.jump.util.LangUtil;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.ui.Viewport;
 
-
+/**
+ * A Style mapping different basic styles for different attribute values.
+ */
 public class ColorThemingStyle implements Style, AlphaSetting {
 
 	public ColorThemingStyle() {
@@ -50,8 +52,7 @@ public class ColorThemingStyle implements Style, AlphaSetting {
 	 */
 	public void setAlpha(int alpha) {
 		defaultStyle.setAlpha(alpha);
-		for (Object obj : attributeValueToBasicStyleMap.values()) {
-			BasicStyle style = (BasicStyle) obj;
+		for (BasicStyle style : attributeValueToBasicStyleMap.values()) {
 			style.setAlpha(alpha);
 		}
 	}
@@ -62,19 +63,20 @@ public class ColorThemingStyle implements Style, AlphaSetting {
 	 */
 	public void setLineWidth(int lineWidth) {
 		defaultStyle.setLineWidth(lineWidth);
-		for (Object obj : attributeValueToBasicStyleMap.values()) {
-			BasicStyle style = (BasicStyle) obj;
+		for (BasicStyle style : attributeValueToBasicStyleMap.values()) {
 			style.setLineWidth(lineWidth);
 		}
 	}
 
 	/**
-	 * @param defaultStyle
-	 *                  <code>null</code> to prevent drawing features with a null
-	 *                  attribute value
+     * @param attributeName name of the attribute used to choose the feature Style
+     * @param attributeValueToBasicStyleMap map attribute values (or range) to styles
+	 * @param defaultStyle style used for features with a null attribute value.
+     *      <code>null</code> to prevent drawing features with a null attribute value.
 	 */
     public ColorThemingStyle(String attributeName,
-            Map attributeValueToBasicStyleMap, BasicStyle defaultStyle) {
+            Map<Object,BasicStyle> attributeValueToBasicStyleMap,
+            BasicStyle defaultStyle) {
         this(attributeName, attributeValueToBasicStyleMap,
                 attributeValueToLabelMap(attributeValueToBasicStyleMap),
                 defaultStyle);
@@ -82,17 +84,32 @@ public class ColorThemingStyle implements Style, AlphaSetting {
         // allow different types of classing
     }
 
+    /**
+     * @param attributeName name of the attribute used to choose the feature Style
+     * @param attributeValueToBasicStyleMap map attribute values (or range) to styles
+     * @param attributeValueToLabelMap map attribute values (or range) to labels
+     * @param defaultStyle style used for features with a null attribute value.
+     *      <code>null</code> to prevent drawing features with a null attribute value.
+     */
 	public ColorThemingStyle(String attributeName,
-			Map attributeValueToBasicStyleMap, Map attributeValueToLabelMap, BasicStyle defaultStyle) {
+			Map<Object,BasicStyle> attributeValueToBasicStyleMap,
+            Map<Object,String> attributeValueToLabelMap, BasicStyle defaultStyle) {
 		setAttributeName(attributeName);
 		setAttributeValueToBasicStyleMap(attributeValueToBasicStyleMap);
         setAttributeValueToLabelMap(attributeValueToLabelMap);
 		setDefaultStyle(defaultStyle);
 	}
 
-	private static Map attributeValueToLabelMap(Map attributeValueToBasicStyleMap) {
+    /**
+     * Return labels from attribute values (or range)
+     * @param attributeValueToBasicStyleMap
+     * @return
+     */
+	private static Map<Object,String> attributeValueToLabelMap(
+            Map<Object,BasicStyle> attributeValueToBasicStyleMap) {
         // Be sure to use the same Map class -- it may be a RangeTreeMap [Jon Aquino 2005-07-30]
-        Map attributeValueToLabelMap = (Map) LangUtil.newInstance(attributeValueToBasicStyleMap.getClass());
+        Map<Object,String> attributeValueToLabelMap =
+                (Map<Object,String>) LangUtil.newInstance(attributeValueToBasicStyleMap.getClass());
         for (Object value : attributeValueToBasicStyleMap.keySet()) {
             attributeValueToLabelMap.put(value, value.toString());
         }
@@ -113,8 +130,8 @@ public class ColorThemingStyle implements Style, AlphaSetting {
 
     private BasicStyle getStyle(Feature feature) {
 		//Attribute name will be null if a layer has only a spatial attribute [Jon Aquino]
-		//If we can't find an attribute with this name, just use the
-		//defaultStyle. The attribute may have been deleted. [Jon Aquino]
+		//If we can't find an attribute with this name, just use the defaultStyle.
+		// The attribute may have been deleted. [Jon Aquino]
 		// If the attribute data type for color theming has been changed -
 		// throws multiple exceptions and the layer dissappears due to the 
 		// fact that it can't find the style in the valuetobasicstyle map.
@@ -124,7 +141,7 @@ public class ColorThemingStyle implements Style, AlphaSetting {
 		try {
 				style = attributeName != null
 					&& feature.getSchema().hasAttribute(attributeName)
-					&& feature.getAttribute(attributeName) != null ? (BasicStyle) attributeValueToBasicStyleMap
+					&& feature.getAttribute(attributeName) != null ? attributeValueToBasicStyleMap
 							.get(trimIfString(feature.getAttribute(attributeName)))
 							: defaultStyle;
 		}
@@ -168,9 +185,10 @@ public class ColorThemingStyle implements Style, AlphaSetting {
 
 	private Layer layer;
 
-    private Map attributeValueToBasicStyleMap  = new HashMap(); //[sstein 2.Dec.06] added = new Hashmap
+    private Map<Object,BasicStyle> attributeValueToBasicStyleMap
+            = new HashMap<Object,BasicStyle>(); //[sstein 2.Dec.06] added = new Hashmap
 
-    private Map attributeValueToLabelMap;
+    private Map<Object,String> attributeValueToLabelMap;
 
     private String attributeName;
 
@@ -181,14 +199,15 @@ public class ColorThemingStyle implements Style, AlphaSetting {
 		try {
 			ColorThemingStyle clone = (ColorThemingStyle) super.clone();
 			//Deep-copy the map, to facilitate undo. [Jon Aquino]
-            clone.attributeValueToBasicStyleMap = attributeValueToBasicStyleMap.getClass()
-					.newInstance();
+            clone.attributeValueToBasicStyleMap =
+                    (Map<Object,BasicStyle>)attributeValueToBasicStyleMap.getClass().newInstance();
 			for (Object attribute : attributeValueToBasicStyleMap.keySet()) {
                 clone.attributeValueToBasicStyleMap.put(attribute,
-						((BasicStyle) attributeValueToBasicStyleMap
+						(BasicStyle)(attributeValueToBasicStyleMap
 								.get(attribute)).clone());
 			}
-            clone.attributeValueToLabelMap = attributeValueToLabelMap.getClass().newInstance();
+            clone.attributeValueToLabelMap =
+                    (Map<Object,String>)attributeValueToLabelMap.getClass().newInstance();
             clone.attributeValueToLabelMap.putAll(attributeValueToLabelMap);
 			return clone;
 		} catch (InstantiationException e) {
@@ -216,7 +235,8 @@ public class ColorThemingStyle implements Style, AlphaSetting {
 	 * regard (i.e. to test whether or not there are ranges, only the first
 	 * attribute value is tested).
 	 */
-	public void setAttributeValueToBasicStyleMap(Map attributeValueToBasicStyleMap) {
+	public void setAttributeValueToBasicStyleMap(
+            Map<Object,BasicStyle> attributeValueToBasicStyleMap) {
 		this.attributeValueToBasicStyleMap = attributeValueToBasicStyleMap;
 	}
 
@@ -226,7 +246,7 @@ public class ColorThemingStyle implements Style, AlphaSetting {
      * regard (i.e. to test whether or not there are ranges, only the first
      * attribute value is tested).
      */
-    public void setAttributeValueToLabelMap(Map attributeValueToLabelMap) {
+    public void setAttributeValueToLabelMap(Map<Object,String> attributeValueToLabelMap) {
         this.attributeValueToLabelMap = attributeValueToLabelMap;
     }
 
@@ -249,16 +269,26 @@ public class ColorThemingStyle implements Style, AlphaSetting {
 	public boolean isEnabled() {
 		return enabled;
 	}
+
+    /**
+     * Creates a default ColorThemingStyle for this layer if none is already set.
+     * @param layer
+     * @return a default ColorThemingStyle
+     */
 	public static ColorThemingStyle get(Layer layer) {
 		if (layer.getStyle(ColorThemingStyle.class) == null) {
 			ColorThemingStyle colorThemingStyle = new ColorThemingStyle(
 					pickNonSpatialAttributeName(layer
 							.getFeatureCollectionWrapper().getFeatureSchema()),
-					new HashMap(), new BasicStyle(Color.lightGray));
+					new HashMap<Object,BasicStyle>(), new BasicStyle(Color.lightGray));
 			layer.addStyle(colorThemingStyle);
 		}
 		return (ColorThemingStyle) layer.getStyle(ColorThemingStyle.class);
 	}
+
+    /**
+     * Returns the first non spatial attribute name for this schema.
+     */
 	private static String pickNonSpatialAttributeName(FeatureSchema schema) {
 		for (int i = 0; i < schema.getAttributeCount(); i++) {
 			if (schema.getGeometryIndex() != i) {

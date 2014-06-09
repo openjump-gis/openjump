@@ -65,10 +65,9 @@ public class VertexStyleChooser extends JPanel {
 
     private String currentFilename;
 
-    // [sstein 02.08.2006] - removed because we would have two sliders
-    /**
-     * 
-     */
+    // sizeSlider is initialized from DeeRenderingStylePanel
+    // not sure it is still useful for VertexStyleChooser to
+    // have its own slider (maybe for some old plugins)
     public JSlider sizeSlider;
 
     private boolean activateOwnSlider = false;
@@ -78,7 +77,7 @@ public class VertexStyleChooser extends JPanel {
     private BasicStylePanel stylePanel;
 
     /**
-     * @param activateOwnSlider
+     * @param activateOwnSlider true if one need a chooser with its own size slider
      */
     public VertexStyleChooser(boolean activateOwnSlider) {
         super();
@@ -95,7 +94,7 @@ public class VertexStyleChooser extends JPanel {
     }
 
     private void initGUI() {
-        pointTypeComboBox = new JComboBox();
+        pointTypeComboBox = new JComboBox<String>();
         pointTypeComboBox.setEditable(false);
         pointTypeComboBox.addItem(I18N.get("deejump.ui.style.RenderingStylePanel.square"));
         pointTypeComboBox.addItem(I18N.get("deejump.ui.style.RenderingStylePanel.circle"));
@@ -208,6 +207,7 @@ public class VertexStyleChooser extends JPanel {
             setCurrentFileName(currentFilePath);
             setSelectedStyle(BITMAP_STYLE);
             blackboard.put("VertexStyleChooser.last-location", currentFilePath);
+            imageIsLoaded = true;
         }
         return imageIsLoaded;
     }

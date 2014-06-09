@@ -1044,7 +1044,8 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
             attributeValueToValueMap.put(value, value);
         }
         attributeValueToValueMap =
-                CollectionUtil.inverse(state.toExternalFormat(attributeValueToValueMap));
+                (Map<Object,Object>)CollectionUtil.inverse(state
+                        .toExternalFormat(attributeValueToValueMap));
         Map<Object,String> attributeValueToLabelMap = new HashMap<Object,String>();
         for (Object value : attributeValueToValueMap.keySet()) {
             attributeValueToLabelMap.put(value, attributeValueToValueMap.get(value).toString());
@@ -1052,8 +1053,8 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         return attributeValueToLabelMap;
     }
     
-    private Map<Object,Style> toAttributeValueToBasicStyleMap(Collection<Object> attributeValues) {
-        Map<Object,Style> attributeValueToBasicStyleMap = new TreeMap<Object,Style>();
+    private Map<Object,BasicStyle> toAttributeValueToBasicStyleMap(Collection<Object> attributeValues) {
+        Map<Object,BasicStyle> attributeValueToBasicStyleMap = new TreeMap<Object,BasicStyle>();
         for (Object value : attributeValues) {
             attributeValueToBasicStyleMap.put(value, getLayer().getBasicStyle());
         }
@@ -1206,7 +1207,7 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
 
         public void deactivate();
 
-        public Collection getColorSchemeNames();
+        public Collection<String> getColorSchemeNames();
 
         public void applyColorScheme(ColorScheme scheme);
 

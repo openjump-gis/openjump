@@ -191,11 +191,15 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
             try {
                 if (cts.getAttributeValueToLabelMap().keySet().iterator().next() instanceof Range) {
                     LOG.debug("Color theming values are ranges.");
-                    RangeTreeMap<Range, BasicStyle> map = new RangeTreeMap<Range, BasicStyle>();
-                    RangeTreeMap<Range, String> labelMap = new RangeTreeMap<Range, String>();
+                    //RangeTreeMap<Range, BasicStyle> map = new RangeTreeMap<Range, BasicStyle>();
+                    //RangeTreeMap<Range, String> labelMap = new RangeTreeMap<Range, String>();
+                    RangeTreeMap<Object, BasicStyle> map = new RangeTreeMap<Object, BasicStyle>();
+                    RangeTreeMap<Object, String> labelMap = new RangeTreeMap<Object, String>();
 
-                    Map<Range, BasicStyle> oldMap = cts.getAttributeValueToBasicStyleMap();
-                    Map<Range, String> oldLabelMap = cts.getAttributeValueToLabelMap();
+                    //Map<Range, BasicStyle> oldMap = cts.getAttributeValueToBasicStyleMap();
+                    //Map<Range, String> oldLabelMap = cts.getAttributeValueToLabelMap();
+                    Map<Object, BasicStyle> oldMap = cts.getAttributeValueToBasicStyleMap();
+                    Map<Object, String> oldLabelMap = cts.getAttributeValueToLabelMap();
 
                     if (c.equals(Integer.class)) {
                         LOG.debug("Color theming values are ranges of integers.");
@@ -238,11 +242,11 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
 
             if (c.equals(Integer.class)) {
                 LOG.debug("Color theming values are integers.");
-                Map<Integer, Style> map = new TreeMap<Integer, Style>();
+                Map<Object, BasicStyle> map = new TreeMap<Object, BasicStyle>();
                 Map<?, ?> oldMap = cts.getAttributeValueToBasicStyleMap();
-                Map<Integer, String> labelMap = new TreeMap<Integer, String>();
+                Map<Object, String> labelMap = new TreeMap<Object, String>();
                 for (Object key : oldMap.keySet()) {
-                    Style s = (Style) oldMap.get(key);
+                    BasicStyle s = (BasicStyle) oldMap.get(key);
                     map.put(Integer.valueOf((String) key), s);
                     labelMap.put(Integer.valueOf((String) key), (String) key);
                 }
@@ -252,11 +256,11 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
 
             if (c.equals(Double.class)) {
                 LOG.debug("Color theming values are doubles.");
-                Map<Double, Style> map = new TreeMap<Double, Style>();
+                Map<Object, BasicStyle> map = new TreeMap<Object, BasicStyle>();
                 Map<?, ?> oldMap = cts.getAttributeValueToBasicStyleMap();
-                Map<Double, String> labelMap = new TreeMap<Double, String>();
+                Map<Object, String> labelMap = new TreeMap<Object, String>();
                 for (Object key : oldMap.keySet()) {
-                    Style s = (Style) oldMap.get(key);
+                    BasicStyle s = (BasicStyle) oldMap.get(key);
                     map.put(Double.valueOf((String) key), s);
                     labelMap.put(Double.valueOf((String) key), (String) key);
                 }

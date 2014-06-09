@@ -182,6 +182,12 @@ public class BasicStyle implements Style, StrokeFillStyle, AlphaSetting {
             renderingLine, lineStroke, lineColor);
     }
 
+    /**
+     * Uses Object.clone() method which performs a shallow copy of this object,
+     * creating a new instance of the same class and copying attribute values
+     * of this object to the clone.
+     * @return
+     */
     public Object clone() {
         try {
             return super.clone();
