@@ -21,6 +21,7 @@ import javax.swing.event.PopupMenuListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.List;
 
@@ -87,9 +88,17 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
                 ((GeometryColumn)geometryAttributeComboBox.getSelectedItem()) : null;
     }
 
-    public PrimaryKeyColumn getIdentifierColumn() {
-        return identifierAttributeComboBox.getSelectedItem() != null ?
-                ((PrimaryKeyColumn)identifierAttributeComboBox.getSelectedItem()) : null;
+    public PrimaryKeyColumn getIdentifierColumn() throws Exception {
+        Object selectedItem = identifierAttributeComboBox.getSelectedItem();
+        if (selectedItem != null) {
+            if (selectedItem instanceof PrimaryKeyColumn) {
+                return (PrimaryKeyColumn) identifierAttributeComboBox.getSelectedItem();
+            } else {
+                throw new SQLException(I18N.get(KEY + ".invalid-primary-key"));
+            }
+        } else {
+            return null;
+        }
     }
 
     public String getGeometryAttributeName() {
@@ -97,7 +106,7 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
                 getGeometryColumn().getName().trim() : null;
     }
 
-    public String getIdentifierAttributeName() {
+    public String getIdentifierAttributeName() throws Exception {
         return identifierAttributeComboBox.getSelectedItem() != null ?
                 getIdentifierColumn().getName().trim() : null;
     }
@@ -155,8 +164,12 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
         if (((String)LangUtil.ifNull(getGeometryAttributeName(), "")).length() == 0) {
             return I18N.get(KEY + ".missing-geometry-column-name");
         }
-        if (((String)LangUtil.ifNull(getIdentifierAttributeName(), "")).length() == 0) {
-            return I18N.get(KEY + ".missing-pk-name");
+        try {
+            if (((String) LangUtil.ifNull(getIdentifierAttributeName(), "")).length() == 0) {
+                return I18N.get(KEY + ".missing-pk-name");
+            }
+        } catch(Exception e) {
+            return I18N.get(KEY + ".invalid-primary-key");
         }
         return null;
     }

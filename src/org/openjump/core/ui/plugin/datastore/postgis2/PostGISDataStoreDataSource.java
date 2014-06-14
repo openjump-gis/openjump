@@ -112,7 +112,8 @@ public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
         String tableName = datasetName[1];
 
         //@TODO This method should be available in DataStoreMetadata to avoid the cast
-        String[] columns = ((PostgisDSMetadata)pgConnection.getMetadata()).getColumnNames(PostGISQueryUtil.unquote(tableName));
+        //String[] columns = ((PostgisDSMetadata)pgConnection.getMetadata()).getColumnNames(PostGISQueryUtil.unquote(tableName));
+        String[] columns = ((PostgisDSMetadata)pgConnection.getMetadata()).getColumnNames(PostGISQueryUtil.unquote((String)getProperties().get(DATASET_NAME_KEY)));
 
         Connection conn = pgConnection.getConnection();
 
@@ -133,7 +134,9 @@ public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
             sb.append(", \"").append(col).append("\"");
         }
         sb.append(" FROM \"")
-                .append(unquote((String)getProperties().get(DATASET_NAME_KEY)))
+                .append(unquote(schemaName))
+                .append("\".\"")
+                .append(unquote(tableName))
                 .append("\" WHERE ")
                 .append(whereClause)
                 .append(extent)
