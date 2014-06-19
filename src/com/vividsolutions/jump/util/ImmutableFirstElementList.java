@@ -41,11 +41,11 @@ import java.util.ListIterator;
 /**
  * Can't add, replace, or remove the first element in the list.
  */
-public class ImmutableFirstElementList implements List {
+public class ImmutableFirstElementList<T> implements List<T> {
 
-	private List list = new ArrayList();
+	private List<T> list = new ArrayList<T>();
 	
-	public ImmutableFirstElementList(Object firstElement) {
+	public ImmutableFirstElementList(T firstElement) {
 		list.add(firstElement);
 	}
 
@@ -61,7 +61,7 @@ public class ImmutableFirstElementList implements List {
         return list.contains(o);
     }
 
-    public Iterator iterator() {
+    public Iterator<T> iterator() {
     	//Prevent Iterator#remove. [Jon Aquino]
         return Collections.unmodifiableList(list).iterator();
     }
@@ -70,11 +70,11 @@ public class ImmutableFirstElementList implements List {
         return list.toArray();
     }
 
-    public Object[] toArray(Object[] a) {
+    public <T> T[] toArray(T[] a) {
         return list.toArray(a);
     }
 
-    public boolean add(Object o) {
+    public boolean add(T o) {
         return list.add(o);
     }
 
@@ -87,7 +87,7 @@ public class ImmutableFirstElementList implements List {
         return list.containsAll(c);
     }
 
-    public boolean addAll(Collection c) {
+    public boolean addAll(Collection<? extends T> c) {
         return list.addAll(c);
     }
 
@@ -95,11 +95,11 @@ public class ImmutableFirstElementList implements List {
 		return list.addAll(index == 0 ? 1 : index, c);
     }
 
-    public boolean removeAll(Collection c) {
+    public boolean removeAll(Collection<?> c) {
 		return list.subList(1, list.size()).remove(c);
     }
 
-    public boolean retainAll(Collection c) {
+    public boolean retainAll(Collection<?> c) {
 		return list.subList(1, list.size()).retainAll(c);
     }
 
@@ -107,22 +107,22 @@ public class ImmutableFirstElementList implements List {
 		list.subList(1, list.size()).clear();
     }
 
-    public Object get(int index) {
+    public T get(int index) {
         return list.get(index);
     }
 
-    public Object set(int index, Object element) {
+    public T set(int index, T element) {
         if (index == 0) {
         	return get(0);
         }
         return list.set(index, element);
     }
 
-    public void add(int index, Object element) {
+    public void add(int index, T element) {
 		list.add(index == 0 ? 1 : index, element);
     }
 
-    public Object remove(int index) {
+    public T remove(int index) {
         if (index == 0) { return get(0);
         }
         return list.remove(index);

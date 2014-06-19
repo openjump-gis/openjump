@@ -36,7 +36,6 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Stroke;
-import java.awt.geom.NoninvertibleTransformException;
 import java.util.List;
 
 import org.openjump.util.SLDImporter.StrokeFillStyle;
@@ -64,9 +63,9 @@ public class BasicStyle implements Style, StrokeFillStyle, AlphaSetting {
     private boolean renderingLinePattern = false;
     private boolean renderingFillPattern = false;
 
-		public static final Color       DEFAULT_FILL_COLOR  = new Color(0, 0, 0, 255);
-		public static final Color       DEFAULT_LINE_COLOR  = DEFAULT_FILL_COLOR;
-		public static final BasicStroke DEFAULT_FILL_STROKE = new BasicStroke(1);
+    public static final Color       DEFAULT_FILL_COLOR  = new Color(0, 0, 0, 255);
+    public static final Color       DEFAULT_LINE_COLOR  = DEFAULT_FILL_COLOR;
+    public static final BasicStroke DEFAULT_FILL_STROKE = new BasicStroke(1);
 
     //The important thing here is the initial alpha. [Jon Aquino]
     private Color fillColor = DEFAULT_FILL_COLOR;
@@ -152,10 +151,8 @@ public class BasicStyle implements Style, StrokeFillStyle, AlphaSetting {
         return enabled;
     }
 
-    public void paint(Feature f, Graphics2D g, Viewport viewport)
-        throws NoninvertibleTransformException {
-    	
-    	
+    public void paint(Feature f, Graphics2D g, Viewport viewport) throws Exception {
+
     	/* Giuseppe Aruta 11-june-2012
     	 * Added code from SkyJUMP BasicStyle to enable color chooser plugin
     	 */

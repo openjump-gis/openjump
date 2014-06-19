@@ -126,6 +126,10 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy, Dispo
 		getBasicStyle().setFillColor(fillColor);
 		getBasicStyle().setLineColor(defaultLineColor(fillColor));
 		getBasicStyle().setAlpha(150);
+        getVertexStyle().setFillColor(fillColor);
+        getVertexStyle().setLineColor(defaultLineColor(fillColor));
+        getVertexStyle().setAlpha(150);
+        getVertexStyle().setEnabled(false);
 		setFeatureCollection(featureCollection);
 	}
 

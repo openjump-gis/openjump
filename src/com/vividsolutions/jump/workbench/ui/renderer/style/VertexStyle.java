@@ -32,14 +32,11 @@
 
 package com.vividsolutions.jump.workbench.ui.renderer.style;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Shape;
+import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.RectangularShape;
 
 import de.latlon.deejump.plugin.style.BitmapVertexStyle;
-import de.latlon.deejump.plugin.style.VertexStylesFactory;
 import org.openjump.util.SLDImporter.SizedStrokeFillStyle;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -64,8 +61,7 @@ public abstract class VertexStyle implements Style, SizedStrokeFillStyle {
 
     private Color strokeColor;
 
-    protected VertexStyle() {
-    }
+    protected VertexStyle() {}
 
     protected VertexStyle(Shape shape) {
         this.shape = shape;
@@ -85,6 +81,10 @@ public abstract class VertexStyle implements Style, SizedStrokeFillStyle {
 
     public int getSize() {
         return size;
+    }
+
+    public Shape getShape() {
+        return shape;
     }
 
     public Color getFillColor() {
@@ -121,6 +121,8 @@ public abstract class VertexStyle implements Style, SizedStrokeFillStyle {
         alpha = a;
     }
 
+    private BasicStroke stroke = new BasicStroke(1);
+
     public void setLineWidth(int w) {
         // ignore
     }
@@ -129,13 +131,12 @@ public abstract class VertexStyle implements Style, SizedStrokeFillStyle {
         // Set the vertices' fill color to the layer's line color
         fillColor = GUIUtil.alphaColor(layer.getBasicStyle().getFillColor(), layer.getBasicStyle().getAlpha());
         strokeColor = GUIUtil.alphaColor(layer.getBasicStyle().getLineColor(), layer.getBasicStyle().getAlpha());
-
     }
 
     public void paint(Feature f, Graphics2D g, Viewport viewport) throws Exception {
         Coordinate[] coordinates = f.getGeometry().getCoordinates();
         g.setColor(fillColor);
-
+        g.setStroke(stroke);
         for (Coordinate c : coordinates) {
             if (!viewport.getEnvelopeInModelCoordinates().contains(c)) {
                 // Otherwise get "sun.dc.pr.PRException: endPath: bad path"
@@ -189,11 +190,13 @@ public abstract class VertexStyle implements Style, SizedStrokeFillStyle {
             vStyle = this.getClass().newInstance();
             if (vStyle instanceof BitmapVertexStyle) {
                 ((BitmapVertexStyle)vStyle).setFileName(((BitmapVertexStyle)this).getFileName());
+            } else {
+                vStyle.setFillColor(getFillColor());
+                vStyle.setLineColor(getLineColor());
+                vStyle.setFilling(getFilling());
             }
             vStyle.setSize(size);
-            vStyle.setLineColor(getLineColor());
             vStyle.setEnabled(isEnabled());
-            vStyle.setFilling(getFilling());
             vStyle.setAlpha(alpha);
 
         }

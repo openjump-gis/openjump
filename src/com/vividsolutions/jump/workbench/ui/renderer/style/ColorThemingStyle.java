@@ -101,9 +101,10 @@ public class ColorThemingStyle implements Style, AlphaSetting {
 	}
 
     /**
-     * Return labels from attribute values (or range)
-     * @param attributeValueToBasicStyleMap
-     * @return
+     * Returns a map mapping attribute values (or range) to labels from the
+     * map mapping attribute values (or range) to {@link BasicStyle}s.
+     * @param attributeValueToBasicStyleMap the values to BasicStyles map
+     * @return a values to labels map
      */
 	private static Map<Object,String> attributeValueToLabelMap(
             Map<Object,BasicStyle> attributeValueToBasicStyleMap) {
@@ -123,9 +124,6 @@ public class ColorThemingStyle implements Style, AlphaSetting {
 	public void paint(Feature f, Graphics2D g, Viewport viewport)
 			throws Exception {
 		getStyle(f).paint(f, g, viewport);
-        if (vertexStyleEnabled) {
-            getVertexStyle(f).paint(f, g, viewport);
-        }
 	}
 
     private BasicStyle getStyle(Feature feature) {
@@ -139,44 +137,17 @@ public class ColorThemingStyle implements Style, AlphaSetting {
 		// (just like when the attribute name has been changed). [Ed Deen]
 		BasicStyle style = null;
 		try {
-				style = attributeName != null
-					&& feature.getSchema().hasAttribute(attributeName)
-					&& feature.getAttribute(attributeName) != null ? attributeValueToBasicStyleMap
-							.get(trimIfString(feature.getAttribute(attributeName)))
-							: defaultStyle;
+            style = attributeName != null
+			        && feature.getSchema().hasAttribute(attributeName)
+					&& feature.getAttribute(attributeName) != null ?
+                    attributeValueToBasicStyleMap.get(trimIfString(feature.getAttribute(attributeName)))
+			        : defaultStyle;
 		}
 		catch (ClassCastException e) {
 			// Do Nothing
 		}
-		
 		return style == null ? defaultStyle : style;
 	}
-
-    private VertexStyle getVertexStyle(Feature feature) {
-        // If layer has an active vertex style, change this style according
-        // to the BasicStyle color
-        BasicStyle basicStyle = getStyle(feature);
-        if (!isVertexStyleEnabled()) {
-            return null;
-        }
-        else {
-            VertexStyle vertexStyle = (VertexStyle) layer.getVertexStyle().clone();
-            try {
-                if (attributeName != null && feature.getSchema().hasAttribute(attributeName) &&
-                        feature.getAttribute(attributeName) != null) {
-                    vertexStyle.setLineWidth(basicStyle.getLineWidth());
-                    vertexStyle.setAlpha(basicStyle.getAlpha());
-                    vertexStyle.setFillColor(basicStyle.getFillColor());
-                    vertexStyle.setFilling(basicStyle.isRenderingFill());
-                    vertexStyle.setLineColor(basicStyle.getLineColor());
-                }
-            } catch (ClassCastException e) {
-                // Do Nothing
-            }
-
-            return vertexStyle;
-        }
-    }
 
 	public static Object trimIfString(Object object) {
 		return (object != null && object instanceof String) ?
@@ -246,7 +217,8 @@ public class ColorThemingStyle implements Style, AlphaSetting {
      * regard (i.e. to test whether or not there are ranges, only the first
      * attribute value is tested).
      */
-    public void setAttributeValueToLabelMap(Map<Object,String> attributeValueToLabelMap) {
+    public void setAttributeValueToLabelMap(
+            Map<Object,String> attributeValueToLabelMap) {
         this.attributeValueToLabelMap = attributeValueToLabelMap;
     }
 
@@ -272,18 +244,17 @@ public class ColorThemingStyle implements Style, AlphaSetting {
 
     /**
      * Creates a default ColorThemingStyle for this layer if none is already set.
-     * @param layer
-     * @return a default ColorThemingStyle
      */
 	public static ColorThemingStyle get(Layer layer) {
 		if (layer.getStyle(ColorThemingStyle.class) == null) {
 			ColorThemingStyle colorThemingStyle = new ColorThemingStyle(
 					pickNonSpatialAttributeName(layer
 							.getFeatureCollectionWrapper().getFeatureSchema()),
-					new HashMap<Object,BasicStyle>(), new BasicStyle(Color.lightGray));
+					new HashMap<Object,BasicStyle>(),
+                    new XBasicStyle(new BasicStyle(Color.lightGray), new SquareVertexStyle()));
 			layer.addStyle(colorThemingStyle);
 		}
-		return (ColorThemingStyle) layer.getStyle(ColorThemingStyle.class);
+		return (ColorThemingStyle)layer.getStyle(ColorThemingStyle.class);
 	}
 
     /**

@@ -224,7 +224,7 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
         return "";
     }
 
-    protected DeeRenderingStylePanel(Blackboard blackboard, Layer layer, Blackboard persistentBlackboard) {
+    public DeeRenderingStylePanel(Blackboard blackboard, Layer layer, Blackboard persistentBlackboard) {
         super(blackboard, ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
 
         vertexStyleChooser.setBlackboard(persistentBlackboard);
@@ -239,11 +239,9 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
             ex.printStackTrace();
         }
 
-        // Set layer after #jbInit, because both methods initialize the
-        // components. [Jon Aquino]
+        // Set layer after #jbInit, because both methods initialize the components. [Jon Aquino]
         setLayer(layer);
         //updateControls();
-        //setVertexStyle(layer.getVertexStyle());
 
         if (layer.getVertexStyle() instanceof BitmapVertexStyle) {
             String fileName = ((BitmapVertexStyle) layer.getVertexStyle()).getFileName();
@@ -253,6 +251,23 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
 
         vertexStyleChooser.setSelectedStyle(getCurrentVertexStyle());
     }
+
+    //public void updateControls(XBasicStyle xStyle) {
+//
+    //    setBasicStyle(xStyle);
+//
+    //    if (xStyle.getVertexStyle() instanceof BitmapVertexStyle) {
+    //        String fileName = ((BitmapVertexStyle) xStyle.getVertexStyle()).getFileName();
+    //        // side effects used for the WORST
+    //        vertexStyleChooser.setCurrentFileName(fileName);
+    //    } else {
+    //        vertexCheckBox.setSelected(xStyle.getVertexStyle().isEnabled());
+    //        vertexSlider.setValue(sizeToSlider(xStyle.getVertexStyle().getSize()));
+    //        vertexSize.setText(Integer.toString(xStyle.getVertexStyle().getSize()));
+    //    }
+//
+    //    vertexStyleChooser.setSelectedStyle(getCurrentVertexStyle());
+    //}
 
     @Override
     public void updateControls() {
@@ -284,9 +299,7 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
     private void setLayer(Layer layer) {
         this.layer = layer;
         VertexStyle vStyle = layer.getVertexStyle();
-        //ColorThemingStyle tStyle = (ColorThemingStyle)layer.getStyle(ColorThemingStyle.class);
         setSynchronizingLineColor(layer.isSynchronizingLineColor());
-        //boolean enabled = vStyle.isEnabled() || (tStyle != null && tStyle.isVertexStyleEnabled());
         vertexCheckBox.setSelected(vStyle.isEnabled());
         vertexSlider.setEnabled(vStyle.isEnabled());
         vertexSlider.setValue(sizeToSlider(vStyle.getSize()));
@@ -295,9 +308,9 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
         for (Enumeration<?> e = vertexSlider.getLabelTable().elements(); e.hasMoreElements(); ) {
             ((JLabel)e.nextElement()).setEnabled(vStyle.isEnabled());
         }
-        if (vStyle.isEnabled()) {
-            fillCheckBox.setSelected(layer.getVertexStyle().getFilling());
-        }
+        //if (vStyle.isEnabled()) {
+        //    fillCheckBox.setSelected(layer.getVertexStyle().getFilling());
+        //}
         previewPanel.repaint();
     }
 
@@ -447,23 +460,8 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
         previewPanel.repaint();
     }
 
-    /*
-    void setVertexStyle(VertexStyle vertexStyle) {
-        vertexCheckBox.setSelected(vertexStyle.isEnabled());
-        vertexSlider.setEnabled(vertexStyle.isEnabled());
-        vertexStyleChooser.setEnabled(vertexStyle.isEnabled());
-        vertexSize.setEnabled(vertexStyle.isEnabled());
-        for (Enumeration<?> e = vertexSlider.getLabelTable().elements(); e.hasMoreElements(); ) {
-            ((JLabel)e.nextElement()).setEnabled(vertexStyle.isEnabled());
-        }
-        if (vertexStyle.isEnabled()) {
-            vertexSlider.setValue(sizeToSlider(vertexStyle.getSize()));
-        }
-        previewPanel.repaint();
-    }
-    */
 
-    VertexStyle getVertexStyle() {
+    public VertexStyle getVertexStyle() {
         VertexStyle vStyle = vertexStyleChooser.getSelectedStyle();
         vStyle.setEnabled(vertexCheckBox.isSelected());
         vStyle.setSize(sizeFromSlider());
@@ -491,9 +489,9 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
             layer.removeStyle(layer.getVertexStyle());
             layer.addStyle(newVertexStyle);
 
-            if (ColorThemingStyle.get(layer).isEnabled()) {
-                layer.getVertexStyle().setEnabled(false);
-            }
+            //if (ColorThemingStyle.get(layer).isEnabled()) {
+            //    layer.getVertexStyle().setEnabled(false);
+            //}
 
             if (newVertexStyle.isEnabled()) {
                 //layer.getBasicStyle().setEnabled(false);

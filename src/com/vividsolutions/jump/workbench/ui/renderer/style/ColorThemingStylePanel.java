@@ -61,7 +61,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTable;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
@@ -92,13 +91,15 @@ import com.vividsolutions.jump.workbench.ui.EnableableToolBar;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.OKCancelPanel;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.renderer.style.attributeclassifications.JenksBreaksColorThemingState;
 import com.vividsolutions.jump.workbench.ui.renderer.style.attributeclassifications.MaximalBreaksColorThemingState;
 import com.vividsolutions.jump.workbench.ui.renderer.style.attributeclassifications.MeanSTDevColorThemingState;
 import com.vividsolutions.jump.workbench.ui.renderer.style.attributeclassifications.QuantileColorThemingState;
 import com.vividsolutions.jump.workbench.ui.renderer.style.attributeclassifications.RangeColorThemingState;
-import com.vividsolutions.jump.workbench.ui.style.BasicStylePanel;
 import com.vividsolutions.jump.workbench.ui.style.StylePanel;
+
+import de.latlon.deejump.plugin.style.DeeRenderingStylePanel;
 
 /**
  * A panel to choose Color Theming options.
@@ -120,6 +121,7 @@ import com.vividsolutions.jump.workbench.ui.style.StylePanel;
  * @author <p>mmichaud (2011 - debug, remove deprecated code and comments, give
  *         priority to attribute value choice instead of classification choice)</p>
  *         <p>(2014 - add lineWidth parameter and vetexStyleEnabled</p>
+ *         <p>(2014 - manage VertexStyle with XBasicStyle, an extension of BasicStyle</p>
  */
 public class ColorThemingStylePanel extends JPanel implements StylePanel {
 
@@ -195,19 +197,26 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
     
     private boolean updatingComponents = false;
     private boolean initializing = false;
+    // Styles displayed in each combobox of the table
     final private BasicStyleListCellRenderer basicStyleListCellRenderer = new BasicStyleListCellRenderer();
-    private BasicStylePanel basicStylePanel;
+    private DeeRenderingStylePanel deeRenderingStylePanel;
 
+    // Cell editor for the table
     final private TableCellEditor basicStyleTableCellEditor = new TableCellEditor() {
         final private DefaultComboBoxModel<Object> comboBoxModel = new DefaultComboBoxModel<Object>();
         private BasicStyle originalStyle;
         final private DefaultCellEditor editor;
+        // Create JComboBox to select a style among styles created from the ColorScheme
         final private JComboBox<Object> comboBox = new JComboBox<Object>(comboBoxModel) {
+
                 public void setSelectedItem(Object anObject) {
                     if (anObject != CUSTOM_ENTRY) {
                         super.setSelectedItem(anObject);
                         return;
                     }
+                    // If we do not hide popup here, the first click in the dialog opened
+                    // by the prompt will do that instead of interacting with the dialog
+                    this.hidePopup();
                     BasicStyle style = promptBasicStyle(originalStyle);
                     if (style == null) {
                         return;
@@ -215,12 +224,12 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
                     comboBox.addItem(style);
                     super.setSelectedItem(style);
                 }
-            };
+        };
 
-            {
-                comboBox.setRenderer(basicStyleListCellRenderer);
-                editor = new DefaultCellEditor(comboBox);
-            }
+        {
+            comboBox.setRenderer(basicStyleListCellRenderer);
+            editor = new DefaultCellEditor(comboBox);
+        }
 
             public Component getTableCellEditorComponent(JTable table,
                 Object value, boolean isSelected, int row, int column) {
@@ -231,53 +240,59 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
                 //Include the current BasicStyle; otherwise, the current BasicStyle
                 //will not show up as the selected item in the combo box. [Jon Aquino]
                 comboBoxModel.addElement(value);
-
                 for (Color color : ColorScheme.create((String)colorSchemeComboBox.getSelectedItem()).getColors()) {
-                    BasicStyle bs = new BasicStyle(color);
-                    bs.setLineWidth(getLayer().getBasicStyle().getLineWidth());
-                    bs.setLineWidth(getLayer().getBasicStyle().getLineWidth());
-                    bs.setRenderingLine(getLayer().getBasicStyle().isRenderingLine());
-                    bs.setLinePattern(getLayer().getBasicStyle().getLinePattern());
-                    bs.setRenderingFill(getLayer().getBasicStyle().isRenderingFill());
-                    bs.setFillPattern(getLayer().getBasicStyle().getFillPattern());
-                    bs.setRenderingVertices(getLayer().getBasicStyle().getRenderingVertices());
-                    comboBoxModel.addElement(bs);
+                    XBasicStyle xbs = new XBasicStyle(getLayer().getBasicStyle(), getLayer().getVertexStyle());
+                    xbs.setFillColor(color);
+                    xbs.setLineColor(color.darker());
+                    if (originalStyle instanceof XBasicStyle) {
+                        xbs.getVertexStyle().setFillColor(color);
+                        xbs.getVertexStyle().setFillColor(color.darker());
+                        xbs.getVertexStyle().setEnabled(((XBasicStyle)originalStyle).getVertexStyle().isEnabled());
+                    }
+                    //bs.setLineWidth(getLayer().getBasicStyle().getLineWidth());
+                    //bs.setLineWidth(getLayer().getBasicStyle().getLineWidth());
+                    //bs.setRenderingLine(getLayer().getBasicStyle().isRenderingLine());
+                    //bs.setLinePattern(getLayer().getBasicStyle().getLinePattern());
+                    //bs.setRenderingFill(getLayer().getBasicStyle().isRenderingFill());
+                    //bs.setFillPattern(getLayer().getBasicStyle().getFillPattern());
+                    //bs.setRenderingVertices(getLayer().getBasicStyle().getRenderingVertices());
+                    comboBoxModel.addElement(xbs);
                 }
 
                 comboBoxModel.setSelectedItem(value);
 
-                return editor.getTableCellEditorComponent(table, value,
+            return editor.getTableCellEditorComponent(table, value,
                     isSelected, row, column);
-            }
+        }
 
-            public Object getCellEditorValue() {
+        public Object getCellEditorValue() {
                 return editor.getCellEditorValue();
             }
 
-            public boolean isCellEditable(EventObject anEvent) {
+        public boolean isCellEditable(EventObject anEvent) {
                 return editor.isCellEditable(anEvent);
             }
 
-            public boolean shouldSelectCell(EventObject anEvent) {
+        public boolean shouldSelectCell(EventObject anEvent) {
                 return editor.shouldSelectCell(anEvent);
             }
 
-            public boolean stopCellEditing() {
+        public boolean stopCellEditing() {
                 return editor.stopCellEditing();
             }
 
-            public void cancelCellEditing() {
+        public void cancelCellEditing() {
                 editor.cancelCellEditing();
             }
 
-            public void addCellEditorListener(CellEditorListener l) {
+        public void addCellEditorListener(CellEditorListener l) {
                 editor.addCellEditorListener(l);
             }
 
-            public void removeCellEditorListener(CellEditorListener l) {
+        public void removeCellEditorListener(CellEditorListener l) {
                 editor.removeCellEditorListener(l);
             }
-        };
+    };
 
     private ColorScheme colorSchemeForInserts = null;
 
@@ -351,9 +366,15 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         initializing = true;
 
         try {
-            basicStylePanel = new BasicStylePanel(
-                workbenchContext.getWorkbench().getBlackboard(),
-                ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+            //basicStylePanel = new BasicStylePanel(
+            //    workbenchContext.getWorkbench().getBlackboard(),
+            //    ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+            // [mmichaud 2014-06-15] replace BasicStylePanel by DeeRenderingStylePanel
+            // to make it possible to do ColorTheming with VertexStyle
+            deeRenderingStylePanel = new DeeRenderingStylePanel(
+                    workbenchContext.getWorkbench().getBlackboard(),
+                    layer,
+                    PersistentBlackboardPlugIn.get(workbenchContext));
             this.layer = layer;
             this.workbenchContext = workbenchContext;
             // 0 - DiscreteColorThemingState (already initialized)
@@ -390,11 +411,11 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
             initVertexStyleEnabled(layer);
             initToolBar();
             enableColorThemingCheckBox.setSelected(ColorThemingStyle.get(layer).isEnabled());
-            //vertexStyleEnableCheckBox.setSelected(ColorThemingStyle.get(layer).isVertexStyleEnabled());
+            vertexStyleEnableCheckBox.setSelected(ColorThemingStyle.get(layer).isVertexStyleEnabled());
             updateComponents();
-            GUIUtil.sync(basicStylePanel.getTransparencySlider(), transparencySlider);
-            GUIUtil.sync(basicStylePanel.getLineWidthSlider(), lineWidthSlider);
-            basicStylePanel.setSynchronizingLineColor(layer.isSynchronizingLineColor());
+            GUIUtil.sync(deeRenderingStylePanel.getTransparencySlider(), transparencySlider);
+            GUIUtil.sync(deeRenderingStylePanel.getLineWidthSlider(), lineWidthSlider);
+            deeRenderingStylePanel.setSynchronizingLineColor(layer.isSynchronizingLineColor());
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -440,10 +461,10 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
                     enableColorThemingCheckBox.isSelected());
             layer.getBasicStyle().setEnabled(
                     !enableColorThemingCheckBox.isSelected());
-            // sync ColorTheming vertexStyle with vertexStyle before disabling vertexStyle
-            //ColorThemingStyle.get(layer)
-            //        .setVertexStyleEnabled(layer.getVertexStyle().isEnabled());
             // fix bug 3091363 and part of 3043312
+            // ColorThemingStyle is updated after DeeRenderingStylePanel
+            // enable vertex if it has been enables in DeeRenderingStylePanel
+            // and if ColorThemingStyle is not activated
             layer.getVertexStyle().setEnabled(
                     layer.getVertexStyle().isEnabled() &&
                     !enableColorThemingCheckBox.isSelected());
@@ -470,7 +491,7 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
     }
 
     public JCheckBox getSynchronizeCheckBox() {
-        return basicStylePanel.getSynchronizeCheckBox();
+        return deeRenderingStylePanel.getSynchronizeCheckBox();
     }
 
     public Layer getLayer() {
@@ -502,7 +523,7 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
 
     private void initVertexStyleEnabled(Layer layer) {
         vertexStyleEnableCheckBox.setSelected(
-                ColorThemingStyle.get(layer).isVertexStyleEnabled() || layer.getVertexStyle().isEnabled());
+                ColorThemingStyle.get(layer).isVertexStyleEnabled());
     }
 
     private boolean colorThemingStyleHasRanges(Layer layer) {
@@ -617,15 +638,16 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
     private BasicStyle promptBasicStyle(BasicStyle basicStyle) {
         int originalTransparencySliderValue = transparencySlider.getValue();
         int originalLineWidthSliderValue = lineWidthSlider.getValue();
-        basicStylePanel.setBasicStyle(basicStyle);
-        basicStylePanel.getTransparencySlider().setValue(originalTransparencySliderValue);
-        basicStylePanel.getLineWidthSlider().setValue(originalLineWidthSliderValue);
+        deeRenderingStylePanel.setBasicStyle(basicStyle);
+        deeRenderingStylePanel.getTransparencySlider().setValue(originalTransparencySliderValue);
+        deeRenderingStylePanel.getLineWidthSlider().setValue(originalLineWidthSliderValue);
+        //deeRenderingStylePanel.updateControls((XBasicStyle)basicStyle);
 
         OKCancelPanel okCancelPanel = new OKCancelPanel();
         final JDialog dialog = new JDialog((JDialog) SwingUtilities.windowForComponent(
                     this), I18N.get("ui.renderer.style.ColorThemingPanel.custom"), true);
         dialog.getContentPane().setLayout(new BorderLayout());
-        dialog.getContentPane().add(basicStylePanel, BorderLayout.CENTER);
+        dialog.getContentPane().add(deeRenderingStylePanel, BorderLayout.CENTER);
         dialog.getContentPane().add(okCancelPanel, BorderLayout.SOUTH);
         okCancelPanel.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
@@ -641,15 +663,17 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
             lineWidthSlider.setValue(originalLineWidthSliderValue);
         }
 
-        return okCancelPanel.wasOKPressed() ? basicStylePanel.getBasicStyle()
-                                            : null;
+        return okCancelPanel.wasOKPressed() ?
+                new XBasicStyle(deeRenderingStylePanel.getBasicStyle(),
+                        deeRenderingStylePanel.getVertexStyle())
+                : null;
     }
 
     private void initTable(Layer layer) {
         BasicStyle defaultStyle = colorThemingStyleHasRanges(getLayer()) ?
             ColorThemingStyle.get(layer).getDefaultStyle():
-            layer.getBasicStyle();
-
+            new XBasicStyle(layer.getBasicStyle(), layer.getVertexStyle());
+        assert defaultStyle instanceof XBasicStyle : "defaultStyle is not an instance of XBasicStyle";
         table.setModel(new ColorThemingTableModel(defaultStyle,
                 ColorThemingStyle.get(layer).getAttributeName(),
                 attributeValueToBasicStyleMap(layer),
@@ -830,10 +854,9 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
                         enableColorThemingCheckBox_actionPerformed(e);
                     } else {
                         layer.getVertexStyle().setEnabled(
-                                ((ColorThemingStyle)layer.getStyle(ColorThemingStyle.class)).isVertexStyleEnabled());
+                                ColorThemingStyle.get(layer).isVertexStyleEnabled());
                     }
-                    //((ColorThemingStyle)layer.getStyle(ColorThemingStyle.class))
-                    //        .setVertexStyleEnabled(layer.getVertexStyle().isEnabled());
+                    //ColorThemingStyle.get(layer).setVertexStyleEnabled(layer.getVertexStyle().isEnabled());
                 }
             });
 
@@ -1055,8 +1078,9 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
     
     private Map<Object,BasicStyle> toAttributeValueToBasicStyleMap(Collection<Object> attributeValues) {
         Map<Object,BasicStyle> attributeValueToBasicStyleMap = new TreeMap<Object,BasicStyle>();
+        BasicStyle style = new XBasicStyle(getLayer().getBasicStyle(), getLayer().getVertexStyle());
         for (Object value : attributeValues) {
-            attributeValueToBasicStyleMap.put(value, getLayer().getBasicStyle());
+            attributeValueToBasicStyleMap.put(value, style);
         }
         return attributeValueToBasicStyleMap;
     }    
@@ -1183,6 +1207,11 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
     }
 
     void vertexStyleEnabled_stateChanged(ItemEvent e) {
+        for (Object obj : tableModel().getAttributeValueToBasicStyleMap().values()) {
+            if (obj instanceof XBasicStyle) {
+                ((XBasicStyle)obj).getVertexStyle().setEnabled(vertexStyleEnableCheckBox.isSelected());
+            }
+        }
         //repaint();
     }
 
