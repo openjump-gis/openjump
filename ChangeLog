@@ -3,6 +3,7 @@
 2014-07-01 mmichaud <m.michael.michaud@orange.fr>
   * Improve copy/paste style behaviour while copying from/to
     ReferencedImageLayer
+  * Fix bug #371 on WritablePostgisDataStoreDataSource : null schema
 
 2014-06-14 mmichaud <m.michael.michaud@orange.fr>
   * Fix a bug in PostGISDataStoreDataSource thanks to Francisco avalos

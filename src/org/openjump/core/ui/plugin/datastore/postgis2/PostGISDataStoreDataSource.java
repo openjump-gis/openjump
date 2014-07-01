@@ -134,8 +134,7 @@ public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
             sb.append(", \"").append(col).append("\"");
         }
         sb.append(" FROM \"")
-                .append(unquote(schemaName))
-                .append("\".\"")
+                .append(schemaName == null ? "" : unquote(schemaName)+"\".\"")
                 .append(unquote(tableName))
                 .append("\" WHERE ")
                 .append(whereClause)
