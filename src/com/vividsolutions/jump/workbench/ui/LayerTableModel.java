@@ -33,14 +33,8 @@
 
 package com.vividsolutions.jump.workbench.ui;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.text.Collator;
+import java.util.*;
 
 import javax.swing.JTable;
 import javax.swing.event.TableModelEvent;
@@ -65,6 +59,7 @@ public class LayerTableModel extends ColumnBasedTableModel {
     private ArrayList features = new ArrayList();
     private String sortedColumnName = null;
     private boolean sortAscending = false;
+    static Collator collator = Collator.getInstance(Locale.getDefault());
 
     private abstract class MyColumn extends Column {
         public MyColumn(String name, Class dataClass) {
@@ -111,6 +106,7 @@ public class LayerTableModel extends ColumnBasedTableModel {
 
         layer.getLayerManager().addLayerListener(layerListener);
         initColumns(layer);
+        collator.setStrength(Collator.PRIMARY);
     }
 
     private LayerListener layerListener = new LayerListener() {
@@ -386,6 +382,9 @@ public class LayerTableModel extends ColumnBasedTableModel {
       }
       else if (o1 instanceof Geometry) {
         return 0;  // for now - change to compare type
+      }
+      else if (o1 instanceof String && o2 instanceof String) {
+        return collator.compare(o1, o2);
       }
       else if (o1 instanceof Comparable) {
         Comparable attribute1 = (Comparable) o1;
