@@ -8,6 +8,8 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.renderer.style.Style;
+
 import java.util.Collection;
 import javax.swing.ImageIcon;
 
@@ -19,7 +21,7 @@ import javax.swing.ImageIcon;
 
 public class CopyStylesPlugIn extends AbstractPlugIn {
 
-  static Collection stylesBuffer = null;
+  static Collection<Style> stylesBuffer = null;
   static boolean isScaleDependentRenderingEnabled = false;
   static double minScale = 1.0;
   static double maxScale = 1.0;

@@ -418,12 +418,12 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy, Dispo
 		fireAppearanceChanged();
 	}
 
-	public Collection cloneStyles() {
-		ArrayList styleClones = new ArrayList();
+	public Collection<Style> cloneStyles() {
+		ArrayList<Style> styleClones = new ArrayList<Style>();
 
-		for (Iterator i = getStyles().iterator(); i.hasNext();) {
-			Style style = (Style) i.next();
-			styleClones.add(style.clone());
+		for (Iterator<Style> i = getStyles().iterator(); i.hasNext();) {
+			Style style = i.next();
+			styleClones.add((Style)style.clone());
 		}
 
 		return styleClones;

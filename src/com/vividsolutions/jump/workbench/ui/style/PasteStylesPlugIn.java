@@ -16,7 +16,9 @@ import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.LabelStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.Style;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import javax.swing.ImageIcon;
 
 /**
@@ -62,12 +64,22 @@ public class PasteStylesPlugIn extends AbstractPlugIn {
     layer.setScaleDependentRenderingEnabled(CopyStylesPlugIn.isScaleDependentRenderingEnabled);
     layer.setMaxScale(CopyStylesPlugIn.maxScale);
     layer.setMinScale(CopyStylesPlugIn.minScale);
-    if (CopyStylesPlugIn.stylesBuffer.size() > 0 &&
-          CopyStylesPlugIn.stylesBuffer.iterator().next() instanceof ReferencedImageStyle) {
-        // don't try to copy style from image layer
-    } else {
+    if (CopyStylesPlugIn.stylesBuffer.size() > 0) {
+        List<Style> styles = new ArrayList<Style>();
+        for (Style style : CopyStylesPlugIn.stylesBuffer) {
+            // Remove copied ReferencedImageStyle if target layer is not a ReferencedImagesLayer
+            if (style instanceof ReferencedImageStyle &&
+                    !(layer instanceof ReferencedImagesLayer)) continue;
+            styles.add(style);
+        }
+        // Add ReferencedImageStyle if copied styles does not contain ReferencedImageStyle
+        // and target layer is a ReferencedImagesLayer
+        if (!(styles.get(0) instanceof ReferencedImageStyle) &&
+                (layer instanceof ReferencedImagesLayer)) {
+            styles.add(0, layer.getStyles(ReferencedImageStyle.class).get(0));
+        }
         validateStyleForLayer(layer); //throws exception if bad
-        layer.setStyles(CopyStylesPlugIn.stylesBuffer);
+        layer.setStyles(styles);
     }
   }
   

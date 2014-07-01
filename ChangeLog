@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2014-07-01 mmichaud <m.michael.michaud@orange.fr>
+  * Improve copy/paste style behaviour while copying from/to
+    ReferencedImageLayer
+
 2014-06-14 mmichaud <m.michael.michaud@orange.fr>
   * Fix a bug in PostGISDataStoreDataSource thanks to Francisco avalos
     (tables in non public schema could not be read)
