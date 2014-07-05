@@ -17,10 +17,6 @@ public class XBasicStyle extends BasicStyle {
 
     public XBasicStyle() {} // for java2xml
 
-    //public XBasicStyle(BasicStyle fromBasicStyle) {
-    //    this(fromBasicStyle, null);
-    //}
-
     public XBasicStyle(BasicStyle fromBasicStyle, VertexStyle fromVertexStyle) {
         super();
         assert fromVertexStyle != null : "XBasicStyle must have a non null VertexStyle";
@@ -39,7 +35,10 @@ public class XBasicStyle extends BasicStyle {
         setLinePattern(fromBasicStyle.getLinePattern());
         setRenderingLinePattern(fromBasicStyle.isRenderingLinePattern());
 
-        setRenderingVertices(fromBasicStyle.getRenderingVertices());
+        // XBasicStyle already includes a VertexStyle attribute
+        // Use vertexStyle.setEnabled to make vertices visible
+        //setRenderingVertices(fromBasicStyle.getRenderingVertices());
+        setRenderingVertices(fromVertexStyle == null || !fromVertexStyle.isEnabled());
 
         if (fromVertexStyle == null) {
             vertexStyle = new SquareVertexStyle();
@@ -66,18 +65,9 @@ public class XBasicStyle extends BasicStyle {
         this.vertexStyle = vertexStyle;
     }
 
-    @Override public void paint(Feature f, Graphics2D g, Viewport viewport)
-        throws Exception {
-
-        if (!getRenderingVertices() && f.getGeometry() instanceof com.vividsolutions.jts.geom.Point) {
-            return;
-        }
+    @Override public void paint(Feature f, Graphics2D g, Viewport viewport) throws Exception {
         // render basic style
-        StyleUtil.paint(f.getGeometry(), g, viewport, isRenderingFill(),
-                getLineStroke(),
-                (isRenderingFillPattern() && (getFillPattern() != null)) ? getFillPattern()
-                        : getFillColor(),
-                isRenderingLine(), getLineStroke(), getLineColor());
+        super.paint(f, g, viewport);
         // render vertex style
         if (vertexStyle.isEnabled()) {
             //@TODO don't know why some vertexStyles have a 0 alpha

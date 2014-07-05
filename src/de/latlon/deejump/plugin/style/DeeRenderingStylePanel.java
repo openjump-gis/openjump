@@ -252,22 +252,23 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
         vertexStyleChooser.setSelectedStyle(getCurrentVertexStyle());
     }
 
-    //public void updateControls(XBasicStyle xStyle) {
-//
-    //    setBasicStyle(xStyle);
-//
-    //    if (xStyle.getVertexStyle() instanceof BitmapVertexStyle) {
-    //        String fileName = ((BitmapVertexStyle) xStyle.getVertexStyle()).getFileName();
-    //        // side effects used for the WORST
-    //        vertexStyleChooser.setCurrentFileName(fileName);
-    //    } else {
-    //        vertexCheckBox.setSelected(xStyle.getVertexStyle().isEnabled());
-    //        vertexSlider.setValue(sizeToSlider(xStyle.getVertexStyle().getSize()));
-    //        vertexSize.setText(Integer.toString(xStyle.getVertexStyle().getSize()));
-    //    }
-//
-    //    vertexStyleChooser.setSelectedStyle(getCurrentVertexStyle());
-    //}
+    public void setBasicStyle(BasicStyle basicStyle) {
+        super.setBasicStyle(basicStyle);
+        if (basicStyle instanceof XBasicStyle) {
+            VertexStyle vStyle = ((XBasicStyle) basicStyle).getVertexStyle();
+            vertexCheckBox.setSelected(vStyle.isEnabled());
+            vertexSlider.setValue(sizeToSlider(vStyle.getSize()));
+            vertexSize.setText(Integer.toString(vStyle.getSize()));
+            if (vStyle instanceof BitmapVertexStyle) {
+                String fileName = ((BitmapVertexStyle) vStyle).getFileName();
+                // side effects used for the WORST
+                vertexStyleChooser.setCurrentFileName(fileName);
+            } else {
+                vertexStyleChooser.setSelectedStyle(getCurrentVertexStyle());
+            }
+        }
+    }
+
 
     @Override
     public void updateControls() {

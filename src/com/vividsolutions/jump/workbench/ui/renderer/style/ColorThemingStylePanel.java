@@ -249,13 +249,6 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
                         xbs.getVertexStyle().setFillColor(color.darker());
                         xbs.getVertexStyle().setEnabled(((XBasicStyle)originalStyle).getVertexStyle().isEnabled());
                     }
-                    //bs.setLineWidth(getLayer().getBasicStyle().getLineWidth());
-                    //bs.setLineWidth(getLayer().getBasicStyle().getLineWidth());
-                    //bs.setRenderingLine(getLayer().getBasicStyle().isRenderingLine());
-                    //bs.setLinePattern(getLayer().getBasicStyle().getLinePattern());
-                    //bs.setRenderingFill(getLayer().getBasicStyle().isRenderingFill());
-                    //bs.setFillPattern(getLayer().getBasicStyle().getFillPattern());
-                    //bs.setRenderingVertices(getLayer().getBasicStyle().getRenderingVertices());
                     comboBoxModel.addElement(xbs);
                 }
 
@@ -1031,8 +1024,6 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
 
     private SortedSet<Object> getNonNullAttributeValues() {
         TreeSet<Object> values = new TreeSet<Object>();
-        //for (Iterator i = layer.getFeatureCollectionWrapper().getFeatures()
-        //                       .iterator(); i.hasNext();) {
         for (Object obj : layer.getFeatureCollectionWrapper().getFeatures()) {
             Feature feature = (Feature)obj;
             if (feature.getAttribute(getAttributeName()) != null) {
@@ -1210,7 +1201,16 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         for (Object obj : tableModel().getAttributeValueToBasicStyleMap().values()) {
             if (obj instanceof XBasicStyle) {
                 ((XBasicStyle)obj).getVertexStyle().setEnabled(vertexStyleEnableCheckBox.isSelected());
+                // If vertex style is selected, setRenderingVertice is deactivated and the opposite
+                ((XBasicStyle)obj).setRenderingVertices(!vertexStyleEnableCheckBox.isSelected());
             }
+        }
+        if (tableModel().getDefaultStyle() instanceof XBasicStyle) {
+            ((XBasicStyle)tableModel().getDefaultStyle())
+                    .getVertexStyle()
+                    .setEnabled(vertexStyleEnableCheckBox.isSelected());
+            tableModel().getDefaultStyle()
+                    .setRenderingVertices(!vertexStyleEnableCheckBox.isSelected());
         }
         //repaint();
     }
@@ -1292,15 +1292,15 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
     // return an ordered map (value -> count of corresponding features)
     // Erwan Bocher [20/01/2005]
     // Add button to calculate range and populateTable
-    public SortedMap<Object,Object> getAttributeValuesCount() {
-        TreeMap<Object,Object> values = new TreeMap<Object,Object>();
+    public SortedMap<Object,Integer> getAttributeValuesCount() {
+        TreeMap<Object,Integer> values = new TreeMap<Object,Integer>();
 
         for (Object obj : layer.getFeatureCollectionWrapper().getFeatures()) {
             Feature feature = (Feature)obj;
 
             if (feature.getAttribute(getAttributeName()) != null) {
                 Object key = ColorThemingStyle.trimIfString(feature.getAttribute(getAttributeName()));
-            	Integer count = (Integer) values.get(key);
+            	Integer count = values.get(key);
                 if (count == null)
                 	values.put(key, new Integer(1));
                 else
