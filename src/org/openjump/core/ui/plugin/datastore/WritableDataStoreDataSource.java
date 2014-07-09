@@ -186,9 +186,10 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                         if (exists) {
                             deleteTableQuery(conn, quotedSchemaName, quotedTableName);
                         }
-                        if (createPrimaryKey) {
-                            featureCollection.getFeatureSchema().removeExternalPrimaryKey();
-                        }
+                        // if a external PK already exists, unmark it
+                        // if createPrimaryKey=true, it will be re-created
+                        // if createPrimaryKey=false, old gid will be considered as a normal attribute
+                        featureCollection.getFeatureSchema().removeExternalPrimaryKey();
                         createAndPopulateTable(conn, featureCollection,
                                 quotedSchemaName, quotedTableName, srid, "GEOMETRY", dim);
                         if (createPrimaryKey) {
