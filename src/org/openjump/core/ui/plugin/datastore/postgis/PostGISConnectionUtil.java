@@ -55,12 +55,11 @@ public class PostGISConnectionUtil {
     /** 
      * Returns a list of attributes compatible between postgis table and featureSchema.
      */
-    public String[] compatibleSchemaSubset(String dbSchema, String dbTable, 
-                              FeatureSchema featureSchema) throws SQLException {
+    public String[] compatibleSchemaSubset(String schemaName, String tableName,
+                FeatureSchema featureSchema, boolean normalizedColumnNames) throws SQLException {
         DatabaseMetaData metadata = connection.getMetaData();
-        ResultSet rs = metadata.getColumns(null,
-                PostGISQueryUtil.unquote(dbSchema), 
-                PostGISQueryUtil.unquote(dbTable), null);
+        ResultSet rs = metadata.getColumns(null, schemaName, tableName, null);
+        // map database column names to cooresponding feature attribute types
         Map<String,AttributeType> map = new HashMap<String,AttributeType>();
         while (rs.next()) {
             String name = rs.getString("COLUMN_NAME");
@@ -73,7 +72,9 @@ public class PostGISConnectionUtil {
         }
         List<String> subset = new ArrayList<String>();
         for (int i = 0 ; i < featureSchema.getAttributeCount() ; i++) {
-            String attribute = featureSchema.getAttributeName(i);
+            String attribute = normalizedColumnNames ?
+                    PostGISQueryUtil.normalize(featureSchema.getAttributeName(i))
+                    :featureSchema.getAttributeName(i);
             AttributeType type = featureSchema.getAttributeType(i);
             if (map.containsKey(attribute) && (map.get(attribute)==type)) {
                 subset.add(attribute);

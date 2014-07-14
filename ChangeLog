@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2014-07-14  mmichaud <m.michael.michaud@orange.fr>
+  * Add an option in SaveToPostGIS driver and WritableDataStoreDataSource
+    framework to write normalized lower case column names (see FR #206)
+
 2014-07-09  mmichaud <m.michael.michaud@orange.fr>
   * Fix bug #372 can't write a table with an old gid if "Create a primary
     key column" is unchecked

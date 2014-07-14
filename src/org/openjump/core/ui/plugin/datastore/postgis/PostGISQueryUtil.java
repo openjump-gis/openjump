@@ -16,25 +16,26 @@ import java.util.List;
 
 /**
  * static methods to help formatting sql statements for PostGIS
+ * @see org.openjump.core.ui.plugin.datastore.postgis.PostGISConnectionUtil
+ * for tools relying on the current connection
  */
 public class PostGISQueryUtil {
-    
-    //private static final WKBWriter WRITER   = new WKBWriter(2, false);
+
 	private static final WKBWriter WRITER2D = new WKBWriter(2, false);
 	private static final WKBWriter WRITER3D = new WKBWriter(3, false);
 	private static final WKBWriter WRITER2D_SRID = new WKBWriter(2, true);
 	private static final WKBWriter WRITER3D_SRID = new WKBWriter(3, true);
 	
 	/**
-	 * Returns a two Strings array containing the schema name and the table name
+	 * Returns a pair of strings containing unquoted schema and table names
 	 * from a full table name. If the fullName contains only one part (table
 	 * name), the returned array contains a null element at index 0<br>
 	 * Examples :<br>
 	 * <ul>
 	 * <li>myschema.mytable -> [myschema, mytable]</li>
-	 * <li>"MySchema"."MyTable" -> ["MySchema", "MyTable"] (case sensitive)</li>
+	 * <li>"MySchema"."MyTable" -> [MySchema, MyTable]</li>
 	 * <li>MyTable -> [null, MyTable]</li>
-	 * <li>2_table -> [null, "2_table"]</li>
+	 * <li>2_table -> [null, 2_table]</li>
 	 * </ul>
 	 */
 	public static String[] splitTableName(String fullName) {
@@ -52,10 +53,7 @@ public class PostGISQueryUtil {
 	    else {
 	        String dbSchema = fullName.substring(0, index);
 	        String dbTable = fullName.substring(index+1, fullName.length());
-	        if (dbSchema.matches("(?i)^[A-Z_].*") && dbTable.matches("(?i)^[A-Z_].*")) {
-	            return new String[]{dbSchema, dbTable};
-	        }
-	        else return new String[]{quote(dbSchema), quote(dbTable)};
+            return new String[]{dbSchema, dbTable};
 	    }
 	}
 	
@@ -63,11 +61,11 @@ public class PostGISQueryUtil {
 	    int index = fullName.indexOf("\".\"");
 	    if (index > -1) {
 	        return new String[]{
-	            fullName.substring(0, index), 
-	            fullName.substring(index+1, fullName.length())
+	            unquote(fullName.substring(0, index)),
+	            unquote(fullName.substring(index+1, fullName.length()))
 	        };
 	    }
-	    else return new String[]{null, fullName};
+	    else return new String[]{null, unquote(fullName)};
 	}
 	
 	private static boolean isQuoted(String s) {
@@ -95,29 +93,47 @@ public class PostGISQueryUtil {
 	}
 	
 	/**
-	 * Compose concatenate dbSchema name and dbTable name without making any
-	 * assumption whether names are quoted or not.
+	 * Compose concatenated quoted schema name and table name.
+     * @schemaName unquoted schema name
+     * @tableName unquoted table name
 	 */
-	public static String compose(String dbSchema, String dbTable) {
-	    return dbSchema == null ? 
-	            "\"" + unquote(dbTable) + "\"" : 
-	            "\"" + unquote(dbSchema) + "\".\"" + unquote(dbTable) + "\"";
+	public static String compose(String schemaName, String tableName) {
+	    return schemaName == null ?
+	            "\"" + tableName + "\"" :
+	            "\"" + schemaName + "\".\"" + tableName + "\"";
 	}
     
     /**
      * Returns the CREATE TABLE statement corresponding to this feature schema.
      * The statement includes column names and data types, but neither geometry
      * column nor primary key.
+     * @fSchema client feature schema
+     * @schemaName unquoted schema name or null to use default schema
+     * @tableName unquoted table name
+     * @param normalizedColumnNames whether column names must be normalized (lowercased
+     *                              and without special characters) or not
      */
-    public static String getCreateTableStatement(FeatureSchema fSchema, String dbSchema, String dbTable) {
-        return "CREATE TABLE " + compose(dbSchema, dbTable) + 
-               " (" + createColumnList(fSchema, true, false, false) + ");";
+    public static String getCreateTableStatement(FeatureSchema fSchema,
+            String schemaName, String tableName, boolean normalizedColumnNames) {
+        return "CREATE TABLE " + compose(schemaName, tableName) +
+               " (" + createColumnList(fSchema, true, false, false, normalizedColumnNames) + ");";
     }
-    
-    
-    public static String getAddSpatialIndexStatement(String dbSchema, String dbTable, String geometryColumn) {
-        return "CREATE INDEX \"" + compose(dbSchema, dbTable).replaceAll("\"","") + "_" + geometryColumn + "_idx\"\n" + 
-               "ON " + compose(dbSchema, dbTable) + " USING GIST ( \"" + geometryColumn + "\" );";
+
+
+    /**
+     * Create statement to add a spatial index on the specified geometry column.
+     * The geometry column name must have its final form. Attribute name normalization
+     * is the responsability of the calling method.
+     * @param schemaName unquoted schema name or null if default schema is used
+     * @param tableName unquoted table name
+     * @param geometryColumn unquoted geometry column name
+     * @return a sql string to add a spatial index
+     */
+    public static String getAddSpatialIndexStatement(String schemaName, String tableName,
+                String geometryColumn) {
+        return "CREATE INDEX \"" +
+                compose(schemaName, tableName).replaceAll("\"","") + "_" + geometryColumn + "_idx\"\n" +
+               "ON " + compose(schemaName, tableName) + " USING GIST ( \"" + geometryColumn + "\" );";
     }
     
     /**
@@ -126,37 +142,31 @@ public class PostGISQueryUtil {
      * @param includeSQLDataType if true, each attribute name is immediately
      *        followed by its corresponding sql DataType
      * @param includeGeometry if true, the geometry attribute is included
+     * @param includeExternalPK if true, the external primary key is included
+     * @param normalizedColumnName whether feature attribute names must be normalized
+     *                             (lower case without spacial characters) to specify
+     *                             table column names.
      */
     public static String createColumnList(FeatureSchema schema, 
                           boolean includeSQLDataType,
                           boolean includeGeometry,
-                          boolean includeExternalPK) {
+                          boolean includeExternalPK,
+                          boolean normalizedColumnName) {
         StringBuilder sb = new StringBuilder();
         int count = 0;
         for (int i = 0 ; i < schema.getAttributeCount() ; i++) {
             AttributeType type = schema.getAttributeType(i);
             if (type == AttributeType.GEOMETRY && !includeGeometry) continue;
             if (!includeExternalPK && schema.getExternalPrimaryKeyIndex() == i) continue;
-            String name = schema.getAttributeName(i);
+            String name = normalizedColumnName ?
+                    normalize(schema.getAttributeName(i))
+                    :schema.getAttributeName(i);
             if (0 < count++) sb.append(", ");
             sb.append("\"").append(name).append("\"");
             if (includeSQLDataType) sb.append(" ").append(getSQLType(type));
         }
         return sb.toString();
     }
-
-    //public static String createColumnList(FeatureSchema schema, String... exclude) {
-    //    StringBuilder sb = new StringBuilder();
-    //    List<String> excludeList = Arrays.asList(exclude);
-    //    int count = 0;
-    //    for (int i = 0 ; i < schema.getAttributeCount() ; i++) {
-    //        String name = schema.getAttributeName(i);
-    //        if (excludeList.contains(name)) continue;
-    //        if (0 < count++) sb.append(", ");
-    //        sb.append("\"").append(name).append("\"");
-    //    }
-    //    return sb.toString();
-    //}
 
     public static String escapeApostrophes(String value) {
         return value.replaceAll("'", "''");
@@ -224,25 +234,40 @@ public class PostGISQueryUtil {
     }
     
     /**
-     * Create the query String to add a GeometryColumn.
-     * Note 1 : In PostGIS 2.x, srid=-1 is automatically converted to srid=0 by
-     * AddGeometryColumn function.
-     * Note 2 : To stay compatible with PostGIS 1.x, last argument of 
+     * Creates the query String to add a GeometryColumn.
+     * <p>Note 1 : In PostGIS 2.x, srid=-1 is automatically converted to srid=0 by
+     * AddGeometryColumn function.</p>
+     * <p>Note 2 : To stay compatible with PostGIS 1.x, last argument of
      * AddGeometryColumn is omitted. As a consequence, geometry type is inserted
-     * a the column type rather than a constraint (new default behaviour in 2.x)
+     * a the column type rather than a constraint (new default behaviour in 2.x)</p>
+     * <p>The geometry column name must have its final form. Attribute name normalization
+     * is the responsability of the calling method.</p>
      */
-    public static String getAddGeometryColumnStatement(String dbSchema, String dbTable, 
+    public static String getAddGeometryColumnStatement(String schemaName, String tableName,
                 String geometryColumn, int srid, String geometryType, int dim) {
-        dbSchema = dbSchema == null ? "" : "'" + unquote(dbSchema) + "'::varchar,";
-        return "SELECT AddGeometryColumn(" + 
-                dbSchema + "'" + unquote(dbTable) + "'::varchar,'" + 
-                geometryColumn + "'::varchar," + 
-                srid + ",'" + 
-                geometryType.toUpperCase() + "'::varchar," + 
-                dim + ");";
+        if (schemaName == null) {
+            return "SELECT AddGeometryColumn('" + tableName + "','" +
+                    geometryColumn + "'," +
+                    srid + ",'" +
+                    geometryType.toUpperCase() + "'," +
+                    dim + ");";
+        } else {
+            return "SELECT AddGeometryColumn('" + schemaName + "','" +
+                    tableName + "','" +
+                    geometryColumn + "'," +
+                    srid + ",'" +
+                    geometryType.toUpperCase() + "'," +
+                    dim + ");";
+        }
     }
-    
-    
+
+    /**
+     * Converts the geometry into a byte array in EWKB format
+     * @param geom the geometry to convert to a byte array
+     * @param hasSrid whether the geometry srid has to be included in the byte array or not
+     * @param dimension geometry dimension (2 or 3)
+     * @return a byte array containing a EWKB representation of the geometry
+     */
     public static byte[] getByteArrayFromGeometry(Geometry geom, boolean hasSrid, int dimension) {
 		WKBWriter writer;
 		if (hasSrid) {
@@ -252,6 +277,13 @@ public class PostGISQueryUtil {
 		return writer.write(geom);
 	}
 
+    /**
+     * Converts the geometry into a byte array in EWKB format
+     * @param geom the geometry to convert to a byte array
+     * @param srid the srid of the geometry
+     * @param dimension geometry dimension (2 or 3)
+     * @return a byte array containing a EWKB representation of the geometry
+     */
     public static byte[] getByteArrayFromGeometry(Geometry geom, int srid, int dimension) {
         WKBWriter writer;
         geom.setSRID(srid);
@@ -321,6 +353,22 @@ public class PostGISQueryUtil {
                 return defaultSrid;
             }
         } else return defaultSrid;
+    }
+
+    public static String normalize(String name) {
+        if (name == null) return null;
+        StringBuilder sb = new StringBuilder(name.length());
+        for (int i = 0 ; i < name.length() ; i++) {
+            char c = name.charAt(i);
+            if(i==0) {
+                if (Character.isLetter(c) || c == '_') sb.append(Character.toLowerCase(c));
+                else sb.append('_');
+            } else {
+                if (Character.isLetterOrDigit(c) || c == '_') sb.append(Character.toLowerCase(c));
+                else sb.append('_');
+            }
+        }
+        return sb.toString();
     }
 
 }

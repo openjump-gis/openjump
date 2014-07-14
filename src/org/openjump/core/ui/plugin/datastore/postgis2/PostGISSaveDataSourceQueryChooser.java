@@ -10,6 +10,8 @@ import org.apache.log4j.Logger;
 import org.openjump.core.ccordsys.srid.SRIDStyle;
 import org.openjump.core.ui.plugin.datastore.DataStoreDataSourceFactory;
 import org.openjump.core.ui.plugin.datastore.WritableDataStoreDataSource;
+import org.openjump.core.ui.plugin.datastore.postgis.PostGISQueryUtil;
+import org.openjump.core.ui.plugin.datastore.postgis.PostGISUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -69,6 +71,8 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
         );
         query.setProperties(getProperties());
         ((WritableDataStoreDataSource)query.getDataSource()).setTableAlreadyCreated(false);
+        query.getDataSource().getProperties().put(
+                WritableDataStoreDataSource.NORMALIZED_COLUMN_NAMES, panel.isNormalizedColumnNames());
         List<DataSourceQuery> queries = new ArrayList<DataSourceQuery>();
         queries.add(query);
 
@@ -126,13 +130,16 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
         if (layers.length == 1) {
             FeatureSchema schema = layers[0].getFeatureCollectionWrapper().getFeatureSchema();
             properties.put(WritableDataStoreDataSource.GEOMETRY_ATTRIBUTE_NAME_KEY,
-                    schema.getAttributeName(schema.getGeometryIndex()));
+                panel.isNormalizedColumnNames()?
+                    PostGISQueryUtil.normalize(schema.getAttributeName(schema.getGeometryIndex()))
+                    :schema.getAttributeName(schema.getGeometryIndex()));
 
             // OpenJUMP has now a better support of Coordinate System at
             // FeatureCollection and FeatureSchema level, but this one is simple
             // and makes it easy to set the SRID the user want before an update
             SRIDStyle sridStyle = (SRIDStyle)layers[0].getStyle(SRIDStyle.class);
             properties.put(WritableDataStoreDataSource.SRID_KEY, sridStyle.getSRID());
+            properties.put(WritableDataStoreDataSource.NORMALIZED_COLUMN_NAMES, panel.isNormalizedColumnNames());
         }
         properties.put(WritableDataStoreDataSource.LIMITED_TO_VIEW, false);
         properties.put(WritableDataStoreDataSource.MAX_FEATURES_KEY, Integer.MAX_VALUE);

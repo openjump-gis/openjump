@@ -14,6 +14,8 @@ import com.vividsolutions.jump.workbench.ui.AbstractDriverPanel;
 import com.vividsolutions.jump.workbench.ui.OKCancelPanel;
 import com.vividsolutions.jump.workbench.ui.plugin.datastore.ConnectionPanel;
 import org.openjump.core.ui.plugin.datastore.WritableDataStoreDataSource;
+import org.openjump.core.ui.plugin.datastore.postgis.PostGISQueryUtil;
+import org.openjump.core.ui.plugin.datastore.postgis.PostGISUtil;
 import org.openjump.core.ui.plugin.datastore.postgis.SaveToPostGISDataSource;
 
 import javax.swing.*;
@@ -22,6 +24,8 @@ import javax.swing.event.AncestorListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.*;
 
 /**
@@ -33,14 +37,18 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel {
 
     static final String TITLE   = I18N.get(KEY + ".title");
 
-    static final String WRITE_3D_GEOM   = I18N.get(KEY + ".write-3d-geometries");
-    static final String CREATE_DB_PK    = I18N.get(KEY + ".create-database-primary-key");
+    static final String WRITE_3D_GEOM           = I18N.get(KEY + ".write-3d-geometries");
+    static final String CREATE_DB_PK            = I18N.get(KEY + ".create-database-primary-key");
+    static final String NORMALIZED_TABLE_NAME    = I18N.get(KEY + ".normalized-table-name-key");
+    static final String NORMALIZED_COLUMN_NAMES  = I18N.get(KEY + ".normalized-column-names-key");
 
     // UI elements
     private ConnectionPanel connectionPanel;
     private JComboBox tableComboBox;
     private JCheckBox createPrimaryKeyCheckBox;
     private JCheckBox write3dGeomCheckBox;
+    private JCheckBox normalizedTableNameCheckBox;
+    private JCheckBox normalizedColumnNamesCheckBox;
     private OKCancelPanel okCancelPanel;
 
     // context variables
@@ -118,6 +126,31 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel {
         gbLayout.setConstraints(write3dGeomCheckBox, gbConstraints);
         add(write3dGeomCheckBox);
 
+        // Normalize column names checkbox
+        normalizedTableNameCheckBox = new JCheckBox(NORMALIZED_TABLE_NAME);
+        normalizedTableNameCheckBox.setSelected(false);
+        gbConstraints.gridy += 1;
+        gbLayout.setConstraints(normalizedTableNameCheckBox, gbConstraints);
+        add(normalizedTableNameCheckBox);
+        normalizedTableNameCheckBox.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent e) {
+                if (((JCheckBox)e.getSource()).isSelected()) {
+                    tableComboBox.setSelectedItem(PostGISQueryUtil.normalize(
+                            wbContext.getLayerNamePanel().getSelectedLayers()[0].getName()));
+                } else {
+                    tableComboBox.setSelectedItem(
+                            wbContext.getLayerNamePanel().getSelectedLayers()[0].getName());
+                }
+            }
+        });
+
+        // Normalize column names checkbox
+        normalizedColumnNamesCheckBox = new JCheckBox(NORMALIZED_COLUMN_NAMES);
+        normalizedColumnNamesCheckBox.setSelected(false);
+        gbConstraints.gridy += 1;
+        gbLayout.setConstraints(normalizedColumnNamesCheckBox, gbConstraints);
+        add(normalizedColumnNamesCheckBox);
+
     }
 
     class PanelAncestorListener implements AncestorListener {
@@ -185,6 +218,14 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel {
 
     public boolean writeCreate3dGeometriesSelected() {
         return write3dGeomCheckBox.isSelected();
+    }
+
+    public boolean isNormalizedTableName() {
+        return normalizedTableNameCheckBox.isSelected();
+    }
+
+    public boolean isNormalizedColumnNames() {
+        return normalizedColumnNamesCheckBox.isSelected();
     }
 
     // Called if the source layer has changed

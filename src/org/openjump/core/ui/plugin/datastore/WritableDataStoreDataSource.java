@@ -57,11 +57,11 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
     public static final String MANAGE_CONFLICTS  = "Manage conflicts";
 
     // Update options (write to database) : don't translate, these are map keys
-    public static final String EXTERNAL_PK_KEY   = "External PK";
-    public static final String SRID_KEY          = "SRID";
-    public static final String GEOM_DIM_KEY      = "Dimension";
-    //public static final String TABLE_CREATED     = "Table created";
-    public static final String CREATE_PK         = "Create PK";
+    public static final String EXTERNAL_PK_KEY         = "External PK";
+    public static final String SRID_KEY                = "SRID";
+    public static final String GEOM_DIM_KEY            = "Dimension";
+    public static final String CREATE_PK               = "Create PK";
+    public static final String NORMALIZED_COLUMN_NAMES = "Normalized Column Names";
 
     public static final String DEFAULT_PK_NAME   = "gid";
 
@@ -71,6 +71,13 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
 
     // See setTableAlreadyCreated()
     private boolean tableAlreadyCreated = true;
+
+    // unquoted schema name or null for default schema
+    protected String schemaName;
+    // unquoted table name
+    protected String tableName;
+    // primary key name
+    protected String primaryKeyName = DEFAULT_PK_NAME;
 
     public WritableDataStoreDataSource() {
         // Called by Java2XML [Jon Aquino 2005-03-16]
@@ -140,6 +147,10 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
             public FeatureCollection executeQuery(String query,
                                                   Collection exceptions, TaskMonitor monitor) {
                 try {
+                    String[] datasetName = PostGISQueryUtil.splitTableName((String)getProperties().get(DATASET_NAME_KEY));
+                    schemaName = datasetName[0];
+                    tableName = datasetName[1];
+                    primaryKeyName = (String)getProperties().get(EXTERNAL_PK_KEY);
                     // Must be implemented by subclasses
                     return createFeatureCollection();
                 } catch (Exception e) {
@@ -164,9 +175,13 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
 
                 ConnectionDescriptor connectionDescriptor =
                         (ConnectionDescriptor)getProperties().get(CONNECTION_DESCRIPTOR_KEY);
+
+                boolean normalizedColumnNames = (Boolean)getProperties().get(NORMALIZED_COLUMN_NAMES);
+
                 String[] datasetName = PostGISQueryUtil.splitTableName((String)getProperties().get(DATASET_NAME_KEY));
-                String quotedSchemaName = quote(datasetName[0]);
-                String quotedTableName = quote(datasetName[1]);
+                schemaName = datasetName[0];
+                tableName = datasetName[1];
+                String geometryColumn = (String)getProperties().get(WritableDataStoreDataSource.GEOMETRY_ATTRIBUTE_NAME_KEY);
                 boolean createPrimaryKey = (Boolean)getProperties().get(WritableDataStoreDataSource.CREATE_PK);
                 int srid = getProperties().get(SRID_KEY)==null ? 0 : (Integer)getProperties().get(SRID_KEY);
                 int dim = getProperties().get(GEOM_DIM_KEY)==null?
@@ -181,19 +196,19 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                     conn.setAutoCommit(false);
                     if (!tableAlreadyCreated) {
                         LOG.debug("Update mode: create table");
-                        boolean exists = tableExists(conn, unquote(quotedSchemaName), unquote(quotedTableName));
+                        boolean exists = tableExists(conn);
                         if (exists && !confirmOverwrite()) return;
                         if (exists) {
-                            deleteTableQuery(conn, quotedSchemaName, quotedTableName);
+                            deleteTableQuery(conn);
                         }
                         // if a external PK already exists, unmark it
                         // if createPrimaryKey=true, it will be re-created
                         // if createPrimaryKey=false, old gid will be considered as a normal attribute
                         featureCollection.getFeatureSchema().removeExternalPrimaryKey();
-                        createAndPopulateTable(conn, featureCollection,
-                                quotedSchemaName, quotedTableName, srid, "GEOMETRY", dim);
+                        createAndPopulateTable(conn,
+                                featureCollection, srid, geometryColumn, dim, normalizedColumnNames);
                         if (createPrimaryKey) {
-                            addDBPrimaryKey(conn, quotedSchemaName, quotedTableName, DEFAULT_PK_NAME);
+                            addDBPrimaryKey(conn, DEFAULT_PK_NAME);
                             // @TODO reload part is kept out of the transaction because it uses
                             // PostGISFeatureInputStream which init() function contains
                             // rs = stmt.executeQuery(parsedQuery);
@@ -207,14 +222,14 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                     }
                     else {
                         LOG.debug("Update mode: update table");
+                        primaryKeyName = (String)getProperties().get(EXTERNAL_PK_KEY);
                         FeatureSchema featureSchema = featureCollection.getFeatureSchema();
                         PostGISConnectionUtil connUtil = new PostGISConnectionUtil(conn);
-                        if (connUtil.compatibleSchemaSubset(quotedSchemaName, quotedTableName, featureSchema)
+                        if (connUtil.compatibleSchemaSubset(schemaName, tableName, featureSchema, normalizedColumnNames)
                                 .length < featureSchema.getAttributeCount()) {
                             if (!confirmWriteDespiteDifferentSchemas()) return;
                         }
-                        commit(conn, quotedSchemaName, quotedTableName,
-                                (String)getProperties().get(EXTERNAL_PK_KEY), srid, dim);
+                        commit(conn, srid, dim, normalizedColumnNames);
                         evolutions.clear();
                     }
                     conn.commit();
@@ -224,7 +239,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                 }
                 // Adding vacuum analyze seems to be necessary to be able to use
                 // ST_Estimated_Extent on the newly created table
-                finalizeUpdate(conn, quotedSchemaName, quotedTableName);
+                finalizeUpdate(conn);
             }
 
             public void close() {
@@ -240,23 +255,24 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
      * Example : perform a vacuum analyze in PostgreSQL to compact database and to
      * update statistics (needed by ST_Estimated_Extent function)
      */
-    public abstract void finalizeUpdate(java.sql.Connection conn,
-            String quotedSchemaName, String quotedTableName) throws Exception;
+    public abstract void finalizeUpdate(java.sql.Connection conn) throws Exception;
 
 
-    private void commit(java.sql.Connection conn, String dbSchema, String dbTable,
-                        String keyName, int srid, int dim) throws Exception {
+    private void commit(java.sql.Connection conn,
+                int srid, int dim, boolean normalizedColumnNames) throws Exception {
 
-        LOG.info("Evolutions to commit to " + dbSchema + "." + dbTable + " (PK=" + keyName +")");
+        LOG.info("Evolutions to commit to " + schemaName + "." + tableName + " (PK=" + primaryKeyName +")");
         for (Evolution evolution : evolutions.values()) {
             if (evolution.getType() == Evolution.Type.CREATION) {
-                PreparedStatement pstmt = insertStatement(conn, evolution.getNewFeature().getSchema(),                        dbSchema, dbTable, keyName, srid, dim);
-                pstmt = setAttributeValues(pstmt, evolution.getNewFeature(), srid, dim, keyName);
+                PreparedStatement pstmt = insertStatement(conn,
+                        evolution.getNewFeature().getSchema(), normalizedColumnNames);
+                pstmt = setAttributeValues(pstmt, evolution.getNewFeature(), srid, dim, primaryKeyName);
                 pstmt.execute();
                 LOG.info("  create new feature " + evolution.getNewFeature().getID()+"/");
             } else if (evolution.getType() == Evolution.Type.SUPPRESSION) {
-                deleteStatement(conn, evolution.getOldFeature(), keyName, dbSchema, dbTable).executeUpdate();
-                LOG.info("  delete " + evolution.getOldFeature().getID() + "/" + evolution.getOldFeature().getAttribute(keyName));
+                deleteStatement(conn, evolution.getOldFeature()).executeUpdate();
+                LOG.info("  delete " + evolution.getOldFeature().getID() + "/" +
+                        evolution.getOldFeature().getAttribute(primaryKeyName));
             } else if (evolution.getType() == Evolution.Type.MODIFICATION) {
                 Feature oldFeature = evolution.getOldFeature();
                 Feature newFeature = evolution.getNewFeature();
@@ -267,88 +283,54 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                     if (oldFeature.getAttribute(i) == null && newFeature.getAttribute(i) != null ||
                         oldFeature.getAttribute(i) != null && newFeature.getAttribute(i) == null ||
                         oldFeature.getAttribute(i) != null && !oldFeature.getAttribute(i).equals(newFeature.getAttribute(i))) {
-                        updateOneAttributeStatement(conn, newFeature, i, keyName, dbSchema, dbTable, srid, dim).executeUpdate();
+                        updateOneAttributeStatement(conn, newFeature, i, srid, dim).executeUpdate();
                     }
                 }
-                LOG.info("  modify " + evolution.getNewFeature().getID() + "/" + evolution.getNewFeature().getAttribute(keyName));
+                LOG.info("  modify " + evolution.getNewFeature().getID() + "/" +
+                        evolution.getNewFeature().getAttribute(primaryKeyName));
             }
         }
 
         evolutions.clear();
     }
 
-    protected PreparedStatement insertStatement(java.sql.Connection conn, FeatureSchema schema,
-                                                String dbSchema, String dbTable, String keyName,
-                                                int srid, int dim) throws SQLException {
-        String tableName = dbSchema == null ? dbTable : dbSchema + "." + dbTable;
-        StringBuilder sb = new StringBuilder("INSERT INTO " + tableName + "(");
+    /**
+     * Create a statement to insert a feature into the database
+     * @param conn connection to the database to update.
+     * @param fSchema feature schema
+     * @param normalizedColumnNames whether database column names should be normalized (lowercase) or not
+     * @return a PreparedStatement
+     * @throws SQLException
+     */
+    protected PreparedStatement insertStatement(java.sql.Connection conn,
+                FeatureSchema fSchema, boolean normalizedColumnNames) throws SQLException {
 
-        sb.append(PostGISQueryUtil.createColumnList(schema, false, true, false)).append(") VALUES(");
-        int nbValues = schema.getAttributeCount();
-        if (keyName != null && schema.hasAttribute(keyName)) nbValues --;
+        StringBuilder sb = new StringBuilder("INSERT INTO " + compose(schemaName, tableName) + "(");
+        // create a column name list without datatypes, including geometry and excluding primary key
+        sb.append(PostGISQueryUtil.createColumnList(fSchema, false, true, false, normalizedColumnNames))
+          .append(") VALUES(");
+        int nbValues = fSchema.getAttributeCount();
+        if (primaryKeyName != null && fSchema.hasAttribute(primaryKeyName)) nbValues --;
         for (int i = 0 ; i < nbValues ; i++) {
             sb.append(i==0?"?":",?");
         }
         sb.append(");");
         PreparedStatement pstmt = conn.prepareStatement(sb.toString());
-        //LOG.debug(pstmt);
         return pstmt;
     }
 
-    /*
-    protected PreparedStatement insertStatement(java.sql.Connection conn, Feature feature,
-                                                String dbSchema, String dbTable, String keyName,
-                                                int srid, int dim) throws SQLException {
-        String tableName = dbSchema == null ? dbTable : dbSchema + "." + dbTable;
-        FeatureSchema schema = feature.getSchema();
-        StringBuilder sb = new StringBuilder("INSERT INTO " + tableName + "(");
 
-        sb.append(PostGISQueryUtil.createColumnList(schema, false, true, false)).append(") VALUES(");
-        int nbValues = schema.getAttributeCount();
-        if (keyName != null && schema.hasAttribute(keyName)) nbValues --;
-        for (int i = 0 ; i < nbValues ; i++) {
-            sb.append(i==0?"?":",?");
-        }
-        sb.append(");");
-        PreparedStatement pstmt = conn.prepareStatement(sb.toString());
-        //pstmt = setAttributeValues(pstmt, feature, srid, dim, keyName);
-        //LOG.debug(pstmt);
-        return pstmt;
-    }
-    */
+    private PreparedStatement updateOneAttributeStatement(java.sql.Connection conn,
+                Feature feature, int attribute, int srid, int dim) throws SQLException {
 
-    /*
-    private PreparedStatement updateStatement(java.sql.Connection conn, Feature feature, String keyName,
-                                              String dbSchema, String dbTable, boolean hasSrid, int dim) throws SQLException {
-        String tableName = dbSchema == null ? dbTable : dbSchema + "." + dbTable;
-        FeatureSchema schema = feature.getSchema();
-        boolean quoted = schema.getAttributeType(schema.getExternalPrimaryKeyIndex()) == AttributeType.STRING;
-        String quote = quoted ? "'" : "";
-        StringBuilder sb = new StringBuilder("UPDATE " + tableName + " SET (");
-        //sb.append(PostGISQueryUtil.createColumnList(schema, keyName)).append(") = (");
-        sb.append(PostGISQueryUtil.createColumnList(schema, false, true, false)).append(") = (");
-        for (int i = 0 ; i < schema.getAttributeCount()-1 ; i++) {
-            sb.append(i==0?"?":",?");
-        }
-        sb.append(") WHERE \"").append(keyName).append("\" = ").append(quote).append(feature.getAttribute(keyName)).append(quote).append(";");
-        String query = sb.toString();
-        //LOG.debug(query);
-        PreparedStatement pstmt = conn.prepareStatement(query);
-        return setAttributeValues(pstmt, feature, hasSrid, dim, keyName);
-    }
-    */
-
-
-    private PreparedStatement updateOneAttributeStatement(java.sql.Connection conn, Feature feature, int attribute,
-                String keyName, String dbSchema, String dbTable, int srid, int dim) throws SQLException {
-        String tableName = dbSchema == null ? dbTable : dbSchema + "." + dbTable;
         FeatureSchema schema = feature.getSchema();
         boolean quoted = schema.getAttributeType(schema.getExternalPrimaryKeyIndex()) == AttributeType.STRING;
         String quoteKey = quoted ? "'" : "";
 
-        StringBuilder sb = new StringBuilder("UPDATE ").append(tableName)
+        StringBuilder sb = new StringBuilder("UPDATE ").append(compose(schemaName, tableName))
                 .append(" SET \"").append(schema.getAttributeName(attribute)).append("\" = ?")
-                .append(" WHERE \"").append(keyName).append("\" = ").append(quoteKey).append(feature.getAttribute(keyName)).append(quoteKey).append(";");
+                .append(" WHERE \"").append(primaryKeyName).append("\" = ")
+                .append(quoteKey).append(feature.getAttribute(primaryKeyName)).append(quoteKey).append(";");
         PreparedStatement pstmt = conn.prepareStatement(sb.toString());
         AttributeType type = schema.getAttributeType(attribute);
         if (feature.getAttribute(attribute) == null) pstmt.setObject(1, null);
@@ -365,11 +347,9 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
         return pstmt;
     }
 
-    private PreparedStatement deleteStatement(java.sql.Connection conn,
-                Feature feature, String keyName, String dbSchema, String dbTable) throws SQLException {
-        String tableName = dbSchema == null ? dbTable : dbSchema + "." + dbTable;
-        PreparedStatement pstmt = conn.prepareStatement("DELETE FROM " + tableName + " WHERE \"" + keyName + "\" = ?");
-        pstmt.setObject(1,feature.getAttribute(keyName));
+    private PreparedStatement deleteStatement(java.sql.Connection conn, Feature feature) throws SQLException {
+        PreparedStatement pstmt = conn.prepareStatement("DELETE FROM " + tableName + " WHERE \"" + primaryKeyName + "\" = ?");
+        pstmt.setObject(1,feature.getAttribute(primaryKeyName));
         LOG.debug(pstmt);
         return pstmt;
     }
@@ -404,8 +384,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
         return pstmt;
     }
 
-    protected abstract int getTableSRID(java.sql.Connection conn,
-                                        String dbSchema, String dbTable, String column) throws SQLException;
+    protected abstract int getTableSRID(java.sql.Connection conn, String column) throws SQLException;
 
     protected Geometry getViewEnvelope() {
         return new GeometryFactory().toGeometry(
@@ -467,7 +446,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
         for (Evolution evolution : evolutions.values()) {
             Evolution.Type type = evolution.getType();
             if (type == Evolution.Type.MODIFICATION || type == Evolution.Type.SUPPRESSION) {
-                Object dbid = evolution.getOldFeature().getAttribute(getProperties().get(EXTERNAL_PK_KEY).toString());
+                Object dbid = evolution.getOldFeature().getAttribute(primaryKeyName);
                 if (dbid != null) {
                     index.put(dbid, evolution);
                 }
@@ -491,30 +470,41 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
     /**
      * Check if this [schema.]table exists in this database.
      */
-    private boolean tableExists(java.sql.Connection connection, String dbSchema, String dbTable) throws SQLException {
+    private boolean tableExists(java.sql.Connection connection) throws SQLException {
         DatabaseMetaData metadata = connection.getMetaData();
-        return metadata.getTables(null, dbSchema, dbTable, new String[]{"TABLE"}).next();
+        return metadata.getTables(null, schemaName, tableName, new String[]{"TABLE"}).next();
     }
 
     /**
      * Execute a query against this connection to delete the reference to this
      * table in the PostGIS's geometry_columns table.
+     * @schemaName unquoted schema name
+     * @tableName unquoted table name
      */
-    abstract protected void deleteTableQuery(java.sql.Connection connection,
-                                    String dbSchema, String dbTable) throws SQLException;
+    abstract protected void deleteTableQuery(java.sql.Connection connection) throws SQLException;
 
+    /**
+     * Create and populate a table with features from a dataset.
+     * @param conn connection to the database
+     * @param fc featureCollection to upload to the database
+     * @param srid srid of the geometry
+     * @param geometryType geometry type
+     * @param dim geometry dimension
+     * @param normalizedColumnNames whether columns names have to be normalized or not
+     * @throws SQLException
+     */
     abstract protected void createAndPopulateTable(
             java.sql.Connection conn,
             FeatureCollection fc,
-            String dbSchema, String dbTable,
-            int srid, String geometryType, int dim) throws SQLException;
+            int srid, String geometryType, int dim,
+            boolean normalizedColumnNames) throws SQLException;
 
 
     /**
      * Add an automatically named primary key constraint to the table.
      */
-    protected abstract void addDBPrimaryKey(java.sql.Connection conn, String dbSchema,
-                                 String dbTable, String primaryKey) throws SQLException;
+    protected abstract void addDBPrimaryKey(java.sql.Connection conn, String primaryKey) throws SQLException;
+
 
     // @TODO Bad design : it should be possible to do this kind of post-processing
     // in the loader (where layer name is known rather than in the datasource)
