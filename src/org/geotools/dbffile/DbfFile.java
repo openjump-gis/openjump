@@ -718,7 +718,7 @@ public class DbfFile implements DbfConsts {
     private DateFormat lastFormat = DATE_PARSER;
 
     public static void main(String[] args) throws Exception {
-        System.out.println(new SimpleDateFormat("yyyymmdd") {
+        System.out.println(new SimpleDateFormat("yyyyMMdd") {
             {
                 setLenient(false);
             }

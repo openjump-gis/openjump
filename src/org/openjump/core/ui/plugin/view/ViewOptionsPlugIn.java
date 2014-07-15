@@ -31,12 +31,12 @@ public class ViewOptionsPlugIn extends AbstractPlugIn {
 
         // Most useful formats for english and european speakers
         dateFormatChooser = new JComboBox(new String[]{
-                "yyyy-MM-dd hh:mm:ss.SSS",
-                "yyyy-MM-dd'T'hh:mm:ss.SSS",
+                "yyyy-MM-dd HH:mm:ss.SSS",
+                "yyyy-MM-dd'T'HH:mm:ss.SSS",
                 "yyyy-MM-dd",
                 "hh:mm:ss",
                 "dd/MM/yyyy",
-                "dd/MM/yyyy hh:mm:ss"
+                "dd/MM/yyyy HH:mm:ss"
         });
         dateFormatChooser.setEnabled(true);
         dateFormatChooser.setEditable(true);

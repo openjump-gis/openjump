@@ -6,12 +6,9 @@ import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.workbench.datasource.DataSourceQueryChooser;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import org.apache.log4j.Logger;
 import org.openjump.core.ccordsys.srid.SRIDStyle;
-import org.openjump.core.ui.plugin.datastore.DataStoreDataSourceFactory;
 import org.openjump.core.ui.plugin.datastore.WritableDataStoreDataSource;
 import org.openjump.core.ui.plugin.datastore.postgis.PostGISQueryUtil;
-import org.openjump.core.ui.plugin.datastore.postgis.PostGISUtil;
 
 import javax.swing.*;
 import java.awt.*;

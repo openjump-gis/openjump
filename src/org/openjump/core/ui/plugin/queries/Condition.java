@@ -39,8 +39,8 @@ public class Condition  {
         new SimpleDateFormat("dd-MM-yy"),
         new SimpleDateFormat("dd-MM-yyyy"),
         new SimpleDateFormat("yyyy-MM-dd"),
-        new SimpleDateFormat("yyyy-MM-dd hh:mm:ss"),
-        new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss"),
+        new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"),
+        new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"),
         new SimpleDateFormat("yyyy")
     };
     private static final FlexibleDateParser FLEXIBLE_DATE_PARSER = new FlexibleDateParser();
