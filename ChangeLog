@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2014-07-17 mmichaud <m.michael.michaud@orange.fr>
+  * graph-toolbox and csv-driver have been updated in PLUS distribution
+
 2014-07-15  mmichaud <m.michael.michaud@orange.fr>
   * Display date/times with a default 24h format, instead of 12h
 
