@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2014-07-22 mmichaud <m.michael.michaud@orange.fr>
+  * improve the way to guess AttributeType in JoinTableDataSourceCSV
+
 2014-07-17 mmichaud <m.michael.michaud@orange.fr>
   * graph-toolbox and csv-driver have been updated in PLUS distribution
 

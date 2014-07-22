@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
 
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jump.I18N;
@@ -32,6 +33,9 @@ import com.vividsolutions.jump.feature.AttributeType;
  * 
  */
 public class JoinTableDataSourceCSV implements JoinTableDataSource {
+
+    private static final Pattern INTEGER_PATTERN = Pattern.compile("[-+]?[0-9]{1,10}");
+    private static final Pattern DOUBLE_PATTERN = Pattern.compile("[-+]?([0-9]*\\.[0-9]+|[0-9]+(\\.[0-9]+)?)([eE][-+]?[0-9]+)?");
 	
 	private ArrayList fieldNames = null;
 	private ArrayList fieldTypes = null;
@@ -191,28 +195,18 @@ public class JoinTableDataSourceCSV implements JoinTableDataSource {
 
 
 	
-	
+	// get attribute type from string value
+    // @TODO try to guess date AttributeType with flexible parser
 	private AttributeType typeOfString(String s)
 	{
-		char firstChar, lastChar;
-		AttributeType res = AttributeType.STRING;
+		AttributeType res;
 		if (s.length()==0)
 			res = AttributeType.INTEGER;
 		else {
-			firstChar = s.charAt(0);
-			lastChar = s.charAt(s.length()-1);
-			if ((firstChar=='0' && s.length()==1) || (firstChar>'0' && firstChar<='9') || firstChar == '-' || firstChar=='.' || firstChar==',') {
-				if (s.indexOf('.')== -1 && s.indexOf(',')== -1)
-					if (s.length()< 10)
-						res = AttributeType.INTEGER;
-					else
-						res = AttributeType.DOUBLE;	// integers with more than 10 digits are processed as strings
-				else
-					res = AttributeType.DOUBLE;
-			}
-			else
-				res = AttributeType.STRING;
+            if (INTEGER_PATTERN.matcher(s).matches()) res = AttributeType.INTEGER;
+            else if (DOUBLE_PATTERN.matcher(s).matches()) res = AttributeType.DOUBLE;
+            else res = AttributeType.STRING;
 		}
-		return res; 
+		return res;
 	}
 }
