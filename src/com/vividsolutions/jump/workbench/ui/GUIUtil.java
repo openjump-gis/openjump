@@ -1379,6 +1379,7 @@ public class GUIUtil {
     }
     catch (Exception e) {}
     catch (NoClassDefFoundError e) {}
+    catch (IllegalAccessError e) {}
 
     return supported;
   }
