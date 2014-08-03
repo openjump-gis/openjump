@@ -1,5 +1,14 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2914-08-02 ede
+  * fix fail to startup on ubuntu 12.04 with openjdk java version "1.6.0_31"; 
+    OpenJDK Runtime Environment (IcedTea6 1.13.3) 
+    (6b31-1.13.3-1ubuntu1~0.12.04.2); OpenJDK 64-Bit Server VM (build 
+    23.25-b01, mixed mode); error was
+      java.lang.IllegalAccessError: tried to access class java.awt.
+      GraphicsDevice$WindowTranslucency from class com.vividsolutions.
+      jump.workbench.ui.GUIUtil
+
 2014-07-22 mmichaud <m.michael.michaud@orange.fr>
   * improve the way to guess AttributeType in JoinTableDataSourceCSV
 
