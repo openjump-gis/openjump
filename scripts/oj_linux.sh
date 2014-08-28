@@ -176,15 +176,15 @@ else
     MEM_MAX="$MEM_MINUS1GB"
   fi
 
-  # limit 32bit jre to 3GiB = 3221225472 bytes
-  if [ "$JAVA_ARCH" != "x64" ] && [ "$MEM_MAX" -gt "3221225472" ]; then
-    MEM_MAX=3221225472
+  # limit 32bit jre to 2GiB = 2147483648 bytes
+  if [ "$JAVA_ARCH" != "x64" ] && [ "$MEM_MAX" -gt "2147483648" ]; then
+    MEM_MAX=2147483648
   fi
 
   MEM_MAX_MB=`expr $MEM_MAX / 1024 / 1024`
   JAVA_MAXMEM="-Xmx${MEM_MAX_MB}M"
   # output info
-  echo limit max. memory to $MEM_MAX_MB MiB
+  echo set max. memory limit to $MEM_MAX_MB MiB
 fi
 
 # always print java infos
