@@ -1,6 +1,10 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
-2914-08-02 ede
+2014-08-28 ede
+  * limit 32bit jre xmx to 2GiB for compatibility reasons, osgeo's lubuntu 
+    32bit kernel with pae and openjdk 7 couldnt start OJ
+
+2014-08-02 ede
   * fix fail to startup on ubuntu 12.04 with openjdk java version "1.6.0_31"; 
     OpenJDK Runtime Environment (IcedTea6 1.13.3) 
     (6b31-1.13.3-1ubuntu1~0.12.04.2); OpenJDK 64-Bit Server VM (build 
