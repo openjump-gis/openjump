@@ -4,6 +4,10 @@ import java.awt.Graphics2D;
 import java.util.Iterator;
 
 import com.vividsolutions.jts.util.Assert;
+import com.vividsolutions.jump.coordsys.CoordinateSystem;
+import com.vividsolutions.jump.coordsys.Geographic;
+import com.vividsolutions.jump.coordsys.Planar;
+import com.vividsolutions.jump.coordsys.Projection;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.model.CategoryEvent;
 import com.vividsolutions.jump.workbench.model.FeatureEvent;
@@ -17,11 +21,15 @@ import com.vividsolutions.jump.workbench.ui.renderer.style.Style;
  * be saved to the task file.
  */
 public class SRIDStyle implements Style {
+
     private int srid = 0;
+
     public void paint(Feature f, Graphics2D g, Viewport viewport)
             throws Exception {
     }
+
     private boolean initialized = false;
+
     public void initialize(Layer layer) {
         if (initialized) {
             return;
@@ -41,31 +49,38 @@ public class SRIDStyle implements Style {
         });
         initialized = true;
     }
+
     public void updateSRIDs(Layer layer) {
-        for (Iterator i = layer.getFeatureCollectionWrapper().iterator(); i
-                .hasNext();) {
-            Feature feature = (Feature) i.next();
-            feature.getGeometry().setSRID(srid);
+        for (Object feature : layer.getFeatureCollectionWrapper().getFeatures()) {
+            ((Feature)feature).getGeometry().setSRID(srid);
         }
     }
+
     public Object clone() {
         try {
-            return super.clone();
+            SRIDStyle clone = (SRIDStyle)super.clone();
+            clone.initialized = false;
+            return clone;
         } catch (CloneNotSupportedException e) {
             Assert.shouldNeverReachHere();
             return null;
         }
     }
+
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
+
     private boolean enabled = true;
+
     public boolean isEnabled() {
         return enabled;
     }
+
     public int getSRID() {
         return srid;
     }
+
     public void setSRID(int srid) {
         this.srid = srid;
     }

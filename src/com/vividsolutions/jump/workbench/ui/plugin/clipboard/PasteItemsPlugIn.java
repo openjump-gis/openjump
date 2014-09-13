@@ -45,6 +45,8 @@ import java.util.regex.Pattern;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 
+import com.vividsolutions.jump.coordsys.CoordinateSystem;
+import org.openjump.core.ccordsys.srid.SRIDStyle;
 import org.openjump.core.ui.images.IconLoader;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -138,6 +140,9 @@ public class PasteItemsPlugIn extends AbstractPlugIn {
         layer.getFeatureCollectionWrapper().addAll(featureCopies);
         context.getLayerViewPanel().getSelectionManager().getFeatureSelection().unselectItems();
         context.getLayerViewPanel().getSelectionManager().getFeatureSelection().selectItems(layer, featureCopies);
+        if (layer.getStyle(SRIDStyle.class) != null) {
+            ((SRIDStyle)layer.getStyle(SRIDStyle.class)).updateSRIDs(layer);
+        }
       }
 
       public void unexecute() {
@@ -209,9 +214,12 @@ public class PasteItemsPlugIn extends AbstractPlugIn {
       copy.setAttribute(attributeName, original.getAttribute(attributeName));
     }
 
-    Reprojector.instance().reproject(copy.getGeometry(),
-      original.getSchema().getCoordinateSystem(),
-      copy.getSchema().getCoordinateSystem());
+    if (original.getSchema().getCoordinateSystem() != CoordinateSystem.UNSPECIFIED
+        && copy.getSchema().getCoordinateSystem() != CoordinateSystem.UNSPECIFIED ) {
+        Reprojector.instance().reproject(copy.getGeometry(),
+                original.getSchema().getCoordinateSystem(),
+                copy.getSchema().getCoordinateSystem());
+    }
 
     return copy;
   }
