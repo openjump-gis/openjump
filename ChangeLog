@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2014-09-13 mmichaud <m.michael.michaud@orange.fr>
+  * Fix #374 : PasteItemsPlugIn did not set target SRIDStyle to pasted items
+
 2014-08-28 ede
   * limit 32bit jre xmx to 2GiB for compatibility reasons, osgeo's lubuntu 
     32bit kernel with pae and openjdk 7 couldnt start OJ
