@@ -260,7 +260,7 @@ public class FeatureInstaller {
    * @param featureInstaller
    * @param menuPath
    * @param menuName
-   * @param index
+   * @param pos
    * @return
    */
   public static JMenu addMainMenu(FeatureInstaller featureInstaller,
@@ -288,9 +288,9 @@ public class FeatureInstaller {
   /**
    * Convenience method without position parameter.
    * 
-   * @see #addMainMenuPlugin(final PlugIn executable, final String[] menuPath,
-   *      String menuItemName, final boolean checkBox, final Icon icon, final
-   *      EnableCheck enableCheck, final int pos)
+   * @see #addMainMenuPlugin(PlugIn executable, String[] menuPath,
+   *      String menuItemName, boolean checkBox, Icon icon,
+   *      EnableCheck enableCheck, int pos)
    */
   public JMenuItem addMainMenuPlugin(final PlugIn executable,
       final String[] menuPath, String menuItemName, final boolean checkBox,
