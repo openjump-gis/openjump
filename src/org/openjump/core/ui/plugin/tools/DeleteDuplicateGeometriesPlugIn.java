@@ -27,6 +27,7 @@
  */
 package org.openjump.core.ui.plugin.tools;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -178,6 +179,7 @@ public final class DeleteDuplicateGeometriesPlugIn extends AbstractPlugIn implem
         
         @SuppressWarnings("unchecked")
         List<Feature> sourceFeatures = sourceDataset.getFeatures();
+        List<Feature> emptyFeatures = getEmptyFeatures(sourceFeatures);
         int checkCount = 0;
         int checkSize = sourceDataset.size();
         
@@ -185,9 +187,14 @@ public final class DeleteDuplicateGeometriesPlugIn extends AbstractPlugIn implem
             monitor.report(checkCount, checkSize, langMonitorCheckedFeatures);
             
             // For each feature, only candidate features are compared.
-            Envelope envelope = feature.getGeometry().getEnvelopeInternal();
             @SuppressWarnings("unchecked")
-            List<Feature> candidates = indexedDataset.query(envelope);
+            List<Feature> candidates = null;
+            if (feature.getGeometry().isEmpty()) {
+                candidates = emptyFeatures;
+            } else {
+                Envelope envelope = feature.getGeometry().getEnvelopeInternal();
+                candidates = indexedDataset.query(envelope);
+            }
             
             for (Feature candidate : candidates) {
                 // For equal features, the one with the greater ID is removed.
@@ -237,6 +244,14 @@ public final class DeleteDuplicateGeometriesPlugIn extends AbstractPlugIn implem
             }
         }
         return attributesEqual;
+    }
+
+    List<Feature> getEmptyFeatures(List<Feature> features) {
+        List<Feature> list = new ArrayList<Feature>();
+        for (Feature f : features) {
+            if (f.getGeometry().isEmpty()) list.add(f);
+        }
+        return list;
     }
 
 }
