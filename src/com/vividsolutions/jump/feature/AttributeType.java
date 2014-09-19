@@ -104,7 +104,7 @@ public class AttributeType implements Serializable {
      * Converts a type name to an AttributeType.
      * @param name the name of the AttributeType to retrieve
      * @return the corresponding AttributeType
-     * @throws InvalidAttributeTypeException if the type name is unrecognized
+     * @throws IllegalArgumentException if the type name is unrecognized
      */
     public final static AttributeType toAttributeType(String name) {
         AttributeType type = (AttributeType) nameToAttributeTypeMap.get(name);
