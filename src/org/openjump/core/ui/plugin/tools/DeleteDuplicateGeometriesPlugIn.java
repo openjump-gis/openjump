@@ -83,6 +83,7 @@ public final class DeleteDuplicateGeometriesPlugIn extends AbstractPlugIn implem
     // Configuration parameters.
     private Layer confSourceLayer = null;
     private boolean confDeleteOnlySameAttributes = false;
+    private boolean confKeepDeletedFeatures = false;
     
     // Language strings.
     private String langName = "Delete Duplicate Geometries";
@@ -91,6 +92,8 @@ public final class DeleteDuplicateGeometriesPlugIn extends AbstractPlugIn implem
     private String langDeleteOnlySameAttributes = "delete only if attributes are the same";
     private String langMonitorCheckedFeatures = "checked";
     private String langResultNameCleaned = "cleaned";
+    private String langResultNameDeleted = "deleted";
+    private String langKeepDeletedFeatures = "keep duplicate features";
 
     //-----------------------------------------------------------------------------------
     // PUBLIC METHODS.
@@ -121,8 +124,12 @@ public final class DeleteDuplicateGeometriesPlugIn extends AbstractPlugIn implem
     
     public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
         String resultLayerName = confSourceLayer.getName() + "-" + langResultNameCleaned;
-        FeatureCollection resultDataset = this.deleteDuplicateGeometries(monitor);
-        context.addLayer(StandardCategoryNames.RESULT, resultLayerName, resultDataset);
+        String deletedLayerName = confSourceLayer.getName() + "-" + langResultNameDeleted;
+        FeatureCollection[] results = this.deleteDuplicateGeometries(monitor);
+        context.addLayer(StandardCategoryNames.RESULT, resultLayerName, results[0]);
+        if (confKeepDeletedFeatures) {
+            context.addLayer(StandardCategoryNames.RESULT, deletedLayerName, results[1]);
+        }
         System.gc();
     }
     
@@ -140,6 +147,8 @@ public final class DeleteDuplicateGeometriesPlugIn extends AbstractPlugIn implem
                 ".delete-only-if-attributes-are-the-same");
         langMonitorCheckedFeatures = I18N.get(langPrefix + ".checked");
         langResultNameCleaned = I18N.get(langPrefix + ".cleaned");
+        langResultNameDeleted = I18N.get(langPrefix + ".deleted");
+        langKeepDeletedFeatures = I18N.get(langPrefix + ".keep-deleted-features");
     }
     
     private void initializeMenuItem(PlugInContext context) {
@@ -160,14 +169,16 @@ public final class DeleteDuplicateGeometriesPlugIn extends AbstractPlugIn implem
         dialog.addLayerComboBox(langSourceLayer, context.getCandidateLayer(0), null, 
                 context.getLayerManager());
         dialog.addCheckBox(langDeleteOnlySameAttributes, confDeleteOnlySameAttributes);
+        dialog.addCheckBox(langKeepDeletedFeatures, confKeepDeletedFeatures);
     }
 
     private void getDialogValues(MultiInputDialog dialog) {
         confSourceLayer = dialog.getLayer(langSourceLayer);
         confDeleteOnlySameAttributes = dialog.getBoolean(langDeleteOnlySameAttributes);
+        confKeepDeletedFeatures = dialog.getBoolean(langKeepDeletedFeatures);
     }
 
-    private FeatureCollection deleteDuplicateGeometries(TaskMonitor monitor) {
+    private FeatureCollection[] deleteDuplicateGeometries(TaskMonitor monitor) {
         // Method is completely reworked to take advantage of indexes [mmichaud
         // 2012-01-15].
         FeatureCollection sourceDataset = confSourceLayer.getFeatureCollectionWrapper();
@@ -218,12 +229,16 @@ public final class DeleteDuplicateGeometriesPlugIn extends AbstractPlugIn implem
         
         // Create a feature collection with features which ID is not in duplicates.
         FeatureCollection resultDataset = new FeatureDataset(sourceSchema);
+        FeatureCollection duplicateDataset = new FeatureDataset(sourceSchema);
         for (Feature feature : sourceFeatures) {
             if (!duplicateIDs.contains(feature.getID())) {
                 resultDataset.add(feature.clone(true));
+            } else {
+                duplicateDataset.add(feature.clone(true));
             }
         }
-        return resultDataset;
+
+        return new FeatureCollection[] {resultDataset, duplicateDataset};
     }
     
     private boolean areAttributesEqual(Feature feature, Feature candidate, 
