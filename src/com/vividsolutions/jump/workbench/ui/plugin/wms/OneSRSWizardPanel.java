@@ -40,22 +40,28 @@ import java.awt.Insets;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.ui.InputChangedFirer;
 import com.vividsolutions.jump.workbench.ui.InputChangedListener;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
 import com.vividsolutions.jump.coordsys.CoordinateSystem;
 import com.vividsolutions.jump.coordsys.impl.PredefinedCoordinateSystems;
 
+import static com.vividsolutions.jump.workbench.ui.plugin.wms.MapLayerWizardPanel.FORMAT_LIST_KEY;
+import static java.awt.GridBagConstraints.WEST;
+
 
 public class OneSRSWizardPanel extends JPanel implements WizardPanel {
+    private InputChangedFirer inputChangedFirer = new InputChangedFirer();
     private Map dataMap;
     private GridBagLayout gridBagLayout1 = new GridBagLayout();
     private JLabel srsLabel = new JLabel();
+    private DefaultComboBoxModel formatBoxModel = new DefaultComboBoxModel();
+    private JLabel formatLabel;
+    private JComboBox formatBox;
     private JPanel fillerPanel = new JPanel();
     private JTextField textField = new JTextField();
 
@@ -69,9 +75,11 @@ public class OneSRSWizardPanel extends JPanel implements WizardPanel {
     }
 
     public void add(InputChangedListener listener) {
+        inputChangedFirer.add(listener);
     }
 
     public void remove(InputChangedListener listener) {
+        inputChangedFirer.remove(listener);
     }
 
     public String getInstructions() {
@@ -80,6 +88,8 @@ public class OneSRSWizardPanel extends JPanel implements WizardPanel {
 
     void jbInit() throws Exception {
         srsLabel.setText(I18N.get("ui.plugin.wms.OneSRSWizardPanel.select-coordinate-reference-system"));
+        formatLabel = new JLabel(I18N.get("ui.plugin.wms.SRSWizardPanel.image-format"));
+        formatBox = new JComboBox();
         this.setLayout(gridBagLayout1);
         textField.setEnabled(false);
         textField.setOpaque(false);
@@ -87,21 +97,41 @@ public class OneSRSWizardPanel extends JPanel implements WizardPanel {
         textField.setDisabledTextColor(Color.black);
         textField.setEditable(false);
         textField.setText("jTextField1");
-        this.add(srsLabel,
-            new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0,
-                GridBagConstraints.CENTER, GridBagConstraints.NONE,
-                new Insets(0, 0, 0, 4), 0, 0));
-        this.add(fillerPanel,
-            new GridBagConstraints(2, 10, 1, 1, 1.0, 1.0,
-                GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                new Insets(0, 0, 0, 0), 0, 0));
-        this.add(textField,
-            new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0,
-                GridBagConstraints.CENTER, GridBagConstraints.NONE,
-                new Insets(0, 0, 0, 0), 0, 0));
+        GridBagConstraints gb = new GridBagConstraints();
+        gb.anchor = WEST;
+        gb.gridx = 0;
+        gb.gridy = 0;
+        gb.insets = new Insets(5, 5, 5, 5);
+        add(srsLabel, gb);
+        ++gb.gridx;
+        //add(comboBox, gb);
+        add(textField, gb);
+
+        ++gb.gridy;
+        gb.gridx = 0;
+
+        add(formatLabel, gb);
+        ++gb.gridx;
+        add(formatBox, gb);
+        //this.add(srsLabel,
+        //    new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0,
+        //        GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        //        new Insets(0, 0, 0, 4), 0, 0));
+        //this.add(fillerPanel,
+        //    new GridBagConstraints(2, 10, 1, 1, 1.0, 1.0,
+        //        GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        //        new Insets(0, 0, 0, 0), 0, 0));
+        //this.add(textField,
+        //    new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0,
+        //        GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        //        new Insets(0, 0, 0, 0), 0, 0));
     }
 
     public void exitingToRight() {
+        //int index = comboBox.getSelectedIndex();
+        //String srsCode = (String) getCommonSrsList().get( index );
+        //dataMap.put( SRS_KEY, srsCode );
+        dataMap.put(URLWizardPanel.FORMAT_KEY, formatBox.getSelectedItem());
     }
 
     public void enteredFromLeft(Map dataMap) {
@@ -114,6 +144,13 @@ public class OneSRSWizardPanel extends JPanel implements WizardPanel {
 
         String stringToShow = SRSUtils.getName( srs );
         textField.setText( stringToShow );
+
+        String[] formats = (String[]) dataMap.get(FORMAT_LIST_KEY);
+        formatBoxModel.removeAllElements();
+        for (String f : formats) {
+            formatBoxModel.addElement(f);
+        }
+        formatBox.setModel(formatBoxModel);
     }
 
 

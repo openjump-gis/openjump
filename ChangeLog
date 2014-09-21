@@ -1,6 +1,10 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
 2014-09-21 mmichaud <m.michael.michaud@orange.fr>
+  * Fix bug #373 : image format chooser was not available in the
+    OneSRSWizardPanel
+
+2014-09-21 mmichaud <m.michael.michaud@orange.fr>
   * Add DissolvePlugIn able to dissolve according to several attributes
 
 2014-09-20 mmichaud <m.michael.michaud@orange.fr>
