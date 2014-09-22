@@ -145,6 +145,7 @@ public class DissolvePlugIn extends AbstractThreadedUiPlugIn {
 
     private void getDialogValues(MultiInputDialog dialog) {
         layer = dialog.getLayer(LAYER);
+        attributes.clear();
         for (int i = 0 ; i < attributePanel.getComponentCount() ; i++) {
             if (attributePanel.getComponent(i) instanceof JCheckBox) {
                 String name = ((JCheckBox)attributePanel.getComponent(i)).getText();
