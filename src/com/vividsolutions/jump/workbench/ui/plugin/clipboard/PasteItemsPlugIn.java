@@ -210,8 +210,12 @@ public class PasteItemsPlugIn extends AbstractPlugIn {
         .getAttributeType(attributeName)) {
         continue;
       }
+      // [mmichaud 2014-09-22] do not copy if target attribute is the external PK
+      if (copy.getSchema().getAttributeIndex(attributeName) !=
+              copy.getSchema().getExternalPrimaryKeyIndex()) {
+          copy.setAttribute(attributeName, original.getAttribute(attributeName));
+      }
 
-      copy.setAttribute(attributeName, original.getAttribute(attributeName));
     }
 
     if (original.getSchema().getCoordinateSystem() != CoordinateSystem.UNSPECIFIED

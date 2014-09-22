@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2014-09-22 mmichaud <m.michael.michaud@orange.fr>
+  * Fix PasteItems : now set externalPK to null if it exists
+
 2014-09-21 mmichaud <m.michael.michaud@orange.fr>
   * Fix bug #373 : image format chooser was not available in the
     OneSRSWizardPanel
