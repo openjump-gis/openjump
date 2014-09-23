@@ -176,7 +176,8 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                 ConnectionDescriptor connectionDescriptor =
                         (ConnectionDescriptor)getProperties().get(CONNECTION_DESCRIPTOR_KEY);
 
-                boolean normalizedColumnNames = (Boolean)getProperties().get(NORMALIZED_COLUMN_NAMES);
+                boolean normalizedColumnNames = getProperties().containsKey(NORMALIZED_COLUMN_NAMES) ?
+                        (Boolean)getProperties().get(NORMALIZED_COLUMN_NAMES) : false;
 
                 String[] datasetName = PostGISQueryUtil.splitTableName((String)getProperties().get(DATASET_NAME_KEY));
                 schemaName = datasetName[0];
