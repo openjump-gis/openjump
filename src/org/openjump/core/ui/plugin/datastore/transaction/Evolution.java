@@ -82,8 +82,8 @@ public class Evolution {
         // previous evolution was a CREATION
         if (type1 == Type.CREATION) {
             switch (type2) {
-                case CREATION : throw new EvolutionOperationException(KEY + I18N.get(".cannot-merge-2-creations (" +
-                        previous.getNewFeature().getID() + " - " + getNewFeature().getID()));
+                case CREATION : throw new EvolutionOperationException(KEY + I18N.get(".cannot-merge-2-creations") +
+                        " (" + previous.getNewFeature().getID() + " - " + getNewFeature().getID() + ")");
                 case MODIFICATION : return Evolution.createCreation(evo2New);
                 case SUPPRESSION : return null;
                 default : return null;

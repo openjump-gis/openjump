@@ -28,6 +28,7 @@ public class DataStoreTransactionManager {
 
     private static DataStoreTransactionManager TXMANAGER = new DataStoreTransactionManager();
     private WeakHashMap<Layer,Task> registeredLayers = new WeakHashMap<Layer, Task>();
+    private WeakHashMap<Task,LayerListener> registeredListeners = new WeakHashMap<Task, LayerListener>();
 
     /**
      * Get the unique DataStoreTransactionManager.
@@ -45,8 +46,10 @@ public class DataStoreTransactionManager {
      * @param task the task in which the layer is.
      */
     public void registerLayer(Layer layer, Task task) {
-        if (!containsLayerManager(task)) {
-            task.getLayerManager().addLayerListener(getLayerListener());
+        if (!registeredListeners.containsKey(task)) {
+            LayerListener listener = getLayerListener();
+            task.getLayerManager().addLayerListener(listener);
+            registeredListeners.put(task,listener);
         }
         registeredLayers.put(layer, task);
         LOG.info("Register layer '" + layer.getName() + "' (" + task.getName() + ") in the DataStoreTransactionManager");
