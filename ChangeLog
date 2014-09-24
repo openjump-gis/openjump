@@ -1,6 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
-2014-09-22 mmichaud <m.michael.michaud@orange.fr>
+2014-09-24 mmichaud <m.michael.michaud@orange.fr>
+  * PostGISWriter : improve error handling
+
+2014-09-23 mmichaud <m.michael.michaud@orange.fr>
   * Fix a bug in DataStoreTransactionManager : LayerListener could be added
     several times for the same Task in some circumstances
   * Fix #374 : NormalizedColumnName is set to false if it is not defined

@@ -26,6 +26,7 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
     static final String NO_CONNECTION_CHOOSEN     = I18N.get(KEY + ".no-connection-choosen");
     static final String NO_TABLE_CHOOSEN          = I18N.get(KEY + ".no-table-choosen");
     static final String CONNECTION_IS_NOT_POSTGIS = I18N.get(KEY + ".selected-connection-is-not-postgis");
+    static final String GID_ALREADY_EXISTS        = I18N.get(KEY + ".gid-already-exists");
 
     private PlugInContext context;
     private PostGISSaveDriverPanel panel;
@@ -102,6 +103,19 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
                     NO_TABLE_CHOOSEN,
                     ERROR, JOptionPane.ERROR_MESSAGE );
             return false;
+        }
+        else {
+            Layer[] layers = context.getWorkbenchContext().getLayerNamePanel().getSelectedLayers();
+            if (layers.length == 1) {
+                FeatureSchema schema = layers[0].getFeatureCollectionWrapper().getFeatureSchema();
+                if (schema.hasAttribute("gid")) {
+                    JOptionPane.showMessageDialog(panel,
+                            GID_ALREADY_EXISTS,
+                            ERROR, JOptionPane.ERROR_MESSAGE );
+                    return false;
+                }
+            }
+
         }
 
         // put the TABLE_KEY value early to make sure it will appear in the monitor
