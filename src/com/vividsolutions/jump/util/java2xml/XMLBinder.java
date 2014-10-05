@@ -31,8 +31,13 @@
  */
 package com.vividsolutions.jump.util.java2xml;
 
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.WKTReader;
+import com.vividsolutions.jts.io.WKTWriter;
 import com.vividsolutions.jts.util.Assert;
 
+import com.vividsolutions.jump.feature.AttributeType;
+import com.vividsolutions.jump.io.ParseException;
 import com.vividsolutions.jump.util.LangUtil;
 import com.vividsolutions.jump.util.StringUtil;
 
@@ -64,6 +69,10 @@ import java.util.regex.Pattern;
 //Java2XML and XML2Java are very easy to setup, are easier to comprehend, and
 //have better error reporting. [Jon Aquino]
 public class XMLBinder {
+
+    private static final WKTReader WKT_READER = new com.vividsolutions.jts.io.WKTReader();
+    private static final WKTWriter WKT_WRITER = new com.vividsolutions.jts.io.WKTWriter();
+
     private HashMap classToCustomConverterMap = new HashMap();
 
     public XMLBinder() {
@@ -245,6 +254,32 @@ public class XMLBinder {
 
                     public String toXML(Object object) {
                         return object.toString();
+                    }
+                });
+        classToCustomConverterMap.put(AttributeType.class,
+                new CustomConverter() {
+                    public Object toJava(String value) {
+                        return AttributeType.toAttributeType(value);
+                    }
+
+                    public String toXML(Object object) {
+                        return object.toString();
+                    }
+                });
+        classToCustomConverterMap.put(Geometry.class,
+                new CustomConverter() {
+                    public Object toJava(String value) {
+                        try {
+                            return WKT_READER.read(value);
+                        }
+                        catch(com.vividsolutions.jts.io.ParseException e) {
+                            e.printStackTrace();
+                            return null;
+                        }
+                    }
+
+                    public String toXML(Object object) {
+                        return WKT_WRITER.write((Geometry)object);
                     }
                 });
     }
