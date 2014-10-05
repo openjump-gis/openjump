@@ -39,6 +39,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.swing.Icon;
@@ -71,11 +73,53 @@ import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
  * name, converting a PlugIn into an ActionListener (for use with JButtons, for
  * example), and supporting undo.
  */
-public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableChecked, Iconified {
+public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableChecked, Iconified, Recordable {
   private static Logger LOG = Logger.getLogger(AbstractPlugIn.class);
   protected int shortcutModifiers = 0;
   protected int shortcutKeys = 0;
   private String name;
+
+  // [mmichaud 2014-10-01] add some methods for macro plugin recorder
+  private Map<String,Object> parameters;
+
+  public void addParameter(String name, Object value) {
+      if (parameters == null) parameters = new HashMap<String, Object>();
+      parameters.put(name, value);
+  }
+
+  public Object getParameter(String name) {
+      if (parameters == null) return null;
+      return parameters.get(name);
+  }
+
+  public Boolean getBooleanParam(String name) {
+      if (parameters == null) return null;
+      return (Boolean)parameters.get(name);
+  }
+
+  public Integer getIntegerParam(String name) {
+      if (parameters == null) return null;
+      return (Integer)parameters.get(name);
+  }
+
+  public Double getDoubleParam(String name) {
+      if (parameters == null) return null;
+      return (Double)parameters.get(name);
+  }
+
+  public String getStringParam(String name) {
+      if (parameters == null) return null;
+      return (String)parameters.get(name);
+  }
+
+  public void setParameters(Map<String,Object> map) {
+      parameters = map;
+  }
+
+  public Map<String,Object> getParameters() {
+      return parameters;
+  }
+  // [mmichaud 2014-10-01] end
 
   protected void execute(UndoableCommand command, PlugInContext context) {
     execute(command, context.getLayerViewPanel());
