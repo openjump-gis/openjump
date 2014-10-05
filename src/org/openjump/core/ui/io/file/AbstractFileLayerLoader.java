@@ -63,6 +63,9 @@ public abstract class AbstractFileLayerLoader implements FileLayerLoader {
 
   };
 
+  /** default constructor for xmlpersitence*/
+  public AbstractFileLayerLoader() {}
+
   /**
    * Construct a new AbstractFileLayerLoader with a description and list of
    * extensions.

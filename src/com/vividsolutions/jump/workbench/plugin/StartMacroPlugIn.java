@@ -1,9 +1,7 @@
 package com.vividsolutions.jump.workbench.plugin;
 
-import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
-import org.openjump.core.process.MacroProcesses;
 
 import javax.swing.*;
 
