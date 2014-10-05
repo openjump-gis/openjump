@@ -28,6 +28,7 @@ public class StopMacroPlugIn extends AbstractPlugIn implements MacroManager {
                 new String[]{MenuNames.CUSTOMIZE, "Macro"},
                 getName() + "...", false, null,
                 null, -1);
+        new File("lib/ext/macro/").mkdir();
     }
 
     public static EnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
@@ -63,7 +64,9 @@ public class StopMacroPlugIn extends AbstractPlugIn implements MacroManager {
                 if (dialog.wasOKPressed()) {
                     String name = dialog.getText(MACRO_NAME);
                     Java2XML java2XML = new Java2XML();
-                    new Java2XML().write(processes, "processes", new File("macro/" + name + ".ojm"));
+                    File file = new File("lib/ext/macro/" + name + ".ojm");
+                    file.getParentFile().mkdirs();
+                    new Java2XML().write(processes, "processes", new File("lib/ext/macro/" + name + ".ojm"));
                     return true;
                 }
                 else {

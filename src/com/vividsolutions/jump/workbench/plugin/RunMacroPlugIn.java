@@ -35,7 +35,7 @@ public class RunMacroPlugIn extends AbstractThreadedUiPlugIn implements MacroMan
 
 
     public boolean execute(PlugInContext context) throws Exception {
-        JFileChooser jfc = new JFileChooser("macro");
+        JFileChooser jfc = new JFileChooser("lib/ext/macro");
         jfc.setFileSelectionMode(JFileChooser.FILES_ONLY);
         jfc.setFileFilter(createMacroFileFilter());
         jfc.setMultiSelectionEnabled(false);
