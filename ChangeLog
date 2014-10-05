@@ -3,6 +3,12 @@
 2014-10-05 mmichaud <m.michael.michaud@orange.fr>
   * Add 3 plugins for macro recording (needs adaptation in each plugin
     to work effectively).
+  * Make the following plugins recordable within a macro
+    - BufferPlugIn
+    - DisposeSelectedPlugIn
+    - RemoveSelectedPlugIn
+    - ViewSchemaPlugIn
+    - DataSourceFileLayerLoader
 
 2014-09-24 mmichaud <m.michael.michaud@orange.fr>
   * PostGISWriter : improve error handling

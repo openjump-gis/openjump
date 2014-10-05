@@ -38,30 +38,27 @@ import javax.swing.ImageIcon;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.Layerable;
-import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
-import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
-import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
-import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.plugin.*;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 
 public class RemoveSelectedLayersPlugIn extends AbstractPlugIn {
+
     public RemoveSelectedLayersPlugIn() {
     }
 
     public boolean execute(PlugInContext context) throws Exception {
-      // Changed on 2007-05-21 to use the new LayerManager()[Michael Michaud]
-      // remove(context, (Layerable[])
-      // (context.getLayerNamePanel()).selectedNodes(
-      // Layerable.class).toArray(new Layerable[] { }));
   
-      Layerable[] selectedLayers = (Layerable[]) (context.getLayerNamePanel())
-          .selectedNodes(Layerable.class).toArray(new Layerable[] {});
-      LayerManager lmgr = context.getLayerManager();
-      lmgr.remove(selectedLayers);
-
-      return true;
+        Layerable[] selectedLayers = (Layerable[]) (context.getLayerNamePanel())
+            .selectedNodes(Layerable.class).toArray(new Layerable[] {});
+        LayerManager lmgr = context.getLayerManager();
+        lmgr.remove(selectedLayers);
+        if (context.getWorkbenchContext().getBlackboard().getBoolean(StartMacroPlugIn.MACRO_STARTED)) {
+            ((Macro)context.getWorkbenchContext().getBlackboard().get("Macro")).addProcess(this);
+        }
+        return true;
     }
+
     
     public ImageIcon getIcon(){
       return IconLoader.icon("famfam/cross.png");
@@ -70,9 +67,9 @@ public class RemoveSelectedLayersPlugIn extends AbstractPlugIn {
     public MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
         EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
 
-        return new MultiEnableCheck().add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
-                                     .add(checkFactory.createAtLeastNLayerablesMustBeSelectedCheck(
-                1, Layerable.class));
+        return new MultiEnableCheck()
+                .add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
+                .add(checkFactory.createAtLeastNLayerablesMustBeSelectedCheck(1, Layerable.class));
     }
     
 }

@@ -39,11 +39,7 @@ import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.util.Assert;
 
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.feature.AttributeType;
-import com.vividsolutions.jump.feature.BasicFeature;
-import com.vividsolutions.jump.feature.Feature;
-import com.vividsolutions.jump.feature.FeatureDataset;
-import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.util.FlexibleDateParser;
 import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -56,10 +52,7 @@ import com.vividsolutions.jump.workbench.model.LayerListener;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
 import com.vividsolutions.jump.workbench.model.Layerable;
-import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
-import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
-import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
-import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.plugin.*;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanel;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanelListener;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanelProxy;
@@ -76,12 +69,7 @@ import java.awt.event.ActionListener;
 
 import java.text.DateFormat;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import javax.swing.ImageIcon;
 import javax.swing.JInternalFrame;
@@ -98,6 +86,10 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
     private WKTReader wktReader = new WKTReader(factory);
     private FlexibleDateParser dateParser = new FlexibleDateParser();
     private DateFormat dateFormatter = DateFormat.getDateInstance();
+
+    private static final String P_LAYER_NAME = "LayerName";
+    private static final String P_SCHEMA_MAPPING = "SchemaMapping";
+    private static final String P_FORCE_INVALID_CONVERSIONS_TO_NULL = "ForceInvalidConversionsToNull";
 
     public ViewSchemaPlugIn(EditingPlugIn editingPlugIn) {
         this.editingPlugIn = editingPlugIn;
@@ -187,12 +179,95 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
         layer.setFeatureCollection(new FeatureDataset(originalFeatures,
                 newSchema));
         layer.fireLayerChanged(LayerEventType.METADATA_CHANGED);
+
+        // [mmichaud 2014-10-05] add parameters to persist plugin execution in a macro
+        addParameter(P_FORCE_INVALID_CONVERSIONS_TO_NULL, panel.isForcingInvalidConversionsToNull());
+        Map<String,Attribute> schemaMapping = new LinkedHashMap<String, Attribute>();
+        for (int i = 0; i < panel.getModel().getRowCount(); i++) {
+            String attributeName = panel.getModel().get(i).getName();
+            Attribute attribute = new Attribute();
+            attribute.setType(panel.getModel().get(i).getType());
+            if (oldSchema.hasAttribute(attributeName)) {
+                int oldIndex = oldSchema.getAttributeIndex(attributeName);
+                attribute.setReadOnly(oldSchema.isAttributeReadOnly(oldIndex));
+            }
+            attribute.setOldIndex(panel.getModel().get(i).getOriginalIndex());
+            schemaMapping.put(attributeName, attribute);
+        }
+        addParameter(P_SCHEMA_MAPPING, schemaMapping);
+        //
+
         // [mmichaud 2009-05-16] update originalIndexes after a modification
         for (int i = 0; i < panel.getModel().getRowCount(); i++) {
             panel.getModel().get(i).setOriginalIndex(i);
         }
         // -end
         panel.markAsUnmodified();
+
+    }
+
+    /**
+     * Version of applyChanges used when the plugin is executed as a macro
+     * @TODO ideally, the same code should be executed in both cases (DRY)
+     * @param layer
+     * @param schemaMapping
+     * @param isForcingInvalidConversionsToNull
+     * @throws Exception
+     */
+    private void applyChanges(final Layer layer, final Map<String,Attribute> schemaMapping,
+                              final boolean isForcingInvalidConversionsToNull) throws Exception {
+
+        //-- [sstein 10. Oct 2006] bugfix for colortheming by Ole
+        FeatureSchema oldSchema = layer.getFeatureCollectionWrapper().getFeatureSchema();
+        //-- end
+
+        for (String name : schemaMapping.keySet()) {
+            if (oldSchema.hasAttribute(name)) {
+                if (!schemaMapping.get(name).getType().equals(oldSchema.getAttributeType(name))) {
+                    if (ColorThemingStyle.get(layer) != null) {
+                        layer.removeStyle(ColorThemingStyle.get(layer));
+                        layer.getBasicStyle().setEnabled(true);
+                        layer.fireAppearanceChanged();
+                    }
+                }
+            }
+        }
+
+        FeatureSchema newSchema = new FeatureSchema();
+        for (String name : schemaMapping.keySet()) {
+            newSchema.addAttribute(name, schemaMapping.get(name).getType());
+            newSchema.setAttributeReadOnly(newSchema.getAttributeIndex(name), schemaMapping.get(name).isReadOnly());
+        }
+
+        List originalFeatures = layer.getFeatureCollectionWrapper().getFeatures();
+        ArrayList tempFeatures = new ArrayList();
+
+        //Two-phase commit.
+        //Phase 1: check that no conversion errors occur. [Jon Aquino]
+        for (Iterator i = layer.getFeatureCollectionWrapper().iterator();
+             i.hasNext();) {
+            Feature feature = (Feature) i.next();
+            tempFeatures.add(convert(feature, schemaMapping, newSchema, isForcingInvalidConversionsToNull));
+        }
+
+        //Phase 2: commit. [Jon Aquino]
+        for (int i = 0; i < originalFeatures.size(); i++) {
+            Feature originalFeature = (Feature) originalFeatures.get(i);
+            Feature tempFeature = (Feature) tempFeatures.get(i);
+
+            //Modify existing features rather than creating new features, because
+            //there may be references to the existing features (e.g. Attribute Viewers).
+            //[Jon Aquino]
+            originalFeature.setSchema(tempFeature.getSchema());
+            originalFeature.setAttributes(tempFeature.getAttributes());
+        }
+
+        //Non-undoable. [Jon Aquino]
+        layer.getLayerManager().getUndoableEditReceiver().getUndoManager()
+                .discardAllEdits();
+        layer.setFeatureCollection(new FeatureDataset(originalFeatures,
+                newSchema));
+        layer.fireLayerChanged(LayerEventType.METADATA_CHANGED);
     }
 
     private Feature convert(Feature oldFeature, SchemaPanel panel,
@@ -214,6 +289,36 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
                         newFeature.getSchema().getAttributeType(i),
                         panel.getModel().get(i).getName(),
                         panel.isForcingInvalidConversionsToNull()));
+            }
+        }
+
+        return newFeature;
+    }
+
+    /**
+     * Conversion tool used by macro (no dependence to SchemaPanel).
+     * @param oldFeature
+     * @param schemaMapping
+     * @param newSchema
+     * @return
+     * @throws ConversionException
+     */
+    private Feature convert(Feature oldFeature, Map<String,Attribute> schemaMapping, FeatureSchema newSchema,
+                            boolean isForcingInvalidConversionsToNull) throws ConversionException {
+        Feature newFeature = new BasicFeature(newSchema);
+
+        for (String name : schemaMapping.keySet()) {
+            if (schemaMapping.get(name).getOldIndex() == -1) {
+                newFeature.setAttribute(name,
+                        (newSchema.getAttributeType(name) == AttributeType.GEOMETRY)
+                                ? oldFeature.getGeometry() : null);
+            } else {
+                newFeature.setAttribute(name,
+                        convert(oldFeature.getAttribute(schemaMapping.get(name).getOldIndex()),
+                                oldFeature.getSchema().getAttributeType(schemaMapping.get(name).getOldIndex()),
+                                newFeature.getSchema().getAttributeType(name),
+                                name,
+                                isForcingInvalidConversionsToNull));
             }
         }
 
@@ -474,18 +579,45 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
     public boolean execute(PlugInContext context) throws Exception {
         reportNothingToUndoYet(context);
 
-        //Can't simply use Blackboard#get(key, default) because default requires that
-        //we create a new EditSchemaFrame, and we don't want to do this unless we
-        //have to because the EditSchemaFrame constructor modifies the blackboard. 
-        //Result: Executing this plug-in twice creates two frames, even if we don't close
-        //the first. [Jon Aquino]
-        if (frame(context) == null) {
-            context.getSelectedLayer(0).getBlackboard().put(KEY,
-                new EditSchemaFrame(context.getWorkbenchFrame(),
-                    context.getSelectedLayer(0), editingPlugIn));
-        }
+        // [mmichaud 2014-10-05] had to test if we are in macro mode or in interactive mode
+        // maybe a better way vould be that all plugins implement a non interactive method
+        // called either by execute method (interactive mode) or directly by the RunMacro
+        if (!context.getWorkbenchContext().getBlackboard().getBoolean(MacroManager.MACRO_RUNNING)) {
+            //Can't simply use Blackboard#get(key, default) because default requires that
+            //we create a new EditSchemaFrame, and we don't want to do this unless we
+            //have to because the EditSchemaFrame constructor modifies the blackboard.
+            //Result: Executing this plug-in twice creates two frames, even if we don't close
+            //the first. [Jon Aquino]
+            if (frame(context) == null) {
+                addParameter(P_LAYER_NAME, context.getSelectedLayer(0).getName());
+                context.getSelectedLayer(0).getBlackboard().put(KEY,
+                        new EditSchemaFrame(context.getWorkbenchFrame(),
+                                context.getSelectedLayer(0), editingPlugIn));
+            }
 
-        frame(context).surface();
+            frame(context).surface();
+
+            if (context.getWorkbenchContext().getBlackboard().getBoolean(MacroManager.MACRO_STARTED)) {
+                ((Macro) context.getWorkbenchContext().getBlackboard().get(MacroManager.MACRO)).addProcess(this);
+            }
+        }
+        else {
+            // in macro mode, the layer to which the new schema will be applied is choosen in the following order :
+            // - if one layer is selected : apply to the selected layer
+            // - if several layers are selected : apply to P_LAYER_NAME
+            //   or to the first selected layer if P_LAYER_NAME is not selected
+            // - if no layer are selected : apply to P_LAYER_NAME or do not apply
+            Layer layer;
+            Layer[] selectedLayers = context.getLayerNamePanel().getSelectedLayers();
+            if (selectedLayers.length == 1) {
+                layer = selectedLayers[0];
+            } else if (context.getLayerManager().getLayer((String)getParameter(P_LAYER_NAME)) != null) {
+                layer = context.getLayerManager().getLayer((String)getParameter(P_LAYER_NAME));
+            } else return false;
+            applyChanges(layer,
+                    (Map<String,Attribute>)getParameter(P_SCHEMA_MAPPING),
+                    getBooleanParam(P_FORCE_INVALID_CONVERSIONS_TO_NULL));
+        }
 
         return true;
     }
@@ -653,5 +785,38 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
 
         public void addListener(LayerNamePanelListener listener) {}
         public void removeListener(LayerNamePanelListener listener) {}
+    }
+
+    public static class ToNewSchema {
+
+        public ToNewSchema(SchemaPanel panel) {
+
+        }
+    }
+
+    public static class Attribute {
+
+        AttributeType type;
+        boolean readOnly;
+        boolean primaryKey;
+        Operation operation;
+        int oldIndex;
+
+        public Attribute(){}
+
+        public void setType(AttributeType type) {this.type = type;}
+        public AttributeType getType() {return type;}
+
+        public void setReadOnly(boolean readOnly) {this.readOnly = readOnly;}
+        public boolean isReadOnly() {return readOnly;}
+
+        public void setPrimaryKey(boolean primaryKey) {this.primaryKey = primaryKey;}
+        public boolean isPrimaryKey() {return primaryKey;}
+
+        public void setOperation(Operation operation) {this.operation = operation;}
+        public Operation getOperation() {return operation;}
+
+        public void setOldIndex(int oldIndex) {this.oldIndex = oldIndex;}
+        public int getOldIndex() {return oldIndex;}
     }
 }

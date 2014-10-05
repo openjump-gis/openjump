@@ -34,32 +34,27 @@ package com.vividsolutions.jump.workbench.ui.plugin.analysis;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.lang.Exception;
 import java.util.*;
 
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JTextField;
 
 import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.operation.union.UnaryUnionOp;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jts.operation.buffer.BufferOp;
 import com.vividsolutions.jts.operation.buffer.BufferParameters;
-import com.vividsolutions.jts.operation.union.UnaryUnionOp;
 import com.vividsolutions.jts.simplify.DouglasPeuckerSimplifier;
 import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.task.*;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.*;
 import com.vividsolutions.jump.workbench.plugin.*;
+import com.vividsolutions.jump.workbench.plugin.StartMacroPlugIn;
 import com.vividsolutions.jump.workbench.ui.*;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.plugin.clipboard.PasteItemsPlugIn;
 import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 
@@ -85,59 +80,100 @@ import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
  */
 public class BufferPlugIn extends AbstractThreadedUiPlugIn {
 
-  private static final int LEFT = 1;
-  private static final int RIGHT = 2;
-	
-  private String MAIN_OPTIONS;
-  private String PROCESSED_DATA;
-  private String LAYER;
-  private String SELECTION;
-  private String SELECTION_HELP;
-  
-  private String DISTANCE;
-  private String FIXED_DISTANCE;
-  private String ATTRIBUTE;
-  private String FROM_ATTRIBUTE;
-  private String ATTRIBUTE_TOOLTIP;
-  
-  private String OTHER_OPTIONS;
-  private String QUADRANT_SEGMENTS;
-  private String UNION_RESULT;
-  private String COPY_ATTRIBUTES;
-  
-  private String ADVANCED_OPTIONS;
-  private String END_CAP_STYLE;
-  private String CAP_FLAT;
-  private String CAP_ROUND;
-  private String CAP_SQUARE;
+    private static final int LEFT  = 1;
+    private static final int RIGHT = 2;
 
-  private String JOIN_STYLE_TITLE;
-  private String JOIN_STYLE;
-  private String JOIN_BEVEL;
-  private String JOIN_MITRE;
-  private String JOIN_ROUND;
-  private String MITRE_LIMIT;
-  
-  private String LEFT_SINGLE_SIDED;
-  private String RIGHT_SINGLE_SIDED;
+    private String MAIN_OPTIONS;
+    private String PROCESSED_DATA;
+    private String LAYER;
+    private String SELECTION;
+    private String SELECTION_HELP;
 
-  private List endCapStyles;
-  private List joinStyles;
+    private String DISTANCE;
+    private String FIXED_DISTANCE;
+    private String ATTRIBUTE;
+    private String FROM_ATTRIBUTE;
+    private String ATTRIBUTE_TOOLTIP;
 
-  private Layer layer;
-  private double bufferDistance    = 1.0;
-  private int endCapStyleCode      = BufferParameters.CAP_ROUND;
-  private int joinStyleCode        = BufferParameters.JOIN_ROUND;;
-  private double mitreLimit        = 10.0;
-  private boolean leftSingleSided  = false;
-  private boolean rightSingleSided = false;
-  private boolean useSelected      = false;
-  private int quadrantSegments     = 8;
-  private boolean unionResult      = false;
-  private String sideBarText       = "";
-  private boolean copyAttributes   = true;
-  private boolean fromAttribute    = false;
-  private int attributeIndex       = 0;
+    private String OTHER_OPTIONS;
+    private String QUADRANT_SEGMENTS;
+    private String UNION_RESULT;
+    private String COPY_ATTRIBUTES;
+
+    private String ADVANCED_OPTIONS;
+    private String END_CAP_STYLE;
+    private String S_CAP_FLAT   = I18N.get("ui.plugin.analysis.BufferPlugIn.cap-flat");
+    private String S_CAP_ROUND  = I18N.get("ui.plugin.analysis.BufferPlugIn.cap-round");
+    private String S_CAP_SQUARE = I18N.get("ui.plugin.analysis.BufferPlugIn.cap-square");
+
+    private String JOIN_STYLE;
+    private String S_JOIN_BEVEL = I18N.get("ui.plugin.analysis.BufferPlugIn.join-bevel");
+    private String S_JOIN_MITRE = I18N.get("ui.plugin.analysis.BufferPlugIn.join-mitre");
+    private String S_JOIN_ROUND = I18N.get("ui.plugin.analysis.BufferPlugIn.join-round");
+    private String MITRE_LIMIT;
+
+    private String LEFT_SINGLE_SIDED;
+    private String RIGHT_SINGLE_SIDED;
+
+    private List endCapStyles;
+    private List joinStyles;
+
+    // Parameter names used for macro persistence
+    // Mandatory
+    private static final String P_LAYER_NAME          = "LayerName";
+    // Optional (default value provided)
+    private static final String P_USE_SELECTION       = "UseSelection";
+    private static final String P_DISTANCE            = "Distance";
+    private static final String P_QUADRANT_SEGMENTS   = "QuadrantSegments";
+    private static final String P_END_CAP_STYLE       = "EndCapStyle";
+    private static final String P_JOIN_STYLE          = "JoinStyle";
+    private static final String P_MITRE_LIMIT         = "MitreLimit";
+    private static final String P_LEFT_SINGLE_SIDED   = "LeftSingleSided";
+    private static final String P_RIGHT_SINGLE_SIDED  = "RightSingleSided";
+    private static final String P_UNION_RESULT        = "UnionResult";
+    private static final String P_COPY_ATTRIBUTE      = "CopyAttribute";
+    private static final String P_FROM_ATTRIBUTE      = "FromAttribute";
+    private static final String P_ATTRIBUTE_INDEX     = "AttributeIndex";
+
+    {
+        addParameter(P_USE_SELECTION,     false);
+        addParameter(P_DISTANCE,          1.0);
+        addParameter(P_QUADRANT_SEGMENTS, 8);
+        addParameter(P_END_CAP_STYLE,     BufferParameters.CAP_ROUND);
+        addParameter(P_JOIN_STYLE,        BufferParameters.JOIN_ROUND);
+        addParameter(P_MITRE_LIMIT,       1.0);
+        addParameter(P_LEFT_SINGLE_SIDED, false);
+        addParameter(P_RIGHT_SINGLE_SIDED,false);
+        addParameter(P_UNION_RESULT,      false);
+        addParameter(P_COPY_ATTRIBUTE,    true);
+        addParameter(P_FROM_ATTRIBUTE,    false);
+        addParameter(P_ATTRIBUTE_INDEX,   -1);
+    }
+
+    private int encodeCapStyle(String value) {
+        if (value.equalsIgnoreCase(S_CAP_ROUND)) return BufferParameters.CAP_ROUND;
+        else if (value.equalsIgnoreCase(S_CAP_FLAT)) return BufferParameters.CAP_FLAT;
+        else if (value.equalsIgnoreCase(S_CAP_SQUARE)) return BufferParameters.CAP_SQUARE;
+        else return -1;
+    }
+    private String decodeCapStyle(int value) {
+        if (value == BufferParameters.CAP_ROUND) return S_CAP_ROUND;
+        else if (value == BufferParameters.CAP_FLAT) return S_CAP_FLAT;
+        else if (value == BufferParameters.CAP_SQUARE) return S_CAP_SQUARE;
+        else return "Unknown";
+    }
+    private int encodeJoinStyle(String value) {
+        if (value.equalsIgnoreCase(S_JOIN_ROUND)) return BufferParameters.JOIN_ROUND;
+        else if (value.equalsIgnoreCase(S_JOIN_MITRE)) return BufferParameters.JOIN_MITRE;
+        else if (value.equalsIgnoreCase(S_JOIN_BEVEL)) return BufferParameters.JOIN_BEVEL;
+        else return -1;
+    }
+    private String decodeJoinStyle(int value) {
+        if (value == BufferParameters.JOIN_ROUND) return S_JOIN_ROUND;
+        else if (value == BufferParameters.JOIN_MITRE) return S_JOIN_MITRE;
+        else if (value == BufferParameters.JOIN_BEVEL) return S_JOIN_BEVEL;
+        else return "Unknown";
+    }
 
     public BufferPlugIn() {
         super(
@@ -146,20 +182,14 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
         );
     }
 
-    private String categoryName = StandardCategoryNames.RESULT;
-
-    public void setCategoryName(String value) {
-        categoryName = value;
-    }
   
     public void initialize(PlugInContext context) throws Exception {
-        context.getFeatureInstaller().addMainMenuItem(
-            new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
-            this,
-            createEnableCheck(context.getWorkbenchContext())
-        );
+        context.getFeatureInstaller().addMainMenuPlugin(this,
+                new String[]{MenuNames.TOOLS,MenuNames.TOOLS_ANALYSIS}, getName(),
+                false, getIcon(), createEnableCheck(context.getWorkbenchContext()));
     }
-  
+
+
     public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
         EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
 
@@ -167,7 +197,8 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
             .add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
             .add(checkFactory.createAtLeastNLayersMustExistCheck(1));
     }
-  
+
+
     public boolean execute(PlugInContext context) throws Exception {
         
   	    //[sstein, 16.07.2006] set again to obtain correct language
@@ -192,136 +223,152 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
 	    
 	    ADVANCED_OPTIONS = I18N.get("ui.plugin.analysis.BufferPlugIn.advanced-options");
 	    END_CAP_STYLE = I18N.get("ui.plugin.analysis.BufferPlugIn.end-cap-style");
-	    CAP_FLAT = I18N.get("ui.plugin.analysis.BufferPlugIn.cap-flat");
-	    CAP_ROUND = I18N.get("ui.plugin.analysis.BufferPlugIn.cap-round");
-	    CAP_SQUARE = I18N.get("ui.plugin.analysis.BufferPlugIn.cap-square");
-	    
-	    //JOIN_STYLE_TITLE = I18N.get("ui.plugin.analysis.BufferPlugIn.join-style-subtitle");
 	    JOIN_STYLE = I18N.get("ui.plugin.analysis.BufferPlugIn.join-style");
-        JOIN_BEVEL = I18N.get("ui.plugin.analysis.BufferPlugIn.join-bevel");
-        JOIN_MITRE = I18N.get("ui.plugin.analysis.BufferPlugIn.join-mitre");
-        JOIN_ROUND = I18N.get("ui.plugin.analysis.BufferPlugIn.join-round");
         MITRE_LIMIT = I18N.get("ui.plugin.analysis.BufferPlugIn.mitre-join-limit");
-        
         LEFT_SINGLE_SIDED = I18N.get("ui.plugin.analysis.BufferPlugIn.left-single-sided");
         RIGHT_SINGLE_SIDED = I18N.get("ui.plugin.analysis.BufferPlugIn.right-single-sided");
-
 	  
 	    endCapStyles = new ArrayList();
-	    endCapStyles.add(CAP_FLAT);
-	    endCapStyles.add(CAP_ROUND);
-	    endCapStyles.add(CAP_SQUARE);
+	    endCapStyles.add(S_CAP_FLAT);
+	    endCapStyles.add(S_CAP_ROUND);
+	    endCapStyles.add(S_CAP_SQUARE);
 	  
 	    joinStyles = new ArrayList();
-	    joinStyles.add(JOIN_BEVEL);
-	    joinStyles.add(JOIN_MITRE);
-	    joinStyles.add(JOIN_ROUND);    
+	    joinStyles.add(S_JOIN_BEVEL);
+	    joinStyles.add(S_JOIN_MITRE);
+	    joinStyles.add(S_JOIN_ROUND);
 	  
 	    MultiTabInputDialog dialog = new MultiTabInputDialog(
 	        context.getWorkbenchFrame(), getName(), MAIN_OPTIONS, true);
 	    int n = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems().size();
-	    useSelected = (n > 0);
-	    if (useSelected) {
+	    boolean useSelection = (n > 0);
+        String sideBarText;
+	    if (useSelection) {
 		  sideBarText = SELECTION;
 		}
 	    else {
 		  sideBarText = I18N.get("ui.plugin.analysis.BufferPlugIn.buffers-all-geometries-in-the-input-layer");
 		}
-	    setDialogValues(dialog, context);
-	    updateControls(dialog);
+        dialog.setSideBarDescription(sideBarText);
+        addParameter(P_USE_SELECTION, useSelection);
+	    setDialogValues(dialog, context, useSelection);
+	    updateControls(context, dialog, useSelection);
 	    GUIUtil.centreOnWindow(dialog);
 	    dialog.setVisible(true);
 	    if (! dialog.wasOKPressed()) { return false; }
-	    getDialogValues(dialog);
+	    getDialogValues(dialog, useSelection);
 	    return true;
     }
 
+
     public void run(TaskMonitor monitor, PlugInContext context) throws Exception{
-	    monitor.allowCancellationRequests();
-        FeatureSchema featureSchema = new FeatureSchema();
-        featureSchema.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
-        FeatureCollection resultFC = new FeatureDataset(featureSchema);
-        // Fill inputC with features to be processed
-        Collection inputC;
-        if (useSelected) {
-        	inputC = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems();
-        	Feature feature = (Feature) inputC.iterator().next();
-        	featureSchema = feature.getSchema();
-        	inputC = PasteItemsPlugIn.conform(inputC,featureSchema);
-        } else {
-        	inputC = layer.getFeatureCollectionWrapper().getFeatures();
-        	featureSchema = layer.getFeatureCollectionWrapper().getFeatureSchema();
-        	resultFC = new FeatureDataset(featureSchema);
-        }
-        // Short-circuit if input is empty
-        FeatureDataset inputFD = new FeatureDataset(inputC, featureSchema);
-        if (inputFD.isEmpty()) {
-	    	context.getWorkbenchFrame()
-	    	       .warnUser(I18N.get("ui.plugin.analysis.BufferPlugIn.empty-result-set"));
-	    	return;
-	    }
-	    // Create buffers for each input feature
-        Collection resultGeomColl = runBuffer(monitor, context, inputFD);
-        // Post-process result
-        if (copyAttributes) {
-        	FeatureCollection resultFeatureColl = new FeatureDataset(featureSchema);
-        	Iterator iResult = resultGeomColl.iterator();
-        	for (Iterator iSource = inputFD.iterator(); iSource.hasNext(); ) {
-        		Feature sourceFeature = (Feature) iSource.next();
-        		Geometry gResult = (Geometry) iResult.next();
-        		if (!(gResult == null || gResult.isEmpty())) {
-        			Feature newFeature = sourceFeature.clone(false);
-        			newFeature.setGeometry(gResult);
-        			resultFeatureColl.add(newFeature);
-        		}
-                // If both left and right side buffer have been computed
-                // we have 2 features in resultGeomColl for every single feature in InputFD
-                if (leftSingleSided && rightSingleSided) {
-                    gResult = (Geometry) iResult.next();
+        try {
+            //PlugInContext context = getPlugInContext();
+            Layer layer = context.getLayerManager().getLayer((String)getParameter(P_LAYER_NAME));
+            // To make the macro more useful, the macro will run on the first selected layer
+            // or on the first project layer if P_LAYER_NAME is not found in the project
+            if (layer == null && context.getLayerNamePanel().getSelectedLayers().length > 0) {
+                layer = context.getLayerNamePanel().getSelectedLayers()[0];
+            }
+            if (layer == null && context.getLayerManager().getLayers().size() > 0) {
+                layer = context.getLayerManager().getLayer(0);
+            }
+            //monitor.allowCancellationRequests();
+            FeatureSchema featureSchema = new FeatureSchema();
+            featureSchema.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
+            FeatureCollection resultFC = new FeatureDataset(featureSchema);
+            // Fill inputC with features to be processed
+            Collection inputC;
+            if ((Boolean) getParameter(P_USE_SELECTION)) {
+                inputC = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems();
+                Feature feature = (Feature) inputC.iterator().next();
+                featureSchema = feature.getSchema();
+                inputC = PasteItemsPlugIn.conform(inputC, featureSchema);
+            } else {
+
+                inputC = layer.getFeatureCollectionWrapper().getFeatures();
+                featureSchema = layer.getFeatureCollectionWrapper().getFeatureSchema();
+                resultFC = new FeatureDataset(featureSchema);
+            }
+            // Short-circuit if input is empty
+            FeatureDataset inputFD = new FeatureDataset(inputC, featureSchema);
+            if (inputFD.isEmpty()) {
+                context.getWorkbenchFrame()
+                        .warnUser(I18N.get("ui.plugin.analysis.BufferPlugIn.empty-result-set"));
+                return;
+            }
+            Collection resultGeomColl = runBuffer(monitor, context, inputFD);
+            // Post-process result
+            if ((Boolean) getParameter(P_COPY_ATTRIBUTE)) {
+                FeatureCollection resultFeatureColl = new FeatureDataset(featureSchema);
+                Iterator iResult = resultGeomColl.iterator();
+                for (Iterator iSource = inputFD.iterator(); iSource.hasNext(); ) {
+                    Feature sourceFeature = (Feature) iSource.next();
+                    Geometry gResult = (Geometry) iResult.next();
                     if (!(gResult == null || gResult.isEmpty())) {
                         Feature newFeature = sourceFeature.clone(false);
                         newFeature.setGeometry(gResult);
                         resultFeatureColl.add(newFeature);
                     }
+                    // If both left and right side buffer have been computed
+                    // we have 2 features in resultGeomColl for every single feature in InputFD
+                    if ((Boolean)getParameter(P_LEFT_SINGLE_SIDED) && (Boolean)getParameter(P_RIGHT_SINGLE_SIDED)) {
+                        gResult = (Geometry) iResult.next();
+                        if (!(gResult == null || gResult.isEmpty())) {
+                            Feature newFeature = sourceFeature.clone(false);
+                            newFeature.setGeometry(gResult);
+                            resultFeatureColl.add(newFeature);
+                        }
+                    }
+                    if (monitor.isCancelRequested()) break;
                 }
-        		if (monitor.isCancelRequested()) break;
-        	}
-        	resultFC = resultFeatureColl;
-        } else {
-        	resultFC = FeatureDatasetFactory.createFromGeometry(resultGeomColl);
+                resultFC = resultFeatureColl;
+            } else {
+                resultFC = FeatureDatasetFactory.createFromGeometry(resultGeomColl);
+            }
+            if ((Boolean)getParameter(P_UNION_RESULT)) {
+                monitor.report(I18N.get("ui.plugin.analysis.BufferPlugIn.union-buffered-features"));
+                Collection geoms = FeatureUtil.toGeometries(resultFC.getFeatures());
+                Geometry g = UnaryUnionOp.union(geoms);
+                geoms.clear();
+                if (!(g == null || g.isEmpty())) geoms.add(g);
+                resultFC = FeatureDatasetFactory.createFromGeometry(geoms);
+            }
+            if (resultFC.isEmpty()) {
+                context.getWorkbenchFrame()
+                        .warnUser(I18N.get("ui.plugin.analysis.BufferPlugIn.empty-result-set"));
+                return;
+            }
+            context.getLayerManager().addCategory(StandardCategoryNames.RESULT);
+            String name;
+            if (!(Boolean) getParameter("UseSelection"))
+                name = layer.getName();
+            else
+                name = I18N.get("ui.MenuNames.SELECTION");
+            name = I18N.get("com.vividsolutions.jump.workbench.ui.plugin.analysis.BufferPlugIn") + "-" + name;
+            //if (endCapStyleCode != BufferParameters.CAP_ROUND) {
+            //    name = name + "-" + endCapStyle(endCapStyleCode);
+            //}
+            context.addLayer(StandardCategoryNames.RESULT, name, resultFC);
+        } catch(Exception e) {
+            throw e;
         }
-	    if (unionResult) {
-	        monitor.report(I18N.get("ui.plugin.analysis.BufferPlugIn.union-buffered-features"));
-	    	Collection geoms = FeatureUtil.toGeometries(resultFC.getFeatures());
-	    	Geometry g = UnaryUnionOp.union(geoms);
-	    	geoms.clear();
-	    	if (!(g == null || g.isEmpty())) geoms.add(g);
-	    	resultFC = FeatureDatasetFactory.createFromGeometry(geoms);
-	    }
-	    if (resultFC.isEmpty()) {
-	    	context.getWorkbenchFrame()
-	    	       .warnUser(I18N.get("ui.plugin.analysis.BufferPlugIn.empty-result-set"));
-	    	return;
-	    }
-        context.getLayerManager().addCategory(categoryName);
-        String name;
-        if (!useSelected)
-        	name = layer.getName();
-        else
-        	name = I18N.get("ui.MenuNames.SELECTION");
-        name = I18N.get("com.vividsolutions.jump.workbench.ui.plugin.analysis.BufferPlugIn") + "-" + name;
-        if (endCapStyleCode != BufferParameters.CAP_ROUND) {
-        	name = name + "-" + endCapStyle(endCapStyleCode);
+        if (context.getWorkbenchContext().getBlackboard().getBoolean(StartMacroPlugIn.MACRO_STARTED)) {
+            ((Macro)context.getWorkbenchContext().getBlackboard().get("Macro")).addProcess(this);
         }
-        context.addLayer(categoryName, name, resultFC);
-        //if (exceptionNumber > 0) {
-        //    context.getWorkbenchFrame().warnUser(
-        //        I18N.get("ui.plugin.analysis.BufferPlugIn.errors-found-while-executing-buffer") + 
-        //        ": " + exceptionNumber);
-        //}
     }
 
+
     private Collection runBuffer(TaskMonitor monitor, PlugInContext context, FeatureCollection fcA) throws Exception {
+        int quadrantSegments = (Integer)getParameter(P_QUADRANT_SEGMENTS);
+        int endCapStyleCode = (Integer)getParameter(P_END_CAP_STYLE);
+        int joinStyleCode = (Integer)getParameter(P_JOIN_STYLE);
+        double mitreLimit = (Double)getParameter(P_MITRE_LIMIT);
+        boolean leftSingleSided = (Boolean)getParameter(P_LEFT_SINGLE_SIDED);
+        boolean rightSingleSided = (Boolean)getParameter(P_RIGHT_SINGLE_SIDED);
+        double bufferDistance = (Double)getParameter(P_DISTANCE);
+        boolean fromAttribute = (Boolean)getParameter(P_FROM_ATTRIBUTE);
+        int attributeIndex = (Integer)getParameter(P_ATTRIBUTE_INDEX);
         int total = fcA.size();
         int count = 0;
         Collection resultColl = new ArrayList();
@@ -345,15 +392,15 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
             }
             try {
                 if (side == 0) {
-                    Geometry result = runBuffer(ga, bufferParameters, 0);
+                    Geometry result = runBuffer(ga, bufferParameters, 0, bufferDistance);
                     resultColl.add(result);
                 }
                 if ((side & LEFT) == LEFT) {
-                    Geometry result = runBuffer(ga, bufferParameters, LEFT);
+                    Geometry result = runBuffer(ga, bufferParameters, LEFT, bufferDistance);
                     resultColl.add(result);
                 }
                 if ((side & RIGHT) == RIGHT) {
-                    Geometry result = runBuffer(ga, bufferParameters, RIGHT);
+                    Geometry result = runBuffer(ga, bufferParameters, RIGHT, bufferDistance);
                     resultColl.add(result);
                 }
             } catch (Exception e) {
@@ -367,7 +414,7 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
         return resultColl;
     }
 
-    private Geometry runBuffer(Geometry a, BufferParameters param, int side) throws Exception {
+    private Geometry runBuffer(Geometry a, BufferParameters param, int side, double bufferDistance) throws Exception {
         Geometry result;
         // Simplifying a with a Douglas-Peucker simplifier can eliminate
         // useless aligned vertices which can cause exceptions
@@ -383,9 +430,9 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
         return result;
     }
 
-    private void setDialogValues(final MultiTabInputDialog dialog, PlugInContext context) {
-	    
-        dialog.setSideBarDescription(sideBarText);
+    private void setDialogValues(final MultiTabInputDialog dialog,
+                                 final PlugInContext context,
+                                 final boolean useSelection) {
 	    
         try{
 	    	updateIcon(dialog);
@@ -399,38 +446,41 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
         
         dialog.addSeparator();
         dialog.addSubTitle(DISTANCE);
-        final JTextField bufferDistanceTextField = dialog.addDoubleField(FIXED_DISTANCE, bufferDistance, 10, null);	    	
+        final JTextField bufferDistanceTextField = dialog.addDoubleField(FIXED_DISTANCE, (Double)getParameter(P_DISTANCE), 10, null);
 	    final JCheckBox fromAttributeCheckBox = dialog.addCheckBox(FROM_ATTRIBUTE, false, ATTRIBUTE_TOOLTIP);
 	    final JComboBox attributeComboBox = dialog.addAttributeComboBox(ATTRIBUTE, LAYER, AttributeTypeFilter.NUMERIC_FILTER, ATTRIBUTE_TOOLTIP);
         
         dialog.addSeparator();
         dialog.addSubTitle(OTHER_OPTIONS);
-        final JTextField quadrantSegmentsIntegerField = dialog.addIntegerField(QUADRANT_SEGMENTS, quadrantSegments, 3, null);
-        final JCheckBox unionCheckBox = dialog.addCheckBox(UNION_RESULT, unionResult);
-        final JCheckBox copyAttributesCheckBox = dialog.addCheckBox(COPY_ATTRIBUTES, copyAttributes);
+        final JTextField quadrantSegmentsIntegerField = dialog.addIntegerField(QUADRANT_SEGMENTS, (Integer)getParameter(P_QUADRANT_SEGMENTS), 3, null);
+        final JCheckBox unionCheckBox = dialog.addCheckBox(UNION_RESULT, (Boolean)getParameter(P_UNION_RESULT));
+        final JCheckBox copyAttributesCheckBox = dialog.addCheckBox(COPY_ATTRIBUTES, (Boolean)getParameter(P_COPY_ATTRIBUTE));
         
         dialog.addPane(ADVANCED_OPTIONS);
         
         //dialog.addSubTitle(END_CAP_STYLE);
-        final JComboBox endCapComboBox = dialog.addComboBox(END_CAP_STYLE, endCapStyle(endCapStyleCode), endCapStyles, null);
+        final JComboBox endCapComboBox = dialog.addComboBox(END_CAP_STYLE,
+                decodeCapStyle((Integer)getParameter(P_END_CAP_STYLE)), endCapStyles, null);
         
         dialog.addSeparator();
         //dialog.addSubTitle(JOIN_STYLE);
-        final JComboBox joinStyleComboBox = dialog.addComboBox(JOIN_STYLE, joinStyle(joinStyleCode), joinStyles, null);
-        final JTextField mitreLimitTextField = dialog.addDoubleField(MITRE_LIMIT, mitreLimit, 10, null);
+        final JComboBox joinStyleComboBox = dialog.addComboBox(JOIN_STYLE,
+                decodeJoinStyle((Integer)getParameter(P_JOIN_STYLE)), joinStyles, null);
+        final JTextField mitreLimitTextField = dialog.addDoubleField(MITRE_LIMIT, (Double)getParameter(P_MITRE_LIMIT), 10, null);
         
         dialog.addSeparator();
         //dialog.addSubTitle(SINGLE_SIDED);
-        final JCheckBox leftSingleSidedCheckBox = dialog.addCheckBox(LEFT_SINGLE_SIDED, leftSingleSided);
-        final JCheckBox rightSingleSidedCheckBox = dialog.addCheckBox(RIGHT_SINGLE_SIDED, rightSingleSided);
+        final JCheckBox leftSingleSidedCheckBox = dialog.addCheckBox(LEFT_SINGLE_SIDED, (Boolean)getParameter(P_LEFT_SINGLE_SIDED));
+        final JCheckBox rightSingleSidedCheckBox = dialog.addCheckBox(RIGHT_SINGLE_SIDED, (Boolean)getParameter(P_RIGHT_SINGLE_SIDED));
         dialog.addRow(new javax.swing.JPanel());
         
-        mitreLimitTextField.setEnabled(joinStyleCode == BufferParameters.JOIN_MITRE);
+        mitreLimitTextField.setEnabled((Integer)getParameter(P_JOIN_STYLE) == BufferParameters.JOIN_MITRE);
         quadrantSegmentsIntegerField.setEnabled(
-                    (endCapStyleCode == BufferParameters.CAP_ROUND) ||
-                    (joinStyleCode == BufferParameters.JOIN_ROUND));
-        endCapComboBox.setEnabled(!(leftSingleSided || rightSingleSided));
-        copyAttributesCheckBox.setEnabled(!unionResult);
+                    ((Integer)getParameter(P_END_CAP_STYLE) == BufferParameters.CAP_ROUND) ||
+                    ((Integer)getParameter(P_JOIN_STYLE) == BufferParameters.JOIN_ROUND));
+        endCapComboBox.setEnabled(!((Boolean)getParameter(P_LEFT_SINGLE_SIDED) ||
+                                    (Boolean)getParameter(P_RIGHT_SINGLE_SIDED)));
+        copyAttributesCheckBox.setEnabled(!(Boolean)getParameter(P_UNION_RESULT));
         
         updateIcon(dialog);
         
@@ -440,56 +490,59 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
                     // execute other ActionListener methods before this one
                     if (listener != this) listener.actionPerformed(e);
                 }
-                updateControls(dialog);
+                updateControls(context, dialog, useSelection);
             }
         });
         fromAttributeCheckBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                updateControls(dialog);
+                updateControls(context, dialog, useSelection);
             }
         });
         unionCheckBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                updateControls(dialog);
+                updateControls(context, dialog, useSelection);
             }
         });
         endCapComboBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                updateControls(dialog);
+                updateControls(context, dialog, useSelection);
             }
         });
         joinStyleComboBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                updateControls(dialog);
+                updateControls(context, dialog, useSelection);
             }
         });
         leftSingleSidedCheckBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                updateControls(dialog);
+                updateControls(context, dialog, useSelection);
             }
         });
         rightSingleSidedCheckBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                updateControls(dialog);
+                updateControls(context, dialog, useSelection);
             }
         });
         
     }
 
-    private void getDialogValues(MultiInputDialog dialog) {
-	    if (!useSelected) {
+    private void getDialogValues(final MultiInputDialog dialog, final boolean useSelection) {
+        Layer layer = null;
+	    if (!useSelection) {
 		    layer = dialog.getLayer(LAYER);
         }
-	    bufferDistance = dialog.getDouble(FIXED_DISTANCE);
-	    endCapStyleCode = endCapStyleCode(dialog.getText(END_CAP_STYLE));
-	    quadrantSegments = dialog.getInteger(QUADRANT_SEGMENTS);
-	    joinStyleCode = joinStyleCode(dialog.getText(JOIN_STYLE));
-	    mitreLimit = dialog.getDouble(MITRE_LIMIT);
-	    leftSingleSided = dialog.getBoolean(LEFT_SINGLE_SIDED);
-        rightSingleSided = dialog.getBoolean(RIGHT_SINGLE_SIDED);
-	    unionResult = dialog.getBoolean(UNION_RESULT);
-	    copyAttributes = dialog.getBoolean(COPY_ATTRIBUTES);
-	    if (!useSelected) {
+	    double bufferDistance = dialog.getDouble(FIXED_DISTANCE);
+	    int endCapStyleCode = encodeCapStyle(dialog.getText(END_CAP_STYLE));
+	    int quadrantSegments = dialog.getInteger(QUADRANT_SEGMENTS);
+	    int joinStyleCode = encodeJoinStyle(dialog.getText(JOIN_STYLE));
+	    double mitreLimit = dialog.getDouble(MITRE_LIMIT);
+	    boolean leftSingleSided = dialog.getBoolean(LEFT_SINGLE_SIDED);
+        boolean rightSingleSided = dialog.getBoolean(RIGHT_SINGLE_SIDED);
+	    boolean unionResult = dialog.getBoolean(UNION_RESULT);
+	    boolean copyAttributes = dialog.getBoolean(COPY_ATTRIBUTES);
+        boolean fromAttribute  = getParameter(P_FROM_ATTRIBUTE) != null ? (Boolean)getParameter(P_FROM_ATTRIBUTE) : false;
+        int attributeIndex = getParameter(P_ATTRIBUTE_INDEX) != null ? (Integer)getParameter(P_ATTRIBUTE_INDEX) : -1;
+	    if (!useSelection) {
 	        boolean hasNumericAttributes = AttributeTypeFilter.NUMERIC_FILTER
 	            .filter(layer.getFeatureCollectionWrapper().getFeatureSchema()).size() > 0;
 	        fromAttribute = dialog.getBoolean(FROM_ATTRIBUTE);
@@ -502,32 +555,21 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
 			    fromAttribute = false;
 		    }
 	    }
+        addParameter("UseSelection",     useSelection);
+        addParameter("Distance",         bufferDistance);
+        addParameter("LayerName",        layer.getName());
+        addParameter("QuadrantSegments", quadrantSegments);
+        addParameter("EndCapStyleCode",  endCapStyleCode);
+        addParameter("JoinStyleCode",    joinStyleCode);
+        addParameter("MitreLimit",       mitreLimit);
+        addParameter("LeftSingleSided",  leftSingleSided);
+        addParameter("RightSingleSided", rightSingleSided);
+        addParameter("UnionResult",      unionResult);
+        addParameter("CopyAttributes",   copyAttributes);
+        addParameter("FromAttribute",    fromAttribute);
+        addParameter("AttributeIndex",   attributeIndex);
     }
 
-    private int endCapStyleCode(String capStyle) {
-        if (capStyle == CAP_FLAT) return BufferParameters.CAP_FLAT;
-        if (capStyle == CAP_SQUARE) return BufferParameters.CAP_SQUARE;
-        return BufferParameters.CAP_ROUND;
-    }
-    
-    private String endCapStyle(int capStyleCode) {
-        if (capStyleCode == BufferParameters.CAP_FLAT) return CAP_FLAT;
-        if (capStyleCode == BufferParameters.CAP_SQUARE) return CAP_SQUARE;
-        return CAP_ROUND;
-    }
-    
-    private int joinStyleCode(String joinStyle) {
-        if (joinStyle == JOIN_BEVEL) return BufferParameters.JOIN_BEVEL;
-        if (joinStyle == JOIN_MITRE) return BufferParameters.JOIN_MITRE;
-        return BufferParameters.JOIN_ROUND;
-    }
-    
-    private String joinStyle(int joinStyleCode) {
-        if (joinStyleCode == BufferParameters.JOIN_BEVEL) return JOIN_BEVEL;
-        if (joinStyleCode == BufferParameters.JOIN_MITRE) return JOIN_MITRE;
-        return JOIN_ROUND;
-    }
-    
     private Feature combine(Collection originalFeatures) {
         GeometryFactory factory = new GeometryFactory();
         Feature feature = (Feature) ((Feature) originalFeatures.iterator().next()).clone();
@@ -538,36 +580,39 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
         return feature;
     }
 
-    protected void updateControls(final MultiInputDialog dialog) {
-	    getDialogValues(dialog);
+    protected void updateControls(PlugInContext context, final MultiInputDialog dialog, boolean useSelection) {
+	    getDialogValues(dialog, useSelection);
 	    updateIcon(dialog);
-	    boolean hasNumericAttributes = !useSelected && AttributeTypeFilter.NUMERIC_FILTER
-	        .filter(layer.getFeatureCollectionWrapper().getFeatureSchema()).size() > 0;
-	    dialog.setFieldVisible(LAYER, !useSelected);
-	    dialog.setFieldVisible(SELECTION, useSelected);
-	    dialog.setFieldVisible(SELECTION_HELP, useSelected);
-	    dialog.setFieldEnabled(FIXED_DISTANCE, useSelected || !fromAttribute || !hasNumericAttributes);
-	    dialog.setFieldEnabled(FROM_ATTRIBUTE, !useSelected && hasNumericAttributes);
-	    dialog.setFieldEnabled(ATTRIBUTE, !useSelected && fromAttribute && hasNumericAttributes);
-	    dialog.setFieldEnabled(COPY_ATTRIBUTES, !unionResult);
+	    boolean hasNumericAttributes = !useSelection && AttributeTypeFilter.NUMERIC_FILTER
+	        .filter(context.getLayerManager().getLayer((String)getParameter(P_LAYER_NAME))
+                    .getFeatureCollectionWrapper().getFeatureSchema()).size() > 0;
+	    dialog.setFieldVisible(LAYER, !useSelection);
+	    dialog.setFieldVisible(SELECTION, useSelection);
+	    dialog.setFieldVisible(SELECTION_HELP, useSelection);
+	    dialog.setFieldEnabled(FIXED_DISTANCE, useSelection || !(Boolean)getParameter(P_FROM_ATTRIBUTE) || !hasNumericAttributes);
+	    dialog.setFieldEnabled(FROM_ATTRIBUTE, !useSelection && hasNumericAttributes);
+	    dialog.setFieldEnabled(ATTRIBUTE, !useSelection && (Boolean)getParameter(P_FROM_ATTRIBUTE) && hasNumericAttributes);
+	    dialog.setFieldEnabled(COPY_ATTRIBUTES, !(Boolean)getParameter(P_UNION_RESULT));
 	    dialog.setFieldEnabled(QUADRANT_SEGMENTS,
-                    (endCapStyleCode == BufferParameters.CAP_ROUND) ||
-                    (joinStyleCode == BufferParameters.JOIN_ROUND));
-        dialog.setFieldEnabled(MITRE_LIMIT, 
-                     joinStyleCode == BufferParameters.JOIN_MITRE);
-        dialog.setFieldEnabled(END_CAP_STYLE, !(leftSingleSided || rightSingleSided));
+                    ((Integer)getParameter(P_END_CAP_STYLE) == BufferParameters.CAP_ROUND) ||
+                    ((Integer)getParameter(P_JOIN_STYLE) == BufferParameters.JOIN_ROUND));
+        dialog.setFieldEnabled(MITRE_LIMIT,
+                (Integer)getParameter(P_JOIN_STYLE) == BufferParameters.JOIN_MITRE);
+        dialog.setFieldEnabled(END_CAP_STYLE, !((Boolean)getParameter(P_LEFT_SINGLE_SIDED)
+                || (Boolean)getParameter(P_RIGHT_SINGLE_SIDED)));
     }
     
     private void updateIcon(MultiInputDialog dialog) {
         StringBuffer fileName = new StringBuffer("Buffer");
-        if (unionResult) fileName.append("Union");
-        if (leftSingleSided || rightSingleSided) fileName.append("SingleSided");
-        if (!leftSingleSided && !rightSingleSided && endCapStyleCode == BufferParameters.CAP_FLAT) fileName.append("Flat");
-        else if (!leftSingleSided && !rightSingleSided && endCapStyleCode == BufferParameters.CAP_ROUND) fileName.append("Round");
-        else if (!leftSingleSided && !rightSingleSided && endCapStyleCode == BufferParameters.CAP_SQUARE) fileName.append("Square");
-        if (joinStyleCode == BufferParameters.JOIN_BEVEL) fileName.append("Bevel");
-        else if (joinStyleCode == BufferParameters.JOIN_ROUND) fileName.append("Round");
-        else if (joinStyleCode == BufferParameters.JOIN_MITRE) fileName.append("Mitre");
+        if ((Boolean)getParameter(P_UNION_RESULT)) fileName.append("Union");
+        if ((Boolean)getParameter(P_LEFT_SINGLE_SIDED) || (Boolean)getParameter(P_RIGHT_SINGLE_SIDED)) fileName.append("SingleSided");
+        boolean notSingleSided = !(Boolean)getParameter(P_LEFT_SINGLE_SIDED) && !(Boolean)getParameter(P_RIGHT_SINGLE_SIDED);
+        if (notSingleSided && (Integer)getParameter(P_END_CAP_STYLE) == BufferParameters.CAP_FLAT) fileName.append("Flat");
+        else if (notSingleSided && (Integer)getParameter(P_END_CAP_STYLE) == BufferParameters.CAP_ROUND) fileName.append("Round");
+        else if (notSingleSided && (Integer)getParameter(P_END_CAP_STYLE) == BufferParameters.CAP_SQUARE) fileName.append("Square");
+        if ((Integer)getParameter(P_JOIN_STYLE) == BufferParameters.JOIN_BEVEL) fileName.append("Bevel");
+        else if ((Integer)getParameter(P_JOIN_STYLE) == BufferParameters.JOIN_ROUND) fileName.append("Round");
+        else if ((Integer)getParameter(P_JOIN_STYLE) == BufferParameters.JOIN_MITRE) fileName.append("Mitre");
         dialog.setSideBarImage(
             new javax.swing.ImageIcon(IconLoader.image(fileName.toString()+".png")
                 .getScaledInstance((int)(216.0*0.8), (int)(159.0*0.8), java.awt.Image.SCALE_SMOOTH))

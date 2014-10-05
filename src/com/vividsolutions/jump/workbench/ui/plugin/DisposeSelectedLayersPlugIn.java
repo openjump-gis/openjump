@@ -35,22 +35,26 @@ package com.vividsolutions.jump.workbench.ui.plugin;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.Layerable;
+import com.vividsolutions.jump.workbench.plugin.Macro;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.plugin.StartMacroPlugIn;
 
 public class DisposeSelectedLayersPlugIn extends RemoveSelectedLayersPlugIn {
 
-  public boolean execute(PlugInContext context) throws Exception {
-    Layerable[] selectedLayers = (Layerable[]) (context.getLayerNamePanel())
-        .selectedNodes(Layerable.class).toArray(new Layerable[] {});
-    LayerManager lmgr = context.getLayerManager();
-    lmgr.dispose(selectedLayers);
+    public boolean execute(PlugInContext context) throws Exception {
+        Layerable[] selectedLayers = (Layerable[]) (context.getLayerNamePanel())
+            .selectedNodes(Layerable.class).toArray(new Layerable[] {});
+        LayerManager lmgr = context.getLayerManager();
+        lmgr.dispose(selectedLayers);
+        if (context.getWorkbenchContext().getBlackboard().getBoolean(StartMacroPlugIn.MACRO_STARTED)) {
+            ((Macro)context.getWorkbenchContext().getBlackboard().get("Macro")).addProcess(this);
+        }
+        return true;
+    }
 
-    return true;
-  }
-
-  // using the same name as remove plugin, as a users remove in ui is
-  // essentially a remove/dispose combination
-  public String getName() {
+    // using the same name as remove plugin, as a users remove in ui is
+    // essentially a remove/dispose combination
+    public String getName() {
     return I18N.get(getClass().getSuperclass().getCanonicalName());
   }
 
