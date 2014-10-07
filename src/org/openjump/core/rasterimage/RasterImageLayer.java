@@ -11,7 +11,6 @@ package org.openjump.core.rasterimage;
 
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.noding.NodableSegmentString;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -89,7 +88,7 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
     protected PlanarImage image = null;
     
     //-- [sstein 2nd Aug 2010] new, since we scale the image now for display
-    protected static Raster rasterData = null;
+    protected Raster rasterData = null;
     protected boolean rasterDataChanged = false; //may be needed for rescaling the image values
     protected boolean wasScaledForDisplay = false;
     //-- end
@@ -530,7 +529,7 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
         WorkbenchContext context = this.getWorkbenchContext();
         
         if (this.image == null && !this.needToKeepImage){
-            this.setImage( RasterImageLayer.loadImage( context, imageFileName  ) );
+            this.setImage( this.loadImage( context, imageFileName  ) );
         } else if (this.image == null && this.needToKeepImage){
             //logger.printError("was advised to keep image, but there is none!");
         }
@@ -624,7 +623,7 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
         return null;
     }
     
-    public final static PlanarImage loadImage(WorkbenchContext context, String filenameOrURL) {
+    public final PlanarImage loadImage(WorkbenchContext context, String filenameOrURL) {
 
          if (filenameOrURL.toLowerCase().endsWith(".gif")  || filenameOrURL.toLowerCase().endsWith(".png")
                  || filenameOrURL.toLowerCase().endsWith(".tif") || filenameOrURL.toLowerCase().endsWith(".tiff")) {
@@ -686,7 +685,7 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
                 //   dealing now with an Image that will be modified for better dislay 
        		 	Raster rData = pImage.copyData();  //copy data so we do not get a ref
                 rasterData = rData;
-                //-- sstein end
+                //-- sstein end               
                 
                 noDataValue = gf.getNoData();
                 
@@ -714,9 +713,7 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
                 pbConvert.addSource(surrogateImage);
                 pbConvert.add(DataBuffer.TYPE_BYTE);
                 surrogateImage = JAI.create("format", pbConvert);
-
-
-
+                
                 return(surrogateImage);
 
             }catch(Throwable e){
@@ -1602,7 +1599,7 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
 	 * to set the Raster data, use also setImage()
 	 * @param newRaster
 	 */
-	public void setRasterData(Raster newRaster) {
+    public void setRasterData(Raster newRaster) {
 		rasterData = newRaster;
 		setRasterDataChanged(true);
 	}
