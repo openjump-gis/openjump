@@ -60,6 +60,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
     public static final String EXTERNAL_PK_KEY         = "External PK";
     public static final String SRID_KEY                = "SRID";
     public static final String GEOM_DIM_KEY            = "Dimension";
+    public static final String NAN_2_Z_KEY             = "NaN to Z";
     public static final String CREATE_PK               = "Create PK";
     public static final String NORMALIZED_COLUMN_NAMES = "Normalized Column Names";
 

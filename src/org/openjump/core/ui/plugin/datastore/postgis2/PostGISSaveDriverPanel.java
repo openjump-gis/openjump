@@ -16,6 +16,8 @@ import org.openjump.core.ui.plugin.datastore.postgis.PostGISQueryUtil;
 import javax.swing.*;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,15 +35,17 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel {
     static final String TITLE   = I18N.get(KEY + ".title");
 
     static final String WRITE_3D_GEOM           = I18N.get(KEY + ".write-3d-geometries");
+    static final String CONVERT_NAN_Z           = I18N.get(KEY + ".convert-nan-z");
     static final String CREATE_DB_PK            = I18N.get(KEY + ".create-database-primary-key");
-    static final String NORMALIZED_TABLE_NAME    = I18N.get(KEY + ".normalized-table-name-key");
-    static final String NORMALIZED_COLUMN_NAMES  = I18N.get(KEY + ".normalized-column-names-key");
+    static final String NORMALIZED_TABLE_NAME   = I18N.get(KEY + ".normalized-table-name-key");
+    static final String NORMALIZED_COLUMN_NAMES = I18N.get(KEY + ".normalized-column-names-key");
 
     // UI elements
     private ConnectionPanel connectionPanel;
     private JComboBox tableComboBox;
     private JCheckBox createPrimaryKeyCheckBox;
     private JCheckBox write3dGeomCheckBox;
+    private JTextField convertNaNZTextField;
     private JCheckBox normalizedTableNameCheckBox;
     private JCheckBox normalizedColumnNamesCheckBox;
     private OKCancelPanel okCancelPanel;
@@ -121,9 +125,36 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel {
         gbLayout.setConstraints(write3dGeomCheckBox, gbConstraints);
         add(write3dGeomCheckBox);
 
+        // Convert NaN z
+        JLabel convertNaNZLabel = new JLabel(CONVERT_NAN_Z);
+        gbConstraints.gridy += 1;
+        gbConstraints.gridx = 0;
+        gbLayout.setConstraints(convertNaNZLabel, gbConstraints);
+        add(convertNaNZLabel);
+
+        convertNaNZTextField = new JTextField("NaN", 12);
+        convertNaNZTextField.setEnabled(false);
+        convertNaNZTextField.setEditable(false);
+        convertNaNZTextField.setInputVerifier(new InputVerifier() {
+            @Override
+            public boolean verify(JComponent input) {
+                return ((JTextField)input).getText().matches("NaN|\\d+(\\.\\d+)?");
+            }
+        });
+        gbConstraints.gridx = 1;
+        gbLayout.setConstraints(convertNaNZTextField, gbConstraints);
+        add(convertNaNZTextField);
+        write3dGeomCheckBox.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                convertNaNZTextField.setEnabled(((JCheckBox)e.getSource()).isSelected());
+                convertNaNZTextField.setEditable(((JCheckBox) e.getSource()).isSelected());
+            }
+        });
+
         // Normalize column names checkbox
         normalizedTableNameCheckBox = new JCheckBox(NORMALIZED_TABLE_NAME);
         normalizedTableNameCheckBox.setSelected(false);
+        gbConstraints.gridx = 0;
         gbConstraints.gridy += 1;
         gbLayout.setConstraints(normalizedTableNameCheckBox, gbConstraints);
         add(normalizedTableNameCheckBox);
@@ -213,6 +244,10 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel {
 
     public boolean writeCreate3dGeometriesSelected() {
         return write3dGeomCheckBox.isSelected();
+    }
+
+    public double nan2Z() {
+        return Double.parseDouble(convertNaNZTextField.getText());
     }
 
     public boolean isNormalizedTableName() {

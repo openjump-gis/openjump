@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2014-10-07 mmichaud <m.michael.michaud@orange.fr>
+  * Add an option to save to postgis driver to convert NaN Z values to
+    valid Z (requested by mail from Uwe on 2014-10-01/06)
+
 2014-10-05 mmichaud <m.michael.michaud@orange.fr>
   * Add 3 plugins for macro recording (needs adaptation in each plugin
     to work effectively).

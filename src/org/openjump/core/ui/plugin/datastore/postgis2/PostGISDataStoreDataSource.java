@@ -1,5 +1,6 @@
 package org.openjump.core.ui.plugin.datastore.postgis2;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jump.datastore.AdhocQuery;
 import com.vividsolutions.jump.datastore.postgis.PostgisDSConnection;
 import com.vividsolutions.jump.datastore.postgis.PostgisDSMetadata;
@@ -210,9 +211,20 @@ public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
                                int srid, int dim, boolean normalizedColumnNames) throws SQLException {
         PreparedStatement statement = insertStatement(conn, fc.getFeatureSchema(), normalizedColumnNames);
         int count = 0;
+        // There is an option to convert NaN values to any double value while uploading
+        // z is changed without duplicating the geometry
+        // in normal case, uploaded dataset will be downloaded just after
+        // if the upload breaks, a part of geometries may have their z changed
+        double replacementZ = getProperties().get(NAN_2_Z_KEY) == null ?
+                Double.NaN :
+                (Double)getProperties().get(NAN_2_Z_KEY);
         for (Iterator it = fc.iterator() ; it.hasNext() ; ) {
             Feature f = (Feature)it.next();
-            //insertStatement(conn, f, dbSchema, dbTable, primaryKey, srid, dim).executeUpdate();
+            if (dim==3 && getProperties().get(GEOM_DIM_KEY) != null) {
+                for (Coordinate c : f.getGeometry().getCoordinates()) {
+                    if (Double.isNaN(c.z)) c.z = replacementZ;
+                }
+            }
             statement = setAttributeValues(statement, f, srid, dim, primaryKey);
             statement.addBatch();
             if (count++ % 10000 == 0) {
