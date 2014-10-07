@@ -134,7 +134,7 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
         properties.put(WritableDataStoreDataSource.DATASET_NAME_KEY, panel.getTableName());
         properties.put(WritableDataStoreDataSource.CREATE_PK, panel.isCreatePrimaryKeyColumnSelected());
         properties.put(WritableDataStoreDataSource.GEOM_DIM_KEY, panel.writeCreate3dGeometriesSelected()?3:2);
-        properties.put(WritableDataStoreDataSource.NAN_2_Z_KEY, panel.nan2Z());
+        properties.put(WritableDataStoreDataSource.NAN_Z_TO_VALUE_KEY, panel.nanZToValue());
         if (panel.isCreatePrimaryKeyColumnSelected()) {
             properties.put(WritableDataStoreDataSource.EXTERNAL_PK_KEY, WritableDataStoreDataSource.DEFAULT_PK_NAME);
         }

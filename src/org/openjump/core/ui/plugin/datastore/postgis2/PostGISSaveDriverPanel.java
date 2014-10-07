@@ -246,7 +246,7 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel {
         return write3dGeomCheckBox.isSelected();
     }
 
-    public double nan2Z() {
+    public double nanZToValue() {
         return Double.parseDouble(convertNaNZTextField.getText());
     }
 

@@ -215,9 +215,9 @@ public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
         // z is changed without duplicating the geometry
         // in normal case, uploaded dataset will be downloaded just after
         // if the upload breaks, a part of geometries may have their z changed
-        double replacementZ = getProperties().get(NAN_2_Z_KEY) == null ?
+        double replacementZ = getProperties().get(NAN_Z_TO_VALUE_KEY) == null ?
                 Double.NaN :
-                (Double)getProperties().get(NAN_2_Z_KEY);
+                (Double)getProperties().get(NAN_Z_TO_VALUE_KEY);
         for (Iterator it = fc.iterator() ; it.hasNext() ; ) {
             Feature f = (Feature)it.next();
             if (dim==3 && getProperties().get(GEOM_DIM_KEY) != null) {
