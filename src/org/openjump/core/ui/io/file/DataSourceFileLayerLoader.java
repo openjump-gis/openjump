@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.vividsolutions.jump.workbench.plugin.PlugInManager;
 import com.vividsolutions.jump.workbench.plugin.Recordable;
 import com.vividsolutions.jump.workbench.plugin.Macro;
 import org.openjump.core.ui.util.ExceptionUtil;
@@ -140,7 +141,9 @@ public class DataSourceFileLayerLoader extends AbstractFileLayerLoader implement
   }
 
   public Object process(TaskMonitor monitor) throws ClassNotFoundException, URISyntaxException {
-      Class datasourceClass = this.getClass().getClassLoader().loadClass(getStringParam(DATASOURCE_CLASSNAME));
+      PlugInManager plugInManager = workbenchContext.getWorkbench().getPlugInManager();
+      ClassLoader pluginClassLoader = plugInManager.getClassLoader();
+      Class datasourceClass = pluginClassLoader.loadClass(getStringParam(DATASOURCE_CLASSNAME));
       DataSource dataSource = (DataSource)LangUtil.newInstance(datasourceClass);
       //Map<String, Object> properties = toProperties(uri, options);
       Map<String, Object> properties = getParameters();
