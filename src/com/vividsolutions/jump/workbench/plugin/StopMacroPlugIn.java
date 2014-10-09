@@ -44,10 +44,10 @@ public class StopMacroPlugIn extends AbstractPlugIn implements MacroManager {
     public boolean execute(PlugInContext context) throws Exception {
         try {
             if (context.getWorkbenchContext().getBlackboard().get(MACRO) != null) {
+                context.getWorkbenchContext().getBlackboard().put(StartMacroPlugIn.MACRO_STARTED, false);
                 Macro processes = (Macro) context.getWorkbenchContext().getBlackboard().get(MACRO);
                 final MultiInputDialog dialog = new MultiInputDialog(
                         context.getWorkbenchFrame(), getName(), true);
-                context.getWorkbenchContext().getBlackboard().put(StartMacroPlugIn.MACRO_STARTED, false);
                 context.getWorkbenchContext().getBlackboard().put(MACRO, null);
                 dialog.addTextField(MACRO_NAME, "Macro name", 16, new EnableCheck[]{
                         new EnableCheck() {

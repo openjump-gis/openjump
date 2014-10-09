@@ -340,7 +340,12 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
 
           try {
             boolean executeComplete = plugIn.execute(plugInContext);
-
+            if (workbenchContext.getBlackboard().getBoolean(StartMacroPlugIn.MACRO_STARTED)) {
+                if (plugIn instanceof StartMacroPlugIn || plugIn instanceof StopMacroPlugIn) {}
+                else {
+                    ((Macro)workbenchContext.getBlackboard().get("Macro")).addProcess((Recordable)plugIn);
+                }
+            }
             if (plugIn instanceof ThreadedPlugIn && executeComplete) {
               taskMonitorManager
                   .execute((ThreadedPlugIn) plugIn, plugInContext);
