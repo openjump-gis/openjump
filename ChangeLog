@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2014-10-20 ede
+  * fix JML (GML/FME etc.) reader/writer did not properly read/write UTF-8
+
 2014-10-09 mmichaud <m.michael.michaud@orange.fr>
   * fix #376, #377 : kml driver is working again (plus edition)
 

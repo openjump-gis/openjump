@@ -646,16 +646,17 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
 
         this.setInputTemplate(gmlTemplate);
 
-        if (isCompressed) {
-            r = new BufferedReader(new InputStreamReader(
-                        CompressedFile.openFile(inputFname,
-                            dp.getProperty("CompressedFile"))));
-        } else {
-            r = new BufferedReader(new FileReader(inputFname));
-        }
+//        if (isCompressed) {
+//            r = new BufferedReader(new InputStreamReader(
+//                        CompressedFile.openFile(inputFname,
+//                            dp.getProperty("CompressedFile"))));
+//        } else {
+//            r = new BufferedReader(new FileReader(inputFname));
+//        }
 
-        fc = read(r, inputFname);
-        r.close();
+        // forward stream instead of reader to allow sax to detect encoding
+        fc = read(CompressedFile.openFile(inputFname, dp.getProperty("CompressedFile")), inputFname);
+//        r.close();
 
         return fc;
     }
@@ -676,15 +677,29 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
     /**
      *  Main function to read a GML file. You should have already called
      *  setInputTempalate().
+     *  
+     *  NOTE: if proper xml charset support is needed this method should be called
+     *        with an InputStream as source
      *
-     *@param  r              reader to read the GML File from
+     *@param  o              reader/inputstream object to read the GML from
      *@param  readerName     what to call the reader for error reporting
      *@return                Description of the Return Value
      *@exception  Exception  Description of the Exception
      */
-    public FeatureCollection read(java.io.Reader r, String readerName)
+    public FeatureCollection read(Object o, String readerName)
         throws Exception {
-        LineNumberReader myReader = new LineNumberReader(r);
+      
+        // determine reader or stream
+        InputSource is;
+        if (o instanceof Reader) {
+          is = new InputSource((Reader) o);
+        }
+        else if (o instanceof InputStream) {
+          is = new InputSource((InputStream) o);
+        }
+        else {
+          throw new ParseException("need InputStream or Reader object!");
+        }
 
         if (GMLinput == null) {
             throw new ParseException(
@@ -697,16 +712,16 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
         fc = new FeatureDataset(fcmd);
 
         try {
-            xr.parse(new InputSource(myReader));
+            xr.parse(is);
         } catch (SAXParseException e) {
             throw new ParseException(e.getMessage() + "  Last Opened Tag: " +
                 lastStartTag_qName + ".  Reader reports last line read as " +
-                myReader.getLineNumber(),
+                e.getLineNumber(),
                 streamName + " - " + e.getPublicId() + " (" + e.getSystemId() +
                 ") ", e.getLineNumber(), e.getColumnNumber());
         } catch (SAXException e) {
             throw new ParseException(e.getMessage() + "  Last Opened Tag: " +
-                lastStartTag_qName, streamName, myReader.getLineNumber(), 0);
+                lastStartTag_qName, streamName, 0, 0);
         }
 
         return fc;

@@ -31,20 +31,21 @@
  */
 package com.vividsolutions.jump.io;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.util.Assert;
-
-import com.vividsolutions.jump.feature.*;
-
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
-
-import java.lang.reflect.Array;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
+
+import com.vividsolutions.jts.util.Assert;
+import com.vividsolutions.jump.feature.AttributeType;
+import com.vividsolutions.jump.feature.Feature;
+import com.vividsolutions.jump.feature.FeatureCollection;
+import com.vividsolutions.jump.feature.FeatureSchema;
 
 
 /**
@@ -156,7 +157,11 @@ public class GMLWriter implements JUMPWriter {
 
         Writer w;
 
-        w = new java.io.BufferedWriter(new java.io.FileWriter(outputFname));
+        // we always write UTF-8
+        // TODO: we should probably add a parser here to find out the
+        //       charset hardcoded in the template's header section
+        FileOutputStream fileStream = new FileOutputStream(new File(outputFname));
+        w = new OutputStreamWriter(fileStream, "UTF-8");
         this.write(featureCollection, w);
         w.close();
     }
