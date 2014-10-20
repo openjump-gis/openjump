@@ -257,7 +257,7 @@ public class PasteItemsPlugIn extends AbstractPlugIn {
               }
             }
           } catch (Exception e) {
-            workbenchContext.getErrorHandler().handleThrowable(e);
+            workbenchContext.getWorkbench().getFrame().warnUser(e.getMessage());
           }
 
           return MUST_CONTAIN_GEOMETRY;
