@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2014-11-06 mmichaud <m.michael.michaud@orange.fr>
+  * Fix a problem in BeanShellAttributeCalculator with date attribute type
+
 2014-10-20 ede
   * replaced error dialog in PasteItemPlugin's EnableCheck with warning in
     statusbar, the dialog disrupted the activation of the context menu

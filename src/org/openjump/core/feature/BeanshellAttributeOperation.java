@@ -31,9 +31,11 @@ import bsh.EvalError;
 import bsh.Interpreter;
 
 import com.vividsolutions.jump.feature.*;
+import com.vividsolutions.jump.util.FlexibleDateParser;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 
+import java.text.ParseException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -45,7 +47,9 @@ import java.util.Set;
  */
  // 0.1 (2012-11-17)
 public class BeanshellAttributeOperation implements Operation {
-        
+
+    private static final FlexibleDateParser DATE_PARSER = new FlexibleDateParser();
+
     private PlugInContext context;
     private AttributeType type;
     private String bshExpression;
@@ -65,7 +69,7 @@ public class BeanshellAttributeOperation implements Operation {
     }
     
     public Object evaluate(BasicFeature f) throws EvalError, 
-                           NumberFormatException, IllegalArgumentException {
+                           NumberFormatException, IllegalArgumentException, ParseException {
         
         FeatureSchema schema = f.getSchema();
         
@@ -108,10 +112,22 @@ public class BeanshellAttributeOperation implements Operation {
             Object obj = interpreter.eval(bshExpression);
             //AttributeType type = schema.getAttributeType(attributeIndex);
             if (obj == null) return null;
-            else if (type == AttributeType.STRING) return obj.toString();
-            else if (type == AttributeType.DOUBLE) return new Double(obj.toString());
-            else if (type == AttributeType.INTEGER) return new Integer(obj.toString());
-            else if (type == AttributeType.DATE) return new Date(obj.toString());
+            else if (type == AttributeType.STRING) {
+                if (obj instanceof String) return obj;
+                else return obj.toString();
+            }
+            else if (type == AttributeType.DOUBLE) {
+                if (obj instanceof Double) return obj;
+                else return new Double(obj.toString());
+            }
+            else if (type == AttributeType.INTEGER) {
+                if (obj instanceof Integer) return obj;
+                else return new Integer(obj.toString());
+            }
+            else if (type == AttributeType.DATE) {
+                if (obj instanceof Date) return obj;
+                else return DATE_PARSER.parse(obj.toString(), true);
+            }
             else return obj;
         }
         catch(EvalError e) {

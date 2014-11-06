@@ -37,6 +37,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import java.lang.Object;
+import java.text.ParseException;
 import java.util.*;
 
 import java.util.Collection;
@@ -343,6 +344,10 @@ public class BeanshellAttributeCalculatorPlugIn extends ThreadedBasePlugIn
         } catch(NumberFormatException e) {
             ErrorDialog.show(dialog, SCRIPT_EVAL_ERROR, CHECK_TYPES_MATCH + "\n" + 
                 e.toString(), StringUtil.stackTrace(e));
+            return;
+        } catch(ParseException e) {
+            ErrorDialog.show(dialog, SCRIPT_EVAL_ERROR, CHECK_TYPES_MATCH + "\n" +
+                    e.toString(), StringUtil.stackTrace(e));
             return;
         } catch(IllegalArgumentException e) {
             ErrorDialog.show(dialog, SCRIPT_EVAL_ERROR, CHECK_TYPES_MATCH + "\n" + 
