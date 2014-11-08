@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2014-11-08 mmichaud <m.michael.michaud@orange.fr>
+  * Improve LineStringSegmentStyles readability by removing symbols from
+    very small features and from segments very close to each others
+
 2014-11-06 mmichaud <m.michael.michaud@orange.fr>
   * Fix a problem in BeanShellAttributeCalculator with date attribute type
 

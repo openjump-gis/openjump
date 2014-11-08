@@ -55,12 +55,21 @@ public abstract class LineStringSegmentStyle extends LineStringStyle implements 
     }
 
     protected void paintLineString(LineString lineString, Viewport viewport,
-        Graphics2D graphics) throws Exception {
-      for (int i = 0; i < lineString.getNumPoints() - 1; i++) {
-        paint(lineString.getCoordinateN(i),
-              lineString.getCoordinateN(i + 1),
-            viewport, graphics);
-      }
+            Graphics2D graphics) throws Exception {
+        double scale = viewport.getScale();
+        Coordinate mid = null, previous = null;
+        double length = lineString.getLength();
+        // Do not draw symbol if total feature length is < 6 pixels
+        if (length * scale < 6) return;
+        for (int i = 0; i < lineString.getNumPoints() - 1; i++) {
+            Coordinate c0 = lineString.getCoordinateN(i);
+            Coordinate c1 = lineString.getCoordinateN(i+1);
+            mid = new Coordinate((c0.x+c1.x)/2, (c0.y+c1.y)/2);
+            // Do not draw symbol if previous symbol for this feature is less than 12 pixels far
+            if (previous != null && previous.distance(mid) * scale < 12) continue;
+            paint(c0, c1, viewport, graphics);
+            previous = mid;
+        }
     }
 
     protected void paint(Coordinate p0, Coordinate p1, Viewport viewport,
