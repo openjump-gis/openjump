@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2014-11-11 ede
+  * PLUS: update JumpDBQuery to 1.1.0 including new 3.8.6 SQLite JDBC driver
+
 2014-11-08 mmichaud <m.michael.michaud@orange.fr>
   * Improve LineStringSegmentStyles readability by removing symbols from
     very small features and from segments very close to each others
