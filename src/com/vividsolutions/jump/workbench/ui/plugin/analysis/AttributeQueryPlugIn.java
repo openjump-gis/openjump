@@ -35,6 +35,7 @@ package com.vividsolutions.jump.workbench.ui.plugin.analysis;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.*;
+import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
@@ -44,6 +45,7 @@ import javax.swing.JRadioButton;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.task.TaskMonitor;
@@ -52,7 +54,6 @@ import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.plugin.*;
-import com.vividsolutions.jump.workbench.plugin.util.*;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.GenericNames;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
@@ -70,10 +71,13 @@ public class AttributeQueryPlugIn extends AbstractPlugIn
   private static String ATTR_GEOMETRY_LENGTH = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.Length");
   private static String ATTR_GEOMETRY_NUMPOINTS = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.NumPoints");
   private static String ATTR_GEOMETRY_NUMCOMPONENTS = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.NumComponents");
+  private static String ATTR_GEOMETRY_NUMHOLES = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.NumHoles");
   private static String ATTR_GEOMETRY_ISCLOSED = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.IsClosed");
+  private static String ATTR_GEOMETRY_ISEMPTY = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.IsEmpty");
   private static String ATTR_GEOMETRY_ISSIMPLE = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.IsSimple");
   private static String ATTR_GEOMETRY_ISVALID = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.IsValid");
   private static String ATTR_GEOMETRY_TYPE = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.Type");
+  private static String ATTR_GEOMETRY_DIMENSION = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.Dimension");
 
   // MD - could easily add this later
   //private final static String DIALOG_COMPLEMENT = "Complement Result";
@@ -85,6 +89,7 @@ public class AttributeQueryPlugIn extends AbstractPlugIn
   private String funcNameToRun;
   private String value = "";
   private boolean complementResult = false;
+  private boolean caseInsensitive = false;
   private boolean exceptionThrown = false;
   private JRadioButton updateSourceRB;
   private JRadioButton createNewLayerRB;
@@ -122,15 +127,6 @@ public class AttributeQueryPlugIn extends AbstractPlugIn
   }
   
   public boolean execute(PlugInContext context) throws Exception {
-  	//[sstein] reset for correct language
-    //ATTR_GEOMETRY_AREA = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.Area");
-    //ATTR_GEOMETRY_LENGTH = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.Length");
-    //ATTR_GEOMETRY_NUMPOINTS = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.NumPoints");
-    //ATTR_GEOMETRY_NUMCOMPONENTS = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.NumComponents");
-    //ATTR_GEOMETRY_ISCLOSED = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.IsClosed");
-    //ATTR_GEOMETRY_ISSIMPLE = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.IsSimple");
-    //ATTR_GEOMETRY_ISVALID = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.IsValid");
-    //ATTR_GEOMETRY_TYPE = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.Type");
 
     dialog = new MultiInputDialog(context.getWorkbenchFrame(), getName(), true);
     setDialogValues(dialog, context);
@@ -185,10 +181,15 @@ public class AttributeQueryPlugIn extends AbstractPlugIn
           String value){
     AttributePredicate pred = AttributePredicate.getPredicate(funcNameToRun);
     FeatureCollection resultFC = new FeatureDataset(sourceFC.getFeatureSchema());
-
+    if (caseInsensitive && !value.startsWith("(?i)")) {
+      value = value.toLowerCase();
+    }
     for (Iterator i = sourceFC.iterator(); i.hasNext(); ) {
       Feature f = (Feature) i.next();
       Object fVal = getValue(f, attrName);
+      if (caseInsensitive && (fVal instanceof String)) {
+          fVal = ((String) fVal).toLowerCase();
+      }
       boolean predResult = pred.isTrue(fVal, value);
 
       if (complementResult)
@@ -228,6 +229,16 @@ public class AttributeQueryPlugIn extends AbstractPlugIn
       double len = (g == null) ? 0.0 : g.getNumGeometries();
       return new Double(len);
     }
+    if (attrName == ATTR_GEOMETRY_NUMHOLES) {
+      Geometry g = f.getGeometry();
+      int numHoles = 0;
+      for (int i = 0 ; i < g.getNumGeometries() ; i++) {
+          if (g.getGeometryN(i) instanceof Polygon) {
+              numHoles += ((Polygon)g.getGeometryN(i)).getNumInteriorRing();
+          }
+      }
+      return numHoles;
+    }
     if (attrName == ATTR_GEOMETRY_ISCLOSED) {
       Geometry g = f.getGeometry();
       if (g instanceof LineString)
@@ -235,6 +246,11 @@ public class AttributeQueryPlugIn extends AbstractPlugIn
       if (g instanceof MultiLineString)
         return new Boolean( ((MultiLineString) g).isClosed());
       return new Boolean(false);
+    }
+    if (attrName == ATTR_GEOMETRY_ISEMPTY) {
+      Geometry g = f.getGeometry();
+      boolean bool = g.isEmpty();
+      return new Boolean(bool);
     }
     if (attrName == ATTR_GEOMETRY_ISSIMPLE) {
       Geometry g = f.getGeometry();
@@ -247,16 +263,24 @@ public class AttributeQueryPlugIn extends AbstractPlugIn
       return new Boolean(bool);
     }
     if (attrName == ATTR_GEOMETRY_TYPE) {
+      Geometry g = f.getGeometry();
+      String type = StringUtil.classNameWithoutQualifiers(g.getClass().getName());
+      if (caseInsensitive)
+        type = type.toLowerCase();
+      return StringUtil.classNameWithoutQualifiers(g.getClass().getName());
+    }
+    if (attrName == ATTR_GEOMETRY_DIMENSION) {
         Geometry g = f.getGeometry();
-        return StringUtil.classNameWithoutQualifiers(g.getClass().getName());
-      }
+        return g.getDimension();
+    }
     return f.getAttribute(attrName);
   }
 
   private static String LAYER = GenericNames.SOURCE_LAYER;
   private static String ATTRIBUTE = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Attribute");
-  private static String PREDICATE = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Relation");
+  private static String PREDICATE = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Condition");
   private static String VALUE = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Value");
+  private static String DIALOG_CASE_INSENSITIVE = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Case-Insensitive");
   private static String DIALOG_COMPLEMENT = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Complement-Result");
 
   private static String UPDATE_SRC = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Select-features-in-the-source-layer");
@@ -265,15 +289,6 @@ public class AttributeQueryPlugIn extends AbstractPlugIn
   private JComboBox attrComboBox;
 
   private void setDialogValues(MultiInputDialog dialog, PlugInContext context){
-  	//[sstein] reset for language
-    //LAYER = GenericNames.SOURCE_LAYER;
-    //ATTRIBUTE = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Attribute");
-    //PREDICATE = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Relation");
-    //VALUE = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Value");
-    //DIALOG_COMPLEMENT = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Complement-Result");
-    //UPDATE_SRC = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Select-features-in-the-source-layer");
-    //CREATE_LYR = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Create-a-new-layer-for-the-results");
-
     dialog.setSideBarDescription(
     		I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Finds-the-Source-features-which-have-attribute-values-satisfying-a-given-condition"));
 
@@ -286,6 +301,7 @@ public class AttributeQueryPlugIn extends AbstractPlugIn
     attrComboBox = dialog.addComboBox(ATTRIBUTE, attrName, functionNames, null);
     dialog.addComboBox(PREDICATE, funcNameToRun, functionNames, null);
     dialog.addTextField(VALUE, value, 20, null, null);
+    dialog.addCheckBox(DIALOG_CASE_INSENSITIVE, caseInsensitive);
     dialog.addCheckBox(DIALOG_COMPLEMENT, complementResult);
 
     final String OUTPUT_GROUP = "OUTPUT_GROUP";
@@ -300,6 +316,7 @@ public class AttributeQueryPlugIn extends AbstractPlugIn
     attrName = dialog.getText(ATTRIBUTE);
     funcNameToRun = dialog.getText(PREDICATE);
     value = dialog.getText(VALUE);
+    caseInsensitive = dialog.getBoolean(DIALOG_CASE_INSENSITIVE);
     complementResult = dialog.getBoolean(DIALOG_COMPLEMENT);
     createLayer = dialog.getBoolean(CREATE_LYR);
   }
@@ -329,10 +346,13 @@ public class AttributeQueryPlugIn extends AbstractPlugIn
     names.add(ATTR_GEOMETRY_LENGTH);
     names.add(ATTR_GEOMETRY_NUMPOINTS);
     names.add(ATTR_GEOMETRY_NUMCOMPONENTS);
+    names.add(ATTR_GEOMETRY_NUMHOLES);
     names.add(ATTR_GEOMETRY_ISCLOSED);
+    names.add(ATTR_GEOMETRY_ISEMPTY);
     names.add(ATTR_GEOMETRY_ISSIMPLE);
     names.add(ATTR_GEOMETRY_ISVALID);
     names.add(ATTR_GEOMETRY_TYPE);
+    names.add(ATTR_GEOMETRY_DIMENSION);
 
     return names;
   }

@@ -1,5 +1,11 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2014-11-15 mmichaud <m.michael.michaud@orange.fr>
+  * Small improvements in the AttributeQueryPlugIn
+    + add isEmpty, dimension and numHoles attributes
+    + add matches operator (using regex)
+    + add case insensitive option
+
 2014-11-11 ede
   * PLUS: update JumpDBQuery to 1.1.0 including new 3.8.6 SQLite JDBC driver
 

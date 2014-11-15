@@ -37,6 +37,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jump.I18N;
@@ -61,6 +62,7 @@ public abstract class AttributePredicate
     new GreaterThanOrEqualPredicate(),
     new ContainsPredicate(),
     new StartsWithPredicate(),
+    new MatchesPredicate(),
   };
 
   static List getNames()
@@ -218,6 +220,14 @@ public abstract class AttributePredicate
     public boolean isTrue(Object arg1, Object arg2) {
       if (arg1 == null || arg2 == null) return false;
       return arg1.toString().startsWith(arg2.toString());
+    }
+  }
+
+  private static class MatchesPredicate extends AttributePredicate {
+    public MatchesPredicate() {  super(I18N.get("ui.plugin.analysis.AttributePredicate.matches"));  }
+    public boolean isTrue(Object arg1, Object arg2) {
+        if (arg1 == null || arg2 == null) return false;
+        return Pattern.compile(arg2.toString()).matcher(arg1.toString()).matches();
     }
   }
 }
