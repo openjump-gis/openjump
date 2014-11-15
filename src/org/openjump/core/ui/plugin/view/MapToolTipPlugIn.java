@@ -43,9 +43,11 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
+import java.io.File;
 import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.openjump.core.geomutils.GeoUtils;
 
@@ -208,6 +210,7 @@ public class MapToolTipPlugIn extends AbstractPlugIn
                             if (name.endsWith(pictureSuffix)) {
                             	data = "<img src=\"file:///" + data + "\">";
                             }
+                            data = processLink(data);
                             if ((!data.equals("")) && (NumLinesOfData < maxLinesOfData))
                             {
                                 dataText += "<br>" + name + ": " + data;
@@ -221,6 +224,22 @@ public class MapToolTipPlugIn extends AbstractPlugIn
         }
         dataText += sNoData + "</html>";
         return dataText;
+    }
+
+    Pattern URL = Pattern.compile("(?i)(https?:|file:/)//.*(jpg|jpeg|gif|png)");
+    Pattern PathWithDrive = Pattern.compile("(?i)(?:[a-z]:\\\\)(?:[^\\\\/?%*:|\"<>]+\\\\)*(?:[^\\\\/?%*:|\"<>]+.(?:jpg|jpeg|gif|png))");
+    Pattern PathWithoutDrive = Pattern.compile("(?i)(?:[^\\\\/?%*:|\"<>]+\\\\)*(?:[^\\\\/?%*:|\"<>]+.(?:jpg|jpeg|gif|png))");
+    private String processLink(String value) {
+        if (URL.matcher(value).matches()) {
+            return "<img width=240 height=180 src=\"" + value + "\">";
+        }
+        if (PathWithDrive.matcher(value).matches()) {
+            return "<img width=240 height=180 src=\"file:///" + value.replaceAll("\\\\","/") + "\">";
+        }
+        if (PathWithoutDrive.matcher(value).matches() && new File(value).exists()) {
+            return "<img width=240 height=180 src=\"file:///" + new File(value).getAbsolutePath().replaceAll("\\\\","/") + "\">";
+        }
+        return value;
     }
     
     private String getGeoData(Geometry geo, Coordinate mousePt)

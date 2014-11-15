@@ -5,6 +5,8 @@
     + add isEmpty, dimension and numHoles attributes
     + add matches operator (using regex)
     + add case insensitive option
+  * MapToolTipPlugIn can now interpret jpg/gif/png images from url or
+    filesystem paths (both relative or absolute).
 
 2014-11-11 ede
   * PLUS: update JumpDBQuery to 1.1.0 including new 3.8.6 SQLite JDBC driver
