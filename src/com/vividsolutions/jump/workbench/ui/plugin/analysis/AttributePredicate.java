@@ -53,7 +53,7 @@ import com.vividsolutions.jump.workbench.ui.GenericNames;
  */
 public abstract class AttributePredicate
 {
-  static AttributePredicate[] method = {
+  static AttributePredicate[] methods = {
     new EqualPredicate(),
     new NotEqualPredicate(),
     new LessThanPredicate(),
@@ -62,27 +62,61 @@ public abstract class AttributePredicate
     new GreaterThanOrEqualPredicate(),
     new ContainsPredicate(),
     new StartsWithPredicate(),
-    new MatchesPredicate(),
+    new EndsWithPredicate(),
+    new MatchesPredicate()
   };
 
-  static List getNames()
+  static AttributePredicate[] methodsCaseInsensitive = {
+    new ContainsCIPredicate(),
+    new StartsWithCIPredicate(),
+    new EndsWithCIPredicate(),
+    new MatchesCIPredicate()
+  };
+
+  static List<String> getNames()
   {
     List names = new ArrayList();
-    for (int i = 0; i < method.length; i++) {
-      names.add(method[i].name);
+    for (int i = 0; i < methods.length; i++) {
+      names.add(methods[i].name);
+    }
+    return names;
+  }
+
+  static List<String> getNamesCI()
+  {
+    List names = new ArrayList();
+    for (int i = 0; i < methodsCaseInsensitive.length; i++) {
+      names.add(methodsCaseInsensitive[i].name);
     }
     return names;
   }
 
   static AttributePredicate getPredicate(String name)
   {
-    for (int i = 0; i < method.length; i++) {
-      if (method[i].name.equals(name))
-        return method[i];
+    for (int i = 0; i < methods.length; i++) {
+      if (methods[i].name.equals(name))
+        return methods[i];
     }
     return null;
   }
 
+  static AttributePredicate getPredicate(String name, boolean caseInsensitive)
+  {
+    AttributePredicate pred = null;
+    if ( caseInsensitive ) {
+      for (int i = 0; i < methodsCaseInsensitive.length; i++) {
+        if (methodsCaseInsensitive[i].name.equals(name))
+          pred = methodsCaseInsensitive[i];
+      }
+    }
+    // checkbox might be disabled but still ticked on, return nonCI pred in that case
+    if ( pred == null ) {
+      pred = getPredicate(name);
+    }
+
+    return pred;
+  }
+  
   private static FlexibleDateParser dateParser = new FlexibleDateParser();
 
   private String name;
@@ -208,6 +242,7 @@ public abstract class AttributePredicate
     }
     protected boolean testCompareValue(int comp) { return comp >= 0; }
   }
+
   private static class ContainsPredicate extends AttributePredicate {
     public ContainsPredicate() {  super(GenericNames.CONTAINS);  }
     public boolean isTrue(Object arg1, Object arg2) {
@@ -215,11 +250,41 @@ public abstract class AttributePredicate
       return arg1.toString().indexOf(arg2.toString()) >= 0;
     }
   }
+  
+  private static class ContainsCIPredicate extends ContainsPredicate {
+    public boolean isTrue(Object arg1, Object arg2) {
+      if (arg1 == null || arg2 == null) return false;
+      return arg1.toString().toLowerCase().indexOf(arg2.toString().toLowerCase()) >= 0;
+    }
+  }
+
   private static class StartsWithPredicate extends AttributePredicate {
     public StartsWithPredicate() {  super(I18N.get("ui.plugin.analysis.AttributePredicate.starts-with"));  }
     public boolean isTrue(Object arg1, Object arg2) {
       if (arg1 == null || arg2 == null) return false;
       return arg1.toString().startsWith(arg2.toString());
+    }
+  }
+  
+  private static class StartsWithCIPredicate extends StartsWithPredicate {
+    public boolean isTrue(Object arg1, Object arg2) {
+      if (arg1 == null || arg2 == null) return false;
+      return arg1.toString().toLowerCase().startsWith(arg2.toString().toLowerCase());
+    }
+  }
+
+  private static class EndsWithPredicate extends AttributePredicate {
+    public EndsWithPredicate() {  super(I18N.get("ui.plugin.analysis.AttributePredicate.ends-with"));  }
+    public boolean isTrue(Object arg1, Object arg2) {
+      if (arg1 == null || arg2 == null) return false;
+      return arg1.toString().endsWith(arg2.toString());
+    }
+  }
+  
+  private static class EndsWithCIPredicate extends EndsWithPredicate {
+    public boolean isTrue(Object arg1, Object arg2) {
+      if (arg1 == null || arg2 == null) return false;
+      return arg1.toString().toLowerCase().endsWith(arg2.toString().toLowerCase());
     }
   }
 
@@ -228,6 +293,13 @@ public abstract class AttributePredicate
     public boolean isTrue(Object arg1, Object arg2) {
         if (arg1 == null || arg2 == null) return false;
         return Pattern.compile(arg2.toString()).matcher(arg1.toString()).matches();
+    }
+  }
+  
+  private static class MatchesCIPredicate extends MatchesPredicate {
+    public boolean isTrue(Object arg1, Object arg2) {
+        if (arg1 == null || arg2 == null) return false;
+        return Pattern.compile(arg2.toString(), Pattern.CASE_INSENSITIVE).matcher(arg1.toString()).matches();
     }
   }
 }

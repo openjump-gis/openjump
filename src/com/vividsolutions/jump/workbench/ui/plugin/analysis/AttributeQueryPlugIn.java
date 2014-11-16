@@ -32,12 +32,15 @@
 
 package com.vividsolutions.jump.workbench.ui.plugin.analysis;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.*;
-import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JMenuItem;
 import javax.swing.JRadioButton;
@@ -59,6 +62,7 @@ import com.vividsolutions.jump.workbench.ui.GenericNames;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.SelectionManager;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 /**
@@ -123,9 +127,13 @@ public class AttributeQueryPlugIn extends AbstractPlugIn
   }
   
   public String getName(){
-  	return I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Attribute-Query");
+    return I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Attribute-Query");
   }
-  
+
+  public ImageIcon getIcon(){
+    return IconLoader.icon("fugue/regular-expression-search.png");
+  }
+
   public boolean execute(PlugInContext context) throws Exception {
 
     dialog = new MultiInputDialog(context.getWorkbenchFrame(), getName(), true);
@@ -179,17 +187,13 @@ public class AttributeQueryPlugIn extends AbstractPlugIn
           FeatureCollection sourceFC,
           String attrName,
           String value){
-    AttributePredicate pred = AttributePredicate.getPredicate(funcNameToRun);
+    AttributePredicate pred = AttributePredicate.getPredicate(funcNameToRun,caseInsensitive);
     FeatureCollection resultFC = new FeatureDataset(sourceFC.getFeatureSchema());
-    if (caseInsensitive && !value.startsWith("(?i)")) {
-      value = value.toLowerCase();
-    }
+
     for (Iterator i = sourceFC.iterator(); i.hasNext(); ) {
       Feature f = (Feature) i.next();
       Object fVal = getValue(f, attrName);
-      if (caseInsensitive && (fVal instanceof String)) {
-          fVal = ((String) fVal).toLowerCase();
-      }
+
       boolean predResult = pred.isTrue(fVal, value);
 
       if (complementResult)
@@ -265,9 +269,7 @@ public class AttributeQueryPlugIn extends AbstractPlugIn
     if (attrName == ATTR_GEOMETRY_TYPE) {
       Geometry g = f.getGeometry();
       String type = StringUtil.classNameWithoutQualifiers(g.getClass().getName());
-      if (caseInsensitive)
-        type = type.toLowerCase();
-      return StringUtil.classNameWithoutQualifiers(g.getClass().getName());
+      return type;
     }
     if (attrName == ATTR_GEOMETRY_DIMENSION) {
         Geometry g = f.getGeometry();
@@ -299,11 +301,22 @@ public class AttributeQueryPlugIn extends AbstractPlugIn
     JComboBox lyrCombo = dialog.addLayerComboBox(LAYER, initLayer, context.getLayerManager());
     lyrCombo.addItemListener(new LayerItemListener());
     attrComboBox = dialog.addComboBox(ATTRIBUTE, attrName, functionNames, null);
-    dialog.addComboBox(PREDICATE, funcNameToRun, functionNames, null);
+    final JComboBox dropBox = dialog.addComboBox(PREDICATE, funcNameToRun, functionNames, null);
     dialog.addTextField(VALUE, value, 20, null, null);
-    dialog.addCheckBox(DIALOG_CASE_INSENSITIVE, caseInsensitive);
-    dialog.addCheckBox(DIALOG_COMPLEMENT, complementResult);
 
+    final JCheckBox caseBox = dialog.addCheckBox(DIALOG_CASE_INSENSITIVE, caseInsensitive);
+    caseBox.setEnabled(caseBoxEnabled(dropBox));
+
+    // en/disable caseInsensitive box by user input
+    dropBox.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        boolean enabled = caseBoxEnabled(dropBox);
+        caseBox.setEnabled(enabled);
+      }
+    });
+
+    dialog.addCheckBox(DIALOG_COMPLEMENT, complementResult);
+    
     final String OUTPUT_GROUP = "OUTPUT_GROUP";
     createNewLayerRB = dialog.addRadioButton(CREATE_LYR, OUTPUT_GROUP, createLayer,CREATE_LYR);
     updateSourceRB = dialog.addRadioButton(UPDATE_SRC, OUTPUT_GROUP, !createLayer, UPDATE_SRC);
@@ -336,6 +349,18 @@ public class AttributeQueryPlugIn extends AbstractPlugIn
   }
 
 
+  private static boolean caseBoxEnabled( JComboBox<String> dropBox ){
+    Object selectedItem = dropBox.getSelectedItem();
+    boolean enabled = false;
+    for (String function : AttributePredicate.getNamesCI()) {
+      if (selectedItem != null && selectedItem.equals(function)) {
+        enabled = true;
+        break;
+      }
+    }
+    return enabled;
+  }
+  
   private static List getAttributeNames(FeatureSchema fs) {
     List names = new ArrayList();
     for (int i = 0; i < fs.getAttributeCount(); i++) {
