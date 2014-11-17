@@ -557,7 +557,7 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
 	    }
         addParameter("UseSelection",     useSelection);
         addParameter("Distance",         bufferDistance);
-        addParameter("LayerName",        layer.getName());
+        addParameter("LayerName",        useSelection ? null : layer.getName());
         addParameter("QuadrantSegments", quadrantSegments);
         addParameter("EndCapStyleCode",  endCapStyleCode);
         addParameter("JoinStyleCode",    joinStyleCode);
