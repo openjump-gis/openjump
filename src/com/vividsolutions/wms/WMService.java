@@ -67,6 +67,9 @@ public class WMService {
   private String serverUrl;
   private String wmsVersion = WMS_1_1_1;
   private Capabilities cap;
+  // timeouts in ms
+  private int TIMEOUT_OPEN = 5000;
+  private int TIMEOUT_READ = TIMEOUT_OPEN;
   
   /**
    * Constructs a WMService object from a server URL.
@@ -122,6 +125,8 @@ public class WMService {
             String requestUrlString = this.serverUrl + req;
             URL requestUrl = new URL( requestUrlString );
             URLConnection con = requestUrl.openConnection();
+            con.setConnectTimeout(TIMEOUT_OPEN);
+            con.setReadTimeout(TIMEOUT_READ);
             if(requestUrl.getUserInfo() != null) {
                 con.setRequestProperty("Authorization", "Basic " +
                         Base64.encodeBytes(requestUrl.getUserInfo().getBytes()));
