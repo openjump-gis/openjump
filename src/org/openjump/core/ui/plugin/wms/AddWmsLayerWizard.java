@@ -42,6 +42,7 @@ public class AddWmsLayerWizard extends AbstractWizardGroup {
     "http://wms.jpl.nasa.gov/wms.cgi",
     //"http://wms.latlon.org/?",                // does not work (missing WMT_MS_Capabilities)
     "http://ows.terrestris.de/osm/service",
+    "http://maps.omniscale.net/wms/demo/default/service",
     // addresses added on 2013-06-19
     "http://www2.demis.nl/WMS/wms.ashx?wms=WorldMap",
     "http://gridca.grid.unep.ch/cgi-bin/mapserv?map=/www/geodataportal/htdocs/mod_map/geo_wms.map&",
