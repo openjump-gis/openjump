@@ -47,7 +47,6 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.net.Authenticator;
 import java.net.InetAddress;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
@@ -56,7 +55,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.TreeSet;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
