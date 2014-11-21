@@ -36,30 +36,27 @@
  */
 package com.vividsolutions.jump.workbench.ui.network;
 
-import java.awt.Dimension;
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
+import java.lang.reflect.Method;
 import java.net.Authenticator;
-import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
-import java.net.Proxy;
-import java.net.ProxySelector;
-import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.TreeSet;
-import java.util.regex.Pattern;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -74,6 +71,9 @@ import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -88,7 +88,6 @@ import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.ui.OptionsPanelV2;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 
 /**
  * Allows to configure the network connection (through a proxy HTTP or SOCKS)
@@ -111,8 +110,7 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
       .getLogger(ProxySettingsOptionsPanel.class);
 
   /** Panel icon */
-  public final static Icon ICON = IconLoader
-      .icon("fugue/globe-network.png");
+  public final static Icon ICON = IconLoader.icon("fugue/globe-network.png");
 
   /** Network configuration keys */
   public final static String HTTP_PROXY_SETTINGS_KEY = ProxySettingsOptionsPanel.class
@@ -131,6 +129,9 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
 
   /** Nombre asociado al panel de configuracion */
   public final static String NAME = getMessage("network-properties");
+  
+  private final static String DEFAULT_TEST_URL = "https://google.com";
+  private static final String DEFAULT_TEST_URL_REGEX = "^https?://google.com/?$";
 
   /** Test connection panel */
   private JPanel testConnectionPanel;
@@ -155,14 +156,18 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
   protected Blackboard blackboard;
 
   static {
+    // only add new ciphers if java version is >= 1.7
     boolean newCiphers = false;
     try {
-      newCiphers = ( Double.parseDouble(System.getProperty("java.version").substring(0, 3)) > 1.6 );
-    } catch (Exception e) {}
+      newCiphers = (Double.parseDouble(System.getProperty("java.version")
+          .substring(0, 3)) > 1.6);
+    } catch (Exception e) {
+    }
     // set cipher priorities, last tried first
-    System.setProperty("https.protocols", "SSLv3,TLSv1" + (newCiphers ? ",TLSv1.1,TLSv1.2" : "") );
+    System.setProperty("https.protocols", "SSLv3,TLSv1"
+        + (newCiphers ? ",TLSv1.1,TLSv1.2" : ""));
   }
-  
+
   /**
    * @param blackboard
    */
@@ -190,6 +195,40 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
       JLabel testUrlLabel = new JLabel(getMessage("test-url"));
       testUrlTextField = new JTextField();
 
+      // gray out and insert default value
+      testUrlTextField.getDocument().addDocumentListener(
+          new DocumentListener() {
+            public void changedUpdate(DocumentEvent e) {
+              reset(e);
+            }
+
+            public void removeUpdate(DocumentEvent e) {
+              reset(e);
+            }
+
+            public void insertUpdate(DocumentEvent e) {
+              reset(e);
+            }
+
+            public void reset(DocumentEvent e) {
+              String testUrl = testUrlTextField.getText();
+              if (testUrl.isEmpty()) {
+                SwingUtilities.invokeLater(new Runnable() {
+                  @Override
+                  public void run() {
+                    if (testUrlTextField.getText().isEmpty())
+                      testUrlTextField.setText(DEFAULT_TEST_URL);
+                  }
+                });
+                ;
+
+              }
+              boolean defValue = isDefaultTestUrl(testUrl);
+              testUrlTextField.setForeground(defValue ? Color.gray
+                  : Color.black);
+            }
+          });
+
       // Create the panel components
       JPanel buttonPanel = new JPanel(new FlowLayout());
       testConnectionButton = new JButton(
@@ -209,23 +248,26 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
               getMessage("checking-internet-connection")) {
 
             protected void methodToPerform() {
+              String result;
               try {
-                // Init the test
-                String result = isConnected();
-                if (result.isEmpty()) {
-                  connectionResultsLabel.setText(SUCCESSFULL_CONNECTION_LABEL);
-                  connectionResultsLabel.setIcon(SUCCESSFULL_CONNECTION_ICON);
-                  scroller.setVisible(false);
-                } else {
-                  connectionResultsLabel.setText(FAILED_CONNECTION_LABEL);
-                  connectionResultsLabel.setIcon(FAILED_CONNECTION_ICON);
-                  connectionErrorText.setText(result);
-                  scroller.setVisible(true);
-                }
-                testConnectionPanel.revalidate();
+                // run the test
+                result = isConnected();
+                // check http status
+                if (!result.matches("^(?i)HTTP/[0-9\\.]+\\s+[123].*"))
+                  throw new Exception(result);
+                connectionResultsLabel.setText(SUCCESSFULL_CONNECTION_LABEL);
+                connectionResultsLabel.setIcon(SUCCESSFULL_CONNECTION_ICON);
               } catch (Exception e) {
-                LOGGER.error("", e);
+                connectionResultsLabel.setText(FAILED_CONNECTION_LABEL);
+                connectionResultsLabel.setIcon(FAILED_CONNECTION_ICON);
+                result = e.getClass().getName() + " -> " + e.getMessage();
+                JUMPWorkbench.getInstance().getFrame()
+                    .log(Arrays.toString(e.getStackTrace()));
+                ;
               }
+              connectionErrorText.setText(result);
+              scroller.setVisible(!result.isEmpty());
+              testConnectionPanel.revalidate();
             }
           }.setVisible(true);
 
@@ -237,12 +279,13 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
       connectionResultsLabel = new JLabel();
       connectionResultsLabel.setAlignmentX(CENTER_ALIGNMENT);
       connectionResultsLabel.setAlignmentY(CENTER_ALIGNMENT);
-      connectionErrorText = new JTextArea(5,5);
+      connectionErrorText = new JTextArea(5, 5);
       connectionErrorText.setEditable(false);
       connectionErrorText.setLineWrap(true);
       connectionErrorText.setFont(connectionResultsLabel.getFont());
       scroller = new JScrollPane(connectionErrorText);
-      scroller.setMinimumSize(connectionErrorText.getPreferredScrollableViewportSize());
+      scroller.setMinimumSize(connectionErrorText
+          .getPreferredScrollableViewportSize());
       scroller.setVisible(false);
 
       // Add the components to the panel
@@ -254,7 +297,7 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
       FormUtils.addRowInGBL(testConnectionPanel, 1, 0, connectionResultsPanel);
       FormUtils.addRowInGBL(testConnectionPanel, 2, 0, buttonPanel);
       FormUtils.addRowInGBL(testConnectionPanel, 3, 0, scroller);
-      
+
     }
     return testConnectionPanel;
   }
@@ -291,7 +334,7 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
         public boolean verify(JComponent input) {
           try {
             int port = Integer.parseInt(proxyPortTextField.getText().trim());
-            System.out.println(port + "/" + (port > 0 && port <= 65535));
+            //System.out.println(port + "/" + (port > 0 && port <= 65535));
             return (port > 0 && port <= 65535);
           } catch (Exception e) {
             // TODO: handle exception
@@ -358,8 +401,8 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
     connectionResultsLabel.setText(PRESS_TO_CHECK_CONNECTION_LABEL);
 
     // Recover the values
-    HTTPProxySettings settings = (HTTPProxySettings) PersistentBlackboardPlugIn
-        .get(blackboard).get(HTTP_PROXY_SETTINGS_KEY);
+    HTTPProxySettings settings = (HTTPProxySettings) blackboard
+        .get(HTTP_PROXY_SETTINGS_KEY);
 
     proxyHTTPEnabledCheckBox.setSelected(settings != null);
     if (settings != null) {
@@ -370,80 +413,41 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
       directConnectToTextField.setText(settings.getDirectConnectionTo());
     }
 
-    String testUrl = (String) PersistentBlackboardPlugIn.get(blackboard).get(
-        TEST_URL_KEY);
+    String testUrl = (String) blackboard.get(TEST_URL_KEY);
     if (testUrl != null)
       testUrlTextField.setText(testUrl);
+    else
+      testUrlTextField.setText(DEFAULT_TEST_URL);
 
     refreshEditability();
+
+    // Properties ps = System.getProperties();
+    // TreeSet<String> v = new TreeSet(ps.keySet());
+    // String out = "";
+    // for (String key : v) {
+    // if (key.matches("^http.*"))
+    // out += key + "=" + ps.getProperty(key) + "\n";
+    // }
+    // System.out.println(out);
   }
 
   @Override
   public void okPressed() {
     // Save the results into the blackboard
     HTTPProxySettings settings = buildSettingsFromUserParameters();
-    stablishCurrentNetworkSettings(settings);
-    PersistentBlackboardPlugIn.get(blackboard).put(HTTP_PROXY_SETTINGS_KEY,
-        settings);
+    applySettingsToSystem(settings);
+    // save proxy settings to blackboard
+    if (settings != null)
+      blackboard.put(HTTP_PROXY_SETTINGS_KEY, settings);
+    else
+      blackboard.remove(HTTP_PROXY_SETTINGS_KEY);
+
+    // save testurl setting to blackboard
     String testUrl = testUrlTextField.getText().trim();
-    if (!testUrl.isEmpty())
-      PersistentBlackboardPlugIn.get(blackboard).put(TEST_URL_KEY, testUrl);
-  }
-
-  /**
-   * Sets the current network settings for the session
-   * 
-   * @param settings
-   *          Settings to stablish
-   */
-  private void stablishCurrentNetworkSettings(HTTPProxySettings settings) {
-    // Set the properties to the current session
-    Properties systemSettings = System.getProperties();
-    if (settings != null) {
-
-      systemSettings.put("http.proxySet", "true");
-      systemSettings.put("http.proxyHost", settings.getHost());
-      systemSettings.put("https.proxyHost", settings.getHost());
-      systemSettings.put("http.proxyPort", settings.getPort()+"");
-      systemSettings.put("https.proxyPort", settings.getPort()+"");
-      if (StringUtils.isNotEmpty(settings.getUserName())) {
-        systemSettings.put("http.proxyUserName", settings.getUserName());
-      } else {
-        systemSettings.remove("http.proxyUserName");
-      }
-
-      if (StringUtils.isNotEmpty(settings.getPassword())) {
-        systemSettings.put("http.proxyPassword", settings.getPassword());
-      } else {
-        systemSettings.remove("http.proxyPassword");
-      }
-
-      if (StringUtils.isNotEmpty(settings.getDirectConnectionTo())) {
-        systemSettings.put(
-            "http.nonProxyHosts", settings.getDirectConnectionTo());
-      } else {
-        systemSettings.remove("http.nonProxyHosts");
-      }
-      
-      //System.setProperties(systemSettings);
-
-      if (settings.getUserName() != null) {
-        Authenticator.setDefault(new ProxyAuth(settings.getUserName(), settings
-            .getPassword()));
-      } else {
-        Authenticator.setDefault(new ProxyAuth("", ""));
-      }
-      
-    } else {
-      systemSettings.remove("http.proxySet");
-      systemSettings.remove("http.proxyHost");
-      systemSettings.remove("https.proxyHost");
-      systemSettings.remove("http.proxyPort");
-      systemSettings.remove("https.proxyPort");
-      systemSettings.remove("http.proxyUserName");
-      systemSettings.remove("http.proxyPassword");
-      systemSettings.remove("http.nonProxyHosts");
-    }
+    if (!testUrl.isEmpty() && !isDefaultTestUrl(testUrl))
+      blackboard.put(TEST_URL_KEY, testUrl);
+    else
+      blackboard.remove(TEST_URL_KEY);
   }
 
   /**
@@ -486,30 +490,48 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
         try {
           StringBuffer strUrl = new StringBuffer();
           // add "http://" prefix if it wasn't included.
-          strUrl.append(host.startsWith("http://") ? host
-              .toLowerCase() : "http://" + host.toLowerCase());
+          strUrl.append(host.startsWith("http://") ? host.toLowerCase()
+              : "http://" + host.toLowerCase());
 
           // add port
           strUrl.append(StringUtils.isNotEmpty(port) ? ":" + port : "");
 
           // Check that the URL is correctly constructed
-          new URL(strUrl.toString());
+          URL url = new URL(strUrl.toString());
 
-        } catch (MalformedURLException e) {
+          // check if we can resolve the hostname
+          String urlHost = url.getHost();
+          DNSResolver dnsRes = new DNSResolver(host);
+          Thread t = new Thread(dnsRes);
+          t.start();
+          t.join(2000);
+          InetAddress inetAddr = dnsRes.get();
+          if (inetAddr == null)
+            throw new UnknownHostException(urlHost);
+
+        } catch (Exception e) {
           LOGGER.error(e);
           errorMessage = getMessage("server-or-proxy-port-is-not-correct-check-provided-parameters");
+          errorMessage += "\n " + e.getClass().getName() + " -> "
+              + e.getMessage();
         }
       }
     }
     return errorMessage;
   }
 
+  private boolean isDefaultTestUrl(String urlString) {
+    return urlString.matches(DEFAULT_TEST_URL_REGEX);
+  }
+
   /**
    * Check if the user is connected to internet using the current configuration
    * 
    * @return
+   * @throws Exception
    */
-  private String isConnected() {
+  private String isConnected() throws Exception {
+
     Properties systemProperties = System.getProperties();
 
     // Backup current properties
@@ -522,42 +544,43 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
     Object proxyPassword = systemProperties.get("http.proxyPassword");
     Object nonProxyHosts = systemProperties.get("http.nonProxyHosts");
 
+    URLConnection con = null;
     try {
       HTTPProxySettings settings = buildSettingsFromUserParameters();
-      stablishCurrentNetworkSettings(settings);
+      applySettingsToSystem(settings);
 
       String testUrl = testUrlTextField.getText().trim();
       if (testUrl.isEmpty())
-        testUrl = "http://www.google.com";
-      
-      Properties ps = System.getProperties();
-      TreeSet<String> v = new TreeSet(ps.keySet());
-      String out = "";
-      for (String key : v) {
-        if (key.matches("^http.*"))
-        out += key + "=" + ps.getProperty(key) + "\n";
-      }
-      System.out.println(out);
+        testUrl = "https://www.google.com";
 
-      try
-      {
-           ProxySelector selector = ProxySelector.getDefault();
-           List<Proxy> proxyList = selector.select(new URI(testUrl));
-           System.out.println(proxyList);
-      }
-      catch (IllegalArgumentException e)
-      {
-      }
-      
+      // Properties ps = System.getProperties();
+      // TreeSet<String> v = new TreeSet(ps.keySet());
+      // String out = "";
+      // for (String key : v) {
+      // if (key.matches("^http.*"))
+      // out += key + "=" + ps.getProperty(key) + "\n";
+      // }
+      // System.out.println(out);
+
+      // try
+      // {
+      // ProxySelector selector = ProxySelector.getDefault();
+      // List<Proxy> proxyList = selector.select(new URI(testUrl));
+      // System.out.println(proxyList);
+      // }
+      // catch (IllegalArgumentException e)
+      // {
+      // }
+
       URL url = new URL(testUrl);
-      URLConnection con = url.openConnection();
-      con.setConnectTimeout(5000);
-      con.setReadTimeout(5000);
+      con = url.openConnection();
+      tuneConnection(con);
 
       // get all headers
       Map<String, List<String>> map = con.getHeaderFields();
-      if (map.values().isEmpty() && con.getContentLengthLong() <= 0) {
-        return con.getContent() != null ? "" : "empty document";
+      if (map.values().isEmpty()) {
+        readConnection(con);
+        throw new Exception("empty document");
       }
 
       String value = "";
@@ -569,17 +592,10 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
           value = entry.getValue().get(0);
       }
 
-      if (value.matches("^(?i)HTTP/[0-9\\.]+\\s+200\\s+OK.*")) {
-        // try to read to force a connection
-        con.getContent();
-        return "";
-      } else
-        return value;
-      
+      return value;
 
-    } catch (Exception e) {
-      return e.toString();
     } finally {
+
       // Restore them
       if (proxySet != null) {
         systemProperties.put("http.proxySet", proxySet);
@@ -631,7 +647,129 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
     }
   }
 
+  private void readConnection(URLConnection con) throws IOException {
+    BufferedReader in = new BufferedReader(new InputStreamReader(
+        con.getInputStream()));
+    String inputLine;
+    while ((inputLine = in.readLine()) != null);
+      //System.out.println(inputLine);
+    in.close();
+  }
+
+  private void tuneConnection(URLConnection con) {
+    con.setConnectTimeout(5000);
+    con.setReadTimeout(5000);
+    con.setUseCaches(false);
+  }
+
   private static String getMessage(String id) {
     return I18N.get(ProxySettingsOptionsPanel.class.getName() + "." + id);
+  }
+
+  /**
+   * Sets the current network settings for the session
+   * 
+   * @param settings
+   *          Settings to stablish
+   */
+  private static void applySettingsToSystem(HTTPProxySettings settings) {
+    // Set the properties to the current session
+    Properties systemSettings = System.getProperties();
+    if (settings != null) {
+
+      systemSettings.put("http.proxySet", "true");
+      systemSettings.put("http.proxyHost", settings.getHost());
+      systemSettings.put("https.proxyHost", settings.getHost());
+      systemSettings.put("http.proxyPort", settings.getPort() + "");
+      systemSettings.put("https.proxyPort", settings.getPort() + "");
+      if (StringUtils.isNotEmpty(settings.getUserName())) {
+        systemSettings.put("http.proxyUserName", settings.getUserName());
+      } else {
+        systemSettings.remove("http.proxyUserName");
+      }
+
+      if (StringUtils.isNotEmpty(settings.getPassword())) {
+        systemSettings.put("http.proxyPassword", settings.getPassword());
+      } else {
+        systemSettings.remove("http.proxyPassword");
+      }
+
+      if (StringUtils.isNotEmpty(settings.getDirectConnectionTo())) {
+        systemSettings.put("http.nonProxyHosts",
+            settings.getDirectConnectionTo());
+      } else {
+        systemSettings.remove("http.nonProxyHosts");
+      }
+
+      // this is a WORKAROUND for 
+      // "java caches the first successful auth and does not allow to change it anymore afterwards"
+      // see http://stackoverflow.com/questions/480895/reset-the-authenticator-credentials
+      // sun.net.www.protocol.http.AuthCacheValue.setAuthCache(new
+      // sun.net.www.protocol.http.AuthCacheImpl());
+      try {
+        Class clazzParam = Class.forName("sun.net.www.protocol.http.AuthCache");
+        Class clazzParamImpl = Class
+            .forName("sun.net.www.protocol.http.AuthCacheImpl");
+        Object cache = clazzParamImpl.newInstance();
+        Class clazz = Class.forName("sun.net.www.protocol.http.AuthCacheValue");
+        // for (Method m : clazz.getDeclaredMethods()) {
+        // System.out.println(m);
+        // }
+        Method method = clazz.getDeclaredMethod("setAuthCache", clazzParam);
+        method.setAccessible(true);
+        Object o = method.invoke(null, cache);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+
+      if (!settings.getUserName().isEmpty()) {
+        Authenticator.setDefault(new ProxyAuth(settings.getUserName(), settings
+            .getPassword()));
+      }
+
+    } else {
+      systemSettings.remove("http.proxySet");
+      systemSettings.remove("http.proxyHost");
+      systemSettings.remove("https.proxyHost");
+      systemSettings.remove("http.proxyPort");
+      systemSettings.remove("https.proxyPort");
+      systemSettings.remove("http.proxyUserName");
+      systemSettings.remove("http.proxyPassword");
+      systemSettings.remove("http.nonProxyHosts");
+    }
+  }
+
+  public static void restoreSystemSettings(Blackboard blackboard) {
+    // Recover the values
+    HTTPProxySettings settings = (HTTPProxySettings) blackboard
+        .get(HTTP_PROXY_SETTINGS_KEY);
+    applySettingsToSystem(settings);
+  }
+
+}
+
+class DNSResolver implements Runnable {
+  private String domain;
+  private InetAddress inetAddr;
+
+  public DNSResolver(String domain) {
+    this.domain = domain;
+  }
+
+  public void run() {
+    try {
+      InetAddress addr = InetAddress.getByName(domain);
+      set(addr);
+    } catch (UnknownHostException e) {
+
+    }
+  }
+
+  public synchronized void set(InetAddress inetAddr) {
+    this.inetAddr = inetAddr;
+  }
+
+  public synchronized InetAddress get() {
+    return inetAddr;
   }
 }

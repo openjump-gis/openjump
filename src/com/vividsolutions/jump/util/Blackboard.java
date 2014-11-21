@@ -98,6 +98,10 @@ public class Blackboard implements Cloneable, Serializable {
         return this;
     }
 
+    public Object remove(String key) {
+      return properties.remove(key);
+    }
+
     public double get(String key, double defaultValue) {
         if (get(key) == null) {
             put(key, defaultValue);

@@ -81,6 +81,7 @@ import com.vividsolutions.jump.workbench.ui.SplashPanelV2;
 import com.vividsolutions.jump.workbench.ui.SplashWindow;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.network.ProxySettingsOptionsPanel;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.skin.InstallSkinsPlugIn;
 
@@ -408,7 +409,11 @@ public class JUMPWorkbench {
     // this restores the saved laf, so it must be loaded early
     new InstallSkinsPlugIn().initialize(workbench.context.createPlugInContext());
     final WorkbenchFrame frame = workbench.getFrame();
-    
+
+    // restore proxy settings TODO: write a hook routine for this
+    ProxySettingsOptionsPanel.restoreSystemSettings(PersistentBlackboardPlugIn
+        .get(workbench.context.getWorkbench().getBlackboard()));
+
     // now setup our configuration
     // TODO: clean up and merge with postExtensionInitialization below or even better put into xml config
     new JUMPConfiguration().setup(workbench.context);
