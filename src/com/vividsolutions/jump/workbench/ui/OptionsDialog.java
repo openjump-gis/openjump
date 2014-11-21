@@ -81,7 +81,7 @@ public class OptionsDialog extends JDialog {
 
         okCancelPanel.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (okCancelPanel.wasOKPressed()) {
+              if (okCancelPanel.wasOKPressed()) {
                     String errorMessage = validateInput();
 
                     if (errorMessage != null) {
@@ -152,9 +152,13 @@ public class OptionsDialog extends JDialog {
         return null;
     }
 
+    public void addTab(OptionsPanelV2 panel) {
+        addTab(panel.getName(), panel.getIcon(), panel);
+    }
+    
     public void addTab(String title, OptionsPanel panel) {
         addTab(title, null, panel);
-    }    
+    }
     
     public void addTab(String title, Icon icon, OptionsPanel panel) {
         tabbedPane.addTab(title, icon, (Component) panel);
