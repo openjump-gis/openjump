@@ -97,7 +97,7 @@ public class JUMPWorkbench {
     // Lazily initialize it, as it may not even be called (e.g. EZiLink),
     // and we want the splash screen to appear ASAP [Jon Aquino]
     if (splashImage == null) {
-      splashImage = IconLoader.icon("splash3.png");
+      splashImage = IconLoader.icon("splash7.png");
     }
     return splashImage;
   }

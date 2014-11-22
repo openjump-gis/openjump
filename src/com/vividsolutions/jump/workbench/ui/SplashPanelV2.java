@@ -35,12 +35,16 @@ package com.vividsolutions.jump.workbench.ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.Insets;
+import java.awt.image.BufferedImage;
+import java.util.Calendar;
 
 import javax.swing.BorderFactory;
-import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -48,15 +52,22 @@ import javax.swing.border.BevelBorder;
 
 import org.openjump.core.CheckOS;
 
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+
 public class SplashPanelV2 extends JPanel {
   JPanel txt_panel;
 
-  public SplashPanelV2(Icon image, String caption) {
+  public SplashPanelV2(ImageIcon image, String caption) {
     super(new BorderLayout());
     if (transparentSplash())
       setBackground(new Color(255, 255, 255, 0));
     JPanel img_panel = new JPanel(new BorderLayout());
+
+    if ( itsThatTimeAgain() )
+      image = gimmick(image);
+
     JLabel img_label = new JLabel(image /* IconLoader.icon("splash3.png") */);
+
     if (transparentSplash())
       img_panel.setBackground(new Color(255, 255, 255, 0));
     img_panel.add(img_label);
@@ -94,7 +105,25 @@ public class SplashPanelV2 extends JPanel {
         255, 255, 255, alpha), new Color(255, 255, 255, alpha), new Color(103,
         101, 98, alpha), new Color(148, 145, 140, alpha)));
   }
-  
+
+  private boolean itsThatTimeAgain() {
+    Calendar now = Calendar.getInstance();
+    int day = now.get(Calendar.DAY_OF_MONTH);
+    int month = now.get(Calendar.MONTH);
+    return ( month == Calendar.DECEMBER && day >= 18 && day <= 31 );
+  }
+
+  private ImageIcon gimmick(ImageIcon image) {
+    BufferedImage combined = new BufferedImage(image.getIconWidth(),
+        image.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
+    Graphics g = combined.getGraphics();
+    g.drawImage(image.getImage(), 0, 0, null);
+    Image hat = IconLoader.image("hat.png");
+    g.drawImage(hat, 335, 22, null);
+
+    return new ImageIcon(combined);
+  }
+
   public void addProgressMonitor(JComponent pm) {
     txt_panel.add(pm, new GridBagConstraints(0, 1, 1, 1, 1, 1,
         GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 4,
