@@ -4,6 +4,7 @@
   * Fix #380 FillPolygonTool did not alway write into the correct project
   * Fix #363 Shapefile charset chooser was not always updated in
     SaveDatasetAsPlugIn
+  * Fix #360 SkyPrinter can now print a single layerable
 
 2014-11-16 ede
   * update Xerces as used by GML and WMS to latest stable 2.11
