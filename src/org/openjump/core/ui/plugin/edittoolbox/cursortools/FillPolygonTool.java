@@ -79,7 +79,6 @@ public class FillPolygonTool extends NClickTool {
   public static final String COMPUTING = I18N
       .get("org.openjump.core.ui.plugin.edittoolbox.cursortools.FillPolygonTool.computing");
 
-  private FeatureDrawingUtil featureDrawingUtil;
   private WorkbenchContext context;
   private static long START = 0;
   private static long END = 0;
@@ -89,8 +88,6 @@ public class FillPolygonTool extends NClickTool {
 
   public FillPolygonTool(WorkbenchContext context) {
     super(1);
-    featureDrawingUtil = new FeatureDrawingUtil(
-        (LayerNamePanelProxy) context.getLayerNamePanel());
     this.context = context;
     okCancelDialog = new OKCancelDialog(
           context.getWorkbench().getFrame(),
@@ -146,6 +143,8 @@ public class FillPolygonTool extends NClickTool {
 
   protected void gestureFinished() throws Exception {
     reportNothingToUndoYet();
+    FeatureDrawingUtil featureDrawingUtil = new FeatureDrawingUtil(
+              (LayerNamePanelProxy) context.getLayerNamePanel());
     // What is the logic for this test ?
     // If the user click several times to close the progress bar and
     // interrupt the process, the first click will close the dialog box,
