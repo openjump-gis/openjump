@@ -49,6 +49,7 @@ import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
+import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanel;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanelProxy;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
@@ -347,6 +348,24 @@ public class EnableCheckFactory {
                     if (layers[i].isEditable()) countSelectedEditable++;
                 }
                 return 1 != countSelectedEditable ? msg : null;
+            }
+        };
+    }
+
+    public EnableCheck createAtLeastNLayerablesMustExistCheck(final int n) {
+        return new EnableCheck() {
+            public String check(JComponent component) {
+                LayerManager layerManager = workbenchContext.getLayerManager();
+                String msg;
+                if (n == 1) {
+                    msg = get("com.vividsolutions.jump.workbench.plugin.At-least-one-layerables-must-exist");
+                } else {
+                    msg = getMessage(
+                            "com.vividsolutions.jump.workbench.plugin.At-least-n-layerables-must-exist",
+                            new Object[] { n });
+                }
+                return (layerManager == null || n > layerManager.getLayerables(Layerable.class).size()) ? msg
+                        : null;
             }
         };
     }
