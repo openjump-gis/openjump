@@ -1,7 +1,10 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2014-11-22 ede
+  * add Proxy configuration (courtesy of Kosmo)
+
 2014-11-22 mmichaud <m.michael.michaud@orange.fr>
-  * Fix #380 FillPolygonTool did not alway write into the correct project
+  * Fix #380 FillPolygonTool did not always write into the correct project
   * Fix #363 Shapefile charset chooser was not always updated in
     SaveDatasetAsPlugIn
   * Fix #360 SkyPrinter can now print a single layerable
