@@ -88,6 +88,8 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
     private String LAYER;
     private String SELECTION;
     private String SELECTION_HELP;
+    private String UPDATE_SOURCE;
+    private String UPDATE_SOURCE_HELP;
 
     private String DISTANCE;
     private String FIXED_DISTANCE;
@@ -123,6 +125,7 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
     private static final String P_LAYER_NAME          = "LayerName";
     // Optional (default value provided)
     private static final String P_USE_SELECTION       = "UseSelection";
+    private static final String P_UPDATE_SOURCE       = "UpdateSource";
     private static final String P_DISTANCE            = "Distance";
     private static final String P_QUADRANT_SEGMENTS   = "QuadrantSegments";
     private static final String P_END_CAP_STYLE       = "EndCapStyle";
@@ -137,6 +140,7 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
 
     {
         addParameter(P_USE_SELECTION,     false);
+        addParameter(P_UPDATE_SOURCE,     false);
         addParameter(P_DISTANCE,          1.0);
         addParameter(P_QUADRANT_SEGMENTS, 8);
         addParameter(P_END_CAP_STYLE,     BufferParameters.CAP_ROUND);
@@ -208,6 +212,8 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
 	    LAYER = I18N.get("ui.plugin.analysis.BufferPlugIn.layer");
         SELECTION = I18N.get("ui.plugin.analysis.BufferPlugIn.selection");
         SELECTION_HELP = I18N.get("ui.plugin.analysis.BufferPlugIn.selection-help");
+        UPDATE_SOURCE = I18N.get("ui.plugin.analysis.BufferPlugIn.update-source");
+        UPDATE_SOURCE_HELP = I18N.get("ui.plugin.analysis.BufferPlugIn.update-source-help");
   
         DISTANCE = I18N.get("ui.plugin.analysis.BufferPlugIn.distance");
 	    FIXED_DISTANCE = I18N.get("ui.plugin.analysis.BufferPlugIn.fixed-distance");
@@ -273,23 +279,26 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
             if (layer == null && context.getLayerManager().getLayers().size() > 0) {
                 layer = context.getLayerManager().getLayer(0);
             }
+
             //monitor.allowCancellationRequests();
             FeatureSchema featureSchema = new FeatureSchema();
             featureSchema.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
-            FeatureCollection resultFC = new FeatureDataset(featureSchema);
+            //FeatureCollection resultFC = new FeatureDataset(featureSchema);
+
             // Fill inputC with features to be processed
             Collection inputC;
             if ((Boolean) getParameter(P_USE_SELECTION)) {
                 inputC = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems();
-                Feature feature = (Feature) inputC.iterator().next();
-                featureSchema = feature.getSchema();
-                inputC = PasteItemsPlugIn.conform(inputC, featureSchema);
+                if (!(Boolean)getParameter(P_UPDATE_SOURCE)) {
+                    Feature feature = (Feature) inputC.iterator().next();
+                    featureSchema = feature.getSchema();
+                    inputC = PasteItemsPlugIn.conform(inputC, featureSchema);
+                }
             } else {
-
                 inputC = layer.getFeatureCollectionWrapper().getFeatures();
                 featureSchema = layer.getFeatureCollectionWrapper().getFeatureSchema();
-                resultFC = new FeatureDataset(featureSchema);
             }
+
             // Short-circuit if input is empty
             FeatureDataset inputFD = new FeatureDataset(inputC, featureSchema);
             if (inputFD.isEmpty()) {
@@ -297,11 +306,21 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
                         .warnUser(I18N.get("ui.plugin.analysis.BufferPlugIn.empty-result-set"));
                 return;
             }
-            Collection resultGeomColl = runBuffer(monitor, context, inputFD);
+
+            Map<Integer,Geometry> resultMap = runBuffer(monitor, context, inputFD);
+
+            if ((Boolean)getParameters().get(P_UPDATE_SOURCE)) {
+                updateSourceLayer(monitor, context, layer, inputFD, resultMap);
+            }
+            else {
+                createNewLayer(monitor, context, inputFD, resultMap, featureSchema);
+            }
+
+            /*
             // Post-process result
             if ((Boolean) getParameter(P_COPY_ATTRIBUTE)) {
                 FeatureCollection resultFeatureColl = new FeatureDataset(featureSchema);
-                Iterator iResult = resultGeomColl.iterator();
+                Iterator iResult = resultMap.values().iterator();
                 for (Iterator iSource = inputFD.iterator(); iSource.hasNext(); ) {
                     Feature sourceFeature = (Feature) iSource.next();
                     Geometry gResult = (Geometry) iResult.next();
@@ -312,19 +331,19 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
                     }
                     // If both left and right side buffer have been computed
                     // we have 2 features in resultGeomColl for every single feature in InputFD
-                    if ((Boolean)getParameter(P_LEFT_SINGLE_SIDED) && (Boolean)getParameter(P_RIGHT_SINGLE_SIDED)) {
-                        gResult = (Geometry) iResult.next();
-                        if (!(gResult == null || gResult.isEmpty())) {
-                            Feature newFeature = sourceFeature.clone(false);
-                            newFeature.setGeometry(gResult);
-                            resultFeatureColl.add(newFeature);
-                        }
-                    }
+                    //if ((Boolean)getParameter(P_LEFT_SINGLE_SIDED) && (Boolean)getParameter(P_RIGHT_SINGLE_SIDED)) {
+                    //    gResult = (Geometry) iResult.next();
+                    //    if (!(gResult == null || gResult.isEmpty())) {
+                    //        Feature newFeature = sourceFeature.clone(false);
+                    //        newFeature.setGeometry(gResult);
+                    //        resultFeatureColl.add(newFeature);
+                    //    }
+                    //}
                     if (monitor.isCancelRequested()) break;
                 }
                 resultFC = resultFeatureColl;
             } else {
-                resultFC = FeatureDatasetFactory.createFromGeometry(resultGeomColl);
+                resultFC = FeatureDatasetFactory.createFromGeometry(resultMap.values());
             }
             if ((Boolean)getParameter(P_UNION_RESULT)) {
                 monitor.report(I18N.get("ui.plugin.analysis.BufferPlugIn.union-buffered-features"));
@@ -350,6 +369,7 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
             //    name = name + "-" + endCapStyle(endCapStyleCode);
             //}
             context.addLayer(StandardCategoryNames.RESULT, name, resultFC);
+            */
         } catch(Exception e) {
             throw e;
         }
@@ -358,8 +378,67 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
         }
     }
 
+    private void createNewLayer(TaskMonitor monitor, PlugInContext context, FeatureCollection inputFD,
+                                Map<Integer,Geometry> resultMap, FeatureSchema featureSchema) {
+        FeatureCollection resultFC = new FeatureDataset(featureSchema);
+        if ((Boolean) getParameter(P_COPY_ATTRIBUTE)) {
+            FeatureCollection resultFeatureColl = new FeatureDataset(featureSchema);
+            Iterator iResult = resultMap.values().iterator();
+            for (Iterator iSource = inputFD.iterator(); iSource.hasNext(); ) {
+                Feature sourceFeature = (Feature) iSource.next();
+                Geometry gResult = (Geometry) iResult.next();
+                if (!(gResult == null || gResult.isEmpty())) {
+                    Feature newFeature = sourceFeature.clone(false);
+                    newFeature.setGeometry(gResult);
+                    resultFeatureColl.add(newFeature);
+                }
+                if (monitor.isCancelRequested()) break;
+            }
+            resultFC = resultFeatureColl;
+        } else {
+            resultFC = FeatureDatasetFactory.createFromGeometry(resultMap.values());
+        }
+        if ((Boolean)getParameter(P_UNION_RESULT)) {
+            monitor.report(I18N.get("ui.plugin.analysis.BufferPlugIn.union-buffered-features"));
+            Collection geoms = FeatureUtil.toGeometries(resultFC.getFeatures());
+            Geometry g = UnaryUnionOp.union(geoms);
+            geoms.clear();
+            if (!(g == null || g.isEmpty())) geoms.add(g);
+            resultFC = FeatureDatasetFactory.createFromGeometry(geoms);
+        }
+        if (resultFC.isEmpty()) {
+            context.getWorkbenchFrame()
+                    .warnUser(I18N.get("ui.plugin.analysis.BufferPlugIn.empty-result-set"));
+            return;
+        }
+        context.getLayerManager().addCategory(StandardCategoryNames.RESULT);
+        String name;
+        if (!(Boolean) getParameter("UseSelection"))
+            name = (String)getParameter(P_LAYER_NAME);
+        else
+            name = I18N.get("ui.MenuNames.SELECTION");
+        name = I18N.get("com.vividsolutions.jump.workbench.ui.plugin.analysis.BufferPlugIn") + "-" + name;
+        //if (endCapStyleCode != BufferParameters.CAP_ROUND) {
+        //    name = name + "-" + endCapStyle(endCapStyleCode);
+        //}
+        context.addLayer(StandardCategoryNames.RESULT, name, resultFC);
+    }
 
-    private Collection runBuffer(TaskMonitor monitor, PlugInContext context, FeatureCollection fcA) throws Exception {
+    private void updateSourceLayer(TaskMonitor monitor, PlugInContext context,
+                                   Layer layer, FeatureCollection input, Map<Integer,Geometry> map) {
+        EditTransaction transaction = new EditTransaction(new LinkedHashSet<Feature>(),
+                "Buffer", layer, true, true, context.getLayerViewPanel().getContext());
+        for (Iterator it = input.iterator() ; it.hasNext(); ) {
+            Feature feature = (Feature)it.next();
+            Geometry newGeometry = map.get(feature.getID());
+            transaction.modifyFeatureGeometry(feature, newGeometry);
+            //if (newGeometry != null) feature.setGeometry(newGeometry);
+        }
+        transaction.commit();
+    }
+
+
+    private Map<Integer,Geometry> runBuffer(TaskMonitor monitor, PlugInContext context, FeatureCollection fcA) throws Exception {
         int quadrantSegments = (Integer)getParameter(P_QUADRANT_SEGMENTS);
         int endCapStyleCode = (Integer)getParameter(P_END_CAP_STYLE);
         int joinStyleCode = (Integer)getParameter(P_JOIN_STYLE);
@@ -371,7 +450,8 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
         int attributeIndex = (Integer)getParameter(P_ATTRIBUTE_INDEX);
         int total = fcA.size();
         int count = 0;
-        Collection resultColl = new ArrayList();
+        //Collection resultColl = new ArrayList();
+        Map<Integer,Geometry> map = new HashMap<Integer, Geometry>(fcA.size());
         BufferParameters bufferParameters = 
             new BufferParameters(quadrantSegments, endCapStyleCode, joinStyleCode, mitreLimit);
         bufferParameters.setSingleSided(leftSingleSided || rightSingleSided);
@@ -393,15 +473,20 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
             try {
                 if (side == 0) {
                     Geometry result = runBuffer(ga, bufferParameters, 0, bufferDistance);
-                    resultColl.add(result);
+                    map.put(fa.getID(), result);
                 }
-                if ((side & LEFT) == LEFT) {
+                if (side == LEFT) {
                     Geometry result = runBuffer(ga, bufferParameters, LEFT, bufferDistance);
-                    resultColl.add(result);
+                    map.put(fa.getID(), result);
                 }
-                if ((side & RIGHT) == RIGHT) {
+                if (side == RIGHT) {
                     Geometry result = runBuffer(ga, bufferParameters, RIGHT, bufferDistance);
-                    resultColl.add(result);
+                    map.put(fa.getID(), result);
+                }
+                if (side == LEFT + RIGHT) {
+                    Geometry left = runBuffer(ga, bufferParameters, LEFT, bufferDistance);
+                    Geometry right = runBuffer(ga, bufferParameters, RIGHT, bufferDistance);
+                    map.put(fa.getID(), left.getFactory().createGeometryCollection(new Geometry[]{left,right}));
                 }
             } catch (Exception e) {
                 String errorMessage = I18N.getMessage(
@@ -411,7 +496,7 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
                 throw new Exception(errorMessage, e);
             }
         }
-        return resultColl;
+        return map;
     }
 
     private Geometry runBuffer(Geometry a, BufferParameters param, int side, double bufferDistance) throws Exception {
@@ -443,6 +528,7 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
         final JComboBox layerComboBox = dialog.addLayerComboBox(LAYER, context.getCandidateLayer(0), context.getLayerManager());
         dialog.addLabel(SELECTION);
         dialog.addLabel(SELECTION_HELP);
+        final JCheckBox updateCheckBox = dialog.addCheckBox(UPDATE_SOURCE, (Boolean)getParameter(P_UPDATE_SOURCE), UPDATE_SOURCE_HELP);
         
         dialog.addSeparator();
         dialog.addSubTitle(DISTANCE);
@@ -493,6 +579,11 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
                 updateControls(context, dialog, useSelection);
             }
         });
+        updateCheckBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                updateControls(context, dialog, useSelection);
+            }
+        });
         fromAttributeCheckBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 updateControls(context, dialog, useSelection);
@@ -531,6 +622,7 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
 	    if (!useSelection) {
 		    layer = dialog.getLayer(LAYER);
         }
+        boolean updateSource = dialog.getBoolean(UPDATE_SOURCE);
 	    double bufferDistance = dialog.getDouble(FIXED_DISTANCE);
 	    int endCapStyleCode = encodeCapStyle(dialog.getText(END_CAP_STYLE));
 	    int quadrantSegments = dialog.getInteger(QUADRANT_SEGMENTS);
@@ -555,19 +647,20 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
 			    fromAttribute = false;
 		    }
 	    }
-        addParameter("UseSelection",     useSelection);
-        addParameter("Distance",         bufferDistance);
-        addParameter("LayerName",        useSelection ? null : layer.getName());
-        addParameter("QuadrantSegments", quadrantSegments);
-        addParameter("EndCapStyleCode",  endCapStyleCode);
-        addParameter("JoinStyleCode",    joinStyleCode);
-        addParameter("MitreLimit",       mitreLimit);
-        addParameter("LeftSingleSided",  leftSingleSided);
-        addParameter("RightSingleSided", rightSingleSided);
-        addParameter("UnionResult",      unionResult);
-        addParameter("CopyAttributes",   copyAttributes);
-        addParameter("FromAttribute",    fromAttribute);
-        addParameter("AttributeIndex",   attributeIndex);
+        addParameter(P_USE_SELECTION,       useSelection);
+        addParameter(P_UPDATE_SOURCE,       updateSource);
+        addParameter(P_DISTANCE,            bufferDistance);
+        addParameter(P_LAYER_NAME,          useSelection ? null : layer.getName());
+        addParameter(P_QUADRANT_SEGMENTS,   quadrantSegments);
+        addParameter(P_END_CAP_STYLE,       endCapStyleCode);
+        addParameter(P_JOIN_STYLE,          joinStyleCode);
+        addParameter(P_MITRE_LIMIT,         mitreLimit);
+        addParameter(P_LEFT_SINGLE_SIDED,   leftSingleSided);
+        addParameter(P_RIGHT_SINGLE_SIDED,  rightSingleSided);
+        addParameter(P_UNION_RESULT,        unionResult);
+        addParameter(P_COPY_ATTRIBUTE,      copyAttributes);
+        addParameter(P_FROM_ATTRIBUTE,      fromAttribute);
+        addParameter(P_ATTRIBUTE_INDEX,     attributeIndex);
     }
 
     private Feature combine(Collection originalFeatures) {
@@ -588,11 +681,13 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
                     .getFeatureCollectionWrapper().getFeatureSchema()).size() > 0;
 	    dialog.setFieldVisible(LAYER, !useSelection);
 	    dialog.setFieldVisible(SELECTION, useSelection);
+        dialog.setFieldVisible(UPDATE_SOURCE, useSelection);
 	    dialog.setFieldVisible(SELECTION_HELP, useSelection);
 	    dialog.setFieldEnabled(FIXED_DISTANCE, useSelection || !(Boolean)getParameter(P_FROM_ATTRIBUTE) || !hasNumericAttributes);
 	    dialog.setFieldEnabled(FROM_ATTRIBUTE, !useSelection && hasNumericAttributes);
 	    dialog.setFieldEnabled(ATTRIBUTE, !useSelection && (Boolean)getParameter(P_FROM_ATTRIBUTE) && hasNumericAttributes);
-	    dialog.setFieldEnabled(COPY_ATTRIBUTES, !(Boolean)getParameter(P_UNION_RESULT));
+	    dialog.setFieldEnabled(COPY_ATTRIBUTES, !(Boolean)getParameter(P_UNION_RESULT) && !(Boolean)getParameter(P_UPDATE_SOURCE));
+        dialog.setFieldEnabled(UNION_RESULT, !(Boolean)getParameter(P_UPDATE_SOURCE));
 	    dialog.setFieldEnabled(QUADRANT_SEGMENTS,
                     ((Integer)getParameter(P_END_CAP_STYLE) == BufferParameters.CAP_ROUND) ||
                     ((Integer)getParameter(P_JOIN_STYLE) == BufferParameters.JOIN_ROUND));
