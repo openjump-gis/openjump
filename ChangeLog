@@ -2,6 +2,8 @@
 
 2014-11-22 mmichaud <m.michael.michaud@orange.fr>
   * Fix #380 FillPolygonTool did not alway write into the correct project
+  * Fix #363 Shapefile charset chooser was not always updated in
+    SaveDatasetAsPlugIn
 
 2014-11-16 ede
   * update Xerces as used by GML and WMS to latest stable 2.11
