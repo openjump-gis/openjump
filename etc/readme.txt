@@ -24,7 +24,8 @@ as (Component name - License name - License file in "licenses/" folder or link)
  BeanShell - LGPL2.1 - lgpl-2.1.txt
  Buoy Framework - Public Domain
  Code2000 Unicode font - GPL2 - gpl-2.txt
- Commons Compress - Apache License Version 2.0 - apache_license-2.0.txt
+ Commons Codec, Compress, IO, Lang, Logging
+   - Apache License Version 2.0 - apache_license-2.0.txt
  Extensible-TIFF-JAI (xtiff jai) - MIT License - MIT-license.txt
  Icons (some original or based fully or in part on the following)
    FAMFAMFAM Silk by http://www.famfamfam.com - CC BY 2.5
@@ -34,8 +35,7 @@ as (Component name - License name - License file in "licenses/" folder or link)
    OJ icon v3 and others by Edgar Soldin http://soldin.de - GPL2 - gpl-2.txt
  ImageIO Ext - LGPL3 - lgpl-3.0.txt
    except the following dependencies/components:
-   commons-codec, commons-io, commons-lang, commons-logging 
-   - Apache License Version 2.0 - apache_license-2.0.txt
+   commons-codec, commons-io, commons-lang, commons-logging (see above)
    imageio-ext-streams - partly LGPL2 or 3 - imageio-ext-streams-LICENSE.txt
    imageio-ext-tiff - BSD style license - imageio-ext-tiff-BSD-LICENSE.txt
  JAI core, codec - Java Advanced Imaging Distribution License - jdl-jai.pdf

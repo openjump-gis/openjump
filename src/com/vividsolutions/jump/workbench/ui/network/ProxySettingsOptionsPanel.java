@@ -8,7 +8,7 @@
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation;
- * version 2.1 of the License.
+ * version 2.0 of the License.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -96,7 +96,8 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
  * 
  * @author Sergio Baños Calvo
  * @author Ede
- * @since 2.0
+ * @since Kosmo 2.0
+ * @since OJ 1.8
  */
 public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
 
@@ -123,12 +124,11 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
       .icon("saig/internet_connection_failed.png");
   public final static String SUCCESSFULL_CONNECTION_LABEL = getMessage("connected");
   public final static String FAILED_CONNECTION_LABEL = getMessage("not-connected");
-  public final static String PRESS_TO_CHECK_CONNECTION_LABEL = getMessage("press-the-button-to-check-the-internet-connection-using-provided-parameters");
 
   /** Nombre asociado al panel de configuracion */
   public final static String NAME = getMessage("network-properties");
   
-  private final static String DEFAULT_TEST_URL = "https://google.com";
+  private final static String DEFAULT_TEST_URL = "http://google.com";
   private static final String DEFAULT_TEST_URL_REGEX = "^https?://google.com/?$";
 
   /** Test connection panel */
@@ -313,7 +313,7 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
 
       // Create the panel components
       proxyHTTPEnabledCheckBox = new JCheckBox(
-          getMessage("enable-proxy-connection-through-http"));
+          getMessage("enable-proxy-connection-through-http(s)"));
       proxyHTTPEnabledCheckBox.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -396,7 +396,6 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
     // from the System
     // properties)
     connectionResultsLabel.setIcon(null);
-    connectionResultsLabel.setText(PRESS_TO_CHECK_CONNECTION_LABEL);
 
     // Recover the values
     HTTPProxySettings settings = (HTTPProxySettings) blackboard
