@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2014-11-23 ede
+  * fix #339 Map Canvas & Attributes Window re-sizing 
+    to fit/match Application window
+
 2014-11-22 ede
   * add Proxy configuration (courtesy of Kosmo)
 
