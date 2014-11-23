@@ -47,10 +47,12 @@ import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ChoosableStyle;
 import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
 import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxDialog;
+
 import org.apache.log4j.Logger;
 import org.openjump.core.CheckOS;
 import org.openjump.core.model.TaskEvent;
 import org.openjump.core.model.TaskListener;
+import org.openjump.core.ui.swing.DetachableInternalFrame;
 import org.openjump.core.ui.util.ScreenScale;
 import org.openjump.swing.factory.component.ComponentFactory;
 
@@ -58,6 +60,7 @@ import javax.swing.*;
 import javax.swing.Timer;
 import javax.swing.border.Border;
 import javax.swing.event.*;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
@@ -311,6 +314,17 @@ public class WorkbenchFrame extends JFrame
 
     // set icon for the app frame
     JUMPWorkbench.setIcon(this);
+    
+    // prevent loosing windows when frame is resized,
+    // resize and move them back into if needed
+    addComponentListener(new ComponentAdapter() {
+      @Override
+      public void componentResized(ComponentEvent e) {
+        for (JInternalFrame iframe : getInternalFrames()) {
+          legalize(iframe);
+        }
+      }
+    });
 
     toolBar = new WorkbenchToolBar(workbenchContext);
     toolBar.setTaskMonitorManager(new TaskMonitorManager());
@@ -343,8 +357,8 @@ public class WorkbenchFrame extends JFrame
     // create a run plugin via shortcut listener
     shortcutListener = new ShortcutPluginExecuteKeyListener(workbenchContext);
 
-    // these register handlers for mac menus, need apple stubs avail in 
-    // lib/orange*.jar in calsspath to compile
+    // these register handlers for mac menus, needs apple 
+    // stubs in lib/orange*.jar in classpath to compile
     if (CheckOS.isMacOsx()) {
       try {
         new AppleHandler().register();
@@ -352,7 +366,6 @@ public class WorkbenchFrame extends JFrame
         // the whole handling above is optional, inform but don't fail
         StringWriter sw = new StringWriter();
         e.printStackTrace(new PrintWriter(sw));
-        System.err.println(sw);
         log(sw.toString());
       }
     }
@@ -749,10 +762,37 @@ public class WorkbenchFrame extends JFrame
           toolBar.updateEnabledState();
         }
       });
-      // Call #activateFrame *after* adding the listener. [Jon Aquino]
-      position(internalFrame);
-      activateFrame(internalFrame);
     }
+    // prevent user to drag frame out of desktop pane (left and top)
+    internalFrame.addComponentListener(new ComponentAdapter() {
+      @Override
+      public void componentMoved(ComponentEvent e) {
+        // ignore detached frames, which are hidden in the minus area
+        if (internalFrame instanceof DetachableInternalFrame
+            && ((DetachableInternalFrame) internalFrame).isDetached()) {
+          return;
+        }
+        
+        int x = internalFrame.getX();
+        int y = internalFrame.getY();
+        int new_x = x < 0 ? 0 : x;
+        int new_y = y < 0 ? 0 : y;
+        if (x != new_x || y != new_y )
+          internalFrame.setLocation(new_x, new_y);
+      }
+    });
+    // relocate in window when maximized is disabled
+    internalFrame.addComponentListener(new ComponentAdapter() {
+      public void componentResized(ComponentEvent e) {
+        if (internalFrame.isMaximizable())
+          legalize(internalFrame);
+        ;
+      }
+    });
+    
+    // Call #activateFrame *after* adding the listener. [Jon Aquino]
+    position(internalFrame);
+    activateFrame(internalFrame);
   }
 
   private void installTitleBarModifiedIndicator(
@@ -1325,7 +1365,57 @@ public class WorkbenchFrame extends JFrame
       int offset = (positionIndex % 5) * STEP;
       location = new GUIUtil.Location(offset, false, offset, false);
     }
-    GUIUtil.setLocation(internalFrame, location, desktopPane);
+    // cut to desktoppane size, if bigger
+    int x = location.x;
+    int y = location.y;
+    int w = internalFrame.getWidth();
+    int h = internalFrame.getHeight();
+    int pane_w = getDesktopPane().getWidth();
+    int pane_h = getDesktopPane().getHeight();
+    int new_w = w, new_h = h;
+    if (x + w > pane_w)
+      new_w = pane_w - x;
+    if (y + h > pane_h)
+      new_h = pane_h - y;
+
+    GUIUtil.setBounds(internalFrame, location, new_w, new_h, getDesktopPane());
+  }
+  
+  private void legalize(JInternalFrame iframe) {
+    // protect detached frame's source frame
+    if (iframe instanceof DetachableInternalFrame
+        && ((DetachableInternalFrame) iframe).isDetached()) {
+      return;
+    }
+    
+    int x = iframe.getX();
+    int y = iframe.getY();
+    int w = iframe.getWidth();
+    int h = iframe.getHeight();
+    int pane_w = getDesktopPane().getWidth();
+    int pane_h = getDesktopPane().getHeight();
+    int new_x = x, new_y = y, new_w = w, new_h = h;
+
+    if (x + w >= pane_w) {
+      if (pane_w - w < 0) {
+        new_x = 0;
+        new_w = pane_w;
+      } else {
+        new_x = pane_w - w;
+      }
+    }
+    if (y + h >= pane_h) {
+      if (pane_h - h < 0) {
+        new_y = 0;
+        new_h = pane_h;
+      } else {
+        new_y = pane_h - h;
+      }
+    }
+
+    // relocate/resize if needed
+    if (x != new_x || y != new_y || w != new_w || h != new_h)
+      iframe.setBounds(new_x, new_y, new_w, new_h);
   }
 
   /**

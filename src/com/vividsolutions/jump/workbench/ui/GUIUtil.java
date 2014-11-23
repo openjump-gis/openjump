@@ -1185,22 +1185,25 @@ public class GUIUtil {
         checkBox.doClick();
     }
 
-    public static void setLocation(Component componentToMove,
-            Location location, Component other) {
-        Point p = new Point(
-                (int) other.getLocationOnScreen().getX()
-                        + (location.fromRight ? (other.getWidth()
-                                - componentToMove.getWidth() - location.x)
-                                : location.x), (int) other
-                        .getLocationOnScreen().getY()
-                        + (location.fromBottom ? (other.getHeight()
-                                - componentToMove.getHeight() - location.y)
-                                : location.y));
-        if (!(componentToMove instanceof Window)) {
-            SwingUtilities.convertPointFromScreen(p, componentToMove
-                    .getParent());
-        }
-        componentToMove.setLocation(p);
+    public static void setLocation(Component componentToMove, Location location,
+        Component other) {
+      setBounds(componentToMove, location, componentToMove.getWidth(),
+          componentToMove.getHeight(), other);
+    }
+
+    public static void setBounds(Component componentToMove, Location location,
+        int width, int height, Component other) {
+      Point p = new Point(
+          (int) other.getLocationOnScreen().getX()
+              + (location.fromRight ? (other.getWidth()
+                  - componentToMove.getWidth() - location.x) : location.x),
+          (int) other.getLocationOnScreen().getY()
+              + (location.fromBottom ? (other.getHeight()
+                  - componentToMove.getHeight() - location.y) : location.y));
+      if (!(componentToMove instanceof Window)) {
+        SwingUtilities.convertPointFromScreen(p, componentToMove.getParent());
+      }
+      componentToMove.setBounds(p.x,p.y,width,height);
     }
 
     /**
@@ -1280,13 +1283,13 @@ public class GUIUtil {
 
     public static class Location {
 
-        private int x;
+        public int x;
 
-        private int y;
+        public int y;
 
-        private boolean fromRight;
+        public boolean fromRight;
 
-        private boolean fromBottom;
+        public boolean fromBottom;
 
         /**
          * Constructor taking an initial location, offset hint.
