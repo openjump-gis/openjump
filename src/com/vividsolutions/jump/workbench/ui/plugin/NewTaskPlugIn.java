@@ -1,4 +1,3 @@
-
 /*
  * The Unified Mapping Platform (JUMP) is an extensible, interactive GUI 
  * for visualizing and manipulating spatial features with geometry and attributes.
@@ -43,31 +42,31 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
-
 public class NewTaskPlugIn extends AbstractPlugIn {
-    public NewTaskPlugIn() {
-      this.setShortcutKeys(KeyEvent.VK_N);
-      this.setShortcutModifiers(KeyEvent.CTRL_MASK);
-    }
+  public NewTaskPlugIn() {
+    this.setShortcutKeys(KeyEvent.VK_N);
+    this.setShortcutModifiers(KeyEvent.CTRL_MASK);
+  }
 
-    public boolean execute(PlugInContext context) throws Exception {
-        reportNothingToUndoYet(context);
-        context.getWorkbenchFrame().addTaskFrame();
+  public boolean execute(PlugInContext context) throws Exception {
+    reportNothingToUndoYet(context);
+    context.getWorkbenchFrame().addTaskFrame();
 
-        return true;
-    }
-    //[sstein 26.08.2006] added for toolbar
-    public static MultiEnableCheck createEnableCheck(
-            final WorkbenchContext workbenchContext) {            
-            return new MultiEnableCheck();
-    }
-    
-    ImageIcon icon16 =  IconLoader.icon("page_oj_16.v2.png");
-    ImageIcon icon20 =  IconLoader.icon("page_oj_20.v3.png");
-    
-    //[sstein 26.08.2006] added for toolbar
-    public ImageIcon getIcon(int size) {
-      return (size>16) ? icon20 : icon16;
-    }
+    return true;
+  }
+
+  // [sstein 26.08.2006] added for toolbar
+  public static MultiEnableCheck createEnableCheck(
+      final WorkbenchContext workbenchContext) {
+    return new MultiEnableCheck();
+  }
+
+  ImageIcon icon16 = IconLoader.icon("page_oj_16.v2.png");
+  ImageIcon icon20 = IconLoader.icon("page_oj_20.v3.png");
+
+  // [sstein 26.08.2006] added for toolbar
+  public ImageIcon getIcon(int size) {
+    return (size > 16) ? icon20 : icon16;
+  }
 
 }

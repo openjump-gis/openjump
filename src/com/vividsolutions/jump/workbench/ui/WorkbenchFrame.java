@@ -933,6 +933,11 @@ public class WorkbenchFrame extends JFrame
   }
 
   public TaskFrame addTaskFrame(TaskFrame taskFrame) {
+    // resize to fill current desktoppane
+    double factor = 0.95;
+    int w = (int) (getDesktopPane().getWidth() * factor);
+    int h = (int) (getDesktopPane().getHeight() * factor);
+    taskFrame.setSize(w, h);
     // track which taskframe is activated [ede r2804]
     // move addInternalFrameListener to TaskFrame class (constructor)
     // to fix bugs id 3530414 and 3536708 [mmichaud r2978]
