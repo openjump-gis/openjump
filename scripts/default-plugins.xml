@@ -1,6 +1,9 @@
 <workbench>
 	<!-- ====================== plugins without menu entry ================== -->
 	<plug-in>
+		com.vividsolutions.jump.workbench.datasource.InstallStandardDataSourceQueryChoosersPlugIn
+	</plug-in>
+	<plug-in>
 		com.vividsolutions.jump.workbench.ui.plugin.FirstTaskFramePlugIn
 	</plug-in>
 	<plug-in>
@@ -27,9 +30,6 @@
 	</plug-in>
 	<plug-in>
 		org.openjump.core.ui.plugin.view.NorthArrowInstallRenderer
-	</plug-in>
-	<plug-in>
-		com.vividsolutions.jump.workbench.datasource.InstallStandardDataSourceQueryChoosersPlugIn
 	</plug-in>
 	<plug-in>
 		com.vividsolutions.jump.workbench.ui.plugin.InstallStandardFeatureTextWritersPlugIn
@@ -90,9 +90,8 @@
 	<plug-in>
 		org.openjump.core.ui.plugin.file.OpenWizardPlugIn
 	</plug-in>
-	<plug-in>
-		org.openjump.core.ui.plugin.file.OpenFilePlugIn
-	</plug-in>
+	<!-- disabled as it is essentially the file dialog from above -->
+	<!-- plug-in> org.openjump.core.ui.plugin.file.OpenFilePlugIn </plug-in -->
 	<plug-in>
 		org.openjump.core.ui.plugin.file.OpenProjectPlugIn
 	</plug-in>
@@ -114,18 +113,34 @@
 
 	<separator />
 
-	<plug-in menupath="MenuNames.FILE" install="true">
-		com.vividsolutions.jump.workbench.datasource.SaveDatasetAsPlugIn
-	</plug-in>
 	<plug-in>
 		org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn
+		<menus>
+			<main-menu menupath="MenuNames.FILE" install="true" />
+		</menus>
 	</plug-in>
+	<plug-in>
+		org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn
+		<menus>
+			<main-menu menupath="MenuNames.FILE" install="true" />
+		</menus>
+	</plug-in>
+	<plug-in>
+		com.vividsolutions.jump.workbench.datasource.SaveDatasetAsPlugIn
+		<menus>
+			<main-menu menupath="MenuNames.FILE" install="true" />
+		</menus>
+	</plug-in>
+
 	<plug-in>
 		com.vividsolutions.jump.workbench.ui.plugin.SaveProjectPlugIn
 	</plug-in>
 	<plug-in>
 		com.vividsolutions.jump.workbench.ui.plugin.SaveProjectAsPlugIn
 	</plug-in>
+
+	<separator />
+
 	<plug-in>
 		com.vividsolutions.jump.workbench.ui.plugin.SaveImageAsPlugIn
 	</plug-in>
@@ -142,12 +157,12 @@
 			<main-menu name="I18N.ui.MenuNames.PRINT.Cadplan" menupath="MenuNames.FILE/MenuNames.PRINT" />
 		</menus>
 	</plug-in>
-  <plug-in initialize="false">
-    com.isa.jump.plugin.PrintPlugIn
-    <menus>
-      <main-menu name="I18N.ui.MenuNames.PRINT.SkyPrinter" menupath="MenuNames.FILE/MenuNames.PRINT" />
-    </menus>
-  </plug-in>
+	<plug-in initialize="false">
+		com.isa.jump.plugin.PrintPlugIn
+		<menus>
+			<main-menu name="I18N.ui.MenuNames.PRINT.SkyPrinter" menupath="MenuNames.FILE/MenuNames.PRINT" />
+		</menus>
+	</plug-in>
 
 	<!-- ====================== EDIT menu =================================== -->
 	<plug-in>
@@ -516,15 +531,15 @@
 	<plug-in>
 		org.openjump.core.ui.plugin.view.EasyButtonsPlugin
 	</plug-in>
-    <plug-in>
-        com.vividsolutions.jump.workbench.plugin.StartMacroPlugIn
-    </plug-in>
-    <plug-in>
-        com.vividsolutions.jump.workbench.plugin.StopMacroPlugIn
-    </plug-in>
-    <plug-in>
-        com.vividsolutions.jump.workbench.plugin.RunMacroPlugIn
-    </plug-in>
+	<plug-in>
+		com.vividsolutions.jump.workbench.plugin.StartMacroPlugIn
+	</plug-in>
+	<plug-in>
+		com.vividsolutions.jump.workbench.plugin.StopMacroPlugIn
+	</plug-in>
+	<plug-in>
+		com.vividsolutions.jump.workbench.plugin.RunMacroPlugIn
+	</plug-in>
 
 
 	<!--- ======================= TOOLS menu =============================== -->
@@ -565,9 +580,9 @@
 	<plug-in>
 		org.openjump.core.ui.plugin.tools.UnionByAttributePlugIn
 	</plug-in>
-    <plug-in>
-        org.openjump.core.ui.plugin.tools.DissolvePlugIn
-    </plug-in>
+	<plug-in>
+		org.openjump.core.ui.plugin.tools.DissolvePlugIn
+	</plug-in>
 	<plug-in>
 		com.vividsolutions.jump.workbench.ui.plugin.analysis.GeometryFunctionPlugIn
 	</plug-in>
@@ -1077,6 +1092,11 @@
 	</plug-in>
 	<plug-in>
 		org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn
+		<menus>
+			<layername-popup
+				name="I18N.org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Save-Selected-Datasets"
+				install="true" />
+		</menus>
 	</plug-in>
 
 	<separator />
