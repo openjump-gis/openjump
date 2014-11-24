@@ -604,29 +604,32 @@ public class OpenJumpConfiguration {
     
     Registry registry = workbenchContext.getRegistry();
     List loadChoosers = DataSourceQueryChooserManager.get(
-      workbenchContext.getBlackboard()).getLoadDataSourceQueryChoosers();
+        workbenchContext.getBlackboard()).getLoadDataSourceQueryChoosers();
     for (Object chooser : loadChoosers) {
       if (chooser instanceof FileDataSourceQueryChooser) {
-        FileDataSourceQueryChooser fileChooser = (FileDataSourceQueryChooser)chooser;
+        FileDataSourceQueryChooser fileChooser = (FileDataSourceQueryChooser) chooser;
         Class dataSourceClass = fileChooser.getDataSourceClass();
         String description = fileChooser.getDescription();
         List<String> extensions = Arrays.asList(fileChooser.getExtensions());
         DataSourceFileLayerLoader fileLoader = new DataSourceFileLayerLoader(
-          workbenchContext, dataSourceClass, description, extensions);
+            workbenchContext, dataSourceClass, description, extensions);
         if (description == "GML 2.0") {
           fileLoader.addOption(
-            StandardReaderWriterFileDataSource.GML.INPUT_TEMPLATE_FILE_KEY,
-            "FileString", true);
+              StandardReaderWriterFileDataSource.GML.INPUT_TEMPLATE_FILE_KEY,
+              "FileString", true);
         }
-		// for Shapefiles we check if we should show the charset selection
-		if (dataSourceClass == StandardReaderWriterFileDataSource.Shapefile.class) {
-			Object showCharsetSelection = PersistentBlackboardPlugIn.get(workbenchContext).get(DatasetOptionsPanel.BB_DATASET_OPTIONS_SHOW_CHARSET_SELECTION);
-			if (showCharsetSelection instanceof Boolean) {
-				if (((Boolean) showCharsetSelection).booleanValue()) {
-					fileLoader.addOption("charset", "CharSetComboBoxField", Charset.defaultCharset().displayName(), true);
-				}
-			}
-		}
+        // for Shapefiles we check if we should show the charset selection
+        if (dataSourceClass == StandardReaderWriterFileDataSource.Shapefile.class) {
+          Object showCharsetSelection = PersistentBlackboardPlugIn.get(
+              workbenchContext).get(
+              DatasetOptionsPanel.BB_DATASET_OPTIONS_SHOW_CHARSET_SELECTION);
+          if (showCharsetSelection instanceof Boolean) {
+            if (((Boolean) showCharsetSelection).booleanValue()) {
+              fileLoader.addOption("charset", "CharSetComboBoxField", Charset
+                  .defaultCharset().displayName(), true);
+            }
+          }
+        }
         registry.createEntry(FileLayerLoader.KEY, fileLoader);
       }
     }

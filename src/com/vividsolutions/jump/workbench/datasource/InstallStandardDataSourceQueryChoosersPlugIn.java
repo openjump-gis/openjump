@@ -58,126 +58,124 @@ import org.openjump.swing.factory.field.FieldComponentFactory;
  * Adds to the JUMP Workbench the UIs for opening and saving files with the
  * basic file formats.
  */
-public class InstallStandardDataSourceQueryChoosersPlugIn extends AbstractPlugIn {
+public class InstallStandardDataSourceQueryChoosersPlugIn extends
+    AbstractPlugIn {
 
-    private void addFileDataSourceQueryChoosers(
-        JUMPReader reader,
-        JUMPWriter writer,
-        final String description,
-        final WorkbenchContext context,
-        Class readerWriterDataSourceClass) {
+  private void addFileDataSourceQueryChoosers(JUMPReader reader,
+      JUMPWriter writer, final String description,
+      final WorkbenchContext context, Class readerWriterDataSourceClass) {
 
-        DataSourceQueryChooserManager chooserManager = DataSourceQueryChooserManager.get(context.getBlackboard());
+    DataSourceQueryChooserManager chooserManager = DataSourceQueryChooserManager
+        .get(context.getBlackboard());
 
-        chooserManager.addLoadDataSourceQueryChooser(new LoadFileDataSourceQueryChooser(
-                readerWriterDataSourceClass,
-                description,
-                extensions(readerWriterDataSourceClass),
-                context) {
-                protected void addFileFilters(JFileChooser chooser) {
-                    super.addFileFilters(chooser);
-                    InstallStandardDataSourceQueryChoosersPlugIn.addCompressedFileFilter(description, chooser);
-                }
-            });
+    chooserManager
+        .addLoadDataSourceQueryChooser(new LoadFileDataSourceQueryChooser(
+            readerWriterDataSourceClass, description,
+            extensions(readerWriterDataSourceClass), context) {
+          protected void addFileFilters(JFileChooser chooser) {
+            super.addFileFilters(chooser);
+            InstallStandardDataSourceQueryChoosersPlugIn
+                .addCompressedFileFilter(description, chooser);
+          }
+        });
 
-		if (readerWriterDataSourceClass != StandardReaderWriterFileDataSource.Shapefile.class) {
-			chooserManager.addSaveDataSourceQueryChooser(new SaveFileDataSourceQueryChooser(
-					readerWriterDataSourceClass,
-					description,
-					extensions(readerWriterDataSourceClass),
-					context));
-		} else {
-		// if we write ESRI Shapefiles, we add an option for the Charset
-			chooserManager.addSaveDataSourceQueryChooser(new SaveFileDataSourceQueryChooser(
-					readerWriterDataSourceClass,
-					description,
-					extensions(readerWriterDataSourceClass),
-					context) {
+    if (readerWriterDataSourceClass != StandardReaderWriterFileDataSource.Shapefile.class) {
+      chooserManager
+          .addSaveDataSourceQueryChooser(new SaveFileDataSourceQueryChooser(
+              readerWriterDataSourceClass, description,
+              extensions(readerWriterDataSourceClass), context));
+    } else {
+      // if we write ESRI Shapefiles, we add an option for the Charset
+      chooserManager
+          .addSaveDataSourceQueryChooser(new SaveFileDataSourceQueryChooser(
+              readerWriterDataSourceClass, description,
+              extensions(readerWriterDataSourceClass), context) {
 
-				private JComponent comboboxFieldComponent;
+            private JComponent comboboxFieldComponent;
 
-				protected Map toProperties(File file) {
-                    HashMap properties = new HashMap(super.toProperties(file));
-					String charsetName = Charset.defaultCharset().name();
-					if (comboboxFieldComponent instanceof ComboBoxComponentPanel) {
-						charsetName = (String) ((ComboBoxComponentPanel)comboboxFieldComponent).getSelectedItem();
-					}
-                    properties.put("charset", charsetName);
+            protected Map toProperties(File file) {
+              HashMap properties = new HashMap(super.toProperties(file));
+              String charsetName = Charset.defaultCharset().name();
+              if (comboboxFieldComponent instanceof ComboBoxComponentPanel) {
+                charsetName = (String) ((ComboBoxComponentPanel) comboboxFieldComponent)
+                    .getSelectedItem();
+              }
+              properties.put("charset", charsetName);
 
-                    return properties;
-                }
+              return properties;
+            }
 
-				protected Component getSouthComponent1() {
-						boolean showCharsetSelection = false;
-						Object showCharsetSelectionObject = PersistentBlackboardPlugIn.get(context.getBlackboard()).get(DatasetOptionsPanel.BB_DATASET_OPTIONS_SHOW_CHARSET_SELECTION);
-						if (showCharsetSelectionObject instanceof Boolean) {
-							showCharsetSelection = ((Boolean)showCharsetSelectionObject).booleanValue();
-						}
-						if (showCharsetSelection) {
-						FieldComponentFactory fieldComponentFactory = new ComboBoxFieldComponentFactory(context, I18N.get("org.openjump.core.ui.io.file.DataSourceFileLayerLoader.charset") + ":", Charset.availableCharsets().keySet().toArray());
-						comboboxFieldComponent = fieldComponentFactory.createComponent();
-						fieldComponentFactory.setValue(comboboxFieldComponent, Charset.defaultCharset().name());
-						return comboboxFieldComponent;
-						} else {
-							return new Component() {};
-						}
-				}
-			});
+            protected Component getSouthComponent1() {
+              boolean showCharsetSelection = false;
+              Object showCharsetSelectionObject = PersistentBlackboardPlugIn
+                  .get(context.getBlackboard())
+                  .get(
+                      DatasetOptionsPanel.BB_DATASET_OPTIONS_SHOW_CHARSET_SELECTION);
+              if (showCharsetSelectionObject instanceof Boolean) {
+                showCharsetSelection = ((Boolean) showCharsetSelectionObject)
+                    .booleanValue();
+              }
+              if (showCharsetSelection) {
+                FieldComponentFactory fieldComponentFactory = new ComboBoxFieldComponentFactory(
+                    context,
+                    I18N.get("org.openjump.core.ui.io.file.DataSourceFileLayerLoader.charset")
+                        + ":", Charset.availableCharsets().keySet().toArray());
+                comboboxFieldComponent = fieldComponentFactory
+                    .createComponent();
+                fieldComponentFactory.setValue(comboboxFieldComponent, Charset
+                    .defaultCharset().name());
+                return comboboxFieldComponent;
+              } else {
+                return new Component() {
+                };
+              }
+            }
+          });
 
-		}
+    }
+  }
+
+  public static String[] extensions(Class readerWriterDataSourceClass) {
+    String[] exts = null;
+
+    try {
+      exts = ((StandardReaderWriterFileDataSource) readerWriterDataSourceClass
+          .newInstance()).getExtensions();
+    } catch (Exception e) {
+      Assert.shouldNeverReachHere(e.toString());
     }
 
+    return exts;
+  }
 
+  public void initialize(final PlugInContext context) throws Exception {
+    addFileDataSourceQueryChoosers(new JMLReader(), new JMLWriter(),
+        "JUMP GML", context.getWorkbenchContext(),
+        StandardReaderWriterFileDataSource.JML.class);
 
-    public static String[] extensions(Class readerWriterDataSourceClass) {
-        String[] exts = null;
+    new GMLDataSourceQueryChooserInstaller()
+        .addLoadGMLFileDataSourceQueryChooser(context);
+    new GMLDataSourceQueryChooserInstaller()
+        .addSaveGMLFileDataSourceQueryChooser(context);
 
-        try {
-            exts =  ((StandardReaderWriterFileDataSource) readerWriterDataSourceClass.newInstance()).getExtensions();
-        } catch (Exception e) {
-            Assert.shouldNeverReachHere(e.toString());
-        }
+    addFileDataSourceQueryChoosers(new FMEGMLReader(), new FMEGMLWriter(),
+        "FME GML", context.getWorkbenchContext(),
+        StandardReaderWriterFileDataSource.FMEGML.class);
 
-        return exts;
-    }
+    addFileDataSourceQueryChoosers(new WKTReader(), new WKTWriter(), "WKT",
+        context.getWorkbenchContext(),
+        StandardReaderWriterFileDataSource.WKT.class);
 
-    public void initialize(final PlugInContext context)throws Exception {
-        addFileDataSourceQueryChoosers(
-            new JMLReader(),
-            new JMLWriter(),
-            "JUMP GML",
-            context.getWorkbenchContext(),
-            StandardReaderWriterFileDataSource.JML.class);
+    addFileDataSourceQueryChoosers(new ShapefileReader(),
+        new ShapefileWriter(), "ESRI Shapefile", context.getWorkbenchContext(),
+        StandardReaderWriterFileDataSource.Shapefile.class);
+  }
 
-        new GMLDataSourceQueryChooserInstaller().addLoadGMLFileDataSourceQueryChooser(context);
-        new GMLDataSourceQueryChooserInstaller().addSaveGMLFileDataSourceQueryChooser(context);
-
-        addFileDataSourceQueryChoosers(
-            new FMEGMLReader(),
-            new FMEGMLWriter(),
-            "FME GML",
-            context.getWorkbenchContext(),
-            StandardReaderWriterFileDataSource.FMEGML.class);
-
-        addFileDataSourceQueryChoosers(
-            new WKTReader(),
-            new WKTWriter(),
-            "WKT",
-            context.getWorkbenchContext(),
-            StandardReaderWriterFileDataSource.WKT.class);
-
-        addFileDataSourceQueryChoosers(
-            new ShapefileReader(),
-            new ShapefileWriter(),
-            "ESRI Shapefile",
-            context.getWorkbenchContext(),
-            StandardReaderWriterFileDataSource.Shapefile.class);
-    }
-
-
-    public static void addCompressedFileFilter(final String description,
-        JFileChooser chooser) {
-        chooser.addChoosableFileFilter(GUIUtil.createFileFilter(I18N.get("datasource.InstallStandardDataSourceQueryChoosersPlugIn.compressed")+" " +
-                description, new String[] { "zip", "gz" }));
-    }
+  public static void addCompressedFileFilter(final String description,
+      JFileChooser chooser) {
+    chooser
+        .addChoosableFileFilter(GUIUtil.createFileFilter(
+            I18N.get("datasource.InstallStandardDataSourceQueryChoosersPlugIn.compressed")
+                + " " + description, new String[] { "zip", "gz" }));
+  }
 }
