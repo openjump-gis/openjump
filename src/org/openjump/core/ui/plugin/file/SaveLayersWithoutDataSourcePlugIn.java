@@ -36,8 +36,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
-import javax.swing.JMenuItem;
+
+import org.openjump.core.ui.plugin.file.open.JFCWithEnterAction;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.io.DriverProperties;
@@ -54,11 +57,8 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
-import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
-import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
-import org.openjump.core.ui.images.IconLoader;
-import org.openjump.core.ui.plugin.file.open.JFCWithEnterAction;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 /**
 * Subclass this to implement a 'Save Project' plugin.
@@ -78,7 +78,7 @@ public class SaveLayersWithoutDataSourcePlugIn extends AbstractPlugIn {
     
     public static final String WARN_USER = I18N.get("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.every-layer-has-a-datasource");
     
-    
+    public static final ImageIcon ICON = IconLoader.icon("disks_dots.png");
     private JFileChooser fileChooser;
     
     public SaveLayersWithoutDataSourcePlugIn() {
@@ -89,18 +89,9 @@ public class SaveLayersWithoutDataSourcePlugIn extends AbstractPlugIn {
     }
     
     public void initialize(PlugInContext context) throws Exception {
-        WorkbenchContext workbenchContext = context.getWorkbenchContext();
-        
-	    EnableCheck enableCheck = createEnableCheck(workbenchContext);
-	    FeatureInstaller installer = new FeatureInstaller(workbenchContext);
-	    installer.addMainMenuItem(
-            this, new String[] {MenuNames.FILE},
-            new JMenuItem(getName(), IconLoader.icon("disk_multiple_16.png")),
-            createEnableCheck(context.getWorkbenchContext()), 9);
-        
-        fileChooser = new JFCWithEnterAction();
-        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        fileChooser.setDialogTitle(FILECHOOSER);
+      fileChooser = new JFCWithEnterAction();
+      fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+      fileChooser.setDialogTitle(FILECHOOSER);
     }
     
     public boolean execute(PlugInContext context) throws Exception {

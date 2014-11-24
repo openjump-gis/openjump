@@ -36,13 +36,44 @@
 
 package org.openjump.core.ui.plugin.mousemenu;
 
-import com.vividsolutions.jts.geom.*;
+import java.awt.Dimension;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
+import javax.swing.filechooser.FileFilter;
+
+import org.openjump.core.geomutils.GeoUtils;
+import org.openjump.core.ui.images.IconLoader;
+
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollectionWrapper;
 import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.feature.FeatureSchema;
-import com.vividsolutions.jump.io.*;
+import com.vividsolutions.jump.io.DriverProperties;
+import com.vividsolutions.jump.io.FMEGMLWriter;
+import com.vividsolutions.jump.io.GMLWriter;
+import com.vividsolutions.jump.io.JMLWriter;
+import com.vividsolutions.jump.io.ShapefileWriter;
+import com.vividsolutions.jump.io.WKTWriter;
 import com.vividsolutions.jump.io.datasource.DataSource;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.io.datasource.StandardReaderWriterFileDataSource;
@@ -53,22 +84,16 @@ import com.vividsolutions.jump.workbench.datasource.SaveFileDataSourceQueryChoos
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
-import com.vividsolutions.jump.workbench.plugin.*;
+import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
+import com.vividsolutions.jump.workbench.plugin.EnableCheck;
+import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
+import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
+import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.WorkbenchToolBar;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
-import com.vividsolutions.jump.workbench.ui.plugin.SaveProjectAsPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.SaveProjectPlugIn;
-import org.openjump.core.geomutils.GeoUtils;
-import org.openjump.core.ui.images.IconLoader;
-
-import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.*;
 
 public class SaveDatasetsPlugIn extends AbstractPlugIn
 {
@@ -127,15 +152,16 @@ public class SaveDatasetsPlugIn extends AbstractPlugIn
         WorkbenchToolBar toolBar = frame.getToolBar();
         toolBar.addPlugIn(2, this, ICON, enableCheck, workbenchContext);
         
-        featureInstaller.addPopupMenuItem(layerNamePopupMenu,
-            this, sSaveSelectedDatasets +"{pos:17}",
-            false, ICON2,
-            enableCheck);
     }
     
     public static final ImageIcon ICON = IconLoader.icon("disk_multiple_20.png");
     public static final ImageIcon ICON2 = IconLoader.icon("disk_multiple_16.png");
     
+    @Override
+    public Icon getIcon(Dimension dim) {
+      return dim.width > 16 ? ICON : ICON2;
+    }
+
     public boolean execute(PlugInContext context) throws Exception
     {
         try

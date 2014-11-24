@@ -26,27 +26,74 @@
  */
 package com.vividsolutions.jump.workbench.ui;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.util.Assert;
-import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.util.Blackboard;
-import com.vividsolutions.jump.util.Block;
-import com.vividsolutions.jump.util.CollectionUtil;
-import com.vividsolutions.jump.util.StringUtil;
-import com.vividsolutions.jump.workbench.JUMPWorkbench;
-import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.model.*;
-import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
-import com.vividsolutions.jump.workbench.plugin.EnableCheck;
-import com.vividsolutions.jump.workbench.plugin.PlugIn;
-import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.ui.cursortool.editing.EditingPlugIn;
-import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
-import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
-import com.vividsolutions.jump.workbench.ui.renderer.style.ChoosableStyle;
-import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
-import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxDialog;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dialog;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.Graphics;
+import java.awt.GraphicsEnvironment;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyVetoException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.sql.SQLException;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+import javax.swing.BorderFactory;
+import javax.swing.DefaultDesktopManager;
+import javax.swing.Icon;
+import javax.swing.JComponent;
+import javax.swing.JDesktopPane;
+import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
+import javax.swing.KeyStroke;
+import javax.swing.MenuElement;
+import javax.swing.MenuSelectionManager;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
+import javax.swing.WindowConstants;
+import javax.swing.border.Border;
+import javax.swing.event.InternalFrameAdapter;
+import javax.swing.event.InternalFrameEvent;
+import javax.swing.event.InternalFrameListener;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 
 import org.apache.log4j.Logger;
 import org.openjump.core.CheckOS;
@@ -56,21 +103,41 @@ import org.openjump.core.ui.swing.DetachableInternalFrame;
 import org.openjump.core.ui.util.ScreenScale;
 import org.openjump.swing.factory.component.ComponentFactory;
 
-import javax.swing.*;
-import javax.swing.Timer;
-import javax.swing.border.Border;
-import javax.swing.event.*;
-
-import java.awt.*;
-import java.awt.event.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyVetoException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.sql.SQLException;
-import java.text.DecimalFormat;
-import java.util.*;
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.util.Assert;
+import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.util.Blackboard;
+import com.vividsolutions.jump.util.Block;
+import com.vividsolutions.jump.util.CollectionUtil;
+import com.vividsolutions.jump.util.StringUtil;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.model.Category;
+import com.vividsolutions.jump.workbench.model.CategoryEvent;
+import com.vividsolutions.jump.workbench.model.FeatureEvent;
+import com.vividsolutions.jump.workbench.model.Layer;
+import com.vividsolutions.jump.workbench.model.LayerEvent;
+import com.vividsolutions.jump.workbench.model.LayerEventType;
+import com.vividsolutions.jump.workbench.model.LayerListener;
+import com.vividsolutions.jump.workbench.model.LayerManager;
+import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
+import com.vividsolutions.jump.workbench.model.Layerable;
+import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
+import com.vividsolutions.jump.workbench.model.Task;
+import com.vividsolutions.jump.workbench.model.UndoableEditReceiver;
+import com.vividsolutions.jump.workbench.model.WMSLayer;
+import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
+import com.vividsolutions.jump.workbench.plugin.EnableCheck;
+import com.vividsolutions.jump.workbench.plugin.PlugIn;
+import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.cursortool.editing.EditingPlugIn;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
+import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.ViewAttributesPlugIn.ViewAttributesFrame;
+import com.vividsolutions.jump.workbench.ui.renderer.style.ChoosableStyle;
+import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
+import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxDialog;
 
 /**
  * This class is responsible for the main window of the JUMP application.
@@ -1361,11 +1428,16 @@ public class WorkbenchFrame extends JFrame
   private void position(JInternalFrame internalFrame) {
     final int STEP = 5;
     GUIUtil.Location location = null;
-    if (internalFrame instanceof PrimaryInfoFrame) {
+    // initially show infowindow, attributewindow on the left bottom
+    // later on attributewindow saves/restore it's last postion from persist.blackboard
+    if (internalFrame instanceof InfoFrame
+        || internalFrame instanceof ViewAttributesFrame) {
       primaryInfoFrameIndex++;
       int offset = (primaryInfoFrameIndex % 3) * STEP;
-      location = new GUIUtil.Location(offset, true, offset, true);
-    } else {
+      location = new GUIUtil.Location(offset + 10, false, offset + 10, true);
+    }
+    // ordinary int.frames start from top left
+    else {
       positionIndex++;
       int offset = (positionIndex % 5) * STEP;
       location = new GUIUtil.Location(offset, false, offset, false);
@@ -1702,16 +1774,22 @@ public class WorkbenchFrame extends JFrame
     blackboard.put(WIDTH_KEY, d.width);
     blackboard.put(HEIGHT_KEY, d.height);
     // save the statuspanel divider locations
-	  blackboard.put(STATUSPANEL_DIVIDER_LOCATION_1, new Integer(statusPanelSplitPane1.getDividerLocation()));
-	  blackboard.put(STATUSPANEL_DIVIDER_LOCATION_2, new Integer(statusPanelSplitPane2.getDividerLocation()));
-	  blackboard.put(STATUSPANEL_DIVIDER_LOCATION_3, new Integer(statusPanelSplitPane3.getDividerLocation()));
-	  blackboard.put(STATUSPANEL_DIVIDER_LOCATION_4, new Integer(statusPanelSplitPane4.getDividerLocation()));
-	  blackboard.put(DESKTOPSTATUS_DIVIDER_LOCATION, new Integer(desktopStatusSplit.getDividerLocation()));
+    blackboard.put(STATUSPANEL_DIVIDER_LOCATION_1, new Integer(
+        statusPanelSplitPane1.getDividerLocation()));
+    blackboard.put(STATUSPANEL_DIVIDER_LOCATION_2, new Integer(
+        statusPanelSplitPane2.getDividerLocation()));
+    blackboard.put(STATUSPANEL_DIVIDER_LOCATION_3, new Integer(
+        statusPanelSplitPane3.getDividerLocation()));
+    blackboard.put(STATUSPANEL_DIVIDER_LOCATION_4, new Integer(
+        statusPanelSplitPane4.getDividerLocation()));
+    blackboard.put(DESKTOPSTATUS_DIVIDER_LOCATION, new Integer(
+        desktopStatusSplit.getDividerLocation()));
   }
 
-  public boolean recallMaximizedState() {
+  private boolean recallMaximizedState() {
     Blackboard blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
-    boolean maximized = false;
+    // on the very first start we are maximized, later we'll restore users last state
+    boolean maximized = true;
     if (blackboard.get(MAXIMIZED_KEY) == null) {
       blackboard.put(MAXIMIZED_KEY, maximized);
     }
@@ -1734,7 +1812,7 @@ public class WorkbenchFrame extends JFrame
     return rect.getSize();
   }
 
-  public Point recallWindowLocation() {
+  private Point recallWindowLocation() {
     Blackboard blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
 
     Point p;
@@ -1749,7 +1827,7 @@ public class WorkbenchFrame extends JFrame
     return p;
   }
 
-  public Dimension recallWindowSize() {
+  private Dimension recallWindowSize() {
     Blackboard blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
     // restore Statusbar divider locations
     statusPanelSplitPane1.setDividerLocation(blackboard.get(STATUSPANEL_DIVIDER_LOCATION_1, 200));

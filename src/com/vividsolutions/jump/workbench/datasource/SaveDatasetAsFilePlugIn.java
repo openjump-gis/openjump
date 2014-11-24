@@ -10,6 +10,12 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 
+/**
+ * 
+ * @deprecated in favor of com.vividsolutions.jump.workbench.datasource.SaveDatasetAsPlugIn
+ *
+ */
+@Deprecated
 public class SaveDatasetAsFilePlugIn extends AbstractSaveDatasetAsPlugIn {
     protected void setSelectedFormat(String format) {
         loadSaveDatasetFileMixin.setSelectedFormat(format);

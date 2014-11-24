@@ -87,5 +87,5 @@ public class SaveDatasetAsPlugIn extends AbstractSaveDatasetAsPlugIn {
         return dialog;
     }
     
-    public static final ImageIcon ICON = IconLoader.icon("disk.png");
+    public static final ImageIcon ICON = IconLoader.icon("disk_dots.png");
 }
