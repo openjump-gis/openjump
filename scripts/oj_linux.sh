@@ -187,7 +187,7 @@ if [ -z "$JUMP_PLUGINS" ] || [ ! -f "$JUMP_PLUGINS" ]; then
 fi
 
 # include every jar/zip in lib and native dir
-for libfile in "$JUMP_LIB/"*.zip "$JUMP_LIB/"*.jar "$JUMP_NATIVE_DIR/"*.jar
+for libfile in "$JUMP_LIB/"*.zip "$JUMP_LIB/"*.jar "$JUMP_NATIVE_DIR/$JAVA_ARCH/"*.jar "$JUMP_NATIVE_DIR/"*.jar
 do
   CLASSPATH="$libfile":"$CLASSPATH";
 done
@@ -218,25 +218,36 @@ JAVA_OPTS="$JAVA_OPTS $JAVA_OPTS_OVERRIDE"
 extract_libs "$JUMP_NATIVE_DIR"
 
 # allow jre to find native libraries in native dir, lib/ext (backwards compatibility)
-# NOTE: mac osx DYLD_LIBRARY_PATH is set in oj_macosx.command only
-export LD_LIBRARY_PATH="$JUMP_NATIVE_DIR/linux-$JAVA_ARCH:$JUMP_NATIVE_DIR:./lib/ext:$LD_LIBRARY_PATH"
-# allow jre to find binaries located under the native folder
+NATIVE_PATH="$JUMP_NATIVE_DIR/$JAVA_ARCH:$JUMP_NATIVE_DIR:$JUMP_PLUGIN_DIR"
+# allow jre to find executable binaries located under the native folder
 export PATH="$JUMP_NATIVE_DIR:$PATH"
 
 # generate gdal settings
 export GDAL_DATA=$JUMP_NATIVE_DIR/gdal-linux-data
 GDALPATH=$JUMP_NATIVE_DIR/gdal-linux-$JAVA_ARCH
-export LD_LIBRARY_PATH=$GDALPATH:$GDALPATH/lib:$GDALPATH/java:$LD_LIBRARY_PATH
+NATIVE_PATH="$GDALPATH:$GDALPATH/lib:$GDALPATH/java:$NATIVE_PATH"
 CLASSPATH=$GDALPATH/java/gdal.jar:$CLASSPATH
 
-echo ---LD_LIBRARY_PATH---
-echo $LD_LIBRARY_PATH
+# export (DY)LD_LIBRARY_PATH depending on platform
+if [ "$(basename "$0")" == "oj_macosx.command" ]; then
+  ## Export environment variables for C-coded functions.
+  export DYLD_LIBRARY_PATH="$NATIVE_PATH:$DYLD_LIBRARY_PATH"
+  echo ---DYLD_LIBRARY_PATH---
+  echo $DYLD_LIBRARY_PATH
+else
+  export LD_LIBRARY_PATH="$NATIVE_PATH:$LD_LIBRARY_PATH"
+  echo ---LD_LIBRARY_PATH---
+  echo $LD_LIBRARY_PATH
+fi
 
 echo ---PATH---
 echo $PATH
 
 echo ---CLASSPATH---
 echo $CLASSPATH
+
+echo ---Save logs \& state to--- 
+echo "$JUMP_SETTINGS/"
 
 echo ---Detect maximum memory limit---
 # use previously set or detect RAM size in bytes
