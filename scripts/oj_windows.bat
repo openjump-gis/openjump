@@ -96,7 +96,7 @@ if DEFINED ProgramFiles(x86) set X64=64
 if DEFINED JAVA_X64 (
   set "JAVA_ARCH=-x64"
 ) else (
-  set "JAVA_ARCH=-x32"
+  set "JAVA_ARCH=-x86"
 )
 rem command ver example outputs
 rem  german win7 "Microsoft Windows [Version 6.1.7601]"

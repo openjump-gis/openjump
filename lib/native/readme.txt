@@ -1,4 +1,5 @@
-Put native libraries (e.g. *.dll,*.so) into this folder.
+Place native libraries (e.g. *.dll,*.so,*.dylib) into this folder or 
+it's subfolders.
 
 
 Notes for Mac, Linux
@@ -9,9 +10,10 @@ lib/native/
 lib/ext
 $LD_LIBRARY_PATH
 
-as file extensions for native jre libs differ on OSX (*.dylib) and Linux (*.so) you may place 
-e.g. mac 32bit java libraries under lib/native/linux-x32 and they will be 
-found.
+file extensions for native java library files differ between OSX (*.dylib)
+and Linux (*.so). hence you can place e.g. mac 32bit java libraries under 
+ lib/native/linux-x86
+and they will be found.
 
 
 Notes for Windows
