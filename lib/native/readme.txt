@@ -42,7 +42,7 @@ having different java versions installed on different Windows workstations,
 then place 32bit libraries into 
  lib/native/win-x86
 and 64bit libraries into 
- lib/native/win-x86
+ lib/native/win-x64
 .
 Create the folders if necessary.
 
