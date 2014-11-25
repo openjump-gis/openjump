@@ -27,6 +27,11 @@ is_number(){
   expr "$1" : '^[0-9][0-9]*$' > /dev/null 2>&1
 }
 
+## check if $1 is a decimal utility function
+is_decimal(){
+  expr "$1" : '^[0-9][0-9]*\.[0-9][0-9]*$' > /dev/null 2>&1
+}
+
 ## end function, delays closing of terminal
 end(){
   # show error for some time to prohibit window closing on X
@@ -149,46 +154,17 @@ done
 JAVA_VERSIONSTRING="$("$JAVA" -version 2>&1)"
 JAVA_VERSION=$(echo $JAVA_VERSIONSTRING | awk -F'"' '/^java version/{print $2}' | awk -F'.' '{print $1"."$2}')
 JAVA_ARCH=$(echo $JAVA_VERSIONSTRING | grep -q -i 64-bit && echo x64 || echo x86)
-JAVA_NEEDED="1.5"
-if ! awk "BEGIN{if($JAVA_VERSION < $JAVA_NEEDED)exit 1}"; then
-  echo "Your java version '$JAVA_VERSION' is insufficient to run openjump.
-Please provide an at least version '$JAVA_NEEDED' java runtime."
+JAVA_NEEDED="1.6"
+if ! is_decimal "$JAVA_VERSION" || ! awk "BEGIN{if($JAVA_VERSION < $JAVA_NEEDED)exit 1}"; then
+  echo "Your java version '$JAVA_VERSION' is insufficient to run OpenJUMP.
+Please provide an at least a version '$JAVA_NEEDED' Java Runtime."
   ERROR=1
-fi
-
-# use previously set or detect RAM size in bytes
-RAM_SIZE=${RAM_SIZE-$(expr "$(awk '/MemTotal/{print $2}' /proc/meminfo)" \* 1024)}
-if [ -n "$JAVA_MAXMEM" ]; then
-  echo "max. memory limit defined via JAVA_MAXMEM=$JAVA_MAXMEM"
-elif ! is_number "$RAM_SIZE"; then
-  echo "failed to detect system RAM size, using default max. memory limit of 512 MiB"
-  JAVA_MAXMEM="-Xmx512M"
-else
-  # calculate 80% RAM (in bytes)
-  MEM_80PCT=`expr "$RAM_SIZE" \* 80 / 100`
-  # calculate RAM size minus 1GiB, for big RAM machines we protect max. 1GiB
-  # e.g. for 80% of 16GiB not to waste 3.2GiB
-  MEM_MINUS1GB=`expr "$RAM_SIZE" - \( 1024 \* 1024 \* 1024 \)`
-  # use whatever is bigger
-  if [ "$MEM_80PCT" -gt "$MEM_MINUS1GB" ]; then
-    MEM_MAX="$MEM_80PCT"
-  else
-    MEM_MAX="$MEM_MINUS1GB"
-  fi
-
-  # limit 32bit jre to 2GiB = 2147483648 bytes
-  if [ "$JAVA_ARCH" != "x64" ] && [ "$MEM_MAX" -gt "2147483648" ]; then
-    MEM_MAX=2147483648
-  fi
-
-  MEM_MAX_MB=`expr $MEM_MAX / 1024 / 1024`
-  JAVA_MAXMEM="-Xmx${MEM_MAX_MB}M"
-  # output info
-  echo set max. memory limit to $MEM_MAX_MB MiB
+  end
 fi
 
 # always print java infos
-echo "Running -> '${JAVA}'; " $("$JAVA" -version 2>&1|awk 'BEGIN{ORS=""}{print $0"; "}')
+echo "Using '$(basename "${JAVA}")' found in '$(dirname "${JAVA}")"
+echo $("$JAVA" -version 2>&1|awk 'BEGIN{ORS=""}{print $0"; "}')
 
 JUMP_PROFILE=~/.jump/openjump.profile
 if [ -f "$JUMP_PROFILE" ]; then
@@ -243,7 +219,7 @@ extract_libs "$JUMP_NATIVE_DIR"
 
 # allow jre to find native libraries in native dir, lib/ext (backwards compatibility)
 # NOTE: mac osx DYLD_LIBRARY_PATH is set in oj_macosx.command only
-export LD_LIBRARY_PATH="$JUMP_NATIVE_DIR/linux-$JAVA_ARCH:$JUMP_NATIVE_DIR:$JUMP_HOME/lib/ext":$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH="$JUMP_NATIVE_DIR/linux-$JAVA_ARCH:$JUMP_NATIVE_DIR:./lib/ext:$LD_LIBRARY_PATH"
 # allow jre to find binaries located under the native folder
 export PATH="$JUMP_NATIVE_DIR:$PATH"
 
@@ -253,8 +229,50 @@ GDALPATH=$JUMP_NATIVE_DIR/gdal-linux-$JAVA_ARCH
 export LD_LIBRARY_PATH=$GDALPATH:$GDALPATH/lib:$GDALPATH/java:$LD_LIBRARY_PATH
 CLASSPATH=$GDALPATH/java/gdal.jar:$CLASSPATH
 
-# try to start if no errors so far
+echo ---LD_LIBRARY_PATH---
+echo $LD_LIBRARY_PATH
+
+echo ---PATH---
+echo $PATH
+
+echo ---CLASSPATH---
+echo $CLASSPATH
+
+echo ---Detect maximum memory limit---
+# use previously set or detect RAM size in bytes
+RAM_SIZE=${RAM_SIZE-$(expr "$(awk '/MemTotal/{print $2}' /proc/meminfo)" \* 1024)}
+if [ -n "$JAVA_MAXMEM" ]; then
+  echo "max. memory limit defined via JAVA_MAXMEM=$JAVA_MAXMEM"
+elif ! is_number "$RAM_SIZE"; then
+  echo "failed to detect system RAM size, using default max. memory limit of 512 MiB"
+  JAVA_MAXMEM="-Xmx512M"
+else
+  # calculate 80% RAM (in bytes)
+  MEM_80PCT=`expr "$RAM_SIZE" \* 80 / 100`
+  # calculate RAM size minus 1GiB, for big RAM machines we protect max. 1GiB
+  # e.g. for 80% of 16GiB not to waste 3.2GiB
+  MEM_MINUS1GB=`expr "$RAM_SIZE" - \( 1024 \* 1024 \* 1024 \)`
+  # use whatever is bigger
+  if [ "$MEM_80PCT" -gt "$MEM_MINUS1GB" ]; then
+    MEM_MAX="$MEM_80PCT"
+  else
+    MEM_MAX="$MEM_MINUS1GB"
+  fi
+
+  # limit 32bit jre to 2GiB = 2147483648 bytes
+  if [ "$JAVA_ARCH" != "x64" ] && [ "$MEM_MAX" -gt "2147483648" ]; then
+    MEM_MAX=2147483648
+  fi
+
+  MEM_MAX_MB=`expr $MEM_MAX / 1024 / 1024`
+  JAVA_MAXMEM="-Xmx${MEM_MAX_MB}M"
+  # output info
+  echo set max. memory limit to $MEM_MAX_MB MiB
+fi
+
+# eventually try to start if no errors so far
 if [ -z "$ERROR" ]; then
+  echo ---Start OJ---
   # log.dir needs a trailing slash for path concatenation in log4j.xml
   "$JAVA" -cp "$CLASSPATH" -Dlog.dir="$JUMP_SETTINGS/" $JAVA_OPTS $MAIN -state "$JUMP_SETTINGS/" $JUMP_OPTS "$@"
   # result of jre call
