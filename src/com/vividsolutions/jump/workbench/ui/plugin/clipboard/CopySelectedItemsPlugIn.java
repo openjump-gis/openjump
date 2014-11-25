@@ -31,7 +31,13 @@
  */
 package com.vividsolutions.jump.workbench.ui.plugin.clipboard;
 
-import com.vividsolutions.jump.I18N;
+import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
+
+import javax.swing.ImageIcon;
+
+import org.openjump.core.ui.images.IconLoader;
+
 import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
@@ -39,13 +45,6 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.SelectionManagerProxy;
-
-import java.awt.Toolkit;
-import java.awt.event.KeyEvent;
-
-import javax.swing.ImageIcon;
-
-import org.openjump.core.ui.images.IconLoader;
 
 public class CopySelectedItemsPlugIn extends AbstractPlugIn {
   // Note: Need to copy the data twice: once when the user hits Copy, so she is
