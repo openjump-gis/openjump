@@ -4,6 +4,9 @@
 		com.vividsolutions.jump.workbench.datasource.InstallStandardDataSourceQueryChoosersPlugIn
 	</plug-in>
 	<plug-in>
+		org.openjump.core.ui.plugin.file.OpenFilePlugIn
+	</plug-in>
+	<plug-in>
 		com.vividsolutions.jump.workbench.ui.plugin.FirstTaskFramePlugIn
 	</plug-in>
 	<plug-in>
@@ -959,6 +962,12 @@
 			<layername-popup install="true" />
 		</menus>
 	</plug-in>
+	<plug-in>
+		org.openjump.core.ui.plugin.layer.CombineSelectedLayersPlugIn
+		<menus>
+			<layername-popup install="true" />
+		</menus>
+	</plug-in>
 
 	<separator />
 
@@ -1101,12 +1110,6 @@
 
 	<separator />
 
-	<plug-in>
-		org.openjump.core.ui.plugin.layer.CombineSelectedLayersPlugIn
-		<menus>
-			<layername-popup install="true" />
-		</menus>
-	</plug-in>
 	<plug-in>
 		com.vividsolutions.jump.workbench.ui.plugin.AddNewFeaturesPlugIn
 		<menus>
