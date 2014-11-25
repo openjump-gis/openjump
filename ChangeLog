@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2014-11-25 ede
+  * PLUS: added Concave Hull plugin by Eric Grosso
+
 2014-11-24 ede
   * iconified SaveDatasetAsPlugIn with dots
   * iconified SaveLayersWithoutDataSourcePlugIn
