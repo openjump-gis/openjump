@@ -1,5 +1,16 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2014-11-24 ede
+  * iconified SaveDatasetAsPlugIn with dots
+  * iconified SaveLayersWithoutDataSourcePlugIn
+  * place attribute/info-windows initially on the left bottom
+  * start OJ maximized on the very first start, later restore latest state
+  * two new save as icons for single and multiple saving
+  * added missing save layer/dataset entries to Main->File
+  * added shortcuts
+    Alt+S - save selected datasets
+    Alt+Shift+S - save selected dataset as
+
 2014-11-23 ede
   * fix #339 Map Canvas & Attributes Window re-sizing 
     to fit/match Application window
