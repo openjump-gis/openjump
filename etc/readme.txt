@@ -88,6 +88,8 @@ and the following plugins
   bsheditor4jump-*.jar, buoy.jar(see above)
  CSV driver (Michaël Michaud) - GPL2 - gpl-2.txt
   csv-driver-*.jar
+ Concave Hull (Eric Grosso) - LGPL2.1, GPL2 - lgpl-2.1.txt, gpl-2.txt
+  ConcaveHull*.{jar,txt}
  DXF driver (Michaël Michaud) - GPL2 - gpl-2.txt
   driver-dxf-*.jar
  Graph Extension (Michaël Michaud) - GPL2 - gpl-2.txt
