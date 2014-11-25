@@ -31,6 +31,7 @@
  */
 package com.vividsolutions.jump.workbench.datasource;
 
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.Collection;
 
@@ -47,6 +48,14 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
  * @see DataSourceQueryChooserDialog
  */
 public class SaveDatasetAsPlugIn extends AbstractSaveDatasetAsPlugIn {
+  
+   
+    public SaveDatasetAsPlugIn() {
+      super();
+      this.setShortcutKeys(KeyEvent.VK_S);
+      this.setShortcutModifiers(KeyEvent.ALT_MASK+KeyEvent.SHIFT_MASK);
+    }
+    
     protected Collection showDialog(WorkbenchContext context) {
         GUIUtil.centreOnWindow(getDialog());
         

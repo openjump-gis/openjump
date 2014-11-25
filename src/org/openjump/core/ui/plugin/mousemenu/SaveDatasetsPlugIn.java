@@ -35,6 +35,7 @@
 package org.openjump.core.ui.plugin.mousemenu;
 
 import java.awt.Dimension;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -167,6 +168,14 @@ public class SaveDatasetsPlugIn extends AbstractPlugIn {
   private String pathToSaveReadOnlySources = "";
   private String extToSaveReadOnlySources = "";
   private JFileChooser fileChooser;
+
+  
+  
+  public SaveDatasetsPlugIn() {
+    super();
+    this.setShortcutKeys(KeyEvent.VK_S);
+    this.setShortcutModifiers(KeyEvent.ALT_MASK);
+  }
 
   public void initialize(PlugInContext context) throws Exception {
     WorkbenchContext workbenchContext = context.getWorkbenchContext();
