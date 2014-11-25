@@ -79,5 +79,5 @@ public class DeleteAllFeaturesPlugIn extends AbstractPlugIn {
             .add(checkFactory.createSelectedLayersMustBeEditableCheck());
     }
     
-    public static final ImageIcon ICON = IconLoader.icon("delete.png");
+    public static final ImageIcon ICON = IconLoader.icon("fugue/eraser.png");
 }
