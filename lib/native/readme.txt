@@ -46,7 +46,7 @@ and 64bit libraries into
 .
 Create the folders if necessary.
 
-Same goes for Linux or OSX workstations use
+Same goes for Linux or OSX workstations. Use
  lib/native/linux-x64
 and
  lib/native/linux-x86
