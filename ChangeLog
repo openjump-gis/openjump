@@ -2,6 +2,10 @@
 
 2014-11-25 ede
   * PLUS: added Concave Hull plugin by Eric Grosso
+  * oj_windows.bat: add java arch native path support for windows
+  * iconified DeleteAllFeaturesPlugIn, CombineSelectedLayersPlugIn
+  * moved CombineSelectedLayersPlugIn up within layerpopup menu
+  
 
 2014-11-24 ede
   * iconified SaveDatasetAsPlugIn with dots
