@@ -93,6 +93,11 @@ set LIB=lib
 rem -- setup native lib paths
 set NATIVE=%LIB%\native
 if DEFINED ProgramFiles(x86) set X64=64
+if DEFINED JAVA_X64 (
+  set "JAVA_ARCH=-x64"
+) else (
+  set "JAVA_ARCH=-x32"
+)
 rem command ver example outputs
 rem  german win7 "Microsoft Windows [Version 6.1.7601]"
 rem  finnish xp  "Microsoft Windows XP [versio 5.1.2600]"
@@ -118,9 +123,10 @@ for /f "delims=" %%v in ('ver^|findstr /REC:" 6.3.[0-9\.]*]"') do (
   set "ID=eightone"
 )
 rem -- add native as fallthrough and lib\ext the legacy value and default system path --
-if DEFINED X64 set "NATIVEPATH=%NATIVE%\%ID%%X64%"
-set "NATIVEPATH=%NATIVEPATH%;%NATIVE%\%ID%;%NATIVE%"
-set "PATH=%NATIVEPATH%;%LIB%\ext;%PATH%"
+if DEFINED X64 set "NATIVEPATH=%NATIVE%\%ID%%X64%%JAVA_ARCH%;%NATIVE%\%ID%%X64%"
+set "NATIVEPATH=%NATIVEPATH%;%NATIVE%\%ID%%JAVA_ARCH%;%NATIVE%\%ID%"
+set "NATIVEPATH=%NATIVEPATH%;%NATIVE%\win%JAVA_ARCH%;%NATIVE%\win"
+set "PATH=%NATIVEPATH%;%NATIVE%;%LIB%\ext;%PATH%"
 
 rem -- debug info --
 if /i NOT "%JAVA_BIN%"=="javaw" echo ---PATH--- & echo %PATH%
