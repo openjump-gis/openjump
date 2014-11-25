@@ -34,11 +34,14 @@
 package org.openjump.core.ui.plugin.layer;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
+import javax.swing.Icon;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jump.I18N;
@@ -55,6 +58,7 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.plugin.clipboard.CopySelectedItemsPlugIn;
 import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
@@ -199,4 +203,11 @@ public class CombineSelectedLayersPlugIn extends AbstractPlugIn {
         checkFactory.createWindowWithSelectionManagerMustBeActiveCheck()).add(
         checkFactory.createAtLeastNLayersMustBeSelectedCheck(2));
   }
+
+  @Override
+  public Icon getIcon(Dimension dim) {
+    return IconLoader.icon("famfam/page_white_stack.png");
+  }
+
+  
 }
