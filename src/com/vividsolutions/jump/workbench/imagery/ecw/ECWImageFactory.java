@@ -50,7 +50,7 @@ import org.openjump.util.UriUtil;
 public class ECWImageFactory implements ReferencedImageFactory {
 
   private static final String TYPE_NAME = "ECW";
-  private static final String DESCRIPTION = "Enhanced Compressed Wavelet";
+  private static final String DESCRIPTION = "Enhanced Compressed Wavelet (via ecw3.3)";
   private static final String[] EXTENSIONS = new String[] { "ecw" };
   final static String sNotInstalled = I18N
       .get("org.openjump.core.ui.plugin.layer.AddSIDLayerPlugIn.not-installed");
@@ -103,7 +103,8 @@ public class ECWImageFactory implements ReferencedImageFactory {
       return available;
     
     available = new Boolean( _isAvailable(context) );
-    context.getWorkbench().getFrame().log("ECW/JP2 SDK loader will be unavailable.");
+    if (!available)
+      context.getWorkbench().getFrame().log("ECW/JP2 SDK loader will be unavailable.");
     
     return available;
   }
