@@ -1,5 +1,7 @@
 package com.vividsolutions.jump.workbench.imagery.ecw;
 
+import com.vividsolutions.jump.workbench.WorkbenchContext;
+
 public class JPEG2000ImageFactory extends ECWImageFactory{
     static final String TYPE_NAME = "JPEG2000";
     static final String DESCRIPTION = "JPEG 2000 (via ecw3.3)";
@@ -16,4 +18,5 @@ public class JPEG2000ImageFactory extends ECWImageFactory{
     public String[] getExtensions() {
         return EXTENSIONS;
     }
+
 }

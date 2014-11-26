@@ -49,66 +49,93 @@ import org.openjump.util.UriUtil;
  */
 public class ECWImageFactory implements ReferencedImageFactory {
 
-	private Logger logger = Logger.getLogger(ECWImageFactory.class);	
-	
-    private static final String TYPE_NAME = "ECW";
-    private static final String DESCRIPTION = "Enhanced Compressed Wavelet";
-    private static final String[] EXTENSIONS = new String[]{ "ecw" };
-    final static String sNotInstalled=I18N.get("org.openjump.core.ui.plugin.layer.AddSIDLayerPlugIn.not-installed");
+  private static final String TYPE_NAME = "ECW";
+  private static final String DESCRIPTION = "Enhanced Compressed Wavelet";
+  private static final String[] EXTENSIONS = new String[] { "ecw" };
+  final static String sNotInstalled = I18N
+      .get("org.openjump.core.ui.plugin.layer.AddSIDLayerPlugIn.not-installed");
 
-    public ECWImageFactory() {
+  private static Boolean available = null;
+
+  public ECWImageFactory() {
+  }
+
+  public String getTypeName() {
+    return TYPE_NAME;
+  }
+
+  public ReferencedImage createImage(String location) throws Exception {
+    // if(true)throw new Exception("foobar");
+
+    URI uri = new URI(location);
+    if (CompressedFile.isArchive(uri) || CompressedFile.isCompressed(uri))
+      throw new JUMPException("Compressed files not supported for this format.");
+
+    String filepath = new File(uri).getCanonicalPath();
+    // prevent a weird bug of the ecw libs not being able to handle accented
+    // and extended chars in general
+    if (!Charset.forName("US-ASCII").newEncoder().canEncode(filepath)) {
+      String hint = filepath.replaceAll("[^\\u0000-\\u007F]", "?");
+      throw new ECWLoadException(
+          I18N.getMessage(
+              "com.vividsolutions.jump.workbench.imagery.ecw.path-contains-nonansi-chars",
+              new Object[] { hint }));
     }
 
-    public String getTypeName() {
-        return TYPE_NAME;
-    }
+    return new ECWImage(filepath);
+  }
 
-    public ReferencedImage createImage(String location) throws Exception {
-        //if(true)throw new Exception("foobar");
-      
-        URI uri = new URI(location);
-        if (CompressedFile.isArchive(uri) || CompressedFile.isCompressed(uri))
-          throw new JUMPException("Compressed files not supported for this format.");
+  public String getDescription() {
+    return DESCRIPTION;
+  }
 
-        String filepath = new File( uri ).getCanonicalPath();
-        // prevent a weird bug of the ecw libs not being able to handle accented
-        // and extended chars in general
-        if (!Charset.forName("US-ASCII").newEncoder().canEncode(filepath)) {
-            String hint = filepath.replaceAll("[^\\u0000-\\u007F]", "?");
-            throw new ECWLoadException(
-                    I18N.getMessage(
-                            "com.vividsolutions.jump.workbench.imagery.ecw.path-contains-nonansi-chars",
-                            new Object[] { hint }));
-        }
+  public String[] getExtensions() {
+    return EXTENSIONS;
+  }
 
-        return new ECWImage(filepath);
-    }
+  public boolean isEditableImage(String location) {
+    return false;
+  }
 
-    public String getDescription() {
-        return DESCRIPTION;
-    }
+  // cache availability
+  public boolean isAvailable(WorkbenchContext context) {
+    if (available != null)
+      return available;
+    
+    available = new Boolean( _isAvailable(context) );
+    context.getWorkbench().getFrame().log("ECW/JP2 SDK loader will be unavailable.");
+    
+    return available;
+  }
 
-    public String[] getExtensions() {
-        return EXTENSIONS;
-    }
+  private boolean _isAvailable(WorkbenchContext context) {
 
-    public boolean isEditableImage(String location) {
+    Class c = null;
+    try {
+      c = this.getClass().getClassLoader()
+          .loadClass(JNCSRendererProxy.RENDERER_CLASS);
+
+    } catch (ClassNotFoundException e) {
+      // eat it
+    } finally {
+      if (c == null) {
+        context
+            .getWorkbench()
+            .getFrame()
+            .log(
+                "ECW/JP2 loader class " + JNCSRendererProxy.RENDERER_CLASS + " "
+                    + sNotInstalled, this.getClass());
         return false;
+      }
+    }
+    // check if we can load native libs
+    try {
+      System.loadLibrary("jecw");
+    } catch (Error e) {
+      context.getWorkbench().getFrame().log("ECW/JP2 native libs " + sNotInstalled, this.getClass());
+      return false;
     }
 
-	public boolean isAvailable(WorkbenchContext context) {
-		Class c = null;
-		try{
-			c = this.getClass().getClassLoader().loadClass(
-                JNCSRendererProxy.RENDERER_CLASS);
-
-		}catch(ClassNotFoundException e){
-			// eat it
-			logger.warn("ECW loader class " + JNCSRendererProxy.RENDERER_CLASS + " " + sNotInstalled);
-			return false;
-		}
-		logger.trace("found ECW loader class");
-		return c != null;
-	}
-
+    return true;
+  }
 }
