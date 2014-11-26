@@ -82,6 +82,9 @@ abstract public class AbstractGraphicImageFactory implements
       extensions.addAll(Arrays.asList(new String[] { "jbig2", "jb2" }));
     else if (ext.matches("rgbe"))
       extensions.addAll(Arrays.asList(new String[] { ext, "hdr" }));
+    else if (ext.matches("\\*"))
+      // ignore wildcard extensions
+      ;
     else
       extensions.add(ext);
   }
