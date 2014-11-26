@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2014-11-26 ede
+  * reworked native lib support, read lib/native/readme.txt
+  * streamlined start script outputs on all 3 platforms
+
 2014-11-26 mmichaud <m.michael.michaud@orange.fr>
   * fixpart #379 in PostGIS Driver (new) : delete was not working
     for a table with special characters.
