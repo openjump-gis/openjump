@@ -350,7 +350,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
     }
 
     private PreparedStatement deleteStatement(java.sql.Connection conn, Feature feature) throws SQLException {
-        PreparedStatement pstmt = conn.prepareStatement("DELETE FROM " + tableName + " WHERE \"" + primaryKeyName + "\" = ?");
+        PreparedStatement pstmt = conn.prepareStatement("DELETE FROM " + compose(schemaName, tableName) + " WHERE \"" + primaryKeyName + "\" = ?");
         pstmt.setObject(1,feature.getAttribute(primaryKeyName));
         LOG.debug(pstmt);
         return pstmt;

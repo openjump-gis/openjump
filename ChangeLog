@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2014-11-26 mmichaud <m.michael.michaud@orange.fr>
+  * fixpart #379 in PostGIS Driver (new) : delete was not working
+    for a table with special characters.
+
 2014-11-25 ede
   * PLUS: added Concave Hull plugin by Eric Grosso
   * oj_windows.bat: add java arch native path support for windows
