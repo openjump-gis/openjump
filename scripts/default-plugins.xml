@@ -1512,6 +1512,30 @@
 			<attributetab-popup install="true" />
 		</menus>
 	</plug-in>
+	<plug-in>
+		de.soldin.jumpcore.geomconv.GCPlugin
+		<menus>
+			<attributetab-popup />
+		</menus>
+	</plug-in>
+	<plug-in>
+		com.vividsolutions.jump.workbench.ui.plugin.CombineSelectedFeaturesPlugIn
+		<menus>
+			<attributetab-popup install="true" />
+		</menus>
+	</plug-in>
+	<plug-in>
+		org.openjump.core.ui.plugin.mousemenu.MergeSelectedFeaturesPlugIn
+		<menus>
+			<attributetab-popup install="true" />
+		</menus>
+	</plug-in>
+	<plug-in>
+		com.vividsolutions.jump.workbench.ui.plugin.ExplodeSelectedFeaturesPlugIn
+		<menus>
+			<attributetab-popup install="true" />
+		</menus>
+	</plug-in>
 
 
 
