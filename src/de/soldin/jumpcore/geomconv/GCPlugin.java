@@ -61,6 +61,7 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.AttributeTab;
 import com.vividsolutions.jump.workbench.ui.FeatureSelection;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
@@ -128,6 +129,7 @@ public class GCPlugin extends ExtCorePlugIn {
 			//context.getFeatureInstaller().addPopupMenuSeparator(popupMenu, new String[]{ "bla" });
 			//context.getFeatureInstaller().addPopupMenuSeparator(popupMenu, new String[]{ "foo", "bar"});
 			addToPopupMenu(wbc, popupMenu, popupchain);
+			addToPopupMenu(wbc, AttributeTab.popupMenu(wbc), popupchain);
 		}catch (NoSuchMethodError e) {
 			System.out.println("update to oj 1.4.1 for popupmenu entries");
 		}
@@ -278,7 +280,7 @@ public class GCPlugin extends ExtCorePlugIn {
 							if ( !geoms_new[j].equalsExact(geom) ) changed = true;
 						}
 						// only create a new geometry if the old was changed
-						if ( changed && count > 1 ) {						
+						if ( changed && count > 1 ) {
 							geom_new = factory.createGeometryCollection(geoms_new);
 							// restore multigeometrytype of geom_src collection
 							geom_new = convert( geom_new, geom_src.getGeometryType() );
@@ -529,6 +531,17 @@ public class GCPlugin extends ExtCorePlugIn {
 				geom_src = factory.createMultiLineString( lines );		
 		}
 		*/
+		
+		// convert empty geometries
+		if (geom_src.isEmpty()) {
+			List<Object> params = new ArrayList<Object>();
+			for (Class clazz : cparams) {
+				params.add(null);
+			}
+			geom_new = (Geometry) method.invoke(factory, params.toArray());
+			return geom_new;
+		}
+		
 		boolean isArray = cparams[0].isArray();
 		String name = isArray ? cparams[0].getComponentType()
 				.getName() : cparams[0].getName();
