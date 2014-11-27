@@ -60,6 +60,8 @@ import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.SelectionManager;
+import com.vividsolutions.jump.workbench.ui.SelectionManagerProxy;
 
 public class CombineSelectedFeaturesPlugIn extends AbstractPlugIn {
   public static ImageIcon ICON = IconLoader.icon("features_combine.png");
@@ -71,12 +73,12 @@ public class CombineSelectedFeaturesPlugIn extends AbstractPlugIn {
   }
 
   public boolean execute(final PlugInContext context) throws Exception {
-    final ArrayList originalFeatures = new ArrayList(context
-        .getLayerViewPanel().getSelectionManager()
-        .getFeaturesWithSelectedItems());
+    final SelectionManager smgr = ((SelectionManagerProxy) context
+        .getActiveInternalFrame()).getSelectionManager();
+    final ArrayList originalFeatures = new ArrayList(
+        smgr.getFeaturesWithSelectedItems());
     final Feature combinedFeature = combine(originalFeatures, context);
-    final Layer layer = (Layer) context.getLayerViewPanel()
-        .getSelectionManager().getLayersWithSelectedItems().iterator().next();
+    final Layer layer = (Layer) smgr.getLayersWithSelectedItems().iterator().next();
     execute(new UndoableCommand(getName()) {
       public void execute() {
         layer.getFeatureCollectionWrapper().removeAll(originalFeatures);
@@ -138,7 +140,7 @@ public class CombineSelectedFeaturesPlugIn extends AbstractPlugIn {
     return new MultiEnableCheck()
         .add(checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck())
         .add(checkFactory.createExactlyNLayersMustHaveSelectedItemsCheck(1))
-        .add(checkFactory.createAtLeastNFeaturesMustHaveSelectedItemsCheck(2))
+        .add(checkFactory.createAtLeastNItemsMustBeSelectedCheck(2))
         .add(checkFactory.createSelectedItemsLayersMustBeEditableCheck());
   }
 

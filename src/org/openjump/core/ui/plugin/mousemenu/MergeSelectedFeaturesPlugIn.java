@@ -35,12 +35,10 @@ package org.openjump.core.ui.plugin.mousemenu;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
-import javax.swing.ImageIcon;
-import javax.swing.JPopupMenu;
 
-import org.openjump.core.apitools.FeatureCollectionTools;
+import javax.swing.ImageIcon;
+
 import org.openjump.core.ui.images.IconLoader;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -50,8 +48,6 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.operation.linemerge.LineMerger;
 import com.vividsolutions.jts.operation.union.UnaryUnionOp;
-
-import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
@@ -60,9 +56,8 @@ import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
-import com.vividsolutions.jump.workbench.ui.MenuNames;
-import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
+import com.vividsolutions.jump.workbench.ui.SelectionManager;
+import com.vividsolutions.jump.workbench.ui.SelectionManagerProxy;
 
 /**
  * A PlugIn to merge selected features. Polygon are unioned while linestring are
@@ -89,18 +84,16 @@ public class MergeSelectedFeaturesPlugIn extends AbstractPlugIn {
     return new MultiEnableCheck()
         .add(checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck())
         .add(checkFactory.createExactlyNLayersMustHaveSelectedItemsCheck(1))
-        .add(checkFactory.createAtLeastNFeaturesMustHaveSelectedItemsCheck(2))
+        .add(checkFactory.createAtLeastNItemsMustBeSelectedCheck(2))
         .add(checkFactory.createSelectedItemsLayersMustBeEditableCheck());
   }
 
   public boolean execute(PlugInContext context) throws Exception {
 
-    final Collection features = context.getWorkbenchContext()
-        .getLayerViewPanel().getSelectionManager()
-        .getFeaturesWithSelectedItems();
-    final Layer layer = (Layer) context.getWorkbenchContext()
-        .getLayerViewPanel().getSelectionManager().getLayersWithSelectedItems()
-        .iterator().next();
+    final SelectionManager smgr = ((SelectionManagerProxy) context
+        .getActiveInternalFrame()).getSelectionManager();
+    final Collection features = smgr.getFeaturesWithSelectedItems();
+    final Layer layer = (Layer) smgr.getLayersWithSelectedItems().iterator().next();
 
     Collection points = new ArrayList();
     Collection linestrings = new ArrayList();
