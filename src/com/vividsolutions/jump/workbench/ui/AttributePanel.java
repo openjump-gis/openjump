@@ -212,14 +212,29 @@ public class AttributePanel
         });
         updateSelectionManager();
     }
+  
     private void updateSelectionManager() {
-        selectionManager.clear();
-        for (Iterator i = layerToTablePanelMap.values().iterator(); i.hasNext();) {
-            AttributeTablePanel tablePanel = (AttributeTablePanel) i.next();
-            selectionManager.getFeatureSelection().selectItems(
-                tablePanel.getModel().getLayer(),
-                tablePanel.getSelectedFeatures());
+      for (Iterator i = layerToTablePanelMap.values().iterator(); i.hasNext();) {
+        AttributeTablePanel tablePanel = (AttributeTablePanel) i.next();
+        Layer layer = tablePanel.getModel().getLayer();
+        Collection<Feature> selected_tab = tablePanel.getSelectedFeatures();
+        Collection<Feature> selected_old = selectionManager.getFeatureSelection()
+            .getFeaturesWithSelectedItems(layer);
+        Collection<Feature> selected = new ArrayList<Feature>();
+        Collection<Feature> unselected = new ArrayList<Feature>();
+        // keep selection order
+        for (Feature feature : selected_old) {
+          if (!selected_tab.contains(feature))
+            unselected.add(feature);
         }
+        selectionManager.getFeatureSelection().unselectItems(layer, unselected);
+        // add newly selected to list end
+        for (Feature feature : selected_tab) {
+          if (!selected_old.contains(feature))
+            selected.add(feature);
+        }
+        selectionManager.getFeatureSelection().selectItems(layer, selected);
+      }
     }
     public int rowCount() {
         int rowCount = 0;
