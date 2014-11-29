@@ -203,7 +203,7 @@ public class GMLGeometryWriter
   //<gml:Point><gml:coordinates>1195156.78946687,382069.533723461</gml:coordinates></gml:Point>
   private void writePoint(Point p, String attributes, int level, Writer writer) throws IOException {
       startLine(writer, level, geometryTag("Point", attributes) + "\n");
-      write(new Coordinate[] { p.getCoordinate() }, level + 1, writer);
+      if (!p.isEmpty()) write(new Coordinate[] { p.getCoordinate() }, level + 1, writer);
       startLine(writer, level, "</gml:Point>\n");
   }
 
