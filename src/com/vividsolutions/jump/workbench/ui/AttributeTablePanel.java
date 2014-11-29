@@ -36,6 +36,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.awt.image.BufferedImage;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -73,6 +74,7 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.EditSelectedFeaturePlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
+
 import org.openjump.core.ui.plugin.view.ViewOptionsPlugIn;
 
 /**
@@ -240,11 +242,13 @@ public class AttributeTablePanel extends JPanel {
         }
     };
 
-   private ImageIcon corner = IconLoader.icon("red_corner.png");
+   private ImageIcon corner = IconLoader.icon("red_dot.gif");
     
    private ImageIcon buildEmptyIcon( ImageIcon icon ){
+     ImageIcon out = new ImageIcon(new BufferedImage(10, 10, BufferedImage.TYPE_INT_ARGB));
      icon = GUIUtil.toGrayScale(icon);
-     return GUIUtil.overlay(icon, corner, 0, 0);
+     out = GUIUtil.overlay(out, icon, 0, 0, 0.5F);
+     return GUIUtil.overlay(out, corner, 0, 0);
    }
     
    private class GeometryCellRenderer implements TableCellRenderer 
@@ -256,6 +260,7 @@ public class AttributeTablePanel extends JPanel {
     private ImageIcon mline = IconLoader.icon("EditMultiLineString.gif");
     private ImageIcon poly = IconLoader.icon("EditPolygon.gif");
     private ImageIcon mpoly = IconLoader.icon("EditMultiPolygon.gif");
+    private ImageIcon lring = IconLoader.icon("EditLinearRing.gif");
 
     private JButton buttonPoint = new JButton(point);
     private JButton buttonMultiPoint = new JButton(mpoint);
@@ -264,6 +269,8 @@ public class AttributeTablePanel extends JPanel {
     private JButton buttonPolygon = new JButton(poly);
     private JButton buttonMultiPolygon = new JButton(mpoly);
     private JButton buttonGC = new JButton(gc);
+    private JButton buttonLinearRing = new JButton(lring);
+    
     private JButton buttonPointEmpty = new JButton(buildEmptyIcon(point));
     private JButton buttonMultiPointEmpty = new JButton(buildEmptyIcon(mpoint));
     private JButton buttonLineStringEmpty = new JButton(buildEmptyIcon(line));
@@ -272,16 +279,17 @@ public class AttributeTablePanel extends JPanel {
     private JButton buttonPolygonEmpty = new JButton(buildEmptyIcon(poly));
     private JButton buttonMultiPolygonEmpty = new JButton(buildEmptyIcon(mpoly));
     private JButton buttonGCEmpty = new JButton(buildEmptyIcon(gc));
+    private JButton buttonLinearRingEmpty = new JButton(buildEmptyIcon(lring));
 
     GeometryCellRenderer()
     {
       String text = I18N.get("ui.AttributeTablePanel.feature.view-edit");
       JButton[] buttons = new JButton[] { buttonPoint, buttonMultiPoint,
           buttonLineString, buttonMultiLineString, buttonPolygon,
-          buttonMultiPolygonEmpty, buttonGCEmpty, buttonPointEmpty,
+          buttonMultiPolygon, buttonGC, buttonLinearRing, buttonPointEmpty,
           buttonMultiPointEmpty, buttonLineStringEmpty,
           buttonMultiLineStringEmpty, buttonPolygonEmpty,
-          buttonMultiPolygonEmpty, buttonGCEmpty };
+          buttonMultiPolygonEmpty, buttonGCEmpty, buttonLinearRingEmpty };
       for (JButton button : buttons) {
         button.setToolTipText(text);
       }
@@ -292,6 +300,8 @@ public class AttributeTablePanel extends JPanel {
     {
       Feature f = (Feature) value;
       Geometry g = f.getGeometry();
+      if (g instanceof com.vividsolutions.jts.geom.LinearRing)
+        return g.isEmpty() ? buttonLinearRingEmpty : buttonLinearRing;
       if (g instanceof com.vividsolutions.jts.geom.Point)
         return g.isEmpty() ? buttonPointEmpty : buttonPoint;
       if (g instanceof com.vividsolutions.jts.geom.MultiPoint)

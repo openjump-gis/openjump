@@ -31,6 +31,7 @@
  */
 package com.vividsolutions.jump.workbench.ui;
 
+import java.awt.AlphaComposite;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -807,16 +808,24 @@ public class GUIUtil {
       return new ImageIcon(gray);
     }
     
-    public static ImageIcon overlay(ImageIcon image, ImageIcon overlay, int x, int y) {
-      BufferedImage combined = new BufferedImage(image.getIconWidth(),
-          image.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
-      Graphics g = combined.getGraphics();
-      g.drawImage(image.getImage(), 0, 0, null);
-      g.drawImage(overlay.getImage(), x, y, null);
-
-      return new ImageIcon(combined);
+    public static ImageIcon overlay(ImageIcon image, ImageIcon overlay, int x,
+        int y) {
+      return overlay(image, overlay, x, y, 1F);
     }
     
+    public static ImageIcon overlay(ImageIcon image, ImageIcon overlay, int x,
+        int y, float alpha) {
+      BufferedImage combined = new BufferedImage(image.getIconWidth(),
+          image.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
+      Graphics2D g = combined.createGraphics();
+      AlphaComposite ac = java.awt.AlphaComposite.getInstance(
+          AlphaComposite.SRC_OVER, alpha);
+      g.setComposite(ac);
+      g.drawImage(image.getImage(), 0, 0, null);
+      g.drawImage(overlay.getImage(), x, y, null);
+  
+      return new ImageIcon(combined);
+    }
     
     public static int swingThreadPriority() {
         final Int i = new Int();
