@@ -117,7 +117,7 @@ public final class I18N {
   /**
    * Construct an I18N instance for the category.
    * 
-   * @param resourcePath The path to the language files.
+   * @param category i18n files should be in category/language/jump files.
    */
   private I18N( final String category ) {
     resourcePath = category.replace('.', '/') + "/" + resourcePath;
@@ -211,8 +211,7 @@ public final class I18N {
    * PlugInManager (plugin jars are added to a child classloader there) to allow
    * plugins to make use of this I18N class.
    * 
-   * @param classLoader
-   *          the classLoader to set
+   * @param cl the classLoader to set
    */
   public static void setClassLoader(ClassLoader cl) {
     if (cl!=null) classLoader = cl;
@@ -295,7 +294,7 @@ public final class I18N {
   /***
    * Applies a given locale to the java runtime.
    * 
-   * @param locale
+   * @param loc
    */
   public static void applyToRuntime( Locale loc ) {
     Locale.setDefault(loc);
