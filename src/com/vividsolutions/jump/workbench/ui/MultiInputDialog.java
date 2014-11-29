@@ -270,12 +270,14 @@ public class MultiInputDialog extends AbstractMultiInputDialog {
                           String toolTipText,
                           int labelPos,
                           int fillMode) {
-        if (toolTipText != null) {
+        if (label != null && toolTipText != null) {
             label.setToolTipText(toolTipText);
             component.setToolTipText(toolTipText);
         }
 
-        fieldNameToLabelMap.put(fieldName, label);
+        if (label!= null) {
+            fieldNameToLabelMap.put(fieldName, label);
+        }
         fieldNameToComponentMap.put(fieldName, component);
         
         if (enableChecks != null) {
@@ -289,10 +291,12 @@ public class MultiInputDialog extends AbstractMultiInputDialog {
                 new Insets(5+inset, 2+inset, 2+inset, 2+inset), 0, 0));
         }
         else if (labelPos == LEFT_LABEL) {
-            currentPanel.add(label,
-                new GridBagConstraints(1, rowCount, 1, 1, 0.0, 0.0,
-                GridBagConstraints.WEST, GridBagConstraints.NONE,
-                new Insets(2+inset, 2+inset, 2+inset, 2+inset), 0, 0));
+            if (label != null) {
+                currentPanel.add(label,
+                        new GridBagConstraints(1, rowCount, 1, 1, 0.0, 0.0,
+                                GridBagConstraints.WEST, GridBagConstraints.NONE,
+                                new Insets(2+inset, 2+inset, 2+inset, 2+inset), 0, 0));
+            }
             currentPanel.add(component,
                 new GridBagConstraints(2, rowCount, 2, 1, 0.0, 0.0,
                 GridBagConstraints.WEST, fillMode,
@@ -303,10 +307,12 @@ public class MultiInputDialog extends AbstractMultiInputDialog {
                 new GridBagConstraints(1, rowCount, 2, 1, 1.0, 0.0,
                 GridBagConstraints.WEST, fillMode,
                 new Insets(2+inset, 2+inset, 2+inset, 2+inset), 0, 0));
-            currentPanel.add(label,
-                new GridBagConstraints(3, rowCount, 1, 1, 0.0, 0.0,
-                GridBagConstraints.WEST, GridBagConstraints.NONE,
-                new Insets(2+inset, 2+inset, 2+inset, 2+inset), 0, 0));
+            if (label != null) {
+                currentPanel.add(label,
+                        new GridBagConstraints(3, rowCount, 1, 1, 0.0, 0.0,
+                                GridBagConstraints.WEST, GridBagConstraints.NONE,
+                                new Insets(2+inset, 2+inset, 2+inset, 2+inset), 0, 0));
+            }
         }
         
         rowCount++;
