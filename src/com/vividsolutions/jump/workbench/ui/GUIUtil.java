@@ -37,6 +37,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -47,6 +48,7 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.Window;
+import java.awt.color.ColorSpace;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
@@ -58,6 +60,7 @@ import java.awt.event.MouseListener;
 import java.awt.font.TextLayout;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorConvertOp;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -790,6 +793,31 @@ public class GUIUtil {
       return resize(icon, width);
     }
 
+    public static ImageIcon toGrayScale(ImageIcon icon) {
+      BufferedImage gray = new BufferedImage(icon.getIconWidth(),
+          icon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
+      BufferedImage orig = new BufferedImage(icon.getIconWidth(),
+          icon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
+      Graphics g = orig.getGraphics();
+      g.drawImage(icon.getImage(), 0, 0, null);
+      // Automatic converstion....
+      ColorConvertOp op = new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
+      op.filter(orig, gray);
+
+      return new ImageIcon(gray);
+    }
+    
+    public static ImageIcon overlay(ImageIcon image, ImageIcon overlay, int x, int y) {
+      BufferedImage combined = new BufferedImage(image.getIconWidth(),
+          image.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
+      Graphics g = combined.getGraphics();
+      g.drawImage(image.getImage(), 0, 0, null);
+      g.drawImage(overlay.getImage(), x, y, null);
+
+      return new ImageIcon(combined);
+    }
+    
+    
     public static int swingThreadPriority() {
         final Int i = new Int();
 

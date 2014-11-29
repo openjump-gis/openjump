@@ -240,29 +240,51 @@ public class AttributeTablePanel extends JPanel {
         }
     };
 
+   private ImageIcon corner = IconLoader.icon("red_corner.png");
+    
+   private ImageIcon buildEmptyIcon( ImageIcon icon ){
+     icon = GUIUtil.toGrayScale(icon);
+     return GUIUtil.overlay(icon, corner, 0, 0);
+   }
+    
    private class GeometryCellRenderer implements TableCellRenderer 
    {
-     private JButton button = new JButton(IconLoader.icon("Pencil.gif"));
-     private JButton buttonPoint = new JButton(IconLoader.icon("EditPoint.gif"));
-     private JButton buttonMultiPoint = new JButton(IconLoader.icon("EditMultiPoint.gif"));
-     private JButton buttonLineString = new JButton(IconLoader.icon("EditLineString.gif"));
-     private JButton buttonMultiLineString = new JButton(IconLoader.icon("EditMultiLineString.gif"));
-     private JButton buttonPolygon = new JButton(IconLoader.icon("EditPolygon.gif"));
-     private JButton buttonMultiPolygon = new JButton(IconLoader.icon("EditMultiPolygon.gif"));
-     private JButton buttonGC = new JButton(IconLoader.icon("EditGeometryCollection.gif"));
-     private JButton buttonEmptyGC = new JButton(IconLoader.icon("EditEmptyGC.gif"));
+    private ImageIcon gc = IconLoader.icon("EditGeometryCollection.gif");
+    private ImageIcon point = IconLoader.icon("EditPoint.gif");
+    private ImageIcon mpoint = IconLoader.icon("EditMultiPoint.gif");
+    private ImageIcon line = IconLoader.icon("EditLineString.gif");
+    private ImageIcon mline = IconLoader.icon("EditMultiLineString.gif");
+    private ImageIcon poly = IconLoader.icon("EditPolygon.gif");
+    private ImageIcon mpoly = IconLoader.icon("EditMultiPolygon.gif");
+
+    private JButton buttonPoint = new JButton(point);
+    private JButton buttonMultiPoint = new JButton(mpoint);
+    private JButton buttonLineString = new JButton(line);
+    private JButton buttonMultiLineString = new JButton(mline);
+    private JButton buttonPolygon = new JButton(poly);
+    private JButton buttonMultiPolygon = new JButton(mpoly);
+    private JButton buttonGC = new JButton(gc);
+    private JButton buttonPointEmpty = new JButton(buildEmptyIcon(point));
+    private JButton buttonMultiPointEmpty = new JButton(buildEmptyIcon(mpoint));
+    private JButton buttonLineStringEmpty = new JButton(buildEmptyIcon(line));
+    private JButton buttonMultiLineStringEmpty = new JButton(
+        buildEmptyIcon(mline));
+    private JButton buttonPolygonEmpty = new JButton(buildEmptyIcon(poly));
+    private JButton buttonMultiPolygonEmpty = new JButton(buildEmptyIcon(mpoly));
+    private JButton buttonGCEmpty = new JButton(buildEmptyIcon(gc));
 
     GeometryCellRenderer()
     {
-      buttonPoint.setToolTipText("View/Edit Point");
-      buttonMultiPoint.setToolTipText("View/Edit MultiPoint");
-      buttonLineString.setToolTipText("View/Edit LineString");
-      buttonMultiLineString.setToolTipText("View/Edit MultiLineString");
-      buttonPolygon.setToolTipText("View/Edit Polygon");
-      buttonMultiPolygon.setToolTipText("View/Edit MultiPolygon");
-      buttonGC.setToolTipText("View/Edit GeometryCollection");
-      buttonEmptyGC.setToolTipText("View/Edit empty GeometryCollection");
-      button.setToolTipText("View/Edit Geometry");
+      String text = I18N.get("ui.AttributeTablePanel.feature.view-edit");
+      JButton[] buttons = new JButton[] { buttonPoint, buttonMultiPoint,
+          buttonLineString, buttonMultiLineString, buttonPolygon,
+          buttonMultiPolygonEmpty, buttonGCEmpty, buttonPointEmpty,
+          buttonMultiPointEmpty, buttonLineStringEmpty,
+          buttonMultiLineStringEmpty, buttonPolygonEmpty,
+          buttonMultiPolygonEmpty, buttonGCEmpty };
+      for (JButton button : buttons) {
+        button.setToolTipText(text);
+      }
     }
     
     public Component getTableCellRendererComponent(JTable table, Object value,
@@ -271,20 +293,19 @@ public class AttributeTablePanel extends JPanel {
       Feature f = (Feature) value;
       Geometry g = f.getGeometry();
       if (g instanceof com.vividsolutions.jts.geom.Point)
-        return buttonPoint;
+        return g.isEmpty() ? buttonPointEmpty : buttonPoint;
       if (g instanceof com.vividsolutions.jts.geom.MultiPoint)
-        return buttonMultiPoint;
+        return g.isEmpty() ? buttonMultiPointEmpty : buttonMultiPoint;
       if (g instanceof com.vividsolutions.jts.geom.LineString)
-        return buttonLineString;
+        return g.isEmpty() ? buttonLineStringEmpty : buttonLineString;
       if (g instanceof com.vividsolutions.jts.geom.MultiLineString)
-        return buttonMultiLineString;
+        return g.isEmpty() ? buttonMultiLineStringEmpty : buttonMultiLineString;
       if (g instanceof com.vividsolutions.jts.geom.Polygon)
-        return buttonPolygon;
+        return g.isEmpty() ? buttonPolygonEmpty : buttonPolygon;
       if (g instanceof com.vividsolutions.jts.geom.MultiPolygon)
-        return buttonMultiPolygon;
-      if (g.isEmpty())
-        return buttonEmptyGC; 
-      return buttonGC;
+        return g.isEmpty() ? buttonMultiPolygonEmpty : buttonMultiPolygon;
+
+      return g.isEmpty() ? buttonGCEmpty : buttonGC;
     }
   }
 
