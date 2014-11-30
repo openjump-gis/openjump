@@ -29,6 +29,7 @@ package com.vividsolutions.jump.workbench.ui;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -57,6 +58,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
+import org.openjump.core.ui.plugin.view.ViewOptionsPlugIn;
+
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
@@ -74,8 +77,6 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.EditSelectedFeaturePlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
-
-import org.openjump.core.ui.plugin.view.ViewOptionsPlugIn;
 
 /**
  * Implements an AttributeTable panel. Table-size changes are absorbed by the
@@ -242,14 +243,32 @@ public class AttributeTablePanel extends JPanel {
         }
     };
 
-   //private ImageIcon corner = IconLoader.icon("red_dot.gif");
+    private ImageIcon buildPartlyEmptyIcon(ImageIcon icon) {
+      ImageIcon empty = buildEmptyIcon(icon);
+      // build mask
+      BufferedImage mask = new BufferedImage(icon.getIconWidth(),
+          icon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
+      Graphics2D g = mask.createGraphics();
+      g.setColor(Color.WHITE);
+      g.fillRect(0, 0, mask.getWidth(), mask.getHeight());
+      g.setColor(Color.BLACK);
+      g.fillRect(mask.getWidth()/2-1, 0, mask.getWidth(), mask.getHeight());
+      // overlay half-red onto normal icon
+      icon = GUIUtil.overlay(icon, empty, 0, 0, 1F, mask);
+      return icon;
+    }
     
     private ImageIcon buildEmptyIcon(ImageIcon icon) {
-      // ImageIcon out = new ImageIcon(new BufferedImage(10, 10,
-      // BufferedImage.TYPE_INT_ARGB));
-      icon = GUIUtil.toGrayScale(icon);
-      //out = GUIUtil.overlay(out, icon, 0, 0, 0.5F);
-      return icon; // GUIUtil.overlay(out, corner, 0, 0);
+      ImageIcon gray = GUIUtil.toGrayScale(icon);
+      // build red
+      BufferedImage red = new BufferedImage(icon.getIconWidth(),
+          icon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
+      Graphics2D g = red.createGraphics();
+      g.setColor(Color.PINK);
+      g.fillRect(0, 0, red.getWidth(), red.getHeight());
+      // build red empty
+      ImageIcon empty = GUIUtil.overlay(new ImageIcon(red), gray, 0, 0, 1F, null);
+      return empty;
     }
    
     private JButton buildIconButton(ImageIcon icon, Color color) {
@@ -263,13 +282,33 @@ public class AttributeTablePanel extends JPanel {
     }
    
     private JButton buildIconButton( ImageIcon icon ){
+      icon = GUIUtil.pad(icon, 2);
       return buildIconButton(icon, null);
     }
     
    private JButton buildEmptyIconButton( ImageIcon icon ){
-     JButton b = buildIconButton(buildEmptyIcon(icon),Color.PINK);
+     icon = GUIUtil.pad(icon, 2);
+     JButton b = buildIconButton(buildEmptyIcon(icon));
      return b;
    }
+   
+   private JButton buildPartlyEmptyIconButton( ImageIcon icon ){
+     icon = GUIUtil.pad(icon, 2);
+     JButton b = buildIconButton(buildPartlyEmptyIcon(icon));
+     return b;
+   }
+   
+    private boolean isPartlyEmpty(Geometry g) {
+      if (g.isEmpty())
+        return false;
+  
+      for (int i = 0; i < g.getNumGeometries(); i++) {
+        Geometry inner = g.getGeometryN(i);
+        if (inner.isEmpty())
+          return true;
+      }
+      return false;
+    }
     
    private class GeometryCellRenderer implements TableCellRenderer 
    {
@@ -299,6 +338,11 @@ public class AttributeTablePanel extends JPanel {
     private JButton buttonMultiPolygonEmpty = buildEmptyIconButton(mpoly);
     private JButton buttonGCEmpty = buildEmptyIconButton(gc);
     private JButton buttonLinearRingEmpty = buildEmptyIconButton(lring);
+    
+    private JButton buttonMultiPointPartlyEmpty = buildPartlyEmptyIconButton(mpoint);
+    private JButton buttonMultiLineStringPartlyEmpty = buildPartlyEmptyIconButton(mline);
+    private JButton buttonMultiPolygonPartlyEmpty = buildPartlyEmptyIconButton(mpoly);
+    private JButton buttonGCPartlyEmpty = buildPartlyEmptyIconButton(gc);
 
     GeometryCellRenderer()
     {
@@ -319,23 +363,29 @@ public class AttributeTablePanel extends JPanel {
     {
       Feature f = (Feature) value;
       Geometry g = f.getGeometry();
-      
+
       if (g instanceof com.vividsolutions.jts.geom.LinearRing)
         return g.isEmpty() ? buttonLinearRingEmpty : buttonLinearRing;
       if (g instanceof com.vividsolutions.jts.geom.Point)
         return g.isEmpty() ? buttonPointEmpty : buttonPoint;
       if (g instanceof com.vividsolutions.jts.geom.MultiPoint)
-        return g.isEmpty() ? buttonMultiPointEmpty : buttonMultiPoint;
+        return g.isEmpty() ? buttonMultiPointEmpty
+            : isPartlyEmpty(g) ? buttonMultiPointPartlyEmpty : buttonMultiPoint;
       if (g instanceof com.vividsolutions.jts.geom.LineString)
         return g.isEmpty() ? buttonLineStringEmpty : buttonLineString;
       if (g instanceof com.vividsolutions.jts.geom.MultiLineString)
-        return g.isEmpty() ? buttonMultiLineStringEmpty : buttonMultiLineString;
+        return g.isEmpty() ? buttonMultiLineStringEmpty
+            : isPartlyEmpty(g) ? buttonMultiLineStringPartlyEmpty
+                : buttonMultiLineString;
       if (g instanceof com.vividsolutions.jts.geom.Polygon)
         return g.isEmpty() ? buttonPolygonEmpty : buttonPolygon;
       if (g instanceof com.vividsolutions.jts.geom.MultiPolygon)
-        return g.isEmpty() ? buttonMultiPolygonEmpty : buttonMultiPolygon;
+        return g.isEmpty() ? buttonMultiPolygonEmpty
+            : isPartlyEmpty(g) ? buttonMultiPolygonPartlyEmpty
+                : buttonMultiPolygon;
 
-      return g.isEmpty() ? buttonGCEmpty : buttonGC;
+      return g.isEmpty() ? buttonGCEmpty
+          : isPartlyEmpty(g) ? buttonGCPartlyEmpty : buttonGC;
     }
   }
 

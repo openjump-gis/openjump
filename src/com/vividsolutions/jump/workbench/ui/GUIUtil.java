@@ -62,6 +62,10 @@ import java.awt.font.TextLayout;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
+import java.awt.image.FilteredImageSource;
+import java.awt.image.ImageFilter;
+import java.awt.image.ImageProducer;
+import java.awt.image.RGBImageFilter;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -794,6 +798,25 @@ public class GUIUtil {
       return resize(icon, width);
     }
 
+    /**
+     * enlarge icon by padding border pixels onto it
+     * @param icon
+     * @param border
+     * @return ImageIcon
+     */
+    public static ImageIcon pad(ImageIcon icon, int border) {
+      BufferedImage padded = new BufferedImage(icon.getIconWidth()+2*border,
+          icon.getIconHeight()+2*border, BufferedImage.TYPE_INT_ARGB);
+      Graphics g = padded.createGraphics();
+      g.drawImage(icon.getImage(), border, border, null);
+      return new ImageIcon(padded);
+    }
+    
+    /**
+     * convert icon to grayscale
+     * @param icon
+     * @return ImageIcon
+     */
     public static ImageIcon toGrayScale(ImageIcon icon) {
       BufferedImage gray = new BufferedImage(icon.getIconWidth(),
           icon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
@@ -808,23 +831,77 @@ public class GUIUtil {
       return new ImageIcon(gray);
     }
     
-    public static ImageIcon overlay(ImageIcon image, ImageIcon overlay, int x,
+    /**
+     * overlay an icon over another icon
+     * @param icon
+     * @param overlay
+     * @param x
+     * @param y
+     * @return ImageIcon
+     */
+    public static ImageIcon overlay(ImageIcon icon, ImageIcon overlay, int x,
         int y) {
-      return overlay(image, overlay, x, y, 1F);
+      return overlay(icon, overlay, x, y, 1F, null);
     }
     
+    /**
+     * overlay an icon over another icon respecting mask (b/w image)
+     * @param image
+     * @param overlay
+     * @param x
+     * @param y
+     * @param alpha
+     * @param mask
+     * @return
+     */
     public static ImageIcon overlay(ImageIcon image, ImageIcon overlay, int x,
-        int y, float alpha) {
+        int y, float alpha, Image mask) {
+      // build masked image
+      Image overlay_image;
+      if (mask != null) {
+        BufferedImage masked = new BufferedImage(overlay.getIconWidth(),
+            overlay.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = masked.createGraphics();
+        g2.drawImage(overlay.getImage(), 0, 0, null);
+        AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.DST_IN,
+            1.0F);
+        g2.setComposite(ac);
+        g2.drawImage(transformGrayToTransparency(mask), 0, 0, null);
+        g2.dispose();
+        overlay_image = masked;
+      }
+      else{
+        overlay_image = overlay.getImage();
+      }
+
       BufferedImage combined = new BufferedImage(image.getIconWidth(),
           image.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
       Graphics2D g = combined.createGraphics();
-      AlphaComposite ac = java.awt.AlphaComposite.getInstance(
-          AlphaComposite.SRC_OVER, alpha);
-      g.setComposite(ac);
       g.drawImage(image.getImage(), 0, 0, null);
-      g.drawImage(overlay.getImage(), x, y, null);
+      AlphaComposite ac2 = java.awt.AlphaComposite.getInstance(
+          AlphaComposite.SRC_OVER, alpha);
+      g.setComposite(ac2);
+      g.drawImage(overlay_image, x, y, null);
   
       return new ImageIcon(combined);
+    }
+    
+    /**
+     * transform a b/w image to image containing an alpha channel
+     * @param image
+     * @return
+     */
+    private static Image transformGrayToTransparency(Image image) {
+      if (image == null)
+        return image;
+      ImageFilter filter = new RGBImageFilter() {
+        public final int filterRGB(int x, int y, int rgb) {
+          return (rgb << 8) & 0xFF000000;
+        }
+      };
+  
+      ImageProducer ip = new FilteredImageSource(image.getSource(), filter);
+      return Toolkit.getDefaultToolkit().createImage(ip);
     }
     
     public static int swingThreadPriority() {
