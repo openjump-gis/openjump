@@ -1,5 +1,15 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2014-12-01 ede
+  * beautified attribtab edit geom buttons, icons visualize (partly) empty 
+    geometries now with grayed out icons and pink background
+  * JML/GML reader: fixed support for (empty) multigeometries and linearrings
+  * JML/GML write: fix writing empty point geoms
+  * attribtab keeps selection order now
+  * add union/merge/geomconv to attribute table popup
+  * geometry converter converts empty geoms now
+  * disable wildcard extensions for image filelayerloaders
+
 2014-11-26 ede
   * reworked native lib support, read lib/native/readme.txt
   * streamlined start script outputs on all 3 platforms
