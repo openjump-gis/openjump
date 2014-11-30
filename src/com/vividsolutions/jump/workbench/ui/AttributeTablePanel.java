@@ -242,13 +242,33 @@ public class AttributeTablePanel extends JPanel {
         }
     };
 
-   private ImageIcon corner = IconLoader.icon("red_dot.gif");
+   //private ImageIcon corner = IconLoader.icon("red_dot.gif");
     
-   private ImageIcon buildEmptyIcon( ImageIcon icon ){
-     ImageIcon out = new ImageIcon(new BufferedImage(10, 10, BufferedImage.TYPE_INT_ARGB));
-     icon = GUIUtil.toGrayScale(icon);
-     out = GUIUtil.overlay(out, icon, 0, 0, 0.5F);
-     return GUIUtil.overlay(out, corner, 0, 0);
+    private ImageIcon buildEmptyIcon(ImageIcon icon) {
+      // ImageIcon out = new ImageIcon(new BufferedImage(10, 10,
+      // BufferedImage.TYPE_INT_ARGB));
+      icon = GUIUtil.toGrayScale(icon);
+      //out = GUIUtil.overlay(out, icon, 0, 0, 0.5F);
+      return icon; // GUIUtil.overlay(out, corner, 0, 0);
+    }
+   
+    private JButton buildIconButton(ImageIcon icon, Color color) {
+      JButton b = new JButton(icon);
+      // order matters, set color, then area, then opaque
+      if (color != null)
+        b.setBackground(color);
+      b.setContentAreaFilled(false);
+      b.setOpaque(true);
+      return b;
+    }
+   
+    private JButton buildIconButton( ImageIcon icon ){
+      return buildIconButton(icon, null);
+    }
+    
+   private JButton buildEmptyIconButton( ImageIcon icon ){
+     JButton b = buildIconButton(buildEmptyIcon(icon),Color.PINK);
+     return b;
    }
     
    private class GeometryCellRenderer implements TableCellRenderer 
@@ -262,24 +282,23 @@ public class AttributeTablePanel extends JPanel {
     private ImageIcon mpoly = IconLoader.icon("EditMultiPolygon.gif");
     private ImageIcon lring = IconLoader.icon("EditLinearRing.gif");
 
-    private JButton buttonPoint = new JButton(point);
-    private JButton buttonMultiPoint = new JButton(mpoint);
-    private JButton buttonLineString = new JButton(line);
-    private JButton buttonMultiLineString = new JButton(mline);
-    private JButton buttonPolygon = new JButton(poly);
-    private JButton buttonMultiPolygon = new JButton(mpoly);
-    private JButton buttonGC = new JButton(gc);
-    private JButton buttonLinearRing = new JButton(lring);
+    private JButton buttonPoint = buildIconButton(point);
+    private JButton buttonMultiPoint = buildIconButton(mpoint);
+    private JButton buttonLineString = buildIconButton(line);
+    private JButton buttonMultiLineString = buildIconButton(mline);
+    private JButton buttonPolygon = buildIconButton(poly);
+    private JButton buttonMultiPolygon = buildIconButton(mpoly);
+    private JButton buttonGC = buildIconButton(gc);
+    private JButton buttonLinearRing = buildIconButton(lring);
     
-    private JButton buttonPointEmpty = new JButton(buildEmptyIcon(point));
-    private JButton buttonMultiPointEmpty = new JButton(buildEmptyIcon(mpoint));
-    private JButton buttonLineStringEmpty = new JButton(buildEmptyIcon(line));
-    private JButton buttonMultiLineStringEmpty = new JButton(
-        buildEmptyIcon(mline));
-    private JButton buttonPolygonEmpty = new JButton(buildEmptyIcon(poly));
-    private JButton buttonMultiPolygonEmpty = new JButton(buildEmptyIcon(mpoly));
-    private JButton buttonGCEmpty = new JButton(buildEmptyIcon(gc));
-    private JButton buttonLinearRingEmpty = new JButton(buildEmptyIcon(lring));
+    private JButton buttonPointEmpty = buildEmptyIconButton(point);
+    private JButton buttonMultiPointEmpty = buildEmptyIconButton(mpoint);
+    private JButton buttonLineStringEmpty = buildEmptyIconButton(line);
+    private JButton buttonMultiLineStringEmpty = buildEmptyIconButton(mline);
+    private JButton buttonPolygonEmpty = buildEmptyIconButton(poly);
+    private JButton buttonMultiPolygonEmpty = buildEmptyIconButton(mpoly);
+    private JButton buttonGCEmpty = buildEmptyIconButton(gc);
+    private JButton buttonLinearRingEmpty = buildEmptyIconButton(lring);
 
     GeometryCellRenderer()
     {
@@ -300,6 +319,7 @@ public class AttributeTablePanel extends JPanel {
     {
       Feature f = (Feature) value;
       Geometry g = f.getGeometry();
+      
       if (g instanceof com.vividsolutions.jts.geom.LinearRing)
         return g.isEmpty() ? buttonLinearRingEmpty : buttonLinearRing;
       if (g instanceof com.vividsolutions.jts.geom.Point)
