@@ -1,5 +1,7 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+* release 1.8.0 ***************************************************************
+
 2014-12-01 ede
   * beautified attribtab edit geom buttons, icons visualize (partly) empty 
     geometries now with grayed out icons and pink background
@@ -24,7 +26,6 @@
   * iconified DeleteAllFeaturesPlugIn, CombineSelectedLayersPlugIn
   * moved CombineSelectedLayersPlugIn up within layerpopup menu
   
-
 2014-11-24 ede
   * iconified SaveDatasetAsPlugIn with dots
   * iconified SaveLayersWithoutDataSourcePlugIn

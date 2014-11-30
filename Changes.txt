@@ -1,5 +1,118 @@
 Version ${version.number} ${version.release} rev.${version.revision} (released on ${version.buildDate})
 
+  New Features
+  * Add DissolvePlugIn able to dissolve according to several attributes
+  * MapToolTipPlugIn can now interpret jpg/gif/png images from url or
+    filesystem paths (both relative or absolute).
+  * Small improvements in the AttributeQueryPlugIn
+    + add isEmpty, dimension and numHoles attributes
+    + add matches operator (using regex)
+    + add case insensitive option
+  * even more small improvements in the AttributeQueryPlugIn
+    namely icon, added endsWith condition, cleaned up case insensitivity
+  * FR #210 adds option "update source layer" for the buffer plugin
+  * add Proxy configuration (courtesy of Kosmo)
+  * added shortcuts
+    Alt+S - save selected datasets
+    Alt+Shift+S - save selected dataset as
+  
+  Work in progress
+  * Add 3 plugins for macro recording (needs adaptation in each plugin
+    to work effectively).
+  * Make the following plugins recordable within a macro
+    - BufferPlugIn
+    - DisposeSelectedPlugIn
+    - RemoveSelectedPlugIn
+    - ViewSchemaPlugIn
+    - DataSourceFileLayerLoader
+  
+  Improvements
+  * Add lineWidth option to ColorThemingPanel
+  * Add "display vertex" in ColorThemingPanel (vertexStyleEnabled attribute)
+  * Improve copy/paste style behaviour while copying from/to
+    ReferencedImageLayer
+  * AttributeTable sorting is now Locale sensitive for String attributes
+  * Add an option in SaveToPostGIS driver and WritableDataStoreDataSource
+    framework to write normalized lower case column names (see FR #206)
+  * Display date/times with a default 24h format, instead of 12h
+  * improve the way to guess AttributeType in JoinTableDataSourceCSV
+  * DeleteDuplicateGeometries now works also with empty geometries
+  * DeleteDuplicateGeometries save deleted features in another layer
+  * PostGISWriter : improve error handling
+  * Add an option to save to postgis driver to convert NaN Z values to
+    valid Z (requested by mail from Uwe on 2014-10-01/06)
+  * Patch RasterImageLayer according to Alberto de Luca patch sent by
+    mail on 2014-10-06
+  * replaced error dialog in PasteItemPlugin's EnableCheck with warning in
+    statusbar, the dialog disrupted the activation of the context menu
+    containing the plugin
+  * Improve LineStringSegmentStyles readability by removing symbols from
+    very small features and from segments very close to each others
+  * update Xerces as used by GML and WMS to latest stable 2.11
+  * iconified SaveDatasetAsPlugIn with dots
+  * iconified SaveLayersWithoutDataSourcePlugIn
+  * place attribute/info-windows initially on the left bottom
+  * start OJ maximized on the very first start, later restore latest state
+  * two new save as icons for single and multiple saving
+  * added missing save layer/dataset entries to Main->File
+  * oj_windows.bat: add java arch native path support for windows
+  * iconified DeleteAllFeaturesPlugIn, CombineSelectedLayersPlugIn
+  * moved CombineSelectedLayersPlugIn up within layerpopup menu
+  * reworked native lib support, read lib/native/readme.txt
+  * streamlined start script outputs on all 3 platforms
+  * beautified attribtab edit geom buttons, icons visualize (partly) empty 
+    geometries now with grayed out icons and pink background
+  * attribtab keeps selection order now
+  * add union/merge/geomconv to attribute table popup
+  * geometry converter converts empty geoms now
+  * disable wildcard extensions for image filelayerloaders
+  
+  Bug Fixes
+  * Fix a bug in PostGISDataStoreDataSource thanks to Francisco avalos
+    (tables in non public schema could not be read)
+  * Fix bug #371 on WritablePostgisDataStoreDataSource : null schema
+  * Fix bug #372 can't write a table with an old gid if "Create a primary
+    key column" is unchecked
+  * fix fail to startup on ubuntu 12.04 with openjdk java version "1.6.0_31"; 
+    OpenJDK Runtime Environment (IcedTea6 1.13.3) 
+    (6b31-1.13.3-1ubuntu1~0.12.04.2); OpenJDK 64-Bit Server VM (build 
+    23.25-b01, mixed mode); error was
+      java.lang.IllegalAccessError: tried to access class java.awt.
+      GraphicsDevice$WindowTranslucency from class com.vividsolutions.
+      jump.workbench.ui.GUIUtil
+  * limit 32bit jre xmx to 2GiB for compatibility reasons, osgeo's lubuntu 
+    32bit kernel with pae and openjdk 7 couldnt start OJ
+  * Fix #374 : PasteItemsPlugIn did not set target SRIDStyle to pasted items
+  * Fix bug #373 : image format chooser was not available in the
+    OneSRSWizardPanel
+  * Fix PasteItems : now set externalPK to null if it exists
+  * Fix a bug in DataStoreTransactionManager : LayerListener could be added
+    several times for the same Task in some circumstances
+  * Fix #374 : NormalizedColumnName is set to false if it is not defined
+    (ex. old jmp file)
+  * fix JML (GML/FME etc.) reader/writer did not properly read/write UTF-8
+  * Fix a problem in BeanShellAttributeCalculator with date attribute type
+  * Fix a regression introduced in buffer plugin (buffer selection -> NPE)
+  * Fix #380 FillPolygonTool did not always write into the correct project
+  * Fix #363 Shapefile charset chooser was not always updated in
+    SaveDatasetAsPlugIn
+  * Fix #360 SkyPrinter can now print a single layerable
+  * fix #339 Map Canvas & Attributes Window re-sizing 
+    to fit/match Application window
+  * fixpart #379 in PostGIS Driver (new) : delete was not working
+    for a table with special characters.
+  * JML/GML reader: fixed support for (empty) multigeometries and linearrings
+  * JML/GML write: fix writing empty point geoms
+  
+  PLUS edition
+  * graph-toolbox and csv-driver have been updated in PLUS distribution
+  * fix #376, #377 : kml driver is working again (plus edition)
+  * PLUS: update JumpDBQuery to 1.1.0 including new 3.8.6 SQLite JDBC driver
+  * PLUS: added Concave Hull plugin by Eric Grosso
+
+
+Version 1.7.1 release rev.4004 (released on 29. May 2014)
+
   Fix
   * fix nasty OSX bug preventing users to open files
 
