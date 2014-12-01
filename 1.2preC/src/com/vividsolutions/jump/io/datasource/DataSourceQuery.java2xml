@@ -1,5 +1,0 @@
-<?xml version="1.0"?>
-<root>
-  <element xml-name="query" java-name="query"/>
-  <element xml-name="data-source" java-name="dataSource"/>
-</root>

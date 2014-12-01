@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<root>
-  <attribute xml-name="name" java-name="name"/>
-  <attribute xml-name="visible" java-name="visible"/>
-  <element xml-name="layer-names">
-    <element xml-name="layer-name" java-name="imageFilename"/>
-  </element>  
-</root>

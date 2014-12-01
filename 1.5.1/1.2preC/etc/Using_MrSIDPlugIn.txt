@@ -1,7 +1,0 @@
-You will need to go to the LizardTech site  (http://www.lizardtech.com/download/dl_options.php?page=tools ) and download mrsiddecode.exe and mrsidinfo.exe. We are not allowed to redistribute these but they are free from LizardTech. They are needed to read MrSID files.
-
-Here are the MrSID files. This is a plugin. This will put an "Add MrSID layer"  menu item on the Layer menu. A standard file dialog will be displayed which will allow you to choose one or more MrSID files. If more than one file is chosen they will be combined to make one raster layer. The raster layer will be sized to fit the coordinate space of the view. NOTE: you must have a vector layer in order to establish the coordinate space of the view. We have experienced the problem that sometimes a section of the raster will drop out when loading more than one MrSID. This results in an empty section in the raster. Also if you are going to do multiple zooms in a row, it is a good idea to turn off your raster layer first since each zoom will try to import the raster for each zoom level at it occurs. This can generate a lot of MrSID decode requests in a row, and sometimes the system cannot keep up. However you can zoom with the raster layer on. Just let the raster load and redraw before you do the next one.
-
-Also when you save a task, the MrSID layer info will be saved as well. That is what the SidLayer.java2xml file is used for.
-
-The mrsiddecode and mrsidinfo exes need to be placed in the etc folder inside the JUMP folder.
