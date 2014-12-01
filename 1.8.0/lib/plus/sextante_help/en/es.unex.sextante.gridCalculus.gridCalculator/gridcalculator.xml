@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="The raster calculator allows the computation of algebraic expressions with raster layers, obtaining derived information in the form of new layers of geographical data.&#10;&#10;All the elements that may be selected such as layers, functions, operators and constants appear on the left hand side of the parameter window.&#10;&#10;By double clicking an element, its value will be added to the Formula text box. Expressions can also be  entered directly by typing the different formulas and values on the text box (see  below for details about general syntax).&#10;&#10;The most common operators  appear on the  right hand side of the window." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="FORMULA" text='The formula to use to compute resulting values.&#10;&#10;Notes on general syntax:&#10;&#10;To add a layer, just enter its name. In the case of multiband layers, you can use "Band" followed by band number (starting on 1). for instance, "mde Band 1".&#10;&#10;You can also use the "|" sign, for instance "image|2".&#10;&#10;Functions:&#10;&#10;* sin(x): returns the sine of x (x should be in radians).&#10;* cos(x): returns the  cosine of x (x should be in radians).&#10;* tan(x): returns the  tangent of x (x should be in radians).&#10;* asin(x): returns the archsine of  x (x should be in radians).&#10;* acos(x): returns the archcosine of  x (x should be in radians).&#10;* atan(x): returns the archcotangent de x (x should be in radians).&#10;* atan2(x/y): returns the archcotangent of  x/y (x/y should be in radians).&#10;* sinh(x): returns the  hyperbolic sine of x (x should be in radians).&#10;* cosh(x): returns the hyperbolic cosine of x (x should be in radians).&#10;* atanh(x): returns the inverse hyperbolic  tangent  of x (x should be in radians).&#10;* In(x): returns the logarithm of  x.&#10;* log(x): returns the base-10 logarithm.&#10;* exp(x): returns the  exponential function of  x.&#10;* abs(x): returns the absolute value of  x.&#10;* rand(): returns a random value  within the range 0-1.&#10;* mod(x/y): returns the module of  x/y.&#10;* sqrt(x): returns the positive square root of x.&#10;*if(expression, a, b): returns a if  expression is true, b otherwise.  &#10;&#10;Operators. The  precedence of  operators is as usual : + and - are evaluated after &#183; y /, and these after the power operator. Use parenthesis in case of doubt, to be sure of how the program will evaluate the introduced formula.&#10;* + (add)&#10;* - (subtract)&#10;* (multiplication)&#10;* / (division)&#10;*  % (modulus)&#10;* ! (NOT)&#10;*  ^ (power)&#10;* &amp;&amp; (AND)&#10;* || (OR)&#10;* &lt; (less than)&#10;* &gt; (more than)&#10;* &lt;= (less or equal to)&#10;* &gt;= (more or equal to)&#10;*  == (equal to)&#10;* != (different from)&#10;&#10;Constants. &#10;* Pi&#10;* Cell size[raster layer]&#10;* e&#10;&#10;If any of the layers used for the calculation has a no-data value at a given cell, the value of that cell in the resulting layer will be the no-data value, regardless of the other input values.' description="Formula" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="The resulting layers. Values in each cell are computed acoording to the formula entered in the corresponding field." description="Result" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

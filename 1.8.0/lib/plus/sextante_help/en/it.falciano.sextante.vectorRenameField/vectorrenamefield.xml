@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm renames an alphanumerical field of the attribute table associated with a vector layer." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Antonio Falciano" description="Algorithm created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Antonio Falciano" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="INPUT" text="The input vector layer of which we want to rename a field" description="Vector layer" type="3">
+		</element>
+		<element name="FIELD_TO_RENAME" text="The name of the field to rename" description="Old_field_name" type="3">
+		</element>
+		<element name="NEW_FIELD_NAME" text="The new name of the field. The length of the new name must not exceed 10 characters." description="New_field_name" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="The output vector layer with the renamed field" description="Result" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
