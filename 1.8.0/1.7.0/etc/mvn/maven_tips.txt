@@ -1,9 +1,0 @@
---- ADDING A JAR MANUALLY ---
-
-Try downloading the file manually from the project website.
-
-Then, install it using the command:
-mvn install:install-file -DgroupId=org.functionaljava -DartifactId=fj -Dversion=2.19 -Dpackaging=jar -Dfile=/path/to/file
-
-Alternatively, if you host your own repository you can deploy the file there:
-mvn deploy:deploy-file -DgroupId=org.functionaljava -DartifactId=fj -Dversion=2.19 -Dpackaging=jar -Dfile=/path/to/file -Durl=[url] -DrepositoryId=[id]
