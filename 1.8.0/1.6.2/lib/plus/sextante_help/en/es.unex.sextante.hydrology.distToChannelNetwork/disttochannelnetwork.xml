@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm calculates the hydrological distance from each cell to the closest channel" description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="DEM" text="Digital Elevation Model. This should be a sink-filled DEM, since flow routing algorithms are used to calculate hydologic distances." description="Elevation" type="3">
+		</element>
+		<element name="NETWORK" text="The channel network. Channel cells should have any valid value. Non-channel cells should have a no-data value" description="Channel network" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="DIST" text="The distance values are expressed in map units. &#10;&#10;These distances to channel network are not eucledian distances but hydrological, taking into consideration the movement of the flow itself through the MDE." description="Distance to channel network" type="2">
+			<image description="" file="distancia_a_red_de_drenaje.jpg">
+			</image>
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm computes some geometric properties of the polygons in a given vector layer" description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="LAYER" text="The inputs polygons layer" description="Polygons" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="The output layer is the same as the input one, but with the following fields added to its attributes table:&#10;* AREA&#10;* PERIMETER&#10;* THICK = 4 x PI x AREA / PERIMETER^2&#10;* APRel = PERIMETER^2 / AREA&#10;* APRel2 = 5 x PERIMETER / AREA&#10;* QDR = 16 x AREA / (PERIMETER^2)&#10;* FD = 2 x PERIMETER / log(AREA)&#10;* RC = (4 x PI x AREA / PERIMETER^2)^0.5&#10;* SHAPE = PERIMETER / (2 x (AREA x PI)^0.5) = THICK^2" description="Polygons" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

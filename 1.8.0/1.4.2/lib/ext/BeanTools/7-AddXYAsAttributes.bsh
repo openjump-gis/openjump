@@ -1,0 +1,44 @@
+/////////////////////////////////////////////////////
+// This script adds a new layer from a selected one//
+// The new layer has two new attributes            //
+// containing X and Y of a coordinate              //
+// Michael Michaud 2009-03-02                      //
+/////////////////////////////////////////////////////
+
+//Begin Import libraries
+import com.vividsolutions.jump.feature.*;
+import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
+import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
+//End Import Libraries
+
+//Begin Dialog 
+dialog = new MultiInputDialog(wc.workbench.frame, "", true);
+dialog.addLabel("<html>This script creates a  new layer, from a selected point layer.<br/>The new layer has two new attributes containing coordinates X and Y of the points</html>");
+//End Dialog
+
+//Begin Choices YES/NO
+dialog.setVisible(true);
+if (!dialog.wasOKPressed()) return;
+//End Choices YES/NO
+
+//Begin script
+ll = wc.layerNamePanel.selectedLayers;
+if (ll.length != 1) wc.workbench.frame.warnUser("Exactly one layer must be selected");
+else {
+fc = ll[0].featureCollectionWrapper;
+fs = fc.featureSchema.clone();
+fs.addAttribute("X", AttributeType.DOUBLE);
+fs.addAttribute("Y", AttributeType.DOUBLE);
+resultFC = new FeatureDataset(fs);
+for (f : fc.features) {
+   nf = new BasicFeature(fs);
+   for (int i = 0 ; i < fs.attributeCount-2 ; i++){
+       nf.setAttribute(i, f.getAttribute(i));
+   }
+   nf.setAttribute("X", f.geometry.coordinate.x);
+   nf.setAttribute("Y", f.geometry.coordinate.y);
+   resultFC.add(nf);
+}
+wc.layerManager.addLayer(StandardCategoryNames.RESULT, ll[0].name+"_XY", resultFC);
+}
+//End script

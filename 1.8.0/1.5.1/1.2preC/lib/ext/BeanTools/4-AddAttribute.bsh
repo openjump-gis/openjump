@@ -1,0 +1,44 @@
+///////////////////////////////////////////////////////////////
+//
+// ADD NEW ATTRIBUTES TO THE FIRST SELECTED LAYER AND
+// FILL THEM WITH NEW INFORMATION
+//
+// THE EXAMPLE ADD ATTRIBUTES CONTAINING THE GEOMETRY STATUS
+//
+// Michael Michaud   2007-03-15
+///////////////////////////////////////////////////////////////
+
+import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
+
+// layer is the first of the selected layers
+layer = wc.layerNamePanel.selectedLayers[0];
+fc = layer.featureCollectionWrapper;
+
+// error message if the selected layer is not editable
+if (!wc.getLayerNamePanel().getSelectedLayers()[0].isEditable()) {
+    dialog = new MultiInputDialog(wc.workbench.frame, "", true);
+    dialog.addLabel(wc.getLayerNamePanel().getSelectedLayers()[0].getName() + " is not editable");
+    dialog.setVisible(true);
+}
+else {
+    // add an attribute to the schema
+    fs = fc.featureSchema;
+    fs.addAttribute("ValidGeom", AttributeType.STRING);
+    fs.addAttribute("SimpleGeom", AttributeType.STRING);
+    newDataset = new FeatureDataset(fs);
+    
+    // iterate over features
+    for (f : fc.features) {
+        nf = new BasicFeature(fs);
+        // -2 because 2 attributes have been added
+        for (i = 0 ; i < (fs.attributeCount-2) ; i++) {
+            nf.setAttribute(i, f.getAttribute(i));
+        }
+        // Here is the code to fill the new attribute : change it to fit your needs
+        nf.setAttribute("ValidGeom", ""+f.geometry.isValid());
+        nf.setAttribute("SimpleGeom", ""+f.geometry.isSimple());
+        newDataset.add(nf);
+    }
+    
+    layer.setFeatureCollection(newDataset);
+}

@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm converts polar coordinates to rectangular ones. This should be used when combining different anisotropic cost layers, since they cannot be added directly to get a total cost layer. They should be converted to rectangular coordinates, then X and Y components should be added separately and then the resulting X and Y total costs should be converted back to polar coordinates using the corresponding algorithm." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="ANGLE" text="Cells in this layer represent the angular component of the vector in the cell. It should be expressed in radians." description="Angle" type="3">
+		</element>
+		<element name="DISTANCE" text="Cells in this layer contain the modulus(length) of the vector in each cell." description="Distance" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="The following outputs were generated using slope and aspect as inputs" description="Description" type="2">
+		</element>
+		<element name="Y" text="Cells in this layer contain the Y coordinate of the vector in that cell." description="Y" type="2">
+		</element>
+		<element name="X" text="Cells in this layer contain the Y coordinate of the vector in that cell." description="X" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text='This algorithm creates a new vector layer with random geometries.&#10;&#10;The extent of the area to cover with the graticule should be selected in the "Output region" tab.' description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Algorithm created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="XMIN" text="Min X coordinate of the valid region (inside of which feature will be added)" description="X Min" type="3">
+		</element>
+		<element name="XMAX" text="Max X coordinate of the valid region (inside of which feature will be added)" description="X Max" type="3">
+		</element>
+		<element name="YMIN" text="Min Y coordinate of the valid region (inside of which feature will be added)" description="Y Min" type="3">
+		</element>
+		<element name="YMAX" text="Max Y coordinate of the valid region (inside of which feature will be added)" description="Y Max" type="3">
+		</element>
+		<element name="COUNT" text="The number of features to add to the layer." description="Number of features to create" type="3">
+		</element>
+		<element name="TYPE" text="The type of geometries to add:&#10;*Points&#10;*Lines&#10;*Polygons" description="Type" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text='The resulting layer with random geometries. The attributes table just contains an "ID" field for each feature.' description="Result" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm calculates USLE C factor from a NDVI image, using the following formula:&#10;&#10;C = e^(-alpha &#183; NDVI / (beta- NDVI))&#10;&#10;where alpha and beta are factor that determine the shape of the C-NDVI curve&#10;&#10;To calculate the NDVI image from red and infrared images, use the NDVI algorithm implemented in SEXTANTE." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="* http://eusoils.jrc.ec.europa.eu/ESDB_Archive/pesera/pesera_cd/pdf/er_it_new.pdf" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Algorithm created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="NDVI" text="An NDVI image" description="NDVI" type="3">
+		</element>
+		<element name="ALPHA" text="The alpha value in the above formula." description="Alpha" type="3">
+		</element>
+		<element name="BETA" text="The beta value in the above formula." description="Beta" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="CFACTOR" text="The resulting layer with the USLE C Factor" description="C" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

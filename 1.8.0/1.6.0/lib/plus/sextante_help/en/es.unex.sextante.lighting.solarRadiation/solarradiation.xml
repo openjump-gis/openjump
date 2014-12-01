@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="The algorithm calculates incoming solar radiation for a given period over a given area." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="DEM" text="Digital Elevation Model. " description="Elevation" type="3">
+		</element>
+		<element name="SOLARCONST" text="The value of the solar constant (i.e the amount of incoming solar electromagnetic radiation per unit area, measured on the outer surface of Earth's atmosphere in a plane perpendicular to the rays)" description="Solar constant [W/m&#178;]" type="3">
+		</element>
+		<element name="METHOD" text="the method to use.&#10;* Global atmospheric transmittance&#10;* Calculate transmittance from components" description="Method" type="3">
+		</element>
+		<element name="TRANSMITTANCE" text="Global transmittance" description="Global transmittance" type="3">
+		</element>
+		<element name="PRESSURE" text="" description="Atmospheric pressure [mb]" type="3">
+		</element>
+		<element name="WATER" text="" description="Atmospheric water content [cm]" type="3">
+		</element>
+		<element name="DUST" text="" description="Dust [ppm]" type="3">
+		</element>
+		<element name="LATITUDE" text="The latitude, needed to calculare Sun's position" description="Latitude [&#176;]" type="3">
+		</element>
+		<element name="HOURSTEP" text="Each day is divided in periods based on a given interval. The shorter the interval, the longer it will take to execute the algorithm and the more precise the result will be." description="Interval for daily insolation [h]" type="3">
+		</element>
+		<element name="DAILYSTEP" text="The total period of the calculation is divided in periods based on a given interval. The shorter the interval the longer it will take to execute the algorithm and the more precise the result will be." description="Inteval for global insolation [days]" type="3">
+		</element>
+		<element name="INITMONTH" text="" description="Starting month" type="3">
+		</element>
+		<element name="INITDAY" text="" description="Starting day" type="3">
+		</element>
+		<element name="ENDMONTH" text="" description="Ending month" type="3">
+		</element>
+		<element name="ENDDAY" text="" description="Ending day" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="TIME" text="Total time during which a given cell receives solar radiation along the selected time span." description="Insolation time" type="2">
+		</element>
+		<element name="RADIATION" text="Total energy received in the cell, in Kw/hour&#183;m2" description="Solar radiation" type="2">
+			<image description="" file="radiacion_solar.jpg">
+			</image>
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

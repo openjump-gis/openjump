@@ -1,0 +1,15 @@
+//layer=raster
+//slope=output raster
+slopemean(layer, slope){
+	NUMBER_OF_METHODS = 5;
+	multiple = "";
+	for(i=0;i<NUMBER_OF_METHODS;i++){
+		runalg("slope", layer, "#", "#", "#");
+		rename("Slope", "Slope" + i);
+		multiple = multiple + "Slope" + i;
+		if (i < NUMBER_OF_METHODS - 1){
+			multiple=multiple + ",";
+		}
+	}
+	runalg("multigridmeanvalue", multiple, "#", slope);	
+}

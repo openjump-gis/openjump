@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm creates a new points layer with a given number of points, adjusting them to the polygons in an additional layer.&#10;&#10;Points are added inside the area covered by each polygon, and distributed randomly or in a regular grid.&#10;" description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="POLYGONS" text="The input polygons layer" description="Polygons" type="3">
+		</element>
+		<element name="NPOINTS" text="The number of points to add inside each polygon" description="Number of points" type="3">
+		</element>
+		<element name="METHOD" text="Select how to distribute the points &#10;* In a regular grid&#10;* Randomly" description="Method" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="New layer with points" description="Points" type="2">
+			<image description="Example regular grid" file="ajustar_n_puntos_en_poligono_mallaregular.jpg">
+			</image>
+			<image description="Example random" file="ajustar_n_puntos_en_poligono_aleatoria.jpg">
+			</image>
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<root>
+  <attribute xml-name="enabled" java-name="enabled"/>
+  <attribute xml-name="size" java-name="size"/>
+  <attribute xml-name="filling" java-name="filling" />
+</root>

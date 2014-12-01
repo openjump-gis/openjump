@@ -1,0 +1,25 @@
+///////////////////////////////////////////////////////////////
+// HELLO WORLD SCRIPT
+// Michael Michaud 2007-03-15
+///////////////////////////////////////////////////////////////
+
+import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
+
+htmlFrame = wc.workbench.frame.outputFrame;
+htmlFrame.createNewDocument();
+htmlFrame.setTitle("BeanTools Help");
+
+htmlFrame.addHeader(2, "What is BeanTools PlugIn for ?");
+htmlFrame.addText("With BeanToolsPlugIn, you can write a script and immediately execute it as if it was a new jump plugin.");
+htmlFrame.addText("See script samples in the ext/BeanTools directory of your installation.");
+
+htmlFrame.addHeader(2, "BeanTools : How To");
+htmlFrame.addText("1 - Write a script with any text editor (I recommend jEdit).");
+htmlFrame.addText("you access all jump resources through the WorkbenchContext (wc) variable.");
+htmlFrame.addText("please, refer to OpenJUMP api and JAVA api to know which methods to use.");
+htmlFrame.addText("2 - Put your .bsh file in the ext/BeanTools directory.");
+htmlFrame.addText("3 - Execute the script from the Customize/BeanTools menu.");
+htmlFrame.addText("4 - Use RefreshScriptsMenu if you add a new script and don't want to restart OpenJUMP.");
+
+wc.workbench.frame.flash(htmlFrame);
+htmlFrame.surface();

@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm reduces the effects of sensor differences when comparing images from two dates.&#10;&#10;Calibration can be done aplying two different methods: Adjusting the image so it has a given average and standard deviation values, or applying some given gain and offset values.&#10;&#10;In the first case, it uses the formula:&#10;&#10;NDC = (((ND - average) / standard_deviation) x typical_deviation) + image_average  &#10;&#10;In the second case, the following formula is used:&#10;&#10;NDC = gain x ND + offset&#10;" description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="INPUT" text="Input image to calibrate" description="Image to calibrate" type="3">
+		</element>
+		<element name="METHOD" text="The following methods are available:&#10;* Average and Standard deviation.&#10;* Gain and offset" description="Method" type="3">
+		</element>
+		<element name="STDDEV" text="Target image standard deviation" description="Resulting standard deviation" type="3">
+		</element>
+		<element name="MEAN" text="Target image average" description="Resulting average" type="3">
+		</element>
+		<element name="GAIN" text="Gain to apply." description="Gain" type="3">
+		</element>
+		<element name="OFFSET" text="Offset to apply" description="Offset" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="CALIBRATED" text="The calibrated image" description="Calibrated image" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

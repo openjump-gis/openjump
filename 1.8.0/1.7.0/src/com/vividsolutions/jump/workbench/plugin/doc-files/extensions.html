@@ -1,0 +1,131 @@
+<html>
+<body>
+<h2>Creating JUMP Extensions</h2>
+
+<p>
+An extension is a collection of classes and supporting resources that
+provides additional functionality to JUMP.  Extensions are packaged as
+JAR files.  From the user's perspective, extending JUMP is as easy as
+copying an extension JAR file into the JUMP application's workbench
+plugin directory (see Section 1.4, Configuring JUMP.) 
+</p>
+
+<p>
+Typically, an Extension will add plugins (menu items) and cursor tools
+(toolbar buttons) to the Workbench. Plugins and cursor tools are
+discussed more fully in later sections.  The JUMP Workbench will
+search the JAR file for subclasses of Extension. (Note: They must also
+be named '...Extension'). It will then call the #configure method on
+each Extension class it finds.
+</p>
+
+
+<h3>2.1 EXAMPLE: BUILDING A SIMPLE JUMP EXTENSION</h3>
+
+<p>
+In this section we will see how to write a simple JUMP PlugIn, how to
+package it as an Extension and how to install it to make it available
+to JUMP.  Let's walk through the creation of an extension that writes
+'Hello, World!' to the Workbench Output Window. First, create the
+plugin:
+</p>
+
+<table border='1' 
+       cellspacing='0' cellpadding='4' bgcolor='#AAAAAA'
+       width='80%'
+       align='center'
+       >
+<tr>
+<td>
+<pre>
+package example;
+
+import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
+import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+
+public class HelloWorldPlugIn extends AbstractPlugIn {
+
+    public void initialize(PlugInContext context) throws Exception {
+        context.getFeatureInstaller().addMainMenuItem(this,
+            new String[] { "Tools", "Test" }, getName(), false, null, null);
+    }
+    public boolean execute(PlugInContext context) throws Exception {
+        context.getWorkbenchFrame().getOutputFrame().createNewDocument();
+        context.getWorkbenchFrame().getOutputFrame().addText("Hello, World!");
+        context.getWorkbenchFrame().getOutputFrame().surface();
+        return true;
+    }
+}
+
+</pre>
+<b>Listing 1  Hello World plugin</b>
+</td>
+</tr>
+</table>
+
+
+<p>
+Next, create an Extension that loads it:
+</p>
+
+
+<table border='1' 
+       cellspacing='0' cellpadding='4' bgcolor='#AAAAAA'
+       width='80%'
+       align='center'
+       >
+<tr>
+<td>
+<pre>
+package example;
+
+import com.vividsolutions.jump.workbench.plugin.Extension;
+import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+
+public class MyExtension extends Extension {
+
+    public void configure(PlugInContext context) throws Exception {
+        new HelloWorldPlugIn().initialize(context);
+    }
+}
+
+</pre>
+<b>Listing 2 Hello World Extension</b>
+</td>
+</tr>
+</table>
+
+
+<p>
+Now, create a JAR file containing these two classes and drop it into
+the Workbench's plugin directory (see Section 1.4, Configuring JUMP).
+When you next start JUMP, you will see a new menu item: Tools > Test >
+Hello World. Selecting it will open the Output Window, which will
+display the "Hello, World!" message.  You might wonder where the
+Workbench got the menu name "Hello World" - it's not anywhere in the
+HelloWorldPlugIn code.  Generating a friendly name from the class name
+is one of the useful functions provided by AbstractPlugIn (and is an
+incentive to create meaningful plugin class names!)
+</p>
+
+<p>
+Tip: When you are developing a plugin, it is tedious to generate and
+install a JAR file each time you test a change in the plugin
+classes. Instead, you can specify the name of your plugin classes in a
+workbench properties file (see Section 1.4, Configuring JUMP on page
+8)
+</p>
+
+<h3>2.2 MAIN CLASSES</h3>
+
+Class	Package
+
+AbstractPlugIn, 
+PlugInContext, 
+ThreadedPlugIn.
+Extension	   com.vividsolutions.jump.workbench.plugin 
+
+
+
+</body>
+</html>

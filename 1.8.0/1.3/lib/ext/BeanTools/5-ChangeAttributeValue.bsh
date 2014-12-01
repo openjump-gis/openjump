@@ -1,0 +1,56 @@
+///////////////////////////////////////////////////////////////
+// METHODS TO CHANGE ATTRIBUTE VALUES
+// THE SCRIPT HANDLES ERRORS WITH WARNING MESSAGES
+// Michael Michaud   2007-03-15
+///////////////////////////////////////////////////////////////
+
+// WARNING : THE FOLLOWING METHOD MUST BE CHANGED TO FIT YOUR NEEDS
+// It replaces each string by a capitalized version of the same string
+changeValue(Object value) {
+    if (value != null && value instanceof String) return value.toUpperCase();
+    else return value;
+}
+
+// Change the values for one attribute in one layer
+changeAttribute(String layer, String attribute) {
+    lay = wc.layerManager.getLayer(layer);
+    if (lay==null) {
+        wc.workbench.frame.warnUser(layer + "does not exist");
+        return;
+    }
+    schema = lay.featureCollectionWrapper.featureSchema;
+    if (!schema.hasAttribute(attribute)) {
+        wc.workbench.frame.warnUser(attribute + "does not exist for " + layer);
+        return;
+    }
+    features = lay.featureCollectionWrapper.features;
+    for (f : features) {
+        f.setAttribute(attribute, changeValue(f.getAttribute(attribute)));
+    }
+}
+
+// Change the values for every attribute of a layer
+changeAttribute(String layer) {
+    lay = wc.layerManager.getLayer(layer);
+    if (lay==null) {
+        wc.workbench.frame.warnUser(layer + "does not exist");
+        return;
+    }
+    schema = lay.featureCollectionWrapper.featureSchema;
+    for (int i = 0 ; i < schema.attributeCount ; i++) {
+        // modify and uncomment the following line
+        // to skip attributes having the wrong AttributeType
+        // if (schema.getAttributeType(i) != AttributeType.STRING) continue;
+        changeAttribute(layer, schema.getAttributeName(i));
+    }
+}
+
+// Change attribute values for all the selected layers
+changeAll() {
+    layers = wc.layerNamePanel.selectedLayers;
+    for (layer : layers) changeAttribute(layer.name);
+}
+
+// This statement do the work on all selected layers
+// You can replace it by a call to a more specific 'changeAttribute' method
+changeAll();

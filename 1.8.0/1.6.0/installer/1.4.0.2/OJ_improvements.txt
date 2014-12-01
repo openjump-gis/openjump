@@ -1,0 +1,29 @@
+1) for past changes see here: 	http://jump-pilot.svn.sourceforge.net/viewvc/jump-pilot/core/trunk/ChangeLog?view=markup
+ 
+2) Known issues and bugs can be found here: 
+	http://sourceforge.net/tracker/?group_id=118054&atid=679906 
+
+
+3) Improvements and bug fixes between OpenJUMP 1.4.0 release and 1.4.0.2:
+=============================================================================
+
+-----------------------------------
+Version 1.4.0.2 (released on 07.November.2010)
+
+  Bug fix release:
+
+  - postgresql driver replaced by a newer one (for pgsql 9.0 compatibility)
+  - openjump bundled with Sextante and postgis plugin fixed :
+    (1) quick fix in linux/macos script (thanks to edgar soldin)
+    (2) postgis plugin made java5 compatible thanks to Uwe Dallüge
+  - see other small fixes in the ChangeLog file at
+    http://jump-pilot.svn.sourceforge.net/viewvc/jump-pilot/core/trunk/ChangeLog?sortby=date&view=log
+
+-----------------------------------
+Version 1.4.0.1 (released on 27.October.2010)
+
+  Bug fix release:
+  
+  - fixed a raster referencing problem (returning the wrong raster data for the
+    currently selected raster layer)
+

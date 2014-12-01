@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm calculates the angle between the vector pointing north and the projection on the horizontal plane of the normal vector to the surface at the given point. Angles are measured clockwise" description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="DEM" text="A Digital Elevation Model." description="Elevation" type="3">
+		</element>
+		<element name="METHOD" text="The method to use may be selected from the following ones:&#10;&#10;* Maximum slope (Travis et al. 1975).&#10;* Maximum Triangle Slopes (Tarboton 1997).&#10;* Plane fitting (Costa-Cabral &amp; Burges 1996).&#10;* Degree Polynom (Bauer, Rohdenburg, Bork 1985).&#10;* Degree Polynom (Heerdegen &amp; Beran 1982).&#10;* Degree Polynom (Zevenbergen &amp; Thorne 1987).&#10;* Degree Polynom (Haralick 1983)." description="Method" type="3">
+		</element>
+		<element name="UNITS" text="Aspect might be expressed in radians or degrees" description="Units: " type="3">
+				</element>
+
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="ASPECT" text="The output raster layer with aspect values expressed in the selected units" description="Aspect" type="2">
+			<image description="" file="orientacion.jpg">
+			</image>
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

@@ -1,0 +1,17 @@
+How to enable the loading of MRSID files in OpenJUMP 1.3:
+
+# (1) You will need to go to the LizardTech site  (http://www.lizardtech.com/download/dl_options.php?page=tools ) and download mrsidgeodecode.exe and mrsidgeoinfo.exe. We are not allowed to redistribute these but they are free from LizardTech. They are needed to read MrSID files.
+# (2) on Windows platforms create a ETC folder in the ‘program’ folder (e.g. ‘C:\Program Files\etc\’) and put the 2 files in it.
+# (3) Now, rename the files: ‘mrsidgeodecode_win.exe’ to ‘mrsiddecode.exe’ and ‘mrsidgeoinfo_Win.exe’ to ‘mrsidinfo.exe’.
+# (4) Place the files: mrsidgeodecode.exe and mrsidgeoinfo.exe in the /etc/ folder of OpenJUMP. 
+# (5) Create also a folder called “TMP” in the OpenJUMP “ETC” folder and give it read/write permissions.
+# (6) Check now if the option to load “Mr SID” files is offered in the "Open..." file load dialog.
+
+When you save a task, the MrSID layer info will be saved as well. That is what the SidLayer.java2xml file is used for.
+
+Note, to enable the display of *.ecw files on Windows you need to place the file in the /lib/ directory:
+NCSUtil.dll
+NCSEcw.dll
+NCScnet.dll
+The files should be availble from the ER-Mapper website http://www.ermapper.com/ProductView.aspx?t=28
+This, unfortunately works only for Windows.

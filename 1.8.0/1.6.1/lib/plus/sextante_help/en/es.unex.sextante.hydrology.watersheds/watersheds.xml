@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm divides the area covered by a DEM into watersheds, according to the structure of a given channel network" description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="DEM" text="Digital Elevation Model." description="Elevation" type="3">
+		</element>
+		<element name="NETWORK" text="The channel network codified based on the following criteria:&#10;* No data value on the cells that are not of the stream.&#10;* Any positive value in cells belonging to the channel network&#10;* Any negative value in those cells where an outlet point should be added. Apart from these outlets, all the junctions in the network are used as outlet points as well" description="Channel network" type="3">
+		</element>
+		<element name="MINSIZE" text="The minimum size accepted for a subbasin (in cells). Subbasin with an area less that this value will be added to a neighbour subbasin" description="Minimum size (cells)" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="WATERSHEDS" text="A raster layer with classes representing subbasins" description="Watersheds" type="2">
+			<image description="" file="cuencas.jpg">
+			</image>
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

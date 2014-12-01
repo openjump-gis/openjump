@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm converts lines to polygons, considering only the edges which describe closed areas and without returning overlapping polygons." description="Description" type="0">
+			<image description="Example of input line layer" file="input_lines.png">
+			</image>
+			<image description="Example of output polygon layer" file="output_polygons.png">
+			</image>
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Antonio Falciano" description="Algorithm created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Antonio Falciano" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="LAYER" text="The input line layer which we want to polygonize" description="Polylines" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="The output polygon layer" description="Polygons" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

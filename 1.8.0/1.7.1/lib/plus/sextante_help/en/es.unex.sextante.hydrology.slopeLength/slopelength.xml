@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm calculates the length of the longest flow path uphill of each cell." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="DEM" text="Digital Elevation Model. It should be a sink-filled DEM, since flow routing algorithms are used to trace the longest flow path." description="Elevation" type="3">
+		</element>
+		<element name="THRESHOLD" text='If the field "Use threshold" is selected, the resulting value is not the length of the longest flow path uphill, but instead the length the longest uphill path without slope changes above this threshold.&#10;&#10;Slope changes are calculated as the ratio of the slope in a cell and the slope in the one located inmediatly uphill.' description="Slope change threshold" type="3">
+		</element>
+		<element name="USETHRESHOLD" text="Select this to use a threshold to interrupt the measurement of flow paths when a large change in slope occurs." description="Use threshold" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="SLOPELENGTH" text="The values in this layer represent the length of the longest flow path uphill of each cell. " description="Slope length" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

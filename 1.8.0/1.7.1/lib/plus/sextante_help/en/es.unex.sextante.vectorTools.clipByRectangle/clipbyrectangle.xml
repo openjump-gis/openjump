@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithms clips a vector layer using a rectangular area defined by its max and min coordinates. Instead of using a second layer to define the clipping region, this is defined numerically by the user. Useful in scripting and batch mode." description="Description" type="0">
+			<image description="Figure: Clip by rectangle example" file="clipByRectangle.jpg">
+			</image>
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Juan Ignacio Varela (Nacho Uve)" description="Algorithm created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya and Nacho Varela" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="Based on Clip Algorithm" description="User_notes" type="0">
+		</element>
+		<element name="LAYER" text="The vector layer to clip" description="Layer to clip" type="3">
+		</element>
+		<element name="XMIN" text="Minimum X coordinate of the clipping region" description="X Min" type="3">
+		</element>
+		<element name="XMAX" text="Maximum X coordinate of the clipping region" description="X Max" type="3">
+		</element>
+		<element name="YMIN" text="Minimum Y coordinate of the clipping region" description="Y Min" type="3">
+		</element>
+		<element name="YMAX" text="Maximum Y coordinate of the clipping region" description="Y Max" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="The clipped layer, which will contain geometries only within the defined boundary rectangle" description="Clipped_Layer" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

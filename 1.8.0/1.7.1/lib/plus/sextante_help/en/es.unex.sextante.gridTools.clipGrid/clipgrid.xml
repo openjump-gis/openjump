@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm crops a given grid using a polygon vector layer. The resulting raster layer has the minimum extent needed to cover all the polygons in the input layer and valid values only on those cells that are inside any of the polygons of the input vector layer. All the remaining cells have the no-data value." description="Description" type="0">
+			<image description="Parameters (layer to crop and polygons)" file="cortar_grids_con_capa_de_poligonos1.jpg">
+			</image>
+			<image description="Croppped layer" file="cortar_grids_con_capa_de_poligonos2.jpg">
+			</image>
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="INPUT" text="The layer to be cropped" description="Layer to crop" type="3">
+		</element>
+		<element name="POLYGONS" text="A polygon layer which delimitates the area to crop. " description="Polygons" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="The resulting layer containing valid values only on those cells that fall inside the polygons of the vector input layer." description="Cropped layer" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

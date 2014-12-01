@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm calculates the viewshed associated with a given point" description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="DEM" text="Digital Elevation Model." description="Elevation" type="3">
+		</element>
+		<element name="METHOD" text="the method to use may be selected from the following:&#10;* Visibility: simply assign a value of 1 to the visible cells and 0 to those that are not visible.&#10;* Lighting: the value in each visible indicates the angle of vision.&#10;* Distance: the value in each visible cell indicates the distance between the emitter/receiver and the cell&#10;* Size: the value in each visible cell indicates the apparent size of the object in the cell, as seen from the emitter/receiver. This is a function of distance and angle." description="Method" type="3">
+		</element>
+		<element name="POINT" text="Coordinates of the center point (the one that defines the viewshed)" description="Coordinates of emitter/receiver" type="3">
+		</element>
+		<element name="HEIGHT" text="Height above ground of the emitter/receiver" description="Height of emitter/receiver" type="3">
+		</element>
+		<element name="HEIGHTOBS" text="Height above ground to add to each point except the central emitter/recever point" description="Height of mobile receiver/emitter" type="3">
+		</element>
+		<element name="RADIUS" text="Maximum distance from emitter/receiver to be analyzed. If it is equal to zero, no maximum distance is considered." description="Radius" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="The visibility layer. The meaning of values in this layer depends on the selected method." description="Visibility" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm performs a qualitative analysis of the surface, applying a local analysis." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="* R. Dikau. The application of a digital relief model to landform analysis in geomorphology. In J. Raper, editor, Three Dimensional Applications in Geographical Information Systems, pages 51-77. Taylor &amp; Francis, London, 1989. &#10;* E.E. Dikau, R. Brabb and R.M Mark. Landform classiffication of New Mexico by computer. U.S. Dept Interior, U.S. Geological Survey., 1991." description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="DEM" text="Digital Elevation Model." description="Elevation" type="3">
+		</element>
+		<element name="METHOD" text="The method to use may be selected from the following:&#10;* Mark highest neighbor &#10;* Opposite neighbors&#10;* Flow Direction &#10;* Peucker &amp; Douglas  " description="Method" type="3">
+		</element>
+		<element name="THRESHOLD" text="" description="Threshold (Peucker &amp; Douglas)" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="In the case of Peucker &amp; Douglas the values in each cell may be assigned from the following categories:&#10;*  9 = Peak (summit)&#10;* -9 = Pit&#10;*  0 = Plane&#10;*  1 = Pass&#10;*  2 = Convex break line&#10;* -2 = Concave break line&#10;*  7 = Ridge (crest)&#10;* -7 = Channel" description="Result" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

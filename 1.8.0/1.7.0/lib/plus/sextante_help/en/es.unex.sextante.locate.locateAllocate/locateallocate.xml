@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="Location-allocation is the process of finding the best locations for one or more facilities that will service a given set of points and then assigning those points to the facilities, taking into account factors such as the number of facilities available, their cost, and the maximum impedance from a facility to a point.&#10;&#10;This algorithm, given a set of demand points and candidate points (points where the facility can be placed), along with preexistent resources, will select the best locations and create a resulting line layer that links each demand point with its associated facility point (the point among the selected candidates that gives service to the demand one)&#10;" description="Description" type="0">
+			<image description="Demand and candidate points" file="locateallocate_input.jpg">
+			</image>
+			<image description="Resulting connection layer" file="locateallocate_output.jpg">
+			</image>
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="" description="Algorithm created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="DEMAND" text="The input layer with demand point" description="Demand points" type="3">
+		</element>
+		<element name="FIELDDEMAND" text="A weighting field for demand points (in the case of cities, for instance, a population field might be used)" description="Field" type="3">
+		</element>
+		<element name="OFFER" text="A points layer with the location of already existing facilities" description="Preexistent resources" type="3">
+		</element>
+		<element name="CANDIDATES" text="A point layer with the location of candidate points" description="Candidate points" type="3">
+		</element>
+		<element name="DIST" text="The type of distance to use" description="Type of distance" type="3">
+		</element>
+		<element name="METHOD" text="" description="Method" type="3">
+		</element>
+		<element name="NEWLOCATIONS" text="the number of points to select from the candidates layer" description="Number of resources to allocate" type="3">
+		</element>
+		<element name="MAXDIST" text="A maximum distance for the methods that require it." description="Maximum distance" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="SPIDER" text="A lines layer connecting demand points with their closest selected candidate point." description="Conexions" type="2">
+		</element>
+		<element name="RESULT" text="Statistics about the result" description="Statistics" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="The Normalized Difference Vegitation Index or NDVI (Rouse et al., 1974) is an index used to measure the normalized difference between the reflection of red and near- infrared providing a mesurement on the quantity, development  and robustness of the vegetative cover ina given area. This index is the result of the following formula:" description="Description" type="0">
+			<image description="" file="ndvi_formula.jpg">
+			</image>
+		</element>
+		<element name="ADDITIONAL_INFO" text="* http://en.wikipedia.org/wiki/NDVI &#10;* http://earthobservatory.nasa.gov/Library/MeasuringVegetation/&#10;* http://www-gem.jrc.it/stars/vis.htm&#10;* Rock, B.; Williams, D. &amp; Vogelmann, J. Field and airborne spectral characterization of suspected acid deposition damage in red spruce (Picea rubens) from Vermont Proc., Symp. on Machine Processing of Remotely Sensed Data, Purdue Univ., West Lafayette, Indiana., 1985 &#10;* Lee, N. &amp; Nakane, K. Forest vegetation classification and biomass estimation based on Landsat TM data in a mountainous region of West Japan Forestry Sciences, 1997, 50, 159-171" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="LAYERRED" text="Layer with values corresponding to the spectral reflectance in the red region" description="Red layer" type="3">
+		</element>
+		<element name="BANDRED" text="Band with values corresponding to the spectral reflectance in the red region" description="Red band" type="3">
+		</element>
+		<element name="LAYERNIR" text="Layer with values corresponding to the spectral reflectance in the near infrared region" description="Near infrarred layer" type="3">
+		</element>
+		<element name="BANDNIR" text="Band with values corresponding to the spectral reflectance in the near infrared region" description="Near infrared band" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="NDVI" description="Result" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

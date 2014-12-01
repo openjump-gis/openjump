@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm completes the information of a raster layer that has cells without data. Those cells are completed using values from the nearest neighbour cell with valid data.&#10;&#10;This algorithm should be used when filling a layer that contains a non-continuous variable, and specially those layers with cualitative data sucha as a layer with a land-use classification. In that case, the usual void filling algorithm should not be used, since it might assign values to a cell that do not exist on the original layer, and those values might be meaningless. Using a nearest neighbour method guarantees that all values assigned to no-data cells are meaningful." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="LAYER" text="The layer with no-data cells." description="Layer" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="Output raster layer in which there are no cells without data." description="Filled layer" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

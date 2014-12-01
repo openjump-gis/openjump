@@ -1,0 +1,801 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.openjump</groupId>
+  <artifactId>OpenJUMP</artifactId>
+  <version>snapshot</version>
+  <name>OpenJUMP svn snapshot</name>
+  <scm>
+    <connection>scm:svn:https://jump-pilot.svn.sourceforge.net/svnroot/jump-pilot/core/trunk</connection>
+    <developerConnection>scm:svn:https://jump-pilot.svn.sourceforge.net/svnroot/jump-pilot/core/trunk</developerConnection>
+    <tag>HEAD</tag>
+    <url>http://jump-pilot.svn.sourceforge.net/viewvc/jump-pilot/core/trunk/</url>
+  </scm>
+  <properties>
+    <version.number>0.0.0</version.number>
+    <version.release>snapshot</version.release>
+    <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+    <project.binaries>**/*.command,**/*.sh,**/*.bat,**/*.exe,**/MacOS/OpenJUMP</project.binaries>
+  </properties>
+  <profiles>
+    <profile>
+      <id>windows</id>
+      <activation>
+        <os>
+          <family>windows</family>
+        </os>
+      </activation>
+      <properties>
+        <launch4j.dir>launcher/launch4j-3.0.2-win32</launch4j.dir>
+      </properties>
+    </profile>
+    <profile>
+      <id>unix</id>
+      <activation>
+        <os>
+          <family>unix</family>
+        </os>
+      </activation>
+      <properties>
+        <launch4j.dir>launcher/launch4j-3.0.2-linux</launch4j.dir>
+      </properties>
+    </profile>
+    <profile>
+      <!-- DEPRECATED: replaced by profile snapshot below -->
+      <id>core</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <version.number>${version.datestamp}</version.number>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>make-core</id>
+                <phase>package</phase>
+                <configuration>
+                  <appendAssemblyId>false</appendAssemblyId>
+                  <finalName>${artifactId}-${version.number}-r${version.revision}-CORE</finalName>
+                  <descriptors>
+                    <descriptor>etc/mvn/bin_zip-core_snapshot.xml</descriptor>
+                  </descriptors>
+                </configuration>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <!-- DEPRECATED: replaced by profile snapshot below -->
+      <id>plus</id>
+      <properties>
+        <version.number>${version.datestamp}</version.number>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <!--version>2.1</version -->
+            <executions>
+              <execution>
+                <id>make-plus</id>
+                <phase>package</phase>
+                <configuration>
+                  <appendAssemblyId>false</appendAssemblyId>
+                  <finalName>${artifactId}-${version.number}-r${version.revision}-PLUS</finalName>
+                  <descriptors>
+                    <descriptor>etc/mvn/bin_zip-plus_snapshot.xml</descriptor>
+                  </descriptors>
+                </configuration>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>snapshot</id>
+      <properties>
+        <!-- has to be set on maven run with -D version.number=X.X.X -->
+        <version.number>${version.datestamp}</version.number>
+        <version.release>snapshot</version.release>
+        <version.string>${artifactId}-${version.number}-r${version.revision}</version.string>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <configuration>
+              <appendAssemblyId>false</appendAssemblyId>
+            </configuration>
+            <executions>
+              <execution>
+                <id>snap-core</id>
+                <phase>package</phase>
+                <configuration>
+                  <appendAssemblyId>false</appendAssemblyId>
+                  <finalName>${version.string}-CORE</finalName>
+                  <descriptors>
+                    <descriptor>etc/mvn/bin_zip-core_snapshot.xml</descriptor>
+                  </descriptors>
+                </configuration>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>snap-plus</id>
+                <phase>package</phase>
+                <configuration>
+                  <appendAssemblyId>false</appendAssemblyId>
+                  <finalName>${version.string}-PLUS</finalName>
+                  <descriptors>
+                    <descriptor>etc/mvn/bin_zip-plus_snapshot.xml</descriptor>
+                  </descriptors>
+                </configuration>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>release</id>
+      <properties>
+        <!-- has to be set on maven run with -D version.number=X.X.X -->
+        <version.number>unknown</version.number>
+        <version.release>release</version.release>
+        <version.string>${artifactId}-${version.number}-r${version.revision}</version.string>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <configuration>
+              <appendAssemblyId>false</appendAssemblyId>
+            </configuration>
+            <executions>
+              <execution>
+                <id>release core</id>
+                <phase>package</phase>
+                <configuration>
+                  <finalName>${version.string}-CORE</finalName>
+                  <descriptors>
+                    <descriptor>etc/mvn/bin_zip-core_stable.xml</descriptor>
+                  </descriptors>
+                  <useJvmChmod>true</useJvmChmod>
+                </configuration>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>release plus</id>
+                <phase>package</phase>
+                <configuration>
+                  <finalName>${version.string}-PLUS</finalName>
+                  <descriptors>
+                    <descriptor>etc/mvn/bin_zip-plus_stable.xml</descriptor>
+                  </descriptors>
+                </configuration>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>portable</id>
+      <properties>
+        <portable.filename>${artifactId}-Portable-${version.number}-r${version.revision}</portable.filename>
+        <portable.filepath>${project.build.directory}/recompress</portable.filepath>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>1.7</version>
+            <executions>
+              <execution>
+                <id>recompress portable zip distros</id>
+                <phase>package</phase>
+                <configuration>
+                  <target>
+                    <property name="file.encoding" value="ISO-8859-1" />
+                    <property name="recompress.folder"
+                      value="${project.build.directory}/recompress" />
+                    <delete includeemptydirs="true" quiet="true">
+                      <fileset dir="${project.build.directory}/recompress"
+                        followsymlinks="false" />
+                    </delete>
+                    <!-- Using an ant task to deflate *.zip -->
+                    <unzip
+                      src="${project.build.directory}/${version.string}-CORE.zip"
+                      dest="${recompress.folder}/core">
+                      <cutdirsmapper dirs="1" />
+                    </unzip>
+                    <unzip
+                      src="${project.build.directory}/${version.string}-PLUS.zip"
+                      dest="${recompress.folder}/plus">
+                      <cutdirsmapper dirs="1" />
+                    </unzip>
+                    <!-- recompress jars -->
+                    <taskdef name="p200ant"
+                      classname="de.matthiasmann.p200ant.P200AntTask"
+                      classpath="launcher/p200ant.jar" />
+                    <fileset id="jars2pack" dir="${recompress.folder}/">
+                      <include name="**/*.jar" />
+                      <!-- exclude signed jars, circumvent security errors 
+                        e.g. "SecurityException: SHA1 digest error" -->
+                      <exclude name="**/ermapper.jar" />
+                    </fileset>
+                    <p200ant repack="true">
+                      <fileset refid="jars2pack" />
+                    </p200ant>
+                    <!-- Recompress to distro zips -->
+                    <zip
+                      destfile="${recompress.folder}/${portable.filename}-CORE.zip"
+                      level="9">
+                      <zipfileset dir="${recompress.folder}/core"
+                        prefix="${version.string}-CORE" excludes="${project.binaries}" />
+                      <zipfileset dir="${recompress.folder}/core"
+                        prefix="${version.string}-CORE" includes="${project.binaries}"
+                        filemode="755" />
+                    </zip>
+                    <zip
+                      destfile="${recompress.folder}/${portable.filename}-PLUS.zip"
+                      level="9">
+                      <zipfileset dir="${recompress.folder}/plus"
+                        prefix="${version.string}-PLUS" excludes="${project.binaries}" />
+                      <zipfileset dir="${recompress.folder}/plus"
+                        prefix="${version.string}-PLUS" includes="${project.binaries}"
+                        filemode="755" />
+                    </zip>
+                  </target>
+                </configuration>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>installer</id>
+      <properties>
+        <version.string>${artifactId}-${version.number}-r${version.revision}</version.string>
+        <installer.filename>${artifactId}-Installer-${version.number}-r${version.revision}</installer.filename>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>1.7</version>
+            <executions>
+              <execution>
+                <id>create installers</id>
+                <phase>package</phase>
+                <configuration>
+                  <target>
+                    <property name="file.encoding" value="ISO-8859-1" />
+                    <delete includeemptydirs="true" quiet="true">
+                      <fileset dir="${project.build.directory}/izpack"
+                        followsymlinks="false" />
+                    </delete>
+                    <!-- Using an ant task to deflate *.zip -->
+                    <unzip
+                      src="${portable.filepath}/${portable.filename}-CORE.zip"
+                      dest="${project.build.directory}/izpack/core/pack0">
+                      <cutdirsmapper dirs="1" />
+                    </unzip>
+                    <unzip
+                      src="${portable.filepath}/${portable.filename}-PLUS.zip"
+                      dest="${project.build.directory}/izpack/plus/pack0">
+                      <cutdirsmapper dirs="1" />
+                    </unzip>
+                    <!-- Set correct permissions for executables. Seems not to be respected 
+                         by izpack packer, hence it has to be done again in post-install -->
+                    <chmod dir="${project.build.directory}/izpack" perm="644" type="file"
+                      includes="**" verbose="true" />
+                    <chmod dir="${project.build.directory}/izpack" perm="755" type="dir"
+                      includes="**" verbose="true" />
+                    <chmod dir="${project.build.directory}/izpack" perm="755" type="file"
+                      includes="${project.binaries}" verbose="true" />
+
+                    <!-- prepare izpack environments -->
+                    <!-- jump through hoops to get special chars in readme infopanel 
+                      correct -->
+                    <copy file="${project.build.directory}/res/readme.txt"
+                      tofile="${project.build.directory}/izpack/readme.text.html" />
+                    <replace
+                      file="${project.build.directory}/izpack/readme.text.html"
+                      encoding="iso-8859-1">
+                      <replacefilter>
+                        <replacetoken>&amp;</replacetoken>
+                        <replacevalue>&amp;amp;</replacevalue>
+                      </replacefilter>
+                      <replacefilter>
+                        <replacetoken>&lt;</replacetoken>
+                        <replacevalue>&amp;lt;</replacevalue>
+                      </replacefilter>
+                      <replacefilter>
+                        <replacetoken>&gt;</replacetoken>
+                        <replacevalue>&amp;gt;</replacevalue>
+                      </replacefilter>
+                    </replace>
+                    <concat destfile="${project.build.directory}/izpack/readme.html"
+                      binary="yes">
+                      <fileset file="etc/izpack/res/readme.html.head" />
+                      <fileset
+                        file="${project.build.directory}/izpack/readme.text.html" />
+                      <fileset file="etc/izpack/res/readme.html.foot" />
+                    </concat>
+                    <!-- prepare different editions -->
+                    <filter token="edition" value="CORE" />
+                    <filter token="version" value="${version.number}" />
+                    <filter token="revision" value="${version.revision}" />
+                    <!-- copydir src="etc/izpack" dest="${project.build.directory}/izpack/core" 
+                      / -->
+                    <copy todir="${project.build.directory}/izpack/core">
+                      <fileset dir="etc/izpack" />
+                    </copy>
+                    <copy file="etc/izpack/oj_installer.xml" todir="${project.build.directory}/izpack/core/"
+                      filtering="true" overwrite="true" />
+                    <filter token="edition" value="PLUS" />
+                    <copy todir="${project.build.directory}/izpack/plus">
+                      <fileset dir="etc/izpack" />
+                    </copy>
+                    <copy file="etc/izpack/oj_installer.xml" todir="${project.build.directory}/izpack/plus/"
+                      filtering="true" overwrite="true" />
+                    <!-- Allows us to use the IzPack Ant task -->
+                    <taskdef name="IzPack"
+                      classpath="launcher/IzPack-4.3.5/lib/standalone-compiler.jar"
+                      classname="com.izforge.izpack.ant.IzPackTask" />
+                    <!-- We call IzPack -->
+                    <echo message="Make CORE installer" />
+                    <IzPack
+                      input="${project.build.directory}/izpack/core/oj_installer.xml"
+                      output="${project.build.directory}/izpack/${installer.filename}-CORE.jar"
+                      installerType="standard" basedir="${project.build.directory}/izpack/core/"
+                      IzPackDir="launcher/IzPack-4.3.5" />
+                    <echo message="Make PLUS installer" />
+                    <IzPack
+                      input="${project.build.directory}/izpack/plus/oj_installer.xml"
+                      output="${project.build.directory}/izpack/${installer.filename}-PLUS.jar"
+                      installerType="standard" basedir="${project.build.directory}/izpack/plus/"
+                      IzPackDir="launcher/IzPack-4.3.5" />
+                    <!-- generate exe launcher via launch4j -->
+                    <!-- property name="launch4j.dir" location="launcher/launch4j-3.0.2" 
+                      / -->
+                    <property name="launch4j.config"
+                      location="etc/launch4j/ojinstall-launch4j.xml" />
+                    <taskdef name="launch4j" classname="net.sf.launch4j.ant.Launch4jTask"
+                      classpath="${launch4j.dir}/launch4j.jar:${launch4j.dir}/lib/xstream.jar" />
+                    <launch4j configFile="${launch4j.config}"
+                      jar="${project.build.directory}/izpack/${installer.filename}-CORE.jar"
+                      outfile="${project.build.directory}/izpack/${installer.filename}-CORE.exe" />
+                    <launch4j configFile="${launch4j.config}"
+                      jar="${project.build.directory}/izpack/${installer.filename}-PLUS.jar"
+                      outfile="${project.build.directory}/izpack/${installer.filename}-PLUS.exe" />
+                  </target>
+                </configuration>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>javadoc</id>
+      <properties>
+        <!-- by default datestamp, can be overwritten with -D version.number=X.X.X -->
+        <version.number>${version.datestamp}</version.number>
+        <version.string>${artifactId}-${version.number}-r${version.revision}</version.string>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <configuration>
+              <outputDirectory>${project.build.directory}/apidocs/</outputDirectory>
+              <reportOutputDirectory>${project.build.directory}/apidocs/</reportOutputDirectory>
+              <!-- destDir>${version.string}</destDir -->
+              <quiet>true</quiet>
+            </configuration>
+            <executions>
+              <execution>
+                <phase>compile</phase>
+                <goals>
+                  <goal>javadoc</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>1.7</version>
+            <executions>
+              <execution>
+                <id>create apidoc zip</id>
+                <phase>package</phase>
+                <configuration>
+                  <target>
+                    <zip
+                      destfile="${project.build.directory}/${version.string}-apidocs.zip"
+                      level="9">
+                      <zipfileset dir="${project.build.directory}/apidocs" prefix="apidocs"/>
+                    </zip>
+                  </target>
+                </configuration>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>srczip</id>
+      <properties>
+        <!-- by default datestamp, can be overwritten with -D version.number=X.X.X -->
+        <version.number>${version.datestamp}</version.number>
+        <version.string>${artifactId}-${version.number}-r${version.revision}</version.string>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>1.7</version>
+            <executions>
+              <execution>
+                <id>create src zip</id>
+                <phase>package</phase>
+                <configuration>
+                  <target>
+                    <zip
+                      destfile="${project.build.directory}/${version.string}-src.zip"
+                      level="9">
+                      <zipfileset dir="${project.build.directory}/classes" prefix="src" excludes="**/*.class"/>
+                    </zip>
+                  </target>
+                </configuration>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+  <build>
+    <finalName>${artifactId}-${version.number}-r${version.revision}</finalName>
+    <sourceDirectory>src/</sourceDirectory>
+    <outputDirectory>target/classes</outputDirectory>
+    <resources>
+      <resource>
+        <directory>src</directory>
+        <!-- we copy _everything_ to target/classes and filter during packaging -->
+        <excludes>
+          <!-- exclude> **/*.java </exclude -->
+          <exclude>language/*.properties</exclude>
+        </excludes>
+      </resource>
+      <resource>
+        <filtering>true</filtering>
+        <directory>src</directory>
+        <includes>
+          <include>language/*.properties</include>
+        </includes>
+      </resource>
+      <!-- filter version placeholders during copying -->
+      <resource>
+        <filtering>true</filtering>
+        <directory>etc</directory>
+        <includes>
+          <include>readme.txt</include>
+        </includes>
+        <targetPath>${project.build.directory}/res/</targetPath>
+      </resource>
+      <resource>
+        <filtering>true</filtering>
+        <directory>.</directory>
+        <includes>
+          <include>Changes.txt</include>
+        </includes>
+        <targetPath>${project.build.directory}/res/</targetPath>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+      </plugin>
+      <!-- execute buildnumber plugin two times because it can't get date 
+        AND rev in one go -->
+      <plugin>
+        <inherited>true</inherited>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>buildnumber-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>generate-buildnumber</id>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>create</goal>
+            </goals>
+            <configuration>
+              <useLastCommittedRevision>true</useLastCommittedRevision>
+              <buildNumberPropertyName>version.revision</buildNumberPropertyName>
+            </configuration>
+          </execution>
+          <execution>
+            <id>generate-datestamp</id>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>create</goal>
+            </goals>
+            <configuration>
+              <format>{0,date,yyyyMMdd}</format>
+              <items>
+                <item>timestamp</item>
+              </items>
+              <buildNumberPropertyName>version.datestamp</buildNumberPropertyName>
+            </configuration>
+          </execution>
+          <execution>
+            <id>generate-date</id>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>create</goal>
+            </goals>
+            <configuration>
+              <format>{0,date,dd. MMMM yyyy}</format>
+              <items>
+                <item>timestamp</item>
+              </items>
+              <locale>en_US</locale>
+              <buildNumberPropertyName>version.buildDate</buildNumberPropertyName>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!--plugin> <groupId>com.google.code.maven-replacer-plugin</groupId> 
+        <artifactId>maven-replacer-plugin</artifactId> <version>1.3.9</version> <executions> 
+        <execution> <phase>process-resources</phase> <goals> <goal>replace</goal> 
+        </goals> </execution> </executions> <configuration> <file>target/classes/language/jump.properties</file> 
+        <replacements> <replacement> <token>JUMPWorkbench.version.release.*</token> 
+        <value>JUMPWorkbench.version.release = ${version}</value> </replacement> 
+        </replacements> </configuration> </plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>nolang</id>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/nolang/</outputDirectory>
+              <classifier>nolang</classifier>
+              <excludes>
+                <exclude>language/**</exclude>
+              </excludes>
+            </configuration>
+          </execution>
+          <execution>
+            <id>nosrc</id>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/nolang/</outputDirectory>
+              <classifier>nosrc</classifier>
+              <excludes>
+                <exclude>**/*.java</exclude>
+                <!-- excluding unit-test and doc resources -->
+                <exclude>**/*Test.class</exclude>
+                <exclude>fixtures/**</exclude>
+                <exclude>jumptest/**</exclude>
+                <exclude>versiondoc/**</exclude>
+              </excludes>
+            </configuration>
+          </execution>
+        </executions>
+        <!--configuration> <archive> <manifest> <mainClass>com.vividsolutions.jump.workbench.JUMPWorkbench</mainClass> 
+          <addClasspath>true</addClasspath> </manifest> </archive> </configuration -->
+      </plugin>
+      <!-- remove redundant copy command <plugin> <groupId>org.codehaus.mojo</groupId> 
+        <artifactId>build-helper-maven-plugin</artifactId> <version>1.5</version> 
+        <executions> <execution> <id>attach-artifacts</id> <phase>package</phase> 
+        <goals> <goal>attach-artifact</goal> </goals> <configuration> <artifacts> 
+        <artifact> <file>target/openjump-core-1.4.3-SNAPSHOT-bin.zip</file> <type>zip</type> 
+        <classifier>bin</classifier> </artifact> </artifacts> </configuration> </execution> 
+        </executions> </plugin> -->
+    </plugins>
+  </build>
+  <repositories>
+    <repository>
+      <id>refractions</id>
+      <name>Refractions Research Maven 2 Repository</name>
+      <url>http://lists.refractions.net/m2</url>
+    </repository>
+    <repository>
+      <id>maven central</id>
+      <name>Central Maven 2 Repository</name>
+      <url>http://central.maven.org/maven2</url>
+    </repository>
+    <repository>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>geotools</id>
+      <name>Geotools repository</name>
+      <url>http://maven.geotools.fr/repository</url>
+    </repository>
+    <repository>
+      <id>cam</id>
+      <name>Cambridge Maven 2 Repository</name>
+      <url>http://maven.ch.cam.ac.uk/m2repo/</url>
+    </repository>
+    <repository>
+      <id>openjump</id>
+      <name>OpenJUMP Maven 2 Repository</name>
+      <url>http://jump-pilot.svn.sourceforge.net/svnroot/jump-pilot/maven-repository/</url>
+    </repository>
+    <repository>
+      <id>mvn-adamgent</id>
+      <url>http://mvn-adamgent.googlecode.com/svn/maven/release</url>
+      <name>Adam Gent Maven Repository</name>
+    </repository>
+  </repositories>
+  <dependencies>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.16</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.vividsolutions</groupId>
+      <artifactId>jts</artifactId>
+      <version>1.13</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.beanshell</groupId>
+      <artifactId>bsh</artifactId>
+      <version>2.0b4</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.media</groupId>
+      <artifactId>jai_codec</artifactId>
+      <version>1.1.2_01</version>
+      <scope>compile</scope>
+    </dependency>
+    <!--dependency>
+      <groupId>jdom</groupId>
+      <artifactId>jdom</artifactId>
+      <version>1.0b8</version>
+      <scope>compile</scope>
+    </dependency-->
+    <dependency>
+      <groupId>org.jdom</groupId>
+      <artifactId>jdom</artifactId>
+      <version>1.1.3</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <version>2.8.1</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>9.2-1002.jdbc4</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>batik</groupId>
+      <artifactId>batik-awt-util</artifactId>
+      <version>1.6</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>batik</groupId>
+      <artifactId>batik-dom</artifactId>
+      <version>1.6</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>batik</groupId>
+      <artifactId>batik-svggen</artifactId>
+      <version>1.6</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>batik</groupId>
+      <artifactId>batik-squiggle</artifactId>
+      <version>1.6</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.buoy</groupId>
+      <artifactId>buoy</artifactId>
+      <version>1.8</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.math.array</groupId>
+      <artifactId>jmatharray</artifactId>
+      <version>20070905</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.math.plot</groupId>
+      <artifactId>jmathplot</artifactId>
+      <version>20070905</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>jama</groupId>
+      <artifactId>jama</artifactId>
+      <version>1.0.2</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.10</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.python</groupId>
+      <artifactId>jython</artifactId>
+      <version>2.2</version>
+    </dependency>
+    <dependency>
+      <groupId>com.yuvimasory</groupId>
+      <artifactId>orange-extensions</artifactId>
+      <version>1.2.0</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/OrangeExtensions-1.2.jar</systemPath>
+    </dependency>
+  </dependencies>
+</project>
