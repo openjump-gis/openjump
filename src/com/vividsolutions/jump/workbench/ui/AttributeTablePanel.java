@@ -271,30 +271,20 @@ public class AttributeTablePanel extends JPanel {
       return empty;
     }
    
-    private JButton buildIconButton(ImageIcon icon, Color color) {
-      JButton b = new JButton(icon);
-      // order matters, set color, then area, then opaque
-      if (color != null)
-        b.setBackground(color);
-      b.setContentAreaFilled(false);
-      b.setOpaque(true);
-      return b;
-    }
-   
-    private JButton buildIconButton( ImageIcon icon ){
+    private JLabel buildIconLabel( ImageIcon icon ){
       icon = GUIUtil.pad(icon, 2);
-      return buildIconButton(icon, null);
+      return new JLabel(icon);
     }
     
-   private JButton buildEmptyIconButton( ImageIcon icon ){
+   private JLabel buildEmptyIconLabel( ImageIcon icon ){
      icon = GUIUtil.pad(icon, 2);
-     JButton b = buildIconButton(buildEmptyIcon(icon));
+     JLabel b = buildIconLabel(buildEmptyIcon(icon));
      return b;
    }
    
-   private JButton buildPartlyEmptyIconButton( ImageIcon icon ){
+   private JLabel buildPartlyEmptyIconLabel( ImageIcon icon ){
      icon = GUIUtil.pad(icon, 2);
-     JButton b = buildIconButton(buildPartlyEmptyIcon(icon));
+     JLabel b = buildIconLabel(buildPartlyEmptyIcon(icon));
      return b;
    }
    
@@ -321,39 +311,39 @@ public class AttributeTablePanel extends JPanel {
     private ImageIcon mpoly = IconLoader.icon("EditMultiPolygon.gif");
     private ImageIcon lring = IconLoader.icon("EditLinearRing.gif");
 
-    private JButton buttonPoint = buildIconButton(point);
-    private JButton buttonMultiPoint = buildIconButton(mpoint);
-    private JButton buttonLineString = buildIconButton(line);
-    private JButton buttonMultiLineString = buildIconButton(mline);
-    private JButton buttonPolygon = buildIconButton(poly);
-    private JButton buttonMultiPolygon = buildIconButton(mpoly);
-    private JButton buttonGC = buildIconButton(gc);
-    private JButton buttonLinearRing = buildIconButton(lring);
+    private JLabel buttonPoint = buildIconLabel(point);
+    private JLabel buttonMultiPoint = buildIconLabel(mpoint);
+    private JLabel buttonLineString = buildIconLabel(line);
+    private JLabel buttonMultiLineString = buildIconLabel(mline);
+    private JLabel buttonPolygon = buildIconLabel(poly);
+    private JLabel buttonMultiPolygon = buildIconLabel(mpoly);
+    private JLabel buttonGC = buildIconLabel(gc);
+    private JLabel buttonLinearRing = buildIconLabel(lring);
     
-    private JButton buttonPointEmpty = buildEmptyIconButton(point);
-    private JButton buttonMultiPointEmpty = buildEmptyIconButton(mpoint);
-    private JButton buttonLineStringEmpty = buildEmptyIconButton(line);
-    private JButton buttonMultiLineStringEmpty = buildEmptyIconButton(mline);
-    private JButton buttonPolygonEmpty = buildEmptyIconButton(poly);
-    private JButton buttonMultiPolygonEmpty = buildEmptyIconButton(mpoly);
-    private JButton buttonGCEmpty = buildEmptyIconButton(gc);
-    private JButton buttonLinearRingEmpty = buildEmptyIconButton(lring);
+    private JLabel buttonPointEmpty = buildEmptyIconLabel(point);
+    private JLabel buttonMultiPointEmpty = buildEmptyIconLabel(mpoint);
+    private JLabel buttonLineStringEmpty = buildEmptyIconLabel(line);
+    private JLabel buttonMultiLineStringEmpty = buildEmptyIconLabel(mline);
+    private JLabel buttonPolygonEmpty = buildEmptyIconLabel(poly);
+    private JLabel buttonMultiPolygonEmpty = buildEmptyIconLabel(mpoly);
+    private JLabel buttonGCEmpty = buildEmptyIconLabel(gc);
+    private JLabel buttonLinearRingEmpty = buildEmptyIconLabel(lring);
     
-    private JButton buttonMultiPointPartlyEmpty = buildPartlyEmptyIconButton(mpoint);
-    private JButton buttonMultiLineStringPartlyEmpty = buildPartlyEmptyIconButton(mline);
-    private JButton buttonMultiPolygonPartlyEmpty = buildPartlyEmptyIconButton(mpoly);
-    private JButton buttonGCPartlyEmpty = buildPartlyEmptyIconButton(gc);
+    private JLabel buttonMultiPointPartlyEmpty = buildPartlyEmptyIconLabel(mpoint);
+    private JLabel buttonMultiLineStringPartlyEmpty = buildPartlyEmptyIconLabel(mline);
+    private JLabel buttonMultiPolygonPartlyEmpty = buildPartlyEmptyIconLabel(mpoly);
+    private JLabel buttonGCPartlyEmpty = buildPartlyEmptyIconLabel(gc);
 
     GeometryCellRenderer()
     {
       String text = I18N.get("ui.AttributeTablePanel.feature.view-edit");
-      JButton[] buttons = new JButton[] { buttonPoint, buttonMultiPoint,
+      JLabel[] buttons = new JLabel[] { buttonPoint, buttonMultiPoint,
           buttonLineString, buttonMultiLineString, buttonPolygon,
           buttonMultiPolygon, buttonGC, buttonLinearRing, buttonPointEmpty,
           buttonMultiPointEmpty, buttonLineStringEmpty,
           buttonMultiLineStringEmpty, buttonPolygonEmpty,
           buttonMultiPolygonEmpty, buttonGCEmpty, buttonLinearRingEmpty };
-      for (JButton button : buttons) {
+      for (JLabel button : buttons) {
         button.setToolTipText(text);
       }
     }
