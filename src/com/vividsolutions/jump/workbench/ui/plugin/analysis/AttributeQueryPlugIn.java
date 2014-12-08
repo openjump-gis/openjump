@@ -349,7 +349,7 @@ public class AttributeQueryPlugIn extends AbstractPlugIn
   }
 
 
-  private static boolean caseBoxEnabled( JComboBox<String> dropBox ){
+  private static boolean caseBoxEnabled( JComboBox dropBox ){
     Object selectedItem = dropBox.getSelectedItem();
     boolean enabled = false;
     for (String function : AttributePredicate.getNamesCI()) {
