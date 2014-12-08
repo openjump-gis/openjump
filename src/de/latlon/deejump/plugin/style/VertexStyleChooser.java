@@ -59,7 +59,7 @@ public class VertexStyleChooser extends JPanel {
         STYLE_NAMES = Collections.unmodifiableList(TEMP_STYLE_NAMES);
     }
 
-    private JComboBox<String> pointTypeComboBox;
+    private JComboBox pointTypeComboBox;
 
     private JButton bitmapChangeButton;
 
@@ -94,7 +94,7 @@ public class VertexStyleChooser extends JPanel {
     }
 
     private void initGUI() {
-        pointTypeComboBox = new JComboBox<String>();
+        pointTypeComboBox = new JComboBox();
         pointTypeComboBox.setEditable(false);
         pointTypeComboBox.addItem(I18N.get("deejump.ui.style.RenderingStylePanel.square"));
         pointTypeComboBox.addItem(I18N.get("deejump.ui.style.RenderingStylePanel.circle"));
