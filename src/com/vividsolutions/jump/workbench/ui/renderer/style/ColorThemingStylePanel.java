@@ -140,14 +140,14 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
     final private JCheckBox enableColorThemingCheckBox = new JCheckBox();
 
     final private JLabel attributeLabel = new JLabel();
-    final private JComboBox<String> attributeNameComboBox = new JComboBox<String>();
+    final private JComboBox attributeNameComboBox = new JComboBox();
     private String lastAttributeName;
 
     final private JLabel classificationLabel = new JLabel(I18N.get("ui.renderer.style.ColorThemingStylePanel.Classification-Method"));
-    final private JComboBox<String> classificationComboBox = new JComboBox<String>();
+    final private JComboBox classificationComboBox = new JComboBox();
 
     final private JLabel colorSchemeLabel = new JLabel();
-    final private JComboBox<String> colorSchemeComboBox = new JComboBox<String>();
+    final private JComboBox colorSchemeComboBox = new JComboBox();
     
     // jPanel2 contains the scrollPane (table), add/remove plugin, transparency and lineWidth slider)
     final private JPanel jPanel2 = new JPanel();
@@ -203,11 +203,11 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
 
     // Cell editor for the table
     final private TableCellEditor basicStyleTableCellEditor = new TableCellEditor() {
-        final private DefaultComboBoxModel<Object> comboBoxModel = new DefaultComboBoxModel<Object>();
+        final private DefaultComboBoxModel comboBoxModel = new DefaultComboBoxModel();
         private BasicStyle originalStyle;
         final private DefaultCellEditor editor;
         // Create JComboBox to select a style among styles created from the ColorScheme
-        final private JComboBox<Object> comboBox = new JComboBox<Object>(comboBoxModel) {
+        final private JComboBox comboBox = new JComboBox(comboBoxModel) {
 
                 public void setSelectedItem(Object anObject) {
                     if (anObject != CUSTOM_ENTRY) {
@@ -792,7 +792,7 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
     }
 
     private void initAttributeNameComboBox(Layer layer) {
-        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<String>();
+        DefaultComboBoxModel model = new DefaultComboBoxModel();
         FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
         for (int i = 0; i < schema.getAttributeCount(); i++) {
             if (i == schema.getGeometryIndex()) {
@@ -1171,7 +1171,7 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         initializing = true;
 
         try {
-            colorSchemeComboBox.setModel(new DefaultComboBoxModel<String>(
+            colorSchemeComboBox.setModel(new DefaultComboBoxModel(
                     new Vector<String>(state.getColorSchemeNames())));
             //colorSchemeComboBox.setPrototypeDisplayValue("01234567890123456789012345678901");
             //The colour scheme may not be present if it was taken from the
