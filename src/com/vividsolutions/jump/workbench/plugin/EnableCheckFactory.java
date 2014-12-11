@@ -46,6 +46,8 @@ import javax.swing.JInternalFrame;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.imagery.ReferencedImage;
+import com.vividsolutions.jump.workbench.imagery.ReferencedImagesLayer;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
@@ -54,6 +56,7 @@ import com.vividsolutions.jump.workbench.ui.LayerNamePanel;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanelProxy;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanelProxy;
+import com.vividsolutions.jump.workbench.ui.LayerableNamePanel;
 import com.vividsolutions.jump.workbench.ui.SelectionManagerProxy;
 import com.vividsolutions.jump.workbench.ui.TaskFrame;
 import com.vividsolutions.jump.workbench.ui.TaskFrameProxy;
@@ -620,7 +623,6 @@ public class EnableCheckFactory {
     }
 
 
-    
     public EnableCheck createAtLeastNFeaturesMustHaveSelectedItemsCheck(
             final int n) {
         return new EnableCheck() {
@@ -639,5 +641,58 @@ public class EnableCheckFactory {
                         .getFeaturesWithSelectedItemsCount()) ? msg : null;
             }
         };
+    }
+
+    /**
+     * check the current selection in layernamepanel against a list of layerable classes.
+     * returns an error message if at least one of the layerables is of an unlisted class.
+     * 
+     * TODO: this is just quickly written down, has to tested thorougly still
+     * 
+     * @param classes
+     * @return error message
+     */
+    public EnableCheck createSelectedLayerablesMustBeEither(final Class[] classes) {
+      return new EnableCheck() {
+        public String check(JComponent component) {
+          String types = "";
+          for (Class clz : classes) {
+            String clzName = get(clz.getCanonicalName());
+            types = types.length() > 0 ? ", " + clzName : clzName;
+          }
+          String msg = getMessage(
+              "com.vividsolutions.jump.workbench.plugin.Selected-layers-must-be-of-type",
+              types);
+  
+          // fetch layer(ables)
+          LayerNamePanel lnp = workbenchContext.getLayerNamePanel();
+          Layerable[] layers;
+          if (lnp instanceof LayerableNamePanel)
+            layers = ((LayerableNamePanel) lnp).getSelectedLayerables().toArray(
+                new Layerable[0]);
+          else
+            layers = lnp.getSelectedLayers();
+  
+          for (Layerable layer : layers) {
+            boolean ok = false;
+            for (Class clz : classes) {
+              // treat Layer explicitely as ReferencedImagesLayer is an extended
+              // Layer unfortunately
+              if (clz.isAssignableFrom(Layer.class)
+                  && !clz.isAssignableFrom(ReferencedImagesLayer.class))
+                ok = clz.isInstance(layer)
+                    && !ReferencedImagesLayer.class.isInstance(layer);
+              else if (clz.isInstance(layer))
+                ok = true;
+  
+              if (ok)
+                break;
+            }
+            if (!ok)
+              return msg;
+          }
+          return null;
+        }
+      };
     }
 }
