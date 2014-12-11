@@ -46,7 +46,6 @@ import javax.swing.JInternalFrame;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.imagery.ReferencedImage;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImagesLayer;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManager;
@@ -60,7 +59,6 @@ import com.vividsolutions.jump.workbench.ui.LayerableNamePanel;
 import com.vividsolutions.jump.workbench.ui.SelectionManagerProxy;
 import com.vividsolutions.jump.workbench.ui.TaskFrame;
 import com.vividsolutions.jump.workbench.ui.TaskFrameProxy;
-import com.vividsolutions.jump.workbench.ui.plugin.ViewAttributesPlugIn.ViewAttributesFrame;
 import com.vividsolutions.jump.workbench.ui.warp.WarpingVectorLayerFinder;
 
 /**
