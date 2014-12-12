@@ -43,6 +43,8 @@ import java.util.Iterator;
 import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
 
+import org.openjump.core.rasterimage.RasterImageLayer;
+
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -51,6 +53,7 @@ import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
 import com.vividsolutions.jump.workbench.model.Layerable;
+import com.vividsolutions.jump.workbench.model.WMSLayer;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanel;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanelProxy;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
@@ -642,10 +645,9 @@ public class EnableCheckFactory {
     }
 
     /**
-     * check the current selection in layernamepanel against a list of layerable classes.
-     * returns an error message if at least one of the layerables is of an unlisted class.
-     * 
-     * TODO: this is just quickly written down, has to tested thorougly still
+     * check the current selection in layernamepanel against a list of layerable
+     * classes. returns an error message if at least one of the layerables is of
+     * an unlisted class.
      * 
      * @param classes
      * @return error message
@@ -656,10 +658,11 @@ public class EnableCheckFactory {
           String types = "";
           for (Class clz : classes) {
             String clzName = get(clz.getCanonicalName());
-            types = types.length() > 0 ? ", " + clzName : clzName;
+            types += types.length() > 0 ? ", " + clzName : clzName;
           }
+  
           String msg = getMessage(
-              "com.vividsolutions.jump.workbench.plugin.Selected-layers-must-be-of-type",
+              "com.vividsolutions.jump.workbench.plugin.Selected-layers-must-be-of-types-{0}",
               types);
   
           // fetch layer(ables)
@@ -674,14 +677,15 @@ public class EnableCheckFactory {
           for (Layerable layer : layers) {
             boolean ok = false;
             for (Class clz : classes) {
-              // treat Layer explicitely as ReferencedImagesLayer is an extended
-              // Layer unfortunately
+              // treat Layer explicitly because ReferencedImagesLayer is derived
+              // from Layer and would therefore count as Layer without this
+              // special check
               if (clz.isAssignableFrom(Layer.class)
-                  && !clz.isAssignableFrom(ReferencedImagesLayer.class))
+                  && !ReferencedImagesLayer.class.isAssignableFrom(clz))
                 ok = clz.isInstance(layer)
                     && !ReferencedImagesLayer.class.isInstance(layer);
-              else if (clz.isInstance(layer))
-                ok = true;
+              else
+                ok = clz.isInstance(layer);
   
               if (ok)
                 break;
@@ -692,5 +696,21 @@ public class EnableCheckFactory {
           return null;
         }
       };
+    }
+  
+    public EnableCheck createSelectedLayerablesMustBeVectorLayer() {
+      return createSelectedLayerablesMustBeEither(new Class[] { Layer.class });
+    }
+  
+    public EnableCheck createSelectedLayerablesMustBeReferencedImagesLayer() {
+      return createSelectedLayerablesMustBeEither(new Class[] { ReferencedImagesLayer.class });
+    }
+  
+    public EnableCheck createSelectedLayerablesMustBeRasterImageLayer() {
+      return createSelectedLayerablesMustBeEither(new Class[] { RasterImageLayer.class });
+    }
+  
+    public EnableCheck createSelectedLayerablesMustBeWMSLayer() {
+      return createSelectedLayerablesMustBeEither(new Class[] { WMSLayer.class });
     }
 }
