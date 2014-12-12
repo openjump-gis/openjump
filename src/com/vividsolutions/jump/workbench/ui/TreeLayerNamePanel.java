@@ -578,6 +578,10 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
     }
   }
 
+  /**
+   * @deprecated use getSelectedLayerables() instead
+   */
+  @Deprecated
   public Layer[] getSelectedLayers() {
     return selectedLayers(this);
   }
