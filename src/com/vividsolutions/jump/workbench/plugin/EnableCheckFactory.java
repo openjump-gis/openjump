@@ -645,11 +645,13 @@ public class EnableCheckFactory {
     }
 
     /**
-     * check the current selection in layernamepanel against a list of layerable
-     * classes. returns an error message if at least one of the layerables is of
-     * an unlisted class.
+     * Check the current selection in layernamepanel against 2 lists of layerable
+     * classes. Returns an error message if at least one layerable is not an
+     * instance of the first class array or if at least one layerable is an
+     * instance of the second class array.
      * 
-     * @param classes
+     * @param classes layerables must all be instances of one of these classes
+     * @param excluded no layerable must be an instances of one of these classes
      * @return error message
      */
     public EnableCheck createSelectedLayerablesMustBeEither(final Class[] classes, final Class[] excluded) {
