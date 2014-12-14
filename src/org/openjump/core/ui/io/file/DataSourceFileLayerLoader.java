@@ -114,6 +114,12 @@ public class DataSourceFileLayerLoader extends AbstractFileLayerLoader implement
         return parameters;
     }
     // [mmichaud 2014-10-01] end
+    
+    // this probably clashes with the above, but DataSourceFileLayerLoader is reused for opening files
+    // so any "old" parameters lingering during open have a probably detrimental effect on the next open
+    public void resetParameters() {
+        this.parameters = new HashMap<String, Object>();
+    }
 
   /** The {@link DataSource} class. */
   private Class dataSourceClass;
@@ -238,6 +244,8 @@ public class DataSourceFileLayerLoader extends AbstractFileLayerLoader implement
    * @return True if the file could be loaded false otherwise.
    */
   public boolean open(TaskMonitor monitor, URI uri, Map<String, Object> options) {
+      //reset old parameters away
+      resetParameters();
       addParameter(DATASOURCE_CLASSNAME, dataSourceClass.getName());
       addParameter(URI, uri.toString());
       Map<String,Object> properties = toProperties(uri, options);
