@@ -652,43 +652,50 @@ public class EnableCheckFactory {
      * @param classes
      * @return error message
      */
-    public EnableCheck createSelectedLayerablesMustBeEither(final Class[] classes) {
+    public EnableCheck createSelectedLayerablesMustBeEither(final Class[] classes, final Class[] excluded) {
       return new EnableCheck() {
         public String check(JComponent component) {
-          String types = "";
-          for (Class clz : classes) {
-            String clzName = get(clz.getCanonicalName());
-            types += types.length() > 0 ? ", " + clzName : clzName;
-          }
+            StringBuilder types = new StringBuilder("[");
+            for (Class clz : classes) {
+              String clzName = get(clz.getCanonicalName());
+              types.append(types.length() > 1 ? ", " + clzName : clzName);
+            }
+            types.append("]");
+            StringBuilder exclusion = new StringBuilder("[");
+            for (Class clz : excluded) {
+                String clzName = get(clz.getCanonicalName());
+                exclusion.append(exclusion.length() > 1 ? ", " + clzName : clzName);
+            }
+            exclusion.append("]");
   
-          String msg = getMessage(
-              "com.vividsolutions.jump.workbench.plugin.Selected-layers-must-be-of-types-{0}",
-              types);
+            String msg = getMessage(
+                "plugin.EnableCheckFactory.selected-layers-must-be-of-type",
+                   new Object[]{types, exclusion});
   
-          // fetch layer(ables)
-          LayerNamePanel lnp = workbenchContext.getLayerNamePanel();
-          Layerable[] layers;
-          if (lnp instanceof LayerableNamePanel)
-            layers = ((LayerableNamePanel) lnp).getSelectedLayerables().toArray(
-                new Layerable[0]);
-          else
-            layers = lnp.getSelectedLayers();
+            // fetch layer(ables)
+            LayerNamePanel lnp = workbenchContext.getLayerNamePanel();
+            Layerable[] layerables;
+            if (lnp instanceof LayerableNamePanel)
+                layerables = ((LayerableNamePanel) lnp).getSelectedLayerables().toArray(
+                  new Layerable[0]);
+            else
+                layerables = lnp.getSelectedLayers();
   
-          for (Layerable layer : layers) {
+          for (Layerable layerable : layerables) {
             boolean ok = false;
             for (Class clz : classes) {
-              // treat Layer explicitly because ReferencedImagesLayer is derived
-              // from Layer and would therefore count as Layer without this
-              // special check
-              if (clz.isAssignableFrom(Layer.class)
-                  && !ReferencedImagesLayer.class.isAssignableFrom(clz))
-                ok = clz.isInstance(layer)
-                    && !ReferencedImagesLayer.class.isInstance(layer);
-              else
-                ok = clz.isInstance(layer);
-  
-              if (ok)
-                break;
+                if (clz.isAssignableFrom(layerable.getClass())) {
+                    ok = true;
+                    for (Class exc : excluded) {
+                        if (exc.isAssignableFrom(layerable.getClass())) {
+                            ok = false;
+                            break;
+                        }
+                    }
+                }
+                if (ok) {
+                    break;
+                }
             }
             if (!ok)
               return msg;
@@ -697,20 +704,17 @@ public class EnableCheckFactory {
         }
       };
     }
-  
-    public EnableCheck createSelectedLayerablesMustBeVectorLayer() {
-      return createSelectedLayerablesMustBeEither(new Class[] { Layer.class });
+
+    public EnableCheck createSelectedLayerablesMustBeEither(final Class[] classes) {
+        return createSelectedLayerablesMustBeEither(new Class[] { Layer.class }, new Class[0]);
     }
   
-    public EnableCheck createSelectedLayerablesMustBeReferencedImagesLayer() {
-      return createSelectedLayerablesMustBeEither(new Class[] { ReferencedImagesLayer.class });
+    public EnableCheck createSelectedLayerablesMustBeVectorLayers() {
+      return createSelectedLayerablesMustBeEither(new Class[] { Layer.class }, new Class[]{ReferencedImagesLayer.class});
     }
-  
-    public EnableCheck createSelectedLayerablesMustBeRasterImageLayer() {
-      return createSelectedLayerablesMustBeEither(new Class[] { RasterImageLayer.class });
+
+    public EnableCheck createSelectedLayerablesMustBeRasterLayers() {
+        return createSelectedLayerablesMustBeEither(new Class[] { WMSLayer.class,  ReferencedImagesLayer.class});
     }
-  
-    public EnableCheck createSelectedLayerablesMustBeWMSLayer() {
-      return createSelectedLayerablesMustBeEither(new Class[] { WMSLayer.class });
-    }
+
 }
