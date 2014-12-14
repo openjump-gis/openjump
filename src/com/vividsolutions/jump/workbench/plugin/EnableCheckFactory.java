@@ -652,7 +652,7 @@ public class EnableCheckFactory {
      * 
      * @param classes layerables must all be instances of one of these classes
      * @param excluded no layerable must be an instances of one of these classes
-     * @return error message
+     * @return error message or null
      */
     public EnableCheck createSelectedLayerablesMustBeEither(final Class[] classes, final Class[] excluded) {
       return new EnableCheck() {
@@ -708,15 +708,35 @@ public class EnableCheckFactory {
     }
 
     public EnableCheck createSelectedLayerablesMustBeEither(final Class[] classes) {
-        return createSelectedLayerablesMustBeEither(new Class[] { Layer.class }, new Class[0]);
-    }
-  
-    public EnableCheck createSelectedLayerablesMustBeVectorLayers() {
-      return createSelectedLayerablesMustBeEither(new Class[] { Layer.class }, new Class[]{ReferencedImagesLayer.class});
+      return createSelectedLayerablesMustBeEither(new Class[] { Layer.class },
+          new Class[0]);
     }
 
-    public EnableCheck createSelectedLayerablesMustBeRasterLayers() {
-        return createSelectedLayerablesMustBeEither(new Class[] { WMSLayer.class,  ReferencedImagesLayer.class});
+  /**
+   * checks if selected layerables are vector layers. unfortunately
+   * {@link ReferencedImagesLayer}s are derived from OJ vector {@link Layer}.
+   * hence this method internally includes {@link Layer} but excludes
+   * {@link ReferencedImagesLayer}.
+   * 
+   * @see EnableCheckFactory#createSelectedLayerablesMustBeEither(Class[],
+   *      Class[])
+   * @return error message or null
+   */
+    public EnableCheck createSelectedLayerablesMustBeVectorLayers() {
+      return createSelectedLayerablesMustBeEither(new Class[] { Layer.class },
+          new Class[] { ReferencedImagesLayer.class });
+    }
+  
+    public EnableCheck createSelectedLayerablesMustBeWMSLayers() {
+      return createSelectedLayerablesMustBeEither(new Class[] { WMSLayer.class });
+    }
+  
+    public EnableCheck createSelectedLayerablesMustBeRasterImageLayers() {
+      return createSelectedLayerablesMustBeEither(new Class[] { RasterImageLayer.class });
+    }
+  
+    public EnableCheck createSelectedLayerablesMustBeReferencedImagesLayers() {
+      return createSelectedLayerablesMustBeEither(new Class[] { ReferencedImagesLayer.class });
     }
 
 }
