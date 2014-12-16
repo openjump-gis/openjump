@@ -256,7 +256,9 @@ public class DataSourceFileLayerLoader extends AbstractFileLayerLoader implement
           //return (Boolean)process(monitor);
           boolean ret = (Boolean)process(monitor);
           if (workbenchContext.getBlackboard().getBoolean("MacroStarted")) {
-              ((Macro)workbenchContext.getBlackboard().get("Macro")).addProcess(this);
+              DataSourceFileLayerLoader clone = new DataSourceFileLayerLoader();
+              clone.setParameters(this.getParameters());
+              ((Macro)workbenchContext.getBlackboard().get("Macro")).addProcess(clone);
           }
           return ret;
       } catch(Exception e) {
