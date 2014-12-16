@@ -104,6 +104,7 @@ public class OpenWizardPlugIn extends AbstractThreadedUiPlugIn {
   }
 
   public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
+    if (dialog == null) return;
     WizardGroup wizard = dialog.getSelectedWizard();
     wizard.run(dialog, monitor);
   }
