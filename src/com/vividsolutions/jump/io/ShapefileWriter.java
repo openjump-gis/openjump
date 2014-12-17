@@ -239,8 +239,7 @@ public class ShapefileWriter implements JUMPWriter {
      * @param featureCollection collection to write
      * @param dp 'OutputFile' or 'DefaultValue' to specify where to write, and 'ShapeType' to specify dimentionality.
      */
-    public void write(FeatureCollection featureCollection, DriverProperties dp)
-        throws IllegalParametersException, Exception {
+    public void write(FeatureCollection featureCollection, DriverProperties dp) throws Exception {
         String shpfileName;
         String dbffname;
         String shxfname;
@@ -266,6 +265,7 @@ public class ShapefileWriter implements JUMPWriter {
             throw new IllegalParametersException(I18N.get("io.ShapefileWriter.no-output-filename-specified"));
         }
 
+        shpfileName = new File(shpfileName).getPath(); // write the path with the native file separator
         loc = shpfileName.lastIndexOf(File.separatorChar);
 
         if (loc == -1) {
