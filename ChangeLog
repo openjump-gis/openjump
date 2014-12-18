@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2014-12-19
+  * Now possible to use negative values in MultiRingBufferSelectedPlugin
+
 * release 1.8.0 ***************************************************************
 
 2014-12-01 ede

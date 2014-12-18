@@ -50,6 +50,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.operation.union.UnaryUnionOp;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.task.*;
@@ -224,44 +225,53 @@ public class MultiRingBufferSelectedPlugIn extends AbstractPlugIn
     private Collection getBuffers(FeatureSchema featureSchema, Collection selectedFeatures){
         exceptionThrown = false;
         Collection bufferFeatureCollection = new ArrayList();
-        Geometry prevGeo = null;
-          
-        Iterator ia = selectedFeatures.iterator();
-        prevGeo = ((Feature) selectedFeatures.iterator().next()).getGeometry();
-        while (ia.hasNext()) {
-            prevGeo = prevGeo.union(((Feature) ia.next()).getGeometry());
+
+        List<Geometry> geoms = new ArrayList<Geometry>(selectedFeatures.size());
+        Map<Integer,Geometry> previousMap = new HashMap<Integer,Geometry>(selectedFeatures.size());
+        for (Iterator it = selectedFeatures.iterator() ; it.hasNext() ; ) {
+            Feature feature = (Feature)it.next();
+            geoms.add(feature.getGeometry());
+            previousMap.put(feature.getID(), feature.getGeometry());
         }
+        Geometry prevGeo = UnaryUnionOp.union(geoms);
               
         for (int bufferNum = 0; bufferNum < bufferDistances.length; bufferNum++) {
             Geometry bufferGeo = null;
-            //no need for error checking for valid doubles
-            //it was done in getDialogValues
+            //no need to check bufferDistances are valid doubles, it was done in getDialogValues
             double bufferDistance = Double.parseDouble(bufferDistances[bufferNum]);
 
             if (bufferDistance > 0) {
-                ia = selectedFeatures.iterator();
-                Geometry featureGeo = ((Feature) selectedFeatures.iterator().next()).getGeometry();
-                bufferGeo = getBuffer(featureGeo, bufferDistance);
-            
-                while (ia.hasNext()) {
-                    featureGeo = ((Feature) ia.next()).getGeometry();
-                    Geometry result = getBuffer(featureGeo, bufferDistance);
-                    if (result != null) {
-                        bufferGeo = bufferGeo.union(result);
-                    }
+                geoms.clear();
+                for (Iterator it = selectedFeatures.iterator() ; it.hasNext() ; ) {
+                    Geometry buffer = getBuffer(((Feature)it.next()).getGeometry(), bufferDistance);
+                    if (buffer != null) geoms.add(buffer);
                 }
-        
+                bufferGeo = UnaryUnionOp.union(geoms);
+
                 Feature bufferFeature = new BasicFeature(featureSchema);
             
 //              if (constructDonuts) 
                 bufferFeature.setGeometry(bufferGeo.difference(prevGeo));
-//              else
 //              bufferFeature.setGeometry(bufferGeo);
             
                 bufferFeature.setAttribute(DISTANCEATTRIBUTE, new Double(bufferDistances[bufferNum]));
                 bufferFeature.setAttribute(attributeName, bufferAttributeValues[bufferNum]);
                 bufferFeatureCollection.add(bufferFeature);
                 prevGeo = bufferGeo;
+            } else if (bufferDistance < 0) {
+                for (Iterator it = selectedFeatures.iterator() ; it.hasNext() ; ) {
+                    Feature feature = (Feature)it.next();
+                    bufferGeo = getBuffer(feature.getGeometry(), bufferDistance);
+                    if (bufferGeo != null && !bufferGeo.isEmpty()) {
+                        Feature bufferFeature = new BasicFeature(featureSchema);
+                        bufferFeature.setGeometry(previousMap.get(feature.getID()).difference(bufferGeo));
+                        previousMap.put(feature.getID(), bufferGeo);
+                        bufferFeature.setAttribute(DISTANCEATTRIBUTE, new Double(bufferDistances[bufferNum]));
+                        bufferFeature.setAttribute(attributeName, bufferAttributeValues[bufferNum]);
+                        System.out.println("dist=" + bufferDistance + " : id=" + feature.getID() + " : g=" + previousMap.get(feature.getID()));
+                        bufferFeatureCollection.add(bufferFeature);
+                    }
+                }
             }
         }
         return bufferFeatureCollection;
@@ -334,10 +344,10 @@ public class MultiRingBufferSelectedPlugIn extends AbstractPlugIn
             //check out the values before trying to use them
             for (bufNum = 0; bufNum < bufferDistances.length; bufNum++) {
                 double bufDist = Double.parseDouble(bufferDistances[bufNum]);
-                if (bufDist < 0) {
-                    reportValidationError(dialog, BUFFER+" #" + (bufNum+1) + " < 0.");
-                    return false;
-                }
+                //if (bufDist < 0) {
+                //    reportValidationError(dialog, BUFFER+" #" + (bufNum+1) + " < 0.");
+                //    return false;
+                //}
             }
         }
         catch (NumberFormatException e) {
