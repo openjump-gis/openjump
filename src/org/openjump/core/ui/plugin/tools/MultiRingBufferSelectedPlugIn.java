@@ -268,7 +268,6 @@ public class MultiRingBufferSelectedPlugIn extends AbstractPlugIn
                         previousMap.put(feature.getID(), bufferGeo);
                         bufferFeature.setAttribute(DISTANCEATTRIBUTE, new Double(bufferDistances[bufferNum]));
                         bufferFeature.setAttribute(attributeName, bufferAttributeValues[bufferNum]);
-                        System.out.println("dist=" + bufferDistance + " : id=" + feature.getID() + " : g=" + previousMap.get(feature.getID()));
                         bufferFeatureCollection.add(bufferFeature);
                     }
                 }
