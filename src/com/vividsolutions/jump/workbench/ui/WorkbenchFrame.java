@@ -384,7 +384,7 @@ public class WorkbenchFrame extends JFrame
     
     // prevent loosing windows when frame is resized,
     // resize and move them back into if needed
-    addComponentListener(new ComponentAdapter() {
+    getDesktopPane().addComponentListener(new ComponentAdapter() {
       @Override
       public void componentResized(ComponentEvent e) {
         for (JInternalFrame iframe : getInternalFrames()) {
