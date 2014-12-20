@@ -155,6 +155,9 @@ public class ConstraintsOptionsPanel extends JPanel implements OptionsPanel {
         {
             public void actionPerformed(ActionEvent e)
             {
+                if (constrainIncrementalAngleCheckBox.isSelected()) {
+                    constrainAngleCheckBox.setSelected(false);
+                }
                 updateEnabled();
             }
         });
@@ -163,20 +166,13 @@ public class ConstraintsOptionsPanel extends JPanel implements OptionsPanel {
         {
             public void actionPerformed(ActionEvent e)
             {
+                if (constrainAngleCheckBox.isSelected()) {
+                    constrainIncrementalAngleCheckBox.setSelected(false);
+                }
                 updateEnabled();
             }
         });
-        
-        //numPartsTextField.addFocusListener(new myFocusListener()
-        //{
-        //    public void focusLost(FocusEvent e)
-        //    {
-        //        double newAngle = 360.0 / Double.parseDouble(numPartsTextField.getText());
-        //        //constrainIncrementalAngleCheckBox.setText("Constrain angle to " + newAngle + " degree increments");
-        //        //[sstein: 16.10.2005]
-        //        constrainIncrementalAngleCheckBox.setText(constrainAngleByStepsOf + " " + newAngle + " " + degree);
-        //    }
-        //});
+
     }
 
     private void updateEnabled() {
@@ -185,17 +181,19 @@ public class ConstraintsOptionsPanel extends JPanel implements OptionsPanel {
         angleConstraintTextField.setEnabled(constrainAngleCheckBox.isSelected());
         relativeAngleRadioButton.setEnabled(constrainAngleCheckBox.isSelected());
         absoluteAngleRadioButton.setEnabled(constrainAngleCheckBox.isSelected());
-        
-        if (constrainIncrementalAngleCheckBox.isSelected())
-            incrementalAnglePanel.setBorder(IncrementalAnglePanelTitleLong);
-        else
-            incrementalAnglePanel.setBorder(IncrementalAnglePanelTitleShort);
-        
-        if (constrainAngleCheckBox.isSelected())
-            anglePanel.setBorder(anglePanelTitleLong);
-        else
-            anglePanel.setBorder(anglePanelTitleShort);
 
+        if (constrainIncrementalAngleCheckBox.isSelected()) {
+            incrementalAnglePanel.setBorder(IncrementalAnglePanelTitleLong);
+        }
+        else {
+            incrementalAnglePanel.setBorder(IncrementalAnglePanelTitleShort);
+        }
+        if (constrainAngleCheckBox.isSelected()) {
+            anglePanel.setBorder(anglePanelTitleLong);
+        }
+        else {
+            anglePanel.setBorder(anglePanelTitleShort);
+        }
     }
 
     public String validateInput()
