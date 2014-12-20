@@ -74,12 +74,14 @@ public class SelectByTypePlugIn extends AbstractPlugIn
     private boolean selectMultiPolygon = false;
     private boolean selectGeometryCollection = false;
     private boolean selectedLayersOnly = true;
+    private boolean excludeEmptyGeometries = false;
     protected AbstractSelection selection;
 
     final static String sSelectByGeometryType = I18N.get("org.openjump.core.ui.plugin.edit.SelectByTypePlugIn.Select-by-Geometry-Type");
     final static String sSelectOnlyTheseTypes = I18N.get("org.openjump.core.ui.plugin.edit.SelectByTypePlugIn.Select-only-these-types");
     final static String sEmptyGeometries = I18N.get("org.openjump.core.ui.plugin.edit.SelectByTypePlugIn.Empty-Geometries");
     final static String sOnSelectedLayersOnly = I18N.get("org.openjump.core.ui.plugin.edit.SelectByTypePlugIn.On-selected-layers-only");
+    final static String sExcludeEmptyGeometries = I18N.get("org.openjump.core.ui.plugin.edit.SelectByTypePlugIn.Exclude-empty-geometries");
 	
     public void initialize(PlugInContext context) throws Exception
     {     
@@ -145,8 +147,9 @@ public class SelectByTypePlugIn extends AbstractPlugIn
     private boolean selectFeature(Feature feature)
     {
         Geometry geo = feature.getGeometry();
-        
-		if (selectPoint && (geo instanceof Point)) return true;
+
+        if (geo.isEmpty() && excludeEmptyGeometries) return false;
+		else if (selectPoint && (geo instanceof Point)) return true;
 		else if (selectMultiPoint && (geo instanceof MultiPoint)) return true;
 		else if (selectLineString && (geo instanceof LineString)) return true;
 		else if (selectLinearRing && (geo instanceof LinearRing)) return true;
@@ -170,6 +173,7 @@ public class SelectByTypePlugIn extends AbstractPlugIn
         dialog.addCheckBox("Polygon", selectPolygon);
         dialog.addCheckBox("MultiPolygon", selectMultiPolygon);
         dialog.addCheckBox("GeometryCollection", selectGeometryCollection);
+        dialog.addCheckBox(sExcludeEmptyGeometries, excludeEmptyGeometries);
         dialog.addCheckBox(sOnSelectedLayersOnly, selectedLayersOnly);
     }
     
@@ -184,6 +188,7 @@ public class SelectByTypePlugIn extends AbstractPlugIn
         selectPolygon = dialog.getCheckBox("Polygon").isSelected();
         selectMultiPolygon = dialog.getCheckBox("MultiPolygon").isSelected();
         selectGeometryCollection = dialog.getCheckBox("GeometryCollection").isSelected();
+        excludeEmptyGeometries = dialog.getCheckBox(sExcludeEmptyGeometries).isSelected();
         selectedLayersOnly = dialog.getCheckBox(sOnSelectedLayersOnly).isSelected();
     }
     

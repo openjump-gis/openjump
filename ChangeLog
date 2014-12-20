@@ -3,6 +3,8 @@
 2014-12-20 mmichaud <m.michael.michaud@orange.fr>
   * fix #383 about project files and gml-fme files encoding
   * fix #381 about angle constraint dialog box
+  * fr #212 add "exclude empty geometries" option to
+    "select feature by geometry type" tool
 
 2014-12-19 mmichaud <m.michael.michaud@orange.fr>
   * now possible to use negative values in MultiRingBufferSelectedPlugin
