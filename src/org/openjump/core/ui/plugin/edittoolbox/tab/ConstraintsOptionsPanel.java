@@ -68,7 +68,7 @@ public class ConstraintsOptionsPanel extends JPanel implements OptionsPanel {
     WorkbenchContext workbenchContext;
     final static String length = I18N.get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.Length");
     final static String incAngle = I18N.get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.Incremental-Angle");
-    final static String incAngleShiftCtrl = I18N.get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.Incremental-Angle-Shift-to-activate-Ctrl-to-close");
+    final static String incAngleShift = I18N.get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.Incremental-Angle-Shift-to-activate");
     final static String angle = I18N.get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.Angle");
     final static String angleShift = I18N.get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.Angle-Shift-to-activate");
     final static String constrainAngleByStepsOf = I18N.get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.Constrain-angle-by-steps-of");
@@ -108,7 +108,7 @@ public class ConstraintsOptionsPanel extends JPanel implements OptionsPanel {
     private GridBagLayout incrementalAnglePanelGridBagLayout = new GridBagLayout();
     private GridBagLayout incrementalAngleSubPanelGridBagLayout = new GridBagLayout();
     private TitledBorder IncrementalAnglePanelTitleShort = new TitledBorder(titleBorder, incAngle);
-    private TitledBorder IncrementalAnglePanelTitleLong = new TitledBorder(titleBorder, incAngleShiftCtrl);
+    private TitledBorder IncrementalAnglePanelTitleLong = new TitledBorder(titleBorder, incAngleShift);
     private JCheckBox constrainIncrementalAngleCheckBox = new JCheckBox();
     private JTextField numPartsTextField = new JTextField(4);
     private GridBagLayout gridBagLayout3 = new GridBagLayout();
