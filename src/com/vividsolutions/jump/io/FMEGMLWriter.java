@@ -36,6 +36,8 @@
  */
 package com.vividsolutions.jump.io;
 
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -149,7 +151,8 @@ public class FMEGMLWriter implements JUMPWriter {
         };
         gmlWriter.setOutputTemplate(gmlTemplate);
 
-        w = new java.io.BufferedWriter(new java.io.FileWriter(outputfname));
+        //w = new java.io.BufferedWriter(new java.io.FileWriter(outputfname));
+        w = new java.io.BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputfname),"UTF-8"));
         gmlWriter.write(featureCollection, w);
         w.close();
     }

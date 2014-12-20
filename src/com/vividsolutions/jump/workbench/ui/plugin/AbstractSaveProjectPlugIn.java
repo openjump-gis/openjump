@@ -100,7 +100,7 @@ public abstract class AbstractSaveProjectPlugIn extends AbstractPlugIn {
       stringWriter.flush();
     }
 
-    FileUtil.setContents(file.getAbsolutePath(), stringWriter.toString());
+    FileUtil.setContents(file.getAbsolutePath(), stringWriter.toString(), "UTF-8");
     task.setName(GUIUtil.nameWithoutExtension(file));
     task.setProjectFile(file);
 

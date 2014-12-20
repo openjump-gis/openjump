@@ -1,10 +1,13 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2014-12-20 mmichaud <m.michael.michaud@orange.fr>
+  * fix #383 about project files and gml-fme files encoding
+
 2014-12-19 mmichaud <m.michael.michaud@orange.fr>
-  * Now possible to use negative values in MultiRingBufferSelectedPlugin
+  * now possible to use negative values in MultiRingBufferSelectedPlugin
 
 2014-12-18 mmichaud <m.michael.michaud@orange.fr>
-  * Add CTSPlugIn in PLUS distribution
+  * add CTSPlugIn in PLUS distribution
 
 * release 1.8.0 ***************************************************************
 

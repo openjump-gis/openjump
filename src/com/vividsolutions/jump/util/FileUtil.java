@@ -27,19 +27,9 @@
 
 package com.vividsolutions.jump.util;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.Closeable;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URI;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -53,63 +43,61 @@ import com.vividsolutions.jump.io.CompressedFile;
  * File-related utility functions.
  */
 public class FileUtil {
-//    /**
-//     * Reads a text file.
-//     * 
-//     * @param textFileName
-//     *                   the pathname of the file to open
-//     * @return the lines of the text file
-//     * @throws FileNotFoundException
-//     *                    if the text file is not found
-//     * @throws IOException
-//     *                    if the file is not found or another I/O error occurs
-//     */
-//    public static List getContents(InputStream is)
-//            throws FileNotFoundException, IOException {
-//        List contents = new ArrayList();
-//        FileReader fileReader = new FileReader(textFileName);
-//        BufferedReader bufferedReader = new BufferedReader (fileReader);
-//        String line = bufferedReader.readLine();
-//
-//        while (line != null) {
-//            contents.add(line);
-//            line = bufferedReader.readLine();
-//        }
-//
-//        return contents;
-//    }
 
+    /**
+     * Gets the content of filename as a list of lines.
+     *
+     * @param filename name of the input file
+     * @return a list of strings representing the file's lines
+     * @throws IOException
+     */
     public static List getContents(String filename) throws IOException {
       return getContents(new FileInputStream(filename));
     }
-    
+
+    /**
+     * Gets the content of filename as a list of lines.
+     *
+     * @param filename name of the input file
+     * @param encoding charset to use to decode filename
+     * @return a list of strings representing the file's lines
+     * @throws IOException
+     */
+    public static List getContents(String filename, String encoding) throws IOException {
+        return getContents(new FileInputStream(filename), encoding);
+    }
+
+    /**
+     * Gets the content a compressed file passed as an URI.
+     *
+     * @param uri uri of the input resource
+     * @return a list of strings representing the compressed file's lines
+     * @throws IOException
+     */
     public static List getContents(URI uri) throws IOException {
       return getContents(CompressedFile.openFile(uri));
     }
-      
+
     /**
-     * Saves the String to a file with the given filename.
-     * 
-     * @param textFileName
-     *                   the pathname of the file to create (or overwrite)
-     * @param contents
-     *                   the data to save
+     * Gets the content of an inputSteam as a list of lines.
+     * @param inputStream
+     * @return a list of lines
      * @throws IOException
-     *                    if an I/O error occurs.
      */
-    public static void setContents(String textFileName, String contents)
-            throws IOException {
-        FileWriter fileWriter = new FileWriter(textFileName, false);
-        BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-        bufferedWriter.write(contents);
-        bufferedWriter.flush();
-        bufferedWriter.close();
-        fileWriter.close();
+    public static List getContents(InputStream inputStream) throws IOException {
+        return getContents(inputStream, Charset.defaultCharset().name());
     }
 
-    public static List getContents(InputStream inputStream) throws IOException {
+    /**
+     * Gets the content of an inputSteam as a list of lines. inputStream is decoded
+     * with the specified charset.
+     * @param inputStream
+     * @return a list of lines
+     * @throws IOException
+     */
+    public static List getContents(InputStream inputStream, String encoding) throws IOException {
         ArrayList contents = new ArrayList();
-        InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+        InputStreamReader inputStreamReader = new InputStreamReader(inputStream, encoding);
         try {
             BufferedReader bufferedReader = new BufferedReader(
                     inputStreamReader);
@@ -127,27 +115,71 @@ public class FileUtil {
         }
         return contents;
     }
+      
+    /**
+     * Saves the String to a file with the given filename.
+     * 
+     * @param filename the pathname of the file to create (or overwrite)
+     * @param contents the data to save
+     * @throws IOException if an I/O error occurs.
+     */
+    public static void setContents(String filename, String contents)
+            throws IOException {
+        setContents(filename, contents, Charset.defaultCharset().name());
+    }
+
+
 
     /**
      * Saves the List of Strings to a file with the given filename.
      * 
-     * @param textFileName
-     *                   the pathname of the file to create (or overwrite)
-     * @param lines
-     *                   the Strings to save as lines in the file
-     * @throws IOException
-     *                    if an I/O error occurs.
+     * @param filename the pathname of the file to create (or overwrite)
+     * @param lines the Strings to save as lines in the file
+     * @throws IOException if an I/O error occurs.
      */
-    public static void setContents(String textFileName, List lines)
+    public static void setContents(String filename, List lines)
             throws IOException {
-        String contents = "";
+        setContents(filename, lines, Charset.defaultCharset().name());
+    }
 
-        for (Iterator i = lines.iterator(); i.hasNext(); ) {
-            String line = (String) i.next();
-            contents += (line + System.getProperty("line.separator"));
+    /**
+     * Saves lines into a file named filename, using encoding charset.
+     *
+     * @param filename the pathname of the file to create (or overwrite)
+     * @param contents the data to save
+     * @throws IOException if an I/O error occurs.
+     */
+    public static void setContents(String filename, String contents, String encoding)
+            throws IOException {
+        List<String> lines = new ArrayList<String>();
+        lines.add(contents);
+        setContents(filename, lines, encoding);
+    }
+
+    /**
+     * Saves lines into a file named filename, using encoding charset.
+     *
+     * @param filename the pathname of the file to create (or overwrite)
+     * @param lines the data to save
+     * @throws IOException if an I/O error occurs.
+     */
+    public static void setContents(String filename, List<String> lines, String encoding)
+            throws IOException {
+        OutputStreamWriter osw = null;
+        try {
+            osw = new OutputStreamWriter(new FileOutputStream(filename), encoding);
+            String lineSep = System.lineSeparator();
+            for (Iterator<String> it = lines.iterator() ; it.hasNext() ; ) {
+                osw.write(it.next());
+                if (it.hasNext()) {
+                    osw.write(lineSep);
+                }
+            }
+        } finally {
+            if (osw != null) {
+                try {osw.close();} catch(IOException e) {}
+            }
         }
-
-        setContents(textFileName, contents);
     }
 
     public static void zip(Collection files, File zipFile) throws IOException {
