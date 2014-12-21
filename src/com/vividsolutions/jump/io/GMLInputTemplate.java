@@ -34,6 +34,7 @@
 package com.vividsolutions.jump.io;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.LineNumberReader;
 import java.util.ArrayList;
 
@@ -54,7 +55,7 @@ import com.vividsolutions.jump.util.FlexibleDateParser;
  *This is a SAX Handler.
  */
 public class GMLInputTemplate extends DefaultHandler {
-    LineNumberReader myReader;
+    //LineNumberReader myReader;
     XMLReader xr;
     String tagBody = "";
     String collectionTag;
@@ -148,34 +149,32 @@ public class GMLInputTemplate extends DefaultHandler {
     /**
      * Helper function - load a GMLInputTemplate file with the stream name "Unknown Stream"
      */
-    public void load(java.io.Reader r) throws ParseException, IOException {
-        load(r, "Unknown Stream");
+    public void load(InputStream is) throws ParseException, IOException {
+        load(is, "Unknown Stream");
     }
 
     /**
      * Main function - load in an XML file. <br>
      * Error handling/reporting also done here.
-     *@param r where to read the XML file from
+     *@param is inputStream where to read the XML file from
      *@param readerName name of the stream for error reporting
      */
-    public void load(java.io.Reader r, String readerName)
+    public void load(InputStream is, String readerName)
         throws ParseException, IOException {
-        myReader = new LineNumberReader(r);
+        //myReader = new LineNumberReader(r);
         streamName = readerName; // for error reporting
 
         try {
-            xr.parse(new InputSource(myReader));
+            xr.parse(new InputSource(is));
         } catch (EndOfParseException e) {
             // This is not really an error
         } catch (SAXParseException e) {
             throw new ParseException(e.getMessage() + " (Is this really a GML file?)  Last Opened Tag: " +
-                lastStartTag_qName + ".  Reader reports last line read as " +
-                myReader.getLineNumber(),
-                streamName + " - " + e.getPublicId() + " (" + e.getSystemId() +
+                lastStartTag_qName, streamName + " - " + e.getPublicId() + " (" + e.getSystemId() +
                 ") ", e.getLineNumber(), e.getColumnNumber());
         } catch (SAXException e) {
             throw new ParseException(e.getMessage() + "  Last Opened Tag: " +
-                lastStartTag_qName, streamName, myReader.getLineNumber(), 0);
+                lastStartTag_qName, streamName, -1, 0);
         }
 
         loaded = (havecollectionTag) && (havefeatureTag) &&

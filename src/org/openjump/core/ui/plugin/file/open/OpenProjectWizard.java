@@ -32,9 +32,7 @@ import javax.swing.*;
 import javax.xml.namespace.QName;
 
 import java.awt.*;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -113,7 +111,8 @@ public class OpenProjectWizard extends AbstractWizardGroup {
       Blackboard blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
       blackboard.put(FILE_CHOOSER_DIRECTORY_KEY, file.getAbsoluteFile().getParent());
     
-      FileReader reader = new FileReader(file);
+      //FileReader reader = new FileReader(file);
+      InputStream inputStream = new FileInputStream(file);
       JUMPWorkbench workbench = null;
       WorkbenchFrame workbenchFrame = null;
       try {
@@ -121,7 +120,7 @@ public class OpenProjectWizard extends AbstractWizardGroup {
         workbenchFrame = workbench.getFrame();
         PlugInManager plugInManager = workbench.getPlugInManager();
         ClassLoader pluginClassLoader = plugInManager.getClassLoader();
-        sourceTask = (Task)new XML2Java(pluginClassLoader).read(reader,
+        sourceTask = (Task)new XML2Java(pluginClassLoader).read(inputStream,
           Task.class);
         initializeDataSources(sourceTask, workbenchFrame.getContext());
         newTask = new Task();
@@ -171,7 +170,7 @@ public class OpenProjectWizard extends AbstractWizardGroup {
         throw e;
       }
       finally {
-        reader.close();
+        inputStream.close();
       }
   }
 

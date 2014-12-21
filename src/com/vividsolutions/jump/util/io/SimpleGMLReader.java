@@ -53,13 +53,13 @@ public class SimpleGMLReader {
     }
 
     /**
-     * @param gml a Reader on an XML document containing GML
+     * @param gml inputStream of an XML document containing GML
      * @param collectionElement the name of the feature-collection tag
      * @param featureElement the name of the feature tag
      * @param geometryElement the name of the geometry tag
      * @return a List of Geometries
      */
-    public List toGeometries(Reader gml, String collectionElement,
+    public List toGeometries(InputStream gml, String collectionElement,
         String featureElement, String geometryElement)
         throws Exception {
         GMLInputTemplate template = template(collectionElement, featureElement,
@@ -84,12 +84,12 @@ public class SimpleGMLReader {
         s += "</JCSGMLInputTemplate>";
 
         GMLInputTemplate template = new GMLInputTemplate();
-        StringReader sr = new StringReader(s);
-
+        //StringReader sr = new StringReader(s);
+        InputStream is = new ByteArrayInputStream(s.getBytes("UTF-8"));
         try {
-            template.load(sr);
+            template.load(is);
         } finally {
-            sr.close();
+            is.close();
         }
 
         return template;
@@ -97,18 +97,18 @@ public class SimpleGMLReader {
 
     /**
      * @param gml
-     * @see #toGeometries(Reader, String, String, String)
+     * @see #toGeometries(InputStream, String, String, String)
      */
     public List toGeometries(String gml, String collectionElement,
         String featureElement, String geometryElement)
         throws Exception {
-        StringReader r = new StringReader(gml);
-
+        //StringReader r = new StringReader(gml);
+        InputStream is = new ByteArrayInputStream(gml.getBytes("UTF-8"));
         try {
-            return toGeometries(r, collectionElement, featureElement,
+            return toGeometries(is, collectionElement, featureElement,
                 geometryElement);
         } finally {
-            r.close();
+            is.close();
         }
     }
 
@@ -118,38 +118,26 @@ public class SimpleGMLReader {
      */
     public FeatureCollection readFMEFile(File file) throws Exception {
         FMEGMLReader fmeGMLReader = new FMEGMLReader();
-        FileReader fileReader = new FileReader(file);
+        //FileReader fileReader = new FileReader(file);
         GMLInputTemplate inputTemplate;
-
+        InputStream inputStream = null;
         try {
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
-
-            try {
-                inputTemplate = fmeGMLReader.getGMLInputTemplate(bufferedReader,
-                        file.getPath());
-            } finally {
-                bufferedReader.close();
-            }
+            inputStream = new BufferedInputStream(new FileInputStream(file));
+            inputTemplate = fmeGMLReader.getGMLInputTemplate(inputStream, file.getPath());
         } finally {
-            fileReader.close();
+            inputStream.close();
         }
 
         GMLReader gmlReader = new GMLReader();
         gmlReader.setInputTemplate(inputTemplate);
 
         FeatureCollection fc;
-        fileReader = new FileReader(file);
 
         try {
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
-
-            try {
-                fc = gmlReader.read(bufferedReader);
-            } finally {
-                bufferedReader.close();
-            }
+            inputStream = new BufferedInputStream(new FileInputStream(file));
+            fc = gmlReader.read(inputStream);
         } finally {
-            fileReader.close();
+            inputStream.close();
         }
 
         return fc;

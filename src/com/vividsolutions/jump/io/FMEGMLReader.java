@@ -38,8 +38,8 @@ package com.vividsolutions.jump.io;
 
 import com.vividsolutions.jump.feature.FeatureCollection;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.nio.charset.Charset;
 
 
 /**
@@ -71,7 +71,8 @@ public class FMEGMLReader extends AbstractJUMPReader {
     public FeatureCollection read(DriverProperties dp)
         throws IllegalParametersException, Exception {
         FeatureCollection result;
-        java.io.Reader r;
+        //java.io.Reader r;
+        InputStream inputStream;
         GMLInputTemplate inputTemplate;
         GMLReader gmlReader = new GMLReader();
         String inputfname;
@@ -92,41 +93,39 @@ public class FMEGMLReader extends AbstractJUMPReader {
         }
 
         if (isCompressed) {
-            r = new BufferedReader(new InputStreamReader(
-                        CompressedFile.openFile(inputfname,
-                            dp.getProperty("CompressedFile"))));
+            inputStream = CompressedFile.openFile(inputfname,
+                            dp.getProperty("CompressedFile"));
         } else {
-            r = new BufferedReader(new java.io.FileReader(inputfname));
+            inputStream = new BufferedInputStream(new FileInputStream(inputfname));
         }
 
         try {
             try {
-                inputTemplate = getGMLInputTemplate(r, inputfname);
+                inputTemplate = getGMLInputTemplate(inputStream, inputfname);
             } finally {
-                r.close();
+                inputStream.close();
             }
         } finally {
-            r.close();
+            inputStream.close();
         }
 
         if (isCompressed) {
-            r = new BufferedReader(new InputStreamReader(
-                        CompressedFile.openFile(inputfname,
-                            dp.getProperty("CompressedFile"))));
+            inputStream = CompressedFile.openFile(inputfname,
+                            dp.getProperty("CompressedFile"));
         } else {
-            r = new BufferedReader(new java.io.FileReader(inputfname));
+            inputStream = new BufferedInputStream(new FileInputStream(inputfname));
         }
 
         try {
             gmlReader.setInputTemplate(inputTemplate);
 
             try {
-                result = gmlReader.read(r, inputfname);
+                result = gmlReader.read(inputStream, inputfname);
             } finally {
-                r.close();
+                inputStream.close();
             }
         } finally {
-            r.close();
+            inputStream.close();
         }
 
         return result;
@@ -136,12 +135,13 @@ public class FMEGMLReader extends AbstractJUMPReader {
      * Parse the input file and make a GMLInputTemplate out of it
      *
      * @param fname just used in error message
-     * @param r Java Reader
+     * @param inputStream a UTF-8 encoded input stream
      */
-    public GMLInputTemplate getGMLInputTemplate(java.io.Reader r, String fname)
+    public GMLInputTemplate getGMLInputTemplate(InputStream inputStream, String fname)
         throws java.io.IOException, ParseException {
         GMLInputTemplate result;
-        java.io.LineNumberReader reader = new java.io.LineNumberReader(r);
+        java.io.LineNumberReader reader = new java.io.LineNumberReader(
+                new InputStreamReader(inputStream, Charset.forName("UTF-8")));
         int lineNo = 0;
         boolean foundStartTag = false;
         boolean foundEndTag = false;
@@ -268,10 +268,11 @@ public class FMEGMLReader extends AbstractJUMPReader {
         templateText = templateText + "</JCSGMLInputTemplate>\n";
 
         // System.out.println(templateText);
-        java.io.StringReader sr = new java.io.StringReader(templateText);
+        //java.io.StringReader sr = new java.io.StringReader(templateText);
+        InputStream is = new ByteArrayInputStream(templateText.getBytes("UTF-8"));
         result = new GMLInputTemplate();
-        result.load(sr, "Auto created FME GML input template");
-        sr.close();
+        result.load(is, "Auto created FME GML input template");
+        is.close();
 
         return result;
     }

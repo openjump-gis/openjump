@@ -56,17 +56,22 @@ public class XML2Java extends XMLBinder {
     public Object read(Reader reader, Class c) throws Exception {
         return read(new SAXBuilder().build(reader).getRootElement(), c);
     }
+    public Object read(InputStream inputStream, Class c) throws Exception {
+        return read(new SAXBuilder().build(inputStream).getRootElement(), c);
+    }
     public Object read(File file, Class c) throws Exception {
-        FileReader fileReader = new FileReader(file);
+        //FileReader fileReader = new FileReader(file);
+        BufferedInputStream bis = null;
         try {
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            //BufferedReader bufferedReader = new BufferedReader(fileReader);
+            bis = new BufferedInputStream(new FileInputStream(file));
             try {
-                return new XML2Java().read(bufferedReader, c);
+                return new XML2Java().read(bis, c);
             } finally {
-                bufferedReader.close();
+                bis.close();
             }
         } finally {
-            fileReader.close();
+            bis.close();
         }
     }
     private void read(final Element tag, final Object object, List specElements)

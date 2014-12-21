@@ -7,6 +7,7 @@ import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jump.util.io.SimpleGMLReader;
 import junit.framework.TestCase;
 
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.util.List;
 
@@ -25,13 +26,13 @@ public class SimpleGMLReaderTestCase extends TestCase {
 
   public void test() throws Exception {
     List geometries;
-    FileReader fileReader = new FileReader(SimpleGMLReaderTestCase.class.getClassLoader().getResource("jumptest/data/3points.xml").toURI().getPath());
+    FileInputStream fileInputStream = new FileInputStream(SimpleGMLReaderTestCase.class.getClassLoader().getResource("jumptest/data/3points.xml").toURI().getPath());
     try {
-      geometries = new SimpleGMLReader().toGeometries(fileReader,
+      geometries = new SimpleGMLReader().toGeometries(fileInputStream,
           "dataFeatures", "Feature", "gml:pointProperty");
     }
     finally {
-      fileReader.close();
+      fileInputStream.close();
     }
     assertEquals(3, geometries.size());
     assertEquals(new Coordinate(1195523.78545869, 382130.432621668),

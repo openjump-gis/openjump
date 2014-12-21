@@ -688,7 +688,7 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
       }
     }
 
-    java.io.Reader r;
+    //java.io.Reader r;
 
     this.setInputTemplate(gmlTemplate);
 
@@ -714,14 +714,13 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
    * readerName "Unknown Stream". You should have already called
    * setInputTempalate().
    *
-   * @param r
-   *          reader to read the GML File from
+   * @param is input stream to read the GML File from
    * @return Description of the Return Value
    * @exception Exception
    *              Description of the Exception
    */
-  public FeatureCollection read(java.io.Reader r) throws Exception {
-    return read(r, "Unknown Stream");
+  public FeatureCollection read(InputStream is) throws Exception {
+    return read(is, "Unknown Stream");
   }
 
   /**
@@ -969,9 +968,9 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
   private GMLInputTemplate inputTemplateFromFile(InputStream in)
       throws ParseException, FileNotFoundException, IOException {
     GMLInputTemplate result;
-    java.io.Reader r = new BufferedReader(new InputStreamReader(in));
-    result = inputTemplate(r);
-    r.close();
+    //java.io.Reader r = new BufferedReader(new InputStreamReader(in));
+    result = inputTemplate(in);
+    //r.close();
 
     return result;
   }
@@ -979,9 +978,9 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
   private GMLInputTemplate inputTemplateFromFile(String filename)
       throws ParseException, FileNotFoundException, IOException {
     GMLInputTemplate result;
-    java.io.Reader r = new BufferedReader(new FileReader(filename));
-    result = inputTemplate(r);
-    r.close();
+    InputStream is = new BufferedInputStream(new FileInputStream(filename));
+    result = inputTemplate(is);
+    is.close();
 
     return result;
   }
@@ -1048,11 +1047,11 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
     }
   }
 
-  private GMLInputTemplate inputTemplate(java.io.Reader r) throws IOException,
+  private GMLInputTemplate inputTemplate(InputStream is) throws IOException,
       ParseException {
     GMLInputTemplate gmlTemplate = new GMLInputTemplate();
-    gmlTemplate.load(r);
-    r.close();
+    gmlTemplate.load(is);
+    is.close();
 
     if (!(gmlTemplate.loaded)) {
       throw new ParseException("Failed to load GML input template");
