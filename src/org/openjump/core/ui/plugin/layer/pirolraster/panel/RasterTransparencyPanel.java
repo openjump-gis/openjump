@@ -45,6 +45,9 @@ import com.vividsolutions.jump.workbench.ui.style.StylePanel;
  * 
  * @version $Rev: 2446 $
  * [sstein] - 22.Feb.2009 - modified to work in OpenJUMP
+ * 
+ * @version $Rev: 4221 $ 
+ * [Giuseppe Aruta] Dic 23 2014-  Derived  from ChangeRasterImageStyleDialog
  */
 public class RasterTransparencyPanel extends JPanel implements ValueChecker, ActionListener, StylePanel {
 	private static final long serialVersionUID = 619781257815627447L;

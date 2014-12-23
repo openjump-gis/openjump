@@ -37,6 +37,7 @@ import com.vividsolutions.jump.workbench.ui.style.StylePanel;
 
 
 /**
+ * @version $Rev: 4221 $ 
  * Dic 23 2014
  * [Giuseppe Aruta] - Transformed in a MultiImputDialog. 
  * Add Added Raster Transparency, ScaleStyle and ColorEditor Panels

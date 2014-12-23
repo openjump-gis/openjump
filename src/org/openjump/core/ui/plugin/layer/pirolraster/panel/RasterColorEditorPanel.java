@@ -28,6 +28,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 
 /**
+ * @version $Rev: 4221 $ 
  * Dic 23 2014
  * [Giuseppe Aruta] - Derived  from RasterColorEditorDialog
  */

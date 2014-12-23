@@ -26,6 +26,7 @@ import javax.swing.JButton;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.ui.util.ScreenScale;
 /**
+ * @version $Rev: 4221 $ 
  * Dic 23 2014
  *  Giuseppe Aruta
  *  Panel that allows to set Scale display of
@@ -33,6 +34,8 @@ import org.openjump.core.ui.util.ScreenScale;
  *  Panel
  *  Refractor from AdbToolBox version 
  *  ver 1.0 2014_02_10
+ *  
+ *  
  */
 public class RasterScaleStylePanel extends JPanel implements StylePanel {
 
