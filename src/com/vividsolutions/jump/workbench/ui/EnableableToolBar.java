@@ -55,6 +55,7 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 
 public class EnableableToolBar extends JToolBar {
     protected HashMap buttonToEnableCheckMap = new HashMap();
+    protected HashMap buttonToNameMap = new HashMap();
     private InvokeMethodActionListener updateStateListener = new InvokeMethodActionListener(this, "updateEnabledState");
 
     public EnableCheck getEnableCheck(AbstractButton button) {
@@ -75,7 +76,16 @@ public class EnableableToolBar extends JToolBar {
             JComponent component = (JComponent) i.next();
             EnableCheck enableCheck =
                 (EnableCheck) buttonToEnableCheckMap.get(component);
-            component.setEnabled(enableCheck.check(component) == null);
+            String name = (String) buttonToNameMap.get(component);
+            
+            String check = enableCheck.check(component);
+            if (check!=null){
+              component.setEnabled(false);
+              component.setToolTipText(name +" - "+ check);
+            } else{
+              component.setEnabled(true);
+              component.setToolTipText(name);
+            }
         }
     }
 
@@ -96,15 +106,7 @@ public class EnableableToolBar extends JToolBar {
         Icon icon,
         ActionListener actionListener,
         EnableCheck enableCheck) {
-        if (enableCheck != null) {
-            buttonToEnableCheckMap.put(button, enableCheck);
-        }
-        button.setIcon(icon);
-        button.setMargin(new Insets(0, 0, 0, 0));
-        button.setToolTipText(tooltip);
-        button.addActionListener(actionListener);
-        button.addActionListener(updateStateListener);
-        add(button);
+        add(-1, button, tooltip, icon, actionListener, enableCheck);
     }
 
     public void add(final int index, final AbstractButton button,
@@ -113,6 +115,7 @@ public class EnableableToolBar extends JToolBar {
         if (enableCheck != null) {
             buttonToEnableCheckMap.put(button, enableCheck);
         }
+        buttonToNameMap.put(button, tooltip);
         button.setIcon(icon);
         button.setMargin(new Insets(0, 0, 0, 0));
         button.setToolTipText(tooltip);
