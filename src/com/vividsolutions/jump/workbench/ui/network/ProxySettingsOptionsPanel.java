@@ -464,7 +464,7 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
       settings.setPassword(StringUtils.trim(new String(proxyPasswordTextField
           .getPassword())));
       // preprocess direct connect value
-      // - we allow commas (,) as separator
+      // - we allow commas (;,) as separator
       // - we remove space chars as they confuse the jre
       String directConnectTo = directConnectToTextField.getText()
           .replaceAll("[,;]+", "|").replaceAll("\\s", "");
