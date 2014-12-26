@@ -128,8 +128,8 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
   /** Nombre asociado al panel de configuracion */
   public final static String NAME = getMessage("network-properties");
   
-  private final static String DEFAULT_TEST_URL = "http://google.com";
-  private static final String DEFAULT_TEST_URL_REGEX = "^https?://google.com/?$";
+  private final static String DEFAULT_TEST_URL = "http://www.osgeo.org/";
+  private static final String DEFAULT_TEST_URL_REGEX = "^https?://www.osgeo.org/?$";
 
   /** Test connection panel */
   private JPanel testConnectionPanel;
@@ -463,8 +463,13 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
       settings.setUserName(StringUtils.trim(proxyUserTextField.getText()));
       settings.setPassword(StringUtils.trim(new String(proxyPasswordTextField
           .getPassword())));
-      settings.setDirectConnectionTo(StringUtils.trim(directConnectToTextField
-          .getText()));
+      // preprocess direct connect value
+      // - we allow commas (,) as separator
+      // - we remove space chars as they confuse the jre
+      String directConnectTo = directConnectToTextField.getText()
+          .replaceAll("[,;]+", "|").replaceAll("\\s", "");
+      System.out.println(directConnectTo);
+      settings.setDirectConnectionTo(directConnectTo);
     }
 
     return settings;
