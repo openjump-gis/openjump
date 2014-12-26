@@ -196,7 +196,7 @@ public class JUMPFeatureFactory {
         if ( featureType != null ) {
             Map<URI, GMLSchema> schemaMap = new HashMap<URI, GMLSchema>();
             String dft = server.getDescribeTypeURL( featureType );
-            GMLSchemaDocument doc = new GMLSchemaDocument();
+            GMLSchemaDocument doc = new de.latlon.deejump.wfs.client.deegree2mods.GMLSchemaDocument();
             try {
                 doc.load( new URL( dft ) );
                 LOG.debug( "Feature type schema:\n" + doc.getAsPrettyString() );

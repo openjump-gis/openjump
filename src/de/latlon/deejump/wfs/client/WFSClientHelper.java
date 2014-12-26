@@ -42,18 +42,15 @@
 
 package de.latlon.deejump.wfs.client;
 
-import java.io.IOException;
+import java.io.*;
+import java.net.*;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
-import org.deegree.framework.log.ILogger;
-import org.deegree.framework.log.LoggerFactory;
+import org.apache.commons.httpclient.*;
+import org.apache.commons.httpclient.methods.*;
+import org.deegree.enterprise.*;
+import org.deegree.framework.log.*;
 
-import de.latlon.deejump.wfs.DeeJUMPException;
+import de.latlon.deejump.wfs.*;
 
 /**
  * Does the posting and getting of requests/reponses for the WFSPanel.
@@ -77,39 +74,13 @@ public class WFSClientHelper {
                             throws DeeJUMPException {
         LOG.logDebug( "WFS GetFeature: " + serverUrl + " -> " + request );
 
-        HttpClient httpclient = new HttpClient();
-
-        String proxyUser = System.getProperty( "proxyUser" );
-        String proxyPasswd = System.getProperty( "proxyPassword" );
-        String proxyHost = System.getProperty( "proxyHost" );
-        String port = System.getProperty( "proxyPort" );
-
-        int proxyPort = 80;
-        if ( port != null ) {
-            try {
-                proxyPort = Integer.valueOf( port ).intValue();
-            } catch ( Exception e ) {
-                e.printStackTrace();
-                LOG.logDebug( "Cannot convert port into an integer: " + port );
-            }
-        }
-
-        LOG.logDebug( "Proxy settings: host='" + proxyHost + "' port='" + proxyPort + "' " + " user='" + proxyUser
-                      + "' pw='" + proxyPasswd + "'" );
-
-        if ( proxyHost != null ) {
-            httpclient.getHostConfiguration().setProxy( proxyHost, proxyPort );
-
-            if ( proxyUser != null ) {
-                httpclient.getState().setCredentials( new AuthScope( proxyHost, proxyPort ),
-                                                      new UsernamePasswordCredentials( proxyUser, proxyPasswd ) );
-            }
-        }
+        HttpClient httpclient = new WFSHttpClient();
 
         PostMethod httppost = new PostMethod( serverUrl );
         httppost.setRequestEntity( new StringRequestEntity( request ) );
 
         try {
+            WebUtils.enableProxyUsage( httpclient, new URL(serverUrl) );
             httpclient.executeMethod( httppost );
             return httppost.getResponseBodyAsString();
         } catch ( HttpException e ) {

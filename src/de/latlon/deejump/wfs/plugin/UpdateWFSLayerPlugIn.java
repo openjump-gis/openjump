@@ -82,6 +82,7 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.log4j.Logger;
 import org.deegree.datatypes.QualifiedName;
+import org.deegree.enterprise.WebUtils;
 import org.deegree.framework.xml.NamespaceContext;
 import org.deegree.framework.xml.XMLException;
 import org.deegree.framework.xml.XMLFragment;
@@ -102,6 +103,7 @@ import com.vividsolutions.jump.workbench.plugin.ThreadedBasePlugIn;
 import com.vividsolutions.jump.workbench.ui.HTMLFrame;
 import com.vividsolutions.jump.workbench.ui.WorkbenchToolBar;
 
+import de.latlon.deejump.wfs.client.WFSHttpClient;
 import de.latlon.deejump.wfs.jump.WFSFeature;
 import de.latlon.deejump.wfs.jump.WFSLayer;
 
@@ -309,10 +311,11 @@ public class UpdateWFSLayerPlugIn extends ThreadedBasePlugIn {
             }
         }
 
-        HttpClient client = new HttpClient();
+        HttpClient client = new WFSHttpClient();
         PostMethod post = new PostMethod( wfsUrl );
         post.setRequestEntity( new StringRequestEntity( xmlRequest, "text/xml", "UTF-8" ) );
 
+        WebUtils.enableProxyUsage( client, new URL(wfsUrl) );
         int code = client.executeMethod( post );
         if ( code == 200 ) {
             result.load( post.getResponseBodyAsStream(), "http://www.systemid.org" );
@@ -395,8 +398,8 @@ public class UpdateWFSLayerPlugIn extends ThreadedBasePlugIn {
 
     private static EnableCheck createEnableCheck( final WorkbenchContext workbenchContext ) {
         MultiEnableCheck mec = new MultiEnableCheck();
-        mec.add( createExactlyNWfsLayersMustBeSelectedCheck( workbenchContext, 1 ) );
-        mec.add( createFeatureMustHaveChangedCheck( workbenchContext ) );
+//        mec.add( createExactlyNWfsLayersMustBeSelectedCheck( workbenchContext, 1 ) );
+//        mec.add( createFeatureMustHaveChangedCheck( workbenchContext ) );
 
         return mec;
     }

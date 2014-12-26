@@ -67,9 +67,7 @@ public class WFServiceWrapper_1_1_0 extends AbstractWFSWrapper {
     private void init()
                             throws DeeJUMPException {
 
-        createHttpClient();
-
-        WFSCapabilitiesDocument wfsCapsDoc = new WFSCapabilitiesDocument();
+        WFSCapabilitiesDocument wfsCapsDoc = new de.latlon.deejump.wfs.client.deegree2mods.WFSCapabilitiesDocument();
         try {
             String caps = getCapabilitiesURL();
             LOG.debug( "Sending capabilities request: " + caps );

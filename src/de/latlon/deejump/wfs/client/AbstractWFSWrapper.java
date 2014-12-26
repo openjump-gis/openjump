@@ -9,28 +9,19 @@
 
 package de.latlon.deejump.wfs.client;
 
-import java.io.StringReader;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.net.*;
+import java.util.*;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.params.HttpClientParams;
-import org.apache.log4j.Logger;
-import org.deegree.datatypes.QualifiedName;
-import org.deegree.datatypes.Types;
-import org.deegree.framework.xml.DOMPrinter;
-import org.deegree.model.feature.schema.FeatureType;
-import org.deegree.model.feature.schema.GMLSchema;
-import org.deegree.model.feature.schema.GMLSchemaDocument;
-import org.deegree.model.feature.schema.PropertyType;
-import org.deegree.ogcwebservices.OWSUtils;
-import org.deegree.ogcwebservices.wfs.capabilities.WFSFeatureType;
+import org.apache.log4j.*;
+import org.deegree.datatypes.*;
+import org.deegree.framework.xml.*;
+import org.deegree.model.feature.schema.*;
+import org.deegree.ogcwebservices.*;
+import org.deegree.ogcwebservices.wfs.capabilities.*;
 
-import de.latlon.deejump.wfs.DeeJUMPException;
-import de.latlon.deejump.wfs.auth.UserData;
+import de.latlon.deejump.wfs.*;
+import de.latlon.deejump.wfs.auth.*;
 
 /**
  * Superclass that wraps the basic functionality of a (simple) WFS. This class encapsulates the
@@ -60,8 +51,6 @@ public abstract class AbstractWFSWrapper {
     private Map<String, String> featureTypeToSchemaXML;
 
     private Map<String, QualifiedName[]> geoPropsNameToQNames;
-
-    private HttpClient httpClient;
 
     protected UserData logins;
 
@@ -103,7 +92,6 @@ public abstract class AbstractWFSWrapper {
         this.featureTypeToSchema = new HashMap<String, GMLSchema>();
         this.featureTypeToSchemaXML = new HashMap<String, String>();
         this.geoPropsNameToQNames = new HashMap<String, QualifiedName[]>();
-        createHttpClient();
 
     }
 
@@ -197,7 +185,7 @@ public abstract class AbstractWFSWrapper {
         String serverReq = getDescribeTypeURL( ft );
 
         try {
-            GMLSchemaDocument xsdDoc = new GMLSchemaDocument();
+            GMLSchemaDocument xsdDoc = new de.latlon.deejump.wfs.client.deegree2mods.GMLSchemaDocument();
             xsdDoc.load( new URL( serverReq ) );
             return DOMPrinter.nodeToString( xsdDoc.getRootElement(), null );
         } catch ( Exception e ) {
@@ -312,16 +300,6 @@ public abstract class AbstractWFSWrapper {
      */
     public QualifiedName[] getGeometryProperties( String featureType ) {
         return this.geoPropsNameToQNames.get( featureType );
-    }
-
-    protected void createHttpClient() {
-        httpClient = new HttpClient();
-
-        HttpClientParams clientPars = new HttpClientParams();
-        clientPars.setConnectionManagerTimeout( 60000 );
-
-        httpClient.setParams( clientPars );
-
     }
 
 }
