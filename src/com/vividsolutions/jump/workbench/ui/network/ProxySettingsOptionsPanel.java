@@ -468,7 +468,6 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
       // - we remove space chars as they confuse the jre
       String directConnectTo = directConnectToTextField.getText()
           .replaceAll("[,;]+", "|").replaceAll("\\s", "");
-      System.out.println(directConnectTo);
       settings.setDirectConnectionTo(directConnectTo);
     }
 
