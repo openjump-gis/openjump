@@ -50,11 +50,14 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.TreeSet;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -130,6 +133,9 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
   
   private final static String DEFAULT_TEST_URL = "http://www.osgeo.org/";
   private static final String DEFAULT_TEST_URL_REGEX = "^https?://www.osgeo.org/?$";
+  
+  private final static String[] uservars = new String[]{ "User", "user" , "UserName", "Username", "username" };
+  private final static String[] passvars = new String[] { "Pass", "pass", "PassWord", "Password", "password" };
 
   /** Test connection panel */
   private JPanel testConnectionPanel;
@@ -535,43 +541,39 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
 
     Properties systemProperties = System.getProperties();
 
+    //printProps("vorher");
+    
     // Backup current properties
-    Object proxySet = systemProperties.get("http.proxySet");
-    Object proxyHost = systemProperties.get("http.proxyHost");
-    Object proxyHostSSL = systemProperties.get("https.proxyHost");
-    Object proxyPort = systemProperties.get("http.proxyPort");
-    Object proxyPortSSL = systemProperties.get("https.proxyPort");
-    Object proxyUserName = systemProperties.get("http.proxyUserName");
-    Object proxyPassword = systemProperties.get("http.proxyPassword");
-    Object nonProxyHosts = systemProperties.get("http.nonProxyHosts");
+    List<String> backupVars = new ArrayList(Arrays.asList(new String[] {
+        "http.proxyHost", "https.proxyHost", "http.proxyPort",
+        "https.proxyPort", "http.nonProxyHosts" }));
+
+    // we double username/password here as both seem to be used by different packages
+    // java standard is http.proxyUser/http.proxyPass
+    // deegree2 uses http.proxyUser/http.proxyPassword via the deprecated commons httpclient
+    List<String> authVars = new ArrayList<String>(Arrays.asList(uservars));
+    authVars.addAll(Arrays.asList(passvars));
+    for (String string : authVars) {
+      backupVars.add("http.proxy"+string);
+      backupVars.add("https.proxy"+string);
+    }
+    
+    // now backup defined settings
+    Map backupSettings = new HashMap<String, Object>();
+    for (String key : backupVars) {
+      Object value = systemProperties.get(key);
+      if (value!=null)
+        backupSettings.put(key, value);
+    }
 
     URLConnection con = null;
     try {
       HTTPProxySettings settings = buildSettingsFromUserParameters();
       applySettingsToSystem(settings);
 
+      //printProps("während");
+      
       String testUrl = testUrlTextField.getText().trim();
-      if (testUrl.isEmpty())
-        testUrl = "https://www.google.com";
-
-      // Properties ps = System.getProperties();
-      // TreeSet<String> v = new TreeSet(ps.keySet());
-      // String out = "";
-      // for (String key : v) {
-      // if (key.matches("^http.*"))
-      // out += key + "=" + ps.getProperty(key) + "\n";
-      // }
-      // System.out.println(out);
-
-      // try
-      // {
-      // ProxySelector selector = ProxySelector.getDefault();
-      // List<Proxy> proxyList = selector.select(new URI(testUrl));
-      // System.out.println(proxyList);
-      // }
-      // catch (IllegalArgumentException e)
-      // {
-      // }
 
       URL url = new URL(testUrl);
       con = url.openConnection();
@@ -597,55 +599,18 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
 
     } finally {
 
-      // Restore them
-      if (proxySet != null) {
-        systemProperties.put("http.proxySet", proxySet);
-      } else {
-        systemProperties.remove("http.proxySet");
+      // Restore settings as they were before
+      for (String key : backupVars) {
+        Object value = backupSettings.get(key);
+        if (value != null)
+          systemProperties.put(key, value);
+        else
+          systemProperties.remove(key);
       }
 
-      if (proxyHost != null) {
-        systemProperties.put("http.proxyHost", proxyHost);
-      } else {
-        systemProperties.remove("http.proxyHost");
-      }
-
-      if (proxyPort != null) {
-        systemProperties.put("http.proxyPort", proxyPort);
-      } else {
-        systemProperties.remove("http.proxyPort");
-      }
-
-      if (proxyHostSSL != null) {
-        systemProperties.put("https.proxyHost", proxyHostSSL);
-      } else {
-        systemProperties.remove("http.proxyHost");
-      }
-
-      if (proxyPortSSL != null) {
-        systemProperties.put("https.proxyPort", proxyPortSSL);
-      } else {
-        systemProperties.remove("https.proxyPort");
-      }
-
-      if (proxyUserName != null) {
-        systemProperties.put("http.proxyUserName", proxyUserName);
-      } else {
-        systemProperties.remove("http.proxyUserName");
-      }
-
-      if (proxyPassword != null) {
-        systemProperties.put("http.proxyPassword", proxyPassword);
-      } else {
-        systemProperties.remove("http.proxyPassword");
-      }
-
-      if (nonProxyHosts != null) {
-        systemProperties.put("http.nonProxyHosts", nonProxyHosts);
-      } else {
-        systemProperties.remove("http.nonProxyHosts");
-      }
+      //printProps("danach");
     }
+    
   }
 
   private void readConnection(URLConnection con) throws IOException {
@@ -678,21 +643,37 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
     Properties systemSettings = System.getProperties();
     if (settings != null) {
 
-      systemSettings.put("http.proxySet", "true");
       systemSettings.put("http.proxyHost", settings.getHost());
       systemSettings.put("https.proxyHost", settings.getHost());
       systemSettings.put("http.proxyPort", settings.getPort() + "");
       systemSettings.put("https.proxyPort", settings.getPort() + "");
+
+      // we double username/password here as both seem to be used by different packages
+      // java standard is http.proxyUser/http.proxyPass
+      // deegree2 uses http.proxyUser/http.proxyPassword
+
       if (StringUtils.isNotEmpty(settings.getUserName())) {
-        systemSettings.put("http.proxyUserName", settings.getUserName());
+        for (String id : uservars) {
+          systemSettings.put("http.proxy"+id, settings.getUserName());
+          systemSettings.put("https.proxy"+id, settings.getUserName());
+        }
       } else {
-        systemSettings.remove("http.proxyUserName");
+        for (String id : uservars) {
+          systemSettings.remove("http.proxy"+id);
+          systemSettings.remove("https.proxy"+id);
+        }
       }
 
       if (StringUtils.isNotEmpty(settings.getPassword())) {
-        systemSettings.put("http.proxyPassword", settings.getPassword());
+        for (String id : passvars) {
+          systemSettings.put("http.proxy" + id, settings.getPassword());
+          systemSettings.put("https.proxy" + id, settings.getPassword());
+        }
       } else {
-        systemSettings.remove("http.proxyPassword");
+        for (String id : passvars) {
+          systemSettings.remove("http.proxy" + id);
+          systemSettings.remove("https.proxy" + id);
+        }
       }
 
       if (StringUtils.isNotEmpty(settings.getDirectConnectionTo())) {
@@ -729,13 +710,17 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
       }
 
     } else {
-      systemSettings.remove("http.proxySet");
       systemSettings.remove("http.proxyHost");
       systemSettings.remove("https.proxyHost");
       systemSettings.remove("http.proxyPort");
       systemSettings.remove("https.proxyPort");
-      systemSettings.remove("http.proxyUserName");
-      systemSettings.remove("http.proxyPassword");
+      // remove all user/pass variables
+      ArrayList<String> authVars = new ArrayList<String>(Arrays.asList(uservars));
+      authVars.addAll(Arrays.asList(passvars));
+      for (String string : authVars) {
+        systemSettings.remove("http.proxy"+string);
+        systemSettings.remove("https.proxy"+string);
+      }
       systemSettings.remove("http.nonProxyHosts");
     }
   }
@@ -747,6 +732,16 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
     applySettingsToSystem(settings);
   }
 
+  private static void printProps(String title){
+    Properties ps = System.getProperties();
+    TreeSet<String> v = new TreeSet(ps.keySet());
+    String out = title+"\n";
+    for (String key : v) {
+      if (key.matches("^http.*"))
+        out += key + "=" + ps.getProperty(key) + "\n";
+    }
+    System.out.println(out);
+  }
 }
 
 class DNSResolver implements Runnable {
