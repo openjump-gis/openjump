@@ -8,65 +8,35 @@
  */
 package de.latlon.deejump.wfs.ui;
 
-import static javax.swing.JFileChooser.APPROVE_OPTION;
-import static javax.swing.JOptionPane.ERROR_MESSAGE;
-import static javax.swing.JOptionPane.showMessageDialog;
-import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED;
-import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED;
+import static javax.swing.JFileChooser.*;
+import static javax.swing.JOptionPane.*;
+import static javax.swing.ScrollPaneConstants.*;
 
-import java.awt.Component;
-import java.awt.Dialog;
+import java.awt.*;
 import java.awt.Dimension;
-import java.awt.LayoutManager;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
+import java.awt.event.*;
+import java.io.*;
+import java.util.*;
 import java.util.List;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
-import javax.swing.border.Border;
+import javax.swing.*;
+import javax.swing.border.*;
 
-import org.apache.log4j.Logger;
-import org.deegree.datatypes.QualifiedName;
-import org.deegree.framework.xml.XMLFragment;
+import org.apache.log4j.*;
+import org.deegree.datatypes.*;
+import org.deegree.framework.xml.*;
 import org.deegree.model.spatialschema.Geometry;
-import org.deegree.ogcwebservices.wfs.capabilities.WFSFeatureType;
-import org.xml.sax.SAXException;
+import org.deegree.ogcwebservices.wfs.capabilities.*;
+import org.xml.sax.*;
 
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.*;
 
-import de.latlon.deejump.wfs.DeeJUMPException;
-import de.latlon.deejump.wfs.auth.LoginDialog;
-import de.latlon.deejump.wfs.auth.MD5Hasher;
-import de.latlon.deejump.wfs.auth.UserData;
-import de.latlon.deejump.wfs.client.AbstractWFSWrapper;
-import de.latlon.deejump.wfs.client.WFSClientHelper;
-import de.latlon.deejump.wfs.client.WFServiceWrapper_1_0_0;
-import de.latlon.deejump.wfs.client.WFServiceWrapper_1_1_0;
-import de.latlon.deejump.wfs.i18n.I18N;
+import de.latlon.deejump.wfs.*;
+import de.latlon.deejump.wfs.auth.*;
+import de.latlon.deejump.wfs.client.*;
+import de.latlon.deejump.wfs.i18n.*;
+import de.latlon.deejump.wfs.plugin.*;
 
 /**
  * This is a panel which contains other basic GUIs for accessing Features of a WFS.
@@ -163,7 +133,7 @@ public class WFSPanel extends JPanel {
     private UserData logins;
 
     private WorkbenchContext context;
-
+    
     /**
      * @param context
      * @param urlList
@@ -171,7 +141,6 @@ public class WFSPanel extends JPanel {
      */
     public WFSPanel( WorkbenchContext context, List<String> urlList ) {
         this.context = context;
-        setWFSList( urlList );
         initGUI();
         this.options = new WFSOptions();
     }
@@ -183,13 +152,23 @@ public class WFSPanel extends JPanel {
 
         // combo box for WFS URLs
         serverCombo = createServerCombo();
-        Dimension d = new Dimension( 400, 45 );
-        serverCombo.setPreferredSize( d );
-        serverCombo.setMaximumSize( d );
+//        Dimension d = new Dimension( 400, 45 );
+//        serverCombo.setPreferredSize( d );
+//        serverCombo.setMaximumSize( d );
         String txt = I18N.get( "FeatureResearchDialog.wfsService" );
-        serverCombo.setBorder( BorderFactory.createTitledBorder( txt ) );
+        serverCombo.setBorder( BorderFactory.createTitledBorder( BorderFactory.createEmptyBorder(20, 5, 5, 5), txt ) );
         txt = I18N.get( "FeatureResearchDialog.wfsServiceToolTip" );
         serverCombo.setToolTipText( txt );
+        
+        serverCombo.addMouseListener(new MouseAdapter() {
+          public void mouseClicked(MouseEvent e) {
+            if (SwingUtilities.isRightMouseButton(e) && e.getClickCount() == 3) {
+              String[] urls = WFSPlugIn.createUrlList(true);
+              serverCombo.setModel(new JComboBox(urls).getModel());
+            }
+            super.mouseClicked(e);
+          }
+        });
 
         add( serverCombo );
 
@@ -369,23 +348,26 @@ public class WFSPanel extends JPanel {
 
     // Gh 15.11.05
     private JComboBox createServerCombo() {
-        // 
-        if ( wfService != null ) {
-            servers.add( 0, wfService.getCapabilitiesURL() );
+      if (servers.size() < 1)
+        servers = new ArrayList<String>(Arrays.asList(WFSPlugIn.createUrlList(false)));
+  
+      if (wfService != null) {
+        servers.add(0, wfService.getCapabilitiesURL());
+      }
+      String[] server = servers.toArray(new String[servers.size()]);
+      final ExtensibleComboBox extensibleComboBox = new ExtensibleComboBox(server);
+      extensibleComboBox.setSelectedIndex(0);
+      extensibleComboBox.addItemListener(new ItemListener() {
+        public void itemStateChanged(ItemEvent e) {
+          if (e.getStateChange() == ItemEvent.SELECTED) {
+            /*
+             * String selected = extensibleComboBox.getSelectedItem().toString();
+             * reinitService( selected );
+             */
+          }
         }
-        String[] server = servers.toArray( new String[servers.size()] );
-        final ExtensibleComboBox extensibleComboBox = new ExtensibleComboBox( server );
-        extensibleComboBox.setSelectedIndex( 0 );
-        extensibleComboBox.addItemListener( new ItemListener() {
-            public void itemStateChanged( ItemEvent e ) {
-                if ( e.getStateChange() == ItemEvent.SELECTED ) {
-                    /*
-                     * String selected = extensibleComboBox.getSelectedItem().toString(); reinitService( selected );
-                     */
-                }
-            }
-        } );
-        return extensibleComboBox;
+      });
+      return extensibleComboBox;
     }
 
     JTabbedPane getTabs() {
@@ -467,16 +449,16 @@ public class WFSPanel extends JPanel {
     private JComboBox createFeatureTypeCombo() {
         String[] start = { "            " };
         JComboBox tmpFeatureTypeCombo = new JComboBox( start );
-        Dimension d = new Dimension( 300, 60 );
-        tmpFeatureTypeCombo.setPreferredSize( d );
-        tmpFeatureTypeCombo.setMaximumSize( d );
+//        Dimension d = new Dimension( 300, 60 );
+//        tmpFeatureTypeCombo.setPreferredSize( d );
+//        tmpFeatureTypeCombo.setMaximumSize( d );
 
-        Border border = BorderFactory.createTitledBorder( I18N.get( "FeatureResearchDialog.featureType" ) );
+        Border border = BorderFactory.createTitledBorder( BorderFactory.createEmptyBorder(20, 5, 5, 5), I18N.get( "FeatureResearchDialog.featureType" ) );
 
-        Border border2 = BorderFactory.createEmptyBorder( 5, 2, 10, 2 );
-
-        border2 = BorderFactory.createCompoundBorder( border2, border );
-        tmpFeatureTypeCombo.setBorder( border2 );
+//        Border border2 = BorderFactory.createEmptyBorder( 5, 2, 10, 2 );
+//
+//        border2 = BorderFactory.createCompoundBorder( border2, border );
+        tmpFeatureTypeCombo.setBorder( border );
         tmpFeatureTypeCombo.addActionListener( new java.awt.event.ActionListener() {
             public void actionPerformed( java.awt.event.ActionEvent evt ) {
 
@@ -788,11 +770,6 @@ public class WFSPanel extends JPanel {
      */
     protected Geometry getSelectedGeometry() {
         return this.selectedGeom;
-    }
-
-    // GH 29.11.05
-    private void setWFSList( List<String> serverURLS ) {
-        servers = serverURLS;
     }
 
     /**

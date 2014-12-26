@@ -24,6 +24,8 @@ import javax.swing.JScrollPane;
 
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 
+import de.latlon.deejump.wfs.plugin.*;
+
 /**
  * This dialog presents a graphical user interface to OGC Filter operations. It encapsulates two panels, one for
  * attribute-based feature search and the other for geometry-based search. Both search methods can be combined. The
@@ -64,7 +66,7 @@ public class WFSDialog extends JDialog {
      *            the address of the server. This is something like http://my.domain.com/deegreewfs/wfs
      * @throws java.awt.HeadlessException
      */
-    public WFSDialog( WorkbenchContext context, Frame owner, String title, String[] urls ) {
+    public WFSDialog( WorkbenchContext context, Frame owner, String title ) {
 
         super( owner, title, true );
         this.context = context;
@@ -78,7 +80,7 @@ public class WFSDialog extends JDialog {
             }
         } );
 
-        initGUI( urls );
+        initGUI( WFSPlugIn.createUrlList(false) );
 
     }
 
