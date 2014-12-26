@@ -47,7 +47,7 @@ public abstract class AbstractWFSWrapper {
 
     private Map<String, GMLSchema> featureTypeToSchema;
 
-    // hmmm, this is repating the above, really...
+    // hmmm, this is repeating the above, really...
     private Map<String, String> featureTypeToSchemaXML;
 
     private Map<String, QualifiedName[]> geoPropsNameToQNames;
