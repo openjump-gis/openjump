@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2013-12-28 Giuseppe Aruta (giuseppe_aruta@yahoo.it)
+   * Rewrite ChangeRasterImagePropertiesPlugIn as a Multi dialog
+   Added Transparency, Scale transparency and Color Editor panels 
+
 2014-12-21 mmichaud <m.michael.michaud@orange.fr>
   * fix #383 about project files and gml-fme files encoding (reading)
 
