@@ -160,7 +160,8 @@ public class DeeChangeStylesPlugIn extends AbstractPlugIn {
                     testStyles(layer, stylePanels, context);
                 }
             }
-        });
+        }
+        );
 
         tabbedPane.setSelectedComponent(find(stylePanels, selectedTab));
         dialog.pack();

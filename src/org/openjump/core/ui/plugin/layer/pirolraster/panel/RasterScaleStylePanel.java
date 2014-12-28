@@ -7,11 +7,15 @@ import java.awt.Insets;
 import java.text.DecimalFormat;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+
+import org.openjump.core.rasterimage.RasterImageLayer;
+import org.openjump.core.ui.util.ScreenScale;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.MathUtil;
@@ -19,32 +23,24 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.ValidatingTextField;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-
 import com.vividsolutions.jump.workbench.ui.style.StylePanel;
-import javax.swing.JButton;
 
-import org.openjump.core.rasterimage.RasterImageLayer;
-import org.openjump.core.ui.util.ScreenScale;
 /**
- * @version $Rev: 4221 $ 
- * Dic 23 2014
- *  Giuseppe Aruta
- *  Panel that allows to set Scale display of
- *  a Sextante Raster Layer
- *  Panel
- *  Refractor from AdbToolBox version 
- *  ver 1.0 2014_02_10
- *  
- *  
+ * @version $Rev: 4221 $ Dic 23 2014 Giuseppe Aruta Panel that allows to set
+ *          Scale display of a Sextante Raster Layer Panel Refractor from
+ *          AdbToolBox version ver 1.0 2014_02_10
+ * 
+ * 
  */
 public class RasterScaleStylePanel extends JPanel implements StylePanel {
 
     /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-	private static final ImageIcon MAX_SCALE_ICON = IconLoader.icon("Atom.gif");
-    private static final ImageIcon MIN_SCALE_ICON = IconLoader.icon("globe3_32.png");
+    private static final long serialVersionUID = 1L;
+    private static final ImageIcon MAX_SCALE_ICON = IconLoader.icon("Atom.gif");
+    private static final ImageIcon MIN_SCALE_ICON = IconLoader
+            .icon("globe3_32.png");
     private JCheckBox enableScaleDependentRenderingCheckBox = null;
     private JLabel smallestScaleLabel = null;
     private JLabel largestScaleLabel = null;
@@ -62,14 +58,15 @@ public class RasterScaleStylePanel extends JPanel implements StylePanel {
     private JLabel unitsPerPixelLabel = null;
     private JButton hideAboveCurrentScaleButton = null;
     private JButton hideBelowCurrentScaleButton = null;
-    private static final Color TEXT_FIELD_BACKGROUND_COLOUR = new JTextField().getBackground();
+    private static final Color TEXT_FIELD_BACKGROUND_COLOUR = new JTextField()
+            .getBackground();
     private JLabel smallestScaleIconLabel = null;
     private JLabel largestScaleIconLabel = null;
     private JPanel spacerPanelBelowCurrentScale = null;
     private JButton showAtThisScaleButton = null;
-    //Add space label
-    private JLabel SpaceLabel  = null;
-    
+    // Add space label
+    private JLabel SpaceLabel = null;
+
     private double scaleFactor = 0;
 
     private JPanel getFillerPanel() {
@@ -84,27 +81,31 @@ public class RasterScaleStylePanel extends JPanel implements StylePanel {
         initialize();
         this.layer = layer;
         this.panel = panel;
-       // panel.setSize(500, 550);
+        // panel.setSize(500, 550);
         panel.setName(getTitle());
         double internalScale = this.currentScale();
-        double realScale = ScreenScale.getHorizontalMapScale(panel.getViewport());
+        double realScale = ScreenScale.getHorizontalMapScale(panel
+                .getViewport());
         this.scaleFactor = internalScale / realScale;
 
         Double internalMinScale = layer.getMinScale();
         Double realMinScale = null;
         if (internalMinScale != null) {
-            realMinScale = new Double(Math.floor(internalMinScale.doubleValue() / this.scaleFactor));
+            realMinScale = new Double(Math.floor(internalMinScale.doubleValue()
+                    / this.scaleFactor));
         }
 
         Double internalMaxScale = layer.getMaxScale();
         Double realMaxScale = null;
         if (internalMaxScale != null) {
-            realMaxScale = new Double(Math.floor(internalMaxScale.doubleValue() / this.scaleFactor));
+            realMaxScale = new Double(Math.floor(internalMaxScale.doubleValue()
+                    / this.scaleFactor));
         }
         smallestScaleTextField.setText(formatScaleLosslessly(realMinScale));
         largestScaleTextField.setText(formatScaleLosslessly(realMaxScale));
         currentScaleTextField.setText(formatScaleLossily(realScale));
-        enableScaleDependentRenderingCheckBox.setSelected(layer.isScaleDependentRenderingEnabled());
+        enableScaleDependentRenderingCheckBox.setSelected(layer
+                .isScaleDependentRenderingEnabled());
         updateComponents();
     }
 
@@ -126,7 +127,7 @@ public class RasterScaleStylePanel extends JPanel implements StylePanel {
         smallestScaleIconLabel = new JLabel();
         largestScaleIconLabel = new JLabel();
         unitsPerPixelLabel = new JLabel();
-        //Add space label
+        // Add space label
         SpaceLabel = new JLabel();
         GridBagConstraints gridBagConstraints15 = new GridBagConstraints();
         GridBagConstraints gridBagConstraints14 = new GridBagConstraints();
@@ -156,14 +157,17 @@ public class RasterScaleStylePanel extends JPanel implements StylePanel {
         this.setLayout(new GridBagLayout());
         gridBagConstraints1.gridx = 1;
         gridBagConstraints1.gridy = 4;
-        smallestScaleLabel.setText(I18N.get("ui.style.ScaleStylePanel.smallest-scale"));
-        smallestScaleLabel.setToolTipText(I18N.get("ui.style.ScaleStylePanel.larger-units-pixel"));
+        smallestScaleLabel.setText(I18N
+                .get("ui.style.ScaleStylePanel.smallest-scale"));
+        smallestScaleLabel.setToolTipText(I18N
+                .get("ui.style.ScaleStylePanel.larger-units-pixel"));
         smallestScaleIconLabel.setIcon(MIN_SCALE_ICON);
         largestScaleIconLabel.setIcon(MAX_SCALE_ICON);
         gridBagConstraints5.gridx = 3;
         gridBagConstraints5.gridy = 6;
         smallestScale1Label.setText("1:");
-        currentScaleLabel.setText(I18N.get("ui.style.ScaleStylePanel.current-scale"));
+        currentScaleLabel.setText(I18N
+                .get("ui.style.ScaleStylePanel.current-scale"));
         gridBagConstraints6.gridx = 3;
         gridBagConstraints6.gridy = 8;
         gridBagConstraints16.gridx = 3;
@@ -211,7 +215,8 @@ public class RasterScaleStylePanel extends JPanel implements StylePanel {
         gridBagConstraints12.insets = new java.awt.Insets(2, 2, 2, 2);
         gridBagConstraints13.gridx = 4;
         gridBagConstraints13.gridy = 5;
-        unitsPerPixelLabel.setText(I18N.get("ui.style.ScaleStylePanel.units-pixel"));
+        unitsPerPixelLabel.setText(I18N
+                .get("ui.style.ScaleStylePanel.units-pixel"));
         gridBagConstraints14.gridx = 7;
         gridBagConstraints14.gridy = 6;
         gridBagConstraints14.insets = new java.awt.Insets(4, 4, 4, 4);
@@ -228,8 +233,10 @@ public class RasterScaleStylePanel extends JPanel implements StylePanel {
         GUIUtil.shrinkFont(getHideBelowCurrentScaleButton());
         GUIUtil.shrinkFont(getShowAtThisScaleButton());
         GUIUtil.shrinkFont(unitsPerPixelLabel);
-        largestScaleLabel.setText(I18N.get("ui.style.ScaleStylePanel.largest-scale"));
-        largestScaleLabel.setToolTipText(I18N.get("ui.style.ScaleStylePanel.smaller-units-pixel"));
+        largestScaleLabel.setText(I18N
+                .get("ui.style.ScaleStylePanel.largest-scale"));
+        largestScaleLabel.setToolTipText(I18N
+                .get("ui.style.ScaleStylePanel.smaller-units-pixel"));
         gridBagConstraints2.gridx = 1;
         gridBagConstraints2.gridy = 6;
         gridBagConstraints31.gridx = 1;
@@ -240,13 +247,11 @@ public class RasterScaleStylePanel extends JPanel implements StylePanel {
         gridBagConstraints18.gridy = 3;
         gridBagConstraints21.gridx = 7;
         gridBagConstraints21.gridy = 2;
-        
-        
-        
+
         gridBagConstraintsSpace.ipady = 250;
         gridBagConstraintsSpace.gridx = 1;
         gridBagConstraintsSpace.gridy = 10;
-        
+
         gridBagConstraints21.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints21.insets = new java.awt.Insets(4, 4, 4, 4);
         this.add(getSpacerPanelInTopLeftCorner(), gridBagConstraints12);
@@ -270,8 +275,7 @@ public class RasterScaleStylePanel extends JPanel implements StylePanel {
         this.add(getSmallestScaleTextField(), gridBagConstraints7);
         this.add(getLargestScaleTextField(), gridBagConstraints9);
         this.add(getCurrentScaleTextField(), gridBagConstraints17);
-        
-       
+
     }
 
     public String getTitle() {
@@ -281,64 +285,84 @@ public class RasterScaleStylePanel extends JPanel implements StylePanel {
     public void updateStyles() {
         layer.setMinScale(getSmallestScale());
         layer.setMaxScale(getLargestScale());
-        layer.setScaleDependentRenderingEnabled(
-                enableScaleDependentRenderingCheckBox.isSelected());
-        layer.fireAppearanceChanged();        
+        layer.setScaleDependentRenderingEnabled(enableScaleDependentRenderingCheckBox
+                .isSelected());
+        layer.fireAppearanceChanged();
     }
 
     public String validateInput() {
-        if (getSmallestScale() != null && getLargestScale() != null && getLargestScale().doubleValue() > getSmallestScale().doubleValue()) {
-            return I18N.get("ui.style.ScaleStylePanel.units-pixel-at-smallest-scale-must-be-larger-than-units-pixel-at-largest-scale");
+        if (getSmallestScale() != null
+                && getLargestScale() != null
+                && getLargestScale().doubleValue() > getSmallestScale()
+                        .doubleValue()) {
+            return I18N
+                    .get("ui.style.ScaleStylePanel.units-pixel-at-smallest-scale-must-be-larger-than-units-pixel-at-largest-scale");
         }
         if (getLargestScale() != null && getLargestScale().doubleValue() == 0) {
-            return I18N.get("ui.style.ScaleStylePanel.units-pixel-at-largest-scale-must-be-greater-than-0");
+            return I18N
+                    .get("ui.style.ScaleStylePanel.units-pixel-at-largest-scale-must-be-greater-than-0");
         }
         if (getSmallestScale() != null && getSmallestScale().doubleValue() == 0) {
-            return I18N.get("ui.style.ScaleStylePanel.units-pixel-at-smallest-scale-must-be-greater-than-0");
+            return I18N
+                    .get("ui.style.ScaleStylePanel.units-pixel-at-smallest-scale-must-be-greater-than-0");
         }
         return null;
     }
 
     private Double getLargestScale() {
         return largestScaleTextField.getText().trim().length() > 0 ? new Double(
-                largestScaleTextField.getDouble() * this.scaleFactor)
-                : null;
+                largestScaleTextField.getDouble() * this.scaleFactor) : null;
     }
 
     private Double getSmallestScale() {
         return smallestScaleTextField.getText().trim().length() > 0 ? new Double(
-                smallestScaleTextField.getDouble() * this.scaleFactor)
-                : null;
+                smallestScaleTextField.getDouble() * this.scaleFactor) : null;
     }
 
     private JCheckBox getEnableScaleDependentRenderingCheckBox() {
         if (enableScaleDependentRenderingCheckBox == null) {
             enableScaleDependentRenderingCheckBox = new JCheckBox();
-            enableScaleDependentRenderingCheckBox.setText(I18N.get("ui.style.ScaleStylePanel.only-show-layer-when-scale-is-between"));
-            enableScaleDependentRenderingCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            enableScaleDependentRenderingCheckBox
+                    .setText(I18N
+                            .get("ui.style.ScaleStylePanel.only-show-layer-when-scale-is-between"));
+            enableScaleDependentRenderingCheckBox
+                    .addActionListener(new java.awt.event.ActionListener() {
 
-                public void actionPerformed(java.awt.event.ActionEvent e) {
-                    updateComponents();
-                }
-            });
+                        public void actionPerformed(java.awt.event.ActionEvent e) {
+                            updateComponents();
+                        }
+                    });
         }
         return enableScaleDependentRenderingCheckBox;
     }
 
     private void updateComponents() {
-        smallestScaleTextField.setBackground(enableScaleDependentRenderingCheckBox.isSelected() ? TEXT_FIELD_BACKGROUND_COLOUR
-                : getBackground());
-        largestScaleTextField.setBackground(enableScaleDependentRenderingCheckBox.isSelected() ? TEXT_FIELD_BACKGROUND_COLOUR
-                : getBackground());
-        unitsPerPixelLabel.setEnabled(enableScaleDependentRenderingCheckBox.isSelected());
-        hideAboveCurrentScaleButton.setEnabled(enableScaleDependentRenderingCheckBox.isSelected());
-        smallestScaleLabel.setEnabled(enableScaleDependentRenderingCheckBox.isSelected());
-        smallestScale1Label.setEnabled(enableScaleDependentRenderingCheckBox.isSelected());
-        smallestScaleTextField.setEnabled(enableScaleDependentRenderingCheckBox.isSelected());
-        hideBelowCurrentScaleButton.setEnabled(enableScaleDependentRenderingCheckBox.isSelected());
-        largestScaleLabel.setEnabled(enableScaleDependentRenderingCheckBox.isSelected());
-        largestScale1Label.setEnabled(enableScaleDependentRenderingCheckBox.isSelected());
-        largestScaleTextField.setEnabled(enableScaleDependentRenderingCheckBox.isSelected());
+        smallestScaleTextField
+                .setBackground(enableScaleDependentRenderingCheckBox
+                        .isSelected() ? TEXT_FIELD_BACKGROUND_COLOUR
+                        : getBackground());
+        largestScaleTextField
+                .setBackground(enableScaleDependentRenderingCheckBox
+                        .isSelected() ? TEXT_FIELD_BACKGROUND_COLOUR
+                        : getBackground());
+        unitsPerPixelLabel.setEnabled(enableScaleDependentRenderingCheckBox
+                .isSelected());
+        hideAboveCurrentScaleButton
+                .setEnabled(enableScaleDependentRenderingCheckBox.isSelected());
+        smallestScaleLabel.setEnabled(enableScaleDependentRenderingCheckBox
+                .isSelected());
+        smallestScale1Label.setEnabled(enableScaleDependentRenderingCheckBox
+                .isSelected());
+        smallestScaleTextField.setEnabled(enableScaleDependentRenderingCheckBox
+                .isSelected());
+        hideBelowCurrentScaleButton
+                .setEnabled(enableScaleDependentRenderingCheckBox.isSelected());
+        largestScaleLabel.setEnabled(enableScaleDependentRenderingCheckBox
+                .isSelected());
+        largestScale1Label.setEnabled(enableScaleDependentRenderingCheckBox
+                .isSelected());
+        largestScaleTextField.setEnabled(enableScaleDependentRenderingCheckBox
+                .isSelected());
     }
 
     private ValidatingTextField getSmallestScaleTextField() {
@@ -370,11 +394,10 @@ public class RasterScaleStylePanel extends JPanel implements StylePanel {
                 7,
                 SwingConstants.LEFT,
                 new ValidatingTextField.CompositeValidator(
-                new ValidatingTextField.Validator[]{
-            ValidatingTextField.DOUBLE_VALIDATOR,
-            new ValidatingTextField.GreaterThanOrEqualValidator(
-            0)
-        }),
+                        new ValidatingTextField.Validator[] {
+                                ValidatingTextField.DOUBLE_VALIDATOR,
+                                new ValidatingTextField.GreaterThanOrEqualValidator(
+                                        0) }),
                 ValidatingTextField.DUMMY_CLEANER);
     }
 
@@ -407,14 +430,17 @@ public class RasterScaleStylePanel extends JPanel implements StylePanel {
     private JButton getHideAboveCurrentScaleButton() {
         if (hideAboveCurrentScaleButton == null) {
             hideAboveCurrentScaleButton = new JButton();
-            hideAboveCurrentScaleButton.setText(I18N.get("ui.style.ScaleStylePanel.hide-above-current-scale"));
-            hideAboveCurrentScaleButton.addActionListener(new java.awt.event.ActionListener() {
+            hideAboveCurrentScaleButton.setText(I18N
+                    .get("ui.style.ScaleStylePanel.hide-above-current-scale"));
+            hideAboveCurrentScaleButton
+                    .addActionListener(new java.awt.event.ActionListener() {
 
-                public void actionPerformed(java.awt.event.ActionEvent e) {
-                    double realScale = 1 / scaleFactor * currentScale();
-                    smallestScaleTextField.setText(formatScaleLossily(roundFirstSignificantFigureUp(realScale)));
-                }
-            });
+                        public void actionPerformed(java.awt.event.ActionEvent e) {
+                            double realScale = 1 / scaleFactor * currentScale();
+                            smallestScaleTextField
+                                    .setText(formatScaleLossily(roundFirstSignificantFigureUp(realScale)));
+                        }
+                    });
         }
         return hideAboveCurrentScaleButton;
     }
@@ -442,15 +468,19 @@ public class RasterScaleStylePanel extends JPanel implements StylePanel {
     private JButton getHideBelowCurrentScaleButton() {
         if (hideBelowCurrentScaleButton == null) {
             hideBelowCurrentScaleButton = new JButton();
-            hideBelowCurrentScaleButton.setText(I18N.get("ui.style.ScaleStylePanel.hide-below-current-scale"));
-            hideBelowCurrentScaleButton.addActionListener(new java.awt.event.ActionListener() {
+            hideBelowCurrentScaleButton.setText(I18N
+                    .get("ui.style.ScaleStylePanel.hide-below-current-scale"));
+            hideBelowCurrentScaleButton
+                    .addActionListener(new java.awt.event.ActionListener() {
 
-                public void actionPerformed(java.awt.event.ActionEvent e) {
-                    //[sstein] changed to show real scale instead currentScale
-                    double realScale = 1 / scaleFactor * currentScale();
-                    largestScaleTextField.setText(formatScaleLossily(roundFirstSignificantFigureDown(realScale)));
-                }
-            });
+                        public void actionPerformed(java.awt.event.ActionEvent e) {
+                            // [sstein] changed to show real scale instead
+                            // currentScale
+                            double realScale = 1 / scaleFactor * currentScale();
+                            largestScaleTextField
+                                    .setText(formatScaleLossily(roundFirstSignificantFigureDown(realScale)));
+                        }
+                    });
         }
         return hideBelowCurrentScaleButton;
     }
@@ -464,7 +494,8 @@ public class RasterScaleStylePanel extends JPanel implements StylePanel {
         if (spacerPanelBelowCurrentScale == null) {
             spacerPanelBelowCurrentScale = new JPanel();
             spacerPanelBelowCurrentScale.setLayout(new GridBagLayout());
-            spacerPanelBelowCurrentScale.setPreferredSize(new java.awt.Dimension(0, 20));
+            spacerPanelBelowCurrentScale
+                    .setPreferredSize(new java.awt.Dimension(0, 20));
         }
         return spacerPanelBelowCurrentScale;
     }
@@ -477,21 +508,28 @@ public class RasterScaleStylePanel extends JPanel implements StylePanel {
     private JButton getShowAtThisScaleButton() {
         if (showAtThisScaleButton == null) {
             showAtThisScaleButton = new JButton();
-            showAtThisScaleButton.setText(I18N.get("ui.style.ScaleStylePanel.show-at-this-scale"));
-            showAtThisScaleButton.addActionListener(new java.awt.event.ActionListener() {
+            showAtThisScaleButton.setText(I18N
+                    .get("ui.style.ScaleStylePanel.show-at-this-scale"));
+            showAtThisScaleButton
+                    .addActionListener(new java.awt.event.ActionListener() {
 
-                public void actionPerformed(java.awt.event.ActionEvent e) {
-                    if (!enableScaleDependentRenderingCheckBox.isSelected()) {
-                        enableScaleDependentRenderingCheckBox.doClick();
-                    }
-                    if (getSmallestScale() != null && currentScale() > getSmallestScale().doubleValue()) {
-                        getHideAboveCurrentScaleButton().doClick();
-                    }
-                    if (getLargestScale() != null && currentScale() < getLargestScale().doubleValue()) {
-                        getHideBelowCurrentScaleButton().doClick();
-                    }
-                }
-            });
+                        public void actionPerformed(java.awt.event.ActionEvent e) {
+                            if (!enableScaleDependentRenderingCheckBox
+                                    .isSelected()) {
+                                enableScaleDependentRenderingCheckBox.doClick();
+                            }
+                            if (getSmallestScale() != null
+                                    && currentScale() > getSmallestScale()
+                                            .doubleValue()) {
+                                getHideAboveCurrentScaleButton().doClick();
+                            }
+                            if (getLargestScale() != null
+                                    && currentScale() < getLargestScale()
+                                            .doubleValue()) {
+                                getHideBelowCurrentScaleButton().doClick();
+                            }
+                        }
+                    });
         }
         return showAtThisScaleButton;
     }
