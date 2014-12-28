@@ -261,10 +261,10 @@ public class WFSPlugIn extends ThreadedBasePlugIn {
     
     String urls = (String) PersistentBlackboardPlugIn.get(
         JUMPWorkbench.getInstance().getContext()).get(WFSDialog.WFS_URL_LIST);
-    String[] urlList = (urls == null) ? null : urls.split(",");
+    String[] urlList = (urls == null) ? new String[0] : urls.split(",");
 
-    if (urlList == null)
-      urlList = new String[0];
+    if (urlList.length < 1)
+      return DEFAULTURLS;
 
     return urlList;
   }
