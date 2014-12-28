@@ -13,7 +13,6 @@ import static javax.swing.JOptionPane.*;
 import static javax.swing.ScrollPaneConstants.*;
 
 import java.awt.*;
-import java.awt.Dimension;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
@@ -160,6 +159,7 @@ public class WFSPanel extends JPanel {
         txt = I18N.get( "FeatureResearchDialog.wfsServiceToolTip" );
         serverCombo.setToolTipText( txt );
         
+        // reset serverlist on triple rightmouseclick (for testing purposes)
         serverCombo.addMouseListener(new MouseAdapter() {
           public void mouseClicked(MouseEvent e) {
             if (SwingUtilities.isRightMouseButton(e) && e.getClickCount() == 3) {
@@ -256,33 +256,39 @@ public class WFSPanel extends JPanel {
         setBorder( BorderFactory.createEmptyBorder( 5, 5, 5, 5 ) );
         add( p );
 
-        final Dimension dim = new Dimension( 400, 570 );
-        final Dimension minDim = new Dimension( 400, 500 );
+//        final Dimension dim = new Dimension( 400, 570 );
+//        final Dimension minDim = new Dimension( 400, 500 );
 
         tabs = new JTabbedPane() {
             private static final long serialVersionUID = 6328063093445991041L;
 
-            @Override
-            public Dimension getPreferredSize() {
-                return dim;
-            }
+//            @Override
+//            public Dimension getPreferredSize() {
+//                return dim;
+//            }
+//
+//            @Override
+//            public Dimension getMinimumSize() {
+//                return minDim;
+//            }
 
             @Override
-            public Dimension getMinimumSize() {
-                return minDim;
-            }
-
-            @Override
-            public void setEnabled( boolean e ) {
-                super.setEnabled( e );
-                attributeResPanel.setEnabled( e );
-                propertiesPanel.setEnabled( e );
-                propertiesPanel.setEnabled( e );
-                spatialResPanel.setEnabled( e );
-                requestTextArea.setEnabled( e );
-                responseTextArea.setEnabled( e );
+            public void setEnabled( final boolean e ) {
+              SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                  tabs.getParent().setEnabled( e );
+                  attributeResPanel.setEnabled( e );
+                  propertiesPanel.setEnabled( e );
+                  //propertiesPanel.setEnabled( e );
+                  spatialResPanel.setEnabled( e );
+                  requestTextArea.setEnabled( e );
+                  responseTextArea.setEnabled( e );
+                }
+              });
             }
         };
+        
 
         attributeResPanel = new PropertyCriteriaPanel( this, featureTypeCombo );
         attributeResPanel.setEnabled( false );
@@ -354,8 +360,8 @@ public class WFSPanel extends JPanel {
       if (wfService != null) {
         servers.add(0, wfService.getCapabilitiesURL());
       }
-      String[] server = servers.toArray(new String[servers.size()]);
-      final ExtensibleComboBox extensibleComboBox = new ExtensibleComboBox(server);
+
+      final ExtensibleComboBox extensibleComboBox = new ExtensibleComboBox(servers.toArray());
       extensibleComboBox.setSelectedIndex(0);
       extensibleComboBox.addItemListener(new ItemListener() {
         public void itemStateChanged(ItemEvent e) {
