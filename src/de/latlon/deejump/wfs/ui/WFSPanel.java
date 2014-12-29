@@ -8,34 +8,70 @@
  */
 package de.latlon.deejump.wfs.ui;
 
-import static javax.swing.JFileChooser.*;
-import static javax.swing.JOptionPane.*;
-import static javax.swing.ScrollPaneConstants.*;
+import static javax.swing.JFileChooser.APPROVE_OPTION;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.showMessageDialog;
+import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED;
+import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.util.*;
+import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
-import javax.swing.*;
-import javax.swing.border.*;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
+import javax.swing.border.Border;
 
-import org.apache.log4j.*;
-import org.deegree.datatypes.*;
-import org.deegree.framework.xml.*;
+import org.apache.log4j.Logger;
+import org.deegree.datatypes.QualifiedName;
+import org.deegree.framework.xml.XMLFragment;
 import org.deegree.model.spatialschema.Geometry;
-import org.deegree.ogcwebservices.wfs.capabilities.*;
-import org.xml.sax.*;
+import org.deegree.ogcwebservices.wfs.capabilities.WFSFeatureType;
+import org.saig.core.gui.swing.sldeditor.util.FormUtils;
+import org.xml.sax.SAXException;
 
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jump.workbench.*;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
 
-import de.latlon.deejump.wfs.*;
-import de.latlon.deejump.wfs.auth.*;
-import de.latlon.deejump.wfs.client.*;
-import de.latlon.deejump.wfs.i18n.*;
-import de.latlon.deejump.wfs.plugin.*;
+import de.latlon.deejump.wfs.DeeJUMPException;
+import de.latlon.deejump.wfs.auth.LoginDialog;
+import de.latlon.deejump.wfs.auth.MD5Hasher;
+import de.latlon.deejump.wfs.auth.UserData;
+import de.latlon.deejump.wfs.client.AbstractWFSWrapper;
+import de.latlon.deejump.wfs.client.WFSClientHelper;
+import de.latlon.deejump.wfs.client.WFServiceWrapper_1_0_0;
+import de.latlon.deejump.wfs.client.WFServiceWrapper_1_1_0;
+import de.latlon.deejump.wfs.i18n.I18N;
+import de.latlon.deejump.wfs.plugin.WFSPlugIn;
 
 /**
  * This is a panel which contains other basic GUIs for accessing Features of a WFS.
@@ -61,8 +97,6 @@ public class WFSPanel extends JPanel {
     /** Search uses a selected (GML) geometry as spatial criteria */
     public static final String SELECTED_GEOM = "SELECTED_GEOM";
 
-    private List<String> servers = new ArrayList<String>();
-
     static File lastDirectory;
 
     /**
@@ -84,7 +118,7 @@ public class WFSPanel extends JPanel {
 
     AbstractWFSWrapper wfService;
 
-    protected RequestTextArea requestTextArea;
+    protected RequestPanel requestTextArea;
 
     protected JTextArea responseTextArea;
 
@@ -95,10 +129,8 @@ public class WFSPanel extends JPanel {
     private JTabbedPane tabs;
 
     private JComboBox featureTypeCombo;
-
-    // private JPanel mainPanel;
-
-    private Box box;
+    
+    private List<Component> advancedTabs = new ArrayList<Component>();
 
     // TODO remove dependency on JUMP/JTS use deegree Envelope
     /** The envelope of the current bounding box */
@@ -138,185 +170,254 @@ public class WFSPanel extends JPanel {
      * @param urlList
      *            the list of servers
      */
-    public WFSPanel( WorkbenchContext context, List<String> urlList ) {
+    public WFSPanel( WorkbenchContext context ) {
         this.context = context;
         initGUI();
         this.options = new WFSOptions();
     }
-
-    private void initGUI() {
-
-        LayoutManager lm = new BoxLayout( this, BoxLayout.Y_AXIS );
-        setLayout( lm );
-
-        // combo box for WFS URLs
-        serverCombo = createServerCombo();
-//        Dimension d = new Dimension( 400, 45 );
-//        serverCombo.setPreferredSize( d );
-//        serverCombo.setMaximumSize( d );
-        String txt = I18N.get( "FeatureResearchDialog.wfsService" );
-        serverCombo.setBorder( BorderFactory.createTitledBorder( BorderFactory.createEmptyBorder(20, 5, 5, 5), txt ) );
-        txt = I18N.get( "FeatureResearchDialog.wfsServiceToolTip" );
-        serverCombo.setToolTipText( txt );
-        
-        // reset serverlist on triple rightmouseclick (for testing purposes)
-        serverCombo.addMouseListener(new MouseAdapter() {
-          public void mouseClicked(MouseEvent e) {
-            if (SwingUtilities.isRightMouseButton(e) && e.getClickCount() == 3) {
-              String[] urls = WFSPlugIn.createUrlList(true);
-              serverCombo.setModel(new JComboBox(urls).getModel());
-            }
-            super.mouseClicked(e);
-          }
-        });
-
-        add( serverCombo );
-
-        // connect and capabilities button
-        JButton connecButton = new JButton( I18N.get( "FeatureResearchDialog.connect" ) );
-        connecButton.setAlignmentX( 0.5f );
-        connecButton.addActionListener( new ActionListener() {
-            public void actionPerformed( ActionEvent e ) {
-                try {
-                    reinitService( (String) serverCombo.getSelectedItem() );
-                } catch ( DeeJUMPException e1 ) {
-                    LOG.info( "Service could not be initialized." );
-                    LOG.debug( "Stack trace: ", e1 );
-                }
-            }
-        } );
-
-        capabilitiesButton = new JButton( I18N.get( "FeatureResearchDialog.capabilities" ) );
-        capabilitiesButton.setEnabled( false );
-        capabilitiesButton.addActionListener( new ActionListener() {
-            public void actionPerformed( ActionEvent e ) {
-                createXMLFrame( WFSPanel.this, wfService.getCapabilitesAsString() );
-
-            }
-        } );
-
-        JButton loginButton = new JButton( I18N.get( "FeatureResearchDialog.login" ) );
-        loginButton.addActionListener( new ActionListener() {
-            public void actionPerformed( ActionEvent e ) {
-                performLogin();
-            }
-        } );
-
-        loginButton.setEnabled( context != null );
-
-        JButton saveButton = new JButton( I18N.get( "General.save" ) );
-        if ( context != null ) {
-            saveButton.addActionListener( new ActionListener() {
-                public void actionPerformed( ActionEvent evt ) {
-                    JFileChooser jfc = new JFileChooser();
-                    if ( lastDirectory != null ) {
-                        jfc.setCurrentDirectory( lastDirectory );
-                    }
-                    int i = jfc.showSaveDialog( WFSPanel.this );
-                    if ( i == APPROVE_OPTION ) {
-                        try {
-                            String txt = WFSClientHelper.createResponsefromWFS( getWfService().getGetFeatureURL(),
-                                                                                getRequest() );
-                            FileWriter fw = new FileWriter( jfc.getSelectedFile() );
-                            fw.write( txt );
-                            fw.close();
-                            lastDirectory = jfc.getSelectedFile().getParentFile();
-                        } catch ( Exception e ) {
-                            showMessageDialog( WFSPanel.this, e.getMessage(), "Error!", ERROR_MESSAGE );
-                            e.printStackTrace();
-                        }
-
-                    }
-
-                }
-            } );
-        }
-
-        JPanel p = new JPanel();
-        p.setLayout( new BoxLayout( p, BoxLayout.Y_AXIS ) );
-
-        // version buttons
-        p.add( createVersionButtons( new String[] { "1.0.0", "1.1.0" } ) );
-
-        JPanel innerPanel = new JPanel();
-        innerPanel.add( connecButton );
-        innerPanel.add( capabilitiesButton );
-        innerPanel.add( loginButton );
-        if ( context != null ) {
-            innerPanel.add( saveButton );
-        }
-        p.add( innerPanel );
-
-        featureTypeCombo = createFeatureTypeCombo();
-        // featureTypeCombo.setVisible( false );
-        featureTypeCombo.setEnabled( false );
-        p.add( featureTypeCombo );
-
-        // FIXME what's this???
-        setBorder( BorderFactory.createEmptyBorder( 5, 5, 5, 5 ) );
-        add( p );
-
-//        final Dimension dim = new Dimension( 400, 570 );
-//        final Dimension minDim = new Dimension( 400, 500 );
-
-        tabs = new JTabbedPane() {
-            private static final long serialVersionUID = 6328063093445991041L;
-
-//            @Override
-//            public Dimension getPreferredSize() {
-//                return dim;
-//            }
-//
-//            @Override
-//            public Dimension getMinimumSize() {
-//                return minDim;
-//            }
-
-            @Override
-            public void setEnabled( final boolean e ) {
-              SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                  tabs.getParent().setEnabled( e );
-                  attributeResPanel.setEnabled( e );
-                  propertiesPanel.setEnabled( e );
-                  //propertiesPanel.setEnabled( e );
-                  spatialResPanel.setEnabled( e );
-                  requestTextArea.setEnabled( e );
-                  responseTextArea.setEnabled( e );
-                }
-              });
-            }
-        };
-        
-
-        attributeResPanel = new PropertyCriteriaPanel( this, featureTypeCombo );
-        attributeResPanel.setEnabled( false );
-        tabs.add( I18N.get( "FeatureResearchDialog.attributeSearch" ), attributeResPanel );
-
-        propertiesPanel = new PropertySelectionPanel( this );
-        tabs.add( I18N.get( "FeatureResearchDialog.properties" ), propertiesPanel );
-
-        spatialResPanel = new SpatialCriteriaPanel( this );
-        tabs.add( I18N.get( "FeatureResearchDialog.spatialSearch" ), spatialResPanel );
-
-        requestTextArea = new RequestTextArea( this );
-
-        tabs.add( I18N.get( "FeatureResearchDialog.request" ), requestTextArea );
-
-        tabs.add( I18N.get( "FeatureResearchDialog.response" ), createResponseTextArea() );
-        tabs.setEnabled( false );
-
-        box = Box.createHorizontalBox();
-        box.setBorder( BorderFactory.createEmptyBorder( 20, 5, 10, 5 ) );
-
-        add( tabs );
-        tabs.setVisible( false );
-
-        // setMinimumSize( new Dimension( 400, 300 ) );
-        // setPreferredSize( new Dimension( 400, 600 ) );
+    
+    private void addAdvancedTab( String name, Component component){
+      component.setName(name);
+      advancedTabs.add(component);
+    }
+    
+    private void showAdvancedTabs(){
+      // add adv tabs
+      for (Component component : advancedTabs) {
+        tabs.add(component);
+      }
+      GUIUtil.centreOnWindow(SwingUtilities.windowForComponent(this));
+    }
+    
+    private void hideAdvancedTabs(){
+      // remove advanced tabs, all after tab 1
+      while (tabs.getTabCount()>1){
+        int i = tabs.getTabCount()-1;
+        tabs.removeTabAt(i);;
+      }
     }
 
+    private void initGUI() {
+  
+      this.setLayout(new GridBagLayout());
+  
+      JPanel urlPanel = new JPanel();
+      urlPanel.setLayout(new GridBagLayout());
+  
+      // combo box for WFS URLs
+      serverCombo = createServerCombo();
+  
+      String txt = I18N.get("FeatureResearchDialog.wfsService");
+      serverCombo.setBorder(BorderFactory.createTitledBorder(
+          BorderFactory.createEmptyBorder(20, 5, 5, 5), txt));
+      txt = I18N.get("FeatureResearchDialog.wfsServiceToolTip");
+      serverCombo.setToolTipText(txt);
+  
+      // reset serverlist on triple rightmouseclick (for testing purposes)
+      serverCombo.addMouseListener(new MouseAdapter() {
+        public void mouseClicked(MouseEvent e) {
+          if (SwingUtilities.isRightMouseButton(e) && e.getClickCount() == 3) {
+            String[] urls = WFSPlugIn.createUrlList(true);
+            serverCombo.setModel(new JComboBox(urls).getModel());
+          }
+          super.mouseClicked(e);
+        }
+      });
+  
+      FormUtils.addRowInGBL(urlPanel, 0, 0, serverCombo);
+  
+      // connect and capabilities button
+      JButton connecButton = new JButton(
+          I18N.get("FeatureResearchDialog.connect"));
+      connecButton.setAlignmentX(0.5f);
+      connecButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          try {
+            reinitService((String) serverCombo.getSelectedItem());
+          } catch (DeeJUMPException e1) {
+            LOG.info("Service could not be initialized.");
+            LOG.debug("Stack trace: ", e1);
+          }
+        }
+      });
+  
+      capabilitiesButton = new JButton(
+          I18N.get("FeatureResearchDialog.capabilities"));
+      capabilitiesButton.setEnabled(false);
+      capabilitiesButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          createXMLFrame(WFSPanel.this, wfService.getCapabilitesAsString());
+  
+        }
+      });
+  
+      JButton loginButton = new JButton(I18N.get("FeatureResearchDialog.login"));
+      loginButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          performLogin();
+        }
+      });
+  
+      loginButton.setEnabled(context != null);
+  
+      JButton saveButton = new JButton(I18N.get("General.save"));
+      if (context != null) {
+        saveButton.addActionListener(new ActionListener() {
+          public void actionPerformed(ActionEvent evt) {
+            JFileChooser jfc = new JFileChooser();
+            if (lastDirectory != null) {
+              jfc.setCurrentDirectory(lastDirectory);
+            }
+            int i = jfc.showSaveDialog(WFSPanel.this);
+            if (i == APPROVE_OPTION) {
+              try {
+                String txt = WFSClientHelper.createResponsefromWFS(getWfService()
+                    .getGetFeatureURL(), getRequest());
+                FileWriter fw = new FileWriter(jfc.getSelectedFile());
+                fw.write(txt);
+                fw.close();
+                lastDirectory = jfc.getSelectedFile().getParentFile();
+              } catch (Exception e) {
+                showMessageDialog(WFSPanel.this, e.getMessage(), "Error!",
+                    ERROR_MESSAGE);
+                e.printStackTrace();
+              }
+  
+            }
+  
+          }
+        });
+      }
+  
+      JPanel p = new JPanel();
+      p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+      // version buttons
+      p.add(createVersionButtons(new String[] { "1.0.0", "1.1.0" }));
+      FormUtils.addRowInGBL(urlPanel, 1, 0, p);
+  
+      JPanel innerPanel = new JPanel();
+      innerPanel.add(connecButton);
+      innerPanel.add(capabilitiesButton);
+      innerPanel.add(loginButton);
+      if (context != null) {
+        innerPanel.add(saveButton);
+      }
+      FormUtils.addRowInGBL(urlPanel, 2, 0, innerPanel);
+  
+      featureTypeCombo = createFeatureTypeCombo();
+      // featureTypeCombo.setVisible( false );
+      featureTypeCombo.setEnabled(false);
+      FormUtils.addRowInGBL(urlPanel, 3, 0, featureTypeCombo);
+  
+      // FIXME what's this???
+      setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+  
+      tabs = new JTabbedPane() {
+        @Override
+        public Component add(Component component) {
+          super.add(component.getName(), component);
+          return component;
+        }
+      };
+  
+      JPanel keepNorth = new JPanel(new GridBagLayout());
+      keepNorth.add(urlPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
+          GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL, new Insets(0,
+              0, 0, 0), 0, 0));
+      tabs.add(I18N.get("FeatureResearchDialog.selectUrl"), keepNorth);
+  
+      attributeResPanel = new PropertyCriteriaPanel(this, featureTypeCombo);
+      keepNorth = new JPanel(new GridBagLayout());
+      keepNorth.add(attributeResPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
+          GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL, new Insets(0,
+              0, 0, 0), 0, 0));
+      addAdvancedTab(I18N.get("FeatureResearchDialog.attributeSearch"), keepNorth);
+  
+      propertiesPanel = new PropertySelectionPanel(this);
+      addAdvancedTab(I18N.get("FeatureResearchDialog.properties"),
+          propertiesPanel);
+  
+      spatialResPanel = new SpatialCriteriaPanel(this);
+      addAdvancedTab(I18N.get("FeatureResearchDialog.spatialSearch"),
+          spatialResPanel);
+  
+      requestTextArea = new RequestPanel(this);
+      addAdvancedTab(I18N.get("FeatureResearchDialog.request"), requestTextArea);
+  
+      addAdvancedTab(I18N.get("FeatureResearchDialog.response"),
+          createResponseTextArea());
+  
+      add(tabs, new GridBagConstraints(0, 0, 1, 1, 1, 1,
+          GridBagConstraints.NORTH, GridBagConstraints.BOTH, new Insets(0, 0, 0,
+              0), 0, 0));
+    }
+
+    /** Initializes the FeatureType combo box of the AttributeResearchPanel */
+
+    private void refreshGUIs() {
+
+        String[] featTypes = null;
+        requestTextArea.setRequestText( "" );
+        responseTextArea.setText( "" );
+        try {
+            featTypes = wfService.getFeatureTypes();
+            Arrays.sort( featTypes );
+            featureTypeCombo.setModel( new javax.swing.DefaultComboBoxModel( featTypes ) );
+
+            controlButtons.okButton.setEnabled( true );
+            capabilitiesButton.setEnabled( true );
+
+            featureTypeCombo.setEnabled( true );
+            // featureTypeCombo.setVisible( true );
+            //attributeResPanel.setFeatureTypeComboEnabled( true );
+
+        } catch ( Exception e ) {
+            JOptionPane.showMessageDialog( this, "Could not connect to WFS server at \n'" + wfService.getBaseWfsURL()
+                                                 + "'\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE );
+            e.printStackTrace();
+
+            featureTypeCombo.setModel( new javax.swing.DefaultComboBoxModel( new String[0] ) );
+            //attributeResPanel.setFeatureTypeComboEnabled( false );
+
+            hideAdvancedTabs();
+        }
+
+        if ( featTypes != null && featTypes.length > 0 ) {
+            try {
+                attributeNames = wfService.getProperties( featTypes[0] );
+
+                geoProperties = wfService.getGeometryProperties( featTypes[0] );
+
+                propertiesPanel.setProperties( attributeNames, geoProperties );
+
+                spatialResPanel.resetGeoCombo( geoProperties );
+
+                // /hmmm repeated code...
+                WFSFeatureType ft = wfService.getFeatureTypeByName( featTypes[0] );
+                // TODO: UT could support other srs, but not doing it now
+                if ( ft != null ) {
+                    String[] crs = new String[] { ft.getDefaultSRS().toString() };
+                    srs = crs[0];
+                    spatialResPanel.setCrs( crs );
+                }
+                
+                showAdvancedTabs();
+            } catch ( Exception e ) {
+                e.printStackTrace();
+
+                hideAdvancedTabs();
+
+                controlButtons.okButton.setEnabled( true );
+
+                JOptionPane.showMessageDialog( this, "Could not get DescribeFeatureType for '" + featTypes[0]
+                                                     + "' from WFS server at \n'" + wfService.getBaseWfsURL() + "'\n"
+                                                     + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE );
+            }
+        }
+
+    }
+
+    
     protected void performLogin() {
         LoginDialog dialog = new LoginDialog( (Dialog) this.getTopLevelAncestor(),
                                               I18N.get( "FeatureResearchDialog.login" ),
@@ -354,8 +455,7 @@ public class WFSPanel extends JPanel {
 
     // Gh 15.11.05
     private JComboBox createServerCombo() {
-      if (servers.size() < 1)
-        servers = new ArrayList<String>(Arrays.asList(WFSPlugIn.createUrlList(false)));
+      List<String>  servers = new ArrayList<String>(Arrays.asList(WFSPlugIn.createUrlList(false)));
   
       if (wfService != null) {
         servers.add(0, wfService.getCapabilitiesURL());
@@ -363,16 +463,7 @@ public class WFSPanel extends JPanel {
 
       final ExtensibleComboBox extensibleComboBox = new ExtensibleComboBox(servers.toArray());
       extensibleComboBox.setSelectedIndex(0);
-      extensibleComboBox.addItemListener(new ItemListener() {
-        public void itemStateChanged(ItemEvent e) {
-          if (e.getStateChange() == ItemEvent.SELECTED) {
-            /*
-             * String selected = extensibleComboBox.getSelectedItem().toString();
-             * reinitService( selected );
-             */
-          }
-        }
-      });
+
       return extensibleComboBox;
     }
 
@@ -455,15 +546,9 @@ public class WFSPanel extends JPanel {
     private JComboBox createFeatureTypeCombo() {
         String[] start = { "            " };
         JComboBox tmpFeatureTypeCombo = new JComboBox( start );
-//        Dimension d = new Dimension( 300, 60 );
-//        tmpFeatureTypeCombo.setPreferredSize( d );
-//        tmpFeatureTypeCombo.setMaximumSize( d );
 
         Border border = BorderFactory.createTitledBorder( BorderFactory.createEmptyBorder(20, 5, 5, 5), I18N.get( "FeatureResearchDialog.featureType" ) );
 
-//        Border border2 = BorderFactory.createEmptyBorder( 5, 2, 10, 2 );
-//
-//        border2 = BorderFactory.createCompoundBorder( border2, border );
         tmpFeatureTypeCombo.setBorder( border );
         tmpFeatureTypeCombo.addActionListener( new java.awt.event.ActionListener() {
             public void actionPerformed( java.awt.event.ActionEvent evt ) {
@@ -510,85 +595,6 @@ public class WFSPanel extends JPanel {
         p.add( jsp );
 
         return p;
-    }
-
-    /** Initializes the FeatureType combo box of the AttributeResearchPanel */
-
-    private void refreshGUIs() {
-
-        String[] featTypes = null;
-        requestTextArea.setRequestText( "" );
-        responseTextArea.setText( "" );
-        try {
-            featTypes = wfService.getFeatureTypes();
-            Arrays.sort( featTypes );
-            featureTypeCombo.setModel( new javax.swing.DefaultComboBoxModel( featTypes ) );
-
-            controlButtons.okButton.setEnabled( true );
-            capabilitiesButton.setEnabled( true );
-            tabs.setEnabledAt( 1, true );
-
-            featureTypeCombo.setEnabled( true );
-            // featureTypeCombo.setVisible( true );
-            attributeResPanel.setFeatureTypeComboEnabled( true );
-
-        } catch ( Exception e ) {
-            JOptionPane.showMessageDialog( this, "Could not connect to WFS server at \n'" + wfService.getBaseWfsURL()
-                                                 + "'\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE );
-
-            featureTypeCombo.setModel( new javax.swing.DefaultComboBoxModel( new String[0] ) );
-            attributeResPanel.setFeatureTypeComboEnabled( false );
-            tabs.setEnabledAt( 1, false );
-            capabilitiesButton.setEnabled( false );
-            controlButtons.okButton.setEnabled( false );
-
-            tabs.setEnabled( false );
-
-        }
-
-        if ( featTypes != null && featTypes.length > 0 ) {
-            try {
-
-                attributeNames = wfService.getProperties( featTypes[0] );
-                attributeResPanel.setEnabled( true );
-                geoProperties = wfService.getGeometryProperties( featTypes[0] );
-
-                propertiesPanel.setProperties( attributeNames, geoProperties );
-                propertiesPanel.setEnabled( true );
-                spatialResPanel.resetGeoCombo( geoProperties );
-
-                // /hmmm repeated code...
-                WFSFeatureType ft = wfService.getFeatureTypeByName( featTypes[0] );
-                // UT could support other srs, but not doing it now
-                if ( ft != null ) {
-                    String[] crs = new String[] { ft.getDefaultSRS().toString() };
-                    srs = crs[0];
-                    spatialResPanel.setCrs( crs );
-                }
-                tabs.setEnabled( true );
-            } catch ( Exception e ) {
-                e.printStackTrace();
-                // this is necessary to turn tabs click area on
-                tabs.setEnabled( true );
-                // if something went wrong, disable all but req/response tabs
-                // featureTypeCombo.setModel( new javax.swing.DefaultComboBoxModel( new String[0] )
-                // );
-
-                attributeResPanel.setEnabled( false );
-                propertiesPanel.setEnabled( false );
-                spatialResPanel.setEnabled( false );
-
-                requestTextArea.setEnabled( true );
-                responseTextArea.setEnabled( true );
-
-                controlButtons.okButton.setEnabled( true );
-
-                JOptionPane.showMessageDialog( this, "Could not get DescribeFeatureType for '" + featTypes[0]
-                                                     + "' from WFS server at \n'" + wfService.getBaseWfsURL() + "'\n"
-                                                     + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE );
-            }
-        }
-
     }
 
     /** Creates a GetFeature request by concatenation of xlm elements */
@@ -795,9 +801,11 @@ public class WFSPanel extends JPanel {
         return list;
     }
 
-    protected void setResposeText( String txt ) {
+    protected void setResponseText( String txt ) {
         responseTextArea.setText( txt );
         responseTextArea.setCaretPosition( 0 );
+        // activate it, it's the last one
+        tabs.setSelectedIndex(tabs.getTabCount()-1);
     }
 
     /**

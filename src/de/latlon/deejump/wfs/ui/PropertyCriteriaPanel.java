@@ -11,6 +11,9 @@ package de.latlon.deejump.wfs.ui;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -72,6 +75,8 @@ class PropertyCriteriaPanel extends JPanel {
     WFSPanel wfsPanel;
 
     protected JComboBox featureTypeCombo;
+    
+    protected JPanel criteriaHeaderPanel;
 
     protected JLabel attLabel;
 
@@ -130,7 +135,7 @@ class PropertyCriteriaPanel extends JPanel {
 
         JPanel p = new JPanel();
         describeFTButton = new JButton( I18N.get( "AttributeResearchPanel.describeFeatType" ) );
-        describeFTButton.setEnabled( false );
+
         describeFTButton.addActionListener( new ActionListener() {
             public void actionPerformed( ActionEvent e ) {
                 QualifiedName ft = PropertyCriteriaPanel.this.wfsPanel.getFeatureType();
@@ -172,40 +177,37 @@ class PropertyCriteriaPanel extends JPanel {
     /** Creates the panel where the criteria list will be shown */
     private JComponent createCriteriaPanel() {
         JPanel criteriaPanel = new JPanel();
-        criteriaPanel.setLayout( null );
-        criteriaPanel.setPreferredSize( new Dimension( 360, 125 ) );
+        criteriaPanel.setLayout( new GridBagLayout());
         criteriaPanel.setBorder( BorderFactory.createTitledBorder( I18N.get( "AttributeResearchPanel.attributeBasedCriteria" ) ) );
-        criteriaPanel.setBounds( LEFT_MARGIN, 70, 360, 125 );
 
+        criteriaListPanel = new JPanel();
+        criteriaListPanel.setLayout( new BoxLayout(criteriaListPanel, BoxLayout.Y_AXIS) );
+
+        criteriaHeaderPanel = new JPanel(){
+          @Override
+          public Dimension getPreferredSize() {
+            return new Dimension(criteriaListPanel.getPreferredSize().width -20,super.getPreferredSize().height);
+          }
+          
+        };
+        criteriaHeaderPanel.setLayout( new GridBagLayout() );
         attLabel = new JLabel( I18N.get( "AttributeResearchPanel.attribute" ) );
-        attLabel.setBounds( LEFT_MARGIN, 18, SECOND_COL - LEFT_MARGIN, STD_HEIGHT );
-        criteriaPanel.add( attLabel );
-
+        criteriaHeaderPanel.add( attLabel, new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0) );
+        
         operLabel = new JLabel( I18N.get( "AttributeResearchPanel.operator" ) );
-        operLabel.setBounds( LEFT_MARGIN + SECOND_COL + 5, 18, THIRD_COL - SECOND_COL, STD_HEIGHT );
-        criteriaPanel.add( operLabel );
+        criteriaHeaderPanel.add( operLabel, new GridBagConstraints(1, 0, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0) );
+
 
         valLabel = new JLabel( I18N.get( "AttributeResearchPanel.comparisonValue" ) );
+        criteriaHeaderPanel.add( valLabel, new GridBagConstraints(2, 0, 1, 1, 1, 1, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0) );
 
-        valLabel.setBounds( LEFT_MARGIN + THIRD_COL + 5, 18, SECOND_COL - LEFT_MARGIN, STD_HEIGHT );
-        criteriaPanel.add( valLabel );
-
+        criteriaPanel.add( criteriaHeaderPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0) );
+        
+        // hide header for now
         setHeadersEnabled( false );
-
-        criteriaListPanel = new JPanel() {
-            private static final long serialVersionUID = -7342449173372211027L;
-
-            @Override
-            public Dimension getPreferredSize() {
-                return new Dimension( 300, 400 );
-            }
-        };
-        criteriaListPanel.setBounds( LEFT_MARGIN, 40, 360, 400 );
-        criteriaListPanel.setOpaque( false );
-        criteriaListPanel.setLayout( null );
-
-        criteriaPanel.add( criteriaListPanel );
-
+        
+        criteriaPanel.add( criteriaListPanel, new GridBagConstraints(0, 1, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0) );
+        
         return criteriaPanel;
     }
 
@@ -264,11 +266,9 @@ class PropertyCriteriaPanel extends JPanel {
                     remCriteriaButton.setEnabled( true );
                 }
 
-                if ( i >= 4 ) {
-                    newCriteriaButton.setEnabled( false );
-                }
+                newCriteriaButton.setEnabled( ( i < 9 ) );
+
                 AttributeComparisonPanel ac = new AttributeComparisonPanel( wfsPanel.attributeNames );
-                ac.setBounds( 0, ( STD_HEIGHT + 4 ) * ( i ), 340, STD_HEIGHT );
                 criteriaList.add( ac );
                 criteriaListPanel.add( ac );
                 criteriaListPanel.revalidate();
@@ -357,9 +357,7 @@ class PropertyCriteriaPanel extends JPanel {
 
     /** Turns label on/off. */
     void setHeadersEnabled( boolean on ) {
-        attLabel.setEnabled( on );
-        operLabel.setEnabled( on );
-        valLabel.setEnabled( on );
+      criteriaHeaderPanel.setVisible(on);
     }
 
     /**
@@ -494,15 +492,12 @@ class PropertyCriteriaPanel extends JPanel {
 
         /** Initialize the GUI */
         private void initGUI() {
-            setLayout( null );
-            attributeCombo.setBounds( 0, 0, SECOND_COL, STD_HEIGHT );
             add( attributeCombo );
 
-            operatorCombo.setBounds( SECOND_COL + 5, 0, THIRD_COL - SECOND_COL, STD_HEIGHT );
+            //operatorCombo.setBounds( SECOND_COL + 5, 0, THIRD_COL - SECOND_COL, STD_HEIGHT );
             add( operatorCombo );
 
             valueField.setColumns( 16 );
-            valueField.setBounds( THIRD_COL + 10, 0, 130, STD_HEIGHT );
             add( valueField );
         }
 
@@ -582,9 +577,5 @@ class PropertyCriteriaPanel extends JPanel {
             return oper;
         }
 
-        @Override
-        public Dimension getPreferredSize() {
-            return new Dimension( 300, 18 );
-        }
     }
 }

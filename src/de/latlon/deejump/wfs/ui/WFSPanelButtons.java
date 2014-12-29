@@ -105,35 +105,9 @@ class WFSPanelButtons extends JPanel {
             }
         });
         
-        final String showAdvanced =  I18N.get( "WFSPanel.showAdvanced" );
-        final String hideAdvanced = I18N.get( "WFSPanel.hideAdvanced" );
-
-        JButton extrasButton = new JButton( showAdvanced );
-        extrasButton.setBounds( 260, 20, 80, 20 );
-        extrasButton.setAlignmentX( 0.5f );
-        extrasButton.addActionListener( new ActionListener() {
-            public void actionPerformed( ActionEvent e ) {
-                String actComm = e.getActionCommand();
-                JButton b = (JButton) e.getSource();
-                if ( showAdvanced.equals( actComm ) ) {
-                    wfsPanel.setTabsVisible( true );
-                    parentWindow.setSize( 500, 900 );
-                    b.setText( hideAdvanced );
-                    b.setActionCommand( hideAdvanced );
-                } else {
-                    wfsPanel.setTabsVisible( false );
-                    parentWindow.setSize( 500, 300 );
-                    b.setText( showAdvanced );
-                    b.setActionCommand( showAdvanced );
-
-                }
-            }
-        } );
 
         Dimension d = new Dimension(15,10);
         box.add( optionsbutton );
-        box.add( Box.createRigidArea( d ));
-        box.add( extrasButton );
         box.add( Box.createRigidArea( d ));        
         box.add( okButton );
         box.add( Box.createRigidArea( d ));

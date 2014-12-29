@@ -9,7 +9,6 @@
 
 package de.latlon.deejump.wfs.ui;
 
-import java.awt.Dimension;
 import java.util.Arrays;
 import java.util.List;
 
@@ -57,7 +56,6 @@ public class PropertySelectionPanel extends JPanel {
         super();
         this.parentDialog = parentDialog;
         initGUI();
-        setEnabled( false );
     }
 
     private void initGUI() {
@@ -69,27 +67,15 @@ public class PropertySelectionPanel extends JPanel {
         propertiesList = new JList();
         JScrollPane scrollPane = new JScrollPane( propertiesList );
 
-        Dimension dim = new Dimension( 400, 200 );
-
-        scrollPane.setMaximumSize( dim );
-        scrollPane.setPreferredSize( dim );
-        scrollPane.setMinimumSize( dim );
-
         p.add( scrollPane );
-
-        add( p );
 
         geoPropsCombo = new JComboBox();
 
-        dim = new Dimension( 200, 40 );
-        geoPropsCombo.setMaximumSize( dim );
-        geoPropsCombo.setPreferredSize( dim );
-        geoPropsCombo.setMinimumSize( dim );
-
         geoPropsCombo.setBorder( BorderFactory.createTitledBorder( I18N.get( "SpatialResearchPanel.geometryName" ) ) );
 
-        add( geoPropsCombo );
-
+        p.add( geoPropsCombo );
+        
+        add(p);
     }
 
     /**

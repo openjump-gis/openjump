@@ -71,7 +71,7 @@ public class WFSDialog extends JDialog {
         super( owner, title, true );
         this.context = context;
         setTitle( "WFSPlugin v. " + VERSION );
-        setLocation( 0, 50 );
+
         addWindowListener( new WindowAdapter() {
             @Override
             public void windowClosing( WindowEvent we ) {
@@ -80,22 +80,18 @@ public class WFSDialog extends JDialog {
             }
         } );
 
-        initGUI( WFSPlugIn.createUrlList(false) );
+        initGUI();
 
     }
 
     /** Initialize main GUI and its children */
-    private void initGUI( String[] wfsURLs ) {
+    private void initGUI( ) {
 
         getContentPane().setLayout( new BorderLayout() );
 
-        this.wfsPanel = new WFSPanel( context, Arrays.asList( wfsURLs ) );
+        this.wfsPanel = new WFSPanel( context );
 
-        // remove response tab from dialog
-        this.wfsPanel.getTabs().removeTabAt( 4 );
-
-        JScrollPane scroller = new JScrollPane(wfsPanel);
-        getContentPane().add( scroller, BorderLayout.CENTER);
+        getContentPane().add(wfsPanel, BorderLayout.CENTER);
 
         WFSPanelButtons buttons = new WFSPanelButtons( this, this.wfsPanel );
         this.wfsPanel.controlButtons = buttons;
@@ -115,7 +111,6 @@ public class WFSDialog extends JDialog {
         } );
         getContentPane().add( buttons, BorderLayout.SOUTH );
 
-        setSize( 450, 300 );
         setResizable( true );
         pack();
     }
