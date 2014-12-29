@@ -115,6 +115,8 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
   public final static Icon ICON = IconLoader.icon("fugue/globe-network.png");
 
   /** Network configuration keys */
+  public final static String HTTP_PROXY_SETTINGS_ENABLED = ProxySettingsOptionsPanel.class
+      .getName() + "-Enabled";
   public final static String HTTP_PROXY_SETTINGS_KEY = ProxySettingsOptionsPanel.class
       .getName() + "-Settings";
   public final static String TEST_URL_KEY = ProxySettingsOptionsPanel.class
@@ -407,7 +409,7 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
     HTTPProxySettings settings = (HTTPProxySettings) blackboard
         .get(HTTP_PROXY_SETTINGS_KEY);
 
-    proxyHTTPEnabledCheckBox.setSelected(settings != null);
+    proxyHTTPEnabledCheckBox.setSelected(settings != null && settings.isEnabled());
     if (settings != null) {
       proxyHostTextField.setText(settings.getHost());
       proxyPortTextField.setText("" + settings.getPort());
@@ -440,11 +442,11 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
     HTTPProxySettings settings = buildSettingsFromUserParameters();
     applySettingsToSystem(settings);
     // save proxy settings to blackboard
-    if (settings != null)
-      blackboard.put(HTTP_PROXY_SETTINGS_KEY, settings);
-    else
-      blackboard.remove(HTTP_PROXY_SETTINGS_KEY);
+    blackboard.put(HTTP_PROXY_SETTINGS_KEY, settings);
 
+    // save enabled state
+    blackboard.put(HTTP_PROXY_SETTINGS_ENABLED, settings.isEnabled());
+    
     // save testurl setting to blackboard
     String testUrl = testUrlTextField.getText().trim();
     if (!testUrl.isEmpty() && !isDefaultTestUrl(testUrl))
@@ -460,22 +462,21 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
    */
   private HTTPProxySettings buildSettingsFromUserParameters() {
 
-    HTTPProxySettings settings = null;
-    if (proxyHTTPEnabledCheckBox.isSelected()) {
-      settings = new HTTPProxySettings();
-      settings.setHost(StringUtils.trim(proxyHostTextField.getText()));
-      settings.setPort(Integer.valueOf((StringUtils.trim(proxyPortTextField
-          .getText()))));
-      settings.setUserName(StringUtils.trim(proxyUserTextField.getText()));
-      settings.setPassword(StringUtils.trim(new String(proxyPasswordTextField
-          .getPassword())));
-      // preprocess direct connect value
-      // - we allow commas (;,) as separator
-      // - we remove space chars as they confuse the jre
-      String directConnectTo = directConnectToTextField.getText()
-          .replaceAll("[,;]+", "|").replaceAll("\\s", "");
-      settings.setDirectConnectionTo(directConnectTo);
-    }
+    HTTPProxySettings settings = new HTTPProxySettings(proxyHTTPEnabledCheckBox.isSelected());
+    settings.setHost(StringUtils.trim(proxyHostTextField.getText()));
+    settings.setPort(Integer.valueOf((StringUtils.trim(proxyPortTextField
+        .getText()))));
+    settings.setUserName(StringUtils.trim(proxyUserTextField.getText()));
+    settings.setPassword(StringUtils.trim(new String(proxyPasswordTextField
+        .getPassword())));
+    // preprocess direct connect value
+    // - we allow commas (;,) as separator
+    // - we remove space chars as they confuse the jre
+    String directConnectTo = directConnectToTextField.getText()
+        .replaceAll("[,;]+", "|").replaceAll("\\s", "");
+    settings.setDirectConnectionTo(directConnectTo);
+
+    settings.setEnabled(proxyHTTPEnabledCheckBox.isSelected());
 
     return settings;
   }
@@ -641,7 +642,7 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
   private static void applySettingsToSystem(HTTPProxySettings settings) {
     // Set the properties to the current session
     Properties systemSettings = System.getProperties();
-    if (settings != null) {
+    if (settings !=null && settings.isEnabled()) {
 
       systemSettings.put("http.proxyHost", settings.getHost());
       systemSettings.put("https.proxyHost", settings.getHost());
@@ -729,6 +730,7 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
     // Recover the values
     HTTPProxySettings settings = (HTTPProxySettings) blackboard
         .get(HTTP_PROXY_SETTINGS_KEY);
+    settings.setEnabled((Boolean) blackboard.get(HTTP_PROXY_SETTINGS_ENABLED));
     applySettingsToSystem(settings);
   }
 
