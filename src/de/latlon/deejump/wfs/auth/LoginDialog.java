@@ -38,10 +38,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
@@ -66,6 +69,7 @@ public class LoginDialog extends JDialog {
     protected String name = null;
     protected String password = null;
     private JTextField wfsField = null;
+    private boolean cancelled = true;
     
     /**
      * sets up the login dialog with a name and an owner Frame. Dialog is shown modally immediately!
@@ -83,59 +87,72 @@ public class LoginDialog extends JDialog {
     }
     
     private void initGUI(String serverName) {
-        getContentPane().setLayout(new GridBagLayout());
+        setLayout(new GridBagLayout());
         GridBagConstraints gb = new GridBagConstraints();
+        gb.weightx = 1;
         gb.gridx = 0;
         gb.gridy = 0;
         gb.insets = new Insets(5, 2, 0, 2);
-        getContentPane().add(new JLabel(I18N.get("LoginDialog.service")), gb);
+        add(new JLabel(I18N.get("LoginDialog.service")), gb);
         ++gb.gridy;
-        getContentPane().add(new JLabel(I18N.get("LoginDialog.username")), gb);
+        add(new JLabel(I18N.get("LoginDialog.username")), gb);
         ++gb.gridy;
-        getContentPane().add(new JLabel(I18N.get("LoginDialog.password")), gb);
+        add(new JLabel(I18N.get("LoginDialog.password")), gb);
 
         gb.gridy = 0;
         ++gb.gridx;
         gb.fill = GridBagConstraints.HORIZONTAL;
 
         wfsField = new JTextField(serverName);
-        getContentPane().add(wfsField, gb);
+        add(wfsField, gb);
         ++gb.gridy;
         nameField = new JTextField();
-        getContentPane().add(nameField, gb);
+        add(nameField, gb);
         ++gb.gridy;
         passwordField = new JPasswordField();
-        getContentPane().add(passwordField, gb);
+        add(passwordField, gb);
 
+        JPanel buttonsPanel = new JPanel(new GridBagLayout());
+        
         JButton ok = new JButton(I18N.get("LoginDialog.ok"));
         ok.addActionListener(
             new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     name = nameField.getText();
                     password = new String(passwordField.getPassword());
+                    cancelled = false;
                     dispose();
                 }
             }
         );
         
         gb.insets = new Insets(5, 2, 5, 2);
-        gb.fill = GridBagConstraints.NONE;
-        ++gb.gridy;
+//        gb.fill = GridBagConstraints.HORIZONTAL;
+//        gb.anchor = GridBagConstraints.EAST;
         gb.gridx = 0;
-        getContentPane().add(ok, gb);
+        gb.gridy = 0;
+        buttonsPanel.add(ok, gb);
         
         JButton cancel = new JButton(I18N.get("LoginDialog.cancel"));
         cancel.addActionListener(
              new ActionListener() {
                  public void actionPerformed(ActionEvent e) {
-                     dispose();
+                   dispose();
                  }
              }
          );
         
-        gb.gridx = 1;
-        getContentPane().add(cancel, gb);
-
+        gb.gridx++;
+//        gb.anchor = GridBagConstraints.WEST;
+        buttonsPanel.add(cancel, gb);
+        
+        gb.gridx = 0;
+        gb.gridwidth = 2;
+        gb.gridy = 3;
+        gb.fill = GridBagConstraints.NONE;
+        gb.anchor = GridBagConstraints.CENTER;
+        add(buttonsPanel,gb);
+        
         getRootPane().setDefaultButton(ok);
         pack();
         setResizable(false);
@@ -148,6 +165,9 @@ public class LoginDialog extends JDialog {
         });
     }
 
+    public boolean wasCancelled() {
+      return cancelled;
+    }
     
     /**
      * @return the name of the user if the dialog has been quit

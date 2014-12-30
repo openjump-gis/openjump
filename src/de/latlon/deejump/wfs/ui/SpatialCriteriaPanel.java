@@ -10,7 +10,6 @@
 package de.latlon.deejump.wfs.ui;
 
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
@@ -115,8 +114,7 @@ class SpatialCriteriaPanel extends JPanel {
 
     private JComponent createSRSCombo() {
 
-        srsCombo = new JComboBox( new DefaultComboBoxModel( new String[0] ) );
-        srsCombo.setEnabled( false );
+        srsCombo = new ExtensibleComboBox( new String[0] );
 
         JPanel p = new JPanel();
         p.add( new JLabel( I18N.get( "SpatialResearchPanel.srs" ) ) );
@@ -142,9 +140,8 @@ class SpatialCriteriaPanel extends JPanel {
 
         JPanel opsPanel = new JPanel();
         JPanel opsFieldPanel = new JPanel();
-        Border bo = BorderFactory.createEmptyBorder( 10, 10, 10, 10 );
-        opsPanel.setBorder( bo );
-        opsFieldPanel.setBorder( bo );
+        opsPanel.setBorder( BorderFactory.createEmptyBorder( 0, 10, 0, 0 ) );
+        opsFieldPanel.setBorder( BorderFactory.createEmptyBorder( 0, 0, 0, 10 ) );
 
         LayoutManager lm2 = new GridLayout( OPERATION_NAMES.length, 1 );
         opsPanel.setLayout( lm2 );
@@ -165,12 +162,13 @@ class SpatialCriteriaPanel extends JPanel {
             String txt = simpleName + "." + OPERATION_NAMES[i];
             String buttonTxt = I18N.get( txt );
             opButtons[i] = new JRadioButton( buttonTxt );
+            opButtons[i].setBorder(null);
             txt += ".descrip";
             buttonTxt = I18N.get( txt );
             opButtons[i].setToolTipText( buttonTxt );
             opButtons[i].setActionCommand( OPERATION_NAMES[i] );
             opButtons[i].addActionListener( bal );
-            opButtons[i].setBounds( PropertyCriteriaPanel.LEFT_MARGIN + 10, ( i * 25 ) + 25, 270, 20 );
+//            opButtons[i].setBounds( PropertyCriteriaPanel.LEFT_MARGIN + 10, ( i * 25 ) + 25, 270, 10 );
             opButtons[i].setAlignmentX( Component.LEFT_ALIGNMENT );
 
             bg.add( opButtons[i] );
@@ -178,7 +176,7 @@ class SpatialCriteriaPanel extends JPanel {
             if ( "DWithin".equals( OPERATION_NAMES[i] ) ) {
                 opsFieldPanel.add( dWithinDistanceField );
             } else if ( "Beyond".equals( OPERATION_NAMES[i] ) ) {
-                beyondDistanceField.setEnabled( false );
+//                beyondDistanceField.setEnabled( false );
                 opsFieldPanel.add( beyondDistanceField );
             } else {
                 opsFieldPanel.add( Box.createHorizontalStrut( 1 ) );
@@ -194,7 +192,7 @@ class SpatialCriteriaPanel extends JPanel {
         combiPanel.setLayout( new GridLayout( 1, 2 ) );
         combiPanel.add( opsPanel );
         combiPanel.add( opsFieldPanel );
-        combiPanel.setPreferredSize( new Dimension( 300, 380 ) );
+
         b.add( combiPanel );
 
         return b;

@@ -246,7 +246,7 @@ class PropertyCriteriaPanel extends JPanel {
         b.add( andButton );
         b.add( Box.createRigidArea( new Dimension( 20, 10 ) ) );
         b.add( orButton );
-        b.setPreferredSize( new Dimension( 150, 100 ) );
+//        b.setPreferredSize( new Dimension( 150, 100 ) );
 
         return b;
     }

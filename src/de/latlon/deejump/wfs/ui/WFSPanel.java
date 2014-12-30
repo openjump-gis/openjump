@@ -16,7 +16,6 @@ import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED;
 
 import java.awt.Component;
 import java.awt.Dialog;
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -39,6 +38,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -247,7 +247,6 @@ public class WFSPanel extends JPanel {
       capabilitiesButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           createXMLFrame(WFSPanel.this, wfService.getCapabilitesAsString());
-  
         }
       });
   
@@ -423,6 +422,8 @@ public class WFSPanel extends JPanel {
                                               I18N.get( "FeatureResearchDialog.login" ),
                                               serverCombo.getSelectedItem().toString() );
 
+        if (dialog.wasCancelled()) return;
+        
         String pass = dialog.getPassword();
         String user = dialog.getName();
 
@@ -494,15 +495,25 @@ public class WFSPanel extends JPanel {
 
         // ta.setLineWrap( true );
         JScrollPane sp = new JScrollPane( xmlPane, VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_AS_NEEDED );
-        sp.setMaximumSize( new Dimension( 600, 400 ) );
-        sp.setPreferredSize( new Dimension( 800, 400 ) );
+//        sp.setMaximumSize( new Dimension( 600, 400 ) );
+//        sp.setPreferredSize( new Dimension( 800, 400 ) );
 
         String[] opts = new String[] { I18N.get( "closeAndSave" ), I18N.get( "OK" ) };
+        
+        JOptionPane pane = new JOptionPane(sp, JOptionPane.PLAIN_MESSAGE,
+            JOptionPane.YES_NO_OPTION, null,
+            opts, opts[1]);
+        pane.selectInitialValue();
+        JDialog dialog = pane.createDialog(parent,  I18N.get( "FeatureResearchDialog.capabilities" ));
+        GUIUtil.centreOnScreen(dialog);
 
-        int i = JOptionPane.showOptionDialog( parent, sp, I18N.get( "FeatureResearchDialog.capabilities" ),
-                                              JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, opts, opts[1] );
+        dialog.show();
+        dialog.dispose();
+        
+//        int i = JOptionPane.showOptionDialog( parent, sp, I18N.get( "FeatureResearchDialog.capabilities" ),
+//                                              JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, opts, opts[1] );
 
-        if ( i == 0 ) { // save our capabilities!
+        if ( opts[0].equals(pane.getValue()) ) { // save our capabilities!
             WFSPanel.saveTextToFile( parent, xmlPane.getText() );
         }
     }
