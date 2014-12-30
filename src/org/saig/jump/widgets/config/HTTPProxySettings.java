@@ -55,6 +55,8 @@ public class HTTPProxySettings {
     /** Log */
     private final static Logger LOGGER = Logger.getLogger(HTTPProxySettings.class);
     
+    private boolean enabled = true;
+    
     private String host;
     
     private Integer port;
@@ -77,6 +79,18 @@ public class HTTPProxySettings {
         } catch (CryptManagerException e) {
             LOGGER.error(e);
         }
+    }
+
+    public HTTPProxySettings(boolean enabled) {
+      this.enabled = enabled;
+    }
+
+    public boolean isEnabled() {
+      return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+      this.enabled = enabled;
     }
 
     public String getHost() {
@@ -105,7 +119,7 @@ public class HTTPProxySettings {
 
     public String getPassword() {
         if(StringUtils.isEmpty(password)) {
-            return ""; //$NON-NLS-1$
+            return "";
         }
         return password;
     }
