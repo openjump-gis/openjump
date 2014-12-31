@@ -185,7 +185,7 @@ public abstract class AbstractWFSWrapper {
         String serverReq = getDescribeTypeURL( ft );
 
         try {
-            GMLSchemaDocument xsdDoc = new de.latlon.deejump.wfs.client.deegree2mods.GMLSchemaDocument();
+            GMLSchemaDocument xsdDoc = new de.latlon.deejump.wfs.deegree2mods.GMLSchemaDocument();
             xsdDoc.load( new URL( serverReq ) );
             return DOMPrinter.nodeToString( xsdDoc.getRootElement(), null );
         } catch ( Exception e ) {
@@ -245,7 +245,7 @@ public abstract class AbstractWFSWrapper {
                         PropertyType[] props = fts[i].getProperties();
                         for ( int j = 0; j < props.length; j++ ) {
                             if ( !( props[j].getType() == Types.GEOMETRY || props[j].getType() == 10014 ) ) {
-                                propsList.add( props[j].getName().getPrefixedName() );
+                                propsList.add( props[j].getName().getLocalName() );
                             }
                         }
                     }

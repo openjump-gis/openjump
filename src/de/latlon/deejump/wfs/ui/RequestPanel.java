@@ -107,7 +107,7 @@ class RequestPanel extends JPanel {
                 try {
 
                     // simple test for well-formedness
-                    XMLFragment xf = new de.latlon.deejump.wfs.client.deegree2mods.XMLFragment();
+                    XMLFragment xf = new de.latlon.deejump.wfs.deegree2mods.XMLFragment();
                     xf.load( new StringReader( reqTxt ), "http://empty" );
 
                     if ( "1.1.0".equals( wfsPanel.wfService.getServiceVersion() ) ) {

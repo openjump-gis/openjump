@@ -221,7 +221,8 @@ public class WFSPlugIn extends ThreadedBasePlugIn {
       throw new WorkbenchException(
           I18N.get("WFSResearchPlugIn.invalideGeomType"));
     }
-    org.deegree.model.spatialschema.Geometry geoObj = JTSAdapter.wrap(geo);
+    // TODO: fetch SRS info and use it
+    org.deegree.model.spatialschema.Geometry geoObj = JTSAdapter.wrap(geo,null);
 
     return geoObj;
   }

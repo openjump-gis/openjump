@@ -44,11 +44,14 @@ package de.latlon.deejump.wfs.client;
 
 import java.io.*;
 import java.net.*;
+import java.util.LinkedList;
 
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.methods.*;
+import org.apache.commons.io.IOUtils;
 import org.deegree.enterprise.*;
 import org.deegree.framework.log.*;
+import org.deegree.framework.util.CharsetUtils;
 
 import de.latlon.deejump.wfs.*;
 
@@ -82,7 +85,11 @@ public class WFSClientHelper {
         try {
             WebUtils.enableProxyUsage( httpclient, new URL(serverUrl) );
             httpclient.executeMethod( httppost );
-            return httppost.getResponseBodyAsString();
+            PushbackInputStream pbis = new PushbackInputStream( httppost.getResponseBodyAsStream(), 1024 );
+            String encoding = readEncoding( pbis );
+
+            return IOUtils.toString(pbis, encoding);
+
         } catch ( HttpException e ) {
             String mesg = "Error opening connection with " + serverUrl;
             LOG.logError( mesg, e );
@@ -95,4 +102,51 @@ public class WFSClientHelper {
 
     }
 
+    /**
+     * reads the encoding of a XML document from its header. If no header available
+     * <code>CharsetUtils.getSystemCharset()</code> will be returned
+     * 
+     * @param pbis
+     * @return encoding of a XML document
+     * @throws IOException
+     */
+    private static String readEncoding( PushbackInputStream pbis )
+                            throws IOException {
+        byte[] b = new byte[80];
+        String s = "";
+        int rd = 0;
+
+        LinkedList<byte[]> bs = new LinkedList<byte[]>();
+        LinkedList<Integer> rds = new LinkedList<Integer>();
+        while ( rd < 80 ) {
+            rds.addFirst( pbis.read( b ) );
+            if ( rds.peek() == -1 ) {
+                rds.poll();
+                break;
+            }
+            rd += rds.peek();
+            s += new String( b, 0, rds.peek() ).toLowerCase();
+            bs.addFirst( b );
+            b = new byte[80];
+        }
+
+        String encoding = CharsetUtils.getSystemCharset();
+        if ( s.indexOf( "?>" ) > -1 ) {
+            int p = s.indexOf( "encoding=" );
+            if ( p > -1 ) {
+                StringBuffer sb = new StringBuffer();
+                int k = p + 1 + "encoding=".length();
+                while ( s.charAt( k ) != '"' && s.charAt( k ) != '\'' ) {
+                    sb.append( s.charAt( k++ ) );
+                }
+                encoding = sb.toString();
+            }
+        }
+        while ( !bs.isEmpty() ) {
+            pbis.unread( bs.poll(), 0, rds.poll() );
+        }
+
+        return encoding;
+    }
+    
 }

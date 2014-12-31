@@ -1,4 +1,4 @@
-package de.latlon.deejump.wfs.client.deegree2mods;
+package de.latlon.deejump.wfs.deegree2mods;
 
 import java.io.*;
 import java.net.*;

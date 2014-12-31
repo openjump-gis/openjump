@@ -1,4 +1,4 @@
-package de.latlon.deejump.wfs.client.deegree2mods;
+package de.latlon.deejump.wfs.deegree2mods;
 
 import java.io.*;
 import java.net.*;
@@ -10,17 +10,15 @@ import org.xml.sax.*;
 
 import de.latlon.deejump.wfs.client.*;
 
-public class GMLSchemaDocument extends
-    org.deegree.model.feature.schema.GMLSchemaDocument {
-
-  private static final long serialVersionUID = 42459124798674598L;
+public class XMLFragment extends org.deegree.framework.xml.XMLFragment {
 
   /**
-   * this override is necessary to have this method use the WFSHttpClient which
-   * holds some general settings like the socket timeout
+   * this override is necessary to have this method use the WFSHttpClient
+   * which holds some general settings like the socket timeout
    */
   @Override
-  public void load(URL url) throws IOException, SAXException {
+  public void load( URL url )
+      throws IOException, SAXException {
     if (url == null) {
       throw new IllegalArgumentException("The given url may not be null");
     }
@@ -37,4 +35,5 @@ public class GMLSchemaDocument extends
     client.executeMethod(get);
     load(get.getResponseBodyAsStream(), uri);
   }
+
 }

@@ -52,7 +52,7 @@ public class WFServiceWrapper_1_0_0 extends AbstractWFSWrapper {
 
     private void init() {
 
-        capsDoc = new de.latlon.deejump.wfs.client.deegree2mods.XMLFragment();
+        capsDoc = new de.latlon.deejump.wfs.deegree2mods.XMLFragment();
 
         try {
             capsDoc.load( new URL( getCapabilitiesURL() ) );
