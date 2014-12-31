@@ -53,7 +53,9 @@ import javax.swing.border.Border;
 import org.apache.log4j.Logger;
 import org.deegree.datatypes.QualifiedName;
 import org.deegree.framework.xml.XMLFragment;
+import org.deegree.model.spatialschema.GMLGeometryAdapter;
 import org.deegree.model.spatialschema.Geometry;
+import org.deegree.model.spatialschema.GeometryFactory;
 import org.deegree.ogcwebservices.wfs.capabilities.WFSFeatureType;
 import org.saig.core.gui.swing.sldeditor.util.FormUtils;
 import org.xml.sax.SAXException;
@@ -132,9 +134,9 @@ public class WFSPanel extends JPanel {
     
     private List<Component> advancedTabs = new ArrayList<Component>();
 
-    // TODO remove dependency on JUMP/JTS use deegree Envelope
+    // use deegree Envelope
     /** The envelope of the current bounding box */
-    private Envelope envelope = new Envelope( -1d, -1d, 1d, 1d );
+    private org.deegree.model.spatialschema.Envelope envelope;
 
     // private GMLGeometry gmlBbox;
     private Geometry selectedGeom;
@@ -679,28 +681,42 @@ public class WFSPanel extends JPanel {
         return sb;
     }
 
-    /**
+      /**
      * Creates the XML fragment containing a bounding box filter
      * 
      * @return the XML fragment containing a bounding box filter
      */
     private StringBuffer createBboxGml() {
-
-        StringBuffer sb = new StringBuffer( 500 );
-
-        QualifiedName ft = getFeatureType();
-        QualifiedName qn = getChosenGeoProperty();
-
-        if ( envelope != null ) {
-            sb.append( "<ogc:BBOX>" ).append( "<ogc:PropertyName>" ).append( ft.getPrefix() ).append( ":" );
-            sb.append( qn.getLocalName() ).append( "</ogc:PropertyName>" ).append( "<gml:Box><gml:coord>" );
-            sb.append( "<gml:X>" ).append( envelope.getMinX() ).append( "</gml:X>" ).append( "<gml:Y>" );
-            sb.append( envelope.getMinY() ).append( "</gml:Y>" ).append( "</gml:coord><gml:coord>" );
-            sb.append( "<gml:X>" ).append( envelope.getMaxX() ).append( "</gml:X>" ).append( "<gml:Y>" );
-            sb.append( envelope.getMaxY() ).append( "</gml:Y>" ).append( "</gml:coord></gml:Box></ogc:BBOX>" );
-        }
-
-        return sb;
+  
+      if (envelope == null)
+        return new StringBuffer();
+  
+      // StringBuffer sb = new StringBuffer( 500 );
+      //
+      // QualifiedName ft = getFeatureType();
+      // QualifiedName qn = getChosenGeoProperty();
+  
+      // if ( envelope != null ) {
+      // sb.append( "<ogc:BBOX>" ).append( "<ogc:PropertyName>" ).append(
+      // ft.getPrefix() ).append( ":" );
+      // sb.append( qn.getLocalName() ).append( "</ogc:PropertyName>" ).append(
+      // "<gml:Box><gml:coord>" );
+      // sb.append( "<gml:X>" ).append( envelope.getMinX() ).append( "</gml:X>"
+      // ).append( "<gml:Y>" );
+      // sb.append( envelope.getMinY() ).append( "</gml:Y>" ).append(
+      // "</gml:coord><gml:coord>" );
+      // sb.append( "<gml:X>" ).append( envelope.getMaxX() ).append( "</gml:X>"
+      // ).append( "<gml:Y>" );
+      // sb.append( envelope.getMaxY() ).append( "</gml:Y>" ).append(
+      // "</gml:coord></gml:Box></ogc:BBOX>" );
+      // }
+  
+      if (getWfsVersion().equals("1.0.0")) {
+        return GMLGeometryAdapter.exportAsBox(envelope);
+      } else {
+        return GMLGeometryAdapter.exportAsEnvelope(envelope);
+      }
+  
     }
 
     /**
@@ -858,7 +874,8 @@ public class WFSPanel extends JPanel {
      * @param env
      */
     public void setEnvelope( Envelope env ) {
-        this.envelope = env;
+      // TODO: respect SRS
+      this.envelope = GeometryFactory.createEnvelope(env.getMinX(), env.getMinY(), env.getMaxX(), env.getMaxY(), null);
     }
 
     /**

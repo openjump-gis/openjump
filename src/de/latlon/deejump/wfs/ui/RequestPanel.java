@@ -90,7 +90,7 @@ class RequestPanel extends JPanel {
         new Insets(0, 0, 0, 0), 0, 0));
     
     add(buttonPanel, new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0,
-        GridBagConstraints.SOUTH, GridBagConstraints.HORIZONTAL, new Insets(0,
+        GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0,
             0, 0, 0), 0, 0));
   }
 

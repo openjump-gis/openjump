@@ -290,8 +290,8 @@ public class TransactionFactory {
         try {
             LOG.debug( "Using crs " + crs );
             CoordinateSystem cs = CRSFactory.create( crs );
-            gg = JTSAdapter.wrap( geometry );
-            ( (GeometryImpl) gg ).setCoordinateSystem( cs );
+            gg = JTSAdapter.wrap( geometry, cs );
+            //( (GeometryImpl) gg ).setCoordinateSystem( cs );
         } catch ( Exception e ) {
             e.printStackTrace();
         }

@@ -129,7 +129,6 @@ class SpatialCriteriaPanel extends JPanel {
     public void setCrs( String[] crs ) {
         this.srsCombo.setModel( new DefaultComboBoxModel( crs ) );
         srsCombo.setEnabled( true );
-
     }
 
     /** Creates a panel containing the radio buttons representaing the spatial operations */

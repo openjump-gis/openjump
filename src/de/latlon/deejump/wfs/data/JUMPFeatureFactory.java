@@ -531,7 +531,8 @@ public class JUMPFeatureFactory {
                 } else {
                     fp[i] = FeatureFactory.createFeatureProperty(
                                                                   new QualifiedName( schema.getAttributeName( geoIx ) ),
-                                                                  JTSAdapter.wrap( feature.getGeometry() ) );
+                                                                  // TODO: implement SRS support
+                                                                  JTSAdapter.wrap( feature.getGeometry(), null ) );
 
                 }
             }
