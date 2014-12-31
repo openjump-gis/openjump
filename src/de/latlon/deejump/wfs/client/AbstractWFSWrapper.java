@@ -245,7 +245,7 @@ public abstract class AbstractWFSWrapper {
                         PropertyType[] props = fts[i].getProperties();
                         for ( int j = 0; j < props.length; j++ ) {
                             if ( !( props[j].getType() == Types.GEOMETRY || props[j].getType() == 10014 ) ) {
-                                propsList.add( props[j].getName().getLocalName() );
+                                propsList.add( props[j].getName().getPrefixedName() );
                             }
                         }
                     }
