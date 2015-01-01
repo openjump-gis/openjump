@@ -730,8 +730,11 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
     // Recover the values
     HTTPProxySettings settings = (HTTPProxySettings) blackboard
         .get(HTTP_PROXY_SETTINGS_KEY);
-    settings.setEnabled((Boolean) blackboard.get(HTTP_PROXY_SETTINGS_ENABLED));
-    applySettingsToSystem(settings);
+    if (settings != null) {
+      boolean enabled = blackboard.get(HTTP_PROXY_SETTINGS_ENABLED, true);
+      settings.setEnabled(enabled);
+      applySettingsToSystem(settings);
+    }
   }
 
   private static void printProps(String title){
