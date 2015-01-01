@@ -27,6 +27,7 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JTextField;
 import javax.swing.border.Border;
 
 import de.latlon.deejump.wfs.i18n.I18N;
@@ -67,7 +68,8 @@ public class WFSOptionsPanel2 extends JPanel {
         setLayout( layoutManager );
 
         maxFeaturesField = new JFormattedTextField();
-        maxFeaturesField.setColumns( 4 );
+        maxFeaturesField.setColumns( 10 );
+        maxFeaturesField.setHorizontalAlignment(JTextField.RIGHT);
         maxFeaturesField.addPropertyChangeListener( "value", new PropertyChangeListener() {
             public void propertyChange( PropertyChangeEvent evt ) {
                 options.setMaxFeatures( ( (Integer) evt.getNewValue() ).intValue() );
