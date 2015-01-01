@@ -73,7 +73,23 @@ public class WFSClientHelper {
      * @return the response as String
      * @throws DeeJUMPException
      */
-    public static String createResponsefromWFS( String serverUrl, String request )
+    public static String createResponseStringfromWFS(String serverUrl,
+        String request) throws DeeJUMPException {
+      
+      PushbackInputStream pbis = new PushbackInputStream(
+          createResponseStreamfromWFS(serverUrl, request), 1024);
+
+      try {
+        String encoding = readEncoding(pbis);
+        return IOUtils.toString(pbis, encoding);
+      } catch (IOException e) {
+        String mesg = "Error reading " + serverUrl;
+        LOG.logError(mesg, e);
+        throw new DeeJUMPException(mesg, e);
+      }
+    }
+    
+    public static InputStream createResponseStreamfromWFS( String serverUrl, String request )
                             throws DeeJUMPException {
         LOG.logDebug( "WFS GetFeature: " + serverUrl + " -> " + request );
 
@@ -85,23 +101,16 @@ public class WFSClientHelper {
         try {
             WebUtils.enableProxyUsage( httpclient, new URL(serverUrl) );
             httpclient.executeMethod( httppost );
-            PushbackInputStream pbis = new PushbackInputStream( httppost.getResponseBodyAsStream(), 1024 );
-            String encoding = readEncoding( pbis );
 
-            return IOUtils.toString(pbis, encoding);
-
-        } catch ( HttpException e ) {
+            return httppost.getResponseBodyAsStream();
+        } catch ( Exception e ) {
             String mesg = "Error opening connection with " + serverUrl;
             LOG.logError( mesg, e );
             throw new DeeJUMPException( mesg, e );
-        } catch ( IOException e ) {
-            String mesg = "Error opening connection with " + serverUrl;
-            LOG.logError( mesg, e );
-            throw new DeeJUMPException( mesg, e );
-        }
+        } 
 
     }
-
+    
     /**
      * reads the encoding of a XML document from its header. If no header available
      * <code>CharsetUtils.getSystemCharset()</code> will be returned

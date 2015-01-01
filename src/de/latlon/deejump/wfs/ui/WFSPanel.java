@@ -272,7 +272,7 @@ public class WFSPanel extends JPanel {
             int i = jfc.showSaveDialog(WFSPanel.this);
             if (i == APPROVE_OPTION) {
               try {
-                String txt = WFSClientHelper.createResponsefromWFS(getWfService()
+                String txt = WFSClientHelper.createResponseStringfromWFS(getWfService()
                     .getGetFeatureURL(), getRequest());
                 FileWriter fw = new FileWriter(jfc.getSelectedFile());
                 fw.write(txt);

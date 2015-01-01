@@ -9,10 +9,10 @@
 package de.latlon.deejump.wfs.data;
 
 import static com.vividsolutions.jump.feature.AttributeType.GEOMETRY;
-import static de.latlon.deejump.wfs.client.WFSClientHelper.createResponsefromWFS;
 import static org.deegree.model.spatialschema.JTSAdapter.export;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -50,8 +50,8 @@ import org.deegree.model.spatialschema.JTSAdapter;
 import org.deegree.ogcbase.CommonNamespaces;
 import org.deegree.ogcwebservices.wfs.XMLFactory;
 import org.deegree.ogcwebservices.wfs.operation.GetFeature;
-import org.deegree.ogcwebservices.wfs.operation.Query;
 import org.deegree.ogcwebservices.wfs.operation.GetFeature.RESULT_TYPE;
+import org.deegree.ogcwebservices.wfs.operation.Query;
 import org.xml.sax.SAXException;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -62,6 +62,7 @@ import com.vividsolutions.jump.feature.FeatureSchema;
 
 import de.latlon.deejump.wfs.DeeJUMPException;
 import de.latlon.deejump.wfs.client.AbstractWFSWrapper;
+import de.latlon.deejump.wfs.client.WFSClientHelper;
 import de.latlon.deejump.wfs.jump.WFSFeature;
 
 /**
@@ -177,8 +178,8 @@ public class JUMPFeatureFactory {
                                                                                       QualifiedName featureType )
                             throws DeeJUMPException {
 
-        String s = createResponsefromWFS( server.getGetFeatureURL(), request );
-
+        String s = WFSClientHelper.createResponseStringfromWFS( server.getGetFeatureURL(), request );
+      
         if ( s.indexOf( "<Exception>" ) >= 0 || s.indexOf( "<ServiceExceptionReport" ) >= 0 ) { //$NON-NLS-1$ //$NON-NLS-2$
             RuntimeException re = new RuntimeException( "Couldn't get data from WFS:\n" //$NON-NLS-1$
                                                         + s );
@@ -186,10 +187,9 @@ public class JUMPFeatureFactory {
             throw re;
         }
 
-        LOG.debug( "WFS FC: " + s ); //$NON-NLS-1$ //$NON-NLS-2$
+        LOG.debug( "WFS FC: " + s );
 
         StringReader sr = new StringReader( s );
-
         GMLFeatureCollectionDocument gfDoc = new GMLFeatureCollectionDocument();
 
         // get schema from server
@@ -246,7 +246,6 @@ public class JUMPFeatureFactory {
         org.deegree.model.feature.FeatureCollection newFeatCollec = null;
         try {
             gfDoc.load( sr, "http://dummySysId" );
-
             newFeatCollec = gfDoc.parse();
         } catch ( SAXException e ) {
             String mesg = "Error parsing response.";
