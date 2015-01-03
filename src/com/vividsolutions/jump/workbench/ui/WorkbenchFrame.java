@@ -1782,28 +1782,30 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
 
             /* [2015-01-03] Giuseppe Aruta
              *  Generate a string with the list of layers with no datasource 
-             */
-
+             
+            ///[2015-01-03] Giuseppe Aruta 
+             * Deactivated as it works even if there are no layers with no datasource
+             * 
             String numLayer = "\n ("
                     + ((generatedLayers.size() > 3) ? "e.g. " : "")
                     + StringUtil.toCommaDelimitedString(new ArrayList(
                             generatedLayers).subList(0,
                             Math.min(3, generatedLayers.size()))) + ")";
-
+            */
             if (container instanceof WorkbenchFrame) {
                 message = I18N
                         .getMessage(
                                 "ui.WorkbenchFrame.do-you-really-want-to-close-openjump",
                                 new Object[] { Integer.valueOf(generatedLayers
                                         .size()) })
-                        + numLayer;
+                        ;
             } else if (container instanceof TaskFrame) {
                 message = I18N
                         .getMessage(
                                 "ui.WorkbenchFrame.do-you-really-want-to-close-the-project",
                                 new Object[] { Integer.valueOf(generatedLayers
                                         .size()) })
-                        + numLayer;
+                        ;
             }
             pane.setMessage(message);
             pane.setMessageType(JOptionPane.QUESTION_MESSAGE);
