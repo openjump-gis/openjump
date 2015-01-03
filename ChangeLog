@@ -1,4 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
+2015-01-03 Giuseppe Aruta (giuseppe_aruta@yahoo.it)
+   * RasterImageLayerPropertiesPlugIn. Updated to advanced options. 
+   * Displays File, Raster properties and and cells data statistics
+   * of Sextante Raster Layer. It allows and allows to save those
+   * information as TXT file. Internationalized
 
 2015-01-03 Giuseppe Aruta (giuseppe_aruta@yahoo.it)
    * HTMLPanel. Added Option to save window to HTML page
