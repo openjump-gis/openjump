@@ -16,6 +16,7 @@ import java.nio.charset.Charset;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.util.java2xml.Java2XML;
 import com.vividsolutions.jump.util.java2xml.XML2Java;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
@@ -32,6 +33,10 @@ public class PersistentBlackboardPlugIn extends AbstractPlugIn {
     public static Blackboard get(WorkbenchContext context) {
         Blackboard blackboard = context.getBlackboard();
         return get(blackboard);
+    }
+
+    public static Blackboard getInstance() {
+      return get(JUMPWorkbench.getInstance().getContext());
     }
 
     public static Blackboard get(Blackboard blackboard) {
