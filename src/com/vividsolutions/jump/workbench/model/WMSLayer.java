@@ -135,7 +135,7 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
 		getBlackboard().put(LayerNameRenderer.USE_CLOCK_ANIMATION_KEY, true);
 	}
 	
-	private void setService(WMService service) {
+	public void setService(WMService service) {
 		this.service = service;
 		this.serverURL = service.getServerUrl();
 	}

@@ -58,11 +58,11 @@ import javax.swing.UIManager;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
 
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.StringUtil;
-import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.InputChangedFirer;
 import com.vividsolutions.jump.workbench.ui.InputChangedListener;
 import com.vividsolutions.jump.workbench.ui.addremove.AddRemoveListModel;
@@ -79,10 +79,11 @@ public class MapLayerPanel extends JPanel {
     public final static ImageIcon ICON = IconLoader.icon("globe3_13.png");
     private InputChangedFirer inputChangedFirer = new InputChangedFirer();
     private GridBagLayout gridBagLayout1 = new GridBagLayout();
-    private AddRemovePanel addRemovePanel = new AddRemovePanel(true);
+    private AddRemovePanel addRemovePanel;
     private JCheckBox checkBox = new JCheckBox(I18N.get("ui.plugin.wms.MapLayerPanel.sort"), true);
     // [mmichaud 2012-05-08] cache the fullSrs list associated to each MapLayer
     private Map<String,String> fullSrsMap = new HashMap<String,String>();
+    private WMService service = null;
 
     public MapLayerPanel() {
         try {
@@ -106,6 +107,11 @@ public class MapLayerPanel extends JPanel {
 
         return mapLayers;
     }
+    
+
+    public WMService getService() {
+      return service;
+    }
 
     private void setRendererText(JLabel renderer, MapLayer layer) {
         String label = fullSrsMap.get(layer.getTitle());
@@ -118,6 +124,7 @@ public class MapLayerPanel extends JPanel {
     }
 
     void jbInit() throws Exception {
+        addRemovePanel = new AddRemovePanel(true);
         addRemovePanel.setRightText(I18N.get("ui.plugin.wms.MapLayerPanel.chosen-layers"));
         this.setLayout(gridBagLayout1);
         this.add(addRemovePanel,
@@ -297,6 +304,7 @@ public class MapLayerPanel extends JPanel {
      * @param initialChosenMapLayers null to leave unspecified
      */
     public void init(WMService service, Collection initialChosenMapLayers) {
+        this.service = service;
         final MapLayerTreeModel treeModel = new MapLayerTreeModel(service.getCapabilities()
                                                                          .getTopLayer());
 
@@ -321,6 +329,7 @@ public class MapLayerPanel extends JPanel {
 
         ((TreeAddRemoveList) addRemovePanel.getLeftList()).setModel(treeAddRemoveListModel);
 
+        addRemovePanel.getRightList().getModel().setItems(new ArrayList());
         if (initialChosenMapLayers != null) {
             addIfOnList(service.getCapabilities().getTopLayer(),
                 addRemovePanel.getRightList().getModel(), initialChosenMapLayers);
@@ -329,6 +338,13 @@ public class MapLayerPanel extends JPanel {
         addRemovePanel.updateEnabled();
     }
 
+    public void reset() {
+      this.service = null;
+      ((TreeAddRemoveList) addRemovePanel.getLeftList()).setModel(new TreeAddRemoveListModel(new DefaultTreeModel(null)));
+      addRemovePanel.getRightList().getModel().setItems(new ArrayList());
+      addRemovePanel.updateEnabled();
+    }
+    
     private List items(MapLayerTreeModel.LayerNode node) {
         ArrayList items = new ArrayList();
         items.add(node);

@@ -32,62 +32,78 @@
 
 package com.vividsolutions.jump.workbench.ui.plugin.wms;
 
+import java.awt.Component;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.Map;
+
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.JCheckBox;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+
+import org.openjump.core.ui.plugin.wms.AddWmsLayerWizard;
+import org.openjump.util.UriUtil;
+
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchException;
 import com.vividsolutions.jump.workbench.ui.InputChangedFirer;
 import com.vividsolutions.jump.workbench.ui.InputChangedListener;
+import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.wizard.CancelNextException;
-import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
+import com.vividsolutions.jump.workbench.ui.wizard.WizardPanelV2;
 import com.vividsolutions.wms.MapImageFormatChooser;
 import com.vividsolutions.wms.WMSException;
 import com.vividsolutions.wms.WMService;
-import org.openjump.swing.listener.InvokeMethodItemListener;
-import org.openjump.swing.listener.InvokeMethodKeyTypedListener;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.io.IOException;
-import java.net.URL;
-import java.util.LinkedList;
-import java.util.Map;
-
-public class URLWizardPanel extends JPanel implements WizardPanel {
+public class URLWizardPanel extends JPanel implements WizardPanelV2 {
+  
+  private static URLWizardPanel instance = null;
   
   public static final String SERVICE_KEY = "SERVICE";
 
   public static final String FORMAT_KEY = "FORMAT";
 
   public static final String URL_KEY = "URL";
+  
+  public static final String I18N_PREFIX = "ui.plugin.wms.URLWizardPanel.";
 
   private InputChangedFirer inputChangedFirer = new InputChangedFirer();
 
   private Map dataMap;
 
-  private GridBagLayout gridBagLayout1 = new GridBagLayout();
-
-  private JLabel urlLabel = new JLabel();
-
-  private JComboBox urls;
-
-  private JPanel fillerPanel = new JPanel();
+  private String[] urlList;
+  private SelectUrlWithAuthPanel urlPanel;
 
   // [UT]
   public static final String VERSION_KEY = "WMS_VERSION";
+  public static final String TITLE = I18N.get(I18N_PREFIX + "select-wms-url");
 
-  private String wmsVersion = WMService.WMS_1_1_1;
+  // this is a hack, guess why
+  public static String wmsVersion = WMService.WMS_1_1_1;
+  public static final String[] wmsVersions = new String[] { WMService.WMS_1_0_0,
+      WMService.WMS_1_1_0, WMService.WMS_1_1_1, WMService.WMS_1_3_0 };
+  private String[] initialUrls = new String[0];
 
   private boolean lossyPreferred = true;
 
-  public URLWizardPanel(String[] initialURLs, String wmsVersion) {
+  private URLWizardPanel() {
     try {
-      this.wmsVersion = wmsVersion;
-      urls = new JComboBox(initialURLs);
-      urls.setEditable(true);
-      urls.getEditor().selectAll();
+      String urlString = (String)PersistentBlackboardPlugIn.getInstance()
+          .get(AddWmsLayerWizard.CACHED_URL_KEY);
+          this.initialUrls = (urlString != null) ? urlString.split(",") : AddWmsLayerWizard.DEFAULT_URLS;
+      
+      this.dataMap = new LinkedHashMap<String,Object>();
+      
       jbInit();
     } catch (Exception ex) {
       ex.printStackTrace();
@@ -103,37 +119,7 @@ public class URLWizardPanel extends JPanel implements WizardPanel {
   }
 
   void jbInit() throws Exception {
-    urlLabel.setText("URL:");
-    this.setLayout(gridBagLayout1);
-    //urls.setPreferredSize(new Dimension(300, 21));
-    urlLabel.addMouseListener(new MouseAdapter() {
-      public void mouseClicked(MouseEvent e) {
-        if (SwingUtilities.isRightMouseButton(e) && e.getClickCount() == 3) {
-          urls.setSelectedItem("http://libcwms.gov.bc.ca/wmsconnector/com.esri.wsit.WMSServlet/ogc_layer_service");
-        }
-        super.mouseClicked(e);
-      }
-    });
-    urls.getEditor().getEditorComponent().addKeyListener(
-      new InvokeMethodKeyTypedListener(inputChangedFirer, "fire", true));
-    urls.addItemListener(new InvokeMethodItemListener(inputChangedFirer,
-      "fire", true));
 
-    this.add(urlLabel, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0,
-      GridBagConstraints.WEST, GridBagConstraints.NONE,
-      new Insets(8, 2, 2, 2), 0, 0));
-    this.add(urls, new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0,
-      GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-      new Insets(8, 2, 2, 2), 0, 0));
-    //// [UT]
-    this.add(createVersionButtons(new String[] {
-      WMService.WMS_1_0_0, WMService.WMS_1_1_0, WMService.WMS_1_1_1, WMService.WMS_1_3_0
-    }), new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0,
-            GridBagConstraints.WEST, GridBagConstraints.NONE,
-            new Insets(2, 2, 2, 2), 0, 0));
-    this.add(fillerPanel, new GridBagConstraints(2, 3, 1, 1, 0.1, 1.0,
-        GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-        new Insets(0, 0, 0, 0), 0, 0));
     // [UT] 20.10.2005 not added yet; need more testing
     /*
      * this.add(createLossyCheckBox(), new GridBagConstraints(1, 4, 1, 1, 0.0,
@@ -141,10 +127,33 @@ public class URLWizardPanel extends JPanel implements WizardPanel {
      * 0, 0), 0, 0));
      */
 
+    JPanel keepNorth = new JPanel(new GridBagLayout());
+    
+    urlList = (String[])dataMap.get(URL_KEY);
+    if (urlList==null)
+      urlList = initialUrls;
+
+    urlPanel = new SelectUrlWithAuthPanel(urlList);
+    urlPanel.setBorder(BorderFactory.createTitledBorder(getTitle()));
+
+    keepNorth.add(urlPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
+        GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0,
+            0, 0, 0), 0, 0));
+
+    JPanel versionPanel = createVersionPanel();
+    versionPanel.setBorder(BorderFactory.createTitledBorder(I18N.get("GenericNames.version")));
+    keepNorth.add(versionPanel, new GridBagConstraints(0, 1,
+        1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+        new Insets(0, 0, 0, 0), 0, 0));
+
+    this.setLayout(new GridBagLayout());
+    this.add(keepNorth, new GridBagConstraints(0, 1, 1, 1, 1, 1,
+        GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL, new Insets(0,
+            0, 0, 0), 0, 0));
   }
 
   public String getInstructions() {
-    return I18N.get("ui.plugin.wms.URLWizardPanel.please-enter-the-url-of-the-wms-server");
+    return I18N.get(I18N_PREFIX + "please-enter-the-url-of-the-wms-server");
   }
 
   //
@@ -168,23 +177,14 @@ public class URLWizardPanel extends JPanel implements WizardPanel {
 
     return fixedURL;
   }
+  
+  
 
   public void exitingToRight() throws IOException, WorkbenchException {
     try {
-      LinkedList<String> list = new LinkedList<String>();
-      String url = urls.getSelectedIndex() == -1 ? 
-          urls.getEditor().getItem().toString() : 
-          urls.getItemAt(urls.getSelectedIndex()).toString();
+      String url = urlPanel.getUrl();
+      url = UriUtil.urlAddCredentials(url, urlPanel.getUser(), urlPanel.getPass());
 
-      list.add(url);
-
-      for (int i = 0; i < urls.getItemCount(); ++i) {
-        if (i != urls.getSelectedIndex()) {
-          list.add(urls.getItemAt(i).toString());
-        }
-      }
-
-      dataMap.put(URL_KEY, list.toArray(new String[list.size()]));
       // [UT]
       // String ver = (String)dataMap.get(VERSION_KEY);
 
@@ -194,6 +194,16 @@ public class URLWizardPanel extends JPanel implements WizardPanel {
       // WMService service = new WMService( url );
 
       service.initialize(true);
+      
+      LinkedList<String> list = new LinkedList<String>();
+      // insert latest on top 
+      list.add(url);
+      // add the rest
+      list.addAll(Arrays.asList(urlList));
+      
+      dataMap.put(URL_KEY, list.toArray(new String[0]));
+      //PersistentBlackboardPlugIn.get
+      
       dataMap.put(SERVICE_KEY, service);
       // [UT] 20.04.2005 added version
       MapImageFormatChooser formatChooser = new MapImageFormatChooser(wmsVersion);
@@ -206,7 +216,7 @@ public class URLWizardPanel extends JPanel implements WizardPanel {
 
       if (format == null) {
         throw new WorkbenchException(
-          I18N.get("ui.plugin.wms.URLWizardPanel.the-server-does-not-support-gif-png-or-jpeg-format"));
+          I18N.get(I18N_PREFIX + "the-server-does-not-support-gif-png-or-jpeg-format"));
       }
 
       dataMap.put(MapLayerWizardPanel.FORMAT_LIST_KEY, service.getCapabilities().getMapFormats());
@@ -222,11 +232,17 @@ public class URLWizardPanel extends JPanel implements WizardPanel {
 
   public void enteredFromLeft(Map dataMap) {
     this.dataMap = dataMap;
-    urls.getEditor().selectAll();
+//    urls.getEditor().selectAll();
+  }
+
+  public void enteredFromRight() throws Exception {
+    // System.out.println(Arrays.toString((String[])dataMap.get(URL_KEY)));
+    if (dataMap.get(URL_KEY) != null)
+      urlPanel.setUrlsList((String[]) dataMap.get(URL_KEY));
   }
 
   public String getTitle() {
-    return I18N.get("ui.plugin.wms.URLWizardPanel.select-uniform-resource-locator-url");
+    return TITLE;
   }
 
   public String getID() {
@@ -235,7 +251,7 @@ public class URLWizardPanel extends JPanel implements WizardPanel {
 
   public boolean isInputValid() {
     try {
-      String urlString = urls.getEditor().getItem().toString();
+      String urlString = urlPanel.getUrl();
       String host = new URL(urlString).getHost();
       return host.length() > 0;
     } catch (Throwable e) {
@@ -248,16 +264,17 @@ public class URLWizardPanel extends JPanel implements WizardPanel {
   }
 
   // [UT] 10.01.2005
-  private Component createVersionButtons(String[] versions) {
-    JPanel p = new JPanel();
+  public JPanel createVersionPanel() {
+    JPanel p = new JPanel(new GridBagLayout());
 
     ActionListener al = new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         JRadioButton jb = (JRadioButton)e.getSource();
-        wmsVersion = jb.getText();
+        URLWizardPanel.wmsVersion = jb.getText();
       }
     };
 
+    String[] versions  = URLWizardPanel.wmsVersions;
     ButtonGroup group = new ButtonGroup();
     JRadioButton[] buttons = new JRadioButton[versions.length];
     for (int i = 0; i < buttons.length; i++) {
@@ -274,10 +291,12 @@ public class URLWizardPanel extends JPanel implements WizardPanel {
     return p;
   }
 
+
+  
   // [UT] 20.10.2005
   private Component createLossyCheckBox() {
     JPanel p = new JPanel();
-    JCheckBox checkBox = new JCheckBox("Prefer Lossy images", true);// I18N.get("ui.plugin.wms.URLWizardPanel.select-uniform-resource-locator-url")
+    JCheckBox checkBox = new JCheckBox(I18N.get(I18N_PREFIX + "prefer-lossy-images"), true);
     // );
     checkBox.setToolTipText("This will try to load JPEG images, if the WMS allows it.");
     checkBox.addActionListener(new ActionListener() {
@@ -288,5 +307,16 @@ public class URLWizardPanel extends JPanel implements WizardPanel {
     p.add(checkBox);
     return p;
   }
+  
 
+
+  public static URLWizardPanel getInstance(){
+    if (instance == null) {
+      instance = new URLWizardPanel();
+    }
+    
+    return instance;
+  }
 }
+
+

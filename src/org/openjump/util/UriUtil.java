@@ -3,7 +3,10 @@ package org.openjump.util;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.zip.ZipEntry;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Utility class for handline {@link URI}.
@@ -166,5 +169,79 @@ public final class UriUtil {
     final int slashIndex = path.lastIndexOf('/');
     final int dotIndex = path.lastIndexOf('.');
     return slashIndex < dotIndex ? path.substring(0,dotIndex) : path;
+  }
+  
+  final static String charSet = "UTF-8";
+  
+  public static String urlEncode( String in ){
+    try {
+      return URLEncoder.encode(in, charSet);
+    } catch (Exception e) {
+      return in;
+    }
+  }
+  
+  public static String urlDecode( String in ){
+    try {
+      return URLDecoder.decode(in, charSet);
+    } catch (Exception e) {
+      return in;
+    }
+  }
+  
+  final static String regexp = "^([^:/]+://)(([^@:/]*)(\\:([^@:/]*))?@)?(.*)$";
+  
+  public static boolean isURL( String in ){
+    Pattern p = Pattern.compile(regexp);
+    Matcher m = p.matcher(in != null ? in : "");
+    
+//    while (m.find()) {
+//      System.out.println("g in:"+in);
+//      for (int i = 1; i <= m.groupCount(); i++) {
+//        System.out.println("g"+i+":"+m.group(i));
+//      }
+//    }
+    return m.matches();
+  }
+  
+  public static String urlStripAuth( String url ) {
+    String clean = isURL(url) ? url.replaceFirst(regexp, "$1$6") : url;
+    return clean;
+  }
+  
+  public static String urlStripPassword( String url ) {
+    String user = urlGetUser(url);
+    if (!user.isEmpty())
+      user += "@";
+    String clean = isURL(url) ? url.replaceFirst(regexp, "$1"+user+"$6") : url;
+    return clean;
+  }
+  
+  public static String urlGetUser(String url) {
+    if (isURL(url))
+      return urlDecode(url.replaceFirst(regexp, "$3"));
+    return "";
+  }
+
+  public static String urlGetPassword(String url) {
+    if (isURL(url))
+      return urlDecode(url.replaceFirst(regexp, "$5"));
+    return "";
+  }
+  
+  public static String urlAddCredentials(String url, String user, String pass) {
+    if (!isURL(url))
+      return url;
+
+    String urlCreds = user != null ? urlEncode(user) : "";
+    if (!urlCreds.isEmpty()) {
+      String urlPass = pass != null ? urlEncode(pass) : "";
+      if (!urlPass.isEmpty())
+        urlCreds += ":" + urlPass;
+    }
+    if (!urlCreds.isEmpty())
+      urlCreds = urlCreds + "@";
+
+    return url.replaceFirst(regexp, "$1" + urlCreds + "$6");
   }
 }

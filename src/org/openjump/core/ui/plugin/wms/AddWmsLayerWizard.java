@@ -28,13 +28,13 @@ import java.util.List;
 
 public class AddWmsLayerWizard extends AbstractWizardGroup {
     
-  private static final String CACHED_URL = "AddWMSQueryPlugin.CACHED_URL";
+  public static final String CACHED_URL_KEY = "AddWMSQueryPlugin.CACHED_URL";
 
   public static final String KEY = AddWmsLayerWizard.class.getName();
 
   private WorkbenchContext workbenchContext;
 
-  private String[] cachedURLs = new String[] {
+  public static final String[] DEFAULT_URLS = new String[] {
     "http://deegree3-demo.deegree.org/utah-workspace/services",
     "http://demo.opengeo.org/geoserver/wms",
     //"http://wiki.openstreetmap.org/wiki/WMS", // does not work (missing WMT_MS_Capabilities)
@@ -63,13 +63,9 @@ public class AddWmsLayerWizard extends AbstractWizardGroup {
 
   public void initialize(WorkbenchContext workbenchContext, WizardDialog dialog) {
     removeAllPanels();
-    String urlString = (String)PersistentBlackboardPlugIn.get(workbenchContext)
-      .get(CACHED_URL);
-    if (urlString != null) {
-      cachedURLs = urlString.split(",");
-    }
 
-    URLWizardPanel urlPanel = new URLWizardPanel(cachedURLs, lastWMSVersion);
+
+    URLWizardPanel urlPanel = URLWizardPanel.getInstance();
     chooseProjectPanel = new ChooseProjectPanel(workbenchContext,
       urlPanel.getID());
     addPanel(chooseProjectPanel);
@@ -113,11 +109,11 @@ public class AddWmsLayerWizard extends AbstractWizardGroup {
         categoryName = selectedCategories.iterator().next().getName();
       }
       mgr.addLayerable(categoryName, layer);
-      cachedURLs = (String[])dialog.getData(URLWizardPanel.URL_KEY);
+      String[] lastURLs = (String[])dialog.getData(URLWizardPanel.URL_KEY);
       lastWMSVersion = (String)dialog.getData(URLWizardPanel.VERSION_KEY);
 
       PersistentBlackboardPlugIn.get(context.getWorkbenchContext()).put(
-        CACHED_URL, toCommaString(cachedURLs));
+        CACHED_URL_KEY, toCommaString(lastURLs));
     } catch (IOException e) {
       monitor.report(e);
     }
