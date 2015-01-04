@@ -144,6 +144,13 @@ public class MultiInputDialog extends AbstractMultiInputDialog {
      */
     public MultiInputDialog(final Frame frame, String title, boolean modal) {
         super(frame, title, modal);
+        
+        okCancelApplyPanel.addActionListener(new ActionListener() {
+          public void actionPerformed(ActionEvent e) {
+            okCancelApplyPanel_actionPerformed(e);
+          }
+        });
+        
         try {
             jbInit();
         } catch (Exception ex) {
@@ -205,24 +212,21 @@ public class MultiInputDialog extends AbstractMultiInputDialog {
     //GridBagLayout. I find that nonzero weights can cause layout bugs that are
     //hard to track down. [Jon Aquino]
     void jbInit() throws Exception {
-
-        okCancelApplyPanel.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                okCancelApplyPanel_actionPerformed(e);
-            }
-        });
-        //LDB: set the default button for Enter to the OK for all
-		this.getRootPane().setDefaultButton(okCancelApplyPanel.getButton(I18N.get("ui.OKCancelPanel.ok")));
-                
-        setMainComponent();
-        
-        this.setResizable(true);
-        this.getContentPane().add(dialogPanel, BorderLayout.CENTER);
-            dialogPanel.add(infoPanel, BorderLayout.WEST);
-            dialogPanel.add(mainComponent, BorderLayout.CENTER);
-            dialogPanel.add(console, BorderLayout.SOUTH);
-                console.setVisible(false);
-        this.getContentPane().add(okCancelApplyPanel, BorderLayout.SOUTH);
+  
+      // LDB: set the default button for Enter to the OK for all
+      this.getRootPane().setDefaultButton(
+          okCancelApplyPanel.getButton(I18N.get("ui.OKCancelPanel.ok")));
+  
+      setMainComponent();
+  
+      dialogPanel.add(infoPanel, BorderLayout.WEST);
+      dialogPanel.add(mainComponent, BorderLayout.CENTER);
+      dialogPanel.add(console, BorderLayout.SOUTH);
+      console.setVisible(false);
+  
+      this.setResizable(true);
+      this.getContentPane().add(dialogPanel, BorderLayout.CENTER);
+      this.getContentPane().add(okCancelApplyPanel, BorderLayout.SOUTH);
     }
     
     public void addOKCancelApplyPanelActionListener(ActionListener actionListener) {
@@ -286,30 +290,30 @@ public class MultiInputDialog extends AbstractMultiInputDialog {
         
         if (labelPos == NO_LABEL) {
             currentPanel.add(component,
-                new GridBagConstraints(1, rowCount, 3, 1, 1.0, 0.0,
+                new GridBagConstraints(1, rowCount, 3, 1, 1.0, 1.0,
                 GridBagConstraints.WEST, fillMode,
                 new Insets(5+inset, 2+inset, 2+inset, 2+inset), 0, 0));
         }
         else if (labelPos == LEFT_LABEL) {
             if (label != null) {
                 currentPanel.add(label,
-                        new GridBagConstraints(1, rowCount, 1, 1, 0.0, 0.0,
+                        new GridBagConstraints(1, rowCount, 1, 1, 1.0, 1.0,
                                 GridBagConstraints.WEST, GridBagConstraints.NONE,
                                 new Insets(2+inset, 2+inset, 2+inset, 2+inset), 0, 0));
             }
             currentPanel.add(component,
-                new GridBagConstraints(2, rowCount, 2, 1, 0.0, 0.0,
+                new GridBagConstraints(2, rowCount, 2, 1, 1.0, 1.0,
                 GridBagConstraints.WEST, fillMode,
                 new Insets(2+inset, 2+inset, 2+inset, 2+inset), 0, 0));
         }
         else if (labelPos == RIGHT_LABEL) {
             currentPanel.add(component,
-                new GridBagConstraints(1, rowCount, 2, 1, 1.0, 0.0,
+                new GridBagConstraints(1, rowCount, 2, 1, 1.0, 1.0,
                 GridBagConstraints.WEST, fillMode,
                 new Insets(2+inset, 2+inset, 2+inset, 2+inset), 0, 0));
             if (label != null) {
                 currentPanel.add(label,
-                        new GridBagConstraints(3, rowCount, 1, 1, 0.0, 0.0,
+                        new GridBagConstraints(3, rowCount, 1, 1, 1.0, 1.0,
                                 GridBagConstraints.WEST, GridBagConstraints.NONE,
                                 new Insets(2+inset, 2+inset, 2+inset, 2+inset), 0, 0));
             }
