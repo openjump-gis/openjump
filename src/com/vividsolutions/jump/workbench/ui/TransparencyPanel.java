@@ -44,20 +44,19 @@ import javax.swing.JSlider;
 public class TransparencyPanel extends JPanel {
     JPanel opaquePanel = new JPanel();
     JPanel transparentPanel = new JPanel();
-    GridBagLayout gridBagLayout3 = new GridBagLayout();
     JSlider transparencySlider = new JSlider();
 
     public TransparencyPanel() {
         transparencySlider.setMaximum(255);
-        transparencySlider.setPreferredSize(new Dimension(100, 24));
-        setLayout(gridBagLayout3);
+        //transparencySlider.setPreferredSize(new Dimension(100, 24));
+        setLayout(new GridBagLayout());
         add(opaquePanel,
             new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE,
                 new Insets(0, 0, 0, 0), 0, 0));
         add(transparencySlider,
-            new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0,
-                GridBagConstraints.CENTER, GridBagConstraints.NONE,
+            new GridBagConstraints(2, 0, 1, 1, 1.0, 0.0,
+                GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
                 new Insets(0, 0, 0, 0), 0, 0));
         add(transparentPanel,
             new GridBagConstraints(3, 0, 1, 1, 0.0, 0.0,
