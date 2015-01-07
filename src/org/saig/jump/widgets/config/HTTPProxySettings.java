@@ -59,7 +59,7 @@ public class HTTPProxySettings {
     
     private String host;
     
-    private Integer port;
+    private String port;
     
     private String userName;
     
@@ -101,11 +101,11 @@ public class HTTPProxySettings {
         this.host = host;
     }
 
-    public Integer getPort() {
+    public String getPort() {
         return port;
     }
 
-    public void setPort( Integer port ) {
+    public void setPort( String port ) {
         this.port = port;
     }
 

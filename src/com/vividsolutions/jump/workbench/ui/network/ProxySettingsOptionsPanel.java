@@ -462,10 +462,10 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
    */
   private HTTPProxySettings buildSettingsFromUserParameters() {
 
-    HTTPProxySettings settings = new HTTPProxySettings(proxyHTTPEnabledCheckBox.isSelected());
+    HTTPProxySettings settings = new HTTPProxySettings(
+        proxyHTTPEnabledCheckBox.isSelected());
     settings.setHost(StringUtils.trim(proxyHostTextField.getText()));
-    settings.setPort(Integer.valueOf((StringUtils.trim(proxyPortTextField
-        .getText()))));
+    settings.setPort(StringUtils.trim(proxyPortTextField.getText()));
     settings.setUserName(StringUtils.trim(proxyUserTextField.getText()));
     settings.setPassword(StringUtils.trim(new String(proxyPasswordTextField
         .getPassword())));
