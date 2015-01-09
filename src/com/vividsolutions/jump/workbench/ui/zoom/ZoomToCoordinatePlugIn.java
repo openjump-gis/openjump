@@ -1,5 +1,6 @@
 package com.vividsolutions.jump.workbench.ui.zoom;
 
+import java.awt.Color;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.StringTokenizer;
@@ -20,6 +21,7 @@ import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.cursortool.Animations;
 
 public class ZoomToCoordinatePlugIn extends AbstractPlugIn {
 	private Coordinate lastCoordinate = new Coordinate(0, 0);
@@ -32,6 +34,9 @@ public class ZoomToCoordinatePlugIn extends AbstractPlugIn {
         lastCoordinate = coordinate;
 		context.getLayerViewPanel().getViewport()
 				.zoom(toEnvelope(coordinate, context.getLayerManager()));
+		 Animations.drawExpandingRing(context.getLayerViewPanel().getViewport()
+	                .toViewPoint(lastCoordinate), false, Color.BLUE,
+	                context.getLayerViewPanel(), new float[] { 20, 20 });
 
 		return true;
 	}
