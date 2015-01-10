@@ -239,5 +239,37 @@ public class CoordinateListMetrics
 	   {
 	     return distancelast(coordinates, false);
 	   	}
+   
+   /**
+    * Giuseppe Aruta 2015_01_10 code from ConstrainedMamager.class return
+    * Bearing in degrees (between EW axes, -180 to +180) from 2 coordinates
+    */
+   public static double bearing(List coordinates, boolean closedDistance) {
+
+       int size = coordinates.size();
+       if (size <= 1)
+           return 0.0D;
+       Coordinate p1 = (Coordinate) coordinates.get(size - 2);
+       Coordinate p2 = (Coordinate) coordinates.get(size - 1);
+       if (size > 2) {
+       } else {
+       }
+       Coordinate r = new Coordinate(p2.x - p1.x, p2.y - p1.y);
+       double rMag = Math.sqrt(r.x * r.x + r.y * r.y);
+       if (rMag == 0.0) {
+           return 0.0;
+       } else {
+           double rCos = r.x / rMag;
+           double rAng = Math.acos(rCos);
+
+           if (r.y < 0.0)
+               rAng = -rAng;
+           return rAng * 360.0 / (2 * Math.PI);
+       }
+   }
+
+   public double bearing(List coordinates) {
+       return distancelast(coordinates, false);
+   }
   
 }
