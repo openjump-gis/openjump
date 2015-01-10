@@ -33,10 +33,13 @@
  
 package org.openjump.core.geomutils;
 
+import org.openjump.core.geomutils.GeoUtils;
+
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateList;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
 public class Arc
@@ -83,6 +86,47 @@ public class Arc
     {
         CoordinateList coordinates = arcAnglePts(angle, start, center);
         return new GeometryFactory().createLineString(coordinates.toCoordinateArray());
+    }
+    
+    
+    /*
+     * Giuseppe Aruta - 2015_01_10 - Get the last point of an arc
+     */
+
+    public Point getLastPointArc() {
+        if (this.angle == 360.0D) {
+            return new GeometryFactory().createPoint(new Coordinate(GeoUtils
+                    .rotPt(this.start, this.center, this.angle)));
+        }
+        CoordinateList polyCoords = new CoordinateList();
+        CoordinateList coordinates = arcAnglePts(this.angle, this.start,
+                this.center);
+        polyCoords.add(coordinates.toCoordinateArray(), true);
+        polyCoords.add(new Coordinate(GeoUtils.rotPt(this.start, this.center,
+                this.angle)));
+        return new GeometryFactory().createPoint(new Coordinate(GeoUtils.rotPt(
+                this.start, this.center, this.angle)));
+    }
+
+    /*
+     * Giuseppe Aruta - 2015_01_10 - Get the middle point of an arc
+     */
+
+    public Point getMiddlePointArc() {
+        if (this.angle == 360.0D) {
+            double anglem = this.angle / 2.0D;
+            return new GeometryFactory().createPoint(new Coordinate(GeoUtils
+                    .rotPt(this.start, this.center, anglem)));
+        }
+        double anglem = this.angle / 2.0D;
+        CoordinateList polyCoords = new CoordinateList();
+        CoordinateList coordinates = arcAnglePts(anglem, this.start,
+                this.center);
+        polyCoords.add(coordinates.toCoordinateArray(), true);
+        polyCoords.add(new Coordinate(GeoUtils.rotPt(this.start, this.center,
+                anglem)));
+        return new GeometryFactory().createPoint(new Coordinate(GeoUtils.rotPt(
+                this.start, this.center, anglem)));
     }
     
     public CoordinateList getCoordinates()
