@@ -1,11 +1,23 @@
 # for display continuity sake please use 2 spaces instead of tabs
+
+2015-01-07 ede
+  * fix "OpenJump NB 4256 - Bug on opening Option Dialog and clicking on 
+    "OK" button. The panel freezes." reported by Peppe
+
+2015-01-04 ede
+  * MultiInputDialog: fix doubleregistering listener, layout issues
+  * WMS support
+    - added user/pass input fields
+    - url field linebreaks into multiple rows on long urls
+    - EditWMSQuery plugin can now change auth&url and reiitialize WMS service
+
 2015-01-03 Giuseppe Aruta (giuseppe_aruta@yahoo.it)
-	* WorkbenchFrame. Add the list of layers with no datasource
-	  when confirm the close of a TaskFrame or the close of
-      the application 
-    * LayerNameRenderer. Add Layer name and extension of layer 
-      at layer tooltip
-      
+  * WorkbenchFrame. Add the list of layers with no datasource
+    when confirm the close of a TaskFrame or the close of
+    the application 
+  * LayerNameRenderer. Add Layer name and extension of layer 
+    at layer tooltip
+
 2015-01-03 Giuseppe Aruta (giuseppe_aruta@yahoo.it)
    * RasterImageLayerPropertiesPlugIn. Updated to advanced options. 
    * Displays File, Raster properties and and cells data statistics
@@ -15,9 +27,27 @@
 2015-01-03 Giuseppe Aruta (giuseppe_aruta@yahoo.it)
    * HTMLPanel. Added Option to save window to HTML page
 
+2015-01-01 ede
+  * fix WFS attributes had distorted chars due to wrong encoding issue
+    minor wfsclienthelper restructuring
+
+ 2014-12-31 ede
+  * fix WFS bbox issue
+  * disable autoprefixing WFS properties with 'app0' etc.
+
+2014-12-29 ede
+  * WFS dialog needs much less desktop space now
+
 2014-12-28 Giuseppe Aruta (giuseppe_aruta@yahoo.it)
    * Rewrite ChangeRasterImagePropertiesPlugIn as a Multi dialog
    Added Transparency, Scale transparency and Color Editor panels 
+
+2014-12-26 ede
+  * WFS respects global proxy settings now
+
+2014-12-22 ede
+  * added WFS plugin to CORE and it's libs to PLUS, 
+    will hence be enabled in PLUS only
 
 2014-12-21 mmichaud <m.michael.michaud@orange.fr>
   * fix #383 about project files and gml-fme files encoding (reading)
