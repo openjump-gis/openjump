@@ -1,5 +1,11 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2015-01-12 bertaz
+  * Reworked Sextante Raster Image handling:
+    - support for loading only the visible part of TIFF files;
+    - support for TIFF files overviews and subsampling;
+    - support for external .aux.xml statistics file;
+    - centralized symbology.
 2015-01-07 ede
   * fix "OpenJump NB 4256 - Bug on opening Option Dialog and clicking on 
     "OK" button. The panel freezes." reported by Peppe

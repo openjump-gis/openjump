@@ -76,7 +76,7 @@ public class ExportEnvelopeAsGeometryPlugIn extends AbstractPlugIn {
             return false;
         }
         
-        Geometry geom = rLayer.getEnvelopeAsGeometry();
+        Geometry geom = rLayer.getWholeImageEnvelopeAsGeometry();
         
         if (geom==null){
             return false;

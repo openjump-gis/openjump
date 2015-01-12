@@ -61,6 +61,9 @@ import com.vividsolutions.jump.workbench.model.Task;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.ViewAttributesPlugIn;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 /**
  * Provides proxied (non-spatial) views of a Layer.
@@ -95,6 +98,7 @@ public class InfoFrame extends DetachableInternalFrame implements
     private InfoModel model = new InfoModel();
     private GeometryInfoTab geometryInfoTab;
     private JTabbedPane tabbedPane = new JTabbedPane();
+    private RasterInfoTab rasterInfoTab;
     private WorkbenchFrame workbenchFrame;
     private static ImageIcon ICON = IconLoader.icon("information_16x16.png");
     
@@ -104,6 +108,7 @@ public class InfoFrame extends DetachableInternalFrame implements
         final TaskFrame taskFrame) {
 		blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
         geometryInfoTab = new GeometryInfoTab(model, workbenchContext);
+        rasterInfoTab = new RasterInfoTab(null, null);
         //Keep my own copy of LayerManager, because it will be nulled in TaskFrame
         //when TaskFrame closes (it may in fact already be closed, which is why
         //a LayerManagerProxy must be passed in too). But I have to 
@@ -144,6 +149,7 @@ public class InfoFrame extends DetachableInternalFrame implements
         }
         tabbedPane.addTab("", IconLoader.icon("Table.gif"), attributeTab, TABLE_VIEW);
         tabbedPane.addTab("", IconLoader.icon("Paper.gif"), geometryInfoTab, HTML_VIEW);
+        tabbedPane.addTab("R", null, rasterInfoTab, "Raster");
         updateTitle(taskFrame.getTask().getName());
         taskFrame.getTask().add(new Task.NameListener() {
             public void taskNameChanged(String name) {
@@ -260,6 +266,13 @@ public class InfoFrame extends DetachableInternalFrame implements
     public LayerViewPanel getLayerViewPanel() {
         return getTaskFrame().getLayerViewPanel();
     }
+    public void setRasterValues(String[] layerNames, String[] cellValues) {    
+        if(layerNames == null || cellValues == null
+                || layerNames.length == 0 || cellValues.length == 0) {
+            return;
+        }
+        rasterInfoTab.setRasterValues(layerNames, cellValues);
+    }
 
     @Override
     public JFrame getFrame() {
@@ -298,4 +311,55 @@ public class InfoFrame extends DetachableInternalFrame implements
       }
   
     }
+    
+    protected class RasterInfoTab extends JPanel {
+        
+        private DefaultTableModel tableModel;
+        private final String[] columnNames = {"Layer", "Value"};
+        JTable table = null;
+        
+        public RasterInfoTab(String[] layerNames, String[] cellValues) {
+            
+            if(layerNames == null || cellValues == null) {
+                
+                tableModel = new DefaultTableModel(columnNames, 0);
+                
+            } else {
+            
+                String[][] data = new String[layerNames.length][2];
+                for(int r=0; r<data.length; r++) {
+                    data[r][0] = layerNames[r];
+                    data[r][1] = cellValues[r];
+                }            
+            
+                tableModel = new DefaultTableModel(data, columnNames);
+            
+            }
+                
+            table = new JTable(tableModel);
+            table.setFillsViewportHeight(true);
+            
+            JScrollPane jScrollPane = new JScrollPane();
+            jScrollPane.setViewportView(table);
+            
+            
+            this.add(jScrollPane);          
+
+        }
+        
+        public void setRasterValues(String[] layerNames, String[] cellValues) {
+            
+            String[][] data = new String[layerNames.length][2];
+            for(int r=0; r<data.length; r++) {
+                data[r][0] = layerNames[r];
+                data[r][1] = cellValues[r];
+            }                
+                
+            tableModel = new DefaultTableModel(data, columnNames);
+            table.setModel(tableModel);
+            
+        }
+        
+    }
+    
 }

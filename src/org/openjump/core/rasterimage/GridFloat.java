@@ -1,29 +1,28 @@
 package org.openjump.core.rasterimage;
 
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferFloat;
-import java.awt.image.Raster;
 import java.awt.image.SampleModel;
 import java.awt.image.WritableRaster;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import javax.media.jai.PlanarImage;
 import javax.media.jai.RasterFactory;
-import javax.media.jai.TiledImage;
-import javax.swing.JOptionPane;
 
 public class GridFloat {
 
-    public GridFloat(String fltFullFileName){
+    public GridFloat(String fltFullFileName) throws IOException{
 
         this.fltFullFileName = fltFullFileName;
         hdrFullFileName = fltFullFileName.substring(0, fltFullFileName.lastIndexOf(".")) + ".hdr";
@@ -73,209 +72,177 @@ public class GridFloat {
         
     }
 
-    private int readHdr(){
+    private void readHdr() throws FileNotFoundException, IOException{
 
-        try{
-            String line = null;
-            BufferedReader buffRead = new BufferedReader(new FileReader(hdrFullFileName));
-            while((line = buffRead.readLine()) != null){
-                String[] lines = line.split(" +");
-                if(lines[0].toLowerCase().equals("ncols")){
-                    nCols = Integer.parseInt(lines[1].toString());
-                }else if(lines[0].toLowerCase().equals("nrows")){
-                    nRows = Integer.parseInt(lines[1].toString());
-                }else if(lines[0].toLowerCase().equals("xllcorner")){
-                    xllCorner = Double.parseDouble(lines[1].toString());
-                    origCorner = true;
-                }else if(lines[0].toLowerCase().equals("yllcorner")){
-                    yllCorner = Double.parseDouble(lines[1].toString());
-                }else if(lines[0].toLowerCase().equals("xllcenter")){
-                    xllCorner = Double.parseDouble(lines[1].toString());
-                    origCorner = false;
-                }else if(lines[0].toLowerCase().equals("yllcenter")){
-                    yllCorner = Double.parseDouble(lines[1].toString());
-                }else if(lines[0].toLowerCase().equals("cellsize")){
-                    cellSize = Double.parseDouble(lines[1].toString());
-                }else if(lines[0].toLowerCase().equals("nodata_value")){
-                    noData = Double.parseDouble(lines[1].toString());
-                }else if(lines[0].toLowerCase().equals("byteorder")){
-                    byteOrder = lines[1].toString();
-                }
+        String line;
+        BufferedReader buffRead = new BufferedReader(new FileReader(hdrFullFileName));
+        while((line = buffRead.readLine()) != null){
+            String[] lines = line.split(" +");
+            if(lines[0].toLowerCase().equals("ncols")){
+                nCols = Integer.parseInt(lines[1]);
+            }else if(lines[0].toLowerCase().equals("nrows")){
+                nRows = Integer.parseInt(lines[1]);
+            }else if(lines[0].toLowerCase().equals("xllcorner")){
+                xllCorner = Double.parseDouble(lines[1]);
+                origCorner = true;
+            }else if(lines[0].toLowerCase().equals("yllcorner")){
+                yllCorner = Double.parseDouble(lines[1]);
+            }else if(lines[0].toLowerCase().equals("xllcenter")){
+                xllCorner = Double.parseDouble(lines[1]);
+                origCorner = false;
+            }else if(lines[0].toLowerCase().equals("yllcenter")){
+                yllCorner = Double.parseDouble(lines[1]);
+            }else if(lines[0].toLowerCase().equals("cellsize")){
+                cellSize = Double.parseDouble(lines[1]);
+            }else if(lines[0].toLowerCase().equals("nodata_value")){
+                noData = Double.parseDouble(lines[1]);
+            }else if(lines[0].toLowerCase().equals("byteorder")){
+                byteOrder = lines[1];
             }
-            buffRead.close();
-            buffRead = null;
+        }
+        buffRead.close();
 
-            if(!origCorner){
-                xllCorner =- 0.5*cellSize;
-                yllCorner =- 0.5*cellSize;
-            }
-
-            return 0;
-        }catch(IOException Ex){
-            JOptionPane.showMessageDialog(null, "Error while reading hdr file: " + Ex, "Error", JOptionPane.ERROR_MESSAGE);
-            return 1;
+        if(!origCorner){
+            xllCorner =- 0.5*cellSize;
+            yllCorner =- 0.5*cellSize;
         }
 
     }
 
-    public int writeHdr(){
+    public void writeHdr() throws IOException{
 
-        try{
-            File fileHeader = new File(hdrFullFileName);
-            BufferedWriter buffWrite = new BufferedWriter(new FileWriter(fileHeader));
+        File fileHeader = new File(hdrFullFileName);
+        BufferedWriter buffWrite = new BufferedWriter(new FileWriter(fileHeader));
 
-            buffWrite.write("ncols" + " " + nCols);
+        buffWrite.write("ncols" + " " + nCols);
+        buffWrite.newLine();
+
+        buffWrite.write("nrows" + " " + nRows);
+        buffWrite.newLine();
+
+        if(origCorner){
+
+            buffWrite.write("xllcorner" + " " + xllCorner);
             buffWrite.newLine();
 
-            buffWrite.write("nrows" + " " + nRows);
+            buffWrite.write("yllcorner" + " " + yllCorner);
             buffWrite.newLine();
 
-            if(origCorner){
+        }else{
 
-                buffWrite.write("xllcorner" + " " + xllCorner);
-                buffWrite.newLine();
-
-                buffWrite.write("yllcorner" + " " + yllCorner);
-                buffWrite.newLine();
-
-            }else{
-
-                buffWrite.write("xllcenter" + " " + xllCorner + 0.5*cellSize);
-                buffWrite.newLine();
-
-                buffWrite.write("yllcenter" + " " + yllCorner + 0.5*cellSize);
-                buffWrite.newLine();
-
-            }
-
-            buffWrite.write("cellsize" + " " + cellSize);
+            buffWrite.write("xllcenter" + " " + xllCorner + 0.5*cellSize);
             buffWrite.newLine();
 
-            buffWrite.write("NODATA_value" + " " + noData);
+            buffWrite.write("yllcenter" + " " + yllCorner + 0.5*cellSize);
             buffWrite.newLine();
 
-            buffWrite.write("byteorder" + " " + byteOrder);
-            buffWrite.newLine();
+        }
 
-            buffWrite.close();
-            buffWrite = null;
+        buffWrite.write("cellsize" + " " + cellSize);
+        buffWrite.newLine();
 
-           return 0;
-       }catch(IOException IOExc){
-            JOptionPane.showMessageDialog(null, "Error while reading hdr file: " + IOExc, "Error", JOptionPane.ERROR_MESSAGE);
-            return 1;
-       }
+        buffWrite.write("NODATA_value" + " " + noData);
+        buffWrite.newLine();
+
+        buffWrite.write("byteorder" + " " + byteOrder);
+        buffWrite.newLine();
+
+        buffWrite.close();
+        buffWrite = null;
 
     }
 
-    public int readGrid(){
+    public void readGrid() throws FileNotFoundException, IOException{
 
-        int ret = readHdr();
-        if(ret != 0) return 1;
+        readHdr();
 
         double valSum = 0;
         double valSumSquare = 0;
         minVal = Double.MAX_VALUE;
         maxVal = -minVal;
 
-        try{
 
-            File fileFlt = new File(fltFullFileName);
-            FileInputStream fileInStream = new FileInputStream(fileFlt);
-            FileChannel fileChannel = fileInStream.getChannel();
-            long length = fileFlt.length();
-            MappedByteBuffer mbb;
-            mbb = fileChannel.map(
-                    FileChannel.MapMode.READ_ONLY,
-                    0,
-                    length
-                    );
-            mbb.order(ByteOrder.LITTLE_ENDIAN);
-            fileChannel.close();
-            fileInStream.close();
+        File fileFlt = new File(fltFullFileName);
+        FileInputStream fileInStream = new FileInputStream(fileFlt);
+        FileChannel fileChannel = fileInStream.getChannel();
+        long length = fileFlt.length();
+        MappedByteBuffer mbb;
+        mbb = fileChannel.map(
+                FileChannel.MapMode.READ_ONLY,
+                0,
+                length
+                );
+        mbb.order(ByteOrder.LITTLE_ENDIAN);
+        fileChannel.close();
+        fileInStream.close();
 
-            int i = 0;
-            dataArray = new float[nCols*nRows];
-            for(int c=0; c<nCols*nRows; c++){
-                dataArray[c] = mbb.getFloat(i);
-                if(dataArray[c] != noData) {
-                    valSum += dataArray[c];
-                    valSumSquare += (dataArray[c] * dataArray[c]);
-                    cellCount++;
-                    if(dataArray[c] < minVal){minVal = dataArray[c];}
-                    if(dataArray[c] > maxVal){maxVal = dataArray[c];}
-                    if((int)dataArray[c] != dataArray[c]) isInteger = false;
-                }
-                i+=4;
+        int i = 0;
+        dataArray = new float[nCols*nRows];
+        for(int c=0; c<nCols*nRows; c++){
+            dataArray[c] = mbb.getFloat(i);
+            if(dataArray[c] != noData) {
+                valSum += dataArray[c];
+                valSumSquare += (dataArray[c] * dataArray[c]);
+                cellCount++;
+                if(dataArray[c] < minVal){minVal = dataArray[c];}
+                if(dataArray[c] > maxVal){maxVal = dataArray[c];}
+                if((int)dataArray[c] != dataArray[c]) isInteger = false;
             }
-
-            meanVal = valSum / cellCount;
-            stDevVal = Math.sqrt(valSumSquare/cellCount - meanVal*meanVal);
-
-            mbb=null;
-
-            // Create raster
-            SampleModel sampleModel = RasterFactory.createBandedSampleModel(DataBuffer.TYPE_FLOAT, nCols, nRows, 1);
-            DataBuffer db = new DataBufferFloat(dataArray, nCols*nRows);
-            java.awt.Point point = new java.awt.Point();
-            point.setLocation(xllCorner, yllCorner);
-            raster = RasterFactory.createRaster(sampleModel, db, point);
-
-            return 0;
-        }catch(Exception ex){
-            JOptionPane.showMessageDialog(null, "Error while reading the flt file: " + ex, "Error", JOptionPane.ERROR_MESSAGE);
-            return 1;
+            i+=4;
         }
+
+        meanVal = valSum / cellCount;
+        stDevVal = Math.sqrt(valSumSquare/cellCount - meanVal*meanVal);
+
+        //mbb=null;
+
+        // Create raster
+        SampleModel sampleModel = RasterFactory.createBandedSampleModel(DataBuffer.TYPE_FLOAT, nCols, nRows, 1);
+        DataBuffer db = new DataBufferFloat(dataArray, nCols*nRows);
+        java.awt.Point point = new java.awt.Point();
+        point.setLocation(0, 0);
+        raster = WritableRaster.createWritableRaster(sampleModel, db, point);
     
     }
 
-    public int writeGrid(){
+    public void writeGrid() throws IOException{
 
-        try{
-
-            if(raster == null){
-                // Create raster
-                SampleModel sampleModel = RasterFactory.createBandedSampleModel(DataBuffer.TYPE_FLOAT, nCols, nRows, 1);
-                dataArray = new float[nCols*nRows];
-                DataBuffer db = new DataBufferFloat(dataArray, nCols*nRows);
-                java.awt.Point point = new java.awt.Point();
-                point.setLocation(xllCorner, yllCorner);
-                raster = RasterFactory.createRaster(sampleModel, db, point);
-            }
-
-            if(writeHdr() != 0) return -1;
-
-            File fileOut = new File(fltFullFileName);
-            FileOutputStream fileOutStream = new FileOutputStream(fileOut);
-            FileChannel fileChannelOut = fileOutStream.getChannel();
-
-
-            ByteBuffer bb = ByteBuffer.allocateDirect(nCols * 4);
-            bb.order(ByteOrder.LITTLE_ENDIAN);
-
-            for(int r=0; r<nRows; r++){
-                for(int c=0; c<nCols; c++){
-                    if(bb.hasRemaining()){
-                        bb.putFloat(raster.getSampleFloat(c, r, 0));
-                    }else{
-                        c--;
-                        bb.compact();
-                        fileChannelOut.write(bb);
-                        bb.clear();
-                    }
-                }
-            }
-
-            bb.compact();
-            fileChannelOut.write(bb);
-            bb.clear();
-
-            return 0;
-
-        }catch(Exception ex){
-            JOptionPane.showMessageDialog(null, "Error while reading flt file: " + ex, "Error", JOptionPane.ERROR_MESSAGE);
-            return 1;
-        }
+//        if(raster == null){
+//            // Create raster
+//            SampleModel sampleModel = RasterFactory.createBandedSampleModel(DataBuffer.TYPE_DOUBLE, nCols, nRows, 1);
+//            dataArray = new double[nCols*nRows];
+//            DataBuffer db = new DataBufferDouble(dataArray, nCols*nRows);
+//            java.awt.Point point = new java.awt.Point();
+//            point.setLocation(xllCorner, yllCorner);
+//            raster = RasterFactory.createRaster(sampleModel, db, point);
+//        }
+//
+//        writeHdr();
+//
+//        File fileOut = new File(fltFullFileName);
+//        FileOutputStream fileOutStream = new FileOutputStream(fileOut);
+//        FileChannel fileChannelOut = fileOutStream.getChannel();
+//
+//
+//        ByteBuffer bb = ByteBuffer.allocateDirect(nCols * 4);
+//        bb.order(ByteOrder.LITTLE_ENDIAN);
+//
+//        for(int r=0; r<nRows; r++){
+//            for(int c=0; c<nCols; c++){
+//                if(bb.hasRemaining()){
+//                    bb.putFloat(raster.getSampleFloat(c, r, 0));
+//                }else{
+//                    c--;
+//                    bb.compact();
+//                    fileChannelOut.write(bb);
+//                    bb.clear();
+//                }
+//            }
+//        }
+//
+//        bb.compact();
+//        fileChannelOut.write(bb);
+//        bb.clear();
 
     }
     
@@ -300,33 +267,55 @@ public class GridFloat {
 
     }
 
-    public javax.media.jai.PlanarImage getPlanarImage (){
+    public BufferedImage getBufferedImage (){
 
-        try{
+        SampleModel sm = raster.getSampleModel();
+        ColorModel colorModel = PlanarImage.createColorModel(sm);
+        BufferedImage image = new BufferedImage(colorModel, raster, false, null);
+        return image;
+        
+//        // Create sample model
+//        SampleModel sampleModel = RasterFactory.createBandedSampleModel(DataBuffer.TYPE_FLOAT, nCols, nRows, 1);
+//
+//        // Create tiled image
+//        TiledImage tiledImage = new TiledImage(0, 0, nCols, nRows, 0, 0, sampleModel, null);
+//
+//        // Create writebaleraster
+//        WritableRaster wraster = tiledImage.getWritableTile(0,0);
+//
+//        // Set raster data
+//        wraster.setPixels(0, 0, nCols, nRows, dataArray);
+//
+//        // Set image raster
+//        tiledImage.setData(wraster);
+//
+//
+//        return tiledImage;
 
-            // Create sample model
-            SampleModel sampleModel = RasterFactory.createBandedSampleModel(DataBuffer.TYPE_FLOAT, nCols, nRows, 1);
-
-            // Create tiled image
-            TiledImage tiledImage = new TiledImage(0, 0, nCols, nRows, 0, 0, sampleModel, null);
-
-            // Create writebaleraster
-            WritableRaster wraster = tiledImage.getWritableTile(0,0);
-
-            // Set raster data
-            wraster.setPixels(0, 0, nCols, nRows, dataArray);
-
-            // Set image raster
-            tiledImage.setData(wraster);
-
-
-            return tiledImage;
-        }catch(Exception ex){
-            System.out.println(ex);
-            return null;
-        }
     }
 
+    public double readCellVal(Integer col, Integer row) throws FileNotFoundException, IOException{
+
+        long offset = ((row - 1) * nCols + col - 1) * 4;
+
+        File fileFlt = new File(fltFullFileName);
+        FileInputStream fileInStream = new FileInputStream(fileFlt);
+        FileChannel fileChannel = fileInStream.getChannel();
+        long length = 4;
+        MappedByteBuffer mbb;
+        mbb = fileChannel.map(
+                FileChannel.MapMode.READ_ONLY,
+                offset,
+                length
+                );
+        mbb.order(ByteOrder.LITTLE_ENDIAN);
+        fileChannel.close();
+        fileInStream.close();
+
+        return (double)mbb.getFloat();
+
+    }
+    
     public int getnCols() {
         return nCols;
     }
@@ -391,20 +380,20 @@ public class GridFloat {
         this.byteOrder = byteOrder;
     }
 
-    public Raster getRaster(){
-        return raster;
-    }
-
-    public void setRas(Raster raster){
-        this.raster = raster;
-
-        cellCount = 0;
-
-        DataBuffer db = raster.getDataBuffer();
-        for(int e=0; e<db.getSize(); e++){
-            if(db.getElemFloat(e) != noData) cellCount++;
-        }
-    }
+//    public Raster getRaster(){
+//        return raster;
+//    }
+//
+//    public void setRas(Raster raster){
+//        this.raster = raster;
+//
+//        cellCount = 0;
+//
+//        DataBuffer db = raster.getDataBuffer();
+//        for(int e=0; e<db.getSize(); e++){
+//            if(db.getElemDouble(e) != noData) cellCount++;
+//        }
+//    }
 
     public double getMinVal(){
         return minVal;
@@ -429,6 +418,10 @@ public class GridFloat {
     public boolean isInteger(){
         return isInteger;
     }
+    
+    public float[] getFloatArray() {
+        return dataArray;
+    }
 
     private String fltFullFileName = null;
     private String hdrFullFileName = null;
@@ -447,7 +440,7 @@ public class GridFloat {
 
 //    private double[][] ras = null;
     private float[] dataArray = null;
-    private Raster raster = null;
+    private WritableRaster raster = null;
 
     private long   cellCount = 0;
     private double minVal = Double.MAX_VALUE;

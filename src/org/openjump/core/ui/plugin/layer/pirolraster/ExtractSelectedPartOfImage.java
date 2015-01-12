@@ -29,6 +29,12 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.Viewport;
+import java.awt.Point;
+import java.io.File;
+import org.openjump.core.rasterimage.ImageAndMetadata;
+import org.openjump.core.rasterimage.RasterImageIO;
+import org.openjump.core.rasterimage.Resolution;
 
 /**
  * PlugIn that extracts a selected part (fence) of a raster image to a new raster image layer.<br>
@@ -69,25 +75,56 @@ public class ExtractSelectedPartOfImage extends AbstractPlugIn {
     public boolean execute(PlugInContext context) throws Exception {
         RasterImageLayer rLayer = (RasterImageLayer) LayerTools.getSelectedLayerable(context, RasterImageLayer.class);
         
-        if (rLayer==null){
-            context.getWorkbenchFrame().warnUser(I18N.get("pirol.plugIns.EditAttributeByFormulaPlugIn.no-layer-selected")); //$NON-NLS-1$
-            return false;
-        }
+        String newLayerName = context.getLayerManager().uniqueLayerName(
+                I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage.part-of") + rLayer.getName());
+        String extension = rLayer.getImageFileName().substring(rLayer.getImageFileName().lastIndexOf("."), rLayer.getImageFileName().length());
+        
+        File outFile =  new File(System.getProperty("java.io.tmpdir").concat(File.separator).concat(newLayerName).concat(extension));
         
         Geometry fence = SelectionTools.getFenceGeometry(context);
         Envelope envWanted = fence.getEnvelopeInternal();
+
+        RasterImageIO rasterImageIO = new RasterImageIO();
+        Raster raster = rLayer.getRasterData(rLayer.getRectangleFromEnvelope(envWanted));
+        rasterImageIO.writeImage(outFile, raster, envWanted, rLayer.getMetadata().getOriginalCellSize(), rLayer.getMetadata().getNoDataValue());
         
-        BufferedImage partOfImageWanted = rLayer.getTileAsImage(envWanted);
-        Raster partOfRasterWanted = rLayer.getTileAsRaster(envWanted); //[sstein 2 Aug 2010] need to add as we have now the image for display plus the data
+        String catName = StandardCategoryNames.WORKING;	
+        try {
+            catName = ((Category)context.getLayerNamePanel().getSelectedCategories().toArray()[0]).getName();
+        } catch (RuntimeException e1) {}
+
+        Point point = RasterImageIO.getImageDimensions(outFile.getAbsolutePath());
+        Envelope env =  RasterImageIO.getGeoReferencing(outFile.getAbsolutePath(), true, point);
         
-        if (partOfImageWanted==null){
-            context.getWorkbenchFrame().warnUser(I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage.fence-in-wrong-region"));
-            return false;
-        }
+        Viewport viewport = context.getWorkbenchContext().getLayerViewPanel().getViewport();
+        Resolution requestedRes = RasterImageIO.calcRequestedResolution(viewport);
+        ImageAndMetadata imageAndMetadata = rasterImageIO.loadImage(
+                context.getWorkbenchContext(), outFile.getAbsolutePath(), null, viewport.getEnvelopeInModelCoordinates(), requestedRes);
+        RasterImageLayer ril = new RasterImageLayer(outFile.getName(),
+                context.getWorkbenchContext().getLayerManager(), outFile.getAbsolutePath(), imageAndMetadata.getImage(), env);
         
-        boolean returnVal = this.putImageIntoMap(partOfImageWanted, partOfRasterWanted, envWanted, rLayer, context);
+        context.getLayerManager().addLayerable(catName, ril);
+        return true;
         
-        return returnVal;
+//        if (rLayer==null){
+//            context.getWorkbenchFrame().warnUser(I18N.get("pirol.plugIns.EditAttributeByFormulaPlugIn.no-layer-selected")); //$NON-NLS-1$
+//            return false;
+//        }
+//        
+//        Geometry fence = SelectionTools.getFenceGeometry(context);
+//        Envelope envWanted = fence.getEnvelopeInternal();
+//        
+//        BufferedImage partOfImageWanted = rLayer.getTileAsImage(envWanted);
+//        Raster partOfRasterWanted = rLayer.getTileAsRaster(envWanted); //[sstein 2 Aug 2010] need to add as we have now the image for display plus the data
+//        
+//        if (partOfImageWanted==null){
+//            context.getWorkbenchFrame().warnUser(I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage.fence-in-wrong-region"));
+//            return false;
+//        }
+//        
+//        boolean returnVal = this.putImageIntoMap(partOfImageWanted, partOfRasterWanted, envWanted, rLayer, context);
+//        
+//        return returnVal;
     }
     
     protected boolean putImageIntoMap(BufferedImage partOfImage, Raster partOfRaster, Envelope envelope, RasterImageLayer rLayer, PlugInContext context){
@@ -95,8 +132,8 @@ public class ExtractSelectedPartOfImage extends AbstractPlugIn {
 	
 		String newLayerName = context.getLayerManager().uniqueLayerName(I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage.part-of") + rLayer.getName());
         
-        RasterImageLayer newRasterLayer = new RasterImageLayer(newLayerName, context.getLayerManager(), partOfImage, partOfRaster, envelope);
-		
+                RasterImageLayer newRasterLayer = new RasterImageLayer(newLayerName, context.getLayerManager(), partOfImage, partOfRaster, envelope);
+                
 		String catName = StandardCategoryNames.WORKING;
 		
 		try {

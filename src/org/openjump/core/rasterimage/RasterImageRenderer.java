@@ -87,13 +87,14 @@ public class RasterImageRenderer extends ImageCachingRenderer {
      *@param image
      *@throws Exception
      */
+    @Override
     protected void renderHook(ThreadSafeImage image) throws Exception {
         if (!getRasterImageLayer().isVisible()) {
             return;
         }
         
-        while(!this.doneRendering)
-            Thread.sleep(50);
+//        while(!this.doneRendering)
+//            Thread.sleep(50);
         
         doneRendering = false;
 
@@ -103,30 +104,37 @@ public class RasterImageRenderer extends ImageCachingRenderer {
         
         RasterImageLayer rLayer = getRasterImageLayer();
         
-        final Envelope realWorldCoordinates = new Envelope(rLayer.getEnvelope());
-        final Point2D upperLeftCorner = this.panel.getViewport().toViewPoint(new Coordinate(realWorldCoordinates.getMinX(), realWorldCoordinates.getMaxY()));
+        final BufferedImage sourceImage = rLayer.createImage(panel);
         
-        // Draw a grey rect where the image is about to show up...
-        if (false && rLayer.getOrigImageWidth() * rLayer.getOrigImageHeight() > RasterImageLayer.getMaxPixelsForFastDisplayMode()){
-            final Rectangle drawingRect = rLayer.getDrawingRectangle(10, 10, rLayer.getEnvelope(), this.panel.getViewport());
-            
-            if (drawingRect!=null){
-                //logger.printDebug(drawingRect.toString());
-                Drawer defaultDrawer = new ThreadSafeImage.Drawer() {
-                    public void draw(Graphics2D g) throws Exception {
-                        g.translate( upperLeftCorner.getX() , upperLeftCorner.getY() );
-                        g.setComposite(AlphaComposite.getInstance( AlphaComposite.SRC_OVER, .5f));
-                        g.setColor(Color.lightGray);
-                        g.fillRect(drawingRect.x, drawingRect.y, drawingRect.width, -drawingRect.height);
-                    }
-                };
-                
-                image.draw(defaultDrawer);
-            }
+        // Image is out of viewport
+        if(rLayer.getActualImageEnvelope() == null) {
+            return;
         }
         
+        final Envelope realWorldCoordinates = new Envelope(rLayer.getActualImageEnvelope());
+        final Point2D upperLeftCorner = panel.getViewport().toViewPoint(new Coordinate(realWorldCoordinates.getMinX(), realWorldCoordinates.getMaxY()));
         
-        final BufferedImage sourceImage = rLayer.createImage(panel);
+//        // Draw a grey rect where the image is about to show up...
+//        if (false && rLayer.getOrigImageWidth() * rLayer.getOrigImageHeight() > RasterImageLayer.getMaxPixelsForFastDisplayMode()){
+//            final Rectangle drawingRect = rLayer.getDrawingRectangle(10, 10, rLayer.getEnvelope(), panel.getViewport());
+//            
+//            if (drawingRect!=null){
+//                //logger.printDebug(drawingRect.toString());
+//                Drawer defaultDrawer = new ThreadSafeImage.Drawer() {
+//                    public void draw(Graphics2D g) throws Exception {
+//                        g.translate( upperLeftCorner.getX() , upperLeftCorner.getY() );
+//                        g.setComposite(AlphaComposite.getInstance( AlphaComposite.SRC_OVER, .5f));
+//                        g.setColor(Color.lightGray);
+//                        g.fillRect(drawingRect.x, drawingRect.y, drawingRect.width, -drawingRect.height);
+//                    }
+//                };
+//                
+//                image.draw(defaultDrawer);
+//            }
+//        }
+        
+        
+        
         final int xOffset = rLayer.getXOffset();
         final int yOffset = rLayer.getYOffset();
         

@@ -61,7 +61,7 @@ public class ZoomToRasterImagePlugIn extends AbstractPlugIn {
             return false;
         }
         
-        context.getLayerViewPanel().getViewport().zoom(rLayer.getEnvelope());
+        context.getLayerViewPanel().getViewport().zoom(rLayer.getWholeImageEnvelope());
         
         return true;
     }

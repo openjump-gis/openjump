@@ -52,6 +52,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.NoninvertibleTransformException;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -128,7 +129,7 @@ public class ProfileGraphTool extends MultiClickTool
         savedCoordinates = new ArrayList<Coordinate>(getCoordinates());
     }
     
-      protected void gestureFinished() throws NoninvertibleTransformException{
+      protected void gestureFinished() throws NoninvertibleTransformException, IOException{
         reportNothingToUndoYet();
         savedCoordinates.clear();
         

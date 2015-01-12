@@ -43,6 +43,8 @@ import com.vividsolutions.jump.workbench.plugin.ThreadedPlugIn;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 /**
  * @author Giuseppe Aruta (giuseppe_aruta[AT]yahoo.it)
@@ -232,8 +234,8 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn implements
     /*
      * Check the Data type of the DataBuffer storing the pixel data.
      */
-    public String dataType(PlugInContext context, RasterImageLayer rLayer) {
-        Raster r = rLayer.getRasterData();
+    public String dataType(PlugInContext context, RasterImageLayer rLayer) throws IOException {
+        Raster r = rLayer.getRasterData(null);
         SampleModel sm = r.getSampleModel();
         datatype = sm.getDataType();
         switch (datatype) {
@@ -355,7 +357,7 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn implements
                 .getSelectedLayerable(context, RasterImageLayer.class);
         final MultiInputDialog dialog = new MultiInputDialog(
                 context.getWorkbenchFrame(), INFO, true);
-        extent = rLayer.getEnvelope();
+        extent = rLayer.getWholeImageEnvelope();
 
         /*
          * Check the source file of selected Raster Image Ex.
@@ -385,11 +387,11 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn implements
          */
         if (checkfile == null) {
 
-            PlanarImage pi = rLayer.getImageForDisplay();
+            BufferedImage pi = rLayer.getImageForDisplay();
             pi.getWidth();
             int band = pi.getSampleModel().getNumBands();// Number of bands
             name = rLayer.getName();// Name of Layer
-            extent = rLayer.getEnvelope();// Extent of Layer
+            extent = rLayer.getWholeImageEnvelope();// Extent of Layer
             double cellSize = (extent.getMaxX() - extent.getMinX())
                     / pi.getWidth();// Cell size
 
@@ -502,7 +504,7 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn implements
             OpenJUMPSextanteRasterLayer rstLayer = new OpenJUMPSextanteRasterLayer();
             rstLayer.create(rLayer);
             final File image = new File(rstLayer.getFilename());
-            Raster r = rLayer.getRasterData();
+            Raster r = rLayer.getRasterData(null);
             SampleModel sm = r.getSampleModel();
             ColorModel cm = PlanarImage.createColorModel(sm);
 
@@ -527,9 +529,9 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn implements
             X = rstLayer.getNX(); // Number of columns
             Y = rstLayer.getNY(); // Number of rows
             int cellnumber = X * Y; // Number of cells
-            area = df.format(rLayer.getEnvelope().getArea()); // Area
-            width = df.format(rLayer.getEnvelope().getWidth()); // Width
-            height = df.format(rLayer.getEnvelope().getHeight()); // Height
+            area = df.format(rLayer.getWholeImageEnvelope().getArea()); // Area
+            width = df.format(rLayer.getWholeImageEnvelope().getWidth()); // Width
+            height = df.format(rLayer.getWholeImageEnvelope().getHeight()); // Height
             size = image.length(); // Size in byte
             sizeMB = getAsString(size); // Size in Mega Bytes
             sum = df.format(rstLayer.getMeanValue()

@@ -73,7 +73,7 @@ public class WarpImageToFencePlugIn extends AbstractPlugIn {
         Geometry fence = SelectionTools.getFenceGeometry(context);
         Envelope envWanted = fence.getEnvelopeInternal();
         
-        rLayer.setEnvelope(envWanted);
+        rLayer.setActualImageEnvelope(envWanted);
         
         return true;
     }

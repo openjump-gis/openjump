@@ -11,11 +11,11 @@ package org.openjump.core.rasterimage;
 
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.AbstractLayerable;
 import com.vividsolutions.jump.workbench.model.LayerManager;
+import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.LayerNameRenderer;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
@@ -23,18 +23,17 @@ import com.vividsolutions.jump.workbench.ui.Viewport;
 import org.openjump.util.metaData.MetaDataMap;
 import org.openjump.util.metaData.ObjectContainingMetaInformation;
 
-import javax.imageio.ImageIO;
 import javax.media.jai.JAI;
-import javax.media.jai.PlanarImage;
-import javax.media.jai.RenderedOp;
 import java.awt.*;
 import java.awt.Point;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.image.*;
 import java.awt.image.renderable.ParameterBlock;
-import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Layer representing a georeferenced raster image (e.g. an areal photography) in OpenJump.
@@ -48,7 +47,7 @@ import java.io.IOException;
  * @version $Rev: 2509 $
  * modified: [sstein]: 16.Feb.2009 changed logger-entries to comments, used frame.warnUser
  */
-public class RasterImageLayer extends AbstractLayerable implements ObjectContainingMetaInformation {
+public final class RasterImageLayer extends AbstractLayerable implements ObjectContainingMetaInformation {
     
     protected static Blackboard blackboard = null;
     
@@ -62,9 +61,9 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
     protected final static int MODE_CLIPPINGFIRST = 2;
     protected final static int MODE_FASTDISPLAY = 3;
     
-    protected Rectangle imagePart, oldImagePart, visibleRect = null;
+    protected Rectangle imagePart, visibleRect = null;
     
-    protected double scaleXImg2Canvas, oldScaleXImg2Canvas, scaleYImg2Canvas;
+    protected double oldScaleXImg2Canvas;
     
     protected int xOffset, yOffset;
     
@@ -85,21 +84,23 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
     protected String imageFileName = null;
     protected int origImageWidth, origImageHeight;
     protected boolean imageSet = false;
-    protected PlanarImage image = null;
+    protected BufferedImage image = null;
+    protected int numBands = 0;
     
     //-- [sstein 2nd Aug 2010] new, since we scale the image now for display
-    protected Raster rasterData = null;
+    protected Raster actualRasterData = null;
     protected boolean rasterDataChanged = false; //may be needed for rescaling the image values
     protected boolean wasScaledForDisplay = false;
     //-- end
     
-    protected PlanarImage imageProcessingStep1 = null, imageProcessingStep2 = null;
+    protected BufferedImage imageProcessingStep1 = null, imageProcessingStep2 = null;
 
     
-    protected Envelope envelope = null, visibleEnv = null;
+    protected Envelope actualImageEnvelope = null, visibleEnv = null, oldVisibleEnv;
+    protected Envelope originalImageEnvelope = null;
     
     /**
-     * Flag to decide, if events are fired automatically, if the appearance (envelope, etc.) changes.<br>
+     * Flag to decide, if events are fired automatically, if the appearance (imageEnvelope, etc.) changes.<br>
      * default: true
      */
     protected boolean firingAppearanceEvents = true;
@@ -116,10 +117,19 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
     protected boolean transparencyColorNeedsToBeApplied = false;
 
     //-- [sstein 26 June 2013] new as with ASCII grid imports nodata values can be defined
-    protected static double noDataValue = Double.NaN;
+    protected double noDataValue = Double.NaN;
+    protected double originalCellSize;
+    protected double actualCellSize;
     //-- end
 
-	/**
+    private Metadata metadata;
+    
+    private Stats stats;
+    
+    private RasterSymbology symbology = null;
+    private boolean symbologyChanged = false;
+    
+    /**
      * for java2xml
      */
     public RasterImageLayer() {
@@ -128,26 +138,55 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
         getBlackboard().put(LayerNameRenderer.USE_CLOCK_ANIMATION_KEY, true);
         
     }
+    
+    /**
+     * for java2xml
+     *@return the Envelope as string
+     */
+    public String getXmlEnvelope(){
+        return this.originalImageEnvelope.toString();
+    }
+
+    /**
+     * for java2xml
+     *@param envStr the Envelope as string
+     */
+    public void setXmlEnvelope(String envStr){
+        String coords = envStr.substring(envStr.indexOf("[")+1, envStr.indexOf("]"));
+        
+        String[] coordArray = coords.split(",");
+        
+        String[] xCoords = coordArray[0].split(":");
+        String[] yCoords = coordArray[1].split(":");
+        
+        double minX = java.lang.Double.parseDouble(xCoords[0]);
+        double maxX = java.lang.Double.parseDouble(xCoords[1]);
+        
+        double minY = java.lang.Double.parseDouble(yCoords[0]);
+        double maxY = java.lang.Double.parseDouble(yCoords[1]);
+        
+        this.setWholeImageEnvelope( new Envelope( minX, maxX, minY, maxY ) );
+    }    
 
     /**
      *@param name name of the layer
      *@param layerManager
+     * @param imageFileName
      *@param imageToDisplay the image (if already loaded) or null
-     *@param newRaster the raster (if already loaded) or null
-     *@param envelope real-world coordinates of the image
+     * @param wholeImageEnvelope
      */
-    public RasterImageLayer(String name, LayerManager layerManager, String imageFileName, RenderedImage imageToDisplay, Raster newRaster, Envelope envelope) {
+    public RasterImageLayer(String name, LayerManager layerManager, String imageFileName, BufferedImage imageToDisplay, Envelope wholeImageEnvelope) {
         super(name, layerManager);
         
         getBlackboard().put(LayerNameRenderer.USE_CLOCK_ANIMATION_KEY, true);
         
         this.imageFileName = imageFileName;
-        this.envelope = envelope;
+        this.originalImageEnvelope = wholeImageEnvelope;
         
         if (imageToDisplay != null)
-            this.setImage(javax.media.jai.PlanarImage.wrapRenderedImage(imageToDisplay));
-        if (newRaster != null)
-        	this.setRasterData(newRaster);
+            this.setImage(imageToDisplay);
+//        if (newRaster != null)
+//        	this.setRasterData(newRaster);
         //[sstein 9.Aug.2010]       
         long avram = getAvailRAM();
         if(avram > 256000000){
@@ -170,22 +209,22 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
      *@param newRaster the raster (if already loaded) or null
      *@param envelope real-world coordinates of the image
      */
-    public RasterImageLayer(String name, LayerManager layerManager, RenderedImage imageToDisplay, Raster newRaster, Envelope envelope) {
+    public RasterImageLayer(String name, LayerManager layerManager, BufferedImage imageToDisplay, Raster newRaster, Envelope wholeImageEnvelope) {
         super(name, layerManager);
         
         getBlackboard().put(LayerNameRenderer.USE_CLOCK_ANIMATION_KEY, true);
         
         this.setNeedToKeepImage(true);
-        this.envelope = envelope;
+        this.originalImageEnvelope = wholeImageEnvelope;
         
         if (imageToDisplay != null)
-            this.setImage(javax.media.jai.PlanarImage.wrapRenderedImage(imageToDisplay));
+            this.setImage(imageToDisplay);
         else{
             //logger.printError("given image is NULL");
         }
-        if (newRaster != null)
-        	this.setRasterData(newRaster);
-        else{
+        if (newRaster != null) {
+//        	this.setRasterData(newRaster);
+        }else{
             //logger.printError("given raster is NULL");
         }
         //[sstein 9.Aug.2010]
@@ -209,12 +248,33 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
         return RasterImageLayer.blackboard;
     }
 
+    @Override
     public Object clone() throws CloneNotSupportedException {
         RasterImageLayer raster = null;
         if (this.isNeedToKeepImage()) {
-            raster = new RasterImageLayer(this.getName(), this.getLayerManager(), this.getImageForDisplay(), this.getRasterData(), new Envelope(this.getEnvelope()));
+            try {
+                raster = new RasterImageLayer(getName(), getLayerManager(), getImageForDisplay(), getRasterData(null), new Envelope(getWholeImageEnvelope()));
+            } catch (IOException ex) {
+                Logger.getLogger(RasterImageLayer.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (NoninvertibleTransformException ex) {
+                Logger.getLogger(RasterImageLayer.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (TiffTags.TiffReadingException ex) {
+                Logger.getLogger(RasterImageLayer.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
+                Logger.getLogger(RasterImageLayer.class.getName()).log(Level.SEVERE, null, ex);
+            }
         } else {
-            raster = new RasterImageLayer(this.getName(), this.getLayerManager(), this.getImageFileName(), this.getImageForDisplay(), this.getRasterData(), new Envelope(this.getEnvelope()));
+            try {
+                raster = new RasterImageLayer(getName(), getLayerManager(), getImageFileName(), getImageForDisplay(), new Envelope(getWholeImageEnvelope()));
+            } catch (IOException ex) {
+                Logger.getLogger(RasterImageLayer.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (NoninvertibleTransformException ex) {
+                Logger.getLogger(RasterImageLayer.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (TiffTags.TiffReadingException ex) {
+                Logger.getLogger(RasterImageLayer.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
+                Logger.getLogger(RasterImageLayer.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         // clone must produce a layerable with the same name (as for Layer) not a unique name
         if (raster != null) {
@@ -229,18 +289,18 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
      * apply a scale operation to the image and return the
      * new image.
      */
-    protected PlanarImage scaleImage(PlanarImage im, float xScale, float yScale) {
+    protected BufferedImage scaleImage(BufferedImage im, float xScale, float yScale) {
         ParameterBlock pb = new ParameterBlock();
         pb.addSource(im);
         pb.add(xScale);
         pb.add(yScale);
 
-        return JAI.create("Scale", pb, null);
+        return JAI.create("Scale", pb, null).getAsBufferedImage();
     }
     
     
     
-    protected PlanarImage createOneColorImage(){
+    protected BufferedImage createOneColorImage(double scaleXImg2Canvas, double scaleYImg2Canvas){
         //logger.printDebug("fixing 1px scale: scaleXImg2Canvas = " + scaleXImg2Canvas + ", scaleYImg2Canvas = " + scaleYImg2Canvas);
         //logger.printDebug("this.imageProcessingStep1: " + this.imageProcessingStep1 .getWidth() + ", " + this.imageProcessingStep1.getHeight());
         
@@ -253,7 +313,7 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
         
         Graphics2D grfcs = bim.createGraphics();
         
-        grfcs.setColor(new Color(this.imageProcessingStep1.getAsBufferedImage().getRGB(0,0)));
+        grfcs.setColor(new Color(this.imageProcessingStep1.getRGB(0,0)));
         
         //logger.printDebug("color: " + new Color(this.imageProcessingStep1.getAsBufferedImage().getRGB(0,0)).toString());
         
@@ -261,11 +321,15 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
         
         grfcs.dispose();
         
-        return PlanarImage.wrapRenderedImage(bim);
+        return bim;
+        
+        //return PlanarImage.wrapRenderedImage(bim);
     }
     
     /**
      * Creates the image to draw
+     * @param layerViewPanel
+     * @return 
      */
     public BufferedImage createImage(LayerViewPanel layerViewPanel) {
         
@@ -281,19 +345,13 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
         BufferedImage imageToDraw = null;
 
         try {
-            Point2D upperLeftCornerOfImage = null;
-            Point2D lowerRightCornerOfImage = null;
             
-            try {
-                upperLeftCornerOfImage = viewport.toViewPoint(new Coordinate(this.getEnvelope().getMinX(), this.getEnvelope().getMaxY()));
-                lowerRightCornerOfImage = viewport.toViewPoint(new Coordinate(this.getEnvelope().getMaxX(), this.getEnvelope().getMinY()));
-            } catch(java.awt.geom.NoninvertibleTransformException ne) {
-                //logger.printError(ne.getLocalizedMessage());
-                ne.printStackTrace();
-                return null;
-            }
-
-
+            //GeoTIFFRaster grr = new GeoTIFFRaster((new File(imageFileName)).toURI().toString());
+            
+            java.awt.Point imageDims = RasterImageIO.getImageDimensions(imageFileName);
+            
+            origImageWidth = imageDims.x;
+            origImageHeight = imageDims.y;            
             visibleRect = viewport.getPanel().getVisibleRect();
             
             int visibleX1 = visibleRect.x;
@@ -305,161 +363,83 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
             Coordinate lowerRightVisible = viewport.toModelCoordinate(new Point(visibleX2, visibleY2));
             
             Envelope newVisibleEnv = new Envelope(upperLeftVisible.x, lowerRightVisible.x, upperLeftVisible.y, lowerRightVisible.y);
-
-            double scaledWidth = lowerRightCornerOfImage.getX() - upperLeftCornerOfImage.getX();
-            double scaledHeight = upperLeftCornerOfImage.getY() - lowerRightCornerOfImage.getY();
             
-            if (!this.isImageSet()){
-                this.reLoadImage();
-            }
+            setImageSet(false);
             
-            scaleXImg2Canvas = scaledWidth / this.origImageWidth;
-            scaleYImg2Canvas = scaledHeight / this.origImageHeight;
-            
-            if (this.visibleEnv == null || this.visibleEnv.getMinX() != newVisibleEnv.getMinX() || this.visibleEnv.getMaxX() != newVisibleEnv.getMaxX() || 
-                    this.visibleEnv.getMinY() != newVisibleEnv.getMinY() || this.visibleEnv.getMaxY() != newVisibleEnv.getMaxY() ){
-                this.visibleEnv = newVisibleEnv;
+            if (visibleEnv == null || visibleEnv.getMinX() != newVisibleEnv.getMinX() || visibleEnv.getMaxX() != newVisibleEnv.getMaxX() || 
+                    visibleEnv.getMinY() != newVisibleEnv.getMinY() || visibleEnv.getMaxY() != newVisibleEnv.getMaxY() || symbologyChanged){
+                visibleEnv = newVisibleEnv;
+                    
+                symbologyChanged = false;
                 
-                if ( (this.origImageWidth * this.origImageHeight) < RasterImageLayer.getMaxPixelsForFastDisplayMode() ){
-                    //int pixels = this.origImageWidth * this.origImageHeight;
-                	//int maxpixels = RasterImageLayer.getMaxPixelsForFastDisplayMode();
-                    //-- faster display (uses more RAM) for small images
-                    this.setImageProcessingMode(RasterImageLayer.MODE_FASTDISPLAY);
-                    
-                    if (this.isImageNull()){
-                        this.reLoadImage();
-                    }
-                    //[sstein 9.Aug.2010]
-                    //problem: putting the stuff below here will also avoid the first re-scaling of the image
-                    //         for better display, so I added the additional scaling stuff
-                    
-                    long totalMem = Runtime.getRuntime().totalMemory();
-                    long freeMem = Runtime.getRuntime().freeMemory();
-                    long committedMemory = totalMem - freeMem;
-                    double maxMemoryToCommit = availRAM - minRamToKeepFree;
-                    boolean needFreeRAM = (committedMemory > maxMemoryToCommit);
-                    if(needFreeRAM == false){
-                    	if (wasScaledForDisplay == false){
-                    		setImage(stretchImageValuesForDisplay(getImageForDisplay()));
-                    		wasScaledForDisplay = true;
-                    	}
-                    	this.setNeedToKeepImage(true); //so small images are not reloaded every time
-                    }
-                    
-                    //[sstein end]
-                    
-                    this.imagePart = this.getVisibleImageCoordinatesOfImage( this.origImageWidth, this.origImageHeight, this.visibleEnv, this.getEnvelope() );
-                    
-                    if (this.imageProcessingStep2 == null || (scaleXImg2Canvas != this.oldScaleXImg2Canvas || !RasterImageLayer.tilesAreNotNullAndCongruent( this.imagePart, this.oldImagePart))){
-    
-                        this.imageProcessingStep1 = this.getVisiblePartOfTheImage( this.getImageForDisplay(), this.imagePart );
-                        
-                        if ( this.imageProcessingStep1 != null) {
-                            // avoid an 1 pixel by 1 pixel image to get scaled to thousands by thousands pixels causing an out of memory error
-                            if (this.imagePart.width == 1 || this.imagePart.height == 1){
-                                this.xOffset = 0;
-                                this.yOffset = 0;
-                                this.imageProcessingStep2 = this.createOneColorImage();
-                            } else {
-                                this.imageProcessingStep2 = this.getScaledImageMatchingVisible( this.imageProcessingStep1, scaleXImg2Canvas, scaleYImg2Canvas );
-                            }
+                reLoadImage();
+                if(image == null) {
+                    return null;
+                }                    
+                
+                Point2D upperLeftCornerOfImage = viewport.toViewPoint(new Coordinate(getActualImageEnvelope().getMinX(), getActualImageEnvelope().getMaxY()));
+                Point2D lowerRightCornerOfImage = viewport.toViewPoint(new Coordinate(getActualImageEnvelope().getMaxX(), getActualImageEnvelope().getMinY()));
 
-                        } else {
-                            return null;
-                        }
-                        
-                        if (this.transparentColor!=null) transparencyColorNeedsToBeApplied = true;
-                        
-                        this.imageProcessingStep1 = null;
-                        
-                        this.xOffset = (int)(this.xOffset *scaleXImg2Canvas);
-                        this.yOffset = (int)(this.yOffset *(-scaleYImg2Canvas));
-                        
-                        this.oldScaleXImg2Canvas = this.scaleXImg2Canvas;
-                        
-                        this.oldImagePart = this.imagePart;
-                    }
-    
-                } else if ( (scaleXImg2Canvas >= 1) || (scaledWidth > 2500 && visibleRect.width < 1500)){
-                    
-                    this.setImageProcessingMode(RasterImageLayer.MODE_CLIPPINGFIRST);
+                double scaledWidth = lowerRightCornerOfImage.getX() - upperLeftCornerOfImage.getX();
+                double scaledHeight = upperLeftCornerOfImage.getY() - lowerRightCornerOfImage.getY();
 
-                    this.imagePart = this.getVisibleImageCoordinatesOfImage( this.origImageWidth, this.origImageHeight, visibleEnv, this.getEnvelope() );
-                    
-                    if (this.imageProcessingStep2 == null || (scaleXImg2Canvas != this.oldScaleXImg2Canvas || !RasterImageLayer.tilesAreNotNullAndCongruent( this.imagePart, this.oldImagePart))){
-    
-                        if (!RasterImageLayer.tilesAreNotNullAndCongruent(this.oldImagePart, this.imagePart)){
-                            this.imageProcessingStep1 = null;
-                            
-                            if (this.isImageNull()){
-                                this.reLoadImage();
-                            }
-                            
-                            this.imageProcessingStep1 = this.getVisiblePartOfTheImage( this.getImageForDisplay(), this.imagePart );
-                            
-                            this.clearImageAndRaster(false);
-                        }
-                        
-                        if ( this.imageProcessingStep1 != null) {
-                            
-                            // avoid an 1 pixel by 1 pixel image to get scaled to thousands by thousands pixels causing an out of memory error
-                            if (this.imagePart.width == 1 || this.imagePart.height == 1){
-                                this.xOffset = 0;
-                                this.yOffset = 0;
-                                this.imageProcessingStep2 = this.createOneColorImage();
-                            } else {
-                                this.imageProcessingStep2 = this.getScaledImageMatchingVisible( this.imageProcessingStep1, scaleXImg2Canvas, scaleYImg2Canvas );
-                            }
+                long totalMem = Runtime.getRuntime().totalMemory();
+                long freeMem = Runtime.getRuntime().freeMemory();
+                long committedMemory = totalMem - freeMem;
+                double maxMemoryToCommit = availRAM - minRamToKeepFree;
+                boolean needFreeRAM = (committedMemory > maxMemoryToCommit);
+                if(needFreeRAM == false){
+
+                    setImage(stretchImageValuesForDisplay());
+                    wasScaledForDisplay = true;
+
+                    setNeedToKeepImage(true); //so small images are not reloaded every time
+                }
+
+                //[sstein end]                    
+                imagePart = getVisibleImageCoordinatesOfImage( image.getWidth(), image.getHeight(), visibleEnv, getActualImageEnvelope() );
+
+                double scaleXImg2Canvas = scaledWidth / image.getWidth();
+                double scaleYImg2Canvas = scaledHeight / image.getHeight();
+
+                if (imageProcessingStep2 == null || scaleXImg2Canvas != oldScaleXImg2Canvas ||
+                        !RasterImageLayer.tilesAreNotNullAndCongruent( visibleEnv, oldVisibleEnv)){
+
+                    imageProcessingStep1 = getVisiblePartOfTheImage( getImageForDisplay(), imagePart );
+
+                    if ( imageProcessingStep1 != null) {
+                        // avoid an 1 pixel by 1 pixel image to get scaled to thousands by thousands pixels causing an out of memory error
+                        if (imagePart.width == 1 || imagePart.height == 1){
+                            xOffset = 0;
+                            yOffset = 0;
+                            imageProcessingStep2 = createOneColorImage(scaleXImg2Canvas, scaleYImg2Canvas);
                         } else {
-                            return null;
+                            imageProcessingStep2 = getScaledImageMatchingVisible( imageProcessingStep1, scaleXImg2Canvas, scaleYImg2Canvas );
                         }
-                        
-                        if (this.transparentColor!=null) transparencyColorNeedsToBeApplied = true;
-                                                
-                        this.imageProcessingStep1 = null;
-                        
-                        this.xOffset = (int)(this.xOffset *scaleXImg2Canvas);
-                        this.yOffset = (int)(this.yOffset *(-scaleYImg2Canvas));
-                        
-                        this.oldScaleXImg2Canvas = this.scaleXImg2Canvas;
-                        
-                        this.oldImagePart = this.imagePart;
-                    }
-                    
-                } else {
-                    this.setImageProcessingMode(RasterImageLayer.MODE_SCALINGFIRST);
-                    
-                    if ( scaleXImg2Canvas != this.oldScaleXImg2Canvas || this.imageProcessingStep1 == null){
-                        this.imageProcessingStep1 = null;
-                        
-                        if (this.isImageNull()){
-                            this.reLoadImage();
-                        }
-                        this.imageProcessingStep1 = this.getScaledImageMatchingVisible( this.getImageForDisplay(), scaleXImg2Canvas, scaleYImg2Canvas );
-                        this.clearImageAndRaster(false);
-                        
-                        this.oldScaleXImg2Canvas = this.scaleXImg2Canvas;
-                    } 
-                    if ( this.imageProcessingStep1 != null ){
-                        this.imagePart = this.getVisibleImageCoordinatesOfImage( this.imageProcessingStep1, visibleEnv, this.getEnvelope() );
-                        if ( this.imageProcessingStep2 == null || !RasterImageLayer.tilesAreNotNullAndCongruent( this.imagePart, this.oldImagePart)){
-                            this.imageProcessingStep2 = this.getVisiblePartOfTheImage( PlanarImage.wrapRenderedImage(this.imageProcessingStep1), this.imagePart );
-                            this.oldImagePart = this.imagePart;
-                        }
+
                     } else {
                         return null;
                     }
-                    
-                    if (this.transparentColor!=null) transparencyColorNeedsToBeApplied = true;
-                    
+
+                    if (transparentColor!=null) transparencyColorNeedsToBeApplied = true;
+
+                    imageProcessingStep1 = null;
+
+                    xOffset = (int)(xOffset *scaleXImg2Canvas);
+                    yOffset = (int)(yOffset *(-scaleYImg2Canvas));
+
+                    oldScaleXImg2Canvas = scaleXImg2Canvas;
+
+                    oldVisibleEnv = visibleEnv;
                 }
-                
+    
+                               
             }
             
-            if (this.imageProcessingStep2 != null && transparencyColorNeedsToBeApplied ){
-                imageToDraw = this.setupTransparency(this.imageProcessingStep2);
-            } else if (this.imageProcessingStep2 != null) {
-                imageToDraw = this.imageProcessingStep2.getAsBufferedImage();
+            if (imageProcessingStep2 != null && transparencyColorNeedsToBeApplied ){
+                imageToDraw = setupTransparency(imageProcessingStep2);
+            } else if (imageProcessingStep2 != null) {
+                imageToDraw = imageProcessingStep2;
             }
             
 
@@ -469,13 +449,13 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
         }
 
         if (Runtime.getRuntime().freeMemory() < RasterImageLayer.getMinRamToKeepFree()){
-            this.clearImageAndRaster(true);
+            clearImageAndRaster(true);
         }
         
         if (imageToDraw != null) {
             return imageToDraw;
-        } else if (this.imageProcessingStep2!=null) {
-            return this.imageProcessingStep2.getAsBufferedImage();
+        } else if (imageProcessingStep2!=null) {
+            return imageProcessingStep2;
         }
         
         
@@ -492,10 +472,10 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
     	//       does not account for Xmx (max memory), only for the actual memory
     	//       Hence we should work with committed memory as I did above??? 
         boolean reallyNeedToFreeRAM = (Runtime.getRuntime().freeMemory() < minRamToKeepFree);
-        if (!this.needToKeepImage && reallyNeedToFreeRAM ){
-            this.image = null;
-            rasterData = null; //[sstein 2Aug2010] line added
-            this.wasScaledForDisplay = false; //[sstein 20Aug2010] line added
+        if (!needToKeepImage && reallyNeedToFreeRAM ){
+            //this.image = null;
+            //rasterData = null; //[sstein 2Aug2010] line added
+            wasScaledForDisplay = false; //[sstein 20Aug2010] line added
         }
         if (garbageCollect){
             Runtime.getRuntime().gc();
@@ -508,30 +488,59 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
      *@param garbageCollect if true the garbage collector will be called (this parameter may be overridden, if there is not enough RAM available...)
      */
     public void flushImages(boolean garbageCollect){
-        if (this.image!=null)
-            this.image.dispose();
-        this.image = null;
+        if (image!=null)
+            image.flush();
+        image = null;
         
-        if (this.imageProcessingStep1!=null)
-            this.imageProcessingStep1.dispose();
-        this.imageProcessingStep1 = null;
+        if (imageProcessingStep1!=null)
+            imageProcessingStep1.flush();
+        imageProcessingStep1 = null;
         
-        if (this.imageProcessingStep2!=null)
-            this.imageProcessingStep2.dispose();
-        this.imageProcessingStep2 = null;
+        if (imageProcessingStep2!=null)
+            imageProcessingStep2.flush();
+        imageProcessingStep2 = null;
     
         if (garbageCollect){
             Runtime.getRuntime().gc();
         }
     }
     
-    public void reLoadImage(){
-        WorkbenchContext context = this.getWorkbenchContext();
+    public void reLoadImage() throws IOException, NoninvertibleTransformException, FileNotFoundException, TiffTags.TiffReadingException, Exception{
         
-        if (this.image == null && !this.needToKeepImage){
-            this.setImage( this.loadImage( context, imageFileName  ) );
-        } else if (this.image == null && this.needToKeepImage){
-            //logger.printError("was advised to keep image, but there is none!");
+        //if (image == null && !needToKeepImage){
+        
+        RasterImageIO rasterImageIO = new RasterImageIO();
+
+        Viewport viewport = getWorkbenchContext().getLayerViewPanel().getViewport();
+        if(!viewport.getEnvelopeInModelCoordinates().intersects(originalImageEnvelope) &&
+                getWorkbenchContext().getLayerManager().getLayerables(Layerable.class).isEmpty()) {
+            viewport.zoom(originalImageEnvelope);
+        }
+        
+//        Rectangle visibleRect = viewport.getPanel().getVisibleRect();
+            
+        Resolution requestedRes = RasterImageIO.calcRequestedResolution(viewport);
+        
+        ImageAndMetadata imageAndMetadata = rasterImageIO.loadImage(getWorkbenchContext(), imageFileName, stats, viewport.getEnvelopeInModelCoordinates(), requestedRes);
+        metadata = imageAndMetadata.getMetadata();
+        image = imageAndMetadata.getImage();
+        numBands = metadata.getStats().getBandCount();
+        noDataValue = imageAndMetadata.getMetadata().getNoDataValue();
+        stats = imageAndMetadata.getMetadata().getStats();
+        originalImageEnvelope = imageAndMetadata.getMetadata().getOriginalImageEnvelope();
+        actualImageEnvelope = imageAndMetadata.getMetadata().getActualEnvelope();
+        originalCellSize = imageAndMetadata.getMetadata().getOriginalCellSize();        
+        actualCellSize = imageAndMetadata.getMetadata().getActualCellSize();
+        
+        if(image != null) {
+            setImage(image);
+        }
+        wasScaledForDisplay = false;
+        
+        if(image != null) {
+            actualRasterData = image.copyData(null);      
+        } else {
+            actualRasterData = null;
         }
     }
     
@@ -539,308 +548,116 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
      * use this to assign the raster data again
      * the method is called from  getRasterData();
      */
-    public void reLoadImageButKeepImageForDisplay(){
-       WorkbenchContext context = this.getWorkbenchContext();
-       PlanarImage pi = this.getImageForDisplay();
+    public void reLoadImageButKeepImageForDisplay() throws IOException, NoninvertibleTransformException, FileNotFoundException, TiffTags.TiffReadingException, Exception{
+       WorkbenchContext context = getWorkbenchContext();
+       BufferedImage pi = getImageForDisplay();
        //[sstein 24.Sept.2010] commented out:
        //PlanarImage dontNeedThisImage = RasterImageLayer.loadImage( context, imageFileName); //causes error for .clone()
        this.setImage(pi);
     }
     
-    /**
-     * Returns the dimensions (width and height in px) of the image as a <code>Point</code> object.
-     * The clue is that only the image file's header is read to get this information, so it's quite
-     * fast, because the image was not entirely read.  
-     *@param context the WorkbenchContext
-     *@param filenameOrURL the image file's name or URL
-     *@return a point which's x is the image's width and y is the height
-     */
-    public static Point getImageDimensions(WorkbenchContext context, String filenameOrURL) {
+    protected BufferedImage stretchImageValuesForDisplay() throws NoninvertibleTransformException{
         
-        if (!filenameOrURL.toLowerCase().endsWith(".jpg") && !filenameOrURL.toLowerCase().endsWith(".flt") &&
-                !filenameOrURL.toLowerCase().endsWith(".asc")){
-            try {
-                // JAI required!!
-                javax.media.jai.PlanarImage pImage = javax.media.jai.JAI.create("fileload", filenameOrURL);
-                if (pImage != null) {
-                    return new Point(pImage.getWidth(), pImage.getHeight());
-                }
-            } catch (Throwable e) {
-                //logger.printError(e.getLocalizedMessage());
-                if (e.getMessage().indexOf("Planar (band-sequential) format TIFF is not supported") > -1) {
-                	context.getWorkbench().getFrame().warnUser("unsupported-tiff");
+//        Viewport viewport = getWorkbenchContext().getLayerViewPanel().getViewport();
+//
+//        
+//        Rectangle rectangle = RasterImageIO.getDrawingRectangle(
+//                origImageWidth, origImageHeight, originalImageEnvelope,
+//                getViewportRectangle(getWorkbenchContext()),
+//                viewport.getEnvelopeInModelCoordinates(),
+//                new Resolution(cellSize, cellSize));
+//        
+//        if(rectangle == null || (wasScaledForDisplay)) {
+//            return bImage;
+//        }
+        
+        int width = actualRasterData.getWidth();
+        int height = actualRasterData.getHeight();  
+        
+        // Need to change image type to support transparency and apply symbology
+        BufferedImage newImage = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
+        for (int row = 0; row < height; row++) {
+            for (int col = 0; col < width; col++) {
+
+                if(symbology == null) {
+                    if(stats.getBandCount() < 3) {
+                        double value = actualRasterData.getSampleDouble(col, row, 0);
+                        if(Double.isNaN(value) || Double.isInfinite(value) || value == noDataValue) {
+                            newImage.setRGB(col, row, Color.TRANSLUCENT);
+                            continue;
+                        }
+                        int rgbValue = (int) ((value - stats.getMin(0)) * 255./(stats.getMax(0) - stats.getMin(0)));
+                        if(rgbValue > 255) rgbValue = 255;
+                        if(rgbValue < 0) rgbValue = 0;
+                        newImage.setRGB(col, row, new Color(rgbValue, rgbValue, rgbValue).getRGB());
+                    } else {
+                        double valueR = actualRasterData.getSampleDouble(col, row, 0);
+                        double valueG = actualRasterData.getSampleDouble(col, row, 1);
+                        double valueB = actualRasterData.getSampleDouble(col, row, 2);
+                        if(Double.isNaN(valueR) || Double.isInfinite(valueR) || valueR == noDataValue
+                                || Double.isNaN(valueG) || Double.isInfinite(valueG) || valueG == noDataValue
+                                || Double.isNaN(valueB) || Double.isInfinite(valueB) || valueB == noDataValue) {
+                            newImage.setRGB(col, row, Color.TRANSLUCENT);
+                            continue;
+                        }
+                        
+                        int r = (int) ((valueR - stats.getMin(0)) * 255./(stats.getMax(0) - stats.getMin(0)));
+                        if(r > 255) r = 255;
+                        if(r < 0) r = 0;
+                        int g = (int) ((valueG - stats.getMin(1)) * 255./(stats.getMax(1) - stats.getMin(0)));
+                        if(g > 255) g = 255;
+                        if(g < 0) g = 0;
+                        int b = (int) ((valueB - stats.getMin(2)) * 255./(stats.getMax(2) - stats.getMin(0)));
+                        if(b > 255) b = 255;
+                        if(b < 0) b = 0;
+
+                        newImage.setRGB(col, row, new Color(r, g, b).getRGB());
+                    }
                 } else {
-                	context.getWorkbench().getFrame().warnUser("problems-loading-image"+ e.getMessage());
+                    double value = actualRasterData.getSampleDouble(col, row, 0);
+                    
+                    if(Double.isNaN(value) || Double.isInfinite(value) || value == noDataValue) {
+                        newImage.setRGB(col, row, Color.TRANSLUCENT);
+                        continue;
+                    }
+                    
+                    Color color = symbology.getColor(value);
+                    newImage.setRGB(col, row, color.getRGB());
                 }
+                    
+                
             }
-        }else if(filenameOrURL.toLowerCase().endsWith(".flt")){
-
-            try{
-
-                GridFloat gf = new GridFloat(filenameOrURL);
-
-                return new Point(gf.getnCols(), gf.getnRows());
-
-            }catch(Throwable e){
-                //logger.printError(e.getLocalizedMessage());
-                if (e.getMessage().indexOf("Error in FLT file") > -1) {
-                	context.getWorkbench().getFrame().warnUser("unsupported-flt");
-                } else {
-                	context.getWorkbench().getFrame().warnUser("problems-loading-image"+ e.getMessage());
-                }
-            }
-
-        }else if(filenameOrURL.toLowerCase().endsWith(".asc")){
-
-            try{
-
-                GridAscii ga = new GridAscii(filenameOrURL);
-                return new Point(ga.getnCols(), ga.getnRows());
-
-            }catch(Throwable e){
-                //logger.printError(e.getLocalizedMessage());
-                if (e.getMessage().indexOf("Error in Grid Ascii file") > -1) {
-                	context.getWorkbench().getFrame().warnUser("unsupported-asc");
-                } else {
-                	context.getWorkbench().getFrame().warnUser("problems-loading-image"+ e.getMessage());
-                }
-            }
-
-        } else {
-            
-            BufferedImage image = null;
-
-            try {
-                image = ImageIO.read(new File(filenameOrURL));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            
-            return new Point(image.getWidth(), image.getHeight());
-            
         }
-        
-        return null;
-    }
-    
-    public final PlanarImage loadImage(WorkbenchContext context, String filenameOrURL) {
 
-         if (filenameOrURL.toLowerCase().endsWith(".gif")  || filenameOrURL.toLowerCase().endsWith(".png")
-                 || filenameOrURL.toLowerCase().endsWith(".tif") || filenameOrURL.toLowerCase().endsWith(".tiff")) {
-             try {
-                 javax.media.jai.PlanarImage pImage = javax.media.jai.JAI.create("fileload", filenameOrURL);
-                 //-- [sstein 2 Aug 2010] 
-                 //   dealing now with an Image that will be modified for better display 
-                 Raster rData = pImage.copyData(); //copy data so we do not get a ref
-                 rasterData = rData;
-                 PlanarImage surrogatImage = null;
-                 surrogatImage = stretchImageValuesForDisplay(pImage);
-                 //return pImage;
-                 //surrogatImage = pImage; //for testing
-                 return surrogatImage;
-                 //-- end
-                 
-             } catch (Throwable e) {
-                 //logger.printError(e.getMessage());
-            	 if(context != null){
-	                 if (e.getMessage().indexOf("Planar (band-sequential) format TIFF is not supported") > -1) {
-	                	 context.getWorkbench().getFrame().warnUser(I18N.get("unsupported-tiff"));
-	                 } else {
-	                     context.getWorkbench().getFrame().warnUser(I18N.get("problems-loading-image")+ e.getMessage());
-	                 }
-            	 }
-                 e.printStackTrace();
-                 return null;
-             }
-         } else if (filenameOrURL.toLowerCase().endsWith(".jpg")){
-        	 PlanarImage pimage = null;
-
-             try {
-            	 BufferedImage image = ImageIO.read(new File(filenameOrURL));
-                 //-- [sstein 2 Aug 2010] 
-                 //   dealing now with an Image that will be modified for better dislay 
-        		 pimage = PlanarImage.wrapRenderedImage(image);
-        		 Raster rData = pimage.copyData();  //copy data so we do not get a ref
-                 rasterData = rData;
-                 //-- end
-                 
-             } catch (IOException e) {
-                 e.printStackTrace();
-             }
-             //-- [sstein 2 Aug 2010] 
-             PlanarImage surrogatImage = stretchImageValuesForDisplay(pimage);
-             //return pimage;
-             return surrogatImage;
-             //-- end
-
-         } else if (filenameOrURL.toLowerCase().endsWith(".flt")){
-
-            try{
-
-                GridFloat gf = new GridFloat(filenameOrURL);
-                gf.readGrid();
-
-                javax.media.jai.PlanarImage pImage = gf.getPlanarImage();
-                //-- [sstein 3 Aug 2010] 
-                //   dealing now with an Image that will be modified for better dislay 
-       		 	Raster rData = pImage.copyData();  //copy data so we do not get a ref
-                rasterData = rData;
-                //-- sstein end               
-                
-                noDataValue = gf.getNoData();
-                
-                // This rescales values
-                // See http://www.lac.inpe.br/JIPCookbook/2200-display-surrogate.jsp
-
-                ParameterBlock pbMaxMin = new ParameterBlock();
-                pbMaxMin.addSource(pImage);
-                RenderedOp extrema = JAI.create("extrema", pbMaxMin);
-                double minValue = gf.getMinVal();
-                double maxValue = gf.getMaxVal();
-
-                double[] subtractThis = new double[1]; subtractThis[0] = minValue;
-                double[] multiplyBy   = new double[1]; multiplyBy[0]   = 255./(maxValue-minValue);
-
-                ParameterBlock pbSub = new ParameterBlock();
-                pbSub.addSource(pImage);
-                pbSub.add(subtractThis);
-                PlanarImage surrogateImage = (PlanarImage)JAI.create("subtractconst",pbSub,null);
-                ParameterBlock pbMult = new ParameterBlock();
-                pbMult.addSource(surrogateImage);
-                pbMult.add(multiplyBy);
-                surrogateImage = (PlanarImage)JAI.create("multiplyconst",pbMult,null);
-                ParameterBlock pbConvert = new ParameterBlock();
-                pbConvert.addSource(surrogateImage);
-                pbConvert.add(DataBuffer.TYPE_BYTE);
-                surrogateImage = JAI.create("format", pbConvert);
-                
-                return(surrogateImage);
-
-            }catch(Throwable e){
-                //logger.printError(e.getLocalizedMessage());
-                if (e.getMessage().indexOf("Error in FLT file") > -1) {
-                	context.getWorkbench().getFrame().warnUser("unsupported-flt");
-                } else {
-                	context.getWorkbench().getFrame().warnUser("problems-loading-image"+ e.getMessage());
-                }
-            }
-
-         } else if (filenameOrURL.toLowerCase().endsWith(".asc")){
-
-            try{
-
-                GridAscii ga = new GridAscii(filenameOrURL);
-                ga.readGrid();
-
-                javax.media.jai.PlanarImage pImage = ga.getPlanarImage();
-                //-- [sstein 3 Aug 2010]
-                //   dealing now with an Image that will be modified for better display
-       		 	Raster rData = pImage.copyData();  //copy data so we do not get a ref
-                rasterData = rData;
-                //-- sstein end
-                noDataValue = ga.getNoData();
-
-                // This rescales values
-                // See http://www.lac.inpe.br/JIPCookbook/2200-display-surrogate.jsp
-
-                ParameterBlock pbMaxMin = new ParameterBlock();
-                pbMaxMin.addSource(pImage);
-                RenderedOp extrema = JAI.create("extrema", pbMaxMin);
-                double minValue = ga.getMinVal();
-                double maxValue = ga.getMaxVal();
-
-                double[] subtractThis = new double[1]; subtractThis[0] = minValue;
-                double[] multiplyBy   = new double[1]; multiplyBy[0]   = 255./(maxValue-minValue);
-
-                ParameterBlock pbSub = new ParameterBlock();
-                pbSub.addSource(pImage);
-                pbSub.add(subtractThis);
-                PlanarImage surrogateImage = (PlanarImage)JAI.create("subtractconst",pbSub,null);
-                ParameterBlock pbMult = new ParameterBlock();
-                pbMult.addSource(surrogateImage);
-                pbMult.add(multiplyBy);
-                surrogateImage = (PlanarImage)JAI.create("multiplyconst",pbMult,null);
-                ParameterBlock pbConvert = new ParameterBlock();
-                pbConvert.addSource(surrogateImage);
-                pbConvert.add(DataBuffer.TYPE_BYTE);
-                surrogateImage = JAI.create("format", pbConvert);
-
-
-
-                return(surrogateImage);
-
-            }catch(Throwable e){
-                //logger.printError(e.getLocalizedMessage());
-                if (e.getMessage().indexOf("Error in ASCII file") > -1) {
-                	context.getWorkbench().getFrame().warnUser("unsupported-ascii");
-                } else {
-                	context.getWorkbench().getFrame().warnUser("problems-loading-image"+ e.getMessage());
-                }
-            }
-
-         }
-         //logger.printError("unsupported image format"); 
-         return null;
-     }
-    
-    private static PlanarImage stretchImageValuesForDisplay(RenderedImage pImage){
-    	
-        //-- This rescales values
-        //   See http://www.lac.inpe.br/JIPCookbook/2200-display-surrogate.jsp
-
-    	  //int width = pImage.getWidth();
-    	  //int height = pImage.getHeight();
-    	
-    	  // Create an array to receive the pixels values with the appropriate number of bands
-    	  //double[] pixelValues = new double[pImage.getSampleModel().getNumBands()];
-    	
-    	  // Which are the max and min of the image? We need to know to create the
-    	  // surrogate image. Let's use the extrema operator to get them.
-    	  ParameterBlock pbMaxMin = new ParameterBlock();
-    	  pbMaxMin.addSource(pImage);
-    	  RenderedOp extrema = JAI.create("extrema", pbMaxMin);
-    	  // Must get the extrema of all bands !
-    	  double[] allMins = (double[])extrema.getProperty("minimum");
-    	  double[] allMaxs = (double[])extrema.getProperty("maximum");
-    	  double minValue = allMins[0];
-    	  double maxValue = allMaxs[0];
-    	  for(int v=1;v<allMins.length;v++)
-    	  {
-	    	  if (allMins[v] < minValue) minValue = allMins[v];
-	    	  if (allMaxs[v] > maxValue) maxValue = allMaxs[v];
-    	  }
-    	  // Rescale the image with the parameters
-    	  double[] subtractThis = new double[1]; subtractThis[0] = minValue;
-    	  double[] multiplyBy   = new double[1]; multiplyBy[0]   = 255./(maxValue-minValue);
-    	  // Now we can rescale the pixels' values:
-    	  ParameterBlock pbSub = new ParameterBlock();
-    	  pbSub.addSource(pImage);
-    	  pbSub.add(subtractThis);
-    	  PlanarImage surrogateImage = (PlanarImage)JAI.create("subtractconst",pbSub,null);    
-    	  ParameterBlock pbMult = new ParameterBlock();
-    	  pbMult.addSource(surrogateImage);
-    	  pbMult.add(multiplyBy);
-    	  surrogateImage = (PlanarImage)JAI.create("multiplyconst",pbMult,null);    
-    	  // Let's convert the data type for displaying.
-    	  ParameterBlock pbConvert = new ParameterBlock();
-    	  pbConvert.addSource(surrogateImage);
-    	  pbConvert.add(DataBuffer.TYPE_BYTE);
-    	  surrogateImage = JAI.create("format", pbConvert); 
-    	return surrogateImage;
+        return newImage;
     }
     
     /**
      * @return Envelope with the real world coordinates of the image
      */
-    public Envelope getEnvelope() {
-        return envelope;
+    public Envelope getWholeImageEnvelope() {
+        return originalImageEnvelope;
     }
+    
+    public Envelope getActualImageEnvelope() {
+        return actualImageEnvelope;
+    }
+    
     /**
      * Sets the Envelope object containing the real world coordinates (e.g. WGS84) of the image - this needs to be set (if it wasn't given to the constructor)!
      *@param envelope the Envelope
      */
-    public void setEnvelope(Envelope envelope) {
-        this.envelope = envelope;
+    public void setWholeImageEnvelope(Envelope envelope) {
+        this.originalImageEnvelope = envelope;
+        
+        this.forceTotalRepaint();
+        
+        if (this.isFiringAppearanceEvents())
+            this.fireAppearanceChanged();
+    }
+    
+    public void setActualImageEnvelope(Envelope envelope) {
+        this.actualImageEnvelope = envelope;
         
         this.forceTotalRepaint();
         
@@ -852,15 +669,19 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
      * for java2xml
      *@return the Envelope as string
      */
-    public String getXmlEnvelope(){
-        return this.envelope.toString();
+    public String getXmlWholeImageEnvelope(){
+        return this.originalImageEnvelope.toString();
+    }
+    
+    public String getXmlActualImageEnvelope() {
+        return this.actualImageEnvelope.toString();
     }
     
     /**
      * for java2xml
      *@param envStr the Envelope as string
      */
-    public void setXmlEnvelope(String envStr){
+    public void setXmlWholeImageEnvelope(String envStr){
         String coords = envStr.substring(envStr.indexOf("[")+1, envStr.indexOf("]"));
         
         String[] coordArray = coords.split(",");
@@ -874,22 +695,53 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
         double minY = java.lang.Double.parseDouble(yCoords[0]);
         double maxY = java.lang.Double.parseDouble(yCoords[1]);
         
-        this.setEnvelope( new Envelope( minX, maxX, minY, maxY ) );
+        this.setWholeImageEnvelope( new Envelope( minX, maxX, minY, maxY ) );
+    }
+    
+    public void setXmlActualImageEnvelope(String envStr){
+        String coords = envStr.substring(envStr.indexOf("[")+1, envStr.indexOf("]"));
+        
+        String[] coordArray = coords.split(",");
+        
+        String[] xCoords = coordArray[0].split(":");
+        String[] yCoords = coordArray[1].split(":");
+        
+        double minX = java.lang.Double.parseDouble(xCoords[0]);
+        double maxX = java.lang.Double.parseDouble(xCoords[1]);
+        
+        double minY = java.lang.Double.parseDouble(yCoords[0]);
+        double maxY = java.lang.Double.parseDouble(yCoords[1]);
+        
+        this.setActualImageEnvelope( new Envelope( minX, maxX, minY, maxY ) );
     }
     
     /**
      * Method to change the coordinates of the image and later apply the
      * changes to the RasterImageLayer by using {@link RasterImageLayer#setGeometryAsEnvelope(Geometry)}.
-     *@return return the envelope (= bounding box) as a geometry, 
+     *@return return the imageEnvelope (= bounding box) as a geometry, 
      */
-    public Polygon getEnvelopeAsGeometry(){
+    public Polygon getWholeImageEnvelopeAsGeometry(){
         Coordinate[] coordinates = new Coordinate[5];
         
-        coordinates[0] = new Coordinate(this.envelope.getMinX(), this.envelope.getMaxY());
-        coordinates[1] = new Coordinate(this.envelope.getMaxX(), this.envelope.getMaxY());
-        coordinates[2] = new Coordinate(this.envelope.getMaxX(), this.envelope.getMinY());
-        coordinates[3] = new Coordinate(this.envelope.getMinX(), this.envelope.getMinY());
-        coordinates[4] = new Coordinate(this.envelope.getMinX(), this.envelope.getMaxY());
+        coordinates[0] = new Coordinate(originalImageEnvelope.getMinX(), originalImageEnvelope.getMaxY());
+        coordinates[1] = new Coordinate(originalImageEnvelope.getMaxX(), originalImageEnvelope.getMaxY());
+        coordinates[2] = new Coordinate(originalImageEnvelope.getMaxX(), originalImageEnvelope.getMinY());
+        coordinates[3] = new Coordinate(originalImageEnvelope.getMinX(), originalImageEnvelope.getMinY());
+        coordinates[4] = new Coordinate(originalImageEnvelope.getMinX(), originalImageEnvelope.getMaxY());
+        
+        GeometryFactory gf = new GeometryFactory();
+        
+        return gf.createPolygon(gf.createLinearRing(coordinates), null);
+    }
+    
+    public Polygon getActualImageEnvelopeAsGeometry(){
+        Coordinate[] coordinates = new Coordinate[5];
+        
+        coordinates[0] = new Coordinate(actualImageEnvelope.getMinX(), actualImageEnvelope.getMaxY());
+        coordinates[1] = new Coordinate(actualImageEnvelope.getMaxX(), actualImageEnvelope.getMaxY());
+        coordinates[2] = new Coordinate(actualImageEnvelope.getMaxX(), actualImageEnvelope.getMinY());
+        coordinates[3] = new Coordinate(actualImageEnvelope.getMinX(), actualImageEnvelope.getMinY());
+        coordinates[4] = new Coordinate(actualImageEnvelope.getMinX(), actualImageEnvelope.getMaxY());
         
         GeometryFactory gf = new GeometryFactory();
         
@@ -899,17 +751,20 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
     /**
      * Method to set the coordinates of the image, e.g. after changing them after using {@link RasterImageLayer#getEnvelopeAsGeometry()}.
      */
-    public void setGeometryAsEnvelope(Geometry geometry){
-        this.setEnvelope(geometry.getEnvelopeInternal());
+    public void setGeometryAsWholeImageEnvelope(Geometry geometry){
+        setWholeImageEnvelope(geometry.getEnvelopeInternal());
     }
     
+    public void setGeometryAsActualImageEnvelope(Geometry geometry){
+        setActualImageEnvelope(geometry.getEnvelopeInternal());
+    }
     
     /**
      * Add transparency to the image (more exactly: to each pixel which a color == this.transparentColor)
      *@param pImage the image
      */
-    private BufferedImage setupTransparency(PlanarImage pImage){
-        BufferedImage bim = pImage.getAsBufferedImage();
+    private BufferedImage setupTransparency(BufferedImage bim){
+        //BufferedImage bim = pImage.getAsBufferedImage();
         
         ColorModel cm = bim.getColorModel();
         int fullTransparencyAlpha = 255;
@@ -951,34 +806,35 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
     
     private void setImageProcessingMode( int nr ){
         if (lastImgProcessingMode != nr){
-            if (this.imageProcessingStep1!=null)
-                this.imageProcessingStep1.dispose();
-            this.imageProcessingStep1 = null;
+            if (imageProcessingStep1!=null)
+                imageProcessingStep1.flush();
+            imageProcessingStep1 = null;
             
-            if (this.imageProcessingStep2!=null)
-                this.imageProcessingStep2.dispose();
-            this.imageProcessingStep2 = null;
+            if (imageProcessingStep2!=null)
+                imageProcessingStep2.flush();
+            imageProcessingStep2 = null;
 
-            this.imagePart = null;
-            this.oldImagePart = null;
+            imagePart = null;
             
-            this.oldScaleXImg2Canvas = -1;
+            oldScaleXImg2Canvas = -1;
             
             if (Runtime.getRuntime().freeMemory() < RasterImageLayer.getMinRamToKeepFree()){
                 Runtime.getRuntime().gc();
             }
             
-            this.lastImgProcessingMode = nr;
+            lastImgProcessingMode = nr;
         }
     }
     
 
-    
-    private static boolean tilesAreNotNullAndCongruent( Rectangle r1, Rectangle r2 ){
-        boolean result;
-        if (r1 == null || r2 == null) result = false;
-        else result = (r1.x == r2.x && r1.y == r2.y && r1.width == r2.width && r1.height == r2.height);
-        return result;
+    private static boolean tilesAreNotNullAndCongruent( Envelope oldVisibleEnv, Envelope newVisibleEnv ){
+
+        if (oldVisibleEnv == null || newVisibleEnv == null) return true;
+        return (oldVisibleEnv.getMinX() == newVisibleEnv.getMinX() &&
+                oldVisibleEnv.getMaxX() == newVisibleEnv.getMaxX() &&
+                oldVisibleEnv.getMinY() == newVisibleEnv.getMinY() &&
+                oldVisibleEnv.getMaxY() == newVisibleEnv.getMaxY());
+        
     }
     
     /**
@@ -996,7 +852,7 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
         return copy; 
     }
     
-    protected PlanarImage getScaledImageMatchingVisible( PlanarImage toBeScaled, double XscaleImg2Canvas, double YscaleImg2Canvas ){
+    protected BufferedImage getScaledImageMatchingVisible( BufferedImage toBeScaled, double XscaleImg2Canvas, double YscaleImg2Canvas ){
 
         if (toBeScaled==null) return null;
         
@@ -1005,14 +861,14 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
         
         if (scaledWidth<=0 || scaledHeight<=0) return null;
         
-        return this.scaleImage(toBeScaled, (float)XscaleImg2Canvas, (float)Math.abs(YscaleImg2Canvas) );
+        return scaleImage(toBeScaled, (float)XscaleImg2Canvas, (float)Math.abs(YscaleImg2Canvas) );
 
     }
     
-    public BufferedImage getTileAsImage( Envelope wantedEnvelope ){
-        double imgWidth = this.origImageWidth;
-        double imgHeight = this.origImageHeight;
-        Envelope imageEnv = this.getEnvelope();
+    public BufferedImage getTileAsImage( Envelope wantedEnvelope ) throws IOException, NoninvertibleTransformException, FileNotFoundException, TiffTags.TiffReadingException, Exception{
+        double imgWidth = image.getWidth();
+        double imgHeight = image.getHeight();
+        Envelope imageEnv = getActualImageEnvelope();
         
         double minVisibleX = Math.max(wantedEnvelope.getMinX(), imageEnv.getMinX());
         double minVisibleY = Math.max(wantedEnvelope.getMinY(), imageEnv.getMinY());
@@ -1055,11 +911,11 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
         int wantedWidth = (int)(wantedEnvelope.getWidth() * scaleX);
         int wantedHeight = (int)(wantedEnvelope.getHeight() * scaleY);
         
-        if (this.image==null){
-            this.reLoadImage();
+        if (image==null){
+            reLoadImage();
         }
         
-        BufferedImage imgTile = this.image.getAsBufferedImage( new Rectangle(xOffset, yOffset, width, height), this.image.getColorModel());
+        BufferedImage imgTile = this.image.getSubimage(xOffset, yOffset, width, height);
         
         BufferedImage result = new BufferedImage( wantedWidth, wantedHeight, BufferedImage.TYPE_INT_ARGB);
         
@@ -1091,91 +947,93 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
         return result;
     }
     
-    public Raster getTileAsRaster( Envelope wantedEnvelope ){
-        double imgWidth = this.origImageWidth;
-        double imgHeight = this.origImageHeight;
-        Envelope imageEnv = this.getEnvelope();
-        
-        double minVisibleX = Math.max(wantedEnvelope.getMinX(), imageEnv.getMinX());
-        double minVisibleY = Math.max(wantedEnvelope.getMinY(), imageEnv.getMinY());
-        
-        double maxVisibleX = Math.min(wantedEnvelope.getMaxX(), imageEnv.getMaxX());
-        double maxVisibleY = Math.min(wantedEnvelope.getMaxY(), imageEnv.getMaxY());
-        
-        double offset2VisibleX = imageEnv.getMinX() - wantedEnvelope.getMinX();
-        double offset2VisibleY = wantedEnvelope.getMaxY() - imageEnv.getMaxY();
-        
-        double scaleX = imgWidth / imageEnv.getWidth();
-        double scaleY = imgHeight / imageEnv.getHeight();
-        
-        // use local variables!
-        int xOffset, yOffset, width, height;
-        
-        if (offset2VisibleX >= 0){
-            xOffset = 0;
-        } else {
-            xOffset = (int)(-offset2VisibleX * scaleX);
-        }
-        
-        if (offset2VisibleY >= 0){
-            yOffset = 0;
-        } else {
-            yOffset = (int)(-offset2VisibleY * scaleY);
-        }
-        
-        width = (int)((maxVisibleX-minVisibleX) * scaleX);
-        height =  (int)((maxVisibleY-minVisibleY) * scaleY);
-        
-        if (width < imgWidth && height < imgHeight){ 
-            width += 1;
-            height += 1;
-        }
-        
-        
-        if (width <= 0 || height <= 0) return null;
-        
-        int wantedWidth = (int)(wantedEnvelope.getWidth() * scaleX);
-        int wantedHeight = (int)(wantedEnvelope.getHeight() * scaleY);
-        
-        if (rasterData==null){
-            this.reLoadImage();
-        }
-        
-        ColorModel colorModel = PlanarImage.createColorModel(rasterData.getSampleModel());
-        BufferedImage bufimg = new BufferedImage(colorModel, (WritableRaster) rasterData, false, null);
-		PlanarImage pimage = PlanarImage.wrapRenderedImage(bufimg);
-        
-        BufferedImage imgTile = pimage.getAsBufferedImage( new Rectangle(xOffset, yOffset, width, height), pimage.getColorModel());
-        
-        BufferedImage result = new BufferedImage( wantedWidth, wantedHeight, BufferedImage.TYPE_INT_ARGB);
-        
-        Graphics2D graf = result.createGraphics();
-        
-        Color backgroundColor = (this.transparentColor!=null)?this.transparentColor:Color.white;
-        
-        graf.fillRect(0,0,wantedWidth, wantedHeight);
-        
-        int xTileOffset,yTileOffset;
-        
-        if (xOffset > 0){
-            xTileOffset = 0;
-        } else {
-            xTileOffset = (int)(offset2VisibleX * scaleX);
-        }
-        
-        if (yOffset > 0){
-            yTileOffset = 0;
-        } else {
-            yTileOffset = (int)(offset2VisibleY * scaleY);
-        }
-        
-        graf.drawImage(imgTile, xTileOffset, yTileOffset, imgTile.getWidth(), imgTile.getHeight(), backgroundColor, null);
-        graf.dispose();
-        
-        this.clearImageAndRaster(false);
-        
-        return result.getData();
-    }
+//    public Raster getTileAsRaster( Envelope wantedEnvelope ) throws IOException{
+//
+//        double imgWidth = origImageWidth;
+//        double imgHeight = origImageHeight;
+//        Envelope imageEnv = originalImageEnvelope;
+//        
+//        double minVisibleX = Math.max(wantedEnvelope.getMinX(), imageEnv.getMinX());
+//        double minVisibleY = Math.max(wantedEnvelope.getMinY(), imageEnv.getMinY());
+//        
+//        double maxVisibleX = Math.min(wantedEnvelope.getMaxX(), imageEnv.getMaxX());
+//        double maxVisibleY = Math.min(wantedEnvelope.getMaxY(), imageEnv.getMaxY());
+//        
+//        double offset2VisibleX = imageEnv.getMinX() - wantedEnvelope.getMinX();
+//        double offset2VisibleY = wantedEnvelope.getMaxY() - imageEnv.getMaxY();
+//        
+//        double scaleX = imgWidth / imageEnv.getWidth();
+//        double scaleY = imgHeight / imageEnv.getHeight();
+//        
+//        // use local variables!
+//        int xOffset, yOffset, width, height;
+//        
+//        if (offset2VisibleX >= 0){
+//            xOffset = 0;
+//        } else {
+//            xOffset = (int)(-offset2VisibleX * scaleX);
+//        }
+//        
+//        if (offset2VisibleY >= 0){
+//            yOffset = 0;
+//        } else {
+//            yOffset = (int)(-offset2VisibleY * scaleY);
+//        }
+//        
+//        width = (int)((maxVisibleX-minVisibleX) * scaleX);
+//        height =  (int)((maxVisibleY-minVisibleY) * scaleY);
+//        
+//        if (width < imgWidth && height < imgHeight){ 
+//            width += 1;
+//            height += 1;
+//        }
+//        
+//        
+//        if (width <= 0 || height <= 0) return null;
+//        
+//        int wantedWidth = (int)(wantedEnvelope.getWidth() * scaleX);
+//        int wantedHeight = (int)(wantedEnvelope.getHeight() * scaleY);
+//        
+//        Rectangle subset = new Rectangle(xOffset, yOffset, wantedWidth, wantedHeight);
+//        Raster rasterData = RasterImageIO.loadRasterData(imageFileName, subset);
+//        return rasterData;
+//        
+//        
+////        ColorModel colorModel = PlanarImage.createColorModel(rasterData.getSampleModel());
+////        BufferedImage bufimg = new BufferedImage(colorModel, (WritableRaster) rasterData, false, null);
+////        PlanarImage pimage = PlanarImage.wrapRenderedImage(bufimg);
+////        
+////        BufferedImage imgTile = pimage.getAsBufferedImage( new Rectangle(xOffset, yOffset, width, height), pimage.getColorModel());
+////        
+////        BufferedImage result = new BufferedImage( wantedWidth, wantedHeight, BufferedImage.TYPE_INT_ARGB);
+////        
+////        Graphics2D graf = result.createGraphics();
+////        
+////        Color backgroundColor = (this.transparentColor!=null)?this.transparentColor:Color.white;
+////        
+////        graf.fillRect(0,0,wantedWidth, wantedHeight);
+////        
+////        int xTileOffset,yTileOffset;
+////        
+////        if (xOffset > 0){
+////            xTileOffset = 0;
+////        } else {
+////            xTileOffset = (int)(offset2VisibleX * scaleX);
+////        }
+////        
+////        if (yOffset > 0){
+////            yTileOffset = 0;
+////        } else {
+////            yTileOffset = (int)(offset2VisibleY * scaleY);
+////        }
+////        
+////        graf.drawImage(imgTile, xTileOffset, yTileOffset, imgTile.getWidth(), imgTile.getHeight(), backgroundColor, null);
+////        graf.dispose();
+////        
+////        this.clearImageAndRaster(false);
+////        
+////        return result.getData();
+//    }
     
     protected WorkbenchContext getWorkbenchContext(){
         return (WorkbenchContext)this.getBlackboard().get(BLACKBOARD_KEY_WORKBENCHCONTEXT);
@@ -1214,7 +1072,7 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
         
         Envelope newVisibleEnv = new Envelope(upperLeftVisible.x, lowerRightVisible.x, upperLeftVisible.y, lowerRightVisible.y);
         
-        Rectangle rect = this.getVisibleImageCoordinatesOfImage(imgWidth, imgHeight, newVisibleEnv, imageEnv);
+        Rectangle rect = getVisibleImageCoordinatesOfImage(imgWidth, imgHeight, newVisibleEnv, imageEnv);
         
         if (rect==null) return null;
         
@@ -1232,6 +1090,7 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
     }
     
     protected Rectangle getVisibleImageCoordinatesOfImage( double imgWidth, double imgHeight, Envelope visible, Envelope imageEnv ){
+        
         double minVisibleX = Math.max(visible.getMinX(), imageEnv.getMinX());
         double minVisibleY = Math.max(visible.getMinY(), imageEnv.getMinY());
         
@@ -1245,15 +1104,15 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
         double scaleY = imgHeight / imageEnv.getHeight();
         
         if (offset2VisibleX >= 0){
-            this.xOffset = 0;
+            xOffset = 0;
         } else {
-            this.xOffset = (int)(-offset2VisibleX * scaleX);
+            xOffset = (int)(-offset2VisibleX * scaleX);
         }
         
         if (offset2VisibleY >= 0){
-            this.yOffset = 0;
+            yOffset = 0;
         } else {
-            this.yOffset = (int)(-offset2VisibleY * scaleY);
+            yOffset = (int)(-offset2VisibleY * scaleY);
         }
         
         int width = (int)((maxVisibleX-minVisibleX) * scaleX);
@@ -1269,36 +1128,52 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
             return null;
         }
         
-        return new Rectangle(this.xOffset, this.yOffset, width, height);
+        return new Rectangle(xOffset, yOffset, width, height);
     }
     
    
-    protected Rectangle getVisibleImageCoordinatesOfImage( PlanarImage img, Envelope visible, Envelope imageEnv ){
+    protected Rectangle getVisibleImageCoordinatesOfImage( BufferedImage img, Envelope visible, Envelope imageEnv ){
         return this.getVisibleImageCoordinatesOfImage( img.getWidth(), img.getHeight(), visible, imageEnv );
     }
     
-    protected PlanarImage getVisiblePartOfTheImage( PlanarImage img, Rectangle desiredImageArea ){
+    protected BufferedImage getVisiblePartOfTheImage( BufferedImage img, Rectangle desiredImageArea ){
         if (desiredImageArea==null){
             return null;
         }
         if ( desiredImageArea.width > 0 && desiredImageArea.height > 0 ){
             if (desiredImageArea.width + desiredImageArea.x <= img.getWidth() &&
-                    desiredImageArea.height + desiredImageArea.y <= img.getHeight() )
-                return PlanarImage.wrapRenderedImage( img.getAsBufferedImage( new Rectangle(desiredImageArea.x, desiredImageArea.y, desiredImageArea.width, desiredImageArea.height), img.getColorModel() ));
+                    desiredImageArea.height + desiredImageArea.y <= img.getHeight() ) {
+                
+                ParameterBlock pb = new ParameterBlock();
+                pb.addSource(img);
+                pb.add((float) desiredImageArea.x);
+                pb.add((float) desiredImageArea.y);
+                pb.add((float) desiredImageArea.width);
+                pb.add((float) desiredImageArea.height);
+                
+                return JAI.create("crop", pb).getAsBufferedImage();
+                
+            }
+
+            //return PlanarImage.wrapRenderedImage( img.getAsBufferedImage( new Rectangle(desiredImageArea.x, desiredImageArea.y, desiredImageArea.width, desiredImageArea.height), img.getColorModel() ));
             //logger.printWarning("desired area invalid: " + (desiredImageArea.width + desiredImageArea.x) + ", " + (desiredImageArea.height + desiredImageArea.y) + "; image dimensions: " + img.getWidth() + ", " + img.getHeight());
         } 
         return null;
     }
 
+    public BufferedImage getImage() {
+        return this.image;
+    }
+    
+    
     /**
      * Sets the image that will be shown in the map (also sets some interally used flags)
      *@param image image that will be shown in the map
      */
-    public void setImage(javax.media.jai.PlanarImage image) {
+    public void setImage(BufferedImage image) {
         this.image = image;
-        origImageWidth = image.getWidth();
-        origImageHeight = image.getHeight();
-        
+        //origImageWidth = image.getWidth();
+        //origImageHeight = image.getHeight();
         imageSet = true;
     }
     
@@ -1316,10 +1191,10 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
      * returns the image, this can be modified - i.e. is just a representation. 
      *@return the image
      */
-    public PlanarImage getImageForDisplay(){
-        if (this.image == null)
-            this.reLoadImage();
-        return this.image;
+    public BufferedImage getImageForDisplay() throws IOException, NoninvertibleTransformException, FileNotFoundException, TiffTags.TiffReadingException, Exception{
+        if (image == null)
+            reLoadImage();
+        return image;
     }
     
     /**
@@ -1576,48 +1451,98 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
     
     protected MetaDataMap metaInformation = null;
     
+    @Override
     public MetaDataMap getMetaInformation() {
         return metaInformation;
     }
 
+    @Override
     public void setMetaInformation(MetaDataMap metaInformation) {
         this.metaInformation = metaInformation;
     }
 
-	/**
-	 * the original raster data values. For display use getImage().
-	 * @return the rasterData
-	 */
-	public Raster getRasterData() {
-        //if (rasterData == null)
-		//-- [sstein Aug10th 2010] now reload every time but keep Style
-        this.reLoadImageButKeepImageForDisplay();
-		return rasterData;
-	}
-
-	/**
-	 * to set the Raster data, use also setImage()
-	 * @param newRaster
-	 */
-    public void setRasterData(Raster newRaster) {
-		rasterData = newRaster;
-		setRasterDataChanged(true);
-	}
+    public Raster getRasterData(Rectangle subset) throws IOException {
+        
+        Raster raster = RasterImageIO.loadRasterData(imageFileName, subset);        
+        return raster;
+        
+    }
+    
+    public Rectangle getRectangleFromEnvelope(Envelope envelope) throws IOException {
+        
+        double imgWidth = origImageWidth;
+        double imgHeight = origImageHeight;
+        Envelope imageEnv = originalImageEnvelope;
+        
+        double minVisibleX = Math.max(envelope.getMinX(), imageEnv.getMinX());
+        double minVisibleY = Math.max(envelope.getMinY(), imageEnv.getMinY());
+        
+        double maxVisibleX = Math.min(envelope.getMaxX(), imageEnv.getMaxX());
+        double maxVisibleY = Math.min(envelope.getMaxY(), imageEnv.getMaxY());
+        
+        double offset2VisibleX = imageEnv.getMinX() - envelope.getMinX();
+        double offset2VisibleY = envelope.getMaxY() - imageEnv.getMaxY();
+        
+        double scaleX = imgWidth / imageEnv.getWidth();
+        double scaleY = imgHeight / imageEnv.getHeight();
+        
+        // use local variables!
+        int xOffset, yOffset, width, height;
+        
+        if (offset2VisibleX >= 0){
+            xOffset = 0;
+        } else {
+            xOffset = (int)(-offset2VisibleX * scaleX);
+        }
+        
+        if (offset2VisibleY >= 0){
+            yOffset = 0;
+        } else {
+            yOffset = (int)(-offset2VisibleY * scaleY);
+        }
+        
+        width = (int)((maxVisibleX-minVisibleX) * scaleX);
+        height =  (int)((maxVisibleY-minVisibleY) * scaleY);
+        
+        if (width < imgWidth && height < imgHeight){ 
+            width += 1;
+            height += 1;
+        }
+        
+        
+        if (width <= 0 || height <= 0) return null;
+        
+        int wantedWidth = (int)(envelope.getWidth() * scaleX);
+        int wantedHeight = (int)(envelope.getHeight() * scaleY);
+        
+        Rectangle subset = new Rectangle(xOffset, yOffset, wantedWidth, wantedHeight);
+        return subset;
+        
+    }
+    
+//    /**
+//     * to set the Raster data, use also setImage()
+//     * @param newRaster
+//     */
+//    public void setRasterData(Raster newRaster) {
+//            rasterData = newRaster;
+//            setRasterDataChanged(true);
+//    }
 
 	
-	/**
-	 * @return the rasterDataChanged
-	 */
-	public boolean isRasterDataChanged() {
-		return rasterDataChanged;
-	}
+    /**
+     * @return the rasterDataChanged
+     */
+    public boolean isRasterDataChanged() {
+            return rasterDataChanged;
+    }
 
-	/**
-	 * @param rasterDataChanged the rasterDataChanged to set
-	 */
-	public void setRasterDataChanged(boolean rasterDataChanged) {
-		this.rasterDataChanged = rasterDataChanged;
-	}
+    /**
+     * @param rasterDataChanged the rasterDataChanged to set
+     */
+    public void setRasterDataChanged(boolean rasterDataChanged) {
+            this.rasterDataChanged = rasterDataChanged;
+    }
 	
     /**
      * Default value is NaN. The value can be different when data have been read, 
@@ -1625,20 +1550,99 @@ public class RasterImageLayer extends AbstractLayerable implements ObjectContain
      * @return value that is written when a cell does not contain data
      */
     public double getNoDataValue() {
-		return noDataValue;
-	}
+        return noDataValue;
+    }    
     
     /**
      * TODO: sstein test - 25.Sept.2013
      * @return
      */
     public int getNumBands(){
-    	int numbands= this.image.getSampleModel().getNumBands();
-    	return numbands;
+    	return numBands;
     }
     
     public void dispose() {
     // TODO: probably a good idea to remove resources when the layer is closed up
     // dunno what is needed to clean up Sextante though, hence leave it for now
     }
+           
+    public Double getCellValue(Coordinate coordinate, int band) throws RasterDataNotFoundException, IOException {
+        
+        return getCellValue(coordinate.x, coordinate.y, band);
+        
+    }
+    
+    public Double getCellValue(int col, int row, int band) throws RasterDataNotFoundException, IOException {
+
+        int pos = row * origImageWidth + col;
+        if(pos <0 || pos > origImageWidth * origImageHeight) return null;
+                       
+        return RasterImageIO.readCellValue(imageFileName, col, row, band);
+        
+    }
+
+    public Double getCellValue(double coordX, double coordY, int band) throws RasterDataNotFoundException, IOException {
+        
+        double cellSizeX = (originalImageEnvelope.getMaxX() - originalImageEnvelope.getMinX()) / origImageWidth;
+        double cellSizeY = (originalImageEnvelope.getMaxY() - originalImageEnvelope.getMinY()) / origImageHeight;
+        
+        int col = (int) Math.floor((coordX - originalImageEnvelope.getMinX()) / cellSizeX);
+        int row = origImageHeight - (int) Math.floor((coordY - originalImageEnvelope.getMinY()) / cellSizeY) - 1;
+        
+        if(col <0 || col >= origImageWidth || row <0 || row >= origImageHeight) return null;
+        
+        int pos = row * origImageWidth + col;
+        
+        return RasterImageIO.readCellValue(imageFileName, col, row, band);
+        
+    }   
+    
+    public boolean isNoData(double value) {
+        if(Double.isInfinite(noDataValue) && Double.isInfinite(value)) {
+            return true;
+        }
+        if(Double.isNaN(noDataValue) && Double.isNaN(value)) {
+            return true;
+        }
+        return(value == noDataValue);
+    }
+
+    public Metadata getMetadata() {
+        return metadata;
+    }
+    
+    public class RasterDataNotFoundException extends Exception {
+    
+    }
+    
+    public static Rectangle getViewportRectangle(WorkbenchContext workbenchContext) {
+        
+        Rectangle viewportRectangle = new Rectangle(
+                0,
+                0,
+                workbenchContext.getLayerViewPanel().getVisibleRect().width,
+                workbenchContext.getLayerViewPanel().getVisibleRect().height);
+        return viewportRectangle;
+                
+    }
+    
+    public void setSymbology(RasterSymbology symbology) throws NoninvertibleTransformException {
+        this.symbology = symbology;
+        symbologyChanged = true;
+//        setImage(stretchImageValuesForDisplay());
+        
+//        forceTotalRepaint();
+//        if (isFiringAppearanceEvents()) {
+//            fireAppearanceChanged();
+//        }
+        imageProcessingStep2 = null;
+        getWorkbenchContext().getLayerViewPanel().getViewport().update();
+    }
+
+    public Raster getActualRasterData() {
+        return actualRasterData;
+    }
+    
+    
+    
 }

@@ -48,7 +48,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
   protected String KEY_ALLWAYSACCEPT_TWF_EXT = "allwaysCheckForTWFExtension";
   protected String KEY_ZOOM_TO_INSERTED_IMAGE = "zoomToImage";
   protected boolean allwaysLookForTFWExtension = true;
-  protected boolean zoomToInsertedImage = true;
+  protected boolean zoomToInsertedImage = false;
   private String imageFileName = "";
   private String cachedLayer = "default-layer-name";
   //------ 
@@ -58,6 +58,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
         I18N.get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.Sextante-Raster-Image"),
         IconLoader.icon("mapSv2_13.png"), SelectRasterImageFilesPanel.KEY);
     this.workbenchContext = workbenchContext;
+    RasterImageLayer.setWorkbenchContext(workbenchContext);
   }
 
 
@@ -121,7 +122,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
 		        
 		        boolean imageAdded = false;
 		        
-		        Point imageDimensions = RasterImageLayer.getImageDimensions(workbenchContext, selectedFilename);
+		        Point imageDimensions = RasterImageIO.getImageDimensions(selectedFilename);
 		        Envelope env = this.getGeoReferencing(selectedFilename, this.allwaysLookForTFWExtension, imageDimensions, this.workbenchContext);
 		        
 		        
@@ -156,7 +157,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
 
       int layersAsideImage = context.getLayerManager().getLayerables(Layerable.class).size();
       
-      RasterImageLayer rLayer = new RasterImageLayer(newLayerName, context.getLayerManager(), this.imageFileName, null, null, envelope);
+      RasterImageLayer rLayer = new RasterImageLayer(newLayerName, context.getLayerManager(), imageFileName, null, envelope);
       
       // #################################
       

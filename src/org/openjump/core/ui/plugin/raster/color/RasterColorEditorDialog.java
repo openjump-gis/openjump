@@ -15,6 +15,9 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.geom.NoninvertibleTransformException;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * 15 sept. 2005
@@ -143,7 +146,9 @@ public class RasterColorEditorDialog extends JDialog {
 				} catch (NoninvertibleTransformException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
-				}
+				} catch (IOException ex) {
+                                        ex.printStackTrace();
+                                }
             }
         });
 
@@ -259,7 +264,7 @@ public class RasterColorEditorDialog extends JDialog {
 
     }
 
-    void okCancelPanel_actionPerformed(ActionEvent e) throws NumberFormatException, NoninvertibleTransformException {
+    void okCancelPanel_actionPerformed(ActionEvent e) throws NumberFormatException, NoninvertibleTransformException, IOException {
         if (!okCancelPanel.wasOKPressed()) {
             setVisible(false);
             return;

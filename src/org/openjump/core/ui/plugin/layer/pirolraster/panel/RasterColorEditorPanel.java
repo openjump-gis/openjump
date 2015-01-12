@@ -23,6 +23,9 @@ import java.awt.event.ActionListener;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @version $Rev: 4221 $ Dic 23 2014 [Giuseppe Aruta] - Derived from
@@ -174,18 +177,18 @@ public class RasterColorEditorPanel extends JPanel implements ValueChecker,
         colorScaleChooser.setToolTipText(sToolTip); //$NON-NLS-1$
         colorScaleChooser.setBorder(borderRaised);
         mainPanel.add(colorScaleChooser, c);
-        OpenJUMPSextanteRasterLayer ojraster = new OpenJUMPSextanteRasterLayer();
+        //OpenJUMPSextanteRasterLayer ojraster = new OpenJUMPSextanteRasterLayer();
         // [mmichaud 2013-05-25] false : this is a temporary image not a file
         // based image
-        ojraster.create(layer, false);
+        //ojraster.create(layer, false);
 
-        fromValue = new JTextField(Double.toString(ojraster.getMinValue()), 15);
+        fromValue = new JTextField(Double.toString(layer.getMetadata().getStats().getMin(0)), 15);
         fromValueLabel = new JLabel(sFromValue); //$NON-NLS-1$
 
         fromValue.setCaretPosition(0);
         fromValue.selectAll();
 
-        toValue = new JTextField(Double.toString(ojraster.getMaxValue()), 15);
+        toValue = new JTextField(Double.toString(layer.getMetadata().getStats().getMax(0)), 15);
         toValue.setCaretPosition(0);
         fromValue.selectAll();
         toValueLabel = new JLabel(sToValue); //$NON-NLS-1$
@@ -428,6 +431,8 @@ public class RasterColorEditorPanel extends JPanel implements ValueChecker,
             } catch (NoninvertibleTransformException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
+            } catch (IOException ex) {
+                Logger.getLogger(RasterColorEditorPanel.class.getName()).log(Level.SEVERE, null, ex);
             }
 
             setVisible(false);
@@ -638,6 +643,8 @@ public class RasterColorEditorPanel extends JPanel implements ValueChecker,
         } catch (NoninvertibleTransformException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
 
         setVisible(false);
@@ -653,19 +660,19 @@ public class RasterColorEditorPanel extends JPanel implements ValueChecker,
 
     public void changeColors(WorkbenchContext context, Color[] colors,
             Color noDataColor, float min, float max)
-            throws NoninvertibleTransformException {
+            throws NoninvertibleTransformException, IOException {
 
         if (colors == null || colors.length == 0) {
             layer.setNeedToKeepImage(false);
             layer.flushImages(true);
-            layer.setEnvelope(layer.getEnvelope());
+            layer.setWholeImageEnvelope(layer.getWholeImageEnvelope());
             context.getLayerViewPanel().getViewport().update();
             return;
         }
 
         colorGenerator = new ColorGenerator(35, colors);
 
-        Raster raster = layer.getRasterData();
+        Raster raster = layer.getImage().getRaster();
 
         /**
          * TODO: make the stuff below work. Not sure how, becasue the three
@@ -747,7 +754,7 @@ public class RasterColorEditorPanel extends JPanel implements ValueChecker,
          * false, null);
          */
 
-        PlanarImage pimage = PlanarImage.wrapRenderedImage(newImage);
+        //PlanarImage pimage = PlanarImage.wrapRenderedImage(newImage);
 
         /*
          * System.out.println("databuffer: " +
@@ -755,8 +762,8 @@ public class RasterColorEditorPanel extends JPanel implements ValueChecker,
          * newImage.getRaster().getSampleModel());
          */
         layer.setNeedToKeepImage(true);
-        layer.setImage(pimage);
-        layer.setEnvelope(layer.getEnvelope());
+        layer.setImage(newImage);
+        layer.setWholeImageEnvelope(layer.getWholeImageEnvelope());
         context.getLayerViewPanel().getViewport().update();
     }
 

@@ -50,6 +50,7 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
+import org.openjump.core.rasterimage.RasterImageIO;
 
 public class LoadSextanteRasterImagePlugIn extends AbstractPlugIn {
     private String imageFileName = "";
@@ -101,7 +102,7 @@ public class LoadSextanteRasterImagePlugIn extends AbstractPlugIn {
 
         int layersAsideImage = context.getLayerManager().getLayerables(Layerable.class).size();
         
-        RasterImageLayer rLayer = new RasterImageLayer(newLayerName, context.getLayerManager(), this.imageFileName, null, null, envelope);
+        RasterImageLayer rLayer = new RasterImageLayer(newLayerName, context.getLayerManager(), this.imageFileName, null, envelope);
         
         // #################################
         
@@ -222,7 +223,7 @@ public class LoadSextanteRasterImagePlugIn extends AbstractPlugIn {
         
         boolean imageAdded = false;
         
-        Point imageDimensions = RasterImageLayer.getImageDimensions(context.getWorkbenchContext(), selectedFilename);
+        Point imageDimensions = RasterImageIO.getImageDimensions(selectedFilename);
         Envelope env = this.getGeoReferencing(selectedFilename, this.allwaysLookForTFWExtension, imageDimensions, context);
         
         

@@ -125,10 +125,10 @@ public class SaveRasterImageAsImagePlugIn extends AbstractPlugIn {
             RasterImageLayer rLayer = (RasterImageLayer) LayerTools.getSelectedLayerable(context, RasterImageLayer.class); 
 			//-- [sstein 2 Aug 2010] replace to save raster and not the image that may be adjusted for display
             //image = rLayer.getImageForDisplay().getAsBufferedImage();
-            Raster r = rLayer.getRasterData();
+            Raster r = rLayer.getRasterData(null);
             SampleModel sm = r.getSampleModel();
     		ColorModel colorModel = PlanarImage.createColorModel(sm);
-    		image = new BufferedImage(colorModel, (WritableRaster) rLayer.getRasterData(), false, null);
+    		image = new BufferedImage(colorModel, (WritableRaster) rLayer.getRasterData(null), false, null);
     		//-- end
 			TIFFEncodeParam param = new TIFFEncodeParam();
 			param.setCompression(TIFFEncodeParam.COMPRESSION_NONE);
@@ -137,7 +137,7 @@ public class SaveRasterImageAsImagePlugIn extends AbstractPlugIn {
 			tifOut.close();
 			
 			/* save geodata: */
-			Envelope envelope = rLayer.getEnvelope();
+			Envelope envelope = rLayer.getWholeImageEnvelope();
 
 
 			WorldFileHandler worldFileHandler = new WorldFileHandler(tifFileName, false);

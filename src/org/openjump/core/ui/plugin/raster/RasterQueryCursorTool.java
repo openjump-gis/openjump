@@ -74,6 +74,7 @@ import com.vividsolutions.jump.workbench.ui.cursortool.editing.FeatureDrawingUti
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.renderer.style.LabelStyle;
 import de.latlon.deejump.plugin.style.CrossVertexStyle;
+import java.io.IOException;
 
 public class RasterQueryCursorTool extends NClickTool 
 {
@@ -155,7 +156,7 @@ public class RasterQueryCursorTool extends NClickTool
     
         
     
-      protected void gestureFinished() throws NoninvertibleTransformException{
+      protected void gestureFinished() throws NoninvertibleTransformException, IOException{
         reportNothingToUndoYet();
         savedCoordinates.clear();
         

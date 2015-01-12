@@ -20,6 +20,7 @@ import com.sun.media.jai.codecimpl.TIFFCodec;
 import com.sun.media.jai.codecimpl.TIFFImageEncoder;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.workbench.model.LayerManager;
+import java.io.IOException;
 
 public class OpenJUMPSextanteRasterLayer extends AbstractSextanteRasterLayer{
 
@@ -31,7 +32,7 @@ public class OpenJUMPSextanteRasterLayer extends AbstractSextanteRasterLayer{
 	private double m_dNoDataValue;
 	private Raster m_Raster;
 
-	public void create(RasterImageLayer layer){
+	public void create(RasterImageLayer layer) throws IOException{
 
 		/* [sstein 26 Oct. 2010] - don't use code below because
 		 * the raster data should be loaded new from file.
@@ -62,17 +63,17 @@ public class OpenJUMPSextanteRasterLayer extends AbstractSextanteRasterLayer{
 		create(layer, true);
 	}
 
-	public void create(RasterImageLayer layer, boolean loadFromFile){
+	public void create(RasterImageLayer layer, boolean loadFromFile) throws IOException{
 
 		if (loadFromFile == false){
 			m_BaseDataObject = layer;
 			//[sstein 2 Aug 2010], changed so we work now with the raster and not the image, which may be scaled for display. 
 			//m_Raster = layer.getImage().getData();
-			m_Raster = layer.getRasterData();
+			m_Raster = layer.getRasterData(null);
 			//-- end
 			m_sName = layer.getName();
 			m_sFilename = layer.getImageFileName();
-			Envelope env = layer.getEnvelope();
+			Envelope env = layer.getActualImageEnvelope();
 			m_LayerExtent = new GridExtent();
 			m_LayerExtent.setCellSize((env.getMaxX() - env.getMinX())
 					/ (double)m_Raster.getWidth());
@@ -85,14 +86,13 @@ public class OpenJUMPSextanteRasterLayer extends AbstractSextanteRasterLayer{
 					layer.getLayerManager(),
 					layer.getImageFileName(),
 					null,
-					null,
-					layer.getEnvelope());
+					layer.getWholeImageEnvelope());
 			m_BaseDataObject = rasterLayer;
-			m_Raster = rasterLayer.getRasterData();
+			m_Raster = rasterLayer.getRasterData(null);
 			//-- end
 			m_sName = rasterLayer.getName();
 			m_sFilename = rasterLayer.getImageFileName();
-			Envelope env = rasterLayer.getEnvelope();
+			Envelope env = rasterLayer.getWholeImageEnvelope();
 			m_LayerExtent = new GridExtent();
 			//[sstein 18.June.2012]: note, to be working, the cell size need to be set first,
 			// since setting the ranges will update NX, NY and MaxX, MaxY values - dependent
@@ -117,12 +117,11 @@ public class OpenJUMPSextanteRasterLayer extends AbstractSextanteRasterLayer{
 		envelope.init(ge.getXMin(), ge.getXMax(), ge.getYMin(), ge.getYMax());
 		ColorModel colorModel = PlanarImage.createColorModel(m_Raster.getSampleModel());
 		BufferedImage bufimg = new BufferedImage(colorModel, (WritableRaster) m_Raster, false, null);
-		PlanarImage pimage = PlanarImage.wrapRenderedImage(bufimg);
+		//PlanarImage pimage = PlanarImage.wrapRenderedImage(bufimg);
 		m_BaseDataObject = new RasterImageLayer(name,
 												layerManager,
 												filename,
-												pimage,
-												m_Raster,
+												bufimg,
 												envelope);
 		m_sName = name;
 		m_sFilename = filename;
@@ -149,12 +148,11 @@ public class OpenJUMPSextanteRasterLayer extends AbstractSextanteRasterLayer{
 		envelope.init(ge.getXMin(), ge.getXMax(), ge.getYMin(), ge.getYMax());
 		ColorModel colorModel = PlanarImage.createColorModel(m_Raster.getSampleModel());
 		BufferedImage bufimg = new BufferedImage(colorModel, (WritableRaster) m_Raster, false, null);
-		PlanarImage pimage = PlanarImage.wrapRenderedImage(bufimg);
+		//PlanarImage pimage = PlanarImage.wrapRenderedImage(bufimg);
 		RasterImageLayer imageLayer = new RasterImageLayer(m_sName,
 				layerManager,
 				m_sFilename,
-				pimage,
-				m_Raster,
+				bufimg,
 				envelope);
 
 		m_Raster = raster;
@@ -249,7 +247,7 @@ public class OpenJUMPSextanteRasterLayer extends AbstractSextanteRasterLayer{
 
 		if (m_BaseDataObject != null){
 			RasterImageLayer layer = (RasterImageLayer) m_BaseDataObject;
-			Envelope envelope = layer.getEnvelope();
+			Envelope envelope = layer.getWholeImageEnvelope();
 			return new Rectangle2D.Double(envelope.getMinX(),
 					  envelope.getMinY(),
 					  envelope.getWidth(),
@@ -284,7 +282,7 @@ public class OpenJUMPSextanteRasterLayer extends AbstractSextanteRasterLayer{
 			tifOut.close();
 
 			/* save geodata: */
-			Envelope envelope = layer.getEnvelope();
+			Envelope envelope = layer.getWholeImageEnvelope();
 
 			WorldFileHandler worldFileHandler = new WorldFileHandler(m_sFilename, false);
 			worldFileHandler.writeWorldFile(envelope, image.getWidth(), image.getHeight());
