@@ -745,7 +745,7 @@ public class EnableCheckFactory {
     /**
      * Giuseppe Aruta - 2015-01-13
      * RasterImageLayer.class
-     * checks how many bands has selected Raster Image Layer (Sextante)
+     * checks how many bands a Raster Image Layer (Sextante) has
      */
     public EnableCheck createRasterImageLayerExactlyNBandsMustExistCheck(
             final int n) {
@@ -756,7 +756,7 @@ public class EnableCheckFactory {
                         .getSelectedLayerable(workbenchContext.getWorkbench()
                                 .getContext(), RasterImageLayer.class);
 
-                int numbands = rLayer.getRasterData().getNumBands();
+                int numbands = rLayer.getNumBands();
 
                 String msg;
                 if (n == 1) {
