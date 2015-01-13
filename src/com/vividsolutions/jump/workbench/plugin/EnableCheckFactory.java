@@ -43,6 +43,7 @@ import java.util.Iterator;
 import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
 
+import org.openjump.core.apitools.LayerTools;
 import org.openjump.core.rasterimage.RasterImageLayer;
 
 import com.vividsolutions.jts.util.Assert;
@@ -54,6 +55,7 @@ import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.model.WMSLayer;
+import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanel;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanelProxy;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
@@ -739,4 +741,35 @@ public class EnableCheckFactory {
       return createSelectedLayerablesMustBeEither(new Class[] { ReferencedImagesLayer.class });
     }
 
+    
+    /**
+     * Giuseppe Aruta - 2015-01-13
+     * RasterImageLayer.class
+     * checks how many bands has selected Raster Image Layer (Sextante)
+     */
+    public EnableCheck createRasterImageLayerExactlyNBandsMustExistCheck(
+            final int n) {
+        return new EnableCheck() {
+            public String check(JComponent component) {
+
+                RasterImageLayer rLayer = (RasterImageLayer) LayerTools
+                        .getSelectedLayerable(workbenchContext.getWorkbench()
+                                .getContext(), RasterImageLayer.class);
+
+                int numbands = rLayer.getRasterData().getNumBands();
+
+                String msg;
+                if (n == 1) {
+                    msg = get("Exactly 1 bands must exist on selected raster layer");
+                } else {
+                    msg = getMessage(
+                            "Exactly n bands must exist on selected raster layer",
+                            new Object[] { n });
+                }
+                return (n != numbands) ? msg : null;
+               }
+        };
+    }
+    
+    
 }
