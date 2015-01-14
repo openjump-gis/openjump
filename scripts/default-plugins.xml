@@ -513,7 +513,13 @@
 			<main-menu menupath="MenuNames.LAYER" />
 		</menus>
 	</plug-in>
-
+	<separator />
+	<plug-in>
+	org.openjump.core.ui.plugin.layer.ExportLayerableEnvelopeAsGeometryPlugIn
+	<menus>
+			<main-menu menupath="MenuNames.LAYER" install="true" />
+		</menus>
+	</plug-in>
 	<!-- ====================== CUSTOMIZE menu ================================== -->
 	<plug-in>
 		com.vividsolutions.jump.workbench.ui.plugin.OptionsPlugIn

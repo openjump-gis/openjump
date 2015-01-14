@@ -1,5 +1,13 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2015_01_15 Giuseppe Aruta 2015_01_15
+  * Add on Layer menu "Export layer envelope as geometry" which 
+    exports the envelope of any type of layer supported by OpenJUMP (Layer.class,
+    ReferencedImageStyle.class, WMSLayer.class, WFSLayer.class,
+    RasterImageLayer.class) as geometry. Layer name, layer datasource (if any)
+    and CRS (only for WMS and WFS) are saved as layer attributes
+ 
+
 2015-01-04 Giuseppe Aruta Modified layerable tooltip 
   * Check if layerable has datasource and distinguish between 
     Layer.class, ReferencedImageStyle.class
