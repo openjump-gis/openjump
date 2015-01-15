@@ -647,22 +647,22 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
      * Sets the Envelope object containing the real world coordinates (e.g. WGS84) of the image - this needs to be set (if it wasn't given to the constructor)!
      *@param envelope the Envelope
      */
-    public void setWholeImageEnvelope(Envelope envelope) {
-        this.originalImageEnvelope = envelope;
+    private void setWholeImageEnvelope(Envelope envelope) {
+        originalImageEnvelope = envelope;
         
-        this.forceTotalRepaint();
+        forceTotalRepaint();
         
         if (this.isFiringAppearanceEvents())
             this.fireAppearanceChanged();
     }
     
-    public void setActualImageEnvelope(Envelope envelope) {
-        this.actualImageEnvelope = envelope;
+    private void setActualImageEnvelope(Envelope envelope) {
+        actualImageEnvelope = envelope;
         
-        this.forceTotalRepaint();
+        forceTotalRepaint();
         
-        if (this.isFiringAppearanceEvents())
-            this.fireAppearanceChanged();
+        if (isFiringAppearanceEvents())
+            fireAppearanceChanged();
     }
     
     /**
@@ -1162,7 +1162,7 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
     }
 
     public BufferedImage getImage() {
-        return this.image;
+        return image;
     }
     
     

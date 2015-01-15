@@ -60,7 +60,7 @@ public class RasterColorEditor {
         if (colors == null || colors.length == 0) {
             layer.setNeedToKeepImage(false);
             layer.flushImages(true);
-            layer.setWholeImageEnvelope(layer.getWholeImageEnvelope());
+            //layer.setWholeImageEnvelope(layer.getWholeImageEnvelope());
             context.getLayerViewPanel().getViewport().update();
             return;
         }

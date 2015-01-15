@@ -19,11 +19,23 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.model.Category;
+import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.Viewport;
+import java.awt.Point;
+import java.awt.image.Raster;
+import java.awt.image.renderable.ParameterBlock;
+import java.io.File;
+import javax.media.jai.JAI;
+import javax.media.jai.RenderedOp;
+import org.openjump.core.rasterimage.ImageAndMetadata;
+import org.openjump.core.rasterimage.RasterImageIO;
+import org.openjump.core.rasterimage.Resolution;
 
 
 /**
@@ -69,11 +81,55 @@ public class WarpImageToFencePlugIn extends AbstractPlugIn {
             context.getWorkbenchFrame().warnUser(I18N.get("pirol.plugIns.EditAttributeByFormulaPlugIn.no-layer-selected")); //$NON-NLS-1$
             return false;
         }
-        
+
+        String newLayerName = context.getLayerManager().uniqueLayerName(
+                I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage.part-of") + rLayer.getName());
+        String extension = rLayer.getImageFileName().substring(rLayer.getImageFileName().lastIndexOf("."), rLayer.getImageFileName().length());
+        File outFile =  new File(System.getProperty("java.io.tmpdir").concat(File.separator).concat(newLayerName).concat(extension));
+
         Geometry fence = SelectionTools.getFenceGeometry(context);
         Envelope envWanted = fence.getEnvelopeInternal();
         
-        rLayer.setActualImageEnvelope(envWanted);
+        float xScale = (float) (envWanted.getWidth()  / rLayer.getWholeImageEnvelope().getWidth());
+        float yScale = (float) (envWanted.getHeight() / rLayer.getWholeImageEnvelope().getHeight());
+        
+        RasterImageIO rasterImageIO = new RasterImageIO();
+        Raster raster = rLayer.getRasterData(null);
+        
+        // Get whole image
+        ImageAndMetadata imageAndMetadata = rasterImageIO.loadImage(
+                context.getWorkbenchContext(),
+                rLayer.getImageFileName(),
+                rLayer.getMetadata().getStats(),
+                null, null);
+        
+        ParameterBlock pb = new ParameterBlock();
+        pb.addSource(imageAndMetadata.getImage());
+        pb.add(xScale);
+        pb.add(yScale);
+
+        RenderedOp outputOp = JAI.create("Scale", pb, null);
+        
+        rasterImageIO.writeImage(outFile, outputOp.copyData(), envWanted, rLayer.getMetadata().getOriginalCellSize(), rLayer.getMetadata().getNoDataValue());
+        
+        String catName = StandardCategoryNames.WORKING;	
+        try {
+            catName = ((Category)context.getLayerNamePanel().getSelectedCategories().toArray()[0]).getName();
+        } catch (RuntimeException e1) {}
+
+        Point point = RasterImageIO.getImageDimensions(outFile.getAbsolutePath());
+        Envelope env =  RasterImageIO.getGeoReferencing(outFile.getAbsolutePath(), true, point);
+        
+        Viewport viewport = context.getWorkbenchContext().getLayerViewPanel().getViewport();
+        Resolution requestedRes = RasterImageIO.calcRequestedResolution(viewport);
+        imageAndMetadata = rasterImageIO.loadImage(
+                context.getWorkbenchContext(), outFile.getAbsolutePath(), null, viewport.getEnvelopeInModelCoordinates(), requestedRes);
+        RasterImageLayer ril = new RasterImageLayer(outFile.getName(),
+                context.getWorkbenchContext().getLayerManager(), outFile.getAbsolutePath(), imageAndMetadata.getImage(), env);
+        
+        context.getLayerManager().addLayerable(catName, ril);
+        
+        //rLayer.setWholeImageEnvelope(envWanted);
         
         return true;
     }

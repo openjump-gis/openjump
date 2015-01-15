@@ -12,14 +12,12 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.io.CompressedFile;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.Viewport;
-import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferDouble;
 import java.awt.image.DataBufferFloat;
 import java.awt.image.Raster;
 import java.awt.image.SampleModel;
@@ -42,7 +40,6 @@ import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
 import javax.media.jai.RasterFactory;
 import javax.media.jai.RenderedOp;
-import javax.swing.JOptionPane;
 import org.openjump.core.rasterimage.TiffTags.TiffMetadata;
 
 /**
