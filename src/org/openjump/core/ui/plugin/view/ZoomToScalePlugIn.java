@@ -81,11 +81,13 @@ public class ZoomToScalePlugIn extends AbstractPlugIn {
 			createEnableCheck(context.getWorkbenchContext()));
     }
     
-    public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
-        
-        return new MultiEnableCheck()                        
-                        .add(checkFactory.createAtLeastNLayersMustExistCheck(1));
+    public static MultiEnableCheck createEnableCheck(
+            WorkbenchContext workbenchContext) {
+        EnableCheckFactory checkFactory = new EnableCheckFactory(
+                workbenchContext);
+
+        return new MultiEnableCheck().add(checkFactory
+                .createAtLeastNLayerablesMustExistCheck(1));
     }
     
     

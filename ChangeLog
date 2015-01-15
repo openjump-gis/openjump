@@ -1,9 +1,14 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2015_01_15 Giuseppe Aruta 
+  * Extended "Zoom To Scale" PlugIn to any layerable
+  * Add a "Style" plugin to WMS Layer dialog. 
+    Currently only Visibility by scale is available
+ 
 2015-01-15 bertaz
   * Fixed WarpImageToFence plug-in. Now the plug-in creates a new, warped, raster.
   
-2015_01_15 Giuseppe Aruta 2015_01_15
+2015_01_15 Giuseppe Aruta 
   * Add on Layer menu "Export layer envelope as geometry" which 
     exports the envelope of any type of layer supported by OpenJUMP (Layer.class,
     ReferencedImageStyle.class, WMSLayer.class, WFSLayer.class,
