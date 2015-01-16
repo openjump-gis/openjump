@@ -286,6 +286,7 @@ public class TiffTags {
     public static final int FIELDTYPE_SHORT = 3;
     public static final int FIELDTYPE_LONG = 4;
     public static final int TIFFTAG_GDAL_NODATA = 42113;
+    public static final int TIFFTAG_GDAL_METADATA = 42112;
     
     public class TiffMetadata {
 

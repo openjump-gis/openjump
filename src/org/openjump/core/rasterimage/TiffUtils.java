@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReadParam;
 import javax.imageio.ImageReader;
@@ -20,7 +21,12 @@ import javax.media.jai.JAI;
 import javax.media.jai.RenderedOp;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+import org.apache.commons.imaging.ImageReadException;
+import org.apache.commons.imaging.formats.tiff.TiffField;
+import org.apache.commons.imaging.formats.tiff.TiffImageMetadata;
+import org.apache.commons.imaging.formats.tiff.TiffImageParser;
 import static org.openjump.core.rasterimage.RasterImageIO.getGeoReferencing;
+import org.xml.sax.SAXException;
 
 /**
  *
@@ -205,14 +211,37 @@ public class TiffUtils {
         
     }
     
-    private static Stats calculateStats(File tiffFile, double noDataValue, File imageFile) throws ParserConfigurationException, TransformerException {
+    private static Stats calculateStats(File tiffFile, double noDataValue, File imageFile)
+            throws ParserConfigurationException, TransformerException, ImageReadException, IOException, SAXException {
                        
+        Stats stats = null;
+        
+        // Look for internal stats tag
+        try{
+            TiffImageParser parser = new TiffImageParser();
+            TiffImageMetadata metadata = (TiffImageMetadata) parser.getMetadata(tiffFile);
+            List<TiffField> tiffFields = metadata.getAllFields();
+            for(TiffField tiffField : tiffFields) {
+                if(tiffField.getTag() == TiffTags.TIFFTAG_GDAL_METADATA) {                
+                    GDALInternalMetadata gdalParser = new GDALInternalMetadata();
+                    stats = gdalParser.readStatistics(tiffField.getStringValue());
+                    break;
+                }
+            }
+        } catch(Exception ex) {
+            stats = null;
+        }
+        
+        if(stats != null) {
+            return stats;
+        }
+        
         // Look for aux.xml file
         File auxXmlFile = new File(imageFile.getParent(), imageFile.getName() + ".aux.xml");
         if(auxXmlFile.exists()) {
             GDALPamDataset gdalPamDataset = new GDALPamDataset();
             try {
-                Stats stats = gdalPamDataset.readStatistics(auxXmlFile);
+                stats = gdalPamDataset.readStatistics(auxXmlFile);
                 return stats;
             } catch(Exception ex) {
                 return createStatsXml(tiffFile, noDataValue, auxXmlFile);

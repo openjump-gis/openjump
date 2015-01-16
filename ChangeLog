@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2015-01-16 bertaz
+  * TIFF rasters: added ability to read statistics saved as
+  * GDAL_METADATA TIFF tag
+
 2015_01_15 Giuseppe Aruta 
   * Extended "Zoom To Scale" PlugIn to any layerable
   * Add a "Style" plugin to WMS Layer dialog. 
