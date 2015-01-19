@@ -2,6 +2,8 @@ package org.openjump.core.ui.plugin.wms;
 
 import java.util.Iterator;
 
+import javax.swing.ImageIcon;
+
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.*;
@@ -9,6 +11,7 @@ import com.vividsolutions.jump.workbench.model.*;
 import com.vividsolutions.wms.*;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.*;
 import com.vividsolutions.jump.geom.EnvelopeUtil;
 import com.vividsolutions.jump.util.*;
@@ -70,5 +73,5 @@ public class ZoomToWMSLayerPlugIn extends AbstractPlugIn {
     public String getName() {
         return I18N.get("org.openjump.core.ui.plugin.wms.ZoomToWMSLayerPlugIn.zoom-to-wms-layer");
     }
-
+    public static final ImageIcon ICON = IconLoader.icon("zoom.gif");
 }

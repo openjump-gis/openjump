@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 import javax.media.jai.PlanarImage;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
@@ -41,6 +42,7 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GenericNames;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 /**
  * This PlugIn saves a RasterImages to disk with its geographical position.
@@ -182,4 +184,5 @@ public class SaveRasterImageAsImagePlugIn extends AbstractPlugIn {
     public String getIconString() {
         return null;
     }
+    public static final ImageIcon ICON = IconLoader.icon("disk_dots.png");
 }
