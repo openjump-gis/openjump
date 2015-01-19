@@ -39,7 +39,7 @@ public class TiffUtils {
             throws NoninvertibleTransformException, IOException, FileNotFoundException, TiffTags.TiffReadingException, Exception {
         
         // Try to read geotiff tags
-        TiffTags.TiffMetadata tiffMetadata = TiffTags.readTags(tiffFile);
+        TiffTags.TiffMetadata tiffMetadata = TiffTags.readMetadata(tiffFile);
         int originalImageWidth = tiffMetadata.getColsCount();
         int originalImageHeight = tiffMetadata.getRowsCount();
         Resolution cellSize = tiffMetadata.getResolution();

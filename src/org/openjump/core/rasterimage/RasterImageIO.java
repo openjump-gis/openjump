@@ -76,17 +76,17 @@ public class RasterImageIO {
 //            InputStream input = createInputStream((new File(filenameOrURL)).toURI());
 //            SeekableStream ss = SeekableStream.wrapInputStream(input, true);
 //            XTIFFDirectory dir = XTIFFDirectory.create(ss, 0);
-//            XTIFFField fieldNoData = dir.getField(42113);
+//            XTIFFField fieldNoData = dir.readField(42113);
 //            
-//            XTIFFField fieldWidth = dir.getField(XTIFF.TIFFTAG_IMAGE_WIDTH);
-//            XTIFFField fieldHeight = dir.getField(XTIFF.TIFFTAG_IMAGE_LENGTH);
-//            XTIFFField fieldCellSizeX = dir.getField(XTIFF.TIFFTAG_X_RESOLUTION);
+//            XTIFFField fieldWidth = dir.readField(XTIFF.TIFFTAG_IMAGE_WIDTH);
+//            XTIFFField fieldHeight = dir.readField(XTIFF.TIFFTAG_IMAGE_LENGTH);
+//            XTIFFField fieldCellSizeX = dir.readField(XTIFF.TIFFTAG_X_RESOLUTION);
             
 //            int width = fieldWidth.getAsInt(0);
 //            int height = fieldHeight.getAsInt(0);
 //            double xCellSize = 1; // TODO
             
-            TiffMetadata tiffMetadata = TiffTags.readTags(new File(fileNameOrURL));
+            TiffMetadata tiffMetadata = TiffTags.readMetadata(new File(fileNameOrURL));
              
             int imgWidth = tiffMetadata.getColsCount();
             int imgHeight = tiffMetadata.getRowsCount();

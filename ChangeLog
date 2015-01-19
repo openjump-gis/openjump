@@ -1,4 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
+2015-01-16 bertaz
+  * TIFF rasters: replaced code for reading TIFF tags with
+  * Apache Commons Imaging functions
+  
 2015-01-19 Giuseppe Aruta 
   * Add modified "palette" icon with semitransparency to Style plugins
   * New icons to copy and paste style plugins

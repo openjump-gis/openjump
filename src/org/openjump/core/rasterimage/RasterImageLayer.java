@@ -238,9 +238,7 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
         //[sstein end]
     }
 
-    /**
-     *@inheritDoc
-     */
+    @Override
     public Blackboard getBlackboard() {
         if (RasterImageLayer.blackboard == null)
             RasterImageLayer.blackboard = new Blackboard();
@@ -250,6 +248,7 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
 
     @Override
     public Object clone() throws CloneNotSupportedException {
+        super.clone();
         RasterImageLayer raster = null;
         if (this.isNeedToKeepImage()) {
             try {
@@ -257,8 +256,6 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
             } catch (IOException ex) {
                 Logger.getLogger(RasterImageLayer.class.getName()).log(Level.SEVERE, null, ex);
             } catch (NoninvertibleTransformException ex) {
-                Logger.getLogger(RasterImageLayer.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (TiffTags.TiffReadingException ex) {
                 Logger.getLogger(RasterImageLayer.class.getName()).log(Level.SEVERE, null, ex);
             } catch (Exception ex) {
                 Logger.getLogger(RasterImageLayer.class.getName()).log(Level.SEVERE, null, ex);
@@ -269,8 +266,6 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
             } catch (IOException ex) {
                 Logger.getLogger(RasterImageLayer.class.getName()).log(Level.SEVERE, null, ex);
             } catch (NoninvertibleTransformException ex) {
-                Logger.getLogger(RasterImageLayer.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (TiffTags.TiffReadingException ex) {
                 Logger.getLogger(RasterImageLayer.class.getName()).log(Level.SEVERE, null, ex);
             } catch (Exception ex) {
                 Logger.getLogger(RasterImageLayer.class.getName()).log(Level.SEVERE, null, ex);
