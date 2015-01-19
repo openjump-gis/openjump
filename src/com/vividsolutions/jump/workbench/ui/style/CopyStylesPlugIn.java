@@ -34,7 +34,7 @@ public class CopyStylesPlugIn extends AbstractPlugIn {
   }
   
   public ImageIcon getIcon() {
-    return IconLoader.icon("Palette_in.gif");
+    return IconLoader.icon("Palette_copy.png");
   }
 
   public static MultiEnableCheck createEnableCheck(

@@ -45,7 +45,7 @@ public class PasteStylesPlugIn extends AbstractPlugIn {
   }
   
   public ImageIcon getIcon() {
-    return GUIUtil.toSmallIcon(IconLoader.icon("Palette_out.gif"));
+    return GUIUtil.toSmallIcon(IconLoader.icon("Palette_paste.png"));
   }
 
   public boolean execute(PlugInContext context) throws Exception

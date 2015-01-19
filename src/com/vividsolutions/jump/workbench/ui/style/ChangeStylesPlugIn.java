@@ -187,7 +187,7 @@ public class ChangeStylesPlugIn extends AbstractPlugIn {
     }
 
     public ImageIcon getIcon() {
-        return IconLoader.icon("Palette.gif");
+        return IconLoader.icon("Palette.png");
     }
 
     public MultiEnableCheck createEnableCheck(

@@ -240,7 +240,7 @@ public class DeeChangeStylesPlugIn extends AbstractPlugIn {
      */
     public ImageIcon getIcon() {
         //return IconLoaderFamFam.icon("palette.png");
-        return IconLoader.icon("Palette.gif");
+        return IconLoader.icon("Palette.png");
     }
 
     public MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {

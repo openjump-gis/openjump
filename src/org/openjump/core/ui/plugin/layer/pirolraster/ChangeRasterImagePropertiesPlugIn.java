@@ -151,7 +151,7 @@ public class ChangeRasterImagePropertiesPlugIn extends AbstractPlugIn {
     }
 
     public ImageIcon getIcon() {
-        return GUIUtil.toSmallIcon(IconLoader.icon("color_wheel.png"));
+        return GUIUtil.toSmallIcon(IconLoader.icon("Palette.png"));
     }
 
     public static MultiEnableCheck createEnableCheck(
