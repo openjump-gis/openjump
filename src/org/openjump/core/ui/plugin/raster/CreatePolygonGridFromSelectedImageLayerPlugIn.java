@@ -102,7 +102,7 @@ public class CreatePolygonGridFromSelectedImageLayerPlugIn extends AbstractPlugI
 		FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
 		featureInstaller.addMainMenuItem(
 				this,								//exe
-				new String[] {MenuNames.RASTER}, 	//menu path
+				new String[] {MenuNames.RASTER, MenuNames.RASTER_VECTORIALIZE }, 	//menu path
 				this.sName + "...", 
 				false,			//checkbox
 				null,			//icon

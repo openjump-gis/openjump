@@ -77,6 +77,8 @@ public class MenuNames {
     public static final String ATTRIBUTS = I18N.get("ui.MenuNames.ATTRIBUTS");
     public static final String SELECTION = I18N.get("ui.MenuNames.SELECTION");
     public static final String RASTER = I18N.get("ui.MenuNames.RASTER");
+    public static final String RASTER_VECTORIALIZE = I18N
+            .get("ui.MenuNames.RASTER.VECTORIALIZE");
     public static final String STATISTICS = I18N.get("ui.MenuNames.STATISTICS");
     public static final String GEOPROCESSING = "SIGLE-" + I18N.get("ui.MenuNames.GEOPROCESSING");
     

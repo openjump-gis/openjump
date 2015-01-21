@@ -88,7 +88,7 @@ public class CreateLatticeFromSelectedImageLayerPlugIn extends AbstractPlugIn im
     	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
     	featureInstaller.addMainMenuItem(
     			this,								//exe
-    			new String[] {MenuNames.RASTER}, 	//menu path
+    			new String[] {MenuNames.RASTER,  MenuNames.RASTER_VECTORIALIZE },	//menu path
     			sName, 
     			false,			//checkbox
     			null,			//icon

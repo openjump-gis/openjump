@@ -793,10 +793,21 @@
 	<!--- ====================== Raster ==================================== / -->
 	<plug-in>
 		org.openjump.core.ui.plugin.raster.CreateLatticeFromSelectedImageLayerPlugIn
+                
 	</plug-in>
 	<plug-in>
 		org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn
+ 		 
 	</plug-in>
+	<plug-in>
+		org.openjump.core.ui.plugin.raster.RasterLayerStatisticsPlugIn 
+ 		 <menus>
+			<main-menu menupath=" MenuNames.RASTER/MenuNames.STATISTICS" />
+		</menus>
+	</plug-in>
+
+	<separator />
+
 	<plug-in> org.openjump.core.ui.plugin.raster.ProfileGraphPlugIn
 	</plug-in>
 	<plug-in>

@@ -1,5 +1,10 @@
 # for display continuity sake please use 2 spaces instead of tabs
 2015-01-21 Giuseppe Aruta
+  * RASTER: Rearrenged Create Lattice and Create Polygon grid of
+    Raster images in a submenu ("Vectorialize")
+  * RASTER: Add Layer Statistics Plugin (on submenu "Statistics")
+
+2015-01-21 Giuseppe Aruta
   * Upgraded Sextante PlugIn
   * Substituted ExportEnvelopeAsGeometryPlugIn Raster plugIn with
     more general ExportLayerableEnvelopeAsGeometryPlugIn 
