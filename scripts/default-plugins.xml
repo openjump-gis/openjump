@@ -1281,7 +1281,8 @@
 		</menus>
 	</plug-in>
 	<plug-in>
-		org.openjump.core.ui.plugin.layer.pirolraster.ExportEnvelopeAsGeometryPlugIn
+		org.openjump.core.ui.plugin.layer.ExportLayerableEnvelopeAsGeometryPlugIn
+		<!-- org.openjump.core.ui.plugin.layer.pirolraster.ExportEnvelopeAsGeometryPlugIn -->
 		<menus>
 			<layername-popup-raster install="true" />
 		</menus>
