@@ -84,8 +84,8 @@ public class WarpImageToFencePlugIn extends AbstractPlugIn {
 
         String newLayerName = context.getLayerManager().uniqueLayerName(
                 I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage.part-of") + rLayer.getName());
-        String extension = rLayer.getImageFileName().substring(rLayer.getImageFileName().lastIndexOf("."), rLayer.getImageFileName().length());
-        File outFile =  new File(System.getProperty("java.io.tmpdir").concat(File.separator).concat(newLayerName).concat(extension));
+//        String extension = rLayer.getImageFileName().substring(rLayer.getImageFileName().lastIndexOf("."), rLayer.getImageFileName().length());
+        File outFile =  new File(System.getProperty("java.io.tmpdir").concat(File.separator).concat(newLayerName).concat(".tif"));
 
         Geometry fence = SelectionTools.getFenceGeometry(context);
         Envelope envWanted = fence.getEnvelopeInternal();
@@ -94,7 +94,6 @@ public class WarpImageToFencePlugIn extends AbstractPlugIn {
         float yScale = (float) (envWanted.getHeight() / rLayer.getWholeImageEnvelope().getHeight());
         
         RasterImageIO rasterImageIO = new RasterImageIO();
-        Raster raster = rLayer.getRasterData(null);
         
         // Get whole image
         ImageAndMetadata imageAndMetadata = rasterImageIO.loadImage(
@@ -110,7 +109,9 @@ public class WarpImageToFencePlugIn extends AbstractPlugIn {
 
         RenderedOp outputOp = JAI.create("Scale", pb, null);
         
-        rasterImageIO.writeImage(outFile, outputOp.copyData(), envWanted, rLayer.getMetadata().getOriginalCellSize(), rLayer.getMetadata().getNoDataValue());
+        rasterImageIO.writeImage(outFile, outputOp.copyData(), envWanted,
+                rasterImageIO.new CellSizeXY(rLayer.getMetadata().getOriginalCellSize(), rLayer.getMetadata().getOriginalCellSize()),
+                rLayer.getMetadata().getNoDataValue());
         
         String catName = StandardCategoryNames.WORKING;	
         try {

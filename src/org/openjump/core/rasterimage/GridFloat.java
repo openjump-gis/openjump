@@ -1,9 +1,11 @@
 package org.openjump.core.rasterimage;
 
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferFloat;
+import java.awt.image.Raster;
 import java.awt.image.SampleModel;
 import java.awt.image.WritableRaster;
 import java.io.BufferedReader;
@@ -11,9 +13,11 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
@@ -207,42 +211,42 @@ public class GridFloat {
 
     public void writeGrid() throws IOException{
 
-//        if(raster == null){
-//            // Create raster
-//            SampleModel sampleModel = RasterFactory.createBandedSampleModel(DataBuffer.TYPE_DOUBLE, nCols, nRows, 1);
-//            dataArray = new double[nCols*nRows];
-//            DataBuffer db = new DataBufferDouble(dataArray, nCols*nRows);
-//            java.awt.Point point = new java.awt.Point();
-//            point.setLocation(xllCorner, yllCorner);
-//            raster = RasterFactory.createRaster(sampleModel, db, point);
-//        }
-//
-//        writeHdr();
-//
-//        File fileOut = new File(fltFullFileName);
-//        FileOutputStream fileOutStream = new FileOutputStream(fileOut);
-//        FileChannel fileChannelOut = fileOutStream.getChannel();
-//
-//
-//        ByteBuffer bb = ByteBuffer.allocateDirect(nCols * 4);
-//        bb.order(ByteOrder.LITTLE_ENDIAN);
-//
-//        for(int r=0; r<nRows; r++){
-//            for(int c=0; c<nCols; c++){
-//                if(bb.hasRemaining()){
-//                    bb.putFloat(raster.getSampleFloat(c, r, 0));
-//                }else{
-//                    c--;
-//                    bb.compact();
-//                    fileChannelOut.write(bb);
-//                    bb.clear();
-//                }
-//            }
-//        }
-//
-//        bb.compact();
-//        fileChannelOut.write(bb);
-//        bb.clear();
+        if(raster == null){
+            // Create raster
+            SampleModel sampleModel = RasterFactory.createBandedSampleModel(DataBuffer.TYPE_DOUBLE, nCols, nRows, 1);
+            dataArray = new float[nCols*nRows];
+            DataBuffer db = new DataBufferFloat(dataArray, nCols*nRows);
+            java.awt.Point point = new java.awt.Point();
+            point.setLocation(xllCorner, yllCorner);
+            raster = RasterFactory.createRaster(sampleModel, db, point).createCompatibleWritableRaster();
+        }
+
+        writeHdr();
+
+        File fileOut = new File(fltFullFileName);
+        FileOutputStream fileOutStream = new FileOutputStream(fileOut);
+        FileChannel fileChannelOut = fileOutStream.getChannel();
+
+
+        ByteBuffer bb = ByteBuffer.allocateDirect(nCols * 4);
+        bb.order(ByteOrder.LITTLE_ENDIAN);
+
+        for(int r=0; r<nRows; r++){
+            for(int c=0; c<nCols; c++){
+                if(bb.hasRemaining()){
+                    bb.putFloat(raster.getSampleFloat(c, r, 0));
+                }else{
+                    c--;
+                    bb.compact();
+                    fileChannelOut.write(bb);
+                    bb.clear();
+                }
+            }
+        }
+
+        bb.compact();
+        fileChannelOut.write(bb);
+        bb.clear();
 
     }
     
@@ -271,26 +275,8 @@ public class GridFloat {
 
         SampleModel sm = raster.getSampleModel();
         ColorModel colorModel = PlanarImage.createColorModel(sm);
-        BufferedImage image = new BufferedImage(colorModel, raster, false, null);
+        BufferedImage image = new BufferedImage(colorModel, WritableRaster.createWritableRaster(sm, raster.getDataBuffer(), new Point(0,0)), false, null);
         return image;
-        
-//        // Create sample model
-//        SampleModel sampleModel = RasterFactory.createBandedSampleModel(DataBuffer.TYPE_FLOAT, nCols, nRows, 1);
-//
-//        // Create tiled image
-//        TiledImage tiledImage = new TiledImage(0, 0, nCols, nRows, 0, 0, sampleModel, null);
-//
-//        // Create writebaleraster
-//        WritableRaster wraster = tiledImage.getWritableTile(0,0);
-//
-//        // Set raster data
-//        wraster.setPixels(0, 0, nCols, nRows, dataArray);
-//
-//        // Set image raster
-//        tiledImage.setData(wraster);
-//
-//
-//        return tiledImage;
 
     }
 
@@ -380,20 +366,20 @@ public class GridFloat {
         this.byteOrder = byteOrder;
     }
 
-//    public Raster getRaster(){
-//        return raster;
-//    }
-//
-//    public void setRas(Raster raster){
-//        this.raster = raster;
-//
-//        cellCount = 0;
-//
-//        DataBuffer db = raster.getDataBuffer();
-//        for(int e=0; e<db.getSize(); e++){
-//            if(db.getElemDouble(e) != noData) cellCount++;
-//        }
-//    }
+    public Raster getRaster(){
+        return raster;
+    }
+
+    public void setRas(Raster raster){
+        this.raster = raster;
+
+        cellCount = 0;
+
+        DataBuffer db = raster.getDataBuffer();
+        for(int e=0; e<db.getSize(); e++){
+            if(db.getElemDouble(e) != noData) cellCount++;
+        }
+    }
 
     public double getMinVal(){
         return minVal;
@@ -440,7 +426,7 @@ public class GridFloat {
 
 //    private double[][] ras = null;
     private float[] dataArray = null;
-    private WritableRaster raster = null;
+    private Raster raster = null;
 
     private long   cellCount = 0;
     private double minVal = Double.MAX_VALUE;

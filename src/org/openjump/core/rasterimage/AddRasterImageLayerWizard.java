@@ -263,11 +263,11 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
                       
                       doubles = availTags[i].getAsDoubles();
                       
-                      if (doubles[2]==0)
+                      if (doubles.length == 2 || doubles[2] == 0) {
                           pixelScale = new Coordinate(doubles[0],doubles[1]);
-                      else
+                      } else {
                           pixelScale = new Coordinate(doubles[0],doubles[1],doubles[2]);
-                      
+                      }
                       //logger.printDebug("ModelPixelScaleTag (ps): " + pixelScale);
                   } else {
                       //logger.printDebug("tiff field: " + availTags[i].getType() + ", "+ availTags[i].getTag()  + ", "+ availTags[i].getCount());

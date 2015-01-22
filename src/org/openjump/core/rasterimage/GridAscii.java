@@ -1,5 +1,6 @@
 package org.openjump.core.rasterimage;
 
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.DataBuffer;
@@ -8,9 +9,16 @@ import java.awt.image.Raster;
 import java.awt.image.SampleModel;
 import java.awt.image.WritableRaster;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.util.Locale;
 import javax.media.jai.PlanarImage;
 import javax.media.jai.RasterFactory;
 
@@ -36,7 +44,7 @@ public class GridAscii {
     }
 
     public GridAscii(String ascFullFileName, int nCols, int nRows, boolean origCorner,
-            double xllOrig, double yllOrig, double cellSize, double noData, String byteOrder){
+            double xllOrig, double yllOrig, double cellSize, double noData){
 
         this.ascFullFileName = ascFullFileName;
 
@@ -139,24 +147,20 @@ public class GridAscii {
 
         // Read remaining part of grids
         String dtmLine;
-        String[] dtmLines;
-
-        int col = 0;
-        int row = 0;
+        String[] dtmColumns;
 
         // Read DTM
-        int line = 0;
         int cell = 0;
         cellCount = 0;
         dataArray = new float[nCols*nRows];
         while((dtmLine = buffRead.readLine()) != null){
             dtmLine = dtmLine.trim();
-            dtmLines = dtmLine.split(" +");
-            for(int c=0; c<dtmLines.length; c++){
+            dtmColumns = dtmLine.split(" +");
+            for (String dtmColumn : dtmColumns) {
 //                    row = (cell/nCols);
 //                    col = cell - (row * nCols) + 1;
-                dataArray[cell] = Float.parseFloat(dtmLines[c]);
-//                    ras[col][row] = Double.parseDouble(dtmLines[c]);
+                dataArray[cell] = Float.parseFloat(dtmColumn);
+                //                    ras[col][row] = Double.parseDouble(dtmLines[c]);
                 if(dataArray[cell] != noData) {
                     valSum += dataArray[cell];
                     valSumSquare += (dataArray[cell] * dataArray[cell]);
@@ -167,7 +171,6 @@ public class GridAscii {
                 }
                 cell++;
             }
-            line++;
         }
         buffRead.close();
 
@@ -183,6 +186,75 @@ public class GridAscii {
         
     }
 
+    public void writeGrid() throws IOException, Exception{
+
+        // Write header
+        FileWriter fileWriter = new FileWriter(new File(ascFullFileName));
+        BufferedWriter buffw = new BufferedWriter(fileWriter);
+
+        writeHeader(buffw);
+
+        // Write data ------------------------------------------------------
+        NumberFormat numberFormat = null;
+        if(decimalPlaces != null && decimalPlaces > 0) {
+            String pattern = "0.";
+            for(int p=0; p<decimalPlaces; p++) {
+                pattern = pattern.concat("0");
+            }
+            DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols(Locale.ENGLISH);
+            numberFormat = new DecimalFormat(pattern, decimalFormatSymbols);
+        }
+        
+        for(int r=0; r<nRows; r++){
+            StringBuffer sb = new StringBuffer();
+            for(int c=0; c<nCols; c++){
+                
+                if(numberFormat == null){
+                    sb.append(" ").append(raster.getSampleFloat(c, r, 0));
+                } else {
+                    sb.append(" ").append(numberFormat.format(raster.getSampleFloat(c, r, 0)));
+                }
+
+            }
+            buffw.write(sb + lineFeed);
+        }
+
+        buffw.close();
+        fileWriter.close();
+        
+    }
+    
+    public void writeHeader(BufferedWriter bufferedWriter) throws Exception {
+        
+        String line;
+        line = "ncols " + Integer.toString(nCols);
+        bufferedWriter.write(line + lineFeed);
+
+        line = "nrows " + Integer.toString(nRows);
+        bufferedWriter.write(line + lineFeed);
+
+        if(origCorner){
+            line = "xllcorner " + (xllCorner);
+            bufferedWriter.write(line + lineFeed);
+
+            line = "yllcorner " + (yllCorner);
+            bufferedWriter.write(line + lineFeed);
+        }else{
+            line = "xllcenter " + (xllCorner + 0.5 * cellSize);
+            bufferedWriter.write(line + lineFeed);
+
+            line = "yllcenter " + (yllCorner + 0.5 * cellSize);
+            bufferedWriter.write(line + lineFeed);
+        }
+
+        line = "cellsize " + cellSize;
+        bufferedWriter.write(line + lineFeed);
+
+        line = "nodata_value " + Double.toString(noData);
+        bufferedWriter.write(line + lineFeed);
+
+    }
+    
     public void setHeaderEqualTo(GridAscii gridAscii){
 
         this.nCols = gridAscii.getnCols();
@@ -211,29 +283,11 @@ public class GridAscii {
     }
 
     public BufferedImage getBufferedImage() throws IOException{
-
         SampleModel sm = raster.getSampleModel();
         ColorModel colorModel = PlanarImage.createColorModel(sm);
-        BufferedImage image = new BufferedImage(colorModel, raster, false, null);
+        BufferedImage image = new BufferedImage(colorModel, WritableRaster.createWritableRaster(raster.getSampleModel(), raster.getDataBuffer(), new Point(0, 0)), false, null);
         return image;
-        
-//        // Create sample model
-//        SampleModel sampleModel = RasterFactory.createBandedSampleModel(DataBuffer.TYPE_DOUBLE, nCols, nRows, 1);
-//
-//        // Create tiled image
-//        TiledImage tiledImage = new TiledImage(0, 0, nCols, nRows, 0, 0, sampleModel, null);
-//
-//        // Create writebaleraster
-//        WritableRaster wraster = tiledImage.getWritableTile(0,0);
-//
-//        // Set raster data
-//        wraster.setPixels(0, 0, nCols, nRows, ((DataBufferDouble)readGrid().getDataBuffer()).getData());
-//
-//        // Set image raster
-//        tiledImage.setData(wraster);
-//
-//
-//        return tiledImage;
+
     }
 
     public double readCellValue(int col, int row) throws FileNotFoundException, IOException {
@@ -312,16 +366,17 @@ public class GridAscii {
         return raster;
     }
 
-//    public void setRas(Raster raster){
-//        this.raster = raster;
-//
-//        cellCount = 0;
-//
-//        DataBuffer db = raster.getDataBuffer();
-//        for(int e=0; e<db.getSize(); e++){
-//            if(db.getElemDouble(e) != noData) cellCount++;
-//        }
-//    }
+    public void setRas(Raster raster){
+        this.raster = raster;
+        
+        
+        cellCount = 0;
+
+        DataBuffer db = raster.getDataBuffer();
+        for(int e=0; e<db.getSize(); e++){
+            if(db.getElemDouble(e) != noData) cellCount++;
+        }
+    }
 
     public double getMinVal(){
         return minVal;
@@ -351,6 +406,10 @@ public class GridAscii {
         return dataArray;
     }
 
+    public void setDecimalPlaces(Integer decimalPlaces) {
+        this.decimalPlaces = decimalPlaces;
+    }
+    
     private String ascFullFileName = null;
 
     private boolean origCorner = false;
@@ -362,7 +421,7 @@ public class GridAscii {
     private double noData = -9999;
 
     private float[] dataArray = null;
-    private WritableRaster raster = null;
+    private Raster raster = null;
 
     private long   cellCount = 0;
     private double minVal = Double.MAX_VALUE;
@@ -370,5 +429,8 @@ public class GridAscii {
     private double meanVal = 0;
     private double stDevVal = 0;
     private boolean isInteger = true;
+    private Integer decimalPlaces = 0;
+    
+    private final String lineFeed = System.getProperty("line.separator");
 
 }

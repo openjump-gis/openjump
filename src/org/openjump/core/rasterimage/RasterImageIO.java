@@ -9,7 +9,6 @@ import com.sun.media.jai.codecimpl.TIFFImageEncoder;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.io.CompressedFile;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.Viewport;
 import java.awt.Point;
@@ -22,24 +21,18 @@ import java.awt.image.DataBufferFloat;
 import java.awt.image.Raster;
 import java.awt.image.SampleModel;
 import java.awt.image.WritableRaster;
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import javax.imageio.ImageIO;
-import javax.imageio.spi.ImageReaderSpi;
-import javax.imageio.stream.ImageInputStream;
 import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
 import javax.media.jai.RasterFactory;
 import javax.media.jai.RenderedOp;
+import org.apache.commons.imaging.ImageReadException;
+import org.apache.commons.imaging.formats.tiff.TiffField;
+import org.apache.commons.imaging.formats.tiff.fieldtypes.FieldType;
 import org.openjump.core.rasterimage.TiffTags.TiffMetadata;
 
 /**
@@ -71,20 +64,6 @@ public class RasterImageIO {
                             cellSize, cellSize, Double.NaN, stats));         
             
         } else if (fileNameOrURL.toLowerCase().endsWith(".tif") || fileNameOrURL.toLowerCase().endsWith(".tiff")) {
-            
-            // Get nodata value. Uses TIFFTAG_GDAL_NODATA (42113)
-//            InputStream input = createInputStream((new File(filenameOrURL)).toURI());
-//            SeekableStream ss = SeekableStream.wrapInputStream(input, true);
-//            XTIFFDirectory dir = XTIFFDirectory.create(ss, 0);
-//            XTIFFField fieldNoData = dir.readField(42113);
-//            
-//            XTIFFField fieldWidth = dir.readField(XTIFF.TIFFTAG_IMAGE_WIDTH);
-//            XTIFFField fieldHeight = dir.readField(XTIFF.TIFFTAG_IMAGE_LENGTH);
-//            XTIFFField fieldCellSizeX = dir.readField(XTIFF.TIFFTAG_X_RESOLUTION);
-            
-//            int width = fieldWidth.getAsInt(0);
-//            int height = fieldHeight.getAsInt(0);
-//            double xCellSize = 1; // TODO
             
             TiffMetadata tiffMetadata = TiffTags.readMetadata(new File(fileNameOrURL));
              
@@ -254,61 +233,6 @@ public class RasterImageIO {
         
     }
     
-    static protected InputStream createInputStream(URI uri) throws IOException {
-        Object in = createInput(uri);
-        if (in instanceof String)
-            in = new File((String) in);
-        if (in instanceof File)
-            in = new FileInputStream((File) in);
-        return (InputStream) in;
-    }
-    
-    static protected Object createInput(URI uri) throws IOException {
-        return createInput(uri, null);
-    }
-    
-    static protected Object createInput(URI uri, Object loader) throws IOException {
-
-        Object input;
-        if (CompressedFile.isArchive(uri) || CompressedFile.isCompressed(uri)) {
-            InputStream src_is;
-            src_is = CompressedFile.openFile(uri);
-            src_is = new BufferedInputStream(src_is);
-            input = src_is;
-        } else {
-            input = new File(uri);
-        }
-
-        if (loader == null) {
-            return input;
-        }
-
-        if (loader instanceof ImageReaderSpi) {
-            // how may i serve you today?
-            Class[] clazzes = ((ImageReaderSpi) loader).getInputTypes();
-            List<Class> intypes = clazzes != null ? Arrays.asList(clazzes) : new ArrayList();
-            //System.out.println("GR in types: " + intypes);
-            for (Class clazz : intypes) {
-                // already reader compliant? off you f***
-                if (clazz.isInstance(input))
-                    return input;
-                // want an ImageInputStream? try to build one..
-                if (ImageInputStream.class.equals(clazz)) {
-                    // this returns null if it can't build one from given input
-                    ImageInputStream iis = ImageIO.createImageInputStream(input);
-                    if (iis != null) { 
-                        return iis;
-                    }
-                }
-            }
-
-            throw new IOException("Couldn't create an input for '" + uri
-                + "' accepted by reader '" + loader + "'");
-        }
-
-        return input;
-    }
-    
     public static Point getImageDimensions(String filenameOrURL) throws IOException {
         
         if (!filenameOrURL.toLowerCase().endsWith(".jpg") && !filenameOrURL.toLowerCase().endsWith(".flt") &&
@@ -332,7 +256,7 @@ public class RasterImageIO {
 
         } else {
             
-            BufferedImage image = image = ImageIO.read(new File(filenameOrURL));            
+            BufferedImage image = ImageIO.read(new File(filenameOrURL));            
             return new Point(image.getWidth(), image.getHeight());
             
         }
@@ -342,8 +266,7 @@ public class RasterImageIO {
     
     public static Envelope getGeoReferencing(String fileName, boolean allwaysLookForTFWExtension,
             Point imageDimensions) throws IOException, NoninvertibleTransformException, Exception{
-    
-        double minx, maxx, miny, maxy;
+
         Envelope env = null;
       
         WorldFileHandler worldFileHandler = new WorldFileHandler(fileName, allwaysLookForTFWExtension);
@@ -368,31 +291,28 @@ public class RasterImageIO {
                 //logger.printDebug("checking for GeoTIFF");
 
                 Coordinate tiePoint = null, pixelOffset = null, pixelScale = null;
-                double[] doubles = null;
+                double[] doubles;
 
                 FileSeekableStream fileSeekableStream = new FileSeekableStream(fileName);
                 TIFFDirectory tiffDirectory = new TIFFDirectory(fileSeekableStream, 0);
 
                 TIFFField[] availTags = tiffDirectory.getFields();
               
-                for (int i=0; i<availTags.length; i++){
-                    if (availTags[i].getTag() == GeoTiffConstants.ModelTiepointTag){
-                        doubles = availTags[i].getAsDoubles();
-
+                for (TIFFField availTag : availTags) {
+                    if (availTag.getTag() == GeoTiffConstants.ModelTiepointTag) {
+                        doubles = availTag.getAsDoubles();
                         if (doubles.length != 6){
                             //logger.printError("unsupported value for ModelTiepointTag (" + GeoTiffConstants.ModelTiepointTag + ")");
                             //context.getWorkbench().getFrame().warnUser("unsupported value for ModelTiepointTag (" + GeoTiffConstants.ModelTiepointTag + ")");
                             //break;
                             throw new Exception("unsupported value for ModelTiepointTag (" + GeoTiffConstants.ModelTiepointTag + ")");
                         }
-
                         if (doubles[0]!=0 || doubles[1]!=0 || doubles[2]!=0){
                             if (doubles[2]==0)
                                 pixelOffset = new Coordinate(doubles[0],doubles[1]);
                             else
                                 pixelOffset = new Coordinate(doubles[0],doubles[1],doubles[2]);
                         }
-
                         if (doubles[5]==0)
                             tiePoint = new Coordinate(doubles[3],doubles[4]);
                         else
@@ -400,11 +320,9 @@ public class RasterImageIO {
 
                         //logger.printDebug("ModelTiepointTag (po): " + pixelOffset);
                         //logger.printDebug("ModelTiepointTag (tp): " + tiePoint);
-                    } else if (availTags[i].getTag() == GeoTiffConstants.ModelPixelScaleTag){
+                    } else if (availTag.getTag() == GeoTiffConstants.ModelPixelScaleTag) {
                         // Karteneinheiten pro pixel x bzw. y
-
-                        doubles = availTags[i].getAsDoubles();
-
+                        doubles = availTag.getAsDoubles();
                         if (doubles[2]==0)
                             pixelScale = new Coordinate(doubles[0],doubles[1]);
                         else
@@ -414,14 +332,14 @@ public class RasterImageIO {
                     } else {
                         //logger.printDebug("tiff field: " + availTags[i].getType() + ", "+ availTags[i].getTag()  + ", "+ availTags[i].getCount());
                     }
-
                 }
 
                 fileSeekableStream.close();
 
                 if (tiePoint!=null && pixelScale!=null){
                     isGeoTiff = true;
-                    Coordinate upperLeft = null, lowerRight = null;
+                    Coordinate upperLeft;
+                    Coordinate lowerRight;
 
                     if (pixelOffset==null){
                         upperLeft = tiePoint;
@@ -520,6 +438,35 @@ public class RasterImageIO {
         double cellSizeY = (envelope.getMaxY() - envelope.getMinY()) / imageDims.y;
     
         return new RasterImageIO().new CellSizeXY(cellSizeX, cellSizeY);
+        
+    }
+    
+    public static Double getNoData(String fileNameOrURL) throws IOException, ImageReadException {
+        
+        if(fileNameOrURL.toLowerCase().endsWith(".asc")) {
+            
+            GridAscii gridAscii = new GridAscii(fileNameOrURL);
+            gridAscii.readHeader();
+            return gridAscii.getNoData();
+            
+        } else if(fileNameOrURL.toLowerCase().endsWith(".flt")) {
+            
+            GridFloat gf = new GridFloat(fileNameOrURL);
+            return gf.getNoData();
+            
+        } else if(fileNameOrURL.toLowerCase().endsWith(".tif")) {
+            
+            TiffField field = TiffTags.readField(new File(fileNameOrURL), 42113);
+            if(field.getFieldType() == FieldType.DOUBLE) {
+                return field.getDoubleValue();
+            } else if (field.getFieldType() == FieldType.FLOAT) {
+                return field.getDoubleValue();
+            } else if (field.getFieldType() == FieldType.ASCII) {
+                return Double.parseDouble(field.getStringValue());
+            }
+            
+        }
+        return null;
         
     }
     
@@ -638,7 +585,7 @@ public class RasterImageIO {
             File outFile,
             Raster raster,
             Envelope envelope,
-            double cellSize, double noData) throws FileNotFoundException, IOException {
+            CellSizeXY cellSize, double noData) throws FileNotFoundException, IOException {
         
         SampleModel sm = raster.getSampleModel();
         ColorModel colorModel = PlanarImage.createColorModel(sm);
@@ -650,7 +597,7 @@ public class RasterImageIO {
         TIFFField[] tiffFields = new TIFFField[3];
         
         // Cell size
-        tiffFields[0] = new TIFFField(GeoTiffConstants.ModelPixelScaleTag, TIFFField.TIFF_DOUBLE, 2, new double[]{cellSize, cellSize});        
+        tiffFields[0] = new TIFFField(GeoTiffConstants.ModelPixelScaleTag, TIFFField.TIFF_DOUBLE, 2, new double[]{cellSize.cellSizeX, cellSize.cellSizeY});        
         
         // No data
         String noDataS = Double.toString(noData);
@@ -697,6 +644,10 @@ public class RasterImageIO {
             return cellSizeY;
         }
     
+        public double getAverageCellSize() {
+            return (cellSizeX + cellSizeY) * 0.5;
+        }
+        
         private final double cellSizeX;
         private final double cellSizeY;
         

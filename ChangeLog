@@ -1,4 +1,11 @@
 # for display continuity sake please use 2 spaces instead of tabs
+2015-01-22 bertaz
+  * Fixed a bug in WarpImageToFencePlugIn (extension for temporary
+    output file wrong when input is not a TIFF file)
+  * Drivers for esri ASCII and Floating Point grids: added capability to write
+    asc and flt files. Some bugs fixed.
+  * RasterImageIO: added a method to get the nodata value for a grid.
+
 2015-01-21 Giuseppe Aruta
   * RASTER: Rearrenged Create Lattice and Create Polygon grid of
     Raster images in a submenu ("Vectorialize")
@@ -9,7 +16,7 @@
   * Substituted ExportEnvelopeAsGeometryPlugIn Raster plugIn with
     more general ExportLayerableEnvelopeAsGeometryPlugIn 
 
-2015-01-16 bertaz
+2015-01-19 bertaz
   * TIFF rasters: replaced code for reading TIFF tags with
   * Apache Commons Imaging functions
   
