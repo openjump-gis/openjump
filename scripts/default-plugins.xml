@@ -802,7 +802,7 @@
 	<plug-in>
 		org.openjump.core.ui.plugin.raster.RasterLayerStatisticsPlugIn 
  		 <menus>
-			<main-menu menupath=" MenuNames.RASTER/MenuNames.STATISTICS" />
+			<main-menu menupath=" MenuNames.RASTER/MenuNames.STATISTICS" install="true"/>
 		</menus>
 	</plug-in>
 
