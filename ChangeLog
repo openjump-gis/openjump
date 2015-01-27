@@ -1,4 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
+
+2015-01-27 ede
+  * fix WMS auth access
+
 2015-01-22 bertaz
   * Fixed a bug in WarpImageToFencePlugIn (extension for temporary
     output file wrong when input is not a TIFF file)

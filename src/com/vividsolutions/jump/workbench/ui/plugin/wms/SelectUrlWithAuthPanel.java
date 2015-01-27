@@ -12,7 +12,6 @@ import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.ComboBoxEditor;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -27,9 +26,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
 
-import org.apache.commons.httpclient.util.URIUtil;
 import org.openjump.util.UriUtil;
-import org.saig.core.gui.swing.sldeditor.util.FormUtils;
 
 import com.vividsolutions.jump.I18N;
 
@@ -121,10 +118,6 @@ public class SelectUrlWithAuthPanel extends JPanel {
     // for direct interaction with the url textarea
     this.url = (JTextComponent)ed.getEditorComponent();
     
-    //FormUtils.addRowInGBL(this, 0, 0, userLabel, user);
-    //FormUtils.addRowInGBL(this, 1, 0, passLabel, pass);
-    //FormUtils.addRowInGBL(this, 1, 2, show, showLabel);
-    //FormUtils.addRowInGBL(this, 2, 0, urlLabel, urls, true);
     Insets insets = new Insets(3,3,3,3);
     add(userLabel, new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.WEST,
         GridBagConstraints.NONE, insets, 0, 0));
@@ -257,7 +250,7 @@ public class SelectUrlWithAuthPanel extends JPanel {
       editor.getDocument().addDocumentListener(new DocumentListener() {
         @Override
         public void removeUpdate(DocumentEvent e) {
-          fetchAuthIntoFields(e);
+          //fetchAuthIntoFields(e);
         }
         @Override
         public void insertUpdate(DocumentEvent e) {
@@ -268,17 +261,19 @@ public class SelectUrlWithAuthPanel extends JPanel {
           fetchAuthIntoFields(e);
         }
         boolean enabled = true;
-        private void fetchAuthIntoFields( DocumentEvent e ) {
+        private void fetchAuthIntoFields( final DocumentEvent e ) {
           if (!enabled) return;
           
           // we don't want to listen to the events we trigger ourselfs
           enabled = false;
+          // save editor content for later
+          final String edText = editor.getText();
+          
           SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-              String text = editor.getText();
-              FilteredURLString url = new FilteredURLString(text);
-              text = url.toString();
+              FilteredURLString url = new FilteredURLString(edText);
+              String text = url.toString();
               // remove auth in textarea, only if there is auth in entered url
               if (!text.equals(url.unFiltered())) {
                 int posdiff = url.unFiltered().length() - text.length();

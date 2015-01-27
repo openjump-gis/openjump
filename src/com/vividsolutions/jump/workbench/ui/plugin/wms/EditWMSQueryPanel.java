@@ -268,7 +268,7 @@ public class EditWMSQueryPanel extends JPanel {
     url = UriUtil
         .urlAddCredentials(url, urlPanel.getUser(), urlPanel.getPass());
 
-    url = URLWizardPanel.fixUrlForWMService(url);
+    url = WMService.legalize(url);
     // [UT] 20.04.2005
     WMService service = new WMService(url, URLWizardPanel.wmsVersion);
 

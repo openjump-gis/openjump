@@ -42,8 +42,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -156,30 +157,6 @@ public class URLWizardPanel extends JPanel implements WizardPanelV2 {
     return I18N.get(I18N_PREFIX + "please-enter-the-url-of-the-wms-server");
   }
 
-  //
-  // The WMService appends other parameters to the end of the URL
-  //
-  public static String fixUrlForWMService(String url) {
-    String fixedURL = url.trim();
-
-    if (fixedURL.indexOf("?") == -1) {
-      fixedURL = fixedURL + "?";
-    } else {
-      if (fixedURL.endsWith("?")) {
-        // ok
-      } else {
-        // it must have other parameters
-        if (!fixedURL.endsWith("&")) {
-          fixedURL = fixedURL + "&";
-        }
-      }
-    }
-
-    return fixedURL;
-  }
-  
-  
-
   public void exitingToRight() throws IOException, WorkbenchException {
     try {
       String url = urlPanel.getUrl();
@@ -188,14 +165,14 @@ public class URLWizardPanel extends JPanel implements WizardPanelV2 {
       // [UT]
       // String ver = (String)dataMap.get(VERSION_KEY);
 
-      url = fixUrlForWMService(url);
+      url = WMService.legalize(url);
       // [UT] 20.04.2005
       WMService service = new WMService(url, wmsVersion);
       // WMService service = new WMService( url );
 
       service.initialize(true);
       
-      LinkedList<String> list = new LinkedList<String>();
+      Set<String> list = new LinkedHashSet<String>();
       // insert latest on top 
       list.add(url);
       // add the rest

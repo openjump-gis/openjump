@@ -71,8 +71,8 @@ public class Capabilities {
   
   public Capabilities(WMService service, String title, MapLayer topLayer, Collection mapFormats, String getMapURL, String getFeatureInfoURL) {
       this(service, title, topLayer, mapFormats);
-      this.getMapURL = fixUrlForWMService(getMapURL);
-      this.getFeatureInfoURL = fixUrlForWMService(getFeatureInfoURL);
+      this.getMapURL = getMapURL;
+      this.getFeatureInfoURL = getFeatureInfoURL;
     }
 
   /**

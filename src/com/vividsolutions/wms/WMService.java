@@ -43,6 +43,8 @@ import java.net.URLConnection;
 
 import javax.swing.JOptionPane;
 
+import org.openjump.util.UriUtil;
+
 import net.iharder.Base64;
 
 import com.vividsolutions.jump.I18N;
@@ -129,27 +131,39 @@ public class WMService {
             con.setReadTimeout(TIMEOUT_READ);
             if(requestUrl.getUserInfo() != null) {
                 con.setRequestProperty("Authorization", "Basic " +
-                        Base64.encodeBytes(requestUrl.getUserInfo().getBytes()));
+                        Base64.encodeBytes(UriUtil.urlDecode(requestUrl.getUserInfo()).getBytes()));
                 con.setRequestProperty("Host", requestUrl.getHost());
             }
             //Parser p = new Parser();
             cap = parser.parseCapabilities( this, con.getInputStream() );
             String url1 = cap.getService().getServerUrl();
             String url2 = cap.getGetMapURL();
-            if(!url1.equals(url2)){
-                //if the difference is only in credentials then use url1 else ask from user
-                if(!new URL(url1).equals(new URL(url2)) && alertDifferingURL) {
-                    int resp = showConfirmDialog(null, I18N.getMessage("com.vididsolutions.wms.WMService.Other-GetMap-URL-Found",
-                            new Object[]{url2}), null, YES_NO_OPTION);
-                    if(resp == NO_OPTION) {
-                        cap.setGetMapURL(url1);
-                    }
-                } else {
-                    //changed 24.06.2011 (Wilfried Hornburg, LGLN) url1 --> url2; original: cap.setGetMapURL(url1);
-                    //revert to url1, following Jukka's advice a discussion is on-going on JPP mailing list
-                    cap.setGetMapURL(url1);
-                }
+            
+            String compare_url1 = UriUtil.urlStripAuth(legalize(url1));
+            String compare_url2 = UriUtil.urlStripAuth(legalize(url2));
+            //if the difference is only in credentials then use url1 else ask from user
+            if (!compare_url1.equals(compare_url2) && alertDifferingURL) {
+              int resp = showConfirmDialog(null, I18N.getMessage(
+                  "com.vididsolutions.wms.WMService.Other-GetMap-URL-Found",
+                  new Object[] { url2 }), null, YES_NO_OPTION);
+              // nope. user wants to keep the initial url
+              if (resp == NO_OPTION) {
+                cap.setGetMapURL(url1);
+              }
+              // make sure url2 has auth info if needed
+              else if (!UriUtil.urlGetUser(url1).isEmpty()) {
+                String url2_withAuth = UriUtil.urlAddCredentials(url2,
+                    UriUtil.urlGetUser(url1), UriUtil.urlGetPassword(url1));
+                cap.setGetMapURL(url2_withAuth);
+              }
+            } else {
+              // changed 24.06.2011 (Wilfried Hornburg, LGLN) url1 --> url2; original:
+              // cap.setGetMapURL(url1);
+              // revert to url1, following Jukka's advice a discussion is on-going on
+              // JPP mailing list
+              cap.setGetMapURL(url1);
             }
+
         } catch ( FileNotFoundException e ){
             JOptionPane.showMessageDialog( null, I18N.getMessage( "com.vividsolutions.wms.WMService.WMS-Not-Found",
                                                                   new Object[] { e.getLocalizedMessage() } ),
@@ -211,4 +225,26 @@ public class WMService {
   	public String getVersion(){
   	    return wmsVersion;
 	}
+  	
+    //
+    // The WMService appends other parameters to the end of the URL
+    //
+    public static String legalize(String url) {
+      String fixedURL = url.trim();
+
+      if (fixedURL.indexOf("?") == -1) {
+        fixedURL = fixedURL + "?";
+      } else {
+        if (fixedURL.endsWith("?")) {
+          // ok
+        } else {
+          // it must have other parameters
+          if (!fixedURL.endsWith("&")) {
+            fixedURL = fixedURL + "&";
+          }
+        }
+      }
+
+      return fixedURL;
+    }
 }
