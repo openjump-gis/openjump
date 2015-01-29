@@ -1,6 +1,7 @@
 package org.openjump.core.rasterimage;
 
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.DataBuffer;
@@ -50,7 +51,7 @@ public class GridFloat {
     }
 
     public GridFloat(String fltFullFileName, int nCols, int nRows, boolean origCorner,
-            double xllOrig, double yllOrig, double cellSize, double noData, String byteOrder){
+            double xllOrig, double yllOrig, double cellSize, double noData, ByteOrder byteOrder){
 
         this.fltFullFileName = fltFullFileName;
         hdrFullFileName = fltFullFileName.substring(0, fltFullFileName.lastIndexOf(".")) + ".hdr";
@@ -68,11 +69,13 @@ public class GridFloat {
         this.cellSize = cellSize;
         this.noData = noData;
 
-        if(byteOrder.toLowerCase().equals("lsbfirst") && byteOrder.toLowerCase().equals("lsblast")){
-            this.byteOrder = "LSBFIRST";
-        }else{
-            this.byteOrder = byteOrder;
-        }
+        this.byteOrder = byteOrder;
+        
+//        if(byteOrder.toLowerCase().equals("lsbfirst") && byteOrder.toLowerCase().equals("lsblast")){
+//            this.byteOrder = "LSBFIRST";
+//        }else{
+//            this.byteOrder = byteOrder;
+//        }
         
     }
 
@@ -101,7 +104,11 @@ public class GridFloat {
             }else if(lines[0].toLowerCase().equals("nodata_value")){
                 noData = Double.parseDouble(lines[1]);
             }else if(lines[0].toLowerCase().equals("byteorder")){
-                byteOrder = lines[1];
+                if(lines[1].equalsIgnoreCase(MSBFIRST)) {
+                    byteOrder = ByteOrder.BIG_ENDIAN;
+                } else if(lines[1].equalsIgnoreCase(LSBFIRST)) {
+                    byteOrder = ByteOrder.LITTLE_ENDIAN;
+                }
             }
         }
         buffRead.close();
@@ -116,7 +123,8 @@ public class GridFloat {
     public void writeHdr() throws IOException{
 
         File fileHeader = new File(hdrFullFileName);
-        BufferedWriter buffWrite = new BufferedWriter(new FileWriter(fileHeader));
+        FileWriter fileWriter = new FileWriter(fileHeader);
+        BufferedWriter buffWrite = new BufferedWriter(fileWriter);
 
         buffWrite.write("ncols" + " " + nCols);
         buffWrite.newLine();
@@ -151,12 +159,12 @@ public class GridFloat {
         buffWrite.write("byteorder" + " " + byteOrder);
         buffWrite.newLine();
 
+        fileWriter.close();
         buffWrite.close();
-        buffWrite = null;
 
     }
 
-    public void readGrid() throws FileNotFoundException, IOException{
+    public void readGrid(Rectangle subset) throws FileNotFoundException, IOException{
 
         readHdr();
 
@@ -169,40 +177,76 @@ public class GridFloat {
         File fileFlt = new File(fltFullFileName);
         FileInputStream fileInStream = new FileInputStream(fileFlt);
         FileChannel fileChannel = fileInStream.getChannel();
-        long length = fileFlt.length();
-        MappedByteBuffer mbb;
-        mbb = fileChannel.map(
-                FileChannel.MapMode.READ_ONLY,
-                0,
-                length
-                );
-        mbb.order(ByteOrder.LITTLE_ENDIAN);
-        fileChannel.close();
-        fileInStream.close();
+        
+        if(subset == null) {
+        
+            dataArray = new float[nCols*nRows];
+            
+            long length = fileFlt.length();
+            MappedByteBuffer mbb;
+            mbb = fileChannel.map(
+                    FileChannel.MapMode.READ_ONLY,
+                    0,
+                    length
+                    );
+            mbb.order(byteOrder);
 
-        int i = 0;
-        dataArray = new float[nCols*nRows];
-        for(int c=0; c<nCols*nRows; c++){
-            dataArray[c] = mbb.getFloat(i);
-            if(dataArray[c] != noData) {
-                valSum += dataArray[c];
-                valSumSquare += (dataArray[c] * dataArray[c]);
-                cellCount++;
-                if(dataArray[c] < minVal){minVal = dataArray[c];}
-                if(dataArray[c] > maxVal){maxVal = dataArray[c];}
-                if((int)dataArray[c] != dataArray[c]) isInteger = false;
+            int i = 0;
+            for(int p=0; p<nCols*nRows; p++){
+                dataArray[p] = mbb.getFloat(i);
+                if(dataArray[p] != noData) {
+                    valSum += dataArray[p];
+                    valSumSquare += (dataArray[p] * dataArray[p]);
+                    cellCount++;
+                    if(dataArray[p] < minVal){minVal = dataArray[p];}
+                    if(dataArray[p] > maxVal){maxVal = dataArray[p];}
+                    if((int)dataArray[p] != dataArray[p]) isInteger = false;
+                }
+                i+=4;
             }
-            i+=4;
+
+            meanVal = valSum / cellCount;
+            stDevVal = Math.sqrt(valSumSquare/cellCount - meanVal*meanVal);
+
+        } else {
+            
+            dataArray = new float[subset.width*subset.height];
+            
+            long length = subset.width * 4;
+            MappedByteBuffer mbb;
+            
+            for(int r=0; r<subset.height; r++) {
+                long position = (subset.y + r) * nCols * 4 + subset.x * 4;
+                mbb = fileChannel.map(
+                    FileChannel.MapMode.READ_ONLY,
+                    position,
+                    length
+                    );
+                mbb.order(byteOrder);
+                
+                for(int c=0; c<subset.width; c++){
+                    int p = r*subset.width + c;
+                    dataArray[p] = mbb.getFloat();
+                    if(dataArray[p] != noData) {
+                        valSum += dataArray[p];
+                        valSumSquare += (dataArray[p] * dataArray[p]);
+                        cellCount++;
+                        if(dataArray[p] < minVal){minVal = dataArray[p];}
+                        if(dataArray[p] > maxVal){maxVal = dataArray[p];}
+                        if((int)dataArray[p] != dataArray[p]) isInteger = false;
+                    }
+                }
+                
+            }
+            
         }
 
-        meanVal = valSum / cellCount;
-        stDevVal = Math.sqrt(valSumSquare/cellCount - meanVal*meanVal);
-
-        //mbb=null;
-
+        fileChannel.close();
+        fileInStream.close();
+        
         // Create raster
         SampleModel sampleModel = RasterFactory.createBandedSampleModel(DataBuffer.TYPE_FLOAT, nCols, nRows, 1);
-        DataBuffer db = new DataBufferFloat(dataArray, nCols*nRows);
+        DataBuffer db = new DataBufferFloat(dataArray, dataArray.length / 4);
         java.awt.Point point = new java.awt.Point();
         point.setLocation(0, 0);
         raster = WritableRaster.createWritableRaster(sampleModel, db, point);
@@ -358,11 +402,11 @@ public class GridFloat {
         this.noData = noData;
     }
 
-    public String getByteOrder() {
+    public ByteOrder getByteOrder() {
         return byteOrder;
     }
 
-    public void setByteOrder(String byteOrder) {
+    public void setByteOrder(ByteOrder byteOrder) {
         this.byteOrder = byteOrder;
     }
 
@@ -420,7 +464,7 @@ public class GridFloat {
 //    private double yllCenter = 0;
     private double cellSize = 0;
     private double noData = -9999;
-    private String byteOrder = "LSBFIRST";
+    private ByteOrder byteOrder = ByteOrder.LITTLE_ENDIAN;
 
     private boolean origCorner = true;
 

@@ -76,13 +76,13 @@ public class ExtractSelectedPartOfImage extends AbstractPlugIn {
         RasterImageLayer rLayer = (RasterImageLayer) LayerTools.getSelectedLayerable(context, RasterImageLayer.class);
         
         String newLayerName = context.getLayerManager().uniqueLayerName(
-                I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage.part-of") + rLayer.getName());
-        String extension = rLayer.getImageFileName().substring(rLayer.getImageFileName().lastIndexOf("."), rLayer.getImageFileName().length());
+                I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage.part-of") + rLayer.getName() + ".tif");
+//        String extension = rLayer.getImageFileName().substring(rLayer.getImageFileName().lastIndexOf("."), rLayer.getImageFileName().length());
         
-        File outFile =  new File(System.getProperty("java.io.tmpdir").concat(File.separator).concat(newLayerName).concat(extension));
+        File outFile =  new File(System.getProperty("java.io.tmpdir").concat(File.separator).concat(newLayerName)); //.concat(extension));
         
         Geometry fence = SelectionTools.getFenceGeometry(context);
-        Envelope envWanted = fence.getEnvelopeInternal();
+        Envelope envWanted = fence.getEnvelopeInternal().intersection(rLayer.getWholeImageEnvelope());
 
         RasterImageIO rasterImageIO = new RasterImageIO();
         Raster raster = rLayer.getRasterData(rLayer.getRectangleFromEnvelope(envWanted));

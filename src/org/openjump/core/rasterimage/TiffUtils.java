@@ -71,8 +71,8 @@ public class TiffUtils {
         
             // No overviews, decimation (subsampling)          
 
-            float xScale = (float) Math.min(cellSize.getX(), cellSize.getX() / requestedRes.getX());
-            float yScale = (float) Math.min(cellSize.getY(), cellSize.getY() / requestedRes.getY());
+            float xScale = (float) (cellSize.getX() / requestedRes.getX());
+            float yScale = (float) (cellSize.getY() / requestedRes.getY());
             xScale = Math.min(xScale, 1);
             yScale = Math.min(yScale, 1);
             
@@ -274,8 +274,7 @@ public class TiffUtils {
                 for(int b=0; b<bandCount; b++) {
                 
                     double value = raster.getSampleDouble(c, r, b);
-                    if(!Double.isNaN(noDataValue) && !Double.isInfinite(noDataValue)
-                            && value != noDataValue && !Double.isNaN(value) && !Double.isInfinite(value)) {
+                    if(value != noDataValue && !Double.isNaN(value) && !Double.isInfinite(value)) {
                         if(value < minValue[b]) minValue[b] = value;
                         if(value > maxValue[b]) maxValue[b] = value;
                         cellsCount[b]++;

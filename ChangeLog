@@ -1,5 +1,11 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2015-01-29 bertaz
+  * fix #386: ExtractSelectedPartOfImage fails to work when extracting a part of ASC or FLT monoband raster.
+  * fix #387: RasterImageLayer class seems not working anymore with JPG files, occasionally also with some PNG.
+  * Some other bugs fixed in ExtractSelectePartOfImage
+  * Some other bugs fixed in RasterImageIO
+  
 2015-01-27 ede
   * fix WMS auth access
 

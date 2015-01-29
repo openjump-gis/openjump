@@ -1,6 +1,7 @@
 package org.openjump.core.rasterimage;
 
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.DataBuffer;
@@ -128,7 +129,7 @@ public class GridAscii {
 
     }
 
-    public void readGrid() throws FileNotFoundException, IOException{
+    public void readGrid(Rectangle subset) throws FileNotFoundException, IOException{
 
         readHeader();
 
@@ -147,20 +148,38 @@ public class GridAscii {
 
         // Read remaining part of grids
         String dtmLine;
-        String[] dtmColumns;
+        String[] columns;
 
-        // Read DTM
         int cell = 0;
         cellCount = 0;
-        dataArray = new float[nCols*nRows];
+        
+        int startCol = 0;
+        int endCol = nCols;
+
+        if(subset == null) {
+            dataArray = new float[nCols*nRows];
+        } else {
+            dataArray = new float[subset.width*subset.height];
+            startCol = subset.x;
+            endCol = subset.x + subset.width;
+        }
+            
+        int row = 0;
         while((dtmLine = buffRead.readLine()) != null){
+            
+            if(subset != null) {
+                if(row < subset.y || row >= subset.y + subset.height) {
+                    row++;
+                    continue;
+                }
+            }
+            
             dtmLine = dtmLine.trim();
-            dtmColumns = dtmLine.split(" +");
-            for (String dtmColumn : dtmColumns) {
-//                    row = (cell/nCols);
-//                    col = cell - (row * nCols) + 1;
-                dataArray[cell] = Float.parseFloat(dtmColumn);
-                //                    ras[col][row] = Double.parseDouble(dtmLines[c]);
+            columns = dtmLine.split(" +");
+            
+            for (int c=startCol; c<endCol; c++) {
+
+                dataArray[cell] = Float.parseFloat(columns[c]);
                 if(dataArray[cell] != noData) {
                     valSum += dataArray[cell];
                     valSumSquare += (dataArray[cell] * dataArray[cell]);
@@ -171,6 +190,8 @@ public class GridAscii {
                 }
                 cell++;
             }
+            
+            row++;
         }
         buffRead.close();
 
@@ -178,8 +199,13 @@ public class GridAscii {
         stDevVal = Math.sqrt(valSumSquare/cellCount - meanVal*meanVal);
 
         // Create raster
-        SampleModel sampleModel = RasterFactory.createBandedSampleModel(DataBuffer.TYPE_DOUBLE, nCols, nRows, 1);
-        DataBuffer db = new DataBufferFloat(dataArray, nCols*nRows);
+        SampleModel sampleModel;
+        if(subset == null) {
+            sampleModel = RasterFactory.createBandedSampleModel(DataBuffer.TYPE_DOUBLE, nCols, nRows, 1);
+        } else {
+            sampleModel = RasterFactory.createBandedSampleModel(DataBuffer.TYPE_DOUBLE, subset.width, subset.height, 1);
+        }
+        DataBuffer db = new DataBufferFloat(dataArray, dataArray.length / 4);
         java.awt.Point point = new java.awt.Point();
         point.setLocation(0, 0);
         raster = WritableRaster.createWritableRaster(sampleModel, db, point);

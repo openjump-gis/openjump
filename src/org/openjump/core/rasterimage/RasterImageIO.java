@@ -11,16 +11,20 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.Viewport;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferByte;
 import java.awt.image.DataBufferFloat;
 import java.awt.image.Raster;
+import java.awt.image.RenderedImage;
 import java.awt.image.SampleModel;
 import java.awt.image.WritableRaster;
+import java.awt.image.renderable.ParameterBlock;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -48,10 +52,61 @@ public class RasterImageIO {
                 || fileNameOrURL.toLowerCase().endsWith(".gif")
                 || fileNameOrURL.toLowerCase().endsWith(".png")) {
              
-            BufferedImage bImage = javax.media.jai.JAI.create("fileload", fileNameOrURL).getAsBufferedImage();
+            BufferedImage bImage;
+            try {
+                // Try with ImageIO                
+                bImage = ImageIO.read(new File(fileNameOrURL));
+            } catch(Exception ex) {
+                // Try with JAI
+                bImage = JAI.create("fileload", fileNameOrURL).getAsBufferedImage();
+            }
             
             if(stats == null) {
-                stats = Stats.defaultRGBStats();
+                
+                ParameterBlock pb = new ParameterBlock();
+                pb.addSource(bImage);   // The source image
+                pb.add(null);       // null ROI means whole image
+                pb.add(1);          // check every pixel horizontally
+                pb.add(1);          // check every pixel vertically
+
+                // Mean
+                RenderedImage meanImage = JAI.create("mean", pb, null);
+                double[] mean = (double[])meanImage.getProperty("mean");
+
+                int nCols = bImage.getWidth();
+                int nRows = bImage.getHeight();
+                int nBands = bImage.getData().getNumBands();
+                long nCells = nCols * nRows;
+
+                // StdDev
+                double[] stdDev = new double[nBands];
+                DataBuffer dataBuffer = bImage.getData().getDataBuffer();
+                for(int r=0; r<nRows; r++) {
+                    for(int c=0; c<nCols; c++) {
+                        for(int b=0; b<nBands; b++) {
+
+                            double val = Math.pow(dataBuffer.getElemDouble(b) - mean[b], 2);
+                            stdDev[b] += val;
+                        }
+                    }
+                }
+
+                for(int b=0; b<nBands; b++) {
+                    stdDev[b] = Math.sqrt(stdDev[b] / nCells);
+                }
+
+                // Max and min
+                pb = new ParameterBlock();
+                pb.addSource(bImage);
+
+                RenderedOp op = JAI.create("extrema", pb);
+                double[][] extrema = (double[][]) op.getProperty("extrema");
+   
+                stats = new Stats(nBands);
+                for(int b=0; b<nBands; b++) {
+                    stats.setStatsForBand(b, extrema[0][b], extrema[1][b], mean[b], stdDev[b]);
+                }
+                
             }
             
             Envelope envelope = getGeoReferencing(fileNameOrURL, true, new Point(bImage.getWidth(), bImage.getHeight()));
@@ -79,7 +134,7 @@ public class RasterImageIO {
          } else if (fileNameOrURL.toLowerCase().endsWith(".flt")){
 
             GridFloat gf = new GridFloat(fileNameOrURL);
-            gf.readGrid();
+            gf.readGrid(null);
             
             Envelope imageEnvelope = new Envelope(
                     gf.getXllCorner(),
@@ -102,7 +157,7 @@ public class RasterImageIO {
          } else if (fileNameOrURL.toLowerCase().endsWith(".asc")){
 
             GridAscii ga = new GridAscii(fileNameOrURL);
-            ga.readGrid();
+            ga.readGrid(null);
 
             Envelope imageEnvelope = new Envelope(
                     ga.getXllCorner(),
@@ -135,16 +190,35 @@ public class RasterImageIO {
             
             RenderedOp renderedOp = JAI.create("fileload", filenameOrURL);
             return renderedOp.getAsBufferedImage(subset, null).getData();
-            
-            //return renderedOp.copyData();
-            
-//            javax.media.jai.PlanarImage pImage = javax.media.jai.JAI.create("fileload", filenameOrURL);
-//            return pImage.copyData();
 
         } else if (filenameOrURL.toLowerCase().endsWith(".jpg")){
         	 
-            return null;
-            
+            BufferedImage bImage;
+            try {
+                // Try with ImageIO                
+                bImage = ImageIO.read(new File(filenameOrURL));
+            } catch(Exception ex) {
+                // Try with JAI
+                bImage = JAI.create("fileload", filenameOrURL).getAsBufferedImage();
+            }
+            if(subset != null) {
+                
+                BufferedImage clipping = new BufferedImage(subset.width, subset.height, bImage.getType());  
+                Graphics2D area = (Graphics2D) clipping.getGraphics().create();  
+                area.drawImage(bImage, 0, 0,
+                        clipping.getWidth(), clipping.getHeight(),
+                        subset.x, subset.y,
+                        subset.x + subset.width, subset.y + subset.height, null);  
+                area.dispose();
+                
+                return clipping.getData();
+//                Raster raster =  bImage.getData(subset);
+//                WritableRaster wRaster = raster.createCompatibleWritableRaster(subset);
+//                wRaster.setRect(subset.x, subset.y, raster);
+//                return wRaster;
+            } else {
+                return bImage.getData();
+            }
 //            PlanarImage pimage;
 //            BufferedImage image = ImageIO.read(new File(filenameOrURL));
 //            pimage = PlanarImage.wrapRenderedImage(image);
@@ -154,23 +228,38 @@ public class RasterImageIO {
         } else if (filenameOrURL.toLowerCase().endsWith(".flt")){
 
             GridFloat gf = new GridFloat(filenameOrURL);
-            gf.readGrid();
+            gf.readGrid(subset);
 
-            DataBuffer dataBuffer = new DataBufferFloat(gf.getFloatArray(), gf.getnCols()*gf.getnRows());
+            DataBuffer dataBuffer = new DataBufferFloat(gf.getFloatArray(), gf.getFloatArray().length);
 
-            return Raster.createWritableRaster(RasterFactory.createBandedSampleModel(
-                    DataBuffer.TYPE_FLOAT, gf.getnCols(), gf.getnRows(), 1), dataBuffer, new java.awt.Point(0,0));
-
+            int nCols = gf.getnCols();
+            int nRows = gf.getnRows();
+            if(subset != null) {
+                nCols = subset.width;
+                nRows = subset.height;
+            }
+            
+            return Raster.createWritableRaster(
+                    RasterFactory.createBandedSampleModel(DataBuffer.TYPE_FLOAT, nCols, nRows, 1),
+                    dataBuffer,
+                    new java.awt.Point(0,0));
 
          } else if (filenameOrURL.toLowerCase().endsWith(".asc")){
 
             GridAscii ga = new GridAscii(filenameOrURL);
-            ga.readGrid();
+            ga.readGrid(subset);
 
-            DataBuffer dataBuffer = new DataBufferFloat(ga.getFloatArray(), ga.getnCols()*ga.getnRows());
+            int nCols = ga.getnCols();
+            int nRows = ga.getnRows();            
+            if(subset != null) {
+                nCols = subset.width;
+                nRows = subset.height;
+            }
+            
+            DataBuffer dataBuffer = new DataBufferFloat(ga.getFloatArray(), ga.getFloatArray().length);
             
             return Raster.createWritableRaster(RasterFactory.createBandedSampleModel(
-                    DataBuffer.TYPE_FLOAT, ga.getnCols(), ga.getnRows(), 1), dataBuffer, new java.awt.Point(0,0));
+                    DataBuffer.TYPE_FLOAT, nCols, nRows, 1), dataBuffer, new java.awt.Point(0,0));
 
 
          }
@@ -210,7 +299,7 @@ public class RasterImageIO {
             RenderedOp renderedOp = javax.media.jai.JAI.create("fileload", filenameOrURL);
             Rectangle rectangle = new Rectangle(col, row, 1, 1);
                 
-            return renderedOp.getData(rectangle).getSampleDouble(col, row, 0);
+            return renderedOp.getData(rectangle).getSampleDouble(col, row, band);
                  
 //            BufferedImage image = ImageIO.read(new File(filenameOrURL));
 //            pimage = PlanarImage.wrapRenderedImage(image);
@@ -586,6 +675,16 @@ public class RasterImageIO {
             Raster raster,
             Envelope envelope,
             CellSizeXY cellSize, double noData) throws FileNotFoundException, IOException {
+        
+        // Delete old .xml.aux statistics file
+        File auxXmlFile = new File(outFile.getParent(), outFile.getName() + ".aux.xml");
+        if(auxXmlFile.exists() && auxXmlFile.canWrite()) {
+            try {
+                auxXmlFile.delete();
+            } catch(Exception ex) {
+                ex.printStackTrace(System.out);
+            }
+        }
         
         SampleModel sm = raster.getSampleModel();
         ColorModel colorModel = PlanarImage.createColorModel(sm);
