@@ -1,4 +1,3 @@
-
 /*
  * The Unified Mapping Platform (JUMP) is an extensible, interactive GUI 
  * for visualizing and manipulating spatial features with geometry and attributes.
@@ -33,11 +32,9 @@
  * www.ashs.isa.com
  */
 
-
 package org.openjump.core.ui.plugin.raster;
 
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 
 import org.openjump.core.rasterimage.RasterImageLayer;
 
@@ -50,55 +47,50 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
-public class ProfileGraphPlugIn extends AbstractPlugIn
-{
-    ProfileGraphTool profileTool;    
-    private final static String sErrorSeeOutputWindow= I18N.get("org.openjump.core.ui.plugin.tools.MeasureM_FPlugIn.Error-see-output-window");
+public class ProfileGraphPlugIn extends AbstractPlugIn {
+    ProfileGraphTool profileTool;
+    private final static String sErrorSeeOutputWindow = I18N
+            .get("org.openjump.core.ui.plugin.tools.MeasureM_FPlugIn.Error-see-output-window");
     private String sName = "Create Thiessen Polygons";
-    
-    public void initialize(PlugInContext context) throws Exception
-    {    
-    
-   		this.sName = I18N.get("org.openjump.core.ui.plugin.raster.ProfileGraphPlugIn.Profile-Graph");
 
-        //context.getWorkbenchContext().getWorkbench().getFrame().getToolBar().addPlugIn(getIcon(), this, new MultiEnableCheck(), context.getWorkbenchContext());
-        context.getFeatureInstaller().addMainMenuItem(
-        		this, 
-				new String[] {MenuNames.RASTER}, 
-				this.sName + "...", 
-				false, 
-				null,
-				createEnableCheck(context.getWorkbenchContext()));
+    public void initialize(PlugInContext context) throws Exception {
+
+        this.sName = I18N
+                .get("org.openjump.core.ui.plugin.raster.ProfileGraphPlugIn.Profile-Graph");
+
+        // context.getWorkbenchContext().getWorkbench().getFrame().getToolBar().addPlugIn(getIcon(),
+        // this, new MultiEnableCheck(), context.getWorkbenchContext());
+        context.getFeatureInstaller().addMainMenuPlugin(this,
+                new String[] { MenuNames.RASTER }, this.sName + "...", false,
+                getIcon(), createEnableCheck(context.getWorkbenchContext()));
         profileTool = new ProfileGraphTool();
-   }
-    
-    public boolean execute(PlugInContext context) throws Exception
-    {
-        try
-        {
+    }
+
+    public boolean execute(PlugInContext context) throws Exception {
+        try {
             context.getLayerViewPanel().setCurrentCursorTool(profileTool);
             return true;
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
-        	context.getWorkbenchFrame().warnUser(sErrorSeeOutputWindow);
+            context.getWorkbenchFrame().warnUser(sErrorSeeOutputWindow);
             context.getWorkbenchFrame().getOutputFrame().createNewDocument();
-            context.getWorkbenchFrame().getOutputFrame().addText("MeasureM_FPlugIn Exception:" + e.toString());
+            context.getWorkbenchFrame().getOutputFrame()
+                    .addText("MeasureM_FPlugIn Exception:" + e.toString());
             return false;
         }
     }
-   
-    private Icon getIcon()
-    {
-        return  return IconLoader.icon("profile.png");//new ImageIcon(getClass().getResource("RulerM_F.gif"));
-    }  
-    
-    public MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
-        return new MultiEnableCheck()
-            .add(checkFactory.createTaskWindowMustBeActiveCheck())
-            .add(checkFactory.createAtLeastNLayerablesMustBeSelectedCheck(1, RasterImageLayer.class));
+
+    private Icon getIcon() {
+        return IconLoader.icon("profile.png");
+    }
+
+    public MultiEnableCheck createEnableCheck(
+            final WorkbenchContext workbenchContext) {
+        EnableCheckFactory checkFactory = new EnableCheckFactory(
+                workbenchContext);
+        return new MultiEnableCheck().add(
+                checkFactory.createTaskWindowMustBeActiveCheck()).add(
+                checkFactory.createAtLeastNLayerablesMustBeSelectedCheck(1,
+                        RasterImageLayer.class));
     }
 }
-
