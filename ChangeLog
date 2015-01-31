@@ -1,7 +1,11 @@
 # for display continuity sake please use 2 spaces instead of tabs
+2015_01_31. Giuseppe Aruta 
+  * ProfileGraphPlugIn. Add new Icon
+  * ProfileGraphTool.class. Add new panel which display profile info: length, mean slope, coordinates of starting
+    and ending points, cell dimension, cell statistics.
 
 2015_01_31. Giuseppe Aruta 
-  * RasterImageLayerProperties.class. Upgraded dispaly as HTML instead of TXT (used HTMLPanel.class). 
+  * RasterImageLayerProperties.class. Upgraded display as HTML instead of TXT (used HTMLPanel.class). 
   * Info can be saved as HTML file
  
 2015_01_31 Giuseppe Aruta 

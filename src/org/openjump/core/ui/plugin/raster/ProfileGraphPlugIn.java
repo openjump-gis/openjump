@@ -48,6 +48,7 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class ProfileGraphPlugIn extends AbstractPlugIn
 {
@@ -90,7 +91,7 @@ public class ProfileGraphPlugIn extends AbstractPlugIn
    
     private Icon getIcon()
     {
-        return new ImageIcon(getClass().getResource("RulerM_F.gif"));
+        return  return IconLoader.icon("profile.png");//new ImageIcon(getClass().getResource("RulerM_F.gif"));
     }  
     
     public MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
