@@ -32,13 +32,22 @@
 
 package org.openjump.core.ui.plugin.raster;
 
-import java.awt.Color;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.geom.NoninvertibleTransformException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.Iterator;
 import java.util.Locale;
 
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JInternalFrame;
+import javax.swing.JPanel;
+
+import org.openjump.core.apitools.LayerTools;
 import org.openjump.core.rasterimage.RasterImageLayer;
+import org.openjump.core.rasterimage.TiffTags.TiffReadingException;
 import org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer;
 import org.openjump.core.rasterimage.sextante.rasterWrappers.GridWrapperNotInterpolated;
 
@@ -49,17 +58,28 @@ import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.ui.HTMLFrame;
-import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
+import com.vividsolutions.jump.workbench.ui.HTMLPanel;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 /**
  * Giuseppe Aruta 2015_01_21 Class derived from LayerStatiticsPlugIn.class
  * Computes various statistics on cells for selected Raster Image Layers.
+ * 
+ * Giuseppe Aruta 2015_01_31.RasterLayerStatistics.class. Upgraded statistics to all bands 
+ * Add plugin icon. Change name to "Raster statistics"
  */
 public class RasterLayerStatisticsPlugIn extends AbstractPlugIn {
-
+    private final static String CANCEL = I18N.get("ui.OKCancelPanel.cancel");
     private final static String LAYER_STATISTICS = I18N
-            .get("ui.plugin.LayerStatisticsPlugIn.layer-statistics");
+            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.raster-statistics");
+    private final static String LAYER = I18N
+            .get("ui.plugin.LayerStatisticsPlugIn.layer");
+    private final static String ENV = I18N
+            .get("ui.plugin.LayerStatisticsPlugIn.envelope");
+    private final static String NUMBANDS = I18N
+            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.file.bands_number");
+    private final static String BAND = I18N
+            .get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.band");
     private final static String MAX = I18N
             .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.cell.max");
     private final static String MIN = I18N
@@ -80,7 +100,6 @@ public class RasterLayerStatisticsPlugIn extends AbstractPlugIn {
             .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.nodatacell");
     private final static String VALIDCELLS = I18N
             .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.validcells");
-
 
     public static MultiEnableCheck createEnableCheck(
             WorkbenchContext workbenchContext) {
@@ -114,7 +133,9 @@ public class RasterLayerStatisticsPlugIn extends AbstractPlugIn {
         return counter;
     }
 
-    public boolean execute(PlugInContext context) throws Exception {
+    public String StatisticsText(PlugInContext context, RasterImageLayer rLayer)
+            throws NoninvertibleTransformException, TiffReadingException,
+            Exception {
         /*
          * Overwrite Locale to UK Decimal format ####.##
          */
@@ -124,83 +145,163 @@ public class RasterLayerStatisticsPlugIn extends AbstractPlugIn {
                 .getNumberInstance(locale);
         df.applyPattern(pattern);
 
-        final WorkbenchContext wbcontext = context.getWorkbenchContext();
+        String infotext = null;
+        OpenJUMPSextanteRasterLayer rstLayer = new OpenJUMPSextanteRasterLayer();
+        rstLayer.create(rLayer);
+        Envelope layerEnv = rLayer.getWholeImageEnvelope();
+        // Get the statistics
+        int numBands = rLayer.getNumBands();
 
-        HTMLFrame out = context.getOutputFrame();
-        out.createNewDocument();
-        out.setBackground(Color.lightGray);
-        out.addHeader(1, LAYER_STATISTICS);
-        for (Iterator i = wbcontext.getLayerNamePanel()
-                .selectedNodes(RasterImageLayer.class).iterator(); i.hasNext();) {
-            RasterImageLayer slayer = (RasterImageLayer) i.next();
-            OpenJUMPSextanteRasterLayer rstLayer = new OpenJUMPSextanteRasterLayer();
-            rstLayer.create(slayer);
+        String bandstring = ": " + String.valueOf(numBands);
+        df.format(rstLayer.getMinValue());
+        df.format(rstLayer.getMaxValue());
+        df.format(rstLayer.getMeanValue());
+        int X = rstLayer.getNX(); // Number of columns
+        int Y = rstLayer.getNY(); // Number of rows
+        df.format(rstLayer.getMeanValue() * (X * Y - nodata(context, rstLayer)));
+        String nodata = df.format(rstLayer.getNoDataValue());// No data
+        df.format(rstLayer.getVariance());
+        double var = rstLayer.getVariance();// Variance as double
+        df.format(Math.sqrt(var));
+        df.format(var / rstLayer.getMeanValue());
+        int validcells = X * Y - nodata(context, rstLayer);// Number of
+                                                           // valid cells
 
-            // Get the statistics
-            int bands = slayer.getNumBands();
+        int nodatacells = nodata(context, rstLayer);// number of no data
+                                                    // cells
 
-            String bandstring = ": " + String.valueOf(bands);
-            String min = df.format(rstLayer.getMinValue());// Min value of
-                                                           // cells
-            String max = df.format(rstLayer.getMaxValue());// Max value of
-                                                           // cells
-            String mean = df.format(rstLayer.getMeanValue());// Mean value
-            int X = rstLayer.getNX(); // Number of columns
-            int Y = rstLayer.getNY(); // Number of rows
-            String sum = df.format(rstLayer.getMeanValue()
-                    * (X * Y - nodata(context, rstLayer)));// Sum
-            String nodata = df.format(rstLayer.getNoDataValue());// No data
-                                                                 // value
-            String variance = df.format(rstLayer.getVariance());// variance
-            double var = rstLayer.getVariance();// Variance as double
-            String std = df.format(Math.sqrt(var));// Standard deviation
-            String cvar = df.format(var / rstLayer.getMeanValue());// Covariance
-            int validcells = X * Y - nodata(context, rstLayer);// Number of
-                                                               // valid cells
-            int nodatacells = nodata(context, rstLayer);// number of no data
-                                                        // cells
+        infotext = "<HTML><BODY>";
+        infotext += "<table border='0.1'>";
+        infotext += "<tr><td><b>" + LAYER + "</b> </td><td>" + rLayer.getName()
+                + "</td></tr>";
+        infotext += "</table><br>";
 
-            out.addHeader(2, I18N.get("ui.plugin.LayerStatisticsPlugIn.layer"
-                    + ": ")
-                    + " " + slayer.getName());
+        infotext += "<table border='0.1'>";
+        infotext += "<tr><td><b>" + ENV + "</b> </td><td>"
+                + layerEnv.toString() + "</td></tr>";
+        infotext += "<tr><td><b>" + NUMBANDS + "</b> </td><td>" + bandstring
+                + "</td></tr>";
+        infotext += "<tr><td><b>" + NODATA + "</b> </td><td>" + nodata
+                + "</td></tr>";
+        infotext += "<tr><td><b>" + VALIDCELLS + "</b> </td><td>"
+                + Integer.toString(validcells) + "</td></tr>";
+        infotext += "<tr><td><b>" + NODATACELLS + "</b> </td><td>"
+                + Integer.toString(nodatacells) + "</td></tr>";
+        infotext += "</table><br>";
 
-            Envelope layerEnv = slayer.getWholeImageEnvelope();
-            out.addField(I18N.get("ui.plugin.LayerStatisticsPlugIn.envelope"),
-                    layerEnv.toString());
-            out.addField(
-                    I18N.get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.file.bands_number"),
-                    bandstring);
-            out.append("<table border='1'>");
-            out.append("<tr><td bgcolor=#CCCCCC align='center'> " + MIN
-                    + "</td><td bgcolor=#CCCCCC align='center'> " + MAX
-                    + "</td><td bgcolor=#CCCCCC align='center'> " + MEAN
-                    + "</td><td bgcolor=#CCCCCC align='center'> " + SUM
-                    + "</td><td bgcolor=#CCCCCC align='center'> " + NODATA
-                    + "</td><td bgcolor=#CCCCCC align='center'> " + VARIANCE
-                    + "</td><td bgcolor=#CCCCCC align='center'> " + STD
-                    + "</td><td bgcolor=#CCCCCC align='center'> " + CVAR
-                    + "</td><td bgcolor=#CCCCCC align='center'> " + VALIDCELLS
-                    + "</td><td bgcolor=#CCCCCC align='center'> " + NODATACELLS
-                    + "</td></tr>");
-            out.append("</td><td align='right'>" + min
-                    + "</td><td align='right'>" + max
-                    + "</td><td align='right'>" + mean
-                    + "</td><td align='right'>" + sum
-                    + "</td><td align='right'>" + nodata
-                    + "</td><td align='right'>" + variance
-                    + "</td><td align='right'>" + std
-                    + "</td><td align='right'>" + cvar
-                    + "</td><td align='right'>" + validcells
-                    + "</td><td align='right'>" + nodatacells + "</td></tr>");
-            out.append("</table>");
-            out.surface();
+        infotext += "<table border='1'>";
+        infotext += "<tr><td bgcolor=#CCCCCC align='center'> " + BAND
+                + "</td><td bgcolor=#CCCCCC align='center'> " + MIN
+                + "</td><td bgcolor=#CCCCCC align='center'> " + MAX
+                + "</td><td bgcolor=#CCCCCC align='center'> " + MEAN
+                + "</td><td bgcolor=#CCCCCC align='center'> " + SUM
+                + "</td><td bgcolor=#CCCCCC align='center'> " + VARIANCE
+                + "</td><td bgcolor=#CCCCCC align='center'> " + STD
+                + "</td><td bgcolor=#CCCCCC align='center'> " + CVAR
+
+                + "</td></tr>";
+        for (int b = 0; b < numBands; b++) {
+
+            infotext += "</td><td align='right'>"
+                    + b
+                    + "</td><td align='right'>"
+                    + df.format(rstLayer.getMinValue(b))// min
+                    + "</td><td align='right'>"
+                    + df.format(rstLayer.getMaxValue(b))// max
+                    + "</td><td align='right'>"
+                    + df.format(rstLayer.getMeanValue(b))// mean
+                    + "</td><td align='right'>"
+                    + df.format(rstLayer.getMeanValue(b)
+                            * (X * Y - nodata(context, rstLayer)))// sum
+
+                    + "</td><td align='right'>"
+                    + df.format(rstLayer.getVariance(b))// variance
+                    + "</td><td align='right'>"
+                    + df.format(Math.sqrt(rstLayer.getVariance(b)))// std
+                    + "</td><td align='right'>"
+                    + df.format(rstLayer.getVariance(b)
+                            / rstLayer.getMeanValue(b))// cvar
+
+                    + "</td></tr>";
         }
+        infotext += "</table>";
+        infotext += "</DIV></BODY></HTML>";
+
+        return infotext;
+    }
+
+    public boolean execute(PlugInContext context) throws Exception {
+
+        RasterImageLayer rLayer = (RasterImageLayer) LayerTools
+                .getSelectedLayerable(context, RasterImageLayer.class);
+        // final WorkbenchContext wbcontext = context.getWorkbenchContext();
+        /*
+         * Overwrite Locale to UK Decimal format ####.##
+         */
+        Locale locale = new Locale("en", "UK");
+        String pattern = "###.########";
+        DecimalFormat df = (DecimalFormat) NumberFormat
+                .getNumberInstance(locale);
+        df.applyPattern(pattern);
+
+        context.getWorkbenchContext();
+
+        // HTMLFrame out = context.getOutputFrame();
+        final JInternalFrame frame = new JInternalFrame(LAYER_STATISTICS);
+        HTMLPanel out = new HTMLPanel();
+        out.getRecordPanel().removeAll();
+        out.createNewDocument();
+        out.addHeader(1, LAYER_STATISTICS);
+        // for (Iterator i = wbcontext.getLayerNamePanel()
+        // .selectedNodes(RasterImageLayer.class).iterator(); i.hasNext();) {
+        // RasterImageLayer rLayer = (RasterImageLayer) i.next();
+
+        out.append(StatisticsText(context, rLayer));
+        // }
+        // -- OK button Panel
+        JPanel okPanel = new JPanel();
+        final JButton okButton = new JButton(CANCEL) {
+            @Override
+            public Dimension getPreferredSize() {
+                return new Dimension(100, 25);
+            }
+        };
+        okButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose();
+                return;
+            }
+        });
+        okPanel.add(okButton);
+        // -- End of OK Buttom
+
+        /*
+         * JTabbedPane tabbedPane = new JTabbedPane(); Border
+         * mainComponentBorder = BorderFactory.createCompoundBorder(
+         * BorderFactory.createEtchedBorder(),
+         * BorderFactory.createEmptyBorder(5, 5, 5, 5));
+         * tabbedPane.setBorder(mainComponentBorder); tabbedPane.add(out,
+         * LAYER_STATISTICS); frame.add(tabbedPane, BorderLayout.CENTER);
+         */
+
+        frame.add(out, BorderLayout.CENTER);
+        frame.add(okPanel, BorderLayout.SOUTH);
+
+        frame.setClosable(true);
+        frame.setResizable(true);
+        frame.setMaximizable(true);
+        frame.setSize(800, 450);
+        frame.setVisible(true);
+        context.getWorkbenchFrame().addInternalFrame(frame);
+        // }
+
         return true;
     }
 
     public String getName() {
-        return I18N
-                .get("com.vividsolutions.jump.workbench.ui.plugin.LayerStatisticsPlugIn");
+        return LAYER_STATISTICS;
     }
+
+    public static final ImageIcon ICON = IconLoader.icon("statistics16.png");
 
 }

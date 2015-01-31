@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2015_01_31 Giuseppe Aruta 
+ * RasterLayerStatistics.class. Upgraded statistics to all bands 
+ * Add plugin icon. Change name to "Raster statistics"
+
 2015-01-29 bertaz
   * fix #386: ExtractSelectedPartOfImage fails to work when extracting a part of ASC or FLT monoband raster.
   * fix #387: RasterImageLayer class seems not working anymore with JPG files, occasionally also with some PNG.
