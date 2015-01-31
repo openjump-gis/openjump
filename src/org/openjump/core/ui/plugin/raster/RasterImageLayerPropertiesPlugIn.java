@@ -1,15 +1,16 @@
 package org.openjump.core.ui.plugin.raster;
 
-import java.awt.Color;
+import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
 import java.awt.image.SampleModel;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
@@ -18,33 +19,28 @@ import javax.media.jai.PlanarImage;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
+import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.JTabbedPane;
 import javax.swing.border.Border;
 
+import org.apache.log4j.Logger;
 import org.openjump.core.apitools.LayerTools;
 import org.openjump.core.rasterimage.RasterImageLayer;
+import org.openjump.core.rasterimage.TiffTags.TiffReadingException;
 import org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer;
 import org.openjump.core.rasterimage.sextante.rasterWrappers.GridWrapperNotInterpolated;
-import org.saig.core.gui.swing.sldeditor.util.FormUtils;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.plugin.ThreadedPlugIn;
-import com.vividsolutions.jump.workbench.ui.GUIUtil;
-import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
+import com.vividsolutions.jump.workbench.ui.HTMLFrame;
+import com.vividsolutions.jump.workbench.ui.HTMLPanel;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 
 /**
  * @author Giuseppe Aruta (giuseppe_aruta[AT]yahoo.it)
@@ -52,13 +48,14 @@ import java.io.IOException;
  *          of Sextante Raster Layer: name, file location, raster dimension (in
  *          cell), raster extension, X cell size, numbers of bands, min-max-mean
  *          of 1st band value (if the raster is monoband)
- * @version 0.2 - 2015_02_01 Advanced plugin. Displays File, Raster and cells
+ * @version 0.2 - 2015_01_02 Advanced plugin. Displays File, Raster and cells
  *          data properties of Sextante Raster Layer and allows to save those
  *          information as TXT file
+ * @version 0.2 - 2015_01_31. Used HTML instead of TXT frame. Info can be saved
+ *           as HTML file         
  */
 
-public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn implements
-        ThreadedPlugIn {
+public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
 
     protected static final String TXTENDING = ".txt";
     private String minVal;
@@ -87,6 +84,7 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn implements
     private String covar; // Covariance
     private String sum; // Sum of cell values
 
+    private final static String CANCEL = I18N.get("ui.OKCancelPanel.cancel");
     // /Language code deriving from previous RasterImageLayerPropertiesPlugIn
     private final static String INFO = I18N
             .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn");
@@ -161,6 +159,7 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn implements
     private final static String YMAX = I18N
             .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.ymax");
 
+    private static final Logger LOGGER = Logger.getLogger(HTMLFrame.class);
     private Envelope extent;
 
     /*
@@ -234,7 +233,8 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn implements
     /*
      * Check the Data type of the DataBuffer storing the pixel data.
      */
-    public String dataType(PlugInContext context, RasterImageLayer rLayer) throws IOException {
+    public String dataType(PlugInContext context, RasterImageLayer rLayer)
+            throws IOException {
         Raster r = rLayer.getRasterData(null);
         SampleModel sm = r.getSampleModel();
         datatype = sm.getDataType();
@@ -345,27 +345,20 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn implements
         return filetype;
     }
 
-    @Override
-    public boolean execute(PlugInContext context) throws Exception {
-        // -- not used here
-        return true;
-    }
-
-    public void run(TaskMonitor monitor, final PlugInContext context)
-            throws Exception {
-        RasterImageLayer rLayer = (RasterImageLayer) LayerTools
-                .getSelectedLayerable(context, RasterImageLayer.class);
-        final MultiInputDialog dialog = new MultiInputDialog(
-                context.getWorkbenchFrame(), INFO, true);
+    public String InfoText(PlugInContext context, RasterImageLayer rLayer)
+            throws NoninvertibleTransformException, TiffReadingException,
+            Exception {
+        String infotext = null;
         extent = rLayer.getWholeImageEnvelope();
-
         /*
          * Check the source file of selected Raster Image Ex.
          * C:/Document/Image/Test.jpg
          */
         String checkfile = rLayer.getImageFileName();
-
-        String infotext = null;
+        BufferedImage pi = null;
+        pi = rLayer.getImageForDisplay();
+        pi.getWidth();
+        int band = pi.getSampleModel().getNumBands();// Number of bands
 
         /*
          * Overwrite Locale to UK Decimal format ####.##
@@ -387,9 +380,6 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn implements
          */
         if (checkfile == null) {
 
-            BufferedImage pi = rLayer.getImageForDisplay();
-            pi.getWidth();
-            int band = pi.getSampleModel().getNumBands();// Number of bands
             name = rLayer.getName();// Name of Layer
             extent = rLayer.getWholeImageEnvelope();// Extent of Layer
             double cellSize = (extent.getMaxX() - extent.getMinX())
@@ -416,91 +406,7 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn implements
                     + df.format(rLayer.getOrigImageWidth()) + " X "
                     + df.format(rLayer.getOrigImageHeight()) + " pixel" + "\n"
                     + "\t" + BANDS + ": " + band + "\n";
-
-            JTextArea textArea = new JTextArea(infotext);
-            textArea.setEditable(false);
-            textArea.setFont(new Font("Verdana", Font.BOLD, 12));
-            Border border = BorderFactory.createLineBorder(Color.darkGray);
-            textArea.setBorder(BorderFactory.createCompoundBorder(border,
-                    BorderFactory.createEmptyBorder(10, 10, 10, 10)));
-            JScrollPane scrollPane = new JScrollPane(textArea);
-            textArea.setLineWrap(true);
-            textArea.setWrapStyleWord(true);
-            scrollPane.setPreferredSize(new Dimension(600, 400));
-
-            final String printtext = infotext;
-            JButton jButton_Export = new javax.swing.JButton();
-            jButton_Export.setText(EXPORT_TO_TXT);
-            jButton_Export
-                    .addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(
-                                java.awt.event.ActionEvent evt) {
-                            try {
-
-                                JFileChooser fileChooser = GUIUtil
-                                        .createJFileChooserWithOverwritePrompting();
-                                fileChooser.setDialogTitle("Save to text file");
-                                fileChooser.setFileFilter(GUIUtil
-                                        .createFileFilter("text file",
-                                                new String[] { "txt" }));
-                                fileChooser.getCurrentDirectory();
-                                fileChooser.setName(name);
-                                int returnVal = fileChooser
-                                        .showSaveDialog(context
-                                                .getWorkbenchFrame());
-                                File file = fileChooser.getSelectedFile();
-                                BufferedWriter writer = null;
-                                if (returnVal == JFileChooser.APPROVE_OPTION) {
-                                    try {
-                                        writer = new BufferedWriter(
-                                                new FileWriter(file
-                                                        .getAbsolutePath()
-                                                        + ".txt"));
-                                        writer.write(printtext);
-                                        writer.close();
-                                    } finally {
-                                        context.getWorkbenchFrame()
-                                                .setStatusMessage(FILE_SAVED);
-                                    }
-                                }
-                            } catch (Exception ex) {
-
-                                JOptionPane.showMessageDialog(null, this,
-                                        ERROR, JOptionPane.ERROR_MESSAGE);
-
-                            }
-                        }
-                    });
-            /*
-             * Add Scroll pannel with the text area to the dialog
-             */
-            dialog.addRow(scrollPane);
-            /*
-             * Create a new panel for the "Save to TXT" button
-             */
-            JPanel buttonPane = new JPanel();
-            /*
-             * Add "Save to TXT" button to the new paneò
-             */
-            FormUtils.addRowInGBL(buttonPane, 1, 0, jButton_Export);
-            /*
-             * Add the "Save to TXT" panel to the dialog
-             */
-            dialog.addRow(buttonPane);
-            /*
-             * MultiImput Dialog parameters
-             */
-            dialog.pack();
-            GUIUtil.centreOnWindow(dialog);
-            dialog.setCancelVisible(false);
-            dialog.setVisible(true);
-        }
-
-        /*
-         * The following section is for Layers with datasource
-         */
-
-        else {
+        } else {
             OpenJUMPSextanteRasterLayer rstLayer = new OpenJUMPSextanteRasterLayer();
             rstLayer.create(rLayer);
             final File image = new File(rstLayer.getFilename());
@@ -539,163 +445,131 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn implements
                                                            // of
                                                            // values
 
-            try {
-                /*
-                 * 2. Raster Layer monoband with datasource
-                 */
-                if (numbands == 1) {
-                    infotext = LAYER_NAME + ": " + "\t" + name_raster + "\n"
-                            + "\n" + NAMEFILE + "\n" + "\t" + NAME + ": "
-                            + name + "\n" + "\t" + TYPE + ": "
-                            + filetype(image) + "\n" + "\t" + DIMENSION + ": "
-                            + sizeMB + " (" + size + " bytes)" + "\n" + "\t"
-                            + DIRECTORY + ": " + directory + "\n" + "\n"
-                            + EXTENT + "\n" + "\t" + XMIN + ": "
-                            + df.format(extent.getMinX()) + "\n" + "\t" + YMIN
-                            + ": " + df.format(extent.getMinY()) + "\n" + "\t"
-                            + XMAX + ": " + df.format(extent.getMaxX()) + "\n"
-                            + "\t" + YMAX + ": " + df.format(extent.getMaxY())
-                            + "\n" + "\t" + AREA + ": " + area + " (" + width
-                            + " X " + height + ")" + "\n" + "\t" + CELL_SIZE
-                            + ": " + cellSize + "\n" + "\t" + CELL_NUM + ": "
-                            + cellnumber + "\n" + "\n" + RASTER + "\n" + "\t"
-                            + DATATYPE + ": " + dataType(context, rLayer)
-                            + "\n" + "\t" + COLORDEPTH + ": " + colordepth
-                            + " bpp" + "\n" + "\t" + RASTER_SIZE + ": " + X
-                            + " X " + Y + " pixel" + "\n" + "\t" + BANDS + ": "
-                            + numbands + "\n" + "\n" + STATISTICS + "\n" + "\t"
-                            + MAX + ": " + maxVal + "\n" + "\t" + MIN + ": "
-                            + minVal + "\n" + "\t" + MEAN + ": " + meanVal
-                            + "\n" + "\t" + SUM + ": " + sum + "\n" + "\t"
-                            + NODATA + ": " + noVal + "\n" + "\t" + VARIANCE
-                            + ": " + varVal + "\n" + "\t" + CVAR + ": " + covar
-                            + "\n" + "\t" + STD + ": " + stdvar + "\n" + "\t"
-                            + VALIDCELLS + ": "
-                            + (X * Y - nodata(context, rstLayer)) + "\n" + "\t"
-                            + NODATACELLS + ": " + nodata(context, rstLayer)
-                            + "\n";
+            infotext = "<HTML><BODY>";
+            infotext += "<DIV style=\"width: 500px; text-justification: justify;\">";
 
-                } else {
-                    /*
-                     * 3. Raster Layer multiple bands with datasource
-                     */
-                    infotext = LAYER_NAME + ": " + "\t" + name_raster + "\n"
-                            + "\n" + NAMEFILE + "\n" + "\t" + NAME + ": "
-                            + name + "\n" + "\t" + TYPE + ": "
-                            + filetype(image) + "\n" + "\t" + DIMENSION + ": "
-                            + sizeMB + " (" + size + " bytes)" + "\n" + "\t"
-                            + DIRECTORY + ": " + directory + "\n" + "\n"
-                            + EXTENT + "\n" + "\t" + XMIN + ": "
-                            + df.format(extent.getMinX()) + "\n" + "\t" + YMIN
-                            + ": " + df.format(extent.getMinY()) + "\n" + "\t"
-                            + XMAX + ": " + df.format(extent.getMaxX()) + "\n"
-                            + "\t" + YMAX + ": " + df.format(extent.getMaxY())
-                            + "\n" + "\t" + AREA + ": " + area + " (" + width
-                            + " X " + height + ")" + "\n" + "\t" + CELL_SIZE
-                            + ": " + cellSize + "\n" + "\t" + CELL_NUM + ": "
-                            + cellnumber + "\n" + "\n" + RASTER + "\n" + "\t"
-                            + DATATYPE + ": " + dataType(context, rLayer)
-                            + "\n" + "\t" + COLORDEPTH + ": " + colordepth
-                            + " bpp" + "\n" + "\t" + RASTER_SIZE + ": " + X
-                            + " X " + Y + " pixel" + "\n" + "\t" + BANDS + ": "
-                            + numbands + "\n";
-                }
+            infotext += "<table border='0.1'>";
+            infotext += "<tr><td bgcolor=#CCCCCC><b>" + LAYER_NAME
+                    + "</b> </td><td>" + name_raster + "</td></tr>";
+            infotext += "</table>";
 
-                JTextArea textArea = new JTextArea(infotext);
-                textArea.setEditable(false);
-                textArea.setFont(new Font("Verdana", Font.BOLD, 12));
-                Border border = BorderFactory.createLineBorder(Color.darkGray);
-                textArea.setBorder(BorderFactory.createCompoundBorder(border,
-                        BorderFactory.createEmptyBorder(10, 10, 10, 10)));
-                JScrollPane scrollPane = new JScrollPane(textArea);
-                textArea.setLineWrap(true);
-                textArea.setWrapStyleWord(true);
-                scrollPane.setPreferredSize(new Dimension(650, 400));
+            // infotext += "<b>" + NAMEFILE + "</b>" + "<br>";
+            infotext += "<table border='0.1'>";
+            infotext += "<tr><td bgcolor=#CCCCCC><b>" + NAMEFILE + "  "
+                    + "</b></td><td><b>" + NAME + "</b></td><td>" + name
+                    + "</td></tr>";
+            // infotext += "<tr> <td></td> <td><b>" + NAME + "</b></td><td>"
+            // + name + "</td></tr>";
+            infotext += "<tr> <td></td> <td<b>" + TYPE + "</b></td><td>"
+                    + filetype(image) + "</td></tr>";
+            infotext += "<tr> <td></td> <td><b> " + DIMENSION + "</b></td><td>"
+                    + sizeMB + " (" + size + " bytes)" + "</td></tr>";
+            infotext += "<tr> <td></td> <td><b>" + DIRECTORY + "</b></td><td>"
+                    + directory + "</td></tr>";
+            infotext += "</table>";
 
-                // J Button to export//
-                final String printtext = infotext;
-                JButton jButton_Export = dialog.addButton(EXPORT_TO_TXT);
+            // infotext += "<br>";
+            // infotext += "<b>" + RASTER + "</b>" + "<br>";
+            infotext += "<table border='0.1'>";
+            infotext += "<tr><td bgcolor=#CCCCCC><b>" + RASTER
+                    + "</b></td><td><b>" + BANDS + "</b></td><td>" + numbands
+                    + "</td></tr>";
+            infotext += "<tr><td></td> <td><b>" + DATATYPE + "</b></td><td>"
+                    + dataType(context, rLayer) + "</td></tr>";
+            infotext += "<tr><td></td> <td><b>" + COLORDEPTH + "</b></td><td>"
+                    + colordepth + "</td></tr>";
+            infotext += "<tr><td></td> <td><b>" + RASTER_SIZE + "</b></td><td>"
+                    + X + " X " + Y + " pixel" + "</td></tr>";
+            infotext += "</table>";
 
-                // JButton jButton_Export = new javax.swing.JButton();
-                // jButton_Export.setText("Export to text file");
-                jButton_Export.setSize(15, 4);
-                jButton_Export
-                        .addActionListener(new java.awt.event.ActionListener() {
-                            public void actionPerformed(
-                                    java.awt.event.ActionEvent evt) {
-                                try {
+            // infotext += "<br>";
 
-                                    JFileChooser fileChooser = GUIUtil
-                                            .createJFileChooserWithOverwritePrompting();
-                                    fileChooser.setDialogTitle(EXPORT_TO_TXT);
-                                    fileChooser.setFileFilter(GUIUtil
-                                            .createFileFilter("text file",
-                                                    new String[] { "txt" }));
-                                    fileChooser.setCurrentDirectory(image);
-                                    fileChooser.getCurrentDirectory();
-                                    fileChooser.setName(name);
-                                    int returnVal = fileChooser
-                                            .showSaveDialog(context
-                                                    .getWorkbenchFrame());
-                                    File file = fileChooser.getSelectedFile();
-                                    BufferedWriter writer = null;
-                                    if (returnVal == JFileChooser.APPROVE_OPTION) {
-                                        try {
-                                            writer = new BufferedWriter(
-                                                    new FileWriter(file
-                                                            .getAbsolutePath()
-                                                            + ".txt"));
-                                            writer.write(printtext);
-                                            writer.close();
-                                        } finally {
-                                            context.getWorkbenchFrame()
-                                                    .setStatusMessage(
-                                                            FILE_SAVED);
-                                        }
-                                    }
-                                } catch (Exception ex) {
-                                    JOptionPane.showMessageDialog(null, this,
-                                            ERROR, JOptionPane.ERROR_MESSAGE);
-                                }
-                            }
-                        });
-                /*
-                 * Add Scroll pannel with the text area to the dialog
-                 */
-                dialog.addRow(scrollPane);
-                /*
-                 * Create a new panel for the "Save to TXT" button
-                 */
-                JPanel buttonPane = new JPanel();
-                /*
-                 * Add "Save to TXT" button to the new paneò
-                 */
-                FormUtils.addRowInGBL(buttonPane, 1, 0, jButton_Export);
-                /*
-                 * Add the "Save to TXT" panel to the dialog
-                 */
-                dialog.addRow(buttonPane);
-                /*
-                 * MultiImput Dialog parameters
-                 */
-                dialog.pack();
-                GUIUtil.centreOnWindow(dialog);
-                dialog.setCancelVisible(false);
-                dialog.setVisible(true);
-            } catch (NullPointerException e) {
-                context.getWorkbenchFrame()
-                        .warnUser(
-                                I18N.get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Error-See-Output-Window"));
-                context.getWorkbenchFrame().getOutputFrame()
-                        .createNewDocument();
-                context.getWorkbenchFrame()
-                        .getOutputFrame()
-                        .addText(
-                                "SaveImageToRasterPlugIn Exception:"
-                                        + new Object[] { e.toString() });
+            infotext += "<table border='0.1'>";
+            infotext += "<tr><td bgcolor=#CCCCCC><b>" + EXTENT
+                    + "</b></td><td><b>" + XMIN + "</b></td><td>"
+                    + df.format(extent.getMinX()) + "</td><td>";
+            infotext += "<tr><td></td> <td><b>" + XMAX + "</b></td><td>"
+                    + df.format(extent.getMaxX()) + "</td><td>";
+            infotext += "<tr><td></td> <td><b>" + YMIN + "</b></td><td>"
+                    + df.format(extent.getMinY()) + "</td><td>";
+            infotext += "<tr><td></td> <td><b>" + YMAX + "</b></td><td>"
+                    + df.format(extent.getMaxY()) + "</td><td>";
+            infotext += "<tr><td></td> <td><b>" + AREA + "</b></td><td>" + area
+                    + " (" + width + " X " + height + ")" + "</td></tr>";// Extension
+            infotext += "<tr><td></td> <td><b>" + CELL_SIZE + "</b></td><td>"
+                    + cellSize + "</td></tr>"; // Extension fo a cell
+            infotext += "<tr><td></td> <td><b>" + CELL_NUM + "</td><td>"
+                    + cellnumber + "</td></tr>"; // Number of cells
+            infotext += "</table>";
+
+            infotext += "</DIV></BODY></HTML>";
+
+        }
+        return infotext;
+
+    }
+
+    public boolean execute(PlugInContext context) throws Exception {
+
+        RasterImageLayer rLayer = (RasterImageLayer) LayerTools
+                .getSelectedLayerable(context, RasterImageLayer.class);
+
+        final WorkbenchContext wbcontext = context.getWorkbenchContext();
+
+        // HTMLFrame out = context.getOutputFrame();
+        final JInternalFrame frame = new JInternalFrame(INFO);
+        JTabbedPane tabbedPane = new JTabbedPane();
+        Border mainComponentBorder = BorderFactory.createCompoundBorder(
+                BorderFactory.createEtchedBorder(),
+                BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        tabbedPane.setBorder(mainComponentBorder);
+
+        HTMLPanel out = new HTMLPanel();
+        out.getRecordPanel().removeAll();
+        out.createNewDocument();
+        // out.setForeground(Color.gray);
+        // out.setBackgroundColor(SystemColor.window);
+        // out.setBackground(Color.green);
+        out.addHeader(1, INFO);
+        out.append(InfoText(context, rLayer));
+
+        // -- OK button Panel
+        JPanel okPanel = new JPanel();
+        final JButton okButton = new JButton(CANCEL) {
+            @Override
+            public Dimension getPreferredSize() {
+                return new Dimension(100, 25);
+            }
+        };
+        okButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose();
                 return;
             }
-        }
+        });
+        okPanel.add(okButton);
+        // -- End of OK Buttom
+
+        /*
+         * JTabbedPane tabbedPane = new JTabbedPane(); Border
+         * mainComponentBorder = BorderFactory.createCompoundBorder(
+         * BorderFactory.createEtchedBorder(),
+         * BorderFactory.createEmptyBorder(5, 5, 5, 5));
+         * tabbedPane.setBorder(mainComponentBorder); tabbedPane.add(out,
+         * LAYER_STATISTICS); frame.add(tabbedPane, BorderLayout.CENTER);
+         */
+
+        frame.add(out, BorderLayout.CENTER);
+        frame.add(okPanel, BorderLayout.SOUTH);
+
+        frame.setClosable(true);
+        frame.setResizable(true);
+        frame.setMaximizable(true);
+        frame.setSize(800, 450);
+        frame.setVisible(true);
+        context.getWorkbenchFrame().addInternalFrame(frame);
+
+        return true;
     }
 
 }

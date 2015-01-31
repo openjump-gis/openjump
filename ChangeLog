@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2015_01_31. Giuseppe Aruta 
+  * RasterImageLayerProperties.class. Upgraded dispaly as HTML instead of TXT (used HTMLPanel.class). 
+  * Info can be saved as HTML file
+ 
 2015_01_31 Giuseppe Aruta 
  * RasterLayerStatistics.class. Upgraded statistics to all bands 
  * Add plugin icon. Change name to "Raster statistics"
