@@ -898,5 +898,11 @@
       <version>2.6-pre2-SNAPSHOT</version>
       <scope>provided</scope>
      </dependency>
+        <!--Nico Ribot: 30 jan 2015. For JTreeTable : Datastore list of layers:--> 
+        <dependency>
+            <groupId>uk.gov.nationalarchives.thirdparty.netbeans</groupId>
+            <artifactId>org-netbeans-swing-outline</artifactId>
+            <version>7.2</version>
+        </dependency>
   </dependencies>
 </project>

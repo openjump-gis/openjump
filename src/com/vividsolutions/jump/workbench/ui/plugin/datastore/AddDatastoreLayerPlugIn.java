@@ -25,7 +25,6 @@ public class AddDatastoreLayerPlugIn extends AbstractAddDatastoreLayerPlugIn {
     public static final ImageIcon ICON = IconLoader.icon("database_add.png");
 
     public boolean execute(final PlugInContext context) throws Exception {
-        ((AddDatastoreLayerPanel) panel(context)).setCaching(true);
         return super.execute(context);
     }
 
@@ -37,6 +36,7 @@ public class AddDatastoreLayerPlugIn extends AbstractAddDatastoreLayerPlugIn {
             final AddDatastoreLayerPanel panel,
             final PlugInContext context) throws Exception {
 
+        /*
         Layer layer = new Layer(
                 panel.getDatasetName(),
                 context.getLayerManager().generateLayerFillColor(),
@@ -66,6 +66,8 @@ public class AddDatastoreLayerPlugIn extends AbstractAddDatastoreLayerPlugIn {
         context.getLayerManager().setFiringEvents(true); // added by michaudm on 2009-04-23
 
         return layer;
+                */
+        return null;
     }
 
 

@@ -35,6 +35,14 @@ public class GeometryColumn {
         return type;
     } 
     
+    /**
+     * Sets the type of this GeometryColumn
+     * @param type 
+     */
+    public void setType(String type) {
+        this.type = type;
+    } 
+    
     public String toString() {
         return name + " (" + type + ", srid=" + srid + ")";
     }

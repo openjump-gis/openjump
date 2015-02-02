@@ -33,7 +33,7 @@ import com.vividsolutions.jump.workbench.ui.OKCancelDialog;
  */
 public class ConnectionPanel extends JPanel {
 
-    protected final static int MAIN_COLUMN_WIDTH = 400;
+    protected final static int MAIN_COLUMN_WIDTH = 550;
 
     protected final static Insets INSETS = new Insets( 2, 2, 2, 2 );
 

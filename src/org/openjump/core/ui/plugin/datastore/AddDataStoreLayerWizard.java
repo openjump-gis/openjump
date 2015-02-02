@@ -11,6 +11,7 @@ import org.openjump.core.ui.swing.wizard.AbstractWizardGroup;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.coordsys.CoordinateSystemRegistry;
+import com.vividsolutions.jump.datastore.DataStoreLayer;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.io.datasource.Connection;
 import com.vividsolutions.jump.io.datasource.DataSource;
@@ -27,10 +28,12 @@ import com.vividsolutions.jump.workbench.ui.plugin.AddNewLayerPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel;
 import com.vividsolutions.jump.workbench.ui.plugin.datastore.DataStoreDataSource;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AddDataStoreLayerWizard extends AbstractWizardGroup {
-  private static final String KEY = AddDataStoreLayerWizard.class.getName();
 
+    private static final String KEY = AddDataStoreLayerWizard.class.getName();
   private AddDataStoreLayerWizardPanel dataStoreWizardPanel;
 
   private WorkbenchContext workbenchContext;
@@ -64,9 +67,12 @@ public class AddDataStoreLayerWizard extends AbstractWizardGroup {
     try {
       AddDatastoreLayerPanel dataStorePanel = dataStoreWizardPanel.getDataStorePanel();
       if (dataStorePanel.validateInput() == null) {
-        final Layer layer = createLayer(dataStorePanel, monitor);
+                final List<Layer> layers = createLayers(dataStorePanel, monitor);
+
+                // for all selected layers, create a new OJ layer
         SwingUtilities.invokeLater(new Runnable() {
           public void run() {
+                        for (final Layer layer : layers) {
             Collection<Category> selectedCategories = workbenchContext.getLayerNamePanel()
               .getSelectedCategories();
             LayerManager layerManager = workbenchContext.getLayerManager();
@@ -76,41 +82,42 @@ public class AddDataStoreLayerWizard extends AbstractWizardGroup {
             }
             try {
                 workbenchContext.getLayerViewPanel().getViewport().update();
-            } catch(Exception e) {
+                            } catch (Exception e) {
                 //throw NoninvertibleTransformationException;
             }
             layerManager.addLayerable(categoryName, layer);
           }
+                    }
         });
+
         workbenchContext.getLayerViewPanel().getViewport().update();
+            } else {
+                throw new Exception(dataStorePanel.validateInput());
       }
-      else throw new Exception(dataStorePanel.validateInput());
     } catch (Exception e) {
       monitor.report(e);
       throw e;
     }
   }
 
-  private Layer createLayer(final AddDatastoreLayerPanel panel,
-    TaskMonitor monitor) throws Exception {
+    private Layer createLayer(final DataStoreLayer dsLayer,
+            ConnectionDescriptor connectionDescriptor, TaskMonitor monitor) throws Exception {
 
-    String datasetName = panel.getDatasetName();
     LayerManager layerManager = workbenchContext.getLayerManager();
     Color fillColor = layerManager.generateLayerFillColor();
     FeatureCollection featureCollection = AddNewLayerPlugIn.createBlankFeatureCollection();
-    Layer layer = new Layer(datasetName, fillColor, featureCollection,
+        Layer layer = new Layer(dsLayer.getFullName(), fillColor, featureCollection,
       layerManager);
 
-    String geometryAttributeName = panel.getGeometryAttributeName();
-    String whereClause = panel.getWhereClause();
-    int limit = panel.getMaxFeatures();
-    ConnectionDescriptor connectionDescriptor = panel.getConnectionDescriptor();
-    boolean caching = panel.isCaching();
-    DataStoreDataSource ds = new DataStoreDataSource(datasetName,
+        String geometryAttributeName = dsLayer.getGeoCol().getName();
+        String whereClause = dsLayer.getWhereClause();
+        int limit = dsLayer.getLimit();
+        boolean caching = dsLayer.isCaching();
+        DataStoreDataSource ds = new DataStoreDataSource(dsLayer.getFullName(),
       geometryAttributeName, whereClause, limit, connectionDescriptor, caching,
       workbenchContext);
 
-    DataSourceQuery dsq = new DataSourceQuery(ds, null, datasetName);
+        DataSourceQuery dsq = new DataSourceQuery(ds, null, dsLayer.getFullName());
 
     layer.setDataSourceQuery(dsq);
 
@@ -123,13 +130,27 @@ public class AddDataStoreLayerWizard extends AbstractWizardGroup {
         // Other is with a "Style" which can be persisted with the layer
         load(layer, crsRegistry, monitor);
         SRIDStyle sridStyle = new SRIDStyle();
-        sridStyle.setSRID(panel.getGeometryColumn().getSRID());
+            sridStyle.setSRID(dsLayer.getGeoCol().getSRID());
         layer.addStyle(sridStyle);
         layerManager.setFiringEvents(true); // added by michaudm on 2009-04-05
+        } finally {
+            layerManager.setFiringEvents(true);
     }
-    finally {layerManager.setFiringEvents(true);}
     return layer;
   }
+
+    private List<Layer> createLayers(final AddDatastoreLayerPanel panel,
+            TaskMonitor monitor) throws Exception {
+        ArrayList<Layer> ret = new ArrayList<Layer>();
+        List<DataStoreLayer> dsLayers = panel.getDatasetLayers();
+        ConnectionDescriptor connectionDescriptor = panel.getConnectionDescriptor();
+
+        for (DataStoreLayer dsl : dsLayers) {
+            ret.add(createLayer(dsl, connectionDescriptor, monitor));
+        }
+        return ret;
+
+    }
 
   public static void load(Layer layer, CoordinateSystemRegistry registry,
     TaskMonitor monitor) throws Exception {
