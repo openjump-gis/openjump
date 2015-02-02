@@ -1,4 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
+2015-02-02 Nicolas Ribot (elnico)
+  * Replaced DataStore Combobox displaying each layer in a DataStore by a TreeTable based on 
+    Netbeans Swing Outline component. Multiple layers can be selected in the tree.
+    Layers are grouped by schemas in the tree.
+    Limit, Where Clause and Caching properties can be edited in the table
 2015-02-02 bertaz
   * Fixed GIF format support in RasterImageLayer and ExtractSelectePartOfImage
 
