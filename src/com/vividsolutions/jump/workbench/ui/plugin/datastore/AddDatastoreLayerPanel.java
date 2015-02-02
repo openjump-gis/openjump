@@ -248,11 +248,13 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
                     DataStoreLayer layer = new DataStoreLayer(dsName, geo);
                     ArrayList<DataStoreLayer> newEntry = new ArrayList<DataStoreLayer>();
                     newEntry.add(layer);
-                    // ON JDK 7, 8:
+                    // ON 8:
 //                    ArrayList<DataStoreLayer> list = ret.putIfAbsent(layer.getSchema(), newEntry);
-                    // On 6
-                    ArrayList<DataStoreLayer> list = ret.containsKey(layer.getSchema()) ? ret.put(layer.getSchema(), newEntry) : null;
-                    if (list != null) {
+                    // On 6, 7
+                    ArrayList<DataStoreLayer> list = ret.get(layer.getSchema());
+                    if (list == null) {
+                        list = ret.put(layer.getSchema(), newEntry);
+                    } else  {
                         // this schema exists: add newEntry into existing list
                         list.addAll(newEntry);
                         // need to reput the entry ?
