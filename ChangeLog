@@ -1,5 +1,15 @@
 # for display continuity sake please use 2 spaces instead of tabs
 2015-02-02 Nicolas Ribot (elnico)
+  * Added very first version of Oracle Spatial Support in Data Store Layer Wizard:
+    Based on Geotools gt2-oracle-spatial.jar to load geometry from ORA structure efficiently.
+    Current features: 
+       - Lists geometry tables grouped by schemas (user connection schema is considered 
+         as the default schema)
+       - Loads Oracle geometry tables storing POINT, LINESTRING, POLYGON and MULTI*. 
+         Does not manage other Oracle spatial types (topology, raster, etc.)
+       - Handles several geometry columns (other geometric columns are converted to WKT)
+       - Efficient data loading based on Larry Reader DB Plugin code
+
   * Replaced DataStore Combobox displaying each layer in a DataStore by a TreeTable based on 
     Netbeans Swing Outline component. Multiple layers can be selected in the tree.
     Layers are grouped by schemas in the tree.

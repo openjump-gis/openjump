@@ -8,6 +8,7 @@ public class GeometryColumn {
     private String name;
     private int srid = 0;
     private String type = "Geometry";
+    private boolean indexed = false;
     
     public GeometryColumn(String name) {
         this.name = name;
@@ -45,5 +46,13 @@ public class GeometryColumn {
     
     public String toString() {
         return name + " (" + type + ", srid=" + srid + ")";
+    }
+
+    public boolean isIndexed() {
+        return indexed;
+    }
+
+    public void setIndexed(boolean indexed) {
+        this.indexed = indexed;
     }
 }
