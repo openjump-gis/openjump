@@ -251,7 +251,7 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
                     // ON JDK 7, 8:
 //                    ArrayList<DataStoreLayer> list = ret.putIfAbsent(layer.getSchema(), newEntry);
                     // On 6
-                    ArrayList<DataStoreLayer> list = ret.containsKey(layer.getSchema()) ? ret.get(layer.getSchema()) : null;
+                    ArrayList<DataStoreLayer> list = ret.containsKey(layer.getSchema()) ? ret.put(layer.getSchema(), newEntry) : null;
                     if (list != null) {
                         // this schema exists: add newEntry into existing list
                         list.addAll(newEntry);
