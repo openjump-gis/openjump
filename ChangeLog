@@ -1,4 +1,7 @@
 # for display continuity sake please use 2 spaces instead of tabs
+2015-02-02 bertaz
+  * Fixed GIF format support in RasterImageLayer and ExtractSelectePartOfImage
+
 2015_01_31. Giuseppe Aruta 
   * ProfileGraphPlugIn. Add new Icon
   * ProfileGraphTool.class. Add new panel which display profile info: length, mean slope, coordinates of starting

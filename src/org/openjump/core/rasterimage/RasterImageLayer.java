@@ -553,23 +553,14 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
     
     protected BufferedImage stretchImageValuesForDisplay() throws NoninvertibleTransformException{
         
-//        Viewport viewport = getWorkbenchContext().getLayerViewPanel().getViewport();
-//
-//        
-//        Rectangle rectangle = RasterImageIO.getDrawingRectangle(
-//                origImageWidth, origImageHeight, originalImageEnvelope,
-//                getViewportRectangle(getWorkbenchContext()),
-//                viewport.getEnvelopeInModelCoordinates(),
-//                new Resolution(cellSize, cellSize));
-//        
-//        if(rectangle == null || (wasScaledForDisplay)) {
-//            return bImage;
-//        }
-        
         int width = actualRasterData.getWidth();
         int height = actualRasterData.getHeight();  
         
         // Need to change image type to support transparency and apply symbology
+        if(image.getColorModel() instanceof IndexColorModel) {
+            return image;  
+        }
+        
         BufferedImage newImage = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
         for (int row = 0; row < height; row++) {
             for (int col = 0; col < width; col++) {

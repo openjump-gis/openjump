@@ -9,6 +9,7 @@
  */
 package org.openjump.core.ui.plugin.layer.pirolraster;
 
+import com.sun.media.jai.codecimpl.util.RasterFactory;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 
@@ -31,6 +32,12 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.Viewport;
 import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferByte;
+import java.awt.image.IndexColorModel;
+import java.awt.image.SampleModel;
+import java.awt.image.WritableRaster;
 import java.io.File;
 import org.openjump.core.rasterimage.ImageAndMetadata;
 import org.openjump.core.rasterimage.RasterImageIO;
@@ -84,8 +91,49 @@ public class ExtractSelectedPartOfImage extends AbstractPlugIn {
         Geometry fence = SelectionTools.getFenceGeometry(context);
         Envelope envWanted = fence.getEnvelopeInternal().intersection(rLayer.getWholeImageEnvelope());
 
+        Rectangle subset = rLayer.getRectangleFromEnvelope(envWanted);
+        Raster raster = rLayer.getRasterData(subset);;
+        
+        if(rLayer.getImage().getColorModel() instanceof IndexColorModel) {
+            SampleModel sampleModel = rLayer.getImage().getSampleModel();
+            IndexColorModel indexColorModel = (IndexColorModel) rLayer.getImage().getColorModel();
+            DataBuffer dataBufferIn = raster.getDataBuffer();
+            DataBufferByte dataBufferOut = new DataBufferByte(subset.width * subset.height * 3, 3);
+            int index = 0;
+            int nCells = subset.height * subset.width;
+            for(int r=0; r<subset.height; r++) {
+                for(int c=0; c<subset.width; c++) {
+                    int value = dataBufferIn.getElem(index);
+//                    if(indexColorModel.getAlpha(value) == 255) {
+//                        dataBufferOut.setElem(0, index, rLayer.getNoDataValue());
+//                    }
+                    dataBufferOut.setElem(0, index, indexColorModel.getRed(value));
+                    dataBufferOut.setElem(1, index + nCells, indexColorModel.getGreen(value));
+                    dataBufferOut.setElem(2, index + nCells * 2, indexColorModel.getBlue(value));
+                    index++;
+                }
+            }
+            
+            int[] bankIndices = new int[3];
+            bankIndices[0] = 0;
+            bankIndices[1] = 1;
+            bankIndices[2] = 2;
+            
+            int[] bandOffsets = new int[3];
+            bandOffsets[0] = 0;
+            bandOffsets[1] = raster.getWidth() * raster.getHeight();
+            bandOffsets[2] = 2 * raster.getWidth() * raster.getHeight();
+            
+            WritableRaster wRaster = RasterFactory.createBandedRaster(
+                    dataBufferOut, raster.getWidth(), raster.getHeight(),
+                    raster.getWidth(),
+                    bankIndices,
+                    bandOffsets, new Point(0,0));
+            raster = wRaster;
+        }
+            
         RasterImageIO rasterImageIO = new RasterImageIO();
-        Raster raster = rLayer.getRasterData(rLayer.getRectangleFromEnvelope(envWanted));
+        
         rasterImageIO.writeImage(outFile, raster, envWanted,
                 rasterImageIO.new CellSizeXY(rLayer.getMetadata().getOriginalCellSize(), rLayer.getMetadata().getOriginalCellSize()), rLayer.getMetadata().getNoDataValue());
         
