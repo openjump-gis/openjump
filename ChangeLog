@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 2015-02-02 Nicolas Ribot (elnico)
+  * removed Oracle spatial stuff due to dependencies problems
+
+2015-02-02 Nicolas Ribot (elnico)
   * Added very first version of Oracle Spatial Support in Data Store Layer Wizard:
     Based on Geotools gt2-oracle-spatial.jar to load geometry from ORA structure efficiently.
     Current features: 
