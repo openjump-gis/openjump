@@ -82,17 +82,17 @@ Additionally PLUS distribution contains
  Postgis driver (postgis-*.jar) - LGPL2 - lgpl-2.1.txt
 
 and the following plugins
- Aggregation PlugIn (Michaï¿½l Michaud) - GPL2 - gpl-2.txt
+ Aggregation PlugIn (Michaël Michaud) - GPL2 - gpl-2.txt
   aggregation-*.jar
- BeanShell Editor (Michaï¿½l Michaud) - GPL2 - gpl-2.txt
+ BeanShell Editor (Michaël Michaud) - GPL2 - gpl-2.txt
   bsheditor4jump-*.jar, buoy.jar(see above)
- CSV driver (Michaï¿½l Michaud) - GPL2 - gpl-2.txt
+ CSV driver (Michaël Michaud) - GPL2 - gpl-2.txt
   csv-driver-*.jar
  Concave Hull (Eric Grosso) - LGPL2.1, GPL2 - lgpl-2.1.txt, gpl-2.txt
   ConcaveHull*.{jar,txt}
- DXF driver (Michaï¿½l Michaud) - GPL2 - gpl-2.txt
+ DXF driver (Michaël Michaud) - GPL2 - gpl-2.txt
   driver-dxf-*.jar
- Graph Extension (Michaï¿½l Michaud) - GPL2 - gpl-2.txt
+ Graph Extension (Michaël Michaud) - GPL2 - gpl-2.txt
   graph-toolbox-*.jar, jump-jgrapht-*.jar, 
   jgrapht-*.jar - LGPL2 - lgpl-2.1.txt
  Jump Chart (com.cadplan.jump) - GPL2 - gpl-2.txt
@@ -119,7 +119,7 @@ and the following plugins
   sextante-binding-*.jar, sextante/*.* 
   TableLayout-*.jar - Clearthought License - clearthought-2.0.txt
   xbean-*.jar - Apache License Version 2.0 - apache_license-2.0.txt
- Topology Extension (Michaï¿½l Michaud) - GPL2 - gpl-2.txt
+ Topology Extension (Michaël Michaud) - GPL2 - gpl-2.txt
   topology-*.jar
  Vertex Note (com.cadplan.jump) - GPL2 - gpl-2.txt
  Vertex Symbols (com.cadplan.jump) - GPL2 - gpl-2.txt
@@ -272,15 +272,15 @@ Original development team of JUMP was:
     Paul Ramsey 
 
 OpenJUMP continuous contributors (non exhaustive list in alphabetical order):
-  Alberto de Luca (geomaticaeambiente.it)
   Edgar Soldin (edso, http://soldin.de)
   Giuseppe Aruta
   Jukka Rahkonen
   Matthias Scholz
-  Michaï¿½l Michaud
+  Michaël Michaud
   Stefan Steiniger
 
 Past contributors (in alphabetical order):
+  Alberto de Luca (geomaticaeambiente.it)
   Andreas Schmitz (lat-lon.de)
   Axel Orth
   Basile Chandesris
@@ -310,14 +310,14 @@ Past contributors (in alphabetical order):
   Stephan Holl
   Steve Tanner
   Ugo Taddei
-  Uwe Dallï¿½ge
+  Uwe Dallüge
 
 Translation contributors are
   Chinese: Elton Chan
   Czech: Jan Ruzicka
   English: Landon Blake
   Finnish: Jukka Rahkonnen
-  French: Basile Chandesris, Erwan Bocher, Steve Tanner, Michaï¿½l Michaud
+  French: Basile Chandesris, Erwan Bocher, Steve Tanner, Michaël Michaud
   German: Florian Rengers, Stefan Steiniger, Edgar Soldin
   Hungarian: Zoltan Siki
   Italian: Giuseppe Aruta
@@ -341,8 +341,8 @@ Contributing projects and companies:
   for providing their Jump ISA tools code and numerous other improvements
 - Lat/Lon GmbH (deeJUMP team)
   for providing some plugins and functionality (i.e. WFS and WMS Plugins)
-  contact: Markus Mï¿½ller/Andreas Schmitz
-- Pirol Project from University of Applied Sciences Osnabrï¿½ck
+  contact: Markus Müller/Andreas Schmitz
+- Pirol Project from University of Applied Sciences Osnabrück
   for providing the attribute editor. Note that the project is finished now.
   (contact: Arnd Kielhorn)
 - VividSolutions Inc. & Refractions Inc.
