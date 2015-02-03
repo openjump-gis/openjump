@@ -910,16 +910,5 @@
             <artifactId>org-netbeans-swing-outline</artifactId>
             <version>7.2</version>
         </dependency>
-        <!--For oracle spatial: geotools STRUCT converter: very efficient-->
-        <dependency>
-            <groupId>com.oracle</groupId>
-            <artifactId>ojdbc6</artifactId>
-            <version>11.2.0.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-oracle-spatial</artifactId>
-            <version>2.5.5</version>
-        </dependency>
     </dependencies>
 </project>

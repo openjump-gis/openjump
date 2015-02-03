@@ -68,8 +68,6 @@ import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.datastore.DataStoreDriver;
 import com.vividsolutions.jump.datastore.DataStoreException;
-import com.vividsolutions.jump.datastore.oracle.OracleDataStoreDriver;
-import static com.vividsolutions.jump.datastore.oracle.OracleDataStoreDriver.JDBC_CLASS;
 import com.vividsolutions.jump.datastore.postgis.PostgisDataStoreDriver;
 //import com.vividsolutions.jump.workbench.datasource.AbstractSaveDatasetAsPlugIn;
 //import com.vividsolutions.jump.workbench.datasource.InstallStandardDataSourceQueryChoosersPlugIn;
@@ -185,7 +183,6 @@ import com.vividsolutions.jump.workbench.ui.zoom.ZoomToSelectedItemsPlugIn;
 import com.vividsolutions.jump.workbench.ui.zoom.ZoomTool;
 
 import de.latlon.deejump.plugin.style.DeeChangeStylesPlugIn;
-import java.sql.Driver;
 
 /**
  * Initializes the Workbench with various menus and cursor tools. Accesses the
@@ -1070,6 +1067,7 @@ public class JUMPConfiguration implements Setup {
 
     // Nicolas Ribot, 01 fev 2015: tries to add oracle DataStore support
     // add the driver only if oracle driver class if found
+    /*
     try {
         Driver driver = (Driver) Class.forName(JDBC_CLASS).newInstance();
         context.getRegistry().createEntry(DataStoreDriver.REGISTRY_CLASSIFICATION,
@@ -1078,6 +1076,7 @@ public class JUMPConfiguration implements Setup {
         // TODO: replace by log ?
         System.out.println("oracle driver not found: " + e.toString() + ". dataStore NOT added");
     }
+    */
     // update exit handler
     final ApplicationExitHandler oldApplicationExitHandler = context
         .getWorkbench().getFrame().getApplicationExitHandler();
