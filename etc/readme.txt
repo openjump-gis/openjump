@@ -354,4 +354,3 @@ others:
 - L. Paul Chew for providing the Delaunay triangulation algorithm to 
   create Voronoi diagrams
 
-
