@@ -56,6 +56,7 @@ as (Component name - License name - License file in "licenses/" folder or link)
  Postgresql JDBC driver - Postgresql BSD license - postgresql-BSD_license.txt
  Xerces2 Java Parser - Apache License Version 2.0 - apache_license-2.0.txt
  XZ for Java - Public Domain
+ Outline Swing Component by Netbeans.org, GPL2 - gpl-2.txt
 
 and the following plugins
 ( Component name - License name - License file in "licenses/" folder
