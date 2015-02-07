@@ -1,4 +1,11 @@
 # for display continuity sake please use 2 spaces instead of tabs
+
+[2014_01_24] Giuseppe Aruta (ma15569) - RasterQueryPlugIn
+		- Extended inspection to multiband raster layers. 
+		- Multiple measure are now displayed (and saved) by default. 
+		  Press SHIFT to cancel previous and display only last measure. 
+		- Moving cursor on image shows raster cell value on lower panel
+
 2015-02-02 Nicolas Ribot (elnico)
   * removed Oracle spatial stuff due to dependencies problems
 
