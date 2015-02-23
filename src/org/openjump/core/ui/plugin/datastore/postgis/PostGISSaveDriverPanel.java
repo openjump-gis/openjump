@@ -336,6 +336,7 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel implements Actio
 	
 	
 	public String getPrimaryKey() {
+        if (!primaryKeyComboBox.isEnabled()) return null;
 	    Object selection = primaryKeyComboBox.getSelectedItem();
 	    if (selection == null) return null;
 	    //else if (selection.equals(NO_PK)) return SaveToPostGISDataSource.NO_LOCAL_ID;
@@ -343,7 +344,7 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel implements Actio
 	}
 	
 	public boolean isCreatePrimaryKeyColumnSelected() {
-	    return createPrimaryKeyCheckBox.isSelected();
+	    return createPrimaryKeyCheckBox.isEnabled() && createPrimaryKeyCheckBox.isSelected();
 	}
 	
 
