@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2014_01_24 Giuseppe Aruta (ma15569) 
+	- RasterQueryPlugIn. Fix minor bug on lower panel
+
 2015-02-23 mmichaud <m.michael.michaud@orange.fr>
     - Fix Save dataset as Postgis Table (insert all Features as New Rows)
 

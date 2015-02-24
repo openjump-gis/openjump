@@ -65,6 +65,7 @@ import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
+import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.cursortool.NClickTool;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.renderer.style.LabelStyle;
@@ -74,13 +75,15 @@ import de.latlon.deejump.plugin.style.CrossVertexStyle;
 public class RasterQueryCursorTool extends NClickTool {
 
     /*
-     * [2013_05_27] Giuseppe Aruta Simple plugin that allows to inspect raster cell value for
-     *  DTM ver 0.1 2013_05_27
+     * [2013_05_27] Giuseppe Aruta Simple plugin that allows to inspect raster
+     * cell value for DTM ver 0.1 2013_05_27
      * 
      * [2014_01_24] Giuseppe Aruta - Extended inspection to multiband raster
-     *  layers. Now multiple measure are displayed (and saved) by default. Press
-     *  SHIFT to display only last measure. Moving cursor on image shows raster
-     *  cell value on lower panel
+     * layers. Now multiple measure are displayed (and saved) by default. Press
+     * SHIFT to display only last measure. Moving cursor on image shows raster
+     * cell value on lower panel
+     * 
+     * [2014_02_24] Fix minor bug on lower panel
      */
 
     protected Coordinate tentativeCoordinate;
@@ -272,20 +275,28 @@ public class RasterQueryCursorTool extends NClickTool {
     }
 
     /*
-     * Displays cell values while moving cursor on the raster
+     * Displays cell values on system bar while moving cursor on the raster
      */
+    PlugInContext gContext;
+
     public void mouseMoved(MouseEvent me) {
 
+        final WorkbenchContext wbcontext = this.getWorkbench().getContext();
+        RasterImageLayer aLayer = null;
+        for (java.util.Iterator i = wbcontext.getLayerNamePanel()
+                .selectedNodes(RasterImageLayer.class).iterator(); i.hasNext();) {
+            aLayer = (RasterImageLayer) i.next();
+        }
         String cellValues = null;
         try {
             cellValues = "";
             Coordinate tentativeCoordinate = getPanel().getViewport()
                     .toModelCoordinate(me.getPoint());
-            for (int b = 0; b < rLayer.getNumBands(); b++) {
-                Double cellValue = rLayer.getCellValue(tentativeCoordinate.x,
+            for (int b = 0; b < aLayer.getNumBands(); b++) {
+                Double cellValue = aLayer.getCellValue(tentativeCoordinate.x,
                         tentativeCoordinate.y, b);
                 if (cellValue != null) {
-                    if (rLayer.isNoData(cellValue)) {
+                    if (aLayer.isNoData(cellValue)) {
                         cellValues = Double.toString(Double.NaN);
                     } else {
                         cellValues = cellValues.concat(Double
@@ -305,6 +316,12 @@ public class RasterQueryCursorTool extends NClickTool {
             e.printStackTrace();
         }
         name = rLayer.getName();
+
+        // gContext.getWorkbenchContext()
+        // .getLayerViewPanel()
+        // .setToolTipText(
+        // "(" + name + ") " + VALUE + ": "
+        // + cellValues.toString());
 
         getPanel().getContext().setStatusMessage(
                 "(" + name + ") " + VALUE + ": " + cellValues.toString());
