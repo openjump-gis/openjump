@@ -1,20 +1,20 @@
 # for display continuity sake please use 2 spaces instead of tabs
-2014_02_22 Giuseppe Aruta (ma15569) 
+2015_02_22 Giuseppe Aruta (ma15569) 
 	- Add 2 new plugin to manage nodata values on monoband DEM
 		a) Change No Data Value: it changes default nodata value of file
 		b) Set input value to no dta;: it changes an arbitrary cell value to
 		   default nodata
 
-2014_02_22 Giuseppe Aruta (ma15569) 
+2015_02_22 Giuseppe Aruta (ma15569) 
 	- Add new Compare Raster Grid layers to Raster plugins
 
-2014_01_24 Giuseppe Aruta (ma15569) 
+2015_01_24 Giuseppe Aruta (ma15569) 
 	- RasterQueryPlugIn. Fix minor bug on lower panel
 
 2015-02-23 mmichaud <m.michael.michaud@orange.fr>
     - Fix Save dataset as Postgis Table (insert all Features as New Rows)
 
-2014_01_24 Giuseppe Aruta (ma15569) - RasterQueryPlugIn
+2015_01_24 Giuseppe Aruta (ma15569) - RasterQueryPlugIn
 	- Extended inspection to multiband raster layers. 
 	- Multiple measure are now displayed (and saved) by default. 
 	  Press SHIFT to cancel previous and display only last measure. 
