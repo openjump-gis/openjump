@@ -805,7 +805,12 @@
 			<main-menu menupath=" MenuNames.RASTER/MenuNames.STATISTICS" install="true"/>
 		</menus>
 	</plug-in>
-
+	<plug-in>
+		org.openjump.core.ui.plugin.raster.statistics.DEMStatisticsPlugIn 
+ 		 <menus>
+			<main-menu menupath=" MenuNames.RASTER/MenuNames.STATISTICS" install="true"/>
+		</menus>
+	</plug-in>
 	<separator />
 
 	<plug-in> org.openjump.core.ui.plugin.raster.ProfileGraphPlugIn

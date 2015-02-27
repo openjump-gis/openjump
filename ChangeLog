@@ -1,4 +1,6 @@
 # for display continuity sake please use 2 spaces instead of tabs
+2014_02_22 Giuseppe Aruta (ma15569) 
+	- Add new Compare Raster Grid layers to Raster plugins
 
 2014_01_24 Giuseppe Aruta (ma15569) 
 	- RasterQueryPlugIn. Fix minor bug on lower panel
