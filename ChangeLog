@@ -1,4 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
+
+2015-02-28 mmichaud <m.michael.michaud@orange.fr>
+  * Fix bug #388 shrinking columns in infoFrame and attributeTable
+    when the schema has changed.
+
 2015_02_22 Giuseppe Aruta (ma15569) 
 	- Add 2 new plugin to manage nodata values on monoband DEM
 		a) Change No Data Value: it changes default nodata value of file

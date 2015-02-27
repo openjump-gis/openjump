@@ -53,12 +53,7 @@ import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.plugin.*;
-import com.vividsolutions.jump.workbench.ui.LayerNamePanel;
-import com.vividsolutions.jump.workbench.ui.LayerNamePanelListener;
-import com.vividsolutions.jump.workbench.ui.LayerNamePanelProxy;
-import com.vividsolutions.jump.workbench.ui.SchemaPanel;
-import com.vividsolutions.jump.workbench.ui.TreeLayerNamePanel;
-import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
+import com.vividsolutions.jump.workbench.ui.*;
 import com.vividsolutions.jump.workbench.ui.cursortool.editing.EditingPlugIn;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStyle;
@@ -103,7 +98,7 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
         return I18N.get("ui.plugin.ViewSchemaPlugIn.view-edit-schema");
     }
 
-    private void applyChanges(final Layer layer, final SchemaPanel panel)
+    private void applyChanges(final Layer layer, final SchemaPanel panel, final WorkbenchFrame workbenchFrame)
         throws Exception {
         if (!panel.isModified()) {
             //User just pressed the Apply button even though he made no edits.
@@ -116,6 +111,14 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
         }
 
         panel.getModel().removeBlankRows();
+
+        // If the schema is modified, features of the layer are changed,
+        // the corresponding attributeTab in the InfoFrame is emptied and
+        // the columns are schrinked to a null width.
+        // Removing the attributeTab in the InfoFrame avoid these side effects
+        for (JInternalFrame iFrame : workbenchFrame.getInternalFrames()) {
+            if (iFrame instanceof InfoFrame) ((InfoFrame)iFrame).getModel().remove(layer);
+        }
 
         FeatureSchema newSchema = new FeatureSchema();
         //-- [sstein 10. Oct 2006] bugfix for colortheming by Ole
@@ -689,7 +692,7 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
                     public void actionPerformed(ActionEvent e) {
                         try {
                             commitEditsInProgress(panel);
-                            applyChanges(layer, panel);
+                            applyChanges(layer, panel, workbenchFrame);
                         } catch (Exception x) {
                             workbenchFrame.handleThrowable(x);
                         }
@@ -712,10 +715,9 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
                         case JOptionPane.YES_OPTION:
 
                             try {
-                                applyChanges(layer, panel);
+                                applyChanges(layer, panel, workbenchFrame);
                             } catch (Exception x) {
                                 workbenchFrame.handleThrowable(x);
-
                                 return;
                             }
 
