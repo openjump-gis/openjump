@@ -204,7 +204,7 @@ import java.util.*;
  *
  * <p>
  *  Since JUMP and JTS do not currently support a M (measure)
- *  coordinate, it will always be set to �10E40 in the shape file
+ *  coordinate, it will always be set to -10E40 in the shape file
  *  (type 'xym' or 'xyzm').  This value represents the Measure "no
  *  data" value (page 2, ESRI Shapefile Technical Description).  Since
  *  the 'NaN' DOUBLE values for Z coordinates is invalid in a
