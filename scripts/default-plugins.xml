@@ -811,6 +811,16 @@
 			<main-menu menupath=" MenuNames.RASTER/MenuNames.STATISTICS" install="true"/>
 		</menus>
 	</plug-in>
+	<plug-in>
+		org.openjump.core.ui.plugin.raster.nodata.ChangeNoDataValuePlugIn 
+ 		  
+	</plug-in>
+
+	<plug-in>
+		org.openjump.core.ui.plugin.raster.nodata.ChangeValueToNoDataPlugIn
+ 		  
+	</plug-in>
+	
 	<separator />
 
 	<plug-in> org.openjump.core.ui.plugin.raster.ProfileGraphPlugIn
