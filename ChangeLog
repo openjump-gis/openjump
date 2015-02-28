@@ -1,6 +1,10 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
 2015-02-28 mmichaud <m.michael.michaud@orange.fr>
+  * FR 215 : don't open a new ViewAttributesFrame if there is already one
+    open for the selected layer Layer
+
+2015-02-28 mmichaud <m.michael.michaud@orange.fr>
   * Fix bug #388 shrinking columns in infoFrame and attributeTable
     when the schema has changed.
 

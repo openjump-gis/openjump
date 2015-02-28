@@ -28,8 +28,7 @@ package com.vividsolutions.jump.workbench.ui.plugin;
 
 import java.awt.BorderLayout;
 
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
+import javax.swing.*;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
@@ -95,6 +94,19 @@ public class ViewAttributesPlugIn extends AbstractPlugIn {
   @Override
   public boolean execute(final PlugInContext context) throws Exception {
     reportNothingToUndoYet(context);
+    // If the AttributeTable for the currently selected layer is already open,
+    // don't create a new ViewAttributesFrame
+    for (JInternalFrame iFrame : context.getWorkbenchFrame().getInternalFrames()) {
+        if (iFrame instanceof ViewAttributesFrame) {
+            if (((ViewAttributesFrame)iFrame)
+                    .getOneLayerAttributeTab()
+                    .getLayer()
+                    .equals(context.getSelectedLayer(0))) {
+                iFrame.toFront();
+                return true;
+            }
+        }
+    }
     // Don't add GeometryInfoFrame because the HTML will probably be too
     // much for the editor pane (too many features). [Jon Aquino]
     final ViewAttributesFrame frame = new ViewAttributesFrame(
@@ -197,6 +209,10 @@ public class ViewAttributesPlugIn extends AbstractPlugIn {
           .isTrue(
               !(this instanceof CloneableInternalFrame),
               I18N.get("ui.plugin.ViewAttributesPlugIn.there-can-be-no-other-views-on-the-InfoModels"));
+    }
+
+    public OneLayerAttributeTab getOneLayerAttributeTab() {
+        return attributeTab;
     }
 
     public LayerViewPanel getLayerViewPanel() {
