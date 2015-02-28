@@ -38,6 +38,8 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
 
+import org.openjump.core.rasterimage.RasterImageLayer;
+
 import com.vividsolutions.jts.util.Assert;
 
 import com.vividsolutions.jump.I18N;
@@ -286,6 +288,15 @@ public abstract class AbstractMultiInputDialog extends JDialog {
         return (Layer)comboBox.getSelectedItem();
     }
     
+    
+    /**
+     * Returns a Raster Image Layer from a JComboBox control.
+     */
+    // 2015-2-28 added by ma15569 - Giuseppe Aruta
+    public RasterImageLayer getRasterImageLayer(String fieldName) {
+        JComboBox comboBox = (JComboBox) fieldNameToComponentMap.get(fieldName);
+        return (RasterImageLayer) comboBox.getSelectedItem();
+    }
     
     ////////////////////////////////////////////////////////////////////////////
     //                                                                        //
