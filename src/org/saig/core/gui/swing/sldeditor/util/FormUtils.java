@@ -1,5 +1,5 @@
 /* 
- * Kosmo - Sistema Abierto de Información Geográfica
+ * Kosmo - Sistema Abierto de Informaciï¿½n Geogrï¿½fica
  * Kosmo - Open Geographical Information System
  *
  * http://www.saig.es
@@ -21,16 +21,16 @@
  *
  * For more information, contact:
  * 
- * Sistemas Abiertos de Información Geográfica, S.L.
- * Avnda. República Argentina, 28
- * Edificio Domocenter Planta 2ª Oficina 7
+ * Sistemas Abiertos de Informaciï¿½n Geogrï¿½fica, S.L.
+ * Avnda. Repï¿½blica Argentina, 28
+ * Edificio Domocenter Planta 2ï¿½ Oficina 7
  * C.P.: 41930 - Bormujos (Sevilla)
- * España / Spain
+ * Espaï¿½a / Spain
  *
- * Teléfono / Phone Number
+ * Telï¿½fono / Phone Number
  * +34 954 788876
  * 
- * Correo electrónico / Email
+ * Correo electrï¿½nico / Email
  * info@saig.es
  *
  */
@@ -320,6 +320,112 @@ public class FormUtils {
         parent.add(component, gridBagConstraints);
     }
 
+    //2015_03_11 Giuseppe Aruta: Add Icon to row 
+    public static void addRowInGBL( JComponent parent, int row, int startCol, Icon icon,  
+            JComponent component ) {
+        GridBagConstraints gridBagConstraints = new GridBagConstraints();
+        gridBagConstraints.gridx = startCol;
+        gridBagConstraints.gridy = row;
+        gridBagConstraints.anchor = GridBagConstraints.WEST;
+        gridBagConstraints.insets = getDefaultInsets();
+        JLabel iconlabel = new JLabel();
+        iconlabel.setIcon(icon);
+        parent.add(iconlabel, gridBagConstraints);
+      //  parent.add(label, gridBagConstraints);
+
+        gridBagConstraints = new GridBagConstraints();
+        gridBagConstraints.gridx = startCol + 1;
+        gridBagConstraints.gridy = row;
+        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = getDefaultInsets();
+        parent.add(component, gridBagConstraints);
+    }
+    
+    
+    //2015_03_11 Giuseppe Aruta: Add Icon to row 
+    public static void addRowInGBL( JComponent parent, int row, int startCol, Icon icon, 
+            JComponent component, JComponent component2 ) {
+        GridBagConstraints gridBagConstraints = new GridBagConstraints();
+        gridBagConstraints.gridx = startCol;
+        gridBagConstraints.gridy = row;
+        gridBagConstraints.anchor = GridBagConstraints.WEST;
+        gridBagConstraints.insets = getDefaultInsets();
+        JLabel iconlabel = new JLabel();
+        iconlabel.setIcon(icon);
+        parent.add(iconlabel, gridBagConstraints);
+       // parent.add(label, gridBagConstraints);
+
+        gridBagConstraints = new GridBagConstraints();
+        gridBagConstraints.gridx = startCol + 1;
+        gridBagConstraints.gridy = row;
+        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = getDefaultInsets();
+        parent.add(component, gridBagConstraints);
+
+        gridBagConstraints = new GridBagConstraints();
+        gridBagConstraints.gridx = startCol + 2;
+        gridBagConstraints.gridy = row;
+        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = getDefaultInsets();
+        parent.add(component2, gridBagConstraints);
+    }
+    
+    //2015_03_11 Giuseppe Aruta: Add Icon to row 
+    public static void addRowInGBL( JComponent parent, int row, int startCol, Icon icon, 
+             JLabel label, JComponent component, JLabel label2, JComponent component2 ) {
+        GridBagConstraints gridBagConstraints = new GridBagConstraints();
+        gridBagConstraints.gridx = startCol;
+        gridBagConstraints.gridy = row;
+        gridBagConstraints.anchor = GridBagConstraints.WEST;
+        gridBagConstraints.insets = getDefaultInsets();
+        JLabel iconlabel = new JLabel();
+        iconlabel.setIcon(icon);
+        parent.add(iconlabel, gridBagConstraints);
+       // parent.add(label, gridBagConstraints);
+
+        gridBagConstraints = new GridBagConstraints();
+        gridBagConstraints.gridx = startCol + 1;
+        gridBagConstraints.gridy = row;
+        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = getDefaultInsets();
+        parent.add(label, gridBagConstraints);
+
+        gridBagConstraints = new GridBagConstraints();
+        gridBagConstraints.gridx = startCol + 2;
+        gridBagConstraints.gridy = row;
+        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = getDefaultInsets();
+        parent.add(component, gridBagConstraints);
+        gridBagConstraints = new GridBagConstraints();
+        
+        gridBagConstraints.gridx = startCol + 3;
+        gridBagConstraints.gridy = row;
+        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = getDefaultInsets();
+        parent.add(label2, gridBagConstraints);
+
+        gridBagConstraints = new GridBagConstraints();
+        gridBagConstraints.gridx = startCol + 4;
+        gridBagConstraints.gridy = row;
+        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = getDefaultInsets();
+        parent.add(component2, gridBagConstraints);
+    } 
+    
     public static void addColInGBL( JComponent parent, int row, int startCol, JComponent label,
             JComponent component ) {
         GridBagConstraints gridBagConstraints = new GridBagConstraints();
