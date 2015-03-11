@@ -490,9 +490,11 @@ public class RasterImageIOUtils {
      *            file to load es D:/Openjump/test.tif
      * @param PlugInContext
      *            Plugin Context
+      * @param Category
+     *            . Name of the category to load the file
      */
 
-    public static void loadTIF(File file, PlugInContext context)
+    public static void loadTIF(File file, PlugInContext context, String catName)
             throws NoninvertibleTransformException, TiffReadingException,
             Exception {
 
@@ -511,7 +513,7 @@ public class RasterImageIOUtils {
         RasterImageLayer ril = new RasterImageLayer(file.getName(), context
                 .getWorkbenchContext().getLayerManager(),
                 file.getAbsolutePath(), imageAndMetadata.getImage(), env);
-        String catName = StandardCategoryNames.RESULT;
+        //String catName = StandardCategoryNames.RESULT;
         try {
             catName = ((Category) context.getLayerNamePanel()
                     .getSelectedCategories().toArray()[0]).getName();
