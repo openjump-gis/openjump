@@ -1,4 +1,4 @@
-package org.openjump.core.ui.raster;
+package org.openjump.core.rasterimage;
 
 import java.awt.Point;
 import java.awt.geom.NoninvertibleTransformException;
@@ -17,12 +17,16 @@ import java.nio.channels.FileChannel;
 import java.text.NumberFormat;
 import java.util.Properties;
 
+import javax.imageio.ImageIO;
+import javax.media.jai.PlanarImage;
+
 import org.openjump.core.rasterimage.GridAscii;
 import org.openjump.core.rasterimage.GridFloat;
 import org.openjump.core.rasterimage.ImageAndMetadata;
 import org.openjump.core.rasterimage.RasterImageIO;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.Resolution;
+import org.openjump.core.rasterimage.WorldFileHandler;
 import org.openjump.core.rasterimage.TiffTags.TiffReadingException;
 import org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer;
 import org.openjump.core.rasterimage.sextante.rasterWrappers.GridWrapperNotInterpolated;
@@ -78,6 +82,28 @@ public class RasterImageIOUtils {
                         .getNoDataValue());
     }
 
+    
+    /**
+     * Export selected raster to TIF/TFW - using ImageIO.class
+     * 
+     * @param file
+     *            file to save es D:/Openjump/test.tif
+     * @param Envelope
+     *            envelope of selected Image Layer (RasterImageLayer.class)
+     * @param PlanarImage
+     *            PlanarImage of selected Image Layer (RasterImageLayer.class)
+     */
+
+    public static void saveTIF_ImageIO(File file, Envelope envelope,
+            PlanarImage planarimage) throws Exception {
+        ImageIO.write(planarimage, "tif", file);
+        WorldFileHandler worldFileHandler = new WorldFileHandler(
+                file.getAbsolutePath(), false);
+        worldFileHandler.writeWorldFile(envelope, planarimage.getWidth(),
+                planarimage.getHeight());
+    };
+    
+    
     /**
      * Export selected raster to ArcView Gridded Ascii (ASC)
      * 
