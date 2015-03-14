@@ -138,7 +138,7 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
     private final static String DATASOURCE_CLASS = I18N
             .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.DataSource-Class");
     private final static String EXTENT = I18N
-            .get("ui.plugin.analysis.GeometryFunction.Envelope ");
+            .get("ui.plugin.analysis.GeometryFunction.Envelope");
     private final static String MULTIPLESOURCE = I18N
             .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Multiple-Sources");
 

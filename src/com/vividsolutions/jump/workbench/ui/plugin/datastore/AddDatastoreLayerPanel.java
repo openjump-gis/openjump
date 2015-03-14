@@ -63,7 +63,13 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
 
     public AddDatastoreLayerPanel(WorkbenchContext context) {
         super(context);
-        initialize();
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                initialize();
+            }
+        });
+        //initialize();
         getConnectionComboBox().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //getDatasetComboBox().setSelectedItem( null );

@@ -304,6 +304,7 @@ public class JUMPWorkbench {
     // plug-ins
     // are initialized.
     driverManager.loadDrivers(properties);
+    workbench = this;
   }
 
   public static void main(String[] args) {

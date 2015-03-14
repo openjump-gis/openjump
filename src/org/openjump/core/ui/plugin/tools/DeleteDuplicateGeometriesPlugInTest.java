@@ -96,7 +96,7 @@ public class DeleteDuplicateGeometriesPlugInTest {
         File fixture = new File("src/fixtures/delete-duplicate-geometries.jml");
         TestTools.openFile(fixture, workbench.getContext());
         LayerManager layerManager = workbench.getContext().getLayerManager();
-        
+
         // and: "a configured plugin"
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("confSourceLayer", layerManager.getLayer("delete-duplicate-geometries"));

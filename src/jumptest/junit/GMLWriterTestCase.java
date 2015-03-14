@@ -12,6 +12,7 @@ import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.io.GMLWriter;
 
+import com.vividsolutions.jump.util.FlexibleDateParser;
 import junit.framework.TestCase;
 
 
@@ -38,7 +39,7 @@ public class GMLWriterTestCase extends TestCase {
         doAssert("", null, AttributeType.DOUBLE);
         doAssert("4", new Integer(4), AttributeType.INTEGER);
         doAssert("", null, AttributeType.INTEGER);
-        doAssert(dateFormatter.format(new SimpleDateFormat("yyyy-MM-dd").parse("1921-04-18")), dateFormatter.parse("1921-04-18"), AttributeType.DATE);
+        doAssert(dateFormatter.format(new FlexibleDateParser().parse("April 18, 1921", false)), new FlexibleDateParser().parse("1921-04-18", false), AttributeType.DATE);
         doAssert("", null, AttributeType.DATE);
 
         try {

@@ -76,10 +76,11 @@ public final class TestTools {
         
         // Create a new Workbench with WorkbenchFrame and WorkbenchContext.
         TaskMonitor monitor = new DummyTaskMonitor();
-        Setup setup = new JUMPConfiguration();
+
         privateStaticField(JUMPWorkbench.class, "commandLine", new CommandLine());
         //JUMPWorkbench.main(args, title, setup, splashPanel, monitor);
         JUMPWorkbench workbench = new JUMPWorkbench(title, args, splashWindow, monitor);
+        Setup setup = new JUMPConfiguration();
         
         // Setup Workbench.
         setup.setup(workbench.getContext());
@@ -122,7 +123,7 @@ public final class TestTools {
      * 
      * @param plugin Plugin.
      * @param parameters Execution parameters.
-     * @param retrieveFieldNamesFromPlugIn Retrieve {@link I18N} string names.
+     * @param retrieveFieldNamesFromPlugIn Retrieve {@link com.vividsolutions.jump.I18N} string names.
      */
     public static void configurePlugIn(PlugIn plugin, Map<String, Object> parameters, 
             boolean retrieveFieldNamesFromPlugIn) throws Exception {
@@ -140,7 +141,7 @@ public final class TestTools {
     }
     
     /**
-     * Executes operations of the {@link Plugin}.
+     * Executes operations of the {@link PlugIn}.
      * 
      * @param plugin Plugin.
      * @param context Context.
