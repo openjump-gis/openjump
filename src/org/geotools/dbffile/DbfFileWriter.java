@@ -48,7 +48,7 @@ public class DbfFileWriter implements DbfConsts{
         NoFields = f.length;
         NoRecs = nrecs;
         fields = new DbfFieldDef[NoFields];
-        for(int i=0;i<NoFields;i++){
+        for(int i = 0 ; i < NoFields ; i++){
             fields[i]=f[i];
         }
         ls.writeByteLE(3); // ID - dbase III with out memo
@@ -75,7 +75,7 @@ public class DbfFileWriter implements DbfConsts{
         for(int i=0;i<20;i++) ls.writeByteLE(0); // 20 bytes of junk!
 
         // field descriptions
-        for(int i=0;i<NoFields;i++){
+        for(int i = 0 ; i < NoFields ; i++){
             //patch from Hisaji Ono for Double byte characters
             ls.write(fields[i].fieldname.toString().getBytes(charset.name()), 0, 11 ); // [Matthias Scholz 04.Sept.2010] Charset added
             ls.writeByteLE(fields[i].fieldtype);
@@ -116,7 +116,7 @@ public class DbfFileWriter implements DbfConsts{
         ls.writeByteLE(' ');
         int len;
         StringBuffer tmps;
-        for(int i=0;i<NoFields;i++){
+        for(int i = 0 ; i < NoFields ; i++){
             len = fields[i].fieldlen;
             Object o = rec.elementAt(i);
             switch(fields[i].fieldtype){
@@ -173,14 +173,14 @@ public class DbfFileWriter implements DbfConsts{
                 case 'F':
                 case 'f':
                     //double
-                    s = ((Double)o).toString();
+                    s = o.toString();
                     String x = FormatedString.format(s,fields[i].fieldnumdec,fields[i].fieldlen);
                     ls.writeBytesLE(x);
                     break;
                 // Case 'logical' added by mmichaud on 18 sept. 2004
                 case 'L':
                     //boolean
-                    if (o==null || o.equals("") || o.equals(" ")) ls.writeBytesLE(" ");
+                    if (o==null || o.equals("") || o.equals(" ") || o.equals("?")) ls.writeBytesLE(" ");
                     else {
                         boolean b = ((Boolean)o).booleanValue();
                         ls.writeBytesLE(b?"T":"F");

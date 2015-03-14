@@ -129,29 +129,37 @@ public class DbfFile implements DbfConsts {
         String realtype;
 
         switch (type) {
-        case 'C':
-            realtype = "STRING";
-            break;
+            case 'C':
+                realtype = "STRING";
+                break;
 
-        case 'N':
-            if (fielddef[col].fieldnumdec == 0) {
-                realtype = "INTEGER";
-            } else {
+            case 'N':
+                if (fielddef[col].fieldnumdec == 0) {
+                    if (fielddef[col].fieldlen > 11) {
+                        realtype = "LONG";
+                    } else {
+                        realtype = "INTEGER";
+                    }
+                } else {
+                    realtype = "DOUBLE";
+                }
+                break;
+
+            case 'F':
                 realtype = "DOUBLE";
-            }
-            break;
+                break;
 
-        case 'F':
-            realtype = "DOUBLE";
-            break;
+            case 'D': //Added by [Jon Aquino]
+                realtype = "DATE";
+                break;
 
-        case 'D': //Added by [Jon Aquino]
-            realtype = "DATE";
-            break;
+            case 'L': //Added by [Jon Aquino]
+                realtype = "BOOLEAN";
+                break;
 
-        default:
-            realtype = "STRING";
-            break;
+            default:
+                realtype = "STRING";
+                break;
         }
 
         return realtype;
@@ -234,9 +242,9 @@ public class DbfFile implements DbfConsts {
      * @param row - the row to fetch
      * @exception java.io.IOException on read error.
      */
-    public Vector ParseDbfRecord(long row) throws java.io.IOException {
-        return ParseRecord(GetDbfRec(row));
-    }
+    //public Vector ParseDbfRecord(long row) throws java.io.IOException {
+    //    return ParseRecord(GetDbfRec(row));
+    //}
 
     // like public Vector ParseRecord(StringBuffer rec), but this
     // will try to minimize the number of object created to keep
@@ -257,63 +265,83 @@ public class DbfFile implements DbfConsts {
         int end;
         start = fielddef[wantedCol].fieldstart;
         int len = fielddef[wantedCol].fieldlen;		 //[sstein 9.Sept.08]
-        end = start + fielddef[wantedCol].fieldlen;
+        end = start + len;
         String s;
         String masterString;
+
         switch (fielddef[wantedCol].fieldtype) {
             
-        case 'C': //character
-            while ((start < end) &&
-                   (rec[end-1] == ' ' ||    //[sstein 9.Sept.08]
-                    rec[end-1] == 0))       //[mmichaud 16 june 2010]
-                    end--;  //trim trailing spaces
-            s = new String(rec, start, end - start, charset.name());  //[sstein 9.Sept.08] + [Matthias Scholz 3. Sept.10] Charset added
-            masterString = uniqueStrings.get(s);
-            if (masterString!=null) return masterString;
-            else {
-                uniqueStrings.put(s,s);
-                return s;
-            }
+            case 'C': //character
+                while ((start < end) &&
+                       (rec[end-1] == ' ' ||    //[sstein 9.Sept.08]
+                        rec[end-1] == 0))       //[mmichaud 16 june 2010]
+                        end--;  //trim trailing spaces
+                //[sstein 9.Sept.08] + [Matthias Scholz 3. Sept.10] Charset added
+                s = new String(rec, start, end - start, charset.name());
+                masterString = uniqueStrings.get(s);
+                if (masterString != null) {
+                    return masterString;
+                } else {
+                    uniqueStrings.put(s,s);
+                    return s;
+                }
 
-        case 'F': //same as numeric, more or less
-        case 'N': //numeric
+            case 'F': //same as numeric, more or less
 
-          // fields of type 'F' are always represented as Doubles
-          boolean isInteger = fielddef[wantedCol].fieldnumdec == 0
-                && fielddef[wantedCol].fieldtype == 'N';
+            case 'N': //numeric
 
-          // The number field should be trimed from the start AND the end.
-          // Added .trim() to 'String numb = rec.substring(start, end)' instead. [Kevin Neufeld]
-          // while ((start < end) && (rec.charAt(start) == ' '))
-          // 	start++;
+                // fields of type 'F' are always represented as Doubles
+                boolean isInteger = fielddef[wantedCol].fieldnumdec == 0
+                    && fielddef[wantedCol].fieldtype == 'N';
+                boolean isLong = isInteger && fielddef[wantedCol].fieldlen > 11;
 
-          String numb = new String(rec, start, len).trim();  //[sstein 9.Sept.08]
-          if (isInteger) { //its an int
-              try {
-                  return new Integer(numb);
-              } catch (java.lang.NumberFormatException e) {
-                  return new Integer(0);
-              }
-          } else { //its a float
-              try {
-                  return new Double(numb);
-              } catch (java.lang.NumberFormatException e) {
-                  // dBase can have numbers that look like '********' !! This isn't ideal but at least reads them
-                  return new Double(Double.NaN);
-              }
-          }
+                // The number field should be trimed from the start AND the end.
+                // Added .trim() to 'String numb = rec.substring(start, end)' instead. [Kevin Neufeld]
+                // while ((start < end) && (rec.charAt(start) == ' '))
+                // 	start++;
 
-        case 'D': //date. Added by [Jon Aquino]
-            return parseDate(new String(rec, start, len));  //[sstein 9.Sept.08]
+                String numb = new String(rec, start, len).trim();  //[sstein 9.Sept.08]
+                if (isLong) { //its an int
+                    try {
+                        return Long.parseLong(numb);
+                    } catch (java.lang.NumberFormatException e) {
+                        return new Long(0);
+                    }
+                }
+                else if (isInteger) { //its an int
+                    try {
+                        return Integer.parseInt(numb);
+                    } catch (java.lang.NumberFormatException e) {
+                        return new Integer(0);
+                    }
+                }
+                else { //its a float
+                    try {
+                        return Double.parseDouble(numb);
+                    } catch (java.lang.NumberFormatException e) {
+                        // dBase can have numbers that look like '********' !! This isn't ideal but at least reads them
+                        return new Double(Double.NaN);
+                    }
+                }
 
-        default:
-        	s = new String(rec, start, len);  //[sstein 9.Sept.08]
-            masterString = uniqueStrings.get(s);
-            if (masterString!=null) return masterString;
-            else {
-                uniqueStrings.put(s,s);
-                return s;
-            }
+            case 'L': //boolean added by mmichaud
+                String bool = new String(rec, start, len).trim().toLowerCase();
+                if (bool.equals("?")) return null;
+                else if (bool.equals("t") || bool.equals("y") || bool.equals("1")) return Boolean.TRUE;
+                else return Boolean.FALSE;
+
+            case 'D': //date. Added by [Jon Aquino]
+                return parseDate(new String(rec, start, len));  //[sstein 9.Sept.08]
+
+            default:
+           	    s = new String(rec, start, len);  //[sstein 9.Sept.08]
+                masterString = uniqueStrings.get(s);
+                if (masterString!=null) {
+                    return masterString;
+                } else {
+                    uniqueStrings.put(s,s);
+                    return s;
+                }
         }
     }
 
@@ -323,6 +351,7 @@ public class DbfFile implements DbfConsts {
      * @param rec the record to be parsed.
      */
     //public Vector ParseRecord(StringBuffer rec) {  //[sstein 9.Sept.08]
+    /*
     public Vector ParseRecord(byte[] rec) {  //[sstein 9.Sept.08]
 
         Vector record = new Vector(numfields);
@@ -348,26 +377,46 @@ public class DbfFile implements DbfConsts {
                     try {
                         String tt = t.substring(fielddef[i].fieldstart,
                                 fielddef[i].fieldstart + fielddef[i].fieldlen);
-                        record.addElement(Integer.valueOf(tt.trim()));
+                        if (fielddef[i].fieldlen > 11) {
+                            record.addElement(Long.parseLong(tt.trim()));
+                        }
+                        else {
+                            record.addElement(Integer.parseInt(tt.trim()));
+                        }
                     } catch (java.lang.NumberFormatException e) {
-                        record.addElement(new Integer(0));
+                        if (fielddef[i].fieldlen > 11) {
+                            record.addElement(null);
+                        } else {
+                            record.addElement(null);
+                        }
                     }
                 } else { //its a float
 
                     try {
-                        record.addElement(Double.valueOf(t.substring(
+                        record.addElement(Double.parseDouble(t.substring(
                                     fielddef[i].fieldstart,
                                     fielddef[i].fieldstart +
                                     fielddef[i].fieldlen).trim()));
                     } catch (java.lang.NumberFormatException e) {
-                        record.addElement(new Double(0.0));
+                        record.addElement(null);
                     }
                 }
                 break;
 
+            case 'L':
+                String bool = t.substring(fielddef[i].fieldstart,
+                        fielddef[i].fieldstart + fielddef[i].fieldlen).trim().toLowerCase();
+                if (bool.equals("?")) {
+                    record.addElement(null);
+                } else if (bool.equals("t") || bool.equals("y") || bool.equals("1")) {
+                    record.addElement(Boolean.TRUE);
+                } else  {
+                    record.addElement(Boolean.FALSE);
+                }
+                break;
             case 'F':
                 try {
-                    record.addElement(Double.valueOf(t.substring(
+                    record.addElement(Double.parseDouble(t.substring(
                                 fielddef[i].fieldstart,
                                 fielddef[i].fieldstart + fielddef[i].fieldlen)
                                                  .trim()));
@@ -389,6 +438,7 @@ public class DbfFile implements DbfConsts {
 
         return record;
     }
+    */
 
     /**
      * Fetches a column of Integers from the database file.
@@ -396,10 +446,12 @@ public class DbfFile implements DbfConsts {
      * @exception java.io.IOException - on read error
      * @exception DbfFileException - column is not an Integer.
      */
+    /*
     public Integer[] getIntegerCol(int col)
             throws java.io.IOException, DbfFileException {
         return getIntegerCol(col, 0, last_rec);
     }
+    */
 
     /**
      * Fetches a part column of Integers from the database file.
@@ -409,6 +461,7 @@ public class DbfFile implements DbfConsts {
      * @exception java.io.IOException - on read error
      * @exception DbfFileException - column is not an Integer.
      */
+    /*
     public Integer[] getIntegerCol(int col, int start, int end)
             throws java.io.IOException, DbfFileException {
         Integer[] column = new Integer[end - start];
@@ -457,6 +510,20 @@ public class DbfFile implements DbfConsts {
 
         return column;
     }
+    */
+
+    /**
+     * Fetches a column of Longs from the database file.
+     * @param col - the column to fetch
+     * @exception java.io.IOException - on read error
+     * @exception DbfFileException - column is not an Long.
+     */
+    /*
+    public Long[] getLongCol(int col)
+            throws java.io.IOException, DbfFileException {
+        return getLongCol(col, 0, last_rec);
+    }
+    */
 
     /**
      * Fetches a column of Double from the database file.
@@ -464,10 +531,71 @@ public class DbfFile implements DbfConsts {
      * @exception java.io.IOException - on read error
      * @exception DbfFileException - column is not an Integer.
      */
+    /*
     public Double[] getFloatCol(int col)
             throws DbfFileException, java.io.IOException {
         return getFloatCol(col, 0, last_rec);
     }
+    */
+
+    /**
+     * Fetches a part column of Longs from the database file.
+     * @param col - the column to fetch
+     * @param start - the row to start fetching from
+     * @param end - the row to stop fetching at.
+     * @exception java.io.IOException - on read error
+     * @exception DbfFileException - column is not a Long.
+     */
+    /*
+    public Long[] getLongCol(int col, int start, int end)
+            throws java.io.IOException, DbfFileException {
+        Long[] column = new Long[end - start];
+        StringBuilder sb = new StringBuilder(numfields);
+        int k = 0;
+        int i = 0;
+
+        if (col >= numfields) {
+            throw new DbfFileException("DbFi>No Such Column in file: " + col);
+        }
+
+        if (fielddef[col].fieldtype != 'N') {
+            throw new DbfFileException("DbFi>Column " + col +
+                    " is not Integer");
+        }
+
+        // move to start of data
+        try {
+            rFile.seek(data_offset + (rec_size * start));
+
+            for (i = start; i < end; i++) {
+                sb.setLength(0);
+
+                for (k = 0; k < rec_size; k++)
+                    sb.append((char) rFile.readUnsignedByte());
+
+                String record = sb.toString();
+                try {
+                    column[i - start] = new Long(record.substring(
+                            fielddef[col].fieldstart,
+                            fielddef[col].fieldstart +
+                                    fielddef[col].fieldlen));
+                } catch (java.lang.NumberFormatException e) {
+                    column[i - start] = new Long(0);
+                }
+            }
+        } catch (java.io.EOFException e) {
+            System.err.println("DbFi>" + e);
+            System.err.println("DbFi>record " + i + " byte " + k +
+                    " file pos " + rFile.getFilePointer());
+        } catch (java.io.IOException e) {
+            System.err.println("DbFi>" + e);
+            System.err.println("DbFi>record " + i + " byte " + k +
+                    " file pos " + rFile.getFilePointer());
+        }
+
+        return column;
+    }
+    */
 
     /**
      * Fetches a part column of Double from the database file.
@@ -477,6 +605,7 @@ public class DbfFile implements DbfConsts {
      * @exception java.io.IOException - on read error
      * @exception DbfFileException - column is not an Integer.
      */
+    /*
     public Double[] getFloatCol(int col, int start, int end)
             throws DbfFileException, java.io.IOException {
         Double[] column = new Double[end - start];
@@ -532,6 +661,7 @@ public class DbfFile implements DbfConsts {
 
         return column;
     }
+    */
 
     /**
      * Fetches a column of Strings from the database file.
@@ -539,10 +669,12 @@ public class DbfFile implements DbfConsts {
      * @exception java.io.IOException - on read error
      * @exception DbfFileException - column is not an Integer.
      */
+    /*
     public String[] getStringCol(int col)
         throws DbfFileException, java.io.IOException {
         return getStringCol(col, 0, last_rec);
     }
+    */
 
     /**
      * Fetches a part column of Strings from the database file.
@@ -552,6 +684,7 @@ public class DbfFile implements DbfConsts {
      * @exception java.io.IOException - on read error
      * @exception DbfFileException - column is not an Integer.
      */
+    /*
     public String[] getStringCol(int col, int start, int end)
         throws DbfFileException, java.io.IOException {
         String[] column = new String[end - start];
@@ -596,6 +729,7 @@ public class DbfFile implements DbfConsts {
 
         return column;
     }
+    */
 
     public void close() throws IOException {
         dFile.close();

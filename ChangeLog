@@ -1,5 +1,10 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2015-03-14 mmichaud <m.michael.michaud@orange.fr>
+  * Manage new attribute types BOOLEAN and LONG in jml and shp drivers
+    (also manage other datatypes so that they can be written as one
+    of the well-known datatype instead of throwing an error message)
+
 2015-02-28 mmichaud <m.michael.michaud@orange.fr>
   * FR 215 : don't open a new ViewAttributesFrame if there is already one
     open for the selected layer Layer

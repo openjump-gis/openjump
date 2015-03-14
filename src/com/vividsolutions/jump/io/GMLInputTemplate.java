@@ -276,11 +276,17 @@ public class GMLInputTemplate extends DefaultHandler {
         //have the value as a string, make it an object
         cd = (ColumnDescription) columnDefinitions.get(index);
 
-        if (cd.type == AttributeType.STRING) {
+        if (cd.type == AttributeType.STRING ||
+                cd.type == AttributeType.VARCHAR ||
+                cd.type == AttributeType.LONGVARCHAR ||
+                cd.type == AttributeType.CHAR ||
+                cd.type == AttributeType.TEXT) {
             return val;
         }
 
-        if (cd.type == AttributeType.INTEGER) {
+        if (cd.type == AttributeType.INTEGER ||
+                cd.type == AttributeType.SMALLINT ||
+                cd.type == AttributeType.TINYINT) {
             try {
                 //Was Long, but JUMP expects AttributeType.INTEGER to hold Integers.
                 //e.g. open JML file then save as Shapefile => get ClassCastException.
@@ -291,18 +297,25 @@ public class GMLInputTemplate extends DefaultHandler {
                 //Compromise -- try Long if Integer fails. Some other parts of JUMP
                 //won't like it (exceptions), but it's better than null. Actually I don't like
                 //this null business -- future: warn the user. [Jon Aquino 1/13/2004]
-                try {
-                    return new Integer(val);
-                }
-                catch (Exception e) {
-                    return new Long(val);
-                }
+                return Integer.parseInt(val);
             } catch (Exception e) {
                 return null;
             }
         }
 
-        if (cd.type == AttributeType.DOUBLE) {
+        if (cd.type == AttributeType.LONG) {
+            try {
+                return Long.parseLong(val);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        if (cd.type == AttributeType.DOUBLE ||
+                cd.type == AttributeType.REAL ||
+                cd.type == AttributeType.FLOAT ||
+                cd.type == AttributeType.DECIMAL ||
+                cd.type == AttributeType.BIGDECIMAL) {
             try {
                 return new Double(val);
             } catch (Exception e) {
@@ -312,14 +325,22 @@ public class GMLInputTemplate extends DefaultHandler {
         
         //Adding date support. Can we throw an exception if an exception
         //occurs or if the type is unrecognized? [Jon Aquino]
-        if (cd.type == AttributeType.DATE) {
+        if (cd.type == AttributeType.DATE || cd.type == AttributeType.TIMESTAMP) {
             try {
                 return dateParser.parse(val, false);
             } catch (Exception e) {
                 return null;
             }
-        }        
-        
+        }
+
+        if (cd.type == AttributeType.BOOLEAN || cd.type == AttributeType.BIT) {
+            try {
+                return Boolean.parseBoolean(val);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
         if (cd.type == AttributeType.OBJECT)
         {
         	return val; // the GML file has text in it and we want to convert it to an "object"
