@@ -315,7 +315,7 @@ public class RasterQueryCursorTool extends NClickTool {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        name = rLayer.getName();
+        name = aLayer.getName();
 
         // gContext.getWorkbenchContext()
         // .getLayerViewPanel()
