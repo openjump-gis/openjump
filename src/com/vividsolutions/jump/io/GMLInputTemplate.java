@@ -303,7 +303,7 @@ public class GMLInputTemplate extends DefaultHandler {
             }
         }
 
-        if (cd.type == AttributeType.LONG) {
+        if (cd.type == AttributeType.LONG || cd.type == AttributeType.BIGINT) {
             try {
                 return Long.parseLong(val);
             } catch (Exception e) {
@@ -314,6 +314,7 @@ public class GMLInputTemplate extends DefaultHandler {
         if (cd.type == AttributeType.DOUBLE ||
                 cd.type == AttributeType.REAL ||
                 cd.type == AttributeType.FLOAT ||
+                cd.type == AttributeType.NUMERIC ||
                 cd.type == AttributeType.DECIMAL ||
                 cd.type == AttributeType.BIGDECIMAL) {
             try {
@@ -325,7 +326,9 @@ public class GMLInputTemplate extends DefaultHandler {
         
         //Adding date support. Can we throw an exception if an exception
         //occurs or if the type is unrecognized? [Jon Aquino]
-        if (cd.type == AttributeType.DATE || cd.type == AttributeType.TIMESTAMP) {
+        if (cd.type == AttributeType.DATE ||
+                cd.type == AttributeType.TIMESTAMP ||
+                cd.type == AttributeType.TIME) {
             try {
                 return dateParser.parse(val, false);
             } catch (Exception e) {

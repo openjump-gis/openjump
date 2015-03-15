@@ -442,7 +442,7 @@ public class ShapefileWriter implements JUMPWriter {
                 if (fromFile.fieldnumdec == 0)
                     fields[f] = fromFile;
                 f++;
-            } else if (columnType == AttributeType.LONG) {
+            } else if (columnType == AttributeType.LONG || columnType == AttributeType.BIGINT) {
                 fields[f] = new DbfFieldDef(columnName, 'N', 21, 0);
                 DbfFieldDef fromFile = overrideWithExistingCompatibleDbfFieldDef(fields[f], fieldMap);
                 if (fromFile.fieldnumdec == 0)
@@ -451,6 +451,7 @@ public class ShapefileWriter implements JUMPWriter {
             } else if (columnType == AttributeType.DOUBLE ||
                         columnType == AttributeType.REAL ||
                         columnType == AttributeType.FLOAT ||
+                        columnType == AttributeType.NUMERIC ||
                         columnType == AttributeType.DECIMAL ||
                         columnType == AttributeType.BIGDECIMAL) {
                 fields[f] = new DbfFieldDef(columnName, 'N', 33, 16);
@@ -492,7 +493,9 @@ public class ShapefileWriter implements JUMPWriter {
                 fields[f] = new DbfFieldDef(columnName, 'C', maxlength, 0);
                 //fields[f] = overrideWithExistingCompatibleDbfFieldDef(fields[f], fieldMap);
                f++;
-            } else if (columnType == AttributeType.DATE || columnType == AttributeType.TIMESTAMP) {
+            } else if (columnType == AttributeType.DATE ||
+                    columnType == AttributeType.TIMESTAMP ||
+                    columnType == AttributeType.TIME) {
                 fields[f] = new DbfFieldDef(columnName, 'D', 8, 0);
                 f++;                
             } else if (columnType == AttributeType.BOOLEAN || columnType == AttributeType.BIT) {
@@ -567,7 +570,7 @@ public class ShapefileWriter implements JUMPWriter {
                     } else {
                         DBFrow.add(a);
                     }
-                } else if (columnType == AttributeType.LONG) {
+                } else if (columnType == AttributeType.LONG || columnType == AttributeType.BIGINT) {
                     Object a = feature.getAttribute(u);
 
                     if (a == null) {
@@ -579,6 +582,7 @@ public class ShapefileWriter implements JUMPWriter {
                         columnType == AttributeType.REAL ||
                         columnType == AttributeType.FLOAT ||
                         columnType == AttributeType.DECIMAL ||
+                        columnType == AttributeType.NUMERIC ||
                         columnType == AttributeType.BIGDECIMAL) {
                     Object a = feature.getAttribute(u);
 
@@ -587,7 +591,9 @@ public class ShapefileWriter implements JUMPWriter {
                     } else {
                         DBFrow.add(a);
                     }
-                } else if (columnType == AttributeType.DATE || columnType == AttributeType.TIMESTAMP) {
+                } else if (columnType == AttributeType.DATE ||
+                        columnType == AttributeType.TIMESTAMP ||
+                        columnType == AttributeType.TIME) {
                     Object a = feature.getAttribute(u);
                     if (a == null) {
                         DBFrow.add("");
