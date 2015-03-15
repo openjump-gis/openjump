@@ -3,6 +3,7 @@ package org.openjump.core.rasterimage;
 import java.awt.Point;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.io.File;
 import java.io.FileInputStream;
@@ -82,6 +83,31 @@ public class RasterImageIOUtils {
                         .getNoDataValue());
     }
 
+    /**
+     * Export selected raster to various image file formats using ImageIO
+     * 
+     * @param File
+     *            destination file (absolute or relative path)
+     * @param format
+     *            Image I/O built-in support for both Oracle Java and OpenJDK is
+     *            "gif", "png" and "tif". Oracle Java support also "jpg". Other
+     *            formats might be work depending on installed codecs
+     * @param BufferedImag
+     *            bufferedimage
+     * @param Envelope
+     *            envelope
+     * @throws IOException
+     */
+
+    public static void saveImage(File file, String format,
+            BufferedImage bufferedimage, Envelope envelope) throws IOException {
+        ImageIO.write(bufferedimage, format, file);
+        WorldFileHandler worldFileHandler = new WorldFileHandler(
+                file.getAbsolutePath(), false);
+        worldFileHandler.writeWorldFile(envelope, bufferedimage.getWidth(),
+                bufferedimage.getHeight());
+
+    }
     
     /**
      * Export selected raster to TIF/TFW - using ImageIO.class
@@ -520,7 +546,7 @@ public class RasterImageIOUtils {
      *            . Name of the category to load the file
      */
 
-    public static void loadTIF(File file, PlugInContext context, String catName)
+    public static void loadTIF(File file, PlugInContext context, String category)
             throws NoninvertibleTransformException, TiffReadingException,
             Exception {
 
@@ -541,11 +567,11 @@ public class RasterImageIOUtils {
                 file.getAbsolutePath(), imageAndMetadata.getImage(), env);
         //String catName = StandardCategoryNames.RESULT;
         try {
-            catName = ((Category) context.getLayerNamePanel()
+            category = ((Category) context.getLayerNamePanel()
                     .getSelectedCategories().toArray()[0]).getName();
         } catch (RuntimeException e1) {
         }
-        context.getLayerManager().addLayerable(catName, ril);
+        context.getLayerManager().addLayerable(category, ril);
 
     }
 

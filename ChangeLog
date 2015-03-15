@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2015-03-15 Giuseppe Aruta (ma15569) 
+  * Add RasterImageIOUtils.class, with various methods to perform
+    some raster image  Input/Output operations
+
 2015-03-14 mmichaud <m.michael.michaud@orange.fr>
   * Manage new attribute types BOOLEAN and LONG in jml and shp drivers
     (also manage other datatypes so that they can be written as one
