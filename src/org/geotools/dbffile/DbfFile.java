@@ -135,7 +135,7 @@ public class DbfFile implements DbfConsts {
 
             case 'N':
                 if (fielddef[col].fieldnumdec == 0) {
-                    if (fielddef[col].fieldlen > 11) {
+                    if (fielddef[col].fieldlen > 9) {
                         realtype = "LONG";
                     } else {
                         realtype = "INTEGER";
@@ -293,7 +293,7 @@ public class DbfFile implements DbfConsts {
                 // fields of type 'F' are always represented as Doubles
                 boolean isInteger = fielddef[wantedCol].fieldnumdec == 0
                     && fielddef[wantedCol].fieldtype == 'N';
-                boolean isLong = isInteger && fielddef[wantedCol].fieldlen > 11;
+                boolean isLong = isInteger && fielddef[wantedCol].fieldlen > 9;
 
                 // The number field should be trimed from the start AND the end.
                 // Added .trim() to 'String numb = rec.substring(start, end)' instead. [Kevin Neufeld]
@@ -377,14 +377,14 @@ public class DbfFile implements DbfConsts {
                     try {
                         String tt = t.substring(fielddef[i].fieldstart,
                                 fielddef[i].fieldstart + fielddef[i].fieldlen);
-                        if (fielddef[i].fieldlen > 11) {
+                        if (fielddef[i].fieldlen > 9) {
                             record.addElement(Long.parseLong(tt.trim()));
                         }
                         else {
                             record.addElement(Integer.parseInt(tt.trim()));
                         }
                     } catch (java.lang.NumberFormatException e) {
-                        if (fielddef[i].fieldlen > 11) {
+                        if (fielddef[i].fieldlen > 9) {
                             record.addElement(null);
                         } else {
                             record.addElement(null);

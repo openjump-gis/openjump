@@ -38,6 +38,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
+import java.math.BigDecimal;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -193,6 +196,24 @@ public class AttributeTablePanel extends JPanel {
                         else setText(formatter.format(value));
                     }
                 });
+                setDefaultRenderer(Time.class, new DefaultTableCellRenderer() {
+                    public void setValue(Object value) {
+                        if (value == null) {
+                            setIcon(nullString);
+                            setHorizontalAlignment(SwingConstants.CENTER);
+                        }
+                        else setText(formatter.format(value));
+                    }
+                });
+                setDefaultRenderer(Timestamp.class, new DefaultTableCellRenderer() {
+                    public void setValue(Object value) {
+                        if (value == null) {
+                            setIcon(nullString);
+                            setHorizontalAlignment(SwingConstants.CENTER);
+                        }
+                        else setText(formatter.format(value));
+                    }
+                });
                 // Set default editor here too, as we want date display and date editing
                 // to be synchronized
                 setDefaultEditor(Date.class, new FlexibleDateParser.CellEditor(formatter));
@@ -214,7 +235,25 @@ public class AttributeTablePanel extends JPanel {
                         else setText(value.toString());
                     }
                 });
+                setDefaultRenderer(Long.class, new DefaultTableCellRenderer() {
+                    public void setValue(Object value) {
+                        if (value == null) {
+                            setIcon(nullString);
+                            setHorizontalAlignment(SwingConstants.CENTER);
+                        }
+                        else setText(value.toString());
+                    }
+                });
                 setDefaultRenderer(Double.class, new DefaultTableCellRenderer() {
+                    public void setValue(Object value) {
+                        if (value == null) {
+                            setIcon(nullString);
+                            setHorizontalAlignment(SwingConstants.CENTER);
+                        }
+                        else setText(value.toString());
+                    }
+                });
+                setDefaultRenderer(BigDecimal.class, new DefaultTableCellRenderer() {
                     public void setValue(Object value) {
                         if (value == null) {
                             setIcon(nullString);

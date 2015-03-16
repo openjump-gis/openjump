@@ -437,18 +437,46 @@ public class ShapefileWriter implements JUMPWriter {
             if (columnType == AttributeType.INTEGER ||
                     columnType == AttributeType.SMALLINT ||
                     columnType == AttributeType.TINYINT) {
-                fields[f] = new DbfFieldDef(columnName, 'N', 11, 0);  //LDB: previously 16
+                int maxlength = findMaxStringLength(featureCollection, t);
+                if (maxlength <= 3) fields[f] = new DbfFieldDef(columnName, 'N', 3, 0);
+                else if (maxlength <= 6) fields[f] = new DbfFieldDef(columnName, 'N', 6, 0);
+                else if (maxlength <= 9) fields[f] = new DbfFieldDef(columnName, 'N', 9, 0);
+                else fields[f] = new DbfFieldDef(columnName, 'N', maxlength, 0);
                 DbfFieldDef fromFile = overrideWithExistingCompatibleDbfFieldDef(fields[f], fieldMap);
                 if (fromFile.fieldnumdec == 0)
                     fields[f] = fromFile;
                 f++;
-            } else if (columnType == AttributeType.LONG || columnType == AttributeType.BIGINT) {
-                fields[f] = new DbfFieldDef(columnName, 'N', 21, 0);
+            }
+
+            else if (columnType == AttributeType.LONG ||
+                    columnType == AttributeType.BIGINT) {
+                int maxlength = findMaxStringLength(featureCollection, t);
+                if (maxlength <= 12) fields[f] = new DbfFieldDef(columnName, 'N', 12, 0);
+                else if (maxlength <= 15) fields[f] = new DbfFieldDef(columnName, 'N', 15, 0);
+                else if (maxlength <= 18) fields[f] = new DbfFieldDef(columnName, 'N', 18, 0);
+                else fields[f] = new DbfFieldDef(columnName, 'N', maxlength, 0);
                 DbfFieldDef fromFile = overrideWithExistingCompatibleDbfFieldDef(fields[f], fieldMap);
                 if (fromFile.fieldnumdec == 0)
                     fields[f] = fromFile;
                 f++;
-            } else if (columnType == AttributeType.DOUBLE ||
+            }
+
+            //if (columnType == AttributeType.INTEGER ||
+            //        columnType == AttributeType.SMALLINT ||
+            //        columnType == AttributeType.TINYINT) {
+            //    fields[f] = new DbfFieldDef(columnName, 'N', 11, 0);  //LDB: previously 16
+            //    DbfFieldDef fromFile = overrideWithExistingCompatibleDbfFieldDef(fields[f], fieldMap);
+            //    if (fromFile.fieldnumdec == 0)
+            //        fields[f] = fromFile;
+            //    f++;
+            //} else if (columnType == AttributeType.LONG || columnType == AttributeType.BIGINT) {
+            //    fields[f] = new DbfFieldDef(columnName, 'N', 21, 0);
+            //    DbfFieldDef fromFile = overrideWithExistingCompatibleDbfFieldDef(fields[f], fieldMap);
+            //    if (fromFile.fieldnumdec == 0)
+            //        fields[f] = fromFile;
+            //    f++;
+            //}
+            else if (columnType == AttributeType.DOUBLE ||
                         columnType == AttributeType.REAL ||
                         columnType == AttributeType.FLOAT ||
                         columnType == AttributeType.NUMERIC ||
@@ -705,6 +733,7 @@ public class ShapefileWriter implements JUMPWriter {
 
         return Math.max(1, maxlen); //LDB: don't allow zero length strings
     }
+
 
     /**
      * Find the generic geometry type of the feature collection.
