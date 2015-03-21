@@ -60,13 +60,14 @@ public class RasterImageIOUtils {
      * 
      * @param file
      *            file to save es D:/Openjump/test.tif
-     * @param context
-     *            Plugin Context
      * @param rLayer
      *            Selected Raster Image Layer (RasterImageLayer.class)
+     * @param Envelope
+     *            envelope  
+     * @throws NoninvertibleTransformException, TiffReadingException, Exception                     
      */
 
-    public static void saveTIF(File file, PlugInContext context,
+    public static void saveTIF(File file, 
             RasterImageLayer rLayer, Envelope envWanted)
             throws NoninvertibleTransformException, TiffReadingException,
             Exception {
@@ -118,10 +119,11 @@ public class RasterImageIOUtils {
      *            envelope of selected Image Layer (RasterImageLayer.class)
      * @param PlanarImage
      *            PlanarImage of selected Image Layer (RasterImageLayer.class)
+     * @throws IOException
      */
 
     public static void saveTIF_ImageIO(File file, Envelope envelope,
-            PlanarImage planarimage) throws Exception {
+            PlanarImage planarimage) throws IOException {
         ImageIO.write(planarimage, "tif", file);
         WorldFileHandler worldFileHandler = new WorldFileHandler(
                 file.getAbsolutePath(), false);
@@ -141,6 +143,7 @@ public class RasterImageIOUtils {
      *            Selected Raster Image Layer (RasterImageLayer.class)
      * @param band
      *            Number of band to save (O=red, 1=green, 2=blue)
+     * @throws IOException
      */
 
     public static void saveASC(File file, PlugInContext context,
@@ -227,6 +230,7 @@ public class RasterImageIOUtils {
      *            . Plugin Context
      * @param rLayer
      *            . Selected Raster Image Layer (RasterImageLayer.class)
+     * @throws IOException
      */
 
     public static void saveHDR(File outFile, PlugInContext context,
@@ -297,6 +301,7 @@ public class RasterImageIOUtils {
      * @param band
      *            Number of the band to save (O=1st band (red), 1=2nd band
      *            (green), 2=3rd band (blue), etc)
+     * @throws IOException
      */
 
     public static void saveFLT(File outFile, PlugInContext context,
@@ -373,6 +378,7 @@ public class RasterImageIOUtils {
      * @param band
      *            . Number of band to save (O=1st band (red), 1=2nd band
      *            (green), 2=3rd band (blue), etc)
+     * @throws IOException
      */
 
     public static void saveSurferGRD(File outfile, PlugInContext context,
@@ -467,6 +473,7 @@ public class RasterImageIOUtils {
      * @param band
      *            . Number of band to save (O=1st band (red), 1=2nd band
      *            (green), 2=3rd band (blue), etc)
+     * @throws IOException
      */
 
     public static void saveXYZ(File outfile, PlugInContext context,
@@ -542,8 +549,9 @@ public class RasterImageIOUtils {
      *            file to load es D:/Openjump/test.tif
      * @param PlugInContext
      *            Plugin Context
-      * @param Category
+     * @param Category
      *            . Name of the category to load the file
+     * @throws NoninvertibleTransformException, TiffReadingException, Exception
      */
 
     public static void loadTIF(File file, PlugInContext context, String category)
@@ -583,6 +591,7 @@ public class RasterImageIOUtils {
      * @param PlugInContext
      * @param Category
      *            . Name of the category to load the file
+     * @throws NoninvertibleTransformException, TiffReadingException, Exception           
      */
 
     public static void loadFLT(File file, PlugInContext context, String category)
@@ -627,6 +636,7 @@ public class RasterImageIOUtils {
      * @param PlugInContext
      * @param Category
      *            . Name of the category to load the file
+     * @throws NoninvertibleTransformException, TiffReadingException, Exception            
      */
 
     public static void loadASC(File file, PlugInContext context, String category)
@@ -662,4 +672,175 @@ public class RasterImageIOUtils {
         context.getLayerManager().addLayerable(category, rasterlayer);
     }
 
+    /**
+     * Mask a selected range of values of a raster. The range will be defined by
+     * a lower and upper values of the range. The values within the range will
+     * be substituted by nodata value. The output file is a Arcview Gridded
+     * Binary file (HDR/FLT)
+     * 
+     * @param file
+     *            file to save es D:/Openjump/test.flt
+     * @param context
+     *            Plugin Context
+     * @param rLayer
+     *            Selected Raster Image Layer (RasterImageLayer.class)
+     * @param int band Number of the band to save (O=1st band (red), 1=2nd band
+     *        (green), 2=3rd band (blue), etc)
+     * @param float mindata lower value of the mask range
+     * @param float maxata upper value of the mask range
+     * @param float nodata nodata value
+     */
+
+    public static void saveFLT_mask(File outFile, PlugInContext context,
+            RasterImageLayer rLayer, int band, float mindata, float maxdata,
+            float nodata) throws IOException {
+        FileOutputStream out = null;
+        try {
+            OpenJUMPSextanteRasterLayer rstLayer = new OpenJUMPSextanteRasterLayer();
+            rstLayer.create(rLayer);
+
+            out = new FileOutputStream(outFile);
+            cellFormat = NumberFormat.getNumberInstance();
+            cellFormat.setMaximumFractionDigits(3);
+            cellFormat.setMinimumFractionDigits(0);
+            properties = new Properties();
+            try {
+                FileInputStream fis = new FileInputStream(propertiesFile);
+                properties.load(fis);
+                properties.getProperty(LoadSextanteRasterImagePlugIn.KEY_PATH);
+                fis.close();
+            } catch (FileNotFoundException localFileNotFoundException) {
+            } catch (IOException e) {
+                context.getWorkbenchFrame().warnUser(GenericNames.ERROR);
+            }
+            FileChannel fileChannelOut = out.getChannel();
+            GridWrapperNotInterpolated gwrapper = new GridWrapperNotInterpolated(
+                    rstLayer, rstLayer.getLayerGridExtent());
+            int nx = rstLayer.getLayerGridExtent().getNX();
+            int ny = rstLayer.getLayerGridExtent().getNY();
+            ByteBuffer bb = ByteBuffer.allocateDirect(nx * 4);
+            bb.order(ByteOrder.LITTLE_ENDIAN);
+
+            for (int y = 0; y < ny; y++) {
+                for (int x = 0; x < nx; x++) {
+                    float value = gwrapper.getCellValueAsFloat(x, y, band);
+                    if (bb.hasRemaining()) {
+                        if (value >= mindata && value <= maxdata) {
+                            bb.putFloat(nodata);
+                        } else {
+                            bb.putFloat(value);
+                        }
+                    } else {
+                        x--;
+                        // c--;
+                        bb.compact();
+                        fileChannelOut.write(bb);
+                        bb.clear();
+                    }
+                }
+            }
+            bb.compact();
+            fileChannelOut.write(bb);
+            bb.clear();
+        } catch (Exception e) {
+            context.getWorkbenchFrame()
+                    .warnUser(
+                            I18N.get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Error-See-Output-Window"));
+            context.getWorkbenchFrame().getOutputFrame().createNewDocument();
+            context.getWorkbenchFrame()
+                    .getOutputFrame()
+                    .addText(
+                            "Save To Raster Exception:Export image with no datasource to FLT/ASC/GRD/XYZ not yet implemented. Please Use Sextante Plugin");
+        } finally {
+            if (out != null)
+                out.close();
+        }
+    }
+
+    /**
+     * Extract a selected range of values of a raster. The range will be defined
+     * by a lower and upper values of the range. All the raster cell values
+     * outside this range of values will be substituted by nodata value.The
+     * output file is a Arcview Gridded Binary file (HDR/FLT)
+     * 
+     * @param file
+     *            file to save es D:/Openjump/test.flt
+     * @param context
+     *            Plugin Context
+     * @param rLayer
+     *            Selected Raster Image Layer (RasterImageLayer.class)
+     * @param int band Number of the band to save (O=1st band (red), 1=2nd band
+     *        (green), 2=3rd band (blue), etc)
+     * @param float mindata lower value of the extract range
+     * @param float maxata upper value of the e range
+     * @param float nodata nodata value
+     */
+
+    public static void saveFLT_extract(File outFile, PlugInContext context,
+            RasterImageLayer rLayer, int band, float mindata, float maxdata,
+            float nodata) throws IOException {
+        FileOutputStream out = null;
+        try {
+            OpenJUMPSextanteRasterLayer rstLayer = new OpenJUMPSextanteRasterLayer();
+            rstLayer.create(rLayer);
+
+            out = new FileOutputStream(outFile);
+            cellFormat = NumberFormat.getNumberInstance();
+            cellFormat.setMaximumFractionDigits(3);
+            cellFormat.setMinimumFractionDigits(0);
+            properties = new Properties();
+            try {
+                FileInputStream fis = new FileInputStream(propertiesFile);
+                properties.load(fis);
+                properties.getProperty(LoadSextanteRasterImagePlugIn.KEY_PATH);
+                fis.close();
+            } catch (FileNotFoundException localFileNotFoundException) {
+            } catch (IOException e) {
+                context.getWorkbenchFrame().warnUser(GenericNames.ERROR);
+            }
+            FileChannel fileChannelOut = out.getChannel();
+            GridWrapperNotInterpolated gwrapper = new GridWrapperNotInterpolated(
+                    rstLayer, rstLayer.getLayerGridExtent());
+            int nx = rstLayer.getLayerGridExtent().getNX();
+            int ny = rstLayer.getLayerGridExtent().getNY();
+            ByteBuffer bb = ByteBuffer.allocateDirect(nx * 4);
+            bb.order(ByteOrder.LITTLE_ENDIAN);
+
+            for (int y = 0; y < ny; y++) {
+                for (int x = 0; x < nx; x++) {
+                    float value = gwrapper.getCellValueAsFloat(x, y, band);
+                    if (bb.hasRemaining()) {
+                        if (value >= mindata && value <= maxdata) {
+                            bb.putFloat(value);
+                        } else {
+                            bb.putFloat(nodata);
+                        }
+                    } else {
+                        x--;
+                        // c--;
+                        bb.compact();
+                        fileChannelOut.write(bb);
+                        bb.clear();
+                    }
+                }
+            }
+            bb.compact();
+            fileChannelOut.write(bb);
+            bb.clear();
+        } catch (Exception e) {
+            context.getWorkbenchFrame()
+                    .warnUser(
+                            I18N.get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Error-See-Output-Window"));
+            context.getWorkbenchFrame().getOutputFrame().createNewDocument();
+            context.getWorkbenchFrame()
+                    .getOutputFrame()
+                    .addText(
+                            "Save To Raster Exception:Export image with no datasource to FLT/ASC/GRD/XYZ not yet implemented. Please Use Sextante Plugin");
+        } finally {
+            if (out != null)
+                out.close();
+        }
+    }   
+    
+    
 }
