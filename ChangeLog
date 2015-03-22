@@ -11,6 +11,7 @@
     - String and boolean : press left button, and click on null menu item
     before releasing
     - Date and numerics : just empty the field
+  *  Fix a regression in kml driver introduced by a change in OJ API
 
 2015-03-15 Giuseppe Aruta (ma15569) 
   * Add RasterImageIOUtils.class, with various methods to perform
