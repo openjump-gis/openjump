@@ -65,6 +65,7 @@ import java.awt.event.ActionListener;
 import java.text.DateFormat;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 import javax.swing.ImageIcon;
 import javax.swing.JInternalFrame;
@@ -334,6 +335,9 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
         return StringUtil.limitLength(s, 30);
     }
 
+    Pattern TRUE_PATTERN = Pattern.compile("(?i)^(T(rue)?|Y(es)?|V(rai)?|1)$");
+    Pattern FALSE_PATTERN = Pattern.compile("(?i)^(F(alse)?|N(o)?|F(aux)?|0)$");
+
     private Object convert(Object oldValue, AttributeType oldType,
         AttributeType newType, String name,
         boolean forcingInvalidConversionsToNull) throws ConversionException {
@@ -352,12 +356,23 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
 
                 if (newType == AttributeType.INTEGER) {
                     try {
-                        return new Integer(oldString);
+                        return new Integer(oldString.replaceAll("^0*",""));
                     } catch (NumberFormatException e) {
                         throw new ConversionException(
                             I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-integer")+" \"" +
                             limitLength(oldValue.toString()) + "\" (" + name +
                             ")");
+                    }
+                }
+
+                if (newType == AttributeType.LONG) {
+                    try {
+                        return new Long(oldString.replaceAll("^0*",""));
+                    } catch (NumberFormatException e) {
+                        throw new ConversionException(
+                                I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-long")+" \"" +
+                                        limitLength(oldValue.toString()) + "\" (" + name +
+                                        ")");
                     }
                 }
 
@@ -370,6 +385,15 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
                             limitLength(oldValue.toString()) + "\" (" + name +
                             ")");
                     }
+                }
+
+                if (newType == AttributeType.BOOLEAN) {
+                    if (FALSE_PATTERN.matcher(oldString).matches()) return Boolean.FALSE;
+                    else if (TRUE_PATTERN.matcher(oldString).matches()) return Boolean.TRUE;
+                    throw new ConversionException(
+                            I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-boolean")+" \"" +
+                                        limitLength(oldValue.toString()) + "\" (" + name +
+                                        ")");
                 }
 
                 if (newType == AttributeType.GEOMETRY) {
@@ -406,8 +430,16 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
                     return oldValue;
                 }
 
+                if (newType == AttributeType.LONG) {
+                    return new Long(oldInt);
+                }
+
                 if (newType == AttributeType.DOUBLE) {
                     return new Double(oldInt);
+                }
+
+                if (newType == AttributeType.BOOLEAN) {
+                    return oldInt == 0 ? Boolean.FALSE : Boolean.TRUE;
                 }
 
                 if (newType == AttributeType.GEOMETRY) {
@@ -439,8 +471,16 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
                     return new Integer((int) oldDouble);
                 }
 
+                if (newType == AttributeType.LONG) {
+                    return new Long((long) oldDouble);
+                }
+
                 if (newType == AttributeType.DOUBLE) {
                     return oldValue;
+                }
+
+                if (newType == AttributeType.BOOLEAN) {
+                    return oldDouble == 0.0 ? Boolean.FALSE : Boolean.TRUE;
                 }
 
                 if (newType == AttributeType.GEOMETRY) {
@@ -468,10 +508,22 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
                         limitLength(oldValue.toString()) + "\" (" + name + ")");
                 }
 
+                if (newType == AttributeType.LONG) {
+                    throw new ConversionException(
+                            I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-long")+" \"" +
+                                    limitLength(oldValue.toString()) + "\" (" + name + ")");
+                }
+
                 if (newType == AttributeType.DOUBLE) {
                     throw new ConversionException(
                         I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-double")+" \"" +
                         limitLength(oldValue.toString()) + "\" (" + name + ")");
+                }
+
+                if (newType == AttributeType.BOOLEAN) {
+                    throw new ConversionException(
+                            I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-boolean")+" \"" +
+                                    limitLength(oldValue.toString()) + "\" (" + name + ")");
                 }
 
                 if (newType == AttributeType.GEOMETRY) {
@@ -495,8 +547,18 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
                     return new Integer((int) oldDate.getTime());
                 }
 
+                if (newType == AttributeType.LONG) {
+                    return oldDate.getTime();
+                }
+
                 if (newType == AttributeType.DOUBLE) {
                     return new Double(oldDate.getTime());
+                }
+
+                if (newType == AttributeType.BOOLEAN) {
+                    throw new ConversionException(
+                            I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-boolean")+" \"" +
+                                    limitLength(oldValue.toString()) + "\" (" + name + ")");
                 }
 
                 if (newType == AttributeType.GEOMETRY) {
@@ -525,6 +587,15 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
                         limitLength(oldValue.toString()) + "\" (" + name + ")");
                 }
 
+                if (newType == AttributeType.LONG) {
+                    if (oldValue instanceof Number) {
+                        return new Long(((Number)oldValue).longValue());
+                    }
+                    throw new ConversionException(
+                            I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-integer")+" \"" +
+                                    limitLength(oldValue.toString()) + "\" (" + name + ")");
+                }
+
                 if (newType == AttributeType.DOUBLE) {
                     if (oldValue instanceof Number) {
                         return new Double(((Number)oldValue).doubleValue());
@@ -532,6 +603,20 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
                     throw new ConversionException(
                             I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-double")+" \"" +
                         limitLength(oldValue.toString()) + "\" (" + name + ")");
+                }
+
+                if (newType == AttributeType.BOOLEAN) {
+                    if (oldValue instanceof Boolean) {
+                        return oldValue;
+                    } else if (oldValue instanceof Number) {
+                        return ((Number)oldValue).intValue() == 0 ? Boolean.FALSE : Boolean.TRUE;
+                    } else if (oldValue instanceof String) {
+                        if (FALSE_PATTERN.matcher(oldValue.toString()).matches()) return Boolean.FALSE;
+                        if (TRUE_PATTERN.matcher(oldValue.toString()).matches()) return Boolean.TRUE;
+                    }
+                    throw new ConversionException(
+                            I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-boolean")+" \"" +
+                                    limitLength(oldValue.toString()) + "\" (" + name + ")");
                 }
 
                 if (newType == AttributeType.GEOMETRY) {
