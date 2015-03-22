@@ -1,5 +1,12 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2015-03-22 mmichaud <m.michael.michaud@orange.fr>
+  * Hide unused AttributeType from the schema.
+    Add a way to nullify attribute values in the Attribute panel :
+    - String and boolean : press left button, and click on null menu item
+    before releasing
+    - Date and numerics : just empty the field
+
 2015-03-15 Giuseppe Aruta (ma15569) 
   * Add RasterImageIOUtils.class, with various methods to perform
     some raster image  Input/Output operations

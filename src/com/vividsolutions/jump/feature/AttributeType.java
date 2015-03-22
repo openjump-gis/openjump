@@ -149,14 +149,16 @@ public class AttributeType implements Serializable {
    */
   public static Collection<AttributeType> basicTypes() {
     List<AttributeType> basicTypes = new ArrayList<AttributeType>();
+    basicTypes.add(GEOMETRY);
     basicTypes.add(STRING);
     basicTypes.add(INTEGER);
     basicTypes.add(LONG);
-    basicTypes.add(FLOAT);
+    //basicTypes.add(FLOAT);
     basicTypes.add(DOUBLE);
     basicTypes.add(DATE);
-    basicTypes.add(TIMESTAMP);
+    //basicTypes.add(TIMESTAMP);
     basicTypes.add(BOOLEAN);
+    basicTypes.add(OBJECT);
     return basicTypes;
   }
 

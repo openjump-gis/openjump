@@ -400,7 +400,8 @@ public class SchemaPanel extends JPanel {
 
     private void initCellEditors() {
         fieldNameColumn().setCellEditor(new MyFieldNameEditor());
-        dataTypeColumn().setCellEditor(new MyDataTypeEditor(AttributeType.allTypes().toArray()));
+        // Switched to basic types only (to get all types available, switch to AttributeType.allTypes())
+        dataTypeColumn().setCellEditor(new MyDataTypeEditor(AttributeType.basicTypes().toArray()));
         fieldNameColumn().setCellRenderer(
             new StripingRenderer(table.getDefaultRenderer(String.class)));
         dataTypeColumn().setCellRenderer(new StripingRenderer(new TableCellRenderer() {
@@ -790,12 +791,16 @@ public class SchemaPanel extends JPanel {
                     int index,
                     boolean isSelected,
                     boolean cellHasFocus) {
-                    return originalRenderer.getListCellRendererComponent(
-                        list,
-                        (value != null) ? capitalizeFirstLetter(value.toString()) : null,
-                        index,
-                        isSelected,
-                        cellHasFocus);
+                    Component component = originalRenderer.getListCellRendererComponent(
+                            list,
+                            (value != null) ? capitalizeFirstLetter(value.toString()) : null,
+                            index,
+                            isSelected,
+                            cellHasFocus);
+                    if (!AttributeType.basicTypes().contains(value)) {
+                        component.setForeground(Color.RED);
+                    }
+                    return component;
                 }
             });
         }
