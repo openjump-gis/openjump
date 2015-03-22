@@ -1,5 +1,9 @@
 package org.openjump.core.ui.plugin.raster.nodata;
 
+import it.betastudio.adbtoolbox.libs.ExtensionFilter;
+import it.betastudio.adbtoolbox.libs.FileOperations;
+
+import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.event.KeyEvent;
 import java.awt.geom.NoninvertibleTransformException;
@@ -16,7 +20,11 @@ import java.nio.channels.FileChannel;
 import java.text.NumberFormat;
 import java.util.Properties;
 
-import javax.swing.JOptionPane;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
@@ -38,13 +46,17 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Category;
+import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.GenericNames;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
+import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.Viewport;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 public class ChangeValueToNoDataPlugIn extends AbstractPlugIn {
@@ -52,6 +64,10 @@ public class ChangeValueToNoDataPlugIn extends AbstractPlugIn {
             .get("org.openjump.core.ui.plugin.raster.nodata.ChangeValueToNoDataPlugIn.name");
     private String SUBMENU = I18N
             .get("org.openjump.core.ui.plugin.raster.nodata.menu");
+    private String CHANGE = I18N
+            .get("org.openjump.core.ui.plugin.raster.nodata.ChangeValueToNoDataPlugIn.change");
+    private String TONODATA = I18N
+            .get("org.openjump.core.ui.plugin.raster.nodata.ChangeValueToNoDataPlugIn.tonodata");
     private static final Logger LOGGER = Logger
             .getLogger(ChangeNoDataValuePlugIn.class);
     private Properties properties = null;
@@ -59,6 +75,10 @@ public class ChangeValueToNoDataPlugIn extends AbstractPlugIn {
     private static String propertiesFile = LoadSextanteRasterImagePlugIn
             .getPropertiesFile();
     NumberFormat cellFormat = null;
+    private String OUTPUT_FILE = I18N.get("driver.DriverManager.file-to-save")
+            + ": ";
+    private static ImageIcon icon16 = IconLoader
+            .icon("fugue/folder-horizontal-open_16.png");
 
     public ChangeValueToNoDataPlugIn() {
 
@@ -82,7 +102,29 @@ public class ChangeValueToNoDataPlugIn extends AbstractPlugIn {
         reportNothingToUndoYet(context);
         RasterImageLayer rLayer = (RasterImageLayer) LayerTools
                 .getSelectedLayerable(context, RasterImageLayer.class);
+        MultiInputDialog dialog = new MultiInputDialog(
+                context.getWorkbenchFrame(), getName(), true);
 
+        // Top panel. Visualize nodata/max/min cell values
+        JPanel jPanel1 = new JPanel(new GridBagLayout());
+        jPanel1.setBorder(BorderFactory.createTitledBorder(I18N
+                .get("ui.plugin.LayerStatisticsPlugIn.layer-statistics")));
+        OpenJUMPSextanteRasterLayer rstLayer = new OpenJUMPSextanteRasterLayer();
+        rstLayer.create(rLayer);
+        JTextField nd = new JTextField(String.valueOf(rLayer.getNoDataValue()));
+        nd.setEditable(false);
+        JTextField max = new JTextField(String.valueOf(rstLayer.getMaxValue()));
+        max.setEditable(false);
+        JTextField min = new JTextField(String.valueOf(rstLayer.getMinValue()));
+        min.setEditable(false);
+        JLabel nd_label = new JLabel("nodata:");
+        JLabel min_label = new JLabel("min:");
+        JLabel max_label = new JLabel("max:");
+        FormUtils.addRowInGBL(jPanel1, 1, 0, nd_label, nd);
+        FormUtils.addRowInGBL(jPanel1, 1, 2, min_label, min);
+        FormUtils.addRowInGBL(jPanel1, 1, 4, max_label, max);
+
+        // Main Panel. Set range source-target no data value
         JPanel secondPanel = new JPanel(new GridBagLayout());
         JTextPane text = new JTextPane();
         text.setOpaque(false);
@@ -98,44 +140,48 @@ public class ChangeValueToNoDataPlugIn extends AbstractPlugIn {
                 }
             }
         });
+        FormUtils.addRowInGBL(secondPanel, 2, 0, CHANGE, changing_data);
+        FormUtils.addRowInGBL(secondPanel, 3, 0, TONODATA, text);
 
-        FormUtils
-                .addRowInGBL(
-                        secondPanel,
-                        2,
-                        0,
-                        I18N.get("org.openjump.core.ui.plugin.raster.nodata.ChangeValueToNoDataPlugIn.change"),
-                        changing_data);
-        FormUtils
-                .addRowInGBL(
-                        secondPanel,
-                        3,
-                        0,
-                        I18N.get("org.openjump.core.ui.plugin.raster.nodata.ChangeValueToNoDataPlugIn.tonodata"),
-                        text);
-        int option = JOptionPane.showConfirmDialog(null, secondPanel,
-                PLUGINNAME, JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.PLAIN_MESSAGE);
+        // Lower panel
+        JPanel jPanel2 = new JPanel(new GridBagLayout());
+        jPanel2 = new javax.swing.JPanel();
+        JLabel jLabel3 = new javax.swing.JLabel();
+        jTextField_RasterOut = new javax.swing.JTextField();
+        JButton jButton_Dir = new javax.swing.JButton();
+        jTextField_RasterOut.setText("");
+        jButton_Dir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_RasterOutActionPerformed(evt);
+            }
+        });
+        jLabel3.setText(OUTPUT_FILE);
+        jTextField_RasterOut.setEditable(true);
+        jButton_Dir.setIcon(icon16);
+        jTextField_RasterOut.setPreferredSize(new Dimension(250, 20));
+        FormUtils.addRowInGBL(jPanel2, 3, 0, OUTPUT_FILE, jTextField_RasterOut);
+        FormUtils.addRowInGBL(jPanel2, 3, 2, jButton_Dir);
 
-        switch (option) {
+        dialog.addRow(jPanel1);
+        dialog.addRow(secondPanel);
+        dialog.addRow(jPanel2);
 
-        case JOptionPane.CANCEL_OPTION:
+        GUIUtil.centreOnWindow(dialog);
+        dialog.setVisible(true);
 
-            break;
+        if (!dialog.wasOKPressed()) {
+            return false;
+        } else {
 
-        case JOptionPane.OK_OPTION:
+            String path = jTextField_RasterOut.getText();
 
-            String redName = context.getLayerManager().uniqueLayerName(
-                    rLayer.getName());
-            int boxToInt = 0;
+            int band = 0;
 
-            File flt_outFile = new File(System.getProperty("java.io.tmpdir")
-                    .concat(File.separator).concat(redName).concat(".flt"));
-            File hdr_outFile = new File(System.getProperty("java.io.tmpdir")
-                    .concat(File.separator).concat(redName).concat(".hdr"));
+            File flt_outFile = new File(path.concat(".flt"));
+            File hdr_outFile = new File(path.concat(".hdr"));
             float olddata = Float.parseFloat(changing_data.getText());
             float newdata = (float) rLayer.getNoDataValue();
-            saveFLT(flt_outFile, context, rLayer, boxToInt, olddata, newdata);
+            saveFLT(flt_outFile, context, rLayer, band, olddata, newdata);
             saveHDR(hdr_outFile, context, rLayer);
             loadFLT(flt_outFile, context);
 
@@ -288,7 +334,7 @@ public class ChangeValueToNoDataPlugIn extends AbstractPlugIn {
                 context.getWorkbenchContext().getLayerManager(),
                 flt_outFile.getAbsolutePath(), imageAndMetadata.getImage(),
                 imageEnvelope);
-        String catName = "Temp";// StandardCategoryNames.RESULT;
+        String catName = StandardCategoryNames.WORKING;
         try {
             catName = ((Category) context.getLayerNamePanel()
                     .getSelectedCategories().toArray()[0]).getName();
@@ -310,6 +356,28 @@ public class ChangeValueToNoDataPlugIn extends AbstractPlugIn {
                         .createRasterImageLayerExactlyNBandsMustExistCheck(1));
 
         return multiEnableCheck;
+    }
+
+    JTextField jTextField_RasterOut = new JTextField();
+
+    private void jButton_RasterOutActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton_RasterOutActionPerformed
+
+        File outputPathFile = null;
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        chooser.setSelectedFile(FileOperations.lastVisitedFolder);
+        chooser.setDialogType(JFileChooser.SAVE_DIALOG);
+        ExtensionFilter filter = new ExtensionFilter();
+        filter.addExtension("flt");
+        chooser.setFileFilter(filter);
+        int ret = chooser.showOpenDialog(null);
+        if (ret == JFileChooser.APPROVE_OPTION) {
+            outputPathFile = chooser.getSelectedFile();
+            // outputpathString = outputpathFile.getPath();
+            jTextField_RasterOut.setText(outputPathFile.getPath());
+            FileOperations.lastVisitedFolder = outputPathFile;
+        }
+
     }
 
 }
