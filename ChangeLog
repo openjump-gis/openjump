@@ -1,4 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
+2015-03-22 Giuseppe Aruta (ma15569) 
+   * SaveRasterImageAsImagePlugIn. Rewrite class using new RasterImage I/O components
+     This version allows to export no nodata cell value to the output tif
+   * RasterImage nodata management plugins: added layer statistics resume panel and
+     an output file chooser filed
 
 2015-03-22 mmichaud <m.michael.michaud@orange.fr>
   * Hide unused AttributeType from the schema.

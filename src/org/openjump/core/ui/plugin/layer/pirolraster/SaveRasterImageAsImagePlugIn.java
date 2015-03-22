@@ -9,180 +9,157 @@
  */
 package org.openjump.core.ui.plugin.layer.pirolraster;
 
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.Raster;
-import java.awt.image.SampleModel;
-import java.awt.image.WritableRaster;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Properties;
+import java.util.HashMap;
 
-import javax.media.jai.PlanarImage;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
 
 import org.openjump.core.apitools.LayerTools;
+import org.openjump.core.rasterimage.RasterImageIOUtils;
 import org.openjump.core.rasterimage.RasterImageLayer;
-import org.openjump.core.rasterimage.WorldFileHandler;
-import org.openjump.core.ui.plugin.file.open.JFCWithEnterAction;
 
-import com.sun.media.jai.codec.TIFFEncodeParam;
-import com.sun.media.jai.codecimpl.TIFFCodec;
-import com.sun.media.jai.codecimpl.TIFFImageEncoder;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.util.FileUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.datasource.SaveFileDataSourceQueryChooser;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.ui.GenericNames;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 
 /**
- * This PlugIn saves a RasterImages to disk with its geographical position.
- * This class is based on Stefan Ostermanns SaveInterpolationAsImagePlugIn.
+ * This PlugIn saves a RasterImages to disk with its geographical position. This
+ * class is based on Stefan Ostermanns SaveInterpolationAsImagePlugIn.
  * 
- * @author Ole Rahn, Stefan Ostermann,
+ * @author Ole Rahn, Stefan Ostermann, <br>
  * <br>
- * <br>FH Osnabr&uuml;ck - University of Applied Sciences Osnabr&uuml;ck,
- * <br>Project: PIROL (2005),
- * <br>Subproject: Daten- und Wissensmanagement
+ *         FH Osnabr&uuml;ck - University of Applied Sciences Osnabr&uuml;ck, <br>
+ *         Project: PIROL (2005), <br>
+ *         Subproject: Daten- und Wissensmanagement
  * 
- * @version $Rev: 2509 $
- * [sstein] - 22.Feb.2009 - modified to work in OpenJUMP
+ * @version $Rev: 2509 $ [sstein] - 22.Feb.2009 - modified to work in OpenJUMP
+ * @version $Rev: 4345 $ [Giuseppe Aruta] - 22.Mar.2015 - rewrite class using
+ *          new RasterImage I/O components. This version allows to export no
+ *          data cell value to the output tif
  */
 public class SaveRasterImageAsImagePlugIn extends AbstractPlugIn {
-    protected static final String TIFENDING = ".tif";
-	protected static final String GEOENDING = ".tfw";
-	
-	//private static Logger logger = new PersonalLogger(DebugUserIds.OLE);
-    private Properties properties = null;
-    private static String propertiesFile = LoadSextanteRasterImagePlugIn.getPropertiesFile();
-    private String lastPath;
-	
-    public SaveRasterImageAsImagePlugIn(){
-        //super(SaveRasterImageAsImagePlugIn.logger);
+
+    private static final String FILE_CHOOSER_DIRECTORY_KEY = SaveFileDataSourceQueryChooser.class
+            .getName() + " - FILE CHOOSER DIRECTORY";
+
+    private static String ERROR = I18N
+            .get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Error-See-Output-Window");
+    private static String PLUGINNAME = I18N
+            .get("org.openjump.core.ui.plugin.layer.pirolraster.SaveRasterImageAsImagePlugIn.Save-Raster-Image-As-Image");
+    private static String SAVED = I18N
+            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.file.saved");
+    private static HashMap extensions;
+
+    public static final String TIF_EXTENSION = "TIF";
+    private static File file;
+
+    public SaveRasterImageAsImagePlugIn() {
+        this.extensions = new HashMap();
+
+        this.extensions.put("TIF", "TIF");
     }
-    
-	/**
-	 *@inheritDoc
-	 */
-	public boolean execute(PlugInContext context) throws Exception {
-		BufferedImage image;
-		/* standard Java save-dialog: */
-		JFileChooser fc = new JFCWithEnterAction();
-		
-		fc.setFileFilter(new FileFilter() {
-				            public boolean accept(File f) {
-				                return f.isDirectory()
-				                        || f.getName().toLowerCase().endsWith(TIFENDING);
-				            }
-				
-				            public String getDescription() {
-				                return "TIFF Image";
-				            }
-				        }
-					);
-		
-		this.properties = new Properties();
-        try {
-            FileInputStream fis = new FileInputStream(SaveRasterImageAsImagePlugIn.propertiesFile);
-            this.properties.load(fis);
-            this.lastPath = this.properties.getProperty(LoadSextanteRasterImagePlugIn.KEY_PATH);
-            fis.close();
-        } catch (FileNotFoundException e) {
-            //SaveRasterImageAsImagePlugIn.logger.printDebug(e.getMessage());
-        	context.getWorkbenchFrame().warnUser(I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.SaveRasterImageAsImagePlugIn.File-not-found"));
-        } catch (IOException e) {
-            //SaveRasterImageAsImagePlugIn.logger.printDebug(e.getMessage());
-        	context.getWorkbenchFrame().warnUser(GenericNames.ERROR);
-        }
-        
-        if (this.lastPath != null){
-            fc.setCurrentDirectory(new File(this.lastPath));
-        }
-        fc.setMultiSelectionEnabled(false);
-		
-		fc.setDialogTitle(this.getName());
-		int returnVal = fc.showSaveDialog(fc);
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			String tifFileName = fc.getSelectedFile().getAbsolutePath();
-			
-			if (!tifFileName.toLowerCase().endsWith(TIFENDING.toLowerCase())){
-			    tifFileName = tifFileName + TIFENDING;
-			}
-			
-			File tifFile = new File(tifFileName);
 
-			FileOutputStream tifOut = new FileOutputStream(tifFile);
-
-			
-			/* save tif image: */
-            RasterImageLayer rLayer = (RasterImageLayer) LayerTools.getSelectedLayerable(context, RasterImageLayer.class); 
-			//-- [sstein 2 Aug 2010] replace to save raster and not the image that may be adjusted for display
-            //image = rLayer.getImageForDisplay().getAsBufferedImage();
-            Raster r = rLayer.getRasterData(null);
-            SampleModel sm = r.getSampleModel();
-    		ColorModel colorModel = PlanarImage.createColorModel(sm);
-    		image = new BufferedImage(colorModel, (WritableRaster) rLayer.getRasterData(null), false, null);
-    		//-- end
-			TIFFEncodeParam param = new TIFFEncodeParam();
-			param.setCompression(TIFFEncodeParam.COMPRESSION_NONE);
-			TIFFImageEncoder encoder = (TIFFImageEncoder) TIFFCodec.createImageEncoder("tiff", tifOut, param);
-			encoder.encode(image);
-			tifOut.close();
-			
-			/* save geodata: */
-			Envelope envelope = rLayer.getWholeImageEnvelope();
-
-
-			WorldFileHandler worldFileHandler = new WorldFileHandler(tifFileName, false);
-			worldFileHandler.writeWorldFile(envelope, image.getWidth(), image.getHeight());
-	        
-	        // Switch RAM mode of the RasterImage
-            rLayer.setImageFileName(tifFileName);
-            rLayer.setNeedToKeepImage(false);
-	        
-	        
-		}
-		return true;
-
-	}
-
-	/**
-	 *@inheritDoc
-	 */
-	public void initialize(PlugInContext context) throws Exception {}
-	
-	public static MultiEnableCheck createEnableCheck(
-			final WorkbenchContext workbenchContext) {
-		EnableCheckFactory checkFactory = new EnableCheckFactory(
-				workbenchContext);
-		MultiEnableCheck multiEnableCheck = new MultiEnableCheck();
-
-        multiEnableCheck.add( checkFactory.createExactlyNLayerablesMustBeSelectedCheck(1, RasterImageLayer.class) );
-
-		return multiEnableCheck;
-	}
-	
-    /**
-     * @inheritDoc
-     */
+    @Override
     public String getName() {
-        return I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.SaveRasterImageAsImagePlugIn.Save-Raster-Image-As-Image");
+        return PLUGINNAME;
     }
-    
-    /**
-     *@inheritDoc
-     */
-    public String getIconString() {
-        return null;
-    }
+
     public static final ImageIcon ICON = IconLoader.icon("disk_dots.png");
+
+    @Override
+    public boolean execute(PlugInContext context) throws Exception {
+        reportNothingToUndoYet(context);
+
+        saveSingleRaster(context);
+
+        return true;
+
+    }
+
+    public static void saveSingleRaster(PlugInContext context) {
+        RasterImageLayer rLayer = (RasterImageLayer) LayerTools
+                .getSelectedLayerable(context, RasterImageLayer.class);
+        Envelope env = rLayer.getWholeImageEnvelope();
+        int bands = rLayer.getNumBands();
+        JFileChooser fileChooser = GUIUtil
+                .createJFileChooserWithOverwritePrompting();
+        fileChooser.setDialogTitle(PLUGINNAME);
+
+        if (PersistentBlackboardPlugIn.get(context.getWorkbenchContext()).get(
+                FILE_CHOOSER_DIRECTORY_KEY) != null) {
+            fileChooser.setCurrentDirectory(new File(
+                    (String) PersistentBlackboardPlugIn.get(
+                            context.getWorkbenchContext()).get(
+                            FILE_CHOOSER_DIRECTORY_KEY)));
+        }
+
+        fileChooser.setMultiSelectionEnabled(false);
+
+        fileChooser.setFileFilter(GUIUtil.createFileFilter("TIF",
+                new String[] { "tif" }));
+
+        int option;
+
+        option = fileChooser.showSaveDialog(context.getWorkbenchFrame());
+
+        if (option == JFileChooser.APPROVE_OPTION) {
+            file = fileChooser.getSelectedFile();
+
+            file = FileUtil.addExtensionIfNone(file, "tif");
+            String extension = FileUtil.getExtension(file);
+
+            int band;
+
+            band = 0;
+
+            try {
+                String trueExtension = (String) extensions.get(extension
+                        .toUpperCase());
+
+                RasterImageIOUtils.saveTIF(file, rLayer, env);
+
+            } catch (Exception e) {
+                context.getWorkbenchFrame().warnUser(ERROR);
+                context.getWorkbenchFrame().getOutputFrame()
+                        .createNewDocument();
+                context.getWorkbenchFrame()
+                        .getOutputFrame()
+                        .addText(
+                                "SaveImageToRasterPlugIn Exception:"
+                                        + new Object[] { e.toString() });
+                return;
+            }
+
+            rLayer.setImageFileName(file.getPath());
+            rLayer.setNeedToKeepImage(false);
+            context.getWorkbenchFrame().setStatusMessage(SAVED);
+
+        }
+
+        return;
+
+    }
+
+    public static MultiEnableCheck createEnableCheck(
+            WorkbenchContext workbenchContext) {
+        EnableCheckFactory checkFactory = new EnableCheckFactory(
+                workbenchContext);
+        MultiEnableCheck multiEnableCheck = new MultiEnableCheck();
+        multiEnableCheck.add(checkFactory
+                .createAtLeastNLayerablesMustBeSelectedCheck(1,
+                        RasterImageLayer.class));
+
+        return multiEnableCheck;
+    }
+
 }
