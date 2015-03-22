@@ -43,9 +43,10 @@ import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
  *         Subproject: Daten- und Wissensmanagement
  * 
  * @version $Rev: 2509 $ [sstein] - 22.Feb.2009 - modified to work in OpenJUMP
- * @version $Rev: 4345 $ [Giuseppe Aruta] - 22.Mar.2015 - rewrite class using
+ * @version $Rev: 4347 $ [Giuseppe Aruta] - 22.Mar.2015 - rewrite class using
  *          new RasterImage I/O components. This version allows to export no
  *          data cell value to the output tif
+ * @version $Rev: 4348 $ [Giuseppe Aruta] - 22.Mar.2015 - add export to ASC and FLT          
  */
 public class SaveRasterImageAsImagePlugIn extends AbstractPlugIn {
 
@@ -62,10 +63,12 @@ public class SaveRasterImageAsImagePlugIn extends AbstractPlugIn {
 
     public static final String TIF_EXTENSION = "TIF";
     private static File file;
+    private static File fileHDR;
 
     public SaveRasterImageAsImagePlugIn() {
         this.extensions = new HashMap();
-
+        this.extensions.put("ASC", "ASC");
+        this.extensions.put("FLT", "FLT");
         this.extensions.put("TIF", "TIF");
     }
 
@@ -104,9 +107,18 @@ public class SaveRasterImageAsImagePlugIn extends AbstractPlugIn {
         }
 
         fileChooser.setMultiSelectionEnabled(false);
+        if (bands == 1) {
 
-        fileChooser.setFileFilter(GUIUtil.createFileFilter("TIF",
-                new String[] { "tif" }));
+            fileChooser.setFileFilter(GUIUtil.createFileFilter("Raster grid",
+                    new String[] { "asc", "flt", "tif" }));
+        } else {
+            // Restricted export to "gif" and "png" for ImageIO-OpenJDK. Other
+            // format are accepted if relative encoders are installed through
+            // imageIO-ext
+            fileChooser.setFileFilter(GUIUtil.createFileFilter("Raster image",
+                    new String[] { "tif" }));
+
+        }
 
         int option;
 
@@ -114,10 +126,11 @@ public class SaveRasterImageAsImagePlugIn extends AbstractPlugIn {
 
         if (option == JFileChooser.APPROVE_OPTION) {
             file = fileChooser.getSelectedFile();
-
+            fileHDR = fileChooser.getSelectedFile();
             file = FileUtil.addExtensionIfNone(file, "tif");
             String extension = FileUtil.getExtension(file);
-
+            fileHDR = FileUtil.removeExtensionIfAny(fileHDR);
+            fileHDR = FileUtil.addExtensionIfNone(fileHDR, "hdr");
             int band;
 
             band = 0;
@@ -125,9 +138,16 @@ public class SaveRasterImageAsImagePlugIn extends AbstractPlugIn {
             try {
                 String trueExtension = (String) extensions.get(extension
                         .toUpperCase());
+                if (trueExtension.equalsIgnoreCase("ASC")) {
+                    RasterImageIOUtils.saveASC(file, context, rLayer, band);
 
-                RasterImageIOUtils.saveTIF(file, rLayer, env);
+                } else if (trueExtension.equalsIgnoreCase("FLT")) {
+                    RasterImageIOUtils.saveFLT(file, context, rLayer, band);
+                    RasterImageIOUtils.saveHDR(fileHDR, context, rLayer);
 
+                } else if (trueExtension.equalsIgnoreCase("TIF")) {
+                    RasterImageIOUtils.saveTIF(file, rLayer, env);
+                }
             } catch (Exception e) {
                 context.getWorkbenchFrame().warnUser(ERROR);
                 context.getWorkbenchFrame().getOutputFrame()
