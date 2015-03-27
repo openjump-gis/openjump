@@ -18,6 +18,7 @@ import java.util.Locale;
 import javax.media.jai.PlanarImage;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
@@ -44,15 +45,17 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 /**
  * @author Giuseppe Aruta (giuseppe_aruta[AT]yahoo.it)
- * @version 0.1 - 2013_05_27 Simple plugin that allows to view some properties
- *          of Sextante Raster Layer: name, file location, raster dimension (in
- *          cell), raster extension, X cell size, numbers of bands, min-max-mean
- *          of 1st band value (if the raster is monoband)
- * @version 0.2 - 2015_01_02 Advanced plugin. Displays File, Raster and cells
- *          data properties of Sextante Raster Layer and allows to save those
- *          information as TXT file
- * @version 0.2 - 2015_01_31. Used HTML instead of TXT frame. Info can be saved
- *           as HTML file         
+ * @version 0.1 - 2013_05_27 (Giuseppe Aruta) Simple plugin that allows to view
+ *          some properties of Sextante Raster Layer: name, file location,
+ *          raster dimension (in cell), raster extension, X cell size, numbers
+ *          of bands, min-max-mean of 1st band value (if the raster is monoband)
+ * @version 0.2 - 2015_01_02 (Giuseppe Aruta) Advanced plugin. Displays File,
+ *          Raster and cells data properties of Sextante Raster Layer and allows
+ *          to save those information as TXT file
+ * @version 0.3 - 2015_01_31. (Giuseppe Aruta) Used HTML instead of TXT frame.
+ *          Info can be saved as HTML file
+ * @version 0.4 - 2015_03_27. (Giuseppe Aruta) Added Raster Layer statistics tab
+ *          with several info about cell values
  */
 
 public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
@@ -98,18 +101,23 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
             .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.cell.nodata");
 
     // New language codes
+
     private final static String RASTER = I18N
             .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.raster");
     private final static String NAMEFILE = I18N
             .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.namefile");
     private final static String STATISTICS = I18N
             .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.statistics");
+    private final static String ENV = I18N
+            .get("ui.plugin.LayerStatisticsPlugIn.envelope");
     private final static String DIRECTORY = I18N
             .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.directory");
     private final static String EXTENT = I18N
             .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.extent");
     private final static String BANDS = I18N
             .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.file.bands_number");
+    private final static String BAND = I18N
+            .get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.band");
     private final static String RASTER_SIZE = I18N
             .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.dimension_raster");
     private final static String CELL_SIZE = I18N
@@ -158,7 +166,8 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
             .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.xmax");
     private final static String YMAX = I18N
             .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.ymax");
-
+    private final static String UNSPECIFIED = I18N
+            .get("coordsys.CoordinateSystem.unspecified");
     private static final Logger LOGGER = Logger.getLogger(HTMLFrame.class);
     private Envelope extent;
 
@@ -185,6 +194,9 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
     public Icon getIcon() {
         return IconLoader.icon("information_16x16.png");
     }
+
+    public static final ImageIcon ICON_STAT = IconLoader
+            .icon("statistics16.png");
 
     public String getName() {
         return I18N
@@ -509,6 +521,105 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
 
     }
 
+    public String StatisticsText(PlugInContext context, RasterImageLayer rLayer)
+            throws NoninvertibleTransformException, TiffReadingException,
+            Exception {
+        /*
+         * Overwrite Locale to UK Decimal format ####.##
+         */
+        Locale locale = new Locale("en", "UK");
+        String pattern = "###.########";
+        DecimalFormat df = (DecimalFormat) NumberFormat
+                .getNumberInstance(locale);
+        df.applyPattern(pattern);
+
+        String infotext = null;
+        OpenJUMPSextanteRasterLayer rstLayer = new OpenJUMPSextanteRasterLayer();
+        rstLayer.create(rLayer);
+        Envelope layerEnv = rLayer.getWholeImageEnvelope();
+        // Get the statistics
+        int numBands = rLayer.getNumBands();
+
+        String bandstring = ": " + String.valueOf(numBands);
+        df.format(rstLayer.getMinValue());
+        df.format(rstLayer.getMaxValue());
+        df.format(rstLayer.getMeanValue());
+        int X = rstLayer.getNX(); // Number of columns
+        int Y = rstLayer.getNY(); // Number of rows
+        df.format(rstLayer.getMeanValue() * (X * Y - nodata(context, rstLayer)));
+        // String nodata = df.format(rstLayer.getNoDataValue());// No data
+        String nodata;
+        nodata = df.format(rLayer.getNoDataValue());// No data
+        df.format(rstLayer.getVariance());
+        double var = rstLayer.getVariance();// Variance as double
+        df.format(Math.sqrt(var));
+        df.format(var / rstLayer.getMeanValue());
+        int validcells = X * Y - nodata(context, rstLayer);// Number of
+                                                           // valid cells
+
+        int nodatacells = nodata(context, rstLayer);// number of no data
+                                                    // cells
+
+        infotext = "<HTML><BODY>";
+        infotext += "<table border='0.1'>";
+        infotext += "<tr><td><b>" + LAYER_NAME + "</b> </td><td>"
+                + rLayer.getName() + "</td></tr>";
+        infotext += "</table><br>";
+
+        infotext += "<table border='0.1'>";
+        infotext += "<tr><td><b>" + ENV + "</b> </td><td>"
+                + layerEnv.toString() + "</td></tr>";
+        infotext += "<tr><td><b>" + BANDS + "</b> </td><td>" + bandstring
+                + "</td></tr>";
+        infotext += "<tr><td><b>" + NODATA + "</b> </td><td>" + nodata
+                + "</td></tr>";
+        infotext += "<tr><td><b>" + VALIDCELLS + "</b> </td><td>"
+                + Integer.toString(validcells) + "</td></tr>";
+        infotext += "<tr><td><b>" + NODATACELLS + "</b> </td><td>"
+                + Integer.toString(nodatacells) + "</td></tr>";
+        infotext += "</table><br>";
+
+        infotext += "<table border='1'>";
+        infotext += "<tr><td bgcolor=#CCCCCC align='center'> " + BAND
+                + "</td><td bgcolor=#CCCCCC align='center'> " + MIN
+                + "</td><td bgcolor=#CCCCCC align='center'> " + MAX
+                + "</td><td bgcolor=#CCCCCC align='center'> " + MEAN
+                + "</td><td bgcolor=#CCCCCC align='center'> " + SUM
+                + "</td><td bgcolor=#CCCCCC align='center'> " + VARIANCE
+                + "</td><td bgcolor=#CCCCCC align='center'> " + STD
+                + "</td><td bgcolor=#CCCCCC align='center'> " + CVAR
+
+                + "</td></tr>";
+        for (int b = 0; b < numBands; b++) {
+            int numerobanda = b + 1;
+            infotext += "</td><td align='right'>"
+                    + numerobanda
+                    + "</td><td align='right'>"
+                    + df.format(rstLayer.getMinValue(b))// min
+                    + "</td><td align='right'>"
+                    + df.format(rstLayer.getMaxValue(b))// max
+                    + "</td><td align='right'>"
+                    + df.format(rstLayer.getMeanValue(b))// mean
+                    + "</td><td align='right'>"
+                    + df.format(rstLayer.getMeanValue(b)
+                            * (X * Y - nodata(context, rstLayer)))// sum
+
+                    + "</td><td align='right'>"
+                    + df.format(rstLayer.getVariance(b))// variance
+                    + "</td><td align='right'>"
+                    + df.format(Math.sqrt(rstLayer.getVariance(b)))// std
+                    + "</td><td align='right'>"
+                    + df.format(rstLayer.getVariance(b)
+                            / rstLayer.getMeanValue(b))// cvar
+
+                    + "</td></tr>";
+        }
+        infotext += "</table>";
+        infotext += "</DIV></BODY></HTML>";
+
+        return infotext;
+    }
+
     public boolean execute(PlugInContext context) throws Exception {
 
         RasterImageLayer rLayer = (RasterImageLayer) LayerTools
@@ -518,20 +629,20 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
 
         // HTMLFrame out = context.getOutputFrame();
         final JInternalFrame frame = new JInternalFrame(INFO);
-        JTabbedPane tabbedPane = new JTabbedPane();
-        Border mainComponentBorder = BorderFactory.createCompoundBorder(
-                BorderFactory.createEtchedBorder(),
-                BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        tabbedPane.setBorder(mainComponentBorder);
 
-        HTMLPanel out = new HTMLPanel();
-        out.getRecordPanel().removeAll();
-        out.createNewDocument();
-        // out.setForeground(Color.gray);
-        // out.setBackgroundColor(SystemColor.window);
-        // out.setBackground(Color.green);
-        out.addHeader(1, INFO);
-        out.append(InfoText(context, rLayer));
+        // First panel Info general
+        HTMLPanel info = new HTMLPanel();
+        info.getRecordPanel().removeAll();
+        info.createNewDocument();
+        info.addHeader(1, INFO);
+        info.append(InfoText(context, rLayer));
+
+        // Second panel Statistics
+        HTMLPanel statistics = new HTMLPanel();
+        statistics.getRecordPanel().removeAll();
+        statistics.createNewDocument();
+        statistics.addHeader(1, STATISTICS);
+        statistics.append(StatisticsText(context, rLayer));
 
         // -- OK button Panel
         JPanel okPanel = new JPanel();
@@ -559,7 +670,16 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
          * LAYER_STATISTICS); frame.add(tabbedPane, BorderLayout.CENTER);
          */
 
-        frame.add(out, BorderLayout.CENTER);
+        JTabbedPane tabbedPane = new JTabbedPane();
+        Border mainComponentBorder = BorderFactory.createCompoundBorder(
+                BorderFactory.createEtchedBorder(),
+                BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        tabbedPane.setBorder(mainComponentBorder);
+        // tabbedPane.add(info, INFO);
+        // tabbedPane.add(statistics,ICON_STAT, STATISTICS);
+        tabbedPane.addTab(INFO, getIcon(), info, "");
+        tabbedPane.addTab(STATISTICS, ICON_STAT, statistics, "");
+        frame.add(tabbedPane, BorderLayout.CENTER);
         frame.add(okPanel, BorderLayout.SOUTH);
 
         frame.setClosable(true);

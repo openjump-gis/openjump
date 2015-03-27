@@ -55,32 +55,20 @@ import com.vividsolutions.jump.workbench.ui.HTMLFrame;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 /**
+ * Giuseppe Aruta [2015_01_27]
  * Computes various statistics for selected layers.
+ * [2015_01_27] added header with the number of selected raster layers
  */
 public class DEMStatisticsPlugIn extends AbstractPlugIn {
 
-    private final static String LAYER_STATISTICS = I18N
-            .get("ui.plugin.LayerStatisticsPlugIn.layer-statistics");
-    private final static String ENVELOPE = I18N
-            .get("ui.plugin.LayerStatisticsPlugIn.envelope");
-    private final static String SOURCE_PATH = I18N
-            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Source-Path");
     private final static String MAX = I18N
             .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.cell.max");
     private final static String MIN = I18N
             .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.cell.min");
-    private final static String MEAN = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.cell.mean");
-    private final static String SUM = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.sum");
     private final static String NODATA = I18N
             .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.cell.nodata");
-    private final static String VARIANCE = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.variance");
-    private final static String STD = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.std");
-    private final static String CVAR = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.cvar");
+    private final static String NUM_LAYER = I18N
+            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Number-of-Layers");
     private final static String NODATACELLS = I18N
             .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.nodatacell");
     private final static String VALIDCELLS = I18N
@@ -95,6 +83,8 @@ public class DEMStatisticsPlugIn extends AbstractPlugIn {
             .get("org.openjump.core.ui.plugin.raster.DEMStatisticsPlugIn.columns");
     private final static String ROWS = I18N
             .get("org.openjump.core.ui.plugin.raster.DEMStatisticsPlugIn.rows");
+    private final static String UNSPECIFIED = I18N
+            .get("coordsys.CoordinateSystem.unspecified");
 
     public static MultiEnableCheck createEnableCheck(
             WorkbenchContext workbenchContext) {
@@ -142,10 +132,12 @@ public class DEMStatisticsPlugIn extends AbstractPlugIn {
 
         final WorkbenchContext wbcontext = context.getWorkbenchContext();
 
+        int ras = wbcontext.getLayerNamePanel()
+                .selectedNodes(RasterImageLayer.class).size();
         HTMLFrame out = context.getOutputFrame();
         out.createNewDocument();
         out.setBackground(Color.lightGray);
-        out.addHeader(1, LAYER_STATISTICS);
+        out.addHeader(1, NUM_LAYER + ": " + ras);
         out.append("<table border='1'>");
         out.append("<tr><td bgcolor=#CCCCCC align='center'> "
                 + I18N.get("ui.plugin.LayerStatisticsPlugIn.layer")
@@ -194,18 +186,6 @@ public class DEMStatisticsPlugIn extends AbstractPlugIn {
                                                                // cells
             int nodatacells = nodata(context, rstLayer);// number of no data
                                                         // cells
-
-            /*
-             * out.addHeader(2, I18N.get("ui.plugin.LayerStatisticsPlugIn.layer"
-             * + ": ") + " " + slayer.getName());
-             * 
-             * Envelope layerEnv = slayer.getWholeImageEnvelope(); out.addField
-             * (I18N.get("ui.plugin.LayerStatisticsPlugIn.envelope"),
-             * layerEnv.toString()); out.addField( I18N.get(
-             * "org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.file.bands_number"
-             * ), bandstring);
-             */
-
             out.append("</td><td align='right'>" + slayer.getName()
                     + "</td><td align='right'>" + min
                     + "</td><td align='right'>" + max
