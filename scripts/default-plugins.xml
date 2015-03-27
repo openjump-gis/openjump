@@ -812,6 +812,9 @@
 		</menus>
 	</plug-in>
 	<plug-in>
+		org.openjump.core.ui.plugin.raster.nodata.ChangeRangeValuesToNoDataPlugIn
+	</plug-in>
+	<plug-in>
 		org.openjump.core.ui.plugin.raster.nodata.ChangeNoDataValuePlugIn 
  		  
 	</plug-in>

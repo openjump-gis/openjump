@@ -1,4 +1,10 @@
 # for display continuity sake please use 2 spaces instead of tabs
+2015-03-22 Giuseppe Aruta (ma15569) 
+	* Added ChangeRangeValuesToNoDataPlugIn. 
+	* This plugin allowas to change a range of cell values (of a Sextante single 
+	* band raster layer) to nodata value. An option allowas to extraxt only the
+	* input range of value (and set the other values to nodata)
+
 2015-03-22 Giuseppe Aruta (ma15569)
    * RasterImageLayer Plugin: added Raster Layer statistics tab with several info about cell values
    * DEMStaristics: added header with the number of selected raster layers

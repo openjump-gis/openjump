@@ -59,8 +59,31 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 public class ChangeNoDataValuePlugIn extends AbstractPlugIn {
+    /**
+     * 
+     * @author Giuseppe Aruta
+     * @date 2015_3_25 This class allows to change nodata value of a single band
+     *       file The output is a ESRI float file
+     */
+    // Language codes:9
+    private String SUBMENU = I18N
+            .get("org.openjump.core.ui.plugin.raster.nodata.menu");
     public static final String PLUGINNAME = I18N
             .get("org.openjump.core.ui.plugin.raster.nodata.ChangeNoDataValuePlugIn.name");
+    private String OUTPUT_FILE = I18N.get("driver.DriverManager.file-to-save")
+            + ": ";
+    private static String FROM = I18N
+            .get("org.openjump.core.ui.plugin.raster.nodata.from");
+    private static String TO = I18N
+            .get("org.openjump.core.ui.plugin.raster.nodata.to");
+    private static String STATISTICS = I18N
+            .get("org.openjump.core.ui.plugin.raster.nodata.CellStatistics");
+    private static String NODATA = I18N
+            .get("org.openjump.core.ui.plugin.raster.nodata.nodata");
+    private static String MIN = I18N
+            .get("org.openjump.core.ui.plugin.raster.nodata.min");
+    private static String MAX = I18N
+            .get("org.openjump.core.ui.plugin.raster.nodata.max");
 
     private static final Logger LOGGER = Logger
             .getLogger(ChangeNoDataValuePlugIn.class);
@@ -69,10 +92,6 @@ public class ChangeNoDataValuePlugIn extends AbstractPlugIn {
     private static String propertiesFile = LoadSextanteRasterImagePlugIn
             .getPropertiesFile();
     NumberFormat cellFormat = null;
-    private String OUTPUT_FILE = I18N.get("driver.DriverManager.file-to-save")
-            + ": ";
-    private String SUBMENU = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.menu");
     private static ImageIcon icon16 = IconLoader
             .icon("fugue/folder-horizontal-open_16.png");
 
@@ -100,13 +119,14 @@ public class ChangeNoDataValuePlugIn extends AbstractPlugIn {
         reportNothingToUndoYet(context);
         RasterImageLayer rLayer = (RasterImageLayer) LayerTools
                 .getSelectedLayerable(context, RasterImageLayer.class);
+        String nome = getName() + " (" + rLayer.getName() + ")";
+
         MultiInputDialog dialog = new MultiInputDialog(
-                context.getWorkbenchFrame(), getName(), true);
+                context.getWorkbenchFrame(), nome, true);
 
         // Top panel. Visualize nodata/max/min cell values
         JPanel jPanel1 = new JPanel(new GridBagLayout());
-        jPanel1.setBorder(BorderFactory.createTitledBorder(I18N
-                .get("ui.plugin.LayerStatisticsPlugIn.layer-statistics")));
+        jPanel1.setBorder(BorderFactory.createTitledBorder(STATISTICS));
         OpenJUMPSextanteRasterLayer rstLayer = new OpenJUMPSextanteRasterLayer();
         rstLayer.create(rLayer);
         JTextField nd = new JTextField(String.valueOf(rLayer.getNoDataValue()));
@@ -115,23 +135,21 @@ public class ChangeNoDataValuePlugIn extends AbstractPlugIn {
         max.setEditable(false);
         JTextField min = new JTextField(String.valueOf(rstLayer.getMinValue()));
         min.setEditable(false);
-        JLabel nd_label = new JLabel("nodata:");
-        JLabel min_label = new JLabel("min:");
-        JLabel max_label = new JLabel("max:");
+        JLabel nd_label = new JLabel(NODATA);
+        JLabel min_label = new JLabel(MIN);
+        JLabel max_label = new JLabel(MAX);
         FormUtils.addRowInGBL(jPanel1, 1, 0, nd_label, nd);
         FormUtils.addRowInGBL(jPanel1, 1, 2, min_label, min);
         FormUtils.addRowInGBL(jPanel1, 1, 4, max_label, max);
 
         // Main Panel. Set range source-target no data value
         JPanel mainPanel = new JPanel(new GridBagLayout());
-        JLabel source_NoData_label = new JLabel(
-                I18N.get("org.openjump.core.ui.plugin.raster.nodata.ChangeNoDataValuePlugIn.from"));
-        JLabel target_NoData_label = new JLabel(
-                I18N.get("org.openjump.core.ui.plugin.raster.nodata.ChangeNoDataValuePlugIn.to"));
+        JLabel source_NoData_label = new JLabel(FROM);
+        JLabel target_NoData_label = new JLabel(TO);
         JTextField source_nodata = new JTextField(String.valueOf(rLayer
                 .getNoDataValue()));
         source_nodata.setEditable(false);
-        JTextField target_nodata = new JTextField(String.valueOf("-99999"));
+        JTextField target_nodata = new JTextField(String.valueOf("-9999"));
         source_nodata.addKeyListener(new java.awt.event.KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
