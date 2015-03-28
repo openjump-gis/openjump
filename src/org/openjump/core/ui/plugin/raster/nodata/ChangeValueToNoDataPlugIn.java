@@ -27,6 +27,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 
 import org.apache.log4j.Logger;
 import org.openjump.core.apitools.LayerTools;
@@ -58,45 +59,34 @@ import com.vividsolutions.jump.workbench.ui.Viewport;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
-public class ChangeRangeValuesToNoDataPlugIn extends AbstractPlugIn {
+public class ChangeValueToNoDataPlugIn extends AbstractPlugIn {
+
     /**
      * 
      * @author Giuseppe Aruta
-     * @date 2015_3_25 This class allows to change a range allows values to
-     *       nodata Reverse operation extracts the input range of value and set
-     *       the others to nodata The output is a ESRI float file
+     * @description This class allows to change an input value to nodata,
+     *              inverse operation set nodata cells to the input value
+     * @version 01 [2015_02_27] first version
+     * @version 02 [2015_03_22] Add output file selection
+     * @version 03 [2015_03_25] Add Inverse operation to set nodata cells to the
+     *          input value
      */
-    private static final Logger LOGGER = Logger
-            .getLogger(ChangeNoDataValuePlugIn.class);
-    private Properties properties = null;
-    private String byteOrder = "LSBFIRST";
-    private static String propertiesFile = LoadSextanteRasterImagePlugIn
-            .getPropertiesFile();
-    NumberFormat cellFormat = null;
 
-    private boolean reverse = false;
-
-    JTextField jTextField_RasterOut = new JTextField();
-
-    // Language codes: 12
-
+    // Language codes: 11
+    public static final String PLUGINNAME = I18N
+            .get("org.openjump.core.ui.plugin.raster.nodata.ChangeValueToNoDataPlugIn.name");
+    private String SUBMENU = I18N
+            .get("org.openjump.core.ui.plugin.raster.nodata.menu");
+    private String CHANGE = I18N
+            .get("org.openjump.core.ui.plugin.raster.nodata.ChangeValueToNoDataPlugIn.change");
+    private String TONODATA = I18N
+            .get("org.openjump.core.ui.plugin.raster.nodata.ChangeValueToNoDataPlugIn.tonodata");
     private static String INVERSE = I18N
             .get("org.openjump.core.ui.plugin.raster.nodata.Inverse");
     private static String REVERSE_TOOLTIP = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.ChangeRangeValuesToNoDataPlugIn.name");
-    private static String CHANGE = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.ChangeRangeValuesToNoDataPlugIn.change");
-    private static String PLUGINNAME = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.ChangeRangeValuesToNoDataPlugIn.name");
-    private static String FROM = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.from");
-    private static String TO = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.to");
-    private String SUBMENU = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.menu");
-    private static String OUTPUT_FILE = I18N
-            .get("driver.DriverManager.file-to-save") + ": ";
-
+            .get("org.openjump.core.ui.plugin.raster.nodata.ChangeValueToNoDataPlugIn.Tooltips");
+    private String OUTPUT_FILE = I18N.get("driver.DriverManager.file-to-save")
+            + ": ";
     private static String STATISTICS = I18N
             .get("org.openjump.core.ui.plugin.raster.nodata.CellStatistics");
     private static String NODATA = I18N
@@ -106,30 +96,25 @@ public class ChangeRangeValuesToNoDataPlugIn extends AbstractPlugIn {
     private static String MAX = I18N
             .get("org.openjump.core.ui.plugin.raster.nodata.max");
 
+    private static final Logger LOGGER = Logger
+            .getLogger(ChangeNoDataValuePlugIn.class);
+    private Properties properties = null;
+    private String byteOrder = "LSBFIRST";
+    private static String propertiesFile = LoadSextanteRasterImagePlugIn
+            .getPropertiesFile();
+    NumberFormat cellFormat = null;
+
     private static ImageIcon icon16 = IconLoader
             .icon("fugue/folder-horizontal-open_16.png");
 
-    public ChangeRangeValuesToNoDataPlugIn() {
+    private boolean reverse = false;
+
+    public ChangeValueToNoDataPlugIn() {
 
     }
 
-    @Override
     public String getName() {
         return PLUGINNAME;
-    }
-
-    public static MultiEnableCheck createEnableCheck(
-            WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(
-                workbenchContext);
-        MultiEnableCheck multiEnableCheck = new MultiEnableCheck();
-
-        multiEnableCheck.add(
-                checkFactory.createExactlyNLayerablesMustBeSelectedCheck(1,
-                        RasterImageLayer.class)).add(
-                checkFactory
-                        .createRasterImageLayerExactlyNBandsMustExistCheck(1));
-        return multiEnableCheck;
     }
 
     @Override
@@ -142,7 +127,6 @@ public class ChangeRangeValuesToNoDataPlugIn extends AbstractPlugIn {
                 null, createEnableCheck(context.getWorkbenchContext()));
     }
 
-    @Override
     public boolean execute(PlugInContext context) throws Exception {
         reportNothingToUndoYet(context);
         RasterImageLayer rLayer = (RasterImageLayer) LayerTools
@@ -169,45 +153,28 @@ public class ChangeRangeValuesToNoDataPlugIn extends AbstractPlugIn {
         FormUtils.addRowInGBL(jPanel1, 1, 2, min_label, min);
         FormUtils.addRowInGBL(jPanel1, 1, 4, max_label, max);
 
-        // middle panel: input fields for upper/lower values of the range
+        // Main Panel. Set range source-target no data value
+        JPanel secondPanel = new JPanel(new GridBagLayout());
+        JTextPane text = new JTextPane();
+        text.setOpaque(false);
+        text.setText(String.valueOf(rLayer.getNoDataValue()));
+        JTextField changing_data = new JTextField();
+        changing_data.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                char vChar = e.getKeyChar();
+                if (!(Character.isDigit(vChar) || (vChar == KeyEvent.VK_PERIOD)
+                        || (vChar == KeyEvent.VK_BACK_SPACE) || (vChar == KeyEvent.VK_DELETE))) {
+                    e.consume();
+                }
+            }
+        });
+        FormUtils.addRowInGBL(secondPanel, 2, 0, CHANGE, changing_data);
+        FormUtils.addRowInGBL(secondPanel, 3, 0, TONODATA, text);
 
+        // Lower panel
         JPanel jPanel2 = new JPanel(new GridBagLayout());
-        JTextField min_nodata = new JTextField();
-        min_nodata.addKeyListener(new java.awt.event.KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                char vChar = e.getKeyChar();
-                if (!(Character.isDigit(vChar) || (vChar == KeyEvent.VK_PERIOD)
-                        || (vChar == KeyEvent.VK_BACK_SPACE)
-                        || (vChar == KeyEvent.VK_DELETE) || (vChar == KeyEvent.VK_MINUS))) {
-                    e.consume();
-                }
-            }
-        });
-        JTextField max_nodata = new JTextField();
-        max_nodata.addKeyListener(new java.awt.event.KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                char vChar = e.getKeyChar();
-                if (!(Character.isDigit(vChar) || (vChar == KeyEvent.VK_PERIOD)
-                        || (vChar == KeyEvent.VK_BACK_SPACE)
-                        || (vChar == KeyEvent.VK_DELETE) || (vChar == KeyEvent.VK_MINUS))) {
-                    e.consume();
-                }
-            }
-        });
-        JLabel max_NoData_label = new JLabel(TO);
-        JLabel min_NoData_label = new JLabel(FROM);
-        // JCheckBox checkBox = new JCheckBox(REVERSE, false);
-        // checkBox.setToolTipText(REVERSE_TOOLTIP);
-        jPanel2.setBorder(BorderFactory.createTitledBorder(CHANGE));
-        FormUtils.addRowInGBL(jPanel2, 2, 0, min_NoData_label, min_nodata);
-        FormUtils.addRowInGBL(jPanel2, 2, 2, max_NoData_label, max_nodata);
-        // FormUtils.addRowInGBL(jPanel2, 3, 0, checkBox);
-
-        // Lower panel: choose output raster file
-        JPanel jPanel3 = new JPanel(new GridBagLayout());
-        jPanel3 = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
         JLabel jLabel3 = new javax.swing.JLabel();
         jTextField_RasterOut = new javax.swing.JTextField();
         JButton jButton_Dir = new javax.swing.JButton();
@@ -221,80 +188,47 @@ public class ChangeRangeValuesToNoDataPlugIn extends AbstractPlugIn {
         jTextField_RasterOut.setEditable(true);
         jButton_Dir.setIcon(icon16);
         jTextField_RasterOut.setPreferredSize(new Dimension(250, 20));
-        FormUtils.addRowInGBL(jPanel3, 3, 0, OUTPUT_FILE, jTextField_RasterOut);
-        FormUtils.addRowInGBL(jPanel3, 3, 2, jButton_Dir);
+        FormUtils.addRowInGBL(jPanel2, 3, 0, OUTPUT_FILE, jTextField_RasterOut);
+        FormUtils.addRowInGBL(jPanel2, 3, 2, jButton_Dir);
 
-        // Build the dialog. Add the panels
         dialog.addRow(jPanel1);
-        dialog.addRow(jPanel2);
+        dialog.addRow(secondPanel);
         dialog.addCheckBox(INVERSE, reverse, REVERSE_TOOLTIP);
-        dialog.addRow(jPanel3);
-        // Build the dialog. Add a checkbox for a reverse operation (extraxt the
-        // range)
+        dialog.addRow(jPanel2);
 
         GUIUtil.centreOnWindow(dialog);
         dialog.setVisible(true);
+
         if (!dialog.wasOKPressed()) {
             return false;
         } else {
-            // Get the path of file
+
             String path = jTextField_RasterOut.getText();
-            // Set the band
+
             int band = 0;
-            // Set the extension of the files FLT/HDR
+
             File flt_outFile = new File(path.concat(".flt"));
             File hdr_outFile = new File(path.concat(".hdr"));
-            // Set range (min/max data) and nodata
-            float mindata = Float.parseFloat(min_nodata.getText());
-            float maxdata = Float.parseFloat(max_nodata.getText());
-            float nodata1 = (float) rLayer.getNoDataValue();
-
+            float olddata = Float.parseFloat(changing_data.getText());
+            float newdata = (float) rLayer.getNoDataValue();
             if (dialog.getCheckBox(INVERSE).isSelected())
-            // A)Reverse operation: extract the range of cell values
+            // A)Reverse operation: set nodata cells to input value
             {
-                saveFLT_extract(flt_outFile, context, rLayer, band, mindata,
-                        maxdata, nodata1);
-
+                saveFLT(flt_outFile, context, rLayer, band, newdata, olddata);
+            } else {// B) Main operation: change cells with input value to
+                    // nodata value
+                saveFLT(flt_outFile, context, rLayer, band, olddata, newdata);
             }
-            // B)Mask the range of cell values
-            else {
-                saveFLT_mask(flt_outFile, context, rLayer, band, mindata,
-                        maxdata, nodata1);
-            }
-            // Save Header
-            double sNoDataVal = rLayer.getNoDataValue();
-            saveHDR(hdr_outFile, context, rLayer, sNoDataVal);
-            min_nodata.setText("");
-            max_nodata.setText("");
-            // Reload result file to working category
-
+            saveHDR(hdr_outFile, context, rLayer);
             loadFLT(flt_outFile, context);
+
         }
         return true;
-    }
-
-    // This code derives from AdBToolbox 1.7 - Set the output file name
-    private void jButton_RasterOutActionPerformed(java.awt.event.ActionEvent evt) {
-        File outputPathFile = null;
-        JFileChooser chooser = new JFileChooser();
-        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        chooser.setSelectedFile(FileOperations.lastVisitedFolder);
-        chooser.setDialogType(JFileChooser.SAVE_DIALOG);
-        ExtensionFilter filter = new ExtensionFilter();
-        filter.setDescription("ESRI Binary grid");
-        filter.addExtension("flt");
-        chooser.setFileFilter(filter);
-        int ret = chooser.showOpenDialog(null);
-        if (ret == JFileChooser.APPROVE_OPTION) {
-            outputPathFile = chooser.getSelectedFile();
-            jTextField_RasterOut.setText(outputPathFile.getPath());
-            FileOperations.lastVisitedFolder = outputPathFile;
-        }
 
     }
 
     private void saveHDR(File outFile, PlugInContext context,
-            RasterImageLayer rLayer, double nodata) throws IOException {
+            RasterImageLayer rLayer) throws IOException {
         OutputStream out = null;
         try {
             OpenJUMPSextanteRasterLayer rstLayer = new OpenJUMPSextanteRasterLayer();
@@ -326,7 +260,7 @@ public class ChangeRangeValuesToNoDataPlugIn extends AbstractPlugIn {
 
             o.println("cellsize " + rstLayer.getLayerCellSize());
 
-            String sNoDataVal = Double.toString(nodata);
+            String sNoDataVal = Double.toString(rstLayer.getNoDataValue());
 
             o.println("NODATA_value " + sNoDataVal);
             o.println("byteorder " + byteOrder);
@@ -346,14 +280,13 @@ public class ChangeRangeValuesToNoDataPlugIn extends AbstractPlugIn {
         }
     }
 
-    private void saveFLT_mask(File outFile, PlugInContext context,
-            RasterImageLayer rLayer, int band, float mindata, float maxdata,
-            float nodata) throws IOException {
+    private void saveFLT(File outFile, PlugInContext context,
+            RasterImageLayer rLayer, int band, float oldnodata, float newnodata)
+            throws IOException {
         FileOutputStream out = null;
         try {
             OpenJUMPSextanteRasterLayer rstLayer = new OpenJUMPSextanteRasterLayer();
             rstLayer.create(rLayer);
-
             LOGGER.debug(getClass());
             out = new FileOutputStream(outFile);
             this.cellFormat = NumberFormat.getNumberInstance();
@@ -382,78 +315,10 @@ public class ChangeRangeValuesToNoDataPlugIn extends AbstractPlugIn {
                 for (int x = 0; x < nx; x++) {
                     float value = gwrapper.getCellValueAsFloat(x, y, band);
                     if (bb.hasRemaining()) {
-                        if (value >= mindata && value <= maxdata) {
-                            bb.putFloat(nodata);
+                        if (value == oldnodata) {
+                            bb.putFloat(newnodata);
                         } else {
                             bb.putFloat(value);
-                        }
-                    } else {
-                        x--;
-                        // c--;
-                        bb.compact();
-                        fileChannelOut.write(bb);
-                        bb.clear();
-                    }
-                }
-            }
-            bb.compact();
-            fileChannelOut.write(bb);
-            bb.clear();
-        } catch (Exception e) {
-            context.getWorkbenchFrame()
-                    .warnUser(
-                            I18N.get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Error-See-Output-Window"));
-            context.getWorkbenchFrame().getOutputFrame().createNewDocument();
-            context.getWorkbenchFrame()
-                    .getOutputFrame()
-                    .addText(
-                            "SaveImageToRasterPlugIn Exception:Export Part of FLT/ASC or modify raster to ASC not yet implemented. Please Use Sextante Plugin");
-        } finally {
-            if (out != null)
-                out.close();
-        }
-    }
-
-    private void saveFLT_extract(File outFile, PlugInContext context,
-            RasterImageLayer rLayer, int band, float mindata, float maxdata,
-            float nodata) throws IOException {
-        FileOutputStream out = null;
-        try {
-            OpenJUMPSextanteRasterLayer rstLayer = new OpenJUMPSextanteRasterLayer();
-            rstLayer.create(rLayer);
-
-            LOGGER.debug(getClass());
-            out = new FileOutputStream(outFile);
-            this.cellFormat = NumberFormat.getNumberInstance();
-            this.cellFormat.setMaximumFractionDigits(3);
-            this.cellFormat.setMinimumFractionDigits(0);
-            this.properties = new Properties();
-            try {
-                FileInputStream fis = new FileInputStream(propertiesFile);
-                this.properties.load(fis);
-                this.properties
-                        .getProperty(LoadSextanteRasterImagePlugIn.KEY_PATH);
-                fis.close();
-            } catch (FileNotFoundException localFileNotFoundException) {
-            } catch (IOException e) {
-                context.getWorkbenchFrame().warnUser(GenericNames.ERROR);
-            }
-            FileChannel fileChannelOut = out.getChannel();
-            GridWrapperNotInterpolated gwrapper = new GridWrapperNotInterpolated(
-                    rstLayer, rstLayer.getLayerGridExtent());
-            int nx = rstLayer.getLayerGridExtent().getNX();
-            int ny = rstLayer.getLayerGridExtent().getNY();
-            ByteBuffer bb = ByteBuffer.allocateDirect(nx * 4);
-            bb.order(ByteOrder.LITTLE_ENDIAN);
-
-            for (int y = 0; y < ny; y++) {
-                for (int x = 0; x < nx; x++) {
-                    float value = gwrapper.getCellValueAsFloat(x, y, band);
-                    if (bb.hasRemaining()) {
-                        if (value >= mindata && value <= maxdata) {
-                            bb.putFloat(value);
-                        } else {
-                            bb.putFloat(nodata);
                         }
                     } else {
                         x--;
@@ -513,6 +378,43 @@ public class ChangeRangeValuesToNoDataPlugIn extends AbstractPlugIn {
         } catch (RuntimeException e1) {
         }
         context.getLayerManager().addLayerable(catName, ril);
+    }
+
+    public static MultiEnableCheck createEnableCheck(
+            WorkbenchContext workbenchContext) {
+        EnableCheckFactory checkFactory = new EnableCheckFactory(
+                workbenchContext);
+        MultiEnableCheck multiEnableCheck = new MultiEnableCheck();
+
+        multiEnableCheck.add(
+                checkFactory.createExactlyNLayerablesMustBeSelectedCheck(1,
+                        RasterImageLayer.class)).add(
+                checkFactory
+                        .createRasterImageLayerExactlyNBandsMustExistCheck(1));
+
+        return multiEnableCheck;
+    }
+
+    JTextField jTextField_RasterOut = new JTextField();
+
+    private void jButton_RasterOutActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton_RasterOutActionPerformed
+
+        File outputPathFile = null;
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        chooser.setSelectedFile(FileOperations.lastVisitedFolder);
+        chooser.setDialogType(JFileChooser.SAVE_DIALOG);
+        ExtensionFilter filter = new ExtensionFilter();
+        filter.addExtension("flt");
+        chooser.setFileFilter(filter);
+        int ret = chooser.showOpenDialog(null);
+        if (ret == JFileChooser.APPROVE_OPTION) {
+            outputPathFile = chooser.getSelectedFile();
+            // outputpathString = outputpathFile.getPath();
+            jTextField_RasterOut.setText(outputPathFile.getPath());
+            FileOperations.lastVisitedFolder = outputPathFile;
+        }
+
     }
 
 }
