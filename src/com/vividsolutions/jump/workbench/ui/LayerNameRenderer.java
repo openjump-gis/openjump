@@ -661,19 +661,7 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
         return filetype;
     }
 
-    /**
-     * Giuseppe Aruta [2015-01-04] Create a tooltip for the layer Check if
-     * return the extension of the file
-     */
-    public static String getExtension(File f) {
-        String ext = null;
-        String s = f.getName();
-        int i = s.lastIndexOf('.');
-        if (i > 0 && i < s.length() - 1) {
-            ext = s.substring(i + 1).toUpperCase();
-        }
-        return ext;
-    }
+   
 
     /**
      * Giuseppe Aruta [2015-01-04] Create a tooltip 
