@@ -959,6 +959,27 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
 
     }
 
+    private String generateMinimalToolTipText(Layerable layerable) {
+
+        String tooltip = "";
+        if (layerable instanceof Layer) {
+            if (((Layer) layerable).getDescription() == null
+                    || ((Layer) layerable).getDescription().trim().length() == 0
+                    || ((Layer) layerable).getDescription().equals(
+                            layerable.getName())) {
+                tooltip = FEATURE_COUNT
+                        + " = "
+                        + ((Layer) layerable).getFeatureCollectionWrapper()
+                                .size();
+            } else {
+                tooltip = layerable.getName() + ": "
+                        + ((Layer) layerable).getDescription();
+            }
+        } else
+            tooltip = layerable.getName();
+        return tooltip;
+    }
+    
     // /////////////////////////////////////////////////////////////////
     // This method takes a String of text and simulates word wrapping
     // by applying HTML code <BR> after 300 characters per line. It
