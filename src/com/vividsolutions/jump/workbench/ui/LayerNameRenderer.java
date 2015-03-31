@@ -41,6 +41,7 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
+import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -52,12 +53,14 @@ import javax.swing.tree.TreeCellRenderer;
 
 import org.apache.log4j.Logger;
 import org.openjump.core.rasterimage.RasterImageLayer;
+import org.saig.jump.widgets.config.ConfigTooltipPanel;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.imagery.ImageryLayerDataset;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageStyle;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImagesLayer;
@@ -65,6 +68,7 @@ import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.model.WMSLayer;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.datastore.DataStoreDataSource;
 import com.vividsolutions.jump.workbench.ui.plugin.wms.MapLayerPanel;
 import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
@@ -118,6 +122,7 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
     private ImageIcon sextante_rasterIcon = IconLoader.icon("mapSv2_13.png");
     private final static String LAYER_NAME = I18N
             .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Layer-Name");
+    private final static String FILE_NAME = I18N.get("ui.MenuNames.FILE");
     private final static String XMIN = I18N
             .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.xmin");
     private final static String YMIN = I18N
@@ -129,8 +134,9 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
     private final static String SRS = I18N
             .get("ui.plugin.wms.EditWMSQueryPanel.coordinate-reference-system");
     private final static String URL = "Url";
-    private final static String NOTSAVED = I18N
-            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Not-Saved");
+    private final static String NOTSAVED = "This layer has no datasource";
+    // I18N
+    // .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Not-Saved");
     private final static String SOURCE_PATH = I18N
             .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Source-Path");
     private final static String SEXTANTE = I18N
@@ -308,10 +314,19 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
          */
 
         /**
-         * Giuseppe Aruta [2015-01-04]
-         * Generated tooltip text
+         * Giuseppe Aruta [2015-01-04] Generated tooltip text
+         * [2015-03-29] Made tooltip optional (original/enhanced)
          */
-        setToolTipText(generateToolTipText(layerable));
+        boolean layerTooltipsOn = PersistentBlackboardPlugIn.get(
+                JUMPWorkbench.getInstance().getBlackboard()).get(
+                ConfigTooltipPanel.LAYER_TOOLTIPS_ON, false);
+        if (layerTooltipsOn) {
+            setToolTipText(generateMinimalToolTipText(layerable));
+
+        } else {
+            setToolTipText(generateToolTipText(layerable));
+        }
+        // setToolTipText(generateToolTipText(layerable));
 
         if (isSelected) {
             Color sbg = list.getSelectionBackground();
@@ -659,25 +674,31 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
     }
 
     /**
-     * Giuseppe Aruta [2015-01-04] Create a tooltip for the layer Check if
-     * layerable has datasource and distinguish between 
-     * Layer.class, ReferencedImageStyle.class
-     * WMSLayer.class, WFSLayer.class and RasterImageLayer.class
-     * 
-     * @param layerable
-     * @return String
+     * Giuseppe Aruta [2015-01-04] Create a tooltip 
+     * Original JUMP version
      */
+    public static String getExtension(File f) {
+        String ext = null;
+        String s = f.getName();
+        int i = s.lastIndexOf('.');
+        if (i > 0 && i < s.length() - 1) {
+            ext = s.substring(i + 1).toUpperCase();
+        }
+        return ext;
+    }
+    
     private String generateToolTipText(Layerable layerable) {
         // String tooltip = layerable.getName();
+
         String tooltip = "";
 
-        // if (layerTooltipsOn) {
         String sourceClass = "";
-        // String tooltip = "";
-        String sourcePath = NOTSAVED;
+        JEditorPane pane = new JEditorPane();
+
+        String sourcePath = NOTSAVED.toUpperCase();
 
         /*
-         * Check if the selected layerable is a WMSLayer.class
+         * WMSLayer.class
          */
         if (layerable instanceof WMSLayer) {
             WMSLayer layer = (WMSLayer) layerable;
@@ -685,15 +706,17 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
             String srs = layer.getSRS();// SRS of WMS layer
             Envelope env = layer.getEnvelope();// Get Envelope of WMS layer
             tooltip = "<HTML><BODY>";
-            tooltip += "<DIV style=\"width: 500px; text-justification: justify;\">";
+            tooltip += "<DIV style=\"width: 400px; text-justification: justify;\">";
             tooltip += "<b>" + LAYER_NAME + ": </b>" + layer.getName() + "<br>";
             tooltip += "<b>" + DATASOURCE_CLASS + ": </b>" + "WMS" + "<br>";
-            tooltip += "<b>" + URL + ": </b>" + url + "<br>";
+            tooltip += "<b>" + URL + ": </b>" + SplitString(url) + "<br>";
             tooltip += "<b>" + SRS + ": </b>" + srs + "<br>";
             tooltip += "<b>" + EXTENT + ": </b>" + env.toString() + "<br>";
             tooltip += "</DIV></BODY></HTML>";
         }
-
+        /*
+         * WFSLayer.class
+         */
         else if (layerable instanceof WFSLayer) {
             WFSLayer layer = (WFSLayer) layerable;
             String url = layer.getServerURL();// Url server of WFS layer
@@ -707,18 +730,59 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
             int size = -1;// Layer size
             size = layer.getFeatureCollectionWrapper().size();// Get number
             tooltip = "<HTML><BODY>";
-            tooltip += "<DIV style=\"width: 500px; text-justification: justify;\">";
+            tooltip += "<DIV style=\"width: 400px; text-justification: justify;\">";
             tooltip += "<b>" + LAYER_NAME + ": </b>" + layer.getName() + "<br>";
             tooltip += "<b>" + DATASOURCE_CLASS + ": </b>" + "WFS" + "<br>";
-            tooltip += "<b>" + URL + ": </b>" + url + "<br>";
+            tooltip += "<b>" + URL + ": </b>" + SplitString(url) + "<br>";
             tooltip += "<b>" + SRS + ": </b>" + srs + "<br>";
             tooltip += "<b>" + EXTENT + ": </b>" + env.toString() + "<br>";
             tooltip += "<b>" + FEATURE_COUNT + ": </b>" + size + "<br>";
             tooltip += "</DIV></BODY></HTML>";
         }
+        /*
+         * Sextante RasterImageLayer.class
+         */
+        else if (layerable instanceof RasterImageLayer) {
+            RasterImageLayer layer = (RasterImageLayer) layerable;
+            // If RasterImageLayer.class has a datasource
+            if (layer.getImageFileName() != null) {
+                File image = new File(layer.getImageFileName());
+                String folder = image.getParent();
+                String nameFile = image.getName();
+                String type = filetype(image);
+                String path = SplitString(image.toString());
+
+                tooltip = "<HTML><BODY>";
+                tooltip += "<DIV style=\"width: 400px; text-justification: justify;\">";
+                tooltip += "<b>" + LAYER_NAME + ": </b>" + layer.getName()
+                        + "<br>";
+                tooltip += "<b>" + DATASOURCE_CLASS + ": </b>" + SEXTANTE
+                        + ":  " + type + "<br>";
+                // tooltip += "<b>" + FILE_NAME + ": </b>" + nameFile + "<br>";
+                tooltip += "<b>" + SOURCE_PATH + ": </b>" + path + "<br>";
+                tooltip += "<b>" + FEATURE_COUNT + ": </b>" + "1" + "<br>";
+                tooltip += "</DIV></BODY></HTML>";
+            }
+            // If RasterImageLayer.class has no datasource
+            else {
+                sourcePath = NOTSAVED;
+                tooltip = "<HTML><BODY>";
+                tooltip += "<DIV style=\"width: 400px; text-justification: justify;\">";
+                tooltip += "<b>" + LAYER_NAME + ": </b>" + layer.getName()
+                        + "<br>";
+                tooltip += "<b>" + DATASOURCE_CLASS + ": </b>";
+                tooltip += SEXTANTE + "<br>";
+
+                tooltip += "<b>" + SOURCE_PATH + ": </b>"
+                        + "<b><font color='red'>" + sourcePath
+                        + "</font></b><br>";
+                tooltip += "<b>" + FEATURE_COUNT + ": </b>" + "1" + "<br>";
+                tooltip += "</DIV></BODY></HTML>";
+            }
+        }
 
         /*
-         * Check if the selected layerable is a Layer.class
+         * Layer.class
          */
         else if (layerable instanceof Layer) {
             Layer layer = (Layer) layerable;
@@ -726,18 +790,19 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
             int size = -1;// Layer size
             String layerName = layerable.getName();
             size = layer.getFeatureCollectionWrapper().size();// Get number
+                                                              // layers
 
             /*
-             * Check if the selected Layer.class is not an Image Layer
+             * Layer.class - NOT an Image Layer
              */
             if (layer.getStyle(ReferencedImageStyle.class) == null
                     && ((Layer) layerable).getDescription() != null) {
                 /*
-                 * Code from LayerPropertyPlugin that gets back the absolute
-                 * path and the extension of Non-Image a Layer.class.
-                 * sourceClass - Extension sourcePath - Path and file
+                 * Code from LayerPropertyPlugin that gets back the file mame of
+                 * a Non-Image Layer.class
                  */
                 DataSourceQuery dsq = layer.getDataSourceQuery();
+
                 if (dsq != null) {
                     String dsqSourceClass = dsq.getDataSource().getClass()
                             .getName();
@@ -754,24 +819,63 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
                     if (fnameObj != null) {
                         sourcePath = fnameObj.toString();
                     }
+                    int dotPos = sourceClass.lastIndexOf(".");
+                    if (dotPos > 0)
+                        sourceClass = sourceClass.substring(dotPos + 1);
+                    dotPos = sourceClass.lastIndexOf("$");
+                    if (dotPos > 0)
+                        sourceClass = sourceClass.substring(dotPos + 1);
+                    File f = new File(sourcePath);
+                    String fileName = f.getName();
+                    String path = SplitString(sourcePath);
+
+                    // Layer.class with datasource that has been modified
+                    if (layer.isFeatureCollectionModified()) {
+                        tooltip = "<HTML><BODY>"; //$NON-NLS-1$
+                        tooltip += "<DIV style=\"width: 400px; text-justification: justify;\">";
+                        tooltip += "<b>" + LAYER_NAME + ": </b>" + layerName
+                                + " - <b><font color='blue'>" + MODIFIED
+                                + "</font></b><br>";
+                        tooltip += "<b>" + DATASOURCE_CLASS + ": </b>"
+                                + sourceClass + "<br>";
+                        tooltip += "<b>" + SOURCE_PATH + ": </b>" + path
+                                + "<br>";
+                        tooltip += "<b>" + FEATURE_COUNT + ": </b>" + size
+                                + "<br>";
+                        tooltip += "</DIV></BODY></HTML>";
+
+                    } else
+                        // Layer.class with datasource not modified
+                        tooltip = "<HTML><BODY>"; //$NON-NLS-1$
+                    tooltip += "<DIV style=\"width: 400px; text-justification: justify;\">";
+                    tooltip += "<b>" + LAYER_NAME + ": </b>" + layerName
+                            + "<br>";
+                    tooltip += "<b>" + DATASOURCE_CLASS + ": </b>"
+                            + sourceClass + "<br>";
+                    tooltip += "<b>" + SOURCE_PATH + ": </b>"
+                            + SplitString(sourcePath) + "<br>";
+                    tooltip += "<b>" + FEATURE_COUNT + ": </b>" + size + "<br>";
+                    tooltip += "</DIV></BODY></HTML>";
+
+                } else {
+
+                    sourcePath = NOTSAVED;
+                    tooltip = "<HTML><BODY>"; //$NON-NLS-1$
+                    // tooltip +=
+                    // "<DIV style=\"width: 300px; text-justification: justify;\">";
+                    tooltip += "<b>" + LAYER_NAME + ": </b>" + layerName
+                            + "<br>";
+                    tooltip += "<b>" + DATASOURCE_CLASS + ": </b>" + ""
+                            + "<br>";
+                    tooltip += "<b>" + FILE_NAME + ": </b>"
+                            + "<b><font color='red'>" + sourcePath
+                            + "</font></b><br>";
+                    tooltip += "<b>" + FEATURE_COUNT + ": </b>" + size + "<br>";
+                    tooltip += "</BODY></HTML>";
                 }
 
-                int dotPos = sourceClass.lastIndexOf(".");
-                if (dotPos > 0)
-                    sourceClass = sourceClass.substring(dotPos + 1);
-                dotPos = sourceClass.lastIndexOf("$");
-                if (dotPos > 0)
-                    sourceClass = sourceClass.substring(dotPos + 1);
-
-                tooltip = "<HTML><BODY>"; //$NON-NLS-1$
-                tooltip += "<DIV style=\"width: 500px; text-justification: justify;\">";
-                tooltip += "<b>" + LAYER_NAME + ": </b>" + layerName + "<br>";
-                tooltip += "<b>" + DATASOURCE_CLASS + ": </b>" + sourceClass
-                        + "<br>";
-                tooltip += "<b>" + SOURCE_PATH + ": </b>" + sourcePath + "<br>";
-                tooltip += "<b>" + FEATURE_COUNT + ": </b>" + size + "<br>";
-                tooltip += "</DIV></BODY></HTML>";
             }
+
             /*
              * Check if the selected Layer.class is a Image Layer
              */
@@ -792,53 +896,49 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
                     sourcePathImage = sourcePathImage.substring(5);
                     sourceClassImage = (String) feature
                             .getString(ImageryLayerDataset.ATTR_TYPE);
+                    String sourceClassImage1 = sourceClassImage.replace("%20",
+                            " ");
                     /*
-                     * sourcefactory = (String) feature
-                     * .getString(ImageryLayerDataset.ATTR_FACTORY);
-                     * sourcegeometry = (String) feature
-                     * .getString(ImageryLayerDataset.ATTR_GEOMETRY);
-                     * sourceloader = (String) feature
-                     * .getString(ImageryLayerDataset.ATTR_LOADER);
+                     * Check if the Image Layer.class has only one file loaded
                      */
-                    // feature.getString("IMG_URI");
-                }
-                /*
-                 * Check if the Image Layer.class has only one file loaded
-                 */
-                if (size == 1) {
-                    tooltip = "<HTML><BODY>"; //$NON-NLS-1$
-                    tooltip += "<DIV style=\"width: 500px; text-justification: justify;\">";
-                    tooltip += "<b>" + LAYER_NAME + ": </b>" + layerName
-                            + "<br>";
+                    if (size == 1) {
+                        File f = new File(sourcePathImage);
+                        String filePath = f.getAbsolutePath();
+                        String filePath1 = filePath.replace("%20", " ");
+                        String type = filetype(f);
+                        String fileName = f.getName();
+                        tooltip = "<HTML><BODY>"; //$NON-NLS-1$
+                        tooltip += "<DIV style=\"width: 400px; text-justification: justify;\">";
+                        tooltip += "<b>" + LAYER_NAME + ": </b>" + layerName
+                                + "<br>";
 
-                    tooltip += "<b>" + DATASOURCE_CLASS + ": </b>"
-                            + "Referenced Image readers " + sourceClassImage
-                            + "<br>";
+                        tooltip += "<b>" + DATASOURCE_CLASS + ": </b>"
+                                + "Image (Referenced Image readers)" + ":  "
+                                + type + "<br>";
 
-                    tooltip += "<b>" + SOURCE_PATH + ": </b>" + sourcePathImage
-                            + "<br>";
+                        tooltip += "<b>" + SOURCE_PATH + ": </b>"
+                                + SplitString(filePath1) + "<br>";
+                        tooltip += "<b>" + FEATURE_COUNT + ": </b>" + size
+                                + "<br>";
+                        tooltip += "</DIV></BODY></HTML>";
+                    }
                     /*
-                     * tooltip += "<b>" + "Factory" + ": </b>" + sourcefactory +
-                     * "<br>"; tooltip += "<b>" + "geometry" + ": </b>" +
-                     * sourcegeometry + "<br>"; tooltip += "<b>" + "loader" +
-                     * ": </b>" + sourceloader + "<br>";
+                     * In this case ImageLayerManagerPlugin has loaded more than
+                     * one file as Image Layer.class
                      */
-                    tooltip += "<b>" + FEATURE_COUNT + ": </b>" + size + "<br>";
-                    tooltip += "</DIV></BODY></HTML>";
-                }
-                /*
-                 * In this case ImageLayerManagerPlugin has loaded more than one
-                 * file as Image Layer.class
-                 */
-                else {
-                    tooltip = "<HTML><BODY>";
-                    tooltip += "<DIV style=\"width: 500px; text-justification: justify;\">";
-                    tooltip += "<b>" + LAYER_NAME + ": </b>" + layerName
-                            + "<br>";
-                    tooltip += "<b>" + SOURCE_PATH + ": </b>" + MULTIPLESOURCE
-                            + "<br>";
-                    tooltip += "<b>" + FEATURE_COUNT + ": </b>" + size + "<br>";
-                    tooltip += "</DIV></BODY></HTML>";
+                    else {
+
+                        tooltip = "<HTML><BODY>";
+                        // tooltip +=
+                        // "<DIV style=\"width: 300px; text-justification: justify;\">";
+                        tooltip += "<b>" + LAYER_NAME + ": </b>" + layerName
+                                + "<br>";
+                        tooltip += "<b>" + SOURCE_PATH + ": </b>"
+                                + MULTIPLESOURCE + "<br>";
+                        tooltip += "<b>" + FEATURE_COUNT + ": </b>" + size
+                                + "<br>";
+                        tooltip += "</BODY></HTML>";
+                    }
                 }
             }
             /*
@@ -846,52 +946,13 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
              */
             else {
                 tooltip = "<HTML><BODY>";
-                tooltip += "<DIV style=\"width: 500px; text-justification: justify;\">";
                 tooltip += "<b>" + LAYER_NAME + ": </b>" + layerName + "<br>";
-                tooltip += "<b>" + DATASOURCE_CLASS + ": </b>" + "<br>";
-                tooltip += "<b>" + SOURCE_PATH + ": </b>" + NOTSAVED + "<br>";
+                tooltip += "<b>" + FILE_NAME + ": </b>" + NOTSAVED + "<br>";
                 tooltip += "<b>" + FEATURE_COUNT + ": </b>" + size + "<br>";
-                tooltip += "</DIV></BODY></HTML>";
+                tooltip += "</BODY></HTML>";
             }
         }
 
-        /*
-         * Check if the selected layerable is a RasterImageLayer.class
-         */
-        else if (layerable instanceof RasterImageLayer) {
-            RasterImageLayer layer = (RasterImageLayer) layerable;
-            /*
-             * If RasterImageLayer.class has a datasource
-             */
-            if (layer.getImageFileName() != null) {
-                File image = new File(layer.getImageFileName());
-                tooltip = "<HTML><BODY>";
-                tooltip += "<DIV style=\"width: 500px; text-justification: justify;\">";
-                tooltip += "<b>" + LAYER_NAME + ": </b>" + layer.getName()
-                        + "<br>";
-                tooltip += "<b>" + DATASOURCE_CLASS + ": </b>" + SEXTANTE
-                        + ":  " + filetype(image) + "<br>";
-                tooltip += "<b>" + SOURCE_PATH + ": </b>" + image.toString()
-                        + "<br>";
-                tooltip += "<b>" + FEATURE_COUNT + ": </b>" + "1" + "<br>";
-                tooltip += "</DIV></BODY></HTML>";
-            }
-            /*
-             * If RasterImageLayer.class has no datasource
-             */
-            else {
-                tooltip = "<HTML><BODY>";
-                tooltip += "<DIV style=\"width: 500px; text-justification: justify;\">";
-                tooltip += "<b>" + LAYER_NAME + ": </b>" + layer.getName()
-                        + "<br>";
-                tooltip += "<b>" + DATASOURCE_CLASS + ": </b>";
-                tooltip += SEXTANTE + "<br>";
-                tooltip += "<b>" + SOURCE_PATH + ": </b>" + NOTSAVED + "<br>";
-                tooltip += "<b>" + FEATURE_COUNT + ": </b>" + "1" + "<br>";
-                tooltip += "</DIV></BODY></HTML>";
-            }
-
-        }
         return tooltip;
 
     }
