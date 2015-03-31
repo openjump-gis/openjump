@@ -1,4 +1,10 @@
 # for display continuity sake please use 2 spaces instead of tabs
+2015-03-31  Giuseppe Aruta (ma15569)  
+	* Layer tree tooltip is now configurable via "Configure tooltip" 
+	* in Option panel.  2 option: Original minimal JUMP/OpenJUMP tooltip 
+	* and advanced info tooltip.Used different colors (red and blue) 
+	* to display layer with no datasource and modified layer with datasource   in the tooltips
+
 2015-03-22 Giuseppe Aruta (ma15569) 
 	* Added ChangeRangeValuesToNoDataPlugIn. 
 	* This plugin allowas to change a range of cell values (of a Sextante single 
