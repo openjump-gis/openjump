@@ -957,6 +957,38 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
 
     }
 
+    // /////////////////////////////////////////////////////////////////
+    // This method takes a String of text and simulates word wrapping
+    // by applying HTML code <BR> after 300 characters per line. It
+    // will check to make sure that we are not in the middle of a word
+    // before breaking the line.
+    // /////////////////////////////////////////////////////////////////
+    public static String SplitString(String string) {
+
+        StringBuffer buf = new StringBuffer();
+        String tempString = string;
+
+        if (string != null) {
+
+            while (tempString.length() > 190) {
+                String block = tempString.substring(0, 400);
+                int index = block.lastIndexOf(' ');
+                if (index < 0) {
+                    index = tempString.indexOf(' ');
+                }
+                if (index >= 0) {
+                    buf.append(tempString.substring(0, index) + "<BR>");
+                }
+                tempString = tempString.substring(index + 1);
+            }
+        } else {
+            tempString = " ";
+        }
+        buf.append(tempString);
+        return buf.toString();
+
+    }
+    
     @Override
     // [ede 11.2012] this is necessary for comboboxes with transparent bg, like
     // in
