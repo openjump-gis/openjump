@@ -968,12 +968,12 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
         return tooltip;
     }
     
-    // /////////////////////////////////////////////////////////////////
-    // This method takes a String of text and simulates word wrapping
-    // by applying HTML code <BR> after 300 characters per line. It
-    // will check to make sure that we are not in the middle of a word
-    // before breaking the line.
-    // /////////////////////////////////////////////////////////////////
+    /*
+    * This method takes a String of text and simulates word wrapping
+     * by applying HTML code <BR> after a defined line. It
+     * will check to make sure that we are not in the middle of a word
+     * before breaking the line.
+     */ 
     public static String SplitString(String string) {
 
         StringBuffer buf = new StringBuffer();
