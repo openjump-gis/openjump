@@ -134,6 +134,8 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
     private final static String SRS = I18N
             .get("ui.plugin.wms.EditWMSQueryPanel.coordinate-reference-system");
     private final static String URL = "Url";
+    private final static String MODIFIED = I18N
+            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.modified");
     private final static String NOTSAVED = "This layer has no datasource";
     // I18N
     // .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Not-Saved");
