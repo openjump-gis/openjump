@@ -970,7 +970,7 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
     
     /*
     * This method takes a String of text and simulates word wrapping
-     * by applying HTML code <BR> after a defined line. It
+     * by applying HTML code <BR> after a defined line length. It
      * will check to make sure that we are not in the middle of a word
      * before breaking the line.
      */ 
