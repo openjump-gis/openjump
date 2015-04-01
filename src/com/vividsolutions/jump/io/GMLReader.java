@@ -415,7 +415,7 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
           }
         }
 
-        System.out.println("wrap-element: " + qName);
+        //System.out.println("wrap-element: " + qName);
         // finalize geometry and add to feature
         if (GMLinput.isGeometryElement(qName)) {
           tagBody = new StringBuffer();
@@ -454,7 +454,7 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
         }
         
         
-         System.out.println("geom-element: " + qName);
+        //System.out.println("geom-element: " + qName);
         // these correspond to <coord><X>0.0</X><Y>0.0</Y></coord>
         if ((qName.compareToIgnoreCase("X") == 0)
             || (qName.compareToIgnoreCase("gml:X") == 0)) {
@@ -526,7 +526,7 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
             Geometry g = currentFeature.getGeometry();
 
             if (g != null) {
-              System.out.println(g.toString());
+              //System.out.println(g.toString());
             }
 
             throw new ParseException("no geometry specified in feature");
