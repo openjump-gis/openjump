@@ -53,13 +53,13 @@ import javax.swing.tree.TreeCellRenderer;
 
 import org.apache.log4j.Logger;
 import org.openjump.core.rasterimage.RasterImageLayer;
-import org.saig.jump.widgets.config.ConfigTooltipPanel;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
+import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.imagery.ImageryLayerDataset;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageStyle;
@@ -123,20 +123,13 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
     private final static String LAYER_NAME = I18N
             .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Layer-Name");
     private final static String FILE_NAME = I18N.get("ui.MenuNames.FILE");
-    private final static String XMIN = I18N
-            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.xmin");
-    private final static String YMIN = I18N
-            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.ymin");
-    private final static String XMAX = I18N
-            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.xmax");
-    private final static String YMAX = I18N
-            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.ymax");
+    private final static String MODIFIED = I18N
+            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.modified");
     private final static String SRS = I18N
             .get("ui.plugin.wms.EditWMSQueryPanel.coordinate-reference-system");
     private final static String URL = "Url";
-    private final static String MODIFIED = I18N
-            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.modified");
-    private final static String NOTSAVED = "This layer has no datasource";
+    private final static String NODATASOURCELAYER = I18N
+            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.nodatasourcelayer.message");
     // I18N
     // .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Not-Saved");
     private final static String SOURCE_PATH = I18N
@@ -316,12 +309,12 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
          */
 
         /**
-         * Giuseppe Aruta [2015-01-04] Generated tooltip text
-         * [2015-03-29] Made tooltip optional (original/enhanced)
+         * Giuseppe Aruta [2015-01-04] Generated tooltip text [2015-03-29] Made
+         * tooltip optional (original/enhanced)
          */
         boolean layerTooltipsOn = PersistentBlackboardPlugIn.get(
                 JUMPWorkbench.getInstance().getBlackboard()).get(
-                ConfigTooltipPanel.LAYER_TOOLTIPS_ON, false);
+                EditOptionsPanel.LAYER_TOOLTIPS_ON, false);
         if (layerTooltipsOn) {
             setToolTipText(generateMinimalToolTipText(layerable));
 
@@ -329,7 +322,6 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
             setToolTipText(generateToolTipText(layerable));
         }
         // setToolTipText(generateToolTipText(layerable));
-
         if (isSelected) {
             Color sbg = list.getSelectionBackground();
             Color sfg = list.getSelectionForeground();
@@ -573,6 +565,38 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
     }
 
     /*
+     * This method takes a String of text and simulates word wrapping by
+     * applying HTML code <BR> after n characters per line. It will check to
+     * make sure that we are not in the middle of a word before breaking the
+     * line.
+     */
+    public static String SplitString(String string, int n) {
+
+        StringBuffer buf = new StringBuffer();
+        String tempString = string;
+
+        if (string != null) {
+
+            while (tempString.length() > n) {
+                String block = tempString.substring(0, n);
+                int index = block.lastIndexOf(File.separator);
+                if (index < 0) {
+                    index = tempString.indexOf(File.separator);
+                }
+                if (index >= 0) {
+                    buf.append(tempString.substring(0, index) + "<BR>");
+                }
+                tempString = tempString.substring(index + 1);
+            }
+        } else {
+            tempString = File.separator;
+        }
+        buf.append(tempString);
+        return buf.toString();
+
+    }
+
+    /*
      * Associate Byte, Megabytes, etc to file
      */
     private static final String[] Q = new String[] { "", "KB", "MB", "GB",
@@ -594,7 +618,7 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
      * Enumeration of File extension used in Sextante Raster Layer
      */
     public enum TypeFile {
-        ASC, CSV, DXF, FLT, TIF, TIFF, JPG, JPEG, PNG, GIF, GRD, JP2, BMP
+        ASC, CSV, DXF, FLT, TIF, TIFF, JPG, JPEG, PNG, GIF, GRD, JP2, BMP, ECW, MrSID
     }
 
     private String filetype;
@@ -657,16 +681,18 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
             filetype = "BMP - Windows Bitmap";
             break;
         }
+        case ECW: {
+            filetype = "ECW - Enhanced Compression Wavelet";
+            break;
+        }
+        case MrSID: {
+            filetype = "MrSID - Multiresolution seamless image database";
+            break;
+        }
         }
         return filetype;
     }
 
-   
-
-    /**
-     * Giuseppe Aruta [2015-01-04] Create a tooltip 
-     * Original JUMP version
-     */
     public static String getExtension(File f) {
         String ext = null;
         String s = f.getName();
@@ -676,16 +702,40 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
         }
         return ext;
     }
-    
+
+    /**
+     * Giuseppe Aruta [2015-01-04] Create a tooltip Original JUMP version
+     */
+    private String generateMinimalToolTipText(Layerable layerable) {
+
+        String tooltip = "";
+        if (layerable instanceof Layer) {
+            if (((Layer) layerable).getDescription() == null
+                    || ((Layer) layerable).getDescription().trim().length() == 0
+                    || ((Layer) layerable).getDescription().equals(
+                            layerable.getName())) {
+                tooltip = FEATURE_COUNT
+                        + " = "
+                        + ((Layer) layerable).getFeatureCollectionWrapper()
+                                .size();
+            } else {
+                tooltip = layerable.getName() + ": "
+                        + ((Layer) layerable).getDescription();
+            }
+        } else
+            tooltip = layerable.getName();
+        return tooltip;
+    }
+
     private String generateToolTipText(Layerable layerable) {
         // String tooltip = layerable.getName();
 
         String tooltip = "";
 
         String sourceClass = "";
-        JEditorPane pane = new JEditorPane();
+        new JEditorPane();
 
-        String sourcePath = NOTSAVED.toUpperCase();
+        String sourcePath = NODATASOURCELAYER.toUpperCase();
 
         /*
          * WMSLayer.class
@@ -699,7 +749,8 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
             tooltip += "<DIV style=\"width: 400px; text-justification: justify;\">";
             tooltip += "<b>" + LAYER_NAME + ": </b>" + layer.getName() + "<br>";
             tooltip += "<b>" + DATASOURCE_CLASS + ": </b>" + "WMS" + "<br>";
-            tooltip += "<b>" + URL + ": </b>" + SplitString(url) + "<br>";
+            tooltip += "<b>" + URL + ": </b>" + StringUtil.split(url, 350)
+                    + "<br>";
             tooltip += "<b>" + SRS + ": </b>" + srs + "<br>";
             tooltip += "<b>" + EXTENT + ": </b>" + env.toString() + "<br>";
             tooltip += "</DIV></BODY></HTML>";
@@ -723,7 +774,8 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
             tooltip += "<DIV style=\"width: 400px; text-justification: justify;\">";
             tooltip += "<b>" + LAYER_NAME + ": </b>" + layer.getName() + "<br>";
             tooltip += "<b>" + DATASOURCE_CLASS + ": </b>" + "WFS" + "<br>";
-            tooltip += "<b>" + URL + ": </b>" + SplitString(url) + "<br>";
+            tooltip += "<b>" + URL + ": </b>" + StringUtil.split(url, 350)
+                    + "<br>";
             tooltip += "<b>" + SRS + ": </b>" + srs + "<br>";
             tooltip += "<b>" + EXTENT + ": </b>" + env.toString() + "<br>";
             tooltip += "<b>" + FEATURE_COUNT + ": </b>" + size + "<br>";
@@ -737,17 +789,17 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
             // If RasterImageLayer.class has a datasource
             if (layer.getImageFileName() != null) {
                 File image = new File(layer.getImageFileName());
-                String folder = image.getParent();
-                String nameFile = image.getName();
+                image.getParent();
+                image.getName();
                 String type = filetype(image);
-                String path = SplitString(image.toString());
+                String path = StringUtil.split(image.toString(), 350);
 
                 tooltip = "<HTML><BODY>";
                 tooltip += "<DIV style=\"width: 400px; text-justification: justify;\">";
                 tooltip += "<b>" + LAYER_NAME + ": </b>" + layer.getName()
                         + "<br>";
-                tooltip += "<b>" + DATASOURCE_CLASS + ": </b>" + SEXTANTE
-                        + ":  " + type + "<br>";
+                tooltip += "<b>" + DATASOURCE_CLASS + ": </b>" + ":  " + type
+                        + " (" + SEXTANTE + ")<br>";
                 // tooltip += "<b>" + FILE_NAME + ": </b>" + nameFile + "<br>";
                 tooltip += "<b>" + SOURCE_PATH + ": </b>" + path + "<br>";
                 tooltip += "<b>" + FEATURE_COUNT + ": </b>" + "1" + "<br>";
@@ -755,7 +807,7 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
             }
             // If RasterImageLayer.class has no datasource
             else {
-                sourcePath = NOTSAVED;
+                sourcePath = NODATASOURCELAYER;
                 tooltip = "<HTML><BODY>";
                 tooltip += "<DIV style=\"width: 400px; text-justification: justify;\">";
                 tooltip += "<b>" + LAYER_NAME + ": </b>" + layer.getName()
@@ -816,8 +868,8 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
                     if (dotPos > 0)
                         sourceClass = sourceClass.substring(dotPos + 1);
                     File f = new File(sourcePath);
-                    String fileName = f.getName();
-                    String path = SplitString(sourcePath);
+                    f.getName();
+                    String path = StringUtil.split(sourcePath, 350);
 
                     // Layer.class with datasource that has been modified
                     if (layer.isFeatureCollectionModified()) {
@@ -843,13 +895,13 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
                     tooltip += "<b>" + DATASOURCE_CLASS + ": </b>"
                             + sourceClass + "<br>";
                     tooltip += "<b>" + SOURCE_PATH + ": </b>"
-                            + SplitString(sourcePath) + "<br>";
+                            + StringUtil.split(sourcePath, 350) + "<br>";
                     tooltip += "<b>" + FEATURE_COUNT + ": </b>" + size + "<br>";
                     tooltip += "</DIV></BODY></HTML>";
 
                 } else {
 
-                    sourcePath = NOTSAVED;
+                    sourcePath = NODATASOURCELAYER;
                     tooltip = "<HTML><BODY>"; //$NON-NLS-1$
                     // tooltip +=
                     // "<DIV style=\"width: 300px; text-justification: justify;\">";
@@ -886,8 +938,7 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
                     sourcePathImage = sourcePathImage.substring(5);
                     sourceClassImage = (String) feature
                             .getString(ImageryLayerDataset.ATTR_TYPE);
-                    String sourceClassImage1 = sourceClassImage.replace("%20",
-                            " ");
+                    sourceClassImage.replace("%20", " ");
                     /*
                      * Check if the Image Layer.class has only one file loaded
                      */
@@ -896,18 +947,17 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
                         String filePath = f.getAbsolutePath();
                         String filePath1 = filePath.replace("%20", " ");
                         String type = filetype(f);
-                        String fileName = f.getName();
+                        f.getName();
                         tooltip = "<HTML><BODY>"; //$NON-NLS-1$
                         tooltip += "<DIV style=\"width: 400px; text-justification: justify;\">";
                         tooltip += "<b>" + LAYER_NAME + ": </b>" + layerName
                                 + "<br>";
 
-                        tooltip += "<b>" + DATASOURCE_CLASS + ": </b>"
-                                + "Image (Referenced Image readers)" + ":  "
-                                + type + "<br>";
+                        tooltip += "<b>" + DATASOURCE_CLASS + ": </b>" + type
+                                + "<br>";
 
                         tooltip += "<b>" + SOURCE_PATH + ": </b>"
-                                + SplitString(filePath1) + "<br>";
+                                + StringUtil.split(filePath1, 350) + "<br>";
                         tooltip += "<b>" + FEATURE_COUNT + ": </b>" + size
                                 + "<br>";
                         tooltip += "</DIV></BODY></HTML>";
@@ -937,7 +987,8 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
             else {
                 tooltip = "<HTML><BODY>";
                 tooltip += "<b>" + LAYER_NAME + ": </b>" + layerName + "<br>";
-                tooltip += "<b>" + FILE_NAME + ": </b>" + NOTSAVED + "<br>";
+                tooltip += "<b>" + FILE_NAME + ": </b>" + NODATASOURCELAYER
+                        + "<br>";
                 tooltip += "<b>" + FEATURE_COUNT + ": </b>" + size + "<br>";
                 tooltip += "</BODY></HTML>";
             }
@@ -947,59 +998,6 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
 
     }
 
-    private String generateMinimalToolTipText(Layerable layerable) {
-
-        String tooltip = "";
-        if (layerable instanceof Layer) {
-            if (((Layer) layerable).getDescription() == null
-                    || ((Layer) layerable).getDescription().trim().length() == 0
-                    || ((Layer) layerable).getDescription().equals(
-                            layerable.getName())) {
-                tooltip = FEATURE_COUNT
-                        + " = "
-                        + ((Layer) layerable).getFeatureCollectionWrapper()
-                                .size();
-            } else {
-                tooltip = layerable.getName() + ": "
-                        + ((Layer) layerable).getDescription();
-            }
-        } else
-            tooltip = layerable.getName();
-        return tooltip;
-    }
-    
-    /*
-    * This method takes a String of text and simulates word wrapping
-     * by applying HTML code <BR> after a defined line length. It
-     * will check to make sure that we are not in the middle of a word
-     * before breaking the line.
-     */ 
-    public static String SplitString(String string) {
-
-        StringBuffer buf = new StringBuffer();
-        String tempString = string;
-
-        if (string != null) {
-
-            while (tempString.length() > 190) {
-                String block = tempString.substring(0, 400);
-                int index = block.lastIndexOf(' ');
-                if (index < 0) {
-                    index = tempString.indexOf(' ');
-                }
-                if (index >= 0) {
-                    buf.append(tempString.substring(0, index) + "<BR>");
-                }
-                tempString = tempString.substring(index + 1);
-            }
-        } else {
-            tempString = " ";
-        }
-        buf.append(tempString);
-        return buf.toString();
-
-    }
-    
     @Override
     // [ede 11.2012] this is necessary for comboboxes with transparent bg, like
     // in
