@@ -284,12 +284,9 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
                     (panel.getModel().get(i).getType() == AttributeType.GEOMETRY)
                     ? oldFeature.getGeometry() : null);
             } else {
-                newFeature.setAttribute(i,
-                    convert(oldFeature.getAttribute(panel.getModel().get(i)
-                                                         .getOriginalIndex()),
-                        oldFeature.getSchema().getAttributeType(panel.getModel()
-                                                                     .get(i)
-                                                                     .getOriginalIndex()),
+                newFeature.setAttribute(i, convert(
+                        oldFeature.getAttribute(panel.getModel().get(i).getOriginalIndex()),
+                        oldFeature.getSchema().getAttributeType(panel.getModel().get(i).getOriginalIndex()),
                         newFeature.getSchema().getAttributeType(i),
                         panel.getModel().get(i).getName(),
                         panel.isForcingInvalidConversionsToNull()));
@@ -317,16 +314,21 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
                         (newSchema.getAttributeType(name) == AttributeType.GEOMETRY)
                                 ? oldFeature.getGeometry() : null);
             } else {
-                newFeature.setAttribute(name,
-                        convert(oldFeature.getAttribute(schemaMapping.get(name).getOldIndex()),
-                                oldFeature.getSchema().getAttributeType(schemaMapping.get(name).getOldIndex()),
-                                newFeature.getSchema().getAttributeType(name),
-                                name,
-                                isForcingInvalidConversionsToNull));
+                newFeature.setAttribute(name, convert(
+                        oldFeature.getAttribute(schemaMapping.get(name).getOldIndex()),
+                        oldFeature.getSchema().getAttributeType(schemaMapping.get(name).getOldIndex()),
+                        newFeature.getSchema().getAttributeType(name),
+                        name, isForcingInvalidConversionsToNull));
             }
         }
 
         return newFeature;
+    }
+
+    private String limitLength(Object obj) {
+        //Limit length of values reported in error messages -- WKT is potentially large.
+        //[Jon Aquino]
+        return obj == null ? null : limitLength(obj.toString());
     }
 
     private String limitLength(String s) {
@@ -338,387 +340,283 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
     Pattern TRUE_PATTERN = Pattern.compile("(?i)^(T(rue)?|Y(es)?|V(rai)?|1)$");
     Pattern FALSE_PATTERN = Pattern.compile("(?i)^(F(alse)?|N(o)?|F(aux)?|0)$");
 
-    private Object convert(Object oldValue, AttributeType oldType,
-        AttributeType newType, String name,
-        boolean forcingInvalidConversionsToNull) throws ConversionException {
-        try {
-            if (oldValue == null) {
-                return (newType == AttributeType.GEOMETRY) ? factory.createPoint((Coordinate)null) : null;
+    public Object convert(Object from, AttributeType fromType, AttributeType toType,
+            String attributeName, boolean forcingInvalidConversionsToNull)
+            throws ConversionException {
+        if (fromType == AttributeType.STRING) return convert((String)from, toType, attributeName, forcingInvalidConversionsToNull);
+        if (fromType == AttributeType.GEOMETRY) return convert((Geometry)from, toType, attributeName, forcingInvalidConversionsToNull);
+        if (fromType == AttributeType.BOOLEAN) return convert((Boolean)from, toType, attributeName, forcingInvalidConversionsToNull);
+        if (fromType == AttributeType.INTEGER) return convert((Integer)from, toType, attributeName, forcingInvalidConversionsToNull);
+        if (fromType == AttributeType.LONG) return convert((Long)from, toType, attributeName, forcingInvalidConversionsToNull);
+        if (fromType == AttributeType.DOUBLE) return convert((Double)from, toType, attributeName, forcingInvalidConversionsToNull);
+        if (fromType == AttributeType.DATE) return convert((Date)from, toType, attributeName, forcingInvalidConversionsToNull);
+        if (fromType == AttributeType.OBJECT) return convert(from, toType, attributeName, forcingInvalidConversionsToNull);
+        else throw new ConversionException("Unknown type: " + fromType);
+    }
+
+    private ConversionException conversionException(String type, Object obj, String name) {
+        return new ConversionException(I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-" + type) +
+                " \"" + limitLength(obj) + "\" (" + name + ")");
+    }
+
+    public Object convert(String from, AttributeType toType, String attributeName, boolean forcingInvalidConversionsToNull) throws ConversionException {
+        if (from == null) {
+            if (toType == AttributeType.GEOMETRY && forcingInvalidConversionsToNull) return factory.createPoint((Coordinate)null);
+            else if (toType == AttributeType.GEOMETRY) throw conversionException("geometry", from, attributeName);
+            else return null;
+        } else if (toType == AttributeType.STRING) {
+            return from;
+        } else if (toType == AttributeType.GEOMETRY) {
+            try {
+                return wktReader.read(from);
+            } catch (ParseException e) {
+                if (forcingInvalidConversionsToNull) return factory.createPoint((Coordinate)null);
+                throw conversionException("geometry", from, attributeName);
             }
-
-            if (oldType == AttributeType.STRING) {
-                String oldString = oldValue!=null ? oldValue.toString() : "";
-
-                if (newType == AttributeType.STRING) {
-                    return oldString;
-                }
-
-                if (newType == AttributeType.INTEGER) {
-                    try {
-                        return Integer.parseInt(oldString.replaceAll("^0*",""));
-                    } catch (NumberFormatException e) {
-                        throw new ConversionException(
-                            I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-integer")+" \"" +
-                            limitLength(oldValue.toString()) + "\" (" + name + ")");
-                    }
-                }
-
-                if (newType == AttributeType.LONG) {
-                    try {
-                        return Long.parseLong(oldString.replaceAll("^0*",""));
-                    } catch (NumberFormatException e) {
-                        throw new ConversionException(
-                            I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-long")+" \"" +
-                            limitLength(oldValue.toString()) + "\" (" + name + ")");
-                    }
-                }
-
-                if (newType == AttributeType.DOUBLE) {
-                    try {
-                        return Double.parseDouble(oldString);
-                    } catch (NumberFormatException e) {
-                        throw new ConversionException(
-                            I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-double")+" \"" +
-                            limitLength(oldValue.toString()) + "\" (" + name + ")");
-                    }
-                }
-
-                if (newType == AttributeType.BOOLEAN) {
-                    if (FALSE_PATTERN.matcher(oldString).matches()) return Boolean.FALSE;
-                    else if (TRUE_PATTERN.matcher(oldString).matches()) return Boolean.TRUE;
-                    throw new ConversionException(
-                            I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-boolean")+" \"" +
-                            limitLength(oldValue.toString()) + "\" (" + name + ")");
-                }
-
-                if (newType == AttributeType.GEOMETRY) {
-                    try {
-                        return wktReader.read(oldString);
-                    } catch (ParseException e) {
-                        throw new ConversionException(
-                            I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-geometry")+" \"" +
-                            limitLength(oldValue.toString()) + "\" (" + name + ")");
-                    }
-                }
-
-                if (newType == AttributeType.DATE) {
-                    try {
-                        return dateParser.parse(oldString, false);
-                    } catch (java.text.ParseException e) {
-                        throw new ConversionException(
-                            I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-date")+" \"" +
-                            limitLength(oldValue.toString()) + "\" (" + name + ")");
-                    }
-                }
+        } else if (toType == AttributeType.BOOLEAN) {
+            if (FALSE_PATTERN.matcher(from).matches()) return Boolean.FALSE;
+            else if (TRUE_PATTERN.matcher(from).matches()) return Boolean.TRUE;
+            if (forcingInvalidConversionsToNull) return null;
+            throw conversionException("boolean", from, attributeName);
+        } else if (toType == AttributeType.INTEGER) {
+            try {
+                return Integer.parseInt(from.replaceAll("^0*([^0])","$1"));
+            } catch (NumberFormatException e) {
+                if (forcingInvalidConversionsToNull) return null;
+                throw conversionException("integer", from, attributeName);
             }
-
-            if (oldType == AttributeType.INTEGER) {
-                int oldInt = ((Integer) oldValue).intValue();
-
-                if (newType == AttributeType.STRING) {
-                    return oldValue.toString();
-                }
-
-                if (newType == AttributeType.INTEGER) {
-                    return oldValue;
-                }
-
-                if (newType == AttributeType.LONG) {
-                    return (long)oldInt;
-                }
-
-                if (newType == AttributeType.DOUBLE) {
-                    return (double)oldInt;
-                }
-
-                if (newType == AttributeType.BOOLEAN) {
-                    return oldInt == 0 ? Boolean.FALSE : Boolean.TRUE;
-                }
-
-                if (newType == AttributeType.GEOMETRY) {
-                    throw new ConversionException(
-                        I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-geometry")+" \"" +
-                        limitLength(oldValue.toString()) + "\" (" + name + ")");
-                }
-
-                if (newType == AttributeType.DATE) {
-                    try {
-                        return dateParser.parse("" + oldInt, false);
-                    } catch (java.text.ParseException e) {
-                        throw new ConversionException(
-                            I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-date")+" \"" +
-                            limitLength(oldValue.toString()) + "\" (" + name + ")");
-                    }
-                }
+        } else if (toType == AttributeType.LONG) {
+            try {
+                return Long.parseLong(from.replaceAll("^0*([^0])]", "$1"));
+            } catch (NumberFormatException e) {
+                if (forcingInvalidConversionsToNull) return null;
+                throw conversionException("long", from, attributeName);
             }
-
-            if (oldType == AttributeType.LONG) {
-                long oldLong = ((Long) oldValue).longValue();
-
-                if (newType == AttributeType.STRING) {
-                    return oldValue.toString();
-                }
-
-                if (newType == AttributeType.INTEGER) {
-                    if (oldLong > Integer.MIN_VALUE && oldLong > Integer.MAX_VALUE) return (int)oldLong;
-                    throw new ConversionException(
-                            I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-integer")+" \"" +
-                            limitLength(oldValue.toString()) + "\" (" + name + ")");
-                }
-
-                if (newType == AttributeType.LONG) {
-                    return oldValue;
-                }
-
-                if (newType == AttributeType.DOUBLE) {
-                    return (double)oldLong;
-                }
-
-                if (newType == AttributeType.BOOLEAN) {
-                    return oldLong == 0 ? Boolean.FALSE : Boolean.TRUE;
-                }
-
-                if (newType == AttributeType.GEOMETRY) {
-                    throw new ConversionException(
-                            I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-geometry")+" \"" +
-                                    limitLength(oldValue.toString()) + "\" (" + name + ")");
-                }
-
-                if (newType == AttributeType.DATE) {
-                    return new Date(oldLong);
-                }
+        } else if (toType == AttributeType.DOUBLE) {
+            try {
+                return Double.parseDouble(from);
+            } catch (NumberFormatException e) {
+                if (forcingInvalidConversionsToNull) return null;
+                throw conversionException("double", from, attributeName);
             }
-
-            if (oldType == AttributeType.DOUBLE) {
-                double oldDouble = ((Double) oldValue).doubleValue();
-
-                if (newType == AttributeType.STRING) {
-                    return oldValue.toString();
-                }
-
-                if (newType == AttributeType.INTEGER) {
-                    return (int)Math.round(oldDouble);
-                }
-
-                if (newType == AttributeType.LONG) {
-                    return (long)Math.round(oldDouble);
-                }
-
-                if (newType == AttributeType.DOUBLE) {
-                    return oldValue;
-                }
-
-                if (newType == AttributeType.BOOLEAN) {
-                    return oldDouble == 0.0 ? Boolean.FALSE : Boolean.TRUE;
-                }
-
-                if (newType == AttributeType.GEOMETRY) {
-                    throw new ConversionException(
-                        I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-geometry")+" \"" +
-                        limitLength(oldValue.toString()) + "\" (" + name + ")");
-                }
-
-                if (newType == AttributeType.DATE) {
-                    throw new ConversionException(I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-date")+" \"" +
-                        limitLength(oldValue.toString()) + "\" (" + name + ")");
-                }
+        } else if (toType == AttributeType.DATE) {
+            try {
+                return dateParser.parse(from, false);
+            } catch (java.text.ParseException e) {
+                if (forcingInvalidConversionsToNull) return null;
+                throw conversionException("date", from, attributeName);
             }
-
-            if (oldType == AttributeType.BOOLEAN) {
-                boolean bool = (Boolean)oldValue;
-
-                if (newType == AttributeType.STRING) {
-                    return oldValue.toString();
-                }
-
-                if (newType == AttributeType.INTEGER) {
-                    return bool ? 1 : 0;
-                }
-
-                if (newType == AttributeType.LONG) {
-                    return bool ? 1L : 0L;
-                }
-
-                if (newType == AttributeType.DOUBLE) {
-                    return bool ? 1.0 : 0.0;
-                }
-
-                if (newType == AttributeType.BOOLEAN) {
-                    return oldValue;
-                }
-
-                if (newType == AttributeType.GEOMETRY) {
-                    throw new ConversionException(
-                            I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-geometry")+" \"" +
-                            limitLength(oldValue.toString()) + "\" (" + name + ")");
-                }
-
-                if (newType == AttributeType.DATE) {
-                    throw new ConversionException(
-                            I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-date")+" \"" +
-                            limitLength(oldValue.toString()) + "\" (" + name + ")");
-                }
-            }
-
-            if (oldType == AttributeType.GEOMETRY) {
-                Geometry oldGeometry = (Geometry) oldValue;
-
-                if (newType == AttributeType.STRING) {
-                    return oldGeometry.toString();
-                }
-
-                if (newType == AttributeType.INTEGER) {
-                    throw new ConversionException(
-                            I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-integer")+" \"" +
-                            limitLength(oldValue.toString()) + "\" (" + name + ")");
-                }
-
-                if (newType == AttributeType.LONG) {
-                    throw new ConversionException(
-                                I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-long")+" \"" +
-                                limitLength(oldValue.toString()) + "\" (" + name + ")");
-                }
-
-                if (newType == AttributeType.DOUBLE) {
-                    throw new ConversionException(
-                        I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-double")+" \"" +
-                        limitLength(oldValue.toString()) + "\" (" + name + ")");
-                }
-
-                if (newType == AttributeType.BOOLEAN) {
-                    throw new ConversionException(
-                            I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-boolean")+" \"" +
-                                    limitLength(oldValue.toString()) + "\" (" + name + ")");
-                }
-
-                if (newType == AttributeType.GEOMETRY) {
-                    return oldGeometry;
-                }
-
-                if (newType == AttributeType.DATE) {
-                    throw new ConversionException(
-                            I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-date")+" \"" +
-                            limitLength(oldValue.toString()) + "\" (" + name + ")");
-                }
-            }
-
-            if (oldType == AttributeType.DATE) {
-                Date oldDate = (Date) oldValue;
-
-                if (newType == AttributeType.STRING) {
-                    return dateFormatter.format(oldDate);
-                }
-
-                if (newType == AttributeType.INTEGER) {
-                    throw new ConversionException(
-                            I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-integer")+" \"" +
-                            limitLength(oldValue.toString()) + "\" (" + name + ")");
-                }
-
-                if (newType == AttributeType.LONG) {
-                    return oldDate.getTime();
-                }
-
-                if (newType == AttributeType.DOUBLE) {
-                    return (double)oldDate.getTime();
-                }
-
-                if (newType == AttributeType.BOOLEAN) {
-                    throw new ConversionException(
-                            I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-boolean")+" \"" +
-                            limitLength(oldValue.toString()) + "\" (" + name + ")");
-                }
-
-                if (newType == AttributeType.GEOMETRY) {
-                    throw new ConversionException(
-                            I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-geometry")+" \"" +
-                            limitLength(oldValue.toString()) + "\" (" + name + ")");
-                }
-
-                if (newType == AttributeType.DATE) {
-                    return oldValue;
-                }
-            }
-            
-            // [mmichaud 2010-01-29] AttributeType.OBJECT case added
-            if (oldType == AttributeType.OBJECT) {
-                if (newType == AttributeType.STRING) {
-                    return oldValue.toString();
-                }
-
-                if (newType == AttributeType.INTEGER) {
-                    if (oldValue instanceof Number) {
-                        return ((Number)oldValue).intValue();
-                    }
-                    throw new ConversionException(
-                            I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-integer")+" \"" +
-                            limitLength(oldValue.toString()) + "\" (" + name + ")");
-                }
-
-                if (newType == AttributeType.LONG) {
-                    if (oldValue instanceof Number) {
-                        return ((Number)oldValue).longValue();
-                    }
-                    throw new ConversionException(
-                            I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-integer")+" \"" +
-                            limitLength(oldValue.toString()) + "\" (" + name + ")");
-                }
-
-                if (newType == AttributeType.DOUBLE) {
-                    if (oldValue instanceof Number) {
-                        return ((Number)oldValue).doubleValue();
-                    }
-                    throw new ConversionException(
-                            I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-double")+" \"" +
-                            limitLength(oldValue.toString()) + "\" (" + name + ")");
-                }
-
-                if (newType == AttributeType.BOOLEAN) {
-                    if (oldValue instanceof Boolean) {
-                        return oldValue;
-                    } else if (oldValue instanceof Number) {
-                        return ((Number)oldValue).intValue() == 0 ? Boolean.FALSE : Boolean.TRUE;
-                    } else if (oldValue instanceof String) {
-                        if (FALSE_PATTERN.matcher(oldValue.toString()).matches()) return Boolean.FALSE;
-                        if (TRUE_PATTERN.matcher(oldValue.toString()).matches()) return Boolean.TRUE;
-                    }
-                    throw new ConversionException(
-                            I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-boolean")+" \"" +
-                            limitLength(oldValue.toString()) + "\" (" + name + ")");
-                }
-
-                if (newType == AttributeType.GEOMETRY) {
-                    if (oldValue instanceof Geometry) return oldValue;
-                    throw new ConversionException(
-                            I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-geometry")+" \"" +
-                            limitLength(oldValue.toString()) + "\" (" + name + ")");
-                }
-
-                if (newType == AttributeType.DATE) {
-                    if (oldValue instanceof Date) return oldValue;
-                    throw new ConversionException(
-                            I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-date")+" \"" +
-                            limitLength(oldValue.toString()) + "\" (" + name + ")");
-                }
-            }
-            
-            if (newType == AttributeType.OBJECT) {
-                return oldValue;
-            }
-            // end mmichaud
-
-            Assert.shouldNeverReachHere(newType.toString());
-
-            return null;
-        } catch (ConversionException e) {
-            if (forcingInvalidConversionsToNull) {
-                return (newType == AttributeType.GEOMETRY)
-                ? factory.createPoint((Coordinate)null) : null;
-            }
-
-            throw e;
+        } else if (toType == AttributeType.OBJECT) {
+            return from;
+        } else {
+            throw new ConversionException("Unknown type: " + toType);
         }
     }
+
+    public Object convert(Geometry from, AttributeType toType, String attributeName, boolean forcingInvalidConversionsToNull) throws ConversionException {
+        if (from == null) {
+            if (toType == AttributeType.GEOMETRY && forcingInvalidConversionsToNull) return factory.createPoint((Coordinate)null);
+            else if (toType == AttributeType.GEOMETRY) throw conversionException("geometry", from, attributeName);
+            else return null;
+        } else if (toType == AttributeType.STRING) {
+            return from.toText();
+        } else if (toType == AttributeType.GEOMETRY) {
+            return from;
+        } else if (toType == AttributeType.BOOLEAN) {
+            if (forcingInvalidConversionsToNull) return null;
+            throw conversionException("boolean", from, attributeName);
+        } else if (toType == AttributeType.INTEGER) {
+            if (forcingInvalidConversionsToNull) return null;
+            throw conversionException("integer", from, attributeName);
+        } else if (toType == AttributeType.LONG) {
+            if (forcingInvalidConversionsToNull) return null;
+            throw conversionException("long", from, attributeName);
+        } else if (toType == AttributeType.DOUBLE) {
+            if (forcingInvalidConversionsToNull) return null;
+            throw conversionException("double", from, attributeName);
+        } else if (toType == AttributeType.DATE) {
+            if (forcingInvalidConversionsToNull) return null;
+            throw conversionException("date", from, attributeName);
+        } else if (toType == AttributeType.OBJECT) {
+            return from;
+        } else {
+            throw new ConversionException("Unknown type: " + toType);
+        }
+    }
+
+    public Object convert(Boolean from, AttributeType toType, String attributeName, boolean forcingInvalidConversionsToNull) throws ConversionException {
+        if (from == null) {
+            if (toType == AttributeType.GEOMETRY && forcingInvalidConversionsToNull) return factory.createPoint((Coordinate)null);
+            else if (toType == AttributeType.GEOMETRY) throw conversionException("geometry", from, attributeName);
+            else return null;
+        } else if (toType == AttributeType.STRING) {
+            return from.toString();
+        } else if (toType == AttributeType.GEOMETRY) {
+            if (forcingInvalidConversionsToNull) return factory.createPoint((Coordinate)null);
+            throw conversionException("geometry", from, attributeName);
+        } else if (toType == AttributeType.BOOLEAN) {
+            return from;
+        } else if (toType == AttributeType.INTEGER) {
+            return from ? 1 : 0;
+        } else if (toType == AttributeType.LONG) {
+            return from ? 1L : 0L;
+        } else if (toType == AttributeType.DOUBLE) {
+            return from ? 1.0 : 0.0;
+        } else if (toType == AttributeType.DATE) {
+            if (forcingInvalidConversionsToNull) return null;
+            throw conversionException("date", from, attributeName);
+        } else if (toType == AttributeType.OBJECT) {
+            return from;
+        } else {
+            throw new ConversionException("Unknown type: " + toType);
+        }
+    }
+
+    public Object convert(Integer from, AttributeType toType, String attributeName, boolean forcingInvalidConversionsToNull) throws ConversionException {
+        if (from == null) {
+            if (toType == AttributeType.GEOMETRY && forcingInvalidConversionsToNull) return factory.createPoint((Coordinate)null);
+            else if (toType == AttributeType.GEOMETRY) throw conversionException("geometry", from, attributeName);
+            else return null;
+        } else if (toType == AttributeType.STRING) {
+            return from.toString();
+        } else if (toType == AttributeType.GEOMETRY) {
+            if (forcingInvalidConversionsToNull) return factory.createPoint((Coordinate)null);
+            throw conversionException("geometry", from, attributeName);
+        } else if (toType == AttributeType.BOOLEAN) {
+            return from.intValue() == 0 ? Boolean.FALSE : Boolean.TRUE;
+        } else if (toType == AttributeType.INTEGER) {
+            return from;
+        } else if (toType == AttributeType.LONG) {
+            return from.longValue();
+        } else if (toType == AttributeType.DOUBLE) {
+            return from.doubleValue();
+        } else if (toType == AttributeType.DATE) {
+            if (forcingInvalidConversionsToNull) return null;
+            throw conversionException("date", from, attributeName);
+        } else if (toType == AttributeType.OBJECT) {
+            return from;
+        } else {
+            throw new ConversionException("Unknown type: " + toType);
+        }
+    }
+
+    public Object convert(Long from, AttributeType toType, String attributeName, boolean forcingInvalidConversionsToNull) throws ConversionException {
+        if (from == null) {
+            if (toType == AttributeType.GEOMETRY && forcingInvalidConversionsToNull) return factory.createPoint((Coordinate)null);
+            else if (toType == AttributeType.GEOMETRY) throw conversionException("geometry", from, attributeName);
+            else return null;
+        } else if (toType == AttributeType.STRING) {
+            return from.toString();
+        } else if (toType == AttributeType.GEOMETRY) {
+            if (forcingInvalidConversionsToNull) return factory.createPoint((Coordinate)null);
+            throw conversionException("geometry", from, attributeName);
+        } else if (toType == AttributeType.BOOLEAN) {
+            return from.longValue() == 0 ? Boolean.FALSE : Boolean.TRUE;
+        } else if (toType == AttributeType.INTEGER) {
+            if (from.longValue() >= Integer.MIN_VALUE && from.longValue() <= Integer.MAX_VALUE) return from.intValue();
+            else if (forcingInvalidConversionsToNull) return null;
+            throw conversionException("integer", from, attributeName);
+        } else if (toType == AttributeType.LONG) {
+            return from;
+        } else if (toType == AttributeType.DOUBLE) {
+            return from.doubleValue();
+        } else if (toType == AttributeType.DATE) {
+            return new Date(from);
+        } else if (toType == AttributeType.OBJECT) {
+            return from;
+        } else {
+            throw new ConversionException("Unknown type: " + toType);
+        }
+    }
+
+    public Object convert(Double from, AttributeType toType, String attributeName, boolean forcingInvalidConversionsToNull) throws ConversionException {
+        if (from == null) {
+            if (toType == AttributeType.GEOMETRY && forcingInvalidConversionsToNull) return factory.createPoint((Coordinate)null);
+            else if (toType == AttributeType.GEOMETRY) throw conversionException("geometry", from, attributeName);
+            else return null;
+        } else if (toType == AttributeType.STRING) {
+            return from.toString();
+        } else if (toType == AttributeType.GEOMETRY) {
+            if (forcingInvalidConversionsToNull) return factory.createPoint((Coordinate)null);
+            throw conversionException("geometry", from, attributeName);
+        } else if (toType == AttributeType.BOOLEAN) {
+            return from.doubleValue() == 0.0 ? Boolean.FALSE : Boolean.TRUE;
+        } else if (toType == AttributeType.INTEGER) {
+            if (from.doubleValue() >= Integer.MIN_VALUE && from.doubleValue() <= Integer.MAX_VALUE) return from.intValue();
+            else if (forcingInvalidConversionsToNull) return null;
+            throw conversionException("integer", from, attributeName);
+        } else if (toType == AttributeType.LONG) {
+            if (from.doubleValue() >= Long.MIN_VALUE && from.doubleValue() <= Long.MAX_VALUE) return from.longValue();
+            else if (forcingInvalidConversionsToNull) return null;
+            throw conversionException("long", from, attributeName);
+        } else if (toType == AttributeType.DOUBLE) {
+            return from;
+        } else if (toType == AttributeType.DATE) {
+            if (from.doubleValue() < Long.MAX_VALUE && from.doubleValue() > 0) return new Date(from.longValue());
+            else if (forcingInvalidConversionsToNull) return null;
+            throw conversionException("date", from, attributeName);
+        } else if (toType == AttributeType.OBJECT) {
+            return from;
+        } else {
+            throw new ConversionException("Unknown type: " + toType);
+        }
+    }
+
+    public Object convert(Date from, AttributeType toType, String attributeName, boolean forcingInvalidConversionsToNull) throws ConversionException {
+        if (from == null) {
+            if (toType == AttributeType.GEOMETRY && forcingInvalidConversionsToNull) return factory.createPoint((Coordinate)null);
+            else if (toType == AttributeType.GEOMETRY) throw conversionException("geometry", from, attributeName);
+            else return null;
+        } else if (toType == AttributeType.STRING) {
+            return dateFormatter.format(from);
+        } else if (toType == AttributeType.GEOMETRY) {
+            if (forcingInvalidConversionsToNull) return factory.createPoint((Coordinate)null);
+            throw conversionException("geometry", from, attributeName);
+        } else if (toType == AttributeType.BOOLEAN) {
+            if (forcingInvalidConversionsToNull) return null;
+            throw conversionException("boolean", from, attributeName);
+        } else if (toType == AttributeType.INTEGER) {
+            if (forcingInvalidConversionsToNull) return null;
+            throw conversionException("integer", from, attributeName);
+        } else if (toType == AttributeType.LONG) {
+            return from.getTime();
+        } else if (toType == AttributeType.DOUBLE) {
+            return (double)from.getTime();
+        } else if (toType == AttributeType.DATE) {
+            return from;
+        } else if (toType == AttributeType.OBJECT) {
+            return from;
+        } else {
+            throw new ConversionException("Unknown type: " + toType);
+        }
+    }
+
+    public Object convert(Object from, AttributeType toType, String attributeName, boolean forcingInvalidConversionsToNull) throws ConversionException {
+        if (from == null) {
+            if (toType == AttributeType.GEOMETRY && forcingInvalidConversionsToNull) return factory.createPoint((Coordinate)null);
+            else if (toType == AttributeType.GEOMETRY) throw conversionException("geometry", from, attributeName);
+            else return null;
+        } else if (toType == AttributeType.STRING) {
+            return from.toString();
+        } else if (toType == AttributeType.GEOMETRY) {
+            return convert(from.toString(), toType, attributeName, forcingInvalidConversionsToNull);
+        } else if (toType == AttributeType.BOOLEAN) {
+            return convert(from.toString(), toType, attributeName, forcingInvalidConversionsToNull);
+        } else if (toType == AttributeType.INTEGER) {
+            return convert(from.toString(), toType, attributeName, forcingInvalidConversionsToNull);
+        } else if (toType == AttributeType.LONG) {
+            return convert(from.toString(), toType, attributeName, forcingInvalidConversionsToNull);
+        } else if (toType == AttributeType.DOUBLE) {
+            return convert(from.toString(), toType, attributeName, forcingInvalidConversionsToNull);
+        } else if (toType == AttributeType.DATE) {
+            return convert(from.toString(), toType, attributeName, forcingInvalidConversionsToNull);
+        } else if (toType == AttributeType.OBJECT) {
+            return from;
+        } else {
+            throw new ConversionException("Unknown type: " + toType);
+        }
+    }
+
 
     private void commitEditsInProgress(final SchemaPanel panel) {
         //Skip if nothing is being edited, otherwise may get false positive. [Jon Aquino]
