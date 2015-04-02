@@ -35,10 +35,14 @@ package com.vividsolutions.jump.io;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.LineNumberReader;
+import java.io.Reader;
 import java.util.ArrayList;
 
-import org.xml.sax.*;
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.vividsolutions.jump.feature.AttributeType;
@@ -147,6 +151,15 @@ public class GMLInputTemplate extends DefaultHandler {
     }
 
     /**
+     * previous method to parse a file
+     * 
+     * @deprecated use load(InputStream is, String readerName) instead
+     */
+    public void load( Reader r ) throws ParseException, IOException{
+      load(r, "Unknown Stream");
+    }
+    
+    /**
      * Helper function - load a GMLInputTemplate file with the stream name "Unknown Stream"
      */
     public void load(InputStream is) throws ParseException, IOException {
@@ -159,13 +172,18 @@ public class GMLInputTemplate extends DefaultHandler {
      *@param is inputStream where to read the XML file from
      *@param readerName name of the stream for error reporting
      */
-    public void load(InputStream is, String readerName)
+    public void load(Object o, String readerName)
         throws ParseException, IOException {
         //myReader = new LineNumberReader(r);
         streamName = readerName; // for error reporting
 
         try {
-            xr.parse(new InputSource(is));
+          if (o instanceof Reader)
+            xr.parse(new InputSource((Reader)o));
+          else if (o instanceof InputStream)
+            xr.parse(new InputSource((InputStream)o));
+          else
+            new IOException("neither InputStream or Reader given");
         } catch (EndOfParseException e) {
             // This is not really an error
         } catch (SAXParseException e) {

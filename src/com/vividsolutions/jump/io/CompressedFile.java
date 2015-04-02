@@ -38,7 +38,10 @@
 
 package com.vividsolutions.jump.io;
 
+import static com.vividsolutions.jump.util.FileUtil.close;
+
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -46,16 +49,23 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.archivers.ArchiveInputStream;
+import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
-import org.apache.commons.compress.archivers.sevenz.SevenZFileGiveStream;
+import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
-import org.apache.commons.compress.archivers.zip.ZipFile;
+import org.apache.commons.compress.compressors.CompressorException;
+import org.apache.commons.compress.compressors.CompressorInputStream;
+import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
@@ -109,80 +119,67 @@ public class CompressedFile {
     return null;
   }
 
-  //
-  // /**
-  // * Utility file open function - handles compressed and un-compressed files.
-  // *
-  // * @param compressedFile
-  // * name of file to open.
-  // * @param extension
-  // * look for file with this extension in zipfile.
-  // *
-  // * <p>
-  // * compressedFile = null, then opens a FileInputStream on
-  // * COMPRESSEDFILE (!) should be file.shp or such
-  // * </p>
-  // *
-  // * <p>
-  // * compressedFile ends in ".zip" - opens the compressed zipfile and
-  // * lookes for first file with extension 'extension'
-  // * </p>
-  // *
-  // * <p>
-  // * compressedFile ends in ".gz" - opens the compressed .gz file.
-  // * </p>
-  // */
-  // static InputStream openFileExtension(String extension, String
-  // compressedFile)
-  // throws Exception {
-  // String compressed_extension;
-  // String inside_zip_extension;
-  //
-  // if ((compressedFile == null) || (compressedFile.length() == 0)) {
-  // throw new Exception("openFileExtension- no compressed file given.");
-  // }
-  //
-  // compressed_extension = compressedFile
-  // .substring(compressedFile.length() - 3);
-  //
-  // if (compressed_extension.compareToIgnoreCase(".gz") == 0) {
-  // // gz file -- easy
-  //
-  // // low-level reader
-  // InputStream IS_low = new FileInputStream(compressedFile);
-  //
-  // // high-level reader
-  // return (new java.util.zip.GZIPInputStream(IS_low));
-  // }
-  //
-  // if (compressed_extension.compareToIgnoreCase("zip") == 0) {
-  // // zip file
-  // InputStream IS_low = new FileInputStream(compressedFile);
-  // ZipInputStream fr_high = new ZipInputStream(IS_low);
-  //
-  // // need to find the correct file within the .zip file
-  // ZipEntry entry;
-  //
-  // entry = fr_high.getNextEntry();
-  //
-  // while (entry != null) {
-  // inside_zip_extension = entry.getName().substring(
-  // entry.getName().length() - extension.length());
-  //
-  // if (inside_zip_extension.compareToIgnoreCase(extension) == 0) {
-  // return (fr_high);
-  // }
-  //
-  // entry = fr_high.getNextEntry();
-  // }
-  //
-  // throw new Exception("couldnt find file with extension" + extension
-  // + " in compressed file " + compressedFile);
-  // }
-  //
-  // throw new Exception("couldnt determine compressed file type for file "
-  // + compressedFile + "- should end in .zip or .gz");
-  // }
+  public static List<URI> listEntries(File file) throws Exception {
+    List<URI> entries = new ArrayList<URI>();
+
+    // tar[.gz,.bz...] (un)compressed archive files
+    if (CompressedFile.isTar(file.getName())) {
+      InputStream is = CompressedFile.openFile(file.getAbsolutePath(), null);
+      TarArchiveEntry entry;
+      TarArchiveInputStream tis = new TarArchiveInputStream(is);
+      while ((entry = tis.getNextTarEntry()) != null) {
+        if (!entry.isDirectory()) {
+          URI entryUri = UriUtil.createZipUri(file, entry.getName());
+          entries.add(entryUri);
+        }
+      }
+      close(tis);
+      close(is);
+    }
+    
+    // 7zip compressed files
+    else if (CompressedFile.isSevenZ(file.getName())) {
+      // System.out.println(file.getName());
+      SevenZFile sevenZFile = new SevenZFile(file);
+      SevenZArchiveEntry entry;
+      while ((entry = sevenZFile.getNextEntry()) != null) {
+        if (!entry.isDirectory()) {
+          URI entryUri = UriUtil.createZipUri(file, entry.getName());
+          entries.add(entryUri);
+        }
+      }
+      close(sevenZFile);
+    }
+    
+    // all other archive files
+    else {
+
+      InputStream is = new BufferedInputStream(new FileInputStream(file));
+      
+      // try if we are a compressed tar
+      CompressorInputStream cis = null;
+      try {
+        cis = new CompressorStreamFactory().createCompressorInputStream(is);
+      } catch (CompressorException e) {
+      }
+      
+      ArchiveInputStream in = new ArchiveStreamFactory()
+          .createArchiveInputStream(cis != null ? cis : is);
+      ArchiveEntry entry;
+      while ((entry = in.getNextEntry()) != null) {
+        if (!entry.isDirectory() && in.canReadEntryData(entry)) {
+          URI entryUri = UriUtil.createZipUri(file, entry.getName());
+          entries.add(entryUri);
+        }
+      }
+      close(in);
+      close(cis);
+      close(is);
+    }
+
+    return entries;
+  }
+  
   
   public static InputStream openFile(String uri_string) throws URISyntaxException, IOException {
     return openFile(new URI(uri_string));
@@ -258,27 +255,52 @@ public class CompressedFile {
       return new XZCompressorInputStream(is, true);
     }
 
-    else if (compressedEntry != null && isZip(filePath)) {
+    // load into memory workaround until commons compress 7zip learns streaming again 
+    else if (compressedEntry != null && isSevenZ(filePath)) {
 
-      ZipFile zipFile = new ZipFile(filePath);
-      ZipArchiveEntry zipEntry = zipFile.getEntry(compressedEntry);
+      SevenZFile sevenZFile = new SevenZFile(new File(filePath));
+      SevenZArchiveEntry entry;
+      while ((entry = sevenZFile.getNextEntry()) != null) {
+        if (entry.getName().equals(compressedEntry)){
+          // works only for files with int max byte size ca. 2GB
+          byte[] content = new byte[(int) entry.getSize()];
+          sevenZFile.read(content);
+          return new ByteArrayInputStream(content);
+        }
+        close(sevenZFile);
 
-      if (zipEntry != null) 
-        return zipFile.getInputStream(zipEntry);
+      }
+      throw createArchiveFNFE(filePath, compressedEntry);
+    }
+    
+    // generic method for types w/o special needs (e.g. zip)
+    if (compressedEntry != null) {
+      InputStream is = new BufferedInputStream( new FileInputStream(filePath) );
+
+      // try if we are a compressed tar
+      CompressorInputStream cis = null;
+      try {
+        cis = new CompressorStreamFactory().createCompressorInputStream(is);
+      } catch (CompressorException e) {
+      }
+
+      ArchiveInputStream in;
+      try {
+        in = new ArchiveStreamFactory()
+            .createArchiveInputStream(cis != null ? cis : is);
+      } catch (ArchiveException e) {
+        throw new IOException(e);
+      }
+
+      ArchiveEntry entry;
+      while ((entry = in.getNextEntry()) != null) {
+        if (entry.getName().equals(compressedEntry))
+          return in;
+      }
 
       throw createArchiveFNFE(filePath, compressedEntry);
     }
     
-    else if (compressedEntry != null && isSevenZ(filePath)) {
-
-      SevenZFileGiveStream sevenZFile = new SevenZFileGiveStream(new File(filePath));
-      SevenZArchiveEntry entry;
-      while ((entry = sevenZFile.getNextEntry()) != null) {
-        if (entry.getName().equals(compressedEntry))
-          return sevenZFile.getCurrentEntryInputStream();
-      }
-      throw createArchiveFNFE(filePath, compressedEntry);
-    }
     // return plain stream if no compressedEntry
     else if (compressedEntry == null) {
       return new FileInputStream(filePath);
@@ -289,21 +311,26 @@ public class CompressedFile {
           + filePath + "' supposedly containing '"+compressedEntry+"'.");
     }
   }
-
-//  public static boolean isCompressed(String filePath) {
-//    return isZip(filePath) || isTar(filePath) || isGZip(filePath) || isBZip(filePath);
-//  }
+  
 
   public static boolean isCompressed(URI uri) {
     String filepath = UriUtil.getFilePath(uri);
     return hasCompressedFileExtension(filepath);
   }
-  
+
   public static boolean isArchive(URI uri) {
     String filepath = UriUtil.getFilePath(uri);
     return hasArchiveFileExtension(filepath);
   }
-  
+
+  public static boolean isCompressed(String filePath) {
+    return hasCompressedFileExtension(filePath);
+  }
+
+  public static boolean isArchive(String filePath) {
+    return hasArchiveFileExtension(filePath);
+  }
+
   public static boolean isZip(String filePath) {
     return filePath.matches(".*\\.(?i:zip)");
   }

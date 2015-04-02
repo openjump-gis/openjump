@@ -1,4 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
+
+2015-04-02 ede
+  * update commons-compress, xz libs
+  * unify archive listing, fix 7zip with new commons-compress version
+
 2015-03-31  Giuseppe Aruta (ma15569)  
 	* Layer tree tooltip is now configurable via "Configure tooltip" 
 	* in Option panel.  2 option: Original minimal JUMP/OpenJUMP tooltip 

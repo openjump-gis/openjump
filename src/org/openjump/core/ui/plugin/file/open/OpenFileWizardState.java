@@ -26,7 +26,9 @@
  ******************************************************************************/
 package org.openjump.core.ui.plugin.file.open;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -42,6 +44,9 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.ArchiveInputStream;
+import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -106,94 +111,30 @@ public class OpenFileWizardState {
     else {
       // Remove old entries in fileloadermap
       fileLoaderMap.clear();
-//      for (Iterator<Entry<URI, FileLayerLoader>> iterator = fileLoaderMap.entrySet()
-//        .iterator(); iterator.hasNext();) {
-//        Entry<URI, FileLayerLoader> entry = iterator.next();
-//        URI fileUri = entry.getKey();
-//        File file;
-
-//        if (fileUri.getScheme().equals("zip")) {
-//          file = UriUtil.getZipFile(fileUri);
-//        } else {
-//          file = new File(fileUri);
-//        }
-//        
-//        if (!fileSet.contains(file)) {
-//          FileLayerLoader loader = entry.getValue();
-//          fileLoaderFiles.get(loader);
-//          Set<URI> loaderFiles = fileLoaderFiles.get(loader);
-//          if (loaderFiles != null) {
-//            loaderFiles.remove(fileUri);
-//          }
-//          iterator.remove();
-//        }
-//      }
 
       // manually add compressed files here
       for (File file : files) {
-        // zip files
-        if (CompressedFile.isZip(file.getName())) {
+
+      // add all archive file's entries
+      if (CompressedFile.isArchive(file.toURI())) {
           try {
-            ZipFile zipFile = new ZipFile(file);
-            URI fileUri = file.toURI();
-            Enumeration entries = zipFile.getEntries();
-            while (entries.hasMoreElements()) {
-              ZipArchiveEntry entry = (ZipArchiveEntry)entries.nextElement();
-              if (!entry.isDirectory()) {
-                URI entryUri = UriUtil.createZipUri(file, entry.getName());
-                String entryExt = UriUtil.getFileExtension(entryUri);
-                //System.out.println(entryUri+"<->"+entryExt);
-                addFile(entryExt, entryUri);
-              }
+            List<URI> entries = CompressedFile.listEntries(file);
+            for (URI entryUri : entries) {
+              String entryExt = UriUtil.getFileExtension(entryUri);
+              addFile(entryExt, entryUri);
             }
           } catch (Exception e) {
             errorHandler.handleThrowable(e);
           }
         }
-        // tar[.gz,.bz...] (un)compressed archive files
-        else if (CompressedFile.isTar(file.getName())) {
-          try {
-            InputStream is = CompressedFile.openFile(file.getAbsolutePath(), null);
-            TarArchiveEntry entry;
-            TarArchiveInputStream tis = new TarArchiveInputStream(is);
-            while ((entry = tis.getNextTarEntry()) != null) {
-              if (!entry.isDirectory()) {
-                URI entryUri = UriUtil.createZipUri(file, entry.getName());
-
-                String entryExt = UriUtil.getFileExtension(entryUri);
-                addFile(entryExt, entryUri);
-              }
-            }
-            tis.close();
-          } catch (Exception e) {
-            errorHandler.handleThrowable(e);
-          }
-        }
-        // 7zip compressed files
-        else if (CompressedFile.isSevenZ(file.getName())) {
-          try {
-            //System.out.println(file.getName());
-            SevenZFile sevenZFile = new SevenZFile(file);
-            SevenZArchiveEntry entry;
-            while ((entry = sevenZFile.getNextEntry()) != null) {
-              if (!entry.isDirectory()) {
-                URI entryUri = UriUtil.createZipUri(file, entry.getName());
-
-                String entryExt = UriUtil.getFileExtension(entryUri);
-                addFile(entryExt, entryUri);
-              }
-            }
-            sevenZFile.close();
-          } catch (IOException e) {
-            errorHandler.handleThrowable(e);
-          }
-        }
+        
         // compressed files
         else if ( CompressedFile.hasCompressedFileExtension(file.getName()) ) {
           String[] parts = file.getName().split("\\.");
           if (parts.length>2)
             addFile(parts[parts.length-2], file.toURI());
         }
+        
         // anything else is a plain data file
         else {
           URI fileUri = file.toURI();
