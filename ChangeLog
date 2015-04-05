@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2015-04-05 ede
+  * PLUS: update kml driver to 0.2.4
+    - reenable loading of kmz files
+
 2015-04-05 mmichaud <m.michael.michaud@orange.fr>
   * Use long/boolean attribute types in jdbc converter
   * Recognize geometry type in more situations
