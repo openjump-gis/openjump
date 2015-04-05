@@ -270,7 +270,7 @@ public class ShapefileReader extends AbstractJUMPReader {
               return new DbfFile(srcFileName, charset);
         }
         // if we are in an archive that can hold multiple files compressedFname is defined and a String
-        else if (CompressedFile.hasArchiveFileExtension(srcFileName) && compressedFname instanceof String) {
+        else if (compressedFname instanceof String) {
             byte[] b = new byte[16000];
             int len;
             boolean keepGoing = true;

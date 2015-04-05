@@ -134,7 +134,6 @@ public class CompressedFile {
         }
       }
       close(tis);
-      close(is);
     }
     
     // 7zip compressed files
@@ -215,81 +214,110 @@ public class CompressedFile {
 
     System.out.println(filePath + " extract " + compressedEntry);
 
-    if (isTar(filePath)) {
-      InputStream is = new BufferedInputStream( new FileInputStream(filePath) );
-      if (filePath.toLowerCase().endsWith("gz"))
-        is = new GzipCompressorInputStream(is, true);
-      else if (filePath.matches("(?i).*bz2?"))
-        is = new BZip2CompressorInputStream(is, true);
-      else if (filePath.matches("(?i).*xz"))
-        is = new XZCompressorInputStream(is, true);
-      
-      TarArchiveInputStream tis = new TarArchiveInputStream(is);
-      if (compressedEntry == null)
-        return is;
-      
-      TarArchiveEntry entry;
-      while ((entry = tis.getNextTarEntry()) != null) {
-        if (entry.getName().equals(compressedEntry))
-          return tis;
-      }
-
-      throw createArchiveFNFE(filePath, compressedEntry);
-    }
-
-    else if (compressedEntry == null && isGZip(filePath)) {
-      // gz compressed file -- easy
-      InputStream is = new BufferedInputStream(new FileInputStream(filePath));
-      return new GzipCompressorInputStream(is,true);
-    }
+//    if (isTar(filePath)) {
+//      InputStream is = new BufferedInputStream( new FileInputStream(filePath) );
+//      if (filePath.toLowerCase().endsWith("gz"))
+//        is = new GzipCompressorInputStream(is, true);
+//      else if (filePath.matches("(?i).*bz2?"))
+//        is = new BZip2CompressorInputStream(is, true);
+//      else if (filePath.matches("(?i).*xz"))
+//        is = new XZCompressorInputStream(is, true);
+//      
+//      TarArchiveInputStream tis = new TarArchiveInputStream(is);
+//      if (compressedEntry == null)
+//        return is;
+//      
+//      TarArchiveEntry entry;
+//      while ((entry = tis.getNextTarEntry()) != null) {
+//        if (entry.getName().equals(compressedEntry))
+//          return tis;
+//      }
+//
+//      throw createArchiveFNFE(filePath, compressedEntry);
+//    }
+//
+//    else 
+//    if (compressedEntry == null && isGZip(filePath)) {
+//      // gz compressed file -- easy
+//      InputStream is = new BufferedInputStream(new FileInputStream(filePath));
+//      return new GzipCompressorInputStream(is,true);
+//    }
+//    
+//    else if (compressedEntry == null && isBZip(filePath)) {
+//      // bz compressed file -- easy
+//      InputStream is = new BufferedInputStream( new FileInputStream(filePath) );
+//      return new BZip2CompressorInputStream(is,true);
+//    }
+//
+//    else if (compressedEntry == null && isXZ(filePath)) {
+//      InputStream is = new BufferedInputStream( new FileInputStream(filePath) );
+//      return new XZCompressorInputStream(is, true);
+//    }
     
-    else if (compressedEntry == null && isBZip(filePath)) {
-      // bz compressed file -- easy
-      InputStream is = new BufferedInputStream( new FileInputStream(filePath) );
-      return new BZip2CompressorInputStream(is,true);
-      //return new org.itadaki.bzip2.BZip2InputStream(is, false);
-    }
+    // if no compressedEntry was given we are supposed to open a plain file
+    // return fileinputstream or compressorinputstream,
+    if (compressedEntry == null) {
+      InputStream bis = new BufferedInputStream(new FileInputStream(filePath));
 
-    else if (compressedEntry == null && isXZ(filePath)) {
-      InputStream is = new BufferedInputStream( new FileInputStream(filePath) );
-      return new XZCompressorInputStream(is, true);
+      // try if we are a plain compressed file
+      CompressorInputStream cis = null;
+      BufferedInputStream bcis = null;
+      try {
+        cis = new CompressorStreamFactory().createCompressorInputStream(bis);
+        bcis = new BufferedInputStream(cis);
+        return bcis;
+      } catch (CompressorException e) {
+        // ok, we are not ..lets return the plain fileinputstream
+        close(bcis);
+        close(cis);
+        return bis;
+      }
     }
 
     // load into memory workaround until commons compress 7zip learns streaming again 
     else if (compressedEntry != null && isSevenZ(filePath)) {
 
       SevenZFile sevenZFile = new SevenZFile(new File(filePath));
-      SevenZArchiveEntry entry;
-      while ((entry = sevenZFile.getNextEntry()) != null) {
-        if (entry.getName().equals(compressedEntry)){
-          // works only for files with int max byte size ca. 2GB
-          byte[] content = new byte[(int) entry.getSize()];
-          sevenZFile.read(content);
-          return new ByteArrayInputStream(content);
-        }
+      try {
+        SevenZArchiveEntry entry;
+        while ((entry = sevenZFile.getNextEntry()) != null) {
+          if (entry.getName().equals(compressedEntry)){
+            // works only for files with INT MAX byte size ca. 2GB
+            byte[] content = new byte[(int) entry.getSize()];
+            sevenZFile.read(content);
+            return new ByteArrayInputStream(content);
+          }
+        } 
+      } finally {
         close(sevenZFile);
-
       }
+
       throw createArchiveFNFE(filePath, compressedEntry);
     }
     
-    // generic method for types w/o special needs (e.g. zip)
-    if (compressedEntry != null) {
-      InputStream is = new BufferedInputStream( new FileInputStream(filePath) );
+    // generic method for archives w/o special needs (e.g. zip)
+    else {
+      // open the file as such, even it is compressed beforehand eg. tar.gz & such
+      InputStream bis = openFile(filePath, null); //new BufferedInputStream( new FileInputStream(filePath) );
 
-      // try if we are a compressed tar
-      CompressorInputStream cis = null;
-      try {
-        cis = new CompressorStreamFactory().createCompressorInputStream(is);
-      } catch (CompressorException e) {
-      }
+//      // try if we are a plain compressed file
+//      CompressorInputStream cis = null;
+//      BufferedInputStream bcis = null;
+//      try {
+//        cis = new CompressorStreamFactory().createCompressorInputStream(bis);
+//        bcis = new BufferedInputStream(cis);
+//      } catch (CompressorException e) {
+//      }
 
-      ArchiveInputStream in;
+      ArchiveInputStream in = null;
       try {
         in = new ArchiveStreamFactory()
-            .createArchiveInputStream(cis != null ? cis : is);
+            .createArchiveInputStream(/*bcis != null ? bcis :*/ bis);
       } catch (ArchiveException e) {
-        throw new IOException(e);
+          //close(bcis);
+          close(bis);
+          throw new IOException("Couldn't determine compressed file type for file '"
+            + filePath + "' supposedly containing '"+compressedEntry+"'.", e);
       }
 
       ArchiveEntry entry;
@@ -298,20 +326,12 @@ public class CompressedFile {
           return in;
       }
 
+      // make sure to close the inputstream on failure to find entry
+      close(in);
       throw createArchiveFNFE(filePath, compressedEntry);
     }
     
-    // return plain stream if no compressedEntry
-    else if (compressedEntry == null) {
-      return new FileInputStream(filePath);
-    }
-
-    else {
-      throw new IOException("Couldn't determine compressed file type for file '"
-          + filePath + "' supposedly containing '"+compressedEntry+"'.");
-    }
   }
-  
 
   public static boolean isCompressed(URI uri) {
     String filepath = UriUtil.getFilePath(uri);
