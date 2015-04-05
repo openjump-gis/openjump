@@ -341,8 +341,10 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
             pstmt.setBytes(1, PostGISQueryUtil.getByteArrayFromGeometry((Geometry)feature.getAttribute(attribute), srid, dim));
         }
         else if (type == AttributeType.INTEGER)  pstmt.setInt(1, feature.getInteger(attribute));
+        else if (type == AttributeType.LONG)     pstmt.setLong(1, (Long) feature.getAttribute(attribute));
         else if (type == AttributeType.DOUBLE)   pstmt.setDouble(1, feature.getDouble(attribute));
-        else if (type == AttributeType.DATE)     pstmt.setTimestamp(1, new Timestamp(((Date)feature.getAttribute(attribute)).getTime()));
+        else if (type == AttributeType.BOOLEAN)  pstmt.setBoolean(1, (Boolean) feature.getAttribute(attribute));
+        else if (type == AttributeType.DATE)     pstmt.setTimestamp(1, new Timestamp(((Date) feature.getAttribute(attribute)).getTime()));
         else if (type == AttributeType.OBJECT)   pstmt.setObject(1, feature.getAttribute(attribute));
         else throw new IllegalArgumentException(type + " is an unknown AttributeType !");
         LOG.debug(pstmt);
@@ -371,7 +373,9 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                 pstmt.setBytes(index++, PostGISQueryUtil.getByteArrayFromGeometry((Geometry)feature.getAttribute(i), srid, dim));
             }
             else if (type == AttributeType.INTEGER)  pstmt.setInt(index++, feature.getInteger(i));
+            else if (type == AttributeType.LONG)     pstmt.setLong(index++, (Long) feature.getAttribute(i));
             else if (type == AttributeType.DOUBLE)   pstmt.setDouble(index++, feature.getDouble(i));
+            else if (type == AttributeType.BOOLEAN)  pstmt.setBoolean(index++, (Boolean) feature.getAttribute(i));
             else if (type == AttributeType.DATE)     pstmt.setTimestamp(index++, new Timestamp(((Date)feature.getAttribute(i)).getTime()));
             else if (type == AttributeType.OBJECT)   {
                 if (feature.getAttribute(i) instanceof Geometry) {
