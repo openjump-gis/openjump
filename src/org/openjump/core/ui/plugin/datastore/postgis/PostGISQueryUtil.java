@@ -178,7 +178,9 @@ public class PostGISQueryUtil {
     public static String getSQLType(AttributeType type) {
         if (type == AttributeType.STRING)   return "varchar";
         if (type == AttributeType.INTEGER)  return "integer";
+        if (type == AttributeType.LONG)     return "bigint";
         if (type == AttributeType.DOUBLE)   return "double precision";
+        if (type == AttributeType.BOOLEAN)  return "boolean";
         if (type == AttributeType.DATE)     return "timestamp";
         if (type == AttributeType.OBJECT)   return "bytea";
         if (type == AttributeType.GEOMETRY) return "geometry";
@@ -190,46 +192,46 @@ public class PostGISQueryUtil {
      * Returns the OpenJUMP AttributeType matching this sql data type
      */
     public static AttributeType getAttributeType(int sqlType, String sqlName) {
-        if (sqlType == Types.BIGINT)     return AttributeType.OBJECT;
+        if (sqlType == Types.BIGINT)     return AttributeType.LONG;
         // PostGIS geometries are stored as OTHER (type=1111) not BINARY (type=-2)
         if (sqlType == Types.BINARY && 
             sqlName.toLowerCase().equals("geometry")) return AttributeType.GEOMETRY;
         else if (sqlType == Types.BINARY)             return AttributeType.OBJECT;
-        if (sqlType == Types.BIT)        return AttributeType.INTEGER;
-        if (sqlType == Types.BLOB)       return AttributeType.OBJECT;
-        if (sqlType == Types.BOOLEAN)    return AttributeType.INTEGER;
-        if (sqlType == Types.CHAR)       return AttributeType.STRING;
-        if (sqlType == Types.CLOB)       return AttributeType.STRING;
-        if (sqlType == Types.DATALINK)   return AttributeType.OBJECT;
-        if (sqlType == Types.DATE)       return AttributeType.DATE;
-        if (sqlType == Types.DECIMAL)    return AttributeType.DOUBLE;
-        if (sqlType == Types.DISTINCT)   return AttributeType.OBJECT;
-        if (sqlType == Types.DOUBLE)     return AttributeType.DOUBLE;
-        if (sqlType == Types.FLOAT)      return AttributeType.DOUBLE;
-        if (sqlType == Types.INTEGER)    return AttributeType.INTEGER;
+        if (sqlType == Types.BIT)           return AttributeType.BOOLEAN;
+        if (sqlType == Types.BLOB)          return AttributeType.OBJECT;
+        if (sqlType == Types.BOOLEAN)       return AttributeType.BOOLEAN;
+        if (sqlType == Types.CHAR)          return AttributeType.STRING;
+        if (sqlType == Types.CLOB)          return AttributeType.STRING;
+        if (sqlType == Types.DATALINK)      return AttributeType.OBJECT;
+        if (sqlType == Types.DATE)          return AttributeType.DATE;
+        if (sqlType == Types.DECIMAL)       return AttributeType.DOUBLE;
+        if (sqlType == Types.DISTINCT)      return AttributeType.OBJECT;
+        if (sqlType == Types.DOUBLE)        return AttributeType.DOUBLE;
+        if (sqlType == Types.FLOAT)         return AttributeType.DOUBLE;
+        if (sqlType == Types.INTEGER)       return AttributeType.INTEGER;
         if (sqlType == Types.JAVA_OBJECT)   return AttributeType.OBJECT;
         if (sqlType == Types.LONGNVARCHAR)  return AttributeType.STRING;
         if (sqlType == Types.LONGVARBINARY) return AttributeType.OBJECT;
         if (sqlType == Types.LONGVARCHAR)   return AttributeType.STRING;
-        if (sqlType == Types.NCHAR)      return AttributeType.STRING;
-        if (sqlType == Types.NCLOB)      return AttributeType.STRING;
-        if (sqlType == Types.NULL)       return AttributeType.OBJECT;
-        if (sqlType == Types.NUMERIC)    return AttributeType.DOUBLE;
-        if (sqlType == Types.NVARCHAR)   return AttributeType.STRING;
+        if (sqlType == Types.NCHAR)         return AttributeType.STRING;
+        if (sqlType == Types.NCLOB)         return AttributeType.STRING;
+        if (sqlType == Types.NULL)          return AttributeType.OBJECT;
+        if (sqlType == Types.NUMERIC)       return AttributeType.DOUBLE;
+        if (sqlType == Types.NVARCHAR)      return AttributeType.STRING;
         if (sqlType == Types.OTHER && 
             sqlName.toLowerCase().equals("geometry")) return AttributeType.GEOMETRY;
-        else if (sqlType == Types.OTHER) return AttributeType.OBJECT;
-        if (sqlType == Types.REAL)       return AttributeType.DOUBLE;
-        if (sqlType == Types.REF)        return AttributeType.OBJECT;
-        if (sqlType == Types.ROWID)      return AttributeType.INTEGER;
-        if (sqlType == Types.SMALLINT)   return AttributeType.INTEGER;
-        if (sqlType == Types.SQLXML)     return AttributeType.STRING;
-        if (sqlType == Types.STRUCT)     return AttributeType.OBJECT;
-        if (sqlType == Types.TIME)       return AttributeType.DATE;
-        if (sqlType == Types.TIMESTAMP)  return AttributeType.DATE;
-        if (sqlType == Types.TINYINT)    return AttributeType.INTEGER;
-        if (sqlType == Types.VARBINARY)  return AttributeType.OBJECT;
-        if (sqlType == Types.VARCHAR)    return AttributeType.STRING;
+        else if (sqlType == Types.OTHER)    return AttributeType.OBJECT;
+        if (sqlType == Types.REAL)          return AttributeType.DOUBLE;
+        if (sqlType == Types.REF)           return AttributeType.OBJECT;
+        if (sqlType == Types.ROWID)         return AttributeType.INTEGER;
+        if (sqlType == Types.SMALLINT)      return AttributeType.INTEGER;
+        if (sqlType == Types.SQLXML)        return AttributeType.STRING;
+        if (sqlType == Types.STRUCT)        return AttributeType.OBJECT;
+        if (sqlType == Types.TIME)          return AttributeType.DATE;
+        if (sqlType == Types.TIMESTAMP)     return AttributeType.DATE;
+        if (sqlType == Types.TINYINT)       return AttributeType.INTEGER;
+        if (sqlType == Types.VARBINARY)     return AttributeType.OBJECT;
+        if (sqlType == Types.VARCHAR)       return AttributeType.STRING;
         throw new IllegalArgumentException("" + sqlType + " is an unknown SQLType");
     }
     

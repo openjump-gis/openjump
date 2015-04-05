@@ -18,6 +18,7 @@ import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.ui.plugin.datastore.DataStoreQueryDataSource;
 
 import javax.swing.*;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.sql.*;
 import java.util.ArrayList;
@@ -487,6 +488,7 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
         StringBuilder sb = new StringBuilder();
         boolean numeric = false;
         if (fc.getFeatureSchema().getAttributeType(primaryKey) == AttributeType.INTEGER) numeric = true;
+        if (fc.getFeatureSchema().getAttributeType(primaryKey) == AttributeType.LONG) numeric = true;
         // WARNING : OBJECT is not necessarilly of type Long
         else if (fc.getFeatureSchema().getAttributeType(primaryKey) == AttributeType.OBJECT) {
             if (fc.size()>0) {
@@ -564,20 +566,29 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
                 Feature feature, String primaryKey, boolean hasSrid, int dim) throws SQLException {
         FeatureSchema schema = feature.getSchema();
         int shift = 1;
-        for (int i = 0 ; i < schema.getAttributeCount() ; i++) {
-            if (schema.getExternalPrimaryKeyIndex() == i) {
-                shift--;
-                continue;
+        try {
+            for (int i = 0; i < schema.getAttributeCount(); i++) {
+                if (schema.getExternalPrimaryKeyIndex() == i) {
+                    shift--;
+                    continue;
+                }
+                AttributeType type = schema.getAttributeType(i);
+                if (feature.getAttribute(i) == null) pstmt.setObject(i + shift, null);
+                else if (type == AttributeType.STRING) pstmt.setString(i + shift, feature.getString(i));
+                else if (type == AttributeType.GEOMETRY)
+                    pstmt.setBytes(i + shift, PostGISQueryUtil.getByteArrayFromGeometry((Geometry) feature.getAttribute(i), hasSrid, dim));
+                else if (type == AttributeType.INTEGER) pstmt.setInt(i + shift, feature.getInteger(i));
+                else if (type == AttributeType.LONG) pstmt.setLong(i + shift, (Long) feature.getAttribute(i));
+                else if (type == AttributeType.DOUBLE) pstmt.setDouble(i + shift, feature.getDouble(i));
+                else if (type == AttributeType.BOOLEAN) pstmt.setBoolean(i + shift, (Boolean) feature.getAttribute(i));
+                else if (type == AttributeType.DATE)
+                    pstmt.setTimestamp(i + shift, new Timestamp(((Date) feature.getAttribute(i)).getTime()));
+                else if (type == AttributeType.OBJECT)
+                    pstmt.setBytes(i + shift, feature.getAttribute(i).toString().getBytes("UTF-8"));
+                else throw new IllegalArgumentException("" + type + " is an unknown AttributeType !");
             }
-            AttributeType type = schema.getAttributeType(i);
-            if (feature.getAttribute(i) == null)     pstmt.setObject(i+shift, null);
-            else if (type == AttributeType.STRING)   pstmt.setString(i+shift, feature.getString(i));
-            else if (type == AttributeType.GEOMETRY) pstmt.setBytes(i+shift, PostGISQueryUtil.getByteArrayFromGeometry((Geometry)feature.getAttribute(i), hasSrid, dim));
-            else if (type == AttributeType.INTEGER)  pstmt.setInt(i+shift, feature.getInteger(i));
-            else if (type == AttributeType.DOUBLE)   pstmt.setDouble(i+shift, feature.getDouble(i));
-            else if (type == AttributeType.DATE)     pstmt.setTimestamp(i+shift, new Timestamp(((Date)feature.getAttribute(i)).getTime()));
-            else if (type == AttributeType.OBJECT)   pstmt.setObject(i+shift, feature.getAttribute(i));
-            else throw new IllegalArgumentException("" + type + " is an unknown AttributeType !");
+        } catch(UnsupportedEncodingException e) {
+            throw new SQLException(e);
         }
         return pstmt;
     }

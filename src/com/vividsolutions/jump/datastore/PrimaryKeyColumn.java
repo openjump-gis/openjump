@@ -25,13 +25,11 @@ public class PrimaryKeyColumn {
         else if (sqlTypeName.startsWith("bit")) this.sqlType = Types.BIT;
         else if (sqlTypeName.startsWith("boolean")) this.sqlType = Types.BOOLEAN;
         else if (sqlTypeName.startsWith("date")) this.sqlType = Types.DATE;
-        else if (sqlTypeName.startsWith("boolean")) this.sqlType = Types.BOOLEAN;
         else if (sqlTypeName.startsWith("double")) this.sqlType = Types.DOUBLE;
-        else if (sqlTypeName.startsWith("boolean")) this.sqlType = Types.BOOLEAN;
         else if (sqlTypeName.startsWith("numeric")) this.sqlType = Types.NUMERIC;
         else if (sqlTypeName.startsWith("real")) this.sqlType = Types.REAL;
         else if (sqlTypeName.startsWith("smallint")) this.sqlType = Types.SMALLINT;
-        else if (sqlTypeName.startsWith("serial")) this.sqlType = Types.INTEGER;
+        else if (sqlTypeName.startsWith("serial")) this.sqlType = Types.BIGINT;
         else if (sqlTypeName.startsWith("time")) this.sqlType = Types.TIME;
         else if (sqlTypeName.startsWith("timestamp")) this.sqlType = Types.TIMESTAMP;
         else this.sqlType = Types.JAVA_OBJECT;

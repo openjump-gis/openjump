@@ -1,30 +1,34 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2015-04-05 mmichaud <m.michael.michaud@orange.fr>
+  * Use long/boolean attribute types in jdbc converter
+  * Recognize geometry type in more situations
+
 2015-04-02 ede
   * update commons-compress, xz libs
   * unify archive listing, fix 7zip with new commons-compress version
 
 2015-03-31  Giuseppe Aruta (ma15569)  
-	* Layer tree tooltip is now configurable via "Configure tooltip" 
-	* in Option panel.  2 option: Original minimal JUMP/OpenJUMP tooltip 
-	* and advanced info tooltip.Used different colors (red and blue) 
-	* to display layer with no datasource and modified layer with datasource   in the tooltips
+  * Layer tree tooltip is now configurable via "Configure tooltip"
+  * in Option panel.  2 option: Original minimal JUMP/OpenJUMP tooltip
+  * and advanced info tooltip.Used different colors (red and blue)
+  * to display layer with no datasource and modified layer with datasource   in the tooltips
 
 2015-03-22 Giuseppe Aruta (ma15569) 
-	* Added ChangeRangeValuesToNoDataPlugIn. 
-	* This plugin allowas to change a range of cell values (of a Sextante single 
-	* band raster layer) to nodata value. An option allowas to extraxt only the
-	* input range of value (and set the other values to nodata)
+  * Added ChangeRangeValuesToNoDataPlugIn.
+  * This plugin allowas to change a range of cell values (of a Sextante single
+  * band raster layer) to nodata value. An option allowas to extraxt only the
+  * input range of value (and set the other values to nodata)
 
 2015-03-22 Giuseppe Aruta (ma15569)
-   * RasterImageLayer Plugin: added Raster Layer statistics tab with several info about cell values
-   * DEMStaristics: added header with the number of selected raster layers
+  * RasterImageLayer Plugin: added Raster Layer statistics tab with several info about cell values
+  * DEMStaristics: added header with the number of selected raster layers
    
 2015-03-22 Giuseppe Aruta (ma15569) 
-   * SaveRasterImageAsImagePlugIn. Rewrite class using new RasterImage I/O components
-     This version allows to export no nodata cell value to the output tif
-   * RasterImage nodata management plugins: added layer statistics resume panel and
-     an output file chooser field
+  * SaveRasterImageAsImagePlugIn. Rewrite class using new RasterImage I/O components
+    This version allows to export no nodata cell value to the output tif
+  * RasterImage nodata management plugins: added layer statistics resume panel and
+    an output file chooser field
 
 2015-03-22 mmichaud <m.michael.michaud@orange.fr>
   * Hide unused AttributeType from the schema.
@@ -51,26 +55,26 @@
   * Fix bug #388 shrinking columns in infoFrame and attributeTable
     when the schema has changed.
 
-2015_02_22 Giuseppe Aruta (ma15569) 
-	- Add 2 new plugin to manage nodata values on monoband DEM
+2015-0222 Giuseppe Aruta (ma15569)
+  * Add 2 new plugin to manage nodata values on monoband DEM
 		a) Change No Data Value: it changes default nodata value of file
 		b) Set input value to no dta;: it changes an arbitrary cell value to
 		   default nodata
 
-2015_02_22 Giuseppe Aruta (ma15569) 
-	- Add new Compare Raster Grid layers to Raster plugins
+2015-02-22 Giuseppe Aruta (ma15569)
+  * Add new Compare Raster Grid layers to Raster plugins
 
-2015_01_24 Giuseppe Aruta (ma15569) 
-	- RasterQueryPlugIn. Fix minor bug on lower panel
+2015-01-24 Giuseppe Aruta (ma15569)
+  * RasterQueryPlugIn. Fix minor bug on lower panel
 
 2015-02-23 mmichaud <m.michael.michaud@orange.fr>
-    - Fix Save dataset as Postgis Table (insert all Features as New Rows)
+  * Fix Save dataset as Postgis Table (insert all Features as New Rows)
 
-2015_01_24 Giuseppe Aruta (ma15569) - RasterQueryPlugIn
-	- Extended inspection to multiband raster layers. 
-	- Multiple measure are now displayed (and saved) by default. 
-	  Press SHIFT to cancel previous and display only last measure. 
-	- Moving cursor on image shows raster cell value on lower panel
+2015-01-24 Giuseppe Aruta (ma15569) - RasterQueryPlugIn
+  * Extended inspection to multiband raster layers.
+  * Multiple measure are now displayed (and saved) by default.
+    Press SHIFT to cancel previous and display only last measure.
+  * Moving cursor on image shows raster cell value on lower panel
 
 2015-02-02 Nicolas Ribot (elnico)
   * removed Oracle spatial stuff due to dependencies problems
@@ -104,8 +108,8 @@
   * Info can be saved as HTML file
  
 2015_01_31 Giuseppe Aruta 
- * RasterLayerStatistics.class. Upgraded statistics to all bands 
- * Add plugin icon. Change name to "Raster statistics"
+  * RasterLayerStatistics.class. Upgraded statistics to all bands
+  * Add plugin icon. Change name to "Raster statistics"
 
 2015-01-29 bertaz
   * fix #386: ExtractSelectedPartOfImage fails to work when extracting a part of ASC or FLT monoband raster.

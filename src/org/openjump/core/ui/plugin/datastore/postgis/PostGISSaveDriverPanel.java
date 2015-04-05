@@ -486,7 +486,8 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel implements Actio
 	        //    list.add(NO_PK);
 	        //}
 	        for (int i = 0 ; i < schema.getAttributeCount() ; i++) {
-	            if (schema.getAttributeType(i) == AttributeType.STRING ||
+	            if (schema.getAttributeType(i) == AttributeType.LONG ||
+                    schema.getAttributeType(i) == AttributeType.STRING ||
 	                schema.getAttributeType(i) == AttributeType.INTEGER ||
                     schema.getAttributeType(i) == AttributeType.OBJECT ||
                     schema.getExternalPrimaryKeyIndex() == i) {

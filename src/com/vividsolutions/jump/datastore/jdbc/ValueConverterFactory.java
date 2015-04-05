@@ -22,6 +22,8 @@ public class ValueConverterFactory {
     public static final ValueConverter DATE_MAPPER = new DateConverter();
     public static final ValueConverter STRING_MAPPER = new StringConverter();
     public static final ValueConverter LONG_MAPPER = new LongConverter();
+    public static final ValueConverter BOOLEAN_MAPPER = new BooleanConverter();
+    public static final ValueConverter OBJECT_MAPPER = new ObjectConverter();
 
     public ValueConverterFactory() {}
 
@@ -34,35 +36,57 @@ public class ValueConverterFactory {
      */
     public static ValueConverter getConverter(ResultSetMetaData rsm, int columnIndex) throws SQLException {
 
-        String classname = rsm.getColumnClassName(columnIndex);
         int sqlType = rsm.getColumnType(columnIndex);
-        //String dbTypeName = rsm.getColumnTypeName(columnIndex);
-        int precision = rsm.getPrecision(columnIndex);
-        int scale = rsm.getScale(columnIndex);
 
         if (sqlType == Types.INTEGER
-                || classname.equalsIgnoreCase("java.lang.Integer")
-                || (classname.equalsIgnoreCase("java.math.BigDecimal")
-                    && precision == 10 && scale == 0))
+                || sqlType == Types.SMALLINT
+                || sqlType == Types.TINYINT)
             return INTEGER_MAPPER;
 
-        if (classname.equalsIgnoreCase("java.math.BigDecimal")
+        if (sqlType == Types.DECIMAL
+                || sqlType == Types.DOUBLE
                 || sqlType == Types.FLOAT
-                || sqlType == Types.REAL
-                || sqlType == Types.DOUBLE)
+                || sqlType == Types.NUMERIC
+                || sqlType == Types.REAL)
             return DOUBLE_MAPPER;
 
-        if (classname.equalsIgnoreCase("java.sql.Timestamp")
-            || classname.equalsIgnoreCase("java.sql.Date"))
+        if (sqlType == Types.DATE
+                || sqlType == Types.TIME
+                || sqlType == Types.TIME_WITH_TIMEZONE
+                || sqlType == Types.TIMESTAMP
+                || sqlType == Types.TIMESTAMP_WITH_TIMEZONE)
             return DATE_MAPPER;
 
         //[mmichaud 2013-08-07] used to store bigint database primary key
         // into a AttributeType.Object attribute
-        if (classname.equalsIgnoreCase("java.lang.Long"))
+        if (sqlType == Types.BIGINT
+                || sqlType == Types.ROWID)
             return LONG_MAPPER;
 
-        if (classname.equalsIgnoreCase("java.String"))
+        if (sqlType == Types.VARCHAR
+                || sqlType == Types.CHAR
+                || sqlType == Types.CLOB
+                || sqlType == Types.LONGNVARCHAR
+                || sqlType == Types.LONGVARCHAR
+                || sqlType == Types.NCHAR
+                || sqlType == Types.NCLOB
+                || sqlType == Types.NVARCHAR
+                || sqlType == Types.SQLXML)
             return STRING_MAPPER;
+
+        if (sqlType == Types.BIT
+                || sqlType == Types.BOOLEAN) {
+            return BOOLEAN_MAPPER;
+        }
+
+        if (sqlType == Types.BINARY
+                || sqlType == Types.VARBINARY
+                || sqlType == Types.BLOB
+                || sqlType == Types.ARRAY
+                || sqlType == Types.JAVA_OBJECT
+                || sqlType == Types.LONGVARBINARY) {
+            return OBJECT_MAPPER;
+        }
 
         // default is null
         return null;
@@ -101,14 +125,28 @@ public class ValueConverterFactory {
         }
     }
 
-    //[mmichaud 2013-08-07] used to store bigint database primary key
-    // into a AttributeType.Object attribute
+    //[mmichaud 2013-08-07]
     public static class LongConverter implements ValueConverter {
-        public AttributeType getType() { return AttributeType.OBJECT; }
+        public AttributeType getType() { return AttributeType.LONG; }
         public Object getValue(ResultSet rs, int columnIndex) throws SQLException {
             Object value = rs.getObject(columnIndex);
             if (value == null) return null;
             else return rs.getLong(columnIndex);
+        }
+    }
+
+    // [mmichaud 2015-04-05]
+    public static class  BooleanConverter implements ValueConverter {
+        public AttributeType getType() { return AttributeType.BOOLEAN; }
+        public Object getValue(ResultSet rs, int columnIndex) throws SQLException {
+            return rs.getBoolean(columnIndex);
+        }
+    }
+
+    public static class  ObjectConverter implements ValueConverter {
+        public AttributeType getType() { return AttributeType.OBJECT; }
+        public Object getValue(ResultSet rs, int columnIndex) throws SQLException {
+            return rs.getBytes(columnIndex);
         }
     }
 }
