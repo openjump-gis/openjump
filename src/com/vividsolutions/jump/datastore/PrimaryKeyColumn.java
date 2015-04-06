@@ -30,8 +30,8 @@ public class PrimaryKeyColumn {
         else if (sqlTypeName.startsWith("real")) this.sqlType = Types.REAL;
         else if (sqlTypeName.startsWith("smallint")) this.sqlType = Types.SMALLINT;
         else if (sqlTypeName.startsWith("serial")) this.sqlType = Types.BIGINT;
-        else if (sqlTypeName.startsWith("time")) this.sqlType = Types.TIME;
         else if (sqlTypeName.startsWith("timestamp")) this.sqlType = Types.TIMESTAMP;
+        else if (sqlTypeName.startsWith("time")) this.sqlType = Types.TIME;
         else this.sqlType = Types.JAVA_OBJECT;
     }
 
