@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2015-04-05 mmichaud <m.michael.michaud@orange.fr>
+  * fix #393 : simple query plugin did not do a deep copy of features
+    improve boolean handling in simple query plugin
+
 2015-04-05 ede
   * PLUS: update kml driver to 0.2.4
     - reenable loading of kmz files
