@@ -106,7 +106,8 @@ public class CutPolygonTool extends PolygonTool {
 	    			    else {
 							if ((geomSelected instanceof Polygon)||(geomSelected instanceof MultiPolygon)){
 								newGeomIntersect = geomSelected.intersection(geomDraw);
-								newGeomDiff = geomSelected.difference(newGeomIntersect);
+								//newGeomDiff = geomSelected.difference(newGeomIntersect);
+                                newGeomDiff = geomSelected.difference(geomDraw);
 								BasicFeature featureIntersect = new BasicFeature(activeLayer.getFeatureCollectionWrapper().getFeatureSchema());
 								BasicFeature featureDiff = new BasicFeature(activeLayer.getFeatureCollectionWrapper().getFeatureSchema());
 								FeatureUtil.copyAttributes(featureSelected, featureIntersect);
