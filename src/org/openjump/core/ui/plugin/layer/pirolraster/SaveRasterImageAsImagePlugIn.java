@@ -176,10 +176,11 @@ public class SaveRasterImageAsImagePlugIn extends AbstractPlugIn {
                 workbenchContext);
         MultiEnableCheck multiEnableCheck = new MultiEnableCheck();
         multiEnableCheck.add(checkFactory
-                .createAtLeastNLayerablesMustBeSelectedCheck(1,
+                .createExactlyNLayerablesMustBeSelectedCheck(1,
                         RasterImageLayer.class));
 
         return multiEnableCheck;
     }
+
 
 }
