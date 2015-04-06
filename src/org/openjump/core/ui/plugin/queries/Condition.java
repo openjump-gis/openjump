@@ -31,7 +31,6 @@ import java.util.regex.Pattern;
  */ 
 public class Condition  {
     
-    //private static final SimpleDateFormat DATE_PARSER = new SimpleDateFormat();
     private static final SimpleDateFormat[] DATE_PARSERS = new SimpleDateFormat[]{
         new SimpleDateFormat(),
         new SimpleDateFormat("dd/MM/yy"),
@@ -43,6 +42,7 @@ public class Condition  {
         new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"),
         new SimpleDateFormat("yyyy")
     };
+
     private static final FlexibleDateParser FLEXIBLE_DATE_PARSER = new FlexibleDateParser();
     
     QueryDialog query;
@@ -73,10 +73,7 @@ public class Condition  {
     
     public boolean test(Feature feature) throws Exception {
         Object o = null;
-        //System.out.print("Nature de l'attribut : ");
         if(query.attributeType=='G') {
-            //System.out.println(" geometrique");
-            //System.out.println("Operator = " + op);
             o = feature.getGeometry();
             if(ft.type=='G') return test(gfunction((Geometry)o));
             else if(ft.type=='N') return test(nfunction((Geometry)o));
@@ -84,7 +81,6 @@ public class Condition  {
             else return false;
         }
         else {
-            // System.out.println(" semantique");
             // attributes which does not exist for this feature must have
             // been eliminated before the test procedure
             // (see QueryDialog#executeQuery())
