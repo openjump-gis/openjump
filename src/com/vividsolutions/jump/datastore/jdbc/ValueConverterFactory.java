@@ -52,9 +52,7 @@ public class ValueConverterFactory {
 
         if (sqlType == Types.DATE
                 || sqlType == Types.TIME
-                || sqlType == Types.TIME_WITH_TIMEZONE
-                || sqlType == Types.TIMESTAMP
-                || sqlType == Types.TIMESTAMP_WITH_TIMEZONE)
+                || sqlType == Types.TIMESTAMP)
             return DATE_MAPPER;
 
         //[mmichaud 2013-08-07] used to store bigint database primary key
