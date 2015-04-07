@@ -95,9 +95,6 @@ public class WarpImageToFencePlugIn extends AbstractPlugIn {
 
         String newLayerName = context.getLayerManager().uniqueLayerName(
                 warped + "_" + rLayer.getName());
-        // String extension =
-        // rLayer.getImageFileName().substring(rLayer.getImageFileName().lastIndexOf("."),
-        // rLayer.getImageFileName().length());
         File outFile = new File(System.getProperty("java.io.tmpdir")
                 .concat(File.separator).concat(fileName));
 
