@@ -580,9 +580,14 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
                         double valueR = actualRasterData.getSampleDouble(col, row, 0);
                         double valueG = actualRasterData.getSampleDouble(col, row, 1);
                         double valueB = actualRasterData.getSampleDouble(col, row, 2);
+                        double valueAlpha = 255;
+                        if(stats.getBandCount() > 3) {
+                            valueAlpha = actualRasterData.getSampleDouble(col, row, 3);
+                        }
                         if(Double.isNaN(valueR) || Double.isInfinite(valueR) || valueR == noDataValue
                                 || Double.isNaN(valueG) || Double.isInfinite(valueG) || valueG == noDataValue
-                                || Double.isNaN(valueB) || Double.isInfinite(valueB) || valueB == noDataValue) {
+                                || Double.isNaN(valueB) || Double.isInfinite(valueB) || valueB == noDataValue
+                                || valueAlpha <= 0) {
                             newImage.setRGB(col, row, Color.TRANSLUCENT);
                             continue;
                         }
@@ -597,7 +602,9 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
                         if(b > 255) b = 255;
                         if(b < 0) b = 0;
 
-                        newImage.setRGB(col, row, new Color(r, g, b).getRGB());
+                        int alpha = (int) valueAlpha;
+                        
+                        newImage.setRGB(col, row, new Color(r, g, b, alpha).getRGB());
                     }
                 } else {
                     double value = actualRasterData.getSampleDouble(col, row, 0);
@@ -776,11 +783,12 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
                 currentColor = bim.getRGB(w,h);
                 
                 if (currentColor==transparentColor){
+                    Color color = new Color(bim.getRGB(w, h));
                     
                     argb[0] = fullTransparencyAlpha;
-                    argb[1] = cm.getRed(currentColor);
-                    argb[2] = cm.getGreen(currentColor);
-                    argb[3] = cm.getBlue(currentColor);
+                    argb[1] = color.getRed();
+                    argb[2] = color.getGreen();
+                    argb[3] = color.getBlue();
                     
                     bim.setRGB(w,h,1,1,argb,0,1);
                 }

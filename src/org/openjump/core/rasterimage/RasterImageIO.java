@@ -18,7 +18,6 @@ import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
 import java.awt.image.DataBufferFloat;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;

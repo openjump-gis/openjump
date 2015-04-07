@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2015-04-07 bertaz
+  * fix #391: Regression on RasterImageLayer about alpha channel
+  * fix #392: Color transparency option on RasterImageLayer.class doesn't work
+
 2015-04-06 mmichaud <m.michael.michaud@orange.fr>
   * fix #393 : simple query plugin did not do a deep copy of features
     improve boolean handling in simple query plugin
