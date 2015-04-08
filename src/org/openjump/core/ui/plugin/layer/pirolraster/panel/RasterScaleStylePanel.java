@@ -248,7 +248,7 @@ public class RasterScaleStylePanel extends JPanel implements StylePanel {
         gridBagConstraints21.gridx = 7;
         gridBagConstraints21.gridy = 2;
 
-        gridBagConstraintsSpace.ipady = 250;
+        gridBagConstraintsSpace.ipady = 320;
         gridBagConstraintsSpace.gridx = 1;
         gridBagConstraintsSpace.gridy = 10;
 
