@@ -55,9 +55,10 @@ import com.vividsolutions.jump.workbench.ui.HTMLFrame;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 /**
- * Giuseppe Aruta [2015_01_27]
- * Computes various statistics for selected layers.
+ * Giuseppe Aruta [2015_01_27] Computes various statistics for selected layers.
  * [2015_01_27] added header with the number of selected raster layers
+ * Giuseppe Aruta [2015_04_09] Reduce display of large nodata values (es QGIS)
+ * to readable number
  */
 public class DEMStatisticsPlugIn extends AbstractPlugIn {
 
@@ -180,7 +181,14 @@ public class DEMStatisticsPlugIn extends AbstractPlugIn {
             String miny = df.format(extent.getMinY());
             int X = rstLayer.getNX(); // Number of columns
             int Y = rstLayer.getNY(); // Number of rows
-            String nodata = df.format(slayer.getNoDataValue());// No data
+            String nodata = null;
+            double nda = slayer.getNoDataValue();
+            if (nda == -3.4028234e+038) {
+                nodata = "<b><font color='red'>-3.4028234e+038</font></b>";
+            } else {
+                nodata = Double.toString(nda);
+            }
+
             int validcells = X * Y - nodata(context, rstLayer);// Number of
                                                                // valid
                                                                // cells
