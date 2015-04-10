@@ -75,11 +75,13 @@ public class RasterImageWizardPanel extends JPanel implements WizardPanel,
             .get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.miny"); //$NON-NLS-1$
     public static final String MAXY_KEY = I18N
             .get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.maxy"); //$NON-NLS-1$
-
+    public static final String WORLD = I18N
+            .get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.optimizedworldfile");
     private InputChangedFirer inputChangedFirer = new InputChangedFirer();
     private Map dataMap;
     private GridBagLayout gridBagLayout1 = new GridBagLayout();
 
+    private JLabel world = new JLabel();
     private JPanel fillerPanel = new JPanel();
     private JLabel minxLabel = new JLabel();
     public static JTextField minxTextField = new JTextField();
@@ -145,7 +147,7 @@ public class RasterImageWizardPanel extends JPanel implements WizardPanel,
         minyTextField.setCaretPosition(minyTextField.getText().length());
         maxyTextField.setPreferredSize(new Dimension(270, 21));
         maxyTextField.setCaretPosition(maxyTextField.getText().length());
-
+         
         this.add(minxLabel, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(
                         0, 0, 0, 4), 0, 0));
@@ -178,7 +180,7 @@ public class RasterImageWizardPanel extends JPanel implements WizardPanel,
 
     public String getInstructions() {
         return I18N
-                .get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.please-enter-the-image-path"); //$NON-NLS-1$
+                .get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.please-enter-the-image-path") + "\n" + WORLD; //$NON-NLS-1$
     }
 
     /**

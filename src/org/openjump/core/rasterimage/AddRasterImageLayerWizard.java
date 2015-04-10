@@ -420,7 +420,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
                         .toString(lowerRightVisible.y));
 
                 // Set size after #init, because #init calls #pack. [Jon Aquino]
-                d.setSize(650, 450);
+                d.setSize(700, 350);
                 GUIUtil.centreOnWindow(d);
                 d.setVisible(true);
 
