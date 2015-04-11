@@ -115,7 +115,7 @@ public class ShapefileReader extends AbstractJUMPReader {
      */
     public FeatureCollection read(DriverProperties dp)
         throws IllegalParametersException, Exception {
-        long t0 = System.currentTimeMillis();
+        //long t0 = System.currentTimeMillis();
         getExceptions().clear();
 
         // ATTENTION: this can contain a zip file path as well
@@ -234,7 +234,7 @@ public class ShapefileReader extends AbstractJUMPReader {
             deleteTmpDbf(); // delete dbf file if it was decompressed
             deleteTmpShx(); // delete shx file if it was decompressed
         }
-        System.out.println("Shapfile read in " + (System.currentTimeMillis()-t0) + " ms");
+        //System.out.println("Shapfile read in " + (System.currentTimeMillis()-t0) + " ms");
         return featureCollection;
     }
 
