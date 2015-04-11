@@ -93,6 +93,7 @@ import com.vividsolutions.jump.feature.*;
 public class ShapefileReader extends AbstractJUMPReader {
 
     private File delete_this_tmp_dbf = null;
+    private File delete_this_tmp_shx = null;
 
     private static Logger LOG = Logger.getLogger(ShapefileReader.class);
 
@@ -114,7 +115,7 @@ public class ShapefileReader extends AbstractJUMPReader {
      */
     public FeatureCollection read(DriverProperties dp)
         throws IllegalParametersException, Exception {
-
+        long t0 = System.currentTimeMillis();
         getExceptions().clear();
 
         // ATTENTION: this can contain a zip file path as well
@@ -136,11 +137,13 @@ public class ShapefileReader extends AbstractJUMPReader {
         Shapefile myshape = getShapefile(shpFileName, dp.getProperty(COMPRESSED_FILE_PROPERTY_KEY));
         String charsetName = dp.getProperty("charset");
         if (charsetName == null) charsetName = Charset.defaultCharset().name();
-        DbfFile mydbf = getDbfFile(shpFileName, dp.getProperty(COMPRESSED_FILE_PROPERTY_KEY), Charset.forName(charsetName));
+        DbfFile mydbf = getDbfFile(shpFileName, dp.getProperty(COMPRESSED_FILE_PROPERTY_KEY),
+                Charset.forName(charsetName));
+        InputStream shx = getShx(shpFileName, dp.getProperty(COMPRESSED_FILE_PROPERTY_KEY));
         GeometryFactory factory = new GeometryFactory();
         GeometryCollection collection = null;
         try {
-        	collection = myshape.read(factory);
+        	collection = shx == null ? myshape.read(factory) : myshape.readFromIndex(factory, shx);
         } finally {
         	myshape.close(); //ensure we can delete input shape files before task is closed
         }
@@ -229,8 +232,9 @@ public class ShapefileReader extends AbstractJUMPReader {
 
             mydbf.close();
             deleteTmpDbf(); // delete dbf file if it was decompressed
+            deleteTmpShx(); // delete shx file if it was decompressed
         }
-
+        System.out.println("Shapfile read in " + (System.currentTimeMillis()-t0) + " ms");
         return featureCollection;
     }
 
@@ -240,6 +244,59 @@ public class ShapefileReader extends AbstractJUMPReader {
         InputStream in = CompressedFile.openFile(shpfileName,compressedFname);
         Shapefile myshape = new Shapefile(in);
         return myshape;
+    }
+
+    protected InputStream getShx(String srcFileName, String compressedFname) throws Exception {
+        FileInputStream shxInputStream;
+
+        // default is a *.shx src file
+        if (srcFileName.matches("(?i).*\\.shp$")) {
+            // replace file name extension of compressedFname (probably .shp) with .shx
+            srcFileName = srcFileName.replaceAll("\\.[^.]*$", ".shx");
+            File shxFile = new File( srcFileName );
+            if ( shxFile.exists() )
+                return new FileInputStream(srcFileName);
+        }
+        // if we are in an archive that can hold multiple files compressedFname is defined and a String
+        else if (compressedFname instanceof String) {
+            byte[] b = new byte[16000];
+            int len;
+            boolean keepGoing = true;
+
+            // copy the file then use that copy
+            File file = File.createTempFile("shx", ".shx");
+            FileOutputStream out = new FileOutputStream(file);
+
+            // replace file name extension of compressedFname (probably .shp) with .dbf
+            compressedFname = compressedFname.replaceAll("\\.[^.]*$", ".shx");
+
+            try {
+                InputStream in = CompressedFile.openFile(srcFileName,compressedFname);
+
+                while (keepGoing) {
+                    len = in.read(b);
+
+                    if (len > 0) {
+                        out.write(b, 0, len);
+                    }
+
+                    keepGoing = (len != -1);
+                }
+
+                in.close();
+                out.close();
+
+                shxInputStream = new FileInputStream(file.toString());
+                delete_this_tmp_shx = file; // to be deleted later on
+                return shxInputStream;
+            } catch (Exception e) {
+                String msg = e.getMessage();
+                LOG.info(msg);
+                System.err.println(msg);
+            }
+        }
+
+        return null;
     }
 
 	/**
@@ -316,6 +373,13 @@ public class ShapefileReader extends AbstractJUMPReader {
         if (delete_this_tmp_dbf != null) {
             delete_this_tmp_dbf.delete();
             delete_this_tmp_dbf = null;
+        }
+    }
+
+    private void deleteTmpShx() {
+        if (delete_this_tmp_shx != null) {
+            delete_this_tmp_shx.delete();
+            delete_this_tmp_shx = null;
         }
     }
 }

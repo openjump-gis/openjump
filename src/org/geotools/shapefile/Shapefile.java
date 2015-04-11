@@ -3,7 +3,9 @@ package org.geotools.shapefile;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jump.io.EndianDataInputStream;
@@ -338,6 +340,111 @@ public class Shapefile  {
         ShapefileHeader head = new ShapefileHeader(file);
         int pos=0, len=0;
         file.close();
+    }
+
+    /**
+     * The purpose of this new reader [mmichaud 2015-04-11] is to read a shapefile using the shx
+     * index file.
+     * While the legacy reader #read(GeometryFactory geometryFactory) read the shapefile sequentially
+     * and don't need the shx index file, this new parser read the shx file and access the shp file
+     * with a RandomAccessReader.
+     * Because the shapefile may come from a compressed input stream, the method first write the
+     * shapefile in a temporary file.
+     * @param geometryFactory
+     * @param is
+     * @return a GeometryCollection containing all the shapes.
+     * @throws IOException
+     * @throws ShapefileException
+     * @throws Exception
+     */
+    public synchronized GeometryCollection readFromIndex(GeometryFactory geometryFactory, InputStream is)
+            throws Exception {
+
+        // Flush shapefile inputStream to a temporary file, because inputStream
+        // may come from a zipped archive, and we want to access data in Random mode
+        File tmpShp = null;
+        RandomAccessFile raf = null;
+        BufferedInputStream bis = null;
+        BufferedOutputStream bos = null;
+        try {
+            tmpShp = File.createTempFile("tmpshp", ".shp");
+            bis = new BufferedInputStream(myInputStream, 4096);
+            bos = new BufferedOutputStream(new FileOutputStream(tmpShp), 4096);
+            int nb = 0;
+            byte[] bytes = new byte[4096];
+            while (-1 != (nb = bis.read(bytes))) {
+                bos.write(bytes, 0, nb);
+            }
+            raf = new RandomAccessFile(tmpShp, "r");
+        } catch(IOException e) {
+            throw e;
+        } finally {
+            if (bis != null) bis.close();
+            if (bos != null) bos.close();
+        }
+
+        // read shapefile header
+        byte[] bytes = new byte[100];
+        ByteBuffer bb = ByteBuffer.wrap(bytes);
+        raf.getChannel().read(bb);
+        EndianDataInputStream shp = new EndianDataInputStream(new ByteArrayInputStream(bytes));
+        if(shp==null) throw new IOException("Failed connection or no content for " + tmpShp);
+        ShapefileHeader shpMainHeader = new ShapefileHeader(shp);
+        if(shpMainHeader.getVersion() < VERSION){System.err.println("Sf-->Warning, Shapefile format ("+shpMainHeader.getVersion()+") older that supported ("+VERSION+"), attempting to read anyway");}
+        if(shpMainHeader.getVersion() > VERSION){System.err.println("Sf-->Warning, Shapefile format ("+shpMainHeader.getVersion()+") newer that supported ("+VERSION+"), attempting to read anyway");}
+
+        // read shx header
+        EndianDataInputStream shx = new EndianDataInputStream(is);
+        if(shx==null) throw new IOException("Failed connection to shx");
+        ShapefileHeader shxMainHeader = new ShapefileHeader(shx);
+        if(shxMainHeader.getVersion() < VERSION){System.err.println("Sf-->Warning, Shapefile format ("+shxMainHeader.getVersion()+") older that supported ("+VERSION+"), attempting to read anyway");}
+        if(shxMainHeader.getVersion() > VERSION){System.err.println("Sf-->Warning, Shapefile format ("+shxMainHeader.getVersion()+") newer that supported ("+VERSION+"), attempting to read anyway");}
+
+        Geometry body;
+        ArrayList list = new ArrayList();
+        int type = shpMainHeader.getShapeType();
+        ShapeHandler handler = getShapeHandler(type);
+        if(handler==null) throw new ShapeTypeNotSupportedException("Unsupported shape type:" + type);
+
+        int recordNumber = 0;
+        try {
+            while (true) {
+                int offset = shx.readIntBE();
+                int length = shx.readIntBE();
+                recordNumber++;
+                try{
+                    bytes = new byte[length*2];
+                    bb = ByteBuffer.wrap(bytes);
+                    raf.getChannel().read(bb, offset*2 + 8);
+                    shp = new EndianDataInputStream(new ByteArrayInputStream(bytes));
+                    body = handler.read(shp, geometryFactory, length);
+                    list.add(body);
+                    if (body.getUserData() != null) errors++;
+                    // System.out.println("Done record: " + recordNumber);
+                } catch(IllegalArgumentException r2d2) {
+                    System.err.println("Error processing record " + recordNumber + " : " + r2d2.getMessage());
+                    System.err.println("   an empty Geometry has been returned");
+                    r2d2.printStackTrace();
+                    list.add(handler.getEmptyGeometry(geometryFactory));
+                    errors++;
+                } catch(Exception c3p0) {
+                    System.err.println("Error processing record " + recordNumber + " : " + c3p0.getMessage());
+                    System.err.println("   an empty Geometry has been returned");
+                    c3p0.printStackTrace();
+                    list.add(handler.getEmptyGeometry(geometryFactory));
+                    errors++;
+                }
+            }
+        } catch(EOFException e) {}
+        if (raf != null) {
+            raf.close();
+        }
+        if (tmpShp != null && tmpShp.exists()) {
+            tmpShp.delete();
+        }
+
+        return geometryFactory.createGeometryCollection((Geometry[])list.toArray(new Geometry[]{}));
+
     }
 }
 
