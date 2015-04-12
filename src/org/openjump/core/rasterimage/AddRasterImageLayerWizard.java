@@ -392,20 +392,30 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
                 int visibleY1 = visibleRect.y;
                 int visibleX2 = visibleX1 + width;// visibleRect.width;
                 int visibleY2 = visibleY1 + height;// visibleRect.height;
+                int visibleX3 = visibleX1 + visibleRect.width;
+                int visibleY3 = visibleY1 + visibleRect.height;
                 Coordinate upperLeftVisible = viewport
                         .toModelCoordinate(new Point(0, 0));
-                Coordinate lowerRightVisible = viewport
+                Coordinate lowerRightVisible1 = viewport
                         .toModelCoordinate(new Point(visibleX2, visibleY2));
+                Coordinate lowerRightVisible2 = viewport
+                        .toModelCoordinate(new Point(visibleX3, visibleY3));
 
                 context.getWorkbench()
                         .getFrame()
                         .warnUser(
                                 I18N.get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.no-worldfile-found"));
-                WizardDialog d = new WizardDialog(context.getWorkbench()
-                        .getFrame(), I18N.get("RasterImagePlugIn.34")
-                        + this.worldFileHandler.getWorldFileName()
-                        + I18N.get("RasterImagePlugIn.35"),
-                        context.getErrorHandler());
+                WizardDialog d = new WizardDialog(
+                        context.getWorkbench().getFrame(),
+                        I18N.getMessage(
+                                "org.openjump.core.rasterimage.AddRasterImageLayerWizard.no-worldfile-found-message",
+                                new Object[] { fil.getName() })
+                        /*
+                         * I18N.get("RasterImagePlugIn.34") +
+                         * this.worldFileHandler.getWorldFileName() +
+                         * I18N.get("RasterImagePlugIn.35")
+                         */
+                        , context.getErrorHandler());
                 d.init(new WizardPanel[] { new RasterImageWizardPanel() });
 
                 // 2015-04-10 [Giuseppe Aruta]wizard dialog now shows local
@@ -413,11 +423,11 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
                 RasterImageWizardPanel.minxTextField.setText(Double
                         .toString(upperLeftVisible.x));
                 RasterImageWizardPanel.maxxTextField.setText(Double
-                        .toString(lowerRightVisible.x));
+                        .toString(lowerRightVisible1.x));
                 RasterImageWizardPanel.minyTextField.setText(Double
                         .toString(upperLeftVisible.y));
                 RasterImageWizardPanel.maxyTextField.setText(Double
-                        .toString(lowerRightVisible.y));
+                        .toString(lowerRightVisible1.y));
 
                 // Set size after #init, because #init calls #pack. [Jon Aquino]
                 d.setSize(700, 350);
@@ -431,36 +441,29 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
 
                 try {
 
-                    minx = Double.parseDouble((String) d
-                            .getData(RasterImageWizardPanel.MINX_KEY));
-                    maxx = Double.parseDouble((String) d
-                            .getData(RasterImageWizardPanel.MAXX_KEY));
-                    miny = Double.parseDouble((String) d
-                            .getData(RasterImageWizardPanel.MINY_KEY));
-                    maxy = Double.parseDouble((String) d
-                            .getData(RasterImageWizardPanel.MAXY_KEY));
+                    if (RasterImageWizardPanel.warpCheckBox.isSelected()) {
+                        env = new Envelope(upperLeftVisible.x,
+                                lowerRightVisible2.x, upperLeftVisible.y,
+                                lowerRightVisible2.y);
+                    } else {
 
-                    env = new Envelope(minx, maxx, miny, maxy);
+                        minx = Double.parseDouble((String) d
+                                .getData(RasterImageWizardPanel.MINX_KEY));
+                        maxx = Double.parseDouble((String) d
+                                .getData(RasterImageWizardPanel.MAXX_KEY));
+                        miny = Double.parseDouble((String) d
+                                .getData(RasterImageWizardPanel.MINY_KEY));
+                        maxy = Double.parseDouble((String) d
+                                .getData(RasterImageWizardPanel.MAXY_KEY));
+
+                        env = new Envelope(minx, maxx, miny, maxy);
+                    }
                 } catch (java.lang.NumberFormatException e) {
-                    /*
-                     * Viewport viewport = context.getLayerViewPanel()
-                     * .getViewport(); Rectangle visibleRect =
-                     * viewport.getPanel() .getVisibleRect();
-                     * 
-                     * BufferedImage bimg = ImageIO.read(new File(fileName));
-                     * int width = bimg.getWidth(); int height =
-                     * bimg.getHeight();
-                     * 
-                     * int visibleX1 = visibleRect.x; int visibleY1 =
-                     * visibleRect.y; int visibleX2 = visibleX1 + width;//
-                     * visibleRect.width; int visibleY2 = visibleY1 + height;//
-                     * visibleRect.height; Coordinate upperLeftVisible =
-                     * viewport .toModelCoordinate(new Point(0, 0)); Coordinate
-                     * lowerRightVisible = viewport .toModelCoordinate(new
-                     * Point(visibleX2, visibleY2));
-                     */
-                    env = new Envelope(upperLeftVisible.x, lowerRightVisible.x,
-                            upperLeftVisible.y, lowerRightVisible.y);
+
+                    env = new Envelope(upperLeftVisible.x,
+                            lowerRightVisible1.x, upperLeftVisible.y,
+                            lowerRightVisible1.y);
+
                 }
 
             }

@@ -46,6 +46,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.Map;
 
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -75,13 +76,21 @@ public class RasterImageWizardPanel extends JPanel implements WizardPanel,
             .get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.miny"); //$NON-NLS-1$
     public static final String MAXY_KEY = I18N
             .get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.maxy"); //$NON-NLS-1$
+    public static final String TITLE = I18N
+            .get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.worldfile-dialog");
+    public static final String INSTRUCTION = I18N
+            .get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.please-enter-the-image-path");
     public static final String WORLD = I18N
             .get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.optimizedworldfile");
+    public static final String TOOLTIP = I18N
+            .get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.warp-tooltip");;
+    public static final String WARP = I18N
+            .get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.warp");
+
     private InputChangedFirer inputChangedFirer = new InputChangedFirer();
     private Map dataMap;
     private GridBagLayout gridBagLayout1 = new GridBagLayout();
 
-    private JLabel world = new JLabel();
     private JPanel fillerPanel = new JPanel();
     private JLabel minxLabel = new JLabel();
     public static JTextField minxTextField = new JTextField();
@@ -91,6 +100,7 @@ public class RasterImageWizardPanel extends JPanel implements WizardPanel,
     public static JTextField minyTextField = new JTextField();
     private JLabel maxyLabel = new JLabel();
     public static JTextField maxyTextField = new JTextField();
+    public static JCheckBox warpCheckBox = new JCheckBox();
 
     public RasterImageWizardPanel() {
         try {
@@ -147,7 +157,8 @@ public class RasterImageWizardPanel extends JPanel implements WizardPanel,
         minyTextField.setCaretPosition(minyTextField.getText().length());
         maxyTextField.setPreferredSize(new Dimension(270, 21));
         maxyTextField.setCaretPosition(maxyTextField.getText().length());
-         
+        this.setPreferredSize(new Dimension(450, 100));
+
         this.add(minxLabel, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(
                         0, 0, 0, 4), 0, 0));
@@ -172,15 +183,39 @@ public class RasterImageWizardPanel extends JPanel implements WizardPanel,
         this.add(maxyTextField, new GridBagConstraints(1, 5, 1, 1, 0.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
                 new Insets(0, 0, 0, 4), 0, 0));
+        warpCheckBox.setText(WARP);
+        warpCheckBox.setToolTipText(TOOLTIP);
+        // textPane.setText(WORLD);
+        warpCheckBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                updateEnabled();
+
+            }
+        });
+
+        this.add(warpCheckBox, new GridBagConstraints(1, 6, 1, 1, 0.0, 0.0,
+                GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+                new Insets(0, 0, 0, 4), 0, 0));
 
         this.add(fillerPanel, new GridBagConstraints(2, 10, 1, 1, 1.0, 1.0,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(
                         0, 0, 0, 0), 0, 0));
     }
 
+    private void updateEnabled() {
+
+        minxLabel.setEnabled(warpCheckBox.isSelected() == false);
+        minxTextField.setEnabled(warpCheckBox.isSelected() == false);
+        maxxLabel.setEnabled(warpCheckBox.isSelected() == false);
+        maxxTextField.setEnabled(warpCheckBox.isSelected() == false);
+        minyLabel.setEnabled(warpCheckBox.isSelected() == false);
+        minyTextField.setEnabled(warpCheckBox.isSelected() == false);
+        maxyLabel.setEnabled(warpCheckBox.isSelected() == false);
+        maxyTextField.setEnabled(warpCheckBox.isSelected() == false);
+    }
+
     public String getInstructions() {
-        return I18N
-                .get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.please-enter-the-image-path") + "\n" + WORLD; //$NON-NLS-1$
+        return INSTRUCTION + "\n" + WORLD; //$NON-NLS-1$
     }
 
     /**
@@ -199,8 +234,7 @@ public class RasterImageWizardPanel extends JPanel implements WizardPanel,
     }
 
     public String getTitle() {
-        return I18N
-                .get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.worldfile-dialog"); //$NON-NLS-1$
+        return TITLE; //$NON-NLS-1$
     }
 
     public String getID() {
