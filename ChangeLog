@@ -1,4 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
+2015-04-12 Giuseppe Aruta (ma15569)
+  * Reworked dialog for rasterimage layers with no georeference info. Now images are opened
+    into the view, by default, with original file width/height proportion. Option to warp
+    image into the view
 
 2015-04-11 mmichaud <m.michael.michaud@orange.fr>
   * fix #396 on ShapefileReader so that it can read shapefile from shx as
