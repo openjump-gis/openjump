@@ -48,8 +48,12 @@ import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.workbench.ui.LayerNameRenderer;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManager;
+import com.vividsolutions.jump.workbench.model.Layerable;
+import com.vividsolutions.jump.workbench.model.WMSLayer;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.util.CollectionMap;
+
+import de.latlon.deejump.wfs.jump.WFSLayer;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -288,7 +292,15 @@ public abstract class AbstractMultiInputDialog extends JDialog {
         return (Layer)comboBox.getSelectedItem();
     }
     
-    
+    /**
+     * Returns a Layerable from a JComboBox control.
+     */
+ // 2015-4-15 added by ma15569 - Giuseppe Aruta
+    public Layerable getLayerable(String fieldName) {
+        JComboBox comboBox = (JComboBox) fieldNameToComponentMap.get(fieldName);
+        return (Layerable) comboBox.getSelectedItem();
+    }
+
     /**
      * Returns a Raster Image Layer from a JComboBox control.
      */
@@ -296,6 +308,24 @@ public abstract class AbstractMultiInputDialog extends JDialog {
     public RasterImageLayer getRasterImageLayer(String fieldName) {
         JComboBox comboBox = (JComboBox) fieldNameToComponentMap.get(fieldName);
         return (RasterImageLayer) comboBox.getSelectedItem();
+    }
+
+    /**
+     * Returns a WMS layer from a JComboBox control.
+     */
+    // 2015-4-15 added by ma15569 - Giuseppe Aruta
+    public WMSLayer getWMSLayer(String fieldName) {
+        JComboBox comboBox = (JComboBox) fieldNameToComponentMap.get(fieldName);
+        return (WMSLayer) comboBox.getSelectedItem();
+    }
+    
+    /**
+     * Returns a WFS layer from a JComboBox control.
+     */
+    // 2015-4-15 added by ma15569 - Giuseppe Aruta
+    public WFSLayer getWFSLayer(String fieldName) {
+        JComboBox comboBox = (JComboBox) fieldNameToComponentMap.get(fieldName);
+        return (WFSLayer) comboBox.getSelectedItem();
     }
     
     ////////////////////////////////////////////////////////////////////////////
