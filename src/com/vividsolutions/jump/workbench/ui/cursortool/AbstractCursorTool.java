@@ -277,7 +277,7 @@ public abstract class AbstractCursorTool implements CursorTool {
 				: null;
 	}
 
-	private static List createStandardSnappingPolicies(Blackboard blackboard) {
+	protected List createStandardSnappingPolicies(Blackboard blackboard) {
 		return Arrays.asList(new SnapPolicy[]{
 				new SnapToVerticesPolicy(blackboard),
 				new SnapToFeaturesPolicy(blackboard),

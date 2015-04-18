@@ -55,6 +55,7 @@ public class SnapOptionsPanel extends JPanel implements OptionsPanel {
     private TitledBorder titledBorder1;
     private JCheckBox snapToFeaturesCheckBox = new JCheckBox();
     private JCheckBox snapToVerticesCheckBox = new JCheckBox();
+    private JCheckBox snapToLineStringBeingEditedCheckBox = new JCheckBox();
     private JPanel jPanel3 = new JPanel();
     private JPanel jPanel4 = new JPanel();
     private JCheckBox snapToGridCheckBox = new JCheckBox();
@@ -129,6 +130,8 @@ public class SnapOptionsPanel extends JPanel implements OptionsPanel {
             blackboard);
         blackboard.put(SnapToFeaturesPolicy.ENABLED_KEY,
             snapToFeaturesCheckBox.isSelected());
+        blackboard.put(SnapToLineStringBeingEditedPolicy.ENABLED_KEY,
+                snapToLineStringBeingEditedCheckBox.isSelected());
         blackboard.put(SnapToGridPolicy.ENABLED_KEY,
             snapToGridCheckBox.isSelected());
         blackboard.put(SnapToGridPolicy.GRID_SIZE_KEY,
@@ -147,6 +150,8 @@ public class SnapOptionsPanel extends JPanel implements OptionsPanel {
             SnapManager.getToleranceInPixels(blackboard));
         snapToFeaturesCheckBox.setSelected(blackboard.get(
                 SnapToFeaturesPolicy.ENABLED_KEY, false));
+        snapToLineStringBeingEditedCheckBox.setSelected(blackboard.get(
+                SnapToLineStringBeingEditedPolicy.ENABLED_KEY, false));
         snapToGridCheckBox.setSelected(blackboard.get(
                 SnapToGridPolicy.ENABLED_KEY, false));
         gridSizeTextField.setText("" +
@@ -172,6 +177,7 @@ public class SnapOptionsPanel extends JPanel implements OptionsPanel {
         jPanel2.setBorder(titledBorder1);
         snapToFeaturesCheckBox.setText(I18N.get("ui.snap.SnapOptionsPanel.snap-to-vertices-and-lines"));
         snapToVerticesCheckBox.setText(I18N.get("ui.snap.SnapOptionsPanel.snap-to-vertices"));
+        snapToLineStringBeingEditedCheckBox.setText(I18N.get("ui.snap.SnapOptionsPanel.snap-to-linestring-being-edited"));
         snapToGridCheckBox.setText(I18N.get("ui.snap.SnapOptionsPanel.snap-to-grid"));
         jPanel4.setLayout(gridBagLayout3);
         jPanel5.setBorder(titledBorder2);
@@ -193,29 +199,36 @@ public class SnapOptionsPanel extends JPanel implements OptionsPanel {
         toleranceLabel.setText(I18N.get("ui.snap.SnapOptionsPanel.tolerance"));
         toleranceUnitsLabel.setText(I18N.get("ui.snap.SnapOptionsPanel.pixels"));
         showGridUnitsLabel.setText(I18N.get("ui.snap.SnapOptionsPanel.model-units"));
+
         this.add(jPanel1, BorderLayout.CENTER);
         jPanel1.add(jPanel2,
             new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
                 new Insets(10, 10, 10, 10), 0, 0));
+
+        jPanel2.add(tolerancePanel,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+                ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+        jPanel2.add(snapToVerticesCheckBox,
+                new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+                        ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
         jPanel2.add(snapToFeaturesCheckBox,
               new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
             ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-        jPanel2.add(snapToVerticesCheckBox,
-              new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+        jPanel2.add(snapToLineStringBeingEditedCheckBox,
+                new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0
+                        ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+
         jPanel2.add(jPanel3,
               new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0
             ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
         jPanel2.add(jPanel4,
-              new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0
+              new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0
             ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
         jPanel4.add(snapToGridCheckBox,
             new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
                 GridBagConstraints.WEST, GridBagConstraints.NONE,
                 new Insets(0, 0, 0, 0), 0, 0));
-        jPanel2.add(tolerancePanel,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+
         tolerancePanel.add(toleranceLabel,      new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
             ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 5), 0, 0));
         tolerancePanel.add(toleranceTextField,    new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0

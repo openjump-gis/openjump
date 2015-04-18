@@ -34,6 +34,8 @@
 package com.vividsolutions.jump.workbench.ui.cursortool.editing;
 
 import java.awt.geom.NoninvertibleTransformException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.Icon;
 
@@ -41,10 +43,15 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.operation.valid.IsValidOp;
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanelProxy;
 import com.vividsolutions.jump.workbench.ui.cursortool.*;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.snap.SnapToLineStringBeingEditedPolicy;
+import com.vividsolutions.jump.workbench.ui.snap.SnapToFeaturesPolicy;
+import com.vividsolutions.jump.workbench.ui.snap.SnapToGridPolicy;
+import com.vividsolutions.jump.workbench.ui.snap.SnapToVerticesPolicy;
 
 
 public class DrawLineStringTool extends MultiClickTool {
@@ -86,6 +93,15 @@ public class DrawLineStringTool extends MultiClickTool {
 				isRollingBackInvalidEdits(),
 				this,
 				getPanel());
+    }
+
+    protected List createStandardSnappingPolicies(Blackboard blackboard) {
+        List policies = new ArrayList();
+        policies.add(new SnapToVerticesPolicy(blackboard));
+        policies.add(new SnapToFeaturesPolicy(blackboard));
+        policies.add(new SnapToGridPolicy(blackboard));
+        policies.add(new SnapToLineStringBeingEditedPolicy(blackboard, this));
+        return policies;
     }
 
     protected LineString getLineString() throws NoninvertibleTransformException {

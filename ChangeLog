@@ -1,4 +1,10 @@
 # for display continuity sake please use 2 spaces instead of tabs
+
+2015-04-18 mmichaud <m.michael.michaud@orange.fr>
+  * FR #220 : add an option to snap on feature being edited. Indeed, the new snap
+    policy is applied on LineString edition only as snapping on a polygon being
+    edited tends to create invalid polygons
+
 2015-04-12 Giuseppe Aruta (ma15569)
   * Reworked dialog for rasterimage layers with no georeference info. Now images are opened
     into the view, by default, with original file width/height proportion. Option to warp
