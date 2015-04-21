@@ -238,11 +238,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
 
         this.worldFileHandler = new WorldFileHandler(fileName,
                 allwaysLookForTFWExtension);
-        // 2015-04-10 [Giuseppe Aruta] Calculate Image dimension
-        File fil = new File(fileName);
-        BufferedImage bufImg = ImageIO.read(fil);
-        int width = bufImg.getWidth();
-        int height = bufImg.getHeight();
+       
         if (imageDimensions == null) {
             // logger.printError("can not determine image dimensions");
             context.getWorkbench()
@@ -388,6 +384,10 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
 
                 // 015-04-10 [Giuseppe Aruta] Calculate local coordinates
                 // as if the image is anchored to the view
+                File fil = new File(fileName);
+                BufferedImage bufImg = ImageIO.read(fil);
+                int width = bufImg.getWidth();
+                int height = bufImg.getHeight();
                 int visibleX1 = visibleRect.x;
                 int visibleY1 = visibleRect.y;
                 int visibleX2 = visibleX1 + width;// visibleRect.width;
@@ -473,6 +473,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
                     this.allwaysLookForTFWExtension);
             this.worldFileHandler.writeWorldFile(env, imageDimensions.x,
                     imageDimensions.y);
+            File fil = new File(fileName);
             String MSG = I18N
                     .getMessage(
                             "org.openjump.core.rasterimage.AddRasterImageLayerWizard.message",
