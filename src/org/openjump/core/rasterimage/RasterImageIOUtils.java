@@ -462,7 +462,8 @@ public class RasterImageIOUtils {
     }
 
     /**
-     * Export selected raster to XYZ table
+     * Export selected raster to XYZ table. If the file is a multi banded raster
+     * each band is extracted to a proper band named "band1", "band2", etc
      * 
      * @param file
      *            file to save es D:/Openjump/test.xyz
@@ -477,12 +478,12 @@ public class RasterImageIOUtils {
      */
 
     public static void saveXYZ(File outfile, PlugInContext context,
-            RasterImageLayer rLayer, int band) throws IOException {
+            RasterImageLayer rLayer) throws IOException {
         OutputStream out = null;
         try {
             OpenJUMPSextanteRasterLayer rstLayer = new OpenJUMPSextanteRasterLayer();
             rstLayer.create(rLayer);
-
+            int numBands = rLayer.getNumBands();
             out = new FileOutputStream(outfile);
             cellFormat = NumberFormat.getNumberInstance();
             cellFormat.setMaximumFractionDigits(3);
@@ -499,7 +500,12 @@ public class RasterImageIOUtils {
             }
 
             PrintStream po = new PrintStream(out);
-            po.println("x\ty\tz");
+            po.append("coordinateX\tcoordinateY");
+            for (int b = 0; b < numBands; b++) {
+                int n = b + 1;
+                po.append("\tband" + n);
+            }
+            po.append("\n");
             GridWrapperNotInterpolated gwrapper = new GridWrapperNotInterpolated(
                     rstLayer, rstLayer.getLayerGridExtent());
             int nx = rstLayer.getLayerGridExtent().getNX();
@@ -507,21 +513,32 @@ public class RasterImageIOUtils {
             for (int y = 0; y < ny; y++) {
                 StringBuffer b = new StringBuffer();
                 for (int x = 0; x < nx; x++) {
-                    double value = gwrapper.getCellValueAsDouble(x, y, band);
 
+                    double value0 = gwrapper.getCellValueAsDouble(x, y, 0);
+                    double value1 = gwrapper.getCellValueAsDouble(x, y, 1);
+                    double value2 = gwrapper.getCellValueAsDouble(x, y, 2);
                     Point2D pt = rstLayer.getLayerGridExtent()
                             .getWorldCoordsFromGridCoords(x, y);
                     double Xf = pt.getX();
                     double Yf = pt.getY();
 
-                    if (Double.isNaN(value)) {
-                        value = defaultNoData;
+                    if (Double.isNaN(value0) || Double.isNaN(value1)
+                            || Double.isNaN(value2)) {
+                        value0 = defaultNoData;
+                        value1 = defaultNoData;
+                        value2 = defaultNoData;
                     }
-                    if (Math.floor(value) == value)
-                        b.append(Xf + "\t" + Yf + "\t" + (int) value + "\n");
+                    if (Math.floor(value0) == value0
+                            || Math.floor(value1) == value1
+                            || Math.floor(value2) == value2)
+                        b.append(Xf + "\t" + Yf + "\t" + (double) value0 + "\t"
+                                + (double) value1 + "\t" + (double) value2
+                                + "\n");
                     else {
-                        b.append(Xf + "\t" + Yf + "\t" + value + "\n");
+                        b.append(Xf + "\t" + Yf + "\t" + value0 + value1
+                                + value2 + "\n");
                     }
+
                 }
                 po.println(b);
             }
@@ -535,7 +552,7 @@ public class RasterImageIOUtils {
             context.getWorkbenchFrame()
                     .getOutputFrame()
                     .addText(
-                            "SaveImageToRasterPlugIn Exception:Export Part of FLT/ASC or modify raster to XYZ not yet implemented. Please Use Sextante Plugin");
+                            "Save To Raster Exception:Export image with no datasource to FLT/ASC/GRD/XYZ not yet implemented. Please Use Sextante Plugin");
         } finally {
             if (out != null)
                 out.close();
