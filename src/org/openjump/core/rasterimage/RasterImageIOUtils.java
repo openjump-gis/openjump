@@ -471,9 +471,6 @@ public class RasterImageIOUtils {
      *            . Plugin Context
      * @param rLayer
      *            . Selected Raster Image Layer (RasterImageLayer.class)
-     * @param band
-     *            . Number of band to save (O=1st band (red), 1=2nd band
-     *            (green), 2=3rd band (blue), etc)
      * @throws IOException
      */
 
