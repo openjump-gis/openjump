@@ -1,149 +1,141 @@
 package org.openjump.core.ui.plugin.layer.pirolraster.panel;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.GridBagLayout;
+import java.awt.LayoutManager;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.geom.NoninvertibleTransformException;
+import java.io.IOException;
+
+import javax.swing.BorderFactory;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.Border;
+
+import org.openjump.core.rasterimage.RasterImageLayer;
+import org.openjump.core.rasterimage.RasterSymbology;
+import org.openjump.core.ui.color.ColorGenerator;
+import org.openjump.core.ui.swing.ValueChecker;
+import org.saig.core.gui.swing.sldeditor.util.FormUtils;
+
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.ui.ColorChooserPanel;
 import com.vividsolutions.jump.workbench.ui.ColorPanel;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.style.StylePanel;
 
-import org.openjump.core.rasterimage.RasterImageLayer;
-import org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer;
-import org.openjump.core.ui.color.ColorGenerator;
-import org.openjump.core.ui.plugin.raster.color.RasterColorEditor;
-import org.openjump.core.ui.swing.ValueChecker;
-
-import javax.media.jai.PlanarImage;
-import javax.swing.*;
-import javax.swing.border.Border;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.geom.NoninvertibleTransformException;
-import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.openjump.core.rasterimage.RasterSymbology;
-
 /**
  * @version $Rev: 4221 $ Dic 23 2014 [Giuseppe Aruta] - Derived from
  *          RasterColorEditorDialog
+ * @version $Rev: 4403 $ Apr 22 2015 [Giuseppe Aruta] - Added inverse color
+ *          ramps and transparency to values outside choosen range
  */
 public class RasterColorEditorPanel extends JPanel implements ValueChecker,
         ActionListener, StylePanel {
 
-    /**
-     * 
-     */
+    public static final String COLOR_KEY = RasterColorEditorPanel.class
+            .getName() + " - COLOR_TYPE";
+    public static final String MIN_KEY = RasterColorEditorPanel.class.getName()
+            + " - MIN_VAL";
+    public static final String MAX_KEY = RasterColorEditorPanel.class.getName()
+            + " - MAX_VAL";
+
     private static final long serialVersionUID = 1L;
 
     private RasterImageLayer layer = null;
-
-    private JTextField fromValue;
-
+    public JTextField fromValue;
+    private JLabel warning;
     private JLabel fromValueLabel;
-
     private JLabel toValueLabel;
-
-    private JTextField toValue;
-
-    private JLabel layerLabel;
-
-    private JComboBox colorScaleChooser;
-
+    public JTextField toValue;
+    public JTextField Chooser;
+    public JComboBox<?> colorScaleChooser;
+    public JComboBox<?> colorRampChooser;
+    public JComboBox<?> typeChooser;
     private ColorGenerator colorGenerator;
 
     private String[] colorTableList = {
-            I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Default-colors"),
-            I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Green-Yellow-Red"),
-            I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Blue-Green-Red"),
-            I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Red-Blue"),
-            I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Blue-Red"),
-            I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Black-White"),
-            I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.White-Black"),
-            I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Rainbow"),
-            "Color Relief 1", "Color Relief 2", "Slope",
-            "Spectral (colorbrewer)", "Spectral 4", "Spectral 8",
-            "Spectral 12", "Landcarpet Europe", "Red", "Yellow", "Blue" };
+            I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Default-colors"),// 0
+            I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Green-Yellow-Red"),// 1
+            I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Blue-Green-Red"),// 2
+            I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Red-Blue"),// 3
+            "Red-Yellow", // 4
+            // I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Blue-Red"),//
+            // 5
+            I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Black-White"),// 5
+            // I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.White-Black"),//
+            // 7
+            "Stripes sixties", // 6
+            I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Rainbow"),// 7
+            "Color Relief", // 8
+            "Topo", // 9
+            "Spectral (Color brewer)", // 10
+            "BrBG (Color brewer)", // 11
+            "RdBu (Color Brewer)", // 12
+            "RdYlBu (Color Bewer)", // 13
+            "RdYlGn (Color Bewer)", // 14
+            "Reds", // 15
+            "Greens", // 16
+            "Blues" }; // 17
 
-    private JPanel mainPanel = new JPanel();
-
-    // private OKCancelPanel okCancelPanel = new OKCancelPanel();
-
+    private JPanel strechedPanel = new JPanel();
+    private JPanel warningPanel = new JPanel();
+    private JPanel statisticPanel = new JPanel(new GridBagLayout());
+    private JTextField nodataField = new JTextField();
+    private JTextField maxdataField = new JTextField();
+    private JTextField mindataField = new JTextField();
+    public JCheckBox transparentBox = new JCheckBox();
+    public JCheckBox discreteBox = new JCheckBox();
+    public JCheckBox invertBox = new JCheckBox();
+    public JCheckBox intervalBox = new JCheckBox();
+    public String fromValueText = new String();
+    public String toValueText = new String();
     private PlugInContext plugInContext;
-
     private Border border = BorderFactory.createEmptyBorder(10, 10, 10, 10);
-
     private Border borderRaised = BorderFactory.createRaisedBevelBorder();
-
-    private Border borderLowerered = BorderFactory.createLoweredBevelBorder();
-
     private Color[] valuesColors;
-
-    private Color noDataColor;
-
     private LayoutManager layout = new BorderLayout();
-
-    private ColorChooserPanel colorChooser;
-
     private LayoutManager gridBagLayout = new GridBagLayout();
-
-    private JButton NoDataColorButton = new JButton();
-
-    private JComboBox combo = new JComboBox();
-
-    private JLabel NodataColor = new JLabel(
-            I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.No-data-color")); //$NON-NLS-1$
-
     private ColorPanel NoDataColorPanel = new ColorPanel();
-
-    private JCheckBox transparent = new JCheckBox(
-            I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Transparency")); //$NON-NLS-1$
-
     private int alpha = 255;
-
-    private JPanel panelSeparator = new JPanel();
-
-    private boolean enabled = true;
-
-    String[] value = { "2", "4", "5", "7", "10", "12", "15", "20", "25", "35" };
 
     private String sToolTip = I18N
             .get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Choose-a-color-range-It-will-be-automaticaly-expanded-between-the-2-values");
-    private String sColorRange = I18N
-            .get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Color-range");
     private String sFromValue = I18N
             .get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.From-value");
     private String sToValue = I18N
             .get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.To-value");
-    private String sNoDataValueColor = I18N
-            .get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.no-data-value-color");
-    private String sChange = I18N
-            .get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.change");
-    private String sChoseOtherColor = I18N
-            .get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Choose-other-color-for-no-data-values");
-    private String sToggleTransparency = I18N
-            .get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Toggle-transparency-for-no-data-values");
-    private String sSelectColor = I18N
-            .get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Select-color");
-    private String sLayerName = I18N
-            .get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Selected-Layer");
+    private static String STATISTICS = I18N
+            .get("org.openjump.core.ui.plugin.raster.nodata.CellStatistics");
+    private static String TITLE = I18N
+            .get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Raster-Color-Editor");
+    private static String NUMBER = I18N
+            .get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Number-of-classes");
+    private static String NODATA = I18N
+            .get("org.openjump.core.ui.plugin.raster.nodata.nodata");
+    private static String MIN = I18N
+            .get("org.openjump.core.ui.plugin.raster.nodata.min");
+    private static String MAX = I18N
+            .get("org.openjump.core.ui.plugin.raster.nodata.max");
+    private static String WARNING = I18N
+            .get("org.openjump.core.ui.plugin.raster.RasterQueryPlugIn.info");
+    private static String TRANSPARENT = I18N
+            .get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Set-values-outside-transparent");
+    private static String INVERT = I18N
+            .get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Invert-colors");
 
     public RasterColorEditorPanel(PlugInContext context,
             RasterImageLayer actualLayer) {
-        super(); //$NON-NLS-1$
+        super();
         plugInContext = context;
         setLayer(actualLayer);
-
         setVisible(true);
-        // setSize(500, 350);
-
-        // GUIUtil.setLocation(this, new GUIUtil.Location(100, true, 100, true),
-        // plugInContext.getWorkbenchFrame());
-
         try {
             jbInit();
         } catch (Exception ex) {
@@ -154,490 +146,347 @@ public class RasterColorEditorPanel extends JPanel implements ValueChecker,
 
     public void setLayer(RasterImageLayer actualLayer) {
         this.layer = actualLayer;
-
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     void jbInit() throws Exception {
 
         setLayout(layout);
 
-        layerLabel = new JLabel(sLayerName + ": " + layer.getName());
-        layerLabel.setBorder(border);
-        add(layerLabel, BorderLayout.NORTH);
-
-        mainPanel.setBorder(border);
-        mainPanel.setLayout(gridBagLayout);
-
-        GridBagConstraints c = new GridBagConstraints(0, 0, 4, 1, 0.0, 0.0,
-                GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
-                new Insets(10, 10, 0, 10), 0, 0);
-
-        colorScaleChooser = new JComboBox(colorTableList);
-        colorScaleChooser.setSelectedIndex(0);
-        String fieldName = sColorRange; //$NON-NLS-1$
-        colorScaleChooser.setToolTipText(sToolTip); //$NON-NLS-1$
-        colorScaleChooser.setBorder(borderRaised);
-        mainPanel.add(colorScaleChooser, c);
-        //OpenJUMPSextanteRasterLayer ojraster = new OpenJUMPSextanteRasterLayer();
-        // [mmichaud 2013-05-25] false : this is a temporary image not a file
-        // based image
-        //ojraster.create(layer, false);
-
-        fromValue = new JTextField(Double.toString(layer.getMetadata().getStats().getMin(0)), 15);
-        fromValueLabel = new JLabel(sFromValue); //$NON-NLS-1$
-
-        fromValue.setCaretPosition(0);
-        fromValue.selectAll();
-
-        toValue = new JTextField(Double.toString(layer.getMetadata().getStats().getMax(0)), 15);
-        toValue.setCaretPosition(0);
-        fromValue.selectAll();
-        toValueLabel = new JLabel(sToValue); //$NON-NLS-1$
-
-        // panelSeparator.setSize(300, 50);
-        NoDataColorPanel.setFillColor(Color.WHITE);
-        NoDataColorPanel.setLineColor(Color.BLACK);
-        NoDataColorPanel.setBorder(borderLowerered);
-        NoDataColorPanel.setToolTipText(sNoDataValueColor); //$NON-NLS-1$
-
-        NoDataColorButton.setText(sChange); //$NON-NLS-1$
-        NoDataColorButton.setToolTipText(sChoseOtherColor); //$NON-NLS-1$
-        NoDataColorButton
-                .addActionListener(new java.awt.event.ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        changeButton_actionPerformed(e);
-                    }
-                });
-
-        transparent.setToolTipText(sToggleTransparency); //$NON-NLS-1$
-
-        transparent.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                transparent_actionPerformed(e);
-            }
-        });
-
-        c.weightx = 1;
-        c.gridx = 0;
-        c.gridy = 1;
-        c.gridwidth = 1;
-        mainPanel.add(fromValueLabel, c);
-
-        c.gridx = 0;
-        c.gridy = 2;
-        c.gridwidth = 1;
-        mainPanel.add(fromValue, c);
-
-        c.weightx = 1;
-        c.gridx = 3;
-        c.gridy = 1;
-        c.gridwidth = 1;
-        mainPanel.add(toValueLabel, c);
-
-        c.gridx = 3;
-        c.gridy = 2;
-        c.gridwidth = 1;
-        mainPanel.add(toValue, c);
-
-        c.weightx = 1;
-        c.weighty = 1;
-        c.gridx = 0;
-        c.gridy = 3;
-        c.gridheight = 2;
-        c.gridwidth = 4;
-
-        // c.ipady = 100;
-        mainPanel.add(panelSeparator, c);
-
-        /*
-         * [sstein - 28.Sept.2010] since this stuff doesn't work yet we don't
-         * display it.
-         * 
-         * 
-         * 
-         * c.gridheight = 1; c.weightx = 0.5; c.gridy = 5; c.gridwidth = 1;
-         * c.ipady = 0; mainPanel.add(NodataColor, c);
-         * 
-         * c.gridx = 1; c.gridwidth = 2; mainPanel.add(NoDataColorPanel, c);
-         * 
-         * c.gridy = 6; mainPanel.add(NoDataColorButton, c);
-         * 
-         * c.gridx = 0; mainPanel.add(transparent, c);
-         */
-
-        add(mainPanel, BorderLayout.CENTER);
-
-    }
-
-    public void  actionPerformed(ActionEvent e) {
-        if (!areValuesOk()) {
-            setVisible(false);
-            return;
-        }
-
-        if (areValuesOk() && Float.parseFloat(fromValue.getText()) < Float
-                .parseFloat(toValue.getText())) {
-
-            switch (colorScaleChooser.getSelectedIndex()) {
-            case 0: {
-                valuesColors = null;
-                break;
-            }
-            case 1: {
-                valuesColors = new Color[] { Color.GREEN, Color.YELLOW, Color.RED };
-                break;
-            }
-            case 2: {
-                valuesColors = new Color[] { Color.BLUE, Color.GREEN, Color.RED };
-                break;
-            }
-            case 3: {
-                valuesColors = new Color[] { Color.RED, Color.BLUE };
-                break;
-            }
-            case 4: {
-                valuesColors = new Color[] { Color.BLUE, Color.RED };
-                break;
-            }
-            case 5: {
-                valuesColors = new Color[] { Color.WHITE, Color.BLACK };
-                break;
-            }
-            case 6: {
-                valuesColors = new Color[] { Color.BLACK, Color.WHITE };
-                break;
-            }
-            case 7: {
-                valuesColors = new Color[] { Color.decode("#9400D3"), //$NON-NLS-1$
-                        Color.decode("#4B0082"), Color.BLUE, Color.GREEN, //$NON-NLS-1$
-                        Color.YELLOW, Color.ORANGE, Color.RED };
-                break;
-            }
-            case 8: {
-                valuesColors = new Color[] {new Color(110,220,110), //$NON-NLS-1$
-                        new Color(240,250,160), new Color(230,220,70),new Color(220,220,220), //$NON-NLS-1$
-                        new Color(250,250,250)};
-                break;
-            }
-            case 9: {
-                valuesColors = new Color[] {
-                        new Color(46,154,88), 
-                        new Color(251,255,128), 
-                        new Color(224,108,31),
-                        new Color(200,55,55), 
-                        new Color(215,244,244)};
-                break;
-            }
-            case 10: {
-                valuesColors = new Color[] {
-                        new Color(0,255,0), 
-                        new Color(36,255,0), 
-                        new Color(73,255,0),
-                        new Color(109,255,0),
-                        new Color(146,255,0), 
-                        new Color(182,255, 0),
-                        new Color(219,255,0),
-                        new Color(255,255,0), 
-                        new Color(255,219,0), 
-                        new Color(255,182,0),
-                        new Color(255,146,0),
-                        new Color(255,109,0), 
-                        new Color(255,73,0),
-                        new Color(255,36,0),
-                        new Color(255,0,0)};
-                break;
-            }
-            case 11: {
-                 valuesColors = new Color[] {
-                         new Color(215,25,28),
-                         new Color(253,174,97),
-                         new Color(171,221,164),
-                         new Color(43,131,186)};
-            break;
-            }
-            
-            case 12: {
-                valuesColors = new Color[] {
-                        new Color(255,0,0), 
-                        new Color(255,128,0), 
-                        new Color(0,255,0),
-                        new Color(0,255,128), 
-                        new Color(0,255,255), 
-                        new Color(0,128,255),
-                        new Color(0,0,255), 
-                        new Color(255,0,255)};
-                break;
-            }
-            
-            case 13: {
-                
-                valuesColors = new Color[] {  
-                        new Color(213,62,79),
-                        new Color(244,109,67),
-                        new Color(253,174,97),
-                        new Color(254,224,139),
-                        new Color(230,245,152),
-                        new Color(171,221,164),
-                        new Color(102,194,165),
-                        new Color(50,136,89)};    
-                        break;
-            }
-                case 14: {
-                     
-                    valuesColors = new Color[] {  
-                new Color(158,1,66),
-                new Color(213,62,79),
-                new Color(244,109,67),
-                new Color(253,174,97),
-                new Color(254,224,139),
-                new Color(255,255,191),
-                new Color(230,245,152),
-                new Color(171,221,164),
-                new Color(102,194,165),
-                new Color(50,136,189),
-                new Color(94,79,162)};
-                    
-
-                    
-                break;
-            }
-                case 15: {
-                  
-                    valuesColors = new Color[] {                   
-                    new Color(218,179,122),
-                    new Color(213,213,149),
-                    new Color(127,166,122),
-                    new Color(151,106,47),
-                    new Color(121,117,10), 
-                    new Color(254,254,254),
-                    new Color(255,255,255)};
-            
-            break;
-                }
-                
-            
-            
-            
-            
-            }
-           
-            try {
-                changeColors(plugInContext.getWorkbenchContext(),
-                        valuesColors, GUIUtil.alphaColor(NoDataColorPanel
-                                .getFillColor(), alpha), Float.parseFloat(fromValue
-                                .getText()), Float.parseFloat(toValue.getText()));
-            } catch (NumberFormatException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
-            } catch (NoninvertibleTransformException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
-            } catch (IOException ex) {
-                Logger.getLogger(RasterColorEditorPanel.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
-            setVisible(false);
-
-            return;
+        if (layer.getNumBands() > 1) {
+            warning = new JLabel(WARNING);
+            warningPanel.add(warning);
+            add(warningPanel, BorderLayout.CENTER);
         } else {
-            plugInContext.getWorkbenchFrame().warnUser("min > max!"); //$NON-NLS-1$
-            return;
+            // Giuseppe Aruta - 2015_4_21
+            // First panel: show statistics of cells of the layer
+            // Deactivate for now
+            statisticPanel.setBorder(BorderFactory
+                    .createTitledBorder(STATISTICS));
+            nodataField = new JTextField(String.valueOf(layer.getNoDataValue()));
+            nodataField.setEditable(false);
+            maxdataField = new JTextField(String.valueOf(layer.getMetadata()
+                    .getStats().getMax(0)));
+            maxdataField.setEditable(false);
+            mindataField = new JTextField(String.valueOf(layer.getMetadata()
+                    .getStats().getMin(0)));
+            mindataField.setEditable(false);
+            JLabel nd_label = new JLabel(NODATA);
+            JLabel min_label = new JLabel(MIN);
+            JLabel max_label = new JLabel(MAX);
+            FormUtils.addRowInGBL(statisticPanel, 1, 0, nd_label, nodataField);
+            FormUtils
+                    .addRowInGBL(statisticPanel, 1, 2, min_label, mindataField);
+            FormUtils
+                    .addRowInGBL(statisticPanel, 1, 4, max_label, maxdataField);
+            // add(statisticPanel, BorderLayout.PAGE_START);
+
+            // Giuseppe Aruta - 2015_4_21
+            // Second panel: Change color model
+            strechedPanel.setBorder(border);
+            strechedPanel.setLayout(gridBagLayout);
+            colorScaleChooser = new JComboBox(colorTableList);
+            final String selectedIndex = (String) colorScaleChooser
+                    .getSelectedItem();
+            colorScaleChooser.setSelectedItem(selectedIndex);
+            colorScaleChooser.setToolTipText(sToolTip); //$NON-NLS-1$
+            colorScaleChooser.setBorder(borderRaised);
+            FormUtils.addRowInGBL(strechedPanel, 2, 0, colorScaleChooser);
+
+            fromValueLabel = new JLabel(sFromValue);
+            toValueLabel = new JLabel(sToValue); //$NON-NLS-1$
+            fromValue = new JTextField(Double.toString(layer.getMetadata()
+                    .getStats().getMin(0)), 15);
+            fromValue.setCaretPosition(0);
+            fromValue.selectAll();
+            toValue = new JTextField(Double.toString(layer.getMetadata()
+                    .getStats().getMax(0)), 15);
+            toValue.setCaretPosition(0);
+            toValue.selectAll();
+            FormUtils.addRowInGBL(strechedPanel, 3, 0, fromValueLabel,
+                    toValueLabel);
+            FormUtils.addRowInGBL(strechedPanel, 4, 0, fromValue, toValue);
+
+            invertBox = new JCheckBox(INVERT);
+            invertBox.setSelected(false);
+            FormUtils.addRowInGBL(strechedPanel, 5, 0, invertBox);
+
+            new JLabel(NUMBER);
+
+            /*
+             * Text field to choose number of intervals. Deactivated. Chooser =
+             * new JTextField("11", 15); Chooser.setColumns(4);
+             * Chooser.setSize(4, 4); // Chooser.setCaretPosition(0);
+             * FormUtils.addRowInGBL(strechedPanel, 6, 0, classes, Chooser);
+             */
+
+            transparentBox = new JCheckBox(TRANSPARENT);
+            transparentBox.setSelected(false);
+            FormUtils.addRowInGBL(strechedPanel, 7, 0, transparentBox);
+            add(strechedPanel, BorderLayout.NORTH);
+
         }
-
-    }
-
-    /*
-     * private boolean validateInput() {
-     * 
-     * return (Float.parseFloat(fromValue.getText()) < Float
-     * .parseFloat(toValue.getText())); }
-     */
-    void changeButton_actionPerformed(ActionEvent e) {
-
-        Color newColor = JColorChooser.showDialog(
-                SwingUtilities.windowForComponent(this), sSelectColor,
-                Color.WHITE); //$NON-NLS-1$
-
-        if (newColor == null) {
-            return;
-        }
-
-        NoDataColorPanel.setFillColor(newColor);
-        NoDataColorPanel.repaint();
-
-    }
-
-    void transparent_actionPerformed(ActionEvent e) {
-
-        if (transparent.isSelected()) {
-            alpha = 0;
-            enabled = false;
-
-        } else {
-            alpha = 255;
-            enabled = true;
-        }
-        NoDataColorButton.setEnabled(enabled);
-        NoDataColorPanel.setVisible(enabled);
-        return;
 
     }
 
     public String getTitle() {
-        // TODO Auto-generated method stub
-        return I18N
-                .get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Raster-Color-Editor");
-
+        return TITLE;
     }
 
     public String validateInput() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public boolean areValuesOk() {
-
         return true;
     }
 
+    public void changeColorsRamp(WorkbenchContext context, Color[] colors,
+            Color noDataColor, double min, double max)
+            throws NoninvertibleTransformException, IOException {
+
+        if (colors == null || colors.length == 0) {
+            layer.setNeedToKeepImage(false);
+            layer.flushImages(true);
+            // layer.setWholeImageEnvelope(layer.getWholeImageEnvelope());
+            context.getLayerViewPanel().getViewport().update();
+            return;
+        }
+        int step = 6;
+        colorGenerator = new ColorGenerator(step, colors);
+        // Deactivated. As 6 steps seems to work better than 35
+        // colorGenerator = new ColorGenerator(35, colors);
+        RasterSymbology symbology = new RasterSymbology(
+                RasterSymbology.ColorMapType.RAMP);
+        min = Double.parseDouble(fromValue.getText());
+        max = Double.parseDouble(toValue.getText());
+        // Max cell value taken from raster statistics. Need to exclude upper
+        // values for the symbolizing
+        double maxlayer = layer.getMetadata().getStats().getMax(0);
+        double interval = (max - min) / colorGenerator.getSteps();
+        symbology.addColorMapEntry(layer.getNoDataValue(), noDataColor);
+        // Giuseppe Aruta 2015_4_17 Set value outside min-max range to a light
+        // grey-green color
+        // Than the color can be set to transparent
+        for (double i = 0; i < min; i++) {
+            symbology.addColorMapEntry(i, new Color(202, 218, 186));// Color.BLACK);
+        }
+        for (double j = maxlayer; j > max; j--) {
+            symbology.addColorMapEntry(j, new Color(202, 218, 186));// Color.BLACK);
+        }
+        for (int c = 0; c < colorGenerator.getSteps(); c++) {
+            Color color = colorGenerator.getColor(c);
+            double value = min + c * interval;
+            symbology.addColorMapEntry(value, color);
+        }
+        layer.setSymbology(symbology);
+        if (transparentBox.isSelected()) {
+            layer.setTransparentColor(new Color(202, 218, 186));
+        }
+    }
+
     public void updateStyles() {
-
-        /*
-         * Giuseppe Aruta [dic 23 2014] Copied from ActionPerformed. Maybe it is
-         * not elegant but it was easier and it did work
-         */
-
         switch (colorScaleChooser.getSelectedIndex()) {
+
         case 0: {
             valuesColors = null;
             break;
         }
         case 1: {
-            valuesColors = new Color[] { Color.GREEN, Color.YELLOW, Color.RED };
+            if (invertBox.isSelected()) {
+                valuesColors = new Color[] { Color.RED, Color.YELLOW,
+                        Color.GREEN };
+            } else {
+                valuesColors = new Color[] { Color.GREEN, Color.YELLOW,
+                        Color.RED };
+            }
             break;
         }
         case 2: {
-            valuesColors = new Color[] { Color.BLUE, Color.GREEN, Color.RED };
+            if (invertBox.isSelected()) {
+                valuesColors = new Color[] { Color.RED, Color.GREEN, Color.BLUE };
+            } else {
+                valuesColors = new Color[] { Color.BLUE, Color.GREEN, Color.RED };
+            }
             break;
         }
         case 3: {
-            valuesColors = new Color[] { Color.RED, Color.BLUE };
+            if (invertBox.isSelected()) {
+                valuesColors = new Color[] { Color.BLUE, Color.RED };
+            } else {
+                valuesColors = new Color[] { Color.RED, Color.BLUE };
+            }
             break;
         }
         case 4: {
-            valuesColors = new Color[] { Color.BLUE, Color.RED };
+            if (invertBox.isSelected()) {
+                valuesColors = new Color[] { Color.YELLOW, Color.RED };
+            } else {
+                valuesColors = new Color[] { Color.RED, Color.YELLOW };
+            }
             break;
         }
         case 5: {
-            valuesColors = new Color[] { Color.WHITE, Color.BLACK };
+            if (invertBox.isSelected()) {
+                valuesColors = new Color[] { Color.BLACK, Color.WHITE };
+            } else {
+                valuesColors = new Color[] { Color.WHITE, Color.BLACK };
+            }
             break;
         }
         case 6: {
-            valuesColors = new Color[] { Color.BLACK, Color.WHITE };
+            if (invertBox.isSelected()) {
+                valuesColors = new Color[] { Color.WHITE, Color.BLACK,
+                        Color.WHITE, Color.BLACK, Color.WHITE, Color.BLACK,
+                        Color.WHITE, Color.BLACK, Color.WHITE, Color.BLACK,
+                        Color.WHITE, Color.BLACK };
+            } else {
+                valuesColors = new Color[] { Color.BLACK, Color.WHITE,
+                        Color.BLACK, Color.WHITE, Color.BLACK, Color.WHITE,
+                        Color.BLACK, Color.WHITE, Color.BLACK, Color.WHITE,
+                        Color.BLACK, Color.WHITE };
+            }
             break;
         }
         case 7: {
-            valuesColors = new Color[] { Color.decode("#9400D3"), //$NON-NLS-1$
-                    Color.decode("#4B0082"), Color.BLUE, Color.GREEN, //$NON-NLS-1$
-                    Color.YELLOW, Color.ORANGE, Color.RED };
+            // Rainbow
+            if (invertBox.isSelected()) {
+                valuesColors = new Color[] { Color.RED, Color.ORANGE,
+                        Color.YELLOW,
+                        Color.GREEN, //$NON-NLS-1$
+                        Color.BLUE, Color.decode("#4B0082"),
+                        Color.decode("#9400D3") };
+            } else {
+
+                valuesColors = new Color[] { Color.decode("#9400D3"), //$NON-NLS-1$
+                        Color.decode("#4B0082"), Color.BLUE, Color.GREEN, //$NON-NLS-1$
+                        Color.YELLOW, Color.ORANGE, Color.RED };
+            }
             break;
         }
-        case 8: {
-            valuesColors = new Color[] {
-                    new Color(110, 220, 110), //$NON-NLS-1$
-                    new Color(240, 250, 160), new Color(230, 220, 70),
-                    new Color(220, 220, 220), //$NON-NLS-1$
-                    new Color(250, 250, 250) };
+        case 8: {// Color Relief
+            if (invertBox.isSelected()) {
+                valuesColors = new Color[] { new Color(215, 244, 244),
+                        new Color(200, 55, 55), new Color(224, 108, 31),
+                        new Color(251, 255, 128), new Color(46, 154, 88) };
+            } else {
+                valuesColors = new Color[] { new Color(46, 154, 88),
+                        new Color(251, 255, 128), new Color(224, 108, 31),
+                        new Color(200, 55, 55), new Color(215, 244, 244) };
+            }
             break;
         }
         case 9: {
-            valuesColors = new Color[] { new Color(46, 154, 88),
-                    new Color(251, 255, 128), new Color(224, 108, 31),
-                    new Color(200, 55, 55), new Color(215, 244, 244) };
+            // Topo
+            if (invertBox.isSelected()) {
+                valuesColors = new Color[] { new Color(76, 0, 255),
+                        new Color(0, 46, 255),
+                        new Color(0, 229, 255),
+                        new Color(77, 255, 0), //$NON-NLS-1$
+                        new Color(255, 255, 0), new Color(255, 222, 89),
+                        new Color(255, 224, 179) };
+
+            } else {
+                valuesColors = new Color[] { new Color(255, 224, 179),
+                        new Color(255, 222, 89),
+                        new Color(255, 255, 0),
+                        new Color(77, 255, 0), //$NON-NLS-1$
+                        new Color(0, 229, 255), new Color(0, 46, 255),
+                        new Color(76, 0, 255) };
+            }
             break;
         }
         case 10: {
-            valuesColors = new Color[] { new Color(0, 255, 0),
-                    new Color(36, 255, 0), new Color(73, 255, 0),
-                    new Color(109, 255, 0), new Color(146, 255, 0),
-                    new Color(182, 255, 0), new Color(219, 255, 0),
-                    new Color(255, 255, 0), new Color(255, 219, 0),
-                    new Color(255, 182, 0), new Color(255, 146, 0),
-                    new Color(255, 109, 0), new Color(255, 73, 0),
-                    new Color(255, 36, 0), new Color(255, 0, 0) };
+            if (invertBox.isSelected()) {
+                valuesColors = new Color[] { new Color(43, 131, 186),
+                        new Color(171, 221, 164), new Color(255, 255, 191),
+                        new Color(253, 174, 97), new Color(215, 25, 28) };
+            } else {
+                valuesColors = new Color[] { new Color(215, 25, 28),
+                        new Color(253, 174, 97), new Color(255, 255, 191),
+                        new Color(171, 221, 164), new Color(43, 131, 186) };
+            }
             break;
         }
         case 11: {
-            valuesColors = new Color[] { new Color(215, 25, 28),
-                    new Color(253, 174, 97), new Color(171, 221, 164),
-                    new Color(43, 131, 186) };
+            if (invertBox.isSelected()) {
+                valuesColors = new Color[] { new Color(1, 133, 113),
+                        new Color(128, 205, 193), new Color(245, 245, 245),
+                        new Color(223, 194, 125), new Color(166, 97, 26) };
+            } else {
+                valuesColors = new Color[] { new Color(166, 97, 26),
+                        new Color(223, 194, 125), new Color(245, 245, 245),
+                        new Color(128, 205, 193), new Color(1, 133, 113) };
+            }
             break;
         }
-
         case 12: {
-            valuesColors = new Color[] { new Color(255, 0, 0),
-                    new Color(255, 128, 0), new Color(0, 255, 0),
-                    new Color(0, 255, 128), new Color(0, 255, 255),
-                    new Color(0, 128, 255), new Color(0, 0, 255),
-                    new Color(255, 0, 255) };
+            if (invertBox.isSelected()) {
+                valuesColors = new Color[] { new Color(5, 113, 176),
+                        new Color(146, 197, 222), new Color(247, 247, 247),
+                        new Color(244, 165, 130), new Color(202, 0, 32) };
+            } else {
+                valuesColors = new Color[] { new Color(202, 0, 32),
+                        new Color(244, 165, 130), new Color(247, 247, 247),
+                        new Color(146, 197, 222), new Color(5, 113, 176) };
+            }
             break;
         }
-
         case 13: {
-
-            valuesColors = new Color[] { new Color(213, 62, 79),
-                    new Color(244, 109, 67), new Color(253, 174, 97),
-                    new Color(254, 224, 139), new Color(230, 245, 152),
-                    new Color(171, 221, 164), new Color(102, 194, 165),
-                    new Color(50, 136, 189) };
+            if (invertBox.isSelected()) {
+                valuesColors = new Color[] { new Color(44, 123, 182),
+                        new Color(171, 217, 233), new Color(255, 255, 191),
+                        new Color(253, 174, 97), new Color(215, 25, 28) };
+            } else {
+                valuesColors = new Color[] { new Color(215, 25, 28),
+                        new Color(253, 174, 97), new Color(255, 255, 191),
+                        new Color(171, 217, 233), new Color(44, 123, 182) };
+            }
             break;
         }
         case 14: {
-
-            valuesColors = new Color[] { new Color(158, 1, 66),
-                    new Color(213, 62, 79), new Color(244, 109, 67),
-                    new Color(253, 174, 97), new Color(254, 224, 139),
-                    new Color(255, 255, 191), new Color(230, 245, 152),
-                    new Color(171, 221, 164), new Color(102, 194, 165),
-                    new Color(50, 136, 189), new Color(94, 79, 162) };
-
+            if (invertBox.isSelected()) {
+                valuesColors = new Color[] { new Color(26, 150, 65),
+                        new Color(166, 217, 106), new Color(255, 255, 191),
+                        new Color(253, 174, 97), new Color(215, 25, 28) };
+            } else {
+                valuesColors = new Color[] { new Color(215, 25, 28),
+                        new Color(253, 174, 97), new Color(255, 255, 191),
+                        new Color(166, 217, 106), new Color(26, 150, 65) };
+            }
             break;
         }
         case 15: {
-
-            valuesColors = new Color[] { new Color(218, 179, 122),
-                    new Color(213, 213, 149), new Color(127, 166, 122),
-                    new Color(151, 106, 47), new Color(121, 117, 10),
-                    new Color(254, 254, 254), new Color(255, 255, 255) };
-
+            if (invertBox.isSelected()) {
+                valuesColors = new Color[] { Color.RED, Color.WHITE };
+            } else {
+                valuesColors = new Color[] { Color.WHITE, Color.RED };
+            }
             break;
         }
         case 16: {
-
-            valuesColors = new Color[] { Color.WHITE, Color.RED };
-
+            if (invertBox.isSelected()) {
+                valuesColors = new Color[] { Color.GREEN, Color.WHITE };
+            } else {
+                valuesColors = new Color[] { Color.WHITE, Color.GREEN };
+            }
             break;
         }
         case 17: {
-
-            valuesColors = new Color[] { Color.WHITE, Color.GREEN };
-
-            break;
-        }
-        case 18: {
-
-            valuesColors = new Color[] { Color.WHITE, Color.BLUE };
-
+            if (invertBox.isSelected()) {
+                valuesColors = new Color[] { Color.BLUE, Color.WHITE };
+            } else {
+                valuesColors = new Color[] { Color.WHITE, Color.BLUE };
+            }
             break;
         }
         }
-        RasterColorEditor colorEditor = new RasterColorEditor(layer);
         try {
-            colorEditor.changeColors(plugInContext.getWorkbenchContext(),
-                    valuesColors,
+            changeColorsRamp(plugInContext.getWorkbenchContext(), valuesColors,
                     GUIUtil.alphaColor(NoDataColorPanel.getFillColor(), alpha),
                     Float.parseFloat(fromValue.getText()),
                     Float.parseFloat(toValue.getText()));
+
         } catch (NumberFormatException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -647,141 +496,16 @@ public class RasterColorEditorPanel extends JPanel implements ValueChecker,
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-
         setVisible(false);
         layer.fireAppearanceChanged();
         setVisible(true);
         return;
-        /*
-         * } else { plugInContext.getWorkbenchFrame().warnUser("min > max!");
-         * //$NON-NLS-1$ return; }
-         */
-
     }
 
-    public void changeColors(WorkbenchContext context, Color[] colors,
-            Color noDataColor, double min, double max)
-            throws NoninvertibleTransformException, IOException {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        updateStyles();
 
-        if (colors == null || colors.length == 0) {
-            layer.setNeedToKeepImage(false);
-            layer.flushImages(true);
-            //layer.setWholeImageEnvelope(layer.getWholeImageEnvelope());
-            context.getLayerViewPanel().getViewport().update();
-            return;
-        }
-
-        colorGenerator = new ColorGenerator(35, colors);
-
-        RasterSymbology symbology = new RasterSymbology(RasterSymbology.ColorMapType.RAMP);
-        
-        min = layer.getMetadata().getStats().getMin(0);
-        max = layer.getMetadata().getStats().getMax(0);
-        double interval = (max - min) / colorGenerator.getSteps();
-        
-        symbology.addColorMapEntry(layer.getNoDataValue(), noDataColor);
-        for(int c=0; c<colorGenerator.getSteps(); c++) {
-            Color color = colorGenerator.getColor(c);
-            double value = layer.getMetadata().getStats().getMin(0) + c * interval;
-            symbology.addColorMapEntry(value, color);
-        }
-        
-        layer.setSymbology(symbology);
-//        
-//        
-//        Raster raster = layer.getImage().getRaster();
-//
-//        /**
-//         * TODO: make the stuff below work. Not sure how, becasue the three
-//         * GeoTools classes have a lot of dependencies... so one should use the
-//         * geotools lib directly???
-//         */
-//
-//        /*
-//         * final String path; final Unit unit = null; final Category[]
-//         * categories; final CoordinateReferenceSystem crs; final Rectangle2D
-//         * bounds;
-//         * 
-//         * 
-//         * Category[] categories = new Category[] { new Category("val1", color1,
-//         * new NumberRange(1, 255), new NumberRange(min, max)), new
-//         * Category("val2", noDataColor, 0) };
-//         * 
-//         * GridSampleDimension GSD = new GridSampleDimension(categories, null);
-//         * GSD = GSD.geophysics(true);
-//         * 
-//         * 
-//         * int width = image.getData().getWidth(); int height =
-//         * image.getData().getHeight();
-//         * 
-//         * WritableRaster data = RasterFactory.createBandedRaster(
-//         * java.awt.image.DataBuffer.TYPE_FLOAT, width, height, 1, null);
-//         * WritableRaster oldData = (WritableRaster) image.getData();
-//         * 
-//         * for (int i = 0; i < height; i++) { for (int j = 0; j < width; j++) {
-//         * data.setSample(j, i, 0, oldData.getSampleFloat(j, i, 0)); } }
-//         */
-//        // OpenJUMPSextanteRasterLayer ojraster = new
-//        // OpenJUMPSextanteRasterLayer();
-//        // ojraster.create(layer);
-//        // double rasterMaxValue = ojraster.getMaxValue();
-//        // double rasterMinValue = ojraster.getMinValue();
-//        int width = raster.getWidth();
-//        int height = raster.getHeight();
-//        BufferedImage newImage = new BufferedImage(width, height,
-//                BufferedImage.TYPE_4BYTE_ABGR);
-//        int numOfSteps = colorGenerator.getSteps();
-//
-//        for (int i = 0; i < height; i++) {
-//            for (int j = 0; j < width; j++) {
-//                float value = raster.getSampleFloat(j, i, 0);
-//
-//                if (value == Double.POSITIVE_INFINITY) {
-//                    newImage.setRGB(j, i, Color.TRANSLUCENT);
-//                } else {
-//                    int intColor = (int) ((value - min) / (max - min) * (numOfSteps - 1));
-//
-//                    /*
-//                     * black color indicates that value is out of the min/max
-//                     * area:
-//                     */
-//                    if (intColor >= numOfSteps || intColor < 0) {
-//                        newImage.setRGB(j, i, Color.BLACK.getRGB());
-//                        // newImage.setRGB(j, i, (new
-//                        // Color(Color.BLACK.getRGB(), true)).getRGB());
-//                        // newImage.setRGB(j, i, Color.BLACK.getRGB());
-//                    } else {
-//                        Color newColor = colorGenerator.getColor(intColor);
-//                        if (newColor == null) {
-//                            // newImage.setRGB(j, i, Color.BLACK.getRGB());
-//                        }
-//
-//                        newImage.setRGB(j, i, newColor.getRGB());
-//                    }
-//                }
-//
-//            }
-//        }
-//
-//        /**
-//         * TODO: make this work
-//         */
-//        /*
-//         * BufferedImage BufImage = new BufferedImage(GSD.getColorModel(), data,
-//         * false, null);
-//         */
-//
-//        //PlanarImage pimage = PlanarImage.wrapRenderedImage(newImage);
-//
-//        /*
-//         * System.out.println("databuffer: " +
-//         * newImage.getRaster().getDataBuffer() + "samplemodel: " +
-//         * newImage.getRaster().getSampleModel());
-//         */
-//        layer.setNeedToKeepImage(true);
-//        layer.setImage(newImage);
-//        layer.setWholeImageEnvelope(layer.getWholeImageEnvelope());
-//        context.getLayerViewPanel().getViewport().update();
     }
 
 }
