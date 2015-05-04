@@ -1,4 +1,14 @@
 # for display continuity sake please use 2 spaces instead of tabs
+
+2015-05-04 ede
+  oj_linux.sh
+  * fix Gentoo java version '' insufficient bug
+  http://sourceforge.net/p/jump-pilot/feature-requests/221
+  * java version check now more robust, warns only if version 
+    cannot be detected properly
+  * follow links to oj_linux.sh now indefinitely
+  * resolve JUMP_HOME now without . and ..
+
 2015-04-12 Giuseppe Aruta <giuseppe_aruta@yahoo.it>
   * Raster Color Editor Panel. Added an option to invert color range and an option to set
     values outside choosen range to transparent. Optimized color ramp. Added more color ramps

@@ -32,6 +32,9 @@ is_decimal(){
   expr "$1" : '^[0-9][0-9]*\.[0-9][0-9]*$' > /dev/null 2>&1
 }
 
+## check if parameter is an absolute path
+relPath(){ echo "$@" | awk '/^\//{exit 1}'; }
+
 ## end function, delays closing of terminal
 end(){
   # show error for some time to prohibit window closing on X
@@ -78,13 +81,20 @@ macinstall(){
   postinstall "$1"
 }
 
-## detect home folder
-if(test -L "$0") then
-  auxlink=`ls -l "$0" | sed 's/^[^>]*-> //g'`
-  JUMP_HOME=`dirname "$auxlink"`/..
-else 
-  JUMP_HOME=`dirname "$0"`/..
-fi
+ME="$0"
+## absolutify home folder
+relPath "$ME" && ME="$(pwd)/$ME"
+# filter multiple // and ./ and replace ..
+ME=$(echo "$ME"|awk '{gsub(/\/+/,"/",$0);gsub(/\/\.\//,"/",$0);while($0~/\/\.\.\//&&last!=$0){last=$0;gsub(/\/([\.][^\.]|[^\.][\.]|[^\.][^\.]|[^\/][^\/][^\/]+)\/\.\.\//,"/",$0);};print}')
+# resolv possible link to our actual location 
+while [ -L "$ME" ]; do
+  MEBASE=$(dirname "$ME")
+  ME=$(readlink -n "$ME")
+  relPath "$ME" && ME="$MEBASE/$ME"
+done
+JUMP_HOME=$(dirname $(dirname "$ME"))
+echo ---JUMP_HOME---
+echo $JUMP_HOME
 
 ## run postinstalls only, if requested
 case "$1" in
@@ -116,8 +126,9 @@ if [ -d "$JUMP_SETTINGS" ]; then
     # check availability and issue warning in case
   fi
 fi
-[ ! -d "$JUMP_SETTINGS" ] || [ ! -w "$JUMP_SETTINGS" ] && \
+if [ ! -d "$JUMP_SETTINGS" ] || [ ! -w "$JUMP_SETTINGS" ]; then 
   echo "Warning: Cannot access settings folder '$JUMP_SETTINGS' for writing."
+fi
 
 ## search java, order is:
 # 1. first in oj_home/jre
@@ -139,11 +150,15 @@ fi
 add the location of java to your PATH environment variable." && ERROR=1 && end
 
 # resolve recursive links to java binary
-relPath(){ echo $1 | awk '/^\//{exit 1}'; }
 relPath "$JAVA" && JAVA="$(pwd)/$JAVA"
 while [ -L "${JAVA}" ]; do
   JDIR=$(dirname "$JAVA")
-  JAVA=$(readlink -n "${JAVA}")
+  JAVA_CANDIDATE=$(readlink -n "${JAVA}")
+  # protect against Gentoo's run-java-tool.bash wrapper
+  if [ $(basename "$JAVA") != $(basename "$JAVA_CANDIDATE") ]; then
+    break
+  fi
+  JAVA="$JAVA_CANDIDATE"
   relPath "$JAVA" && JAVA="${JDIR}/${JAVA}"
 done
 # java executable file?
@@ -155,7 +170,14 @@ JAVA_VERSIONSTRING="$("$JAVA" -version 2>&1)"
 JAVA_VERSION=$(echo $JAVA_VERSIONSTRING | awk -F'"' '/^java version/{print $2}' | awk -F'.' '{print $1"."$2}')
 JAVA_ARCH=$(echo $JAVA_VERSIONSTRING | grep -q -i 64-bit && echo x64 || echo x86)
 JAVA_NEEDED="1.6"
-if ! is_decimal "$JAVA_VERSION" || ! awk "BEGIN{if($JAVA_VERSION < $JAVA_NEEDED)exit 1}"; then
+if ! is_decimal "$JAVA_VERSION"; then
+  echo "Warning! Your java version could not be detected properly. Please report this issue to the OJ developer list. The result was
+---JAVA_VERSIONSTRING---
+$JAVA_VERSIONSTRING
+---JAVA_VERSION---
+$JAVA_VERSION
+---"
+elif ! awk "BEGIN{if($JAVA_VERSION < $JAVA_NEEDED)exit 1}"; then
   echo "Your java version '$JAVA_VERSION' is insufficient to run OpenJUMP.
 Please provide an at least a version '$JAVA_NEEDED' Java Runtime."
   ERROR=1
@@ -163,8 +185,9 @@ Please provide an at least a version '$JAVA_NEEDED' Java Runtime."
 fi
 
 # always print java infos
-echo "Using '$(basename "${JAVA}")' found in '$(dirname "${JAVA}")"
-echo $("$JAVA" -version 2>&1|awk 'BEGIN{ORS=""}{print $0"; "}')
+echo ---JAVA---
+echo "Using '$(basename "${JAVA}")' found in '$(dirname "${JAVA}")'"
+"$JAVA" -version 2>&1|awk 'BEGIN{ORS=""}{print $0"; "}END{print "\n"}'
 
 JUMP_PROFILE=~/.jump/openjump.profile
 if [ -f "$JUMP_PROFILE" ]; then
