@@ -315,61 +315,6 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
             else {
                 createNewLayer(monitor, context, inputFD, resultMap, featureSchema);
             }
-
-            /*
-            // Post-process result
-            if ((Boolean) getParameter(P_COPY_ATTRIBUTE)) {
-                FeatureCollection resultFeatureColl = new FeatureDataset(featureSchema);
-                Iterator iResult = resultMap.values().iterator();
-                for (Iterator iSource = inputFD.iterator(); iSource.hasNext(); ) {
-                    Feature sourceFeature = (Feature) iSource.next();
-                    Geometry gResult = (Geometry) iResult.next();
-                    if (!(gResult == null || gResult.isEmpty())) {
-                        Feature newFeature = sourceFeature.clone(false);
-                        newFeature.setGeometry(gResult);
-                        resultFeatureColl.add(newFeature);
-                    }
-                    // If both left and right side buffer have been computed
-                    // we have 2 features in resultGeomColl for every single feature in InputFD
-                    //if ((Boolean)getParameter(P_LEFT_SINGLE_SIDED) && (Boolean)getParameter(P_RIGHT_SINGLE_SIDED)) {
-                    //    gResult = (Geometry) iResult.next();
-                    //    if (!(gResult == null || gResult.isEmpty())) {
-                    //        Feature newFeature = sourceFeature.clone(false);
-                    //        newFeature.setGeometry(gResult);
-                    //        resultFeatureColl.add(newFeature);
-                    //    }
-                    //}
-                    if (monitor.isCancelRequested()) break;
-                }
-                resultFC = resultFeatureColl;
-            } else {
-                resultFC = FeatureDatasetFactory.createFromGeometry(resultMap.values());
-            }
-            if ((Boolean)getParameter(P_UNION_RESULT)) {
-                monitor.report(I18N.get("ui.plugin.analysis.BufferPlugIn.union-buffered-features"));
-                Collection geoms = FeatureUtil.toGeometries(resultFC.getFeatures());
-                Geometry g = UnaryUnionOp.union(geoms);
-                geoms.clear();
-                if (!(g == null || g.isEmpty())) geoms.add(g);
-                resultFC = FeatureDatasetFactory.createFromGeometry(geoms);
-            }
-            if (resultFC.isEmpty()) {
-                context.getWorkbenchFrame()
-                        .warnUser(I18N.get("ui.plugin.analysis.BufferPlugIn.empty-result-set"));
-                return;
-            }
-            context.getLayerManager().addCategory(StandardCategoryNames.RESULT);
-            String name;
-            if (!(Boolean) getParameter("UseSelection"))
-                name = layer.getName();
-            else
-                name = I18N.get("ui.MenuNames.SELECTION");
-            name = I18N.get("com.vividsolutions.jump.workbench.ui.plugin.analysis.BufferPlugIn") + "-" + name;
-            //if (endCapStyleCode != BufferParameters.CAP_ROUND) {
-            //    name = name + "-" + endCapStyle(endCapStyleCode);
-            //}
-            context.addLayer(StandardCategoryNames.RESULT, name, resultFC);
-            */
         } catch(Exception e) {
             throw e;
         }
@@ -383,10 +328,9 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
         FeatureCollection resultFC = new FeatureDataset(featureSchema);
         if ((Boolean) getParameter(P_COPY_ATTRIBUTE)) {
             FeatureCollection resultFeatureColl = new FeatureDataset(featureSchema);
-            Iterator iResult = resultMap.values().iterator();
             for (Iterator iSource = inputFD.iterator(); iSource.hasNext(); ) {
                 Feature sourceFeature = (Feature) iSource.next();
-                Geometry gResult = (Geometry) iResult.next();
+                Geometry gResult = resultMap.get(sourceFeature.getID());
                 if (!(gResult == null || gResult.isEmpty())) {
                     Feature newFeature = sourceFeature.clone(false);
                     newFeature.setGeometry(gResult);

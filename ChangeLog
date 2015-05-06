@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2015-05-07
+  * Fix a horrible bug in Buffer plugin (attributes were not preserved)
+
 2015-05-04 ede
   oj_linux.sh
   * fix Gentoo java version '' insufficient bug
