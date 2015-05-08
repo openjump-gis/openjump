@@ -4204,7 +4204,7 @@ psd, wbmp, tga, tiff, hdr, pam, xbm, jpg, bmp, pnm, png, ppm, dcx, pgm, gif]
 2007-08-16 beckerl <becker.larry@gmail.com>
         * fixed a problem with the Toggle Visibility Layer Name
           popup menu item.  It was totally nonfunctional.
-          org.openjump.core.ui.plugin.layer.ToggleVisiblityPlugIn.java
+          org.openjump.core.ui.plugin.layer.ToggleVisibilityPlugIn.java
 
 2007-08-16 michaudm <michael.michaud@free.fr>
 
@@ -4316,7 +4316,7 @@ psd, wbmp, tga, tiff, hdr, pam, xbm, jpg, bmp, pnm, png, ppm, dcx, pgm, gif]
 2007-08-03 Andreas Schmitz <schmitz@lat-lon.de>
 
         * src/org/openjump/OpenJumpConfiguration.java,
-          src/org/openjump/core/ui/plugin/layer/ToggleVisiblityPlugIn.java,
+          src/org/openjump/core/ui/plugin/layer/ToggleVisibilityPlugIn.java,
           src/org/openjump/core/ui/plugin/layer/ChangeLayerableNamePlugIn.java,
           src/com/vividsolutions/jump/workbench/ui/plugin/wms/AddWMSQueryPlugIn.java:
           Added context menu entry on layer list that allows changing the layer name.
@@ -6977,7 +6977,7 @@ psd, wbmp, tga, tiff, hdr, pam, xbm, jpg, bmp, pnm, png, ppm, dcx, pgm, gif]
           edittoolbox/cursortools/CrossHairCursor.gif,
           edittoolbox/cursortools/RotateSelectedItemTool.java,
           edittoolbox/cursortools/ScaleSelectedItemsTool.java,
-          layer/AddSIDLayerPlugIn.java, layer/ToggleVisiblityPlugIn.java:
+          layer/AddSIDLayerPlugIn.java, layer/ToggleVisibilityPlugIn.java:
           update isa tools 1.1
 
 2006-02-12  mentaer <sstein@geo.unizh.ch>
@@ -7663,7 +7663,7 @@ psd, wbmp, tga, tiff, hdr, pam, xbm, jpg, bmp, pnm, png, ppm, dcx, pgm, gif]
           core/ui/plugin/edittoolbox/tab/absAngle.png,
           core/ui/plugin/edittoolbox/tab/relAngle.png,
           core/ui/plugin/layer/AddSIDLayerPlugIn.java,
-          core/ui/plugin/layer/ToggleVisiblityPlugIn.java,
+          core/ui/plugin/layer/ToggleVisibilityPlugIn.java,
           io/SIDLayer.java, io/SIDLayer.java2xml: adding isa plugin
           functionality (without string translation in all property files)
 

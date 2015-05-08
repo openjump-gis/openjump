@@ -46,7 +46,7 @@ import org.openjump.core.ui.plugin.file.DataSourceQueryChooserOpenWizard;
 import org.openjump.core.ui.plugin.file.OpenWizardPlugIn;
 //import org.openjump.core.ui.plugin.layer.ChangeSRIDPlugIn;
 //import org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn;
-//import org.openjump.core.ui.plugin.layer.ToggleVisiblityPlugIn;
+//import org.openjump.core.ui.plugin.layer.ToggleVisibilityPlugIn;
 import org.openjump.core.ui.plugin.layer.pirolraster.RasterImageContextMenu;
 //import org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn;
 //import org.openjump.core.ui.plugin.style.ImportArcMapStylePlugIn;
@@ -240,7 +240,7 @@ public class OpenJumpConfiguration {
 //    myFullPathPlugin.initialize(new PlugInContext(workbenchContext, null, null,
 //      null, null));
 //
-//    ToggleVisiblityPlugIn myToggleVisPlugIn = new ToggleVisiblityPlugIn();
+//    ToggleVisibilityPlugIn myToggleVisPlugIn = new ToggleVisibilityPlugIn();
 //    myToggleVisPlugIn.initialize(new PlugInContext(workbenchContext, null,
 //      null, null, null));
 

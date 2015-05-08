@@ -55,11 +55,11 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
-public class ToggleVisiblityPlugIn extends AbstractPlugIn {
+public class ToggleVisibilityPlugIn extends AbstractPlugIn {
   private final static String toggleVisibility = I18N
-      .get("org.openjump.core.ui.plugin.layer.ToggleVisiblityPlugIn.Toggle-Visibility");
+      .get("org.openjump.core.ui.plugin.layer.ToggleVisibilityPlugIn");
   private final static String errorSeeOutputWindow = I18N
-      .get("org.openjump.core.ui.plugin.layer.ToggleVisiblityPlugIn.Error-See-Output-Window");
+      .get("org.openjump.core.ui.plugin.layer.ToggleVisibilityPlugIn.Error-See-Output-Window");
   private final static String layerName = I18N
       .get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Layer-Name");
 
@@ -72,14 +72,14 @@ public class ToggleVisiblityPlugIn extends AbstractPlugIn {
     featureInstaller.addPopupMenuItem(layerNamePopupMenu, this,
         toggleVisibility+"{pos:2}", true,
         GUIUtil.toSmallIcon((ImageIcon) this.getIcon()),
-        ToggleVisiblityPlugIn.createEnableCheck(workbenchContext));
+        ToggleVisibilityPlugIn.createEnableCheck(workbenchContext));
 
     JPopupMenu wmsLayerNamePopupMenu = workbenchContext.getWorkbench()
         .getFrame().getWMSLayerNamePopupMenu();
     featureInstaller.addPopupMenuItem(wmsLayerNamePopupMenu, this,
         toggleVisibility+"{pos:2}", true,
         GUIUtil.toSmallIcon((ImageIcon) this.getIcon()),
-        ToggleVisiblityPlugIn.createEnableCheck(workbenchContext));
+        ToggleVisibilityPlugIn.createEnableCheck(workbenchContext));
 
   }
 
@@ -108,7 +108,7 @@ public class ToggleVisiblityPlugIn extends AbstractPlugIn {
       context.getWorkbenchFrame().warnUser(errorSeeOutputWindow);
       context.getWorkbenchFrame().getOutputFrame().createNewDocument();
       context.getWorkbenchFrame().getOutputFrame()
-          .addText("ToggleVisiblityPlugIn Exception:" + e.toString());
+          .addText("ToggleVisibilityPlugIn Exception:" + e.toString());
       return false;
     }
     return true;

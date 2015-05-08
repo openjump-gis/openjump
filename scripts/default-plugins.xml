@@ -964,8 +964,8 @@
 
 	<!-- ================ LayerName Popup Menu =============================== -->
 	<plug-in>
-		org.openjump.core.ui.plugin.layer.ToggleVisiblityPlugIn
-	</plug-in>
+        org.openjump.core.ui.plugin.layer.ToggleVisibilityPlugIn
+    </plug-in>
 	<plug-in>
 		com.vividsolutions.jump.workbench.ui.plugin.EditablePlugIn
 		<menus>
@@ -1195,7 +1195,7 @@
 
 	<!-- ================ WMS LayerName Popup Menu =============================== -->
 	<plug-in>
-		org.openjump.core.ui.plugin.layer.ToggleVisiblityPlugIn
+		org.openjump.core.ui.plugin.layer.ToggleVisibilityPlugIn
 		<menus>
 			<layername-popup-wms />
 		</menus>
@@ -1258,7 +1258,7 @@
 
 	<!-- ================ Sextante Raster LayerName Popup Menu =============== -->
 	<plug-in>
-		org.openjump.core.ui.plugin.layer.ToggleVisiblityPlugIn
+		org.openjump.core.ui.plugin.layer.ToggleVisibilityPlugIn
 		<menus>
 			<layername-popup-raster install="true" checkbox="true" />
 		</menus>
