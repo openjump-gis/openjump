@@ -1,6 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
-2015-05-07
+2015-05-10 mmichaud <m.michael.michaud@orange.fr>
+  * Repair and improve SaveViewAsBeanTool
+
+2015-05-07 mmichaud <m.michael.michaud@orange.fr>
   * Fix a horrible bug in Buffer plugin (attributes were not preserved)
 
 2015-05-04 ede
