@@ -154,7 +154,7 @@ public abstract class AbstractSextanteRasterLayer implements ISextanteRasterLaye
 
 	}
 
-	public double getWindowCellSize(){
+	public java.awt.Point.Double getWindowCellSize(){
 
 		return m_GridWrapper.getCellSize();
 
@@ -319,16 +319,17 @@ public abstract class AbstractSextanteRasterLayer implements ISextanteRasterLaye
 	private void setConstants(){
 
 		int i;
-		double dCellSize = getWindowCellSize();
-
+		double dCellSizeX = getWindowCellSize().x;
+                double dCellSizeY = getWindowCellSize().y;
+                
 		m_dDist = new double[8];
 
 	    for (i = 0; i < 8; i++){
-	        m_dDist[i] = Math.sqrt ( m_iOffsetX[i] * dCellSize * m_iOffsetX[i] * dCellSize
-	                        + m_iOffsetY[i] * dCellSize * m_iOffsetY[i] * dCellSize );
+	        m_dDist[i] = Math.sqrt ( m_iOffsetX[i] * dCellSizeX * m_iOffsetX[i] * dCellSizeX
+	                        + m_iOffsetY[i] * dCellSizeY * m_iOffsetY[i] * dCellSizeY );
 	    }
 
-	    _2DX = dCellSize * 2;
+	    _2DX = dCellSizeX * 2;
 
 	}
 

@@ -169,7 +169,8 @@ public class CreatePolygonGridFromSelectedImageLayerPlugIn extends AbstractPlugI
 		monitor.report(sCreatingPolygons);
 		int nx = rstLayer.getLayerGridExtent().getNX();
 		int ny = rstLayer.getLayerGridExtent().getNY();
-		double halfCellDim = 0.5 * rstLayer.getLayerGridExtent().getCellSize();
+		double halfCellDimX = 0.5 * rstLayer.getLayerGridExtent().getCellSize().x;
+                double halfCellDimY = 0.5 * rstLayer.getLayerGridExtent().getCellSize().y;
 		int numPoints = nx * ny;
 		if(numPoints > this.maxCells){
 			context.getWorkbenchFrame().warnUser(sToManyPolygons + ": " + numPoints + " > " + this.maxCells);
@@ -180,10 +181,10 @@ public class CreatePolygonGridFromSelectedImageLayerPlugIn extends AbstractPlugI
 				Feature ftemp = new BasicFeature(fs); 
 				Point2D pt = rstLayer.getLayerGridExtent().getWorldCoordsFromGridCoords(x, y);				
 				Coordinate[] coords = new Coordinate[5];
-				coords[0] = new Coordinate(pt.getX()-halfCellDim , pt.getY()+halfCellDim); //topleft
-				coords[1] = new Coordinate(pt.getX()+halfCellDim , pt.getY()+halfCellDim); //topright
-				coords[2] = new Coordinate(pt.getX()+halfCellDim , pt.getY()-halfCellDim); //lowerright
-				coords[3] = new Coordinate(pt.getX()-halfCellDim , pt.getY()-halfCellDim); //lowerleft
+				coords[0] = new Coordinate(pt.getX()-halfCellDimX , pt.getY()+halfCellDimY); //topleft
+				coords[1] = new Coordinate(pt.getX()+halfCellDimX , pt.getY()+halfCellDimY); //topright
+				coords[2] = new Coordinate(pt.getX()+halfCellDimX , pt.getY()-halfCellDimY); //lowerright
+				coords[3] = new Coordinate(pt.getX()-halfCellDimX , pt.getY()-halfCellDimY); //lowerleft
 				//-- to close poly
 				coords[4] = (Coordinate)coords[0].clone(); //topleft
 				//-- create the cell poly

@@ -457,15 +457,15 @@ public class ProfileGraphTool extends MultiClickTool {
 
         if (dx > 0.0 || dy > 0.0) {
             if (dx > dy) {
-                dx /= this.rstLayer.getWindowCellSize();
+                dx /= this.rstLayer.getWindowCellSize().x;
                 n = dx;
                 dy /= dx;
-                dx = this.rstLayer.getWindowCellSize();
+                dx = this.rstLayer.getWindowCellSize().x;
             } else {
-                dy /= this.rstLayer.getWindowCellSize();
+                dy /= this.rstLayer.getWindowCellSize().y;
                 n = dy;
                 dx /= dy;
-                dy = this.rstLayer.getWindowCellSize();
+                dy = this.rstLayer.getWindowCellSize().y;
             }
 
             if (x2 < x) {

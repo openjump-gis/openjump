@@ -49,7 +49,7 @@ public abstract class GridWrapper {
 	protected int m_iOffsetY;
 
 	private int m_iInterpolationMethod = INTERPOLATION_BSpline;
-	private double m_dCellSize; //cellsize of the layer, not the window
+	private java.awt.Point.Double m_dCellSize; //cellsize of the layer, not the window
 
 	protected GridExtent m_WindowExtent;
 
@@ -115,7 +115,7 @@ public abstract class GridWrapper {
 
 	}
 
-	public double getCellSize(){
+	public java.awt.Point.Double getCellSize(){
 
 		return m_WindowExtent.getCellSize();
 
@@ -139,8 +139,8 @@ public abstract class GridWrapper {
 		double	dx, dy;
 		double dValue;
 
-		x	= (int) Math.floor(xPosition = (xPosition - m_Layer.getLayerGridExtent().getXMin()) / m_dCellSize);
-		y	= (int) Math.floor(yPosition = (m_Layer.getLayerGridExtent().getYMax() - yPosition ) / m_dCellSize);
+		x = (int) Math.floor(xPosition = (xPosition - m_Layer.getLayerGridExtent().getXMin()) / m_dCellSize.x);
+		y = (int) Math.floor(yPosition = (m_Layer.getLayerGridExtent().getYMax() - yPosition ) / m_dCellSize.y);
 
 		dValue = getCellValueInLayerCoords(x,y,band);
 

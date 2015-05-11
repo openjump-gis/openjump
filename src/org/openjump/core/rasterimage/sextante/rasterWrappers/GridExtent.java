@@ -37,7 +37,8 @@ public class GridExtent {
 	double m_dYMin;
 	double m_dXMax;
 	double m_dYMax;
-	double m_dCellSize = 1;
+	double m_dCellSizeX = 1;
+        double m_dCellSizeY = 1;
 	int m_iNX;
 	int m_iNY;
 
@@ -57,7 +58,8 @@ public class GridExtent {
 
 		if(layer instanceof ISextanteRasterLayer){
 			ISextanteRasterLayer rasterLayer = (ISextanteRasterLayer) layer;
-			m_dCellSize = rasterLayer.getLayerGridExtent().getCellSize();
+			m_dCellSizeX = rasterLayer.getLayerGridExtent().getCellSize().x;
+                        m_dCellSizeY = rasterLayer.getLayerGridExtent().getCellSize().y;
 		}
 
 		recalculateNXAndNY();
@@ -98,19 +100,16 @@ public class GridExtent {
 	 * Returns the cellsize of this extent
 	 * @return the cells size of this extent
 	 */
-	public double getCellSize() {
+	public java.awt.Point.Double getCellSize() {
 
-		return m_dCellSize;
+		return new java.awt.Point.Double(m_dCellSizeX, m_dCellSizeY);
 
 	}
+        
+	public void setCellSize(double cellSizeX, double cellSizeY) {
 
-	/**
-	 * Sets a new cellsize for this extent
-	 * @param cellSize the new cellsize
-	 */
-	public void setCellSize(double cellSize) {
-
-		m_dCellSize = cellSize;
+		m_dCellSizeX = cellSizeX;
+                m_dCellSizeY = cellSizeY;
 		recalculateNXAndNY();
 
 	}
@@ -137,10 +136,10 @@ public class GridExtent {
 
 	private void recalculateNXAndNY(){
 
-		m_iNY = (int) Math.floor((m_dYMax - m_dYMin) / m_dCellSize);
-		m_iNX = (int) Math.floor((m_dXMax - m_dXMin) / m_dCellSize);
-		m_dXMax = m_dXMin + m_dCellSize * m_iNX;
-		m_dYMax = m_dYMin + m_dCellSize * m_iNY;
+		m_iNY = (int) Math.floor((m_dYMax - m_dYMin) / m_dCellSizeY);
+		m_iNX = (int) Math.floor((m_dXMax - m_dXMin) / m_dCellSizeX);
+		m_dXMax = m_dXMin + m_dCellSizeX * m_iNX;
+		m_dYMax = m_dYMin + m_dCellSizeY * m_iNY;
 
 	}
 
@@ -240,15 +239,18 @@ public class GridExtent {
 		double dOffsetRows;
 		final double MIN_DIF = 0.00001;
 
-		if (extent.getCellSize() != this.getCellSize()){
+		if (extent.getCellSize().x != this.getCellSize().x){
+			return false;
+		}
+                if (extent.getCellSize().y != this.getCellSize().y){
 			return false;
 		}
 		dOffset = Math.abs(extent.getXMin() - this.getXMin());
-		dOffsetCols = dOffset / this.getCellSize();
+		dOffsetCols = dOffset / this.getCellSize().x;
 		bFitsX = (dOffsetCols - Math.floor(dOffsetCols + 0.5) < MIN_DIF);
 
 		dOffset = Math.abs(extent.getYMax() - this.getYMax());
-		dOffsetRows = dOffset / this.getCellSize();
+		dOffsetRows = dOffset / this.getCellSize().y;
 		bFitsY = (Math.abs(dOffsetRows - Math.floor(dOffsetRows + 0.5)) < MIN_DIF);
 
 		return bFitsX && bFitsY;
@@ -266,7 +268,8 @@ public class GridExtent {
 			&& m_dXMax == extent.getXMax()
 			&& m_dYMin == extent.getYMin()
 			&& m_dYMax == extent.getYMax()
-			&& m_dCellSize == extent.getCellSize();
+			&& m_dCellSizeX == extent.getCellSize().x
+                        && m_dCellSizeY == extent.getCellSize().y;
 
 	}
 
@@ -281,7 +284,8 @@ public class GridExtent {
 		m_dXMax = Math.max(extent.getXMax(), m_dXMax);
 		m_dYMin = Math.min(extent.getYMin(), m_dYMin);
 		m_dYMax = Math.max(extent.getYMax(), m_dYMax);
-		m_dCellSize = Math.min(extent.getCellSize(), m_dCellSize);
+		m_dCellSizeX = Math.min(extent.getCellSize().x, m_dCellSizeX);
+                m_dCellSizeY = Math.min(extent.getCellSize().y, m_dCellSizeY);
 		recalculateNXAndNY();
 
 	}
@@ -294,8 +298,8 @@ public class GridExtent {
 	 */
 	public GridCell getGridCoordsFromWorldCoords(Point2D pt){
 
-		int x = (int)Math.floor((pt.getX() - m_dXMin) / m_dCellSize);
-		int y = (int)Math.floor((m_dYMax - pt.getY()) / m_dCellSize);
+		int x = (int)Math.floor((pt.getX() - m_dXMin) / m_dCellSizeX);
+		int y = (int)Math.floor((m_dYMax - pt.getY()) / m_dCellSizeY);
 
 		GridCell cell = new GridCell(x, y, 0.0);
 
@@ -325,8 +329,8 @@ public class GridExtent {
 	 */
 	public Point2D getWorldCoordsFromGridCoords(GridCell cell){
 
-		double x = m_dXMin + (cell.getX() + 0.5) * m_dCellSize;
-		double y = m_dYMax - (cell.getY() + 0.5) * m_dCellSize;
+		double x = m_dXMin + (cell.getX() + 0.5) * m_dCellSizeX;
+		double y = m_dYMax - (cell.getY() + 0.5) * m_dCellSizeY;
 
 		Point2D pt = new Point2D.Double(x, y);
 
@@ -347,13 +351,15 @@ public class GridExtent {
 
 	}
 
+        @Override
 	public String toString(){
 
 		String s = Double.toString(m_dXMin) + ", "
 					+ Double.toString(m_dYMin) + ", "
 					+ Double.toString(m_dXMax) + ", "
 					+ Double.toString(m_dYMax) + ", "
-					+ Double.toString(m_dCellSize);
+					+ Double.toString(m_dCellSizeX) + ", "
+                                        + Double.toString(m_dCellSizeY);
 
 		return s;
 
@@ -376,10 +382,10 @@ public class GridExtent {
 	 */
 	public void enlargeOneCell() {
 
-		m_dYMin = m_dYMin - m_dCellSize;
-		m_dXMin = m_dXMin - m_dCellSize;
-		m_dXMax = m_dXMax + m_dCellSize;
-		m_dYMax = m_dYMax + m_dCellSize;
+		m_dYMin = m_dYMin - m_dCellSizeY;
+		m_dXMin = m_dXMin - m_dCellSizeX;
+		m_dXMax = m_dXMax + m_dCellSizeX;
+		m_dYMax = m_dYMax + m_dCellSizeY;
 		this.recalculateNXAndNY();
 
 	}

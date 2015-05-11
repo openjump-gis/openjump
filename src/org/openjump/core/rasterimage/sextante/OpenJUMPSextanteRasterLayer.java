@@ -75,8 +75,9 @@ public class OpenJUMPSextanteRasterLayer extends AbstractSextanteRasterLayer{
 			m_sFilename = layer.getImageFileName();
 			Envelope env = layer.getActualImageEnvelope();
 			m_LayerExtent = new GridExtent();
-			m_LayerExtent.setCellSize((env.getMaxX() - env.getMinX())
-					/ (double)m_Raster.getWidth());
+			m_LayerExtent.setCellSize(
+                                (env.getMaxX() - env.getMinX()) / (double)m_Raster.getWidth(),
+                                (env.getMaxY() - env.getMinY()) / (double)m_Raster.getHeight());
 			m_LayerExtent.setXRange(env.getMinX(), env.getMaxX());
 			m_LayerExtent.setYRange(env.getMinY(), env.getMaxY());
 			m_dNoDataValue = layer.getNoDataValue();
@@ -98,8 +99,9 @@ public class OpenJUMPSextanteRasterLayer extends AbstractSextanteRasterLayer{
 			// since setting the ranges will update NX, NY and MaxX, MaxY values - dependent
 			// on cell size
 			// TODO: check if elsewhere setCellSize() is used, and set after setXRange/setYRange
-			m_LayerExtent.setCellSize((env.getMaxX() - env.getMinX())
-					/ (double)m_Raster.getWidth());
+			m_LayerExtent.setCellSize(
+                                (env.getMaxX() - env.getMinX()) / (double)m_Raster.getWidth(),
+                                (env.getMaxY() - env.getMinY()) / (double)m_Raster.getHeight());
 			m_LayerExtent.setXRange(env.getMinX(), env.getMaxX());
 			m_LayerExtent.setYRange(env.getMinY(), env.getMaxY());
 			m_dNoDataValue = layer.getNoDataValue();
@@ -194,17 +196,17 @@ public class OpenJUMPSextanteRasterLayer extends AbstractSextanteRasterLayer{
 
 	}
 
-	public double getLayerCellSize() {
+	public java.awt.Point.Double getLayerCellSize() {
 
 		if (m_LayerExtent != null){
 			return m_LayerExtent.getCellSize();
 		}
 		else{
-			return 0;
+			return new java.awt.Point.Double(0, 0);
 		}
 
 	}
-
+        
 	public GridExtent getLayerGridExtent() {
 
 		return m_LayerExtent;

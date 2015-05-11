@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2015-05-11 bertaz
+  * Sextante raster layers: added ability to handle rasters with different x and y cell sizes.
+
 2015-05-10 mmichaud <m.michael.michaud@orange.fr>
   * Repair and improve SaveViewAsBeanTool
 

@@ -68,7 +68,8 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
     private int datatype;
     private String meanVal;
     private String directory;
-    private String cellSize;
+    private String cellSizeX;
+    private String cellSizeY;
     private String name_raster;
     private String name;
     private int X;
@@ -394,9 +395,11 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
 
             name = rLayer.getName();// Name of Layer
             extent = rLayer.getWholeImageEnvelope();// Extent of Layer
-            double cellSize = (extent.getMaxX() - extent.getMinX())
+            double cellSizeX = (extent.getMaxX() - extent.getMinX())
                     / pi.getWidth();// Cell size
-
+            double cellSizeY = (extent.getMaxY() - extent.getMinY())
+                    / pi.getHeight();// Cell size
+            
             infotext = LAYER_NAME + ": " + "\t" + name + "\n" + "\n" + NAMEFILE
                     + "\n" + "\t" + NAME + ": " + LAYER_IN_MEMORY + "\n" + "\t"
                     + TYPE + ": " + "..." + "\n" + "\t" + DIMENSION + ": "
@@ -409,9 +412,9 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
                     + df.format(extent.getHeight() * extent.getWidth()) + "  ("
                     + df.format(extent.getWidth()) + " X "
                     + df.format(extent.getHeight()) + ")" + "\n" + "\t"
-                    + CELL_SIZE + ": " + df.format(cellSize) + "\n" + "\t"
+                    + CELL_SIZE + ": " + df.format(cellSizeX) + ", " + df.format(cellSizeY) + "\n" + "\t"
                     + CELL_NUM + ": " + (pi.getWidth() * pi.getHeight())
-                    / (cellSize * cellSize) + "\n" + "\n" + RASTER + "\n"
+                    / (cellSizeX * cellSizeY) + "\n" + "\n" + RASTER + "\n"
                     + "\t" + DATATYPE + ": " + dataType(context, rLayer) + "\n"
                     + "\t" + COLORDEPTH + ": " + colordepth + " bpp" + "\n"
                     + "\t" + RASTER_SIZE + ": "
@@ -441,7 +444,8 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
 
             directory = image.getParent(); // Directory of file
             colordepth = cm.getPixelSize();// Color depth
-            cellSize = df.format(rstLayer.getLayerCellSize());// Cell size
+            cellSizeX = df.format(rstLayer.getLayerCellSize().x);// Cell size
+            cellSizeY = df.format(rstLayer.getLayerCellSize().y);// Cell size
             name_raster = rstLayer.getName();// Name of layer
             name = image.getName();// Name of file
             X = rstLayer.getNX(); // Number of columns
@@ -509,7 +513,7 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
             infotext += "<tr><td></td> <td><b>" + AREA + "</b></td><td>" + area
                     + " (" + width + " X " + height + ")" + "</td></tr>";// Extension
             infotext += "<tr><td></td> <td><b>" + CELL_SIZE + "</b></td><td>"
-                    + cellSize + "</td></tr>"; // Extension fo a cell
+                    + cellSizeX + ", " + cellSizeY + "</td></tr>"; // Extension fo a cell
             infotext += "<tr><td></td> <td><b>" + CELL_NUM + "</td><td>"
                     + cellnumber + "</td></tr>"; // Number of cells
             infotext += "</table>";

@@ -103,8 +103,8 @@ public class GridWrapperInterpolated extends GridWrapper{
 
 	private double getCellValue(int x, int y, int band){
 
-		double dX = m_WindowExtent.getXMin() + m_WindowExtent.getCellSize() * (x + 0.5);
-		double dY = m_WindowExtent.getYMax() - m_WindowExtent.getCellSize() * (y + 0.5);
+		double dX = m_WindowExtent.getXMin() + m_WindowExtent.getCellSize().x * (x + 0.5);
+		double dY = m_WindowExtent.getYMax() - m_WindowExtent.getCellSize().y * (y + 0.5);
 
 		double dValue = getValueAt(dX, dY, band);
 

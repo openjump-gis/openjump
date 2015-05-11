@@ -56,9 +56,9 @@ public class GridWrapperNotInterpolated extends GridWrapper{
 		GridExtent layerExtent = m_Layer.getLayerGridExtent();
 
 		m_iOffsetX = (int) ((m_WindowExtent.getXMin() - layerExtent.getXMin() )
-				/ m_WindowExtent.getCellSize());
+				/ m_WindowExtent.getCellSize().x);
 		m_iOffsetY = (int) ((layerExtent.getYMax() - m_WindowExtent.getYMax() )
-				 / m_WindowExtent.getCellSize());
+				 / m_WindowExtent.getCellSize().y);
 
 //		dMinX = Math.min(Math.max(m_WindowExtent.getXMin(), layerExtent.getXMin()), layerExtent.getXMax());
 //		//dMinY = Math.min(Math.max(m_WindowExtent.getYMin(), layerExtent.getYMin()), layerExtent.getYMax());

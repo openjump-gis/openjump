@@ -405,13 +405,13 @@ public class RasterImageIOUtils {
             defaultNoData = rstLayer.getNoDataValue();
 
             Double xcMin = Double.valueOf(rLayer.getActualImageEnvelope()
-                    .getMinX() + 0.5D * rstLayer.getLayerCellSize());
+                    .getMinX() + 0.5D * rstLayer.getLayerCellSize().x);
             Double ycMin = Double.valueOf(rLayer.getActualImageEnvelope()
-                    .getMinY() + 0.5D * rstLayer.getLayerCellSize());
+                    .getMinY() + 0.5D * rstLayer.getLayerCellSize().y);
             Double xcMax = Double.valueOf(rLayer.getActualImageEnvelope()
-                    .getMaxX() - 0.5D * rstLayer.getLayerCellSize());
+                    .getMaxX() - 0.5D * rstLayer.getLayerCellSize().x);
             Double ycMax = Double.valueOf(rLayer.getActualImageEnvelope()
-                    .getMaxY() - 0.5D * rstLayer.getLayerCellSize());
+                    .getMaxY() - 0.5D * rstLayer.getLayerCellSize().y);
 
             PrintStream po = new PrintStream(out);
             po.println("DSAA");

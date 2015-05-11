@@ -56,13 +56,13 @@ public interface ISextanteRasterLayer extends ISextanteLayer{
 	 * Return the cellsize of the query window. X and Y cellsizes are assumed to be equal
 	 * @return the cellsize of the query window
 	 */
-	public double getWindowCellSize();
+	public java.awt.Point.Double getWindowCellSize();
 
 	/**
 	 * Return the original cellsize of the layer. X and Y cellsizes are assumed to be equal
 	 * @return the original cellsize of the layer
 	 */
-	public double getLayerCellSize();
+	public java.awt.Point.Double getLayerCellSize();
 
 
 	public void assign(double dValue);
