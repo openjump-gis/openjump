@@ -938,7 +938,7 @@ public class QueryDialog extends BDialog {
                     FeatureCollection dataset = new FeatureDataset(fc.getFeatureSchema());
                     
                     // initialize a new list for the new selection
-                    List okFeatures = new ArrayList();
+                    List<Feature> okFeatures = new ArrayList<Feature>();
                     int mod = 1;
                     if (total > 1000) mod = 10;
                     if (total > 33000) mod = 100;
@@ -952,7 +952,7 @@ public class QueryDialog extends BDialog {
                             }
                             Feature f = (BasicFeature)it.next();
                             if (condition.test(f)) {
-                                okFeatures.add(f.clone());
+                                okFeatures.add(f);
                                 featuresfound++;
                             }
                             Thread.yield();
@@ -970,11 +970,11 @@ public class QueryDialog extends BDialog {
                     if(select.getState()) {
                         selectedFeatures.selectItems(layer, okFeatures);
                     }
-                    
-                    if(create.getState() || display.getState()) {
-                        dataset.addAll(okFeatures);
-                    }
+
                     if(create.getState()) {
+                        for (Feature f : okFeatures) {
+                            dataset.add((Feature)f.clone());
+                        }
                         String outputLayerName = layer.getName() + "_";
                         if (attributeType != 'G') {
                             outputLayerName += (attribute + "_");
@@ -1012,6 +1012,7 @@ public class QueryDialog extends BDialog {
                 }
                 
                 if(display.getState()) {
+                    info.pack();
                     context.getWorkbenchFrame().addInternalFrame(info);
                 }
                 
