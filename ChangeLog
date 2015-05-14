@@ -3,6 +3,7 @@
 2015-05-14 mmichaud <m.michael.michaud@orange.fr>
   * #393 : SimpleQueryPlugIn : the bug was not completely fixed : features
     must be cloned to be added to new Layer but not for Selection or InfoPanel
+  * FR 218 : implement new attribute types in RandomTrianglesPlugIn
 
 2015-05-11 bertaz
   * Sextante raster layers: added ability to handle rasters with different x and y cell sizes.

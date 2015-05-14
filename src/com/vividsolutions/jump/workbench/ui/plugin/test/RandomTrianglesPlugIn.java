@@ -158,26 +158,26 @@ public class RandomTrianglesPlugIn extends AbstractPlugIn {
 		FeatureSchema featureSchema = new FeatureSchema();
 		featureSchema.addAttribute("Geometry", AttributeType.GEOMETRY);
 		featureSchema.addAttribute("City", AttributeType.STRING);
-		featureSchema.addAttribute("A Code", AttributeType.DATE);
+		featureSchema.addAttribute("A_Date", AttributeType.DATE);
 
 		//Put GEOMETRY in this unusual position to test robustness of
 		//AttributeTableModel [Jon Aquino]
 		//    featureSchema.addAttribute("Geometry", AttributeType.GEOMETRY);
-		featureSchema.addAttribute("B Code", AttributeType.INTEGER);
-		featureSchema.addAttribute("C Code", AttributeType.DOUBLE);
-		featureSchema.addAttribute("D Code", AttributeType.STRING);
-		featureSchema.addAttribute("E Code", AttributeType.STRING);
-		featureSchema.addAttribute("F Code", AttributeType.STRING);
-		featureSchema.addAttribute("G Code", AttributeType.STRING);
-		featureSchema.addAttribute("H Code", AttributeType.STRING);
-		featureSchema.addAttribute("I Code", AttributeType.STRING);
-		featureSchema.addAttribute("J Code", AttributeType.STRING);
-		featureSchema.addAttribute("K Code", AttributeType.STRING);
-		featureSchema.addAttribute("L Code", AttributeType.STRING);
-		featureSchema.addAttribute("M Code", AttributeType.STRING);
-		featureSchema.addAttribute("N Code", AttributeType.STRING);
-		featureSchema.addAttribute("O Code", AttributeType.STRING);
-		featureSchema.addAttribute("P Code", AttributeType.STRING);
+		featureSchema.addAttribute("B_Integer", AttributeType.INTEGER);
+		featureSchema.addAttribute("C_Double", AttributeType.DOUBLE);
+		featureSchema.addAttribute("D_Long", AttributeType.LONG);
+		featureSchema.addAttribute("E_Boolean", AttributeType.BOOLEAN);
+		featureSchema.addAttribute("F_Code", AttributeType.STRING);
+		featureSchema.addAttribute("G_Code", AttributeType.STRING);
+		featureSchema.addAttribute("H_Code", AttributeType.STRING);
+		featureSchema.addAttribute("I_Code", AttributeType.STRING);
+		featureSchema.addAttribute("J_Code", AttributeType.STRING);
+		featureSchema.addAttribute("K_Code", AttributeType.STRING);
+		featureSchema.addAttribute("L_Code", AttributeType.STRING);
+		featureSchema.addAttribute("M_Code", AttributeType.STRING);
+		featureSchema.addAttribute("N_Code", AttributeType.STRING);
+		featureSchema.addAttribute("O_Code", AttributeType.STRING);
+		featureSchema.addAttribute("P_Code", AttributeType.STRING);
 
 		FeatureCollection featureCollection = new FeatureDataset(featureSchema);
 		addFeature(cornerSquare(), featureCollection);
@@ -205,32 +205,29 @@ public class RandomTrianglesPlugIn extends AbstractPlugIn {
 		Feature feature =
 			new BasicFeature(featureCollection.getFeatureSchema());
 		feature.setAttribute("Geometry", geometry);
-		feature.setAttribute(
-			"City",
-			cities.get((int) Math.floor(Math.random() * cities.size())));
-		feature.setAttribute("A Code", new Date());
-		feature.setAttribute(
-			"B Code",
-			new Integer((int) (Math.random() * 100000)));
-		feature.setAttribute("C Code", new Double(Math.random() * 100000));
-		feature.setAttribute(
-			"D Code",
-			new Date((int) Math.pow(Math.random() * 100000, 20)).toString());
-		feature.setAttribute("E Code", "" + (int) (Math.random() * 100000));
-		feature.setAttribute("F Code", "" + (int) (Math.random() * 100000));
-		feature.setAttribute("G Code", "" + (int) (Math.random() * 100000));
-		feature.setAttribute("H Code", "" + (int) (Math.random() * 100000));
-		feature.setAttribute("I Code", "" + (int) (Math.random() * 100000));
-		feature.setAttribute("J Code", "" + (int) (Math.random() * 100000));
-		feature.setAttribute("K Code", "" + (int) (Math.random() * 100000));
-		feature.setAttribute("L Code", "" + (int) (Math.random() * 100000));
-		feature.setAttribute("M Code", "" + (int) (Math.random() * 100000));
-		feature.setAttribute("N Code", "" + (int) (Math.random() * 100000));
-		feature.setAttribute("O Code", "" + (int) (Math.random() * 100000));
-		feature.setAttribute("P Code", "" + (int) (Math.random() * 100000));
+		feature.setAttribute("City", cities.get((int) Math.floor(Math.random() * cities.size())));
+		feature.setAttribute("A_Date", new Date());
+		feature.setAttribute("B_Integer", (int)(Math.random() * 100000));
+		feature.setAttribute("C_Double", Math.random() * 100000);
+		feature.setAttribute("D_Long", (long)(Math.random() * 1000000000000L));
+		feature.setAttribute("E_Boolean", Math.random() > 0.5);
+		feature.setAttribute("F_Code", "" + (int)(Math.random() * 100000));
+		feature.setAttribute("G_Code", "" + (int)(Math.random() * 100000));
+		feature.setAttribute("H_Code", "" + (int)(Math.random() * 100000));
+		feature.setAttribute("I_Code", "" + (int)(Math.random() * 100000));
+		feature.setAttribute("J_Code", "" + (int)(Math.random() * 100000));
+		feature.setAttribute("K_Code", "" + (int)(Math.random() * 100000));
+		feature.setAttribute("L_Code", "" + (int)(Math.random() * 100000));
+		feature.setAttribute("M_Code", "" + (int)(Math.random() * 100000));
+		feature.setAttribute("N_Code", "" + (int)(Math.random() * 100000));
+		feature.setAttribute("O_Code", "" + (int)(Math.random() * 100000));
+		feature.setAttribute("P_Code", "" + (int)(Math.random() * 100000));
 
+        if (Math.random() > 0.8) {
+            feature.setAttribute("E_Boolean", null);
+        }
 		if (Math.random() > 0.8) {
-			feature.setAttribute("E Code", null);
+			feature.setAttribute("F_Code", null);
 		}
 
 		featureCollection.add(feature);
