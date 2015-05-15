@@ -273,21 +273,6 @@ public class AttributeTab extends JPanel implements LayerNamePanel {
       	
           toolBar.addSeparator();   	
     	*/
-        toolBar.add(
-                new JButton(),
-                I18N.get("ui.AttributeTab.pan-to-previous-row-and-select"),
-                IconLoader.icon("SmallUpSelect.gif"),
-                new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        try {
-                            pan(panel.topSelectedRow().previousRow());
-                            panel.selectInLayerViewPanel();
-                        } catch (Throwable t) {
-                            errorHandler.handleThrowable(t);
-                        }
-                    }
-                },
-                new MultiEnableCheck().add(taskFrameEnableCheck).add(layersEnableCheck));
     	toolBar
             .add(
                 new JButton(),
@@ -297,7 +282,7 @@ public class AttributeTab extends JPanel implements LayerNamePanel {
             public void actionPerformed(ActionEvent e) {
                 try {
                     pan(panel.topSelectedRow().previousRow());
-                    panel.clearSelection();
+                    panel.selectInLayerViewPanel();
                 } catch (Throwable t) {
                     errorHandler.handleThrowable(t);
                 }
@@ -312,7 +297,7 @@ public class AttributeTab extends JPanel implements LayerNamePanel {
             public void actionPerformed(ActionEvent e) {
                 try {
                     zoom(panel.topSelectedRow().previousRow());
-                    panel.clearSelection();
+                    panel.selectInLayerViewPanel();
                 } catch (Throwable t) {
                     errorHandler.handleThrowable(t);
                 }
@@ -327,7 +312,7 @@ public class AttributeTab extends JPanel implements LayerNamePanel {
             public void actionPerformed(ActionEvent e) {
                 try {
                     zoom(panel.topSelectedRow().nextRow());
-                    panel.clearSelection();
+                    panel.selectInLayerViewPanel();
                 } catch (Throwable t) {
                     errorHandler.handleThrowable(t);
                 }
@@ -342,27 +327,12 @@ public class AttributeTab extends JPanel implements LayerNamePanel {
             public void actionPerformed(ActionEvent e) {
                 try {
                     pan(panel.topSelectedRow().nextRow());
-                    panel.clearSelection();
+                    panel.selectInLayerViewPanel();
                 } catch (Throwable t) {
                     errorHandler.handleThrowable(t);
                 }
             }
         }, new MultiEnableCheck().add(taskFrameEnableCheck).add(layersEnableCheck));
-        toolBar.add(
-                new JButton(),
-                I18N.get("ui.AttributeTab.pan-to-next-row-and-select"),
-                IconLoader.icon("SmallDownSelect.gif"),
-                new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        try {
-                            pan(panel.topSelectedRow().nextRow());
-                            panel.selectInLayerViewPanel();
-                        } catch (Throwable t) {
-                            errorHandler.handleThrowable(t);
-                        }
-                    }
-                },
-                new MultiEnableCheck().add(taskFrameEnableCheck).add(layersEnableCheck));
         toolBar
             .add(
                 new JButton(),

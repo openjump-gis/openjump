@@ -1,8 +1,7 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
 2015-05-14 mmichaud <m.michael.michaud@orange.fr>
-  * Add two arrows in AttributeTab to go next/previous row and select
-    Other arrows moving to next/previous feature now unselect all after moving
+  * Arrows to go to next/previous row now also select next/previous feature
 
 2015-05-14 mmichaud <m.michael.michaud@orange.fr>
   * #393 : SimpleQueryPlugIn : the bug was not completely fixed : features
