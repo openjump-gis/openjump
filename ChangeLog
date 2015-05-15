@@ -1,6 +1,10 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
 2015-05-14 mmichaud <m.michael.michaud@orange.fr>
+  * Add two arrows in AttributeTab to go next/previous row and select
+    Other arrows moving to next/previous feature now unselect all after moving
+
+2015-05-14 mmichaud <m.michael.michaud@orange.fr>
   * #393 : SimpleQueryPlugIn : the bug was not completely fixed : features
     must be cloned to be added to new Layer but not for Selection or InfoPanel
   * FR 218 : implement new attribute types in RandomTrianglesPlugIn
