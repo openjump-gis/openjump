@@ -116,6 +116,7 @@ and the following plugins
  Pirol Csv Dataset 
   (de.fhOsnabrueck.jump.pirol.datasources.pirolCSV) - GPL2 - gpl-2.txt
   PirolCsv.jar, pbaseClasses.jar
+ SetAttributes (Michaël Michaud) - GPL2 - gpl-2.txt
  Sextante Tools (es.unex.sextante.openjump.extensions) - GPL3 - gpl-3.0.txt
   sextante-binding-*.jar, sextante/*.* 
   TableLayout-*.jar - Clearthought License - clearthought-2.0.txt
