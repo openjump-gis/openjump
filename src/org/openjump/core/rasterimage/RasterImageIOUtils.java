@@ -21,13 +21,6 @@ import java.util.Properties;
 import javax.imageio.ImageIO;
 import javax.media.jai.PlanarImage;
 
-import org.openjump.core.rasterimage.GridAscii;
-import org.openjump.core.rasterimage.GridFloat;
-import org.openjump.core.rasterimage.ImageAndMetadata;
-import org.openjump.core.rasterimage.RasterImageIO;
-import org.openjump.core.rasterimage.RasterImageLayer;
-import org.openjump.core.rasterimage.Resolution;
-import org.openjump.core.rasterimage.WorldFileHandler;
 import org.openjump.core.rasterimage.TiffTags.TiffReadingException;
 import org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer;
 import org.openjump.core.rasterimage.sextante.rasterWrappers.GridWrapperNotInterpolated;
@@ -36,7 +29,6 @@ import org.openjump.core.ui.plugin.layer.pirolraster.LoadSextanteRasterImagePlug
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.model.Category;
-import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GenericNames;
 import com.vividsolutions.jump.workbench.ui.Viewport;
@@ -45,6 +37,7 @@ import com.vividsolutions.jump.workbench.ui.Viewport;
  * @author Giuseppe Aruta - Extension codes to perform some RasterImage
  *         Input/Output operations
  * @version 1 [2015-03-11]
+ * Giuseppe Aruta [2015-05-16] corrected bugs introduced with the new RasterImageLayer CellSize
  */
 public class RasterImageIOUtils {
     static Properties properties = null;
@@ -63,14 +56,14 @@ public class RasterImageIOUtils {
      * @param rLayer
      *            Selected Raster Image Layer (RasterImageLayer.class)
      * @param Envelope
-     *            envelope  
-     * @throws NoninvertibleTransformException, TiffReadingException, Exception                     
+     *            envelope
+     * @throws NoninvertibleTransformException
+     *             , TiffReadingException, Exception
      */
 
-    public static void saveTIF(File file, 
-            RasterImageLayer rLayer, Envelope envWanted)
-            throws NoninvertibleTransformException, TiffReadingException,
-            Exception {
+    public static void saveTIF(File file, RasterImageLayer rLayer,
+            Envelope envWanted) throws NoninvertibleTransformException,
+            TiffReadingException, Exception {
 
         RasterImageIO rasterImageIO = new RasterImageIO();
 
@@ -109,7 +102,7 @@ public class RasterImageIOUtils {
                 bufferedimage.getHeight());
 
     }
-    
+
     /**
      * Export selected raster to TIF/TFW - using ImageIO.class
      * 
@@ -130,8 +123,7 @@ public class RasterImageIOUtils {
         worldFileHandler.writeWorldFile(envelope, planarimage.getWidth(),
                 planarimage.getHeight());
     };
-    
-    
+
     /**
      * Export selected raster to ArcView Gridded Ascii (ASC)
      * 
@@ -176,7 +168,7 @@ public class RasterImageIOUtils {
 
             o.println("yllcorner " + rLayer.getActualImageEnvelope().getMinY());
 
-            o.println("cellsize " + rstLayer.getLayerCellSize());
+            o.println("cellsize " + rstLayer.getLayerCellSize().x);
 
             String sNoDataVal = Double.toString(rstLayer.getNoDataValue());
             if (Math.floor(defaultNoData) == defaultNoData)
@@ -263,7 +255,7 @@ public class RasterImageIOUtils {
 
             o.println("yllcorner " + rLayer.getWholeImageEnvelope().getMinY());
 
-            o.println("cellsize " + rstLayer.getLayerCellSize());
+            o.println("cellsize " + rstLayer.getLayerCellSize().x);
 
             String sNoDataVal = Double.toString(rstLayer.getNoDataValue());
             if (Math.floor(defaultNoData) == defaultNoData)
@@ -565,7 +557,8 @@ public class RasterImageIOUtils {
      *            Plugin Context
      * @param Category
      *            . Name of the category to load the file
-     * @throws NoninvertibleTransformException, TiffReadingException, Exception
+     * @throws NoninvertibleTransformException
+     *             , TiffReadingException, Exception
      */
 
     public static void loadTIF(File file, PlugInContext context, String category)
@@ -587,7 +580,7 @@ public class RasterImageIOUtils {
         RasterImageLayer ril = new RasterImageLayer(file.getName(), context
                 .getWorkbenchContext().getLayerManager(),
                 file.getAbsolutePath(), imageAndMetadata.getImage(), env);
-        //String catName = StandardCategoryNames.RESULT;
+        // String catName = StandardCategoryNames.RESULT;
         try {
             category = ((Category) context.getLayerNamePanel()
                     .getSelectedCategories().toArray()[0]).getName();
@@ -605,7 +598,8 @@ public class RasterImageIOUtils {
      * @param PlugInContext
      * @param Category
      *            . Name of the category to load the file
-     * @throws NoninvertibleTransformException, TiffReadingException, Exception           
+     * @throws NoninvertibleTransformException
+     *             , TiffReadingException, Exception
      */
 
     public static void loadFLT(File file, PlugInContext context, String category)
@@ -650,7 +644,8 @@ public class RasterImageIOUtils {
      * @param PlugInContext
      * @param Category
      *            . Name of the category to load the file
-     * @throws NoninvertibleTransformException, TiffReadingException, Exception            
+     * @throws NoninvertibleTransformException
+     *             , TiffReadingException, Exception
      */
 
     public static void loadASC(File file, PlugInContext context, String category)
@@ -854,7 +849,6 @@ public class RasterImageIOUtils {
             if (out != null)
                 out.close();
         }
-    }   
-    
-    
+    }
+
 }
