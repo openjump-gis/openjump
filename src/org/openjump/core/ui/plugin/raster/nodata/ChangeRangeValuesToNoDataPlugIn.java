@@ -83,7 +83,7 @@ public class ChangeRangeValuesToNoDataPlugIn extends AbstractPlugIn {
     private static String INVERSE = I18N
             .get("org.openjump.core.ui.plugin.raster.nodata.Inverse");
     private static String REVERSE_TOOLTIP = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.ChangeRangeValuesToNoDataPlugIn.name");
+            .get("org.openjump.core.ui.plugin.raster.nodata.ChangeRangeValuesToNoDataPlugIn.tooltips");
     private static String CHANGE = I18N
             .get("org.openjump.core.ui.plugin.raster.nodata.ChangeRangeValuesToNoDataPlugIn.change");
     private static String PLUGINNAME = I18N
