@@ -132,15 +132,7 @@ public class ChangeRangeValuesToNoDataPlugIn extends AbstractPlugIn {
         return multiEnableCheck;
     }
 
-    @Override
-    public void initialize(PlugInContext context) throws Exception {
-        WorkbenchContext workbenchContext = context.getWorkbenchContext();
-        new FeatureInstaller(workbenchContext);
-
-        context.getFeatureInstaller().addMainMenuPlugin(this,
-                new String[] { MenuNames.RASTER, SUBMENU }, getName(), false,
-                null, createEnableCheck(context.getWorkbenchContext()));
-    }
+   
 
     @Override
     public boolean execute(PlugInContext context) throws Exception {

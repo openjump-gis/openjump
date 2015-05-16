@@ -79,6 +79,10 @@ public class MenuNames {
     public static final String RASTER = I18N.get("ui.MenuNames.RASTER");
     public static final String RASTER_VECTORIALIZE = I18N
             .get("ui.MenuNames.RASTER.VECTORIALIZE");
+    public static final String RASTER_SINGLE_BAND_RASTER = I18N
+            .get("ui.MenuNames.RASTER.SINGLE_BAND_RASTER");
+    public static final String RASTER_NODATA = I18N
+            .get("org.openjump.core.ui.plugin.raster.nodata.menu");
     public static final String STATISTICS = I18N.get("ui.MenuNames.STATISTICS");
     public static final String GEOPROCESSING = "SIGLE-" + I18N.get("ui.MenuNames.GEOPROCESSING");
     
