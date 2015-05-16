@@ -157,6 +157,7 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
   private TreePath movingTreePath = null;
 
   private boolean firstTimeDragging = true;
+  private boolean ongoingDragging = false;
 
   private int lastHoveringRow = -1;
 
@@ -199,6 +200,7 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
 
       public void mousePressed(MouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
+          ongoingDragging = true;
           movingTreePath = tree.getPathForLocation(e.getX(), e.getY());
           // move only Layerables, not Categories
           if (movingTreePath != null
@@ -217,10 +219,17 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
       }
 
       public void mouseReleased(MouseEvent e) {
-
+        
         if (e.getButton() != MouseEvent.BUTTON1 || movingTreePath == null) {
           return;
         }
+
+        if (!ongoingDragging) {
+          return;
+        }
+        
+        // mouseup _always_ finishes the drag, fixes bug #400 "Layer change category untimely"
+        ongoingDragging = false;
 
         if (tree.isEditing()) {
             return;
@@ -234,7 +243,6 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
         // selecting a different layer, the last XOR placement of the
         // dragbar would appear over the Category. Need to reset
         // firstTimeDragging to true before returning.
-        // movingTreePath = null;
         firstTimeDragging = true;
         lastHoveringRow = -1;
 
