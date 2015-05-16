@@ -33,6 +33,7 @@
 package org.openjump.core.ui.plugin.raster.statistics;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Iterator;
@@ -56,9 +57,10 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 /**
  * Giuseppe Aruta [2015_01_27] Computes various statistics for selected layers.
- * [2015_01_27] added header with the number of selected raster layers
- * Giuseppe Aruta [2015_04_09] Reduce display of large nodata values (es QGIS)
- * to readable number
+ * Giuseppe Aruta [2015_01_27] added header with the number of selected raster layers Giuseppe
+ * Giuseppe Aruta [2015_04_09] Reduce display of large nodata values (es QGIS) to
+ * readable number
+ * Giuseppe Aruta [2015_05_16] Added X*Y Cell size
  */
 public class DEMStatisticsPlugIn extends AbstractPlugIn {
 
@@ -175,8 +177,10 @@ public class DEMStatisticsPlugIn extends AbstractPlugIn {
             DecimalFormat df1 = (DecimalFormat) NumberFormat
                     .getNumberInstance(locale1);
             df.applyPattern(pattern1);
-            String cellSize = df1.format(rstLayer.getLayerCellSize());// Cell
-                                                                      // size
+            String cellSizex = df1.format(rstLayer.getLayerCellSize().x);// Cell
+                                                                         // size
+            String cellSizey = df1.format(rstLayer.getLayerCellSize().y);
+            String cellSize = cellSizex + "x" + cellSizey;
             String minx = df.format(extent.getMinX());
             String miny = df.format(extent.getMinY());
             int X = rstLayer.getNX(); // Number of columns
@@ -208,6 +212,8 @@ public class DEMStatisticsPlugIn extends AbstractPlugIn {
         }
 
         out.append("</table>");
+        out.setPreferredSize(new Dimension(800, 100));
+        out.setMinimumSize(new Dimension(800, 100));
         out.surface();
         return true;
     }
