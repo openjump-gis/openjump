@@ -298,7 +298,8 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
             // a LayerTreeModel.ColorThemingValue [Jon Aquino 2005-07-25]
             return;
           }
-          getLayerManager().remove(layerable);
+          //getLayerManager().remove(layerable);
+          oldCat.remove(layerable);
           cat.add(index, layerable);
           getLayerManager().fireLayerChanged(layerable,
               LayerEventType.METADATA_CHANGED);
