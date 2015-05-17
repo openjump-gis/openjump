@@ -87,9 +87,9 @@ public abstract class SelectTool extends DragTool implements ShortcutsDescriptor
                 EnvelopeUtil.toGeometry(getBoxInModelCoordinates()));
 
         Collection layers = layerToFeaturesInFenceMap.keySet();
-        if (selectedLayersOnly()) {
-            layers.retainAll(Arrays.asList(getTaskFrame().getLayerNamePanel().getSelectedLayers()));
-        }
+        //if (selectedLayersOnly()) {
+        //    layers.retainAll(Arrays.asList(getTaskFrame().getLayerNamePanel().getSelectedLayers()));
+        //}
         for (Iterator i = layers.iterator(); i.hasNext();) {
             Layer layer = (Layer) i.next();
 

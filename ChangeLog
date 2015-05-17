@@ -5,6 +5,9 @@
   * Replace layerManager.remove by category.remove to sort layers :
     much faster and partly solve FR 217
   * Fix #401 : replicate selected features replicated 2 times
+  * #319 and #399 deactivate the ctrl feature used to limit selection
+    to the selected layers because it is buggy and it is not compatible
+    with quasi-mode tool (ctrl already used to switch to select tool)
 
 2015-05-16 ede
   * Fix #400 : Layer changed category untimely
