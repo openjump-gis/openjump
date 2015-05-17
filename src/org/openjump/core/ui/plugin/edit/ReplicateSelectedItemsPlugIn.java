@@ -174,7 +174,7 @@ public class ReplicateSelectedItemsPlugIn extends AbstractPlugIn implements Thre
 	    	    if(fschema.equals(fi.getSchema())){
                     Feature feature = (Feature)fi.clone();
                     transaction.createFeature(feature);
-					actualLayerFeatures.add(feature);
+					//actualLayerFeatures.add(feature);
 	    		}
 	    	    else{
 	    	    	context.getWorkbenchFrame().setStatusMessage(
@@ -187,7 +187,7 @@ public class ReplicateSelectedItemsPlugIn extends AbstractPlugIn implements Thre
 	    	    		Geometry geom = (Geometry)fi.getGeometry().clone();
 	    	    		Feature newFeature = FeatureUtil.toFeature(geom, fschema);
                         transaction.createFeature(newFeature);
-	    	    		actualLayerFeatures.add(newFeature);
+	    	    		//actualLayerFeatures.add(newFeature);
 	    	    	}
 	    	    }
 	    	}	    	
