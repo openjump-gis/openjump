@@ -46,6 +46,7 @@ import javax.swing.JMenu;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Category;
+import com.vividsolutions.jump.workbench.model.LayerEventType;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
@@ -146,8 +147,11 @@ public abstract class SortCategoryAbstractPlugIn extends AbstractPlugIn
 				for (Category category : selectedCategories) {
 					ArrayList<Layerable> layers = getOrderedLayersInCategory(
 							category, labelSelected);
-					removeLayers(layerManager, layers);
-					addLayers(layerManager, category, layers);
+                    removeLayers(category, layers);
+                    addLayers(category, layers);
+                    for (Layerable layerable : layers) {
+                        layerManager.fireLayerChanged(layerable, LayerEventType.METADATA_CHANGED);
+                    }
 				}
 			} finally {
 				// context.getLayerManager().setFiringEvents(firingEvents);
@@ -167,19 +171,19 @@ public abstract class SortCategoryAbstractPlugIn extends AbstractPlugIn
 
 	}
 
-	private void addLayers(LayerManager layerManager, Category category,
-			ArrayList<Layerable> layers) {
-		for (Layerable layerable : layers) {
-			layerManager.addLayerable(category.getName(), layerable);
-		}
-	}
+    private void addLayers(Category category,
+                           ArrayList<Layerable> layers) {
+        for (Layerable layerable : layers) {
+            category.add(0, layerable);
+        }
+    }
 
-	private void removeLayers(LayerManager layerManager,
-			ArrayList<Layerable> layers) {
-		for (Layerable layerable : layers) {
-			layerManager.remove(layerable);
-		}
-	}
+    private void removeLayers(Category category,
+                              ArrayList<Layerable> layers) {
+        for (Layerable layerable : layers) {
+            category.remove(layerable);
+        }
+    }
 
 	abstract ArrayList<Layerable> getOrderedLayersInCategory(Category category,
 			String sortLabel);
