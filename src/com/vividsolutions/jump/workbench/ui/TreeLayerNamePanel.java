@@ -83,6 +83,7 @@ import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.model.WMSLayer;
 import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
 import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
+import org.stringtree.util.tree.Tree;
 
 public class TreeLayerNamePanel extends JPanel implements LayerListener,
     LayerNamePanel, LayerableNamePanel, LayerNamePanelProxy, PopupNodeProxy {
@@ -299,10 +300,10 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
             return;
           }
           //getLayerManager().remove(layerable);
+          getLayerManager().fireLayerChanged(layerable, LayerEventType.REMOVED);
           oldCat.remove(layerable);
           cat.add(index, layerable);
-          getLayerManager().fireLayerChanged(layerable,
-              LayerEventType.METADATA_CHANGED);
+          getLayerManager().fireLayerChanged(layerable, LayerEventType.ADDED);
           movingTreePath = null;
         }
       }
