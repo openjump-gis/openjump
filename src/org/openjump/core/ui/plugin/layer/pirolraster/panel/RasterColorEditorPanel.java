@@ -153,11 +153,7 @@ public class RasterColorEditorPanel extends JPanel implements ValueChecker,
 
         setLayout(layout);
 
-        if (layer.getNumBands() > 1) {
-            warning = new JLabel(WARNING);
-            warningPanel.add(warning);
-            add(warningPanel, BorderLayout.CENTER);
-        } else {
+         
             // Giuseppe Aruta - 2015_4_21
             // First panel: show statistics of cells of the layer
             // Deactivate for now
@@ -225,7 +221,7 @@ public class RasterColorEditorPanel extends JPanel implements ValueChecker,
             FormUtils.addRowInGBL(strechedPanel, 7, 0, transparentBox);
             add(strechedPanel, BorderLayout.NORTH);
 
-        }
+        
 
     }
 
