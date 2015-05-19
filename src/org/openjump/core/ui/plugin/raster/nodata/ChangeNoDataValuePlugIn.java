@@ -6,7 +6,6 @@ import it.betastudio.adbtoolbox.libs.FileOperations;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.event.KeyEvent;
-import java.awt.geom.NoninvertibleTransformException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -14,9 +13,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.channels.FileChannel;
 import java.text.NumberFormat;
 import java.util.Properties;
 
@@ -30,18 +26,13 @@ import javax.swing.JTextField;
 
 import org.apache.log4j.Logger;
 import org.openjump.core.apitools.LayerTools;
-import org.openjump.core.rasterimage.GridFloat;
-import org.openjump.core.rasterimage.ImageAndMetadata;
-import org.openjump.core.rasterimage.RasterImageIO;
+import org.openjump.core.rasterimage.RasterImageIOUtils;
 import org.openjump.core.rasterimage.RasterImageLayer;
-import org.openjump.core.rasterimage.Resolution;
-import org.openjump.core.rasterimage.TiffTags.TiffReadingException;
 import org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer;
 import org.openjump.core.rasterimage.sextante.rasterWrappers.GridWrapperNotInterpolated;
 import org.openjump.core.ui.plugin.layer.pirolraster.LoadSextanteRasterImagePlugIn;
 import org.saig.core.gui.swing.sldeditor.util.FormUtils;
 
-import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Category;
@@ -52,11 +43,8 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.GenericNames;
-import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
-import com.vividsolutions.jump.workbench.ui.Viewport;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 public class ChangeNoDataValuePlugIn extends AbstractPlugIn {
     /**
@@ -64,6 +52,8 @@ public class ChangeNoDataValuePlugIn extends AbstractPlugIn {
      * @author Giuseppe Aruta
      * @date 2015_3_25 This class allows to change nodata value of a single band
      *       file The output is a ESRI float file
+     * @date 2015_19_5  Correct bug introduced with new RasterImageLayer.cellvalue
+     *        Substitute export to .flt file to .asc file    
      */
     // Language codes:9
     private String SUBMENU = I18N
@@ -104,8 +94,6 @@ public class ChangeNoDataValuePlugIn extends AbstractPlugIn {
         return PLUGINNAME;
     }
 
-    
-
     @Override
     public boolean execute(PlugInContext context) throws Exception {
         reportNothingToUndoYet(context);
@@ -141,7 +129,7 @@ public class ChangeNoDataValuePlugIn extends AbstractPlugIn {
         JTextField source_nodata = new JTextField(String.valueOf(rLayer
                 .getNoDataValue()));
         source_nodata.setEditable(false);
-        JTextField target_nodata = new JTextField(String.valueOf("-9999"));
+        JTextField target_nodata = new JTextField(String.valueOf("-99999"));
         source_nodata.addKeyListener(new java.awt.event.KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -204,27 +192,34 @@ public class ChangeNoDataValuePlugIn extends AbstractPlugIn {
 
             int band = 0;
 
-            File flt_outFile = new File(path.concat(".flt"));
-            File hdr_outFile = new File(path.concat(".hdr"));
+            File flt_outFile = new File(path.concat(".asc"));
 
             float newdata = Float.parseFloat(target_nodata.getText());
             float olddata = (float) rLayer.getNoDataValue();
-            saveFLT(flt_outFile, context, rLayer, band, olddata, newdata);
-            saveHDR(hdr_outFile, context, rLayer, newdata);
-            loadFLT(flt_outFile, context);
+            saveASC(flt_outFile, context, rLayer, band, olddata, newdata);
+            String catName = StandardCategoryNames.WORKING;
+            try {
+                catName = ((Category) context.getLayerNamePanel()
+                        .getSelectedCategories().toArray()[0]).getName();
+            } catch (RuntimeException e1) {
+            }
+            RasterImageIOUtils.loadASC(flt_outFile, context, catName);
         }
         return true;
 
     }
 
-    private void saveHDR(File outFile, PlugInContext context,
-            RasterImageLayer rLayer, double nodata) throws IOException {
+    public static double defaultNoData = -99999.0D;
+
+    public void saveASC(File file, PlugInContext context,
+            RasterImageLayer rLayer, int band, float oldnodata, float newnodata)
+            throws IOException {
         OutputStream out = null;
         try {
             OpenJUMPSextanteRasterLayer rstLayer = new OpenJUMPSextanteRasterLayer();
             rstLayer.create(rLayer);
-            LOGGER.debug(getClass());
-            out = new FileOutputStream(outFile);
+
+            out = new FileOutputStream(file);
             this.cellFormat = NumberFormat.getNumberInstance();
             this.cellFormat.setMaximumFractionDigits(3);
             this.cellFormat.setMinimumFractionDigits(0);
@@ -244,16 +239,41 @@ public class ChangeNoDataValuePlugIn extends AbstractPlugIn {
 
             o.println("nrows " + rLayer.getOrigImageHeight());
 
-            o.println("xllcorner " + rLayer.getWholeImageEnvelope().getMinX());
+            o.println("xllcorner " + rLayer.getActualImageEnvelope().getMinX());
 
-            o.println("yllcorner " + rLayer.getWholeImageEnvelope().getMinY());
+            o.println("yllcorner " + rLayer.getActualImageEnvelope().getMinY());
 
-            o.println("cellsize " + rstLayer.getLayerCellSize());
+            o.println("cellsize "
+                    + Double.toString(rstLayer.getLayerCellSize().x));
 
-            String sNoDataVal = Double.toString(nodata);
+            o.println("NODATA_value " + newnodata);
+            GridWrapperNotInterpolated gwrapper = new GridWrapperNotInterpolated(
+                    rstLayer, rstLayer.getLayerGridExtent());
+            int nx = rstLayer.getLayerGridExtent().getNX();
+            int ny = rstLayer.getLayerGridExtent().getNY();
+            for (int y = 0; y < ny; y++) {
+                StringBuffer b = new StringBuffer();
+                for (int x = 0; x < nx; x++) {
+                    double value = gwrapper.getCellValueAsDouble(x, y, band);
 
-            o.println("NODATA_value " + sNoDataVal);
-            o.println("byteorder " + byteOrder);
+                    if (Double.isNaN(value)) {
+                        value = oldnodata;
+                    }
+                    if (Math.floor(value) == value) {
+
+                        if (value == oldnodata) {
+                            b.append((int) newnodata + " ");
+
+                        } else {
+                            b.append((int) value + " ");
+
+                        }
+                    } else {
+                        b.append(value + " ");
+                    }
+                }
+                o.println(b);
+            }
             o.close();
         } catch (Exception e) {
             context.getWorkbenchFrame()
@@ -268,106 +288,6 @@ public class ChangeNoDataValuePlugIn extends AbstractPlugIn {
             if (out != null)
                 out.close();
         }
-    }
-
-    private void saveFLT(File outFile, PlugInContext context,
-            RasterImageLayer rLayer, int band, float oldnodata, float newnodata)
-            throws IOException {
-        FileOutputStream out = null;
-        try {
-            OpenJUMPSextanteRasterLayer rstLayer = new OpenJUMPSextanteRasterLayer();
-            rstLayer.create(rLayer);
-            LOGGER.debug(getClass());
-            out = new FileOutputStream(outFile);
-            this.cellFormat = NumberFormat.getNumberInstance();
-            this.cellFormat.setMaximumFractionDigits(3);
-            this.cellFormat.setMinimumFractionDigits(0);
-            this.properties = new Properties();
-            try {
-                FileInputStream fis = new FileInputStream(propertiesFile);
-                this.properties.load(fis);
-                this.properties
-                        .getProperty(LoadSextanteRasterImagePlugIn.KEY_PATH);
-                fis.close();
-            } catch (FileNotFoundException localFileNotFoundException) {
-            } catch (IOException e) {
-                context.getWorkbenchFrame().warnUser(GenericNames.ERROR);
-            }
-            FileChannel fileChannelOut = out.getChannel();
-            GridWrapperNotInterpolated gwrapper = new GridWrapperNotInterpolated(
-                    rstLayer, rstLayer.getLayerGridExtent());
-            int nx = rstLayer.getLayerGridExtent().getNX();
-            int ny = rstLayer.getLayerGridExtent().getNY();
-            ByteBuffer bb = ByteBuffer.allocateDirect(nx * 4);
-            bb.order(ByteOrder.LITTLE_ENDIAN);
-
-            for (int y = 0; y < ny; y++) {
-                for (int x = 0; x < nx; x++) {
-                    float value = gwrapper.getCellValueAsFloat(x, y, band);
-                    if (bb.hasRemaining()) {
-                        if (value == oldnodata) {
-                            bb.putFloat(newnodata);
-                        } else {
-                            bb.putFloat(value);
-                        }
-                    } else {
-                        x--;
-                        // c--;
-                        bb.compact();
-                        fileChannelOut.write(bb);
-                        bb.clear();
-                    }
-                }
-            }
-            bb.compact();
-            fileChannelOut.write(bb);
-            bb.clear();
-        } catch (Exception e) {
-            context.getWorkbenchFrame()
-                    .warnUser(
-                            I18N.get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Error-See-Output-Window"));
-            context.getWorkbenchFrame().getOutputFrame().createNewDocument();
-            context.getWorkbenchFrame()
-                    .getOutputFrame()
-                    .addText(
-                            "SaveImageToRasterPlugIn Exception:Export Part of FLT/ASC or modify raster to ASC not yet implemented. Please Use Sextante Plugin");
-        } finally {
-            if (out != null)
-                out.close();
-        }
-    }
-
-    private void loadFLT(File flt_outFile, PlugInContext context)
-            throws NoninvertibleTransformException, TiffReadingException,
-            Exception {
-
-        RasterImageIO rasterImageIO = new RasterImageIO();
-        Viewport viewport = context.getWorkbenchContext().getLayerViewPanel()
-                .getViewport();
-        Resolution requestedRes = RasterImageIO
-                .calcRequestedResolution(viewport);
-        ImageAndMetadata imageAndMetadata = rasterImageIO.loadImage(
-                context.getWorkbenchContext(), flt_outFile.getAbsolutePath(),
-                null, viewport.getEnvelopeInModelCoordinates(), requestedRes);
-
-        GridFloat gf = new GridFloat(flt_outFile.getAbsolutePath());
-
-        Envelope imageEnvelope = new Envelope(gf.getXllCorner(),
-                gf.getXllCorner() + gf.getnCols() * gf.getCellSize(),
-                gf.getYllCorner(), gf.getYllCorner() + gf.getnRows()
-                        * gf.getCellSize());
-
-        RasterImageLayer ril = new RasterImageLayer(flt_outFile.getName(),
-                context.getWorkbenchContext().getLayerManager(),
-                flt_outFile.getAbsolutePath(), imageAndMetadata.getImage(),
-                imageEnvelope);
-        String catName = StandardCategoryNames.WORKING;
-        try {
-            catName = ((Category) context.getLayerNamePanel()
-                    .getSelectedCategories().toArray()[0]).getName();
-        } catch (RuntimeException e1) {
-        }
-        context.getLayerManager().addLayerable(catName, ril);
     }
 
     public static MultiEnableCheck createEnableCheck(
@@ -395,7 +315,8 @@ public class ChangeNoDataValuePlugIn extends AbstractPlugIn {
         chooser.setSelectedFile(FileOperations.lastVisitedFolder);
         chooser.setDialogType(JFileChooser.SAVE_DIALOG);
         ExtensionFilter filter = new ExtensionFilter();
-        filter.addExtension("flt");
+        filter.setDescription("ASCII  grid");
+        filter.addExtension("asc");
         chooser.setFileFilter(filter);
         int ret = chooser.showOpenDialog(null);
         if (ret == JFileChooser.APPROVE_OPTION) {

@@ -37,7 +37,6 @@ import com.vividsolutions.jump.workbench.ui.Viewport;
  * @author Giuseppe Aruta - Extension codes to perform some RasterImage
  *         Input/Output operations
  * @version 1 [2015-03-11]
- * Giuseppe Aruta [2015-05-16] corrected bugs introduced with the new RasterImageLayer CellSize
  */
 public class RasterImageIOUtils {
     static Properties properties = null;
@@ -46,7 +45,7 @@ public class RasterImageIOUtils {
             .getPropertiesFile();
     static NumberFormat cellFormat = null;
     // public static final Double DEFAULT_NODATA = Double.valueOf(-9999.0D);
-    public static double defaultNoData = -9999.0D;
+    public static double defaultNoData = -99999.0D;
 
     /**
      * Export selected raster to TIF/TFW - using JAI TiffEncoder.class
@@ -69,6 +68,51 @@ public class RasterImageIOUtils {
 
         Raster raster = rLayer.getRasterData(rLayer
                 .getRectangleFromEnvelope(envWanted));
+
+        rasterImageIO.writeImage(file, raster, envWanted,
+                rasterImageIO.new CellSizeXY(rLayer.getMetadata()
+                        .getOriginalCellSize(), rLayer.getMetadata()
+                        .getOriginalCellSize()), rLayer.getMetadata()
+                        .getNoDataValue());
+    }
+
+    public static void saveTIF(File file, RasterImageLayer rLayer,
+            Envelope envWanted, int band)
+            throws NoninvertibleTransformException, TiffReadingException,
+            Exception {
+
+        BufferedImage bi = rLayer.getImage();
+        int w = bi.getWidth();
+        int h = bi.getHeight();
+
+        for (int x = 0; x <= w; x++) {
+            for (int y = 0; y <= h; y++) {
+
+                int pixelCol = bi.getRGB(x, y);
+                // mask out the non green,non-alpha color.
+                // A is 0xFF000000
+                // R is 0x00FF0000
+                // G is 0x0000FF00
+                // B is 0x000000FF
+                if (band == 0) {
+                    pixelCol &= 0x00FF0000;
+                    bi.setRGB(x, y, pixelCol);
+                } else if (band == 1) {
+                    pixelCol &= 0x0000FF00;
+                    bi.setRGB(x, y, pixelCol);
+
+                } else if (band == 2) {
+                    pixelCol &= 0x000000FF;
+                    bi.setRGB(x, y, pixelCol);
+
+                }
+
+            }
+        }
+
+        RasterImageIO rasterImageIO = new RasterImageIO();
+
+        Raster raster = bi.getData();// rLayer.getRasterData(rLayer.getRectangleFromEnvelope(envWanted));
 
         rasterImageIO.writeImage(file, raster, envWanted,
                 rasterImageIO.new CellSizeXY(rLayer.getMetadata()
@@ -168,7 +212,8 @@ public class RasterImageIOUtils {
 
             o.println("yllcorner " + rLayer.getActualImageEnvelope().getMinY());
 
-            o.println("cellsize " + rstLayer.getLayerCellSize().x);
+            o.println("cellsize "
+                    + Double.toString(rstLayer.getLayerCellSize().x));
 
             String sNoDataVal = Double.toString(rstLayer.getNoDataValue());
             if (Math.floor(defaultNoData) == defaultNoData)
@@ -255,7 +300,8 @@ public class RasterImageIOUtils {
 
             o.println("yllcorner " + rLayer.getWholeImageEnvelope().getMinY());
 
-            o.println("cellsize " + rstLayer.getLayerCellSize().x);
+            o.println("cellsize "
+                    + Double.toString(rstLayer.getLayerCellSize().x));
 
             String sNoDataVal = Double.toString(rstLayer.getNoDataValue());
             if (Math.floor(defaultNoData) == defaultNoData)
