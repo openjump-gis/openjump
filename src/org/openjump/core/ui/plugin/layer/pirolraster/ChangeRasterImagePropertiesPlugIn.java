@@ -73,9 +73,15 @@ public class ChangeRasterImagePropertiesPlugIn extends AbstractPlugIn {
         final RasterColorEditorPanel rascolorpanel = new RasterColorEditorPanel(
                 context, rLayer);
 
-        stylePanels.add(rasstyle);
-        stylePanels.add(rasterScalepanel);
-        stylePanels.add(rascolorpanel);
+        if (rLayer.getNumBands() == 1) {
+            stylePanels.add(rasstyle);
+            stylePanels.add(rasterScalepanel);
+            stylePanels.add(rascolorpanel);
+        } else {
+            stylePanels.add(rasstyle);
+            stylePanels.add(rasterScalepanel);
+            // stylePanels.add(rascolorpanel);
+        }
 
         JTabbedPane tabbedPane = new JTabbedPane();
 
@@ -111,9 +117,15 @@ public class ChangeRasterImagePropertiesPlugIn extends AbstractPlugIn {
         dialog.addOKCancelApplyPanelActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (dialog.wasApplyPressed()) {
-                    rasterScalepanel.updateStyles();
-                    rasstyle.updateStyles();
-                    rascolorpanel.updateStyles();
+                    if (rLayer.getNumBands() == 1) {
+                        rasterScalepanel.updateStyles();
+                        rasstyle.updateStyles();
+                        rascolorpanel.updateStyles();
+                    } else {
+                        rasterScalepanel.updateStyles();
+                        rasstyle.updateStyles();
+                        // rascolorpanel.updateStyles();
+                    }
                 }
             }
         });
@@ -123,9 +135,15 @@ public class ChangeRasterImagePropertiesPlugIn extends AbstractPlugIn {
         dialog.setVisible(true);
 
         if (dialog.wasOKPressed()) {
-            rasterScalepanel.updateStyles();
-            rasstyle.updateStyles();
-            rascolorpanel.updateStyles();
+            if (rLayer.getNumBands() == 1) {
+                rasterScalepanel.updateStyles();
+                rasstyle.updateStyles();
+                rascolorpanel.updateStyles();
+            } else {
+                rasterScalepanel.updateStyles();
+                rasstyle.updateStyles();
+                // rascolorpanel.updateStyles();
+            }
             return true;
         }
         return false;

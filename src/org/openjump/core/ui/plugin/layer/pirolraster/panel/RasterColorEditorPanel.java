@@ -153,75 +153,69 @@ public class RasterColorEditorPanel extends JPanel implements ValueChecker,
 
         setLayout(layout);
 
-         
-            // Giuseppe Aruta - 2015_4_21
-            // First panel: show statistics of cells of the layer
-            // Deactivate for now
-            statisticPanel.setBorder(BorderFactory
-                    .createTitledBorder(STATISTICS));
-            nodataField = new JTextField(String.valueOf(layer.getNoDataValue()));
-            nodataField.setEditable(false);
-            maxdataField = new JTextField(String.valueOf(layer.getMetadata()
-                    .getStats().getMax(0)));
-            maxdataField.setEditable(false);
-            mindataField = new JTextField(String.valueOf(layer.getMetadata()
-                    .getStats().getMin(0)));
-            mindataField.setEditable(false);
-            JLabel nd_label = new JLabel(NODATA);
-            JLabel min_label = new JLabel(MIN);
-            JLabel max_label = new JLabel(MAX);
-            FormUtils.addRowInGBL(statisticPanel, 1, 0, nd_label, nodataField);
-            FormUtils
-                    .addRowInGBL(statisticPanel, 1, 2, min_label, mindataField);
-            FormUtils
-                    .addRowInGBL(statisticPanel, 1, 4, max_label, maxdataField);
-            // add(statisticPanel, BorderLayout.PAGE_START);
+        // Giuseppe Aruta - 2015_4_21
+        // First panel: show statistics of cells of the layer
+        // Deactivate for now
+        statisticPanel.setBorder(BorderFactory.createTitledBorder(STATISTICS));
+        nodataField = new JTextField(String.valueOf(layer.getNoDataValue()));
+        nodataField.setEditable(false);
+        maxdataField = new JTextField(String.valueOf(layer.getMetadata()
+                .getStats().getMax(0)));
+        maxdataField.setEditable(false);
+        mindataField = new JTextField(String.valueOf(layer.getMetadata()
+                .getStats().getMin(0)));
+        mindataField.setEditable(false);
+        JLabel nd_label = new JLabel(NODATA);
+        JLabel min_label = new JLabel(MIN);
+        JLabel max_label = new JLabel(MAX);
+        FormUtils.addRowInGBL(statisticPanel, 1, 0, nd_label, nodataField);
+        FormUtils.addRowInGBL(statisticPanel, 1, 2, min_label, mindataField);
+        FormUtils.addRowInGBL(statisticPanel, 1, 4, max_label, maxdataField);
+        // add(statisticPanel, BorderLayout.PAGE_START);
 
-            // Giuseppe Aruta - 2015_4_21
-            // Second panel: Change color model
-            strechedPanel.setBorder(border);
-            strechedPanel.setLayout(gridBagLayout);
-            colorScaleChooser = new JComboBox(colorTableList);
-            final String selectedIndex = (String) colorScaleChooser
-                    .getSelectedItem();
-            colorScaleChooser.setSelectedItem(selectedIndex);
-            colorScaleChooser.setToolTipText(sToolTip); //$NON-NLS-1$
-            colorScaleChooser.setBorder(borderRaised);
-            FormUtils.addRowInGBL(strechedPanel, 2, 0, colorScaleChooser);
+        // Giuseppe Aruta - 2015_4_21
+        // Second panel: Change color model
+        strechedPanel.setBorder(border);
+        strechedPanel.setLayout(gridBagLayout);
+        colorScaleChooser = new JComboBox(colorTableList);
+        final String selectedIndex = (String) colorScaleChooser
+                .getSelectedItem();
+        colorScaleChooser.setSelectedItem(selectedIndex);
+        colorScaleChooser.setToolTipText(sToolTip); //$NON-NLS-1$
+        colorScaleChooser.setBorder(borderRaised);
+        FormUtils.addRowInGBL(strechedPanel, 2, 0, colorScaleChooser);
 
-            fromValueLabel = new JLabel(sFromValue);
-            toValueLabel = new JLabel(sToValue); //$NON-NLS-1$
-            fromValue = new JTextField(Double.toString(layer.getMetadata()
-                    .getStats().getMin(0)), 15);
-            fromValue.setCaretPosition(0);
-            fromValue.selectAll();
-            toValue = new JTextField(Double.toString(layer.getMetadata()
-                    .getStats().getMax(0)), 15);
-            toValue.setCaretPosition(0);
-            toValue.selectAll();
-            FormUtils.addRowInGBL(strechedPanel, 3, 0, fromValueLabel,
-                    toValueLabel);
-            FormUtils.addRowInGBL(strechedPanel, 4, 0, fromValue, toValue);
+        fromValueLabel = new JLabel(sFromValue);
+        toValueLabel = new JLabel(sToValue); //$NON-NLS-1$
+        fromValue = new JTextField(Double.toString(layer.getMetadata()
+                .getStats().getMin(0)), 15);
+        fromValue.setCaretPosition(0);
+        fromValue.selectAll();
+        toValue = new JTextField(Double.toString(layer.getMetadata().getStats()
+                .getMax(0)), 15);
+        toValue.setCaretPosition(0);
+        toValue.selectAll();
+        FormUtils
+                .addRowInGBL(strechedPanel, 3, 0, fromValueLabel, toValueLabel);
+        FormUtils.addRowInGBL(strechedPanel, 4, 0, fromValue, toValue);
 
-            invertBox = new JCheckBox(INVERT);
-            invertBox.setSelected(false);
-            FormUtils.addRowInGBL(strechedPanel, 5, 0, invertBox);
+        invertBox = new JCheckBox(INVERT);
+        invertBox.setSelected(false);
+        FormUtils.addRowInGBL(strechedPanel, 5, 0, invertBox);
 
-            new JLabel(NUMBER);
+        new JLabel(NUMBER);
 
-            /*
-             * Text field to choose number of intervals. Deactivated. Chooser =
-             * new JTextField("11", 15); Chooser.setColumns(4);
-             * Chooser.setSize(4, 4); // Chooser.setCaretPosition(0);
-             * FormUtils.addRowInGBL(strechedPanel, 6, 0, classes, Chooser);
-             */
+        /*
+         * Text field to choose number of intervals. Deactivated. Chooser = new
+         * JTextField("11", 15); Chooser.setColumns(4); Chooser.setSize(4, 4);
+         * // Chooser.setCaretPosition(0); FormUtils.addRowInGBL(strechedPanel,
+         * 6, 0, classes, Chooser);
+         */
 
-            transparentBox = new JCheckBox(TRANSPARENT);
-            transparentBox.setSelected(false);
-            FormUtils.addRowInGBL(strechedPanel, 7, 0, transparentBox);
-            add(strechedPanel, BorderLayout.NORTH);
-
-        
+        transparentBox = new JCheckBox(TRANSPARENT);
+        transparentBox.setSelected(false);
+        FormUtils.addRowInGBL(strechedPanel, 7, 0, transparentBox);
+        add(strechedPanel, BorderLayout.NORTH);
 
     }
 
@@ -285,7 +279,7 @@ public class RasterColorEditorPanel extends JPanel implements ValueChecker,
         switch (colorScaleChooser.getSelectedIndex()) {
 
         case 0: {
-            valuesColors = null;
+            valuesColors = new Color[] { Color.BLACK, Color.WHITE };
             break;
         }
         case 1: {
