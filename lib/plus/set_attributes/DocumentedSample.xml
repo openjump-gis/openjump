@@ -13,6 +13,8 @@
     A button has five optional attributes
         icon : path of the png or jpg icon (path is relative to the xml file)
         text : if icon is not defined, this text is displayed
+        backgroundColor : color of the button background (or border) for text-based
+            button (accept 0xFFFFFF or #FFFFFF syntax)
         atomic (default is false) : if atomic is set to true, all attributes
 		    of a single object will be changed or none.
 			setting atomic to false may be useful to create a single button
@@ -25,7 +27,7 @@
 		    linear or polygonal features
 		tooltip : tooltip to dispoverflying the button
     -->
-    <button icon="" text="Button1" atomic="false" layer="*" tooltip="MyName [Type1 if null]">
+    <button icon="" text="Button1" atomic="false" backgroundColor="#FF0000" layer="*" tooltip="MyName [Type1 if null]">
         <!--
         Name and value are mandatory attributes. Optional attributes are
             preRequisite : this attribute can take the following values :
