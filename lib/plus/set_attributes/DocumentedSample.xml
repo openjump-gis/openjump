@@ -5,7 +5,9 @@
 	The toolbox has 3 attributes :
 	- title : title of the toolbox
 	- maxCol : maximum number of buttons in one row
-    - iconSize : icon size
+    - iconWidth : button width
+    - iconHeight : button height
+    - unselect : unselect selected features after every use of SetAttributes
 -->	
 <setAttributesToolbox title="MyAttributeSet" maxCol="5" iconWidth="36" iconHeight="24">
 
