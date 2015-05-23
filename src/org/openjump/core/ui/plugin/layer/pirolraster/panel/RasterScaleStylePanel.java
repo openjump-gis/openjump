@@ -128,7 +128,7 @@ public class RasterScaleStylePanel extends JPanel implements StylePanel {
         largestScaleIconLabel = new JLabel();
         unitsPerPixelLabel = new JLabel();
         // Add space label
-        SpaceLabel = new JLabel();
+
         GridBagConstraints gridBagConstraints15 = new GridBagConstraints();
         GridBagConstraints gridBagConstraints14 = new GridBagConstraints();
         GridBagConstraints gridBagConstraints12 = new GridBagConstraints();
@@ -153,7 +153,7 @@ public class RasterScaleStylePanel extends JPanel implements StylePanel {
         GridBagConstraints gridBagConstraints16 = new GridBagConstraints();
         GridBagConstraints gridBagConstraints10 = new GridBagConstraints();
         // To add space at the end of the last option
-        GridBagConstraints gridBagConstraintsSpace = new GridBagConstraints();
+
         this.setLayout(new GridBagLayout());
         gridBagConstraints1.gridx = 1;
         gridBagConstraints1.gridy = 4;
@@ -248,10 +248,6 @@ public class RasterScaleStylePanel extends JPanel implements StylePanel {
         gridBagConstraints21.gridx = 7;
         gridBagConstraints21.gridy = 2;
 
-        gridBagConstraintsSpace.ipady = 320;
-        gridBagConstraintsSpace.gridx = 1;
-        gridBagConstraintsSpace.gridy = 10;
-
         gridBagConstraints21.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints21.insets = new java.awt.Insets(4, 4, 4, 4);
         this.add(getSpacerPanelInTopLeftCorner(), gridBagConstraints12);
@@ -270,7 +266,6 @@ public class RasterScaleStylePanel extends JPanel implements StylePanel {
         this.add(currentScale1Label, gridBagConstraints16);
         this.add(smallestScaleIconLabel, gridBagConstraints2);
         this.add(largestScaleIconLabel, gridBagConstraints31);
-        this.add(SpaceLabel, gridBagConstraintsSpace);
         this.add(getSpacerPanelBelowCurrentScale(), gridBagConstraints18);
         this.add(getSmallestScaleTextField(), gridBagConstraints7);
         this.add(getLargestScaleTextField(), gridBagConstraints9);

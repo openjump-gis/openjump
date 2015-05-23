@@ -20,6 +20,7 @@ import java.awt.event.ActionListener;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
+import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
 import javax.swing.JLabel;
@@ -85,15 +86,12 @@ public class RasterTransparencyPanel extends JPanel implements ValueChecker,
         transparencyOnOffPanel.add(this.useTransCB);
         this.useTransCB.addActionListener(this);
 
-        this.add(transparencyOnOffPanel, BorderLayout.NORTH);
-        ;
         this.colorChooser.getSelectionModel().setSelectedColor(
                 this.rasterImageLayer.getTransparentColor());
         this.colorChooser
                 .setToolTipText(I18N
                         .get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageLayerControllPanel.Choose-transparent-color")); //$NON-NLS-1$
-        this.add(this.colorChooser, BorderLayout.CENTER);
-
+        this.colorChooser.setBorder(BorderFactory.createEtchedBorder());
         JPanel slidersPanel = new JPanel();
         slidersPanel.setLayout(new GridLayout(2, 1));
 
@@ -147,9 +145,18 @@ public class RasterTransparencyPanel extends JPanel implements ValueChecker,
         slidersPanel.add(speedSliderPanel);
 
         this.add(slidersPanel, BorderLayout.SOUTH);
+        if (rasterImageLayer.getNumBands() > 1) {
+            this.setSize(new Dimension(400, 500));
+            this.setPreferredSize(new Dimension(400, 500));
+            this.add(this.colorChooser, BorderLayout.CENTER);
+            this.add(transparencyOnOffPanel, BorderLayout.NORTH);
+            this.add(slidersPanel, BorderLayout.SOUTH);
+        } else {
+            this.add(slidersPanel, BorderLayout.NORTH);
+        }
 
-        this.setPreferredSize(new Dimension(300,
-                this.colorChooser.getHeight() + 50));
+        // this.setPreferredSize(new Dimension(300,
+        // this.colorChooser.getHeight() + 50));
 
         this.doLayout();
 
