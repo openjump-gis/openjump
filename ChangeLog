@@ -1,6 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
 2015-05-25 mmichaud <m.michael.michaud@orange.fr>
+  * shx file was not closed
+
+2015-05-25 mmichaud <m.michael.michaud@orange.fr>
   * update SetAttributes extension to version 0.6.1 : shorter initial delay
     for right-click tooltip
 

@@ -145,6 +145,7 @@ public class ShapefileReader extends AbstractJUMPReader {
         try {
         	collection = shx == null ? myshape.read(factory) : myshape.readFromIndex(factory, shx);
         } finally {
+            if (shx != null) shx.close();
         	myshape.close(); //ensure we can delete input shape files before task is closed
         }
         FeatureSchema fs = new FeatureSchema();
