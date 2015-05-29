@@ -74,7 +74,7 @@ import java.util.*;
  *   <tr>
  *       <td>ShapeType</td>
  *       <td>
- *          Dimentionality of the Shapefile - 'xy', 'xym' or 'xyz'.  'xymz' and
+ *          Dimensionality of the Shapefile - 'xy', 'xym' or 'xyz'.  'xymz' and
  *          'xyzm' are the same as 'xyz' 
  *       </td>
  *   </tr>
@@ -217,8 +217,11 @@ import java.util.*;
  *    Shapefile Spec</a>
  * </p>
  *
- * <TODO> The link referencing the DBF format specification is broken - fix it!</TODO>
- **/
+ *  For more information on the DBF, see
+ *   <a href='http://www.digitalpreservation.gov/formats/fdd/fdd000325.shtml'></a> and
+ *   <a href='http://www.dbase.com/KnowledgeBase/int/db7_file_fmt.htm'></a> 
+ *
+ /
 public class ShapefileWriter implements JUMPWriter {
 
 	public static final String FILE_PROPERTY_KEY = "File";
@@ -237,7 +240,7 @@ public class ShapefileWriter implements JUMPWriter {
      * Main method - write the featurecollection to a shapefile (2d, 3d or 4d).
      *
      * @param featureCollection collection to write
-     * @param dp 'OutputFile' or 'DefaultValue' to specify where to write, and 'ShapeType' to specify dimentionality.
+     * @param dp 'OutputFile' or 'DefaultValue' to specify where to write, and 'ShapeType' to specify dimensionality.
      */
     public void write(FeatureCollection featureCollection, DriverProperties dp) throws Exception {
         String shpfileName;
