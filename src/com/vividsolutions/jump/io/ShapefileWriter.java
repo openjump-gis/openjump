@@ -221,7 +221,7 @@ import java.util.*;
  *   <a href='http://www.digitalpreservation.gov/formats/fdd/fdd000325.shtml'></a> and
  *   <a href='http://www.dbase.com/KnowledgeBase/int/db7_file_fmt.htm'></a> 
  *
- /
+ **/
 public class ShapefileWriter implements JUMPWriter {
 
 	public static final String FILE_PROPERTY_KEY = "File";
