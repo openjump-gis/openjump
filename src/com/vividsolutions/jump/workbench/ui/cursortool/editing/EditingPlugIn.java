@@ -36,6 +36,7 @@ import java.awt.BorderLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
+import org.openjump.core.ui.plugin.edittoolbox.cursortools.RotateSelectedItemTool;
 import org.openjump.core.ui.plugin.edittoolbox.cursortools.ScaleSelectedItemsTool;
 
 import com.vividsolutions.jump.I18N;
@@ -55,6 +56,7 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.OptionsPlugIn;
 import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxDialog;
 import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxPlugIn;
+import org.openjump.core.ui.plugin.edittoolbox.cursortools.SelectMultiItemsTool;
 
 public class EditingPlugIn extends ToolboxPlugIn {
   private static EditingPlugIn instance = null;
@@ -112,7 +114,7 @@ public class EditingPlugIn extends ToolboxPlugIn {
     toolbox.add(new SelectFeaturesTool());
     toolbox.add(new SelectPartsTool());
     toolbox.add(new SelectLineStringsTool());
-    toolbox.add(new MoveSelectedItemsTool(checkFactory));
+    toolbox.add(new SelectMultiItemsTool());
 
     toolbox.addToolBar();
     toolbox.add(DrawRectangleTool.create(toolbox.getContext()));
@@ -129,13 +131,16 @@ public class EditingPlugIn extends ToolboxPlugIn {
     toolbox.add(movVertex);
 
     // -- [sstein: 11.12.2006] added here to fill toolbox
-    toolbox.add(new ScaleSelectedItemsTool(checkFactory));
-
     toolbox.addToolBar();
     toolbox.add(new SnapVerticesTool(checkFactory));
     toolbox.add(new SnapVerticesToSelectedVertexTool(checkFactory));
     toolbox.add(new SplitLineStringTool());
     toolbox.add(new NodeLineStringsTool());
+
+    toolbox.addToolBar();
+    toolbox.add(new MoveSelectedItemsTool(checkFactory));
+    toolbox.add(new ScaleSelectedItemsTool(checkFactory));
+    toolbox.add(new RotateSelectedItemTool(checkFactory));
 
     optionsButton.addActionListener(AbstractPlugIn.toActionListener(
         new OptionsPlugIn(), toolbox.getContext(), null));

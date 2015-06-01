@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2015-06-01 mmichaud <m.michael.michaud@orange.fr>
+  * new select tool to select one or several overlapping features
+
 2015-05-25 mmichaud <m.michael.michaud@orange.fr>
   * shx file was not closed
 

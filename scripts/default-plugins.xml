@@ -1606,9 +1606,9 @@
 	<plug-in>
 		org.openjump.core.ui.plugin.edittoolbox.ConstrainedMoveVertexPlugIn
 	</plug-in>
-	<plug-in>
+	<!--plug-in>
 		org.openjump.core.ui.plugin.edittoolbox.RotateSelectedItemPlugIn
-	</plug-in>
+	</plug-in-->
 	<plug-in>
 		org.openjump.core.ui.plugin.edittoolbox.SelectOneItemPlugIn
 	</plug-in>
