@@ -1,9 +1,11 @@
 package org.openjump.core.ui.plugin.edittoolbox.cursortools;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.geom.EnvelopeUtil;
 import com.vividsolutions.jump.workbench.model.Layer;
+import com.vividsolutions.jump.workbench.ui.AbstractSelection;
 import com.vividsolutions.jump.workbench.ui.FeatureSelection;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.SelectionManager;
@@ -18,17 +20,19 @@ import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicCheckBoxMenuItemUI;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
 import java.awt.geom.NoninvertibleTransformException;
 import java.util.*;
 
 /**
- * Created by UMichael on 30/05/2015.
+ * A select tool opening a popup dialog to choose which feature to be selected when several
+ * superimposed features are located under the mouse.
  */
 public class SelectMultiItemsTool extends SelectTool implements ShortcutsDescriptor {
 
     final static String sSelectMultiItems = I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.SelectMultiItemsTool");
 
+    private AbstractSelection selection;
+    private Coordinate coordinate;
     private LayerViewPanel layerViewPanel;
     int x, y;
 
@@ -56,31 +60,43 @@ public class SelectMultiItemsTool extends SelectTool implements ShortcutsDescrip
         this.layerViewPanel = layerViewPanel;
         super.activate(layerViewPanel);
         selection = layerViewPanel.getSelectionManager().getFeatureSelection();
-        //reset();
     }
 
-    public void mouseReleased(MouseEvent e) {
-        x = e.getX();
-        y = e.getY();
-    }
 
     protected void gestureFinished() throws NoninvertibleTransformException {
-        super.gestureFinished();
+        reportNothingToUndoYet();
+
+        if (!wasShiftPressed()) {
+            getPanel().getSelectionManager().clear();
+        }
 
         // Map layer to collections of features under the mouse
         final Map layerToFeaturesInFenceMap =
                 getPanel().visibleLayerToFeaturesInFenceMap(
                         EnvelopeUtil.toGeometry(getBoxInModelCoordinates()));
-        // Map features thei state (selected or not)
+        // Map features to their state (selected or not)
         final Map<Feature,Boolean> map = new HashMap<Feature, Boolean>();
 
         int count = 0;
-        for (Object coll : layerToFeaturesInFenceMap.values()) {
-            Collection collection = (Collection)coll;
+        for (Map.Entry entry : (Set<Map.Entry>)layerToFeaturesInFenceMap.entrySet()) {
+            Layer lyr = (Layer)entry.getKey();
+            Collection collection = (Collection)entry.getValue();
             count += collection.size();
             for (Object obj : collection) {
                 map.put((Feature)obj, selection.getFeaturesWithSelectedItems().contains(obj));
             }
+            selection.unselectItems(lyr, collection);
+        }
+        if (count == 1) {
+            Map.Entry entry = (Map.Entry)layerToFeaturesInFenceMap.entrySet().iterator().next();
+            selection.selectItems((Layer)entry.getKey(),
+                    (Feature)((Collection)entry.getValue()).iterator().next());
+        } else if (count > 40) {
+            JOptionPane.showMessageDialog(getWorkbenchFrame(),
+                    I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.SelectMultiItemsTool.Too-many-features"),
+                    I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.SelectMultiItemsTool.Message"),
+                    JOptionPane.INFORMATION_MESSAGE);
+            return;
         }
 
         final SelectionManager selectionManager = layerViewPanel.getSelectionManager();
@@ -88,9 +104,12 @@ public class SelectMultiItemsTool extends SelectTool implements ShortcutsDescrip
 
         final JPopupMenu popupMenu = new JPopupMenu();
 
-        final JCheckBoxMenuItem jcbAll = new JCheckBoxMenuItem(I18N.get(
-                "org.openjump.core.ui.plugin.edittoolbox.cursortools.SelectMultiItemsTool.All"));
+        final JCheckBoxMenuItem jcbAll = new JCheckBoxMenuItem(
+                "<html><b>" +
+                I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.SelectMultiItemsTool.All") +
+                "</b></html>");
         jcbAll.setUI(new StayOpenCheckBoxMenuItemUI());
+        jcbAll.setSelected(false);
         addAll(popupMenu, jcbAll, featureSelection, layerToFeaturesInFenceMap);
         popupMenu.add(jcbAll);
 
@@ -122,8 +141,11 @@ public class SelectMultiItemsTool extends SelectTool implements ShortcutsDescrip
             }
         }
 
-        final JCheckBoxMenuItem jcbValid = new JCheckBoxMenuItem(I18N.get(
-                "org.openjump.core.ui.plugin.edittoolbox.cursortools.SelectMultiItemsTool.Valid"));
+        final JMenuItem jcbValid = new JMenuItem(
+                "<html><i>" +
+                I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.SelectMultiItemsTool.Validate") +
+                "</i></html>"
+        );
         jcbValid.setSelected(true);
         jcbValid.addActionListener(new ActionListener() {
             @Override
@@ -136,7 +158,7 @@ public class SelectMultiItemsTool extends SelectTool implements ShortcutsDescrip
 
         if (count > 1) {
             layerViewPanel.add(popupMenu);
-            popupMenu.show(layerViewPanel, x, y);
+            popupMenu.show(layerViewPanel, (int)getViewSource().getX(), (int)getViewSource().getY());
             popupMenu.setVisible(true);
         }
     }
@@ -145,7 +167,6 @@ public class SelectMultiItemsTool extends SelectTool implements ShortcutsDescrip
                         final JCheckBoxMenuItem item,
                         final FeatureSelection featureSelection,
                         final Map layerToFeaturesInFenceMap) {
-        item.setSelected(true);
         item.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -174,6 +195,7 @@ public class SelectMultiItemsTool extends SelectTool implements ShortcutsDescrip
             }
         });
     }
+
 
     // override SelectTool shortcut, not supported
     public Map<QuasimodeTool.ModifierKeySpec, String> describeShortcuts() {
