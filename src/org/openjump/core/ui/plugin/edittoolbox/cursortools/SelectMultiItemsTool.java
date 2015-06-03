@@ -18,6 +18,7 @@ import com.vividsolutions.jump.workbench.ui.renderer.FeatureSelectionRenderer;
 import javax.swing.*;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicCheckBoxMenuItemUI;
+import javax.swing.plaf.basic.BasicMenuItemUI;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.NoninvertibleTransformException;
@@ -89,8 +90,8 @@ public class SelectMultiItemsTool extends SelectTool implements ShortcutsDescrip
         }
         if (count == 1) {
             Map.Entry entry = (Map.Entry)layerToFeaturesInFenceMap.entrySet().iterator().next();
-            selection.selectItems((Layer)entry.getKey(),
-                    (Feature)((Collection)entry.getValue()).iterator().next());
+            selection.selectItems((Layer) entry.getKey(),
+                    (Feature) ((Collection) entry.getValue()).iterator().next());
         } else if (count > 40) {
             JOptionPane.showMessageDialog(getWorkbenchFrame(),
                     I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.SelectMultiItemsTool.Too-many-features"),
@@ -119,32 +120,41 @@ public class SelectMultiItemsTool extends SelectTool implements ShortcutsDescrip
             for (Iterator j = ((Collection)layerToFeaturesInFenceMap.get(layer)).iterator(); j.hasNext();) {
                 final Feature feature = (Feature) j.next();
                 final int fid = feature.getID();
-                final JCheckBoxMenuItem jcb = new JCheckBoxMenuItem(layer.getName()+" (" + fid + ")");
-                jcb.setSelected(map.get(feature));
-                jcb.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        boolean selected = jcb.isSelected();
-                        if (!selected) {
-                            featureSelection.unselectItems(layer, feature);
-                            layerViewPanel.fireSelectionChanged();
-                            layerViewPanel.getSelectionManager().updatePanel();
-                        } else {
-                            featureSelection.selectItems(layer, feature);
-                            layerViewPanel.fireSelectionChanged();
-                            layerViewPanel.getSelectionManager().updatePanel();
+                String label = layer.getName()+" (" + fid + ")";
+                if (layer.isSelectable()) {
+                    final JCheckBoxMenuItem jcb = new JCheckBoxMenuItem(label);
+                    jcb.setSelected(map.get(feature));
+                    jcb.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            boolean selected = jcb.isSelected();
+                            if (!selected) {
+                                featureSelection.unselectItems(layer, feature);
+                                layerViewPanel.fireSelectionChanged();
+                                layerViewPanel.getSelectionManager().updatePanel();
+                            } else {
+                                featureSelection.selectItems(layer, feature);
+                                layerViewPanel.fireSelectionChanged();
+                                layerViewPanel.getSelectionManager().updatePanel();
+                            }
                         }
-                    }
-                });
-                jcb.setUI(new StayOpenCheckBoxMenuItemUI());
-                popupMenu.add(jcb);
+                    });
+                    jcb.setUI(new StayOpenCheckBoxMenuItemUI());
+                    popupMenu.add(jcb);
+                } else {
+                    label = "<html><i>" + label + "</i></html>";
+                    final JMenuItem jmi = new JMenuItem(label);
+                    jmi.setUI(new StayOpenMenuItemUI());
+                    popupMenu.add(jmi);
+                }
+
             }
         }
 
         final JMenuItem jcbValid = new JMenuItem(
-                "<html><i>" +
+                "<html><b><i><font color=\"green\">" +
                 I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.SelectMultiItemsTool.Validate") +
-                "</i></html>"
+                "</font></i></b></html>"
         );
         jcbValid.setSelected(true);
         jcbValid.addActionListener(new ActionListener() {
@@ -171,6 +181,7 @@ public class SelectMultiItemsTool extends SelectTool implements ShortcutsDescrip
             @Override
             public void actionPerformed(ActionEvent e) {
                 boolean selected = item.isSelected();
+
                 if (!selected) {
                     for (Iterator i = layerToFeaturesInFenceMap.keySet().iterator(); i.hasNext();) {
                         Layer lyr = (Layer)i.next();
@@ -181,7 +192,8 @@ public class SelectMultiItemsTool extends SelectTool implements ShortcutsDescrip
                 } else {
                     for (Iterator i = layerToFeaturesInFenceMap.keySet().iterator(); i.hasNext();) {
                         Layer lyr = (Layer)i.next();
-                        featureSelection.selectItems(lyr, (Collection)layerToFeaturesInFenceMap.get(lyr));
+                        if (!lyr.isSelectable()) continue;
+                        featureSelection.selectItems(lyr, (Collection) layerToFeaturesInFenceMap.get(lyr));
                     }
                     layerViewPanel.fireSelectionChanged();
                     layerViewPanel.getSelectionManager().updatePanel();
@@ -192,6 +204,7 @@ public class SelectMultiItemsTool extends SelectTool implements ShortcutsDescrip
                         ((JCheckBoxMenuItem)elements[i]).setSelected(selected);
                     }
                 }
+
             }
         });
     }
@@ -205,6 +218,18 @@ public class SelectMultiItemsTool extends SelectTool implements ShortcutsDescrip
     // tip from
     // http://stackoverflow.com/questions/3759379/how-to-prevent-jpopupmenu-disappearing-when-checking-checkboxes-in-it
     public static class StayOpenCheckBoxMenuItemUI extends BasicCheckBoxMenuItemUI {
+
+        @Override
+        protected void doClick(MenuSelectionManager msm) {
+            menuItem.doClick(0);
+        }
+
+        public static ComponentUI createUI(JComponent c) {
+            return new StayOpenCheckBoxMenuItemUI();
+        }
+    }
+
+    public static class StayOpenMenuItemUI extends BasicMenuItemUI {
 
         @Override
         protected void doClick(MenuSelectionManager msm) {
