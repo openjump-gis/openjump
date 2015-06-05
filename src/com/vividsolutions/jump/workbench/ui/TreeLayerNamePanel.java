@@ -83,7 +83,6 @@ import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.model.WMSLayer;
 import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
 import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
-import org.stringtree.util.tree.Tree;
 
 public class TreeLayerNamePanel extends JPanel implements LayerListener,
     LayerNamePanel, LayerableNamePanel, LayerNamePanelProxy, PopupNodeProxy {
