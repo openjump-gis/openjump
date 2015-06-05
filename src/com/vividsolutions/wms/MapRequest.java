@@ -59,25 +59,23 @@ import org.openjump.util.UriUtil;
  * Represents all of the parameters of a getMap request from a WMS server.
  * @author Chris Hodgson chodgson@refractions.net
  */
-public class MapRequest {
+public class MapRequest extends AbstractBasicRequest{
     
     private static Logger LOG = Logger.getLogger(MapRequest.class);
   
-    private WMService service;
     private int imgWidth;
     private int imgHeight;
     private List<String> layerNames;
     private BoundingBox bbox;
     private boolean transparent;
     private String format;
-    private String version = WMService.WMS_1_1_1;
     
     /**
      * Creates a new MapRequest.
      * @param service the WMService which this MapRequest will use
      */
     public MapRequest(WMService service) {
-        this.service = service;
+        super(service);
         imgWidth = 100;
         imgHeight = 100;
         layerNames = new ArrayList<String>();
@@ -86,13 +84,7 @@ public class MapRequest {
         format = null;
     }
 
-    /**
-     * Gets the WMService that this object will make requests from.
-     * @return the WMService that this object will make requests from
-     */
-    public WMService getService() {
-        return service;
-    }
+
 
     /**
      * Returns the format of this request.
@@ -300,53 +292,7 @@ public class MapRequest {
     }
 
 
-   /**
-    * Connect to the service and get an Image of the map.
-    * @return the retrieved map Image
-    */
-    public Image getImage() throws IOException {
-        URL requestUrl = getURL();
-        URLConnection con = requestUrl.openConnection();
-        if(requestUrl.getUserInfo() != null)
-            con.setRequestProperty("Authorization", "Basic " +
-                    Base64.encodeBytes(UriUtil.urlDecode(requestUrl.getUserInfo()).getBytes()));
 
-        boolean isImage = false;
-        System.out.println(requestUrl);
-        for (Entry<String, List<String>> entry : con.getHeaderFields().entrySet()) {
-    
-          String key = entry.getKey() != null ? entry.getKey() : "";
-          String value = null;
-          try {
-            value = entry.getValue().get(0).toString();
-          } catch (Exception e) {
-          }
-    
-          System.out.println(key + "/" + value);
-    
-          if (key.matches("^(?i)Content-Type$") && value.matches("^(?i)image/.*"))
-            isImage = true;
-        }
-        
-        if (isImage)
-          return ImageIO.read(con.getInputStream());
-        
-        readConnection(con);
-        return null;
-    }
 
-    private void readConnection(URLConnection con) throws IOException {
-      BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
-      StringBuilder result = new StringBuilder();
-      String line;
-      while((line = reader.readLine()) != null) {
-          result.append(line);
-      }
-      System.out.println(result.toString());
-    }
-    
-    //UT
-    public void setVersion( String ver ){
-        this.version = ver;
-    }
+
 }
