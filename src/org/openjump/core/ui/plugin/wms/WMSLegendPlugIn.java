@@ -172,7 +172,7 @@ public class WMSLegendPlugIn extends AbstractPlugIn {
 
         return new MultiEnableCheck().add(
                 checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
-                .add(checkFactory.createAtLeastNLayerablesMustBeSelectedCheck(
+                .add(checkFactory.createExactlyNLayerablesMustBeSelectedCheck(
                         1, WMSLayer.class));
     }
 
