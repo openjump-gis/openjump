@@ -77,6 +77,11 @@ public abstract class SelectTool extends DragTool implements ShortcutsDescriptor
 
     protected void gestureFinished() throws NoninvertibleTransformException {
         reportNothingToUndoYet();
+        //Disable panel updates -- we'll manually repaint the selection and
+        //fire the selection-changed event. [Jon Aquino]
+        boolean originalPanelUpdatesEnabled =
+                getPanel().getSelectionManager().arePanelUpdatesEnabled();
+        getPanel().getSelectionManager().setPanelUpdatesEnabled(false);
 
         if (!wasShiftPressed()) {
             getPanel().getSelectionManager().clear();
@@ -87,9 +92,7 @@ public abstract class SelectTool extends DragTool implements ShortcutsDescriptor
                 EnvelopeUtil.toGeometry(getBoxInModelCoordinates()));
 
         Collection layers = layerToFeaturesInFenceMap.keySet();
-        //if (selectedLayersOnly()) {
-        //    layers.retainAll(Arrays.asList(getTaskFrame().getLayerNamePanel().getSelectedLayers()));
-        //}
+
         for (Iterator i = layers.iterator(); i.hasNext();) {
             Layer layer = (Layer) i.next();
 
@@ -97,11 +100,6 @@ public abstract class SelectTool extends DragTool implements ShortcutsDescriptor
                 continue;
             }
 
-            //Disable panel updates -- we'll manually repaint the selection and
-            //fire the selection-changed event. [Jon Aquino]
-            boolean originalPanelUpdatesEnabled =
-                getPanel().getSelectionManager().arePanelUpdatesEnabled();
-            getPanel().getSelectionManager().setPanelUpdatesEnabled(false);
             try {
                 Map<Feature,List<Geometry>> featureToItemsToSelectMap =
                     featureToItemsInFenceMap(
