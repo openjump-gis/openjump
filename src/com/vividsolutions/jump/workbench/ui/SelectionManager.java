@@ -174,10 +174,10 @@ public class SelectionManager {
             for (AbstractSelection selection : selections) {
                 selection.unselectItems();
             }
+            updatePanel();
         } finally {
             setPanelUpdatesEnabled(originalPanelUpdatesEnabled);
         }
-        updatePanel();
     }
 
     public FeatureSelection getFeatureSelection() {
