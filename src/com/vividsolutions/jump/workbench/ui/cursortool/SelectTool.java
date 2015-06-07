@@ -81,6 +81,7 @@ public abstract class SelectTool extends DragTool implements ShortcutsDescriptor
         //fire the selection-changed event. [Jon Aquino]
         boolean originalPanelUpdatesEnabled =
                 getPanel().getSelectionManager().arePanelUpdatesEnabled();
+
         getPanel().getSelectionManager().setPanelUpdatesEnabled(false);
 
         if (!wasShiftPressed()) {
@@ -99,7 +100,7 @@ public abstract class SelectTool extends DragTool implements ShortcutsDescriptor
             if (layer.getName().equals(FenceLayerFinder.LAYER_NAME)) {
                 continue;
             }
-
+            getPanel().getSelectionManager().setPanelUpdatesEnabled(false);
             try {
                 Map<Feature,List<Geometry>> featureToItemsToSelectMap =
                     featureToItemsInFenceMap(
@@ -120,7 +121,8 @@ public abstract class SelectTool extends DragTool implements ShortcutsDescriptor
                     originalPanelUpdatesEnabled);
             }
         }
-
+        getPanel().getSelectionManager().setPanelUpdatesEnabled(
+                originalPanelUpdatesEnabled);
         getPanel().getSelectionManager().updatePanel();
     }
 
