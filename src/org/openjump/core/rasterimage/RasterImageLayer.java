@@ -543,7 +543,8 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
      * use this to assign the raster data again
      * the method is called from  getRasterData();
      */
-    public void reLoadImageButKeepImageForDisplay() throws IOException, NoninvertibleTransformException, FileNotFoundException, TiffTags.TiffReadingException, Exception{
+    public void reLoadImageButKeepImageForDisplay() throws IOException,
+            NoninvertibleTransformException, FileNotFoundException, TiffTags.TiffReadingException, Exception{
        WorkbenchContext context = getWorkbenchContext();
        BufferedImage pi = getImageForDisplay();
        //[sstein 24.Sept.2010] commented out:
@@ -609,12 +610,13 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
                 } else {
                     double value = actualRasterData.getSampleDouble(col, row, 0);
                     
-                    if(Double.isNaN(value) || Double.isInfinite(value) || value == noDataValue) {
+                    Color color = symbology.getColor(value);
+                    if((Double.isNaN(value) || Double.isInfinite(value) || value == noDataValue)
+                            && color == null) {
                         newImage.setRGB(col, row, Color.TRANSLUCENT);
                         continue;
                     }
-                    
-                    Color color = symbology.getColor(value);
+
                     newImage.setRGB(col, row, color.getRGB());
                 }
                     
