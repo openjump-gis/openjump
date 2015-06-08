@@ -216,11 +216,12 @@ public class RasterImageIOUtils {
                     + Double.toString(rstLayer.getLayerCellSize().x));
 
             String sNoDataVal = Double.toString(rstLayer.getNoDataValue());
-            if (Math.floor(defaultNoData) == defaultNoData)
+            //Giuseppe Aruta 2015_6_8 Deactivated as it overwrites original NoData tag with -99999.0D
+           /* if (Math.floor(defaultNoData) == defaultNoData)
                 sNoDataVal = Integer.toString((int) defaultNoData);
             else {
                 sNoDataVal = Double.toString(defaultNoData);
-            }
+            }*/
             o.println("NODATA_value " + sNoDataVal);
             GridWrapperNotInterpolated gwrapper = new GridWrapperNotInterpolated(
                     rstLayer, rstLayer.getLayerGridExtent());
@@ -424,7 +425,7 @@ public class RasterImageIOUtils {
         OutputStream out = null;
         try {
             OpenJUMPSextanteRasterLayer rstLayer = new OpenJUMPSextanteRasterLayer();
-            rstLayer.create(rLayer);
+            rstLayer.create(rLayer);-99999.0D
 
             out = new FileOutputStream(outfile);
             cellFormat = NumberFormat.getNumberInstance();
