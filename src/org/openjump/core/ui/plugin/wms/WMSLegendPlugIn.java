@@ -64,6 +64,9 @@ public class WMSLegendPlugIn extends AbstractPlugIn {
         frame.add(scrollPane, BorderLayout.CENTER);
 
         context.getWorkbenchFrame().addInternalFrame(frame, true, true);
+        //Detachable internal frame now opens on left/middle part of the project view
+        frame.setBounds(context.getLayerViewPanel().getWidth() - 10, 100,
+                frame.getWidth(), frame.getHeight());
 
         return true;
     }
