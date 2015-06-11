@@ -71,7 +71,7 @@ public class WMService {
   private Capabilities cap;
   // timeouts in ms
   private int TIMEOUT_OPEN = 5000;
-  private int TIMEOUT_READ = TIMEOUT_OPEN;
+  private int TIMEOUT_READ = 2*TIMEOUT_OPEN;
   
   /**
    * Constructs a WMService object from a server URL.
