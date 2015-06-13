@@ -30,10 +30,7 @@
  * www.vividsolutions.com
  */
 package com.vividsolutions.jump.workbench.ui;
-import java.awt.BorderLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.NoninvertibleTransformException;
@@ -59,7 +56,7 @@ import com.vividsolutions.jump.workbench.ui.zoom.ZoomToSelectedItemsPlugIn;
 
 public class AttributePanel
     extends JPanel
-    implements InfoModelListener, AttributeTablePanelListener {
+    implements InfoModelListener/*, AttributeTablePanelListener*/ {
     private SelectionManager selectionManager;
     private BorderLayout borderLayout1 = new BorderLayout();
     private GridBagLayout gridBagLayout1 = new GridBagLayout();
@@ -157,13 +154,13 @@ public class AttributePanel
         layerToTablePanelMap.remove(layerTableModel.getLayer());
         revalidate();
         repaint();
-        updateSelectionManager();
+        //updateSelectionManager(); [mmichaud 2015-06-13] refactoring of selection management
     }
     private void addTablePanel(final LayerTableModel layerTableModel) {
         Assert.isTrue(!layerToTablePanelMap.containsKey(layerTableModel.getLayer()));
         final AttributeTablePanel tablePanel =
             new AttributeTablePanel(layerTableModel, addScrollPanesToChildren, workbenchContext);
-        tablePanel.addListener(this);
+        //tablePanel.addListener(this); [mmichaud 2015-06-13] listener has been moved to AttributeTablePanel
         layerToTablePanelMap.put(layerTableModel.getLayer(), tablePanel);
 		int topInset = layerToTablePanelMap.size() > 1 ? 10 : 0; // a small space on top for 2. and following panel
         add(
@@ -202,17 +199,19 @@ public class AttributePanel
                 }
             }
         });
-        tablePanel
-            .getTable()
-            .getSelectionModel()
-            .addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e) {
-                updateSelectionManager();
-            }
-        });
-        updateSelectionManager();
+        //tablePanel
+        //    .getTable()
+        //    .getSelectionModel()
+        //    .addListSelectionListener(new ListSelectionListener() {
+        //    public void valueChanged(ListSelectionEvent e) {
+        //        updateSelectionManager();
+        //    }
+        //});
+        //updateSelectionManager(); [mmichaud 2015-06-13] refactoring of selection management
     }
-  
+
+    // [mmichaud 2015-06-13] refactoring of selection management
+    /*
     private void updateSelectionManager() {
       for (Iterator i = layerToTablePanelMap.values().iterator(); i.hasNext();) {
         AttributeTablePanel tablePanel = (AttributeTablePanel) i.next();
@@ -236,6 +235,8 @@ public class AttributePanel
         selectionManager.getFeatureSelection().selectItems(layer, selected);
       }
     }
+    */
+
     public int rowCount() {
         int rowCount = 0;
         for (Iterator i = layerToTablePanelMap.values().iterator(); i.hasNext();) {
@@ -244,21 +245,25 @@ public class AttributePanel
         }
         return rowCount;
     }
+
     public void flashSelectedFeatures() throws NoninvertibleTransformException {
         zoomToSelectedItemsPlugIn.flash(
             FeatureUtil.toGeometries(selectedFeatures()),
             taskFrame.getLayerViewPanel());
     }
+
     public void zoom(Collection features) throws NoninvertibleTransformException {
         zoomToSelectedItemsPlugIn.zoom(
             FeatureUtil.toGeometries(features),
             taskFrame.getLayerViewPanel());
     }
+
     public void pan(Collection features) throws NoninvertibleTransformException {
         panToSelectedItemsPlugIn.pan(
             FeatureUtil.toGeometries(features),
             taskFrame.getLayerViewPanel());
     }
+
     public Collection selectedFeatures() {
         ArrayList selectedFeatures = new ArrayList();
         for (Iterator i = layerToTablePanelMap.values().iterator(); i.hasNext();) {
@@ -273,6 +278,9 @@ public class AttributePanel
         }
         return selectedFeatures;
     }
+
+    // [mmichaud 2015-06-13] moved to AttributeTablePanel
+    /*
     public void selectInLayerViewPanel() {
         taskFrame.getLayerViewPanel().getSelectionManager().clear();
         for (Iterator i = layerToTablePanelMap.values().iterator(); i.hasNext();) {
@@ -291,6 +299,8 @@ public class AttributePanel
                 selectedFeatures);
         }
     }
+    */
+
     public Row topSelectedRow() {
         for (Iterator i = layerToTablePanelMap.values().iterator(); i.hasNext();) {
             AttributeTablePanel panel = (AttributeTablePanel) i.next();
@@ -302,6 +312,9 @@ public class AttributePanel
         }
         return nullRow;
     }
+
+    // [mmichaud 2015-06-13] moved to AttributeTablePanel
+    /*
     public void selectionReplaced(AttributeTablePanel panel) {
         for (Iterator i = layerToTablePanelMap.values().iterator(); i.hasNext();) {
             AttributeTablePanel tablePanel = (AttributeTablePanel) i.next();
@@ -312,6 +325,7 @@ public class AttributePanel
             }
             tablePanel.getTable().clearSelection();
         }
+        selectInLayerViewPanel();
     }
     public void clearSelection() {
         for (Iterator i = layerToTablePanelMap.values().iterator(); i.hasNext();) {
@@ -319,6 +333,7 @@ public class AttributePanel
             tablePanel.getTable().clearSelection();
         }
     }
+    */
     public static interface Row {
         public boolean isFirstRow();
         public boolean isLastRow();

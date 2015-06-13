@@ -35,14 +35,13 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.List;
 
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
-import javax.swing.text.PlainDocument;
 
 import org.openjump.core.ui.plugin.view.ViewOptionsPlugIn;
 
@@ -69,7 +68,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
  * last column. Rows are striped for non-editable table.
  */
 
-public class AttributeTablePanel extends JPanel {
+public class AttributeTablePanel extends JPanel implements AttributeTablePanelListener {
 	
 	/**
 	 * The property name of the columns width map in the project file (resides in the data-source subtree).
@@ -123,8 +122,6 @@ public class AttributeTablePanel extends JPanel {
             //#so that it will work for table-size changes. [Jon Aquino]
             setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
             GUIUtil.doNotRoundDoubles(this);
-//            System.out.println("blackboard " + blackboard);
-//            System.out.println("workbenchContext " + workbenchContext);
             blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
             DateFormat formatter;
             try {
@@ -359,140 +356,137 @@ public class AttributeTablePanel extends JPanel {
     };
 
     private ImageIcon buildPartlyEmptyIcon(ImageIcon icon) {
-      ImageIcon empty = buildEmptyIcon(icon);
-      // build mask
-      BufferedImage mask = new BufferedImage(icon.getIconWidth(),
-          icon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
-      Graphics2D g = mask.createGraphics();
-      g.setColor(Color.WHITE);
-      g.fillRect(0, 0, mask.getWidth(), mask.getHeight());
-      g.setColor(Color.BLACK);
-      g.fillRect(mask.getWidth()/2-1, 0, mask.getWidth(), mask.getHeight());
-      // overlay half-red onto normal icon
-      icon = GUIUtil.overlay(icon, empty, 0, 0, 1F, mask);
-      return icon;
+        ImageIcon empty = buildEmptyIcon(icon);
+        // build mask
+        BufferedImage mask = new BufferedImage(icon.getIconWidth(),
+            icon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = mask.createGraphics();
+        g.setColor(Color.WHITE);
+        g.fillRect(0, 0, mask.getWidth(), mask.getHeight());
+        g.setColor(Color.BLACK);
+        g.fillRect(mask.getWidth()/2-1, 0, mask.getWidth(), mask.getHeight());
+        // overlay half-red onto normal icon
+        icon = GUIUtil.overlay(icon, empty, 0, 0, 1F, mask);
+        return icon;
     }
     
     private ImageIcon buildEmptyIcon(ImageIcon icon) {
-      ImageIcon gray = GUIUtil.toGrayScale(icon);
-      // build red
-      BufferedImage red = new BufferedImage(icon.getIconWidth(),
-          icon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
-      Graphics2D g = red.createGraphics();
-      g.setColor(Color.PINK);
-      g.fillRect(0, 0, red.getWidth(), red.getHeight());
-      // build red empty
-      ImageIcon empty = GUIUtil.overlay(new ImageIcon(red), gray, 0, 0, 1F, null);
-      return empty;
+        ImageIcon gray = GUIUtil.toGrayScale(icon);
+        // build red
+        BufferedImage red = new BufferedImage(icon.getIconWidth(),
+            icon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = red.createGraphics();
+        g.setColor(Color.PINK);
+        g.fillRect(0, 0, red.getWidth(), red.getHeight());
+        // build red empty
+        ImageIcon empty = GUIUtil.overlay(new ImageIcon(red), gray, 0, 0, 1F, null);
+        return empty;
     }
    
     private JLabel buildIconLabel( ImageIcon icon ){
-      icon = GUIUtil.pad(icon, 2);
-      return new JLabel(icon);
+        icon = GUIUtil.pad(icon, 2);
+        return new JLabel(icon);
     }
     
    private JLabel buildEmptyIconLabel( ImageIcon icon ){
-     icon = GUIUtil.pad(icon, 2);
-     JLabel b = buildIconLabel(buildEmptyIcon(icon));
-     return b;
+        icon = GUIUtil.pad(icon, 2);
+        JLabel b = buildIconLabel(buildEmptyIcon(icon));
+        return b;
    }
    
    private JLabel buildPartlyEmptyIconLabel( ImageIcon icon ){
-     icon = GUIUtil.pad(icon, 2);
-     JLabel b = buildIconLabel(buildPartlyEmptyIcon(icon));
-     return b;
+        icon = GUIUtil.pad(icon, 2);
+        JLabel b = buildIconLabel(buildPartlyEmptyIcon(icon));
+        return b;
    }
    
     private boolean isPartlyEmpty(Geometry g) {
-      if (g.isEmpty())
+        if (g.isEmpty())
+          return false;
+
+        for (int i = 0; i < g.getNumGeometries(); i++) {
+          Geometry inner = g.getGeometryN(i);
+          if (inner.isEmpty())
+            return true;
+        }
         return false;
-  
-      for (int i = 0; i < g.getNumGeometries(); i++) {
-        Geometry inner = g.getGeometryN(i);
-        if (inner.isEmpty())
-          return true;
-      }
-      return false;
     }
     
-   private class GeometryCellRenderer implements TableCellRenderer 
-   {
-    private ImageIcon gc = IconLoader.icon("EditGeometryCollection.gif");
-    private ImageIcon point = IconLoader.icon("EditPoint.gif");
-    private ImageIcon mpoint = IconLoader.icon("EditMultiPoint.gif");
-    private ImageIcon line = IconLoader.icon("EditLineString.gif");
-    private ImageIcon mline = IconLoader.icon("EditMultiLineString.gif");
-    private ImageIcon poly = IconLoader.icon("EditPolygon.gif");
-    private ImageIcon mpoly = IconLoader.icon("EditMultiPolygon.gif");
-    private ImageIcon lring = IconLoader.icon("EditLinearRing.gif");
+    private class GeometryCellRenderer implements TableCellRenderer {
+        private ImageIcon gc = IconLoader.icon("EditGeometryCollection.gif");
+        private ImageIcon point = IconLoader.icon("EditPoint.gif");
+        private ImageIcon mpoint = IconLoader.icon("EditMultiPoint.gif");
+        private ImageIcon line = IconLoader.icon("EditLineString.gif");
+        private ImageIcon mline = IconLoader.icon("EditMultiLineString.gif");
+        private ImageIcon poly = IconLoader.icon("EditPolygon.gif");
+        private ImageIcon mpoly = IconLoader.icon("EditMultiPolygon.gif");
+        private ImageIcon lring = IconLoader.icon("EditLinearRing.gif");
 
-    private JLabel buttonPoint = buildIconLabel(point);
-    private JLabel buttonMultiPoint = buildIconLabel(mpoint);
-    private JLabel buttonLineString = buildIconLabel(line);
-    private JLabel buttonMultiLineString = buildIconLabel(mline);
-    private JLabel buttonPolygon = buildIconLabel(poly);
-    private JLabel buttonMultiPolygon = buildIconLabel(mpoly);
-    private JLabel buttonGC = buildIconLabel(gc);
-    private JLabel buttonLinearRing = buildIconLabel(lring);
-    
-    private JLabel buttonPointEmpty = buildEmptyIconLabel(point);
-    private JLabel buttonMultiPointEmpty = buildEmptyIconLabel(mpoint);
-    private JLabel buttonLineStringEmpty = buildEmptyIconLabel(line);
-    private JLabel buttonMultiLineStringEmpty = buildEmptyIconLabel(mline);
-    private JLabel buttonPolygonEmpty = buildEmptyIconLabel(poly);
-    private JLabel buttonMultiPolygonEmpty = buildEmptyIconLabel(mpoly);
-    private JLabel buttonGCEmpty = buildEmptyIconLabel(gc);
-    private JLabel buttonLinearRingEmpty = buildEmptyIconLabel(lring);
-    
-    private JLabel buttonMultiPointPartlyEmpty = buildPartlyEmptyIconLabel(mpoint);
-    private JLabel buttonMultiLineStringPartlyEmpty = buildPartlyEmptyIconLabel(mline);
-    private JLabel buttonMultiPolygonPartlyEmpty = buildPartlyEmptyIconLabel(mpoly);
-    private JLabel buttonGCPartlyEmpty = buildPartlyEmptyIconLabel(gc);
+        private JLabel buttonPoint = buildIconLabel(point);
+        private JLabel buttonMultiPoint = buildIconLabel(mpoint);
+        private JLabel buttonLineString = buildIconLabel(line);
+        private JLabel buttonMultiLineString = buildIconLabel(mline);
+        private JLabel buttonPolygon = buildIconLabel(poly);
+        private JLabel buttonMultiPolygon = buildIconLabel(mpoly);
+        private JLabel buttonGC = buildIconLabel(gc);
+        private JLabel buttonLinearRing = buildIconLabel(lring);
 
-    GeometryCellRenderer()
-    {
-      String text = I18N.get("ui.AttributeTablePanel.feature.view-edit");
-      JLabel[] buttons = new JLabel[] { buttonPoint, buttonMultiPoint,
-          buttonLineString, buttonMultiLineString, buttonPolygon,
-          buttonMultiPolygon, buttonGC, buttonLinearRing, buttonPointEmpty,
-          buttonMultiPointEmpty, buttonLineStringEmpty,
-          buttonMultiLineStringEmpty, buttonPolygonEmpty,
-          buttonMultiPolygonEmpty, buttonGCEmpty, buttonLinearRingEmpty };
-      for (JLabel button : buttons) {
-        button.setToolTipText(text);
-      }
+        private JLabel buttonPointEmpty = buildEmptyIconLabel(point);
+        private JLabel buttonMultiPointEmpty = buildEmptyIconLabel(mpoint);
+        private JLabel buttonLineStringEmpty = buildEmptyIconLabel(line);
+        private JLabel buttonMultiLineStringEmpty = buildEmptyIconLabel(mline);
+        private JLabel buttonPolygonEmpty = buildEmptyIconLabel(poly);
+        private JLabel buttonMultiPolygonEmpty = buildEmptyIconLabel(mpoly);
+        private JLabel buttonGCEmpty = buildEmptyIconLabel(gc);
+        private JLabel buttonLinearRingEmpty = buildEmptyIconLabel(lring);
+
+        private JLabel buttonMultiPointPartlyEmpty = buildPartlyEmptyIconLabel(mpoint);
+        private JLabel buttonMultiLineStringPartlyEmpty = buildPartlyEmptyIconLabel(mline);
+        private JLabel buttonMultiPolygonPartlyEmpty = buildPartlyEmptyIconLabel(mpoly);
+        private JLabel buttonGCPartlyEmpty = buildPartlyEmptyIconLabel(gc);
+
+        GeometryCellRenderer() {
+            String text = I18N.get("ui.AttributeTablePanel.feature.view-edit");
+            JLabel[] buttons = new JLabel[] { buttonPoint, buttonMultiPoint,
+                buttonLineString, buttonMultiLineString, buttonPolygon,
+                buttonMultiPolygon, buttonGC, buttonLinearRing, buttonPointEmpty,
+                buttonMultiPointEmpty, buttonLineStringEmpty,
+                buttonMultiLineStringEmpty, buttonPolygonEmpty,
+                buttonMultiPolygonEmpty, buttonGCEmpty, buttonLinearRingEmpty };
+            for (JLabel button : buttons) {
+                button.setToolTipText(text);
+            }
+        }
+
+        public Component getTableCellRendererComponent(JTable table, Object value,
+            boolean isSelected, boolean hasFocus, int row, int column) {
+            Feature f = (Feature) value;
+            Geometry g = f.getGeometry();
+
+            if (g instanceof com.vividsolutions.jts.geom.LinearRing)
+                return g.isEmpty() ? buttonLinearRingEmpty : buttonLinearRing;
+            if (g instanceof com.vividsolutions.jts.geom.Point)
+                return g.isEmpty() ? buttonPointEmpty : buttonPoint;
+            if (g instanceof com.vividsolutions.jts.geom.MultiPoint)
+                return g.isEmpty() ? buttonMultiPointEmpty
+                  : isPartlyEmpty(g) ? buttonMultiPointPartlyEmpty : buttonMultiPoint;
+            if (g instanceof com.vividsolutions.jts.geom.LineString)
+                return g.isEmpty() ? buttonLineStringEmpty : buttonLineString;
+            if (g instanceof com.vividsolutions.jts.geom.MultiLineString)
+                return g.isEmpty() ? buttonMultiLineStringEmpty
+                  : isPartlyEmpty(g) ? buttonMultiLineStringPartlyEmpty
+                      : buttonMultiLineString;
+            if (g instanceof com.vividsolutions.jts.geom.Polygon)
+                return g.isEmpty() ? buttonPolygonEmpty : buttonPolygon;
+            if (g instanceof com.vividsolutions.jts.geom.MultiPolygon)
+                return g.isEmpty() ? buttonMultiPolygonEmpty
+                  : isPartlyEmpty(g) ? buttonMultiPolygonPartlyEmpty
+                      : buttonMultiPolygon;
+
+            return g.isEmpty() ? buttonGCEmpty
+                : isPartlyEmpty(g) ? buttonGCPartlyEmpty : buttonGC;
+        }
     }
-    
-    public Component getTableCellRendererComponent(JTable table, Object value,
-        boolean isSelected, boolean hasFocus, int row, int column) 
-    {
-      Feature f = (Feature) value;
-      Geometry g = f.getGeometry();
-
-      if (g instanceof com.vividsolutions.jts.geom.LinearRing)
-        return g.isEmpty() ? buttonLinearRingEmpty : buttonLinearRing;
-      if (g instanceof com.vividsolutions.jts.geom.Point)
-        return g.isEmpty() ? buttonPointEmpty : buttonPoint;
-      if (g instanceof com.vividsolutions.jts.geom.MultiPoint)
-        return g.isEmpty() ? buttonMultiPointEmpty
-            : isPartlyEmpty(g) ? buttonMultiPointPartlyEmpty : buttonMultiPoint;
-      if (g instanceof com.vividsolutions.jts.geom.LineString)
-        return g.isEmpty() ? buttonLineStringEmpty : buttonLineString;
-      if (g instanceof com.vividsolutions.jts.geom.MultiLineString)
-        return g.isEmpty() ? buttonMultiLineStringEmpty
-            : isPartlyEmpty(g) ? buttonMultiLineStringPartlyEmpty
-                : buttonMultiLineString;
-      if (g instanceof com.vividsolutions.jts.geom.Polygon)
-        return g.isEmpty() ? buttonPolygonEmpty : buttonPolygon;
-      if (g instanceof com.vividsolutions.jts.geom.MultiPolygon)
-        return g.isEmpty() ? buttonMultiPolygonEmpty
-            : isPartlyEmpty(g) ? buttonMultiPolygonPartlyEmpty
-                : buttonMultiPolygon;
-
-      return g.isEmpty() ? buttonGCEmpty
-          : isPartlyEmpty(g) ? buttonGCPartlyEmpty : buttonGC;
-    }
-  }
 
     private MyTable table;
 
@@ -506,11 +500,123 @@ public class AttributeTablePanel extends JPanel {
     private Layer layer;
     private HashMap columnsWidthMap;
 
+    private boolean selectionSynchronized = true;
+
+    private void setSelectionSynchronized(boolean selectionSynchronized) {
+        this.selectionSynchronized = selectionSynchronized;
+    }
+
+    private boolean isSelectionSynchronized() {
+        return selectionSynchronized;
+    }
+
+
     public AttributeTablePanel(final LayerTableModel model, boolean addScrollPane,
             final WorkbenchContext workbenchContext) {
         this(workbenchContext);
         // this panel is exactly for this layer
         this.layer = model.getLayer();
+        final SelectionModelWrapper selectionModel = new SelectionModelWrapper(this);
+        final DefaultListSelectionModel defaultSelectionModel = new DefaultListSelectionModel();
+        table.setSelectionModel(selectionModel);
+        selectionModel.setSelectionMode(SelectionModelWrapper.MULTIPLE_INTERVAL_SELECTION);
+        selectionModel.setFireSelectionReplaced(true);
+
+        // A LayerViewPanel listener to reflect layerView selection into the AttributeTablePanel
+        final LayerViewPanelListener layerViewPanelListener = new LayerViewPanelListener() {
+            @Override
+            public void selectionChanged() {
+                try {
+                    // Get selected features :
+                    // For AttributeTable, selected features are highlighted
+                    // For InfoModel, selected features may be added to the model
+                    // before being highlighted
+                    Collection selection = workbenchContext
+                            .getLayerViewPanel().getSelectionManager()
+                            .getFeaturesWithSelectedItems(layer);
+
+                    // From now on (2015-06-13), LayerViewSelection is propagated to
+                    // AttributeTablePanel and the other way.
+                    // This assertion will avoid recursive updates between LayerView and
+                    // AttributeTable
+                    selectionModel.setFireSelectionReplaced(false);
+
+                    table.clearSelection();
+                    if (selection.size() == 0) {
+                        selectionModel.setFireSelectionReplaced(true);
+                        return;
+                    }
+
+                    // Map feature ids to row ids
+                    Map<Integer, Integer> mapIdRow = new HashMap<Integer, Integer>();
+                    int rowCount = getModel().getRowCount();
+                    for (int row = 0; row < rowCount; row++) {
+                        mapIdRow.put(getModel().getFeature(row).getID(), row);
+                    }
+                    // add selected features which are not yet in the AttributeTablePanel
+                    if (selection.size() > 0) {
+                        int nextRow = getModel().getRowCount();
+                        List<Feature> newFeatures = new ArrayList<Feature>();
+                        for (Object obj : selection) {
+                            int fid = ((Feature) obj).getID();
+                            if (!mapIdRow.containsKey(fid)) {
+                                newFeatures.add((Feature) obj);
+                            }
+                        }
+                        getModel().addAll(newFeatures);
+                        for (int row = nextRow; row < getModel().getRowCount(); row++) {
+                            mapIdRow.put(getModel().getFeature(row).getID(), row);
+                        }
+                    }
+
+                    // create a set of sorted rows to be selected
+                    Set<Integer> rowset = new TreeSet<Integer>();
+                    for (Object obj : selection) {
+                        rowset.add(mapIdRow.get(((Feature) obj).getID()));
+                    }
+
+                    // return if the set of selected raws spread over too man intervals
+                    // as it will take to much time to update the table
+                    //Integer[] rows = rowset.toArray(new Integer[rowset.size()]);
+                    //int countRanges = 0;
+                    //for (int i = 1; i < rowset.size(); i++) {
+                    //    if (rows[i] - rows[i - 1] > 1) countRanges++;
+                    //}
+
+                    // update the table
+                    int rowini = -2, rowfin = -2;
+                    table.setSelectionModel(defaultSelectionModel);
+                    for (int row : rowset) {
+                        if (row == rowfin + 1) rowfin = row;
+                        else if (row > rowfin + 1) {
+                            if (rowfin >= rowini && rowini > -1) {
+                                selectionModel.addSelectionInterval(rowini, rowfin);
+                            }
+                            rowini = row;
+                            rowfin = row;
+                        }
+                    }
+                    if (rowfin >= rowini && rowini > -1) {
+                        selectionModel.addSelectionInterval(rowini, rowfin);
+                    }
+                    table.setSelectionModel(selectionModel);
+
+                } finally {
+                    selectionModel.setFireSelectionReplaced(true);
+                }
+            }
+
+            @Override
+            public void cursorPositionChanged(String x, String y) {
+
+            }
+
+            @Override
+            public void painted(Graphics graphics) {
+
+            }
+        };
+
         if (addScrollPane) {
           remove(table);
           remove(table.getTableHeader());
@@ -551,7 +657,7 @@ public class AttributeTablePanel extends JPanel {
             model.addTableModelListener(new TableModelListener() {
 
                 public void tableChanged(TableModelEvent e) {
-                  if (e.getFirstRow() == TableModelEvent.HEADER_ROW) {
+                    if (e.getFirstRow() == TableModelEvent.HEADER_ROW) {
                         //Structure changed (LayerTableModel specifies
                         // HEADER_ROW).
                         //Add this listener after the table adds its listeners
@@ -573,8 +679,7 @@ public class AttributeTablePanel extends JPanel {
                 }
             });
             updateLabel();
-            //this.workbenchContext = workbenchContext;
-            table.setSelectionModel(new SelectionModelWrapper(this));
+
             table.getTableHeader().setDefaultRenderer(headerRenderer);
             initColumnWidths();
             setToolTips();
@@ -590,6 +695,10 @@ public class AttributeTablePanel extends JPanel {
                         if (isEditButtonColumn(column)) { return; }
                         if (SwingUtilities.isLeftMouseButton(e)) {
                             model.sort(table.getColumnName(column));
+                            boolean oldSync = isSelectionSynchronized();
+                            //setSelectionSynchronized(true);
+                            layerViewPanelListener.selectionChanged();
+                            //setSelectionSynchronized(oldSync);
                         }
                     } catch (Throwable t) {
                         workbenchContext.getErrorHandler().handleThrowable(t);
@@ -646,7 +755,13 @@ public class AttributeTablePanel extends JPanel {
                     public void keyTyped(java.awt.event.KeyEvent e) {
                     }
             });
-
+            // Just after it has been created, AttributeTablePanel listen to the layerView selection
+            // to be able to reflect the view selection into the table
+            workbenchContext.getLayerViewPanel().addListener(layerViewPanelListener);
+            this.addListener(this);
+            // reflect the layerView feature selection into the AttributeTablePanel
+            // just "after" the table and its model have been initialized
+            layerViewPanelListener.selectionChanged();
         } catch (Throwable t) {
             workbenchContext.getErrorHandler().handleThrowable(t);
         }
@@ -852,6 +967,12 @@ public class AttributeTablePanel extends JPanel {
 
         private ListSelectionModel selectionModel;
 
+        private boolean fireSelectionReplaced = true;
+
+        public void setFireSelectionReplaced(boolean b) {
+            this.fireSelectionReplaced = b;
+        }
+
         public SelectionModelWrapper(AttributeTablePanel panel) {
             this.panel = panel;
             selectionModel = panel.table.getSelectionModel();
@@ -867,7 +988,7 @@ public class AttributeTablePanel extends JPanel {
 
         public void setSelectionInterval(int index0, int index1) {
             selectionModel.setSelectionInterval(index0, index1);
-            panel.fireSelectionReplaced();
+            if (fireSelectionReplaced) panel.fireSelectionReplaced();
         }
 
         public void setSelectionMode(int selectionMode) {
@@ -916,18 +1037,22 @@ public class AttributeTablePanel extends JPanel {
 
         public void addSelectionInterval(int index0, int index1) {
             selectionModel.addSelectionInterval(index0, index1);
+            if (fireSelectionReplaced) panel.fireSelectionReplaced();
         }
 
         public void clearSelection() {
             selectionModel.clearSelection();
+            if (fireSelectionReplaced) panel.fireSelectionReplaced();
         }
 
         public void insertIndexInterval(int index, int length, boolean before) {
             selectionModel.insertIndexInterval(index, length, before);
+            if (fireSelectionReplaced) panel.fireSelectionReplaced();
         }
 
         public void removeIndexInterval(int index0, int index1) {
             selectionModel.removeIndexInterval(index0, index1);
+            if (fireSelectionReplaced) panel.fireSelectionReplaced();
         }
 
         public void removeListSelectionListener(ListSelectionListener x) {
@@ -936,6 +1061,7 @@ public class AttributeTablePanel extends JPanel {
 
         public void removeSelectionInterval(int index0, int index1) {
             selectionModel.removeSelectionInterval(index0, index1);
+            if (fireSelectionReplaced) panel.fireSelectionReplaced();
         }
     }
 
@@ -957,4 +1083,27 @@ public class AttributeTablePanel extends JPanel {
     public void setFeatureEditor(FeatureEditor featureEditor) {
         this.featureEditor = featureEditor;
     }
+
+    /**
+     * Called by the SelectionModelWrapper to update LayerViewPanel
+     * when the table selection is changed.
+     * @param panel
+     */
+    public void selectionReplaced(AttributeTablePanel panel) {
+        if (table.isEditing()) table.clearSelection();
+        int[] selectedRows = table.getSelectedRows();
+        // After selectedRows have been memorized, clear the layer selection,
+        // other wise OpenJUMP will add the selectedRows to the already selected features
+        workbenchContext.getLayerViewPanel().getSelectionManager().unselectItems(panel.layer);
+        ArrayList selectedFeatures = new ArrayList();
+        for (int j = 0; j < selectedRows.length; j++) {
+            selectedFeatures.add(getModel().getFeature(selectedRows[j]));
+        }
+        workbenchContext
+                .getLayerViewPanel()
+                .getSelectionManager()
+                .getFeatureSelection()
+                .selectItems(panel.layer, selectedFeatures);
+    }
+
 }

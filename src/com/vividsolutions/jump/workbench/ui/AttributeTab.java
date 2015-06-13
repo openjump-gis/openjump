@@ -282,7 +282,7 @@ public class AttributeTab extends JPanel implements LayerNamePanel {
             public void actionPerformed(ActionEvent e) {
                 try {
                     pan(panel.topSelectedRow().previousRow());
-                    panel.selectInLayerViewPanel();
+                    //panel.selectInLayerViewPanel();
                 } catch (Throwable t) {
                     errorHandler.handleThrowable(t);
                 }
@@ -297,7 +297,7 @@ public class AttributeTab extends JPanel implements LayerNamePanel {
             public void actionPerformed(ActionEvent e) {
                 try {
                     zoom(panel.topSelectedRow().previousRow());
-                    panel.selectInLayerViewPanel();
+                    //panel.selectInLayerViewPanel();
                 } catch (Throwable t) {
                     errorHandler.handleThrowable(t);
                 }
@@ -312,7 +312,7 @@ public class AttributeTab extends JPanel implements LayerNamePanel {
             public void actionPerformed(ActionEvent e) {
                 try {
                     zoom(panel.topSelectedRow().nextRow());
-                    panel.selectInLayerViewPanel();
+                    //panel.selectInLayerViewPanel();
                 } catch (Throwable t) {
                     errorHandler.handleThrowable(t);
                 }
@@ -327,7 +327,7 @@ public class AttributeTab extends JPanel implements LayerNamePanel {
             public void actionPerformed(ActionEvent e) {
                 try {
                     pan(panel.topSelectedRow().nextRow());
-                    panel.selectInLayerViewPanel();
+                    //panel.selectInLayerViewPanel();
                 } catch (Throwable t) {
                     errorHandler.handleThrowable(t);
                 }
@@ -387,7 +387,7 @@ public class AttributeTab extends JPanel implements LayerNamePanel {
                 new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
-                    panel.selectInLayerViewPanel();
+                    //panel.selectInLayerViewPanel();
                 } catch (Throwable t) {
                     errorHandler.handleThrowable(t);
                 }
@@ -485,7 +485,7 @@ public class AttributeTab extends JPanel implements LayerNamePanel {
     }
 
     private void zoom(AttributePanel.Row row) throws NoninvertibleTransformException {
-        panel.clearSelection();
+        //panel.clearSelection();
         //fixed : if the layer don't have any feature, do nothing.
         if (row.getPanel().getTable().getModel().getRowCount() == 0) {
         	return;
@@ -508,7 +508,7 @@ public class AttributeTab extends JPanel implements LayerNamePanel {
     }
     
     private void pan(AttributePanel.Row row) throws NoninvertibleTransformException {
-        panel.clearSelection();
+        //panel.clearSelection();
         //fixed : if the layer don't have any feature, do nothing.
         if (row.getPanel().getTable().getModel().getRowCount() == 0) {
         	return;
