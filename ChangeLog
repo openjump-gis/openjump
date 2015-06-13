@@ -1,5 +1,12 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2015-06-13 mmichaud <m.michael.michaud@orange.fr>
+  * LayerView / AttributePanel selection synchronization
+  * update SetAttributes PlugIn to 0.7.0
+
+2015-06-13 mmichaud <m.michael.michaud@orange.fr>
+  * increase readTimout delay of WMSService from 5 to 10
+
 2015-06-08 bertaz
   * Sextante raster layers: fixed bug in nodata color handling when using symbology.
 
