@@ -416,7 +416,7 @@ public class ShapefileWriter implements JUMPWriter {
         // dbf column type and size
         f = 0;
         
-        Map<String,Integer> truncatedFieldNameCounter = new HashMap<String,Integer>();
+        Set<String> uniqueNames = new HashSet<String>();
 
         for (t = 0; t < fs.getAttributeCount(); t++) {
             AttributeType columnType = fs.getAttributeType(t);
@@ -425,17 +425,9 @@ public class ShapefileWriter implements JUMPWriter {
             //[mmichaud 2012-03-24] increment identical truncated field names
             //[mmichaud 2012-10-07] change from 11 to 10 char (to conform to dbf
             // specification)
-            columnName = columnName.substring(0,Math.min(columnName.length(), 10));
-            if (truncatedFieldNameCounter.get(columnName) == null) {
-                truncatedFieldNameCounter.put(columnName,1);
-            }
-            else {
-                int count = truncatedFieldNameCounter.get(columnName);
-                truncatedFieldNameCounter.put(columnName, count+1);
-                if (count<10) columnName = columnName.substring(0,8) + "_" + count;
-                else columnName = columnName.substring(0,8) + count;
-            }
-            // end
+            //[mmichaud 2015-06-17] fix bug described in
+            // http://sourceforge.net/p/jump-pilot/mailman/message/34210973/
+            columnName = uniqueName(uniqueNames, columnName, 10);
 
             if (columnType == AttributeType.INTEGER ||
                     columnType == AttributeType.SMALLINT ||
@@ -683,6 +675,31 @@ public class ShapefileWriter implements JUMPWriter {
         }
 
         dbf.close();
+    }
+
+    private String removeCount(String s, int count) {
+        return s.substring(0, s.length()-Integer.toString(count).length());
+    }
+
+    private String uniqueName(Set<String> set, String name, int maxLength) {
+
+        name = name.substring(0, Math.min(maxLength, name.length()));
+
+        int count = 1;
+        while (set.contains(name)) {
+            // case name + digit = 10 maxLength
+            if (name.length()==maxLength) {
+                name = removeCount(name, count);
+            }
+            // name + digits < maxLength
+            else if (count > 1) {
+                name = removeCount(name, count-1);
+            }
+            name = name + Integer.toString(count);
+            count++;
+        }
+        set.add(name);
+        return name;
     }
 
     private DbfFieldDef overrideWithExistingCompatibleDbfFieldDef(DbfFieldDef field, Map columnMap) {
