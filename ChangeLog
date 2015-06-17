@@ -3,7 +3,7 @@
 2015-06-17 mmichaud <m.michael.michaud@orange.fr>
   * fix bug in dbf writer described in
     http://sourceforge.net/p/jump-pilot/mailman/message/34210973/
-  * read and use cpg file (codepage for shp/dbf) if it exists
+  * read/write cpg file (codepage for shp/dbf)
 
 2015-06-13 mmichaud <m.michael.michaud@orange.fr>
   * LayerView / AttributePanel selection synchronization

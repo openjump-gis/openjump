@@ -45,9 +45,7 @@ import org.geotools.dbffile.DbfFileWriter;
 import org.geotools.shapefile.Shapefile;
 
 import javax.swing.*;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.*;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.*;
@@ -246,6 +244,7 @@ public class ShapefileWriter implements JUMPWriter {
         String shpfileName;
         String dbffname;
         String shxfname;
+        String cpgfname;
 
         String path;
         String fname;
@@ -293,6 +292,14 @@ public class ShapefileWriter implements JUMPWriter {
 		String charsetName = dp.getProperty("charset");
 		if (charsetName == null) charsetName = Charset.defaultCharset().name();
         writeDbf(featureCollection, dbffname, Charset.forName(charsetName));
+        PrintWriter pw = null;
+        try {
+            cpgfname = path + fname_withoutextention + ".cpg";
+            pw = new PrintWriter(new FileOutputStream(cpgfname));
+            pw.write(Charset.forName(charsetName).name());
+        } finally {
+            if (pw != null) pw.close();
+        }
 
         // this gc will be a collection of either multi-points, multi-polygons, or multi-linestrings
         // polygons will have the rings in the correct order
