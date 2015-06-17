@@ -90,6 +90,7 @@ import com.vividsolutions.jump.workbench.ui.cursortool.CursorTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.DummyTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.LeftClickFilter;
 import com.vividsolutions.jump.workbench.ui.cursortool.QuasimodeTool;
+import com.vividsolutions.jump.workbench.ui.plugin.ViewAttributesPlugIn;
 import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
 import com.vividsolutions.jump.workbench.ui.renderer.java2D.Java2DConverter;
 import com.vividsolutions.jump.workbench.ui.renderer.style.PinEqualCoordinatesStyle;
@@ -667,7 +668,11 @@ public class LayerViewPanel extends JPanel
 	public void fireSelectionChanged() {
 		for (Iterator i = listeners.iterator(); i.hasNext();) {
 			LayerViewPanelListener l = (LayerViewPanelListener) i.next();
-			l.selectionChanged();
+            // [mmichaud 2015-06-17] Do not propagate selectionChange if the change
+            // comes from AttributeTablePanel
+            if (getWorkBenchFrame().getActiveInternalFrame() instanceof ViewAttributesPlugIn.ViewAttributesFrame) continue;
+            if (getWorkBenchFrame().getActiveInternalFrame() instanceof InfoFrame) continue;
+            l.selectionChanged();
 		}
 	}
 

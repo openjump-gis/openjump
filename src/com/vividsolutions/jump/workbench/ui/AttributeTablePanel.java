@@ -575,14 +575,6 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
                         rowset.add(mapIdRow.get(((Feature) obj).getID()));
                     }
 
-                    // return if the set of selected raws spread over too man intervals
-                    // as it will take to much time to update the table
-                    //Integer[] rows = rowset.toArray(new Integer[rowset.size()]);
-                    //int countRanges = 0;
-                    //for (int i = 1; i < rowset.size(); i++) {
-                    //    if (rows[i] - rows[i - 1] > 1) countRanges++;
-                    //}
-
                     // update the table
                     int rowini = -2, rowfin = -2;
                     table.setSelectionModel(defaultSelectionModel);
