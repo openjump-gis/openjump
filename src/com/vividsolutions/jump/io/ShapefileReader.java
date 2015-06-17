@@ -94,6 +94,7 @@ public class ShapefileReader extends AbstractJUMPReader {
 
     private File delete_this_tmp_dbf = null;
     private File delete_this_tmp_shx = null;
+    private File delete_this_tmp_cpg = null;
 
     private static Logger LOG = Logger.getLogger(ShapefileReader.class);
 
@@ -135,8 +136,26 @@ public class ShapefileReader extends AbstractJUMPReader {
 
         //okay, we have .shp and .dbf file paths, lets create Shapefile and DbfFile
         Shapefile myshape = getShapefile(shpFileName, dp.getProperty(COMPRESSED_FILE_PROPERTY_KEY));
-        String charsetName = dp.getProperty("charset");
-        if (charsetName == null) charsetName = Charset.defaultCharset().name();
+        InputStream cpgCharsetInputStream = getCpg(shpFileName, dp.getProperty(COMPRESSED_FILE_PROPERTY_KEY));
+        // charset used to read dbf is platform default charset
+        String charsetName = Charset.defaultCharset().name();
+        // if a cpg file is found, charset used is the one defined in the cpg file
+        BufferedReader cpgCharsetReader = null;
+        try {
+            if (cpgCharsetInputStream != null) {
+                cpgCharsetReader = new BufferedReader(new InputStreamReader(cpgCharsetInputStream));
+                String cpgCharset = cpgCharsetReader.readLine();
+                if (Charset.isSupported(cpgCharset)) charsetName = cpgCharset;
+            }
+        } finally {
+            if (cpgCharsetReader != null) cpgCharsetInputStream.close();
+        }
+        // if dp.getProperty("charset") contains a charset different from platform default,
+        // this charset is preferred to the one defined by cpg file
+        if (dp.getProperty("charset") != null && Charset.isSupported(dp.getProperty("charset")) &&
+                !Charset.defaultCharset().name().equals(Charset.forName(dp.getProperty("charset")))) {
+            charsetName = dp.getProperty("charset");
+        }
         DbfFile mydbf = getDbfFile(shpFileName, dp.getProperty(COMPRESSED_FILE_PROPERTY_KEY),
                 Charset.forName(charsetName));
         InputStream shx = getShx(shpFileName, dp.getProperty(COMPRESSED_FILE_PROPERTY_KEY));
@@ -234,6 +253,7 @@ public class ShapefileReader extends AbstractJUMPReader {
             mydbf.close();
             deleteTmpDbf(); // delete dbf file if it was decompressed
             deleteTmpShx(); // delete shx file if it was decompressed
+            deleteTmpCpg();
         }
         //System.out.println("Shapfile read in " + (System.currentTimeMillis()-t0) + " ms");
         return featureCollection;
@@ -290,6 +310,60 @@ public class ShapefileReader extends AbstractJUMPReader {
                 shxInputStream = new FileInputStream(file.toString());
                 delete_this_tmp_shx = file; // to be deleted later on
                 return shxInputStream;
+            } catch (Exception e) {
+                String msg = e.getMessage();
+                LOG.info(msg);
+                System.err.println(msg);
+            }
+        }
+
+        return null;
+    }
+
+    protected InputStream getCpg(String srcFileName, String compressedFname) throws Exception {
+        FileInputStream cpgInputStream;
+
+        // default is a *.cpg src file
+        if (srcFileName.matches("(?i).*\\.shp$")) {
+            // replace file name extension of compressedFname (probably .shp) with .cpg
+            srcFileName = srcFileName.replaceAll("\\.[^.]*$", ".cpg");
+            File cpgFile = new File(srcFileName);
+            if (cpgFile.exists()) {
+                return new FileInputStream(srcFileName);
+            }
+        }
+        // if we are in an archive that can hold multiple files compressedFname is defined and a String
+        else if (compressedFname instanceof String) {
+            byte[] b = new byte[2048];
+            int len;
+            boolean keepGoing = true;
+
+            // copy the file then use that copy
+            File file = File.createTempFile("cpg", ".cpg");
+            FileOutputStream out = new FileOutputStream(file);
+
+            // replace file name extension of compressedFname (probably .shp) with .dbf
+            compressedFname = compressedFname.replaceAll("\\.[^.]*$", ".cpg");
+
+            try {
+                InputStream in = CompressedFile.openFile(srcFileName,compressedFname);
+
+                while (keepGoing) {
+                    len = in.read(b);
+
+                    if (len > 0) {
+                        out.write(b, 0, len);
+                    }
+
+                    keepGoing = (len != -1);
+                }
+
+                in.close();
+                out.close();
+
+                cpgInputStream = new FileInputStream(file.toString());
+                delete_this_tmp_cpg = file; // to be deleted later on
+                return cpgInputStream;
             } catch (Exception e) {
                 String msg = e.getMessage();
                 LOG.info(msg);
@@ -381,6 +455,13 @@ public class ShapefileReader extends AbstractJUMPReader {
         if (delete_this_tmp_shx != null) {
             delete_this_tmp_shx.delete();
             delete_this_tmp_shx = null;
+        }
+    }
+
+    private void deleteTmpCpg() {
+        if (delete_this_tmp_cpg != null) {
+            delete_this_tmp_cpg.delete();
+            delete_this_tmp_cpg = null;
         }
     }
 }
