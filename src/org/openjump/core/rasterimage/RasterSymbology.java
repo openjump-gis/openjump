@@ -2,6 +2,7 @@ package org.openjump.core.rasterimage;
 
 import java.awt.Color;
 import java.util.TreeMap;
+import org.openjump.core.rasterimage.styler.ColorMapEntry;
 
 /**
  *
@@ -77,7 +78,7 @@ public class RasterSymbology {
                     return downColorMapEntry.getColor();
                 } else {
                     double distDown = value - downColorMapEntry.getUpperValue();
-                    double distUp = upColorMapEntry.getUpperValue() - value;
+                    double distUp = upColorMapEntry.getUpperValue()- value;
 
                     double relDist = distDown / (distUp + distDown);
 
@@ -95,6 +96,9 @@ public class RasterSymbology {
         } else if(colorMapType == ColorMapType.INTERVALS) {
             
             ColorMapEntry downColorMapEntry = getColorMapEntry(value);
+            if(downColorMapEntry == null) {
+                return null;
+            }
             return downColorMapEntry.getColor();
             
         } else {

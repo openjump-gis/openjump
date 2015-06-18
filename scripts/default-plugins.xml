@@ -839,6 +839,10 @@
 	
 	<plug-in> org.openjump.core.ui.plugin.raster.RasterQueryPlugIn
 	</plug-in>
+	
+	<extension>
+		org.openjump.core.rasterimage.styler.RasterStylesExtension
+	</extension>
 
 	<!--- ======================= WINDOW menu =============================== -->
 	<plug-in>
