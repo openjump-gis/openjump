@@ -43,6 +43,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
+import com.vividsolutions.jump.workbench.ui.plugin.ViewAttributesPlugIn;
 import org.openjump.core.ui.plugin.view.ViewOptionsPlugIn;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -527,6 +528,12 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
             @Override
             public void selectionChanged() {
                 try {
+
+                    if (workbenchContext.getWorkbench().getFrame().getActiveInternalFrame()
+                            .isAncestorOf(AttributeTablePanel.this)) return;
+                    if (workbenchContext.getWorkbench().getFrame().getActiveInternalFrame()
+                            .isAncestorOf(AttributeTablePanel.this)) return;
+
                     // Get selected features :
                     // For AttributeTable, selected features are highlighted
                     // For InfoModel, selected features may be added to the model

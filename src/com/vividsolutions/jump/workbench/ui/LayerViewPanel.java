@@ -668,10 +668,6 @@ public class LayerViewPanel extends JPanel
 	public void fireSelectionChanged() {
 		for (Iterator i = listeners.iterator(); i.hasNext();) {
 			LayerViewPanelListener l = (LayerViewPanelListener) i.next();
-            // [mmichaud 2015-06-17] Do not propagate selectionChange if the change
-            // comes from AttributeTablePanel
-            if (getWorkBenchFrame().getActiveInternalFrame() instanceof ViewAttributesPlugIn.ViewAttributesFrame) continue;
-            if (getWorkBenchFrame().getActiveInternalFrame() instanceof InfoFrame) continue;
             l.selectionChanged();
 		}
 	}
