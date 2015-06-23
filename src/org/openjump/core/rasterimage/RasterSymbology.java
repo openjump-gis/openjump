@@ -101,6 +101,15 @@ public class RasterSymbology {
             }
             return downColorMapEntry.getColor();
             
+        } else if(colorMapType == ColorMapType.SINGLE) {
+            
+            ColorMapEntry downColorMapEntry = getColorMapEntry(value);
+            if(downColorMapEntry == null) {
+                return null;
+            }
+            return downColorMapEntry.getColor();
+            
+            
         } else {
             return null;
         }  
@@ -116,7 +125,7 @@ public class RasterSymbology {
     }
     
     public enum ColorMapType {
-        RAMP, INTERVALS
+        RAMP, INTERVALS, SINGLE
     }
     
 }

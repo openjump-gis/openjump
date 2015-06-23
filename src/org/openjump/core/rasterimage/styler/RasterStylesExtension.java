@@ -9,7 +9,6 @@ public class RasterStylesExtension extends Extension {
     public void configure(PlugInContext pic) throws Exception {
         
         new RasterStylesPlugIn().initialize(pic);
-        new RasterLegendPlugIn().initialize(pic);
         
     }
     

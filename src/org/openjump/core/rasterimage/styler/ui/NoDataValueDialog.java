@@ -43,8 +43,8 @@ public class NoDataValueDialog extends javax.swing.JDialog {
         setResizable(false);
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/geomaticaeambiente/openjump/rasterstyles/resources/Bundle"); // NOI18N
-        jLabel_Message.setText(bundle.getString("NoDataValueDialog.jLabel_Message.text")); // NOI18N
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/openjump/core/rasterimage/styler/resources/Bundle"); // NOI18N
+        jLabel_Message.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.NoDataValueDialog.jLabel_Message.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -53,7 +53,7 @@ public class NoDataValueDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 20, 0);
         getContentPane().add(jLabel_Message, gridBagConstraints);
 
-        jTextField_NoDataValue.setText(bundle.getString("NoDataValueDialog.jTextField_NoDataValue.text")); // NOI18N
+        jTextField_NoDataValue.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.NoDataValueDialog.jTextField_NoDataValue.text")); // NOI18N
         jTextField_NoDataValue.setMinimumSize(new java.awt.Dimension(110, 20));
         jTextField_NoDataValue.setPreferredSize(new java.awt.Dimension(110, 20));
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -65,7 +65,7 @@ public class NoDataValueDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 20, 0);
         getContentPane().add(jTextField_NoDataValue, gridBagConstraints);
 
-        jButton_Cancel.setText(bundle.getString("NoDataValueDialog.jButton_Cancel.text")); // NOI18N
+        jButton_Cancel.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.NoDataValueDialog.jButton_Cancel.text")); // NOI18N
         jButton_Cancel.setMaximumSize(new java.awt.Dimension(77, 23));
         jButton_Cancel.setMinimumSize(new java.awt.Dimension(77, 23));
         jButton_Cancel.setPreferredSize(new java.awt.Dimension(77, 23));
@@ -82,7 +82,7 @@ public class NoDataValueDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 5);
         getContentPane().add(jButton_Cancel, gridBagConstraints);
 
-        jButton_Memorize.setText(bundle.getString("NoDataValueDialog.jButton_Memorize.text")); // NOI18N
+        jButton_Memorize.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.NoDataValueDialog.jButton_Memorize.text")); // NOI18N
         jButton_Memorize.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton_MemorizeActionPerformed(evt);
@@ -105,7 +105,7 @@ public class NoDataValueDialog extends javax.swing.JDialog {
             double value = Double.parseDouble(jTextField_NoDataValue.getText());
         
         } catch(NumberFormatException nfe){
-            JOptionPane.showMessageDialog(this, bundle.getString("NoDataValueDialog.Values.message"), RasterStylesExtension.extensionName, WIDTH);
+            JOptionPane.showMessageDialog(this, bundle.getString("org.openjump.core.rasterimage.styler.ui.NoDataValueDialog.Values.message"), RasterStylesExtension.extensionName, WIDTH);
         }
         
         noDataValue = Double.parseDouble(jTextField_NoDataValue.getText());

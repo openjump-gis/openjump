@@ -102,7 +102,7 @@ public class GradientTablePanel extends ColorsTablePanel implements TableModelLi
             
         }catch(Exception ex){
             updateGradient = true;
-            Logger.getLogger(GradientTablePanel.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(org.openjump.core.rasterimage.styler.ui.GradientTablePanel.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         updateGradient = true;

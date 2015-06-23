@@ -39,15 +39,15 @@ public class ColorsTablePanel extends JPanel {
         if(tableType == TableType.INTERVALS) {
             columnNames = new String[]{
                 java.util.ResourceBundle.getBundle("org/openjump/core/rasterimage/styler/resources/Bundle")
-                        .getString("ColorsTablePanel.MinValue"),
+                        .getString("org.openjump.core.rasterimage.styler.ui.ColorsTablePanel.MinValue"),
                 java.util.ResourceBundle.getBundle("org/openjump/core/rasterimage/styler/resources/Bundle")
-                        .getString("ColorsTablePanel.Color")};
+                        .getString("org.openjump.core.rasterimage.styler.ui.ColorsTablePanel.Color")};
         } else if(tableType == TableType.VALUES) {
             columnNames = new String[]{
                 java.util.ResourceBundle.getBundle("org/openjump/core/rasterimage/styler/resources/Bundle")
-                        .getString("ColorsTablePanel.Value"),
+                        .getString("org.openjump.core.rasterimage.styler.ui.ColorsTablePanel.Value"),
                 java.util.ResourceBundle.getBundle("org/openjump/core/rasterimage/styler/resources/Bundle")
-                        .getString("ColorsTablePanel.Color")};
+                        .getString("org.openjump.core.rasterimage.styler.ui.ColorsTablePanel.Color")};
         }
         this.noDataValue = noDataValue;
         this.integerValues = integerValues;
@@ -146,7 +146,7 @@ public class ColorsTablePanel extends JPanel {
         } catch (Exception ex) {
             throw new Exception(
                     java.util.ResourceBundle.getBundle("org/openjump/core/rasterimage/styler/resources/Bundle")
-                            .getString("ColorsTablePanel.ErrorInTable") + ex);
+                            .getString("org.openjump.core.rasterimage.styler.ui.ColorsTablePanel.ErrorInTable") + ex);
         }
         
     }

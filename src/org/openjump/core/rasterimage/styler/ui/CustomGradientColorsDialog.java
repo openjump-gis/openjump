@@ -58,8 +58,8 @@ public class CustomGradientColorsDialog extends javax.swing.JDialog {
         jPanel_ColorTable.setLayout(new java.awt.GridBagLayout());
 
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/openjump/core/rasterimage/styler/resources/Bundle"); // NOI18N
-        jButton_RemoveRow.setText(bundle.getString("CustomGradientColorsDialog.jButton_RemoveRow.text")); // NOI18N
-        jButton_RemoveRow.setToolTipText(bundle.getString("CustomGradientColorsDialog.jButton_RemoveRow.toolTipText")); // NOI18N
+        jButton_RemoveRow.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.CustomGradientColorsDialog.jButton_RemoveRow.text")); // NOI18N
+        jButton_RemoveRow.setToolTipText(bundle.getString("org.openjump.core.rasterimage.styler.ui.CustomGradientColorsDialog.jButton_RemoveRow.toolTipText")); // NOI18N
         jButton_RemoveRow.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton_RemoveRowActionPerformed(evt);
@@ -73,7 +73,7 @@ public class CustomGradientColorsDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 2);
         jPanel_ColorTable.add(jButton_RemoveRow, gridBagConstraints);
 
-        jButton_AddRow.setText(bundle.getString("CustomGradientColorsDialog.jButton_AddRow.text")); // NOI18N
+        jButton_AddRow.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.CustomGradientColorsDialog.jButton_AddRow.text")); // NOI18N
         jButton_AddRow.setMaximumSize(new java.awt.Dimension(93, 23));
         jButton_AddRow.setMinimumSize(new java.awt.Dimension(93, 23));
         jButton_AddRow.setPreferredSize(new java.awt.Dimension(93, 23));
@@ -110,14 +110,14 @@ public class CustomGradientColorsDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 10);
         jPanel_ColorTable.add(jPanel_Gradient, gridBagConstraints);
 
-        jLabel_Min.setText(bundle.getString("CustomGradientColorsDialog.jLabel_Min.text")); // NOI18N
+        jLabel_Min.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.CustomGradientColorsDialog.jLabel_Min.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 10);
         jPanel_ColorTable.add(jLabel_Min, gridBagConstraints);
 
-        jLabel_Max.setText(bundle.getString("CustomGradientColorsDialog.jLabel_Max.text")); // NOI18N
+        jLabel_Max.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.CustomGradientColorsDialog.jLabel_Max.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 2;
@@ -130,7 +130,7 @@ public class CustomGradientColorsDialog extends javax.swing.JDialog {
         gridBagConstraints.gridwidth = 2;
         getContentPane().add(jPanel_ColorTable, gridBagConstraints);
 
-        jButton_Cancel.setText(bundle.getString("CustomGradientColorsDialog.jButton_Cancel.text")); // NOI18N
+        jButton_Cancel.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.CustomGradientColorsDialog.jButton_Cancel.text")); // NOI18N
         jButton_Cancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton_CancelActionPerformed(evt);
@@ -144,7 +144,7 @@ public class CustomGradientColorsDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 10);
         getContentPane().add(jButton_Cancel, gridBagConstraints);
 
-        jButton_Ok.setText(bundle.getString("CustomGradientColorsDialog.jButton_Ok.text")); // NOI18N
+        jButton_Ok.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.CustomGradientColorsDialog.jButton_Ok.text")); // NOI18N
         jButton_Ok.setMaximumSize(new java.awt.Dimension(65, 23));
         jButton_Ok.setMinimumSize(new java.awt.Dimension(65, 23));
         jButton_Ok.setPreferredSize(new java.awt.Dimension(65, 23));
@@ -187,7 +187,7 @@ public class CustomGradientColorsDialog extends javax.swing.JDialog {
         try {
             okButton();
         } catch (Exception ex) {
-            Logger.getLogger(CustomGradientColorsDialog.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(org.openjump.core.rasterimage.styler.ui.CustomGradientColorsDialog.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         
@@ -233,7 +233,7 @@ public class CustomGradientColorsDialog extends javax.swing.JDialog {
         //Check if colors are more than 1
         if(cme.length < 2){
             JOptionPane.showMessageDialog(this, 
-                    bundle.getString("GradientTablePanel.ColorsNumber.message"), 
+                    bundle.getString("org.openjump.core.rasterimage.styler.ui.GradientTablePanel.ColorsNumber.message"), 
                     RasterStylesExtension.extensionName, 
                     JOptionPane.INFORMATION_MESSAGE);
             return;
@@ -251,7 +251,7 @@ public class CustomGradientColorsDialog extends javax.swing.JDialog {
             if(values[v] <= tempValue ||  values[v]>1){
 
                     JOptionPane.showMessageDialog(this, 
-                            bundle.getString("GradientTablePanel.FractionValues.message"), 
+                            bundle.getString("org.openjump.core.rasterimage.styler.ui.GradientTablePanel.FractionValues.message"), 
                             RasterStylesExtension.extensionName, 
                             JOptionPane.INFORMATION_MESSAGE);
                 return;

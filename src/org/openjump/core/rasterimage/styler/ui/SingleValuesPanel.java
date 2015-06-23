@@ -259,7 +259,7 @@ public class SingleValuesPanel extends javax.swing.JPanel {
     
     public RasterSymbology getRasterSymbolizer() throws Exception{
         
-        RasterSymbology rasterSymbolizer = new RasterSymbology(RasterSymbology.ColorMapType.INTERVALS);
+        RasterSymbology rasterSymbolizer = new RasterSymbology(RasterSymbology.ColorMapType.SINGLE);
         for (ColorMapEntry colorMapEntry : colorsTablePanel.getColorMapEntries()) {
             rasterSymbolizer.addColorMapEntry(colorMapEntry.getUpperValue(), colorMapEntry.getColor());
         }

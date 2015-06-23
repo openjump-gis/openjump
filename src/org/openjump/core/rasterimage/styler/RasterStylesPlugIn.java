@@ -4,10 +4,12 @@ import org.openjump.core.rasterimage.styler.ui.NoDataValueDialog;
 import org.openjump.core.rasterimage.styler.ui.RasterStylesDialog;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.ThreadedPlugIn;
+import java.util.List;
 import javax.swing.JPopupMenu;
 import org.openjump.core.apitools.LayerTools;
 import org.openjump.core.rasterimage.RasterImageLayer;
@@ -42,16 +44,15 @@ public class RasterStylesPlugIn implements ThreadedPlugIn {
         RasterImageLayer rasterImageLayer = (RasterImageLayer) LayerTools.getSelectedLayerable(context, RasterImageLayer.class);
         RasterStylesDialog symbologyDialog;
         
-        String bboardKey = GUIUtils.getBBKey(rasterImageLayer.getImageFileName());        
+        String bboardKey = GUIUtils.getBBKey(String.valueOf(rasterImageLayer.getUUID()));        
                 
-        if(context.getWorkbenchContext().getBlackboard().get(bboardKey)!= null){            
+        if(context.getWorkbenchContext().getBlackboard().get(bboardKey) != null){            
             
             symbologyDialog = (RasterStylesDialog) context.getWorkbenchContext().getBlackboard().get(bboardKey);
             symbologyDialog.setLocationRelativeTo(context.getWorkbenchFrame());
             symbologyDialog.setVisible(true);
             
         } else {
-            
             Double noDataValue;
             //check if getNoDataValue() method in RasterImageLayer exist
             try{

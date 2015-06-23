@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2015-06-23 bertazza
+  * improved legend handling for rasters (via RasterStyler):
+  * the legend is now integrated in the layer tree of the TOC
+
 2015-06-23 mmichaud <m.michael.michaud@orange.fr>
   * fix bug #406 wrong message "layers not saved"
 

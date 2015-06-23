@@ -161,7 +161,7 @@ public class GUIUtils {
             Iterator iter = layers.iterator();
             while (iter.hasNext()) {
                 RasterImageLayer ril = (RasterImageLayer) iter.next();
-                if (rasterStylerKey.equals(ril.getImageFileName() + RasterStylesExtension.suffixBlackBKey)) {
+                if (rasterStylerKey.equals(ril.getUUID() + RasterStylesExtension.suffixBlackBKey)) {
                     end_hm.put(rasterStylerKey, start_hm.get(rasterStylerKey));
                     break;
                 }

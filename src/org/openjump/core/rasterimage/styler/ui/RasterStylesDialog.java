@@ -2,6 +2,7 @@ package org.openjump.core.rasterimage.styler.ui;
 
 import com.vividsolutions.jump.util.Range;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.model.LayerEventType;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -69,6 +70,7 @@ public class RasterStylesDialog extends javax.swing.JDialog {
         jButton_Cancel = new javax.swing.JButton();
         jButton_Restore = new javax.swing.JButton();
         jButton_Apply = new javax.swing.JButton();
+        jButton_OK = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(420, 450));
@@ -220,10 +222,9 @@ public class RasterStylesDialog extends javax.swing.JDialog {
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(5, 20, 5, 0);
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         getContentPane().add(jButton_Restore, gridBagConstraints);
 
         jButton_Apply.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.jButton_Apply.text")); // NOI18N
@@ -233,12 +234,22 @@ public class RasterStylesDialog extends javax.swing.JDialog {
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        getContentPane().add(jButton_Apply, gridBagConstraints);
+
+        jButton_OK.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.jButton_OK.text")); // NOI18N
+        jButton_OK.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_OKActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 20);
-        getContentPane().add(jButton_Apply, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        getContentPane().add(jButton_OK, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -262,8 +273,8 @@ public class RasterStylesDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_jCheckBox_NoDataValueActionPerformed
 
     private void jButton_CancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_CancelActionPerformed
-        GUIUtils.clearRasterStylerFromBlackBoard(context);
-        setVisible(false);
+        
+        closeDialog();
         
     }//GEN-LAST:event_jButton_CancelActionPerformed
 
@@ -293,6 +304,18 @@ public class RasterStylesDialog extends javax.swing.JDialog {
         }
             
     }//GEN-LAST:event_jButton_RestoreActionPerformed
+
+    private void jButton_OKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_OKActionPerformed
+        
+        //Update raster image and close
+        try {         
+            updateRasterImageLayer();
+            closeDialog();
+        } catch (Exception ex) {
+            Logger.getLogger(RasterStylesDialog.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }//GEN-LAST:event_jButton_OKActionPerformed
     
     private void fixComponents() throws Exception{
         
@@ -349,11 +372,19 @@ public class RasterStylesDialog extends javax.swing.JDialog {
         }
         
         //add RasterSimbolizer Object in BlackBoard, the key is the name of raster plus suffixBBoardKey var.
-        String bboardKey = GUIUtils.getBBKey(rasterImageLayer.getImageFileName());   
+        String bboardKey = GUIUtils.getBBKey(String.valueOf(rasterImageLayer.getUUID()));
         context.getBlackboard().put(bboardKey, this);
-        
         rasterImageLayer.setSymbology(finalRasterSymbolizer);
 
+        context.getLayerManager().fireLayerChanged(rasterImageLayer, LayerEventType.APPEARANCE_CHANGED);
+        
+    }
+    
+    private void closeDialog() {
+        
+        GUIUtils.clearRasterStylerFromBlackBoard(context);
+        setVisible(false);
+        
     }
     
     private void restoreToOriginal() throws NoninvertibleTransformException {
@@ -371,6 +402,7 @@ public class RasterStylesDialog extends javax.swing.JDialog {
     private javax.swing.JButton jButton_Apply;
     private javax.swing.JButton jButton_Cancel;
     private javax.swing.JButton jButton_NoDataValueColor;
+    private javax.swing.JButton jButton_OK;
     private javax.swing.JButton jButton_Restore;
     private javax.swing.JCheckBox jCheckBox_NoDataValue;
     private javax.swing.JLabel jLabel_Transp_0;

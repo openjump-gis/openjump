@@ -79,10 +79,13 @@ import com.vividsolutions.jump.workbench.model.LayerListener;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
 import com.vividsolutions.jump.workbench.model.LayerTreeModel;
+import com.vividsolutions.jump.workbench.model.LayerTreeModel.RasterStyleValueIntv;
+import com.vividsolutions.jump.workbench.model.LayerTreeModel.RasterStyleValueRamp;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.model.WMSLayer;
 import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
 import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
+import org.openjump.core.rasterimage.RasterSymbology;
 
 public class TreeLayerNamePanel extends JPanel implements LayerListener,
     LayerNamePanel, LayerableNamePanel, LayerNamePanelProxy, PopupNodeProxy {
@@ -91,6 +94,7 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
   BorderLayout borderLayout1 = new BorderLayout();
 
   JTree tree = new JTree() {
+    @Override
     public boolean isPathEditable(TreePath path) {
       if (!isEditable()) {
         return false;
@@ -103,6 +107,7 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
     // Workaround for Java Bug 4199956 "JTree shows container can be
     // expanded - even when empty", posted by bertrand.allo in the Java Bug
     // Database. [Jon Aquino]
+    @Override
     public boolean hasBeenExpanded(TreePath path) {
       return super.hasBeenExpanded(path)
           || !this.getModel().isLeaf(path.getLastPathComponent());
@@ -162,6 +167,10 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
   private int lastHoveringRow = -1;
 
   /**
+     * @param layerManagerProxy
+     * @param treeModel
+     * @param renderingManager
+     * @param additionalNodeClassToTreeCellRendererMap
      */
   public TreeLayerNamePanel(LayerManagerProxy layerManagerProxy,
       TreeModel treeModel, RenderingManager renderingManager,
@@ -389,6 +398,9 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
                   if (path.peek() instanceof LayerTreeModel.ColorThemingValue) {
                     return;
                   }
+                  if (path.peek() instanceof LayerTreeModel.RasterStyleValueIntv) {
+                      return;
+                  }
                   tree.makeVisible(new TreePath(path.toArray()));
                 }
               });
@@ -420,6 +432,7 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
         }
       };
 
+      @Override
       public Component getTreeCellRendererComponent(JTree tree, Object value,
           boolean selected, boolean expanded, boolean leaf, int row,
           boolean hasFocus) {
@@ -437,16 +450,17 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
     map.put(WMSLayer.class, layerTreeCellRenderer);
     map.put(Category.class, layerTreeCellRenderer);
     map.put(RasterImageLayer.class, layerTreeCellRenderer);
-    map.put(LayerTreeModel.ColorThemingValue.class,
-        createColorThemingValueRenderer());
+    map.put(LayerTreeModel.ColorThemingValue.class, createColorThemingValueRenderer());
+    map.put(LayerTreeModel.RasterStyleValueIntv.class, createRasterStyleValueIntvRenderer());
+    map.put(LayerTreeModel.RasterStyleValueRamp.class, createRasterStyleValueRampRenderer());
     return map;
   }
 
   private TreeCellRenderer createColorThemingValueRenderer() {
     return new TreeCellRenderer() {
-      private JPanel panel = new JPanel(new GridBagLayout());
-      private ColorPanel colorPanel = new ColorPanel();
-      private JLabel label = new JLabel();
+      private final JPanel panel = new JPanel(new GridBagLayout());
+      private final ColorPanel colorPanel = new ColorPanel();
+      private final JLabel label = new JLabel();
       {
         panel.add(colorPanel, new GridBagConstraints(0, 0, 1, 1, 0, 0,
             GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0,
@@ -456,6 +470,7 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
                 0, 0), 0, 0));
       }
 
+      @Override
       public Component getTreeCellRendererComponent(JTree tree, Object value,
           boolean selected, boolean expanded, boolean leaf, int row,
           boolean hasFocus) {
@@ -473,6 +488,107 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
     };
   }
 
+  private TreeCellRenderer createRasterStyleValueIntvRenderer() {
+        
+    return new TreeCellRenderer() {
+        private final JPanel panel = new JPanel(new GridBagLayout());
+        private final ColorPanel colorPanel = new ColorPanel();
+        private final JLabel label = new JLabel();
+        {
+            panel.add(colorPanel,
+                    new GridBagConstraints(
+                            0, 0, 1, 1, 0, 0,
+                            GridBagConstraints.WEST,
+                            GridBagConstraints.NONE,
+                            new Insets(0,0,0,0),
+                            0, 0));
+            panel.add(label,
+                    new GridBagConstraints(
+                            1, 0, 1, 1, 0, 0,
+                            GridBagConstraints.WEST,
+                            GridBagConstraints.NONE,
+                            new Insets(0,5,0,0),
+                            0, 0));
+        }
+            
+        @Override
+        public Component getTreeCellRendererComponent(JTree tree,
+                Object value, boolean selected, boolean expanded,
+                boolean leaf, int row, boolean hasFocus) {
+
+            RasterStyleValueIntv rasterStyleValue = (RasterStyleValueIntv) value;
+            
+            if(rasterStyleValue.getColorMapType() == RasterSymbology.ColorMapType.INTERVALS) {
+                label.setText(
+                        String.valueOf(rasterStyleValue.getValue().floatValue() + "-" +
+                        String.valueOf(rasterStyleValue.getNextValue().floatValue())));
+            } else if(rasterStyleValue.getColorMapType() == RasterSymbology.ColorMapType.SINGLE) {
+                label.setText(String.valueOf(rasterStyleValue.getValue().intValue()));
+            }
+            colorPanel.setLineColor(Color.BLACK);
+            colorPanel.setFillColor(rasterStyleValue.getColor());      
+            
+            return panel;
+        }
+    };   
+  }
+  
+  private TreeCellRenderer createRasterStyleValueRampRenderer() {
+ 
+    return new TreeCellRenderer() {
+        private final JPanel panel = new JPanel(new GridBagLayout());
+        private final JLabel labelTop = new JLabel();
+        private final JLabel labelMiddle = new JLabel();
+        private final JLabel labelBottom = new JLabel();
+        private final JLabel labelImg = new JLabel();
+        {
+            
+                panel.add(labelImg, new GridBagConstraints(0, 0, 1, 3, 0, 1,
+                        GridBagConstraints.WEST,
+                        GridBagConstraints.NONE,
+                        new Insets(0,0,0,0),
+                        0, 0));
+                panel.add(labelTop, new GridBagConstraints(1, 0, 1, 1, 0, 1,
+                        GridBagConstraints.WEST,
+                        GridBagConstraints.VERTICAL,
+                        new Insets(0,5,0,0),
+                        0, 0));
+                panel.add(labelMiddle, new GridBagConstraints(1, 1, 1, 1, 0, 1,
+                        GridBagConstraints.WEST,
+                        GridBagConstraints.VERTICAL,
+                        new Insets(0,5,0,0),
+                        0, 0));
+                panel.add(labelBottom, new GridBagConstraints(1, 2, 1, 1, 0, 1,
+                        GridBagConstraints.LAST_LINE_START,
+                        GridBagConstraints.VERTICAL,
+                        new Insets(0,5,0,0),
+                        0, 0));
+                
+                labelTop.setVerticalAlignment(JLabel.TOP);
+                labelBottom.setVerticalAlignment(JLabel.BOTTOM);
+            
+        }
+
+        @Override
+        public Component getTreeCellRendererComponent(JTree tree,
+                Object value, boolean selected, boolean expanded,
+                boolean leaf, int row, boolean hasFocus) {
+            
+            RasterStyleValueRamp rasterStyleValue = (RasterStyleValueRamp) value;
+            
+            labelTop.setText(String.valueOf(rasterStyleValue.getTopValue().floatValue()));
+            labelMiddle.setText(String.valueOf(
+                    (rasterStyleValue.getTopValue().floatValue() - rasterStyleValue.getBottomValue().floatValue())/2));
+            labelBottom.setText(String.valueOf(rasterStyleValue.getBottomValue().floatValue()));  
+            
+            labelImg.setIcon(new RasterRampIcon(rasterStyleValue.getColors()));
+            
+            return panel;
+        }
+    };         
+      
+  }
+  
   void jbInit() throws Exception {
     this.setLayout(borderLayout1);
     tree.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -820,5 +936,5 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
   protected LayerTreeCellRenderer getLayerTreeCellRenderer() {
     return layerTreeCellRenderer;
   }
-
+  
 }

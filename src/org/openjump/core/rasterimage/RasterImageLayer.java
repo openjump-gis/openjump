@@ -32,6 +32,7 @@ import java.awt.image.*;
 import java.awt.image.renderable.ParameterBlock;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -128,6 +129,7 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
     
     private RasterSymbology symbology = null;
     private boolean symbologyChanged = false;
+    private final UUID uuid = java.util.UUID.randomUUID();
     
     /**
      * for java2xml
@@ -568,15 +570,21 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
 
                 if(symbology == null) {
                     if(stats.getBandCount() < 3) {
-                        double value = actualRasterData.getSampleDouble(col, row, 0);
-                        if(Double.isNaN(value) || Double.isInfinite(value) || value == noDataValue) {
-                            newImage.setRGB(col, row, Color.TRANSLUCENT);
-                            continue;
-                        }
-                        int rgbValue = (int) ((value - stats.getMin(0)) * 255./(stats.getMax(0) - stats.getMin(0)));
-                        if(rgbValue > 255) rgbValue = 255;
-                        if(rgbValue < 0) rgbValue = 0;
-                        newImage.setRGB(col, row, new Color(rgbValue, rgbValue, rgbValue).getRGB());
+//                        double value = actualRasterData.getSampleDouble(col, row, 0);
+//                        if(Double.isNaN(value) || Double.isInfinite(value) || value == noDataValue) {
+//                            newImage.setRGB(col, row, Color.TRANSLUCENT);
+//                            continue;
+//                        }
+//                        int rgbValue = (int) ((value - stats.getMin(0)) * 255./(stats.getMax(0) - stats.getMin(0)));
+//                        if(rgbValue > 255) rgbValue = 255;
+//                        if(rgbValue < 0) rgbValue = 0;
+//                        newImage.setRGB(col, row, new Color(rgbValue, rgbValue, rgbValue).getRGB());
+                        
+                        RasterSymbology rasterSymbology = new RasterSymbology(RasterSymbology.ColorMapType.RAMP);
+                        rasterSymbology.addColorMapEntry(metadata.getStats().getMin(0), Color.WHITE);
+                        rasterSymbology.addColorMapEntry(metadata.getStats().getMax(0), Color.BLACK);
+                        setSymbology(rasterSymbology);
+                        
                     } else {
                         double valueR = actualRasterData.getSampleDouble(col, row, 0);
                         double valueG = actualRasterData.getSampleDouble(col, row, 1);
@@ -1622,6 +1630,10 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
                 
     }
     
+    public RasterSymbology getRasterSymbology() {
+        return symbology;
+    }
+    
     public void setSymbology(RasterSymbology symbology) throws NoninvertibleTransformException {
         this.symbology = symbology;
         symbologyChanged = true;
@@ -1639,6 +1651,9 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
         return actualRasterData;
     }
     
+    public UUID getUUID() {
+        return uuid;
+    }
     
     
 }

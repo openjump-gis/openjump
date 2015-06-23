@@ -98,6 +98,7 @@ public abstract class SimpleTreeModel implements TreeModel {
     public void valueForPathChanged(TreePath path, Object newValue) {
     }
 
+    @Override
     public int getIndexOfChild(Object parent, Object child) {
         for (int i = 0; i < getChildCount(parent); i++) {
             //Folders are value objects. [Jon Aquino]

@@ -26,6 +26,7 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Category;
+import com.vividsolutions.jump.workbench.model.LayerEventType;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
@@ -33,6 +34,7 @@ import com.vividsolutions.jump.workbench.ui.Viewport;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
+import java.awt.Color;
 
 public class AddRasterImageLayerWizard extends AbstractWizardGroup {
 
@@ -92,9 +94,11 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
     /**
      * Load the files selected in the wizard.
      * 
+     * @param dialog
      * @param monitor
      *            The task monitor.
      */
+    @Override
     public void run(WizardDialog dialog, TaskMonitor monitor) {
         this.properties = new PropertiesHandler(
                 AddRasterImageLayerWizard.propertiesFile);
@@ -114,9 +118,6 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
 
     public void open(File file, TaskMonitor monitor) {
         try {
-            // workbenchContext.getWorkbench().getFrame().warnUser("would load: "
-            // + file.getName());
-
             try {
                 this.properties.setProperty(
                         LoadSextanteRasterImagePlugIn.KEY_PATH, file.getPath());
@@ -134,7 +135,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
                         selectedFilename.lastIndexOf(File.separator) + 1,
                         selectedFilename.lastIndexOf("."));
 
-                boolean imageAdded = false;
+//                boolean imageAdded = false;
 
                 Point imageDimensions = RasterImageIO
                         .getImageDimensions(selectedFilename);
@@ -143,7 +144,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
                         this.workbenchContext);
 
                 if (env != null) {
-                    imageAdded = this.addImage(workbenchContext, env,
+                    addImage(workbenchContext, env,
                             imageDimensions);
                 }
 
@@ -157,8 +158,8 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
         }
     }
 
-    private boolean addImage(WorkbenchContext context, Envelope envelope,
-            Point imageDimensions) {
+    private void addImage(WorkbenchContext context, Envelope envelope,
+            Point imageDimensions) throws NoninvertibleTransformException {
 
         String newLayerName = context.getLayerManager().uniqueLayerName(
                 cachedLayer);
@@ -178,7 +179,6 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
 
         RasterImageLayer rLayer = new RasterImageLayer(newLayerName,
                 context.getLayerManager(), imageFileName, null, envelope);
-
         // #################################
 
         MetaInformationHandler mih = new MetaInformationHandler(rLayer);
@@ -190,15 +190,12 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
         // Double(envelope.getWidth()));
         // mih.addMetaInformation("real-world-height", new
         // Double(envelope.getHeight()));
-        mih.addMetaInformation("real-world-width",
-                new Double(envelope.getWidth()));
-        mih.addMetaInformation("real-world-height",
-                new Double(envelope.getHeight()));
+        mih.addMetaInformation("real-world-width", envelope.getWidth());
+        mih.addMetaInformation("real-world-height", envelope.getHeight());
 
         // ###################################
-
         context.getLayerManager().addLayerable(catName, rLayer);
-
+        
         if (zoomToInsertedImage || layersAsideImage == 0) {
             // logger.printDebug("zooming to image, layers: " +
             // layersAsideImage);
@@ -208,8 +205,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
                 // logger.printDebug(e.getMessage());
             }
         }
-
-        return true;
+        
     }
 
     /**
