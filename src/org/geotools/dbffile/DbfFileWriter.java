@@ -128,7 +128,7 @@ public class DbfFileWriter implements DbfConsts{
                 case 'G':
                 //chars
                     String ss = (String) o;
-                    while  (ss.length() < fields[i].fieldlen) {
+                    while  (ss.getBytes(charset.name()).length < fields[i].fieldlen) {
                         //need to fill it with ' ' chars
                         //this should converge quickly
                         ss = ss + "                                                                                                                  ";

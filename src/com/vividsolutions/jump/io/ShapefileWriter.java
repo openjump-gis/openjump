@@ -439,7 +439,7 @@ public class ShapefileWriter implements JUMPWriter {
             if (columnType == AttributeType.INTEGER ||
                     columnType == AttributeType.SMALLINT ||
                     columnType == AttributeType.TINYINT) {
-                int maxlength = findMaxStringLength(featureCollection, t);
+                int maxlength = findMaxStringLength(featureCollection, t, charset);
                 if (maxlength <= 3) fields[f] = new DbfFieldDef(columnName, 'N', 3, 0);
                 else if (maxlength <= 6) fields[f] = new DbfFieldDef(columnName, 'N', 6, 0);
                 else if (maxlength <= 9) fields[f] = new DbfFieldDef(columnName, 'N', 9, 0);
@@ -452,7 +452,7 @@ public class ShapefileWriter implements JUMPWriter {
 
             else if (columnType == AttributeType.LONG ||
                     columnType == AttributeType.BIGINT) {
-                int maxlength = findMaxStringLength(featureCollection, t);
+                int maxlength = findMaxStringLength(featureCollection, t, charset);
                 if (maxlength <= 12) fields[f] = new DbfFieldDef(columnName, 'N', 12, 0);
                 else if (maxlength <= 15) fields[f] = new DbfFieldDef(columnName, 'N', 15, 0);
                 else if (maxlength <= 18) fields[f] = new DbfFieldDef(columnName, 'N', 18, 0);
@@ -495,7 +495,7 @@ public class ShapefileWriter implements JUMPWriter {
                         columnType == AttributeType.LONGVARCHAR ||
                         columnType == AttributeType.CHAR ||
                         columnType == AttributeType.TEXT) {
-                int maxlength = findMaxStringLength(featureCollection, t);
+                int maxlength = findMaxStringLength(featureCollection, t, charset);
 
                 if (maxlength > 255) {
                     // If truncate option has been applied for less than 30 s
@@ -537,7 +537,7 @@ public class ShapefileWriter implements JUMPWriter {
             	//[sstein 9.Nov.2012] added this, as Sextante delivered an AttributeType set to null
             	if(columnName.isEmpty() == false){
 	            	// treat as string
-	                int maxlength = findMaxStringLength(featureCollection, t);
+	                int maxlength = findMaxStringLength(featureCollection, t, charset);
 	
 	                if (maxlength > 255) {
 	                    // If truncate option has been applied for less than 30 s
@@ -743,7 +743,7 @@ public class ShapefileWriter implements JUMPWriter {
      *@param fc features to look at
      *@param attributeNumber which of the column to test.
      */
-    int findMaxStringLength(FeatureCollection fc, int attributeNumber) {
+    int findMaxStringLength(FeatureCollection fc, int attributeNumber, Charset charset) {
         int l;
         int maxlen = 0;
         Feature f;
@@ -751,7 +751,7 @@ public class ShapefileWriter implements JUMPWriter {
         for (Iterator i = fc.iterator(); i.hasNext();) {
             f = (Feature) i.next();
             //patch from Hisaji Ono for Double byte characters
-            l = f.getString(attributeNumber).getBytes().length;
+            l = f.getString(attributeNumber).getBytes(charset).length;
 
             if (l > maxlen) {
                 maxlen = l;

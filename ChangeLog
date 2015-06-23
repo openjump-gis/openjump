@@ -6,6 +6,8 @@
 
 2015-06-23 mmichaud <m.michael.michaud@orange.fr>
   * fix bug #406 wrong message "layers not saved"
+  * fix a bug in shapefile charset management (dbf field length was sometimes
+    too short to store strings with accentuated characters)
 
 2015-06-17 bertazza 
   * added Raster Styler to manage symbologies for 1-banded raster
