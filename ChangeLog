@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2015-06-23 mmichaud <m.michael.michaud@orange.fr>
+  * fix bug #406 wrong message "layers not saved"
+
 2015-06-17 bertazza 
   * added Raster Styler to manage symbologies for 1-banded raster
   * (available from raster layer contextual menu)
