@@ -735,6 +735,7 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
             // pressing a key starts the cell editing mode, but it did not 
             // clear the selection and kept delete feature action possible,
             // which was quite dangerous. Now, the selection is cleared
+            /*
             table.addKeyListener(new java.awt.event.KeyListener(){
                     public void keyPressed(java.awt.event.KeyEvent e) {
                         if (!layer.isEditable()) return;
@@ -754,6 +755,7 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
                     public void keyTyped(java.awt.event.KeyEvent e) {
                     }
             });
+            */
             // Just after it has been created, AttributeTablePanel listen to the layerView selection
             // to be able to reflect the view selection into the table
             workbenchContext.getLayerViewPanel().addListener(layerViewPanelListener);
@@ -1089,7 +1091,7 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
      * @param panel
      */
     public void selectionReplaced(AttributeTablePanel panel) {
-        if (table.isEditing()) table.clearSelection();
+
         int[] selectedRows = table.getSelectedRows();
         // After selectedRows have been memorized, clear the layer selection,
         // other wise OpenJUMP will add the selectedRows to the already selected features

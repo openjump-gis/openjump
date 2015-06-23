@@ -1,5 +1,10 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2015-06-24 mmichaud <m.michael.michaud@orange.fr>
+  * AttributeTablePanel : simplify code, avoid useless selection clearing and avoid a
+    recursive loop [could not reproduce a case where features can be deleted from the
+    editing mode]
+
 2015-06-23 bertazza
   * improved legend handling for rasters (via RasterStyler):
   * the legend is now integrated in the layer tree of the TOC
