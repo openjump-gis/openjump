@@ -266,6 +266,15 @@
 	</plug-in>
 	<plug-in>
 		org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn
+	<menus>
+			<main-menu menupath="MenuNames.EDIT" install="true" />
+		</menus>
+	</plug-in>
+	<plug-in>
+		org.openjump.core.ui.plugin.mousemenu.MeasureSelectedPlugIn
+		<menus>
+			<main-menu menupath="MenuNames.EDIT" install="true" />
+		</menus>
 	</plug-in>
 	<plug-in>
 		org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry
@@ -520,6 +529,10 @@
 			<main-menu menupath="MenuNames.LAYER" install="true" />
 		</menus>
 	</plug-in>
+
+	
+
+
 	<!-- ====================== CUSTOMIZE menu ================================== -->
 	<plug-in>
 		com.vividsolutions.jump.workbench.ui.plugin.OptionsPlugIn
@@ -839,10 +852,6 @@
 	
 	<plug-in> org.openjump.core.ui.plugin.raster.RasterQueryPlugIn
 	</plug-in>
-	
-	<extension>
-		org.openjump.core.rasterimage.styler.RasterStylesExtension
-	</extension>
 
 	<!--- ======================= WINDOW menu =============================== -->
 	<plug-in>
@@ -1264,13 +1273,22 @@
 			<layername-popup-wms install="true" />
 		</menus>
 	</plug-in>
+
 	<separator />
+
 	<plug-in>
 		org.openjump.core.ui.plugin.wms.WMSLegendPlugIn
 		<menus>
 			<layername-popup-wms install="true" />
 		</menus>
 	</plug-in>
+        <plug-in>
+		org.openjump.core.ui.plugin.wms.WMSInfoPlugIn
+		<menus>
+			<layername-popup-wms install="true" />
+		</menus>
+	</plug-in>
+
 
 	<!-- ================ Sextante Raster LayerName Popup Menu =============== -->
 	<plug-in>
@@ -1288,12 +1306,16 @@
 			<layername-popup-raster install="true" />
 		</menus>
 	</plug-in>
-	<plug-in>
+
+
+	
+	       <plug-in>
 		org.openjump.core.ui.plugin.layer.pirolraster.ChangeRasterImagePropertiesPlugIn
 		<menus>
 			<layername-popup-raster install="true" />
 		</menus>
 	</plug-in>
+ 
 	<plug-in>
 		org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage
 		<menus>
@@ -1454,24 +1476,15 @@
 
 	<separator />
 
-	<plug-in>
-		com.vividsolutions.jump.workbench.ui.plugin.VerticesInFencePlugIn
-		<menus>
-			<layerview-popup install="true" />
-		</menus>
-	</plug-in>
+	
+	
 	<plug-in>
 		org.openjump.core.ui.plugin.mousemenu.DuplicateItemPlugIn
 		<menus>
 			<layerview-popup install="true" />
 		</menus>
 	</plug-in>
-	<plug-in>
-		org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn
-		<menus>
-			<layerview-popup />
-		</menus>
-	</plug-in>
+	
 	<plug-in>
 		com.vividsolutions.jump.workbench.ui.plugin.CombineSelectedFeaturesPlugIn
 		<menus>
@@ -1490,11 +1503,9 @@
 			<layerview-popup install="true" />
 		</menus>
 	</plug-in>
+	
 	<plug-in>
-		com.vividsolutions.jump.workbench.ui.plugin.clipboard.CopyThisCoordinatePlugIn
-		<menus>
-			<layerview-popup install="true" />
-		</menus>
+		org.openjump.core.ui.plugin.mousemenu.ReverseOrientationPlugIn
 	</plug-in>
 
 	<plug-in>
@@ -1521,19 +1532,52 @@
 	<plug-in>
 		org.openjump.core.ui.plugin.mousemenu.SplitPolygonsNodeLinesPlugIn
 	</plug-in>
+
+	
 	<plug-in>
-		org.openjump.core.ui.plugin.mousemenu.MoveAlongAnglePlugIn
+		org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn
+		<menus>
+			<layerview-popup menupath="MenuNames.TOOLS.OTHERS" install="true" />
+		</menus>
+	</plug-in>
+        <plug-in>
+		org.openjump.core.ui.plugin.mousemenu.RotatePlugIn
+		<menus>
+			<layerview-popup menupath="MenuNames.TOOLS.OTHERS" install="true" />
+		</menus>
 	</plug-in>
 	<plug-in>
-		org.openjump.core.ui.plugin.mousemenu.RotatePlugIn
+		org.openjump.core.ui.plugin.mousemenu.MeasureSelectedPlugIn
+		<menus>
+			<layerview-popup menupath="MenuNames.TOOLS.OTHERS" install="true" />
+		</menus>
+	</plug-in>
+	<plug-in>
+		org.openjump.core.ui.plugin.mousemenu.MoveAlongAnglePlugIn
+		<menus>
+			<layerview-popup menupath="MenuNames.TOOLS.OTHERS" install="true" />
+		</menus>
 	</plug-in>
 	<plug-in>
 		org.openjump.core.ui.plugin.mousemenu.EditSelectedSidePlugIn
+		<menus>
+			<layerview-popup menupath="MenuNames.TOOLS.OTHERS" install="true" />
+		</menus>
 	</plug-in>
 	<plug-in>
-		org.openjump.core.ui.plugin.mousemenu.ReverseOrientationPlugIn
+		com.vividsolutions.jump.workbench.ui.plugin.clipboard.CopyThisCoordinatePlugIn
+		<menus>
+			<layerview-popup menupath="MenuNames.TOOLS.OTHERS" install="true" />
+		</menus>
 	</plug-in>
+	<plug-in>
+		com.vividsolutions.jump.workbench.ui.plugin.VerticesInFencePlugIn
+		<menus>
 
+			<layerview-popup menupath="MenuNames.TOOLS.OTHERS" install="true" />
+		</menus>
+	</plug-in>
+	
 
 	<!-- ================ AttributeTab Popup Menu ============================== -->
 	<plug-in>
@@ -1616,9 +1660,9 @@
 	<plug-in>
 		org.openjump.core.ui.plugin.edittoolbox.ConstrainedMoveVertexPlugIn
 	</plug-in>
-	<!--plug-in>
+	<plug-in>
 		org.openjump.core.ui.plugin.edittoolbox.RotateSelectedItemPlugIn
-	</plug-in-->
+	</plug-in>
 	<plug-in>
 		org.openjump.core.ui.plugin.edittoolbox.SelectOneItemPlugIn
 	</plug-in>

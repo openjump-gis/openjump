@@ -32,10 +32,10 @@
  */
 
 package org.openjump.core.ui.plugin.mousemenu;
+
 import java.util.Collection;
 
 import javax.swing.JComponent;
-import javax.swing.JPopupMenu;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
@@ -50,77 +50,83 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.SelectionManagerProxy;
-import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 public class EditSelectedSidePlugIn extends AbstractPlugIn {
 
-	private final static String sEditSelectedSide = I18N.get("org.openjump.core.ui.plugin.mousemenu.EditSelectedSidePlugIn.Edit-Selected-Side");
-	private final static String sPointsDoNotHaveSides = I18N.get("org.openjump.core.ui.plugin.mousemenu.EditSelectedSidePlugIn.Points-do-not-have-sides");
-	private final static String sSelectOnlyOnePart = I18N.get("org.openjump.core.ui.plugin.mousemenu.EditSelectedSidePlugIn.Select-only-one-part");
-	
-    public void initialize(PlugInContext context) throws Exception
-    {     
-        WorkbenchContext workbenchContext = context.getWorkbenchContext();
-        FeatureInstaller featureInstaller = new FeatureInstaller(workbenchContext);
-        JPopupMenu popupMenu = LayerViewPanel.popupMenu();
-        featureInstaller.addPopupMenuItem(popupMenu,
-            this, sEditSelectedSide,
-            false, null,  //to do: add icon
-            this.createEnableCheck(workbenchContext)); 
+    private final static String sEditSelectedSide = I18N
+            .get("org.openjump.core.ui.plugin.mousemenu.EditSelectedSidePlugIn.Edit-Selected-Side");
+    private final static String sPointsDoNotHaveSides = I18N
+            .get("org.openjump.core.ui.plugin.mousemenu.EditSelectedSidePlugIn.Points-do-not-have-sides");
+    private final static String sSelectOnlyOnePart = I18N
+            .get("org.openjump.core.ui.plugin.mousemenu.EditSelectedSidePlugIn.Select-only-one-part");
+
+    public String getName() {
+        return sEditSelectedSide;
     }
-    
-    public boolean execute(final PlugInContext context) throws Exception
-    {
+
+    /*
+     * public void initialize(PlugInContext context) throws Exception {
+     * WorkbenchContext workbenchContext = context.getWorkbenchContext();
+     * FeatureInstaller featureInstaller = new
+     * FeatureInstaller(workbenchContext); JPopupMenu popupMenu =
+     * LayerViewPanel.popupMenu(); featureInstaller.addPopupMenuItem(popupMenu,
+     * this, sEditSelectedSide, false, null, //to do: add icon
+     * this.createEnableCheck(workbenchContext)); }
+     */
+
+    public boolean execute(final PlugInContext context) throws Exception {
         reportNothingToUndoYet(context);
-        EditSelectedSideDialog dialog = new EditSelectedSideDialog(context, sEditSelectedSide, false);
+        EditSelectedSideDialog dialog = new EditSelectedSideDialog(context,
+                sEditSelectedSide, false);
         dialog.setVisible(true);
         return true;
     }
-        
-    public EnableCheck noPointsMayBeSelectedCheck(final WorkbenchContext workbenchContext) {
+
+    public EnableCheck noPointsMayBeSelectedCheck(
+            final WorkbenchContext workbenchContext) {
         return new EnableCheck() {
             public String check(JComponent component) {
-	           Collection selectedItems = ((SelectionManagerProxy) workbenchContext
-                            .getWorkbench()
-                            .getFrame()
-                            .getActiveInternalFrame())
-                            .getSelectionManager()
-                            .getSelectedItems();
-            Geometry selectedGeo = (Geometry) selectedItems.iterator().next();
-                return (selectedGeo instanceof Point)
-                    ? sPointsDoNotHaveSides
-                    : null;
-               }
+                Collection selectedItems = ((SelectionManagerProxy) workbenchContext
+                        .getWorkbench().getFrame().getActiveInternalFrame())
+                        .getSelectionManager().getSelectedItems();
+                Geometry selectedGeo = (Geometry) selectedItems.iterator()
+                        .next();
+                return (selectedGeo instanceof Point) ? sPointsDoNotHaveSides
+                        : null;
+            }
         };
     }
 
-    public EnableCheck noMultiShapesMayBeSelectedCheck(final WorkbenchContext workbenchContext) {
+    public EnableCheck noMultiShapesMayBeSelectedCheck(
+            final WorkbenchContext workbenchContext) {
         return new EnableCheck() {
             public String check(JComponent component) {
-	           Collection selectedItems = ((SelectionManagerProxy) workbenchContext
-                            .getWorkbench()
-                            .getFrame()
-                            .getActiveInternalFrame())
-                            .getSelectionManager()
-                            .getSelectedItems();
-            Geometry selectedGeo = (Geometry) selectedItems.iterator().next();
+                Collection selectedItems = ((SelectionManagerProxy) workbenchContext
+                        .getWorkbench().getFrame().getActiveInternalFrame())
+                        .getSelectionManager().getSelectedItems();
+                Geometry selectedGeo = (Geometry) selectedItems.iterator()
+                        .next();
 
-                return (((selectedGeo instanceof MultiPoint) || (selectedGeo instanceof MultiLineString) || (selectedGeo instanceof MultiPolygon) || (selectedGeo instanceof GeometryCollection)))
-                    ? (sSelectOnlyOnePart)
-                    : null;
-               }
+                return (((selectedGeo instanceof MultiPoint)
+                        || (selectedGeo instanceof MultiLineString)
+                        || (selectedGeo instanceof MultiPolygon) || (selectedGeo instanceof GeometryCollection))) ? (sSelectOnlyOnePart)
+                        : null;
+            }
         };
     }
-    
-    public MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+
+    public MultiEnableCheck createEnableCheck(
+            final WorkbenchContext workbenchContext) {
+        EnableCheckFactory checkFactory = new EnableCheckFactory(
+                workbenchContext);
         return new MultiEnableCheck()
-            .add(checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck())
-            .add(checkFactory.createExactlyNItemsMustBeSelectedCheck(1))
-            .add(noPointsMayBeSelectedCheck(workbenchContext))
-            .add(noMultiShapesMayBeSelectedCheck(workbenchContext))
-            .add(checkFactory.createSelectedItemsLayersMustBeEditableCheck());
+                .add(checkFactory
+                        .createWindowWithLayerViewPanelMustBeActiveCheck())
+                .add(checkFactory.createExactlyNItemsMustBeSelectedCheck(1))
+                .add(noPointsMayBeSelectedCheck(workbenchContext))
+                .add(noMultiShapesMayBeSelectedCheck(workbenchContext))
+                .add(checkFactory
+                        .createSelectedItemsLayersMustBeEditableCheck());
     }
 }
