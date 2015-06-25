@@ -60,7 +60,7 @@ public class MenuNames {
             .get("ui.MenuNames.TOOLS.OTHERS");
     //public static final String TOOLS_PROGRAMMING =I18N.get("ui.MenuNames.TOOLS.PROGRAMMING");
     public static final String TOOLS_QUERIES =I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.menu");
-    public static final String TOOLS_OTHERS =I18N.get("ui.MenuNames.TOOLS.OTHERS");
+
     public static final String WINDOW = I18N.get("ui.MenuNames.WINDOW");
     public static final String RASTERTOOLS = I18N.get("ui.MenuNames.RASTER");
     public static final String PRINT = I18N.get("ui.MenuNames.PRINT");
