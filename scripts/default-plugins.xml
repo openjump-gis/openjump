@@ -1396,7 +1396,9 @@
 			<layername-popup-raster install="true" />
 		</menus>
 	</plug-in>
-
+	<extension>
+		org.openjump.core.rasterimage.styler.RasterStylesExtension
+	</extension>
 
 
 
