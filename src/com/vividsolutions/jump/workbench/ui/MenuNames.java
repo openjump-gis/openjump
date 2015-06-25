@@ -56,6 +56,8 @@ public class MenuNames {
     public static final String TOOLS_JOIN = I18N.get("ui.MenuNames.TOOLS.JOIN");
     public static final String TOOLS_QA = I18N.get("ui.MenuNames.TOOLS.QA");
     public static final String TOOLS_WARP = I18N.get("ui.MenuNames.TOOLS.WARP");
+    public static final String TOOLS_OTHERS = I18N
+            .get("ui.MenuNames.TOOLS.OTHERS");
     //public static final String TOOLS_PROGRAMMING =I18N.get("ui.MenuNames.TOOLS.PROGRAMMING");
     public static final String TOOLS_QUERIES =I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.menu");
     public static final String TOOLS_OTHERS =I18N.get("ui.MenuNames.TOOLS.OTHERS");
