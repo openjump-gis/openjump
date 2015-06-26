@@ -37,13 +37,10 @@ public class StretchedPanel extends javax.swing.JPanel {
         java.awt.GridBagConstraints gridBagConstraints;
 
         jLabel_Value = new javax.swing.JLabel();
-        jLabel_Label = new javax.swing.JLabel();
         jLabel_MinLabel = new javax.swing.JLabel();
         jLabel_MinValue = new javax.swing.JLabel();
-        jTextField_MinLabel = new javax.swing.JTextField();
         jLabel_MaxLabel = new javax.swing.JLabel();
         jLabel_MaxValue = new javax.swing.JLabel();
-        jTextField_MaxLabel = new javax.swing.JTextField();
         jPanel_ShowGradient = new javax.swing.JPanel();
         jButton_Custom = new javax.swing.JButton();
 
@@ -69,17 +66,6 @@ public class StretchedPanel extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
         add(jLabel_Value, gridBagConstraints);
 
-        jLabel_Label.setFont(new java.awt.Font("Tahoma", 2, 11)); // NOI18N
-        jLabel_Label.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.StretchedPanel.jLabel_Label.text")); // NOI18N
-        jLabel_Label.setMaximumSize(new java.awt.Dimension(30, 14));
-        jLabel_Label.setMinimumSize(new java.awt.Dimension(30, 14));
-        jLabel_Label.setPreferredSize(new java.awt.Dimension(30, 14));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
-        add(jLabel_Label, gridBagConstraints);
-
         jLabel_MinLabel.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.StretchedPanel.jLabel_MinLabel.text")); // NOI18N
         jLabel_MinLabel.setMaximumSize(new java.awt.Dimension(83, 14));
         jLabel_MinLabel.setMinimumSize(new java.awt.Dimension(83, 14));
@@ -102,20 +88,6 @@ public class StretchedPanel extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         add(jLabel_MinValue, gridBagConstraints);
 
-        jTextField_MinLabel.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.StretchedPanel.jTextField_MinLabel.text")); // NOI18N
-        jTextField_MinLabel.setMinimumSize(new java.awt.Dimension(83, 20));
-        jTextField_MinLabel.setPreferredSize(new java.awt.Dimension(83, 20));
-        jTextField_MinLabel.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField_MinLabelActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        add(jTextField_MinLabel, gridBagConstraints);
-
         jLabel_MaxLabel.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.StretchedPanel.jLabel_MaxLabel.text")); // NOI18N
         jLabel_MaxLabel.setToolTipText(bundle.getString("org.openjump.core.rasterimage.styler.ui.StretchedPanel.jLabel_MaxLabel.toolTipText")); // NOI18N
         jLabel_MaxLabel.setMaximumSize(new java.awt.Dimension(83, 14));
@@ -137,15 +109,6 @@ public class StretchedPanel extends javax.swing.JPanel {
         gridBagConstraints.gridy = 2;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         add(jLabel_MaxValue, gridBagConstraints);
-
-        jTextField_MaxLabel.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.StretchedPanel.jTextField_MaxLabel.text")); // NOI18N
-        jTextField_MaxLabel.setMinimumSize(new java.awt.Dimension(83, 20));
-        jTextField_MaxLabel.setPreferredSize(new java.awt.Dimension(83, 20));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        add(jTextField_MaxLabel, gridBagConstraints);
 
         jPanel_ShowGradient.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jPanel_ShowGradient.setMinimumSize(new java.awt.Dimension(80, 75));
@@ -170,17 +133,11 @@ public class StretchedPanel extends javax.swing.JPanel {
         add(jButton_Custom, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField_MinLabelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField_MinLabelActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField_MinLabelActionPerformed
-
     private void formComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentShown
 
         //Set label for elevation
         jLabel_MinValue.setText(Double.toString(GUIUtils.round(minValue, 3)));
         jLabel_MaxValue.setText(Double.toString(GUIUtils.round(maxValue, 3)));
-        jTextField_MinLabel.setText(Double.toString(GUIUtils.round(minValue, 3)));
-        jTextField_MaxLabel.setText(Double.toString(GUIUtils.round(maxValue, 3)));
         
     }//GEN-LAST:event_formComponentShown
 
@@ -274,15 +231,12 @@ public class StretchedPanel extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton_Custom;
-    private javax.swing.JLabel jLabel_Label;
     private javax.swing.JLabel jLabel_MaxLabel;
     private javax.swing.JLabel jLabel_MaxValue;
     private javax.swing.JLabel jLabel_MinLabel;
     private javax.swing.JLabel jLabel_MinValue;
     private javax.swing.JLabel jLabel_Value;
     private javax.swing.JPanel jPanel_ShowGradient;
-    private javax.swing.JTextField jTextField_MaxLabel;
-    private javax.swing.JTextField jTextField_MinLabel;
     // End of variables declaration//GEN-END:variables
 
     private final double minValue;

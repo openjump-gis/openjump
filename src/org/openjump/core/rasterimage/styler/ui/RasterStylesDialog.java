@@ -357,9 +357,9 @@ public class RasterStylesDialog extends javax.swing.JDialog {
         if(jTabbedPane_Type.getSelectedComponent() instanceof StretchedPanel) {
             finalRasterSymbolizer = stretchedPanel.getRasterStyler();
         } else if(jTabbedPane_Type.getSelectedComponent() instanceof IntervalPanel) {
-            finalRasterSymbolizer = intervalPanel.getRasterSymbolizer();
+            finalRasterSymbolizer = intervalPanel.getRasterStyler();
         } else if(jTabbedPane_Type.getSelectedComponent() instanceof SingleValuesPanel) {
-            finalRasterSymbolizer = singleValuesPanel.getRasterSymbolizer();
+            finalRasterSymbolizer = singleValuesPanel.getRasterStyler();
             
         }
         

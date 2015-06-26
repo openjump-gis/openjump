@@ -616,9 +616,27 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
                         newImage.setRGB(col, row, new Color(r, g, b, alpha).getRGB());
                     }
                 } else {
+                    // Symbology exists
                     double value = actualRasterData.getSampleDouble(col, row, 0);
                     
+                    /**
+                     * If symbology min value is higher than raster min value
+                     * the value becomes equal to the symbology min value
+                     */
+                    
+                    Double[] symbologyClassLimits =  symbology.getColorMapEntries_tm().keySet().toArray(new Double[symbology.getColorMapEntries_tm().keySet().size()]);
+                    double symbMinValue = symbologyClassLimits[0];
+                    double symbFirstValue = symbologyClassLimits[0];
+                    if(this.isNoData(symbFirstValue)) {
+                        symbMinValue = symbologyClassLimits[1];
+                    }
+                    
+                    if(value < symbMinValue) {
+                        value = symbMinValue;
+                    }
+                    
                     Color color = symbology.getColor(value);
+                    
                     if((Double.isNaN(value) || Double.isInfinite(value) || value == noDataValue)
                             && color == null) {
                         newImage.setRGB(col, row, Color.TRANSLUCENT);

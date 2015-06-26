@@ -257,7 +257,7 @@ public class SingleValuesPanel extends javax.swing.JPanel {
         colorsTablePanel.rampColors();
     }
     
-    public RasterSymbology getRasterSymbolizer() throws Exception{
+    public RasterSymbology getRasterStyler() throws Exception{
         
         RasterSymbology rasterSymbolizer = new RasterSymbology(RasterSymbology.ColorMapType.SINGLE);
         for (ColorMapEntry colorMapEntry : colorsTablePanel.getColorMapEntries()) {

@@ -8,6 +8,7 @@ import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -363,7 +364,7 @@ public class IntervalPanel extends javax.swing.JPanel {
         return null;
     }
     
-    public RasterSymbology getRasterSymbolizer() throws Exception{
+    public RasterSymbology getRasterStyler() throws Exception{
         
         RasterSymbology rasterSymbolizer = new RasterSymbology(RasterSymbology.ColorMapType.INTERVALS);
         for (ColorMapEntry colorMapEntry : colorsTablePanel.getColorMapEntries()) {
@@ -374,7 +375,7 @@ public class IntervalPanel extends javax.swing.JPanel {
     }
     
     private final Component parent;
-    private final Map<ClassificationMethod,String> classMethods_m = new HashMap<ClassificationMethod,String>();
+    private final Map<ClassificationMethod,String> classMethods_m = new EnumMap<ClassificationMethod,String>(ClassificationMethod.class);
     private double[] rasterData = null;
     private ColorsTablePanel colorsTablePanel = null;
     private double noDataValue;
