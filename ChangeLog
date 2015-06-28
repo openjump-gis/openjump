@@ -5,8 +5,8 @@
   * Add 4 morphologic indices to GeometryAttributes plugin :
     - polygon width
     - polygon length
-    - circularity
-    - compacity
+    - circularity (Miller)
+    - compacity (Gravélius)
 
 2015-06-26 bertazza
   * Raster styles: some bugs fixed.
@@ -147,20 +147,22 @@
   * unify archive listing, fix 7zip with new commons-compress version
 
 2015-03-31  Giuseppe Aruta (ma15569)  
-  * Layer tree tooltip is now configurable via "Configure tooltip"
-  * in Option panel.  2 option: Original minimal JUMP/OpenJUMP tooltip
-  * and advanced info tooltip.Used different colors (red and blue)
-  * to display layer with no datasource and modified layer with datasource   in the tooltips
+  * Layer tree tooltip is now configurable via "Configure tooltip" in Option panel
+    2 options :
+    - original minimal JUMP/OpenJUMP tooltip
+    - advanced info tooltip
+    Use different colors (red and blue) to display layers with no datasource and
+    modified layers with datasource in the tooltips
 
 2015-03-22 Giuseppe Aruta (ma15569) 
   * Added ChangeRangeValuesToNoDataPlugIn.
-  * This plugin allowas to change a range of cell values (of a Sextante single
-  * band raster layer) to nodata value. An option allowas to extraxt only the
-  * input range of value (and set the other values to nodata)
+    This plugin allows to change a range of cell values (of a Sextante single
+    band raster layer) to nodata value. An option allowas to extract only the
+    input range of value (and set the other values to nodata)
 
 2015-03-22 Giuseppe Aruta (ma15569)
   * RasterImageLayer Plugin: added Raster Layer statistics tab with several info about cell values
-  * DEMStaristics: added header with the number of selected raster layers
+  * DEMStatistics: added header with the number of selected raster layers
    
 2015-03-22 Giuseppe Aruta (ma15569) 
   * SaveRasterImageAsImagePlugIn. Rewrite class using new RasterImage I/O components
