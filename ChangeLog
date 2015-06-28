@@ -2,6 +2,11 @@
 
 2015-06-28 mmichaud <m.michael.michaud@orange.fr>
   * SelectOneItemTool : fix #404 (could select a feature juset deleted)
+  * Add 4 morphologic indices to GeometryAttributes plugin :
+    - polygon width
+    - polygon length
+    - circularity
+    - compacity
 
 2015-06-26 bertazza
   * Raster styles: some bugs fixed.

@@ -28,6 +28,7 @@ package org.openjump.core.ui.plugin.tools;
 //import org.openjump.core.ui.images.IconLoader;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.*;
@@ -95,6 +96,18 @@ public class AddGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
     public static String WKT                 = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.wkt");
     public static String ADD_WKT             = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-wkt");
 
+    public static String POLY_WIDTH          = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.poly-width");
+    public static String ADD_POLY_WIDTH      = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-poly-width");
+
+    public static String POLY_LENGTH         = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.poly-length");
+    public static String ADD_POLY_LENGTH     = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-poly-length");
+
+    public static String CIRCULARITY         = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.circularity");
+    public static String ADD_CIRCULARITY     = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-circularity");
+
+    public static String COMPACITY           = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.compacity");
+    public static String ADD_COMPACITY       = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-compacity");
+
     public static String GEOM_ATTRIBUTES     = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.geometry-attributes");
     
     public static String COMPUTE_ATTRIBUTES  = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.compute-attributes"); 
@@ -111,6 +124,10 @@ public class AddGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
     private boolean addArea  = false;
     private boolean addGeometryType  = false;
     private boolean addWKT  = false;
+    private boolean addPolyWidth  = false;
+    private boolean addPolyLength  = false;
+    private boolean addCircularity  = false;
+    private boolean addCompacity  = false;
     
     public void initialize(PlugInContext context) throws Exception {
     	    
@@ -172,6 +189,22 @@ public class AddGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
 	public void setAddArea(boolean addArea) {
 	    this.addArea = addArea;
 	}
+
+    public void setAddPolyWidth(boolean addPolyWidth) {
+        this.addPolyWidth = addPolyWidth;
+    }
+
+    public void setAddPolyLength(boolean addPolyLength) {
+        this.addPolyLength = addPolyLength;
+    }
+
+    public void setAddCircularity(boolean addCircularity) {
+        this.addCircularity = addCircularity;
+    }
+
+    public void setAddCompacity(boolean addCompacity) {
+        this.addCompacity = addCompacity;
+    }
 	
 	public void setAddGeometryType(boolean addGeometryType) {
 	    this.addGeometryType = addGeometryType;
@@ -193,6 +226,10 @@ public class AddGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
     	dialog.addCheckBox(ADD_NB_COMPONENTS, addNbComponents);
     	dialog.addCheckBox(ADD_LENGTH, addLength);
     	dialog.addCheckBox(ADD_AREA, addArea);
+        dialog.addCheckBox(ADD_POLY_WIDTH, addPolyWidth);
+        dialog.addCheckBox(ADD_POLY_LENGTH, addPolyLength);
+        dialog.addCheckBox(ADD_CIRCULARITY, addCircularity);
+        dialog.addCheckBox(ADD_COMPACITY, addCompacity);
     	dialog.addCheckBox(ADD_GEOMETRY_TYPE, addGeometryType);
     	dialog.addCheckBox(ADD_WKT, addWKT);
     }
@@ -206,6 +243,10 @@ public class AddGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
 	    addNbComponents = dialog.getBoolean(ADD_NB_COMPONENTS);
 	    addLength       = dialog.getBoolean(ADD_LENGTH);
 	    addArea         = dialog.getBoolean(ADD_AREA);
+        addPolyWidth    = dialog.getBoolean(ADD_POLY_WIDTH);
+        addPolyLength   = dialog.getBoolean(ADD_POLY_LENGTH);
+        addCircularity  = dialog.getBoolean(ADD_CIRCULARITY);
+        addCompacity    = dialog.getBoolean(ADD_COMPACITY);
 	    addGeometryType = dialog.getBoolean(ADD_GEOMETRY_TYPE);
 	    addWKT          = dialog.getBoolean(ADD_WKT);
     }
@@ -240,6 +281,10 @@ public class AddGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
         if (addNbComponents) schema.addAttribute(NB_COMPONENTS, AttributeType.INTEGER);
         if (addLength)       schema.addAttribute(LENGTH, AttributeType.DOUBLE);
         if (addArea)         schema.addAttribute(AREA, AttributeType.DOUBLE);
+        if (addPolyWidth)    schema.addAttribute(POLY_WIDTH, AttributeType.DOUBLE);
+        if (addPolyLength)   schema.addAttribute(POLY_LENGTH, AttributeType.DOUBLE);
+        if (addCircularity)  schema.addAttribute(CIRCULARITY, AttributeType.DOUBLE);
+        if (addCompacity) schema.addAttribute(COMPACITY, AttributeType.STRING);
         if (addGeometryType) schema.addAttribute(GEOM_TYPE, AttributeType.STRING);
         if (addWKT)          schema.addAttribute(WKT, AttributeType.STRING);
         return schema;
@@ -266,8 +311,64 @@ public class AddGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
         if (addNbComponents) f.setAttribute(NB_COMPONENTS, g.getNumGeometries());
         if (addLength) f.setAttribute(LENGTH, g.getLength());
         if (addArea) f.setAttribute(AREA, g.getArea());
+        if (addPolyWidth) f.setAttribute(POLY_WIDTH, getPolyWidth(g));
+        if (addPolyLength) f.setAttribute(POLY_LENGTH, getPolyLength(g));
+        if (addCircularity) f.setAttribute(CIRCULARITY, getCircularity(g));
+        if (addCompacity) f.setAttribute(COMPACITY, getCompacity(g));
         if (addGeometryType) f.setAttribute(GEOM_TYPE, g.getGeometryType());
         if (addWKT) f.setAttribute(WKT, g.toString());
     }
-	
+
+    private Double getPolyWidth(Geometry g) {
+        if (g.getDimension() == 2) {
+            double length = g.getLength();
+            double area = g.getArea();
+            double val = (( length * length ) / 4.0 )-( 4.0 * area );
+            if (val >= 0.0) {
+                //calcul normal sur surface allongée
+                return (((length / 2.0) - Math.sqrt(val)) / 2.0);
+            } else {
+                //diamètre du disque de même surface, sur une surface ramassée
+                return 2.0 * Math.sqrt(area / Math.PI);
+            }
+        } else return null;
+    }
+
+    private Double getPolyLength(Geometry g) {
+        if (g.getDimension() == 2) {
+            double length = g.getLength();
+            double area = g.getArea();
+            double val = (( length * length ) / 4.0 )-( 4.0 * area );
+            if (val >= 0.0) {
+                //calcul normal sur surface allongée
+                return area / (((length / 2.0) - Math.sqrt(val)) / 2.0);
+            } else {
+                //diamètre du disque de même surface, sur une surface ramassée
+                return 2.0 * Math.sqrt(area / Math.PI);
+            }
+        } else return null;
+    }
+
+    // Ratio between the geometry area and the area of a circle having the same perimeter
+    // = 1 if the olygonis a circle
+    // = 0 if the polygon is completely flat
+    private Double getCircularity(Geometry g) {
+        if (g.getDimension() == 2) {
+            if (g.isEmpty()) return new Double(0);
+            double length = g.getLength();
+            return 4 * Math.PI * g.getArea() / length / length;
+        } else return null;
+    }
+
+    // Ratio between the perimeter of the geometry and the perimeter of the circle with the same perimeter
+    // Not bounded value :
+    // = 1 (circle)
+    // = positive infinity (flat)
+    private Double getCompacity(Geometry g) {
+        if (g.getDimension() == 2) {
+            double area = g.getArea();
+            return area == 0 ? 0 : g.getLength() / (2*Math.sqrt(Math.PI*area));
+        } else return null;
+    }
+
 }
