@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2015-06-28 mmichaud <m.michael.michaud@orange.fr>
+  * SelectOneItemTool : fix #404 (could select a feature juset deleted)
+
 2015-06-26 bertazza
   * Raster styles: some bugs fixed.
 

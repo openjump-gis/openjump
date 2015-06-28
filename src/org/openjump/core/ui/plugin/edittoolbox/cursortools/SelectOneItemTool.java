@@ -118,9 +118,16 @@ public class SelectOneItemTool extends SelectTool implements ShortcutsDescriptor
             }
         }
         
-        if (!featureSelected) reset();
-        
-        if ((topLayer != null) && (topFeature != null))
+        if (!featureSelected)
+        {
+            reset();
+        }
+        if (botFeature != null && !botLayer.getFeatureCollectionWrapper().getFeatures().contains(botFeature))
+        {
+            reset();
+            gestureFinished();
+        }
+        else if ((topLayer != null) && (topFeature != null))
         {
             if (highFID > 0) maxFID = highFID;
             highFID = 0;
@@ -130,6 +137,7 @@ public class SelectOneItemTool extends SelectTool implements ShortcutsDescriptor
         }
         else if ((botLayer != null) && (botFeature != null))
         {
+            System.out.println("botLayer <> null");
             layerViewPanel.getSelectionManager().getFeatureSelection().selectItems(botLayer, botFeature);
         }
     }
