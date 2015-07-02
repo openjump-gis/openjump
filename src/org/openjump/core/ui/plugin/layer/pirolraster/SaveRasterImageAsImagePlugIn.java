@@ -24,6 +24,8 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.FileUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.datasource.SaveFileDataSourceQueryChooser;
+import com.vividsolutions.jump.workbench.model.Category;
+import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
@@ -46,7 +48,8 @@ import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
  * @version $Rev: 4347 $ [Giuseppe Aruta] - 22.Mar.2015 - rewrite class using
  *          new RasterImage I/O components. This version allows to export no
  *          data cell value to the output tif
- * @version $Rev: 4348 $ [Giuseppe Aruta] - 22.Mar.2015 - add export to ASC and FLT          
+ * @version $Rev: 4348 $ [Giuseppe Aruta] - 22.Mar.2015 - add export to ASC and
+ *          FLT
  */
 public class SaveRasterImageAsImagePlugIn extends AbstractPlugIn {
 
@@ -131,6 +134,13 @@ public class SaveRasterImageAsImagePlugIn extends AbstractPlugIn {
             String extension = FileUtil.getExtension(file);
             fileHDR = FileUtil.removeExtensionIfAny(fileHDR);
             fileHDR = FileUtil.addExtensionIfNone(fileHDR, "hdr");
+            String catName = StandardCategoryNames.WORKING;
+            try {
+                catName = ((Category) context.getLayerNamePanel()
+                        .getSelectedCategories().toArray()[0]).getName();
+            } catch (RuntimeException e1) {
+            }
+
             int band;
 
             band = 0;
@@ -140,13 +150,16 @@ public class SaveRasterImageAsImagePlugIn extends AbstractPlugIn {
                         .toUpperCase());
                 if (trueExtension.equalsIgnoreCase("ASC")) {
                     RasterImageIOUtils.saveASC(file, context, rLayer, band);
+                    RasterImageIOUtils.loadASC(file, context, catName);
 
                 } else if (trueExtension.equalsIgnoreCase("FLT")) {
                     RasterImageIOUtils.saveFLT(file, context, rLayer, band);
                     RasterImageIOUtils.saveHDR(fileHDR, context, rLayer);
+                    RasterImageIOUtils.loadFLT(file, context, catName);
 
                 } else if (trueExtension.equalsIgnoreCase("TIF")) {
                     RasterImageIOUtils.saveTIF(file, rLayer, env);
+                    RasterImageIOUtils.loadTIF(file, context, catName);
                 }
             } catch (Exception e) {
                 context.getWorkbenchFrame().warnUser(ERROR);
@@ -160,7 +173,12 @@ public class SaveRasterImageAsImagePlugIn extends AbstractPlugIn {
                 return;
             }
 
-            rLayer.setImageFileName(file.getPath());
+            //Giuseppe Aruta July 2 2015
+            //Since this plugin now export to different raster format
+            //It is more convinient to load the new file instead to
+            //substitute the old with the new. User will decide if to save it to (or to
+            //remove it from) the project
+            // rLayer.setImageFileName(file.getPath());
             rLayer.setNeedToKeepImage(false);
             context.getWorkbenchFrame().setStatusMessage(SAVED);
 
@@ -181,6 +199,5 @@ public class SaveRasterImageAsImagePlugIn extends AbstractPlugIn {
 
         return multiEnableCheck;
     }
-
 
 }
