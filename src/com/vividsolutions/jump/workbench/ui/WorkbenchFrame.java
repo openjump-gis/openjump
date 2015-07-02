@@ -134,6 +134,7 @@ import com.vividsolutions.jump.workbench.ui.cursortool.editing.EditingPlugIn;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.SaveProjectPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.ViewAttributesPlugIn.ViewAttributesFrame;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ChoosableStyle;
 import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
@@ -144,6 +145,16 @@ import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxDialog;
  */
 public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
         ViewportListener, ErrorHandlerV2 {
+
+    private String EXIT_OPENJUMP = I18N.get("ui.WorkbenchFrame.exit-jump");
+    private String CLOSE_PROJECT = I18N.get("ui.WorkbenchFrame.close-task");
+    private String CLOSE_PROJECT_QUESTION = I18N
+            .get("ui.WorkbenchFrame.do-you-want-to-close-project");
+    private String SAVE_PROJECT = I18N
+            .get("ui.WorkbenchFrame.save-project-before-closing-openjump");
+    private String PROJECT_SAVED = I18N
+            .get("ui.WorkbenchFrame.save-project-saved");
+    private static final Logger LOGGER = Logger.getLogger(WorkbenchFrame.class);
 
     BorderLayout borderLayout1 = new BorderLayout();
 
@@ -1684,9 +1695,41 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
     private class DefaultApplicationExitHandler implements
             ApplicationExitHandler {
         public void exitApplication(JFrame mainFrame) {
+            PlugInContext context = getContext().createPlugInContext();
             if (confirmClose(I18N.get("ui.WorkbenchFrame.exit-jump"),
                     getLayersWithModifiedFeatureCollections(),
                     getGeneratedLayers(), WorkbenchFrame.this)) {
+
+                // Giuseppe Aruta -June 30 2015 - warning to save selected
+                // project before closing Openjump
+                try {
+                    int res = JOptionPane.showConfirmDialog(null, SAVE_PROJECT,
+                            EXIT_OPENJUMP, JOptionPane.YES_NO_CANCEL_OPTION,
+                            JOptionPane.DEFAULT_OPTION, null);
+
+                    if (res == JOptionPane.YES_OPTION) {
+                        SaveProjectPlugIn saveProjectPlugIn = new SaveProjectPlugIn();
+                        saveProjectPlugIn.initialize(context);
+                        if (saveProjectPlugIn.execute(context)) {
+                            saveProjectPlugIn.initialize(context);
+                            String projectName = context.getTask()
+                                    .getProjectFile().getAbsolutePath();
+
+                            JOptionPane.showMessageDialog(null, PROJECT_SAVED
+                                    + projectName, EXIT_OPENJUMP,
+                                    JOptionPane.PLAIN_MESSAGE);
+
+                        } else {
+                            return;
+                        }
+                    } else if (res == JOptionPane.CANCEL_OPTION) {
+                        return;
+                    }
+
+                } catch (Exception e) {
+                    LOGGER.error("", e); //$NON-NLS-1$
+                }
+
                 // PersistentBlackboardPlugIn listens for when the workbench is
                 // hidden [Jon Aquino]
                 saveWindowState();
@@ -1718,6 +1761,21 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
                     .getLayersWithNullDataSource();
             if (confirmClose(I18N.get("ui.WorkbenchFrame.close-task"),
                     modifiedItems, generatedItems, taskFrame)) {
+
+                // Giuseppe Aruta -June 30 2015 - simple warning that a project
+                // is being closed
+                try {
+                    int res = JOptionPane.showConfirmDialog(null,
+                            CLOSE_PROJECT_QUESTION, CLOSE_PROJECT,
+                            JOptionPane.OK_CANCEL_OPTION,
+                            JOptionPane.DEFAULT_OPTION, null);
+                    if (res == JOptionPane.CANCEL_OPTION) {
+                        return;
+                    }
+                } catch (Exception e) {
+                    LOGGER.error("", e); //$NON-NLS-1$
+                }
+
                 // There are other internal frames associated with this task
                 if (associatedFrames.size() != 0) {
                     // Confirm you want to close them first
@@ -1780,32 +1838,30 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
             JOptionPane pane = new JOptionPane();
             String message = null;
 
-            /* [2015-01-03] Giuseppe Aruta
-             *  Generate a string with the list of layers with no datasource 
-             
-            ///[2015-01-03] Giuseppe Aruta 
-             * Deactivated as it works even if there are no layers with no datasource
+            /*
+             * [2015-01-03] Giuseppe Aruta Generate a string with the list of
+             * layers with no datasource
              * 
-            String numLayer = "\n ("
-                    + ((generatedLayers.size() > 3) ? "e.g. " : "")
-                    + StringUtil.toCommaDelimitedString(new ArrayList(
-                            generatedLayers).subList(0,
-                            Math.min(3, generatedLayers.size()))) + ")";
-            */
+             * ///[2015-01-03] Giuseppe Aruta Deactivated as it works even if
+             * there are no layers with no datasource
+             * 
+             * String numLayer = "\n (" + ((generatedLayers.size() > 3) ?
+             * "e.g. " : "") + StringUtil.toCommaDelimitedString(new ArrayList(
+             * generatedLayers).subList(0, Math.min(3, generatedLayers.size())))
+             * + ")";
+             */
             if (container instanceof WorkbenchFrame) {
                 message = I18N
                         .getMessage(
                                 "ui.WorkbenchFrame.do-you-really-want-to-close-openjump",
                                 new Object[] { Integer.valueOf(generatedLayers
-                                        .size()) })
-                        ;
+                                        .size()) });
             } else if (container instanceof TaskFrame) {
                 message = I18N
                         .getMessage(
                                 "ui.WorkbenchFrame.do-you-really-want-to-close-the-project",
                                 new Object[] { Integer.valueOf(generatedLayers
-                                        .size()) })
-                        ;
+                                        .size()) });
             }
             pane.setMessage(message);
             pane.setMessageType(JOptionPane.QUESTION_MESSAGE);
