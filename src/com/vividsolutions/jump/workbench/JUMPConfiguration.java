@@ -41,6 +41,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
 
 import org.openjump.OpenJumpConfiguration;
+import org.openjump.core.ui.plugin.layer.LayerableStylePlugIn;
 //import org.openjump.core.ui.plugin.edit.CopyBBoxPlugin;
 //import org.openjump.core.ui.plugin.edit.InvertSelectionPlugIn;
 //import org.openjump.core.ui.plugin.layer.CombineSelectedLayersPlugIn;
@@ -297,7 +298,11 @@ public class JUMPConfiguration implements Setup {
 //
 //  private ZoomBarPlugIn zoomBarPlugIn = new ZoomBarPlugIn();
 //
-  private DeeChangeStylesPlugIn changeStylesPlugIn = new DeeChangeStylesPlugIn();
+  //Giuseppe Aruta - June 3 2015 Deactivate and substituted by a General Layerable Styling plugin
+ // private DeeChangeStylesPlugIn changeStylesPlugIn = new DeeChangeStylesPlugIn();
+  
+//Giuseppe Aruta - June 3 2015 - General Layerable Styling plugin
+  private LayerableStylePlugIn changeStylesPlugIn = new LayerableStylePlugIn();
 
   private UndoPlugIn undoPlugIn = new UndoPlugIn();
 
