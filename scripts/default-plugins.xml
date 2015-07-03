@@ -1226,6 +1226,18 @@
 		</menus>
 	</plug-in>
 	<plug-in>
+	org.openjump.core.ui.plugin.wms.WMSStylePlugIn
+	<menus>
+			<layername-popup-wms install="true" />
+		</menus>
+	</plug-in>
+	<plug-in>
+		org.openjump.core.ui.plugin.wms.WMSLegendPlugIn
+		<menus>
+			<layername-popup-wms install="true" />
+		</menus>
+	</plug-in>
+	<plug-in>
 		org.openjump.core.ui.plugin.wms.ZoomToWMSLayerPlugIn
 		<menus>
 			<layername-popup-wms />
@@ -1275,13 +1287,6 @@
 	</plug-in>
 
 	<separator />
-
-	<plug-in>
-		org.openjump.core.ui.plugin.wms.WMSLegendPlugIn
-		<menus>
-			<layername-popup-wms install="true" />
-		</menus>
-	</plug-in>
        
 
 	<!-- ================ Sextante Raster LayerName Popup Menu =============== -->

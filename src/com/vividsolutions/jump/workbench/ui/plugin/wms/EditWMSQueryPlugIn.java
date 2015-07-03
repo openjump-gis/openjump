@@ -35,6 +35,7 @@ package com.vividsolutions.jump.workbench.ui.plugin.wms;
 import java.awt.GridBagConstraints;
 import java.util.Iterator;
 
+import javax.swing.Icon;
 import javax.swing.JLabel;
 
 import com.vividsolutions.jump.I18N;
@@ -51,55 +52,65 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.wms.MapLayer;
 
 public class EditWMSQueryPlugIn extends AbstractPlugIn {
-  public MultiEnableCheck createEnableCheck(
-      final WorkbenchContext workbenchContext) {
-    EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+    public MultiEnableCheck createEnableCheck(
+            final WorkbenchContext workbenchContext) {
+        EnableCheckFactory checkFactory = new EnableCheckFactory(
+                workbenchContext);
 
-    return new MultiEnableCheck().add(
-        checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck()).add(
-        checkFactory.createExactlyNLayerablesMustBeSelectedCheck(1,
-            Layerable.class));
-  }
-
-  public boolean execute(PlugInContext context) throws Exception {
-    WMSLayer layer = (WMSLayer) context.getLayerNamePanel()
-        .selectedNodes(WMSLayer.class).iterator().next();
-    MultiInputDialog dialog = new MultiInputDialog(context.getWorkbenchFrame(),
-        I18N.get("ui.plugin.wms.EditWMSQueryPlugIn.edit-wms-query"), true);
-
-    dialog.setSideBarImage(IconLoader.icon("EditWMSLayer.jpg"));
-    dialog
-        .setSideBarDescription(I18N
-            .get("ui.plugin.wms.EditWMSQueryPlugIn.this-dialog-enables-you-to-change-the-layers-being-retrieved-from-a-web-map-server"));
-
-    EditWMSQueryPanel panel = new EditWMSQueryPanel( layer );
-
-    // The field name "Chosen Layers" will appear on validation error messages
-    // e.g. if the user doesn't pick any layers. [Jon Aquino]
-    dialog.addRow(I18N.get("ui.plugin.wms.EditWMSQueryPlugIn.chosen-layers"),
-        new JLabel(""), panel, panel.getEnableChecks(), "", dialog.NO_LABEL,
-        GridBagConstraints.BOTH);
-    dialog.pack();
-    GUIUtil.centreOnWindow(dialog);
-    dialog.setVisible(true);
-
-    if (dialog.wasOKPressed()) {
-      layer.removeAllLayerNames();
-
-      for (Iterator i = panel.getChosenMapLayers().iterator(); i.hasNext();) {
-        MapLayer mapLayer = (MapLayer) i.next();
-        layer.addLayerName(mapLayer.getName());
-      }
-
-      layer.setService(panel.getService());
-      layer.setSRS(panel.getSRS());
-      layer.setAlpha(panel.getAlpha());
-      layer.setFormat(panel.getFormat());
-      layer.fireAppearanceChanged();
-
-      return true;
+        return new MultiEnableCheck().add(
+                checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
+                .add(checkFactory.createExactlyNLayerablesMustBeSelectedCheck(
+                        1, Layerable.class));
     }
 
-    return false;
-  }
+    // [Giuseppe Aruta] - added plugin icon
+    public Icon getIcon() {
+        return IconLoader.icon("edit.gif");
+    }
+
+    public boolean execute(PlugInContext context) throws Exception {
+        WMSLayer layer = (WMSLayer) context.getLayerNamePanel()
+                .selectedNodes(WMSLayer.class).iterator().next();
+        MultiInputDialog dialog = new MultiInputDialog(
+                context.getWorkbenchFrame(),
+                I18N.get("ui.plugin.wms.EditWMSQueryPlugIn.edit-wms-query"),
+                true);
+
+        dialog.setSideBarImage(IconLoader.icon("EditWMSLayer.jpg"));
+        dialog.setSideBarDescription(I18N
+                .get("ui.plugin.wms.EditWMSQueryPlugIn.this-dialog-enables-you-to-change-the-layers-being-retrieved-from-a-web-map-server"));
+
+        EditWMSQueryPanel panel = new EditWMSQueryPanel(layer);
+
+        // The field name "Chosen Layers" will appear on validation error
+        // messages
+        // e.g. if the user doesn't pick any layers. [Jon Aquino]
+        dialog.addRow(
+                I18N.get("ui.plugin.wms.EditWMSQueryPlugIn.chosen-layers"),
+                new JLabel(""), panel, panel.getEnableChecks(), "",
+                dialog.NO_LABEL, GridBagConstraints.BOTH);
+        dialog.pack();
+        GUIUtil.centreOnWindow(dialog);
+        dialog.setVisible(true);
+
+        if (dialog.wasOKPressed()) {
+            layer.removeAllLayerNames();
+
+            for (Iterator i = panel.getChosenMapLayers().iterator(); i
+                    .hasNext();) {
+                MapLayer mapLayer = (MapLayer) i.next();
+                layer.addLayerName(mapLayer.getName());
+            }
+
+            layer.setService(panel.getService());
+            layer.setSRS(panel.getSRS());
+            layer.setAlpha(panel.getAlpha());
+            layer.setFormat(panel.getFormat());
+            layer.fireAppearanceChanged();
+
+            return true;
+        }
+
+        return false;
+    }
 }

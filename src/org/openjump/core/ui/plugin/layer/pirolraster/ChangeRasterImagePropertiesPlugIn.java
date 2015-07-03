@@ -36,6 +36,7 @@ import com.vividsolutions.jump.workbench.ui.style.StylePanel;
  * @version $Rev: 4221 $ Dic 23 2014 [Giuseppe Aruta] - Transformed in a
  *          MultiImputDialog. Add Added Raster Transparency, ScaleStyle and
  *          ColorEditor Panels
+ * @version $Rev: 4425 $ July 3 2015 [Giuseppe Aruta] - Renamed plugin name to "Change Style"      
  */
 @SuppressWarnings("deprecation")
 public class ChangeRasterImagePropertiesPlugIn extends AbstractPlugIn {
@@ -58,11 +59,11 @@ public class ChangeRasterImagePropertiesPlugIn extends AbstractPlugIn {
                 .getSelectedLayerable(context, RasterImageLayer.class);
         final MultiInputDialog dialog = new MultiInputDialog(
                 context.getWorkbenchFrame(),
-                I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.ChangeRasterImagePropertiesPlugIn.Change-Raster-Image-Properties"),
-                true);
-
+                I18N.get("ui.style.ChangeStylesPlugIn.change-styles") + " - "
+                        + rLayer.getName() + " (Sextante)", true);
+        dialog.setSideBarImage(IconLoader.icon("Symbology.gif"));
         dialog.setSize(500, 400);
-        dialog.setInset(0);
+        // dialog.setInset(0);
         dialog.setApplyVisible(true);
 
         final ArrayList<JPanel> stylePanels = new ArrayList();
@@ -164,8 +165,9 @@ public class ChangeRasterImagePropertiesPlugIn extends AbstractPlugIn {
     }
 
     public String getName() {
-        return I18N
-                .get("org.openjump.core.ui.plugin.layer.pirolraster.ChangeRasterImagePropertiesPlugIn.Change-Raster-Image-Properties");
+        return I18N.get(I18N.get("ui.style.ChangeStylesPlugIn.change-styles"));
+
+        // "org.openjump.core.ui.plugin.layer.pirolraster.ChangeRasterImagePropertiesPlugIn.Change-Raster-Image-Properties");
     }
 
     public ImageIcon getIcon() {

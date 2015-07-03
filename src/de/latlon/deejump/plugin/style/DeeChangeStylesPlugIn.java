@@ -95,8 +95,11 @@ public class DeeChangeStylesPlugIn extends AbstractPlugIn {
         Blackboard pb = PersistentBlackboardPlugIn.get(wbcontext);
 
         final Layer layer = context.getSelectedLayer(0);
+        
+        //[Giuseppe Aruta] June 3 2015 - added Layer name.
         final MultiInputDialog dialog = new MultiInputDialog(wbframe,
-            I18N.get("ui.style.ChangeStylesPlugIn.change-styles"), true);
+                I18N.get("ui.style.ChangeStylesPlugIn.change-styles") + " - "
+                        + layer.getName(), true);
         dialog.setApplyVisible(true);
         dialog.setInset(0);
         dialog.setSideBarImage(IconLoader.icon("Symbology.gif"));
