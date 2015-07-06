@@ -33,8 +33,11 @@ package org.openjump.core.ui.plugin.wms;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
 
 import org.openjump.core.apitools.LayerTools;
@@ -45,6 +48,7 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.WMSLayer;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
+import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
@@ -53,9 +57,10 @@ import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 /**
- * July 3 2015 [Giuseppe Aruta] 
- * WMS style plugin
- * Added Transparency and scale display to WMS layers
+ * @version July 3 2015 [Giuseppe Aruta] WMS style plugin Added Transparency and
+ *          scale display to WMS layers
+ * @version July 3 2015 [Giuseppe Aruta] correct a bug when Largest
+ *          scale>Smallest scale
  */
 
 public class WMSStylePlugIn extends AbstractPlugIn {
@@ -63,7 +68,7 @@ public class WMSStylePlugIn extends AbstractPlugIn {
     public WMSStylePlugIn() {
     }
 
-    public boolean execute(PlugInContext context) throws Exception {
+    public boolean execute(final PlugInContext context) throws Exception {
         final WMSLayer layer = (WMSLayer) LayerTools.getSelectedLayerable(
                 context, WMSLayer.class);
         final MultiInputDialog dialog = new MultiInputDialog(
@@ -90,21 +95,48 @@ public class WMSStylePlugIn extends AbstractPlugIn {
 
         dialog.setApplyVisible(true);
 
+        dialog.addEnableChecks(panel.getTitle(),
+                Arrays.asList(new EnableCheck() {
+                    public String check(JComponent component) {
+                        return panel.validateInput();
+                    }
+                }));
+
         dialog.addOKCancelApplyPanelActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (dialog.wasApplyPressed()) {
-                    panel.updateStyles();
-                    trppanel.updateStyles();
+
+                    if (panel.LSCale().doubleValue() > panel.SSCale()
+                            .doubleValue()) {
+
+                        JOptionPane.showMessageDialog(
+                                null,
+                                I18N.get("ui.style.ScaleStylePanel.units-pixel-at-smallest-scale-must-be-larger-than-units-pixel-at-largest-scale"),
+                                "Jump", JOptionPane.ERROR_MESSAGE);
+
+                    } else {
+                        trppanel.updateStyles();
+                        panel.updateStyles();
+
+                    }
+
                 }
             }
         });
+        // Add to prevent error message and OJ to freeze if Large scale>Small
+        // scale
+        // Now the only way to close this dialog is using cancel button
+
+        dialog.setDefaultCloseOperation(dialog.DO_NOTHING_ON_CLOSE);
         dialog.pack();
         GUIUtil.centreOnWindow(dialog);
         dialog.setVisible(true);
         if (dialog.wasOKPressed()) {
+
             panel.updateStyles();
             trppanel.updateStyles();
             return true;
+
         }
 
         return false;

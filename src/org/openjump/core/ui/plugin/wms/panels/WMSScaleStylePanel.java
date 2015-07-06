@@ -1,5 +1,9 @@
 package org.openjump.core.ui.plugin.wms.panels;
 
+//[sstein 01.10.2005] changed to be able to work with real scale values
+//[Giuseppe Aruta 03.07.2015] Adapted to WMS layers
+//[Giuseppe Aruta 06.07.2015] Correct a bug when Largest scale>Smales scale
+
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -9,10 +13,13 @@ import java.text.DecimalFormat;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import org.openjump.core.ui.util.ScreenScale;
 
@@ -25,45 +32,57 @@ import com.vividsolutions.jump.workbench.ui.ValidatingTextField;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.style.StylePanel;
 
-/**
- * July 3 2015 [Giuseppe Aruta]  Panel that allows to set Scale display of a wms
- *  Panel that allows to set Scale display of a wms Layer
- */
 public class WMSScaleStylePanel extends JPanel implements StylePanel {
 
-    /**
-	 * 
-	 */
-    private static final long serialVersionUID = 1L;
-    private static final ImageIcon MAX_SCALE_ICON = GUIUtil
-            .toSmallIcon(IconLoader.icon("Atom.gif"));
-    private static final ImageIcon MIN_SCALE_ICON = GUIUtil
-            .toSmallIcon(IconLoader.icon("globe3_32.png"));
+    private static final ImageIcon MAX_SCALE_ICON = IconLoader.icon("Atom.gif");
+
+    private static final ImageIcon MIN_SCALE_ICON = IconLoader
+            .icon("globe3_32.png");
+
     private JCheckBox enableScaleDependentRenderingCheckBox = null;
+
     private JLabel smallestScaleLabel = null;
+
     private JLabel largestScaleLabel = null;
+
     private JLabel smallestScale1Label = null;
+
     private JLabel largestScale1Label = null;
+
     private JLabel currentScale1Label = null;
+
     private ValidatingTextField smallestScaleTextField = null;
+
     private ValidatingTextField largestScaleTextField = null;
+
     private ValidatingTextField currentScaleTextField = null;
+
     private WMSLayer layer;
+
     private LayerViewPanel panel;
+
     private JLabel currentScaleLabel = null;
+
     private JPanel fillerPanel = null;
+
     private JPanel spacerPanelInTopLeftCorner = null;
+
     private JLabel unitsPerPixelLabel = null;
+
     private JButton hideAboveCurrentScaleButton = null;
+
     private JButton hideBelowCurrentScaleButton = null;
+
     private static final Color TEXT_FIELD_BACKGROUND_COLOUR = new JTextField()
             .getBackground();
+
     private JLabel smallestScaleIconLabel = null;
+
     private JLabel largestScaleIconLabel = null;
+
     private JPanel spacerPanelBelowCurrentScale = null;
+
     private JButton showAtThisScaleButton = null;
-    // Add space label
-    private JLabel SpaceLabel = null;
 
     private double scaleFactor = 0;
 
@@ -79,8 +98,11 @@ public class WMSScaleStylePanel extends JPanel implements StylePanel {
         initialize();
         this.layer = layer;
         this.panel = panel;
-        // panel.setSize(500, 550);
-        panel.setName(getTitle());
+
+        /**
+         * [sstein : 01.10.2005] modifications to show the real scale and not
+         * the internal values
+         */
         double internalScale = this.currentScale();
         double realScale = ScreenScale.getHorizontalMapScale(panel
                 .getViewport());
@@ -89,6 +111,8 @@ public class WMSScaleStylePanel extends JPanel implements StylePanel {
         Double internalMinScale = layer.getMinScale();
         Double realMinScale = null;
         if (internalMinScale != null) {
+            // -- not sure to use Math.floor (with respect to zoom into cm space
+            // but somehow necessary to avoid display like 6379.9999999 [sstein]
             realMinScale = new Double(Math.floor(internalMinScale.doubleValue()
                     / this.scaleFactor));
         }
@@ -116,6 +140,8 @@ public class WMSScaleStylePanel extends JPanel implements StylePanel {
     }
 
     private String formatScaleLosslessly(double scale) {
+        // Unlike #formatCurrentScale, this method is lossless [Jon Aquino
+        // 2005-03-31]
         return scale == (int) scale ? "" + (int) scale : "" + scale;
     }
 
@@ -125,8 +151,6 @@ public class WMSScaleStylePanel extends JPanel implements StylePanel {
         smallestScaleIconLabel = new JLabel();
         largestScaleIconLabel = new JLabel();
         unitsPerPixelLabel = new JLabel();
-        // Add space label
-        SpaceLabel = new JLabel();
         GridBagConstraints gridBagConstraints15 = new GridBagConstraints();
         GridBagConstraints gridBagConstraints14 = new GridBagConstraints();
         GridBagConstraints gridBagConstraints12 = new GridBagConstraints();
@@ -150,15 +174,13 @@ public class WMSScaleStylePanel extends JPanel implements StylePanel {
         GridBagConstraints gridBagConstraints6 = new GridBagConstraints();
         GridBagConstraints gridBagConstraints16 = new GridBagConstraints();
         GridBagConstraints gridBagConstraints10 = new GridBagConstraints();
-        // To add space at the end of the last option
-        GridBagConstraints gridBagConstraintsSpace = new GridBagConstraints();
         this.setLayout(new GridBagLayout());
         gridBagConstraints1.gridx = 1;
         gridBagConstraints1.gridy = 4;
         smallestScaleLabel.setText(I18N
                 .get("ui.style.ScaleStylePanel.smallest-scale"));
-        smallestScaleLabel.setToolTipText(I18N
-                .get("ui.style.ScaleStylePanel.larger-units-pixel"));
+        // smallestScaleLabel.setToolTipText(I18N.get("ui.style.ScaleStylePanel.larger-units-pixel"));
+        // //[sstein] 8.Mar.2009
         smallestScaleIconLabel.setIcon(MIN_SCALE_ICON);
         largestScaleIconLabel.setIcon(MAX_SCALE_ICON);
         gridBagConstraints5.gridx = 3;
@@ -213,8 +235,8 @@ public class WMSScaleStylePanel extends JPanel implements StylePanel {
         gridBagConstraints12.insets = new java.awt.Insets(2, 2, 2, 2);
         gridBagConstraints13.gridx = 4;
         gridBagConstraints13.gridy = 5;
-        unitsPerPixelLabel.setText(I18N
-                .get("ui.style.ScaleStylePanel.units-pixel"));
+        // unitsPerPixelLabel.setText(I18N.get("ui.style.ScaleStylePanel.units-pixel"));
+        // //[sstein] 8.Mar.2009
         gridBagConstraints14.gridx = 7;
         gridBagConstraints14.gridy = 6;
         gridBagConstraints14.insets = new java.awt.Insets(4, 4, 4, 4);
@@ -233,19 +255,18 @@ public class WMSScaleStylePanel extends JPanel implements StylePanel {
         GUIUtil.shrinkFont(unitsPerPixelLabel);
         largestScaleLabel.setText(I18N
                 .get("ui.style.ScaleStylePanel.largest-scale"));
-        largestScaleLabel.setToolTipText(I18N
-                .get("ui.style.ScaleStylePanel.smaller-units-pixel"));
+        // largestScaleLabel.setToolTipText(I18N.get("ui.style.ScaleStylePanel.smaller-units-pixel"));
+        // //[sstein] 8.Mar.2009
         gridBagConstraints2.gridx = 1;
         gridBagConstraints2.gridy = 6;
         gridBagConstraints31.gridx = 1;
         gridBagConstraints31.gridy = 8;
-        gridBagConstraints2.insets = new java.awt.Insets(5, 40, 5, 0);
-        gridBagConstraints31.insets = new java.awt.Insets(5, 40, 5, 0);
+        gridBagConstraints2.insets = new java.awt.Insets(5, 10, 5, 0);
+        gridBagConstraints31.insets = new java.awt.Insets(5, 10, 5, 0);
         gridBagConstraints18.gridx = 2;
         gridBagConstraints18.gridy = 3;
         gridBagConstraints21.gridx = 7;
         gridBagConstraints21.gridy = 2;
-
         gridBagConstraints21.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints21.insets = new java.awt.Insets(4, 4, 4, 4);
         this.add(getSpacerPanelInTopLeftCorner(), gridBagConstraints12);
@@ -264,12 +285,10 @@ public class WMSScaleStylePanel extends JPanel implements StylePanel {
         this.add(currentScale1Label, gridBagConstraints16);
         this.add(smallestScaleIconLabel, gridBagConstraints2);
         this.add(largestScaleIconLabel, gridBagConstraints31);
-        this.add(SpaceLabel, gridBagConstraintsSpace);
         this.add(getSpacerPanelBelowCurrentScale(), gridBagConstraints18);
         this.add(getSmallestScaleTextField(), gridBagConstraints7);
         this.add(getLargestScaleTextField(), gridBagConstraints9);
         this.add(getCurrentScaleTextField(), gridBagConstraints17);
-
     }
 
     public String getTitle() {
@@ -277,10 +296,14 @@ public class WMSScaleStylePanel extends JPanel implements StylePanel {
     }
 
     public void updateStyles() {
-        layer.setMinScale(getSmallestScale());
-        layer.setMaxScale(getLargestScale());
-        layer.setScaleDependentRenderingEnabled(enableScaleDependentRenderingCheckBox
-                .isSelected());
+        layer.getLayerManager().deferFiringEvents(new Runnable() {
+            public void run() {
+                layer.setMinScale(getSmallestScale());
+                layer.setMaxScale(getLargestScale());
+                layer.setScaleDependentRenderingEnabled(enableScaleDependentRenderingCheckBox
+                        .isSelected());
+            }
+        });
         layer.fireAppearanceChanged();
     }
 
@@ -303,12 +326,24 @@ public class WMSScaleStylePanel extends JPanel implements StylePanel {
         return null;
     }
 
+    public Double LSCale() {
+        return getLargestScale();
+    }
+
+    public Double SSCale() {
+        return getSmallestScale();
+    }
+
     private Double getLargestScale() {
+        // [sstein 01.10.2005]
+        // change to be able to work with real scale values
         return largestScaleTextField.getText().trim().length() > 0 ? new Double(
                 largestScaleTextField.getDouble() * this.scaleFactor) : null;
     }
 
     private Double getSmallestScale() {
+        // [sstein 01.10.2005]
+        // change to be able to work with real scale values
         return smallestScaleTextField.getText().trim().length() > 0 ? new Double(
                 smallestScaleTextField.getDouble() * this.scaleFactor) : null;
     }
@@ -321,7 +356,6 @@ public class WMSScaleStylePanel extends JPanel implements StylePanel {
                             .get("ui.style.ScaleStylePanel.only-show-layer-when-scale-is-between"));
             enableScaleDependentRenderingCheckBox
                     .addActionListener(new java.awt.event.ActionListener() {
-
                         public void actionPerformed(java.awt.event.ActionEvent e) {
                             updateComponents();
                         }
@@ -383,6 +417,9 @@ public class WMSScaleStylePanel extends JPanel implements StylePanel {
     }
 
     private ValidatingTextField createValidatingTextField() {
+        // Use GreaterThanOrEqualValidator rather than GreaterThanValidator,
+        // which won't let the user type a "0" even if they want to enter "0.1"
+        // [Jon Aquino 2005-03-22]
         return new ValidatingTextField(
                 "",
                 7,
@@ -428,8 +465,9 @@ public class WMSScaleStylePanel extends JPanel implements StylePanel {
                     .get("ui.style.ScaleStylePanel.hide-above-current-scale"));
             hideAboveCurrentScaleButton
                     .addActionListener(new java.awt.event.ActionListener() {
-
                         public void actionPerformed(java.awt.event.ActionEvent e) {
+                            // [sstein] changed to show real scale instead
+                            // currentScale
                             double realScale = 1 / scaleFactor * currentScale();
                             smallestScaleTextField
                                     .setText(formatScaleLossily(roundFirstSignificantFigureUp(realScale)));
@@ -466,7 +504,6 @@ public class WMSScaleStylePanel extends JPanel implements StylePanel {
                     .get("ui.style.ScaleStylePanel.hide-below-current-scale"));
             hideBelowCurrentScaleButton
                     .addActionListener(new java.awt.event.ActionListener() {
-
                         public void actionPerformed(java.awt.event.ActionEvent e) {
                             // [sstein] changed to show real scale instead
                             // currentScale
@@ -506,7 +543,6 @@ public class WMSScaleStylePanel extends JPanel implements StylePanel {
                     .get("ui.style.ScaleStylePanel.show-at-this-scale"));
             showAtThisScaleButton
                     .addActionListener(new java.awt.event.ActionListener() {
-
                         public void actionPerformed(java.awt.event.ActionEvent e) {
                             if (!enableScaleDependentRenderingCheckBox
                                     .isSelected()) {
@@ -527,4 +563,37 @@ public class WMSScaleStylePanel extends JPanel implements StylePanel {
         }
         return showAtThisScaleButton;
     }
-}
+
+    public static void main(String[] args) throws ClassNotFoundException,
+            InstantiationException, IllegalAccessException,
+            UnsupportedLookAndFeelException {
+        /*
+         * System.out.println(roundFirstSignificantFigure(123, 1));
+         * System.out.println(roundFirstSignificantFigure(123, 0));
+         * System.out.println(roundFirstSignificantFigure(789, 1));
+         * System.out.println(roundFirstSignificantFigure(789, 0));
+         * System.out.println(roundFirstSignificantFigure(.00123, 1));
+         * System.out.println(roundFirstSignificantFigure(.00123, 0));
+         * System.out.println(roundFirstSignificantFigure(.00789, 1));
+         * System.out.println(roundFirstSignificantFigure(.00789, 0));
+         */
+        /*
+         * System.out.println(new DecimalFormat("0.#E0").format(0.00000123));
+         * System.exit(0);
+         */
+        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        JDialog dialog = new JDialog();
+        dialog.getContentPane().add(new WMSScaleStylePanel(new WMSLayer() {
+            {
+                setMinScale(new Double(2));
+                setMaxScale(new Double(1));
+            }
+        }, null) {
+            protected double currentScale() {
+                return .000000123;
+            }
+        });
+        dialog.pack();
+        dialog.setVisible(true);
+    }
+} // @jve:decl-index=0:visual-constraint="10,10"
