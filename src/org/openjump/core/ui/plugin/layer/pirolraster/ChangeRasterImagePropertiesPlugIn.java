@@ -10,6 +10,7 @@ import java.util.Iterator;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
@@ -33,10 +34,11 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.style.StylePanel;
 
 /**
- * @version $Rev: 4221 $ Dic 23 2014 [Giuseppe Aruta] - Transformed in a
- *          MultiImputDialog. Add Added Raster Transparency, ScaleStyle and
- *          ColorEditor Panels
- * @version $Rev: 4425 $ July 3 2015 [Giuseppe Aruta] - Renamed plugin name to "Change Style"      
+ * @version Dic 23 2014 [Giuseppe Aruta] - Transformed in a MultiImputDialog.
+ *          Add Added Raster Transparency, ScaleStyle and ColorEditor Panels
+ * @version Jul 03 2015 [Giuseppe Aruta] - Renamed plugin name to "Change Style"
+ * @version Jul 06 2015 [Giuseppe Aruta] - correct bug when Largest scale
+ *          >Smallest scale
  */
 @SuppressWarnings("deprecation")
 public class ChangeRasterImagePropertiesPlugIn extends AbstractPlugIn {
@@ -114,23 +116,44 @@ public class ChangeRasterImagePropertiesPlugIn extends AbstractPlugIn {
                 .put(LAST_TAB_KEY,
                         ((StylePanel) tabbedPane.getSelectedComponent())
                                 .getTitle());
-
+        dialog.addEnableChecks(rasterScalepanel.getTitle(),
+                Arrays.asList(new EnableCheck() {
+                    public String check(JComponent component) {
+                        return rasterScalepanel.validateInput();
+                    }
+                }));
         dialog.addOKCancelApplyPanelActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (dialog.wasApplyPressed()) {
-                    if (rLayer.getNumBands() == 1) {
-                        rasterScalepanel.updateStyles();
-                        rasstyle.updateStyles();
-                        rascolorpanel.updateStyles();
+                    if (rasterScalepanel.LSCale().doubleValue() > rasterScalepanel
+                            .SSCale().doubleValue()) {
+
+                        JOptionPane.showMessageDialog(
+                                null,
+                                I18N.get("ui.style.ScaleStylePanel.units-pixel-at-smallest-scale-must-be-larger-than-units-pixel-at-largest-scale"),
+                                "Jump", JOptionPane.ERROR_MESSAGE);
+
                     } else {
                         rasterScalepanel.updateStyles();
                         rasstyle.updateStyles();
-                        // rascolorpanel.updateStyles();
+
                     }
+
+                    if (rLayer.getNumBands() == 1) {
+
+                        rascolorpanel.updateStyles();
+                    } else {
+
+                    }
+
                 }
             }
         });
+        // Add to prevent error message and OJ to freeze if Large scale>Small
+        // scale
+        // Now the only way to close this dialog is using cancel button
 
+        dialog.setDefaultCloseOperation(dialog.DO_NOTHING_ON_CLOSE);
         dialog.pack();
         GUIUtil.centreOnWindow(dialog);
         dialog.setVisible(true);

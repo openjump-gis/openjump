@@ -26,10 +26,11 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.style.StylePanel;
 
 /**
- * @version $Rev: 4221 $ Dic 23 2014 Giuseppe Aruta Panel that allows to set
- *          Scale display of a Sextante Raster Layer Panel Refractor from
- *          AdbToolBox version ver 1.0 2014_02_10
- * 
+ * @version Dic 23 2014 Giuseppe Aruta Panel that allows to set Scale display of
+ *          a Sextante Raster Layer Panel Refractor from AdbToolBox version ver
+ *          1.0 2014_02_10
+ * @version Jul 06 2015 Giuseppe Aruta correct bug when Largest scale >Smallest
+ *          scale
  * 
  */
 public class RasterScaleStylePanel extends JPanel implements StylePanel {
@@ -302,6 +303,14 @@ public class RasterScaleStylePanel extends JPanel implements StylePanel {
                     .get("ui.style.ScaleStylePanel.units-pixel-at-smallest-scale-must-be-greater-than-0");
         }
         return null;
+    }
+
+    public Double LSCale() {
+        return getLargestScale();
+    }
+
+    public Double SSCale() {
+        return getSmallestScale();
     }
 
     private Double getLargestScale() {
