@@ -42,7 +42,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.swing.JInternalFrame;
+import org.openjump.core.rasterimage.RasterImageLayer;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.io.ParseException;
@@ -54,13 +54,12 @@ import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
-import com.vividsolutions.jump.workbench.ui.LayerViewPanelProxy;
-import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
 import com.vividsolutions.jump.workbench.ui.style.AbstractPalettePanel;
 
 /**
  * Registry of Layers in a Task.
+ * 
  * @see Task
  * @see Layer
  */
@@ -69,22 +68,24 @@ public class LayerManager {
     private UndoableEditReceiver undoableEditReceiver = new UndoableEditReceiver();
     private CoordinateSystem coordinateSystem = CoordinateSystem.UNSPECIFIED;
 
-    //As we introduce threaded drawing and other threaded tasks to the
-    //workbench, we should be careful not to create situations in which
-    //ConcurrentModificationExceptions can occur. [Jon Aquino]
-    //Go with List rather than name-to-category map, because category names can
-    //now change. [Jon Aquino]
+    // As we introduce threaded drawing and other threaded tasks to the
+    // workbench, we should be careful not to create situations in which
+    // ConcurrentModificationExceptions can occur. [Jon Aquino]
+    // Go with List rather than name-to-category map, because category names can
+    // now change. [Jon Aquino]
     private ArrayList categories = new ArrayList();
 
-    //Store weak references to layers rather than the layers themselves -- if a layer
-    //is lucky enough to have all its strong references released, let it dispose of
-    //itself immediately [Jon Aquino] 
+    // Store weak references to layers rather than the layers themselves -- if a
+    // layer
+    // is lucky enough to have all its strong references released, let it
+    // dispose of
+    // itself immediately [Jon Aquino]
     private ArrayList layerReferencesToDispose = new ArrayList();
     private boolean firingEvents = true;
     private ArrayList layerListeners = new ArrayList();
     private Iterator firstColors;
     private Blackboard blackboard = new Blackboard();
-    
+
     private Task task;
 
     public LayerManager() {
@@ -96,7 +97,7 @@ public class LayerManager {
         this();
         this.task = task;
     }
-   
+
     public UndoableEditReceiver getUndoableEditReceiver() {
         return undoableEditReceiver;
     }
@@ -115,8 +116,8 @@ public class LayerManager {
     private Collection firstColors() {
         ArrayList firstColors = new ArrayList();
 
-        for (Iterator i = AbstractPalettePanel.basicStyles().iterator();
-                i.hasNext();) {
+        for (Iterator i = AbstractPalettePanel.basicStyles().iterator(); i
+                .hasNext();) {
             BasicStyle basicStyle = (BasicStyle) i.next();
 
             if (!basicStyle.isRenderingFill()) {
@@ -130,12 +131,12 @@ public class LayerManager {
     }
 
     public Color generateLayerFillColor() {
-        //<<TODO>> Ensure that colour is not being used by another layer [Jon Aquino]
+        // <<TODO>> Ensure that colour is not being used by another layer [Jon
+        // Aquino]
         Color color = firstColors.hasNext() ? (Color) firstColors.next()
-                                            : new Color((int) Math.floor(
-                    Math.random() * 256),
-                (int) Math.floor(Math.random() * 256),
-                (int) Math.floor(Math.random() * 256));
+                : new Color((int) Math.floor(Math.random() * 256),
+                        (int) Math.floor(Math.random() * 256),
+                        (int) Math.floor(Math.random() * 256));
         color = new Color(color.getRed(), color.getGreen(), color.getBlue());
 
         return color;
@@ -149,10 +150,12 @@ public class LayerManager {
 
     public void addLayerable(String categoryName, Layerable layerable) {
         if (layerable instanceof Layer) {
-            if (size() == 0 && getCoordinateSystem() == CoordinateSystem.UNSPECIFIED) {
-                setCoordinateSystem(((Layer) layerable).getFeatureCollectionWrapper().getFeatureSchema().getCoordinateSystem());                
-            }
-            else {
+            if (size() == 0
+                    && getCoordinateSystem() == CoordinateSystem.UNSPECIFIED) {
+                setCoordinateSystem(((Layer) layerable)
+                        .getFeatureCollectionWrapper().getFeatureSchema()
+                        .getCoordinateSystem());
+            } else {
                 reproject((Layer) layerable, coordinateSystem);
             }
             layerReferencesToDispose.add(new WeakReference(layerable));
@@ -163,34 +166,37 @@ public class LayerManager {
         Category cat = getCategory(categoryName);
         cat.add(0, layerable);
 
-        //Fire metadata changed so that the visual modified markers are updated. [Jon Aquino]
+        // Fire metadata changed so that the visual modified markers are
+        // updated. [Jon Aquino]
         fireLayerChanged(layerable, LayerEventType.METADATA_CHANGED);
     }
 
     private void reproject(Layer layer, CoordinateSystem coordinateSystem) {
         try {
-            Assert.isTrue(indexOf(layer) == -1,
-                "If the LayerManager contained this layer, we'd need to be concerned about rolling back on an error [Jon Aquino]");
+            Assert.isTrue(
+                    indexOf(layer) == -1,
+                    "If the LayerManager contained this layer, we'd need to be concerned about rolling back on an error [Jon Aquino]");
 
-            if (!Reprojector.instance().wouldChangeValues(layer.getFeatureCollectionWrapper()
-                                                                         .getFeatureSchema()
-                                                                         .getCoordinateSystem(),
-                        coordinateSystem)) {
+            if (!Reprojector.instance().wouldChangeValues(
+                    layer.getFeatureCollectionWrapper().getFeatureSchema()
+                            .getCoordinateSystem(), coordinateSystem)) {
                 return;
             }
 
-            for (Iterator i = layer.getFeatureCollectionWrapper().iterator();
-                    i.hasNext();) {
+            for (Iterator i = layer.getFeatureCollectionWrapper().iterator(); i
+                    .hasNext();) {
                 Feature feature = (Feature) i.next();
-                Reprojector.instance().reproject(feature.getGeometry(),
-                    layer.getFeatureCollectionWrapper().getFeatureSchema()
-                         .getCoordinateSystem(), coordinateSystem);
+                Reprojector.instance().reproject(
+                        feature.getGeometry(),
+                        layer.getFeatureCollectionWrapper().getFeatureSchema()
+                                .getCoordinateSystem(), coordinateSystem);
             }
         } finally {
-            //Even if #isReprojectionNecessary returned false, we still need to set
-            //the CoordinateSystem to the new value [Jon Aquino]
+            // Even if #isReprojectionNecessary returned false, we still need to
+            // set
+            // the CoordinateSystem to the new value [Jon Aquino]
             layer.getFeatureCollectionWrapper().getFeatureSchema()
-                 .setCoordinateSystem(coordinateSystem);
+                    .setCoordinateSystem(coordinateSystem);
         }
     }
 
@@ -206,8 +212,8 @@ public class LayerManager {
         Category category = new Category();
         category.setLayerManager(this);
 
-        //Can't fire events because this Category hasn't been added to the
-        //LayerManager yet. [Jon Aquino]
+        // Can't fire events because this Category hasn't been added to the
+        // LayerManager yet. [Jon Aquino]
         boolean firingEvents = isFiringEvents();
         setFiringEvents(false);
 
@@ -218,7 +224,8 @@ public class LayerManager {
         }
 
         categories.add(index, category);
-        fireCategoryChanged(category, CategoryEventType.ADDED, indexOf(category));
+        fireCategoryChanged(category, CategoryEventType.ADDED,
+                indexOf(category));
     }
 
     public Category getCategory(String name) {
@@ -238,12 +245,13 @@ public class LayerManager {
     }
 
     /**
-     * @param layerName the name of the layer. A number will be appended if a layer
-     * with the same name already exists. Set to null to automatically generate a
-     * new name.
+     * @param layerName
+     *            the name of the layer. A number will be appended if a layer
+     *            with the same name already exists. Set to null to
+     *            automatically generate a new name.
      */
     public Layer addLayer(String categoryName, String layerName,
-        FeatureCollection featureCollection) {
+            FeatureCollection featureCollection) {
         String actualName = (layerName == null) ? "Layer" : layerName;
         Layer layer = new Layer(actualName, generateLayerFillColor(),
                 featureCollection, this);
@@ -253,7 +261,7 @@ public class LayerManager {
     }
 
     public Layer addOrReplaceLayer(String categoryName, String layerName,
-        FeatureCollection featureCollection) {
+            FeatureCollection featureCollection) {
         Layer oldLayer = getLayer(layerName);
 
         if (oldLayer != null) {
@@ -277,7 +285,7 @@ public class LayerManager {
             return name;
         }
 
-        //<<TODO:REMOVE>> debug [Jon Aquino]
+        // <<TODO:REMOVE>> debug [Jon Aquino]
         if (name == "Relative Vectors") {
             new Throwable().printStackTrace(System.err);
         }
@@ -294,8 +302,8 @@ public class LayerManager {
     }
 
     private boolean isExistingLayerableName(String name) {
-        for (Iterator i = getLayerables(Layerable.class).iterator();
-                i.hasNext();) {
+        for (Iterator i = getLayerables(Layerable.class).iterator(); i
+                .hasNext();) {
             Layerable layerable = (Layerable) i.next();
 
             if (layerable.getName().equals(name)) {
@@ -308,39 +316,41 @@ public class LayerManager {
 
     /**
      * convenience method
+     * 
      * @param layerable
      */
     public void remove(Layerable layerable) {
-      remove(new Layerable[]{layerable}, false);
+        remove(new Layerable[] { layerable }, false);
     }
-    
+
     /**
      * remove, but do not dispose layer (as used e.g. by MoveLayerPlugin)
      */
     public void remove(Layerable[] layerables) {
-      remove(layerables, false);
+        remove(layerables, false);
     }
-    
+
     /**
      * remove a layer, optionally dispose it and it's features
      */
     private void remove(Layerable[] layerables, boolean dispose) {
-      for (int i = 0; i < layerables.length; i++) {
-        Layerable layerable = layerables[i];
-        // iterate over cats to find layer
-        for (Iterator j = categories.iterator(); j.hasNext();) {
-            Category c = (Category) j.next();
-            int index = c.indexOf(layerable);
+        for (int i = 0; i < layerables.length; i++) {
+            Layerable layerable = layerables[i];
+            // iterate over cats to find layer
+            for (Iterator j = categories.iterator(); j.hasNext();) {
+                Category c = (Category) j.next();
+                int index = c.indexOf(layerable);
 
-            if (index != -1) {
-                c.remove(layerable);
-                if (dispose && layerable instanceof Disposable)
-                  ((Disposable)layerable).dispose();
-                fireLayerChanged(layerable, LayerEventType.REMOVED, c, index);
+                if (index != -1) {
+                    c.remove(layerable);
+                    if (dispose && layerable instanceof Disposable)
+                        ((Disposable) layerable).dispose();
+                    fireLayerChanged(layerable, LayerEventType.REMOVED, c,
+                            index);
+                }
             }
         }
-      }
-      System.gc();
+        System.gc();
     }
 
     public void removeIfEmpty(Category category) {
@@ -354,31 +364,32 @@ public class LayerManager {
     }
 
     public void dispose() {
-      this.setFiringEvents(false);
-      for (Iterator i = layerReferencesToDispose.iterator(); i.hasNext();) {
-        WeakReference reference = (WeakReference) i.next();
-        Layer layer = (Layer) reference.get();
-  
-        if (layer != null) {
-          layer.dispose();
+        this.setFiringEvents(false);
+        for (Iterator i = layerReferencesToDispose.iterator(); i.hasNext();) {
+            WeakReference reference = (WeakReference) i.next();
+            Layer layer = (Layer) reference.get();
+
+            if (layer != null) {
+                layer.dispose();
+            }
         }
-      }
-  
-      layerManagerCount--;
-  
-      // Undo actions may be holding on to expensive resources; therefore, send
-      // #die to each to request that the resources be freed. [Jon Aquino]
-      undoableEditReceiver.getUndoManager().discardAllEdits();
+
+        layerManagerCount--;
+
+        // Undo actions may be holding on to expensive resources; therefore,
+        // send
+        // #die to each to request that the resources be freed. [Jon Aquino]
+        undoableEditReceiver.getUndoManager().discardAllEdits();
     }
-  
-    public void dispose(Layerable l){
-      dispose(new Layerable[]{l});
+
+    public void dispose(Layerable l) {
+        dispose(new Layerable[] { l });
     }
-    
-    public void dispose(Layerable[] ls){
-      remove(ls, true);
+
+    public void dispose(Layerable[] ls) {
+        remove(ls, true);
     }
-    
+
     public int indexOf(Category category) {
         return categories.indexOf(category);
     }
@@ -388,61 +399,62 @@ public class LayerManager {
     }
 
     private void fireCategoryChanged(final Category category,
-        final CategoryEventType type, final int categoryIndex) {
+            final CategoryEventType type, final int categoryIndex) {
         if (!firingEvents) {
             return;
         }
 
-        //[sstein 2.Feb.2007] old line results sometimes in ConcurrentModificationException
-        //for (Iterator i = layerListeners.iterator(); i.hasNext();) {
-        //[sstein 2.Feb.2007] new line by Larry
-        for (Iterator i = new ArrayList(layerListeners).iterator(); i.hasNext();) {//LDB added
+        // [sstein 2.Feb.2007] old line results sometimes in
+        // ConcurrentModificationException
+        // for (Iterator i = layerListeners.iterator(); i.hasNext();) {
+        // [sstein 2.Feb.2007] new line by Larry
+        for (Iterator i = new ArrayList(layerListeners).iterator(); i.hasNext();) {// LDB
+                                                                                   // added
             final LayerListener layerListener = (LayerListener) i.next();
             fireLayerEvent(new Runnable() {
-                    public void run() {
-                        layerListener.categoryChanged(new CategoryEvent(
-                                category, type, categoryIndex));
-                    }
-                });
+                public void run() {
+                    layerListener.categoryChanged(new CategoryEvent(category,
+                            type, categoryIndex));
+                }
+            });
         }
     }
 
     public void fireFeaturesChanged(final Collection features,
-        final FeatureEventType type, final Layer layer) {
+            final FeatureEventType type, final Layer layer) {
         Assert.isTrue(type != FeatureEventType.GEOMETRY_MODIFIED);
         fireFeaturesChanged(features, type, layer, null);
     }
 
     public void fireGeometryModified(final Collection features,
-        final Layer layer, final Collection oldFeatureClones) {
+            final Layer layer, final Collection oldFeatureClones) {
         Assert.isTrue(oldFeatureClones != null);
         fireFeaturesChanged(features, FeatureEventType.GEOMETRY_MODIFIED,
-            layer, oldFeatureClones);
+                layer, oldFeatureClones);
     }
 
     private void fireFeaturesChanged(final Collection features,
-        final FeatureEventType type, final Layer layer,
-        final Collection oldFeatureClones) {
+            final FeatureEventType type, final Layer layer,
+            final Collection oldFeatureClones) {
         if (!firingEvents) {
             return;
         }
 
-        //New ArrayList to avoid ConcurrentModificationException [Jon Aquino]
-        for (Iterator i = new ArrayList(layerListeners).iterator();
-                i.hasNext();) {
+        // New ArrayList to avoid ConcurrentModificationException [Jon Aquino]
+        for (Iterator i = new ArrayList(layerListeners).iterator(); i.hasNext();) {
             final LayerListener layerListener = (LayerListener) i.next();
             fireLayerEvent(new Runnable() {
-                    public void run() {
-                        layerListener.featuresChanged(new FeatureEvent(
-                                features, type, layer, oldFeatureClones));
-                    }
-                });
+                public void run() {
+                    layerListener.featuresChanged(new FeatureEvent(features,
+                            type, layer, oldFeatureClones));
+                }
+            });
         }
     }
 
     private void fireLayerEvent(Runnable eventFirer) {
-        //In general, LayerListeners are GUI components. Therefore, notify
-        //them on the event dispatching thread.[Jon Aquino]
+        // In general, LayerListeners are GUI components. Therefore, notify
+        // them on the event dispatching thread.[Jon Aquino]
         try {
             GUIUtil.invokeOnEventThread(eventFirer);
         } catch (InterruptedException e) {
@@ -452,15 +464,18 @@ public class LayerManager {
             Assert.shouldNeverReachHere();
         }
 
-        //Note that if the current thread (in which the model was changed) is not
-        //the event dispatching thread, the model changes and the listener notifications
-        //will be asynchronous -- for example, all the model changes might be done
-        //before the listener notifications even begin. This may be a
-        //problem for a threaded plug-in that does moderately complex
-        //insertions and deletions of nodes in the layer tree (e.g. you may see
-        //duplicate tree nodes). If you encounter this problem, try making the
-        //model changes (e.g. #addLayer) on the event thread using
-        //GUIUtil#invokeOnEventThread. [Jon Aquino]
+        // Note that if the current thread (in which the model was changed) is
+        // not
+        // the event dispatching thread, the model changes and the listener
+        // notifications
+        // will be asynchronous -- for example, all the model changes might be
+        // done
+        // before the listener notifications even begin. This may be a
+        // problem for a threaded plug-in that does moderately complex
+        // insertions and deletions of nodes in the layer tree (e.g. you may see
+        // duplicate tree nodes). If you encounter this problem, try making the
+        // model changes (e.g. #addLayer) on the event thread using
+        // GUIUtil#invokeOnEventThread. [Jon Aquino]
     }
 
     /**
@@ -468,36 +483,38 @@ public class LayerManager {
      * the layer in the category prior to removal (not -1).
      */
     private void fireLayerChanged(final Layerable layerable,
-        final LayerEventType layerChangeType, final Category category,
-        final int layerIndex) {
+            final LayerEventType layerChangeType, final Category category,
+            final int layerIndex) {
         if (!firingEvents) {
             return;
         }
 
-        //New ArrayList to avoid ConcurrentModificationException [Jon Aquino]
-        for (Iterator i = new ArrayList(layerListeners).iterator();
-                i.hasNext();) {
+        // New ArrayList to avoid ConcurrentModificationException [Jon Aquino]
+        for (Iterator i = new ArrayList(layerListeners).iterator(); i.hasNext();) {
             final LayerListener layerListener = (LayerListener) i.next();
             fireLayerEvent(new Runnable() {
-                    public void run() {
-                        layerListener.layerChanged(new LayerEvent(layerable,
-                                layerChangeType, category, layerIndex));
-                    }
-                });
+                public void run() {
+                    layerListener.layerChanged(new LayerEvent(layerable,
+                            layerChangeType, category, layerIndex));
+                }
+            });
         }
     }
 
-    //<<TODO:DESIGN>> Most callers of #fireLayerChanged(Layer, LayerChangeType,
-    //LayerCategory, layerIndex) can use this simpler method instead. [Jon Aquino]
+    // <<TODO:DESIGN>> Most callers of #fireLayerChanged(Layer, LayerChangeType,
+    // LayerCategory, layerIndex) can use this simpler method instead. [Jon
+    // Aquino]
     public void fireLayerChanged(Layerable layerable, LayerEventType type) {
         Category cat = getCategory(layerable);
 
         if (cat == null) {
-            Assert.isTrue(!isFiringEvents(),
-                "If this event is being fired because you are constructing a Layer, " +
-                "cat will be null because you haven't yet added the Layer to the LayerManager. " +
-                "While constructing a layer, you should set firingEvents " +
-                "to false. (Layerable = " + layerable.getName() + ")");
+            Assert.isTrue(
+                    !isFiringEvents(),
+                    "If this event is being fired because you are constructing a Layer, "
+                            + "cat will be null because you haven't yet added the Layer to the LayerManager. "
+                            + "While constructing a layer, you should set firingEvents "
+                            + "to false. (Layerable = " + layerable.getName()
+                            + ")");
 
             return;
         }
@@ -515,7 +532,7 @@ public class LayerManager {
 
     /**
      * @return an iterator over the layers, from bottom to top. Layers with
-     * #drawingLast = true appear last.
+     *         #drawingLast = true appear last.
      */
     public Iterator reverseIterator(Class layerableClass) {
         ArrayList layerablesCopy = new ArrayList(getLayerables(layerableClass));
@@ -550,8 +567,9 @@ public class LayerManager {
      * @return Layers, not all Layerables
      */
     public Iterator iterator() {
-        //<<TODO:PERFORMANCE>> Create an iterator that doesn't build a Collection of
-        //Layers first (unlike #getLayers) [Jon Aquino]
+        // <<TODO:PERFORMANCE>> Create an iterator that doesn't build a
+        // Collection of
+        // Layers first (unlike #getLayers) [Jon Aquino]
         return getLayers().iterator();
     }
 
@@ -587,28 +605,102 @@ public class LayerManager {
         return getLayers().size();
     }
 
-    //<<TODO:MAINTAINABILITY>> Search for uses of #getLayerListModel and see if
-    //they can be replaced by #iterator [Jon Aquino]
+    // <<TODO:MAINTAINABILITY>> Search for uses of #getLayerListModel and see if
+    // they can be replaced by #iterator [Jon Aquino]
     public Envelope getEnvelopeOfAllLayers() {
         return getEnvelopeOfAllLayers(false);
     }
 
     /**
-	 * @param visibleLayersOnly
-	 * @return the envelope containing all layers
-	 */
-	public Envelope getEnvelopeOfAllLayers(boolean visibleLayersOnly) {
-		Envelope envelope = new Envelope();
-        for (Iterator i = iterator(); i.hasNext();) {
-            Layer layer = (Layer) i.next();
-            if (visibleLayersOnly && !layer.isVisible()) { continue; }
-            envelope.expandToInclude(layer.getFeatureCollectionWrapper()
-                                          .getEnvelope());
-        }
-        return envelope;
-	}
+     * @param visibleLayersOnly
+     * @return the envelope containing all layers
+     * 
+     * @since [Giuseppe Aruta] July 8 2015. Now it takes into account Sextante Raster and WMS
+     *        layers
+     */
+    public Envelope getEnvelopeOfAllLayers(boolean visibleLayersOnly) {
+        Envelope envelope = new Envelope();
 
-	/**
+        /*
+         * for (Iterator<Layerable> i = iterator(); i.hasNext();) { Layerable
+         * layerable = (Layer) i.next();
+         * 
+         * if (visibleLayersOnly && !layerable.isVisible()) { continue; }
+         * 
+         * if (layerable instanceof Layer) {
+         * 
+         * envelope.expandToInclude(((Layer) layerable)
+         * .getFeatureCollectionWrapper().getEnvelope()); }
+         * 
+         * }
+         */
+
+        // Add Layer.class envelopes
+        List<Layer> layers = getVectorImageLayers();
+        for (Iterator<Layer> iter = layers.iterator(); iter.hasNext();) {
+            Layer layer = iter.next();
+            if (visibleLayersOnly && !layer.isVisible()) {
+                continue;
+            }
+            envelope.expandToInclude(layer.getFeatureCollectionWrapper()
+                    .getEnvelope());
+        }
+
+        // Add WMS.class envelopes
+        List<WMSLayer> wmslayers = getWMSLayers();
+
+        for (Iterator<WMSLayer> iter = wmslayers.iterator(); iter.hasNext();) {
+            WMSLayer wlayer = iter.next();
+            if (visibleLayersOnly && !wlayer.isVisible()) {
+                continue;
+            }
+            envelope.expandToInclude(wlayer.getEnvelope());
+        }
+        // Add RasterIMageLayer.class envelopes
+        List<RasterImageLayer> rlayers = getRasterImageLayers();
+        for (Iterator<RasterImageLayer> iter = rlayers.iterator(); iter
+                .hasNext();) {
+            RasterImageLayer rlayer = iter.next();
+            if (visibleLayersOnly && !rlayer.isVisible()) {
+                continue;
+            }
+            envelope.expandToInclude(rlayer.getWholeImageEnvelope());
+        }
+
+        return envelope;
+    }
+
+    /**
+     * [Giuseppe Aruta] July 8 2015
+     * Gets the list of WMSLayer.class registered in this manager
+     * 
+     * @return
+     */
+    public List<WMSLayer> getWMSLayers() {
+        return (List<WMSLayer>) getLayerables(WMSLayer.class);
+    }
+
+    /**
+     * [Giuseppe Aruta] July 8 2015
+     * Gets the list of RasterImageLayer.class registered in this manager
+     * 
+     * @return
+     */
+    public List<RasterImageLayer> getRasterImageLayers() {
+        return (List<RasterImageLayer>) getLayerables(RasterImageLayer.class);
+    }
+
+    /**
+     * [Giuseppe Aruta] July 8 2015
+     * Gets the list of Layer.class class registered in this manager
+     * 
+     * @return
+     */
+    public List<Layer> getVectorImageLayers() {
+        return (List<Layer>) getLayerables(Layer.class);
+    }
+
+    /**
      * @return -1 if the layer does not exist
      */
     public int indexOf(Layer layer) {
@@ -639,12 +731,13 @@ public class LayerManager {
 
         ArrayList layers = new ArrayList();
 
-        //Create new ArrayLists to avoid ConcurrentModificationExceptions. [Jon Aquino]
+        // Create new ArrayLists to avoid ConcurrentModificationExceptions. [Jon
+        // Aquino]
         for (Iterator i = new ArrayList(categories).iterator(); i.hasNext();) {
             Category c = (Category) i.next();
 
-            for (Iterator j = new ArrayList(c.getLayerables()).iterator();
-                    j.hasNext();) {
+            for (Iterator j = new ArrayList(c.getLayerables()).iterator(); j
+                    .hasNext();) {
                 Layerable l = (Layerable) j.next();
 
                 if (!(layerableClass.isInstance(l))) {
@@ -664,8 +757,8 @@ public class LayerManager {
         for (Iterator i = visibleLayers.iterator(); i.hasNext();) {
             Layer layer = (Layer) i.next();
 
-            if (layer.getName().equals(FenceLayerFinder.LAYER_NAME) &&
-                    !includeFence) {
+            if (layer.getName().equals(FenceLayerFinder.LAYER_NAME)
+                    && !includeFence) {
                 i.remove();
 
                 continue;
@@ -678,7 +771,7 @@ public class LayerManager {
 
         return visibleLayers;
     }
-    
+
     public static int layerManagerCount() {
         return layerManagerCount;
     }
@@ -719,25 +812,27 @@ public class LayerManager {
         return layersWithModifiedFeatureCollections;
     }
 
-    public LinkedList getLayersWithNullDataSource(){
+    public LinkedList getLayersWithNullDataSource() {
         LinkedList list = new LinkedList();
-        
+
         for (Iterator i = iterator(); i.hasNext();) {
             Layer layer = (Layer) i.next();
-            if(layer.getDataSourceQuery() == null) {
+            if (layer.getDataSourceQuery() == null) {
                 list.add(layer);
             }
         }
-        
+
         return list;
     }
-    
+
     public void setCoordinateSystem(CoordinateSystem coordinateSystem) {
         this.coordinateSystem = coordinateSystem;
 
-        //Don't automatically reproject layers here, because I'd like to use an
-        //EditTransaction, but that requires a LayerViewPanelContext, which is not
-        //available to this LayerManager (but would be available to a plug-in) [Jon Aquino]        
+        // Don't automatically reproject layers here, because I'd like to use an
+        // EditTransaction, but that requires a LayerViewPanelContext, which is
+        // not
+        // available to this LayerManager (but would be available to a plug-in)
+        // [Jon Aquino]
     }
 
     public static void main(String[] args) throws ParseException {
@@ -745,26 +840,28 @@ public class LayerManager {
                 2402253.07294874, 708249.523621829, 2402244.3124463,
                 708247.896591321, 2402252.48269854, 708261.854734465,
                 2402182.39086576));
-        System.out.println(new WKTReader().read(
-                "LINESTRING(708248.882609455 2402253.07294874, 708249.523621829 2402244.3124463)")
-                                          .intersects(new WKTReader().read(
-                    "LINESTRING(708247.896591321 2402252.48269854, 708261.854734465 2402182.39086576)")));
+        System.out
+                .println(new WKTReader()
+                        .read("LINESTRING(708248.882609455 2402253.07294874, 708249.523621829 2402244.3124463)")
+                        .intersects(
+                                new WKTReader()
+                                        .read("LINESTRING(708247.896591321 2402252.48269854, 708261.854734465 2402182.39086576)")));
     }
-	public CoordinateSystem getCoordinateSystem() {
-		return coordinateSystem;
-	}
 
-	//[UT] 25.08.2005 added
-    public void fireFeaturesAttChanged(final Collection features, 
-                                       final FeatureEventType type, 
-                                       final Layer layer, 
-                                       final Collection oldFeatureClones) {
-	   Assert.isTrue(type != FeatureEventType.GEOMETRY_MODIFIED);
-	   fireFeaturesChanged(features, type, layer, oldFeatureClones);
+    public CoordinateSystem getCoordinateSystem() {
+        return coordinateSystem;
+    }
+
+    // [UT] 25.08.2005 added
+    public void fireFeaturesAttChanged(final Collection features,
+            final FeatureEventType type, final Layer layer,
+            final Collection oldFeatureClones) {
+        Assert.isTrue(type != FeatureEventType.GEOMETRY_MODIFIED);
+        fireFeaturesChanged(features, type, layer, oldFeatureClones);
 
     }
 
     public Task getTask() {
-      return task;
+        return task;
     }
 }

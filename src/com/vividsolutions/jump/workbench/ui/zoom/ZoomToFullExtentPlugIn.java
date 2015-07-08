@@ -44,7 +44,13 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
-
+/**
+ * 
+ * @author giuseppe aruta
+ * @since July 8 2015. Now it takes into account Sextante Raster and WMS
+ *        layers
+ */
+ */
 public class ZoomToFullExtentPlugIn extends AbstractPlugIn {
     public ZoomToFullExtentPlugIn() {
     }
@@ -68,11 +74,12 @@ public class ZoomToFullExtentPlugIn extends AbstractPlugIn {
     }
 
     public MultiEnableCheck createEnableCheck(
-        final WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+            final WorkbenchContext workbenchContext) {
+        EnableCheckFactory checkFactory = new EnableCheckFactory(
+                workbenchContext);
 
-        return new MultiEnableCheck().add(checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck())
-                                     .add(checkFactory.createAtLeastNLayersMustExistCheck(
-                1));
+        return new MultiEnableCheck().add(
+                checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck())
+                .add(checkFactory.createAtLeastNLayerablesMustExistCheck(1));
     }
 }
