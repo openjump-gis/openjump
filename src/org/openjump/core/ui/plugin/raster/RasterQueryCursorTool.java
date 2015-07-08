@@ -42,10 +42,8 @@ import java.awt.geom.NoninvertibleTransformException;
 import java.io.IOException;
 
 import javax.swing.Icon;
-import javax.swing.JTextPane;
 
 import org.openjump.core.CheckOS;
-import org.openjump.core.apitools.LayerTools;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.RasterImageLayer.RasterDataNotFoundException;
 
@@ -62,10 +60,12 @@ import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
+import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.LayerNamePanel;
 import com.vividsolutions.jump.workbench.ui.cursortool.NClickTool;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.renderer.style.LabelStyle;
@@ -83,7 +83,8 @@ public class RasterQueryCursorTool extends NClickTool {
      * SHIFT to display only last measure. Moving cursor on image shows raster
      * cell value on lower panel
      * 
-     * [2014_02_24] Fix minor bug on lower panel
+     * [2014_02_24] Giuseppe Aruta - Fixed minor bug on lower panel
+     * [2015_07_08] Giuseppe Aruta - Fixed bug #407 Sextante raster : displaying cell values throws NPE 
      */
 
     protected Coordinate tentativeCoordinate;
@@ -98,6 +99,8 @@ public class RasterQueryCursorTool extends NClickTool {
     private String VALUE = I18N
             .get("org.openjump.core.ui.plugin.raster.RasterQueryPlugIn.value");
     private String name;
+    PlugInContext context;
+    LayerNamePanel namePanel;
 
     public RasterQueryCursorTool() {
         super(1);
@@ -116,66 +119,76 @@ public class RasterQueryCursorTool extends NClickTool {
         return createCursor(i);
     }
 
-    RasterImageLayer rLayer = (RasterImageLayer) LayerTools
-            .getSelectedLayerable(this.getWorkbench().getContext(),
-                    RasterImageLayer.class);
-
     protected void gestureFinished() throws NoninvertibleTransformException,
             IOException, RasterDataNotFoundException {
         reportNothingToUndoYet();
-        JTextPane txt = new JTextPane();
 
-        RasterImageLayer rLayer = (RasterImageLayer) LayerTools
-                .getSelectedLayerable(this.getWorkbench().getContext(),
-                        RasterImageLayer.class);
-        name = rLayer.getName();
-        Coordinate coord = (Coordinate) getCoordinates().get(0);
-        String cellValues = null;
-        if (getPoint().within(rLayer.getWholeImageEnvelopeAsGeometry())) {
-            try {
-                cellValues = "";
-                for (int b = 0; b < rLayer.getNumBands(); b++) {
-                    Double cellValue = rLayer.getCellValue(coord.x, coord.y, b);
-                    if (cellValue != null) {
-                        if (rLayer.isNoData(cellValue)) {
-                            cellValues = Double.toString(Double.NaN);
-                        } else {
-                            cellValues = cellValues.concat(Double
-                                    .toString(cellValue));
+        RasterImageLayer rLayer = null;
+
+        final WorkbenchContext wbcontext = this.getWorkbench().getContext();
+        RasterImageLayer aLayer = null;
+       
+        Layerable[] ls = (Layerable[]) wbcontext.getLayerNamePanel()
+                .selectedNodes(RasterImageLayer.class)
+                .toArray(new Layerable[] {});
+        if (ls != null && ls.length > 0) {
+            rLayer = (RasterImageLayer) ls[0];
+
+            name = rLayer.getName();
+            Coordinate coord = (Coordinate) getCoordinates().get(0);
+            String cellValues = null;
+            if (getPoint().within(rLayer.getWholeImageEnvelopeAsGeometry())) {
+                try {
+                    cellValues = "";
+                    for (int b = 0; b < rLayer.getNumBands(); b++) {
+                        Double cellValue = rLayer.getCellValue(coord.x,
+                                coord.y, b);
+                        if (cellValue != null) {
+                            if (rLayer.isNoData(cellValue)) {
+                                cellValues = Double.toString(Double.NaN);
+                            } else {
+                                cellValues = cellValues.concat(Double
+                                        .toString(cellValue));
+                            }
+                        }
+                        cellValues = cellValues.concat("  ");
+                        if (Double.isNaN(cellValue))
+                            this.lastClick = "    ";
+                        else {
+                            this.lastClick = cellValues;
                         }
                     }
-                    cellValues = cellValues.concat("  ");
-                    if (Double.isNaN(cellValue))
-                        this.lastClick = "    ";
-                    else {
-                        this.lastClick = cellValues;
-                    }
+                } catch (RasterDataNotFoundException ex) {
+                    cellValues = "???";
                 }
-            } catch (RasterDataNotFoundException ex) {
-                cellValues = "???";
-            }
-            Geometry measureGeometry = null;
-            if (wasShiftPressed()) {
-                pixelLayer().getFeatureCollectionWrapper().clear();
-                pixelLayer().getFeatureCollectionWrapper().add(
-                        toFeature(measureGeometry, pixelLayer()
-                                .getFeatureCollectionWrapper()
-                                .getFeatureSchema()));
-            } else {
+                Geometry measureGeometry = null;
+                if (wasShiftPressed()) {
+                    pixelLayer().getFeatureCollectionWrapper().clear();
+                    pixelLayer().getFeatureCollectionWrapper().add(
+                            toFeature(measureGeometry, pixelLayer()
+                                    .getFeatureCollectionWrapper()
+                                    .getFeatureSchema()));
+                } else {
 
-                pixelLayer().getFeatureCollectionWrapper().add(
-                        toFeature(measureGeometry, pixelLayer()
-                                .getFeatureCollectionWrapper()
-                                .getFeatureSchema()));
+                    pixelLayer().getFeatureCollectionWrapper().add(
+                            toFeature(measureGeometry, pixelLayer()
+                                    .getFeatureCollectionWrapper()
+                                    .getFeatureSchema()));
+                }
+                getPanel().getContext().setStatusMessage(
+                        "(" + name + ") " + VALUE + ": " + lastClick);
+            } else {
+                getPanel()
+                        .getContext()
+                        .warnUser(
+                                I18N.get("org.openjump.core.ui.plugin.raster.RasterQueryPlugIn.message"));
             }
-            getPanel().getContext().setStatusMessage(
-                    "(" + name + ") " + VALUE + ": " + lastClick);
-        } else {
+        } else
             getPanel()
                     .getContext()
                     .warnUser(
-                            "Inspection outside the extension of selected Raster layer");
-        }
+                            I18N.get("org.openjump.core.rasterimage.SelectRasterImageFilesPanel.Select-Raster-Image"));
+
     }
 
     private Feature toFeature(Geometry measureGeometry, FeatureSchema schema)
