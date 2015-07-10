@@ -50,7 +50,7 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
  * @since July 8 2015. Now it takes into account Sextante Raster and WMS
  *        layers
  */
- */
+ 
 public class ZoomToFullExtentPlugIn extends AbstractPlugIn {
     public ZoomToFullExtentPlugIn() {
     }
