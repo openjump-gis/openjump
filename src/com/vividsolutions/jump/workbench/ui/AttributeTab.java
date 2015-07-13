@@ -138,15 +138,15 @@ public class AttributeTab extends JPanel implements LayerNamePanel {
                     if (!e.isPopupTrigger()) {
                       return;
                     }
-        
+
                     popupMenu(workbenchContext).setTitle(
                         tablePanel.getModel().getLayer().getName());
                     lastSelectedLayers = new Layer[] { tablePanel.getModel().getLayer() };
-        
+
                     // Call #setEnableLastSelectedLayers here for EnableChecks that
                     // call #getSelectedLayers. [Jon Aquino]
                     setEnableLastSelectedLayers(true, AttributeTab.this);
-        
+
                     try {
                       // place the popup 10px to the right as to circumvent accidental interaction with it
                       popupMenu(workbenchContext).show(
@@ -536,6 +536,7 @@ public class AttributeTab extends JPanel implements LayerNamePanel {
             new TitledPopupMenu());
     }
 
+    /*
     public static void addPopupMenuItem(
         WorkbenchContext workbenchContext,
         PlugIn plugIn,
@@ -595,6 +596,7 @@ public class AttributeTab extends JPanel implements LayerNamePanel {
         }
       };
     }
+    */
 
     private static void setEnableLastSelectedLayers(
         boolean enabled,
