@@ -38,9 +38,12 @@ package com.vividsolutions.jump.io;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.charset.IllegalCharsetNameException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.geotools.dbffile.DbfFile;
@@ -145,7 +148,14 @@ public class ShapefileReader extends AbstractJUMPReader {
             if (cpgCharsetInputStream != null) {
                 cpgCharsetReader = new BufferedReader(new InputStreamReader(cpgCharsetInputStream));
                 String cpgCharset = cpgCharsetReader.readLine();
-                if (Charset.isSupported(cpgCharset)) charsetName = cpgCharset;
+                cpgCharset = esri_cp_2_java(cpgCharset);
+                try {
+                    if (Charset.isSupported(cpgCharset)) {
+                        charsetName = cpgCharset;
+                    }
+                } catch (IllegalCharsetNameException ice) {
+                    LOG.info("Could not interpret charset name " + cpgCharset + " : revert to default " + charsetName);
+                }
             }
         } finally {
             if (cpgCharsetReader != null) cpgCharsetInputStream.close();
@@ -156,6 +166,7 @@ public class ShapefileReader extends AbstractJUMPReader {
                 !Charset.defaultCharset().name().equals(Charset.forName(dp.getProperty("charset")))) {
             charsetName = dp.getProperty("charset");
         }
+        //System.out.println("read as " + charsetName);
         DbfFile mydbf = getDbfFile(shpFileName, dp.getProperty(COMPRESSED_FILE_PROPERTY_KEY),
                 Charset.forName(charsetName));
         InputStream shx = getShx(shpFileName, dp.getProperty(COMPRESSED_FILE_PROPERTY_KEY));
@@ -464,4 +475,26 @@ public class ShapefileReader extends AbstractJUMPReader {
             delete_this_tmp_cpg = null;
         }
     }
+
+    private static final Pattern CODE_PAGE = Pattern.compile(".*?(\\d\\d\\d++)");
+
+    private String esri_cp_2_java(String esri_cp) {
+        Matcher matcher = CODE_PAGE.matcher(esri_cp);
+        if (matcher.matches() && matcher.groupCount() == 1) {
+            String code = matcher.group(1);
+            if (code.length() == 3) {
+                if (code.equals("708")) return "ISO-8859-6";
+                else if (code.equals("932")) return "Shift_JIS";
+                else if (code.equals("936")) return "GBK";
+                else return "IBM"+code;
+            } else if (code.length() == 4) {
+                return "windows-"+code;
+            } else if (code.startsWith("8859")) {
+                return "ISO-8859-"+code.substring(4);
+            } else return esri_cp.replaceAll(" ","-");
+        } else return esri_cp.replaceAll(" ","-");
+    }
+
+
+
 }

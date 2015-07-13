@@ -49,6 +49,8 @@ import java.io.*;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -296,7 +298,7 @@ public class ShapefileWriter implements JUMPWriter {
         try {
             cpgfname = path + fname_withoutextention + ".cpg";
             pw = new PrintWriter(new FileOutputStream(cpgfname));
-            pw.write(Charset.forName(charsetName).name());
+            pw.write(java_cp_2_esri(charsetName));
         } finally {
             if (pw != null) pw.close();
         }
@@ -1053,5 +1055,18 @@ public class ShapefileWriter implements JUMPWriter {
                 "<br/><br/>" +
                 I18N.get("io.ShapefileWriter.truncate-option") +
                 "<br/></html>"), null);
+    }
+
+    private String java_cp_2_esri(String java_cp) {
+        if (java_cp.startsWith("IBM")) return "OEM " + java_cp.substring(3);
+        else if (java_cp.startsWith("ISO-8859-6")) return "OEM 708";
+        else if (java_cp.startsWith("ISO-8859-")) return "ISO 8859" + java_cp.substring(9);
+        else if (java_cp.startsWith("windows-")) return "OEM " + java_cp.substring(8);
+        else if (java_cp.equalsIgnoreCase("x-windows-")) return "OEM " + java_cp.substring(10);
+        else if (java_cp.equalsIgnoreCase("UTF-8")) return "UTF-8";
+        else if (java_cp.equalsIgnoreCase("Shift_JIS")) return "SJIS";
+        else if (java_cp.equalsIgnoreCase("Big5")) return "Big5";
+        else if (java_cp.equalsIgnoreCase("GBK")) return "OEM 936";
+        else return java_cp;
     }
 }

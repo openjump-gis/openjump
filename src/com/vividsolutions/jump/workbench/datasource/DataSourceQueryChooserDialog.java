@@ -180,6 +180,10 @@ public class DataSourceQueryChooserDialog extends JDialog {
     }
 
     void formatComboBox_actionPerformed(ActionEvent e) {
+        showFormat();
+    }
+
+    public void showFormat() {
         cardLayout.show(mainPanel, name(getCurrentChooser().getComponent()));
     }
 
