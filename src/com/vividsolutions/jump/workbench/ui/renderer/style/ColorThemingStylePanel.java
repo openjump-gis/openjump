@@ -153,8 +153,10 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
     final private JPanel jPanel2 = new JPanel();
     final private JScrollPane scrollPane = new JScrollPane();
     final private JLabel transparencyLabel = new JLabel();
+    final private JCheckBox transparencyCheckBox = new JCheckBox();
     final private JSlider transparencySlider = new JSlider();
     final private JLabel lineWidthLabel = new JLabel();
+    final private JCheckBox lineWidthCheckBox = new JCheckBox();
     final private JSlider lineWidthSlider = new JSlider();
     final private JLabel vertexStyleLabel = new JLabel(I18N.get("ui.renderer.style.ColorThemingStylePanel.display-vertices"));
     final private JCheckBox vertexStyleEnableCheckBox = new JCheckBox();
@@ -399,8 +401,12 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
             initTable(layer);
             setState(state);
             initColorSchemeComboBox(layer.getLayerManager());
+            initGlobalTransparency(layer);
             initTransparencySlider(layer);
+            if (isGlobalTransparencyEnabled()) deeRenderingStylePanel.getTransparencySlider().setValue(getAlpha());
+            initGlobalLineWidth(layer);
             initLineWidthSlider(layer);
+            if (isGlobalLineWidthEnabled()) deeRenderingStylePanel.getLineWidthSlider().setValue(getLineWidth());
             initVertexStyleEnabled(layer);
             initToolBar();
             enableColorThemingCheckBox.setSelected(ColorThemingStyle.get(layer).isEnabled());
@@ -447,6 +453,8 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
                     .toExternalFormat(tableModel()
                             .getAttributeValueToLabelMap()), tableModel()
                     .getDefaultStyle()));
+            ColorThemingStyle.get(layer).setGlobalTransparencyEnabled(transparencyCheckBox.isSelected());
+            ColorThemingStyle.get(layer).setGlobalLineWidthEnabled(lineWidthCheckBox.isSelected());
             ColorThemingStyle.get(layer).setAlpha(getAlpha());
             ColorThemingStyle.get(layer).setLineWidth(getLineWidth());
             ColorThemingStyle.get(layer).setVertexStyleEnabled(isVertexStyleEnabled());
@@ -454,6 +462,7 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
                     enableColorThemingCheckBox.isSelected());
             layer.getBasicStyle().setEnabled(
                     !enableColorThemingCheckBox.isSelected());
+
             // fix bug 3091363 and part of 3043312
             // ColorThemingStyle is updated after DeeRenderingStylePanel
             // enable vertex if it has been enables in DeeRenderingStylePanel
@@ -491,10 +500,20 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         return layer;
     }
 
+    private void initGlobalTransparency(Layer layer) {
+        Style style = layer.getStyle(ColorThemingStyle.class);
+        if (style != null) {
+            transparencyCheckBox.setSelected(((ColorThemingStyle) style).isGlobalTransparencyEnabled());
+        }
+    }
 
     private void initTransparencySlider(Layer layer) {
-        transparencySlider.setValue(transparencySlider.getMaximum() -
-                ColorThemingStyle.get(layer).getDefaultStyle().getAlpha());
+        //transparencySlider.setValue(transparencySlider.getMaximum() -
+        //        ColorThemingStyle.get(layer).getDefaultStyle().getAlpha());
+        if (ColorThemingStyle.get(layer).isGlobalLineWidthEnabled()) {
+            //System.out.println("!!!" + (transparencySlider.getMaximum()-ColorThemingStyle.get(layer).getDefaultStyle().getAlpha()));
+            transparencySlider.setValue(transparencySlider.getMaximum()-ColorThemingStyle.get(layer).getDefaultStyle().getAlpha());
+        }
         transparencySlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 basicStyleListCellRenderer.setAlpha(getAlpha());
@@ -503,9 +522,20 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         basicStyleListCellRenderer.setAlpha(getAlpha());
     }
 
+    private void initGlobalLineWidth(Layer layer) {
+        Style style = layer.getStyle(ColorThemingStyle.class);
+        if (style != null) {
+            lineWidthCheckBox.setSelected(((ColorThemingStyle) style).isGlobalLineWidthEnabled());
+        }
+    }
+
     private void initLineWidthSlider(Layer layer) {
-        lineWidthSlider.setValue(lineWidthSlider.getMaximum() -
-                ColorThemingStyle.get(layer).getDefaultStyle().getLineWidth());
+        //lineWidthSlider.setValue(lineWidthSlider.getMaximum() -
+        //        ColorThemingStyle.get(layer).getDefaultStyle().getLineWidth());
+        if (ColorThemingStyle.get(layer).isGlobalLineWidthEnabled()) {
+            //System.out.println("!!!" + ColorThemingStyle.get(layer).getDefaultStyle().getLineWidth());
+            lineWidthSlider.setValue(ColorThemingStyle.get(layer).getDefaultStyle().getLineWidth());
+        }
         lineWidthSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 basicStyleListCellRenderer.setLineWidth(getLineWidth());
@@ -596,9 +626,9 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
             scrollPane.setEnabled(enableColorThemingCheckBox.isSelected() &&
                 (attributeNameComboBox.getItemCount() > 0));
             transparencySlider.setEnabled(enableColorThemingCheckBox.isSelected() &&
-                (attributeNameComboBox.getItemCount() > 0));
+                (attributeNameComboBox.getItemCount() > 0) && transparencyCheckBox.isSelected());
             lineWidthSlider.setEnabled(enableColorThemingCheckBox.isSelected() &&
-                    (attributeNameComboBox.getItemCount() > 0));
+                    (attributeNameComboBox.getItemCount() > 0) && lineWidthCheckBox.isSelected());
             statusLabel.setEnabled(enableColorThemingCheckBox.isSelected());
             toolBar.updateEnabledState();
 
@@ -629,8 +659,10 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
      * @return null if user hits Cancel
      */
     private BasicStyle promptBasicStyle(BasicStyle basicStyle) {
-        int originalTransparencySliderValue = transparencySlider.getValue();
-        int originalLineWidthSliderValue = lineWidthSlider.getValue();
+        int originalTransparencySliderValue = transparencyCheckBox.isSelected() ?
+                transparencySlider.getMaximum()-transparencySlider.getValue()  :basicStyle.getAlpha();
+        int originalLineWidthSliderValue = lineWidthCheckBox.isSelected() ?
+                lineWidthSlider.getValue() : basicStyle.getLineWidth();
         deeRenderingStylePanel.setBasicStyle(basicStyle);
         deeRenderingStylePanel.getTransparencySlider().setValue(originalTransparencySliderValue);
         deeRenderingStylePanel.getLineWidthSlider().setValue(originalLineWidthSliderValue);
@@ -787,6 +819,14 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         return lineWidthSlider.getValue();
     }
 
+    private boolean isGlobalTransparencyEnabled() {
+        return transparencyCheckBox.isSelected();
+    }
+
+    private boolean isGlobalLineWidthEnabled() {
+        return lineWidthCheckBox.isSelected();
+    }
+
     private boolean isVertexStyleEnabled() {
         return vertexStyleEnableCheckBox.isSelected();
     }
@@ -855,6 +895,7 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
 
 		initClassificationComboBox(getAttributeType());
         transparencyLabel.setText(I18N.get("ui.style.BasicStylePanel.transparency"));
+        transparencyCheckBox.setSelected(false);
         transparencySlider.setMaximum(255);
         transparencySlider.setPreferredSize(SLIDER_DIMENSION);
         //Don't get squished by overlong status messages. [Jon Aquino]
@@ -865,12 +906,15 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
                     transparencySlider_stateChanged(e);
                 }
             });
+        transparencySlider.setEnabled(false);
 
         lineWidthLabel.setText(I18N.get("ui.style.BasicStylePanel.line-width"));
+        lineWidthCheckBox.setSelected(false);
         lineWidthSlider.setMajorTickSpacing(5);
         lineWidthSlider.setMinorTickSpacing(1);
         lineWidthSlider.setMaximum(30);
         lineWidthSlider.setPreferredSize(SLIDER_DIMENSION);
+
 
         //Don't get squished by overlong status messages. [Jon Aquino]
         lineWidthSlider.setMinimumSize(SLIDER_DIMENSION);
@@ -880,7 +924,18 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
                 lineWidthSlider_stateChanged(e);
             }
         });
+        lineWidthSlider.setEnabled(false);
 
+        transparencyCheckBox.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent e) {
+                transparencyCheckBoxEnabled_stateChanged(e);
+            }
+        });
+        lineWidthCheckBox.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent e) {
+                lineWidthCheckBoxEnabled_stateChanged(e);
+            }
+        });
         vertexStyleEnableCheckBox.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 vertexStyleEnabled_stateChanged(e);
@@ -939,43 +994,55 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
                 new Insets(0, 0, 0, 0), 0, 0));
         jPanel2.add(statusLabel,
-            new GridBagConstraints(1, 0, 2, 1, 1.0, 0.0,
-                GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
-                new Insets(0, 0, 0, 0), 0, 0));
+                new GridBagConstraints(1, 0, 3, 1, 1.0, 0.0,
+                        GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+                        new Insets(0, 0, 0, 0), 0, 0));
         jPanel2.add(toolBar,
-            new GridBagConstraints(3, 0, 1, 1, 0.0, 0.0,
+            new GridBagConstraints(4, 0, 1, 1, 0.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE,
                 new Insets(0, 0, 0, 0), 0, 0));
-        jPanel2.add(transparencyLabel,
+
+        jPanel2.add(transparencyCheckBox,
                 new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0,
                         GridBagConstraints.WEST, GridBagConstraints.NONE,
                         new Insets(0, 0, 0, 0), 0, 0));
+        jPanel2.add(transparencyLabel,
+                new GridBagConstraints(2, 1, 1, 1, 0.0, 0.0,
+                        GridBagConstraints.WEST, GridBagConstraints.NONE,
+                        new Insets(0, 0, 0, 0), 0, 0));
         jPanel2.add(transparencySlider,
-            new GridBagConstraints(2, 1, 1, 1, 0.0, 0.0,
+            new GridBagConstraints(3, 1, 1, 1, 0.0, 0.0,
                 GridBagConstraints.WEST, GridBagConstraints.NONE,
                 new Insets(0, 0, 0, 0), 0, 0));
         jPanel2.add(GUIUtil.createSyncdTextField(transparencySlider, SLIDER_TEXT_FIELD_COLUMNS),
-                new GridBagConstraints(3, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
+                new GridBagConstraints(4, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
                         new Insets(0, 0, 0, 0), 0, 0));
-        jPanel2.add(lineWidthLabel,
+
+        jPanel2.add(lineWidthCheckBox,
                 new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0,
                         GridBagConstraints.WEST, GridBagConstraints.NONE,
                         new Insets(0, 0, 0, 0), 0, 0));
-        jPanel2.add(lineWidthSlider,
+        jPanel2.add(lineWidthLabel,
                 new GridBagConstraints(2, 2, 1, 1, 0.0, 0.0,
                         GridBagConstraints.WEST, GridBagConstraints.NONE,
                         new Insets(0, 0, 0, 0), 0, 0));
-        jPanel2.add(GUIUtil.createSyncdTextField(lineWidthSlider, SLIDER_TEXT_FIELD_COLUMNS),
-                new GridBagConstraints(3, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        jPanel2.add(lineWidthSlider,
+                new GridBagConstraints(3, 2, 1, 1, 0.0, 0.0,
+                        GridBagConstraints.WEST, GridBagConstraints.NONE,
                         new Insets(0, 0, 0, 0), 0, 0));
-        jPanel2.add(vertexStyleLabel,
+        jPanel2.add(GUIUtil.createSyncdTextField(lineWidthSlider, SLIDER_TEXT_FIELD_COLUMNS),
+                new GridBagConstraints(4, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
+                        new Insets(0, 0, 0, 0), 0, 0));
+
+        jPanel2.add(vertexStyleEnableCheckBox,
                 new GridBagConstraints(1, 3, 1, 1, 0.0, 0.0,
                         GridBagConstraints.WEST, GridBagConstraints.NONE,
                         new Insets(0, 0, 0, 0), 0, 0));
-        jPanel2.add(vertexStyleEnableCheckBox,
+        jPanel2.add(vertexStyleLabel,
                 new GridBagConstraints(2, 3, 1, 1, 0.0, 0.0,
                         GridBagConstraints.WEST, GridBagConstraints.NONE,
                         new Insets(0, 0, 0, 0), 0, 0));
+
 
         scrollPane.getViewport().add(table);
     }
@@ -1195,6 +1262,26 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
 
     void lineWidthSlider_stateChanged(ChangeEvent e) {
         repaint();
+    }
+
+    void transparencyCheckBoxEnabled_stateChanged(ItemEvent e) {
+        getTransparencySlider().setEnabled(transparencyCheckBox.isSelected());
+        if (transparencyCheckBox.isSelected()) {
+            for (Object obj : tableModel().getAttributeValueToBasicStyleMap().values()) {
+                ((XBasicStyle) obj).setAlpha(getAlpha());
+            }
+            tableModel().getDefaultStyle().setAlpha(getAlpha());
+        }
+    }
+
+    void lineWidthCheckBoxEnabled_stateChanged(ItemEvent e) {
+        getLineWidthSlider().setEnabled(lineWidthCheckBox.isSelected());
+        if (lineWidthCheckBox.isSelected()) {
+            for (Object obj : tableModel().getAttributeValueToBasicStyleMap().values()) {
+                ((XBasicStyle) obj).setLineWidth(getLineWidth());
+            }
+            tableModel().getDefaultStyle().setLineWidth(getLineWidth());
+        }
     }
 
     void vertexStyleEnabled_stateChanged(ItemEvent e) {

@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <root>
   <attribute xml-name="enabled" java-name="enabled"/>
+  <attribute xml-name="global-transparency-enabled" java-name="globalTransparencyEnabled"/>
+  <attribute xml-name="global-line-width-enabled" java-name="globalLineWidthEnabled"/>
   <attribute xml-name="vertex-style-enabled" java-name="vertexStyleEnabled"/>
   <!-- attributeName will be null if there are no
   non-spatial attributes. So we must store it as an element

@@ -51,10 +51,12 @@ public class ColorThemingStyle implements Style, AlphaSetting {
 	 * than before.
 	 */
 	public void setAlpha(int alpha) {
-		defaultStyle.setAlpha(alpha);
-		for (BasicStyle style : attributeValueToBasicStyleMap.values()) {
-			style.setAlpha(alpha);
-		}
+        if (isGlobalTransparencyEnabled()) {
+            defaultStyle.setAlpha(alpha);
+            for (BasicStyle style : attributeValueToBasicStyleMap.values()) {
+                style.setAlpha(alpha);
+            }
+        }
 	}
 
 	/**
@@ -62,10 +64,12 @@ public class ColorThemingStyle implements Style, AlphaSetting {
 	 * than before.
 	 */
 	public void setLineWidth(int lineWidth) {
-		defaultStyle.setLineWidth(lineWidth);
-		for (BasicStyle style : attributeValueToBasicStyleMap.values()) {
-			style.setLineWidth(lineWidth);
-		}
+		if (isGlobalLineWidthEnabled()) {
+            defaultStyle.setLineWidth(lineWidth);
+            for (BasicStyle style : attributeValueToBasicStyleMap.values()) {
+                style.setLineWidth(lineWidth);
+            }
+        }
 	}
 
 	/**
@@ -119,6 +123,8 @@ public class ColorThemingStyle implements Style, AlphaSetting {
 
     private BasicStyle defaultStyle;
 
+    private boolean globalTransparencyEnabled;
+    private boolean globalLineWidthEnabled;
     private boolean vertexStyleEnabled;
 
 	public void paint(Feature f, Graphics2D g, Viewport viewport)
@@ -276,6 +282,22 @@ public class ColorThemingStyle implements Style, AlphaSetting {
     public void setDefaultStyle(BasicStyle defaultStyle) {
 		this.defaultStyle = defaultStyle;
 	}
+
+    public boolean isGlobalTransparencyEnabled() {
+        return globalTransparencyEnabled;
+    }
+
+    public void setGlobalTransparencyEnabled(boolean globalTransparencyEnabled) {
+        this.globalTransparencyEnabled = globalTransparencyEnabled;
+    }
+
+    public boolean isGlobalLineWidthEnabled() {
+        return globalLineWidthEnabled;
+    }
+
+    public void setGlobalLineWidthEnabled(boolean globalLineWidthEnabled) {
+        this.globalLineWidthEnabled = globalLineWidthEnabled;
+    }
 
     public boolean isVertexStyleEnabled() {
         return vertexStyleEnabled;
