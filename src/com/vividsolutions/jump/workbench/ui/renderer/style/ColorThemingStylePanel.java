@@ -64,7 +64,6 @@ import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
@@ -401,19 +400,20 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
             initTable(layer);
             setState(state);
             initColorSchemeComboBox(layer.getLayerManager());
+
             initGlobalTransparency(layer);
             initTransparencySlider(layer);
-            if (isGlobalTransparencyEnabled()) deeRenderingStylePanel.getTransparencySlider().setValue(getAlpha());
+            deeRenderingStylePanel.getTransparencySlider().setEnabled(!isGlobalTransparencyEnabled());
+
             initGlobalLineWidth(layer);
             initLineWidthSlider(layer);
-            if (isGlobalLineWidthEnabled()) deeRenderingStylePanel.getLineWidthSlider().setValue(getLineWidth());
+            deeRenderingStylePanel.getLineWidthSlider().setEnabled(!isGlobalLineWidthEnabled());
+
             initVertexStyleEnabled(layer);
             initToolBar();
             enableColorThemingCheckBox.setSelected(ColorThemingStyle.get(layer).isEnabled());
             vertexStyleEnableCheckBox.setSelected(ColorThemingStyle.get(layer).isVertexStyleEnabled());
             updateComponents();
-            GUIUtil.sync(deeRenderingStylePanel.getTransparencySlider(), transparencySlider);
-            GUIUtil.sync(deeRenderingStylePanel.getLineWidthSlider(), lineWidthSlider);
             deeRenderingStylePanel.setSynchronizingLineColor(layer.isSynchronizingLineColor());
         } catch (Exception e) {
             e.printStackTrace();
@@ -508,39 +508,25 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
     }
 
     private void initTransparencySlider(Layer layer) {
-        //transparencySlider.setValue(transparencySlider.getMaximum() -
-        //        ColorThemingStyle.get(layer).getDefaultStyle().getAlpha());
-        if (ColorThemingStyle.get(layer).isGlobalLineWidthEnabled()) {
-            //System.out.println("!!!" + (transparencySlider.getMaximum()-ColorThemingStyle.get(layer).getDefaultStyle().getAlpha()));
-            transparencySlider.setValue(transparencySlider.getMaximum()-ColorThemingStyle.get(layer).getDefaultStyle().getAlpha());
+        ColorThemingStyle style = ColorThemingStyle.get(layer);
+        if (style != null && style.isGlobalTransparencyEnabled()) {
+            transparencySlider.setValue(transparencySlider.getMaximum()-style.getDefaultStyle().getAlpha());
         }
-        transparencySlider.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                basicStyleListCellRenderer.setAlpha(getAlpha());
-            }
-        });
         basicStyleListCellRenderer.setAlpha(getAlpha());
     }
 
     private void initGlobalLineWidth(Layer layer) {
-        Style style = layer.getStyle(ColorThemingStyle.class);
+        Style style = ColorThemingStyle.get(layer);
         if (style != null) {
             lineWidthCheckBox.setSelected(((ColorThemingStyle) style).isGlobalLineWidthEnabled());
         }
     }
 
     private void initLineWidthSlider(Layer layer) {
-        //lineWidthSlider.setValue(lineWidthSlider.getMaximum() -
-        //        ColorThemingStyle.get(layer).getDefaultStyle().getLineWidth());
-        if (ColorThemingStyle.get(layer).isGlobalLineWidthEnabled()) {
-            //System.out.println("!!!" + ColorThemingStyle.get(layer).getDefaultStyle().getLineWidth());
-            lineWidthSlider.setValue(ColorThemingStyle.get(layer).getDefaultStyle().getLineWidth());
+        ColorThemingStyle style = ColorThemingStyle.get(layer);
+        if (style != null && style.isGlobalLineWidthEnabled()) {
+            lineWidthSlider.setValue(style.getDefaultStyle().getLineWidth());
         }
-        lineWidthSlider.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                basicStyleListCellRenderer.setLineWidth(getLineWidth());
-            }
-        });
         basicStyleListCellRenderer.setLineWidth(getLineWidth());
     }
 
@@ -659,13 +645,20 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
      * @return null if user hits Cancel
      */
     private BasicStyle promptBasicStyle(BasicStyle basicStyle) {
-        int originalTransparencySliderValue = transparencyCheckBox.isSelected() ?
-                transparencySlider.getMaximum()-transparencySlider.getValue()  :basicStyle.getAlpha();
-        int originalLineWidthSliderValue = lineWidthCheckBox.isSelected() ?
-                lineWidthSlider.getValue() : basicStyle.getLineWidth();
+        int originalTransparencySliderValue = transparencyCheckBox.isSelected()
+                ? transparencySlider.getValue()
+                : transparencySlider.getMaximum() - basicStyle.getAlpha();
+        int originalLineWidthSliderValue = lineWidthCheckBox.isSelected()
+                ? lineWidthSlider.getValue()
+                : basicStyle.getLineWidth();
         deeRenderingStylePanel.setBasicStyle(basicStyle);
+
         deeRenderingStylePanel.getTransparencySlider().setValue(originalTransparencySliderValue);
+        deeRenderingStylePanel.getTransparencySlider().setEnabled(!isGlobalTransparencyEnabled());
+
         deeRenderingStylePanel.getLineWidthSlider().setValue(originalLineWidthSliderValue);
+        deeRenderingStylePanel.getLineWidthSlider().setEnabled(!isGlobalLineWidthEnabled());
+
         //deeRenderingStylePanel.updateControls((XBasicStyle)basicStyle);
 
         OKCancelPanel okCancelPanel = new OKCancelPanel();
@@ -903,7 +896,14 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         transparencySlider.setToolTipText(I18N.get("ui.renderer.style.ColorThemingPanel.transparency"));
         transparencySlider.addChangeListener(new javax.swing.event.ChangeListener() {
                 public void stateChanged(ChangeEvent e) {
-                    transparencySlider_stateChanged(e);
+                    if (isGlobalTransparencyEnabled()) {
+                        for (Object obj : tableModel().getAttributeValueToBasicStyleMap().values()) {
+                            ((XBasicStyle) obj).setAlpha(getAlpha());
+                        }
+                        tableModel().getDefaultStyle().setAlpha(getAlpha());
+                        basicStyleListCellRenderer.setAlpha(getAlpha());
+                        transparencySlider_stateChanged(e);
+                    }
                 }
             });
         transparencySlider.setEnabled(false);
@@ -921,7 +921,14 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         //lineWidthSlider.setToolTipText(I18N.get("ui.style.BasicStylePanel.line-width"));
         lineWidthSlider.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(ChangeEvent e) {
-                lineWidthSlider_stateChanged(e);
+                if (isGlobalLineWidthEnabled()) {
+                    for (Object obj : tableModel().getAttributeValueToBasicStyleMap().values()) {
+                        ((XBasicStyle) obj).setLineWidth(getLineWidth());
+                    }
+                    tableModel().getDefaultStyle().setLineWidth(getLineWidth());
+                    basicStyleListCellRenderer.setLineWidth(getLineWidth());
+                    lineWidthSlider_stateChanged(e);
+                }
             }
         });
         lineWidthSlider.setEnabled(false);
@@ -960,11 +967,6 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
             new GridBagConstraints(1, 1, 3, 1, 0.0, 0.0,
                 GridBagConstraints.WEST, GridBagConstraints.NONE,
                 new Insets(2, 2, 2, 2), 0, 0));
-        //jPanel1.add(fillerPanel,
-        //    new GridBagConstraints(3, 0, 1, 3, 1, 0.0,
-        //        GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
-        //        new Insets(2, 2, 2, 2), 0, 0));
-        // add classification method in row 2
         jPanel1.add(classificationLabel, 
         		new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, 
         		GridBagConstraints.WEST, GridBagConstraints.NONE, 

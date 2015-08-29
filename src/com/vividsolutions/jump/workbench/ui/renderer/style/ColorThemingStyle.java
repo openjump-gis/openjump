@@ -123,8 +123,8 @@ public class ColorThemingStyle implements Style, AlphaSetting {
 
     private BasicStyle defaultStyle;
 
-    private boolean globalTransparencyEnabled;
-    private boolean globalLineWidthEnabled;
+    private boolean globalTransparencyEnabled = true;
+    private boolean globalLineWidthEnabled = true;
     private boolean vertexStyleEnabled;
 
 	public void paint(Feature f, Graphics2D g, Viewport viewport)

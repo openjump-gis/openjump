@@ -1,5 +1,12 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2015-08-29
+  * fix #408 bug about ColorThemingStyle
+
+2015-07-13 mmichaud <m.michael.michaud@orange.fr>
+  * Improve ColorThemingStyle : can now set transparency and lineWidth
+    globally or individually in ColorThemingPanel
+
 2015-07-12 mmichaud <m.michael.michaud@orange.fr>
   * improve .cpg handling for shapefile/dbf format
   * fix a bug with charset option (could be checked but not visible in "save dataset as" panel)

@@ -122,25 +122,25 @@ public class BasicStyleListCellRenderer implements ListCellRenderer {
         colorPanel.setStyle(basicStyle);
         colorPanel.setLineColor(
             basicStyle instanceof BasicStyle
-                && ((BasicStyle) basicStyle).isRenderingLine()
+                && (basicStyle).isRenderingLine()
                     ? GUIUtil.alphaColor(
-                        ((BasicStyle) basicStyle).getLineColor(),
+                        (basicStyle).getLineColor(),
                         alpha)
                     : (isSelected
                         ? list.getSelectionBackground()
                         : list.getBackground()));
         colorPanel.setFillColor(
             basicStyle instanceof BasicStyle
-                && ((BasicStyle) basicStyle).isRenderingFill()
+                && (basicStyle).isRenderingFill()
                     ? GUIUtil.alphaColor(
-                        ((BasicStyle) basicStyle).getFillColor(),
+                        (basicStyle).getFillColor(),
                         alpha)
                     : (isSelected
                         ? list.getSelectionBackground()
                         : list.getBackground()));
         colorPanel.setLineWidth(
             basicStyle instanceof BasicStyle
-                ? basicStyle.getLineWidth()
+                ? Math.min(5, basicStyle.getLineWidth())
                 : 0);
         if (isSelected) {
             colorPanel.setForeground(list.getSelectionForeground());
