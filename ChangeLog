@@ -1,6 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
-2015-08-29
+2015-09-15 mmichaud <m.michael.michaud@orange.fr>
+  * add Date in XmlBinder to be able to persist Dates in a project file
+
+2015-08-29 mmichaud <m.michael.michaud@orange.fr>
   * fix #408 bug about ColorThemingStyle
 
 2015-07-13 mmichaud <m.michael.michaud@orange.fr>

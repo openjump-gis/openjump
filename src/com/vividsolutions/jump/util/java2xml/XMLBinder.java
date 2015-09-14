@@ -58,10 +58,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.regex.Pattern;
 
 
@@ -72,6 +70,8 @@ public class XMLBinder {
 
     private static final WKTReader WKT_READER = new com.vividsolutions.jts.io.WKTReader();
     private static final WKTWriter WKT_WRITER = new com.vividsolutions.jts.io.WKTWriter();
+
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
     private HashMap classToCustomConverterMap = new HashMap();
 
@@ -206,16 +206,31 @@ public class XMLBinder {
                     return object.toString();
                 }
             });
-        classToCustomConverterMap.put(Boolean.class,
+        classToCustomConverterMap.put(Date.class,
             new CustomConverter() {
                 public Object toJava(String value) {
-                    return new Boolean(value);
+                    try {
+                        return DATE_FORMAT.parse(value);
+                    } catch(java.text.ParseException e) {
+                        e.printStackTrace();
+                        return null;
+                    }
                 }
 
                 public String toXML(Object object) {
-                    return object.toString();
+                    return DATE_FORMAT.format((Date)object);
                 }
             });
+        classToCustomConverterMap.put(Boolean.class,
+                new CustomConverter() {
+                    public Object toJava(String value) {
+                        return new Boolean(value);
+                    }
+
+                    public String toXML(Object object) {
+                        return object.toString();
+                    }
+                });
         classToCustomConverterMap.put(File.class,
                 new CustomConverter() {
                     public Object toJava(String value) {
