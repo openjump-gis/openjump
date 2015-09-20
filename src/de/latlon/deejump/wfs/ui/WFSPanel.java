@@ -617,7 +617,7 @@ public class WFSPanel extends JPanel {
         if ( wfService == null ) {// not inited yet
             return sb;
         }
-        sb.append( "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>" );
+        sb.append( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" );
 
         final String outputFormat = options.getSelectedOutputFormat();
 

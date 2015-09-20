@@ -96,7 +96,12 @@ public class WFSClientHelper {
         HttpClient httpclient = new WFSHttpClient();
 
         PostMethod httppost = new PostMethod( serverUrl );
-        httppost.setRequestEntity( new StringRequestEntity( request ) );
+        try {
+          httppost.setRequestEntity( new StringRequestEntity( request, "text/xml", "UTF-8" ) );
+        } catch (UnsupportedEncodingException e1) {
+          throw new DeeJUMPException(e1);
+        }
+
 
         try {
             WebUtils.enableProxyUsage( httpclient, new URL(serverUrl) );
