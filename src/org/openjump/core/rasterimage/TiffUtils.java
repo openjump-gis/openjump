@@ -319,6 +319,7 @@ public class TiffUtils {
  
     public static RenderedOp readSubsampled(File tiffFile, float xScale, float yScale) {
         
+        System.setProperty("com.sun.media.jai.disableMediaLib", "true");
         RenderedOp renderedOp = JAI.create("fileload", tiffFile.getAbsolutePath());
         ParameterBlock parameterBlock = new ParameterBlock();
         parameterBlock.addSource(renderedOp);

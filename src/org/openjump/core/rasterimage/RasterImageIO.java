@@ -153,7 +153,8 @@ public class RasterImageIO {
                             stats));
 
 
-         } else if (fileNameOrURL.toLowerCase().endsWith(".asc")){
+         } else if (fileNameOrURL.toLowerCase().endsWith(".asc") ||
+                 fileNameOrURL.toLowerCase().endsWith(".txt")){
 
             GridAscii ga = new GridAscii(fileNameOrURL);
             ga.readGrid(null);
@@ -243,7 +244,8 @@ public class RasterImageIO {
                     dataBuffer,
                     new java.awt.Point(0,0));
 
-         } else if (filenameOrURL.toLowerCase().endsWith(".asc")){
+         } else if (filenameOrURL.toLowerCase().endsWith(".asc") ||
+                 filenameOrURL.toLowerCase().endsWith(".txt")){
 
             GridAscii ga = new GridAscii(filenameOrURL);
             ga.readGrid(subset);
@@ -310,7 +312,8 @@ public class RasterImageIO {
             GridFloat gf = new GridFloat(filenameOrURL);
             return gf.readCellVal(col, row);
 
-         } else if (filenameOrURL.toLowerCase().endsWith(".asc")){
+         } else if (filenameOrURL.toLowerCase().endsWith(".asc") ||
+                 filenameOrURL.toLowerCase().endsWith(".txt")){
 
             GridAscii ga = new GridAscii(filenameOrURL);
             return ga.readCellValue(col, row);
@@ -324,7 +327,8 @@ public class RasterImageIO {
     public static Point getImageDimensions(String filenameOrURL) throws IOException {
         
         if (!filenameOrURL.toLowerCase().endsWith(".jpg") && !filenameOrURL.toLowerCase().endsWith(".flt") &&
-                !filenameOrURL.toLowerCase().endsWith(".asc")){
+                !filenameOrURL.toLowerCase().endsWith(".asc") &&
+                !filenameOrURL.toLowerCase().endsWith(".txt")){
 
             javax.media.jai.PlanarImage pImage = javax.media.jai.JAI.create("fileload", filenameOrURL);
             if (pImage != null) {
@@ -337,7 +341,8 @@ public class RasterImageIO {
             return new Point(gf.getnCols(), gf.getnRows());
 
 
-        }else if(filenameOrURL.toLowerCase().endsWith(".asc")){
+        }else if(filenameOrURL.toLowerCase().endsWith(".asc") ||
+                filenameOrURL.toLowerCase().endsWith(".txt")){
 
             GridAscii ga = new GridAscii(filenameOrURL);
             return new Point(ga.getnCols(), ga.getnRows());
@@ -452,7 +457,8 @@ public class RasterImageIO {
 
                   env = new Envelope(upperLeft, lowerRight);
 
-              }else if(fileName.toLowerCase().endsWith(".asc")){
+              }else if(fileName.toLowerCase().endsWith(".asc") ||
+                      fileName.toLowerCase().endsWith(".txt")){
                   isGeoTiff = true;
                   GridAscii ga = new GridAscii(fileName);
 
@@ -531,7 +537,8 @@ public class RasterImageIO {
     
     public static Double getNoData(String fileNameOrURL) throws IOException, ImageReadException {
         
-        if(fileNameOrURL.toLowerCase().endsWith(".asc")) {
+        if(fileNameOrURL.toLowerCase().endsWith(".asc") ||
+                fileNameOrURL.toLowerCase().endsWith(".txt")) {
             
             GridAscii gridAscii = new GridAscii(fileNameOrURL);
             gridAscii.readHeader();

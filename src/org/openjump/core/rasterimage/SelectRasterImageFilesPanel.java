@@ -89,7 +89,7 @@ public class SelectRasterImageFilesPanel extends JFCWithEnterAction implements W
     addChoosableFileFilter(PNG_FILE_FILTER);
     */
     FileFilter JAI_IMAGE_FILE_FILTER = GUIUtil.createFileFilter(I18N.get("org.openjump.core.rasterimage.SelectRasterImageFilesPanel.supported-raster-image-formats"), 
-    		new String[]{ "tif", "tiff", "gif", "jpg", "png", "flt", "asc" });
+    		new String[]{ "tif", "tiff", "gif", "jpg", "png", "flt", "asc", "txt" });
     addChoosableFileFilter(JAI_IMAGE_FILE_FILTER);
     addChoosableFileFilter(GUIUtil.ALL_FILES_FILTER);
     

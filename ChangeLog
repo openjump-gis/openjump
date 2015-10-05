@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2015-10-05
+  * Added "TXT" among the accepted extensions for raster loader.
+
 2015-09-20 ede
   * fix "WFS plugin does not set Content-Type for GetFeature"
 

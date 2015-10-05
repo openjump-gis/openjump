@@ -360,7 +360,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
 
                 env = new Envelope(upperLeft, lowerRight);
 
-            } else if (fileName.toLowerCase().endsWith(".asc")) {
+            } else if (fileName.toLowerCase().endsWith(".asc") || fileName.toLowerCase().endsWith(".txt")) {
                 isGeoTiff = true;
                 GridAscii ga = new GridAscii(fileName);
 

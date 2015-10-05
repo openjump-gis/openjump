@@ -301,7 +301,7 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
      * Enumeration of File extension used in Sextante Raster Layer
      */
     public enum TypeFile {
-        ASC, FLT, TIF, TIFF, JPG, JPEG, PNG, GIF, GRD, JP2, BMP
+        ASC, TXT, FLT, TIF, TIFF, JPG, JPEG, PNG, GIF, GRD, JP2, BMP
     }
 
     /*
@@ -312,6 +312,10 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
         switch (extension1) {
         case ASC: {
             filetype = "ASC - ESRI ASCII grid";
+            break;
+        }
+        case TXT: {
+            filetype = "TXT - ESRI ASCII grid";
             break;
         }
         case FLT: {
