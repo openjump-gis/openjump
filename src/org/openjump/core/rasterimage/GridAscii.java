@@ -320,6 +320,11 @@ public class GridAscii {
         
         BufferedReader buffRead = new BufferedReader(new FileReader(ascFullFileName));
         
+        // Skip header
+        for(int r=0; r<6; r++) {
+            buffRead.readLine();
+        }
+        
         // Skip rows
         for(int r=0; r<row; r++) {
             buffRead.readLine();
