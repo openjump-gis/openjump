@@ -1,5 +1,8 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2015-10-07 bertazza
+  * Fixed bug when reading esri ASCII grid with .txt extension
+
 2015-10-06 bertazza
   * Fixed bug when reading ASCII grid cell value
   

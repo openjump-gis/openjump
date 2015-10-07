@@ -618,7 +618,7 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
      * Enumeration of File extension used in Sextante Raster Layer
      */
     public enum TypeFile {
-        ASC, CSV, DXF, FLT, TIF, TIFF, JPG, JPEG, PNG, GIF, GRD, JP2, BMP, ECW, MrSID
+        ASC, CSV, DXF, FLT, TIF, TIFF, JPG, JPEG, PNG, GIF, GRD, JP2, BMP, ECW, MrSID, TXT
     }
 
     private String filetype;
