@@ -170,7 +170,7 @@ public class BeanshellAttributeCalculatorPlugIn extends ThreadedBasePlugIn
         final JComboBox jcb_layer = dialog.addLayerComboBox(
             SOURCE_LAYER, layer, null, context.getLayerManager());
         keywords.clear();
-        keywords.addAll(getFieldsFromLayer(context.getCandidateLayer(0)));
+        keywords.addAll(getFieldsFromLayer(layer));
         Collections.addAll(keywords, FUNCTIONS);
         
         final JTextField jtf_att1 = dialog.addTextField(
