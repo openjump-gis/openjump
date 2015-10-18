@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2015-10-18 mmichaud <m.michael.michaud@orange.fr>
+  * Small fix in BeanshellAttributeCalculatorPlugIn
+  * DatastoreDataSource now present tables in alphabetical order
+
 2015-10-07 bertazza
   * Fixed bug when reading esri ASCII grid with .txt extension
 

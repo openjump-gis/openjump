@@ -32,7 +32,7 @@ public class PostgisDSMetadata implements DataStoreMetadata {
     // Spatial tables only.
     JDBCUtil.execute(
         conn.getConnection(),
-        "SELECT DISTINCT f_table_schema, f_table_name FROM geometry_columns",
+        "SELECT DISTINCT f_table_schema, f_table_name FROM geometry_columns ORDER BY f_table_schema, f_table_name",
         new ResultSetBlock() {
       public void yield( ResultSet resultSet ) throws SQLException {
         while ( resultSet.next() ) {
