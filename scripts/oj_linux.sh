@@ -92,7 +92,7 @@ while [ -L "$ME" ]; do
   ME=$(readlink -n "$ME")
   relPath "$ME" && ME="$MEBASE/$ME"
 done
-JUMP_HOME=$(dirname $(dirname "$ME"))
+JUMP_HOME=$(dirname "$(dirname "$ME")")
 echo ---JUMP_HOME---
 echo $JUMP_HOME
 
