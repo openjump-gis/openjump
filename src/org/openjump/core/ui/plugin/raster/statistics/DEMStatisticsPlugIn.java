@@ -185,13 +185,47 @@ public class DEMStatisticsPlugIn extends AbstractPlugIn {
             String miny = df.format(extent.getMinY());
             int X = rstLayer.getNX(); // Number of columns
             int Y = rstLayer.getNY(); // Number of rows
+            
+            
+            /*
+             * Giuseppe Aruta Nov. 2015
+             *  workaround for OpenJUMP bug 410 (Sextante), If nodata value is -3.40282346639E38
+     		 *  and min value -9999, -99999 or 1.70141E38. Those two values are displayed in red
+  			 *  on DEMStatistic table
+             */
             String nodata = null;
+            String texmin = df.format(rstLayer.getMinValue());
             double nda = slayer.getNoDataValue();
+            String begin ="<b><font color='red'>";
+            String end = "</font></b>";
+            if (nda == -3.40282346639E38 || rstLayer.getNoDataValue() == -1.79769313486E308) {
+            	 if (rstLayer.getMinValue() == -9999
+                         || rstLayer.getMinValue() == -99999
+                         || rstLayer.getMinValue() == 1.70141E38){
+            		 nodata = begin+nodata+end;
+            		 min = begin+texmin+end;
+            	 } else{
+            		 nodata = Double.toString(nda); 
+            		 min = texmin;
+            	 }
+            	
+            } else{
+            	nodata = Double.toString(nda); 
+       		 	min = texmin;
+            	
+            }
+            
+            
+            
+            /*
+            
+            
+            
             if (nda == -3.4028234e+038) {
                 nodata = "<b><font color='red'>-3.4028234e+038</font></b>";
             } else {
                 nodata = Double.toString(nda);
-            }
+            }*/
 
             int validcells = X * Y - nodata(context, rstLayer);// Number of
                                                                // valid
