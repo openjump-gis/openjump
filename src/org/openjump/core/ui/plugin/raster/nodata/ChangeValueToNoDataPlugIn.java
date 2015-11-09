@@ -75,7 +75,7 @@ public class ChangeValueToNoDataPlugIn extends AbstractPlugIn {
     private static String INVERSE = I18N
             .get("org.openjump.core.ui.plugin.raster.nodata.Inverse");
     private static String REVERSE_TOOLTIP = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.ChangeValueToNoDataPlugIn.Tooltips");
+            .get("org.openjump.core.ui.plugin.raster.nodata.ChangeValueToNoDataPlugIn.tooltips");
     private String OUTPUT_FILE = I18N.get("driver.DriverManager.file-to-save")
             + ": ";
     private static String STATISTICS = I18N
