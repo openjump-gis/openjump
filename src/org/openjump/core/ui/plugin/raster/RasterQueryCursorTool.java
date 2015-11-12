@@ -177,6 +177,7 @@ public class RasterQueryCursorTool extends NClickTool {
                 }
                 getPanel().getContext().setStatusMessage(
                         "(" + name + ") " + VALUE + ": " + lastClick);
+                getPanel().setViewportInitialized(true);
             } else {
                 getPanel()
                         .getContext()
@@ -210,7 +211,7 @@ public class RasterQueryCursorTool extends NClickTool {
             return pixelLayer;
         }
         FeatureSchema schema = new FeatureSchema();
-        schema.addAttribute("Pixel", AttributeType.DOUBLE);
+        schema.addAttribute("Pixel", AttributeType.STRING);
         schema.addAttribute("X", AttributeType.DOUBLE);
         schema.addAttribute("Y", AttributeType.DOUBLE);
         schema.addAttribute(LAYER, AttributeType.STRING);
