@@ -108,6 +108,8 @@ and the following plugins
   JumpFillPattern.jar
  KML Driver (skyjump) - GPL2 - gpl-2.txt
   kml-driver-*.jar
+ Measure Toolbox (Giuseppe Aruta) - GPL3 - gpl-3.0.txt
+  MeasureToolbox_*.jar
  OSM Driver (Stefan Steiniger) - GPL2 - gpl-2.txt
   oj_osm_reader_v*.jar
  Printer (com.cadplan.jump) - GPL2 - gpl-2.txt
