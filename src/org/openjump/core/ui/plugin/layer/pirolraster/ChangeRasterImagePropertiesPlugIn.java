@@ -16,6 +16,8 @@ import javax.swing.JTabbedPane;
 
 import org.openjump.core.apitools.LayerTools;
 import org.openjump.core.rasterimage.RasterImageLayer;
+import org.openjump.core.rasterimage.styler.ui.GUIUtils;
+import org.openjump.core.rasterimage.styler.ui.RasterStylesDialog;
 import org.openjump.core.ui.plugin.layer.pirolraster.panel.RasterColorEditorPanel;
 import org.openjump.core.ui.plugin.layer.pirolraster.panel.RasterScaleStylePanel;
 import org.openjump.core.ui.plugin.layer.pirolraster.panel.RasterTransparencyPanel;
@@ -39,6 +41,7 @@ import com.vividsolutions.jump.workbench.ui.style.StylePanel;
  * @version Jul 03 2015 [Giuseppe Aruta] - Renamed plugin name to "Change Style"
  * @version Jul 06 2015 [Giuseppe Aruta] - correct bug when Largest scale
  *          >Smallest scale
+ * @version Nov 14 2015 [Giuseppe Aruta] - chosen colorset is stored into the Blackboard            
  */
 @SuppressWarnings("deprecation")
 public class ChangeRasterImagePropertiesPlugIn extends AbstractPlugIn {
@@ -59,6 +62,8 @@ public class ChangeRasterImagePropertiesPlugIn extends AbstractPlugIn {
     public boolean execute(PlugInContext context) throws Exception {
         final RasterImageLayer rLayer = (RasterImageLayer) LayerTools
                 .getSelectedLayerable(context, RasterImageLayer.class);
+        
+        String bboardKey = ChangeRasterImagePropertiesPlugIn.class.getName() +"-"+rLayer.getUUID()+ " - COLORSTYLE";   
         final MultiInputDialog dialog = new MultiInputDialog(
                 context.getWorkbenchFrame(),
                 I18N.get("ui.style.ChangeStylesPlugIn.change-styles") + " - "
@@ -66,16 +71,21 @@ public class ChangeRasterImagePropertiesPlugIn extends AbstractPlugIn {
         dialog.setSideBarImage(IconLoader.icon("Symbology.gif"));
         dialog.setSize(500, 400);
         // dialog.setInset(0);
-        dialog.setApplyVisible(true);
+    //   dialog.setApplyVisible(true);
 
         final ArrayList<JPanel> stylePanels = new ArrayList();
-        final RasterScaleStylePanel rasterScalepanel = new RasterScaleStylePanel(
-                rLayer, context.getLayerViewPanel());
+        final RasterColorEditorPanel rascolorpanel;
+        if(context.getWorkbenchContext().getBlackboard().get(bboardKey) != null){            
+          rascolorpanel =  (RasterColorEditorPanel) context.getWorkbenchContext().getBlackboard().get(bboardKey);
+         } else {
+       	  rascolorpanel = new RasterColorEditorPanel(context, rLayer);
+         }
         final RasterTransparencyPanel rasstyle = new RasterTransparencyPanel(
                 rLayer);
-        final RasterColorEditorPanel rascolorpanel = new RasterColorEditorPanel(
-                context, rLayer);
-
+     //   final RasterColorEditorPanel rascolorpanel = new RasterColorEditorPanel(
+     //           context, rLayer);
+        final RasterScaleStylePanel rasterScalepanel = new RasterScaleStylePanel(
+                rLayer, context.getLayerViewPanel());
         if (rLayer.getNumBands() == 1) {
             stylePanels.add(rasstyle);
             stylePanels.add(rasterScalepanel);
@@ -122,7 +132,7 @@ public class ChangeRasterImagePropertiesPlugIn extends AbstractPlugIn {
                         return rasterScalepanel.validateInput();
                     }
                 }));
-        dialog.addOKCancelApplyPanelActionListener(new ActionListener() {
+  /*      dialog.addOKCancelApplyPanelActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (dialog.wasApplyPressed()) {
                     if (rasterScalepanel.LSCale().doubleValue() > rasterScalepanel
@@ -148,7 +158,7 @@ public class ChangeRasterImagePropertiesPlugIn extends AbstractPlugIn {
 
                 }
             }
-        });
+        });*/
         // Add to prevent error message and OJ to freeze if Large scale>Small
         // scale
         // Now the only way to close this dialog is using cancel button

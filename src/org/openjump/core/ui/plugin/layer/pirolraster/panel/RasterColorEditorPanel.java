@@ -25,11 +25,12 @@ import javax.swing.border.Border;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.RasterSymbology;
 import org.openjump.core.ui.color.ColorGenerator;
+import org.openjump.core.ui.plugin.layer.pirolraster.ChangeRasterImagePropertiesPlugIn;
 import org.openjump.core.ui.swing.ValueChecker;
 import org.saig.core.gui.swing.sldeditor.util.FormUtils;
-
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.model.LayerEventType;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.ColorPanel;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
@@ -55,9 +56,8 @@ public class RasterColorEditorPanel extends JPanel implements ValueChecker,
 
     private static final long serialVersionUID = 1L;
 
-    private RasterImageLayer layer = null;
+    protected RasterImageLayer layer = null;
     public JTextField fromValue;
-    private JLabel warning;
     private JLabel fromValueLabel;
     private JLabel toValueLabel;
     public JTextField toValue;
@@ -74,11 +74,7 @@ public class RasterColorEditorPanel extends JPanel implements ValueChecker,
             I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Blue-Green-Red"),// 2
             I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Red-Blue"),// 3
             "Red-Yellow", // 4
-            // I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Blue-Red"),//
-            // 5
             I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Black-White"),// 5
-            // I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.White-Black"),//
-            // 7
             "Stripes sixties", // 6
             I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Rainbow"),// 7
             "Color Relief", // 8
@@ -135,8 +131,6 @@ public class RasterColorEditorPanel extends JPanel implements ValueChecker,
             .get("org.openjump.core.ui.plugin.raster.nodata.min");
     private static String MAX = I18N
             .get("org.openjump.core.ui.plugin.raster.nodata.max");
-    private static String WARNING = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterQueryPlugIn.info");
     private static String TRANSPARENT = I18N
             .get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Set-values-outside-transparent");
     private static String INVERT = I18N
@@ -150,7 +144,7 @@ public class RasterColorEditorPanel extends JPanel implements ValueChecker,
             RasterImageLayer actualLayer) {
         super();
         plugInContext = context;
-        setLayer(actualLayer);
+        this.layer= actualLayer;
         setVisible(true);
         try {
             jbInit();
@@ -158,10 +152,6 @@ public class RasterColorEditorPanel extends JPanel implements ValueChecker,
             ex.printStackTrace();
         }
 
-    }
-
-    public void setLayer(RasterImageLayer actualLayer) {
-        this.layer = actualLayer;
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -193,18 +183,15 @@ public class RasterColorEditorPanel extends JPanel implements ValueChecker,
         // Second panel: Change color model
         strechedPanel.setBorder(border);
         strechedPanel.setLayout(gridBagLayout);
+        strechedPanel.setBorder(BorderFactory.createTitledBorder(TITLE ));
         colorScaleChooser = new JComboBox(colorTableList);
-        // colorScaleChooser.setSelectedItem(colorScaleChooser.getSelectedItem());
         colorScaleChooser.setToolTipText(sToolTip); //$NON-NLS-1$
         colorScaleChooser.setBorder(borderRaised);
         intColor = colorScaleChooser.getSelectedIndex();
         colorScaleChooser.setSelectedIndex(intColor);
-        // colorScaleChooser.setSelectedItem(colorScaleChooser.getInputContext());
         FormUtils.addRowInGBL(strechedPanel, 2, 0, colorScaleChooser);
-
         fromValueLabel = new JLabel(sFromValue);
         toValueLabel = new JLabel(sToValue); //$NON-NLS-1$
-
         fromValueLabel.setPreferredSize(new Dimension(83, 20));
         toValueLabel.setPreferredSize(new Dimension(83, 20));
 
@@ -222,8 +209,7 @@ public class RasterColorEditorPanel extends JPanel implements ValueChecker,
         toValue.setPreferredSize(new Dimension(83, 20));
         toValue.setCaretPosition(toValue.getText().length());
 
-        FormUtils
-                .addRowInGBL(strechedPanel, 3, 0, fromValueLabel, toValueLabel);
+        FormUtils.addRowInGBL(strechedPanel, 3, 0, fromValueLabel, toValueLabel);
         FormUtils.addRowInGBL(strechedPanel, 4, 0, fromValue, toValue);
 
         classes.setText(NUMBER);
@@ -255,27 +241,23 @@ public class RasterColorEditorPanel extends JPanel implements ValueChecker,
         FormUtils.addRowInGBL(strechedPanel, 6, 0, classes);
         FormUtils.addRowInGBL(strechedPanel, 6, 1, spinnerbox, true, true);
 
-        // .addRowInGBL(strechedPanel, 6, 1, spinnerbox);
         FormUtils.addRowInGBL(strechedPanel, 7, 0, invertBox);
         FormUtils.addRowInGBL(strechedPanel, 8, 0, transparentBox);
 
-        add(strechedPanel, BorderLayout.NORTH);
+        if (layer.getNumBands() == 1) {
+        	add(statisticPanel,BorderLayout.NORTH);
+            add(strechedPanel, BorderLayout.SOUTH);}
+       
 
     }
 
-    private RasterSymbology finalRasterSymbolizer;
-
-    public RasterSymbology getFinalRasterSymbolizer() {
-        return this.finalRasterSymbolizer;
-    }
 
     private JCheckBox getIntervalBox() {
         if (intervalsBox == null) {
             intervalsBox = new JCheckBox();
             intervalsBox.setText(INTERVALS);
             intervalsBox.addActionListener(new java.awt.event.ActionListener() {
-
-                public void actionPerformed(java.awt.event.ActionEvent e) {
+             public void actionPerformed(java.awt.event.ActionEvent e) {
                     updateComponents();
                 }
             });
@@ -284,7 +266,6 @@ public class RasterColorEditorPanel extends JPanel implements ValueChecker,
     }
 
     private void updateComponents() {
-
         spinnerbox.setEnabled(intervalsBox.isSelected() == true);
         classes.setEnabled(intervalsBox.isSelected() == true);
     }
@@ -300,7 +281,7 @@ public class RasterColorEditorPanel extends JPanel implements ValueChecker,
     public boolean areValuesOk() {
         return true;
     }
-
+    
     public void changeColorsRamp(WorkbenchContext context, Color[] colors,
             Color noDataColor, double min, double max)
             throws NoninvertibleTransformException, IOException {
@@ -316,8 +297,12 @@ public class RasterColorEditorPanel extends JPanel implements ValueChecker,
         colorGenerator = new ColorGenerator(step, colors);
         // Deactivated. As 6 steps seems to work better than 35
         // colorGenerator = new ColorGenerator(35, colors);
+        
         RasterSymbology symbology = new RasterSymbology(
                 RasterSymbology.ColorMapType.RAMP);
+         
+        CopyColorIntoBlackBoard(context, layer, symbology);
+        
         min = Double.parseDouble(fromValue.getText());
         max = Double.parseDouble(toValue.getText());
         // Max cell value taken from raster statistics. Need to exclude upper
@@ -363,6 +348,9 @@ public class RasterColorEditorPanel extends JPanel implements ValueChecker,
         // colorGenerator = new ColorGenerator(35, colors);
         RasterSymbology symbology = new RasterSymbology(
                 RasterSymbology.ColorMapType.INTERVALS);
+       
+        CopyColorIntoBlackBoard(context, layer, symbology);
+        
         min = Double.parseDouble(fromValue.getText());
         max = Double.parseDouble(toValue.getText());
         // Max cell value taken from raster statistics. Need to exclude upper
@@ -389,14 +377,22 @@ public class RasterColorEditorPanel extends JPanel implements ValueChecker,
         if (transparentBox.isSelected()) {
             layer.setTransparentColor(new Color(202, 218, 186));
         }
+        
+        
+        
     }
 
     public void updateStyles() {
         switch (colorScaleChooser.getSelectedIndex()) {
 
         case 0: {
-            valuesColors = new Color[] { Color.BLACK, Color.WHITE };
-            break;
+        	
+        	if (invertBox.isSelected()) {
+                valuesColors = new Color[] { Color.BLACK, Color.WHITE };
+            } else {
+                valuesColors = new Color[] {  Color.WHITE, Color.BLACK };
+            }
+        	break;
         }
         case 1: {
             if (invertBox.isSelected()) {
@@ -604,6 +600,8 @@ public class RasterColorEditorPanel extends JPanel implements ValueChecker,
                         Float.parseFloat(toValue.getText()));
             }
 
+            
+            
         } catch (NumberFormatException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -625,4 +623,15 @@ public class RasterColorEditorPanel extends JPanel implements ValueChecker,
 
     }
 
+    
+    public void CopyColorIntoBlackBoard(WorkbenchContext context, RasterImageLayer layer,RasterSymbology symbology) 
+   		 throws NoninvertibleTransformException{
+   	 // String bboardKey = GUIUtils.getBBKey(String.valueOf(layer.getUUID()));
+   	 String bboardKey = ChangeRasterImagePropertiesPlugIn.class.getName() +"-"+layer.getUUID()+ " - COLORSTYLE";
+         context.getBlackboard().put(bboardKey, this);
+         layer.setSymbology(symbology);
+         context.getLayerManager().fireLayerChanged(layer, LayerEventType.APPEARANCE_CHANGED);
+   	 
+    }
+    
 }
