@@ -24,7 +24,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.apache.log4j.Logger;
 import org.openjump.core.apitools.LayerTools;
 import org.openjump.core.rasterimage.RasterImageIOUtils;
 import org.openjump.core.rasterimage.RasterImageLayer;
@@ -34,30 +33,31 @@ import org.openjump.core.ui.plugin.layer.pirolraster.LoadSextanteRasterImagePlug
 import org.saig.core.gui.swing.sldeditor.util.FormUtils;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Category;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
-import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.plugin.ThreadedBasePlugIn;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.GenericNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+ 
 
-public class ChangeNoDataValuePlugIn extends AbstractPlugIn {
+public class ChangeNoDataValuePlugIn extends ThreadedBasePlugIn {
     /**
      * 
      * @author Giuseppe Aruta
-     * @date 2015_3_25 This class allows to change nodata value of a single band
+     * @date 2015_3_25 (Giuseppe Aruta) This class allows to change nodata value of a single band
      *       file The output is a ESRI float file
-     * @date 2015_19_5  Correct bug introduced with new RasterImageLayer.cellvalue
-     *        Substitute export to .flt file to .asc file    
+     * @date 2015_19_5  (Giuseppe Aruta) Correct bug introduced with new RasterImageLayer.cellvalue
+     *        Substitute export to .flt file to .asc file 
+     * @date 2015_15_11 (Giuseppe Aruta) Improved GUI   
      */
-    // Language codes:9
-    private String SUBMENU = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.menu");
+  
     public static final String PLUGINNAME = I18N
             .get("org.openjump.core.ui.plugin.raster.nodata.ChangeNoDataValuePlugIn.name");
     private String OUTPUT_FILE = I18N.get("driver.DriverManager.file-to-save")
@@ -75,10 +75,7 @@ public class ChangeNoDataValuePlugIn extends AbstractPlugIn {
     private static String MAX = I18N
             .get("org.openjump.core.ui.plugin.raster.nodata.max");
 
-    private static final Logger LOGGER = Logger
-            .getLogger(ChangeNoDataValuePlugIn.class);
     private Properties properties = null;
-    private String byteOrder = "LSBFIRST";
     private static String propertiesFile = LoadSextanteRasterImagePlugIn
             .getPropertiesFile();
     NumberFormat cellFormat = null;
@@ -94,8 +91,15 @@ public class ChangeNoDataValuePlugIn extends AbstractPlugIn {
         return PLUGINNAME;
     }
 
-    @Override
     public boolean execute(PlugInContext context) throws Exception {
+       
+        return true;
+    }
+
+    public void run(TaskMonitor monitor, PlugInContext context)
+            throws Exception {
+    	monitor.report(I18N
+                .get("jump.plugin.edit.NoderPlugIn.processing"));
         reportNothingToUndoYet(context);
         RasterImageLayer rLayer = (RasterImageLayer) LayerTools
                 .getSelectedLayerable(context, RasterImageLayer.class);
@@ -122,6 +126,9 @@ public class ChangeNoDataValuePlugIn extends AbstractPlugIn {
         FormUtils.addRowInGBL(jPanel1, 1, 2, min_label, min);
         FormUtils.addRowInGBL(jPanel1, 1, 4, max_label, max);
 
+        
+        
+        
         // Main Panel. Set range source-target no data value
         JPanel mainPanel = new JPanel(new GridBagLayout());
         JLabel source_NoData_label = new JLabel(FROM);
@@ -175,6 +182,11 @@ public class ChangeNoDataValuePlugIn extends AbstractPlugIn {
         // FormUtils.addRowInGBL(jPanel2, 3, 0, jLabel3);
         FormUtils.addRowInGBL(jPanel2, 3, 0, OUTPUT_FILE, jTextField_RasterOut);
         FormUtils.addRowInGBL(jPanel2, 3, 2, jButton_Dir);
+        
+        
+        
+        
+        
         dialog.addRow(jPanel1);
         dialog.addRow(mainPanel);
         dialog.addRow(jPanel2);
@@ -183,7 +195,7 @@ public class ChangeNoDataValuePlugIn extends AbstractPlugIn {
         dialog.setVisible(true);
 
         if (!dialog.wasOKPressed()) {
-            return false;
+            return;
         }
 
         else {
@@ -205,7 +217,7 @@ public class ChangeNoDataValuePlugIn extends AbstractPlugIn {
             }
             RasterImageIOUtils.loadASC(flt_outFile, context, catName);
         }
-        return true;
+        return;
 
     }
 
@@ -307,10 +319,14 @@ public class ChangeNoDataValuePlugIn extends AbstractPlugIn {
 
     JTextField jTextField_RasterOut = new JTextField();
 
+    
+      
     private void jButton_RasterOutActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton_RasterOutActionPerformed
 
         File outputPathFile = null;
-        JFileChooser chooser = new JFileChooser();
+        
+         JFileChooser chooser =  new GUIUtil.FileChooserWithOverwritePrompting();
+        
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         chooser.setSelectedFile(FileOperations.lastVisitedFolder);
         chooser.setDialogType(JFileChooser.SAVE_DIALOG);

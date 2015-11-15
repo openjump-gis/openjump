@@ -34,6 +34,7 @@ import org.openjump.core.ui.plugin.layer.pirolraster.LoadSextanteRasterImagePlug
 import org.saig.core.gui.swing.sldeditor.util.FormUtils;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Category;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
@@ -41,20 +42,22 @@ import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.plugin.ThreadedBasePlugIn;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.GenericNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
-public class ChangeRangeValuesToNoDataPlugIn extends AbstractPlugIn {
+public class ChangeRangeValuesToNoDataPlugIn extends ThreadedBasePlugIn {
     /**
      * 
      * @author Giuseppe Aruta
-     * @date 2015_3_25 This class allows to change a range allows values to
+     * @date 2015_3_25 (Giuseppe Aruta) This class allows to change a range allows values to
      *       nodata Reverse operation extracts the input range of value and set
      *       the others to nodata The output is a ESRI float file
-     * @date 2015_19_5  Correct bug introduced with new RasterImageLayer.cellvalue
-     *        Substitute export to .flt file to .asc file    
+     * @date 2015_19_5  (Giuseppe Aruta) Correct bug introduced with new RasterImageLayer.cellvalue
+     *        Substitute export to .flt file to .asc file  
+     * @date 2015_15_11 (Giuseppe Aruta) Improved GUI   
      */
     private static final Logger LOGGER = Logger
             .getLogger(ChangeNoDataValuePlugIn.class);
@@ -122,8 +125,14 @@ public class ChangeRangeValuesToNoDataPlugIn extends AbstractPlugIn {
         return multiEnableCheck;
     }
 
-    @Override
     public boolean execute(PlugInContext context) throws Exception {
+        
+        return true;
+    }
+
+    public void run(TaskMonitor monitor, PlugInContext context)      throws Exception {
+    	monitor.report(I18N
+                .get("jump.plugin.edit.NoderPlugIn.processing"));
         reportNothingToUndoYet(context);
         RasterImageLayer rLayer = (RasterImageLayer) LayerTools
                 .getSelectedLayerable(context, RasterImageLayer.class);
@@ -215,7 +224,7 @@ public class ChangeRangeValuesToNoDataPlugIn extends AbstractPlugIn {
         GUIUtil.centreOnWindow(dialog);
         dialog.setVisible(true);
         if (!dialog.wasOKPressed()) {
-            return false;
+            return ;
         } else {
             // Get the path of file
             String path = jTextField_RasterOut.getText();
@@ -249,13 +258,13 @@ public class ChangeRangeValuesToNoDataPlugIn extends AbstractPlugIn {
             RasterImageIOUtils.loadASC(flt_outFile, context, catName);
 
         }
-        return true;
+        return ;
     }
 
     // This code derives from AdBToolbox 1.7 - Set the output file name
     private void jButton_RasterOutActionPerformed(java.awt.event.ActionEvent evt) {
         File outputPathFile = null;
-        JFileChooser chooser = new JFileChooser();
+        JFileChooser chooser =  new GUIUtil.FileChooserWithOverwritePrompting();
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         chooser.setSelectedFile(FileOperations.lastVisitedFolder);
         chooser.setDialogType(JFileChooser.SAVE_DIALOG);

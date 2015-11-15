@@ -25,7 +25,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 
-import org.apache.log4j.Logger;
 import org.openjump.core.apitools.LayerTools;
 import org.openjump.core.rasterimage.RasterImageIOUtils;
 import org.openjump.core.rasterimage.RasterImageLayer;
@@ -35,39 +34,39 @@ import org.openjump.core.ui.plugin.layer.pirolraster.LoadSextanteRasterImagePlug
 import org.saig.core.gui.swing.sldeditor.util.FormUtils;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Category;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
-import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.plugin.ThreadedBasePlugIn;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.GenericNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
-public class ChangeValueToNoDataPlugIn extends AbstractPlugIn {
+public class ChangeValueToNoDataPlugIn extends ThreadedBasePlugIn {
 
     /**
      * 
      * @author Giuseppe Aruta
      * @description This class allows to change an input value to nodata,
      *              inverse operation set nodata cells to the input value
-     * @version 01 [2015_02_27] first version
-     * @version 02 [2015_03_22] Add output file selection
-     * @version 03 [2015_03_25] Add Inverse operation to set nodata cells to the
+     * @version 01 (Giuseppe Aruta) [2015_02_27] first version
+     * @version 02 (Giuseppe Aruta) [2015_03_22] Add output file selection
+     * @version 03 (Giuseppe Aruta) [2015_03_25] Add Inverse operation to set nodata cells to the
      *          input value
-     * @date 2015_19_5  Correct bug introduced with new RasterImageLayer.cellvalue
-     *        Substitute export to .flt file to .asc file    
+     * @date 2015_19_5 (Giuseppe Aruta) Correct bug introduced with new RasterImageLayer.cellvalue
+     *        Substitute export to .flt file to .asc file   
+     * @date 2015_15_11  (Giuseppe Aruta) Improved GUI            
      */         
     
 
     // Language codes: 11
     public static final String PLUGINNAME = I18N
             .get("org.openjump.core.ui.plugin.raster.nodata.ChangeValueToNoDataPlugIn.name");
-    private String SUBMENU = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.menu");
     private String CHANGE = I18N
             .get("org.openjump.core.ui.plugin.raster.nodata.ChangeValueToNoDataPlugIn.change");
     private String TONODATA = I18N
@@ -87,10 +86,7 @@ public class ChangeValueToNoDataPlugIn extends AbstractPlugIn {
     private static String MAX = I18N
             .get("org.openjump.core.ui.plugin.raster.nodata.max");
 
-    private static final Logger LOGGER = Logger
-            .getLogger(ChangeNoDataValuePlugIn.class);
     private Properties properties = null;
-    private String byteOrder = "LSBFIRST";
     private static String propertiesFile = LoadSextanteRasterImagePlugIn
             .getPropertiesFile();
     NumberFormat cellFormat = null;
@@ -108,8 +104,14 @@ public class ChangeValueToNoDataPlugIn extends AbstractPlugIn {
         return PLUGINNAME;
     }
 
-    public boolean execute(PlugInContext context) throws Exception {
-        reportNothingToUndoYet(context);
+ public boolean execute(PlugInContext context) throws Exception {
+        
+        return true;
+    }
+
+    public void run(TaskMonitor monitor, PlugInContext context)      throws Exception {
+    	monitor.report(I18N
+                .get("jump.plugin.edit.NoderPlugIn.processing"));
         RasterImageLayer rLayer = (RasterImageLayer) LayerTools
                 .getSelectedLayerable(context, RasterImageLayer.class);
         String nome = getName() + " (" + rLayer.getName() + ")";
@@ -181,7 +183,7 @@ public class ChangeValueToNoDataPlugIn extends AbstractPlugIn {
         dialog.setVisible(true);
 
         if (!dialog.wasOKPressed()) {
-            return false;
+            return;
         } else {
 
             String path = jTextField_RasterOut.getText();
@@ -209,7 +211,7 @@ public class ChangeValueToNoDataPlugIn extends AbstractPlugIn {
             RasterImageIOUtils.loadASC(flt_outFile, context, catName);
 
         }
-        return true;
+        return;
 
     }
 
@@ -314,7 +316,7 @@ public class ChangeValueToNoDataPlugIn extends AbstractPlugIn {
     private void jButton_RasterOutActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton_RasterOutActionPerformed
 
         File outputPathFile = null;
-        JFileChooser chooser = new JFileChooser();
+        JFileChooser chooser =  new GUIUtil.FileChooserWithOverwritePrompting();
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         chooser.setSelectedFile(FileOperations.lastVisitedFolder);
         chooser.setDialogType(JFileChooser.SAVE_DIALOG);
