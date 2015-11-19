@@ -87,7 +87,7 @@ public class SingleValuesPanel extends javax.swing.JPanel {
         add(jPanel_Table, gridBagConstraints);
 
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/openjump/core/rasterimage/styler/resources/Bundle"); // NOI18N
-        jButton_Ramp.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.SingleValuesPanel.jButton_Ramp")); // NOI18N
+        jButton_Ramp.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.SingleValuesPanel.jButton_RampAll")); // NOI18N
         jButton_Ramp.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton_RampActionPerformed(evt);
@@ -142,7 +142,7 @@ public class SingleValuesPanel extends javax.swing.JPanel {
 
     private void formComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentShown
 
-        if(firstTimeShown) {
+        if(firstTimeShown && rasterImageLayer.getRasterSymbology() == null) {
             firstTimeShown = false;
             try {
                 findUniqueValues();
@@ -231,18 +231,7 @@ public class SingleValuesPanel extends javax.swing.JPanel {
         
         }
         
-        /* Update table */
-        if(colorsTablePanel == null) {
-            colorsTablePanel = new ColorsTablePanel(parent, ColorsTablePanel.TableType.VALUES,
-                    colorMapEntries, rasterImageLayer.getNoDataValue(), integerValues);
-            GridBagLayout layout = (GridBagLayout)getLayout();
-            GridBagConstraints gbc = layout.getConstraints(jPanel_Table);
-            remove(jPanel_Table);
-            add(colorsTablePanel, gbc);
-            validate();
-        } else {
-            colorsTablePanel.updateTable(colorMapEntries);
-        }        
+        updateTable(colorMapEntries);
         
     }
     
@@ -265,6 +254,27 @@ public class SingleValuesPanel extends javax.swing.JPanel {
         }
         
         return rasterSymbolizer;
+    }
+    
+    public void plugRasterSymbology(RasterSymbology rasterSymbology) {
+        
+        updateTable(rasterSymbology.getColorMapEntries());
+        
+    }
+    
+    private void updateTable(ColorMapEntry[] colorMapEntries) {
+                /* Update table */
+        if(colorsTablePanel == null) {
+            colorsTablePanel = new ColorsTablePanel(parent, ColorsTablePanel.TableType.VALUES,
+                    colorMapEntries, rasterImageLayer.getNoDataValue(), integerValues);
+            GridBagLayout layout = (GridBagLayout)getLayout();
+            GridBagConstraints gbc = layout.getConstraints(jPanel_Table);
+            remove(jPanel_Table);
+            add(colorsTablePanel, gbc);
+            validate();
+        } else {
+            colorsTablePanel.updateTable(colorMapEntries);
+        }
     }
     
     private final Component parent;

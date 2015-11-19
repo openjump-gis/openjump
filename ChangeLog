@@ -1,4 +1,12 @@
 # for display continuity sake please use 2 spaces instead of tabs
+2015-11-19 bertazza <bertazza@gmail.com>
+  * Raster styler: added options to save and load symbology as SLD file, 
+  added option to invert ramp for stretched symbology, added given interval
+  classification method, added some more default symbologies, fixed some bugs
+  * esri Floating Point grid header writer: bug fixed
+  * RasterImageLayer: fixed few bugs related to overall and single cell
+  transparency
+
 2015-11-13 Giuseppe Arta  <giuseppe_aruta@yahoo.it>
   * Added Measure Toolbox Extension version 11 to OpenJUMP Plus
     Documentation is available here: http://sourceforge.net/projects/opensit

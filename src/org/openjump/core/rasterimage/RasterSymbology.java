@@ -1,6 +1,7 @@
 package org.openjump.core.rasterimage;
 
 import java.awt.Color;
+import java.util.Map;
 import java.util.TreeMap;
 import org.openjump.core.rasterimage.styler.ColorMapEntry;
 
@@ -49,6 +50,18 @@ public class RasterSymbology {
 
     public TreeMap<Double, Color> getColorMapEntries_tm() {
         return colorMapEntries_tm;
+    }
+    
+    public ColorMapEntry[] getColorMapEntries() {
+        
+        ColorMapEntry[] colorMapEntries = new ColorMapEntry[getColorMapEntries_tm().size()];
+        int pos = 0;
+        for(Map.Entry<Double,Color> colorMapEntry : getColorMapEntries_tm().entrySet()) {
+            colorMapEntries[pos] = new ColorMapEntry(colorMapEntry.getKey(), colorMapEntry.getValue());
+            pos++;
+        }
+        return colorMapEntries;
+        
     }
     
     public double getTransparency() {

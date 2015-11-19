@@ -1,6 +1,7 @@
 package org.openjump.core.rasterimage.styler.ui;
 
 import com.vividsolutions.jump.util.Range;
+import java.awt.Color;
 import org.openjump.core.rasterimage.styler.ColorMapEntry;
 import org.openjump.core.rasterimage.RasterSymbology;
 
@@ -43,6 +44,7 @@ public class StretchedPanel extends javax.swing.JPanel {
         jLabel_MaxValue = new javax.swing.JLabel();
         jPanel_ShowGradient = new javax.swing.JPanel();
         jButton_Custom = new javax.swing.JButton();
+        jCheckBox_Invert = new javax.swing.JCheckBox();
 
         setAlignmentY(0.0F);
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
@@ -131,6 +133,13 @@ public class StretchedPanel extends javax.swing.JPanel {
         gridBagConstraints.gridy = 3;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         add(jButton_Custom, gridBagConstraints);
+
+        jCheckBox_Invert.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.StretchedPanel.jCheckBox_Invert.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridwidth = 2;
+        add(jCheckBox_Invert, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
     private void formComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentShown
@@ -171,7 +180,7 @@ public class StretchedPanel extends javax.swing.JPanel {
         GradientCanvas gradientCanvas = (GradientCanvas) comboBox_Gradient.getItemAt(0);
         colorMapEntries = gradientCanvas.getColorMapEntries();
         
-        rasterStyler = new RasterSymbology(RasterSymbology.ColorMapType.RAMP);
+        rasterSymbology = new RasterSymbology(RasterSymbology.ColorMapType.RAMP);
         updateRasterStyler(colorMapEntries);
 
         GUIUtils utils = new GUIUtils();
@@ -202,10 +211,10 @@ public class StretchedPanel extends javax.swing.JPanel {
 
     private void customGradient(){
         
-        GradientCanvas gc = (GradientCanvas) comboBox_Gradient.getSelectedItem();
-        ColorMapEntry[] cme = gc.getColorMapEntries();
+        GradientCanvas gradientCanvas = (GradientCanvas) comboBox_Gradient.getSelectedItem();
+        ColorMapEntry[] coloMapEntries = gradientCanvas.getColorMapEntries();
         
-        CustomGradientColorsDialog customGradientDialog = new CustomGradientColorsDialog(null, true, cme);
+        CustomGradientColorsDialog customGradientDialog = new CustomGradientColorsDialog(null, true, coloMapEntries);
         customGradientDialog.setLocationRelativeTo(this);
         customGradientDialog.setVisible(true);
                 
@@ -219,18 +228,46 @@ public class StretchedPanel extends javax.swing.JPanel {
         
     }
     
-    private void updateRasterStyler(ColorMapEntry[] paletteColorMapEntries) throws Exception{
+    private void updateRasterStyler(ColorMapEntry[] colorMapEntries) throws Exception{
         
-        rasterStyler = new RasterSymbology(RasterSymbology.ColorMapType.RAMP);
-        for (ColorMapEntry paletteColorMapEntrie : paletteColorMapEntries) {
+        rasterSymbology = new RasterSymbology(RasterSymbology.ColorMapType.RAMP);
+        for (ColorMapEntry paletteColorMapEntrie : colorMapEntries) {
             double quantity = (maxValue - minValue) * paletteColorMapEntrie.getUpperValue() + minValue;
-            rasterStyler.addColorMapEntry(quantity, paletteColorMapEntrie.getColor());
+            rasterSymbology.addColorMapEntry(quantity, paletteColorMapEntrie.getColor());
         }
     }
     
-
+    public void plugRasterSymbology(RasterSymbology rasterSymbology) throws Exception {
+        
+        colorMapEntries = rasterSymbology.getColorMapEntries();
+        
+        // Convert values to relative values
+        ColorMapEntry[] relColMapEntries = new ColorMapEntry[rasterSymbology.getColorMapEntries().length - 1];
+        double minVal = 0;
+        if(rasterSymbology.getColorMapEntries()[0].getColor() != null) {
+            minVal = rasterSymbology.getColorMapEntries()[0].getUpperValue();
+        } else {
+            minVal = rasterSymbology.getColorMapEntries()[1].getUpperValue();
+        }
+        double maxVal = rasterSymbology.getColorMapEntries()[rasterSymbology.getColorMapEntries().length-1].getUpperValue();
+        
+        for(int i=1; i<rasterSymbology.getColorMapEntries().length; i++) {
+            double relVal = (rasterSymbology.getColorMapEntries()[i].getUpperValue() - minVal)  / (maxVal - minVal);
+            relColMapEntries[i-1] = new ColorMapEntry(relVal, rasterSymbology.getColorMapEntries()[i].getColor());
+        }
+        
+        
+        GUIUtils.updateGradientComboBoxes(relColMapEntries, width, height);
+        comboBox_Gradient.setSelectedIndex(comboBox_Gradient.getItemCount()-1);
+        
+//        rasterSymbology = rasterSymbology;        
+    
+    }
+            
+            
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton_Custom;
+    private javax.swing.JCheckBox jCheckBox_Invert;
     private javax.swing.JLabel jLabel_MaxLabel;
     private javax.swing.JLabel jLabel_MaxValue;
     private javax.swing.JLabel jLabel_MinLabel;
@@ -243,12 +280,34 @@ public class StretchedPanel extends javax.swing.JPanel {
     private final double maxValue;
     private ColorMapEntry[] colorMapEntries;
     private GradientComboBox comboBox_Gradient;
-    private RasterSymbology rasterStyler; 
+    private RasterSymbology rasterSymbology; 
     private final int width = 200;
     private final int height = 18;
     
     public RasterSymbology getRasterStyler(){
-        return rasterStyler;
+        
+        if(jCheckBox_Invert.isSelected()) {
+            RasterSymbology revRasterSymbology = new RasterSymbology(rasterSymbology.getColorMapType());
+            
+            int firstEntry = 0;
+            if(rasterSymbology.getColorMapEntries()[0].getColor() == null) {
+                revRasterSymbology.addColorMapEntry(
+                        rasterSymbology.getColorMapEntries()[0].getUpperValue(),
+                        rasterSymbology.getColorMapEntries()[0].getColor());
+                firstEntry = 1;
+            }
+            
+            int up = rasterSymbology.getColorMapEntries().length - 1 + firstEntry;
+            for(int cme=firstEntry; cme<rasterSymbology.getColorMapEntries().length; cme++) {
+                revRasterSymbology.addColorMapEntry(
+                        rasterSymbology.getColorMapEntries()[cme].getUpperValue(),
+                        rasterSymbology.getColorMapEntries()[up-cme].getColor());
+            }
+            return revRasterSymbology;
+            
+        }        
+        
+        return rasterSymbology;
     }
   
     

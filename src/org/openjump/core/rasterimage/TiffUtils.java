@@ -274,7 +274,8 @@ public class TiffUtils {
                 for(int b=0; b<bandCount; b++) {
                 
                     double value = raster.getSampleDouble(c, r, b);
-                    if(value != noDataValue && !Double.isNaN(value) && !Double.isInfinite(value)) {
+                    if(value != noDataValue && (float)value != (float)noDataValue &&
+                            !Double.isNaN(value) && !Double.isInfinite(value)) {
                         if(value < minValue[b]) minValue[b] = value;
                         if(value > maxValue[b]) maxValue[b] = value;
                         cellsCount[b]++;

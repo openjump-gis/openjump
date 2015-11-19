@@ -570,17 +570,9 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
 
                 if(symbology == null) {
                     if(stats.getBandCount() < 3) {
-//                        double value = actualRasterData.getSampleDouble(col, row, 0);
-//                        if(Double.isNaN(value) || Double.isInfinite(value) || value == noDataValue) {
-//                            newImage.setRGB(col, row, Color.TRANSLUCENT);
-//                            continue;
-//                        }
-//                        int rgbValue = (int) ((value - stats.getMin(0)) * 255./(stats.getMax(0) - stats.getMin(0)));
-//                        if(rgbValue > 255) rgbValue = 255;
-//                        if(rgbValue < 0) rgbValue = 0;
-//                        newImage.setRGB(col, row, new Color(rgbValue, rgbValue, rgbValue).getRGB());
                         
                         RasterSymbology rasterSymbology = new RasterSymbology(RasterSymbology.ColorMapType.RAMP);
+                        rasterSymbology.addColorMapEntry(metadata.getNoDataValue(), transparentColor);
                         rasterSymbology.addColorMapEntry(metadata.getStats().getMin(0), Color.WHITE);
                         rasterSymbology.addColorMapEntry(metadata.getStats().getMax(0), Color.BLACK);
                         setSymbology(rasterSymbology);
@@ -631,22 +623,29 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
                         symbMinValue = symbologyClassLimits[1];
                     }
                     
-                    if(value < symbMinValue) {
+                    if(!this.isNoData(value) && value < symbMinValue) {
                         value = symbMinValue;
                     }
                     
                     Color color = symbology.getColor(value);
                     
-                    if((Double.isNaN(value) || Double.isInfinite(value) || value == noDataValue)
+                    if((Double.isNaN(value) || Double.isInfinite(value) || this.isNoData(value))
                             && color == null) {
                         newImage.setRGB(col, row, Color.TRANSLUCENT);
                         continue;
                     }
-
-                    newImage.setRGB(col, row, color.getRGB());
-                }
                     
-                
+                    // Transparency is a combination of total layer transparency
+                    // and single cell transparency
+                    int transparency = 
+                            (int)(((1 - symbology.getTransparency()) * 
+                            (color.getAlpha() / 255d)) * 255);
+                    newImage.setRGB(col, row, new Color(
+                            color.getRed(),
+                            color.getGreen(),
+                            color.getBlue(),
+                            transparency).getRGB());
+                }  
             }
         }
 
@@ -1626,7 +1625,7 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
         if(Double.isNaN(noDataValue) && Double.isNaN(value)) {
             return true;
         }
-        return(value == noDataValue);
+        return(value == noDataValue || (float)value == (float)noDataValue);
     }
 
     public Metadata getMetadata() {

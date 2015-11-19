@@ -159,8 +159,8 @@ public class GridFloat {
         buffWrite.write("byteorder" + " " + byteOrder);
         buffWrite.newLine();
 
-        fileWriter.close();
         buffWrite.close();
+        fileWriter.close();
 
     }
 
@@ -326,7 +326,7 @@ public class GridFloat {
 
     public double readCellVal(Integer col, Integer row) throws FileNotFoundException, IOException{
 
-        long offset = ((row - 1) * nCols + col - 1) * 4;
+        long offset = (row * nCols + col) * 4;
 
         File fileFlt = new File(fltFullFileName);
         FileInputStream fileInStream = new FileInputStream(fileFlt);
