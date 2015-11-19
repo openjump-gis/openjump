@@ -1,6 +1,6 @@
 package org.openjump.core.rasterimage.styler;
 
-import com.sun.xml.internal.txw2.output.IndentingXMLStreamWriter;
+//import com.sun.xml.internal.txw2.output.IndentingXMLStreamWriter;
 import java.awt.Color;
 import java.io.File;
 import java.io.FileWriter;
@@ -12,10 +12,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerFactory;
 import org.openjump.core.rasterimage.RasterSymbology;
 import org.openjump.core.rasterimage.RasterSymbology.ColorMapType;
 import org.w3c.dom.Document;
@@ -38,7 +35,8 @@ public class SLDHandler {
      * @throws IOException
      * @throws Exception 
      */
-    public static RasterSymbology read(File SLDFile) throws ParserConfigurationException, SAXException, IOException, Exception {
+    public static RasterSymbology read(File SLDFile)
+            throws ParserConfigurationException, SAXException, IOException, Exception {
     
         DocumentBuilderFactory dbf = newInstance();
         dbf.setNamespaceAware(true);
@@ -91,7 +89,7 @@ public class SLDHandler {
     public static void write(RasterSymbology symbology, String symbologyName, File sldFile) throws IOException, XMLStreamException, TransformerConfigurationException {
         
         XMLOutputFactory outFactory =  XMLOutputFactory.newInstance();
-        XMLStreamWriter writer = new IndentingXMLStreamWriter(outFactory.createXMLStreamWriter(new FileWriter(sldFile)));
+        XMLStreamWriter writer = outFactory.createXMLStreamWriter(new FileWriter(sldFile));
         
         writer.writeStartDocument();
         writer.writeStartElement("StyledLayerDescriptor");
