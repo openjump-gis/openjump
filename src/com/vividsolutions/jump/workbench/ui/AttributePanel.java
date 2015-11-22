@@ -39,8 +39,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import javax.swing.JPanel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureUtil;
@@ -54,11 +52,9 @@ import com.vividsolutions.jump.workbench.ui.zoom.ZoomToSelectedItemsPlugIn;
  *  Implements an Attribute Panel.
  */
 
-public class AttributePanel
-    extends JPanel
-    implements InfoModelListener/*, AttributeTablePanelListener*/ {
+public class AttributePanel extends JPanel implements InfoModelListener {
+
     private SelectionManager selectionManager;
-    private BorderLayout borderLayout1 = new BorderLayout();
     private GridBagLayout gridBagLayout1 = new GridBagLayout();
     private HashMap layerToTablePanelMap = new HashMap();
     private InfoModel model;
@@ -334,15 +330,17 @@ public class AttributePanel
         }
     }
     */
-    public static interface Row {
-        public boolean isFirstRow();
-        public boolean isLastRow();
-        public AttributeTablePanel getPanel();
-        public int getIndex();
-        public Row nextRow();
-        public Row previousRow();
-        public Feature getFeature();
+
+    public interface Row {
+        boolean isFirstRow();
+        boolean isLastRow();
+        AttributeTablePanel getPanel();
+        int getIndex();
+        Row nextRow();
+        Row previousRow();
+        Feature getFeature();
     }
+
     private class BasicRow implements Row {
         private AttributeTablePanel panel = null;
         private int index;

@@ -43,7 +43,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
-import com.vividsolutions.jump.workbench.ui.plugin.ViewAttributesPlugIn;
 import org.openjump.core.ui.plugin.view.ViewOptionsPlugIn;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -84,7 +83,7 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
     ImageIcon nullObject = IconLoader.icon("null1.png");
     ImageIcon nullString = IconLoader.icon("null1.png");
 
-    public static interface FeatureEditor {
+    public interface FeatureEditor {
 
         void edit(PlugInContext context, Feature feature, Layer layer)
                 throws Exception;

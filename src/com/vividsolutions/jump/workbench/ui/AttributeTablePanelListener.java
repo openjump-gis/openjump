@@ -38,5 +38,5 @@ public interface AttributeTablePanelListener {
      * Called when the user creates a new selection, rather than adding to the
      * existing selection
      */
-    public void selectionReplaced(AttributeTablePanel panel);
+    void selectionReplaced(AttributeTablePanel panel);
 }
