@@ -957,7 +957,7 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
         for (Iterator i = listeners.iterator(); i.hasNext();) {
             AttributeTablePanelListener listener = (AttributeTablePanelListener) i
                     .next();
-            listener.selectionReplaced(this);
+            listener.selectionReplaced(/*this*/);
         }
     }
 
@@ -1087,23 +1087,23 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
     /**
      * Called by the SelectionModelWrapper to update LayerViewPanel
      * when the table selection is changed.
-     * @param panel
      */
-    public void selectionReplaced(AttributeTablePanel panel) {
+    public void selectionReplaced() {
 
         int[] selectedRows = table.getSelectedRows();
         // After selectedRows have been memorized, clear the layer selection,
         // other wise OpenJUMP will add the selectedRows to the already selected features
-        workbenchContext.getLayerViewPanel().getSelectionManager().unselectItems(panel.layer);
-        ArrayList selectedFeatures = new ArrayList();
+        workbenchContext.getLayerViewPanel().getSelectionManager().unselectItems(getModel().getLayer());
+        Map<Feature,List<Geometry>> map = new HashMap<Feature, List<Geometry>>();
         for (int j = 0; j < selectedRows.length; j++) {
-            selectedFeatures.add(getModel().getFeature(selectedRows[j]));
+            Feature feature = getModel().getFeature(selectedRows[j]);
+            map.put(feature, Collections.singletonList(feature.getGeometry()));
         }
         workbenchContext
                 .getLayerViewPanel()
                 .getSelectionManager()
                 .getFeatureSelection()
-                .selectItems(panel.layer, selectedFeatures);
+                .selectItems(getModel().getLayer(), map);
     }
 
 }

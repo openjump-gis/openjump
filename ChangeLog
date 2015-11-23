@@ -1,6 +1,11 @@
 # for display continuity sake please use 2 spaces instead of tabs
+
+2015-11-23 mmichaud <m.michael.michaud@orange.fr>
+  * Fix bug #411 : plugins in attributeTable context menu was deactivated
+
 2015-11-19 bertazza <bertazza@gmail>
   * Removed reference to IndentingXMLStreamWriter class in SLDHandler class
+
 2015-11-19 bertazza <bertazza@gmail.com>
   * Raster styler: added options to save and load symbology as SLD file, 
   added option to invert ramp for stretched symbology, added given interval

@@ -54,7 +54,7 @@ import com.vividsolutions.jump.workbench.ui.zoom.ZoomToSelectedItemsPlugIn;
 
 public class AttributePanel extends JPanel implements InfoModelListener {
 
-    private SelectionManager selectionManager;
+    //private SelectionManager selectionManager;
     private GridBagLayout gridBagLayout1 = new GridBagLayout();
     private HashMap layerToTablePanelMap = new HashMap();
     private InfoModel model;
@@ -103,8 +103,8 @@ public class AttributePanel extends JPanel implements InfoModelListener {
         LayerManagerProxy layerManagerProxy,
         boolean addScrollPanesToChildren) {
         this.addScrollPanesToChildren = addScrollPanesToChildren;
-        selectionManager = new SelectionManager(null, layerManagerProxy);
-        selectionManager.setPanelUpdatesEnabled(false);
+        //selectionManager = new SelectionManager(null, layerManagerProxy);
+        //selectionManager.setPanelUpdatesEnabled(false);
         this.taskFrame = taskFrame;
         this.workbenchContext = workbenchContext;
         this.layerManagerProxy = layerManagerProxy;
@@ -403,6 +403,6 @@ public class AttributePanel extends JPanel implements InfoModelListener {
         }
     }
     public SelectionManager getSelectionManager() {
-        return selectionManager;
+        return workbenchContext.getLayerViewPanel().getSelectionManager();
     }
 }
