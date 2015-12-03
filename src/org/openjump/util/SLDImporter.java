@@ -61,17 +61,12 @@ import java.util.LinkedList;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.xpath.XPathExpressionException;
 
+import com.vividsolutions.jump.workbench.ui.renderer.style.*;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.vividsolutions.jump.util.Range;
-import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
-import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStyle;
-import com.vividsolutions.jump.workbench.ui.renderer.style.LabelStyle;
-import com.vividsolutions.jump.workbench.ui.renderer.style.SquareVertexStyle;
-import com.vividsolutions.jump.workbench.ui.renderer.style.Style;
-import com.vividsolutions.jump.workbench.ui.renderer.style.VertexStyle;
 
 import de.latlon.deejump.plugin.style.BitmapVertexStyle;
 import de.latlon.deejump.plugin.style.CircleVertexStyle;
@@ -287,13 +282,13 @@ public class SLDImporter {
      * @param rule
      * @return a corresponding BasicStyle
      */
-    public static BasicStyle getBasicStyle(Element rule) {
+    public static XBasicStyle getBasicStyle(Element rule) {
         if (rule == null) {
             return null;
         }
 
         try {
-            BasicStyle style = new BasicStyle();
+            XBasicStyle style = new XBasicStyle();
             style.setRenderingFill(false);
             style.setRenderingFillPattern(false);
             style.setRenderingLine(false);

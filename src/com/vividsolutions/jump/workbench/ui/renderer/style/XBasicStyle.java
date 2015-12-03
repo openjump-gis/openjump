@@ -13,7 +13,7 @@ import java.awt.*;
  */
 public class XBasicStyle extends BasicStyle {
 
-    VertexStyle vertexStyle;
+    VertexStyle vertexStyle = new SquareVertexStyle();
 
     public XBasicStyle() {} // for java2xml
 

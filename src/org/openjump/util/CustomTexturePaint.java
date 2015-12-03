@@ -38,6 +38,8 @@
 
 package org.openjump.util;
 
+import org.apache.log4j.Logger;
+
 import static com.vividsolutions.jump.I18N.get;
 import static com.vividsolutions.jump.I18N.getMessage;
 import static java.awt.Color.black;
@@ -70,6 +72,8 @@ import javax.imageio.ImageIO;
  */
 public class CustomTexturePaint implements Paint {
 
+    private static final Logger LOG = Logger.getLogger(CustomTexturePaint.class);
+
     private TexturePaint texturePaint;
 
     private URL url;
@@ -99,6 +103,13 @@ public class CustomTexturePaint implements Paint {
             setUrl(url.toExternalForm());
         } catch (IOException e) {
             // ignore IOs
+            LOG.error("Could not load texture from URL '" + url + "'", e);
+            BufferedImage img = new BufferedImage(300, 20, TYPE_INT_ARGB);
+            Graphics g = img.getGraphics();
+            g.setColor(black);
+            g.drawString(get("org.openjump.util.CustomTexturePaint.no-image-chosen"), 25, 10);
+            g.dispose();
+            texturePaint = new TexturePaint(img, new Rectangle2D.Float(0, 0, img.getWidth(), img.getHeight()));
         }
     }
 
