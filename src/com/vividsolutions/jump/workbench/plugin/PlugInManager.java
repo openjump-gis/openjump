@@ -141,9 +141,13 @@ public class PlugInManager {
             + version(configuration));
         long start = secondsSince(0);
         try {
+          // make sure we use the plugin classloader for extensions
+          configuration = (Configuration) classLoader.loadClass(
+              configuration.getClass().getName()).newInstance();
           configuration.configure(pc);
+          //System.out.println(Arrays.toString(((URLClassLoader)classLoader).getURLs()));
           System.out
-          .println("Loading " + name(configuration) + " "
+          .println("Loading Config " + name(configuration) + " "
               + version(configuration) + " took " + secondsSinceString(start)
               + "s");
         }
@@ -168,14 +172,17 @@ public class PlugInManager {
         if (initSetting instanceof String
             && initSetting.equals(WorkbenchProperties.ATTR_VALUE_FALSE))
           continue;
-        
+
         monitor.report(LOADING + " " + className);
 
         Class plugInClass = null;
         try {
           long start = secondsSince(0);
-          plugInClass = Class.forName(className);
+
+          // make sure we use the plugin classloader for plugins
+          plugInClass = classLoader.loadClass(className);
           PlugIn plugIn = (PlugIn) plugInClass.newInstance();
+
           plugIn.initialize(pc);
           
           // get plugin's menu settings
@@ -220,8 +227,8 @@ public class PlugInManager {
               .getWorkbench()
               .getFrame()
               .log(
-                  "Loading " + className + " took " + secondsSinceString(start)
-                      + "s");
+                  "Loading Plugin " + className + " took " + secondsSinceString(start)
+                      + "s " );
           
         } catch (Throwable e) {
           context.getErrorHandler().handleThrowable(e);
@@ -255,6 +262,13 @@ public class PlugInManager {
         }
         return "";
     }
+
+    public static String message(Configuration configuration) {
+      if (configuration instanceof Extension) {
+          return ((Extension) configuration).getMessage();
+      }
+      return "";
+  }
 
     /**
      * filter all Configurations from a list of Class objects

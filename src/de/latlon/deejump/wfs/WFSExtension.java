@@ -8,8 +8,6 @@
  */
 package de.latlon.deejump.wfs;
 
-import org.python.modules.thread;
-
 import com.vividsolutions.jump.workbench.plugin.Extension;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 
@@ -23,21 +21,34 @@ import de.latlon.deejump.wfs.plugin.WFSPlugIn;
  * 
  */
 public class WFSExtension extends Extension {
+  private static String msg = "Disabled because deegree2-core is missing. Try OJ PLUS!";
+  private static boolean disabled = false;
+  
+  public String getName() {
+    return "WFS(-T) 1.0/1.1 Extension (Lat/Lon)";
+  }
 
-    public void configure( PlugInContext context )
-                            throws Exception {
-      // only install WFS in PLUS, where the lib/wfs.plus/*.jar are packaged in
-      try {
-        Class.forName("org.deegree.ogcwebservices.wfs.WFService", false,
-            this.getClass().getClassLoader());
-      } catch (ClassNotFoundException e) {
-        context.getWorkbenchFrame().log(
-            "WFS extension disabled because deegree2-core is missing.");
-        return;
-      }
+  public String getVersion() {
+    return "1.1.1 (22.12.2014)";
+  }
 
-      new WFSPlugIn().initialize(context);
-      new UpdateWFSLayerPlugIn().initialize(context);
+  public String getMessage() {
+    return disabled ? msg : "";
+  }
+
+  public void configure(PlugInContext context) throws Exception {
+    // only install WFS in PLUS, where the lib/wfs.plus/*.jar are packaged in
+    try {
+      Class.forName("org.deegree.ogcwebservices.wfs.WFService", false, this
+          .getClass().getClassLoader());
+    } catch (ClassNotFoundException e) {
+      disabled = true;
+      context.getWorkbenchFrame().log( msg );
+      return;
     }
+
+    new WFSPlugIn().initialize(context);
+    new UpdateWFSLayerPlugIn().initialize(context);
+  }
 
 }

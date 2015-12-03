@@ -61,9 +61,11 @@ as (Component name - License name - License file in "licenses/" folder or link)
 and the following plugins
 ( Component name - License name - License file in "licenses/" folder
    list of files and dependencies with license if any )
+ Oracle Datastore (Nicolas Ribot) - GPL2 - gpl-2.txt
  SkyPrinter - GPL2 - gpl-2.txt
   SkyPrinterPlugIn-*.jar
   itext-*.jar - LGPL2.1 - lgpl-2.1.txt
+
 
 Additionally PLUS distribution contains
 ( Component name - License name - License file in "licenses/" folder
@@ -129,6 +131,11 @@ and the following plugins
  Vertex Symbols (com.cadplan.jump) - GPL2 - gpl-2.txt
   VertexSymbols.jar
   itext-*.jar - LGPL2.1 - lgpl-2.1.txt
+ WFS Plugin
+  commons-httpclient-3.1.jar
+  deegree2-core-2.6-pre2-20140511.220246-596.jar
+  jaxen-1.1.1.jar
+  vecmath-1.5.2.jar
 
 
 2. Installation instructions

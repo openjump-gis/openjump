@@ -46,7 +46,12 @@ public abstract class Extension implements Configuration {
                 ? ""
                 : " (" + getClass().getPackage().getName() + ")");
     }
+    
     public String getVersion() {
         return "";
+    }
+    
+    public String getMessage() {
+      return "";
     }
 }

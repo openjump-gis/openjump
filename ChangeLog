@@ -1,5 +1,12 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2015-12-03 ede
+  * added Nicolas Ribot's Oracle Spatial Datastore Extension to CORE
+    activates in PLUS as it needs DBQuery's *gt2-oracle-spatial-2.x.jar*
+    also *ojdbc6.jar* must be downloaded and installed manually because
+    of licensing restrictions
+  * extensions can hold messages now (eg. tell why they are not activated) 
+
 2015-11-23 mmichaud <m.michael.michaud@orange.fr>
   * Fix bug #411 : plugins in attributeTable context menu was deactivated
 

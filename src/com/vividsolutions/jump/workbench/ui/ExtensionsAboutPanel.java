@@ -65,11 +65,13 @@ public class ExtensionsAboutPanel extends JPanel {
         // user extensions
         for (Iterator i = plugInManager.getConfigurations().iterator(); i.hasNext();) {
             Configuration configuration = (Configuration) i.next();
+            String msg = PlugInManager.message(configuration);
             sb.append(
                 "<b>"
                     + GUIUtil.escapeHTML(PlugInManager.name(configuration), false, false)
                     + "</b> "
                     + GUIUtil.escapeHTML(PlugInManager.version(configuration), false, false)
+                    + GUIUtil.escapeHTML(!msg.isEmpty()?" -> "+msg:"", false, false)
                     + "<br>");
         }
         sb.append("</body></html>");
