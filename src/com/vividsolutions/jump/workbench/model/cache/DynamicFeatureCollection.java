@@ -194,7 +194,7 @@ public class DynamicFeatureCollection implements FeatureCollection {
       DataStoreMetadata dsm = dsc.getMetadata();
       if(dsm != null && spatialQuery != null)
         e = dsm.getExtents(spatialQuery.getDatasetName(), spatialQuery.getGeometryAttributeName());
-    }
+      }
     return e;
   }
 

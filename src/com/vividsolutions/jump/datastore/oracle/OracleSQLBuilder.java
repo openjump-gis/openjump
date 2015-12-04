@@ -4,6 +4,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jump.datastore.FilterQuery;
 import com.vividsolutions.jump.datastore.SpatialReferenceSystemID;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import java.util.Map;
 
 /**
@@ -55,7 +56,11 @@ public class OracleSQLBuilder {
         if (limit != 0 && limit != Integer.MAX_VALUE) {
             qs.append(" where ROWNUM <= ").append(limit);
         }
-        System.out.println("build string query: " + qs);
+        
+        JUMPWorkbench.getInstance().getFrame().log(
+            "SQL query to get Spatial table features:\n\t" 
+                + qs.toString(), this.getClass());
+
         return qs.toString();
     }
 
@@ -82,7 +87,9 @@ public class OracleSQLBuilder {
             buf.append(env.getMinX()).append(", ").append(env.getMinY()).append(", ").append(env.getMaxX()).append(", ").append(env.getMaxY());
             buf.append(srid).append(")))='TRUE'");
 
-            System.out.println("bbox filter: " + buf.toString());
+            JUMPWorkbench.getInstance().getFrame().log(
+                "SQL query fragment to get spatial table BBOX filter:\n\t" 
+                + buf.toString(), this.getClass());
         }
 
         return buf.toString();

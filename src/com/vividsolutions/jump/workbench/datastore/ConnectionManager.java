@@ -17,6 +17,7 @@ import com.vividsolutions.jump.io.FeatureInputStream;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
+import java.sql.Connection;
 
 /**
  * Reuses existing connections where possible.
@@ -106,6 +107,15 @@ public class ConnectionManager {
         }
 
         public void close() throws DataStoreException {
+            throw new UnsupportedOperationException();
+        }
+
+        /**
+         * Returns the native JDBC connection used by the manager.
+         * (needed by DataStoreDataSource classes (Oracle, Postgis, ...)
+         * @return the jdbc Connection
+         */
+        public Connection getConnection() {
             throw new UnsupportedOperationException();
         }
 

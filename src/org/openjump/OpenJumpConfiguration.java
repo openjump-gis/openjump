@@ -643,7 +643,14 @@ public class OpenJumpConfiguration {
     addImageFactory(workbenchContext, registry, new MrSIDImageFactory(), null);
 
     // register revamped geoimage
-    GeoImageFactoryFileLayerLoader.register(workbenchContext);
+    // Nicolas Ribot: 04 dec: protection against java.lang.NoClassDefFoundError: it/geosolutions/imageio/gdalframework/GDALImageReaderSpi on Mac OSX
+    // though jar is in classpath and class exists in the Jar.
+    // (missing native Mac OSX gdal files ?)
+    try {
+      GeoImageFactoryFileLayerLoader.register(workbenchContext);
+    } catch (Throwable th) {
+      th.printStackTrace();
+    }
 
     DataSourceQueryChooserManager manager = DataSourceQueryChooserManager.get(workbenchContext.getWorkbench()
       .getBlackboard());

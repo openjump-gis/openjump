@@ -6,6 +6,8 @@ import com.vividsolutions.jump.datastore.*;
 
 import com.vividsolutions.jump.parameter.ParameterList;
 import com.vividsolutions.jump.parameter.ParameterListSchema;
+import com.vividsolutions.jump.util.Blackboard;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
 
 /**
  *  * A driver for supplying {@link OracleDSConnection}s
@@ -14,6 +16,10 @@ public class OracleDataStoreDriver
     implements DataStoreDriver
 {
   public static final String DRIVER_NAME = "Oracle Spatial";
+  /** name of the class dealing with SDO geometries from Geotools jar.
+   * Oracle driver needs this class
+   */
+  public static final String GT_SDO_CLASS_NAME = "org.geotools.data.oracle.sdo.SDO";
   public static final String JDBC_CLASS = "oracle.jdbc.driver.OracleDriver";
   // using new URL style: jdbc:oracle:thin:@//[HOST][:PORT]/SERVICE
   public static final String URL_PREFIX = "jdbc:oracle:thin:@//";
@@ -40,8 +46,16 @@ public class OracleDataStoreDriver
     String.class
     };
   private final ParameterListSchema schema = new ParameterListSchema(paramNames, paramClasses);
+  
+  /** The database driver */
+  private Driver driver;
+
+  public OracleDataStoreDriver(Driver driver) {
+    this.driver = driver;
+  }
 
   public OracleDataStoreDriver() {
+    this(null);
   }
 
   public String getName()
@@ -68,15 +82,13 @@ public class OracleDataStoreDriver
         (port).append
         ("/").append(database));
 
-    Driver driver = (Driver) Class.forName(JDBC_CLASS).newInstance();
-    DriverManager.registerDriver(driver);
-
     // mmichaud 2013-08-27 workaround for ticket #330
     String savePreferIPv4Stack = System.getProperty("java.net.preferIPv4Stack");
     String savePreferIPv6Addresses = System.getProperty("java.net.preferIPv6Addresses");
     System.setProperty("java.net.preferIPv4Stack", "true");
     System.setProperty("java.net.preferIPv6Addresses", "false");
 
+    JUMPWorkbench.getInstance().getFrame().log("Url for oracle: " + url, this.getClass());
     Connection conn = DriverManager.getConnection(url, user, password);
 
     if (savePreferIPv4Stack == null) {

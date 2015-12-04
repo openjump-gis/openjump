@@ -424,7 +424,8 @@ public class ConnectionDescriptorPanel extends JPanel
             Object parameter = parameterClassHandler(schema.getNames()[i],
                     schema.getClasses()[i]).getParameter(
                     (Component) editComponentList.get(i));
-            if (parameter == null || parameter.equals("")) {
+            //TODO: nicolas ribot, 19 fev 2015: password is not required for some databases
+            if (!"Password".equals(schema.getNames()[i]) && (parameter == null || parameter.equals(""))) {
                 return (I18N.get("jump.workbench.ui.plugin.datastore.ConnectionDescriptorPanel.Required-field-missing") + " " + schema.getNames()[i]);
             }
         }

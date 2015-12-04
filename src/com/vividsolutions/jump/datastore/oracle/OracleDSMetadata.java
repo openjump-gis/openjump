@@ -8,6 +8,7 @@ import com.vividsolutions.jump.datastore.PrimaryKeyColumn;
 import com.vividsolutions.jump.datastore.SpatialReferenceSystemID;
 import com.vividsolutions.jump.datastore.jdbc.JDBCUtil;
 import com.vividsolutions.jump.datastore.jdbc.ResultSetBlock;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import java.sql.DatabaseMetaData;
 
 import java.sql.ResultSet;
@@ -15,6 +16,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 public class OracleDSMetadata implements DataStoreMetadata {
+    private static final String SQL_QUERY_LAYERS = "select distinct owner, table_name from ALL_SDO_GEOM_METADATA";
 
     private final WKBReader reader = new WKBReader();
 
@@ -44,9 +46,13 @@ public class OracleDSMetadata implements DataStoreMetadata {
     public String[] getDatasetNames() {
         final List datasetNames = new ArrayList();
         // Spatial tables only.
+        JUMPWorkbench.getInstance().getFrame().log(
+            "SQL query to get list of spatial data:\n\t" 
+                + SQL_QUERY_LAYERS, this.getClass());
+
         JDBCUtil.execute(
             conn.getConnection(),
-            "select distinct owner, table_name from ALL_SDO_GEOM_METADATA",
+            SQL_QUERY_LAYERS,
             new ResultSetBlock() {
                 public void yield(ResultSet resultSet) throws SQLException {
                     while (resultSet.next()) {
@@ -72,7 +78,7 @@ public class OracleDSMetadata implements DataStoreMetadata {
             + "dim WHERE table_name = '" + getTableName(datasetName) + "' and owner='" + getSchemaName(datasetName) 
             + "' and column_name = '" + attributeName + "'";
         
-        System.out.println("getting extent: " + sql1);
+        JUMPWorkbench.getInstance().getFrame().log("SQL query to get extent:\n\t" + sql1, this.getClass());
 
         final ResultSetBlock resultSetBlock = new ResultSetBlock() {
             public void yield(ResultSet resultSet) throws Exception {
@@ -116,6 +122,11 @@ public class OracleDSMetadata implements DataStoreMetadata {
         final List<GeometryColumn> geometryAttributes = new ArrayList<GeometryColumn>();
         String sql = "select column_name, srid from ALL_SDO_GEOM_METADATA "
             + geomColumnMetadataWhereClause("owner", "table_name", datasetName);
+        
+        JUMPWorkbench.getInstance().getFrame().log(
+            "SQL query to get geometry attributes from a spatial table:\n\t" 
+                + sql, this.getClass());
+
         JDBCUtil.execute(
             conn.getConnection(), sql,
             new ResultSetBlock() {
@@ -153,6 +164,10 @@ public class OracleDSMetadata implements DataStoreMetadata {
         // gets the geometry column type for each geo col
         for (final GeometryColumn gc : geometryAttributes) {
             sql = "select distinct t." + gc.getName() + ".sdo_gtype from " + datasetName + " t";
+            JUMPWorkbench.getInstance().getFrame().log(
+            "SQL query to get geometry column type :\n\t" 
+                + sql, this.getClass());
+
             JDBCUtil.execute(
                 conn.getConnection(), sql,
                 new ResultSetBlock() {
@@ -226,6 +241,11 @@ public class OracleDSMetadata implements DataStoreMetadata {
             + "AND cons.constraint_name = cols.constraint_name \n"
             + "AND cons.owner = cols.owner \n"
             + "ORDER BY cols.table_name, cols.position";
+        
+        JUMPWorkbench.getInstance().getFrame().log(
+            "SQL query to get PK from a spatial table:\n\t" 
+                + sql, this.getClass());
+
         JDBCUtil.execute(
             conn.getConnection(), sql,
             new ResultSetBlock() {
@@ -252,6 +272,11 @@ public class OracleDSMetadata implements DataStoreMetadata {
             + "WHERE hidden_column = 'NO' and cols.table_name = '" + getTableName(datasetName) + "' and cols.OWNER = '"
             + getSchemaName(datasetName) + "' \n"
             + "ORDER BY cols.table_name, cols.COLUMN_ID";
+        
+        JUMPWorkbench.getInstance().getFrame().log(
+            "SQL query to get column names and types from a spatial table:\n\t" 
+                + sql, this.getClass());
+
         ColumnNameBlock block = new ColumnNameBlock();
         JDBCUtil.execute(conn.getConnection(), sql, block);
         return block.colName;
@@ -311,6 +336,11 @@ public class OracleDSMetadata implements DataStoreMetadata {
         String schema = tokens.length == 2 ? tokens[0] : "public";
         String table = tokens.length == 2 ? tokens[1] : tableName;
         String sql = "SELECT srid FROM geometry_columns where (f_table_schema = '" + schema + "' and f_table_name = '" + table + "')";
+        
+        JUMPWorkbench.getInstance().getFrame().log(
+            "SQL query to get geometry column SRID:\n\t" 
+                + sql, this.getClass());
+        
         // End of the fix
         JDBCUtil.execute(conn.getConnection(), sql, new ResultSetBlock() {
             public void yield(ResultSet resultSet) throws SQLException {

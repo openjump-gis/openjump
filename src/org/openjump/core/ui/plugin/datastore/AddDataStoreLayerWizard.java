@@ -33,7 +33,7 @@ import java.util.List;
 
 public class AddDataStoreLayerWizard extends AbstractWizardGroup {
 
-    private static final String KEY = AddDataStoreLayerWizard.class.getName();
+  private static final String KEY = AddDataStoreLayerWizard.class.getName();
   private AddDataStoreLayerWizardPanel dataStoreWizardPanel;
 
   private WorkbenchContext workbenchContext;
@@ -42,57 +42,57 @@ public class AddDataStoreLayerWizard extends AbstractWizardGroup {
 
   public AddDataStoreLayerWizard(WorkbenchContext workbenchContext) {
     super(I18N.get(KEY), IconLoader.icon("database_add.png"),
-      AddDataStoreLayerWizardPanel.class.getName());
+        AddDataStoreLayerWizardPanel.class.getName());
     this.workbenchContext = workbenchContext;
     dataStoreWizardPanel = new AddDataStoreLayerWizardPanel(workbenchContext);
     addPanel(dataStoreWizardPanel);
     chooseProjectPanel = new ChooseProjectPanel(workbenchContext,
-      dataStoreWizardPanel.getID());
+        dataStoreWizardPanel.getID());
     addPanel(chooseProjectPanel);
   }
 
   public String getFirstId() {
     String firstId = super.getFirstId();
     if (!chooseProjectPanel.hasActiveTaskFrame()
-      && chooseProjectPanel.hasTaskFrames()) {
+        && chooseProjectPanel.hasTaskFrames()) {
       chooseProjectPanel.setNextID(firstId);
       return chooseProjectPanel.getID();
     } else {
       return firstId;
     }
   }
-  
+
   public void run(WizardDialog dialog, TaskMonitor monitor) throws Exception {
     chooseProjectPanel.activateSelectedProject();
     try {
       AddDatastoreLayerPanel dataStorePanel = dataStoreWizardPanel.getDataStorePanel();
       if (dataStorePanel.validateInput() == null) {
-                final List<Layer> layers = createLayers(dataStorePanel, monitor);
+        final List<Layer> layers = createLayers(dataStorePanel, monitor);
 
-                // for all selected layers, create a new OJ layer
+        // for all selected layers, create a new OJ layer
         SwingUtilities.invokeLater(new Runnable() {
           public void run() {
-                        for (final Layer layer : layers) {
-            Collection<Category> selectedCategories = workbenchContext.getLayerNamePanel()
-              .getSelectedCategories();
-            LayerManager layerManager = workbenchContext.getLayerManager();
-            String categoryName = StandardCategoryNames.WORKING;
-            if (!selectedCategories.isEmpty()) {
-              categoryName = selectedCategories.iterator().next().getName();
-            }
-            try {
+            for (final Layer layer : layers) {
+              Collection<Category> selectedCategories = workbenchContext.getLayerNamePanel()
+                  .getSelectedCategories();
+              LayerManager layerManager = workbenchContext.getLayerManager();
+              String categoryName = StandardCategoryNames.WORKING;
+              if (!selectedCategories.isEmpty()) {
+                categoryName = selectedCategories.iterator().next().getName();
+              }
+              try {
                 workbenchContext.getLayerViewPanel().getViewport().update();
-                            } catch (Exception e) {
+              } catch (Exception e) {
                 //throw NoninvertibleTransformationException;
+              }
+              layerManager.addLayerable(categoryName, layer);
             }
-            layerManager.addLayerable(categoryName, layer);
           }
-                    }
         });
 
         workbenchContext.getLayerViewPanel().getViewport().update();
-            } else {
-                throw new Exception(dataStorePanel.validateInput());
+      } else {
+        throw new Exception(dataStorePanel.validateInput());
       }
     } catch (Exception e) {
       monitor.report(e);
@@ -100,73 +100,73 @@ public class AddDataStoreLayerWizard extends AbstractWizardGroup {
     }
   }
 
-    private Layer createLayer(final DataStoreLayer dsLayer,
-            ConnectionDescriptor connectionDescriptor, TaskMonitor monitor) throws Exception {
+  private Layer createLayer(final DataStoreLayer dsLayer,
+      ConnectionDescriptor connectionDescriptor, TaskMonitor monitor) throws Exception {
 
     LayerManager layerManager = workbenchContext.getLayerManager();
     Color fillColor = layerManager.generateLayerFillColor();
     FeatureCollection featureCollection = AddNewLayerPlugIn.createBlankFeatureCollection();
-        Layer layer = new Layer(dsLayer.getFullName(), fillColor, featureCollection,
-      layerManager);
+    Layer layer = new Layer(dsLayer.getFullName(), fillColor, featureCollection,
+        layerManager);
+    
+    String geometryAttributeName = dsLayer.getGeoCol().getName();
+    String whereClause = dsLayer.getWhereClause();
+    int limit = dsLayer.getLimit();
+    boolean caching = dsLayer.isCaching();
+    DataStoreDataSource ds = new DataStoreDataSource(dsLayer.getFullName(),
+        geometryAttributeName, whereClause, limit, connectionDescriptor, caching,
+        workbenchContext);
 
-        String geometryAttributeName = dsLayer.getGeoCol().getName();
-        String whereClause = dsLayer.getWhereClause();
-        int limit = dsLayer.getLimit();
-        boolean caching = dsLayer.isCaching();
-        DataStoreDataSource ds = new DataStoreDataSource(dsLayer.getFullName(),
-      geometryAttributeName, whereClause, limit, connectionDescriptor, caching,
-      workbenchContext);
-
-        DataSourceQuery dsq = new DataSourceQuery(ds, null, dsLayer.getFullName());
+    DataSourceQuery dsq = new DataSourceQuery(ds, null, dsLayer.getFullName());
 
     layer.setDataSourceQuery(dsq);
 
     CoordinateSystemRegistry crsRegistry = CoordinateSystemRegistry.instance(workbenchContext.getBlackboard());
     try {
-        layerManager.setFiringEvents(false); // added by michaudm on 2009-04-05
-        // TODO : there is currently two different ways to fix the SRID
-        // May need refactoring there
-        // One is with a CoordinateSystemRegistry stored in the context blacboard
-        // Other is with a "Style" which can be persisted with the layer
-        load(layer, crsRegistry, monitor);
-        SRIDStyle sridStyle = new SRIDStyle();
-            sridStyle.setSRID(dsLayer.getGeoCol().getSRID());
-        layer.addStyle(sridStyle);
-        layerManager.setFiringEvents(true); // added by michaudm on 2009-04-05
-        } finally {
-            layerManager.setFiringEvents(true);
+      layerManager.setFiringEvents(false); // added by michaudm on 2009-04-05
+      // TODO : there is currently two different ways to fix the SRID
+      // May need refactoring there
+      // One is with a CoordinateSystemRegistry stored in the context blacboard
+      // Other is with a "Style" which can be persisted with the layer
+      load(layer, crsRegistry, monitor);
+      SRIDStyle sridStyle = new SRIDStyle();
+      sridStyle.setSRID(dsLayer.getGeoCol().getSRID());
+      layer.addStyle(sridStyle);
+      layerManager.setFiringEvents(true); // added by michaudm on 2009-04-05
+    } finally {
+      layerManager.setFiringEvents(true);
     }
     return layer;
   }
 
-    private List<Layer> createLayers(final AddDatastoreLayerPanel panel,
-            TaskMonitor monitor) throws Exception {
-        ArrayList<Layer> ret = new ArrayList<Layer>();
-        List<DataStoreLayer> dsLayers = panel.getDatasetLayers();
-        ConnectionDescriptor connectionDescriptor = panel.getConnectionDescriptor();
+  private List<Layer> createLayers(final AddDatastoreLayerPanel panel,
+      TaskMonitor monitor) throws Exception {
+    ArrayList<Layer> ret = new ArrayList<Layer>();
+    List<DataStoreLayer> dsLayers = panel.getDatasetLayers();
+    ConnectionDescriptor connectionDescriptor = panel.getConnectionDescriptor();
 
-        for (DataStoreLayer dsl : dsLayers) {
-            ret.add(createLayer(dsl, connectionDescriptor, monitor));
-        }
-        return ret;
-
+    for (DataStoreLayer dsl : dsLayers) {
+      ret.add(createLayer(dsl, connectionDescriptor, monitor));
     }
+    return ret;
+
+  }
 
   public static void load(Layer layer, CoordinateSystemRegistry registry,
-    TaskMonitor monitor) throws Exception {
+      TaskMonitor monitor) throws Exception {
     layer.setFeatureCollection(executeQuery(layer.getDataSourceQuery()
-      .getQuery(), layer.getDataSourceQuery().getDataSource(), registry,
-      monitor));
+        .getQuery(), layer.getDataSourceQuery().getDataSource(), registry,
+        monitor));
     layer.setFeatureCollectionModified(false);
   }
 
   private static FeatureCollection executeQuery(String query,
-    DataSource dataSource, CoordinateSystemRegistry registry,
-    TaskMonitor monitor) throws Exception {
+      DataSource dataSource, CoordinateSystemRegistry registry,
+      TaskMonitor monitor) throws Exception {
     Connection connection = dataSource.getConnection();
     try {
       return dataSource.installCoordinateSystem(connection.executeQuery(query,
-        monitor), registry);
+          monitor), registry);
     } finally {
       connection.close();
     }
