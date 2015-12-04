@@ -25,6 +25,9 @@
 	<plug-in>
 		org.openjump.core.ui.plugin.datastore.postgis.SaveToPostGISPlugIn
 	</plug-in>
+	<extension>
+		com.vividsolutions.jump.datastore.OracleDataStoreExtension
+	</extension>
 	<plug-in>
 		org.openjump.core.ccordsys.srid.EnsureAllLayersHaveSRIDStylePlugIn
 	</plug-in>
@@ -1679,7 +1682,6 @@
 	<plug-in>
 		org.openjump.core.ui.plugin.edittoolbox.AutoCompletePolygonPlugIn
 	</plug-in>
-
 	<plug-in>
 		org.openjump.core.ui.plugin.edittoolbox.FillPolygonPlugIn
 	</plug-in>
