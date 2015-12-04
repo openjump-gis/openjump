@@ -25,9 +25,6 @@
 	<plug-in>
 		org.openjump.core.ui.plugin.datastore.postgis.SaveToPostGISPlugIn
 	</plug-in>
-	<extension>
-		com.vividsolutions.jump.datastore.OracleDataStoreExtension
-	</extension>
 	<plug-in>
 		org.openjump.core.ccordsys.srid.EnsureAllLayersHaveSRIDStylePlugIn
 	</plug-in>
@@ -1665,23 +1662,24 @@
 		org.openjump.core.ui.plugin.edittoolbox.ConstrainedMoveVertexPlugIn
 	</plug-in>
 	<plug-in>
-		org.openjump.core.ui.plugin.edittoolbox.RotateSelectedItemPlugIn
-	</plug-in>
-	<plug-in>
 		org.openjump.core.ui.plugin.edittoolbox.SelectOneItemPlugIn
 	</plug-in>
 	<plug-in>
 		org.openjump.core.ui.plugin.edittoolbox.DrawCircleWithGivenRadiusPlugIn
 	</plug-in>
 	<plug-in>
+		org.openjump.core.ui.plugin.edittoolbox.NoteToolPlugIn
+	</plug-in>
+	<plug-in>
 		org.openjump.core.ui.plugin.edittoolbox.CutPolygonSIGLEPlugIn
+	</plug-in>
+	<plug-in>
+		org.openjump.core.ui.plugin.edittoolbox.CutFeaturesPlugIn
 	</plug-in>
 	<plug-in>
 		org.openjump.core.ui.plugin.edittoolbox.AutoCompletePolygonPlugIn
 	</plug-in>
-	<plug-in>
-		org.openjump.core.ui.plugin.edittoolbox.NoteToolPlugIn
-	</plug-in>
+
 	<plug-in>
 		org.openjump.core.ui.plugin.edittoolbox.FillPolygonPlugIn
 	</plug-in>
