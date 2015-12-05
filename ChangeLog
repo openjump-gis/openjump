@@ -1,5 +1,7 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2015-12-06 mmichaud <m.michael.michaud@orange.fr>
+  * add MakeValidPlugIn in Tools>Analysis to repair invalid geometries
 
 2015-12-03 mmichaud <m.michael.michaud@orange.fr>
   * add new plugin EraseLayerAWithLayerB in Tools>Analysis
