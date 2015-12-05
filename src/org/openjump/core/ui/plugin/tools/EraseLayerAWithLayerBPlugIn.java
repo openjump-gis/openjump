@@ -86,7 +86,7 @@ public class EraseLayerAWithLayerBPlugIn extends AbstractThreadedUiPlugIn {
         final JComboBox layerComboBoxA    = dialog.addLayerComboBox(LAYER_A, candidateA, context.getLayerManager());
         final JComboBox layerComboBoxB    = dialog.addLayerComboBox(LAYER_B, candidateB, context.getLayerManager());
         final JCheckBox showNewVerticesCB = dialog.addCheckBox(SHOW_NEW_VERTICES, showNewVertices, SHOW_NEW_VERTICES);
-        final JCheckBox decomposeMultiCB  = dialog.addCheckBox(DECOMPOSE_MULTI, showNewVertices, DECOMPOSE_MULTI);
+        final JCheckBox decomposeMultiCB  = dialog.addCheckBox(DECOMPOSE_MULTI, decomposeMulti, DECOMPOSE_MULTI);
 
         GUIUtil.centreOnWindow(dialog);
     }
