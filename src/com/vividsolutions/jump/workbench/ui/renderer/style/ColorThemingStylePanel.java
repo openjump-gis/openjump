@@ -898,7 +898,7 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
                 public void stateChanged(ChangeEvent e) {
                     if (isGlobalTransparencyEnabled()) {
                         for (Object obj : tableModel().getAttributeValueToBasicStyleMap().values()) {
-                            ((XBasicStyle) obj).setAlpha(getAlpha());
+                            ((BasicStyle) obj).setAlpha(getAlpha());
                         }
                         tableModel().getDefaultStyle().setAlpha(getAlpha());
                         basicStyleListCellRenderer.setAlpha(getAlpha());
@@ -923,7 +923,7 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
             public void stateChanged(ChangeEvent e) {
                 if (isGlobalLineWidthEnabled()) {
                     for (Object obj : tableModel().getAttributeValueToBasicStyleMap().values()) {
-                        ((XBasicStyle) obj).setLineWidth(getLineWidth());
+                        ((BasicStyle) obj).setLineWidth(getLineWidth());
                     }
                     tableModel().getDefaultStyle().setLineWidth(getLineWidth());
                     basicStyleListCellRenderer.setLineWidth(getLineWidth());
@@ -1270,7 +1270,7 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         getTransparencySlider().setEnabled(transparencyCheckBox.isSelected());
         if (transparencyCheckBox.isSelected()) {
             for (Object obj : tableModel().getAttributeValueToBasicStyleMap().values()) {
-                ((XBasicStyle) obj).setAlpha(getAlpha());
+                ((BasicStyle) obj).setAlpha(getAlpha());
             }
             tableModel().getDefaultStyle().setAlpha(getAlpha());
         }
@@ -1280,7 +1280,7 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         getLineWidthSlider().setEnabled(lineWidthCheckBox.isSelected());
         if (lineWidthCheckBox.isSelected()) {
             for (Object obj : tableModel().getAttributeValueToBasicStyleMap().values()) {
-                ((XBasicStyle) obj).setLineWidth(getLineWidth());
+                ((BasicStyle) obj).setLineWidth(getLineWidth());
             }
             tableModel().getDefaultStyle().setLineWidth(getLineWidth());
         }
