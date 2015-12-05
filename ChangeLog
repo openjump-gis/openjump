@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+
+2015-12-03 mmichaud <m.michael.michaud@orange.fr>
+  * add new plugin EraseLayerAWithLayerB in Tools>Analysis
+
 2015-12-04 Giuseppe Aruta  <giuseppe_aruta@yahoo.it>
    * Added CutFeatures tool into the editing toolbox
    * This tool partially derives from SplitPolygonPlugIn.class from Kosmo SAIG
@@ -10,7 +14,10 @@
     activates in PLUS as it needs DBQuery's *gt2-oracle-spatial-2.x.jar*
     also *ojdbc6.jar* must be downloaded and installed manually because
     of licensing restrictions
-  * extensions can hold messages now (eg. tell why they are not activated) 
+  * extensions can hold messages now (eg. tell why they are not activated)
+
+2015-12-03 mmichaud <m.michael.michaud@orange.fr>
+  * fix inconsistency between sld management and new XBasicStyle
 
 2015-11-23 mmichaud <m.michael.michaud@orange.fr>
   * Fix bug #411 : plugins in attributeTable context menu was deactivated
