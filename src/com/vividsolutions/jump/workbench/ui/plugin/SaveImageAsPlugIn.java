@@ -178,7 +178,8 @@ public class SaveImageAsPlugIn extends ExportImagePlugIn {
     public void initialize(PlugInContext context) throws Exception {
       super.initialize(context);
       context.getFeatureInstaller().addMainMenuPlugin(this, new String[] {
-          MenuNames.FILE, MenuNames.FILE_SAVEVIEW });
+          MenuNames.FILE, MenuNames.FILE_SAVEVIEW },
+              I18N.get(this.getClass().getName())+"...",false,null,null);
     }
 
     public boolean execute(PlugInContext context) throws Exception {
