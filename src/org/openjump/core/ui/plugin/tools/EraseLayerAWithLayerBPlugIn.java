@@ -56,7 +56,7 @@ public class EraseLayerAWithLayerBPlugIn extends AbstractThreadedUiPlugIn {
         FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
         featureInstaller.addMainMenuPlugin(
                 this,
-                new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
+                new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY},
                 getName() + "...", false, null,
                 createEnableCheck(context.getWorkbenchContext()));
     }
