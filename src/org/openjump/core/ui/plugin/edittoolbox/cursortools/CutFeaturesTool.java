@@ -2,12 +2,10 @@
   
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
-import com.vividsolutions.jts.operation.linemerge.LineMerger;
 import com.vividsolutions.jts.operation.polygonize.Polygonizer;
 import com.vividsolutions.jts.operation.union.UnaryUnionOp;
 import com.vividsolutions.jts.operation.valid.IsValidOp;
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.feature.BasicFeature;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -15,7 +13,7 @@ import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
-import com.vividsolutions.jump.workbench.ui.LayerNamePanel;
+import com.vividsolutions.jump.workbench.ui.SelectionManager;
 import com.vividsolutions.jump.workbench.ui.cursortool.CoordinateListMetrics;
 import com.vividsolutions.jump.workbench.ui.cursortool.MultiClickTool;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
@@ -86,30 +84,26 @@ import javax.swing.JOptionPane;
             throws Exception {
       WorkbenchContext context = getWorkbench().getContext();
       reportNothingToUndoYet();
-      LayerNamePanel layernamepanel = context.getLayerNamePanel();
-      Layer[] selectedLayers = layernamepanel.getSelectedLayers();
 
+      SelectionManager selectionManager = context.getLayerViewPanel().getSelectionManager();
 
-      if (selectedLayers.length == 0) {
-        JOptionPane.showMessageDialog(null,
-                I18N.getMessage("com.vividsolutions.jump.workbench.plugin.At-least-one-layer-must-be-selected",
-                        new Object[]{Integer.valueOf(1)}), I18N.get("org.openjump.core.ui.plugin.edittoolbox.Information"),
-                1);
+      for (Layer activeLayer : selectionManager.getLayersWithSelectedItems()) {
+        if (!activeLayer.isEditable()) {
+          JOptionPane.showMessageDialog(null,
+                  I18N.getMessage("plugin.EnableCheckFactory.selected-items-layers-must-be-editable",
+                          new Object[]{Integer.valueOf(1)}), I18N.get("org.openjump.core.ui.plugin.edittoolbox.Information"),
+                  1);
+          return;
+        }
+      }
 
-      } else if (selectedLayers.length > 1) {
-        JOptionPane.showMessageDialog(null,
-                I18N.getMessage("com.vividsolutions.jump.workbench.plugin.Exactly-one-layer-must-have-selected-items",
-                        new Object[]{Integer.valueOf(1)}), I18N.get("org.openjump.core.ui.plugin.edittoolbox.Information"),
-                1);
-      } else {
-        Layer activeLayer = selectedLayers[0];
+      for (Layer activeLayer : selectionManager.getLayersWithSelectedItems()) {
         if (activeLayer.isEditable()) {
           Collection selectedFeatures = context.getLayerViewPanel()
                   .getSelectionManager().getFeaturesWithSelectedItems(activeLayer);
           EditTransaction edtr = new EditTransaction(new ArrayList(), "cut polygon", activeLayer, true, true, context.getLayerViewPanel());
           for (Iterator k = selectedFeatures.iterator(); k.hasNext(); ) {
             Feature featureSelected = (Feature) k.next();
-            edtr.deleteFeature(featureSelected);
             this.geomSelected = featureSelected.getGeometry();
             this.geomDraw = getLineString();
             if ((this.geomSelected.isEmpty())) {
@@ -128,8 +122,6 @@ import javax.swing.JOptionPane;
                   featureIntersect.setGeometry(geom);
                   edtr.createFeature(featureIntersect);
                 }
-                //	selectionManager.getFeatureSelection().selectItems(editableLayer, featureIntersect);
-                //	selectionManager.getFeatureSelection().selectItems(editableLayer, featureIntersect1);
               } else if (this.geomSelected instanceof LineString || this.geomSelected instanceof MultiLineString) {
                 edtr.deleteFeature(featureSelected);
                 List<Geometry> div = splitLines(this.geomDraw, this.geomSelected);
@@ -139,19 +131,19 @@ import javax.swing.JOptionPane;
                   featureIntersect.setGeometry(geom);
                   edtr.createFeature(featureIntersect);
                 }
-                //		selectionManager.getFeatureSelection().selectItems(editableLayer, featureIntersect);
-                //		selectionManager.getFeatureSelection().selectItems(editableLayer, featureIntersect1);
               } else {
                 return;
               }
             } else {
-              JOptionPane.showMessageDialog(null, I18N.get("ui.SchemaPanel.layer-must-be-editable"), I18N.get("org.openjump.core.ui.plugin.edittoolbox.Information"), JOptionPane.INFORMATION_MESSAGE);
+              // Points or GeometryCollections
             }
           }
+          context.getLayerViewPanel().getSelectionManager().unselectItems(activeLayer);
           edtr.commit();
           edtr.clearEnvelopeCaches();
         }
       }
+      //}
     }
 
     protected boolean isRollingBackInvalidEdits(WorkbenchContext context) {
