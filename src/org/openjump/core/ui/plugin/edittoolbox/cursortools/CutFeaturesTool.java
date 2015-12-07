@@ -112,7 +112,11 @@ import javax.swing.JOptionPane;
             if (this.geomSelected.contains(this.geomDraw)) {
               return;
             }
-            if (!(this.geomSelected instanceof GeometryCollection) && this.geomDraw.intersects(this.geomSelected)) {
+            if ((this.geomSelected instanceof GeometryCollection)) {
+              context.getWorkbench().getFrame().warnUser(
+                      I18N.get("org.openjump.core.ui.plugin.tools.CutFeaturesTool.geometryCollection-cannot-be-processed"));
+            }
+            else if (this.geomDraw.intersects(this.geomSelected)) {
               if (this.geomSelected instanceof Polygon || this.geomSelected instanceof MultiPolygon) {
                 edtr.deleteFeature(featureSelected);
                 List<Geometry> div = splitPolygon(this.geomDraw, this.geomSelected);
