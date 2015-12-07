@@ -112,7 +112,7 @@ import javax.swing.JOptionPane;
             if (this.geomSelected.contains(this.geomDraw)) {
               return;
             }
-            if ((this.geomSelected instanceof GeometryCollection)) {
+            if ((this.geomSelected.getClass().getSimpleName().equals("GeometryCollection"))) {
               context.getWorkbench().getFrame().warnUser(
                       I18N.get("org.openjump.core.ui.plugin.tools.CutFeaturesTool.geometryCollection-cannot-be-processed"));
             }
