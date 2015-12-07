@@ -131,6 +131,8 @@ import javax.swing.JOptionPane;
                   featureIntersect.setGeometry(geom);
                   edtr.createFeature(featureIntersect);
                 }
+              } else if (this.geomSelected instanceof Point || this.geomSelected instanceof MultiPoint||this.geomSelected instanceof GeometryCollection ) {
+            	// Points or GeometryCollections
               } else {
                 return;
               }
