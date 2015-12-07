@@ -1,110 +1,40 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package com.vividsolutions.jump.datastore.oracle;
 
-import java.sql.*;
-
-import com.vividsolutions.jump.datastore.*;
-
+import com.vividsolutions.jump.datastore.DataStoreConnection;
+import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDataStoreDriver;
 import com.vividsolutions.jump.parameter.ParameterList;
-import com.vividsolutions.jump.parameter.ParameterListSchema;
-import com.vividsolutions.jump.util.Blackboard;
-import com.vividsolutions.jump.workbench.JUMPWorkbench;
 
 /**
- *  * A driver for supplying {@link OracleDSConnection}s
+ * A driver for supplying {@link SpatialDatabaseDSConnection}s
  */
 public class OracleDataStoreDriver
-    implements DataStoreDriver
-{
-  public static final String DRIVER_NAME = "Oracle Spatial";
-  /** name of the class dealing with SDO geometries from Geotools jar.
-   * Oracle driver needs this class
-   */
-  public static final String GT_SDO_CLASS_NAME = "org.geotools.data.oracle.sdo.SDO";
-  public static final String JDBC_CLASS = "oracle.jdbc.driver.OracleDriver";
-  // using new URL style: jdbc:oracle:thin:@//[HOST][:PORT]/SERVICE
-  public static final String URL_PREFIX = "jdbc:oracle:thin:@//";
+    extends SpatialDatabasesDataStoreDriver {
+    // TODO: uniformize
+    public final static String JDBC_CLASS = "oracle.jdbc.driver.OracleDriver";
+    public static final String GT_SDO_CLASS_NAME = "org.geotools.data.oracle.sdo.SDO";
 
-  public static final String PARAM_Server = "Server";
-  public static final String PARAM_Port = "Port";
-  public static final String PARAM_Instance = "Database";
-  public static final String PARAM_User = "User";
-  public static final String PARAM_Password = "Password";
 
-  private static final String[] paramNames = new String[] {
-    PARAM_Server,
-    PARAM_Port,
-    PARAM_Instance,
-    PARAM_User,
-    PARAM_Password
-    };
-  private static final Class[] paramClasses = new Class[]
-  {
-    String.class,
-    Integer.class,
-    String.class,
-    String.class,
-    String.class
-    };
-  private final ParameterListSchema schema = new ParameterListSchema(paramNames, paramClasses);
-  
-  /** The database driver */
-  private Driver driver;
-
-  public OracleDataStoreDriver(Driver driver) {
-    this.driver = driver;
-  }
-
-  public OracleDataStoreDriver() {
-    this(null);
-  }
-
-  public String getName()
-  {
-    return DRIVER_NAME;
-  }
-  public ParameterListSchema getParameterListSchema()
-  {
-    return schema;
-  }
-  public DataStoreConnection createConnection(ParameterList params)
-      throws Exception
-  {
-    String host = params.getParameterString(PARAM_Server);
-    int port = params.getParameterInt(PARAM_Port);
-    String database = params.getParameterString(PARAM_Instance);
-    String user = params.getParameterString(PARAM_User);
-    String password = params.getParameterString(PARAM_Password);
-
-    String url
-        = String.valueOf(new StringBuffer(URL_PREFIX).append
-        (host).append
-        (":").append
-        (port).append
-        ("/").append(database));
-
-    // mmichaud 2013-08-27 workaround for ticket #330
-    String savePreferIPv4Stack = System.getProperty("java.net.preferIPv4Stack");
-    String savePreferIPv6Addresses = System.getProperty("java.net.preferIPv6Addresses");
-    System.setProperty("java.net.preferIPv4Stack", "true");
-    System.setProperty("java.net.preferIPv6Addresses", "false");
-
-    JUMPWorkbench.getInstance().getFrame().log("Url for oracle: " + url, this.getClass());
-    Connection conn = DriverManager.getConnection(url, user, password);
-
-    if (savePreferIPv4Stack == null) {
-        System.getProperties().remove("java.net.preferIPv4Stack");
-    } else {
-        System.setProperty("java.net.preferIPv4Stack", savePreferIPv4Stack);
+    public OracleDataStoreDriver() {
+        this.driverName = "Oracle Spatial";
+        this.jdbcClass = OracleDataStoreDriver.JDBC_CLASS;
+        this.urlPrefix = "jdbc:oracle:thin:@//";
     }
-    if (savePreferIPv6Addresses == null) {
-        System.getProperties().remove("java.net.preferIPv6Addresses");
-    } else {
-        System.setProperty("java.net.preferIPv6Addresses", savePreferIPv6Addresses);
+    
+    /**
+     * returns the right type of DataStoreConnection
+     * @param params
+     * @return
+     * @throws Exception 
+     */
+    @Override
+    public DataStoreConnection createConnection(ParameterList params)
+        throws Exception {
+        DataStoreConnection ret = super.createConnection(params);
+        return new OracleDSConnection(ret.getConnection());
     }
-    return new OracleDSConnection(conn);
-  }
-  public boolean isAdHocQuerySupported() {
-      return true;
-  }
-
 }

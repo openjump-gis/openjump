@@ -1,44 +1,35 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package com.vividsolutions.jump.datastore.postgis;
 
-import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.datastore.*;
+import com.vividsolutions.jump.datastore.FilterQuery;
+import com.vividsolutions.jump.datastore.SpatialReferenceSystemID;
+import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDSConnection;
+import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDSMetadata;
+import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesFeatureInputStream;
+import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesSQLBuilder;
 import com.vividsolutions.jump.io.FeatureInputStream;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
+ *
+ * @author nicolas
  */
-public class PostgisDSConnection implements DataStoreConnection {
+public class PostgisDSConnection extends SpatialDatabasesDSConnection {
 
-    private PostgisDSMetadata dbMetadata;
-    private Connection connection;
-
-    public PostgisDSConnection(Connection conn) {
-        connection = conn;
-        dbMetadata = new PostgisDSMetadata(this);
+    public PostgisDSConnection(Connection con) {
+        super(con); // ?
+        connection = con;
+        this.dbMetadata = new PostgisDSMetadata(this);
     }
-
-    public Connection getConnection() {
-        return connection;
-    }
-
-    public DataStoreMetadata getMetadata() {
-        return dbMetadata;
-    }
-
-    public FeatureInputStream execute(Query query) throws Exception {
-        if (query instanceof FilterQuery) {
-            try {
-                return executeFilterQuery((FilterQuery) query);
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        if (query instanceof AdhocQuery) {
-            return executeAdhocQuery((AdhocQuery) query);
-        }
-        throw new IllegalArgumentException(I18N.get(this.getClass().getName()+".unsupported-query-type"));
+    
+    @Override
+    public SpatialDatabasesSQLBuilder getSqlBuilder(SpatialReferenceSystemID srid, String[] colNames) {
+      return new PostgisSQLBuilder(this.dbMetadata, srid, colNames);
     }
 
     /**
@@ -51,41 +42,10 @@ public class PostgisDSConnection implements DataStoreConnection {
      * @return the results of the query
      * @throws SQLException
      */
+    @Override
     public FeatureInputStream executeFilterQuery(FilterQuery query) throws SQLException {
-
-        SpatialReferenceSystemID srid = dbMetadata.getSRID(query.getDatasetName(), query.getGeometryAttributeName());
-        String[] colNames = dbMetadata.getColumnNames(query.getDatasetName());
-
-        PostgisSQLBuilder builder = new PostgisSQLBuilder(srid, colNames);
-        String queryString = builder.getSQL(query);
-
-        // [mmichaud 2013-08-07] add a parameter for database primary key name
-        return new PostgisFeatureInputStream(connection, queryString, query.getPrimaryKey());
+        SpatialDatabasesFeatureInputStream fis = (SpatialDatabasesFeatureInputStream)super.executeFilterQuery(query);
+        return new PostgisFeatureInputStream(fis.getConnection(), fis.getQueryString(), query.getPrimaryKey());
     }
-
-    public FeatureInputStream executeAdhocQuery(AdhocQuery query) throws Exception {
-        String queryString = query.getQuery();
-        PostgisFeatureInputStream ifs = new PostgisFeatureInputStream(connection, queryString, query.getPrimaryKey());
-        if (ifs.getFeatureSchema().getGeometryIndex() < 0) {
-            throw new Exception(I18N.get(this.getClass().getName()+".resultset-must-have-a-geometry-column"));
-        }
-        return ifs;
-    }
-
-
-    public void close() throws DataStoreException {
-        try {
-            connection.close();
-        }
-        catch (Exception ex) { throw new DataStoreException(ex); }
-    }
-
-    public boolean isClosed() throws DataStoreException {
-        try {
-            return connection.isClosed();
-        } catch (SQLException e) {
-            throw new DataStoreException(e);
-        }
-    }
-
+    
 }

@@ -1,383 +1,84 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package com.vividsolutions.jump.datastore.oracle;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.io.WKBReader;
-import com.vividsolutions.jump.datastore.DataStoreMetadata;
+import com.vividsolutions.jump.datastore.DataStoreConnection;
+import com.vividsolutions.jump.datastore.spatialdatabases.*;
 import com.vividsolutions.jump.datastore.GeometryColumn;
-import com.vividsolutions.jump.datastore.PrimaryKeyColumn;
-import com.vividsolutions.jump.datastore.SpatialReferenceSystemID;
-import com.vividsolutions.jump.datastore.jdbc.JDBCUtil;
-import com.vividsolutions.jump.datastore.jdbc.ResultSetBlock;
-import com.vividsolutions.jump.workbench.JUMPWorkbench;
-import java.sql.DatabaseMetaData;
-
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.List;
 
-public class OracleDSMetadata implements DataStoreMetadata {
-    private static final String SQL_QUERY_LAYERS = "select distinct owner, table_name from ALL_SDO_GEOM_METADATA";
+public class OracleDSMetadata extends SpatialDatabasesDSMetadata {
 
-    private final WKBReader reader = new WKBReader();
+    public OracleDSMetadata(DataStoreConnection con) {
+        conn = con;
+        // TODO: use bind parameters to avoid SQL injection
+        try {
+            this.defaultSchemaName = conn.getConnection().getMetaData().getUserName();
+        } catch (SQLException ex) {
+            System.err.println(ex.toString());
+            defaultSchemaName = "";
+        }
+        datasetNameQuery = "SELECT distinct asgm.OWNER, asgm.TABLE_NAME FROM ALL_SDO_GEOM_METADATA asgm";
+        spatialDbName = "Oracle Spatial";
+        spatialExtentQuery1 = "with tmp as (\n" +
+            "  SELECT dim.*\n" +
+            "  FROM ALL_SDO_GEOM_METADATA asgm, TABLE (asgm.diminfo) dim\n" +
+            "  WHERE owner = '%s' and table_name = '%s' AND COLUMN_NAME='%s'\n" +
+            ") select sdo_util.to_wktgeometry(SDO_GEOMETRY(\n" +
+            "    2003,\n" +
+            "    NULL,\n" +
+            "    NULL,\n" +
+            "    SDO_ELEM_INFO_ARRAY(1,1003,1),\n" +
+            "    SDO_ORDINATE_ARRAY((select sdo_lb from tmp where sdo_dimname = 'X'),\n" +
+            "                       (select sdo_lb from tmp where sdo_dimname = 'Y'), \n" +
+            "                       (select sdo_ub from tmp where sdo_dimname = 'X'),\n" +
+            "                       (select sdo_lb from tmp where sdo_dimname = 'Y'),\n" +
+            "                       (select sdo_ub from tmp where sdo_dimname = 'X'),\n" +
+            "                       (select sdo_ub from tmp where sdo_dimname = 'Y'),\n" +
+            "                       (select sdo_ub from tmp where sdo_dimname = 'X'),\n" +
+            "                       (select sdo_lb from tmp where sdo_dimname = 'Y'),\n" +
+            "                       (select sdo_lb from tmp where sdo_dimname = 'X'),\n" +
+            "                       (select sdo_lb from tmp where sdo_dimname = 'Y'))\n" +
+            "  )) as geom \n" +
+            "from dual";
+        
+        spatialExtentQuery2 = "select sdo_util.to_wktgeometry(sdo_aggr_mbr(%s)) as geom from %s.%s";
+        
+        geoColumnsQuery = "select t.column_name, t.srid, 'SDO_GEOMETRY' as type from ALL_SDO_GEOM_METADATA t "
+            + "where t.owner = '%s' and t.table_name = '%s'";
+        sridQuery = "select t.srid from ALL_SDO_GEOM_METADATA t "
+            + "where t.owner = '%s' and t.table_name = '%s' and t.COLUMN_NAME = '%s'";
+    }
 
-    private OracleDSConnection conn;
-    // connection username, used a default schema
-    private String userSchema;
+    @Override
+    public String getSpatialExtentQuery1(String schema, String table, String attributeName) {
+        return String.format(this.spatialExtentQuery1, schema, table, attributeName);
+    }
 
-    private Map sridMap = new HashMap();
+    @Override
+    public String getSpatialExtentQuery2(String schema, String table, String attributeName) {
+        return String.format(this.spatialExtentQuery2, attributeName, schema, table);
+    }
+
+    @Override
+    public String getGeoColumnsQuery(String datasetName) {
+        return String.format(this.geoColumnsQuery, getSchemaName(datasetName), getTableName(datasetName));
+    }
+
+    @Override
+    public String getSridQuery(String schemaName, String tableName, String colName) {
+        // TODO
+        return String.format(this.sridQuery, schemaName, tableName, colName);
+    }
     
-    // map storing the geo column names and the name of their index 
-    private HashMap<String, String> geoIndexes = new HashMap<String, String>();
-
-    public OracleDSMetadata(OracleDSConnection conn) {
-        this.conn = conn;
-
-        try {
-            this.userSchema = conn.getConnection().getMetaData().getUserName();
-        } catch (SQLException ex) {
-            System.out.println(ex.toString());
-        }
-    }
-
-    public HashMap<String, String> getGeoIndexes() {
-        return geoIndexes;
-    }
-
-    public String[] getDatasetNames() {
-        final List datasetNames = new ArrayList();
-        // Spatial tables only.
-        JUMPWorkbench.getInstance().getFrame().log(
-            "SQL query to get list of spatial data:\n\t" 
-                + SQL_QUERY_LAYERS, this.getClass());
-
-        JDBCUtil.execute(
-            conn.getConnection(),
-            SQL_QUERY_LAYERS,
-            new ResultSetBlock() {
-                public void yield(ResultSet resultSet) throws SQLException {
-                    while (resultSet.next()) {
-                        String schema = resultSet.getString(1);
-                        String table = resultSet.getString(2);
-                        // on Oracle, user's schema is the default schema
-                        if (!schema.equalsIgnoreCase(userSchema)) {
-                            table = schema + "." + table;
-                        }
-                        datasetNames.add(table);
-                    }
-                }
-            });
-        return (String[]) datasetNames.toArray(new String[datasetNames.size()]);
-    }
-
-    // TODO: check
-    public Envelope getExtents(String datasetName, String attributeName) {
-
-        final Envelope[] e = new Envelope[]{null};
-        // extent is taken from layer's metadata
-        String sql1 = "SELECT dim.* FROM ALL_SDO_GEOM_METADATA usgm, TABLE(usgm.diminfo) "
-            + "dim WHERE table_name = '" + getTableName(datasetName) + "' and owner='" + getSchemaName(datasetName) 
-            + "' and column_name = '" + attributeName + "'";
-        
-        JUMPWorkbench.getInstance().getFrame().log("SQL query to get extent:\n\t" + sql1, this.getClass());
-
-        final ResultSetBlock resultSetBlock = new ResultSetBlock() {
-            public void yield(ResultSet resultSet) throws Exception {
-                // looks only for X-Y dimension, though oracle metadata can store more
-                double xmin = 0, ymin = 0, xmax = 0, ymax = 0;
-                while (resultSet.next()) {
-                    if ("X".equalsIgnoreCase(resultSet.getString(1))) {
-                        xmin = resultSet.getDouble(2);
-                        xmax = resultSet.getDouble(3);
-                    }
-                    if ("Y".equalsIgnoreCase(resultSet.getString(1))) {
-                        ymin = resultSet.getDouble(2);
-                        ymax = resultSet.getDouble(3);
-                    }
-                }
-                e[0] = new Envelope(xmin, ymin, xmax, ymax);
-            }
-        };
-        try {
-            JDBCUtil.execute(conn.getConnection(), (sql1), resultSetBlock);
-            if (e[0] == null || e[0].isNull()) {
-                JDBCUtil.execute(conn.getConnection(), (sql1), resultSetBlock);
-            }
-        } catch (Exception ex1) {
-            // TODO: 
-            ex1.printStackTrace();
-        }
-        return e[0];
-    }
-
-    /**
-     * Returns the list of geometryColumns for the given name in Oracle,
-     * metadata does not store this info: queries the table to get distinct list
-     * of geometries: if several found: geometry type. Also retrieves geom srid
-     * from metadata and stores it in the map
-     *
-     * @param datasetName
-     * @return
-     */
-    public List<GeometryColumn> getGeometryAttributes(final String datasetName) {
-        final List<GeometryColumn> geometryAttributes = new ArrayList<GeometryColumn>();
-        String sql = "select column_name, srid from ALL_SDO_GEOM_METADATA "
-            + geomColumnMetadataWhereClause("owner", "table_name", datasetName);
-        
-        JUMPWorkbench.getInstance().getFrame().log(
-            "SQL query to get geometry attributes from a spatial table:\n\t" 
-                + sql, this.getClass());
-
-        JDBCUtil.execute(
-            conn.getConnection(), sql,
-            new ResultSetBlock() {
-                public void yield(ResultSet resultSet) throws SQLException {
-                    while (resultSet.next()) {
-                        String colName = resultSet.getString(1);
-                        int srid = resultSet.getInt(2);
-                        sridMap.put(datasetName + "#" + colName, new SpatialReferenceSystemID(srid));
-                        geometryAttributes.add(new GeometryColumn(
-                                colName,
-                                srid
-                            //              ,resultSet.getString(3)
-                            ));
-                    }
-                }
-            });
-        
-        // TODO: move MD retrieving in a JDBCUtil static method and use JDBC metadata
-        // as deep as we can ?
-        geoIndexes = new HashMap<String, String>();
-        try {
-            // gets info in cnx metadata:
-            DatabaseMetaData md = conn.getConnection().getMetaData();
-            ResultSet rs = md.getIndexInfo(null, getSchemaName(datasetName), getTableName(datasetName), false, true);
-            StringBuilder b = new StringBuilder();
-            while (rs.next()) {
-                if (rs.getString(6) != null && rs.getString(9) != null) {
-                    geoIndexes.put(rs.getString(9), rs.getString(6));
-                }
-            }
-        } catch (SQLException ex) {
-            // TODO
-        }
-
-        // gets the geometry column type for each geo col
-        for (final GeometryColumn gc : geometryAttributes) {
-            sql = "select distinct t." + gc.getName() + ".sdo_gtype from " + datasetName + " t";
-            JUMPWorkbench.getInstance().getFrame().log(
-            "SQL query to get geometry column type :\n\t" 
-                + sql, this.getClass());
-
-            JDBCUtil.execute(
-                conn.getConnection(), sql,
-                new ResultSetBlock() {
-                    public void yield(ResultSet resultSet) throws SQLException {
-                        int gtype = 0;
-                        int i = 0;
-                        String type = "";
-                        while (resultSet.next()) {
-                            gtype = resultSet.getInt(1) % 10;
-                            if (i == 0) {
-                                switch (gtype) {
-                                    case 1:
-                                        type = "POINT";
-                                        break;
-                                    case 2:
-                                        type = "LINESTRING";
-                                        break;
-                                    case 3:
-                                        type = "POLYGON";
-                                        break;
-                                    case 4:
-                                        type = "GEOMETRYCOLLECTION";
-                                        break;
-                                    case 5:
-                                        type = "MULTIPOINT";
-                                        break;
-                                    case 6:
-                                        type = "MULTILINESTRING";
-                                        break;
-                                    case 7:
-                                        type = "MULTIPOLYGON";
-                                        break;
-                                    default:
-                                        type = "GEOMETRY";
-                                }
-                            } else if (i > 0) {
-                                // more than one geo type:
-                                type = "GEOMETRY";
-                                break;
-                            }
-                            i++;
-                        }
-                        gc.setType(type);
-                    }
-                });
-            // also gets info about index is column indexed: useful to avoid calling sdo_filter on
-            // a non-indexed column
-            gc.setIndexed(geoIndexes.containsKey(gc.getName()));
-        }
-        return geometryAttributes;
-    }
-
-    /**
-     * Returns PRIMARY KEY columns of dataset names. // TODO: check STATUS PK:
-     * enabled/disabled
-     *
-     * @param datasetName name of the table (optionally prefixed by the schema
-     * name)
-     * @return the list of columns involved in the Primary Key (generally, a
-     * single column)
-     */
-    public List<PrimaryKeyColumn> getPrimaryKeyColumns(String datasetName) {
-        final List<PrimaryKeyColumn> identifierColumns = new ArrayList<PrimaryKeyColumn>();
-        // query taken from http://www.alberton.info/postgresql_meta_info.html#.UewsFG29b0Q
-        String sql
-            = "SELECT cols.table_name, cols.column_name \n"
-            + "FROM all_constraints cons, all_cons_columns cols \n"
-            + "WHERE cols.table_name = '" + getTableName(datasetName) + "' and cols.OWNER = '"
-            + getSchemaName(datasetName) + "' \n"
-            + "AND cons.constraint_type = 'P' \n"
-            + "AND cons.constraint_name = cols.constraint_name \n"
-            + "AND cons.owner = cols.owner \n"
-            + "ORDER BY cols.table_name, cols.position";
-        
-        JUMPWorkbench.getInstance().getFrame().log(
-            "SQL query to get PK from a spatial table:\n\t" 
-                + sql, this.getClass());
-
-        JDBCUtil.execute(
-            conn.getConnection(), sql,
-            new ResultSetBlock() {
-                public void yield(ResultSet resultSet) throws SQLException {
-                    while (resultSet.next()) {
-                        identifierColumns.add(new PrimaryKeyColumn(
-                                resultSet.getString(1),
-                                resultSet.getString(2)));
-                    }
-                }
-            });
-        return identifierColumns;
-    }
-
-    /**
-     * Fetch only not hidden columns
-     *
-     * @param datasetName
-     * @return
-     */
-    public String[] getColumnNames(String datasetName) {
-        String sql = "SELECT cols.COLUMN_NAME, cols.DATA_TYPE \n"
-            + "FROM ALL_TAB_COLS cols \n"
-            + "WHERE hidden_column = 'NO' and cols.table_name = '" + getTableName(datasetName) + "' and cols.OWNER = '"
-            + getSchemaName(datasetName) + "' \n"
-            + "ORDER BY cols.table_name, cols.COLUMN_ID";
-        
-        JUMPWorkbench.getInstance().getFrame().log(
-            "SQL query to get column names and types from a spatial table:\n\t" 
-                + sql, this.getClass());
-
-        ColumnNameBlock block = new ColumnNameBlock();
-        JDBCUtil.execute(conn.getConnection(), sql, block);
-        return block.colName;
-    }
-
-    /**
-     * Returns the schema name based on the given tableName: string before . if
-     * exists, else returns userName
-     *
-     * @param tableName
-     * @return
-     */
-    private String getSchemaName(String tableName) {
-        int dotPos = tableName.indexOf(".");
-        String schema = this.userSchema;
-        if (dotPos != -1) {
-            schema = tableName.substring(0, dotPos);
-        }
-        return schema;
-    }
-
-    /**
-     * Returns the table name based on the given tableName: string after "." if
-     * exists, else returns userName
-     *
-     * @param tableName
-     * @return
-     */
-    private String getTableName(String tableName) {
-        int dotPos = tableName.indexOf(".");
-        String ret = tableName;
-        if (dotPos != -1) {
-            ret = tableName.substring(0, dotPos);
-        }
-        return ret;
-    }
-
-    @Deprecated
-    public SpatialReferenceSystemID getSRID(String tableName, String colName)
-        throws SQLException {
-        String key = tableName + "#" + colName;
-        if (!sridMap.containsKey(key)) {
-            // not in cache, so query it
-            String srid = querySRID(tableName, colName);
-            sridMap.put(key, new SpatialReferenceSystemID(srid));
-        }
-        return (SpatialReferenceSystemID) sridMap.get(key);
-    }
-
-    // TODO: should never be called: sridMap should be filled when getting geo columns
-    @Deprecated
-    private String querySRID(String tableName, String colName) {
-        final StringBuffer srid = new StringBuffer();
-    // Changed by Michael Michaud 2010-05-26 (throwed exception for empty tableName)
-        // String sql = "SELECT getsrid(" + colName + ") FROM " + tableName + " LIMIT 1";
-        String[] tokens = tableName.split("\\.", 2);
-        String schema = tokens.length == 2 ? tokens[0] : "public";
-        String table = tokens.length == 2 ? tokens[1] : tableName;
-        String sql = "SELECT srid FROM geometry_columns where (f_table_schema = '" + schema + "' and f_table_name = '" + table + "')";
-        
-        JUMPWorkbench.getInstance().getFrame().log(
-            "SQL query to get geometry column SRID:\n\t" 
-                + sql, this.getClass());
-        
-        // End of the fix
-        JDBCUtil.execute(conn.getConnection(), sql, new ResultSetBlock() {
-            public void yield(ResultSet resultSet) throws SQLException {
-                if (resultSet.next()) {
-                    srid.append(resultSet.getString(1));
-                }
-            }
-        });
-
-        return srid.toString();
-    }
-
-    private String geomColumnMetadataWhereClause(String schemaCol, String tableCol, String tableName) {
-        // [mmichaud 2011-07-24] Fixed a bug related to tables having common
-        // names in public schema and another schema
-        int dotPos = tableName.indexOf(".");
-        String schema = this.userSchema;
-        String table = tableName;
-        if (dotPos != -1) {
-            schema = tableName.substring(0, dotPos);
-            table = tableName.substring(dotPos + 1);
-        }
-        return "WHERE " + schemaCol + " = '" + schema + "'"
-            + " AND " + tableCol + " = '" + table + "'";
-    }
-
-    private static class ColumnNameBlock implements ResultSetBlock {
-
-        List colList = new ArrayList();
-        String[] colName;
-
-        public void yield(ResultSet resultSet) throws SQLException {
-            while (resultSet.next()) {
-                colList.add(resultSet.getString(1));
-            }
-            colName = (String[]) colList.toArray(new String[colList.size()]);
-        }
+    @Override
+    public List<GeometryColumn> getGeometryAttributes(String datasetName) {
+        String sql = this.getGeoColumnsQuery(datasetName);
+        return getGeometryAttributes(sql, datasetName);
     }
 
 }

@@ -7,11 +7,8 @@ import com.vividsolutions.jump.datastore.oracle.OracleDataStoreDriver;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.Extension;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
 
 /**
  * 
