@@ -112,7 +112,7 @@ import javax.swing.JOptionPane;
             if (this.geomSelected.contains(this.geomDraw)) {
               return;
             }
-            if (this.geomDraw.intersects(this.geomSelected)) {
+            if (!(this.geomSelected instanceof GeometryCollection) && this.geomDraw.intersects(this.geomSelected)) {
               if (this.geomSelected instanceof Polygon || this.geomSelected instanceof MultiPolygon) {
                 edtr.deleteFeature(featureSelected);
                 List<Geometry> div = splitPolygon(this.geomDraw, this.geomSelected);
@@ -131,13 +131,11 @@ import javax.swing.JOptionPane;
                   featureIntersect.setGeometry(geom);
                   edtr.createFeature(featureIntersect);
                 }
-              } else if (this.geomSelected instanceof Point || this.geomSelected instanceof MultiPoint||this.geomSelected instanceof GeometryCollection ) {
-            	// Points or GeometryCollections
               } else {
-                return;
+            	// Point, MultiPoint, GeometryCollection : don't modify the selected feature
               }
             } else {
-              // Points or GeometryCollections
+              // No intersection : don't modify the selected feature
             }
           }
           context.getLayerViewPanel().getSelectionManager().unselectItems(activeLayer);
@@ -211,6 +209,10 @@ import javax.swing.JOptionPane;
           result.add(geometry);
         }
       }
+      if (result.size() == 1) {
+        result.clear();
+        result.add(geomSel);
+      };
       return result;
     }
 
