@@ -79,20 +79,17 @@ public class DrawLineStringTool extends MultiClickTool {
     }
 
     protected void gestureFinished() throws Exception {
-        reportNothingToUndoYet();
-
-        if (!checkLineString()) {
-            return;
-        }
-
-//        execute(featureDrawingUtil.createAddCommand(getLineString(),
-//                isRollingBackInvalidEdits(), getPanel(), this));
-        
-		featureDrawingUtil.drawLineString(
-				getLineString(),
-				isRollingBackInvalidEdits(),
-				this,
-				getPanel());
+      reportNothingToUndoYet();
+  
+      if (!checkLineString()) {
+        return;
+      }
+  
+      // execute(featureDrawingUtil.createAddCommand(getLineString(),
+      // isRollingBackInvalidEdits(), getPanel(), this));
+  
+      featureDrawingUtil.drawLineString(getLineString(),
+          isRollingBackInvalidEdits(), this, getPanel());
     }
 
     protected List createStandardSnappingPolicies(Blackboard blackboard) {
