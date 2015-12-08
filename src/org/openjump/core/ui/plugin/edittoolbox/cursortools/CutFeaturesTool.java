@@ -43,13 +43,12 @@ import javax.swing.JOptionPane;
   
   public class CutFeaturesTool
     extends MultiClickTool {
-    static final String sCookieCut = I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.CutPolygonTool.Create-Cookie-Cut");
 
     Geometry geomSelected = null;
     Geometry geomDraw = null;
 
-    public CutFeaturesTool(EnableCheckFactory checkFactory) {
-    }
+//    public CutFeaturesTool(EnableCheckFactory checkFactory) {
+//    }
 
     PlugInContext context;
 
