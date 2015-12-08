@@ -33,10 +33,12 @@ package com.vividsolutions.jump.workbench.ui.cursortool;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.KeyboardFocusManager;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.Shape;
@@ -71,12 +73,14 @@ import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanelListener;
 import com.vividsolutions.jump.workbench.ui.TaskFrame;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
+import com.vividsolutions.jump.workbench.ui.cursortool.editing.EditingPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.snap.SnapManager;
 import com.vividsolutions.jump.workbench.ui.snap.SnapPolicy;
 import com.vividsolutions.jump.workbench.ui.snap.SnapToFeaturesPolicy;
 import com.vividsolutions.jump.workbench.ui.snap.SnapToGridPolicy;
 import com.vividsolutions.jump.workbench.ui.snap.SnapToVerticesPolicy;
+import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxDialog;
 
 /**
  * A tool that draws an XOR visual indicator. Subclasses need not keep track of
@@ -97,10 +101,8 @@ public abstract class AbstractCursorTool implements CursorTool {
 	private boolean snappingInitialized = false;
 
 	private boolean snappingAllowed = false;
-
-	private boolean controlPressed;
-
-	private boolean shiftPressed;
+	private boolean controlPressed = false;
+	private boolean shiftPressed = false;
 
 	private Color color = Color.red;
 
@@ -181,14 +183,24 @@ public abstract class AbstractCursorTool implements CursorTool {
     return snappingAllowed;
   }
 
+  protected void setShiftPressed(boolean onoff){
+    shiftPressed = onoff;
+  }
+  
   protected boolean wasShiftPressed() {
-    //System.out.println("act shift pressed");
-		return shiftPressed;
-	}
+    // System.out.println("act shift pressed");
+    return shiftPressed;
+  }
 
-	protected boolean wasControlPressed() {
-		return controlPressed;
-	}
+  protected void setControlPressed(boolean onoff) {
+    // System.out.println("set ctrl "+onoff+" -> "+this);
+    controlPressed = onoff;
+  }
+
+  protected boolean wasControlPressed() {
+    // System.out.println("get ctrl "+controlPressed+" -> "+this);
+    return controlPressed;
+  }
 
 	/**
 	 * The cursor will look best if the image is a 32 x 32 transparent GIF.
@@ -698,6 +710,9 @@ public abstract class AbstractCursorTool implements CursorTool {
     }
 
     public void keyPressed(KeyEvent e) {
+      if(!componentWithFocusIsHandledByCursorTools())
+        return;
+      
       //System.out.println(e);
       if (snappingInitialized && isSpace(e) && !off) {
         off = true;
@@ -709,6 +724,9 @@ public abstract class AbstractCursorTool implements CursorTool {
     }
 
     public void keyReleased(KeyEvent e) {
+      if(!componentWithFocusIsHandledByCursorTools())
+        return;
+      
       //System.out.println(e);
       if (snappingInitialized && isSpace(e) && off) {
         off = false;
@@ -718,11 +736,11 @@ public abstract class AbstractCursorTool implements CursorTool {
       }
       saveModifiers(e);
     }
-    
+
     private void saveModifiers(KeyEvent e){
-      shiftPressed = e.isShiftDown();
-      controlPressed = e.isControlDown();
-      //System.out.println("act "+shiftPressed+"/"+controlPressed);
+      setShiftPressed( e.isShiftDown() );
+      setControlPressed( e.isControlDown() );
+//      System.out.println("act "+wasShiftPressed()+"/"+wasControlPressed());
     }
 
     private void showMsg(String msg) {
@@ -732,6 +750,32 @@ public abstract class AbstractCursorTool implements CursorTool {
     private boolean isSpace(KeyEvent e) {
       return (e.getKeyCode() == KeyEvent.VK_SPACE);
     }
-
   };
+
+  /**
+   * utility method to be used by cursor tools to determine if the
+   * ui component with focus falls into it's purview 
+   * 
+   * @return boolean
+   */
+  public static boolean componentWithFocusIsHandledByCursorTools(){
+    // only react if LayerView, one of it's subcomponents
+    // or the EditToolBox has got the focus
+    Component c = KeyboardFocusManager
+            .getCurrentKeyboardFocusManager().getFocusOwner();
+    // traverse through parents, see if we are in a valid one
+    boolean valid = false;
+    while (c != null) {
+      if (c instanceof LayerViewPanel
+          || (c instanceof ToolboxDialog && c.equals(EditingPlugIn
+              .getInstance().getToolbox()))) {
+        valid = true;
+        break;
+      }
+
+      c = c.getParent();
+    }
+
+    return valid;
+  }
 }

@@ -190,26 +190,30 @@ public class LayerViewPanel extends JPanel
       });
       this.setLayout(borderLayout1);
 
+      final LayerViewPanel lvp = this;
       addMouseListener(new MouseAdapter() {
         public void mouseEntered(MouseEvent e) {
-          // Re-activate WorkbenchFrame. Otherwise, user may try
-          // entering
-          // a quasi-mode by pressing a modifier key -- nothing will
-          // happen because the
-          // WorkbenchFrame does not have focus. [Jon Aquino]
-          // JavaDoc for #toFront says some platforms will not
-          // activate the window.
-          // So use #requestFocus instead. [Jon Aquino 12/9/2003]
-          WorkbenchFrame workbenchFrame = getWorkBenchFrame();
-          // [mmichaud 2012-02-24] get rid of the focus problem between
-          // OpenJUMP and BeanshellEditor (bug #3487686)
-          Window focusedWindow = KeyboardFocusManager
-              .getCurrentKeyboardFocusManager().getFocusedWindow();
-          if (focusedWindow != workbenchFrame)
-            return;
-          if (workbenchFrame != null && !workbenchFrame.isActive()) {
-            workbenchFrame.requestFocus();
-          }
+          // cursor tools and other shortcutables depend 
+          // on properly focussed ui components
+          lvp.requestFocusInWindow();
+//          // Re-activate WorkbenchFrame. Otherwise, user may try
+//          // entering
+//          // a quasi-mode by pressing a modifier key -- nothing will
+//          // happen because the
+//          // WorkbenchFrame does not have focus. [Jon Aquino]
+//          // JavaDoc for #toFront says some platforms will not
+//          // activate the window.
+//          // So use #requestFocus instead. [Jon Aquino 12/9/2003]
+//          WorkbenchFrame workbenchFrame = getWorkBenchFrame();
+//          // [mmichaud 2012-02-24] get rid of the focus problem between
+//          // OpenJUMP and BeanshellEditor (bug #3487686)
+//          Window focusedWindow = KeyboardFocusManager
+//              .getCurrentKeyboardFocusManager().getFocusedWindow();
+//          if (focusedWindow != workbenchFrame)
+//            return;
+//          if (workbenchFrame != null && !workbenchFrame.isActive()) {
+//            workbenchFrame.requestFocus();
+//          }
         }
       });
 

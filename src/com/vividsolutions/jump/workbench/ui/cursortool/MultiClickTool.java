@@ -47,7 +47,6 @@ import java.util.List;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
-import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 
 /**
  * A VisualIndicatorTool that allows the user to draw shapes with multiple
@@ -277,6 +276,10 @@ public abstract class MultiClickTool extends AbstractCursorTool {
     }
 
     public void keyReleased(KeyEvent e) {
+      // ignore events on invalid components
+      if(!componentWithFocusIsHandledByCursorTools())
+        return;
+      
       // erase segment by segment via BACKSPACE, eventually cancel drawing
       if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
         if (coordinates.size() > 1){

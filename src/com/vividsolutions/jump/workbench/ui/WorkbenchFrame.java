@@ -485,14 +485,20 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
                 Component c = KeyboardFocusManager
                         .getCurrentKeyboardFocusManager().getFocusOwner();
                 // traverse through parents, see if we are in a valid one
-                boolean filter = false;
+                boolean valid = false;
                 while (c != null) {
-                    // System.out.println(c);
+                    //System.out.println(c.getClass());
 
-                    // ignore statuspanel, copy/paste is available via textfield
-                    // there
+                    // ignore statuspanel, 
+                    // copy/paste is available via textfield's own keyboard actions
                     if (c.equals(statusPanel)) {
                         break;
+                    }
+
+                    // ignore LayerTree, we have currently no plugin w/ shortcuts doing
+                    // anything w/ it, preserving layer name editing shortcuts this way
+                    if (c instanceof TreeLayerNamePanel) {
+                      break;
                     }
 
                     if (c instanceof TaskFrame
@@ -500,25 +506,28 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
                                     .equals(EditingPlugIn.getInstance()
                                             .getToolbox()))
                             || c instanceof WorkbenchFrame) {
-                        filter = true;
+                        valid = true;
                         break;
                     }
 
                     // we treat windows and jinternalframes as our ultimate
-                    // parent
-                    // else pretty much everything would end up with
-                    // WorkbenchFrame
+                    // parent, as pretty much everything would end up with
+                    // WorkbenchFrame as parent in the end
                     if (c instanceof Window || c instanceof JInternalFrame)
                         break;
 
                     c = c.getParent();
                 }
 
-                // if we are not in one of the containers above we do not use
-                // global shortcuts
-                if (!filter)
-                    return false; // nothing dispatched
+                // if we are not in one of the containers above 
+                // we do not use global shortcuts
+                if (!valid) {
+                  return false; // nothing dispatched
+                }
 
+                // TODO: eventually the whole filtering above should be 
+                // moved into ShortcutPluginExecuteKeyListener where plugins
+                // define focussed ui components they feel responsible for
                 switch (e.getID()) {
                 case KeyEvent.KEY_PRESSED:
                     shortcutListener.keyPressed(e);
