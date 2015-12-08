@@ -40,147 +40,199 @@ import com.vividsolutions.jump.util.LangUtil;
  * @see Layerable
  */
 public abstract class AbstractLayerable implements Layerable {
-    private LayerManager layerManager;
+  private LayerManager layerManager;
 
-    private String name;
+  private String name;
 
-    private boolean visible = true;
+  private boolean visible = true;
+  private boolean editable = false;
+  private boolean selectable = true;
+  private boolean readonly = false;
 
-    private boolean scaleDependentRenderingEnabled = false;
+  private boolean scaleDependentRenderingEnabled = false;
 
-    // When working with scale, the max is less than the min. [Jon Aquino
-    // 2005-03-01]
-    private Double minScale = null;
+  // When working with scale, the max is less than the min. [Jon Aquino
+  // 2005-03-01]
+  private Double minScale = null;
 
-    private Double maxScale = null;
+  private Double maxScale = null;
 
-    /**
-     * Called by Java2XML
-     */
-    public AbstractLayerable() {
+  /**
+   * Called by Java2XML
+   */
+  public AbstractLayerable() {
+  }
+
+  public AbstractLayerable(String name, LayerManager layerManager) {
+    Assert.isTrue(name != null);
+    Assert.isTrue(layerManager != null);
+    setLayerManager(layerManager);
+
+    // Can't fire events because this Layerable hasn't been added to the
+    // LayerManager yet. [Jon Aquino]
+    boolean firingEvents = layerManager.isFiringEvents();
+    layerManager.setFiringEvents(false);
+
+    try {
+      setName(layerManager.uniqueLayerName(name));
+    } finally {
+      layerManager.setFiringEvents(firingEvents);
+    }
+  }
+
+  public void setLayerManager(LayerManager layerManager) {
+    this.layerManager = layerManager;
+  }
+
+  public LayerManager getLayerManager() {
+    return layerManager;
+  }
+
+  public void fireLayerChanged(LayerEventType type) {
+    if (getLayerManager() == null) {
+      // layerManager is null when Java2XML creates the object. [Jon
+      // Aquino]
+      return;
     }
 
-    public AbstractLayerable(String name, LayerManager layerManager) {
-        Assert.isTrue(name != null);
-        Assert.isTrue(layerManager != null);
-        setLayerManager(layerManager);
+    getLayerManager().fireLayerChanged(this, type);
+  }
 
-        //Can't fire events because this Layerable hasn't been added to the
-        //LayerManager yet. [Jon Aquino]
-        boolean firingEvents = layerManager.isFiringEvents();
-        layerManager.setFiringEvents(false);
+  /**
+   * The only time #fireAppearanceChanged must be called is when a party
+   * modifies an attribute of one of the Styles, because Styles don't notify
+   * their layer when they change. But if a party adds or removes a feature, or
+   * applies an EditTransaction to a feature, #fireAppearanceChanged will be
+   * called automatically. This event will be ignored if
+   * LayerManager#isFiringEvents is false
+   */
+  public void fireAppearanceChanged() {
+    fireLayerChanged(LayerEventType.APPEARANCE_CHANGED);
+  }
 
-        try {
-            setName(layerManager.uniqueLayerName(name));
-        } finally {
-            layerManager.setFiringEvents(firingEvents);
-        }
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+    fireLayerChanged(LayerEventType.METADATA_CHANGED);
+  }
+
+  public Task getTask() {
+    if (layerManager != null) {
+      return layerManager.getTask();
+    } else {
+      return null;
+    }
+  }
+
+  public void setVisible(boolean visible) {
+    if (this.visible == visible) {
+      return;
     }
 
-    public void setLayerManager(LayerManager layerManager) {
-        this.layerManager = layerManager;
+    this.visible = visible;
+    fireLayerChanged(LayerEventType.VISIBILITY_CHANGED);
+  }
+
+  /**
+   * Editability is not enforced; all parties are responsible for heeding this
+   * flag.
+   */
+  public void setEditable(boolean editable) {
+    if (this.editable == editable) {
+      return;
     }
 
-    public LayerManager getLayerManager() {
-        return layerManager;
-    }
+    this.editable = editable;
+    fireLayerChanged(LayerEventType.METADATA_CHANGED);
+  }
 
-    public void fireLayerChanged(LayerEventType type) {
-        if (getLayerManager() == null) {
-            //layerManager is null when Java2XML creates the object. [Jon
-            // Aquino]
-            return;
-        }
+  // <<TODO:REFACTORING>> Move Visible to LayerSelection, since it should be a
+  // property
+  // of the view, not the model [Jon Aquino]
+  public boolean isVisible() {
+    return visible;
+  }
 
-        getLayerManager().fireLayerChanged(this, type);
-    }
+  public boolean isEditable() {
+    return editable;
+  }
 
-    /**
-     * The only time #fireAppearanceChanged must be called is when a party
-     * modifies an attribute of one of the Styles, because Styles don't notify
-     * their layer when they change. But if a party adds or removes a feature,
-     * or applies an EditTransaction to a feature, #fireAppearanceChanged will
-     * be called automatically. This event will be ignored if
-     * LayerManager#isFiringEvents is false
-     */
-    public void fireAppearanceChanged() {
-        fireLayerChanged(LayerEventType.APPEARANCE_CHANGED);
-    }
+  /**
+   * @return true if this layer should always be 'readonly' I.e.: The layer
+   *         should never have the editable field set to true.
+   */
+  public boolean isReadonly() {
+    return readonly;
+  }
 
-    public String getName() {
-        return name;
-    }
+  /**
+   * Set whether this layer can be made editable.
+   */
+  public void setReadonly(boolean value) {
+    readonly = value;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-        fireLayerChanged(LayerEventType.METADATA_CHANGED);
-    }
+  /**
+   * @return true if features in this layer can be selected.
+   */
+  public boolean isSelectable() {
+    return selectable;
+  }
 
-    public Task getTask() {
-      if (layerManager != null) {
-        return layerManager.getTask();
-      } else {
-        return null;
-      }
-    }
-    
-    public void setVisible(boolean visible) {
-        if (this.visible == visible) {
-            return;
-        }
+  /**
+   * Set whether or not features in this layer can be selected.
+   * 
+   * @param value
+   *          true if features in this layer can be selected
+   */
+  public void setSelectable(boolean value) {
+    selectable = value;
+  }
 
-        this.visible = visible;
-        fireLayerChanged(LayerEventType.VISIBILITY_CHANGED);
-    }
+  public String toString() {
+    return getName();
+  }
 
-    //<<TODO:REFACTORING>> Move Visible to LayerSelection, since it should be a
-    // property
-    //of the view, not the model [Jon Aquino]
-    public boolean isVisible() {
-        return visible;
-    }
+  public Double getMaxScale() {
+    return maxScale;
+  }
 
-    public String toString() {
-        return getName();
+  public Layerable setMaxScale(Double maxScale) {
+    if (LangUtil.bothNullOrEqual(this.maxScale, maxScale)) {
+      return this;
     }
+    this.maxScale = maxScale;
+    fireAppearanceChanged();
+    return this;
+  }
 
-    public Double getMaxScale() {
-        return maxScale;
-    }
+  public Double getMinScale() {
+    return minScale;
+  }
 
-    public Layerable setMaxScale(Double maxScale) {
-        if (LangUtil.bothNullOrEqual(this.maxScale, maxScale)) {
-            return this;
-        }
-        this.maxScale = maxScale;
-        fireAppearanceChanged();
-        return this;
+  public Layerable setMinScale(Double minScale) {
+    if (LangUtil.bothNullOrEqual(this.minScale, minScale)) {
+      return this;
     }
+    this.minScale = minScale;
+    fireAppearanceChanged();
+    return this;
+  }
 
-    public Double getMinScale() {
-        return minScale;
-    }
+  public boolean isScaleDependentRenderingEnabled() {
+    return scaleDependentRenderingEnabled;
+  }
 
-    public Layerable setMinScale(Double minScale) {
-        if (LangUtil.bothNullOrEqual(this.minScale, minScale)) {
-            return this;
-        }
-        this.minScale = minScale;
-        fireAppearanceChanged();
-        return this;
+  public Layerable setScaleDependentRenderingEnabled(
+      boolean scaleDependentRenderingEnabled) {
+    if (this.scaleDependentRenderingEnabled == scaleDependentRenderingEnabled) {
+      return this;
     }
-
-    public boolean isScaleDependentRenderingEnabled() {
-        return scaleDependentRenderingEnabled;
-    }
-
-    public Layerable setScaleDependentRenderingEnabled(
-            boolean scaleDependentRenderingEnabled) {
-        if (this.scaleDependentRenderingEnabled == scaleDependentRenderingEnabled) {
-            return this;
-        }
-        this.scaleDependentRenderingEnabled = scaleDependentRenderingEnabled;
-        fireAppearanceChanged();
-        return this;
-    }
+    this.scaleDependentRenderingEnabled = scaleDependentRenderingEnabled;
+    fireAppearanceChanged();
+    return this;
+  }
 }

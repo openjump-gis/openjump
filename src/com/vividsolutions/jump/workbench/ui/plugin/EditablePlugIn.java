@@ -32,79 +32,108 @@
 
 package com.vividsolutions.jump.workbench.ui.plugin;
 
-import java.util.Arrays;
-import java.util.Iterator;
-
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
+import javax.swing.JInternalFrame;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.model.Layer;
+import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.CheckBoxed;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.LayerNamePanel;
+import com.vividsolutions.jump.workbench.ui.LayerNamePanelProxy;
+import com.vividsolutions.jump.workbench.ui.LayerableNamePanel;
 import com.vividsolutions.jump.workbench.ui.cursortool.editing.EditingPlugIn;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class EditablePlugIn extends AbstractPlugIn implements CheckBoxed {
 
-    private EditingPlugIn editingPlugIn;
+  private EditingPlugIn editingPlugIn;
 
-    public static final ImageIcon ICON = IconLoader.icon("edit.gif");
-    
-    public EditablePlugIn(EditingPlugIn editingPlugIn) {
-      this.editingPlugIn = editingPlugIn;
-    }
-  
-    public EditablePlugIn() {
-      super();
-      this.editingPlugIn = EditingPlugIn.getInstance();
+  public static final ImageIcon ICON = IconLoader.icon("edit.gif");
+
+  public EditablePlugIn(EditingPlugIn editingPlugIn) {
+    this.editingPlugIn = editingPlugIn;
+  }
+
+  public EditablePlugIn() {
+    super();
+    this.editingPlugIn = EditingPlugIn.getInstance();
+  }
+
+  public boolean execute(PlugInContext context) throws Exception {
+    reportNothingToUndoYet(context);
+
+    Layerable[] layers = getSelectedLayerables(context.getWorkbenchContext());
+    // assume what to do by status of first selected layer
+    boolean makeEditable = !layers[0].isEditable();
+    // set states for each
+    for (Layerable layerable : layers) {
+      layerable.setEditable(makeEditable);
     }
 
-    public boolean execute(PlugInContext context) throws Exception {
-        reportNothingToUndoYet(context);
-        boolean makeEditable = !context.getSelectedLayer(0).isEditable();
-        for (Iterator i = Arrays.asList(context.getSelectedLayers()).iterator(); i.hasNext(); ) {
-            Layer selectedLayer = (Layer) i.next();
-            selectedLayer.setEditable(makeEditable);
+    // show EditToolBox if we switched to editable
+    if (makeEditable
+        && !editingPlugIn.getToolbox(context.getWorkbenchContext()).isVisible()) {
+      editingPlugIn.execute(context);
+    }
+    return true;
+  }
+
+  public EnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
+    EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+    MultiEnableCheck mec = new MultiEnableCheck();
+
+    mec.add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck());
+    mec.add(checkFactory.createAtLeastNLayersMustBeSelectedCheck(1));
+
+    mec.add(new EnableCheck() {
+      public String check(JComponent component) {
+        ((JCheckBoxMenuItem) component)
+            .setSelected(getSelectedLayerables(workbenchContext)[0]
+                .isEditable());
+        return null;
+      }
+    });
+
+    mec.add(new EnableCheck() {
+      public String check(JComponent component) {
+        String errMsg = null;
+        Layerable[] layers = getSelectedLayerables(workbenchContext);
+        for (int i = 0; i < layers.length; i++) {
+          if (layers[i].isReadonly()) {
+            errMsg = I18N
+                .get("ui.plugin.EditablePlugIn.The-selected-layer-cannot-be-made-editable");
+            break;
+          }
         }
-        if (makeEditable && !editingPlugIn.getToolbox(context.getWorkbenchContext()).isVisible()) {
-            editingPlugIn.execute(context);
-        }
-        return true;
+        return errMsg;
+      }
+    });
+
+    return mec;
+  }
+
+  private static Layerable[] getSelectedLayerables(WorkbenchContext wbc) {
+    Layerable[] layers = new Layerable[] {};
+
+    JInternalFrame frame = wbc.getWorkbench().getFrame()
+        .getActiveInternalFrame();
+    if (frame instanceof LayerNamePanelProxy) {
+      LayerNamePanel lnp = ((LayerNamePanelProxy) frame).getLayerNamePanel();
+      if (lnp instanceof LayerableNamePanel)
+        layers = ((LayerableNamePanel) lnp).getSelectedLayerables().toArray(
+            new Layerable[] {});
+      else
+        layers = lnp.getSelectedLayers();
     }
 
-    public EnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
-        MultiEnableCheck mec = new MultiEnableCheck();
-
-        mec.add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck());
-        mec.add(checkFactory.createAtLeastNLayersMustBeSelectedCheck(1));
-
-        mec.add(new EnableCheck() {
-            public String check(JComponent component) {
-                ((JCheckBoxMenuItem) component).setSelected(
-                    workbenchContext.createPlugInContext().getSelectedLayer(0).isEditable());
-                return null;
-            }
-        });
-
-        mec.add(new EnableCheck() {
-            public String check(JComponent component) {
-                String errMsg = null;
-                if ( workbenchContext.createPlugInContext().getSelectedLayer(0).isReadonly()) {
-                    errMsg = I18N.get("ui.plugin.EditablePlugIn.The-selected-layer-cannot-be-made-editable");
-                }
-                return errMsg;
-            }
-        });
-
-        return mec;
-    }
-
+    return layers;
+  }
 }

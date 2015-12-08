@@ -38,39 +38,52 @@ import com.vividsolutions.jump.util.Blackboard;
  * A "sheet" of spatial data, overlaid on other "sheets".
  */
 public interface Layerable {
-    public void setName(String name);
+  public void setName(String name);
 
-    public String getName();
+  public String getName();
 
-    public void setVisible(boolean visible);
+  public void setVisible(boolean visible);
 
-    public boolean isVisible();
+  public boolean isVisible();
 
-    public LayerManager getLayerManager();
+  public void setEditable(boolean editable);
 
-    /**
-     * Called by Java2XML
-     */
-    public void setLayerManager(LayerManager layerManager);
+  public boolean isEditable();
 
-	public Blackboard getBlackboard();
+  public boolean isReadonly();
 
-	/**
-	 * @return the larger units/pixel value
-	 */
-	public Double getMinScale();
-	
-	public Layerable setMinScale(Double minScale);
+  public void setReadonly(boolean value);
 
-	/**
-	 * @return the smaller units/pixel value
-	 */	
-	public Double getMaxScale();
-	
-	public Layerable setMaxScale(Double maxScale);
-	
-	public boolean isScaleDependentRenderingEnabled();
-	
-	public Layerable setScaleDependentRenderingEnabled(boolean scaleDependentRenderingEnabled);
+  public boolean isSelectable();
+
+  public void setSelectable(boolean value);
+
+  public LayerManager getLayerManager();
+
+  /**
+   * Called by Java2XML
+   */
+  public void setLayerManager(LayerManager layerManager);
+
+  public Blackboard getBlackboard();
+
+  /**
+   * @return the larger units/pixel value
+   */
+  public Double getMinScale();
+
+  public Layerable setMinScale(Double minScale);
+
+  /**
+   * @return the smaller units/pixel value
+   */
+  public Double getMaxScale();
+
+  public Layerable setMaxScale(Double maxScale);
+
+  public boolean isScaleDependentRenderingEnabled();
+
+  public Layerable setScaleDependentRenderingEnabled(
+      boolean scaleDependentRenderingEnabled);
 
 }

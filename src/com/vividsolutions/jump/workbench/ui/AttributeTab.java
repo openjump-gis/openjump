@@ -49,15 +49,14 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.NoninvertibleTransformException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.*;
+import java.util.List;
 
 /**
  * Implements an Attribute Tab.
  */
 
-public class AttributeTab extends JPanel implements LayerNamePanel {
+public class AttributeTab extends JPanel implements LayerNamePanel, LayerableNamePanel {
     private BorderLayout borderLayout1 = new BorderLayout();
     private ErrorHandler errorHandler;
     private TaskFrame taskFrame;
@@ -615,6 +614,11 @@ public class AttributeTab extends JPanel implements LayerNamePanel {
         }
 
         return selectedLayers;
+    }
+
+    public Collection<Layerable> getSelectedLayerables() {
+      List<Layerable> ls = (List)Arrays.asList(getSelectedLayers());
+      return ls;
     }
 
     public Collection selectedNodes(Class c) {
