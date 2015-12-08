@@ -159,7 +159,7 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
 		Image image;
 
 		// look if last request equals new one.
-		// if it does take the image from the cache.
+		// if it does, take the image from the cache.
 		if (oldURL == null || !newURL.equals(oldURL) || oldImage == null
 		        || (image = (Image)oldImage.get()) == null) {
 			image = request.getImage();
