@@ -94,6 +94,7 @@ import javax.swing.event.InternalFrameListener;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
+import javax.swing.text.JTextComponent;
 
 import org.apache.log4j.Logger;
 import org.openjump.core.CheckOS;
@@ -482,10 +483,12 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
         KeyEventDispatcher dispatcher = new KeyEventDispatcher() {
             public boolean dispatchKeyEvent(KeyEvent e) {
                 // hands up, who's got the focus
-                Component c = KeyboardFocusManager
+                Component focussed = KeyboardFocusManager
                         .getCurrentKeyboardFocusManager().getFocusOwner();
                 // traverse through parents, see if we are in a valid one
                 boolean valid = false;
+                //System.out.println("START");
+                Component c = focussed;
                 while (c != null) {
                     //System.out.println(c.getClass());
 
@@ -495,9 +498,9 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
                         break;
                     }
 
-                    // ignore LayerTree, we have currently no plugin w/ shortcuts doing
-                    // anything w/ it, preserving layer name editing shortcuts this way
-                    if (c instanceof TreeLayerNamePanel) {
+                    // ignore LayerTree textfields, we have currently no plugin w/ shortcuts
+                    // doing anything w/ it, preserving layer name editing shortcuts this way
+                    if (c instanceof TreeLayerNamePanel && focussed instanceof JTextComponent) {
                       break;
                     }
 
