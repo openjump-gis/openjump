@@ -291,6 +291,8 @@ public class GridFloat {
         bb.compact();
         fileChannelOut.write(bb);
         bb.clear();
+        fileChannelOut.close();
+        fileOutStream.close();
 
     }
     
