@@ -1,8 +1,12 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2015-12-11 mmichaud <m.michael.michaud@orange.fr>
+  * Switch pom to official jts-1.14 release
+
 2015-12-10
   * Fixed bug in GridFloat class: now channels and streams are closed 
     after writing of grid is completed.
+
 2015-12-08 ede
   * bugfix "renaming layers or editing attributes in attribtab executes 
     plugin/cursortool erronously via shortcut" and "shortcuts Strg+X/C/V etc.
