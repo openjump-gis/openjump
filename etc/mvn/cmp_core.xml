@@ -105,11 +105,6 @@
   </fileSets>
   <files>
     <file>
-      <source>lib/jts-1.14-20140423.jar</source>
-      <destName>jts-1.14-20140423.jar</destName>
-      <outputDirectory>/lib/</outputDirectory>
-    </file>
-    <file>
       <source>icon/openjump_icon3.ico</source>
       <destName>oj.ico</destName>
       <outputDirectory>/lib/icons/</outputDirectory>
