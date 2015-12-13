@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.vividsolutions.jump.datastore.oracle;
 
 import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesResultSetConverter;
@@ -21,7 +16,7 @@ import java.sql.ResultSet;
 public class OracleResultSetConverter extends SpatialDatabasesResultSetConverter {
 
     public OracleResultSetConverter(Connection conn, ResultSet rs) {
-        super(conn, rs);
+        this.rs = rs;
         this.odm = new OracleValueConverterFactory(conn);
     }
 }

@@ -1,14 +1,14 @@
 package com.vividsolutions.jump.workbench.ui.plugin.datastore;
 
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Geometry;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.datastore.AdhocQuery;
+import com.vividsolutions.jump.datastore.DataStoreConnection;
+import com.vividsolutions.jump.datastore.DataStoreMetadata;
 import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.io.FeatureInputStream;
 import com.vividsolutions.jump.task.TaskMonitor;
-import com.vividsolutions.jump.util.LangUtil;
+import com.vividsolutions.jump.workbench.datastore.ConnectionDescriptor;
 import com.vividsolutions.jump.workbench.datastore.ConnectionManager;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.Layerable;
@@ -69,10 +69,17 @@ public class RunDatastoreQueryPlugIn extends AbstractAddDatastoreLayerPlugIn {
             query = DataStoreQueryDataSource.expandQuery(query, context);
         }
         // end
-        FeatureInputStream featureInputStream =
-            ConnectionManager.instance(context.getWorkbenchContext())
-                .getOpenConnection(panel.getConnectionDescriptor())
-                .execute(new AdhocQuery(query));
+        // Nicolas Ribot, 08 dec 2015:
+        // manages several datasources now
+        ConnectionDescriptor desc = panel.getConnectionDescriptor();
+        DataStoreConnection dscon = ConnectionManager.instance(context.getWorkbenchContext()).getOpenConnection(desc);
+        
+        FeatureInputStream featureInputStream = dscon.execute(new AdhocQuery(query));
+        
+//        FeatureInputStream featureInputStream =
+//            ConnectionManager.instance(context.getWorkbenchContext())
+//                .getOpenConnection(panel.getConnectionDescriptor())
+//                .execute(new AdhocQuery(query));
         try {
             FeatureDataset featureDataset = new FeatureDataset(
                 featureInputStream.getFeatureSchema());

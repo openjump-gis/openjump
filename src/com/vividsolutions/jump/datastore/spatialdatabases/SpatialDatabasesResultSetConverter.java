@@ -27,8 +27,17 @@ public class SpatialDatabasesResultSetConverter {
   protected SpatialDatabasesValueConverterFactory odm;
   protected boolean isInitialized = false;
 
+  /**
+   * empty ctor
+   * @param conn
+   * @param rs 
+   */
+  public SpatialDatabasesResultSetConverter() {
+  }
+  
   public SpatialDatabasesResultSetConverter(Connection conn, ResultSet rs) {
     this.rs = rs;
+    // try to instantiate the right object type.
     odm = new SpatialDatabasesValueConverterFactory(conn);
   }
 
@@ -57,9 +66,6 @@ public class SpatialDatabasesResultSetConverter {
 
     ResultSetMetaData rsmd = rs.getMetaData();
     int numberOfColumns = rsmd.getColumnCount();
-    //String[] columnNames = new String[numberOfColumns];
-    //String[] columnTypeNames = new String[numberOfColumns];
-    //int[] columnPositions = new int[numberOfColumns];
     mapper = new ValueConverter[numberOfColumns];
     featureSchema = new FeatureSchema();
 
@@ -70,6 +76,8 @@ public class SpatialDatabasesResultSetConverter {
       // Convert the first geometry into AttributeType.GEOMETRY and the following ones
       // into AttributeType.STRINGs [mmichaud 2007-05-13]
       if (mapper[i].getType() == AttributeType.GEOMETRY) {
+        // Nicolas Ribot: stores geomCol index as it is needed by Adhoc query
+        //geometryColIndex = i+1;
         if (featureSchema.getGeometryIndex() == -1) {
           // fixed by mmichaud using a patch from jaakko [2008-05-21] :
           // use colName instead of "GEOMETRY" for attribute name

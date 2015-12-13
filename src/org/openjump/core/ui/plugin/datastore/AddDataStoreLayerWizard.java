@@ -85,7 +85,11 @@ public class AddDataStoreLayerWizard extends AbstractWizardGroup {
               } catch (Exception e) {
                 //throw NoninvertibleTransformationException;
               }
-              layerManager.addLayerable(categoryName, layer);
+              try {
+                layerManager.addLayerable(categoryName, layer);
+              } catch (Exception e) {
+                e.printStackTrace();
+              }
             }
           }
         });

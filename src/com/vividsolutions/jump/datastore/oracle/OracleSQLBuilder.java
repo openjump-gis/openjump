@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.vividsolutions.jump.datastore.oracle;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -82,7 +77,7 @@ public class OracleSQLBuilder extends SpatialDatabasesSQLBuilder {
         buf.append(geomColName).append(" as ").append("\"").append(geomColName).append("\"");
         for (String colName : colNames) {
             if (!geomColName.equalsIgnoreCase(colName)) {
-                buf.append(",\"").append(colName).append("\"");
+                buf.append(", \"").append(colName).append("\"");
             }
         }
         return buf.toString();

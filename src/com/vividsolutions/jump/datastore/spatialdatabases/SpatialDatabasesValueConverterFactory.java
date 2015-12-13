@@ -7,6 +7,7 @@ import com.vividsolutions.jts.io.WKTReader;
 import java.sql.*;
 import com.vividsolutions.jump.datastore.jdbc.*;
 import com.vividsolutions.jump.feature.AttributeType;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import java.io.IOException;
 
 /**
@@ -24,12 +25,27 @@ public class SpatialDatabasesValueConverterFactory {
   protected final Connection conn;
 
   public SpatialDatabasesValueConverterFactory(Connection conn) {
+      try { 
+        JUMPWorkbench.getInstance().getFrame().log("creating a SpatialDatabasesValueConverterFactory (class:" + this.getClass() 
+            + " ) (driver: " + conn.getMetaData().getDriverName() + ") id"
+            + this.hashCode(), this.getClass());
+      } catch (SQLException ex) {
+        ex.printStackTrace();
+      }
     this.conn = conn;
   }
 
+  /**
+   * Base class to get converter from factory.
+   * Should never be called !!
+   * @param rsm
+   * @param columnIndex
+   * @return
+   * @throws SQLException 
+   */
   public ValueConverter getConverter(ResultSetMetaData rsm, int columnIndex)
       throws SQLException {
-    return null;
+      throw new UnsupportedOperationException();
   }
 
   class WKTGeometryValueConverter implements ValueConverter {

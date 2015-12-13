@@ -1,12 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.vividsolutions.jump.datastore.spatialdatabases;
 
 import com.vividsolutions.jump.datastore.DataStoreConnection;
 import com.vividsolutions.jump.datastore.DataStoreDriver;
+import com.vividsolutions.jump.datastore.mariadb.MariadbDSConnection;
+import com.vividsolutions.jump.datastore.oracle.OracleDSConnection;
+import com.vividsolutions.jump.datastore.postgis.PostgisDSConnection;
+import com.vividsolutions.jump.datastore.spatialite.SpatialiteDSConnection;
 import com.vividsolutions.jump.parameter.ParameterList;
 import com.vividsolutions.jump.parameter.ParameterListSchema;
 import java.sql.Connection;
@@ -19,36 +18,43 @@ import java.sql.DriverManager;
 public class SpatialDatabasesDataStoreDriver
     implements DataStoreDriver {
 
+  /** TODO: I18N */
   public static final String PARAM_Server = "Server";
   public static final String PARAM_Port = "Port";
   public static final String PARAM_Instance = "Database";
   public static final String PARAM_User = "User";
   public static final String PARAM_Password = "Password";
+  // For Spatialite
+  public static final String PARAM_DB_File = "DB file";
 
   protected String driverName = null;
   protected String jdbcClass = null;
   protected String urlPrefix = null;
 
-  private static final String[] paramNames = new String[]{
-      PARAM_Server,
-      PARAM_Port,
-      PARAM_Instance,
-      PARAM_User,
-      PARAM_Password
-    };
-  private static final Class[] paramClasses = new Class[]{
-      String.class,
-      Integer.class,
-      String.class,
-      String.class,
-      String.class
-    };
-  private final ParameterListSchema schema = new ParameterListSchema(paramNames, paramClasses);
+  protected String[] paramNames = null;
+  protected Class[] paramClasses = null;
+  protected ParameterListSchema schema = null;
 
   public SpatialDatabasesDataStoreDriver() {
-//    this.driverName = "";
-//    this.jdbcClass = "";
-//    this.urlPrefix = "";
+    // Nicolas Ribot:
+    //paramNames are no more static now they can be overloaded by child classes @link SpatialiteDataStoreDriver for instance
+    paramNames = new String[]{
+        PARAM_Server,
+        PARAM_Port,
+        PARAM_Instance,
+        PARAM_User,
+        PARAM_Password
+      };
+  // Nicolas Ribot: passed protected and not final to allow spatialiteDataStoreDriver to overload it
+    paramClasses = new Class[]{
+        String.class,
+        Integer.class,
+        String.class,
+        String.class,
+        String.class
+      };
+    // Nicolas Ribot: passed protected and not final to allow spatialiteDataStoreDriver to overload it
+    schema = new ParameterListSchema(paramNames, paramClasses);
   }
 
   public String getDriverName() {
@@ -62,8 +68,18 @@ public class SpatialDatabasesDataStoreDriver
   public String getUrlPrefix() {
     return urlPrefix;
   }
-  
-  
+
+  public String[] getParamNames() {
+    return paramNames;
+  }
+
+  public Class[] getParamClasses() {
+    return paramClasses;
+  }
+
+  public ParameterListSchema getSchema() {
+    return schema;
+  }
 
   @Override
   public String getName() {
@@ -108,7 +124,21 @@ public class SpatialDatabasesDataStoreDriver
     } else {
       System.setProperty("java.net.preferIPv6Addresses", savePreferIPv6Addresses);
     }
-    return new SpatialDatabasesDSConnection(conn);
+    //return new SpatialDatabasesDSConnection(conn);
+    // TODO: clean inheritance...
+    if (url.startsWith("jdbc:postgresql")) {
+      return new PostgisDSConnection(conn);
+    } else if (url.startsWith("jdbc:oracle")) {
+      return new OracleDSConnection(conn);
+    } else if (url.startsWith("jdbc:mysql")) {
+      return new MariadbDSConnection(conn);
+    } else if (url.startsWith("jdbc:sqlite")) {
+      return new SpatialiteDSConnection(conn);
+    } else {
+      // TODO: should not pass here
+      System.err.println("ERROR: Returning a SpatialDatabasesDSConnection for url: " + url + ". Should not happen...");
+      return new SpatialDatabasesDSConnection(conn);
+    }
   }
 
   @Override

@@ -25,20 +25,16 @@ public class SpatialDatabasesFeatureInputStream extends BaseFeatureInputStream {
     private ResultSet rs = null;
     private SpatialDatabasesResultSetConverter mapper;
 
-    int geometryColIndex = -1;
     String externalIdentifier = null;  // added on 2013-08-07
 
     public SpatialDatabasesFeatureInputStream(Connection conn, String queryString) {
-        this.conn = conn;
-        this.queryString = queryString;
-        //System.out.println("1building new SpatialDatabasesFeatureInputStream: " + this.hashCode());
+        this(conn, queryString, null);
     }
 
     public SpatialDatabasesFeatureInputStream(Connection conn, String queryString, String externalIdentifier) {
         this.conn = conn;
         this.queryString = queryString;
         this.externalIdentifier = externalIdentifier;
-        //System.out.println("2building new SpatialDatabasesFeatureInputStream: " + this.hashCode());
     }
 
     /**
@@ -76,11 +72,11 @@ public class SpatialDatabasesFeatureInputStream extends BaseFeatureInputStream {
         stmt = conn.createStatement();
         String parsedQuery = queryString;
         try {
-            rs = stmt.executeQuery(parsedQuery);
+          rs = stmt.executeQuery(parsedQuery);
         } catch (SQLException e) {
-            SQLException sqle = new SQLException("Error : " + parsedQuery);
-            sqle.setNextException(e);
-            throw sqle;
+          // adds SQL query to SQLError
+          e.setNextException(new SQLException("Invalid query: " + queryString));
+          throw e;
         }
 //        mapper = new SpatialDatabasesResultSetConverter(conn, rs);
         mapper = getResultSetConverter(rs);
@@ -123,7 +119,7 @@ public class SpatialDatabasesFeatureInputStream extends BaseFeatureInputStream {
             String message = ex.getLocalizedMessage();
             Throwable nextT = ex.getNextException();
             if (nextT != null) message = message + "\n" + nextT.getLocalizedMessage();
-            throw new Error(message);
+            throw new Error(message, ex);
         }
         if (featureSchema == null) {
             featureSchema = new FeatureSchema();

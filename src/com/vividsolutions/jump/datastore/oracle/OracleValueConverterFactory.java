@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.vividsolutions.jump.datastore.oracle;
 
 import com.vividsolutions.jts.io.ParseException;
@@ -51,13 +46,6 @@ public class OracleValueConverterFactory extends SpatialDatabasesValueConverterF
           .getStatement().getConnection()));
 
       return converterMethod.invoke(converter, structClazz.cast(geometryObject));
-
-        //** this is original implementation w/o reflection **// 
-      // org.geotools.data.oracle.sdo.GeometryConverter geometryConverter =
-      // new org.geotools.data.oracle.sdo.GeometryConverter((oracle.jdbc.OracleConnection)
-      // rs.getStatement().getConnection());
-      // return geometryConverter.asGeometry((oracle.sql.STRUCT)
-      // geometryObject);
     }
   }
 
@@ -68,9 +56,10 @@ public class OracleValueConverterFactory extends SpatialDatabasesValueConverterF
   @Override
   public ValueConverter getConverter(ResultSetMetaData rsm, int columnIndex)
       throws SQLException {
-    String classname = rsm.getColumnClassName(columnIndex);
     String dbTypeName = rsm.getColumnTypeName(columnIndex);
 
+    // manages 2 cases: type retrieved from Database metadata (DataStore Panel)
+    // and from direct Adhoc query (type of the column resultset).
     if (dbTypeName.equalsIgnoreCase("MDSYS.SDO_GEOMETRY")) {
       return ORA_STRUCT_GEOMETRY_MAPPER;
     }

@@ -1,5 +1,21 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2015-13-11 Nicolas Ribot <nicolas.ribot@gmail.com>
+  * Spatial Databases support enhanced: support for Oracle Spatial, MySQL/MariaDB
+    Spatialite added.
+  * FilterQuery and Adhoc queries supported for these databases
+  * Error detection in case of bad WHERE clause detected when loading a layer (layer
+    removed from Panel)
+  * New connection icons according to database type
+  * Oracle Spatial: reads SDO_GEOMETRY with geotools code
+                    reflection used on com.oracle.* methods to avoid jar dependence
+                    (ede code)
+  * MariaDB: supports WKB and natives binary types, thanks to code from Larry Reeder
+  * Spatialite: supports Spatialite binary type, WKB and WKT.
+                supports several geometry_column metadata table layout (code from 
+    Larry Reeder DB Plugin)
+  * 
+
 2015-12-11 mmichaud <m.michael.michaud@orange.fr>
   * Switch pom to official jts-1.14 release
 

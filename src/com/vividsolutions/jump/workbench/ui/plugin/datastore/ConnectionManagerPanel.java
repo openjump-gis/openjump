@@ -37,6 +37,10 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.datastore.DataStoreConnection;
 import com.vividsolutions.jump.datastore.DataStoreDriver;
 import com.vividsolutions.jump.datastore.DataStoreException;
+import com.vividsolutions.jump.datastore.mariadb.MariadbDataStoreDriver;
+import com.vividsolutions.jump.datastore.oracle.OracleDataStoreDriver;
+import com.vividsolutions.jump.datastore.postgis.PostgisDataStoreDriver;
+import com.vividsolutions.jump.datastore.spatialite.SpatialiteDataStoreDriver;
 import com.vividsolutions.jump.util.Block;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.datastore.ConnectionDescriptor;
@@ -46,8 +50,21 @@ import com.vividsolutions.jump.workbench.ui.ErrorHandler;
 import com.vividsolutions.jump.workbench.ui.OKCancelDialog;
 
 public class ConnectionManagerPanel extends JPanel {
+  // Nicolas Ribot, 07 dec 2015: 
+  // add icons according to database source
   private Icon CONNECTED_ICON = new ImageIcon(ConnectionManagerPanel.class.getResource("green_circle.png"));
   private Icon DISCONNECTED_ICON = new ImageIcon(ConnectionManagerPanel.class.getResource("small_red_x.png"));
+  private Icon PG_CONNECTED_ICON = new ImageIcon(ConnectionManagerPanel.class.getResource("ok_pg.png"));
+  private Icon PG_DISCONNECTED_ICON = new ImageIcon(ConnectionManagerPanel.class.getResource("ko_pg.png"));
+  private Icon ORA_CONNECTED_ICON = new ImageIcon(ConnectionManagerPanel.class.getResource("ok_oracle.png"));
+  private Icon ORA_DISCONNECTED_ICON = new ImageIcon(ConnectionManagerPanel.class.getResource("ko_oracle.png"));
+  private Icon MARIA_CONNECTED_ICON = new ImageIcon(ConnectionManagerPanel.class.getResource("ok_mysql.png"));
+  private Icon MARIA_DISCONNECTED_ICON = new ImageIcon(ConnectionManagerPanel.class.getResource("ko_mysql.png"));
+  private Icon SQLITE_CONNECTED_ICON = new ImageIcon(ConnectionManagerPanel.class.getResource("ok_sqlite.png"));
+  private Icon SQLITE_DISCONNECTED_ICON = new ImageIcon(ConnectionManagerPanel.class.getResource("ko_sqlite.png")); 
+  private Icon SQLSERVER_CONNECTED_ICON = new ImageIcon(ConnectionManagerPanel.class.getResource("ok_sqlserver.png"));
+  private Icon SQLSERVER_DISCONNECTED_ICON = new ImageIcon(ConnectionManagerPanel.class.getResource("ok_sqlserver.png"));
+  
   private Icon DBS_ICON = new ImageIcon(ConnectionManagerPanel.class.getResource("databases.gif"));
   private Icon NEW_DB_ICON = new ImageIcon(ConnectionManagerPanel.class.getResource("newDatabase.gif"));
   private Icon DELETE_DB_ICON = new ImageIcon(ConnectionManagerPanel.class.getResource("deleteDatabase.gif"));
@@ -203,9 +220,13 @@ public class ConnectionManagerPanel extends JPanel {
                             connectionDescriptor, index, isSelected,
                             cellHasFocus);
                     try {
-                        setIcon(connectionManager.getConnection(
-                                connectionDescriptor).isClosed() ? DISCONNECTED_ICON
-                                : CONNECTED_ICON);
+                        Icon icon = getConnectionIcon(connectionDescriptor,
+                            connectionManager.getConnection(
+                                connectionDescriptor).isClosed());
+                        setIcon(icon);
+//                        setIcon(connectionManager.getConnection(
+//                                connectionDescriptor).isClosed() ? DISCONNECTED_ICON
+//                                : CONNECTED_ICON);
                     } catch (DataStoreException e) {
                         errorHandler.handleThrowable(e);
                     }
@@ -454,6 +475,27 @@ public class ConnectionManagerPanel extends JPanel {
 
     public Collection getSelectedConnectionDescriptors() {
         return Arrays.asList(connectionJList.getSelectedValues());
+    }
+    
+    /**
+     * Returns the icon corresponding to this @link DataStoreConnection and its state 
+     * (closed or opened)
+     * @param desc the connection to get icon from
+     * @return the corresponding icon
+     */
+    private Icon getConnectionIcon(ConnectionDescriptor desc, boolean isClosed) throws DataStoreException {
+      String driverClassName = desc.getDataStoreDriverClassName();
+      if ( driverClassName.equals("com.vividsolutions.jump.datastore.postgis.PostgisDataStoreDriver")) {
+        return isClosed ? PG_DISCONNECTED_ICON : PG_CONNECTED_ICON;
+      } else if ( driverClassName.equals("com.vividsolutions.jump.datastore.oracle.OracleDataStoreDriver")) {
+        return isClosed ? ORA_DISCONNECTED_ICON : ORA_CONNECTED_ICON;
+      } else if ( driverClassName.equals("com.vividsolutions.jump.datastore.mariadb.MariadbDataStoreDriver")) {
+        return isClosed ? MARIA_DISCONNECTED_ICON : MARIA_CONNECTED_ICON;
+      } else if ( driverClassName.equals("com.vividsolutions.jump.datastore.spatialite.SpatialiteDataStoreDriver")) {
+        return isClosed ? SQLITE_DISCONNECTED_ICON : SQLITE_CONNECTED_ICON;
+      }
+      //Default
+      return isClosed ? DISCONNECTED_ICON : CONNECTED_ICON;
     }
 
 /*

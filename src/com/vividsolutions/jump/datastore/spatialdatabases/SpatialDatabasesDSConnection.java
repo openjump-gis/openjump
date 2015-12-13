@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.vividsolutions.jump.datastore.spatialdatabases;
 
 import com.vividsolutions.jump.I18N;
@@ -27,9 +22,16 @@ public class SpatialDatabasesDSConnection implements DataStoreConnection {
 
     protected SpatialDatabasesDSMetadata dbMetadata;
     protected Connection connection;
-
+    
     public SpatialDatabasesDSConnection(Connection conn) {
-        JUMPWorkbench.getInstance().getFrame().log("creating a SpatialDatabasesDSConnection id" + this.hashCode(), this.getClass());
+      
+      try { 
+        JUMPWorkbench.getInstance().getFrame().log("creating a SpatialDatabasesDSConnection (class:" + this.getClass() 
+            + " ) (driver: " + conn.getMetaData().getDriverName() + ") id"
+            + this.hashCode(), this.getClass());
+      } catch (SQLException ex) {
+        ex.printStackTrace();
+      }
         connection = conn;
         dbMetadata = new SpatialDatabasesDSMetadata(this);
     }
@@ -74,24 +76,20 @@ public class SpatialDatabasesDSConnection implements DataStoreConnection {
      * @throws SQLException
      */
     public FeatureInputStream executeFilterQuery(FilterQuery query) throws SQLException {
-
-        SpatialReferenceSystemID srid = dbMetadata.getSRID(query.getDatasetName(), query.getGeometryAttributeName());
-        String[] colNames = dbMetadata.getColumnNames(query.getDatasetName());
-
-        SpatialDatabasesSQLBuilder builder = this.getSqlBuilder(srid, colNames);
-        String queryString = builder.getSQL(query);
-
-        // [mmichaud 2013-08-07] add a parameter for database primary key name
-        return new SpatialDatabasesFeatureInputStream(connection, queryString, query.getPrimaryKey());
+      throw new UnsupportedOperationException();
     }
 
+    /**
+     * select gid, geom 
+     * from departement
+     * where nom like 'A%'
+     * Executes an adhoc query (direct SQL query)
+     * @param query the query to execute
+     * @return a featureInputStream containing query's features
+     * @throws Exception if no geometric column is found in the query
+     */
     public FeatureInputStream executeAdhocQuery(AdhocQuery query) throws Exception {
-        String queryString = query.getQuery();
-        SpatialDatabasesFeatureInputStream ifs = new SpatialDatabasesFeatureInputStream(connection, queryString, query.getPrimaryKey());
-        if (ifs.getFeatureSchema().getGeometryIndex() < 0) {
-            throw new Exception(I18N.get(this.getClass().getName()+".resultset-must-have-a-geometry-column"));
-        }
-        return ifs;
+      throw new UnsupportedOperationException();
     }
 
 

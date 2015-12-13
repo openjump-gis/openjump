@@ -26,7 +26,14 @@
 		org.openjump.core.ui.plugin.datastore.postgis.SaveToPostGISPlugIn
 	</plug-in>
 	<extension>
-		com.vividsolutions.jump.datastore.OracleDataStoreExtension
+		com.vividsolutions.jump.datastore.oracle.OracleDataStoreExtension
+	</extension>
+        <!--adds other Spatial databases extensions-->
+	<extension>
+		com.vividsolutions.jump.datastore.mariadb.MariadbDataStoreExtension
+	</extension>
+	<extension>
+		com.vividsolutions.jump.datastore.spatialite.SpatialiteDataStoreExtension
 	</extension>
 	<plug-in>
 		org.openjump.core.ccordsys.srid.EnsureAllLayersHaveSRIDStylePlugIn

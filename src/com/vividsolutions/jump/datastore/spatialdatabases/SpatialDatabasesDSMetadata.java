@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.vividsolutions.jump.datastore.spatialdatabases;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -98,6 +93,9 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
   }
 
   public SpatialDatabasesDSMetadata(DataStoreConnection conn) {
+    JUMPWorkbench.getInstance().getFrame().log("creating a SpatialDatabasesDSMetadata (class:" + this.getClass() 
+        + " ) (con: " + conn.toString() + ") id"
+        + this.hashCode(), this.getClass());
     this.conn = conn;
     // TODO: use bind parameters to avoid SQL injection
     this.datasetNameQuery = "";
@@ -279,7 +277,7 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
    * @return
    */
   public List<GeometryColumn> getGeometryAttributes(String datasetName) {
-    String sql = this.getGeoColumnsQuery(datasetName);
+    String sql = getGeoColumnsQuery(datasetName);
     return getGeometryAttributes(sql, datasetName);
   }
 

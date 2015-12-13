@@ -160,11 +160,15 @@ public class LayerManager {
             }
             layerReferencesToDispose.add(new WeakReference(layerable));
         }
-
         addCategory(categoryName);
-
+  
         Category cat = getCategory(categoryName);
-        cat.add(0, layerable);
+        
+        try {
+          cat.add(0, layerable);
+        } catch (Throwable t) {
+          t.printStackTrace();
+        }
 
         // Fire metadata changed so that the visual modified markers are
         // updated. [Jon Aquino]
