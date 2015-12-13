@@ -65,6 +65,10 @@ public class XBasicStyle extends BasicStyle {
         this.vertexStyle = vertexStyle;
     }
 
+    @Override public void initialize(Layer layer) {
+        super.initialize(layer);
+    }
+
     @Override public void paint(Feature f, Graphics2D g, Viewport viewport) throws Exception {
         // render basic style
         super.paint(f, g, viewport);
@@ -83,10 +87,6 @@ public class XBasicStyle extends BasicStyle {
 
     @Override public Color getFeatureColor(Feature feature) {
         return null;
-    }
-
-    @Override public void initialize(Layer layer) {
-        throw new UnsupportedOperationException("initialize(Layer) is nor implemented for XBasicStyle");
     }
 
 }
