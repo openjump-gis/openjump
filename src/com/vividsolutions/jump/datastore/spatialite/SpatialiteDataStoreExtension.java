@@ -36,7 +36,7 @@ public class SpatialiteDataStoreExtension extends Extension {
     try {
       ClassLoader pluginLoader = wbc.getWorkbench().getPlugInManager()
           .getClassLoader();
-      // check for ojdbc6.jar
+      // check for sqlite jar
       DriverManager.registerDriver(
           (Driver)Class.forName(JDBC_CLASS, true, pluginLoader).newInstance());
 

@@ -1,14 +1,18 @@
 package com.vividsolutions.jump.datastore.spatialite;
 
-import com.vividsolutions.jump.datastore.DataStoreConnection;
-import com.vividsolutions.jump.parameter.ParameterList;
+import java.io.File;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
+import java.util.Properties;
+
+import com.vividsolutions.jump.datastore.DataStoreConnection;
 import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDataStoreDriver;
+import com.vividsolutions.jump.parameter.ParameterList;
 import com.vividsolutions.jump.parameter.ParameterListSchema;
-import java.io.File;
-import org.sqlite.SQLiteConfig;
+
+//import org.sqlite.SQLiteConfig;
 
 /**
  * A driver for supplying {@link SpatialDatabaseDSConnection}s
@@ -54,10 +58,18 @@ public class SpatialiteDataStoreDriver
       throw new Exception("Spatialite file: " + database + " does not exist. cannot create connection");
     }
     
-    
-    SQLiteConfig config = new SQLiteConfig();
     // mandatory to load spatialite extension
-    config.enableLoadExtension(true);
+    Class configClazz = Class.forName("org.sqlite.SQLiteConfig");
+    Method enableMethod = configClazz.getMethod("enableLoadExtension",
+        new Class[]{Boolean.class});
+    
+    Object config = configClazz.newInstance();
+    enableMethod.invoke(config, new Boolean(true));
+
+    // this is the code above w/o reflection, KEEP FOR REFERENCE!!!
+    // mandatory to load spatialite extension
+    //SQLiteConfig config = new SQLiteConfig();
+    //config.enableLoadExtension(true);
 
     String url
         = String.valueOf(new StringBuffer(urlPrefix).append(database));
@@ -65,8 +77,10 @@ public class SpatialiteDataStoreDriver
     Driver driver = (Driver) Class.forName(this.getJdbcClass()).newInstance();
     DriverManager.registerDriver(driver);
 
-    Connection conn = DriverManager.getConnection(url, config.toProperties());
-    
+    Method getPropsMethod = configClazz.getMethod("toProperties");
+    Properties props = (Properties)getPropsMethod.invoke(config);
+    Connection conn = DriverManager.getConnection(url, props);
+
     return new SpatialiteDSConnection(conn);
   }
 }
