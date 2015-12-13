@@ -229,7 +229,9 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
 
         vertexStyleChooser.setBlackboard(persistentBlackboard);
         vertexStyleChooser.setStylePanel(this);
-
+        // Initialize layer before setBasicStyle as setBasicStyle may now call
+        // getCurrentVertexStyle in the case of XBasicStyle
+        this.layer = layer;
         setBasicStyle(layer.getBasicStyle());
 
         try {
