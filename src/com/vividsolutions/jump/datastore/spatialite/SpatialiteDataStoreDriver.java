@@ -61,10 +61,10 @@ public class SpatialiteDataStoreDriver
     // mandatory to load spatialite extension
     Class configClazz = Class.forName("org.sqlite.SQLiteConfig");
     Method enableMethod = configClazz.getMethod("enableLoadExtension",
-        new Class[]{Boolean.class});
+        new Class[]{boolean.class});
     
     Object config = configClazz.newInstance();
-    enableMethod.invoke(config, new Boolean(true));
+    enableMethod.invoke(config, true);
 
     // this is the code above w/o reflection, KEEP FOR REFERENCE!!!
     // mandatory to load spatialite extension
