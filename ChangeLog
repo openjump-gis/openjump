@@ -1,5 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs
 
+2015-13-11 ede
+  * move WFS language files to language/wfs/
+  * added I18N support for giving a plain path as "category"
+
 2015-13-11 Nicolas Ribot <nicolas.ribot@gmail.com>
   * Spatial Databases support enhanced: support for Oracle Spatial, MySQL/MariaDB
     Spatialite added.
@@ -14,7 +18,6 @@
   * Spatialite: supports Spatialite binary type, WKB and WKT.
                 supports several geometry_column metadata table layout (code from 
     Larry Reeder DB Plugin)
-  * 
 
 2015-12-11 mmichaud <m.michael.michaud@orange.fr>
   * Switch pom to official jts-1.14 release
@@ -25,8 +28,12 @@
 
 2015-12-08 ede
   * bugfix "renaming layers or editing attributes in attribtab executes 
-    plugin/cursortool erronously via shortcut" and "shortcuts Strg+X/C/V etc.
-    not working when editing layer names in TreeLayerNamePanel"
+    plugin/cursortool erronously via shortcut" 
+    and 
+    bugfix #366 "Copy/paste not working in LayerNamePanel"
+  * bugfix #403 "Make layer editable from AttributeTable..."
+  * moved editable, selectable, readonly attributes into (Abstract)Layerable
+    in order for Layerables to be editable etc. in the future
 
 2015-12-06 mmichaud <m.michael.michaud@orange.fr>
   * Improved CutFeatureTool

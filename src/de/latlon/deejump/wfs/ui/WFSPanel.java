@@ -325,7 +325,7 @@ public class WFSPanel extends JPanel {
       keepNorth.add(urlPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
           GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL, new Insets(0,
               0, 0, 0), 0, 0));
-      tabs.add(I18N.get("FeatureResearchDialog.selectUrl"), keepNorth);
+      tabs.add(I18N.get("FeatureResearchDialog.wfsConnection"), keepNorth);
   
       attributeResPanel = new PropertyCriteriaPanel(this, featureTypeCombo);
       keepNorth = new JPanel(new GridBagLayout());

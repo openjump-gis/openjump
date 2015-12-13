@@ -31,6 +31,7 @@
  */
 package com.vividsolutions.jump;
 
+import java.io.File;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -41,86 +42,52 @@ import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 
-import com.vividsolutions.jts.util.Assert;
-
 /**
  * Singleton for the Internationalization (I18N)
- * 
- * <pre>
- * [1] HOWTO TRANSLATE JUMP IN MY OWN LANGUAGE
- *  Copy theses files and add the locales extension for your language and country instead of the *.
- *  - resources/jump_*.properties
- *  - com/vividsolutions/jump/workbench/ui/plugin/KeyboardPlugIn_*.html
- * [2] HOWTO TRANSLATE MY PLUGIN AND GIVE THE ABILITY TO TRANSLATE IT
- *  Use theses methods to use your own *.properties files :
- *  [Michael Michaud 2007-03-23] the 3 following methods have been deactivated
- *  com.vividsolutions.jump.I18N#setPlugInRessource(String, String)
- *  com.vividsolutions.jump.I18N#get(String, String)
- *  com.vividsolutions.jump.I18N#getMessage(String, String, Object[])
- *  you still can use plugInsResourceBundle (as in Pirol's plugin)
- *  
- *  And use jump standard menus
- * </pre>
- * 
- * Code example : [Michael Michaud 2007-03-23 : the following code example is no
- * more valid and has to be changed]
- * 
- * <pre>
- * public class PrintPlugIn extends AbstractPlugIn
- *  {
- *    private String name = &quot;print&quot;;
- * public void initialize(PlugInContext context) throws Exception
- * {
- *   I18N.setPlugInRessource(name, &quot;org.agil.core.jump.plugin.print&quot;);
- *   context.getFeatureInstaller().addMainMenuItem(this,
- *                                                 new String[]
- *                                                 {MenuNames.TOOLS,I18N.get(name, &quot;print&quot;)},
- *                                                 I18N.get(name, &quot;print&quot;), false, null, null);
- * }
- * ...
- * </pre>
- * 
- * <pre>
- * TODO :I18N (1) Improve translations
- * TODO :I18N (2) Separate config (customization) and I18N
- * TODO :I18N (3) Explore and discuss about I18N integration and Jakarta Common Ressources
- * (using it as a ressource interface)
- * </pre>
- * 
- * @author Basile Chandesris - <chandesris@pt-consulting.lu>
- * @see com.vividsolutions.jump.workbench.ui.MenuNames
- * @see com.vividsolutions.jump.workbench.ui.VTextIcon text rotation
- */
+ **/
 public final class I18N {
 
   private static final Logger LOG = Logger.getLogger(I18N.class);
   private static final I18N instance = new I18N();
 
   // [Michael Michaud 2007-03-23] plugInsResourceBundle is deactivated because
-  // all the methods
-  // using it have been deactivated.
+  // all the methods using it have been deactivated.
   // [sstein] activated again since Pirol does use it
   // [ede 11.2012] kept it, although i don't see any usage of it in here
+  // [ede 12.2015] used by de.fho.jump.pirol.utilities.i18n.I18NPlug
   public static Hashtable plugInsResourceBundle = new Hashtable();
-  /** The map from category names to I18N instances. */
-  private static Map<String, I18N> instances = new HashMap<String, I18N>();
+  /** The map of I18N instances. */
+  private static Map<Object, I18N> instances = new HashMap<Object, I18N>();
 
   /** The defaults for the I18N instance. */
   private static ClassLoader classLoader;
   private String resourcePath = "language/jump";
   private Locale locale = Locale.getDefault();
   /** three rbs see getText(String) for details */
-  private ResourceBundle resourceBundle,resourceBundle2,resourceBundle3;
+  private ResourceBundle resourceBundle, resourceBundle2, resourceBundle3;
 
-  private I18N() { init(); }
+  private I18N() {
+    init();
+  }
 
   /**
    * Construct an I18N instance for the category.
    * 
-   * @param category i18n files should be in category/language/jump files.
+   * @param categoryPrefix
+   *          i18n files should be in category/language/jump files.
    */
-  private I18N( final String category ) {
-    resourcePath = category.replace('.', '/') + "/" + resourcePath;
+  private I18N(final String categoryPrefix) {
+    resourcePath = categoryPrefix.replace('.', '/') + "/" + resourcePath;
+    init();
+  }
+
+  /**
+   * Create an instance for a concrete path without 'language/jump' appended
+   * 
+   * @param path
+   */
+  private I18N(final File path) {
+    resourcePath = path.toString();
     init();
   }
 
@@ -133,15 +100,17 @@ public final class I18N {
 
   /**
    * the following three methods locale() language() country() are named that
-   * way because the getter methods were already defined statically and have
-   * to remain for legacy reasons
+   * way because the getter methods were already defined statically and have to
+   * remain for legacy reasons
    */
   private Locale locale() {
     return locale != null ? locale : Locale.getDefault();
   }
+
   private String language() {
     return locale().getLanguage();
   }
+
   private String country() {
     return locale().getCountry();
   }
@@ -155,11 +124,12 @@ public final class I18N {
     resourceBundle = ResourceBundle.getBundle(resourcePath, locale, cl);
     resourceBundle2 = ResourceBundle.getBundle(resourcePath, new Locale(
         language()), cl);
-    resourceBundle3 = ResourceBundle.getBundle(resourcePath, new Locale("",""), cl);
+    resourceBundle3 = ResourceBundle.getBundle(resourcePath,
+        new Locale("", ""), cl);
     // apply to system
     applyToRuntime(locale);
   }
-  
+
   // remember missing strings, do not flood log
   private HashSet missing = new HashSet();
 
@@ -189,21 +159,32 @@ public final class I18N {
       return resourceBundle3.getString(key);
     } catch (java.util.MissingResourceException e) {
       if (!missing.contains(key)) {
-        String msg = getClass().getName()+"\nNo resource bundle or no translation found for''{0}''.\nError was:\n{1}";
-        msg = new MessageFormat(msg).format(new String[]{key,e.getLocalizedMessage()});
+        String msg = getClass().getName()
+            + "\nNo resource bundle or no translation found for''{0}''.\nError was:\n{1}";
+        msg = new MessageFormat(msg).format(new String[] { key,
+            e.getLocalizedMessage() });
         LOG.debug(msg);
-        System.out.println("Missing translation for '"+key+"' in resource bundle '"+this.resourcePath+"'.");
+        System.out.println("Missing translation for '" + key
+            + "' in resource bundle '" + this.resourcePath + "'.");
         missing.add(key);
-        // uncomment and add a search string to get staks telling you where the call came from
-        //Assert.isTrue(!key.contains("Write"));
+        // uncomment and add a search string to get staks telling you where the
+        // call came from
+        // Assert.isTrue(!key.contains("Write"));
       }
       String[] labelpath = key.split("\\.");
       return labelpath[labelpath.length - 1];
     }
   }
 
-  private boolean isValid( String text ){
-    return text != null && !text.trim().equals("") && !text.trim().startsWith("#T:");
+  /**
+   * we ignore untranslated string when we find them
+   * 
+   * @param text
+   * @return
+   */
+  private boolean isValid(String text) {
+    return text != null && !text.trim().equals("")
+        && !text.trim().startsWith("#T:");
   }
 
   /**
@@ -211,10 +192,12 @@ public final class I18N {
    * PlugInManager (plugin jars are added to a child classloader there) to allow
    * plugins to make use of this I18N class.
    * 
-   * @param cl the classLoader to set
+   * @param cl
+   *          the classLoader to set
    */
   public static void setClassLoader(ClassLoader cl) {
-    if (cl!=null) classLoader = cl;
+    if (cl != null)
+      classLoader = cl;
     // apply to instances
     for (I18N i18n : instances.values()) {
       i18n.init();
@@ -227,37 +210,90 @@ public final class I18N {
    * category. If no label is defined then a default string is created from the
    * last part of the key.
    * 
-   * @param category The category.
-   * @param key The key of the text in the language file.
+   * @deprecated use getMessage() instead
+   * @param categoryPrefix
+   *          The category.
+   * @param key
+   *          The key of the text in the language file.
    * @return The I18Nized text.
    */
-  public static String getText(final String category, final String key) {
-    I18N i18n = getInstance(category);
-    return i18n.getText(key);
+  public static String getText(final String categoryPrefix, final String key) {
+    return getMessage(categoryPrefix, key);
   }
 
   /**
-   * Get the I18N instance for the category. A resource file must exist in the
-   * resource path for language/jump for the category.
+   * Get the I18N instance for a category or a path. The resource files are
+   * resolved and at least one must exist in the classpath.
    * 
-   * @param category The category.
+   * Examples:
+   * 
+   * categoryPrefixOrPath = new String("org.openjump.myplugin") then
+   * resourcebundle is looked up as
+   * /org/openjump/myplugin/language/jump[_locale].properties
+   * 
+   * categoryPrefixOrPath = new File("language/wfs/messages") then
+   * resourcebundle is looked up as /language/wfs/messages[_locale].properties
+   * 
+   * @param categoryPrefixOrPath
+   *          The category.
    * @return The instance.
    */
-  public static I18N getInstance(final String category) {
-    I18N instance = instances.get(category);
+  private static I18N getInstance(final Object categoryPrefixOrPath) {
+    I18N instance = instances.get(categoryPrefixOrPath);
     if (instance == null) {
-      instance = new I18N( category );
-      instances.put(category, instance);
+      if (categoryPrefixOrPath instanceof File)
+        instance = new I18N((File) categoryPrefixOrPath);
+      else
+        instance = new I18N(categoryPrefixOrPath.toString());
+      instances.put(categoryPrefixOrPath, instance);
     }
     return instance;
   }
 
-  public static I18N getInstance() {
-    // [Michael Michaud 2007-03-04] guarantee I18N instance unicity without
-    return (instance == null) ? new I18N() : instance;
+  /**
+   * useless as there are no instance class methods. should be private, but who
+   * knows what is using this code anyway.
+   * 
+   * use static I18N.getMessage() methods instead
+   * 
+   * @param categoryPrefix
+   */
+  public static I18N getInstance(final String categoryPrefix) {
+    return getInstance((Object) categoryPrefix);
   }
 
-  // [ede] utility method as it is used in several places (loadFile,getLanguage...)
+  /**
+   * useless as there are no instance class methods. should be private, but who
+   * knows what is using this code anyway.
+   * 
+   * use static I18N.getMessage() methods instead
+   * 
+   * @param path
+   */
+  public static I18N getInstance(final File path) {
+    return getInstance((Object) path);
+  }
+
+  /**
+   * useless as there are no instance class methods. should be private, but who
+   * knows what is using this code anyway.
+   * 
+   * use static I18N.getMessage() methods instead
+   * 
+   * @param path
+   */
+  public static I18N getInstance() {
+    // is initialized statically above
+    return instance;
+  }
+
+  /**
+   * [ede] utility method which is used in several places
+   * (loadFile,getLanguage...)
+   * 
+   * @param localeCode
+   * @return
+   */
   public static Locale fromCode(final String localeCode) {
     // [Michael Michaud 2007-03-04] handle the case where lang is the only
     // variable instead of catching an ArrayIndexOutOfBoundsException
@@ -271,12 +307,12 @@ public final class I18N {
       locale = new Locale(lc[0]);
     } else {
       LOG.debug(localeCode
-        + " is an illegal argument to define lang [and country]");
+          + " is an illegal argument to define lang [and country]");
     }
-    
+
     return locale;
   }
-  
+
   /**
    * Load file specified in command line (-i18n lang_country) (lang_country
    * :language 2 letters + "_" + country 2 letters) Tries first to extract lang
@@ -296,7 +332,7 @@ public final class I18N {
    * 
    * @param loc
    */
-  public static void applyToRuntime( Locale loc ) {
+  public static void applyToRuntime(Locale loc) {
     Locale.setDefault(loc);
     System.setProperty("user.language", loc.getLanguage());
     System.setProperty("user.country", loc.getCountry());
@@ -347,34 +383,40 @@ public final class I18N {
    * resourcebundle is found, returns default string contained inside
    * com.vividsolutions.jump.jump
    * 
-   * @param label with argument insertion : {0}
+   * @param label
+   *          with argument insertion : {0}
    * @param objects
    * @return i18n label
    */
-  public static String getMessage(final String label, final Object[] objects) {
-    return getMessage("", label, objects);
-  }
-
-  // convenience method for one parameter only calls
-  public static String getMessage(final String label, final Object object) {
-    return getMessage("", label, new Object[]{object});
+  public static String getMessage(final String label, final Object... objects) {
+    return getMessage((Object) null, label, objects);
   }
 
   /**
-   * Get the I18N text from the language file associated with the specified
-   * category. If no label is defined then a default string is created from the
-   * last part of the key.
+   * Get the internationalized text from the resource bundle associated with the
+   * specified category or path. If no label is defined then a default string is
+   * created from the last part of the key.
    * 
-   * @param category
+   * Examples:
+   * 
+   * categoryPrefixOrPath = new String("org.openjump.myplugin") then
+   * resourcebundle is looked up as
+   * /org/openjump/myplugin/language/jump[_locale].properties
+   * 
+   * categoryPrefixOrPath = new File("language/wfs/messages") then
+   * resourcebundle is looked up as /language/wfs/messages[_locale].properties
+   * 
+   * @param categoryPrefixOrPath
    *          The category.
    * @param label
    *          Label with argument insertion : {0}
    * @param objects
+   * 
    * @return i18n label
    */
-  public static String getMessage(final String category, final String label,
-      final Object[] objects) {
-    I18N i18n = !category.trim().equals("") ? getInstance(category)
+  private static String getMessage(final Object categoryPrefixOrPath,
+      final String label, final Object[] objects) {
+    I18N i18n = categoryPrefixOrPath != null ? getInstance(categoryPrefixOrPath)
         : getInstance();
     try {
       final MessageFormat mformat = new MessageFormat(i18n.getText(label));
@@ -389,5 +431,13 @@ public final class I18N {
     }
   }
 
-}
+  public static String getMessage(final String categoryPrefix,
+      final String label, final Object... objects) {
+    return getMessage((Object) categoryPrefix, label, objects);
+  }
 
+  public static String getMessage(final File path, final String label,
+      final Object... objects) {
+    return getMessage((Object) path, label, objects);
+  }
+}
