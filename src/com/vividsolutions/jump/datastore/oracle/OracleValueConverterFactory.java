@@ -46,6 +46,16 @@ public class OracleValueConverterFactory extends SpatialDatabasesValueConverterF
           .getStatement().getConnection()));
 
       return converterMethod.invoke(converter, structClazz.cast(geometryObject));
+    
+      /**
+       * below is the original implementation w/o reflection 
+       * KEEP FOR REFERENCE!!!
+       * */ 
+      // org.geotools.data.oracle.sdo.GeometryConverter geometryConverter =
+      // new org.geotools.data.oracle.sdo.GeometryConverter((oracle.jdbc.OracleConnection)
+      // rs.getStatement().getConnection());
+      // return geometryConverter.asGeometry((oracle.sql.STRUCT)
+      // geometryObject);
     }
   }
 
