@@ -59,12 +59,11 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
  */
 public class PlugInManager {
     private static Logger LOG = Logger.getLogger(PlugInManager.class);
-    private static final String NOT_INITIALIZED = 
-      I18N.get("com.vividsolutions.jump.workbench.plugin.PlugInManager.could-not-be-initialized");
-	  private static final String LOADING = 
-	    I18N.get("com.vividsolutions.jump.workbench.plugin.PlugInManager.loading");
-    private static final String LOADING_ERROR = 
-      I18N.get("com.vividsolutions.jump.workbench.plugin.PlugInManager.throwable-encountered-loading");
+
+    private static final String NOT_INITIALIZED = "com.vividsolutions.jump.workbench.plugin.PlugInManager.could-not-be-initialized";
+    private static final String LOADING = "com.vividsolutions.jump.workbench.plugin.PlugInManager.loading";
+    private static final String LOADING_ERROR = "com.vividsolutions.jump.workbench.plugin.PlugInManager.throwable-encountered-loading";
+
     private TaskMonitor monitor;
     private WorkbenchContext context;
     private Collection configurations = new ArrayList();
@@ -137,7 +136,7 @@ public class PlugInManager {
       PlugInContext pc = context.createPlugInContext();
       for (Iterator i = configurations.iterator(); i.hasNext();) {
         Configuration configuration = (Configuration) i.next();
-        monitor.report(LOADING + " " + name(configuration) + " "
+        monitor.report(I18N.get(LOADING) + " " + name(configuration) + " "
             + version(configuration));
         long start = secondsSince(0);
         try {
@@ -154,7 +153,7 @@ public class PlugInManager {
         catch (Throwable e) {
           context.getErrorHandler().handleThrowable(e);
           context.getWorkbench().getFrame()
-              .log(configuration.getClass().getName() + " " + NOT_INITIALIZED, this.getClass());
+              .log(configuration.getClass().getName() + " " + I18N.get(NOT_INITIALIZED), this.getClass());
         }
       }
     }
@@ -173,7 +172,7 @@ public class PlugInManager {
             && initSetting.equals(WorkbenchProperties.ATTR_VALUE_FALSE))
           continue;
 
-        monitor.report(LOADING + " " + className);
+        monitor.report(I18N.get(LOADING) + " " + className);
 
         Class plugInClass = null;
         try {
@@ -233,7 +232,7 @@ public class PlugInManager {
         } catch (Throwable e) {
           context.getErrorHandler().handleThrowable(e);
           context.getWorkbench().getFrame()
-              .log(className + " " + NOT_INITIALIZED, this.getClass());
+              .log(className + " " + I18N.get(NOT_INITIALIZED), this.getClass());
         }
       }
     }
@@ -388,7 +387,7 @@ public class PlugInManager {
                     + ". Refine class name algorithm.");
             return null;
         } catch (Throwable t) {
-            LOG.error(LOADING_ERROR + " " + className + ":");
+            LOG.error(I18N.get(LOADING_ERROR) + " " + className + ":");
             //e.g. java.lang.VerifyError: class
             // org.apache.xml.serialize.XML11Serializer
             //overrides final method [Jon Aquino]
