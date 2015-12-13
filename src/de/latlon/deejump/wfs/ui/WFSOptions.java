@@ -8,6 +8,8 @@
  */
 package de.latlon.deejump.wfs.ui;
 
+import de.latlon.deejump.wfs.data.JUMPFeatureFactory;
+
 /**
  * <code>WFSOptions</code>
  * 
@@ -17,8 +19,6 @@ package de.latlon.deejump.wfs.ui;
  * @version $Revision: 1438 $, $Date: 2008-05-29 15:00:02 +0200 (Do, 29 Mai 2008) $
  */
 public class WFSOptions {
-
-    private int maxFeatures;
 
     private String[] outputFormats;
 
@@ -43,14 +43,14 @@ public class WFSOptions {
      * 
      */
     public WFSOptions() {
-        this( 1000, new String[] { "GML2", "text/xml; subtype=gml/3.1.1" }, new String[] { "GET", "POST" } );
+        this( JUMPFeatureFactory.getMaxFeatures(), new String[] { "GML2", "text/xml; subtype=gml/3.1.1" }, new String[] { "GET", "POST" } );
     }
 
     /**
      * @return the max features setting to be used in the request
      */
     public int getMaxFeatures() {
-        return maxFeatures;
+        return JUMPFeatureFactory.getMaxFeatures();
     }
 
     /**
@@ -60,7 +60,7 @@ public class WFSOptions {
         if ( maxFeatures < 1 ) {
             throw new IllegalArgumentException( "maxFeatures must be a number greater than 1." );
         }
-        this.maxFeatures = maxFeatures;
+        JUMPFeatureFactory.setMaxFeatures(maxFeatures);
     }
 
     /**

@@ -12,7 +12,6 @@ import static com.vividsolutions.jump.feature.AttributeType.GEOMETRY;
 import static org.deegree.model.spatialschema.JTSAdapter.export;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URI;
