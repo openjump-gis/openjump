@@ -64,8 +64,8 @@ public class ConnectionManagerPanel extends JPanel {
 //  private final Icon SQLSERVER_DISCONNECTED_ICON = IconLoader.icon("ok_sqlserver.png");
   
   private final Icon DBS_ICON = IconLoader.icon("famfam/database_edit.png");
-  private final Icon NEW_DB_ICON = IconLoader.icon("database_add.png");
-  private final Icon DELETE_DB_ICON = IconLoader.icon("database_delete.png");
+  private final Icon NEW_DB_ICON = IconLoader.icon("famfam/database_add.png");
+  private final Icon DELETE_DB_ICON = IconLoader.icon("famfam/database_delete.png");
 
     // Partially generated using Eclipse Visual Editor [Jon Aquino 2005-03-08]
 

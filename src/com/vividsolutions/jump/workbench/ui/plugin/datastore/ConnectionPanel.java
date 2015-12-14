@@ -33,7 +33,7 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
  *  Base class for panels with a Connection combobox.
  */
 public class ConnectionPanel extends JPanel {
-    protected final static ImageIcon DB_ICON = IconLoader.icon( "famfam/database_gear.png" );
+    protected final static ImageIcon ADD_DB_ICON = IconLoader.icon( "famfam/add.png" );
 
     protected final static int MAIN_COLUMN_WIDTH = 550;
 
@@ -177,7 +177,7 @@ public class ConnectionPanel extends JPanel {
     private JButton getChooseConnectionButton() {
         if ( chooseConnectionButton == null ) {
             chooseConnectionButton = new JButton();
-            chooseConnectionButton.setIcon( DB_ICON );
+            chooseConnectionButton.setIcon( ADD_DB_ICON );
             chooseConnectionButton.setToolTipText( I18N.get("jump.workbench.ui.plugin.datastore.ConnectionPanel.Connection-Manager"));
             chooseConnectionButton.setMargin( new Insets( 0, 0, 0, 0 ) );
             chooseConnectionButton.addActionListener(

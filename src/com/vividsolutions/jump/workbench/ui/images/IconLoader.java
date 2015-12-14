@@ -34,25 +34,47 @@
 package com.vividsolutions.jump.workbench.ui.images;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+
+import org.deegree.ogcwebservices.wcs.configuration.Resolution;
 
 /**
  * Gets an icon from this class' package.
  */
 public class IconLoader {
     public static ImageIcon icon(String filename) {
-        return new ImageIcon(IconLoader.class.getResource(filename));
+        return new ImageIcon(IconLoader.class.getResource(resolveFile( filename )));
     }
     
     public static BufferedImage image(String filename) {
         try {
-          return ImageIO.read(IconLoader.class.getResource(filename));
+          return ImageIO.read(IconLoader.class.getResource(resolveFile( filename )));
         } catch (IOException e) {
           e.printStackTrace();
           return null;
         }
+    }
+    
+    /**
+     * utility method to automagically resolve images that moved into their 
+     * appropriate iconset subfolders for legacy code
+     * 
+     * @param filename
+     * @return
+     */
+    private static String resolveFile( String filename ){
+      // iterate over each location, return on first hit
+      for (String path : new String[]{"","famfam/","fugue/"}) {
+        if (IconLoader.class.getResource( path + filename )!=null)
+          return path + filename;
+      }
+      
+      // if push comes to shove, we let the calling method deal w/ the 
+      // consequences, exactly as it was before
+      return filename;
     }
 }
