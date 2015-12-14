@@ -43,6 +43,7 @@ import com.vividsolutions.jump.workbench.datastore.ConnectionDescriptor;
 import com.vividsolutions.jump.workbench.datastore.ConnectionManager;
 import com.vividsolutions.jump.workbench.registry.Registry;
 import com.vividsolutions.jump.workbench.ui.ErrorHandler;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.OKCancelDialog;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
@@ -58,9 +59,9 @@ public class ConnectionManagerPanel extends JPanel {
   private final Icon MARIA_CONNECTED_ICON = IconLoader.icon("ok_mariadb.png");
   private final Icon MARIA_DISCONNECTED_ICON = IconLoader.icon("ko_mariadb.png");
   private final Icon SQLITE_CONNECTED_ICON = IconLoader.icon("ok_spatialite.png");
-  private final Icon SQLITE_DISCONNECTED_ICON = IconLoader.icon("ko_spatialite.png"); 
-  private final Icon SQLSERVER_CONNECTED_ICON = IconLoader.icon("ok_sqlserver.png");
-  private final Icon SQLSERVER_DISCONNECTED_ICON = IconLoader.icon("ok_sqlserver.png");
+  private final Icon SQLITE_DISCONNECTED_ICON = GUIUtil.toGrayScale((ImageIcon)SQLITE_CONNECTED_ICON);
+//  private final Icon SQLSERVER_CONNECTED_ICON = IconLoader.icon("ok_sqlserver.png");
+//  private final Icon SQLSERVER_DISCONNECTED_ICON = IconLoader.icon("ok_sqlserver.png");
   
   private final Icon DBS_ICON = IconLoader.icon("famfam/database_edit.png");
   private final Icon NEW_DB_ICON = IconLoader.icon("database_add.png");
