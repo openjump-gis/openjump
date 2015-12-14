@@ -37,10 +37,6 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.datastore.DataStoreConnection;
 import com.vividsolutions.jump.datastore.DataStoreDriver;
 import com.vividsolutions.jump.datastore.DataStoreException;
-import com.vividsolutions.jump.datastore.mariadb.MariadbDataStoreDriver;
-import com.vividsolutions.jump.datastore.oracle.OracleDataStoreDriver;
-import com.vividsolutions.jump.datastore.postgis.PostgisDataStoreDriver;
-import com.vividsolutions.jump.datastore.spatialite.SpatialiteDataStoreDriver;
 import com.vividsolutions.jump.util.Block;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.datastore.ConnectionDescriptor;
@@ -48,26 +44,27 @@ import com.vividsolutions.jump.workbench.datastore.ConnectionManager;
 import com.vividsolutions.jump.workbench.registry.Registry;
 import com.vividsolutions.jump.workbench.ui.ErrorHandler;
 import com.vividsolutions.jump.workbench.ui.OKCancelDialog;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class ConnectionManagerPanel extends JPanel {
   // Nicolas Ribot, 07 dec 2015: 
   // add icons according to database source
-  private Icon CONNECTED_ICON = new ImageIcon(ConnectionManagerPanel.class.getResource("green_circle.png"));
-  private Icon DISCONNECTED_ICON = new ImageIcon(ConnectionManagerPanel.class.getResource("small_red_x.png"));
-  private Icon PG_CONNECTED_ICON = new ImageIcon(ConnectionManagerPanel.class.getResource("ok_pg.png"));
-  private Icon PG_DISCONNECTED_ICON = new ImageIcon(ConnectionManagerPanel.class.getResource("ko_pg.png"));
-  private Icon ORA_CONNECTED_ICON = new ImageIcon(ConnectionManagerPanel.class.getResource("ok_oracle.png"));
-  private Icon ORA_DISCONNECTED_ICON = new ImageIcon(ConnectionManagerPanel.class.getResource("ko_oracle.png"));
-  private Icon MARIA_CONNECTED_ICON = new ImageIcon(ConnectionManagerPanel.class.getResource("ok_mysql.png"));
-  private Icon MARIA_DISCONNECTED_ICON = new ImageIcon(ConnectionManagerPanel.class.getResource("ko_mysql.png"));
-  private Icon SQLITE_CONNECTED_ICON = new ImageIcon(ConnectionManagerPanel.class.getResource("ok_sqlite.png"));
-  private Icon SQLITE_DISCONNECTED_ICON = new ImageIcon(ConnectionManagerPanel.class.getResource("ko_sqlite.png")); 
-  private Icon SQLSERVER_CONNECTED_ICON = new ImageIcon(ConnectionManagerPanel.class.getResource("ok_sqlserver.png"));
-  private Icon SQLSERVER_DISCONNECTED_ICON = new ImageIcon(ConnectionManagerPanel.class.getResource("ok_sqlserver.png"));
+  private final Icon CONNECTED_ICON = IconLoader.icon("connect.png");
+  private final Icon DISCONNECTED_ICON = IconLoader.icon("disconnect.png");
+  private final Icon PG_CONNECTED_ICON = IconLoader.icon("ok_pg.png");
+  private final Icon PG_DISCONNECTED_ICON = IconLoader.icon("ko_pg.png");
+  private final Icon ORA_CONNECTED_ICON = IconLoader.icon("ok_oracle.png");
+  private final Icon ORA_DISCONNECTED_ICON = IconLoader.icon("ko_oracle.png");
+  private final Icon MARIA_CONNECTED_ICON = IconLoader.icon("ok_mariadb.png");
+  private final Icon MARIA_DISCONNECTED_ICON = IconLoader.icon("ko_mariadb.png");
+  private final Icon SQLITE_CONNECTED_ICON = IconLoader.icon("ok_spatialite.png");
+  private final Icon SQLITE_DISCONNECTED_ICON = IconLoader.icon("ko_spatialite.png"); 
+  private final Icon SQLSERVER_CONNECTED_ICON = IconLoader.icon("ok_sqlserver.png");
+  private final Icon SQLSERVER_DISCONNECTED_ICON = IconLoader.icon("ok_sqlserver.png");
   
-  private Icon DBS_ICON = new ImageIcon(ConnectionManagerPanel.class.getResource("databases.gif"));
-  private Icon NEW_DB_ICON = new ImageIcon(ConnectionManagerPanel.class.getResource("newDatabase.gif"));
-  private Icon DELETE_DB_ICON = new ImageIcon(ConnectionManagerPanel.class.getResource("deleteDatabase.gif"));
+  private final Icon DBS_ICON = IconLoader.icon("famfam/database_edit.png");
+  private final Icon NEW_DB_ICON = IconLoader.icon("database_add.png");
+  private final Icon DELETE_DB_ICON = IconLoader.icon("database_delete.png");
 
     // Partially generated using Eclipse Visual Editor [Jon Aquino 2005-03-08]
 

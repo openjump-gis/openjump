@@ -33,6 +33,9 @@ as (Component name - License name - License file in "licenses/" folder or link)
    Fugue by Yusuke Kamiyamane http://p.yusukekamiyamane.com - CC BY 3.0
      - http://creativecommons.org/licenses/by/3.0/
    OJ icon v3 and others by Edgar Soldin http://soldin.de - GPL2 - gpl-2.txt
+   PostgreSQL logo - Trademark Policy - https://wiki.postgresql.org/wiki/Trademark_Policy
+   MariaDB logo - Branding Guidelines - https://mariadb.com/kb/en/mariadb/branding-guidelines/
+   Spatialite logo: The Spatialite logo was kindly contributed by Massimo Zedda - Creative Commons Attribution-NonCommercial-NoDerivs 3.0 - http://creativecommons.org/licenses/by-nc-nd/3.0/
  ImageIO Ext - LGPL3 - lgpl-3.0.txt
    except the following dependencies/components:
    commons-codec, commons-io, commons-lang, commons-logging (see above)
