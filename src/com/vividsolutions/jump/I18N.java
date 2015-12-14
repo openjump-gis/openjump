@@ -346,7 +346,7 @@ public final class I18N {
    *         found, returns a default string which is the last part of the label
    */
   public static String get(final String label) {
-    return getInstance().getText(label);
+    return getMessage((Object)null,label);
   }
 
   /**
@@ -415,11 +415,18 @@ public final class I18N {
    * @return i18n label
    */
   private static String getMessage(final Object categoryPrefixOrPath,
-      final String label, final Object[] objects) {
+      final String label, final Object... objects) {
     I18N i18n = categoryPrefixOrPath != null ? getInstance(categoryPrefixOrPath)
         : getInstance();
     try {
-      final MessageFormat mformat = new MessageFormat(i18n.getText(label));
+      // IMPORTANT: trailing spaces break the Malayalam translation, 
+      //            so we trim here, just to make sure
+      String text = i18n.getText(label).trim();
+      // no params, nothing to parse
+      if ( objects.length < 1 )
+        return text;
+      // parse away
+      final MessageFormat mformat = new MessageFormat(text);
       return mformat.format(objects);
     } catch (java.util.MissingResourceException e) {
       final String[] labelpath = label.split("\\.");
