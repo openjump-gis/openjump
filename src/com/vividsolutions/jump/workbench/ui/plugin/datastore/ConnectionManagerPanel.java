@@ -50,16 +50,16 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 public class ConnectionManagerPanel extends JPanel {
   // Nicolas Ribot, 07 dec 2015: 
   // add icons according to database source
-  private final Icon CONNECTED_ICON = IconLoader.icon("connect.png");
-  private final Icon DISCONNECTED_ICON = IconLoader.icon("disconnect.png");
-  private final Icon PG_CONNECTED_ICON = IconLoader.icon("ok_pg.png");
-  private final Icon PG_DISCONNECTED_ICON = IconLoader.icon("ko_pg.png");
-  private final Icon ORA_CONNECTED_ICON = IconLoader.icon("ok_oracle.png");
-  private final Icon ORA_DISCONNECTED_ICON = IconLoader.icon("ko_oracle.png");
-  private final Icon MARIA_CONNECTED_ICON = IconLoader.icon("ok_mariadb.png");
-  private final Icon MARIA_DISCONNECTED_ICON = IconLoader.icon("ko_mariadb.png");
-  private final Icon SQLITE_CONNECTED_ICON = IconLoader.icon("ok_spatialite.png");
-  private final Icon SQLITE_DISCONNECTED_ICON = GUIUtil.toGrayScale((ImageIcon)SQLITE_CONNECTED_ICON);
+  private static final Icon CONNECTED_ICON = IconLoader.icon("connect.png");
+  private static final Icon DISCONNECTED_ICON = IconLoader.icon("disconnect.png");
+  private static final Icon PG_CONNECTED_ICON = IconLoader.icon("ok_pg.png");
+  private static final Icon PG_DISCONNECTED_ICON = IconLoader.icon("ko_pg.png");
+  private static final Icon ORA_CONNECTED_ICON = IconLoader.icon("ok_oracle.png");
+  private static final Icon ORA_DISCONNECTED_ICON = IconLoader.icon("ko_oracle.png");
+  private static final Icon MARIA_CONNECTED_ICON = IconLoader.icon("ok_mariadb.png");
+  private static final Icon MARIA_DISCONNECTED_ICON = IconLoader.icon("ko_mariadb.png");
+  private static final Icon SQLITE_CONNECTED_ICON = IconLoader.icon("ok_spatialite.png");
+  private static final Icon SQLITE_DISCONNECTED_ICON = GUIUtil.toGrayScale((ImageIcon)SQLITE_CONNECTED_ICON);
 //  private final Icon SQLSERVER_CONNECTED_ICON = IconLoader.icon("ok_sqlserver.png");
 //  private final Icon SQLSERVER_DISCONNECTED_ICON = IconLoader.icon("ok_sqlserver.png");
   
@@ -481,7 +481,7 @@ public class ConnectionManagerPanel extends JPanel {
      * @param desc the connection to get icon from
      * @return the corresponding icon
      */
-    private Icon getConnectionIcon(ConnectionDescriptor desc, boolean isClosed) throws DataStoreException {
+    public static Icon getConnectionIcon(ConnectionDescriptor desc, boolean isClosed) throws DataStoreException {
       String driverClassName = desc.getDataStoreDriverClassName();
       if ( driverClassName.equals("com.vividsolutions.jump.datastore.postgis.PostgisDataStoreDriver")) {
         return isClosed ? PG_DISCONNECTED_ICON : PG_CONNECTED_ICON;

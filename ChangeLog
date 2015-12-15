@@ -1,15 +1,20 @@
-# for display continuity sake please use 2 spaces instead of tabs
+# for display continuity sake please use 2 spaces instead of tabs, also make  #
+# sure that lines break at 80 chars for constricted dispaly situations        #
 
-2015-13-11 ede
+2015-12-15 ede
+  * added icons to the datastore query chooser's combobox
+  * "static"alized a part of ConnectionManagerPanel w/o redesign consequences
+
+2015-12-11 ede
   * move WFS language files to language/wfs/
   * added I18N support for giving a plain path as "category"
 
-2015-13-11 Nicolas Ribot <nicolas.ribot@gmail.com>
-  * Spatial Databases support enhanced: support for Oracle Spatial, MySQL/MariaDB
-    Spatialite added.
+2015-12-11 Nicolas Ribot <nicolas.ribot@gmail.com>
+  * Spatial Databases support enhanced: support for Oracle Spatial, 
+    MySQL/MariaDB, Spatialite added.
   * FilterQuery and Adhoc queries supported for these databases
-  * Error detection in case of bad WHERE clause detected when loading a layer (layer
-    removed from Panel)
+  * Error detection in case of bad WHERE clause detected when loading a layer
+    (layer removed from Panel)
   * New connection icons according to database type
   * Oracle Spatial: reads SDO_GEOMETRY with geotools code
                     reflection used on com.oracle.* methods to avoid jar dependence

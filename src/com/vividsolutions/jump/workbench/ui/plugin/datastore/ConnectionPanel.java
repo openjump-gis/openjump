@@ -13,15 +13,19 @@ import java.util.Collection;
 import java.util.Comparator;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
 
 import com.vividsolutions.jump.I18N;
-
+import com.vividsolutions.jump.datastore.DataStoreException;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.datastore.ConnectionDescriptor;
 import com.vividsolutions.jump.workbench.datastore.ConnectionManager;
@@ -80,11 +84,36 @@ public class ConnectionPanel extends JPanel {
         return null;
     }
 
+    protected DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
+    
     protected JComboBox getConnectionComboBox() {
         if ( connectionComboBox == null ) {
             connectionComboBox = new JComboBox();
             connectionComboBox.setPreferredSize( new Dimension( MAIN_COLUMN_WIDTH,
                 ( int ) connectionComboBox.getPreferredSize().getHeight() ) );
+            connectionComboBox.setRenderer(new ListCellRenderer() {
+              @Override
+              public Component getListCellRendererComponent(
+                  JList list, Object value, int index,
+                  boolean isSelected, boolean cellHasFocus) {
+                JLabel renderer = (JLabel) defaultRenderer.getListCellRendererComponent(list, value, index,
+                    isSelected, cellHasFocus);
+                if (!(value instanceof ConnectionDescriptor))
+                  return renderer;
+                ConnectionDescriptor connectionDescriptor = (ConnectionDescriptor) value;
+                try {
+                  Icon icon = ConnectionManagerPanel.getConnectionIcon(connectionDescriptor,
+                      connectionManager().getConnection(
+                          connectionDescriptor).isClosed());
+                  renderer.setIcon(icon);
+                } catch (DataStoreException e) {
+                  // we ignore those for eye candy
+                }
+                
+                return renderer;
+              }
+              
+            });
         }
         return connectionComboBox;
     }
