@@ -30,6 +30,8 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
 
+import org.openjump.core.ui.plugin.file.open.JFCWithEnterAction;
+
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.datastore.DataStoreDriver;
 import com.vividsolutions.jump.parameter.ParameterList;
@@ -125,169 +127,173 @@ public class ConnectionDescriptorPanel extends JPanel
         }
     };
 
-    private static class JMPFileChooser extends JPanel{
-    	Blackboard bb;
-    	JFileChooser chooser;
-		File f = null;
+    private static class JMPFileChooser extends JPanel {
+      Blackboard bb;
+      JFileChooser chooser;
+      JTextField strFile;
+      File f = null;
+  
+      public JMPFileChooser(Blackboard bb) {
+        this.bb = bb;
+        chooser = new JFCWithEnterAction();
+  
+        final JMPFileChooser th = this;
+  
+        strFile = new JTextField(20);
+        JButton open = new JButton();
+        open.setText("...");
+        open.setMargin(new Insets(0, 0, 0, 0));
+  
+        strFile.addFocusListener(new FocusListener() {
+  
+          public void focusGained(FocusEvent e) {
+            // do nothing
+          }
+  
+          public void focusLost(FocusEvent e) {
+            // check for a new value ...
+            String t = strFile.getText();
+            if (t == null) {
+              th.f = null;
+              return;
+            }
+            t = t.trim();
+            if (t == null || "".equals(t)) {
+              th.f = null;
+              return;
+            }
+  
+            th.f = new File(t);
+          }
+  
+        });
+  
+        open.addActionListener(new ActionListener() {
+          public void actionPerformed(ActionEvent e) {
+            if (f != null) {
+              chooser.setSelectedFile(f);
+              th.setToolTipText(f.toString());
+            }
+            int selection = chooser.showOpenDialog(th);
+            if (selection == JFileChooser.APPROVE_OPTION) {
+              th.f = chooser.getSelectedFile();
+              if (th.f == null) {
+                strFile.setText("");
+              } else {
+                strFile.setText(th.f.toString());
+              }
+            }
+          }
+        });
+  
+        setBorder(BorderFactory.createLineBorder(getBackground(), 0));
+        GridBagLayout gl = new GridBagLayout();
+        setLayout(gl);
+        setAlignmentX(0);
+  
+        GridBagConstraints c = new GridBagConstraints(0, 0, 1, 1, 0, 0,
+            GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0,
+                0), 0, 0);
+  
+        add(strFile, c);
+        gl.setConstraints(strFile, c);
+  
+        c = new GridBagConstraints(1, 0, 1, 1, 0, 0, GridBagConstraints.WEST,
+            GridBagConstraints.NONE, new Insets(2, 2, 2, 2), 0, 0);
+        add(open, c);
+        gl.setConstraints(open, c);
+  
+      }
 
-    	public JMPFileChooser(Blackboard bb){
-    		this.bb = bb;
-    		chooser = new JFileChooser();
-
-    		final JMPFileChooser th = this;
-
-    		final JTextField strFile = new JTextField(20);
-    		JButton open = new JButton();
-    		open.setText("...");
-    		open.setMargin(new Insets(0, 0, 0, 0));
-
-    		strFile.addFocusListener(new FocusListener(){
-
-				public void focusGained(FocusEvent e) {
-					// do nothing
-				}
-
-				public void focusLost(FocusEvent e) {
-					// check for a new value ...
-					String t = strFile.getText();
-					if(t == null){
-						th.f = null;
-						return;
-					}
-					t = t.trim();
-					if(t == null || "".equals(t)){
-						th.f = null;
-						return;
-					}
-
-					th.f = new File(t);
-				}
-
-    		});
-
-    		open.addActionListener(new ActionListener(){
-				public void actionPerformed(ActionEvent e) {
-					if(f!=null){
-						chooser.setSelectedFile(f);
-						th.setToolTipText(f.toString());
-					}
-					int selection =  chooser.showOpenDialog(th);
-					if(selection == JFileChooser.APPROVE_OPTION ){
-						th.f = chooser.getSelectedFile();
-						if(th.f == null){
-							strFile.setText("");
-						}else{
-							strFile.setText(th.f.toString());
-						}
-					}
-				}
-    		});
-
-    		setBorder(BorderFactory.createLineBorder(getBackground(),0));
-    		GridBagLayout gl = new GridBagLayout();
-    		setLayout(gl);
-    		setAlignmentX(0);
-
-    		GridBagConstraints c = new GridBagConstraints(0, 0, 1, 1, 0,
-                    0, GridBagConstraints.WEST, GridBagConstraints.NONE,
-                    new Insets(0, 0, 0, 0), 0, 0);
-
-    		add(strFile, c);
-    		gl.setConstraints(strFile,c);
-
-    		c = new GridBagConstraints(1, 0, 1, 1, 0,
-                    0, GridBagConstraints.WEST, GridBagConstraints.NONE,
-                    new Insets(2, 2, 2, 2), 0, 0);
-            add(open, c);
-    		gl.setConstraints(open,c);
-
-    	}
-
-
+      public JTextField getFileTextField() {
+        return strFile;
+      }
     }
 
     private Map parameterClassToHandlerMap = CollectionUtil
-            .createMap(new Object[] { String.class,
-                    new ParameterClassHandler() {
-
-                public Component createEditComponent(Blackboard bb) {
-                    return new JTextField(20);
+        .createMap(new Object[] { String.class, new ParameterClassHandler() {
+  
+          public Component createEditComponent(Blackboard bb) {
+            return new JTextField(20);
+          }
+  
+          public void setParameter(Component component, Object parameter) {
+            ((JTextField) component).setText((String) parameter);
+          }
+  
+          public Object getParameter(Component component) {
+            return ((JTextField) component).getText();
+          }
+        }, File.class, new ParameterClassHandler() {
+  
+          public Component createEditComponent(Blackboard bb) {
+            JMPFileChooser fileChooser = new JMPFileChooser(bb);
+            if (bb.get(LoadFileDataSourceQueryChooser.FILE_CHOOSER_DIRECTORY_KEY) != null) {
+              fileChooser.f = new File((String) bb
+                  .get(LoadFileDataSourceQueryChooser.FILE_CHOOSER_DIRECTORY_KEY));
+            }
+            return fileChooser;
+          }
+  
+          public void setParameter(Component component, Object parameter) {
+            if (parameter != null) {
+              File f = (File) parameter;
+              ((JMPFileChooser) component).f = f;
+              if (f != null && f.getParent() != null) {
+                ((JMPFileChooser) component).bb.put(
+                    LoadFileDataSourceQueryChooser.FILE_CHOOSER_DIRECTORY_KEY,
+                    f.getParent());
+                if (f.isFile()) {
+                  int index = f.getName().lastIndexOf('.') + 1;
+                  if (index > -1) {
+                    final String suffix = f.getName().substring(index);
+                    if (suffix != null && !"".equals(suffix.trim()))
+                      ((JMPFileChooser) component).chooser
+                          .setFileFilter(new FileFilter() {
+                            public boolean accept(File f) {
+                              return f != null
+                                  && (f.isDirectory() || (f.isFile() && f
+                                      .getName().endsWith(suffix)));
+                            }
+  
+                            public String getDescription() {
+                              return "";
+                            }
+                          });
+                  }
                 }
-
-                public void setParameter(Component component,
-                        Object parameter) {
-                    ((JTextField) component)
-                            .setText((String) parameter);
-                }
-
-                public Object getParameter(Component component) {
-                    return ((JTextField) component).getText();
-                }
-            }, File.class,
-            new ParameterClassHandler() {
-
-                public Component createEditComponent(Blackboard bb) {
-                	JMPFileChooser fileChooser = new JMPFileChooser(bb);
-                    if (bb.get(LoadFileDataSourceQueryChooser.FILE_CHOOSER_DIRECTORY_KEY) != null) {
-                        fileChooser.f = new File(
-                                (String) bb.get(LoadFileDataSourceQueryChooser.FILE_CHOOSER_DIRECTORY_KEY));
-                    }
-                    return fileChooser;
-                }
-
-                public void setParameter(Component component,
-                        Object parameter) {
-                	if(parameter!=null){
-                		File f = (File)parameter;
-                		((JMPFileChooser)component).f = f;
-                		if(f!= null && f.getParent()!=null){
-                			((JMPFileChooser)component).bb.put(LoadFileDataSourceQueryChooser.FILE_CHOOSER_DIRECTORY_KEY,f.getParent());
-                			if(f.isFile()){
-                				int index = f.getName().lastIndexOf('.')+1;
-	                				if(index > -1){
-		                			final String suffix = f.getName().substring(index);
-		                			if(suffix != null && !"".equals(suffix.trim()))
-		                			((JMPFileChooser)component).chooser.setFileFilter(new FileFilter(){
-										public boolean accept(File f) {
-											return f!=null && (f.isDirectory() || (f.isFile() && f.getName().endsWith(suffix)));
-										}
-										public String getDescription() {
-											return "";
-										}
-	                			});
-                				}
-                			}
-                		}
-                	}
-                    ((JTextField) component).setText(parameter==null?"":((File) parameter).toString());
-                }
-
-                public Object getParameter(Component component) {
-            		File f = ((JMPFileChooser)component).f;
-            		if(f!= null && f.getParent()!=null)
-            			((JMPFileChooser)component).bb.put(LoadFileDataSourceQueryChooser.FILE_CHOOSER_DIRECTORY_KEY,f.getParent());
-                    return f;
-                }
-
-            }, Integer.class, new ParameterClassHandler() {
-
-                        public Component createEditComponent(Blackboard bb) {
-                            return new ValidatingTextField("", 5,
-                                    ValidatingTextField.INTEGER_VALIDATOR);
-                        }
-
-                        public void setParameter(Component component,
-                                Object parameter) {
-                            ((JTextField) component)
-                                    .setText(((Integer) parameter).toString());
-                        }
-
-                        public Object getParameter(Component component) {
-                            return ((JTextField) component).getText().length() > 0 ? new Integer(
-                                    ((JTextField) component).getText())
-                                    : null;
-                        }
-                    } });
+              }
+            }
+            if (parameter != null && component instanceof JMPFileChooser)
+              ((JMPFileChooser) component).getFileTextField().setText(
+                  parameter == null ? "" : ((File) parameter).toString());
+          }
+  
+          public Object getParameter(Component component) {
+            File f = ((JMPFileChooser) component).f;
+            if (f != null && f.getParent() != null)
+              ((JMPFileChooser) component).bb.put(
+                  LoadFileDataSourceQueryChooser.FILE_CHOOSER_DIRECTORY_KEY,
+                  f.getParent());
+            return f;
+          }
+  
+        }, Integer.class, new ParameterClassHandler() {
+  
+          public Component createEditComponent(Blackboard bb) {
+            return new ValidatingTextField("", 5,
+                ValidatingTextField.INTEGER_VALIDATOR);
+          }
+  
+          public void setParameter(Component component, Object parameter) {
+            ((JTextField) component).setText(((Integer) parameter).toString());
+          }
+  
+          public Object getParameter(Component component) {
+            return ((JTextField) component).getText().length() > 0 ? new Integer(
+                ((JTextField) component).getText()) : null;
+          }
+        } });
 
     private JPanel mainPanel = new JPanel(new GridBagLayout());
 
