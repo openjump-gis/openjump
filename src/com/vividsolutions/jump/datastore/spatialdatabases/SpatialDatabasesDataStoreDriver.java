@@ -2,12 +2,15 @@ package com.vividsolutions.jump.datastore.spatialdatabases;
 
 import com.vividsolutions.jump.datastore.DataStoreConnection;
 import com.vividsolutions.jump.datastore.DataStoreDriver;
+import com.vividsolutions.jump.datastore.jdbc.DelegatingDriver;
 import com.vividsolutions.jump.datastore.mariadb.MariadbDSConnection;
 import com.vividsolutions.jump.datastore.oracle.OracleDSConnection;
 import com.vividsolutions.jump.datastore.postgis.PostgisDSConnection;
 import com.vividsolutions.jump.datastore.spatialite.SpatialiteDSConnection;
 import com.vividsolutions.jump.parameter.ParameterList;
 import com.vividsolutions.jump.parameter.ParameterListSchema;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
+
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -34,6 +37,8 @@ public class SpatialDatabasesDataStoreDriver
   protected String[] paramNames = null;
   protected Class[] paramClasses = null;
   protected ParameterListSchema schema = null;
+  
+  protected boolean registered = false;
 
   public SpatialDatabasesDataStoreDriver() {
     // Nicolas Ribot:
@@ -103,8 +108,21 @@ public class SpatialDatabasesDataStoreDriver
     String url
         = String.valueOf(new StringBuffer(urlPrefix).append(host).append(":").append(port).append("/").append(database));
 
-    Driver driver = (Driver) Class.forName(this.getJdbcClass()).newInstance();
-    DriverManager.registerDriver(driver);
+    // only register once per driver
+    if (!this.registered) {
+      // we always use the plugin classloader to find jdbc jars
+      // under lib/ext/<subfolder>/
+      ClassLoader cl = JUMPWorkbench.getInstance().getPlugInManager()
+          .getClassLoader();
+      Driver driver = (Driver) Class.forName(this.getJdbcClass(), true, cl)
+          .newInstance();
+      // DriverManager insists on jdbc drivers loaded with the default
+      // classloader, so we wrap our foreign one into a simple wrapper
+      // see
+      // https://stackoverflow.com/questions/288828/how-to-use-a-jdbc-driver-from-an-arbitrary-location
+      DriverManager.registerDriver(new DelegatingDriver(driver));
+      this.registered = true;
+    }
 
     // mmichaud 2013-08-27 workaround for ticket #330
     String savePreferIPv4Stack = System.getProperty("java.net.preferIPv4Stack");

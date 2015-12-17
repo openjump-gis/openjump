@@ -84,15 +84,48 @@ public class PlugInManager {
         if ( plugInDirectory instanceof File ) {
           ArrayList<File> files = new ArrayList();
           files.add( plugInDirectory );
-          files.addAll( findFilesRecursively(plugInDirectory,true) );
-          classLoader = new URLClassLoader(toURLs(files));
+          files.addAll( findFilesRecursively( plugInDirectory,true) );
+          //System.out.println(Arrays.toString(files.toArray()));
+          class ExtendedURLClassLoader extends URLClassLoader{
+
+            public ExtendedURLClassLoader(URL[] urls) {
+              super(urls);
+            }
+
+            /**
+             * not really necessary now, but we keep it for reference for a future
+             * classloader per extension for allowing extensions to use differently
+             * versioned dependency jars in separate subfolders under
+             * lib/ext/<extension_subfolder>/
+             */
+            @Override
+            public Class loadClass(String name) throws ClassNotFoundException {
+              Class c = findLoadedClass(name);
+              if (c == null) {
+                try {
+                  c = getParent().loadClass(name);
+                } catch (ClassNotFoundException e) {
+                }
+                if (c == null)
+                  c = findClass(name);
+              }
+              return c;
+            }
+            
+            public void addUrls( URL[] urls ){
+              for (URL url : urls) {
+                addURL(url);
+              }
+            }
+          };
+          
+          ExtendedURLClassLoader mycl = new ExtendedURLClassLoader(new URL[]{});
+          mycl.addUrls(toURLs(files));
+          classLoader = mycl;
         } else {
           classLoader = getClass().getClassLoader();
         }
 
-//        classLoader = plugInDirectory != null ? new URLClassLoader(
-//            toURLs(findFilesRecursively(plugInDirectory,true))) : getClass().getClassLoader();
-        
         I18N.setClassLoader(classLoader);
         this.context = context;
         this.plugInDirectory = plugInDirectory;

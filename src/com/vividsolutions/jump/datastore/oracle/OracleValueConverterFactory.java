@@ -5,6 +5,8 @@ import com.vividsolutions.jump.datastore.jdbc.ValueConverter;
 import com.vividsolutions.jump.datastore.jdbc.ValueConverterFactory;
 import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesValueConverterFactory;
 import com.vividsolutions.jump.feature.AttributeType;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
+
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -33,20 +35,29 @@ public class OracleValueConverterFactory extends SpatialDatabasesValueConverterF
         IllegalAccessException, IllegalArgumentException,
         InvocationTargetException {
       Object geometryObject = rs.getObject(columnIndex);
-      Class converterClazz = Class
-          .forName("org.geotools.data.oracle.sdo.GeometryConverter");
-      Class connectionClazz = Class.forName("oracle.jdbc.OracleConnection");
-      Class structClazz = Class.forName("oracle.sql.STRUCT");
+
+      // we need to use the plugin classloader to find the dependenciy
+      // jars under lib/ext/<subfolder>/ , additionally we apply some
+      // reflection to allow the dependencies to be only available
+      // during runtime
+      ClassLoader cl = JUMPWorkbench.getInstance().getPlugInManager()
+          .getClassLoader();
+      Class converterClazz = Class.forName(
+          "org.geotools.data.oracle.sdo.GeometryConverter", true, cl);
+      Class connectionClazz = Class.forName("oracle.jdbc.OracleConnection",
+          true, cl);
+      Class structClazz = Class.forName("oracle.sql.STRUCT", true, cl);
       Method converterMethod = converterClazz.getMethod("asGeometry",
-          new Class[]{structClazz});
+          new Class[] { structClazz });
 
       Constructor constructor = converterClazz
           .getDeclaredConstructor(connectionClazz);
       Object converter = constructor.newInstance(connectionClazz.cast(rs
           .getStatement().getConnection()));
 
-      return converterMethod.invoke(converter, structClazz.cast(geometryObject));
-    
+      return converterMethod
+          .invoke(converter, structClazz.cast(geometryObject));
+
       /**
        * below is the original implementation w/o reflection 
        * KEEP FOR REFERENCE!!!
