@@ -1,5 +1,9 @@
 package com.vividsolutions.jump.datastore.spatialdatabases;
 
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.DriverManager;
+
 import com.vividsolutions.jump.datastore.DataStoreConnection;
 import com.vividsolutions.jump.datastore.DataStoreDriver;
 import com.vividsolutions.jump.datastore.jdbc.DelegatingDriver;
@@ -10,10 +14,6 @@ import com.vividsolutions.jump.datastore.spatialite.SpatialiteDSConnection;
 import com.vividsolutions.jump.parameter.ParameterList;
 import com.vividsolutions.jump.parameter.ParameterListSchema;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
-
-import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.DriverManager;
 
 /**
  * A driver for supplying {@link SpatialDatabaseDSConnection}s
@@ -124,13 +124,38 @@ public class SpatialDatabasesDataStoreDriver
       this.registered = true;
     }
 
+    // some helpful debugging output
+    // DriverManager.setLogWriter(new PrintWriter(System.out));
+    // Enumeration<Driver> ds = DriverManager.getDrivers();
+    // while (ds.hasMoreElements()) {
+    // Driver d = ds.nextElement();
+    // System.out.println(d);
+    // System.out.println(url);
+    // System.out.println(d.acceptsURL(url));
+    // }
+    
     // mmichaud 2013-08-27 workaround for ticket #330
     String savePreferIPv4Stack = System.getProperty("java.net.preferIPv4Stack");
     String savePreferIPv6Addresses = System.getProperty("java.net.preferIPv6Addresses");
     System.setProperty("java.net.preferIPv4Stack", "true");
     System.setProperty("java.net.preferIPv6Addresses", "false");
 
-    Connection conn = DriverManager.getConnection(url, user, password);
+    // workaround a bug in DriverManager.getConnection() when used like this:
+    //   Connection conn = DriverManager.getConnection(url, user, password);
+    // getConnection() blindly connects to each driver and memorizes
+    // the first Exception that occurs. this includes "invalid database address"
+    // errors, which is stupid as connect would have only to ask the driver
+    // if it supports the given url scheme. funny enough getDriver() does, so
+    // we add a bit of code and get the connection ourself w/ the proper driver.
+    Driver d = DriverManager.getDriver(url);
+    java.util.Properties info = new java.util.Properties();
+    if (user != null) {
+      info.put("user", user);
+    }
+    if (password != null) {
+      info.put("password", password);
+    }
+    Connection conn = d.connect(url, info);
 
     if (savePreferIPv4Stack == null) {
       System.getProperties().remove("java.net.preferIPv4Stack");
