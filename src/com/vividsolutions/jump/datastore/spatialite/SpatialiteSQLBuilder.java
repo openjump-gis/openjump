@@ -1,5 +1,7 @@
 package com.vividsolutions.jump.datastore.spatialite;
 
+import java.util.Locale;
+
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.datastore.FilterQuery;
 import com.vividsolutions.jump.datastore.SpatialReferenceSystemID;
@@ -94,14 +96,15 @@ public class SpatialiteSQLBuilder extends SpatialDatabasesSQLBuilder {
     if (dsm.isSpatialiteLoaded()) {
         GeometricColumnType gcType = dsm.getGeoColTypesdMap().get(
             query.getDatasetName().toLowerCase() + "." + query.getGeometryAttributeName().toLowerCase());
+        // use Locale.US to enforce floating point number with a dot separator
         if (gcType == GeometricColumnType.SPATIALITE) {
-            ret = String.format("st_envIntersects(%s, %f,%f,%f,%f)", query.getGeometryAttributeName(), env.getMinX(),
+            ret = String.format(Locale.US, "st_envIntersects(%s, %f,%f,%f,%f)", query.getGeometryAttributeName(), env.getMinX(),
                     env.getMinY(), env.getMaxX(), env.getMaxY());
         } else if (gcType == GeometricColumnType.WKB) {
-            ret = String.format("st_envIntersects(st_geomFromWkb(%s), %f,%f,%f,%f)", query.getGeometryAttributeName(), env.getMinX(),
+            ret = String.format(Locale.US, "st_envIntersects(st_geomFromWkb(%s), %f,%f,%f,%f)", query.getGeometryAttributeName(), env.getMinX(),
                     env.getMinY(), env.getMaxX(), env.getMaxY());
         } else if (gcType == GeometricColumnType.WKT) {
-            ret = String.format("st_envIntersects(st_geomFromText(%s), %f,%f,%f,%f)", query.getGeometryAttributeName(), env.getMinX(),
+            ret = String.format(Locale.US, "st_envIntersects(st_geomFromText(%s), %f,%f,%f,%f)", query.getGeometryAttributeName(), env.getMinX(),
                     env.getMinY(), env.getMaxX(), env.getMaxY());
         } else {
             // TODO: log
