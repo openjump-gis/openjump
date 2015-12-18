@@ -263,7 +263,11 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
       // If attributeName is indexed but indexed has not been initialized
       // (no VACUUM ANALYZE) ST_Estimated_Extent may throw an exception.
       // In this case, try the second method using ST_Extent
-      JDBCUtil.execute(conn.getConnection(), sql2, resultSetBlock);
+      if (sql2 != null) {
+        // some drivers do not support a second SQL query for extent:
+        /// sqlite w/o spatialite for instance
+        JDBCUtil.execute(conn.getConnection(), sql2, resultSetBlock);
+      }
     }
     //System.out.println("getting extent for: " + datasetName + "." + attributeName + ": " + e[0].toString()  + " in th: " + Thread.currentThread().getName());
     return e[0];

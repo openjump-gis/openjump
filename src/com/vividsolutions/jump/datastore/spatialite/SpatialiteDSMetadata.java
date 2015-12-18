@@ -4,6 +4,7 @@ import com.vividsolutions.jump.datastore.DataStoreConnection;
 import com.vividsolutions.jump.datastore.spatialdatabases.*;
 import com.vividsolutions.jump.datastore.jdbc.JDBCUtil;
 import com.vividsolutions.jump.datastore.jdbc.ResultSetBlock;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -61,7 +62,8 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
     defaultSchemaName = "";
     spatialDbName = isSpatialiteLoaded() ? "Spatialite" : "SQLite";
     spatialExtentQuery1 = "SELECT %s from %s";
-    spatialExtentQuery2 = "SELECT %s from %s";
+    // no second query for spatialite
+    spatialExtentQuery2 = null;
     sridQuery = "SELECT srid FROM geometry_columns where f_table_name = '%s' and f_geometry_column = '%s'";
     // geo column query needs to be built occording to geometryColumnsLayout
     if (this.geometryColumnsLayout == GeometryColumnsLayout.FDO_LAYOUT) {
@@ -82,7 +84,6 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
     // must cast the geometric field according to its type, to be able to use spatialite functions.
     //return String.format(spatialExtentQuery1, attributeName, table);
     String ret = "select 1";
-    
 
     GeometricColumnType gcType = this.geoColTypesdMap.get(table.toLowerCase() + "." + attributeName.toLowerCase());
 
@@ -112,8 +113,7 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
 
   @Override
   public String getSpatialExtentQuery2(String schema, String table, String attributeName) {
-    // only one mechanism to get extent from spatialite
-    return getSpatialExtentQuery1(schema, table, attributeName);
+    return spatialExtentQuery2;
   }
 
   /**
@@ -145,10 +145,14 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
       ResultSet rs = stmt.executeQuery("select spatialite_version()");
       rs.next();
       this.setSpatialiteVersion(rs.getString(1));
-      //TODO: log
-      System.out.println("SpatialDatabasesPlugin: Spatialite extension loaded for this connexion, version: " + this.getSpatialiteVersion());
+      
+      JUMPWorkbench.getInstance().getFrame().log(
+              "SpatialDatabasesPlugin: Spatialite extension loaded for this connexion, version: " 
+                  + this.getSpatialiteVersion(), this.getClass());
     } catch (Exception e) {
-      System.out.println("SpatialDatabasesPlugin: Cannot load Spatialite Extention (mod_spatialite), reason:" + e.getMessage());
+      JUMPWorkbench.getInstance().getFrame().log(
+              "SpatialDatabasesPlugin: CANNOT load Spatialite Extention (mod_spatialite), reason:" 
+                  + e.getMessage(), this.getClass());
     } finally {
       try {
         stmt.close();
