@@ -142,8 +142,8 @@ public class SpatialDatabasesDataStoreDriver
 
     // workaround a bug in DriverManager.getConnection() when used like this:
     //   Connection conn = DriverManager.getConnection(url, user, password);
-    // getConnection() blindly connects to each driver and memorizes
-    // the first Exception that occurs. this includes "invalid database address"
+    // getConnection() blindly connects to each driver and memorizes only
+    // the _first_ Exception that occurs. this includes "invalid database address"
     // errors, which is stupid as connect would have only to ask the driver
     // if it supports the given url scheme. funny enough getDriver() does, so
     // we add a bit of code and get the connection ourself w/ the proper driver.
