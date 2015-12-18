@@ -2,20 +2,13 @@ package org.openjump.core.ui.plugin.raster.color;
 
 import java.awt.Color;
 import java.awt.geom.NoninvertibleTransformException;
-import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
-
-import javax.media.jai.PlanarImage;
 
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.ui.color.ColorGenerator;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jump.workbench.model.LayerEventType;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import java.io.IOException;
 import org.openjump.core.rasterimage.RasterSymbology;
-import org.openjump.core.rasterimage.RasterSymbology.ColorMapType;
 
 /**
  * @author plouy_p
@@ -66,7 +59,7 @@ public class RasterColorEditor {
         }
     	colorGenerator = new ColorGenerator(35, colors);
         
-        RasterSymbology symbology = new RasterSymbology(ColorMapType.RAMP);
+        RasterSymbology symbology = new RasterSymbology(RasterSymbology.TYPE_RAMP);
         
         min = layer.getMetadata().getStats().getMin(0);
         max = layer.getMetadata().getStats().getMax(0);

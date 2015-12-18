@@ -180,7 +180,7 @@ public class StretchedPanel extends javax.swing.JPanel {
         GradientCanvas gradientCanvas = (GradientCanvas) comboBox_Gradient.getItemAt(0);
         colorMapEntries = gradientCanvas.getColorMapEntries();
         
-        rasterSymbology = new RasterSymbology(RasterSymbology.ColorMapType.RAMP);
+        rasterSymbology = new RasterSymbology(RasterSymbology.TYPE_RAMP);
         updateRasterStyler(colorMapEntries);
 
         GUIUtils utils = new GUIUtils();
@@ -230,7 +230,7 @@ public class StretchedPanel extends javax.swing.JPanel {
     
     private void updateRasterStyler(ColorMapEntry[] colorMapEntries) throws Exception{
         
-        rasterSymbology = new RasterSymbology(RasterSymbology.ColorMapType.RAMP);
+        rasterSymbology = new RasterSymbology(RasterSymbology.TYPE_RAMP);
         for (ColorMapEntry paletteColorMapEntrie : colorMapEntries) {
             double quantity = (maxValue - minValue) * paletteColorMapEntrie.getUpperValue() + minValue;
             rasterSymbology.addColorMapEntry(quantity, paletteColorMapEntrie.getColor());

@@ -11,11 +11,14 @@ import org.openjump.core.rasterimage.styler.ColorMapEntry;
  */
 public class RasterSymbology {
     
-    private final TreeMap<Double,Color> colorMapEntries_tm;
-    private final ColorMapType colorMapType;
+    private TreeMap<Double,Color> colorMapEntries_tm;
+    private String colorMapType;
     private double transparency = 0;
     
-    public RasterSymbology (ColorMapType colorMapType) {
+    public RasterSymbology() {
+    }
+    
+    public RasterSymbology (String colorMapType) {
         
         this.colorMapType = colorMapType;
         colorMapEntries_tm = new TreeMap<Double,Color>();
@@ -44,12 +47,20 @@ public class RasterSymbology {
         return null;        
     }
 
-    public ColorMapType getColorMapType() {
+    public String getColorMapType() {
         return colorMapType;
     }
 
+    public void setColorMapType(String colorMapType) {
+        this.colorMapType = colorMapType;
+    }
+    
     public TreeMap<Double, Color> getColorMapEntries_tm() {
         return colorMapEntries_tm;
+    }
+    
+    public void setColorMapEntries_tm(TreeMap<Double, Color> colorMapEntries_tm) {
+        this.colorMapEntries_tm = colorMapEntries_tm;
     }
     
     public ColorMapEntry[] getColorMapEntries() {
@@ -74,7 +85,7 @@ public class RasterSymbology {
     
     public Color getColor(double value) {
         
-        if(colorMapType == ColorMapType.RAMP) {
+        if(colorMapType.equals(TYPE_RAMP)) {
             
             ColorMapEntry downColorMapEntry = getColorMapEntry(value);
             ColorMapEntry upColorMapEntry = getNextColorMapEntry(value);
@@ -106,7 +117,7 @@ public class RasterSymbology {
                 return null;
             }
             
-        } else if(colorMapType == ColorMapType.INTERVALS) {
+        } else if(colorMapType.equals(TYPE_INTERVALS)) {
             
             ColorMapEntry downColorMapEntry = getColorMapEntry(value);
             if(downColorMapEntry == null) {
@@ -114,7 +125,7 @@ public class RasterSymbology {
             }
             return downColorMapEntry.getColor();
             
-        } else if(colorMapType == ColorMapType.SINGLE) {
+        } else if(colorMapType.equals(TYPE_SINGLE)) {
             
             ColorMapEntry downColorMapEntry = getColorMapEntry(value);
             if(downColorMapEntry == null) {
@@ -137,8 +148,10 @@ public class RasterSymbology {
         return new Color(red, green, blue);        
     }
     
-    public enum ColorMapType {
-        RAMP, INTERVALS, SINGLE
-    }
+    
+    public static final String TYPE_RAMP = "RAMP";
+    public static final String TYPE_INTERVALS = "INTERVALS";
+    public static final String TYPE_SINGLE = "SINGLE";
+    
     
 }

@@ -47,7 +47,6 @@ import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStyle;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.RasterSymbology;
-import org.openjump.core.rasterimage.RasterSymbology.ColorMapType;
 
 /**
  * JTree model for displaying the Layers, WMSLayers, and other Layerables
@@ -96,7 +95,7 @@ public class LayerTreeModel extends SimpleTreeModel {
     
     public static class RasterStyleValueIntv {
        
-        private final ColorMapType colorMapType;
+        private final String colorMapType;
         private final Color color;
         private final Double nextValue;
         private final Double value;
@@ -105,7 +104,7 @@ public class LayerTreeModel extends SimpleTreeModel {
         private int height;
         
         public RasterStyleValueIntv(
-                ColorMapType colorMapType,
+                String colorMapType,
                 Color color,
                 Double value,
                 Double nextValue,
@@ -117,7 +116,7 @@ public class LayerTreeModel extends SimpleTreeModel {
             this.label = label;
         }
 
-        public ColorMapType getColorMapType() {
+        public String getColorMapType() {
             return colorMapType;
         }
 
@@ -281,11 +280,11 @@ public class LayerTreeModel extends SimpleTreeModel {
             if (parent instanceof RasterImageLayer) {
                 
                 RasterImageLayer rasterImageLayer = (RasterImageLayer)parent;
-                if(rasterImageLayer.getRasterSymbology() != null) {
+                if(rasterImageLayer.getSymbology() != null) {
 
-                    RasterSymbology rasterSymbology = rasterImageLayer.getRasterSymbology();
+                    RasterSymbology rasterSymbology = rasterImageLayer.getSymbology();
 
-                    if(rasterImageLayer.getRasterSymbology().getColorMapType() != ColorMapType.RAMP) {
+                    if(rasterImageLayer.getSymbology().getColorMapType() != RasterSymbology.TYPE_RAMP) {
 
                         List<RasterStyleValueIntv> styleValues_l = new ArrayList<RasterStyleValueIntv>();
 

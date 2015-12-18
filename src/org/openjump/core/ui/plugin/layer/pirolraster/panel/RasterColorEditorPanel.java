@@ -299,7 +299,7 @@ public class RasterColorEditorPanel extends JPanel implements ValueChecker,
         // colorGenerator = new ColorGenerator(35, colors);
         
         RasterSymbology symbology = new RasterSymbology(
-                RasterSymbology.ColorMapType.RAMP);
+                RasterSymbology.TYPE_RAMP);
          
         CopyColorIntoBlackBoard(context, layer, symbology);
         
@@ -347,7 +347,7 @@ public class RasterColorEditorPanel extends JPanel implements ValueChecker,
         // Deactivated. As 6 steps seems to work better than 35
         // colorGenerator = new ColorGenerator(35, colors);
         RasterSymbology symbology = new RasterSymbology(
-                RasterSymbology.ColorMapType.INTERVALS);
+                RasterSymbology.TYPE_INTERVALS);
        
         CopyColorIntoBlackBoard(context, layer, symbology);
         

@@ -387,9 +387,9 @@ public class RasterStylesDialog extends javax.swing.JDialog {
         pack();
         
         /* Startup symbology */
-        if(rasterImageLayer.getRasterSymbology() != null) {
+        if(rasterImageLayer.getSymbology() != null) {
             
-            this.finalRasterSymbolizer = rasterImageLayer.getRasterSymbology();
+            this.finalRasterSymbolizer = rasterImageLayer.getSymbology();
             updateGUI();
             
         }
@@ -513,19 +513,15 @@ public class RasterStylesDialog extends javax.swing.JDialog {
     
     private void updateGUI() throws Exception {
         
-        switch(finalRasterSymbolizer.getColorMapType()) {
-            case RAMP:
+        if(finalRasterSymbolizer.getColorMapType().equals(RasterSymbology.TYPE_RAMP)) {
                 stretchedPanel.plugRasterSymbology(finalRasterSymbolizer);
                 jTabbedPane_Type.setSelectedIndex(0);
-                break;
-            case INTERVALS:
+        } else if(finalRasterSymbolizer.getColorMapType().equals(RasterSymbology.TYPE_INTERVALS)) {
                 intervalPanel.plugRasterSymbology(finalRasterSymbolizer);
                 jTabbedPane_Type.setSelectedIndex(1);
-                break;
-            case SINGLE:
+        } else if(finalRasterSymbolizer.getColorMapType().equals(RasterSymbology.TYPE_SINGLE)) {
                 singleValuesPanel.plugRasterSymbology(finalRasterSymbolizer);
                 jTabbedPane_Type.setSelectedIndex(2);
-                break;
         }
     }
 

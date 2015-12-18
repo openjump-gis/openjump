@@ -17,6 +17,7 @@ import com.vividsolutions.jump.workbench.model.*;
 import com.vividsolutions.jump.workbench.plugin.PlugInManager;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.TaskFrame;
+import com.vividsolutions.jump.workbench.ui.Viewport;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.WorkbenchContextReference;
@@ -32,72 +33,80 @@ import javax.swing.*;
 import javax.xml.namespace.QName;
 
 import java.awt.*;
+import java.awt.geom.NoninvertibleTransformException;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import org.openjump.core.rasterimage.ImageAndMetadata;
+import org.openjump.core.rasterimage.RasterImageIO;
+import org.openjump.core.rasterimage.RasterImageLayer;
+import org.openjump.core.rasterimage.RasterSymbology;
+import org.openjump.core.rasterimage.Resolution;
+import org.openjump.core.rasterimage.TiffTags;
+import org.openjump.util.metaData.MetaInformationHandler;
 
 public class OpenProjectWizard extends AbstractWizardGroup {
-  /** The key for the wizard. */
-  public static final String KEY = OpenProjectWizard.class.getName();
   
-  public static final String FILE_CHOOSER_DIRECTORY_KEY = KEY
-      + " - FILE CHOOSER DIRECTORY";
+    /** The key for the wizard. */
+    public static final String KEY = OpenProjectWizard.class.getName();
 
-  /** The workbench context. */
-  private WorkbenchContext workbenchContext;
+    public static final String FILE_CHOOSER_DIRECTORY_KEY = KEY
+        + " - FILE CHOOSER DIRECTORY";
 
-  private SelectProjectFilesPanel selectProjectPanel;
+    /** The workbench context. */
+    private WorkbenchContext workbenchContext;
 
-  private Task sourceTask;
+    private SelectProjectFilesPanel selectProjectPanel;
 
-  private Task newTask;
+    private Task sourceTask;
 
-  private File[] files;
+    private Task newTask;
 
-  private Envelope savedTaskEnvelope = null;
+    private File[] files;
+
+    private Envelope savedTaskEnvelope = null;
 
   /**
    * Construct a new OpenFileWizard.
    * 
    * @param workbenchContext The workbench context.
    */
-  public OpenProjectWizard(final WorkbenchContext workbenchContext) {
-    super(I18N.get(KEY), OpenProjectPlugIn.ICON, 
-      SelectProjectFilesPanel.KEY);
-    this.workbenchContext = workbenchContext;
-    initPanels(workbenchContext);
-  }
+    public OpenProjectWizard(final WorkbenchContext workbenchContext) {
+        super(I18N.get(KEY), OpenProjectPlugIn.ICON, SelectProjectFilesPanel.KEY);
+        this.workbenchContext = workbenchContext;
+        initPanels(workbenchContext);
+    }
 
-  public OpenProjectWizard(final WorkbenchContext workbenchContext,
-    final File[] files) {
-    this.workbenchContext = workbenchContext;
-    this.files = files;
-    initPanels(workbenchContext);
-  }
+    public OpenProjectWizard(final WorkbenchContext workbenchContext,
+        final File[] files) {
+        this.workbenchContext = workbenchContext;
+        this.files = files;
+        initPanels(workbenchContext);
+    }
 
-  private void initPanels(final WorkbenchContext workbenchContext) {
-    selectProjectPanel = new SelectProjectFilesPanel(workbenchContext);
-    addPanel(selectProjectPanel);
-  }
+    private void initPanels(final WorkbenchContext workbenchContext) {
+        selectProjectPanel = new SelectProjectFilesPanel(workbenchContext);
+        addPanel(selectProjectPanel);
+    }
 
-  public void initialize(WorkbenchContext workbenchContext, WizardDialog dialog) {
-    selectProjectPanel.setDialog(dialog);
-  }
+    public void initialize(WorkbenchContext workbenchContext, WizardDialog dialog) {
+        selectProjectPanel.setDialog(dialog);
+    }
 
-  /**
-   * Load the files selected in the wizard.
-   * 
-   * @param monitor The task monitor.
-   * @throws Exception 
-   */
-  public void run(WizardDialog dialog, TaskMonitor monitor) throws Exception {
-    // local list for internal usage OR let user select via gui
-    File[] selectedFiles = (files!=null) ? files : 
-                                           selectProjectPanel.getSelectedFiles();
-    open(selectedFiles, monitor);
-  }
+    /**
+     * Load the files selected in the wizard.
+     * 
+     * @param monitor The task monitor.
+     * @throws Exception 
+     */
+    public void run(WizardDialog dialog, TaskMonitor monitor) throws Exception {
+        // local list for internal usage OR let user select via gui
+        File[] selectedFiles = (files!=null) ? files : 
+                                             selectProjectPanel.getSelectedFiles();
+        open(selectedFiles, monitor);
+    }
 
   private void open(File[] files, TaskMonitor monitor) throws Exception {
     for (File file : files) {
@@ -215,120 +224,123 @@ public class OpenProjectWizard extends AbstractWizardGroup {
     for (Layer layer : layersToBeRemoved) layerManager.remove(layer);
   }
 
-  private void loadLayers(LayerManager sourceLayerManager,
-    LayerManager newLayerManager, CoordinateSystemRegistry registry,
-    TaskMonitor monitor) throws Exception {
-    JUMPWorkbench workbench = workbenchContext.getWorkbench();
-    WorkbenchFrame workbenchFrame = workbench.getFrame();
-    FindFile findFile = new FindFile(workbenchFrame);
-    boolean displayDialog = true;
+    private void loadLayers(LayerManager sourceLayerManager,
+        LayerManager newLayerManager, CoordinateSystemRegistry registry,
+        TaskMonitor monitor) throws Exception {
+        JUMPWorkbench workbench = workbenchContext.getWorkbench();
+        WorkbenchFrame workbenchFrame = workbench.getFrame();
+        FindFile findFile = new FindFile(workbenchFrame);
+        boolean displayDialog = true;
     
-    String oldProjectPath = sourceTask.getProperty(new QName(Task.PROJECT_FILE_KEY));
-    boolean updateResources = false;
-    boolean updateOnlyMissingResources = false;
-    File oldProjectFile = null;
-    if(oldProjectPath != null && !oldProjectPath.equals("")){
-        oldProjectFile = new File(oldProjectPath);
-        if(!oldProjectFile.equals(newTask.getProjectFile())){
-    		JCheckBox checkbox = new JCheckBox(I18N.get("ui.plugin.OpenProjectPlugIn.Only-for-missing-resources"));  
-            String message = I18N.get("ui.plugin.OpenProjectPlugIn."
-                    + "The-project-has-been-moved-Do-you-want-to-update-paths-below-the-project-folder");  
-            Object[] params = {message, checkbox};  
-            int answer = JOptionPane.showConfirmDialog(workbenchFrame, 
-                    params, "OpenJUMP", JOptionPane.YES_NO_OPTION);
-            if(answer == JOptionPane.YES_OPTION){
-                updateResources = true;
-                if(checkbox.isSelected())
-                    updateOnlyMissingResources = true;
-            }            
+        String oldProjectPath = sourceTask.getProperty(new QName(Task.PROJECT_FILE_KEY));
+        boolean updateResources = false;
+        boolean updateOnlyMissingResources = false;
+        File oldProjectFile = null;
+        if(oldProjectPath != null && !oldProjectPath.equals("")){
+            oldProjectFile = new File(oldProjectPath);
+            if(!oldProjectFile.equals(newTask.getProjectFile())){
+                    JCheckBox checkbox = new JCheckBox(I18N.get("ui.plugin.OpenProjectPlugIn.Only-for-missing-resources"));  
+                String message = I18N.get("ui.plugin.OpenProjectPlugIn."
+                        + "The-project-has-been-moved-Do-you-want-to-update-paths-below-the-project-folder");  
+                Object[] params = {message, checkbox};  
+                int answer = JOptionPane.showConfirmDialog(workbenchFrame, 
+                        params, "OpenJUMP", JOptionPane.YES_NO_OPTION);
+                if(answer == JOptionPane.YES_OPTION){
+                    updateResources = true;
+                    if(checkbox.isSelected())
+                        updateOnlyMissingResources = true;
+                }            
+            }
+        }
+
+        try {				
+            List<Category> categories = sourceLayerManager.getCategories();
+            for (Category sourceLayerCategory : categories) {
+                newLayerManager.addCategory(sourceLayerCategory.getName());
+
+                // LayerManager#addLayerable adds layerables to the top. So reverse
+                // the order.
+                ArrayList<Layerable> layerables = new ArrayList<Layerable>(sourceLayerCategory.getLayerables());
+                Collections.reverse(layerables);
+
+                for (Layerable layerable : layerables) {
+                    if (monitor != null) {
+                        monitor.report(I18N.get("ui.plugin.OpenProjectPlugIn.loading") + " " + layerable.getName());
+                    }
+                    layerable.setLayerManager(newLayerManager);
+
+                    if (layerable instanceof Layer) {
+                        Layer layer = (Layer)layerable;
+                        File layerFile = getLayerFileProperty(layer);
+                        if(!updateOnlyMissingResources || !layerFile.exists()){
+                            if(updateResources && layerFile != null && isLocatedBellow(oldProjectFile.getParentFile(), layerFile)) {
+                                File newLayerFile = updateResourcePath(oldProjectFile, newTask.getProjectFile(), layerFile);
+                                setLayerFileProperty(layer, newLayerFile);
+                            }
+                        }
+                        try {
+                            load(layer, registry, monitor);
+                        } catch (FileNotFoundException ex) {
+                            if (displayDialog) {
+                                displayDialog = false;
+
+                                int response = JOptionPane.showConfirmDialog(
+                                workbenchFrame,
+                                I18N.get("ui.plugin.OpenProjectPlugIn.At-least-one-file-in-the-task-could-not-be-found")
+                                        + "\n"
+                                        + I18N.get("ui.plugin.OpenProjectPlugIn.Do-you-want-to-locate-it-and-continue-loading-the-task"),
+                                        "OpenJUMP", JOptionPane.YES_NO_OPTION);
+
+                                if (response != JOptionPane.YES_OPTION) {
+                                    break;
+                                }
+                            }
+
+                            DataSourceQuery dataSourceQuery = layer.getDataSourceQuery();
+                            DataSource dataSource = dataSourceQuery.getDataSource();
+                            Map properties = dataSource.getProperties();
+                            String fname = properties.get(DataSource.FILE_KEY).toString();
+                            String filename = findFile.getFileName(fname);
+                            if (filename.length() > 0) {
+                                // set the new source for this layer
+                                properties.put(DataSource.FILE_KEY, filename);
+                                dataSource.setProperties(properties);
+                                load(layer, registry, monitor);
+                            } else {
+                                break;
+                            }
+                        }
+                    } else if (layerable instanceof RasterImageLayer) {
+
+                        RasterImageLayer rasterImageLayer = (RasterImageLayer) layerable;
+                        loadRasterImageLayer(workbenchContext, rasterImageLayer, rasterImageLayer.getSymbology(), sourceLayerCategory);
+                        break;
+                    }
+
+                    newLayerManager.addLayerable(sourceLayerCategory.getName(), layerable);
+                }
+            }
+            // fire TaskListener's
+            Object[] listeners =  workbenchFrame.getTaskListeners().toArray();
+            for (int i = 0; i < listeners.length; i++) {
+                TaskListener l = (TaskListener) listeners[i];
+                l.taskLoaded(new TaskEvent(this, newLayerManager.getTask()));
+            }
+        } finally {
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    try {
+                        if (savedTaskEnvelope == null)
+                            workbenchContext.getLayerViewPanel().getViewport().zoomToFullExtent();
+                        else
+                            workbenchContext.getLayerViewPanel().getViewport().zoom(savedTaskEnvelope);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            });
         }
     }
-
-    try {				
-    List<Category> categories = sourceLayerManager.getCategories();
-    for (Category sourceLayerCategory : categories) {
-      newLayerManager.addCategory(sourceLayerCategory.getName());
-
-      // LayerManager#addLayerable adds layerables to the top. So reverse
-      // the order.
-      ArrayList<Layerable> layerables = new ArrayList<Layerable>(
-        sourceLayerCategory.getLayerables());
-      Collections.reverse(layerables);
-
-      for (Layerable layerable : layerables) {
-        if (monitor != null) {
-          monitor.report(I18N.get("ui.plugin.OpenProjectPlugIn.loading") + " "
-            + layerable.getName());
-        }
-        layerable.setLayerManager(newLayerManager);
-
-        if (layerable instanceof Layer) {
-          Layer layer = (Layer)layerable;
-          File layerFile = getLayerFileProperty(layer);
-          if(!updateOnlyMissingResources || !layerFile.exists()){
-              if(updateResources && layerFile != null && isLocatedBellow(oldProjectFile.getParentFile(), layerFile)) {
-                  File newLayerFile = updateResourcePath(oldProjectFile, newTask.getProjectFile(), layerFile);
-                  setLayerFileProperty(layer, newLayerFile);
-              }
-          }
-          try {
-            load(layer, registry, monitor);
-          } catch (FileNotFoundException ex) {
-            if (displayDialog) {
-              displayDialog = false;
-
-              int response = JOptionPane.showConfirmDialog(
-                workbenchFrame,
-                I18N.get("ui.plugin.OpenProjectPlugIn.At-least-one-file-in-the-task-could-not-be-found")
-                  + "\n"
-                  + I18N.get("ui.plugin.OpenProjectPlugIn.Do-you-want-to-locate-it-and-continue-loading-the-task"),
-                "OpenJUMP", JOptionPane.YES_NO_OPTION);
-
-              if (response != JOptionPane.YES_OPTION) {
-                break;
-              }
-            }
-
-            DataSourceQuery dataSourceQuery = layer.getDataSourceQuery();
-            DataSource dataSource = dataSourceQuery.getDataSource();
-            Map properties = dataSource.getProperties();
-            String fname = properties.get(DataSource.FILE_KEY).toString();
-            String filename = findFile.getFileName(fname);
-            if (filename.length() > 0) {
-              // set the new source for this layer
-              properties.put(DataSource.FILE_KEY, filename);
-              dataSource.setProperties(properties);
-              load(layer, registry, monitor);
-            } else {
-              break;
-            }
-          }
-        }
-
-        newLayerManager.addLayerable(sourceLayerCategory.getName(), layerable);
-      }
-    }
-	// fire TaskListener's
-	  Object[] listeners =  workbenchFrame.getTaskListeners().toArray();
-	  for (int i = 0; i < listeners.length; i++) {
-		  TaskListener l = (TaskListener) listeners[i];
-		  l.taskLoaded(new TaskEvent(this, newLayerManager.getTask()));
-	  }
-	} finally {
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					if (savedTaskEnvelope == null)
-						workbenchContext.getLayerViewPanel().getViewport().zoomToFullExtent();
-					else
-						workbenchContext.getLayerViewPanel().getViewport().zoom(savedTaskEnvelope);
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-			}
-		});
-	}
-  }
 
   public static void load(Layer layer, CoordinateSystemRegistry registry,
     TaskMonitor monitor) throws Exception {
@@ -341,6 +353,45 @@ public class OpenProjectWizard extends AbstractWizardGroup {
     layer.setFeatureCollectionModified(false);
   }
 
+    public static void loadRasterImageLayer(WorkbenchContext context, RasterImageLayer ril, RasterSymbology symbology, Category category)
+            throws NoninvertibleTransformException, IOException, TiffTags.TiffReadingException, Exception{
+
+        
+        RasterImageIO rasterImageIO = new RasterImageIO();        
+        Point point = RasterImageIO.getImageDimensions(ril.getImageFileName());
+        Envelope env =  RasterImageIO.getGeoReferencing(ril.getImageFileName(), true, point);
+        
+        Viewport viewport = context.getLayerViewPanel().getViewport();
+        Resolution requestedRes = RasterImageIO.calcRequestedResolution(viewport);
+        ImageAndMetadata imageAndMetadata = rasterImageIO.loadImage(
+                context,
+                ril.getImageFileName(),
+                null,
+                viewport.getEnvelopeInModelCoordinates(),
+                requestedRes);
+
+        ril = new RasterImageLayer(
+                ril.getName(),
+                context.getLayerManager(),
+                ril.getImageFileName(),
+                imageAndMetadata.getImage(), env);
+                
+        MetaInformationHandler mih = new MetaInformationHandler(ril);
+
+        mih.addMetaInformation(I18N.get("file-name"), "");
+        mih.addMetaInformation(I18N.get("resolution"), "" + " (px) x " + "" + " (px)");
+        mih.addMetaInformation(I18N.get("real-world-width"), ril.getWholeImageEnvelope().getWidth());
+        mih.addMetaInformation(I18N.get("real-world-height"), ril.getWholeImageEnvelope().getHeight());
+
+      // ###################################
+        context.getLayerManager().addLayerable(category.getName(), ril);
+        
+        if(symbology != null) {
+            ril.setSymbology(symbology);
+        }
+        
+    }
+  
   private static FeatureCollection executeQuery(String query,
     DataSource dataSource, CoordinateSystemRegistry registry,
     TaskMonitor monitor) throws Exception {

@@ -14,7 +14,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.TransformerConfigurationException;
 import org.openjump.core.rasterimage.RasterSymbology;
-import org.openjump.core.rasterimage.RasterSymbology.ColorMapType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -40,7 +39,7 @@ public class SLDHandler {
     
         DocumentBuilderFactory dbf = newInstance();
         dbf.setNamespaceAware(true);
-        ColorMapType colorMapType = ColorMapType.RAMP;
+        String colorMapType = RasterSymbology.TYPE_RAMP;
         
         RasterSymbology rasterSymbology = null;
         
@@ -55,7 +54,7 @@ public class SLDHandler {
             if(type_nl.getLength() == 1) {
                 Element type_el = (Element) type_nl.item(0);
                 String type = type_el.getTextContent();
-                colorMapType = ColorMapType.valueOf(type.toUpperCase());
+                colorMapType = type.toUpperCase();
             }
             
             rasterSymbology = new RasterSymbology(colorMapType);
@@ -113,7 +112,7 @@ public class SLDHandler {
         writer.writeStartElement("RasterSymbolizer");
         
         writer.writeStartElement("Type");
-        writer.writeCharacters(symbology.getColorMapType().name());
+        writer.writeCharacters(symbology.getColorMapType());
         writer.writeEndElement();
         
         writer.writeStartElement("Opacity");

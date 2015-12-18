@@ -1,6 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs, also make  #
 # sure that lines break at 80 chars for constricted dispaly situations        #
 
+2015-12-18 bertazza
+  * Raster symbologies now saved in and restored from project file
+
 2015-12-15 ede
   * added icons to the datastore query chooser's combobox
   * "static"alized a part of ConnectionManagerPanel w/o redesign consequences

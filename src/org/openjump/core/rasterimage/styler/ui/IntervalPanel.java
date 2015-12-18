@@ -413,7 +413,7 @@ public class IntervalPanel extends javax.swing.JPanel {
     
     public RasterSymbology getRasterStyler() throws Exception{
         
-        RasterSymbology rasterSymbolizer = new RasterSymbology(RasterSymbology.ColorMapType.INTERVALS);
+        RasterSymbology rasterSymbolizer = new RasterSymbology(RasterSymbology.TYPE_INTERVALS);
         for (ColorMapEntry colorMapEntry : colorsTablePanel.getColorMapEntries()) {
             rasterSymbolizer.addColorMapEntry(colorMapEntry.getUpperValue(), colorMapEntry.getColor());
         }

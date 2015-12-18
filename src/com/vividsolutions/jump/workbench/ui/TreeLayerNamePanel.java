@@ -518,11 +518,11 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
 
             RasterStyleValueIntv rasterStyleValue = (RasterStyleValueIntv) value;
             
-            if(rasterStyleValue.getColorMapType() == RasterSymbology.ColorMapType.INTERVALS) {
+            if(rasterStyleValue.getColorMapType().equals(RasterSymbology.TYPE_INTERVALS)) {
                 label.setText(
                         String.valueOf(rasterStyleValue.getValue().floatValue() + "-" +
                         String.valueOf(rasterStyleValue.getNextValue().floatValue())));
-            } else if(rasterStyleValue.getColorMapType() == RasterSymbology.ColorMapType.SINGLE) {
+            } else if(rasterStyleValue.getColorMapType().equals(RasterSymbology.TYPE_SINGLE)) {
                 label.setText(String.valueOf(rasterStyleValue.getValue().intValue()));
             }
             colorPanel.setLineColor(Color.BLACK);

@@ -142,7 +142,7 @@ public class SingleValuesPanel extends javax.swing.JPanel {
 
     private void formComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentShown
 
-        if(firstTimeShown && rasterImageLayer.getRasterSymbology() == null) {
+        if(firstTimeShown && rasterImageLayer.getSymbology() == null) {
             firstTimeShown = false;
             try {
                 findUniqueValues();
@@ -248,7 +248,7 @@ public class SingleValuesPanel extends javax.swing.JPanel {
     
     public RasterSymbology getRasterStyler() throws Exception{
         
-        RasterSymbology rasterSymbolizer = new RasterSymbology(RasterSymbology.ColorMapType.SINGLE);
+        RasterSymbology rasterSymbolizer = new RasterSymbology(RasterSymbology.TYPE_SINGLE);
         for (ColorMapEntry colorMapEntry : colorsTablePanel.getColorMapEntries()) {
             rasterSymbolizer.addColorMapEntry(colorMapEntry.getUpperValue(), colorMapEntry.getColor());
         }

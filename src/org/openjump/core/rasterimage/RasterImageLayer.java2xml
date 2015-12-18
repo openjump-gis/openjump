@@ -9,4 +9,5 @@
   <element xml-name="origImageWidth" java-name="origImageWidth"/>
   <element xml-name="origImageHeight" java-name="origImageHeight"/>
   <element xml-name="metaInformation" java-name="metaInformation"/>
+  <element xml-name="symbology" java-name="symbology"/>
 </root>
