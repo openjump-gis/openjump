@@ -9,7 +9,7 @@ import java.util.Properties;
 
 import com.vividsolutions.jump.datastore.DataStoreConnection;
 import com.vividsolutions.jump.datastore.jdbc.DelegatingDriver;
-import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDataStoreDriver;
+import com.vividsolutions.jump.datastore.spatialdatabases.AbstractSpatialDatabasesDataStoreDriver;
 import com.vividsolutions.jump.parameter.ParameterList;
 import com.vividsolutions.jump.parameter.ParameterListSchema;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
@@ -19,7 +19,7 @@ import com.vividsolutions.jump.workbench.JUMPWorkbench;
 /**
  * A driver for supplying {@link SpatialDatabaseDSConnection}s
  */
-public class SpatialiteDataStoreDriver extends SpatialDatabasesDataStoreDriver {
+public class SpatialiteDataStoreDriver extends AbstractSpatialDatabasesDataStoreDriver {
 
   public final static String JDBC_CLASS = "org.sqlite.JDBC";
   private static boolean initialized = false;

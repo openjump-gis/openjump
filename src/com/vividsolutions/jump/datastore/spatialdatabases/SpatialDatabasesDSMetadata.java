@@ -188,7 +188,7 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
     // Spatial tables only.
     try {
       JDBCUtil.execute(
-          conn.getConnection(),
+          conn.getJdbcConnection(),
           this.getDatasetNameQuery(),
           new ResultSetBlock() {
             public void yield(ResultSet resultSet) throws SQLException {
@@ -255,9 +255,9 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
       }
     };
     try {
-      JDBCUtil.execute(conn.getConnection(), (sql1), resultSetBlock);
+      JDBCUtil.execute(conn.getJdbcConnection(), (sql1), resultSetBlock);
       if (e[0] == null || e[0].isNull()) {
-        JDBCUtil.execute(conn.getConnection(), (sql2), resultSetBlock);
+        JDBCUtil.execute(conn.getJdbcConnection(), (sql2), resultSetBlock);
       }
     } catch (Exception ex1) {
       // If attributeName is indexed but indexed has not been initialized
@@ -266,7 +266,7 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
       if (sql2 != null) {
         // some drivers do not support a second SQL query for extent:
         /// sqlite w/o spatialite for instance
-        JDBCUtil.execute(conn.getConnection(), sql2, resultSetBlock);
+        JDBCUtil.execute(conn.getJdbcConnection(), sql2, resultSetBlock);
       }
     }
     //System.out.println("getting extent for: " + datasetName + "." + attributeName + ": " + e[0].toString()  + " in th: " + Thread.currentThread().getName());
@@ -290,7 +290,7 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
     //System.out.println("getting geom Attribute for dataset: " + datasetName + " with query: " + sql);
 
     JDBCUtil.execute(
-        conn.getConnection(), sql,
+        conn.getJdbcConnection(), sql,
         new ResultSetBlock() {
           public void yield(ResultSet resultSet) throws SQLException {
             while (resultSet.next()) {
@@ -319,7 +319,7 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
 
     //System.out.println("getting PK for dataset: " + datasetName);
     try {
-      DatabaseMetaData dbMd = this.conn.getConnection().getMetaData();
+      DatabaseMetaData dbMd = this.conn.getJdbcConnection().getMetaData();
       rs = dbMd.getPrimaryKeys(null, getSchemaName(datasetName), getTableName(datasetName));
       while (rs.next()) {
         String colName = rs.getString(4);
@@ -355,7 +355,7 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
 
     try {
       //System.out.println("getting cols for dataset: " + getSchemaName(datasetName) + " " + getTableName(datasetName) + " from: " + this.hashCode());
-      DatabaseMetaData dbMd = this.conn.getConnection().getMetaData();
+      DatabaseMetaData dbMd = this.conn.getJdbcConnection().getMetaData();
       rs = dbMd.getColumns(null, getSchemaName(datasetName), getTableName(datasetName), null);
       while (rs.next()) {
         cols.add(rs.getString(4));
@@ -389,7 +389,7 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
         // no schema defined in given dataset name: use default one
         schemaName = this.getDefaultSchemaName();
       }
-      DatabaseMetaData dbMd = this.conn.getConnection().getMetaData();
+      DatabaseMetaData dbMd = this.conn.getJdbcConnection().getMetaData();
       rs = dbMd.getIndexInfo(null, this.getSchemaName(dsName), this.getTableName(dsName), false, true);
       while (rs.next()) {
         if (column.equals(rs.getString(9)) && rs.getString(6) != null && rs.getString(9) != null) {
@@ -436,7 +436,7 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
   protected String querySRID(String datasetName, String colName) {
     final StringBuffer srid = new StringBuffer();
     String sql = this.getSridQuery(this.getSchemaName(datasetName), this.getTableName(datasetName), colName);
-    JDBCUtil.execute(conn.getConnection(), sql, new ResultSetBlock() {
+    JDBCUtil.execute(conn.getJdbcConnection(), sql, new ResultSetBlock() {
       public void yield(ResultSet resultSet) throws SQLException {
         if (resultSet.next()) {
           srid.append(resultSet.getString(1));

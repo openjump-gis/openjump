@@ -115,7 +115,7 @@ public class ConnectionManager {
          * (needed by DataStoreDataSource classes (Oracle, Postgis, ...)
          * @return the jdbc Connection
          */
-        public Connection getConnection() {
+        public Connection getJdbcConnection() {
             throw new UnsupportedOperationException();
         }
 

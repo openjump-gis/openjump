@@ -138,7 +138,7 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
     // tries to load spatialite, assuming it is available on the system's path
     Statement stmt = null;
     try {
-      stmt = conn.getConnection().createStatement();
+      stmt = conn.getJdbcConnection().createStatement();
       stmt.executeUpdate("SELECT load_extension('mod_spatialite')");
       // ex is thrown if extension cannot be loaded
       this.spatialiteLoaded = true;
@@ -172,7 +172,7 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
   private void setGeoColLayout() {
     DatabaseMetaData dbMd = null;
     try {
-      dbMd = this.conn.getConnection().getMetaData();
+      dbMd = this.conn.getJdbcConnection().getMetaData();
       ResultSet rs = dbMd.getTables(null, null, SpatialiteDSMetadata.GC_COLUMN_NAME, null);
       if (rs.next()) {
         // tableName is third column in this metadata resultSet
@@ -249,7 +249,7 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
     } 
     try {
       JDBCUtil.execute(
-          conn.getConnection(),
+          conn.getJdbcConnection(),
           query,
           new ResultSetBlock() {
             public void yield(ResultSet resultSet) throws SQLException {

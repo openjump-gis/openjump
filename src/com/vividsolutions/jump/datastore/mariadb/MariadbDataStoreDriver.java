@@ -1,14 +1,16 @@
 package com.vividsolutions.jump.datastore.mariadb;
 
+import java.sql.Connection;
+
 import com.vividsolutions.jump.datastore.DataStoreConnection;
-import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDataStoreDriver;
+import com.vividsolutions.jump.datastore.spatialdatabases.AbstractSpatialDatabasesDataStoreDriver;
 import com.vividsolutions.jump.parameter.ParameterList;
 
 /**
  * A driver for supplying {@link SpatialDatabaseDSConnection}s
  */
 public class MariadbDataStoreDriver
-    extends SpatialDatabasesDataStoreDriver {
+    extends AbstractSpatialDatabasesDataStoreDriver {
 
       // TODO: uniformize
     public final static String JDBC_CLASS = "com.mysql.jdbc.Driver";
@@ -28,7 +30,7 @@ public class MariadbDataStoreDriver
     @Override
     public DataStoreConnection createConnection(ParameterList params)
         throws Exception {
-        DataStoreConnection ret = super.createConnection(params);
-        return new MariadbDSConnection(ret.getConnection());
+        Connection conn = super.createJdbcConnection(params);
+        return new MariadbDSConnection(conn);
     }
 }

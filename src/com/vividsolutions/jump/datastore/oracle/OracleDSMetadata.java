@@ -17,7 +17,7 @@ public class OracleDSMetadata extends SpatialDatabasesDSMetadata {
         conn = con;
         // TODO: use bind parameters to avoid SQL injection
         try {
-            this.defaultSchemaName = conn.getConnection().getMetaData().getUserName();
+            this.defaultSchemaName = conn.getJdbcConnection().getMetaData().getUserName();
         } catch (SQLException ex) {
             System.err.println(ex.toString());
             defaultSchemaName = "";

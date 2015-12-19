@@ -1,12 +1,16 @@
 package com.vividsolutions.jump.datastore.oracle;
 
-import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDataStoreDriver;
+import java.sql.Connection;
+
+import com.vividsolutions.jump.datastore.DataStoreConnection;
+import com.vividsolutions.jump.datastore.spatialdatabases.AbstractSpatialDatabasesDataStoreDriver;
+import com.vividsolutions.jump.parameter.ParameterList;
 
 /**
  * A driver for supplying {@link SpatialDatabaseDSConnection}s
  */
 public class OracleDataStoreDriver
-    extends SpatialDatabasesDataStoreDriver {
+    extends AbstractSpatialDatabasesDataStoreDriver {
     // TODO: uniformize
     public final static String JDBC_CLASS = "oracle.jdbc.driver.OracleDriver";
     public static final String GT_SDO_CLASS_NAME = "org.geotools.data.oracle.sdo.SDO";
@@ -20,5 +24,18 @@ public class OracleDataStoreDriver
         this.driverName = "Oracle Spatial";
         this.jdbcClass = OracleDataStoreDriver.JDBC_CLASS;
         this.urlPrefix = "jdbc:oracle:thin:@//";
+    }
+
+    /**
+     * returns the right type of DataStoreConnection
+     * @param params
+     * @return
+     * @throws Exception 
+     */
+    @Override
+    public DataStoreConnection createConnection(ParameterList params)
+        throws Exception {
+        Connection conn = super.createJdbcConnection(params);
+        return new OracleDSConnection(conn);
     }
 }

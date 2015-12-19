@@ -6,12 +6,7 @@ import java.sql.DriverManager;
 
 import com.vividsolutions.jump.datastore.DataStoreConnection;
 import com.vividsolutions.jump.datastore.DataStoreDriver;
-import com.vividsolutions.jump.datastore.h2.H2DSConnection;
 import com.vividsolutions.jump.datastore.jdbc.DelegatingDriver;
-import com.vividsolutions.jump.datastore.mariadb.MariadbDSConnection;
-import com.vividsolutions.jump.datastore.oracle.OracleDSConnection;
-import com.vividsolutions.jump.datastore.postgis.PostgisDSConnection;
-import com.vividsolutions.jump.datastore.spatialite.SpatialiteDSConnection;
 import com.vividsolutions.jump.parameter.ParameterList;
 import com.vividsolutions.jump.parameter.ParameterListSchema;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
@@ -19,7 +14,7 @@ import com.vividsolutions.jump.workbench.JUMPWorkbench;
 /**
  * A driver for supplying {@link SpatialDatabaseDSConnection}s
  */
-public class SpatialDatabasesDataStoreDriver
+public abstract class AbstractSpatialDatabasesDataStoreDriver
     implements DataStoreDriver {
 
   /** TODO: I18N */
@@ -41,7 +36,7 @@ public class SpatialDatabasesDataStoreDriver
   
   protected boolean registered = false;
 
-  public SpatialDatabasesDataStoreDriver() {
+  public AbstractSpatialDatabasesDataStoreDriver() {
     // Nicolas Ribot:
     //paramNames are no more static now they can be overloaded by child classes @link SpatialiteDataStoreDriver for instance
     paramNames = new String[]{
@@ -97,8 +92,10 @@ public class SpatialDatabasesDataStoreDriver
     return schema;
   }
 
-  @Override
-  public DataStoreConnection createConnection(ParameterList params)
+  /**
+   * use this method in your implementation to create the actual JDBC connection
+   */
+  protected Connection createJdbcConnection(ParameterList params)
       throws Exception {
     String host = params.getParameterString(PARAM_Server);
     int port = params.getParameterInt(PARAM_Port);
@@ -168,24 +165,13 @@ public class SpatialDatabasesDataStoreDriver
     } else {
       System.setProperty("java.net.preferIPv6Addresses", savePreferIPv6Addresses);
     }
-    //return new SpatialDatabasesDSConnection(conn);
-    // TODO: clean inheritance...
-    if (url.startsWith("jdbc:postgresql")) {
-      return new PostgisDSConnection(conn);
-    } else if (url.startsWith("jdbc:oracle")) {
-      return new OracleDSConnection(conn);
-    } else if (url.startsWith("jdbc:mysql")) {
-      return new MariadbDSConnection(conn);
-    } else if (url.startsWith("jdbc:sqlite")) {
-      return new SpatialiteDSConnection(conn);
-    } else if (url.startsWith("jdbc:h2")) {
-      return new H2DSConnection(conn);
-    } else {
-      // TODO: should not pass here
-      System.err.println("ERROR: Returning a SpatialDatabasesDSConnection for url: " + url + ". Should not happen...");
-      return new SpatialDatabasesDSConnection(conn);
-    }
+
+    return conn;
   }
+
+  @Override
+  public abstract DataStoreConnection createConnection(ParameterList params)
+      throws Exception;
 
   @Override
   public boolean isAdHocQuerySupported() {
