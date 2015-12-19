@@ -1,7 +1,6 @@
 package com.vividsolutions.jump.datastore.h2;
 
 import com.vividsolutions.jump.datastore.DataStoreDriver;
-import com.vividsolutions.jump.datastore.mariadb.MariadbDataStoreDriver;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.Extension;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
@@ -9,10 +8,10 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import java.sql.Driver;
 import java.sql.DriverManager;
 
-import static com.vividsolutions.jump.datastore.mariadb.MariadbDataStoreDriver.JDBC_CLASS;
+import static com.vividsolutions.jump.datastore.h2.H2DataStoreDriver.JDBC_CLASS;
 
 /**
- * Created by UMichael on 17/12/2015.
+ * Extension for H2GIS Support
  */
 public class H2DataStoreExtension extends Extension {
     private static boolean disabled = false;

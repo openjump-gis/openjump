@@ -3,7 +3,7 @@ package com.vividsolutions.jump.datastore.h2;
 import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDataStoreDriver;
 
 /**
- * Created by UMichael on 18/12/2015.
+ * A driver for supplying {@link com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDSConnection}s
  */
 public class H2ServerDataStoreDriver extends SpatialDatabasesDataStoreDriver {
 

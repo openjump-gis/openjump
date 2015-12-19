@@ -9,7 +9,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
 /**
- * Factory to convert Postgis geometric data type.
+ * Factory to convert H2 geometric data type.
  */
 public class H2ValueConverterFactory extends SpatialDatabasesValueConverterFactory {
 

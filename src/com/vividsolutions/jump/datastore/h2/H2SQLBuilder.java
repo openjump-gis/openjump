@@ -7,7 +7,7 @@ import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDSMeta
 import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesSQLBuilder;
 
 /**
- * Created by UMichael on 17/12/2015.
+ * Query builder for H2GIS queries.
  */
 public class H2SQLBuilder  extends SpatialDatabasesSQLBuilder {
 

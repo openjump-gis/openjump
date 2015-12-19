@@ -13,7 +13,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * Created by UMichael on 16/12/2015.
+ * Connection to a H2GIS database.
  */
 public class H2DSConnection extends SpatialDatabasesDSConnection {
 
