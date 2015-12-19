@@ -1,6 +1,9 @@
 # for display continuity sake please use 2 spaces instead of tabs, also make  #
 # sure that lines break at 80 chars for constricted dispaly situations        #
 
+2015-12-19 mmichaud <m.michael.michaud@orange.fr>
+  * Add support to H2GIS spatial database
+
 2015-12-18 bertazza
   * Raster symbologies now saved in and restored from project file
 

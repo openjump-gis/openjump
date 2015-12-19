@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 
 import com.vividsolutions.jump.datastore.DataStoreConnection;
 import com.vividsolutions.jump.datastore.DataStoreDriver;
+import com.vividsolutions.jump.datastore.h2.H2DSConnection;
 import com.vividsolutions.jump.datastore.jdbc.DelegatingDriver;
 import com.vividsolutions.jump.datastore.mariadb.MariadbDSConnection;
 import com.vividsolutions.jump.datastore.oracle.OracleDSConnection;
@@ -177,6 +178,8 @@ public class SpatialDatabasesDataStoreDriver
       return new MariadbDSConnection(conn);
     } else if (url.startsWith("jdbc:sqlite")) {
       return new SpatialiteDSConnection(conn);
+    } else if (url.startsWith("jdbc:h2")) {
+      return new H2DSConnection(conn);
     } else {
       // TODO: should not pass here
       System.err.println("ERROR: Returning a SpatialDatabasesDSConnection for url: " + url + ". Should not happen...");

@@ -54,6 +54,8 @@ public class ConnectionManagerPanel extends JPanel {
   private static final Icon DISCONNECTED_ICON = IconLoader.icon("disconnect.png");
   private static final Icon PG_CONNECTED_ICON = IconLoader.icon("ok_pg.png");
   private static final Icon PG_DISCONNECTED_ICON = IconLoader.icon("ko_pg.png");
+  private static final Icon H2_CONNECTED_ICON = IconLoader.icon("ok_h2.png");
+  private static final Icon H2_DISCONNECTED_ICON = IconLoader.icon("ko_h2.png");
   private static final Icon ORA_CONNECTED_ICON = IconLoader.icon("ok_oracle.png");
   private static final Icon ORA_DISCONNECTED_ICON = IconLoader.icon("ko_oracle.png");
   private static final Icon MARIA_CONNECTED_ICON = IconLoader.icon("ok_mariadb.png");
@@ -491,6 +493,10 @@ public class ConnectionManagerPanel extends JPanel {
         return isClosed ? MARIA_DISCONNECTED_ICON : MARIA_CONNECTED_ICON;
       } else if ( driverClassName.equals("com.vividsolutions.jump.datastore.spatialite.SpatialiteDataStoreDriver")) {
         return isClosed ? SQLITE_DISCONNECTED_ICON : SQLITE_CONNECTED_ICON;
+      } else if ( driverClassName.equals("com.vividsolutions.jump.datastore.h2.H2DataStoreDriver")) {
+        return isClosed ? H2_DISCONNECTED_ICON : H2_CONNECTED_ICON;
+      } else if ( driverClassName.equals("com.vividsolutions.jump.datastore.h2.H2ServerDataStoreDriver")) {
+        return isClosed ? H2_DISCONNECTED_ICON : H2_CONNECTED_ICON;
       }
       //Default
       return isClosed ? DISCONNECTED_ICON : CONNECTED_ICON;

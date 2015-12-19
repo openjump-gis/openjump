@@ -22,9 +22,6 @@
 		<!-- shows selection summary in status bar time field -->
 		org.openjump.core.ui.plugin.view.ShowFullPathPlugIn
 	</plug-in>
-	<plug-in>
-		org.openjump.core.ui.plugin.datastore.postgis.SaveToPostGISPlugIn
-	</plug-in>
 	<extension>
 		com.vividsolutions.jump.datastore.oracle.OracleDataStoreExtension
 	</extension>
@@ -35,6 +32,12 @@
 	<extension>
 		com.vividsolutions.jump.datastore.spatialite.SpatialiteDataStoreExtension
 	</extension>
+	<extension>
+		com.vividsolutions.jump.datastore.h2.H2DataStoreExtension
+	</extension>
+	<plug-in>
+		org.openjump.core.ui.plugin.datastore.postgis.SaveToPostGISPlugIn
+	</plug-in>
 	<plug-in>
 		org.openjump.core.ccordsys.srid.EnsureAllLayersHaveSRIDStylePlugIn
 	</plug-in>
