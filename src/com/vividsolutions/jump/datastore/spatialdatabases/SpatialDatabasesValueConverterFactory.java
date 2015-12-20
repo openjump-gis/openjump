@@ -25,13 +25,13 @@ public class SpatialDatabasesValueConverterFactory {
   protected final Connection conn;
 
   public SpatialDatabasesValueConverterFactory(Connection conn) {
-      try { 
-        JUMPWorkbench.getInstance().getFrame().log("creating a SpatialDatabasesValueConverterFactory (class:" + this.getClass() 
-            + " ) (driver: " + conn.getMetaData().getDriverName() + ") id"
-            + this.hashCode(), this.getClass());
-      } catch (SQLException ex) {
-        ex.printStackTrace();
-      }
+//      try { 
+//        JUMPWorkbench.getInstance().getFrame().log("creating a SpatialDatabasesValueConverterFactory (class:" + this.getClass() 
+//            + " ) (driver: " + conn.getMetaData().getDriverName() + ") id"
+//            + this.hashCode(), this.getClass());
+//      } catch (SQLException ex) {
+//        ex.printStackTrace();
+//      }
     this.conn = conn;
   }
 
