@@ -1,9 +1,16 @@
 package com.vividsolutions.jump.workbench.ui.plugin.datastore;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jump.datastore.DataStoreConnection;
+import com.vividsolutions.jump.datastore.DataStoreMetadata;
 import com.vividsolutions.jump.datastore.FilterQuery;
+import com.vividsolutions.jump.datastore.SpatialReferenceSystemID;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.io.datasource.Connection;
-import com.vividsolutions.jump.io.datasource.DataSource;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.util.CollectionUtil;
 import com.vividsolutions.jump.util.LangUtil;
@@ -14,13 +21,10 @@ import com.vividsolutions.jump.workbench.model.cache.CachingFeatureCollection;
 import com.vividsolutions.jump.workbench.model.cache.DynamicFeatureCollection;
 import com.vividsolutions.jump.workbench.ui.plugin.WorkbenchContextReference;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 /**
  * Adapts the DataStore API to the DataSource API.
  */
-public class DataStoreDataSource extends DataSource implements
+public class DataStoreDataSource extends DataStoreQueryDataSource implements
         WorkbenchContextReference {
 
     public static final String DATASET_NAME_KEY = "Dataset Name";
@@ -50,7 +54,9 @@ public class DataStoreDataSource extends DataSource implements
             GEOMETRY_ATTRIBUTE_NAME_KEY, geometryAttributeName,
             WHERE_CLAUSE_KEY, whereClause,
             CONNECTION_DESCRIPTOR_KEY, connectionDescriptor, 
-            CACHING_KEY, Boolean.valueOf(caching) }));
+            CACHING_KEY, Boolean.valueOf(caching),
+            SQL_QUERY_KEY, ""
+            }));
         setWorkbenchContext(context);
     }
 
@@ -131,6 +137,26 @@ public class DataStoreDataSource extends DataSource implements
         if (getProperties().get(MAX_FEATURES_KEY) != null) {
             query.setLimit((Integer)getProperties().get(MAX_FEATURES_KEY));
         }
+        
+        // in order to have an sql query string that is editable later
+        // we generate it here and save it to the properties
+        // TODO: place this code somewhere more appropriate
+        DataStoreConnection conn = ConnectionManager.instance(context)
+            .getConnection(
+                (ConnectionDescriptor) getProperties().get(
+                    CONNECTION_DESCRIPTOR_KEY));
+        DataStoreMetadata meta = conn.getMetadata();
+        SpatialReferenceSystemID srid = meta.getSRID(query.getDatasetName(),
+            query.getGeometryAttributeName());
+        String[] colNames = meta.getColumnNames(query.getDatasetName());
+        Envelope env = meta.getExtents(query.getDatasetName(),
+            query.getGeometryAttributeName());
+        if (env != null)
+          env = new Envelope();
+        query.setFilterGeometry(new GeometryFactory().toGeometry(env));
+        String queryString = conn.getSqlBuilder(srid, colNames).getSQL(query);
+        getProperties().put(SQL_QUERY_KEY, queryString);
+        
         return new CachingFeatureCollection(new DynamicFeatureCollection(
                 (ConnectionDescriptor) getProperties().get(
                         CONNECTION_DESCRIPTOR_KEY), ConnectionManager

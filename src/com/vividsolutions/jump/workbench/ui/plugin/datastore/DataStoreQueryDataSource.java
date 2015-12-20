@@ -106,7 +106,7 @@ public class DataStoreQueryDataSource extends com.vividsolutions.jump.io.datasou
         };
     }
 
-    protected FeatureCollection createFeatureCollection() {
+    protected FeatureCollection createFeatureCollection() throws Exception {
         FeatureInputStream featureInputStream = null;
         FeatureDataset featureDataset = null;
         

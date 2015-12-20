@@ -13,10 +13,13 @@ import com.vividsolutions.jump.datastore.DataStoreDriver;
 import com.vividsolutions.jump.datastore.DataStoreException;
 import com.vividsolutions.jump.datastore.DataStoreMetadata;
 import com.vividsolutions.jump.datastore.Query;
+import com.vividsolutions.jump.datastore.SpatialReferenceSystemID;
+import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesSQLBuilder;
 import com.vividsolutions.jump.io.FeatureInputStream;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
+
 import java.sql.Connection;
 
 /**
@@ -121,6 +124,12 @@ public class ConnectionManager {
 
         public boolean isClosed() throws DataStoreException {
             return true;
+        }
+
+        @Override
+        public SpatialDatabasesSQLBuilder getSqlBuilder(
+            SpatialReferenceSystemID srid, String[] colNames) {
+          throw new UnsupportedOperationException();
         }
     };
 
