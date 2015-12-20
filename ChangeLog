@@ -3,7 +3,7 @@
 
 2015-12-20 ede
   * add support for spatial datastore layers to EditDataStoreQueryPlugIn
-    allows finetuning the query created with Open->Data Store Layer
+    allows finetuning the SQL query created with Open->Data Store Layer
 
 2015-12-19 mmichaud <m.michael.michaud@orange.fr>
   * Add support to H2GIS spatial database
