@@ -22,7 +22,7 @@ public class H2DataStoreDriver extends AbstractSpatialDatabasesDataStoreDriver {
 
   public H2DataStoreDriver() {
     this.driverName = "H2GIS";
-    this.jdbcClass = "org.h2.Driver";
+    this.jdbcClass = JDBC_CLASS;
     this.urlPrefix = "jdbc:h2:";
 
     paramNames = new String[]{

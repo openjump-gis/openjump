@@ -38,8 +38,7 @@ public class OracleDataStoreExtension extends Extension {
       ClassLoader pluginLoader = wbc.getWorkbench().getPlugInManager()
           .getClassLoader();
       // check for ojdbc6.jar
-      DriverManager.registerDriver(
-          (Driver)Class.forName(JDBC_CLASS, true, pluginLoader).newInstance());
+      Class.forName(JDBC_CLASS, false, pluginLoader);
 
       // check for gt2-oracle-spatial-2.x.jar
       Class.forName(GT_SDO_CLASS_NAME, true, pluginLoader)

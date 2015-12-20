@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
 
+import com.vividsolutions.jump.JUMPException;
 import com.vividsolutions.jump.datastore.DataStoreConnection;
 import com.vividsolutions.jump.datastore.DataStoreDriver;
 import com.vividsolutions.jump.datastore.jdbc.DelegatingDriver;
@@ -104,7 +105,7 @@ public abstract class AbstractSpatialDatabasesDataStoreDriver
     String password = params.getParameterString(PARAM_Password);
 
     String url
-        = String.valueOf(new StringBuffer(urlPrefix).append(host).append(":").append(port).append("/").append(database));
+        = String.valueOf(new StringBuffer(getUrlPrefix()).append(host).append(":").append(port).append("/").append(database));
 
     // only register once per driver
     if (!this.registered) {
@@ -123,14 +124,14 @@ public abstract class AbstractSpatialDatabasesDataStoreDriver
     }
 
     // some helpful debugging output
-    // DriverManager.setLogWriter(new PrintWriter(System.out));
-    // Enumeration<Driver> ds = DriverManager.getDrivers();
-    // while (ds.hasMoreElements()) {
-    // Driver d = ds.nextElement();
-    // System.out.println(d);
-    // System.out.println(url);
-    // System.out.println(d.acceptsURL(url));
-    // }
+//    DriverManager.setLogWriter(new java.io.PrintWriter(System.out));
+//    java.util.Enumeration<Driver> ds = DriverManager.getDrivers();
+//    while (ds.hasMoreElements()) {
+//      Driver d = ds.nextElement();
+//      System.out.println(d.toString());
+//      System.out.println(url);
+//      System.out.println(d.acceptsURL(url));
+//    }
     
     // mmichaud 2013-08-27 workaround for ticket #330
     String savePreferIPv4Stack = System.getProperty("java.net.preferIPv4Stack");
@@ -145,7 +146,24 @@ public abstract class AbstractSpatialDatabasesDataStoreDriver
     // errors, which is stupid as connect would have only to ask the driver
     // if it supports the given url scheme. funny enough getDriver() does, so
     // we add a bit of code and get the connection ourself w/ the proper driver.
-    Driver d = DriverManager.getDriver(url);
+    // finally, as mysql & mariadb both support 'jdbc:mysql' we iterate through
+    // all registered drivers now and find exactly the instance of our JDBC_CLASS
+    Driver driver = null;
+    java.util.Enumeration<Driver> drivers = DriverManager.getDrivers();
+    while (drivers.hasMoreElements()) {
+      Driver d = drivers.nextElement();
+      if (d instanceof DelegatingDriver)
+        d = ((DelegatingDriver) d).getDriver();
+      // look for exactly _our_ driver
+      if (d.getClass().getName().equals(getJdbcClass())) {
+        driver = d;
+        break;
+      }
+    }
+    // something went wrong
+    if (driver == null)
+      throw new JUMPException(getJdbcClass()+" is not registered with driver manager.");
+    
     java.util.Properties info = new java.util.Properties();
     if (user != null) {
       info.put("user", user);
@@ -153,7 +171,7 @@ public abstract class AbstractSpatialDatabasesDataStoreDriver
     if (password != null) {
       info.put("password", password);
     }
-    Connection conn = d.connect(url, info);
+    Connection conn = driver.connect(url, info);
 
     if (savePreferIPv4Stack == null) {
       System.getProperties().remove("java.net.preferIPv4Stack");

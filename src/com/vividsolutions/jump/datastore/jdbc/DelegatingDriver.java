@@ -56,4 +56,18 @@ public class DelegatingDriver implements Driver {
   public Logger getParentLogger() throws SQLFeatureNotSupportedException {
     return driver.getParentLogger();
   }
+
+  /**
+   * get wrappee
+   * @return
+   */
+  public Driver getDriver(){
+    return driver;
+  }
+
+  @Override
+  public String toString() {
+    return super.toString() + "["+driver.toString()+"]";
+  }
+
 }

@@ -88,7 +88,10 @@ Additionally PLUS distribution contains
   ERDAS ECW JPEG2000 SDK license - ecw license.txt
   lib/native/[os/]{jecw-*.jar,NCS*.dll,ermapper.jar}
  Postgis driver (postgis-*.jar) - LGPL2 - lgpl-2.1.txt
-
+ MariaDB Connector/J (mariadb-java-client-*.jar) - LGPL2 - lgpl-2.1.txt
+ MySQL Connector/J (mysql-connector-java-*-bin.jar) - GPL2 - gpl-2.txt
+ Xerial SQLite JDBC driver (sqlite-jdbc-*.jar) - apache_license-2.0.txt
+ 
 and the following plugins
  Aggregation PlugIn (Michaël Michaud) - GPL2 - gpl-2.txt
   aggregation-*.jar

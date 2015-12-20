@@ -13,12 +13,12 @@ public class MariadbDataStoreDriver
     extends AbstractSpatialDatabasesDataStoreDriver {
 
       // TODO: uniformize
-    public final static String JDBC_CLASS = "com.mysql.jdbc.Driver";
+    public final static String JDBC_CLASS = "org.mariadb.jdbc.Driver";
 
     public MariadbDataStoreDriver() {
-        this.driverName = "MariaDB/MySQL";
-        this.jdbcClass = "com.mysql.jdbc.Driver";
-        this.urlPrefix = "jdbc:mysql://";
+        this.driverName = "MariaDB";
+        this.jdbcClass = JDBC_CLASS;
+        this.urlPrefix = "jdbc:mariadb://";
     }
     
     /**

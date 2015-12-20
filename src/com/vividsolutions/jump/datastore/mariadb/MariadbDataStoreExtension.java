@@ -1,13 +1,11 @@
 package com.vividsolutions.jump.datastore.mariadb;
 
-import com.vividsolutions.jump.datastore.DataStoreDriver;
 import static com.vividsolutions.jump.datastore.mariadb.MariadbDataStoreDriver.JDBC_CLASS;
 
+import com.vividsolutions.jump.datastore.DataStoreDriver;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.Extension;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import java.sql.Driver;
-import java.sql.DriverManager;
 
 /**
  * 
@@ -25,7 +23,7 @@ public class MariadbDataStoreExtension extends Extension {
   }
 
   public String getMessage() {
-    return disabled ? "Disabled: Missing mysql-connector-java-<version>.jar in classpath"
+    return disabled ? "Disabled: Missing mariadb-java-client-<version>.jar in classpath"
         : "";
   }
 
@@ -36,20 +34,21 @@ public class MariadbDataStoreExtension extends Extension {
     try {
       ClassLoader pluginLoader = wbc.getWorkbench().getPlugInManager()
           .getClassLoader();
-      // check for ojdbc6.jar
-      DriverManager.registerDriver(
-          (Driver)Class.forName(JDBC_CLASS, true, pluginLoader).newInstance());
+      // check for jar
+      Class.forName(JDBC_CLASS, false, pluginLoader);
 
       // register the datastore
       wbc.getRegistry().createEntry(DataStoreDriver.REGISTRY_CLASSIFICATION,
           new MariadbDataStoreDriver());
+      wbc.getRegistry().createEntry(DataStoreDriver.REGISTRY_CLASSIFICATION,
+          new MysqlMariadbDataStoreDriver());
+      
     } catch (Exception e) {
       disabled = true;
       wbc.getWorkbench()
           .getFrame()
           .log(
-              "MariaDB Spatial Data Store disabled:\n\t" + e.toString() 
-            + "\n\tMariaDB JDBC Driver (mysql-connector-java-<version>.jar) must exist in the classpath !", this.getClass());
+              getName() +" " + getMessage() +"\n\t" + e.toString(), this.getClass());
     }
   }
 

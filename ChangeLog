@@ -4,6 +4,12 @@
 2015-12-20 ede
   * add support for spatial datastore layers to EditDataStoreQueryPlugIn
     allows finetuning the SQL query created with Open->Data Store Layer
+  PLUS
+  * add explicit mysql datastore for mysql jdbc
+  * add MariaDB jdbc to lib/plus/dbdatastore/
+  * updated to sqlite-jdbc-3.8.11.2.jar
+  * updated to mysql-connector-java-5.1.38-bin.jar
+  * moved db datastore jars to lib/plus/dbdatastore/
 
 2015-12-19 mmichaud <m.michael.michaud@orange.fr>
   * Add support to H2GIS spatial database

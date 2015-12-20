@@ -26,7 +26,7 @@ public class SpatialiteDataStoreDriver extends AbstractSpatialDatabasesDataStore
 
   public SpatialiteDataStoreDriver() {
     this.driverName = "Spatialite";
-    this.jdbcClass = "org.sqlite.JDBC";
+    this.jdbcClass = JDBC_CLASS;
     // TODO: prompt for filename
     this.urlPrefix = "jdbc:sqlite:";
 

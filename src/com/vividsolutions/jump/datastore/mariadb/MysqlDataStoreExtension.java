@@ -1,34 +1,31 @@
-package com.vividsolutions.jump.datastore.spatialite;
+package com.vividsolutions.jump.datastore.mariadb;
+
+import static com.vividsolutions.jump.datastore.mariadb.MysqlDataStoreDriver.JDBC_CLASS;
 
 import com.vividsolutions.jump.datastore.DataStoreDriver;
-import static com.vividsolutions.jump.datastore.spatialite.SpatialiteDataStoreDriver.JDBC_CLASS;
-
 import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.plugin.Extension;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import java.sql.Driver;
-import java.sql.DriverManager;
 
 /**
  * 
  * @author nicolas ribot
  */
-public class SpatialiteDataStoreExtension extends Extension {
+public class MysqlDataStoreExtension extends MariadbDataStoreExtension {
   private static boolean disabled = false;
 
   public String getName() {
-    return "Spatialite Spatial Datastore Extension";
+    return "MySQL Spatial Datastore Extension";
   }
 
   public String getVersion() {
-    return "0.3 (2015-12-04)";
+    return super.getVersion();
   }
 
   public String getMessage() {
-    return disabled ? "Disabled: Missing sqlite-jdbc-<version>.jar in classpath"
+    return disabled ? "Disabled: Missing mysql-connector-java-<version>.jar in classpath"
         : "";
   }
-  // TODO: refactor in a base class.
+
   public void configure(PlugInContext context) throws Exception {
     WorkbenchContext wbc = context.getWorkbenchContext();
 
@@ -36,19 +33,19 @@ public class SpatialiteDataStoreExtension extends Extension {
     try {
       ClassLoader pluginLoader = wbc.getWorkbench().getPlugInManager()
           .getClassLoader();
-      // check for sqlite jar
+      // check for jar
       Class.forName(JDBC_CLASS, false, pluginLoader);
 
       // register the datastore
       wbc.getRegistry().createEntry(DataStoreDriver.REGISTRY_CLASSIFICATION,
-          new SpatialiteDataStoreDriver());
+          new MysqlDataStoreDriver());
+
     } catch (Exception e) {
       disabled = true;
       wbc.getWorkbench()
           .getFrame()
           .log(
-              "Sqlite/Spatialite Spatial Data Store disabled:\n\t" + e.toString() 
-            + "\n\tSqlite JDBC Driver (sqlite-jdbc-<version>.jar) must exist in the classpath !", this.getClass());
+              getName() +" " + getMessage() +"\n\t" + e.toString(), this.getClass());
     }
   }
 

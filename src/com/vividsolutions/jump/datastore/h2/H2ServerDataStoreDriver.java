@@ -18,7 +18,7 @@ public class H2ServerDataStoreDriver extends
 
   public H2ServerDataStoreDriver() {
     this.driverName = "H2GIS Server";
-    this.jdbcClass = "org.h2.Driver";
+    this.jdbcClass = JDBC_CLASS;
     this.urlPrefix = "jdbc:h2:tcp://";
   }
 
