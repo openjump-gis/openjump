@@ -114,7 +114,7 @@ public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
         String[] columns = ((PostgisDSMetadata)pgConnection.getMetadata())
                 .getColumnNames(PostGISQueryUtil.unquote((String)getProperties().get(DATASET_NAME_KEY)));
 
-        Connection conn = pgConnection.getConnection();
+        Connection conn = pgConnection.getJdbcConnection();
 
         int table_srid = getTableSRID(conn, geometryColumn);
 

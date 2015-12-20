@@ -193,7 +193,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                 PostgisDSConnection pgConnection =
                         (PostgisDSConnection)new PostgisDataStoreDriver()
                                 .createConnection(connectionDescriptor.getParameterList());
-                java.sql.Connection conn = pgConnection.getConnection();
+                java.sql.Connection conn = pgConnection.getJdbcConnection();
                 try {
                     conn.setAutoCommit(false);
                     if (!tableAlreadyCreated) {

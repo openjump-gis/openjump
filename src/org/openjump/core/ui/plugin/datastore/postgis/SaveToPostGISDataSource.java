@@ -151,7 +151,7 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
                 PostgisDSConnection pgConnection = 
                         (PostgisDSConnection)new PostgisDataStoreDriver()
                         .createConnection(connectionDescriptor.getParameterList());
-                java.sql.Connection conn = pgConnection.getConnection();
+                java.sql.Connection conn = pgConnection.getJdbcConnection();
                 PostGISConnectionUtil connUtil = new PostGISConnectionUtil(conn);
 
                 // For update operations, use the dimension defined in geometry_column if any
