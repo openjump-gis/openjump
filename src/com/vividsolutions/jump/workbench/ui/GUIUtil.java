@@ -471,7 +471,7 @@ public class GUIUtil {
     }
     
     /**
-     * Centrer the window on its parent window
+     * Center the window on its parent window
      * 
      * @param windowToMove window to be centered on its parent window
      */
