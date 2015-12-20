@@ -62,6 +62,8 @@ public class ConnectionManagerPanel extends JPanel {
   private static final Icon MARIA_DISCONNECTED_ICON = IconLoader.icon("ko_mariadb.png");
   private static final Icon SQLITE_CONNECTED_ICON = IconLoader.icon("ok_spatialite.png");
   private static final Icon SQLITE_DISCONNECTED_ICON = GUIUtil.toGrayScale((ImageIcon)SQLITE_CONNECTED_ICON);
+  private static final Icon MYSQL_CONNECTED_ICON = IconLoader.icon("dolphin_icon.png");
+  private static final Icon MYSQL_DISCONNECTED_ICON = GUIUtil.toGrayScale((ImageIcon)MYSQL_CONNECTED_ICON);
 //  private final Icon SQLSERVER_CONNECTED_ICON = IconLoader.icon("ok_sqlserver.png");
 //  private final Icon SQLSERVER_DISCONNECTED_ICON = IconLoader.icon("ok_sqlserver.png");
   
@@ -483,22 +485,33 @@ public class ConnectionManagerPanel extends JPanel {
      * @param desc the connection to get icon from
      * @return the corresponding icon
      */
-    public static Icon getConnectionIcon(ConnectionDescriptor desc, boolean isClosed) throws DataStoreException {
+    public static Icon getConnectionIcon(ConnectionDescriptor desc,
+        boolean isClosed) throws DataStoreException {
       String driverClassName = desc.getDataStoreDriverClassName();
-      if ( driverClassName.equals("com.vividsolutions.jump.datastore.postgis.PostgisDataStoreDriver")) {
+      if (driverClassName
+          .equals("com.vividsolutions.jump.datastore.postgis.PostgisDataStoreDriver")) {
         return isClosed ? PG_DISCONNECTED_ICON : PG_CONNECTED_ICON;
-      } else if ( driverClassName.equals("com.vividsolutions.jump.datastore.oracle.OracleDataStoreDriver")) {
+      } else if (driverClassName
+          .equals("com.vividsolutions.jump.datastore.oracle.OracleDataStoreDriver")) {
         return isClosed ? ORA_DISCONNECTED_ICON : ORA_CONNECTED_ICON;
-      } else if ( driverClassName.equals("com.vividsolutions.jump.datastore.mariadb.MariadbDataStoreDriver")) {
+      } else if (driverClassName
+          .equals("com.vividsolutions.jump.datastore.mariadb.MysqlDataStoreDriver")) {
+        return isClosed ? MYSQL_DISCONNECTED_ICON : MYSQL_CONNECTED_ICON;
+      } 
+      // match MariadbDataStoreDriver & MysqlMariadbDataStoreDriver
+      else if (driverClassName.endsWith("MariadbDataStoreDriver")) {
         return isClosed ? MARIA_DISCONNECTED_ICON : MARIA_CONNECTED_ICON;
-      } else if ( driverClassName.equals("com.vividsolutions.jump.datastore.spatialite.SpatialiteDataStoreDriver")) {
+      } else if (driverClassName
+          .equals("com.vividsolutions.jump.datastore.spatialite.SpatialiteDataStoreDriver")) {
         return isClosed ? SQLITE_DISCONNECTED_ICON : SQLITE_CONNECTED_ICON;
-      } else if ( driverClassName.equals("com.vividsolutions.jump.datastore.h2.H2DataStoreDriver")) {
+      } else if (driverClassName
+          .equals("com.vividsolutions.jump.datastore.h2.H2DataStoreDriver")) {
         return isClosed ? H2_DISCONNECTED_ICON : H2_CONNECTED_ICON;
-      } else if ( driverClassName.equals("com.vividsolutions.jump.datastore.h2.H2ServerDataStoreDriver")) {
+      } else if (driverClassName
+          .equals("com.vividsolutions.jump.datastore.h2.H2ServerDataStoreDriver")) {
         return isClosed ? H2_DISCONNECTED_ICON : H2_CONNECTED_ICON;
       }
-      //Default
+      // Default
       return isClosed ? DISCONNECTED_ICON : CONNECTED_ICON;
     }
 
