@@ -1,5 +1,6 @@
 package com.vividsolutions.jump.workbench.ui.plugin.datastore;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,16 +23,21 @@ import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.ThreadedBasePlugIn;
 import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
+import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.tree.TreeModel;
+
 import org.netbeans.swing.outline.DefaultOutlineModel;
 import org.netbeans.swing.outline.Outline;
 import org.netbeans.swing.outline.OutlineModel;
+import org.openjump.core.ui.plugin.datastore.AddDataStoreLayerWizardPanel;
 
 // TODO             String s1 = I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Prevents-unnecessary-queries-to-the-datastore");
 //            String s2 = I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.The-recommended-setting-is-to-leave-this-checked");
@@ -120,7 +126,8 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
       datasetOutline = new Outline();
       //datasetOutline.setBackground(Color.lightGray);
 
-      // Table selection: build the 
+      // Table selection: build the
+      final Component panel = this;
       datasetOutline.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
         @Override
@@ -148,6 +155,16 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
               }
             }
           }
+
+          // notify the wizard panel to dis/enable buttons
+          Component c = panel;
+          while (c !=null && (c = c.getParent()) != null) {
+            if (c instanceof WizardPanel){
+              ((AddDataStoreLayerWizardPanel)c).selectionChanged();
+              break;
+            }
+          }
+
         }
       }
       );

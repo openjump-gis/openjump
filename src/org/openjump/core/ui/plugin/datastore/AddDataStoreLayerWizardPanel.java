@@ -1,19 +1,17 @@
 package org.openjump.core.ui.plugin.datastore;
 
 import java.awt.BorderLayout;
+import java.util.List;
 import java.util.Map;
 
-import javax.swing.JPanel;
-import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.ui.InputChangedListener;
 import com.vividsolutions.jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel;
-import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
+import com.vividsolutions.jump.workbench.ui.wizard.AbstractWizardPanel;
 
-public class AddDataStoreLayerWizardPanel extends JPanel implements WizardPanel {
+public class AddDataStoreLayerWizardPanel extends AbstractWizardPanel {
   private static final String KEY = AddDataStoreLayerWizardPanel.class.getName();
 
   private static final String TITLE = I18N.get(KEY);
@@ -23,19 +21,14 @@ public class AddDataStoreLayerWizardPanel extends JPanel implements WizardPanel 
   private AddDatastoreLayerPanel dataStorePanel;
 
   public AddDataStoreLayerWizardPanel(WorkbenchContext context) {
-    super(new BorderLayout());
+    super();
+    setLayout(new BorderLayout());
     dataStorePanel = new AddDatastoreLayerPanel(context);
     add(new JScrollPane(dataStorePanel), BorderLayout.CENTER);
   }
 
-  public void add(InputChangedListener listener) {
-  }
-
   public void enteredFromLeft(Map dataMap) {
     dataStorePanel.populateConnectionComboBox();
-  }
-
-  public void exitingToRight() throws Exception {
   }
 
   public String getID() {
@@ -46,20 +39,8 @@ public class AddDataStoreLayerWizardPanel extends JPanel implements WizardPanel 
     return INSTRUCTIONS;
   }
 
-  public String getNextID() {
-    return null;
-  }
-
   public String getTitle() {
     return TITLE;
-  }
-
-  public boolean isInputValid() {
-    return true;
-    //return validateInput() == nulldataStorePanel.isValid();
-  }
-
-  public void remove(InputChangedListener listener) {
   }
 
   /**
@@ -67,6 +48,19 @@ public class AddDataStoreLayerWizardPanel extends JPanel implements WizardPanel 
    */
   public AddDatastoreLayerPanel getDataStorePanel() {
     return dataStorePanel;
+  }
+
+  /**
+   * expose the input listeners fire for the wrapped panel to use
+   */
+  public void selectionChanged(){
+    fireInputChanged();
+  }
+
+  @Override
+  public boolean isInputValid() {
+    List l = dataStorePanel.getDatasetLayers();
+    return l != null && l.size() > 0;
   }
 
 }
