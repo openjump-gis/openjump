@@ -1,6 +1,11 @@
 # for display continuity sake please use 2 spaces instead of tabs, also make  #
 # sure that lines break at 80 chars for constricted dispaly situations        #
 
+2015-12-21 bertazza
+  * Raster Styler: updated Italian and Spanish language files (thanks to Peppe)
+  * Raster Styler: added check to ensure a valid number of classes has been
+    selected.  
+
 2015-12-20 ede
   * add support for spatial datastore layers to EditDataStoreQueryPlugIn
     allows finetuning the SQL query created with Open->Data Store Layer

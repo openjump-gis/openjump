@@ -118,7 +118,7 @@ public class IntervalPanel extends javax.swing.JPanel {
         gridBagConstraints.gridy = 2;
         add(jLabel_Classes, gridBagConstraints);
 
-        jTextField_Classes.setText("null");
+        jTextField_Classes.setText("5");
         jTextField_Classes.setMinimumSize(new java.awt.Dimension(70, 20));
         jTextField_Classes.setPreferredSize(new java.awt.Dimension(70, 20));
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -279,7 +279,18 @@ public class IntervalPanel extends javax.swing.JPanel {
     
     private void rampAll() throws Exception {
         
-        int classesCount = Integer.parseInt(jTextField_Classes.getText());
+        int classesCount = 5;
+        try {
+            classesCount = Integer.parseInt(jTextField_Classes.getText());
+        } catch(Exception ex) {
+                JOptionPane.showMessageDialog(
+                this,
+                java.util.ResourceBundle.getBundle("org/openjump/core/rasterimage/styler/resources/Bundle")
+                        .getString("org.openjump.core.rasterimage.styler.ui.IntervalPanel.numberOfClassesError"),
+                RasterStylesExtension.extensionName,
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
         double classWidth = 0;
         
         double[] breaks = null;
