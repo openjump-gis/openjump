@@ -209,15 +209,23 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
     if (getConnectionDescriptor() == null) {
       return;
     }
+    
+    // reset the list first, in case the request doesn't return any (eg. in case of error)
+    LinkedHashMap<String, ArrayList<DataStoreLayer>> root = new LinkedHashMap<String, ArrayList<DataStoreLayer>>();
+    datasetTreeModel = new DataStoreLayerTreeModel(root);
+    
+    Throwable t = null;
     try {
       //loads list of layers from the given connection and builds the datasetTreeModel object for these layers
       loadDatasetList(getConnectionDescriptor());
     } catch (ThreadDeath td) {
-      //TODO:
-      throw td;
+      t = td;
     } catch (Exception e) {
-      getContext().getErrorHandler().handleThrowable(e);
+      t = e;
     } finally {
+      if (t != null){
+        getContext().getErrorHandler().handleThrowable(t);
+      }
       //datasetTreeModel = new DataStoreLayerTreeModel(root);
       datasetOutlineModel = DefaultOutlineModel.createOutlineModel(
           datasetTreeModel, new DataStoreLayerRowModel(), true,
