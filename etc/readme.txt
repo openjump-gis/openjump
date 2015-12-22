@@ -35,9 +35,10 @@ as (Component name - License name - License file in "licenses/" folder or link)
    OJ icon v3 and others by Edgar Soldin http://soldin.de - GPL2 - gpl-2.txt
    [ok|ko]_pg.png PostgreSQL icon - Trademark Policy
      - https://wiki.postgresql.org/wiki/Trademark_Policy
-   [ok|ko]_mariadb.png MariaDB icon - Branding Guidelines
+   [ok|ko]_mariadb.png MariaDB icon - MariaDB Branding Guidelines
      - https://mariadb.com/kb/en/mariadb/branding-guidelines/
-   ok_spatialite.png Spatialite icon (Edgar Soldin) - GPL3 - gpl-3.txt
+   ok_spatialite.png Spatialite icon, dolphin_icon.png (Edgar Soldin)
+     - GPL3 - gpl-3.txt
  ImageIO Ext - LGPL3 - lgpl-3.0.txt
    except the following dependencies/components:
    commons-codec, commons-io, commons-lang, commons-logging (see above)
