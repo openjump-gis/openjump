@@ -176,7 +176,7 @@ Further information can be found in the OJ wiki:
 
 
 Startup/Command line options
------------------
+----------------------------
 Several startup options are available, either for the Java Virtual Machine, 
 or for the OpenJUMP application. To change them, edit the startup script 
 accordingly. The scripts contain documentation comments, don't be afraid.
