@@ -171,8 +171,7 @@ Additionally, if you used the installer you should have
 - On MacOSX, a self contained app on the desktop. 
   Move it to 'Applications' folder if you like.
 
-Further information can be found in the OJ wiki:
-  http://sourceforge.net/apps/mediawiki/jump-pilot/
+Further information can be found in the OJ wiki: http://ojwiki.soldin.de
 
 
 Startup/Command line options
@@ -256,10 +255,9 @@ for a general overview visit
   jump-pilot.sourceforge.net - alternative domain to the above
 for support
   consult the OJ wiki
-    http://sourceforge.net/apps/mediawiki/jump-pilot
+    http://ojwiki.soldin.de
   use mailing list or trackers
-    http://sourceforge.net/apps/mediawiki/
-            jump-pilot/index.php?title=OpenJUMP_Support
+    http://ojwiki.soldin.de/index.php?title=OpenJUMP_Support
 
 For commercial support, e.g. paid plugin development, contact the developer 
 mailing list http://lists.sourceforge.net/lists/listinfo/jump-pilot-devel .
