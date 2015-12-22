@@ -25,9 +25,12 @@
 	<extension>
 		com.vividsolutions.jump.datastore.oracle.OracleDataStoreExtension
 	</extension>
-        <!--adds other Spatial databases extensions-->
+	<!--adds other Spatial databases extensions-->
 	<extension>
 		com.vividsolutions.jump.datastore.mariadb.MariadbDataStoreExtension
+	</extension>
+	<extension>
+		com.vividsolutions.jump.datastore.mariadb.MysqlDataStoreExtension
 	</extension>
 	<extension>
 		com.vividsolutions.jump.datastore.spatialite.SpatialiteDataStoreExtension
