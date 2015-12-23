@@ -62,6 +62,7 @@ import org.xml.sax.SAXException;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.wms.util.XMLTools;
+import java.util.List;
 
 
 /**
@@ -108,6 +109,7 @@ public class Parser {
     LinkedList<String> srsList = new LinkedList<String>();
     LinkedList<MapLayer> subLayers = new LinkedList<MapLayer>();
     BoundingBox bbox = null;
+    List<MapStyle> styles = new ArrayList<MapStyle>();
     
 // I think, bbox is LatLonBoundingBox.
 // I need a new variable for BoundingBox.
@@ -115,6 +117,7 @@ public class Parser {
 // stands that Layers may have zero or more <BoundingBox> [uwe dalluege]
 //    BoundingBox boundingBox = null;
     ArrayList<BoundingBox> boundingBoxList = new ArrayList<BoundingBox> ( );
+    
     
     NodeList nl = layerNode.getChildNodes();
 
@@ -154,7 +157,45 @@ public class Parser {
 
           } else if( n.getNodeName().equals( "Layer" ) ) {
             subLayers.add( wmsLayerFromNode( n ) );
-          }
+          } else if (n.getNodeName().equals("Style")) { //$NON-NLS-1$
+            String styleName = ""; //$NON-NLS-1$
+            String titleName = ""; //$NON-NLS-1$
+            String legendFormat = ""; //$NON-NLS-1$
+            String url = ""; //$NON-NLS-1$
+            int h=0,w=0;
+            NodeList nodeStyle = n.getChildNodes();
+            for( int k = 0; k < nodeStyle.getLength(); k++ ) {
+                Node n1 = nodeStyle.item(k);
+                if (n1.getNodeName().equals("Name")) { //$NON-NLS-1$
+                    styleName = ((CharacterData) n1.getFirstChild()).getData();
+                } else if (n1.getNodeName().equals("Title") & n1.hasChildNodes()) { //$NON-NLS-1$
+                    titleName = ((CharacterData) n1.getFirstChild()).getData();
+                } else if (n1.getNodeName().equals("LegendURL")) { //$NON-NLS-1$
+                    try {
+                        h=Integer.parseInt(n1.getAttributes().getNamedItem("height").getNodeValue());
+                        w=Integer.parseInt(n1.getAttributes().getNamedItem("width").getNodeValue());
+                    }
+                    catch (Exception e) {
+                        e.printStackTrace();
+                        throw new Exception(e.toString());
+                    }
+                    NodeList nodelegend = n1.getChildNodes();
+                    for( int k1 = 0; k1 < nodelegend.getLength(); k1++ ) {
+                        Node n2 = nodelegend.item(k1);
+                        if (n2.getNodeName().equals("Format")) { //$NON-NLS-1$
+                            legendFormat =
+                                ((CharacterData) n2.getFirstChild()).getData();
+                        } else if (n2.getNodeName().equals("OnlineResource")) { //$NON-NLS-1$
+                            url =
+                                n2.getAttributes()
+                                    .getNamedItem("xlink:href").getNodeValue(); //$NON-NLS-1$
+                        }
+                    }
+
+                }
+            }
+            styles.add(new MapStyle(styleName, titleName, url, legendFormat,w,h));
+        }
         }
       } catch( Exception e ) {
           e.printStackTrace();
@@ -164,7 +205,7 @@ public class Parser {
     
 // call the new constructor with boundingBoxList in MapLayer [uwe dalluege]
     return new MapLayer
-    	( name, title, srsList, subLayers, bbox, boundingBoxList );
+    	( name, title, srsList, subLayers, bbox, boundingBoxList, styles );
   }
  
   /**
@@ -269,9 +310,9 @@ public class Parser {
       }
       
       // get the top layer
-      topLayer = wmsLayerFromNode( XMLTools.simpleXPath( doc, "WMT_MS_Capabilities/Capability/Layer" ) );
+      topLayer = wmsLayerFromNode( XMLTools.simpleXPath( doc, "WMT_MS_Capabilities/Capability/Layer" ) );    
       
-      return new Capabilities( service, title, topLayer, formatList );
+      return new Capabilities( service, title, topLayer, formatList, getInfoFormats(doc, "WMT_MS_Capabilities") );
     }
   
   //UT TODO move this into a common method (
@@ -357,7 +398,29 @@ public class Parser {
       // get the top layer
       topLayer = wmsLayerFromNode( XMLTools.simpleXPath( doc, "WMT_MS_Capabilities/Capability/Layer" ) );
       
-      return new Capabilities( service, title, topLayer, formatList, getMapURL, getFeatureInfoURL );
+      return new Capabilities( service, title, topLayer, formatList, getInfoFormats(doc, "WMT_MS_Capabilities"), getMapURL, getFeatureInfoURL );
+    }
+  
+    protected LinkedList<String> getInfoFormats(Document doc, String rootPath) {
+        
+        // get the supported infoFormats
+        final Node formatNode = XMLTools.simpleXPath(doc, rootPath + "/Capability/Request/GetMap");
+        NodeList nl = formatNode.getChildNodes();
+        
+        final Node infoFormatNode = XMLTools.simpleXPath(doc, "WMT_MS_Capabilities/Capability/Request/GetFeatureInfo");
+        LinkedList<String> infoFormatList = new LinkedList<String>();
+        if (infoFormatNode != null) {
+            nl = infoFormatNode.getChildNodes();
+            for (int i = 0; i < nl.getLength(); i++) {
+                Node n = nl.item(i);
+                if (n.getNodeType() == Node.ELEMENT_NODE && "Format".equals(n.getNodeName())) {
+                    infoFormatList.add(n.getFirstChild().getNodeValue());
+                }
+            }
+        }
+        
+        return infoFormatList;
+        
     }
   
 }

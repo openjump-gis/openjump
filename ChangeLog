@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2015-12-24 bertazza
+  * Fixed broken 4663 commit
+
 2015-12-23 bertazza
   * Info feature tool: added a pane to show WMS info.
 
