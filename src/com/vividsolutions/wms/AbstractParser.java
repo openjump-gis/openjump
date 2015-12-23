@@ -39,7 +39,6 @@ package com.vividsolutions.wms;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -48,7 +47,6 @@ import org.apache.log4j.Logger;
 import org.apache.xerces.parsers.DOMParser;
 import org.w3c.dom.CharacterData;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -155,9 +153,31 @@ public abstract class AbstractParser implements IParser {
                 }
             }
         }
+        
         return formatList;
     }
     
+    protected LinkedList<String> getInfoFormats(Document doc) {
+        
+        // get the supported infoFormats
+        final Node formatNode = XMLTools.simpleXPath(doc, getRootPath() + "/Capability/Request/GetMap");
+        NodeList nl = formatNode.getChildNodes();
+        
+        final Node infoFormatNode = XMLTools.simpleXPath(doc, "WMT_MS_Capabilities/Capability/Request/GetFeatureInfo");
+        LinkedList<String> infoFormatList = new LinkedList<String>();
+        if (infoFormatNode != null) {
+            nl = infoFormatNode.getChildNodes();
+            for (int i = 0; i < nl.getLength(); i++) {
+                Node n = nl.item(i);
+                if (n.getNodeType() == Node.ELEMENT_NODE && "Format".equals(n.getNodeName())) {
+                    infoFormatList.add(n.getFirstChild().getNodeValue());
+                }
+            }
+        }
+        
+        return infoFormatList;
+        
+    }
     
    /**
     * Traverses the DOM tree underneath the specified Node and generates
@@ -174,6 +194,7 @@ public abstract class AbstractParser implements IParser {
         LinkedList<MapLayer> subLayers = new LinkedList<MapLayer>();
         BoundingBox geographicBBox = null;
         ArrayList<BoundingBox> boundingBoxList = new ArrayList<BoundingBox> ( );
+        List<MapStyle> styles = new ArrayList<MapStyle>();
     
         NodeList nl = layerNode.getChildNodes();
 
@@ -199,6 +220,44 @@ public abstract class AbstractParser implements IParser {
                         boundingBoxList.add ( new BoundingBox("Geographics", geographicBBox.getEnvelope()) );
                     } else if( n.getNodeName().equals( "Layer" ) ) {
                         subLayers.add( wmsLayerFromNode( n ) );
+                    } else if (n.getNodeName().equals("Style")) { //$NON-NLS-1$
+                        String styleName = ""; //$NON-NLS-1$
+                        String titleName = ""; //$NON-NLS-1$
+                        String legendFormat = ""; //$NON-NLS-1$
+                        String url = ""; //$NON-NLS-1$
+                        int h=0,w=0;
+                        NodeList nodeStyle = n.getChildNodes();
+                        for( int k = 0; k < nodeStyle.getLength(); k++ ) {
+                            Node n1 = nodeStyle.item(k);
+                            if (n1.getNodeName().equals("Name")) { //$NON-NLS-1$
+                                styleName = ((CharacterData) n1.getFirstChild()).getData();
+                            } else if (n1.getNodeName().equals("Title") & n1.hasChildNodes()) { //$NON-NLS-1$
+                                titleName = ((CharacterData) n1.getFirstChild()).getData();
+                            } else if (n1.getNodeName().equals("LegendURL")) { //$NON-NLS-1$
+                                try {
+                                    h=Integer.parseInt(n1.getAttributes().getNamedItem("height").getNodeValue());
+                                    w=Integer.parseInt(n1.getAttributes().getNamedItem("width").getNodeValue());
+                                }
+                                catch (Exception e) {
+                                    e.printStackTrace();
+                                    throw new Exception(e.toString());
+                                }
+                                NodeList nodelegend = n1.getChildNodes();
+                                for( int k1 = 0; k1 < nodelegend.getLength(); k1++ ) {
+                                    Node n2 = nodelegend.item(k1);
+                                    if (n2.getNodeName().equals("Format")) { //$NON-NLS-1$
+                                        legendFormat =
+                                            ((CharacterData) n2.getFirstChild()).getData();
+                                    } else if (n2.getNodeName().equals("OnlineResource")) { //$NON-NLS-1$
+                                        url =
+                                            n2.getAttributes()
+                                                .getNamedItem("xlink:href").getNodeValue(); //$NON-NLS-1$
+                                    }
+                                }
+
+                            }
+                        }
+                        styles.add(new MapStyle(styleName, titleName, url, legendFormat,w,h));
                     }
                 }
             } catch( Exception e ) {
@@ -208,7 +267,7 @@ public abstract class AbstractParser implements IParser {
         }
 
         // call the new constructor with boundingBoxList in MapLayer [uwe dalluege]
-        return new MapLayer(name, title, srsList, subLayers, geographicBBox, boundingBoxList);
+        return new MapLayer(name, title, srsList, subLayers, geographicBBox, boundingBoxList, styles);
     }
     
     protected void addSRSNode(Node n, List<String> srsList) throws Exception {

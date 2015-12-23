@@ -51,8 +51,9 @@ public class Capabilities {
   private String title;
   private ArrayList mapFormats;
   private WMService service;
-  private String getMapURL, getFeatureInfoURL;
-
+  private String getMapURL, featureInfoURL;
+  private ArrayList infoFormats;
+  
   /** 
    * Creates a new WMS Capabilities object. Should generally only be used by the Parser.
    * @param service the WMService to which these Capabilites belong
@@ -60,19 +61,22 @@ public class Capabilities {
    * @param topLayer the top MapLayer of the entire layer tree
    * @param mapFormats the Collection of supported formats 
    */  
-  public Capabilities(WMService service, String title, MapLayer topLayer, Collection mapFormats) {
+  public Capabilities(WMService service, String title, MapLayer topLayer,
+          Collection mapFormats, Collection infoFormats) {
     this.service = service;
     this.title = title;
     this.topLayer = topLayer;
     this.mapFormats = new ArrayList( mapFormats );
+    this.infoFormats = new ArrayList(infoFormats);
     this.getMapURL = service.getServerUrl();
-    this.getFeatureInfoURL = service.getServerUrl();
+    this.featureInfoURL = service.getServerUrl();
   }
   
-  public Capabilities(WMService service, String title, MapLayer topLayer, Collection mapFormats, String getMapURL, String getFeatureInfoURL) {
-      this(service, title, topLayer, mapFormats);
+  public Capabilities(WMService service, String title, MapLayer topLayer,
+          Collection mapFormats, Collection infoFormats, String getMapURL, String featureInfoURL) {
+      this(service, title, topLayer, mapFormats, infoFormats);
       this.getMapURL = getMapURL;
-      this.getFeatureInfoURL = getFeatureInfoURL;
+      this.featureInfoURL = featureInfoURL;
     }
 
   /**
@@ -121,8 +125,8 @@ public class Capabilities {
       return getMapURL;
   }
   
-  public String getGetFeatureInfoURL() {
-      return getFeatureInfoURL;
+  public String getFeatureInfoURL() {
+      return featureInfoURL;
   }
   
   public void setGetMapURL(String url) {
@@ -142,5 +146,16 @@ public class Capabilities {
     }
     return formats;
   }
+  
+    public String getInfoFormat() {
+        String format = "text/plain";
+        if (!infoFormats.contains(format)) {
+            Iterator it = infoFormats.iterator();
+            if (it.hasNext()) {
+                format = (String) it.next();
+            }
+        }
+        return format;
+    }
 
 }

@@ -3,6 +3,8 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2015-12-23 bertazza
+  * Info feature tool: added a pane to show WMS info.
 
 <----------------------------------------------- Changes.txt updated 'til here
 2015-12-21 bertazza

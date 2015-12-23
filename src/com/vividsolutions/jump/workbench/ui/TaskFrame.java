@@ -53,6 +53,7 @@ import com.vividsolutions.jump.workbench.ui.renderer.ImageCachingRenderer;
 import com.vividsolutions.jump.workbench.ui.renderer.Renderer;
 
 import com.vividsolutions.jump.workbench.ui.zoom.ZoomBar;
+import java.io.IOException;
 
 public class TaskFrame extends JInternalFrame implements TaskFrameProxy,
         CloneableInternalFrame, LayerViewPanelProxy, LayerNamePanelProxy,
@@ -223,7 +224,7 @@ public class TaskFrame extends JInternalFrame implements TaskFrameProxy,
         return task.getLayerManager();
     }
 
-    public InfoFrame getInfoFrame() {
+    public InfoFrame getInfoFrame() throws IOException {
         if (infoFrame == null || infoFrame.isClosed()) {
             infoFrame = new PrimaryInfoFrame(workbenchContext, this, this);
         }

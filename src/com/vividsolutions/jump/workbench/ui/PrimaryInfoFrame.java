@@ -34,6 +34,7 @@ package com.vividsolutions.jump.workbench.ui;
 
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
+import java.io.IOException;
 
 
 /**
@@ -44,7 +45,7 @@ import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
  * positions InfoFrames differently depending on whether or not they are primary.
  */
 public class PrimaryInfoFrame extends InfoFrame {
-    public PrimaryInfoFrame(WorkbenchContext workbenchContext, LayerManagerProxy layerManagerProxy, TaskFrame taskFrame) {
+    public PrimaryInfoFrame(WorkbenchContext workbenchContext, LayerManagerProxy layerManagerProxy, TaskFrame taskFrame) throws IOException {
         super(workbenchContext, layerManagerProxy, taskFrame);   
     }
 }

@@ -215,16 +215,16 @@ public class WMService {
    * @return a MapRequest object which can be used to retrieve a map image
    *         from this service
    */
-  	public MapRequest createMapRequest() {
-  	    // [UT] 04.02.2005 changed
-  	    MapRequest mr = new MapRequest( this );
-  	    mr.setVersion( this.wmsVersion );
-        return mr;
-	}
-      
-  	public String getVersion(){
-  	    return wmsVersion;
-	}
+    public MapRequest createMapRequest() {
+        // [UT] 04.02.2005 changed
+        MapRequest mr = new MapRequest( this );
+        mr.setVersion( this.wmsVersion );
+    return mr;
+    }
+
+    public String getVersion(){
+        return wmsVersion;
+    }
   	
     //
     // The WMService appends other parameters to the end of the URL
@@ -232,7 +232,7 @@ public class WMService {
     public static String legalize(String url) {
       String fixedURL = url.trim();
 
-      if (fixedURL.indexOf("?") == -1) {
+      if (!fixedURL.contains("?")) {
         fixedURL = fixedURL + "?";
       } else {
         if (fixedURL.endsWith("?")) {

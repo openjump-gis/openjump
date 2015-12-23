@@ -84,8 +84,8 @@ public class ParserWMS1_1 extends AbstractParser {
         MapLayer topLayer = wmsLayerFromNode(XMLTools.simpleXPath(doc, "WMT_MS_Capabilities/Capability/Layer"));
         LinkedList<String> formatList = getFormatList(doc);
         String getMapURL = getMapURL(doc);
-        String getFeatureInfoURL = getFeatureInfoURL(doc);
-        return new Capabilities(service, title, topLayer, formatList, getMapURL, getFeatureInfoURL );
+        String featureInfoURL = getFeatureInfoURL(doc);
+        return new Capabilities(service, title, topLayer, formatList, getInfoFormats(doc), getMapURL, featureInfoURL );
     }
     
     

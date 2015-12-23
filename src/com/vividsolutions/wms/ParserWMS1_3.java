@@ -85,7 +85,7 @@ public class ParserWMS1_3 extends AbstractParser {
         LinkedList<String> formatList = getFormatList(doc);
         String getMapURL = getMapURL(doc);
         String getFeatureInfoURL = getFeatureInfoURL(doc);
-        return new Capabilities(service, title, topLayer, formatList, getMapURL, getFeatureInfoURL );
+        return new Capabilities(service, title, topLayer, formatList, getInfoFormats(doc), getMapURL, getFeatureInfoURL );
     }
     
     

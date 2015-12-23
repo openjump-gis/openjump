@@ -61,6 +61,8 @@ import com.vividsolutions.jump.workbench.model.Task;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.ViewAttributesPlugIn;
+import java.io.IOException;
+import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
@@ -99,16 +101,18 @@ public class InfoFrame extends DetachableInternalFrame implements
     private GeometryInfoTab geometryInfoTab;
     private JTabbedPane tabbedPane = new JTabbedPane();
     private RasterInfoTab rasterInfoTab;
+    private WMSInfoTab wmsInfoTab;
     private WorkbenchFrame workbenchFrame;
     private static ImageIcon ICON = IconLoader.icon("information_16x16.png");
     
     public InfoFrame(
         WorkbenchContext workbenchContext,
         LayerManagerProxy layerManagerProxy,
-        final TaskFrame taskFrame) {
+        final TaskFrame taskFrame) throws IOException {
 		blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
         geometryInfoTab = new GeometryInfoTab(model, workbenchContext);
         rasterInfoTab = new RasterInfoTab(null, null);
+        wmsInfoTab = new WMSInfoTab();
         //Keep my own copy of LayerManager, because it will be nulled in TaskFrame
         //when TaskFrame closes (it may in fact already be closed, which is why
         //a LayerManagerProxy must be passed in too). But I have to 
@@ -150,6 +154,7 @@ public class InfoFrame extends DetachableInternalFrame implements
         tabbedPane.addTab("", IconLoader.icon("Table.gif"), attributeTab, TABLE_VIEW);
         tabbedPane.addTab("", IconLoader.icon("Paper.gif"), geometryInfoTab, HTML_VIEW);
         tabbedPane.addTab("R", null, rasterInfoTab, "Raster");
+        tabbedPane.addTab("WMS", null, wmsInfoTab, "WMS");
         updateTitle(taskFrame.getTask().getName());
         taskFrame.getTask().add(new Task.NameListener() {
             public void taskNameChanged(String name) {
@@ -274,6 +279,10 @@ public class InfoFrame extends DetachableInternalFrame implements
         rasterInfoTab.setRasterValues(layerNames, cellValues);
     }
 
+    public void setWmsInfo(String string) {
+        wmsInfoTab.setWmsInfoText(string);
+    }
+        
     @Override
     public JFrame getFrame() {
       // our frame has to be all proxies InfoFrame is
@@ -357,6 +366,33 @@ public class InfoFrame extends DetachableInternalFrame implements
                 
             tableModel = new DefaultTableModel(data, columnNames);
             table.setModel(tableModel);
+            
+        }
+        
+    }
+   
+    protected class WMSInfoTab extends JPanel {
+        
+        private final JEditorPane jEditorPane;
+        
+        public WMSInfoTab() throws IOException {
+            
+            setLayout(new BorderLayout());
+            
+            jEditorPane = new JEditorPane();
+            jEditorPane.setEditable(false);
+            JScrollPane jScrollPane = new JScrollPane(
+                    jEditorPane,
+                    JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                    JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+
+            this.add(jScrollPane);          
+
+        }
+        
+        public void setWmsInfoText(String wmsInfo) {
+            
+            jEditorPane.setText(wmsInfo);
             
         }
         

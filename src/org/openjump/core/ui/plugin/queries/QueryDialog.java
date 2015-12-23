@@ -22,6 +22,8 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -901,9 +903,13 @@ public class QueryDialog extends BDialog {
                 // initialization for infoframe
                 InfoFrame info = null;
                 if(display.getState()) {
-                    info = new InfoFrame(context.getWorkbenchContext(),
-                        (LayerManagerProxy)context,
-                        (TaskFrame)context.getWorkbenchFrame().getActiveInternalFrame());
+                    try {
+                        info = new InfoFrame(context.getWorkbenchContext(),
+                                (LayerManagerProxy)context,
+                                (TaskFrame)context.getWorkbenchFrame().getActiveInternalFrame());
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
                 }
                 
                 // Loop on the requested layers

@@ -63,10 +63,13 @@ public class MapLayer {
     // user modifiable members
     private boolean enabled = false;
   
+    private List<MapStyle> styles;
+    
     /**
      * Creates a new instance of MapLayer 
      */
-    public MapLayer(String name, String title, Collection srsList, Collection subLayers, BoundingBox bbox) {
+    public MapLayer(String name, String title, Collection srsList,
+            Collection subLayers, BoundingBox bbox, List<MapStyle> styles) {
         this.parent = null;
         this.name = name;
         this.title = title;
@@ -77,15 +80,17 @@ public class MapLayer {
           (it.next()).parent = this;
         }
         this.bbox = bbox;
+        setStyles(styles);
     }
 
     /**
      * Creates a new instance of MapLayer with boundingBoxList [uwe dalluege]
      */
-    public MapLayer ( String name, String title, Collection srsList, Collection subLayers, 
-  		BoundingBox bbox, ArrayList<BoundingBox> boundingBoxList ) {
-        this ( name, title, srsList, subLayers, bbox );
-  	    this.boundingBoxList = boundingBoxList;
+    public MapLayer
+  	( String name, String title, Collection srsList, Collection subLayers, 
+  		BoundingBox bbox, ArrayList boundingBoxList,List<MapStyle> styles ) {
+  	this ( name, title, srsList, subLayers, bbox,styles );
+  	this.boundingBoxList = boundingBoxList;
     }
   
   
@@ -297,7 +302,61 @@ public class MapLayer {
         if (parent != null) fullSRSList.addAll(parent.getFullSRSList());
         return fullSRSList;
     }
+    
+      /**
+     * Sets the selected WMS layer style
+     * 
+     * @param selectedStyle
+     */
+    public void setSelectedStyle( MapStyle selectedStyle ) {
+        for( Iterator<MapStyle> iter = styles.iterator(); iter.hasNext(); ) {
+            MapStyle element = iter.next();
+            element.setSelected(false, false);
+        }
+        selectedStyle.setSelected(true, false);
+    }
+
+    /**
+     * Gets the WMS layer style by name
+     * 
+     * @param styleName
+     * @return
+     */
+    public MapStyle getStyle( String styleName ) {
+        for( Iterator<MapStyle> iter = styles.iterator(); iter.hasNext(); ) {
+            MapStyle element = iter.next();
+            if (element.getName().equals(styleName))
+                return element;
+        }
+        return null;
+    }
+    
+    public List<MapStyle> getStyles() {
+        return styles;
+    }
   
+    /** 
+     * @param sublayer
+     */
+    public void setSublayer(ArrayList sublayer) {
+        this.subLayers = sublayer;
+    }
+    
+    /**
+     * @param newStyles
+     */
+    public void setStyles( List<MapStyle> newStyles ) {
+        this.styles = newStyles;
+        for( Iterator<MapStyle> iter = styles.iterator(); iter.hasNext(); ) {
+            MapStyle element = iter.next();
+            element.setLayer(this);
+        }
+
+        if (!styles.isEmpty()) {
+            styles.get(0).setSelected(true, true);
+        }
+    }    
+    
     /**
      * Returns a somewhat nicely-formatted string representing all of the details of
      * this layer and its sub-layers (recursively).
