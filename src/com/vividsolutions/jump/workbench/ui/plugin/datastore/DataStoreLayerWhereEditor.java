@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.vividsolutions.jump.workbench.ui.plugin.datastore;
 
 import java.awt.Color;
@@ -17,14 +12,12 @@ import java.util.EventObject;
 import javax.swing.AbstractCellEditor;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.TableCellEditor;
-import org.netbeans.swing.outline.Outline;
 
 /**
  *
