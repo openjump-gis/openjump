@@ -70,8 +70,8 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
         getConnectionComboBox().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //getDatasetComboBox().setSelectedItem( null );
-                getDatasetOutline();
-            }
+                  getDatasetOutline();
+                }
         });
     }
 
@@ -134,8 +134,6 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
         public void valueChanged(ListSelectionEvent e) {
           // refreshes the list of selected DataStoreLayers if user is not manipulating 
           // the selection
-//                    System.out.println("event:" + e);
-
           ListSelectionModel lsm = (ListSelectionModel) e.getSource();
           if (!e.getValueIsAdjusting()) {
             if (!lsm.isSelectionEmpty()) {
@@ -149,7 +147,6 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
                   // stores only DataStoreLayer
                   if (o instanceof DataStoreLayer) {
                     selectedLayers.add((DataStoreLayer) o);
-                    //System.out.println("adding a layer in selection for idx: " + i + " ds: " + ((DataStoreLayer) o).toString());
                   }
                 }
               }
