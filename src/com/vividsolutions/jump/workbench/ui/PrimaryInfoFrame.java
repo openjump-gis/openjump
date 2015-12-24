@@ -45,7 +45,7 @@ import java.io.IOException;
  * positions InfoFrames differently depending on whether or not they are primary.
  */
 public class PrimaryInfoFrame extends InfoFrame {
-    public PrimaryInfoFrame(WorkbenchContext workbenchContext, LayerManagerProxy layerManagerProxy, TaskFrame taskFrame) throws IOException {
+    public PrimaryInfoFrame(WorkbenchContext workbenchContext, LayerManagerProxy layerManagerProxy, TaskFrame taskFrame) {
         super(workbenchContext, layerManagerProxy, taskFrame);   
     }
 }

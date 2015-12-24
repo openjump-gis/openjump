@@ -157,20 +157,20 @@ public class Parser {
 
           } else if( n.getNodeName().equals( "Layer" ) ) {
             subLayers.add( wmsLayerFromNode( n ) );
-          } else if (n.getNodeName().equals("Style")) { //$NON-NLS-1$
-            String styleName = ""; //$NON-NLS-1$
-            String titleName = ""; //$NON-NLS-1$
-            String legendFormat = ""; //$NON-NLS-1$
-            String url = ""; //$NON-NLS-1$
+          } else if (n.getNodeName().equals("Style")) { 
+            String styleName = ""; 
+            String titleName = ""; 
+            String legendFormat = ""; 
+            String url = ""; 
             int h=0,w=0;
             NodeList nodeStyle = n.getChildNodes();
             for( int k = 0; k < nodeStyle.getLength(); k++ ) {
                 Node n1 = nodeStyle.item(k);
-                if (n1.getNodeName().equals("Name")) { //$NON-NLS-1$
+                if (n1.getNodeName().equals("Name")) { 
                     styleName = ((CharacterData) n1.getFirstChild()).getData();
-                } else if (n1.getNodeName().equals("Title") & n1.hasChildNodes()) { //$NON-NLS-1$
+                } else if (n1.getNodeName().equals("Title") & n1.hasChildNodes()) { 
                     titleName = ((CharacterData) n1.getFirstChild()).getData();
-                } else if (n1.getNodeName().equals("LegendURL")) { //$NON-NLS-1$
+                } else if (n1.getNodeName().equals("LegendURL")) { 
                     try {
                         h=Integer.parseInt(n1.getAttributes().getNamedItem("height").getNodeValue());
                         w=Integer.parseInt(n1.getAttributes().getNamedItem("width").getNodeValue());
@@ -182,13 +182,13 @@ public class Parser {
                     NodeList nodelegend = n1.getChildNodes();
                     for( int k1 = 0; k1 < nodelegend.getLength(); k1++ ) {
                         Node n2 = nodelegend.item(k1);
-                        if (n2.getNodeName().equals("Format")) { //$NON-NLS-1$
+                        if (n2.getNodeName().equals("Format")) { 
                             legendFormat =
                                 ((CharacterData) n2.getFirstChild()).getData();
-                        } else if (n2.getNodeName().equals("OnlineResource")) { //$NON-NLS-1$
+                        } else if (n2.getNodeName().equals("OnlineResource")) { 
                             url =
                                 n2.getAttributes()
-                                    .getNamedItem("xlink:href").getNodeValue(); //$NON-NLS-1$
+                                    .getNamedItem("xlink:href").getNodeValue(); 
                         }
                     }
 

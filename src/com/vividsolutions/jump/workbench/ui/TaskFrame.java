@@ -224,7 +224,7 @@ public class TaskFrame extends JInternalFrame implements TaskFrameProxy,
         return task.getLayerManager();
     }
 
-    public InfoFrame getInfoFrame() throws IOException {
+    public InfoFrame getInfoFrame() {
         if (infoFrame == null || infoFrame.isClosed()) {
             infoFrame = new PrimaryInfoFrame(workbenchContext, this, this);
         }

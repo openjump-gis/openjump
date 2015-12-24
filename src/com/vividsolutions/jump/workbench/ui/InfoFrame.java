@@ -108,7 +108,7 @@ public class InfoFrame extends DetachableInternalFrame implements
     public InfoFrame(
         WorkbenchContext workbenchContext,
         LayerManagerProxy layerManagerProxy,
-        final TaskFrame taskFrame) throws IOException {
+        final TaskFrame taskFrame) {
 		blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
         geometryInfoTab = new GeometryInfoTab(model, workbenchContext);
         rasterInfoTab = new RasterInfoTab(null, null);
@@ -375,7 +375,7 @@ public class InfoFrame extends DetachableInternalFrame implements
         
         private final JEditorPane jEditorPane;
         
-        public WMSInfoTab() throws IOException {
+        public WMSInfoTab() {
             
             setLayout(new BorderLayout());
             
