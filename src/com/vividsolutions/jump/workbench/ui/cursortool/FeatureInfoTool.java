@@ -124,8 +124,12 @@ public class FeatureInfoTool extends SpecifyFeaturesTool {
                 continue;
             }
             
-            //String featInfoUrl = wmsLayer.getService().getCapabilities().getFeatureInfoURL();
-            String featInfoUrl = wmsLayer.createRequest(getWorkbench().getContext().getLayerViewPanel()).getURL().toString();
+            String featInfoUrl = wmsLayer.getService().getCapabilities().getFeatureInfoURL();
+            String userInfo = wmsLayer.createRequest(getWorkbench().getContext().getLayerViewPanel()).getURL().getUserInfo();
+            
+            if(userInfo != null) {
+                featInfoUrl = featInfoUrl.concat(userInfo);
+            }
             
             String names = getWmsLayeNames(wmsLayer);
             

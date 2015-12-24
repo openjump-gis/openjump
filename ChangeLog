@@ -4,6 +4,10 @@
 #<-------------------------------- 80 chars ---------------------------------->#
 
 2015-12-24 bertazza
+  * Fixed broken 4666 commit
+  * Info feature tool: fixed issue related to dirty url
+  
+2015-12-24 bertazza
   * Removed IOExpcetion throw from TaskFrame
 
 2015-12-24 bertazza

@@ -903,13 +903,9 @@ public class QueryDialog extends BDialog {
                 // initialization for infoframe
                 InfoFrame info = null;
                 if(display.getState()) {
-                    try {
-                        info = new InfoFrame(context.getWorkbenchContext(),
-                                (LayerManagerProxy)context,
-                                (TaskFrame)context.getWorkbenchFrame().getActiveInternalFrame());
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
+                    info = new InfoFrame(context.getWorkbenchContext(),
+                            (LayerManagerProxy)context,
+                            (TaskFrame)context.getWorkbenchFrame().getActiveInternalFrame());
                 }
                 
                 // Loop on the requested layers
