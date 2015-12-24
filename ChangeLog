@@ -4,6 +4,11 @@
 #<-------------------------------- 80 chars ---------------------------------->#
 
 2015-12-24 bertazza
+  * Info feature tool for WMS: info shown only for visible layers, added
+    &FEATURE_COUNT=10 parameter, and changed method to retrieve url as
+    suggested by Jukka (should now support basic authentication).
+
+2015-12-24 bertazza
   * Fixed broken 4663 commit
 
 2015-12-23 bertazza

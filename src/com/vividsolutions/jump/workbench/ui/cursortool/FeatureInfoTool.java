@@ -113,11 +113,20 @@ public class FeatureInfoTool extends SpecifyFeaturesTool {
         
         // WMS
         List<Layerable> wmsLay_l = getWorkbench().getContext().getLayerManager().getLayerables(WMSLayer.class);
+        //Iterator iter = getWorkbench().getContext().getLayerNamePanel().selectedNodes(WMSLayer.class).iterator();
+        
         String response = "";
-        for(Layerable lay : wmsLay_l) {
-            WMSLayer wmsLayer = (WMSLayer) lay;
+        for(Layerable lay : wmsLay_l) {           
             
-            String featInfoUrl = wmsLayer.getService().getCapabilities().getFeatureInfoURL();     
+            // We only want visible layers
+            WMSLayer wmsLayer = (WMSLayer) lay;
+            if(!wmsLayer.isVisible()) {
+                continue;
+            }
+            
+            //String featInfoUrl = wmsLayer.getService().getCapabilities().getFeatureInfoURL();
+            String featInfoUrl = wmsLayer.createRequest(getWorkbench().getContext().getLayerViewPanel()).getURL().toString();
+            
             String names = getWmsLayeNames(wmsLayer);
             
             Point2D point = getPanel().getViewport().toViewPoint(coord);
@@ -128,6 +137,7 @@ public class FeatureInfoTool extends SpecifyFeaturesTool {
             } else {
                 featInfoUrl += "?";
             }
+            
             String version = wmsLayer.getWmsVersion();
             if (WMService.WMS_1_0_0.equals(version)) {
                 featInfoUrl += "REQUEST=feature_info&WMTVER=1.0.0";
@@ -161,6 +171,8 @@ public class FeatureInfoTool extends SpecifyFeaturesTool {
                     featInfoUrl += "&INFO_FORMAT=text/plain";
                 }
             }
+            
+            featInfoUrl = featInfoUrl.concat("&FEATURE_COUNT=10 ");
             
             URL url = stripXhtmlTags(featInfoUrl);
             
