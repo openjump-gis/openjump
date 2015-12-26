@@ -305,14 +305,16 @@ public class ConnectionManagerPanel extends JPanel {
 
     private ConnectionDescriptor addConnection() {
       // MD - this behavior no longer needed?
-        if (registry.getEntries(DataStoreDriver.REGISTRY_CLASSIFICATION)
-                .isEmpty()) {
-            JOptionPane.showMessageDialog(SwingUtilities
-                    .windowForComponent(this),
-					I18N.get("jump.workbench.ui.plugin.datastore.ConnectionManagerPanel.No-datastore-drivers-are-loaded"));
-            return null;
-        }
-        return addOrCopyConnection(I18N.get("jump.workbench.ui.plugin.datastore.ConnectionManagerPanel.Add-Connection"), null);
+      if (registry.getEntries(DataStoreDriver.REGISTRY_CLASSIFICATION).isEmpty()) {
+        JOptionPane
+            .showMessageDialog(
+                SwingUtilities.windowForComponent(this),
+                I18N.get("jump.workbench.ui.plugin.datastore.ConnectionManagerPanel.No-datastore-drivers-are-loaded"));
+        return null;
+      }
+      return addOrCopyConnection(
+          I18N.get("jump.workbench.ui.plugin.datastore.ConnectionManagerPanel.Add-Connection"),
+          null);
     }
 
     private ConnectionDescriptor addOrCopyConnection(String title, ConnectionDescriptor connDesc) {
