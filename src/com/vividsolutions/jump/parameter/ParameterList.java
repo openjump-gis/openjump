@@ -57,6 +57,10 @@ public class ParameterList {
         return true;
     }
 
+    public boolean containsParameter(String name){
+      return params.containsKey(name);
+    }
+
     public Object getParameter(String name) {
         return params.get(name);
     }
