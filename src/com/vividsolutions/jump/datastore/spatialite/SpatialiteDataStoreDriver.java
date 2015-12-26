@@ -3,13 +3,10 @@ package com.vividsolutions.jump.datastore.spatialite;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.DriverManager;
 import java.util.Properties;
 
 import com.vividsolutions.jump.datastore.DataStoreConnection;
-import com.vividsolutions.jump.datastore.jdbc.DelegatingDriver;
-import com.vividsolutions.jump.datastore.spatialdatabases.AbstractSpatialDatabasesDataStoreDriver;
+import com.vividsolutions.jump.datastore.spatialdatabases.AbstractSpatialDatabasesDSDriver;
 import com.vividsolutions.jump.parameter.ParameterList;
 import com.vividsolutions.jump.parameter.ParameterListSchema;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
@@ -19,21 +16,27 @@ import com.vividsolutions.jump.workbench.JUMPWorkbench;
 /**
  * A driver for supplying {@link SpatialDatabaseDSConnection}s
  */
-public class SpatialiteDataStoreDriver extends AbstractSpatialDatabasesDataStoreDriver {
+public class SpatialiteDataStoreDriver extends AbstractSpatialDatabasesDSDriver {
 
   public final static String JDBC_CLASS = "org.sqlite.JDBC";
-  private static boolean initialized = false;
+  private String spatialiteVersion = "not connected";
 
   public SpatialiteDataStoreDriver() {
     this.driverName = "Spatialite";
     this.jdbcClass = JDBC_CLASS;
-    // TODO: prompt for filename
     this.urlPrefix = "jdbc:sqlite:";
 
     // Panel parameters: adds a file chooser for db name
     paramNames = new String[] { PARAM_DB_File };
     paramClasses = new Class[] { File.class };
     schema = new ParameterListSchema(paramNames, paramClasses);
+  }
+
+  /**
+   * additionally report spatialite version if connection exists
+   */
+  public String getVersion() {
+    return super.getVersion() + " (Spatialite " + spatialiteVersion + ")";
   }
 
   /**
@@ -63,24 +66,8 @@ public class SpatialiteDataStoreDriver extends AbstractSpatialDatabasesDataStore
           + " does not exist. cannot create connection");
     }
 
-    String url = String.valueOf(new StringBuffer(urlPrefix).append(database));
-
     ClassLoader cl = JUMPWorkbench.getInstance().getPlugInManager()
         .getClassLoader();
-
-    // we register only once
-    if (!initialized) {
-      Driver driver = (Driver) cl.loadClass(this.getJdbcClass()).newInstance();
-      // DriverManager insists on jdbc drivers loaded with the default
-      // classloader, so we wrap our foreign one into a simple wrapper
-      // see https://stackoverflow.com/questions/288828/how-to-use-a-jdbc-driver-from-an-arbitrary-location
-      DriverManager.registerDriver(new DelegatingDriver(driver));
-      initialized = true;
-//      Enumeration<Driver> ds = DriverManager.getDrivers();
-//      while (ds.hasMoreElements()) {
-//        System.out.println(ds.nextElement());
-//      }
-    }
 
     // mandatory to enable loading extensions
     Class configClazz = cl.loadClass("org.sqlite.SQLiteConfig");
@@ -97,9 +84,18 @@ public class SpatialiteDataStoreDriver extends AbstractSpatialDatabasesDataStore
 
     Method getPropsMethod = configClazz.getMethod("toProperties");
     Properties props = (Properties) getPropsMethod.invoke(config);
-    Connection conn = DriverManager.getConnection(url, props);
 
-    return new SpatialiteDSConnection(conn);
+    Connection conn = super.createJdbcConnection(params, props);
+    SpatialiteDSConnection dsConn = new SpatialiteDSConnection(conn);
+
+    // memorize spatialite version for displaying later
+    this.spatialiteVersion = ((SpatialiteDSMetadata) dsConn.getMetadata())
+        .getSpatialiteVersion();
+    // report if spatialite could not be loaded
+    if (this.spatialiteVersion.isEmpty())
+      this.spatialiteVersion = "missing";
+
+    return dsConn;
   }
-  
+
 }

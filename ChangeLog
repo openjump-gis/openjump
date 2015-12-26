@@ -3,19 +3,25 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2015-12-26 ede
+  * renamed some classes from *DataStore* to *DS* if others in the same package
+    already used the same naming scheme
+  * adding H2 file db utilizes a filechooser now
+  * streamlined AbstractSpatialDatabasesDataStoreDriver.createJdbcConnection()
+    for file and database datastores
+  * introduced AbstractSpatialDatabasesDSExtension collecting the basic routines
+    used by all spatial database extensions
+  * postgis is now installed via PostgisDSExtension registered in
+    default-plugins.xml
+  * removed obsolete empty JUMPConfiguration.configureDatastores() method
+
 2015-12-24 bertazza
   * Fixed broken 4666 commit
   * Info feature tool: fixed issue related to dirty url
-  
-2015-12-24 bertazza
-  * Removed IOExpcetion throw from TaskFrame
-
-2015-12-24 bertazza
+  * Removed IOException throw from TaskFrame method
   * Info feature tool for WMS: info shown only for visible layers, added
     &FEATURE_COUNT=10 parameter, and changed method to retrieve url as
     suggested by Jukka (should now support basic authentication).
-
-2015-12-24 bertazza
   * Fixed broken 4663 commit
 
 2015-12-23 bertazza

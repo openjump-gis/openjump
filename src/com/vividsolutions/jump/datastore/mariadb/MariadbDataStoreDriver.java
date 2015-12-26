@@ -3,14 +3,14 @@ package com.vividsolutions.jump.datastore.mariadb;
 import java.sql.Connection;
 
 import com.vividsolutions.jump.datastore.DataStoreConnection;
-import com.vividsolutions.jump.datastore.spatialdatabases.AbstractSpatialDatabasesDataStoreDriver;
+import com.vividsolutions.jump.datastore.spatialdatabases.AbstractSpatialDatabasesDSDriver;
 import com.vividsolutions.jump.parameter.ParameterList;
 
 /**
  * A driver for supplying {@link SpatialDatabaseDSConnection}s
  */
 public class MariadbDataStoreDriver
-    extends AbstractSpatialDatabasesDataStoreDriver {
+    extends AbstractSpatialDatabasesDSDriver {
 
       // TODO: uniformize
     public final static String JDBC_CLASS = "org.mariadb.jdbc.Driver";

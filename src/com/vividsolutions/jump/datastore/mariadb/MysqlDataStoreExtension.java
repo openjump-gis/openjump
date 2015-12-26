@@ -1,52 +1,31 @@
 package com.vividsolutions.jump.datastore.mariadb;
 
-import static com.vividsolutions.jump.datastore.mariadb.MysqlDataStoreDriver.JDBC_CLASS;
+import java.util.Collections;
+import java.util.HashMap;
 
-import com.vividsolutions.jump.datastore.DataStoreDriver;
-import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.datastore.spatialdatabases.AbstractSpatialDatabasesDSExtension;
 
 /**
- * 
- * @author nicolas ribot
+ * installs the MySQL database datastore driver if available
  */
-public class MysqlDataStoreExtension extends MariadbDataStoreExtension {
-  private static boolean disabled = false;
+public class MysqlDataStoreExtension extends
+    AbstractSpatialDatabasesDSExtension {
+
+  /**
+   * customize the abstract implementation
+   */
+  public MysqlDataStoreExtension() {
+    super(MysqlDataStoreDriver.class, Collections
+        .unmodifiableMap(new HashMap<String, String>() {
+          {
+            put(MysqlDataStoreDriver.JDBC_CLASS,
+                "mysql-connector-java-<version>.jar");
+          }
+        }));
+  }
 
   public String getName() {
     return "MySQL Spatial Datastore Extension";
-  }
-
-  public String getVersion() {
-    return super.getVersion();
-  }
-
-  public String getMessage() {
-    return disabled ? "Disabled: Missing mysql-connector-java-<version>.jar in classpath"
-        : "";
-  }
-
-  public void configure(PlugInContext context) throws Exception {
-    WorkbenchContext wbc = context.getWorkbenchContext();
-
-    // registers the MariaDBDataStore driver to the system:
-    try {
-      ClassLoader pluginLoader = wbc.getWorkbench().getPlugInManager()
-          .getClassLoader();
-      // check for jar
-      Class.forName(JDBC_CLASS, false, pluginLoader);
-
-      // register the datastore
-      wbc.getRegistry().createEntry(DataStoreDriver.REGISTRY_CLASSIFICATION,
-          new MysqlDataStoreDriver());
-
-    } catch (Exception e) {
-      disabled = true;
-      wbc.getWorkbench()
-          .getFrame()
-          .log(
-              getName() +" " + getMessage() +"\n\t" + e.toString(), this.getClass());
-    }
   }
 
 }

@@ -4,7 +4,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jump.datastore.AdhocQuery;
 import com.vividsolutions.jump.datastore.postgis.PostgisDSConnection;
 import com.vividsolutions.jump.datastore.postgis.PostgisDSMetadata;
-import com.vividsolutions.jump.datastore.postgis.PostgisDataStoreDriver;
+import com.vividsolutions.jump.datastore.postgis.PostgisDSDriver;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureDataset;
@@ -66,7 +66,7 @@ public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
                 (ConnectionDescriptor)getProperties().get(CONNECTION_DESCRIPTOR_KEY);
 
         PostgisDSConnection pgConnection =
-                (PostgisDSConnection)new PostgisDataStoreDriver()
+                (PostgisDSConnection)new PostgisDSDriver()
                         .createConnection(connectionDescriptor.getParameterList());
 
         boolean hasPK = getProperties().get(EXTERNAL_PK_KEY) != null;

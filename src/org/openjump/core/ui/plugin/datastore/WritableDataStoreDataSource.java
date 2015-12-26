@@ -1,27 +1,23 @@
 package org.openjump.core.ui.plugin.datastore;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.datastore.AdhocQuery;
-import com.vividsolutions.jump.datastore.DataStoreConnection;
-import com.vividsolutions.jump.datastore.DataStoreDriver;
-import com.vividsolutions.jump.datastore.postgis.PostgisDSConnection;
-import com.vividsolutions.jump.datastore.postgis.PostgisDataStoreDriver;
-import com.vividsolutions.jump.feature.*;
-import com.vividsolutions.jump.io.FeatureInputStream;
-import com.vividsolutions.jump.io.datasource.Connection;
-import com.vividsolutions.jump.io.datasource.DataSourceQuery;
-import com.vividsolutions.jump.parameter.ParameterList;
-import com.vividsolutions.jump.parameter.ParameterListSchema;
-import com.vividsolutions.jump.task.TaskMonitor;
-import com.vividsolutions.jump.util.CollectionUtil;
-import com.vividsolutions.jump.workbench.JUMPWorkbench;
-import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.datastore.ConnectionDescriptor;
-import com.vividsolutions.jump.workbench.datastore.ConnectionManager;
-import com.vividsolutions.jump.workbench.model.Layer;
-import com.vividsolutions.jump.workbench.ui.plugin.datastore.DataStoreDataSource;
+import static org.openjump.core.ui.plugin.datastore.postgis.PostGISQueryUtil.compose;
+import static org.openjump.core.ui.plugin.datastore.postgis.PostGISQueryUtil.getGeometryDimension;
+
+import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
+import javax.swing.JOptionPane;
+
 import org.apache.log4j.Logger;
 import org.openjump.core.ui.plugin.datastore.postgis.PostGISConnectionUtil;
 import org.openjump.core.ui.plugin.datastore.postgis.PostGISQueryUtil;
@@ -29,12 +25,22 @@ import org.openjump.core.ui.plugin.datastore.transaction.DataStoreTransactionMan
 import org.openjump.core.ui.plugin.datastore.transaction.Evolution;
 import org.openjump.core.ui.plugin.datastore.transaction.EvolutionOperationException;
 
-import javax.swing.*;
-import java.sql.*;
-import java.util.*;
-import java.util.Date;
-
-import static org.openjump.core.ui.plugin.datastore.postgis.PostGISQueryUtil.*;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.datastore.postgis.PostgisDSConnection;
+import com.vividsolutions.jump.datastore.postgis.PostgisDSDriver;
+import com.vividsolutions.jump.feature.AttributeType;
+import com.vividsolutions.jump.feature.Feature;
+import com.vividsolutions.jump.feature.FeatureCollection;
+import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.io.datasource.Connection;
+import com.vividsolutions.jump.task.TaskMonitor;
+import com.vividsolutions.jump.util.CollectionUtil;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.datastore.ConnectionDescriptor;
+import com.vividsolutions.jump.workbench.model.Layer;
+import com.vividsolutions.jump.workbench.ui.plugin.datastore.DataStoreDataSource;
 
 /**
  * Extension of DataBaseDataSource adding write capabilities.
@@ -191,7 +197,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                         (Integer)getProperties().get(GEOM_DIM_KEY);
 
                 PostgisDSConnection pgConnection =
-                        (PostgisDSConnection)new PostgisDataStoreDriver()
+                        (PostgisDSConnection)new PostgisDSDriver()
                                 .createConnection(connectionDescriptor.getParameterList());
                 java.sql.Connection conn = pgConnection.getJdbcConnection();
                 try {

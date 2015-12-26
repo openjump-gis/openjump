@@ -3,20 +3,20 @@ package com.vividsolutions.jump.datastore.postgis;
 import java.sql.Connection;
 
 import com.vividsolutions.jump.datastore.DataStoreConnection;
-import com.vividsolutions.jump.datastore.spatialdatabases.AbstractSpatialDatabasesDataStoreDriver;
+import com.vividsolutions.jump.datastore.spatialdatabases.AbstractSpatialDatabasesDSDriver;
 import com.vividsolutions.jump.parameter.ParameterList;
 
 /**
  * A driver for supplying {@link SpatialDatabaseDSConnection}s
  */
-public class PostgisDataStoreDriver
-    extends AbstractSpatialDatabasesDataStoreDriver {
+public class PostgisDSDriver
+    extends AbstractSpatialDatabasesDSDriver {
 
     public final static String JDBC_CLASS = "org.postgresql.Driver";
 
-    public PostgisDataStoreDriver() {
+    public PostgisDSDriver() {
         this.driverName = "PostGIS";
-        this.jdbcClass = "org.postgresql.Driver";
+        this.jdbcClass = JDBC_CLASS;
         this.urlPrefix = "jdbc:postgresql://";
     }
     

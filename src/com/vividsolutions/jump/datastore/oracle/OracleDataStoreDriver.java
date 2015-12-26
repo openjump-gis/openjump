@@ -3,14 +3,14 @@ package com.vividsolutions.jump.datastore.oracle;
 import java.sql.Connection;
 
 import com.vividsolutions.jump.datastore.DataStoreConnection;
-import com.vividsolutions.jump.datastore.spatialdatabases.AbstractSpatialDatabasesDataStoreDriver;
+import com.vividsolutions.jump.datastore.spatialdatabases.AbstractSpatialDatabasesDSDriver;
 import com.vividsolutions.jump.parameter.ParameterList;
 
 /**
  * A driver for supplying {@link SpatialDatabaseDSConnection}s
  */
 public class OracleDataStoreDriver
-    extends AbstractSpatialDatabasesDataStoreDriver {
+    extends AbstractSpatialDatabasesDSDriver {
     // TODO: uniformize
     public final static String JDBC_CLASS = "oracle.jdbc.driver.OracleDriver";
     public static final String GT_SDO_CLASS_NAME = "org.geotools.data.oracle.sdo.SDO";

@@ -3,7 +3,7 @@ package com.vividsolutions.jump.datastore.h2;
 import java.sql.Connection;
 
 import com.vividsolutions.jump.datastore.DataStoreConnection;
-import com.vividsolutions.jump.datastore.spatialdatabases.AbstractSpatialDatabasesDataStoreDriver;
+import com.vividsolutions.jump.datastore.spatialdatabases.AbstractSpatialDatabasesDSDriver;
 import com.vividsolutions.jump.parameter.ParameterList;
 
 /**
@@ -12,7 +12,7 @@ import com.vividsolutions.jump.parameter.ParameterList;
  * s
  */
 public class H2ServerDataStoreDriver extends
-    AbstractSpatialDatabasesDataStoreDriver {
+    AbstractSpatialDatabasesDSDriver {
 
   public final static String JDBC_CLASS = "org.h2.Driver";
 

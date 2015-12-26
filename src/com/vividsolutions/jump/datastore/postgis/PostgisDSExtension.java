@@ -1,4 +1,4 @@
-package com.vividsolutions.jump.datastore.spatialite;
+package com.vividsolutions.jump.datastore.postgis;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -8,24 +8,22 @@ import com.vividsolutions.jump.datastore.spatialdatabases.AbstractSpatialDatabas
 /**
  * installs spatialite datastore into OJ
  */
-public class SpatialiteDataStoreExtension extends
-    AbstractSpatialDatabasesDSExtension {
+public class PostgisDSExtension extends AbstractSpatialDatabasesDSExtension {
 
   /**
    * customize the abstract implementation
    */
-  public SpatialiteDataStoreExtension() {
-    super(SpatialiteDataStoreDriver.class, Collections
+  public PostgisDSExtension() {
+    super(PostgisDSDriver.class, Collections
         .unmodifiableMap(new HashMap<String, String>() {
           {
-            put(SpatialiteDataStoreDriver.JDBC_CLASS,
-                "sqlite-jdbc-<version>.jar");
+            put(PostgisDSDriver.JDBC_CLASS, "postgresql-<version>.jdbc4.jar");
           }
         }));
   }
 
   public String getName() {
-    return "Spatialite Datastore Extension";
+    return "Postgis Datastore Extension";
   }
 
 }

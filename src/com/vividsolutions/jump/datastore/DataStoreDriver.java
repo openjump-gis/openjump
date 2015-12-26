@@ -1,5 +1,7 @@
 package com.vividsolutions.jump.datastore;
 
+import java.sql.Driver;
+
 import com.vividsolutions.jump.parameter.ParameterList;
 import com.vividsolutions.jump.parameter.ParameterListSchema;
 
@@ -11,6 +13,12 @@ public interface DataStoreDriver {
             .getName();
 
     String getName();
+
+    String getVersion();
+
+    Driver getJdbcDriver();
+
+    String getJdbcDriverVersion();
 
     ParameterListSchema getParameterListSchema();
 

@@ -3,7 +3,7 @@ package org.openjump.core.ui.plugin.datastore.postgis;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.datastore.postgis.PostgisDSConnection;
-import com.vividsolutions.jump.datastore.postgis.PostgisDataStoreDriver;
+import com.vividsolutions.jump.datastore.postgis.PostgisDSDriver;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
@@ -149,7 +149,7 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
                 int dim = getGeometryDimension(featureCollection, 3);
 
                 PostgisDSConnection pgConnection = 
-                        (PostgisDSConnection)new PostgisDataStoreDriver()
+                        (PostgisDSConnection)new PostgisDSDriver()
                         .createConnection(connectionDescriptor.getParameterList());
                 java.sql.Connection conn = pgConnection.getJdbcConnection();
                 PostGISConnectionUtil connUtil = new PostGISConnectionUtil(conn);

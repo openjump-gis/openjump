@@ -36,7 +36,6 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.lang.reflect.Field;
 
-import javax.swing.JFrame;
 import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
 
@@ -67,14 +66,6 @@ import org.openjump.core.ui.plugin.view.SuperZoomPanTool;
 
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.datastore.DataStoreDriver;
-import com.vividsolutions.jump.datastore.DataStoreException;
-import com.vividsolutions.jump.datastore.postgis.PostgisDataStoreDriver;
-//import com.vividsolutions.jump.workbench.datasource.AbstractSaveDatasetAsPlugIn;
-//import com.vividsolutions.jump.workbench.datasource.InstallStandardDataSourceQueryChoosersPlugIn;
-//import com.vividsolutions.jump.workbench.datasource.LoadDatasetPlugIn;
-//import com.vividsolutions.jump.workbench.datasource.SaveDatasetAsPlugIn;
-import com.vividsolutions.jump.workbench.datastore.ConnectionManager;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.WMSLayer;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
@@ -83,7 +74,6 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.ui.ApplicationExitHandler;
 //import com.vividsolutions.jump.workbench.ui.AttributeTab;
 //import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
@@ -182,8 +172,10 @@ import com.vividsolutions.jump.workbench.ui.zoom.ZoomToFullExtentPlugIn;
 //import com.vividsolutions.jump.workbench.ui.zoom.ZoomToLayerPlugIn;
 import com.vividsolutions.jump.workbench.ui.zoom.ZoomToSelectedItemsPlugIn;
 import com.vividsolutions.jump.workbench.ui.zoom.ZoomTool;
-
-import de.latlon.deejump.plugin.style.DeeChangeStylesPlugIn;
+//import com.vividsolutions.jump.workbench.datasource.AbstractSaveDatasetAsPlugIn;
+//import com.vividsolutions.jump.workbench.datasource.InstallStandardDataSourceQueryChoosersPlugIn;
+//import com.vividsolutions.jump.workbench.datasource.LoadDatasetPlugIn;
+//import com.vividsolutions.jump.workbench.datasource.SaveDatasetAsPlugIn;
 
 /**
  * Initializes the Workbench with various menus and cursor tools. Accesses the
@@ -379,7 +371,6 @@ public class JUMPConfiguration implements Setup {
   public void setup(WorkbenchContext workbenchContext) throws Exception {
 
     configureStyles(workbenchContext);
-    configureDatastores(workbenchContext);
 
     workbenchContext.getWorkbench().getBlackboard()
         .put(SnapToVerticesPolicy.ENABLED_KEY, true);
@@ -1062,40 +1053,6 @@ public class JUMPConfiguration implements Setup {
 //    featureInstaller.addMainMenuPlugin(imageLayerManagerPlugIn,
 //        new String[] { MENU_LAYER });
 //    featureInstaller.addMenuSeparator(MENU_LAYER); // ===================
-  }
-
-  public void configureDatastores(final WorkbenchContext context)
-      throws Exception {
-
-    context.getRegistry().createEntry(DataStoreDriver.REGISTRY_CLASSIFICATION,
-        new PostgisDataStoreDriver());
-
-    // Nicolas Ribot, 01 fev 2015: tries to add oracle DataStore support
-    // add the driver only if oracle driver class if found
-    /*
-    try {
-        Driver driver = (Driver) Class.forName(JDBC_CLASS).newInstance();
-        context.getRegistry().createEntry(DataStoreDriver.REGISTRY_CLASSIFICATION,
-            new OracleDataStoreDriver());
-    } catch (Exception e) {
-        // TODO: replace by log ?
-        System.out.println("oracle driver not found: " + e.toString() + ". dataStore NOT added");
-    }
-    */
-//    // update exit handler
-//    final ApplicationExitHandler oldApplicationExitHandler = context
-//        .getWorkbench().getFrame().getApplicationExitHandler();
-//    context.getWorkbench().getFrame()
-//        .setApplicationExitHandler(new ApplicationExitHandler() {
-//          public void exitApplication(JFrame mainFrame) {
-//            try {
-//              ConnectionManager.instance(context).closeConnections();
-//            } catch (DataStoreException e) {
-//              throw new RuntimeException(e);
-//            }
-//            oldApplicationExitHandler.exitApplication(mainFrame);
-//          }
-//        });
   }
 
   private void configureStyles(WorkbenchContext workbenchContext) {
