@@ -173,9 +173,7 @@ public class PlugInManager {
             + version(configuration));
         long start = secondsSince(0);
         try {
-          // make sure we use the plugin classloader for extensions
-          configuration = (Configuration) classLoader.loadClass(
-              configuration.getClass().getName()).newInstance();
+          // we used the plugin classloader to instantiate extensions already above
           configuration.configure(pc);
           //System.out.println(Arrays.toString(((URLClassLoader)classLoader).getURLs()));
           System.out
@@ -196,7 +194,7 @@ public class PlugInManager {
       // List<String> classNames = props.getPlugInClassNames();
       Map<String, Map<String, String>> pluginSettings = props
           .getSettings(new String[]{WorkbenchProperties.KEY_PLUGIN});
-      int i = 0;
+
       for (String className : pluginSettings.keySet()) {
 //        System.out.println(i++ + "/"+ className);
         String initSetting = pluginSettings.get(className).get(
