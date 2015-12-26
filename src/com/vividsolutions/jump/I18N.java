@@ -218,7 +218,7 @@ public final class I18N {
    * @return The I18Nized text.
    */
   public static String getText(final String categoryPrefix, final String key) {
-    return getMessage(categoryPrefix, key);
+    return getMessage((Object)categoryPrefix, key);
   }
 
   /**
@@ -436,11 +436,6 @@ public final class I18N {
           labelpath[labelpath.length - 1]);
       return mformat.format(objects);
     }
-  }
-
-  public static String getMessage(final String categoryPrefix,
-      final String label, final Object... objects) {
-    return getMessage((Object) categoryPrefix, label, objects);
   }
 
   public static String getMessage(final File path, final String label,
