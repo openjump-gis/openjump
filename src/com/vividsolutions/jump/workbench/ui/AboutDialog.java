@@ -111,7 +111,7 @@ public class AboutDialog extends JDialog {
         return aboutDialog;
     }
 
-    private ExtensionsAboutPanel extensionsAboutPanel = new ExtensionsAboutPanel();
+    private ExtensionsAboutPanel extensionsAboutPanel;
 
     private AboutDialog(WorkbenchFrame frame) {
         super(frame, I18N.get("ui.AboutDialog.about-jump"), true);
@@ -123,7 +123,7 @@ public class AboutDialog extends JDialog {
 
         wbc = frame.getContext().getWorkbench().getContext();
 
-        extensionsAboutPanel.setPlugInManager(frame.getContext().getWorkbench().getPlugInManager());
+        extensionsAboutPanel = new ExtensionsAboutPanel(frame.getContext().getWorkbench().getPlugInManager());
 
         try {
             jbInit();
