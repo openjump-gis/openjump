@@ -131,6 +131,7 @@ public class ConnectionPanel extends JPanel {
                            Component a,
                            Component b,
                            boolean aStretchesVertically ) {
+        caption = I18N.get(this.getClass().getName()+"."+caption);
         add( new JLabel( caption ),
              new GridBagConstraints( 0,
                nextRow,
