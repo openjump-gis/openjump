@@ -110,7 +110,7 @@ public class JTSAdapter {
             geometry = export((MultiPrimitive) gmObject);
         } else {
             throw new GeometryException("JTSAdapter.export does not support type '" + gmObject.getClass().getName() //$NON-NLS-1$
-                + "'!"); //$NON-NLS-1$
+                + "'!");
         }
         return geometry;
     }
@@ -154,7 +154,7 @@ public class JTSAdapter {
             gmObject = wrap((com.vividsolutions.jts.geom.GeometryCollection) geometry, crs);
         } else {
             throw new GeometryException("JTSAdapter.wrap does not support type '" + geometry.getClass().getName() //$NON-NLS-1$
-                + "'!"); //$NON-NLS-1$
+                + "'!");
         }
         return gmObject;
     }
@@ -270,7 +270,7 @@ public class JTSAdapter {
         try {
             patch = surface.getSurfacePatchAt(0);
         } catch (GeometryException e) {
-            LOG.logError("", e); //$NON-NLS-1$
+            LOG.logError("", e);
         }
         Position[] exteriorRing = patch.getExteriorRing();
         Position[][] interiorRings = patch.getInteriorRings();

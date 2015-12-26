@@ -68,7 +68,7 @@ public class ExtractSelectedPartOfImage extends AbstractPlugIn {
      * @inheritDoc
      */
     public String getIconString() {
-        return "extractPart.png"; //$NON-NLS-1$
+        return "extractPart.png";
     }
 
     /**
@@ -191,7 +191,7 @@ public class ExtractSelectedPartOfImage extends AbstractPlugIn {
         return true;
 
         // if (rLayer==null){
-        //            context.getWorkbenchFrame().warnUser(I18N.get("pirol.plugIns.EditAttributeByFormulaPlugIn.no-layer-selected")); //$NON-NLS-1$
+        //            context.getWorkbenchFrame().warnUser(I18N.get("pirol.plugIns.EditAttributeByFormulaPlugIn.no-layer-selected"));
         // return false;
         // }
         //

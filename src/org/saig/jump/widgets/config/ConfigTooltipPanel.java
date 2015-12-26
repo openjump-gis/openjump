@@ -66,14 +66,14 @@ public class ConfigTooltipPanel extends OptionsPanelV2 {
 
     /** Nombre asociado al panel */
     public final static String NAME = "Configure Tooltip";
-    //I18N.getString("org.saig.jump.widgets.config.ConfigTooltipPanel.layer-info");  //$NON-NLS-1$
+    //I18N.getString("org.saig.jump.widgets.config.ConfigTooltipPanel.layer-info");
 
     /** Icono asociado al panel */
     public final static Icon ICON = null;
-    //IconLoader.icon("note.png");  //$NON-NLS-1$
+    //IconLoader.icon("note.png");
     /** Opciones de tooltip */
     public static final String LAYER_TOOLTIPS_ON = ConfigTooltipPanel.class
-            .getName() + " - LAYER_TOOLTIPS"; //$NON-NLS-1$
+            .getName() + " - LAYER_TOOLTIPS";
 
     /**
      * Constructor del panel
@@ -98,8 +98,8 @@ public class ConfigTooltipPanel extends OptionsPanelV2 {
         if (tooltipPanel == null) {
             tooltipPanel = new JPanel(new GridBagLayout());
             tooltipPanel.setBorder(BorderFactory.createTitledBorder(I18N
-                    .getString("Configure layer tree tooltip"))); //$NON-NLS-1$
-            tooltipCheck = new JCheckBox("Enable JUMP basic tooltips"); //$NON-NLS-1$
+                    .getString("Configure layer tree tooltip")));
+            tooltipCheck = new JCheckBox("Enable JUMP basic tooltips");
             FormUtils.addRowInGBL(tooltipPanel, 0, 0, tooltipCheck);
         }
         return tooltipPanel;

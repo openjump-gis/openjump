@@ -79,7 +79,7 @@ public class RasterTransparencyPanel extends JPanel implements ValueChecker,
         transparencyOnOffPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
         transparencyOnOffPanel
                 .add(new JLabel(
-                        I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageLayerControllPanel.Do-you-want-a-color-to-be-transparent"))); //$NON-NLS-1$
+                        I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageLayerControllPanel.Do-you-want-a-color-to-be-transparent")));
         // this.useTransCB =new JButton(IconLoader.icon("color_wheel.png"));
 
         this.useTransCB = new JCheckBox();
@@ -90,7 +90,7 @@ public class RasterTransparencyPanel extends JPanel implements ValueChecker,
                 this.rasterImageLayer.getTransparentColor());
         this.colorChooser
                 .setToolTipText(I18N
-                        .get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageLayerControllPanel.Choose-transparent-color")); //$NON-NLS-1$
+                        .get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageLayerControllPanel.Choose-transparent-color"));
         this.colorChooser.setBorder(BorderFactory.createEtchedBorder());
         JPanel slidersPanel = new JPanel();
         slidersPanel.setLayout(new GridLayout(2, 1));
@@ -99,10 +99,10 @@ public class RasterTransparencyPanel extends JPanel implements ValueChecker,
         transparencySliderPanel.setLayout(new GridLayout(2, 1));
         transparencySliderPanel
                 .add(new JLabel(
-                        " "     + I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageLayerControllPanel.set-overall-transparency"))); //$NON-NLS-1$
+                        " "     + I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageLayerControllPanel.set-overall-transparency")));
 
         for (int i = 0; i <= 100; i += 25) {
-            this.sliderLabelDictionary.put(new Integer(i), new JLabel(i + "%")); //$NON-NLS-1$
+            this.sliderLabelDictionary.put(new Integer(i), new JLabel(i + "%"));
         }
         this.transparencySlider.setLabelTable(this.sliderLabelDictionary);
         this.transparencySlider.setPaintLabels(true);
@@ -125,7 +125,7 @@ public class RasterTransparencyPanel extends JPanel implements ValueChecker,
         speedSliderPanel.setLayout(new GridLayout(2, 1));
         speedSliderPanel
                 .add(new JLabel(
-                        I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageLayerControllPanel.processing-speed"))); //$NON-NLS-1$
+                        I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageLayerControllPanel.processing-speed")));
 
         this.speedSlider.setLabelTable(this.sliderLabelDictionary);
         this.speedSlider.setPaintLabels(true);

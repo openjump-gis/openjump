@@ -103,14 +103,14 @@ public class I18N {
      * @return an empty string if obj is null
      **/
     private static String getPrefix( Class< ? > obj ) {
-        String prefix = ""; //$NON-NLS-1$
+        String prefix = "";
         if (obj != null) {
             // In order to avoid problems with inner classes
             while( obj != null && obj.getCanonicalName() == null ) {
                 obj = obj.getEnclosingClass();
             }
             if (obj != null) {
-                prefix = obj.getCanonicalName() + "."; //$NON-NLS-1$
+                prefix = obj.getCanonicalName() + ".";
             }
         }
 

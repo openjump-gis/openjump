@@ -82,7 +82,7 @@ public class WarpImageToFencePlugIn extends AbstractPlugIn {
         if (rLayer == null) {
             context.getWorkbenchFrame()
                     .warnUser(
-                            I18N.get("pirol.plugIns.EditAttributeByFormulaPlugIn.no-layer-selected")); //$NON-NLS-1$
+                            I18N.get("pirol.plugIns.EditAttributeByFormulaPlugIn.no-layer-selected"));
             return false;
         }
 
