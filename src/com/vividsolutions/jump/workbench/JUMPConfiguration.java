@@ -1082,20 +1082,20 @@ public class JUMPConfiguration implements Setup {
         System.out.println("oracle driver not found: " + e.toString() + ". dataStore NOT added");
     }
     */
-    // update exit handler
-    final ApplicationExitHandler oldApplicationExitHandler = context
-        .getWorkbench().getFrame().getApplicationExitHandler();
-    context.getWorkbench().getFrame()
-        .setApplicationExitHandler(new ApplicationExitHandler() {
-          public void exitApplication(JFrame mainFrame) {
-            try {
-              ConnectionManager.instance(context).closeConnections();
-            } catch (DataStoreException e) {
-              throw new RuntimeException(e);
-            }
-            oldApplicationExitHandler.exitApplication(mainFrame);
-          }
-        });
+//    // update exit handler
+//    final ApplicationExitHandler oldApplicationExitHandler = context
+//        .getWorkbench().getFrame().getApplicationExitHandler();
+//    context.getWorkbench().getFrame()
+//        .setApplicationExitHandler(new ApplicationExitHandler() {
+//          public void exitApplication(JFrame mainFrame) {
+//            try {
+//              ConnectionManager.instance(context).closeConnections();
+//            } catch (DataStoreException e) {
+//              throw new RuntimeException(e);
+//            }
+//            oldApplicationExitHandler.exitApplication(mainFrame);
+//          }
+//        });
   }
 
   private void configureStyles(WorkbenchContext workbenchContext) {

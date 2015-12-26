@@ -18,9 +18,12 @@ import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesSQLBui
 import com.vividsolutions.jump.io.FeatureInputStream;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.ui.ApplicationExitHandler;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 
 import java.sql.Connection;
+
+import javax.swing.JFrame;
 
 /**
  * Reuses existing connections where possible.
@@ -68,6 +71,21 @@ public class ConnectionManager {
                         .addAll(connectionDescriptorToConnectionMap.keySet());
             }
         });
+        
+        // close all connections on exit
+        final ApplicationExitHandler oldApplicationExitHandler = context
+            .getWorkbench().getFrame().getApplicationExitHandler();
+        context.getWorkbench().getFrame()
+            .setApplicationExitHandler(new ApplicationExitHandler() {
+              public void exitApplication(JFrame mainFrame) {
+                try {
+                  closeConnections();
+                } catch (DataStoreException e) {
+                  throw new RuntimeException(e);
+                }
+                oldApplicationExitHandler.exitApplication(mainFrame);
+              }
+            });
     }
 
     private Map connectionDescriptorToConnectionMap = new HashMap();
