@@ -1,6 +1,11 @@
 package com.vividsolutions.jump.workbench.registry;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import com.vividsolutions.jump.util.CollectionMap;
 
@@ -29,76 +34,89 @@ import com.vividsolutions.jump.util.CollectionMap;
  * @author dzwiers
  */
 public class Registry {
-	
-    private CollectionMap classificationToEntriesMap = new CollectionMap();
 
-    /**
-     * @param classification
-     * @param entry
-     * @return The current Registry
-     * 
-     * @throws ClassCastException When the entry does not match a registered Classification Type
-     * @see Registry#createClassification(Object, Class)
-     */
-    public Registry createEntry(Object classification, Object entry) throws ClassCastException{
-    	Class c = (Class) typeMap.get(classification);
-    	if(c != null){
-    		// check class type
-    		if(!c.isInstance(entry)){
-    			throw new ClassCastException("Cannot Cast '"+entry+"' into "+c.getName()+" for classification '"+classification+"'");
-    		}
-    	}
-        classificationToEntriesMap.addItem(classification, entry);
-        return this;
-    }
+  private CollectionMap classificationToEntriesMap = new CollectionMap();
 
-    /**
-     * @param classification
-     * @param entries
-     * @return The current Registry
-     * 
-     * @throws ClassCastException When the entries do not match a registered Classification Type
-     * @see Registry#createClassification(Object, Class)
-     */
-    public Registry createEntries(Object classification, Collection entries) throws ClassCastException {
-    	for (Iterator i = entries.iterator(); i.hasNext(); ) {
-    		createEntry(classification, i.next());    		
-    	}
-        return this;
+  /**
+   * @param classification
+   * @param entry
+   * @return The current Registry
+   * 
+   * @throws ClassCastException
+   *           When the entry does not match a registered Classification Type
+   * @see Registry#createClassification(Object, Class)
+   */
+  public Registry createEntry(Object classification, Object entry)
+      throws ClassCastException {
+    Class c = (Class) typeMap.get(classification);
+    if (c != null) {
+      // check class type
+      if (!c.isInstance(entry)) {
+        throw new ClassCastException("Cannot Cast '" + entry + "' into "
+            + c.getName() + " for classification '" + classification + "'");
+      }
     }
 
-    public List getEntries(Object classification) {
-        return (List) new ArrayList(classificationToEntriesMap.getItems(classification));
+    classificationToEntriesMap.addItem(classification, entry);
+    return this;
+  }
+
+  /**
+   * @param classification
+   * @param entries
+   * @return The current Registry
+   * 
+   * @throws ClassCastException
+   *           When the entries do not match a registered Classification Type
+   * @see Registry#createClassification(Object, Class)
+   */
+  public Registry createEntries(Object classification, Collection entries)
+      throws ClassCastException {
+    for (Iterator i = entries.iterator(); i.hasNext();) {
+      createEntry(classification, i.next());
     }
-    
-    // new api
-    private Map typeMap = new HashMap(); // HashMap<Object,Class> --- use this for templating in jvm1.5
-    
-    /**
-     * Sets up the registry to be type-safe for a particular classification. 
-     * Should the user not specify a type mappingthrough this method, no 
-     * checks will be performed.
-     * 
-     * @param classification
-     * @param type
-     * @return The current Registry
-     * 
-     * @throws ClassCastException When the existing entries do not match Classification Type being registered.
-     */
-    public Registry createClassification(Object classification, Class type) throws ClassCastException{
-    	if(classificationToEntriesMap.containsKey(classification)){
-    		// need to check here
-    		Collection c = classificationToEntriesMap.getItems(classification);
-    		if(c!=null){
-    			for(Iterator i=c.iterator();i.hasNext();){
-    				Object entry = i.next();
-    	    		if(!type.isInstance(entry)){
-    	    			throw new ClassCastException("Cannot Cast '"+entry+"' into "+type.getName()+" for classification '"+classification+"'");
-    	    		}
-    			}
-    		}
-    	}
-    	typeMap.put(classification,type);
-    	return this;
+    return this;
+  }
+
+  public List getEntries(Object classification) {
+    return (List) new ArrayList(
+        classificationToEntriesMap.getItems(classification));
+  }
+
+  // new api
+  private Map typeMap = new HashMap(); // HashMap<Object,Class> --- use this for
+                                       // templating in jvm1.5
+
+  /**
+   * Sets up the registry to be type-safe for a particular classification.
+   * Should the user not specify a type mappingthrough this method, no checks
+   * will be performed.
+   * 
+   * @param classification
+   * @param type
+   * @return The current Registry
+   * 
+   * @throws ClassCastException
+   *           When the existing entries do not match Classification Type being
+   *           registered.
+   */
+  public Registry createClassification(Object classification, Class type)
+      throws ClassCastException {
+    if (classificationToEntriesMap.containsKey(classification)) {
+      // need to check here
+      Collection c = classificationToEntriesMap.getItems(classification);
+      if (c != null) {
+        for (Iterator i = c.iterator(); i.hasNext();) {
+          Object entry = i.next();
+          if (!type.isInstance(entry)) {
+            throw new ClassCastException("Cannot Cast '" + entry + "' into "
+                + type.getName() + " for classification '" + classification
+                + "'");
+          }
+        }
+      }
     }
+    typeMap.put(classification, type);
+    return this;
+  }
 }
