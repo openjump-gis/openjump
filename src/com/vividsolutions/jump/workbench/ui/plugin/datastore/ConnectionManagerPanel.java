@@ -490,27 +490,30 @@ public class ConnectionManagerPanel extends JPanel {
     public static Icon getConnectionIcon(ConnectionDescriptor desc,
         boolean isClosed) throws DataStoreException {
       String driverClassName = desc.getDataStoreDriverClassName();
+      
       if (driverClassName
-          .equals("com.vividsolutions.jump.datastore.postgis.PostgisDSDriver")) {
+          .equals(com.vividsolutions.jump.datastore.postgis.PostgisDSDriver.class
+              .getName())) {
         return isClosed ? PG_DISCONNECTED_ICON : PG_CONNECTED_ICON;
       } else if (driverClassName
-          .equals("com.vividsolutions.jump.datastore.oracle.OracleDataStoreDriver")) {
+          .equals(com.vividsolutions.jump.datastore.oracle.OracleDataStoreDriver.class
+              .getName())) {
         return isClosed ? ORA_DISCONNECTED_ICON : ORA_CONNECTED_ICON;
       } else if (driverClassName
-          .equals("com.vividsolutions.jump.datastore.mariadb.MysqlDataStoreDriver")) {
+          .equals(com.vividsolutions.jump.datastore.mariadb.MysqlDataStoreDriver.class
+              .getName())) {
         return isClosed ? MYSQL_DISCONNECTED_ICON : MYSQL_CONNECTED_ICON;
-      } 
+      }
       // match MariadbDataStoreDriver & MysqlMariadbDataStoreDriver
-      else if (driverClassName.endsWith("MariadbDataStoreDriver")) {
+      else if (driverClassName.matches("(?i).+\\.\\w*Mariadb\\w+Driver")) {
         return isClosed ? MARIA_DISCONNECTED_ICON : MARIA_CONNECTED_ICON;
       } else if (driverClassName
-          .equals("com.vividsolutions.jump.datastore.spatialite.SpatialiteDataStoreDriver")) {
+          .equals(com.vividsolutions.jump.datastore.spatialite.SpatialiteDataStoreDriver.class
+              .getName())) {
         return isClosed ? SQLITE_DISCONNECTED_ICON : SQLITE_CONNECTED_ICON;
-      } else if (driverClassName
-          .equals("com.vividsolutions.jump.datastore.h2.H2DataStoreDriver")) {
-        return isClosed ? H2_DISCONNECTED_ICON : H2_CONNECTED_ICON;
-      } else if (driverClassName
-          .equals("com.vividsolutions.jump.datastore.h2.H2ServerDataStoreDriver")) {
+      } 
+      // match both H2 DataStoreDrivers
+      else if (driverClassName.matches("(?i).+\\.H2\\w+Driver")) {
         return isClosed ? H2_DISCONNECTED_ICON : H2_CONNECTED_ICON;
       }
       // Default
