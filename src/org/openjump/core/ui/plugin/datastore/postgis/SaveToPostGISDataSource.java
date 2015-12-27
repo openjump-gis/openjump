@@ -125,7 +125,7 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
                 // Check that Connection descriptor connects to a PostGIS database
                 // @TODO the connection panel should show only PostGIS connection
                 // Error message move to PostGISSaveDataSourceQueryChooser.isInputValid
-                // if (!connectionDescriptor.getDataStoreDriverClassName().equals("com.vividsolutions.jump.datastore.postgis.PostgisDataStoreDriver")) {
+                // if (!connectionDescriptor.getDataStoreDriverClassName().equals(com.vividsolutions.jump.datastore.postgis.PostgisDSDriver.class.getName())) {
                 //     JOptionPane.showMessageDialog(null,
                 //         "The selected Connection is not a PostGIS connection!",
                 //         "Error!", JOptionPane.ERROR_MESSAGE );

@@ -98,7 +98,7 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
         }
         else if (!panel.getConnectionDescriptor()
                        .getDataStoreDriverClassName()
-                       .equals("com.vividsolutions.jump.datastore.postgis.PostgisDataStoreDriver")) {
+                       .equals(com.vividsolutions.jump.datastore.postgis.PostgisDSDriver.class.getName())) {
                 JOptionPane.showMessageDialog(null,
                     CONNECTION_IS_NOT_POSTGIS,
                     ERROR, JOptionPane.ERROR_MESSAGE );

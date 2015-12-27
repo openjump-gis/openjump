@@ -419,7 +419,7 @@ public class ConnectionDescriptorPanel extends JPanel
         frame.getContentPane().add(
                 new ConnectionDescriptorPanel(new Registry().createEntry(
                         DataStoreDriver.REGISTRY_CLASSIFICATION,
-                        new PostgisDataStoreDriver()),null));
+                        new PostgisDSDriver()),null));
         frame.pack();
         frame.setVisible(true);
     }
