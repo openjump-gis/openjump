@@ -118,7 +118,7 @@ public class ValueConverterFactory {
     public static class  DateConverter implements ValueConverter {
         public AttributeType getType() { return AttributeType.DATE; }
         public Object getValue(ResultSet rs, int columnIndex) throws SQLException {
-            //return rs.getDate(columnIndex);
+          //return rs.getDate(columnIndex);
           return rs.getTimestamp(columnIndex);
         }
     }
