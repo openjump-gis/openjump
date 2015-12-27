@@ -66,12 +66,21 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
     spatialExtentQuery2 = null;
     sridQuery = "SELECT srid FROM geometry_columns where f_table_name = '%s' and f_geometry_column = '%s'";
     // geo column query needs to be built occording to geometryColumnsLayout
-    if (this.geometryColumnsLayout == GeometryColumnsLayout.FDO_LAYOUT) {
-      geoColumnsQuery = "SELECT f_geometry_column, srid, geometry_type FROM geometry_columns where f_table_name = '%s'";
+    if (this.geometryColumnsLayout == GeometryColumnsLayout.FDO_LAYOUT ||
+        this.geometryColumnsLayout == GeometryColumnsLayout.OGC_OGR_LAYOUT) {
+      geoColumnsQuery = "SELECT f_geometry_column, srid,\n" +
+          "  case\n" +
+          "    when geometry_type = 1 then 'POINT'\n" +
+          "    when geometry_type = 2 then 'LINESTRING'\n" +
+          "    when geometry_type = 3 then 'POLYGON'\n" +
+          "    when geometry_type = 4 then 'MULTIPOINT'\n" +
+          "    when geometry_type = 5 then 'MULTILINESTRING'\n" +
+          "    when geometry_type = 6 then 'MULTIPOLYGON'\n" +
+          "    when geometry_type = 7 then 'GEOMETRY COLLECTION'\n" +
+          "    else geometry_type end as geometry_type\n" +
+          "FROM geometry_columns where f_table_name = '%s'";
     } else if (this.geometryColumnsLayout == GeometryColumnsLayout.OGC_SPATIALITE_LAYOUT) {
       geoColumnsQuery = "SELECT f_geometry_column, srid, type FROM geometry_columns where f_table_name = '%s'";
-    } else if (this.geometryColumnsLayout == GeometryColumnsLayout.OGC_OGR_LAYOUT) {
-      geoColumnsQuery = "SELECT f_geometry_column, srid, geometry_type FROM geometry_columns where f_table_name = '%s'";
     } else {
       geoColumnsQuery = "SELECT '' ";
     }
