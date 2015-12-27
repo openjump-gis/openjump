@@ -135,7 +135,7 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
       } else if (gcType == GeometricColumnType.WKT) {
         ret = String.format("select st_asBinary(extent(st_geomFromText(%s))) from %s", attributeName, table);
       } else if (gcType == GeometricColumnType.SPATIALITE) {
-        ret = String.format("select st_asBinary(extent(%s)) from %s", attributeName, table);
+        ret = String.format("select st_asBinary(extent(CastAutomagic(%s))) from %s", attributeName, table);
       } else {
         // unknown geom type
         // TODO: log

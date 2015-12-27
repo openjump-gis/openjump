@@ -98,7 +98,7 @@ public class SpatialiteSQLBuilder extends SpatialDatabasesSQLBuilder {
             query.getDatasetName().toLowerCase() + "." + query.getGeometryAttributeName().toLowerCase());
         // use Locale.US to enforce floating point number with a dot separator
         if (gcType == GeometricColumnType.SPATIALITE) {
-            ret = String.format(Locale.US, "st_envIntersects(%s, %f,%f,%f,%f)", query.getGeometryAttributeName(), env.getMinX(),
+            ret = String.format(Locale.US, "st_envIntersects(CastAutomagic(%s), %f,%f,%f,%f)", query.getGeometryAttributeName(), env.getMinX(),
                     env.getMinY(), env.getMaxX(), env.getMaxY());
         } else if (gcType == GeometricColumnType.WKB) {
             ret = String.format(Locale.US, "st_envIntersects(st_geomFromWkb(%s), %f,%f,%f,%f)", query.getGeometryAttributeName(), env.getMinX(),
