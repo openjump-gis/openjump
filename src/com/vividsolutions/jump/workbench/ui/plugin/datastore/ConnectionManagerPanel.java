@@ -54,8 +54,8 @@ public class ConnectionManagerPanel extends JPanel {
   private static final Icon DISCONNECTED_ICON = IconLoader.icon("disconnect.png");
   private static final Icon PG_CONNECTED_ICON = IconLoader.icon("ok_pg.png");
   private static final Icon PG_DISCONNECTED_ICON = IconLoader.icon("ko_pg.png");
-  private static final Icon H2_CONNECTED_ICON = IconLoader.icon("ok_h2.png");
-  private static final Icon H2_DISCONNECTED_ICON = IconLoader.icon("ko_h2.png");
+  private static final Icon H2_CONNECTED_ICON = IconLoader.icon("h2_icon.png");
+  private static final Icon H2_DISCONNECTED_ICON = GUIUtil.toGrayScale((ImageIcon)H2_CONNECTED_ICON);
   private static final Icon ORA_CONNECTED_ICON = IconLoader.icon("ok_oracle.png");
   private static final Icon ORA_DISCONNECTED_ICON = IconLoader.icon("ko_oracle.png");
   private static final Icon MARIA_CONNECTED_ICON = IconLoader.icon("ok_mariadb.png");
