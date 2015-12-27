@@ -14,6 +14,8 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
  */
 abstract public class AbstractSpatialDatabasesDSExtension extends Extension {
 
+  static final String I18NPREFIX = AbstractSpatialDatabasesDSExtension.class.getName();
+
   protected String errorMessage = null;
   protected DataStoreDriver driver = null;
 
@@ -110,7 +112,7 @@ abstract public class AbstractSpatialDatabasesDSExtension extends Extension {
       }
     }
     if (!msg.isEmpty())
-      msg = I18N.getMessage(getClass().getName()
+      msg = I18N.getMessage(I18NPREFIX
           + ".missing-dependency-jars {0}", msg);
 
     return errorMessage = msg;
@@ -157,7 +159,7 @@ abstract public class AbstractSpatialDatabasesDSExtension extends Extension {
       wbc.getWorkbench()
           .getFrame()
           .log(
-              I18N.getMessage(getClass().getName()
+              I18N.getMessage(I18NPREFIX
                   + ".datastore-{0}-disabled:-{1}", getName(), isAvailable()),
               this.getClass());
     }
