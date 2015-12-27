@@ -55,9 +55,9 @@ public class OracleSQLBuilder extends SpatialDatabasesSQLBuilder {
             qs.append(" where ROWNUM <= ").append(limit);
         }
         
-        JUMPWorkbench.getInstance().getFrame().log(
-            "SQL query to get Spatial table features:\n\t" 
-                + qs.toString(), this.getClass());
+//        JUMPWorkbench.getInstance().getFrame().log(
+//            "SQL query to get Spatial table features:\n\t" 
+//                + qs.toString(), this.getClass());
 
         return qs.toString();
     }
