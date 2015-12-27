@@ -85,7 +85,7 @@ public class PlugInManager {
           ArrayList<File> files = new ArrayList();
           files.add( plugInDirectory );
           files.addAll( findFilesRecursively( plugInDirectory,true) );
-          //System.out.println(Arrays.toString(files.toArray()));
+
           class ExtendedURLClassLoader extends URLClassLoader{
 
             public ExtendedURLClassLoader(URL[] urls) {
@@ -103,7 +103,10 @@ public class PlugInManager {
               Class c = findLoadedClass(name);
               if (c == null) {
                 try {
-                  c = getParent().loadClass(name);
+                  // these have to be handled like external packages
+                  if (!name.startsWith("de.latlon.deejump.wfs")
+                      && !name.startsWith("org.deegree."))
+                    c = getParent().loadClass(name);
                 } catch (ClassNotFoundException e) {
                 }
                 if (c == null)
@@ -112,6 +115,10 @@ public class PlugInManager {
               return c;
             }
             
+            /**
+             * allow adding urls, any time
+             * @param urls
+             */
             public void addUrls( URL[] urls ){
               for (URL url : urls) {
                 addURL(url);
@@ -120,8 +127,15 @@ public class PlugInManager {
           };
           
           ExtendedURLClassLoader mycl = new ExtendedURLClassLoader(new URL[]{});
+          // add system classpath (eg. org.deegree overrides classes in deegree.jar)
+          if (getClass().getClassLoader() instanceof URLClassLoader)
+            mycl.addUrls(((URLClassLoader) getClass().getClassLoader()).getURLs());
+          // add jars in lib/ext and subfolders
           mycl.addUrls(toURLs(files));
           classLoader = mycl;
+          
+          // debugging output of all urls in our classloader
+          //System.out.println(Arrays.toString(mycl.getURLs()));
         } else {
           classLoader = getClass().getClassLoader();
         }
@@ -151,7 +165,7 @@ public class PlugInManager {
       }
   
       configurations.addAll(findConfigurations(context.getWorkbench()
-          .getProperties().getConfigurationClasses()));
+          .getProperties().getConfigurationClassNames()));
   
       start = secondsSince(0);
       loadConfigurations();
@@ -301,17 +315,19 @@ public class PlugInManager {
   }
 
     /**
-     * filter all Configurations from a list of Class objects
-     * @param classes
+     * filter all Configurations from a list of class names
+     * @param classNames
      * @return
      * @throws Exception
      */
-    private Collection findConfigurations(List<Class> classes) throws Exception {
+    private Collection findConfigurations(List<String> classNames) throws Exception {
       ArrayList configurations = new ArrayList();
-      for (Iterator i = classes.iterator(); i.hasNext();) {
-        Class c = (Class) i.next();
-        if ( Configuration.class.isAssignableFrom(c) ) {
-          Configuration configuration = (Configuration) c.newInstance();
+      for (Iterator i = classNames.iterator(); i.hasNext();) {
+        String name = (String) i.next();
+        // find class using the plugin classloader
+        Class clazz = Class.forName(name, false, classLoader);
+        if ( Configuration.class.isAssignableFrom(clazz) ) {
+          Configuration configuration = (Configuration) clazz.newInstance();
           configurations.add(configuration);
         }
       }
@@ -354,8 +370,8 @@ public class PlugInManager {
             new String[] { file.getName() });
         monitor.report(msg);
         try {
-          configurations.addAll(findConfigurations(classes(new ZipFile(file),
-              classLoader)));
+          // add all extensions contained in this zip file
+          configurations.addAll(findConfigurations(classNames(new ZipFile(file))));
         } catch (ZipException e) {
           // Might not be a zipfile. Eat it. [Jon Aquino]
         }
@@ -404,6 +420,29 @@ public class PlugInManager {
         return classes;
     }
 
+    /**
+     * list all class names in the zip file that end with Extension or Configuration
+     */
+    private List<String> classNames(ZipFile zipFile) 
+    {
+        ArrayList<String> classNames = new ArrayList();
+        for (Enumeration e = zipFile.entries(); e.hasMoreElements();) {
+            ZipEntry entry = (ZipEntry) e.nextElement();
+            // Filter by filename; otherwise we'll be loading all the classes,
+            // which takes significantly longer [Jon Aquino]
+            // no $ ensures that inner classes are ignored as well [ede]
+            // Include "Configuration" for backwards compatibility. [Jon Aquino]
+            if (!(entry.getName().matches("[^$]+(Extension|Configuration)\\.class"))
+                  || entry.isDirectory()) {
+                continue;
+            }
+            String name = toClassName(entry, classLoader);
+            classNames.add(name);
+        }
+        
+        return classNames;
+    }
+
     private Class toClass(ZipEntry entry, ClassLoader classLoader) 
     {
         String className = entry.getName();
@@ -426,6 +465,16 @@ public class PlugInManager {
             return null;
         }
         return candidate;
+    }
+
+    private String toClassName(ZipEntry entry, ClassLoader classLoader) 
+    {
+        String className = entry.getName();
+        className = className.substring(0, className.length()
+                - ".class".length());
+        className = StringUtil.replaceAll(className, "/", ".");
+
+        return className;
     }
 
     public Collection getConfigurations() {
