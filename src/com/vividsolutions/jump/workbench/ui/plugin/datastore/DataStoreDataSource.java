@@ -151,7 +151,8 @@ public class DataStoreDataSource extends DataStoreQueryDataSource implements
         String[] colNames = meta.getColumnNames(query.getDatasetName());
         Envelope env = meta.getExtents(query.getDatasetName(),
             query.getGeometryAttributeName());
-        if (env != null)
+        // make sure we have a valid Envelope
+        if (env == null)
           env = new Envelope();
         query.setFilterGeometry(new GeometryFactory().toGeometry(env));
         String queryString = conn.getSqlBuilder(srid, colNames).getSQL(query);
