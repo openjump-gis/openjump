@@ -23,7 +23,7 @@ import de.latlon.deejump.wfs.plugin.WFSPlugIn;
 public class WFSExtension extends Extension {
   private static String msg = "Disabled because deegree2-core is missing. Try OJ PLUS!";
   private static boolean disabled = false;
-  
+
   public String getName() {
     return "WFS(-T) 1.0/1.1 Extension (Lat/Lon)";
   }
@@ -37,18 +37,19 @@ public class WFSExtension extends Extension {
   }
 
   public void configure(PlugInContext context) throws Exception {
+    // we use our classloader as we should have been instantiated by the plugin classloader
+    ClassLoader pluginLoader = getClass().getClassLoader();
     // only install WFS in PLUS, where the lib/wfs.plus/*.jar are packaged in
     try {
-      Class.forName("org.deegree.ogcwebservices.wfs.WFService", false, this
-          .getClass().getClassLoader());
+      Class.forName("org.deegree.ogcwebservices.wfs.WFService", false, pluginLoader);
+      
+      new WFSPlugIn().initialize(context);
+      new UpdateWFSLayerPlugIn().initialize(context);
     } catch (ClassNotFoundException e) {
       disabled = true;
-      context.getWorkbenchFrame().log( msg );
+      context.getWorkbenchFrame().log(msg);
       return;
     }
-
-    new WFSPlugIn().initialize(context);
-    new UpdateWFSLayerPlugIn().initialize(context);
   }
 
 }
