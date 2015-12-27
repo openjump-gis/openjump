@@ -236,8 +236,6 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
     final ResultSetBlock resultSetBlock = new ResultSetBlock() {
       public void yield(ResultSet resultSet) throws Exception {
         if (resultSet.next()) {
-          // hack for Oracle: todo: find common method: overload in oracle impl ?
-          // try a binary reader, then defaults to a WKT reader
           byte[] bytes = null;
           Geometry geom = null;
           try {
@@ -260,9 +258,6 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
         JDBCUtil.execute(conn.getJdbcConnection(), (sql2), resultSetBlock);
       }
     } catch (Exception ex1) {
-      // If attributeName is indexed but indexed has not been initialized
-      // (no VACUUM ANALYZE) ST_Estimated_Extent may throw an exception.
-      // In this case, try the second method using ST_Extent
       if (sql2 != null) {
         // some drivers do not support a second SQL query for extent:
         /// sqlite w/o spatialite for instance

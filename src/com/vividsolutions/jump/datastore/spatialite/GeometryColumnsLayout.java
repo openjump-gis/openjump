@@ -6,5 +6,5 @@ package com.vividsolutions.jump.datastore.spatialite;
  * @author nicolas
  */
 public enum GeometryColumnsLayout {
-    FDO_LAYOUT, OGC_OGR_LAYOUT,OGC_SPATIALITE_LAYOUT, NO_LAYOUT;
+    FDO_LAYOUT, OGC_OGR_LAYOUT,OGC_SPATIALITE_LAYOUT, OGC_GEOPACKAGE_LAYOUT, NO_LAYOUT;
 }

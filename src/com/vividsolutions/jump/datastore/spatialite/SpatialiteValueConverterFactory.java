@@ -43,22 +43,27 @@ public class SpatialiteValueConverterFactory extends SpatialDatabasesValueConver
     // gets concerned tableName and column name to be able to detect geom column as text
     String tableName = rsm.getTableName(columnIndex).toLowerCase();
     String columnName = rsm.getColumnName(columnIndex).toLowerCase();
-    
-    GeometricColumnType gcType = metadata.getGeoColTypesdMap().get(tableName+"."+columnName);
+
+    GeometricColumnType gcType = metadata.getGeoColTypesdMap().get(tableName + "." + columnName);
     if (gcType == null) {
-      // not a geo column
+      // not a geo column, handle date/datetime columns by forcing text mode
+      // todo: use Joda to parse date string ?
+      if ("DATETIME".equalsIgnoreCase(dbTypeName) || "DATE".equalsIgnoreCase(dbTypeName)) {
+        return ValueConverterFactory.STRING_MAPPER;
+      }
       ValueConverter stdConverter = ValueConverterFactory.getConverter(rsm, columnIndex);
       if (stdConverter != null) {
         return stdConverter;
-      } 
+      }
       // default - can always show it as a string!
       return ValueConverterFactory.STRING_MAPPER;
     } else if (gcType == GeometricColumnType.WKB) {
-        return WKB_GEOMETRY_MAPPER;
+      return WKB_GEOMETRY_MAPPER;
     } else if (gcType == GeometricColumnType.WKT) {
-        return WKT_GEOMETRY_MAPPER;
-    } else if (gcType == GeometricColumnType.SPATIALITE) {
-        return SPATIALITE_GEOMETRY_MAPPER;
+      return WKT_GEOMETRY_MAPPER;
+    } else if (gcType == GeometricColumnType.SPATIALITE
+        || gcType == GeometricColumnType.NATIVE) {
+      return SPATIALITE_GEOMETRY_MAPPER;
     } else {
       return ValueConverterFactory.STRING_MAPPER;
     }
@@ -81,7 +86,15 @@ public class SpatialiteValueConverterFactory extends SpatialDatabasesValueConver
 
       //no FDO info for this table, try native spatialite blob encoding
       byte[] geometryBytes = rs.getBytes(columnIndex);
-      returnGeometry = getNativeGeometryFromBlob(geometryBytes);
+      if (geometryBytes != null) {
+        if (appearsToBeGeopackageGeometry(geometryBytes)) {
+          returnGeometry = getGeopackageGeometryFromBlob(geometryBytes);
+        } else {
+          returnGeometry = getNativeGeometryFromBlob(geometryBytes);
+        }
+      } else {
+        returnGeometry = wktReader.read("GEOMETRYCOLLECTION EMPTY");
+      }
 
       return returnGeometry;
     }
@@ -107,6 +120,132 @@ public class SpatialiteValueConverterFactory extends SpatialDatabasesValueConver
       return returnGeometry;
     }
 
+    /**
+     * From DB Query plugin: TODO: factorize code
+     *
+     * @param blobAsBytes
+     * @return
+     * @throws Exception
+     */
+    private Geometry getGeopackageGeometryFromBlob(byte[] blobAsBytes) throws IOException, ParseException {
+      Geometry returnGeometry;
+
+      //first two bytes are GP..
+      //Third byte is version
+      //Fourth byte is flags
+      byte flags = blobAsBytes[3];
+      //Bytes 5-8 are SRS ID
+
+      int evelopeSize = 0;
+
+      //FIXME do something with this like Create empty geometry collection??
+      // 0b00100000 ==  0X20
+      boolean emptyGeometry = (flags & 0X20) != 0;
+
+      int envelopSize = getEnvelopeSize(flags);
+
+      int headerSize = 8 + envelopSize;
+
+      byte[] wkb = new byte[blobAsBytes.length - headerSize];
+      System.arraycopy(blobAsBytes, headerSize, wkb, 0, blobAsBytes.length - headerSize);
+      WKBReader wkbReader = new WKBReader();
+      returnGeometry = wkbReader.read(wkb);
+
+      if (returnGeometry == null) {
+        throw new IOException("Unable to parse WKB");
+      }
+
+      return returnGeometry;
+    }
+
+    /**
+     * From DB Query plugin: TODO: factorize code
+     *
+     * @param flags
+     * @return
+     * @throws Exception
+     */
+    private int getEnvelopeSize(byte flags) throws IOException {
+      //0b0000001 == 0x01
+      boolean littleEndian = (flags & 0x01) != 0;
+
+      //0b00001110 == 0x0E
+      int envelopeCode = (flags & 0x0E) >>> 1;
+
+      //spec says the endian bit sets byte order for "header" values
+      //Not sure what 'header" is in this context, but using it with
+      //geonames sample provided by Jukka results in bad parsing of BLOB
+//      if(littleEndian)
+//      {
+//         envelopeCode = 0;
+//         if( (flags & 0b00001000) != 0)
+//         {
+//            envelopeCode += 1;
+//         }
+//
+//         if( (flags & 0b00000100) != 0)
+//         {
+//            envelopeCode += 2;
+//         }
+//
+//         if( (flags & 0b00000010) != 0)
+//         {
+//            envelopeCode += 4;
+//         }
+//      }
+      int envelopeSize;
+      switch (envelopeCode) {
+        case 0:
+          envelopeSize = 0;
+          break;
+        case 1:
+          envelopeSize = 32;
+          break;
+        case 2:
+        case 3:
+          envelopeSize = 48;
+          break;
+        case 4:
+          envelopeSize = 64;
+          break;
+        default:
+          //Envelope codes 5-7 are invalid
+          throw new IOException("Invalid envelope code " + envelopeCode);
+      }
+
+      return envelopeSize;
+    }
+
+  }
+
+  private boolean appearsToBeGeopackageGeometry(byte[] geometryAsBytes) {
+
+    //From http://opengis.github.io/geopackage/#gpb_format
+    //Geopackage blobs start with "gp", contain some other header
+    //info, and are followed by a WKB
+    return (geometryAsBytes.length > 2
+        && geometryAsBytes[0] == (byte) 0x47 //G
+        && geometryAsBytes[1] == (byte) 0x50 //P
+        );
+  }
+
+  private boolean appearsToBeNativeGeometry(byte[] geometryAsBytes) {
+    boolean blobIsGeometry = false;
+
+    //From http://www.gaia-gis.it/spatialite-2.1/SpatiaLite-manual.html
+    //Spatialite geometry blobs are WKB-like, with some specifics to
+    //spatialite:  For our purposes, this should be good enough:
+    //the 39th byte must be 0x7C (marks MBR end)
+    //and the blob must end with 0xFE
+    int numBytes = geometryAsBytes.length;
+
+    if (numBytes > 39
+        && geometryAsBytes[38] == (byte) 0x7C
+        && geometryAsBytes[numBytes - 1] == (byte) 0xFE) {
+      blobIsGeometry = true;
+    }
+
+    return blobIsGeometry;
   }
 
 }

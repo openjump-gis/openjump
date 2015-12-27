@@ -39,9 +39,9 @@ public class SpatialiteSQLBuilder extends SpatialDatabasesSQLBuilder {
 
     //System.out.println(qs);
     String s = String.format(ret, cols, this.datasetName, bbox, and, lim); 
-    JUMPWorkbench.getInstance().getFrame().log(
-        "SQL query to get Spatial table features:\n\t"
-        + s, this.getClass());
+//    JUMPWorkbench.getInstance().getFrame().log(
+//        "SQL query to get Spatial table features:\n\t"
+//        + s, this.getClass());
 
     return s;
   }
