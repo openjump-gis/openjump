@@ -70,9 +70,8 @@ public class MariadbValueConverterFactory extends SpatialDatabasesValueConverter
         WKBReader wr = new WKBReader();
 
         if (nativeFormat) {
-
-                //copy the byte array, removing the first four
-          //zero bytes added by mysql
+          //copy the byte array, removing the first four
+          //zero bytes added by mysql to store SRID in binary
           byte[] wkb = new byte[bytes.length - 4];
           System.arraycopy(bytes, 4, wkb, 0, wkb.length);
           geometry = wr.read(wkb);
@@ -90,6 +89,7 @@ public class MariadbValueConverterFactory extends SpatialDatabasesValueConverter
    * From Larry Reeder, code to detect MySQL spatial type.
    * Added detection code for older/strange mysql geometry format beginning with 6A 08 00 00 
    * TODO: make method public static in its package ?
+   * Newest MySQL/MariaDB version stores srid at the beginning of the blob, as int
    * The JUMP DB Query Plugin is Copyright (C) 2007  Larry Reeder
    *  JUMP is Copyright (C) 2003 Vivid Solutions
    * 
@@ -117,9 +117,10 @@ public class MariadbValueConverterFactory extends SpatialDatabasesValueConverter
         nativeFormat = true;
       }
 
-    } else if (Arrays.equals(ctrl, firstFour)) {
-      // Nicolas Ribot: some geometries begin with: 6A 08 00 00 
-      // TODO: document how/why...
+      // TODO: how to recognize MySQL binary from wkb ?
+//    } else if (Arrays.equals(ctrl, firstFour)) {
+    } else if (true) {
+      // Nicolas Ribot: mysql now stores srid at the beginning of the geom ?
       nativeFormat = true;
     }
     return nativeFormat;

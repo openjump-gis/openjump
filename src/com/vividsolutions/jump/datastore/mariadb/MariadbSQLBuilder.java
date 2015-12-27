@@ -72,6 +72,8 @@ public class MariadbSQLBuilder extends SpatialDatabasesSQLBuilder {
     Envelope env = query.getFilterGeometry().getEnvelopeInternal();
 
     // Example of MariaDB SQL: where st_Intersects(b.geom, st_polygonFromText('POLYGON((4 4, 5 4, 5 5, 4 5, 4 4))'))
+    // Nicolas Ribot: 23 dec: MySQL 5.7.10 checks geom SRID and reject the query if bbox has not correct srid
+    String s = this.defaultSRID == null ? "0" : this.defaultSRID.getString();
     StringBuilder buf = new StringBuilder();
     buf.append("st_intersects(").append(query.getGeometryAttributeName()).append(", st_polygonFromText('POLYGON((");
     buf.append(env.getMinX()).append(" ").append(env.getMinY()).append(",")
@@ -79,7 +81,7 @@ public class MariadbSQLBuilder extends SpatialDatabasesSQLBuilder {
         .append(env.getMaxX()).append(" ").append(env.getMaxY()).append(",")
         .append(env.getMinX()).append(" ").append(env.getMaxY()).append(",")
         .append(env.getMinX()).append(" ").append(env.getMinY());
-    buf.append("))'))");
+    buf.append("))', ").append(s).append("))");
     return buf.toString();
   }
 }

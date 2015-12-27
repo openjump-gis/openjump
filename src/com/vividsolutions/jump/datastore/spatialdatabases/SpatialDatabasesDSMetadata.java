@@ -439,7 +439,9 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
     JDBCUtil.execute(conn.getJdbcConnection(), sql, new ResultSetBlock() {
       public void yield(ResultSet resultSet) throws SQLException {
         if (resultSet.next()) {
-          srid.append(resultSet.getString(1));
+          // Nicolas Ribot: test if a null is returned
+          String s = resultSet.getString(1);
+          srid.append(s == null ? "0" : s);
         }
       }
     });
