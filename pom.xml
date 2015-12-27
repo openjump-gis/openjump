@@ -580,7 +580,7 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>generate-date</id>
+                        <id>generate-dateLong</id>
                         <phase>process-sources</phase>
                         <goals>
                             <goal>create</goal>
@@ -595,7 +595,7 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>generate-date</id>
+                        <id>generate-dateShort</id>
                         <phase>process-sources</phase>
                         <goals>
                             <goal>create</goal>
