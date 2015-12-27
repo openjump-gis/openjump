@@ -8,23 +8,45 @@ import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.noding.IntersectionAdder;
 import com.vividsolutions.jts.noding.MCIndexNoder;
 import com.vividsolutions.jts.noding.NodedSegmentString;
+import com.vividsolutions.jts.operation.linemerge.LineMerger;
 import com.vividsolutions.jts.operation.polygonize.Polygonizer;
+import visad.data.netcdf.in.Merger;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+
 import static com.vividsolutions.jts.geom.impl.PackedCoordinateSequenceFactory.*;
 
 /**
  * Operator to make a geometry valid.
+ * <br/>
+ * Making a geometry valid will remove duplicate points although duplicate points
+ * do not make a geometry invalid.
  */
 public class MakeValidOp {
 
     private static final Coordinate[] EMPTY_COORD_ARRAY = new Coordinate[0];
     private static final LinearRing[] EMPTY_RING_ARRAY = new LinearRing[0];
 
+    // If preserveGeomDim is true, geometry components with a dimension lesser than
+    // input geometry dimension are ignored (except if input geometry is an heterogeneous
+    // GeometryCollection)
+    private boolean preserveGeomDim = false;
+
+    // If preserveCoordDim is true, MakeValidOp preserves third and fourth ordinates.
+    // If preserveCoordDim is false, third dimension is preserved but not fourth one.
+    private boolean preserveCoordDim = false;
+
     public MakeValidOp() {}
+
+    public MakeValidOp preserveGeomDim() {
+        this.preserveGeomDim = true;
+        return this;
+    }
+
+    public MakeValidOp preserveCoordDim() {
+        this.preserveCoordDim = true;
+        return this;
+    }
 
     /**
      * Decompose a geometry recursively into simple components.
@@ -40,9 +62,6 @@ public class MakeValidOp {
     }
 
 
-    public static Geometry makeValid(Geometry geometry) {
-        return makeValid(geometry, true);
-    }
 
     /**
      * Repair an invalid geometry.
@@ -58,10 +77,9 @@ public class MakeValidOp {
      * their M value after the noding or the polygonization phase.
      * TODO add an option to return a geometry preserving input dimension
      * @param geometry input geometry
-     * @param removeDuplicate
      * @return
      */
-    public static Geometry makeValid(Geometry geometry, boolean removeDuplicate) {
+    public Geometry makeValid(Geometry geometry) {
         List<Geometry> list = new ArrayList<Geometry>(geometry.getNumGeometries());
         decompose(geometry, list);
         List<Geometry> list2 = new ArrayList<Geometry>();
@@ -71,18 +89,21 @@ public class MakeValidOp {
                 if (!p.isEmpty()) list2.add(p);
             }
             else if (component instanceof LineString) {
-                Geometry geom = makeLineStringValid((LineString) component, removeDuplicate);
+                Geometry geom = makeLineStringValid((LineString) component);
                 for (int i = 0 ; i < geom.getNumGeometries() ; i++) {
                     if (!geom.getGeometryN(i).isEmpty()) list2.add(geom.getGeometryN(i));
                 }
             }
             else if (component instanceof Polygon) {
-                Geometry geom = makePolygonValid((Polygon) component, removeDuplicate);
+                Geometry geom = makePolygonValid((Polygon) component);
                 for (int i = 0 ; i < geom.getNumGeometries() ; i++) {
                     if (!geom.getGeometryN(i).isEmpty()) list2.add(geom.getGeometryN(i));
                 }
             }
             else assert false : "Should never reach here";
+        }
+        if (preserveGeomDim && !geometry.getClass().getSimpleName().equals("GeometryCollection")) {
+            list2 = removeLowerDimension(list2, geometry.getDimension());
         }
         if (list2.isEmpty()) {
             GeometryFactory factory = geometry.getFactory();
@@ -100,9 +121,23 @@ public class MakeValidOp {
         }
     }
 
+    // Remove geometries with a dimension less than dimension parameter
+    private List<Geometry> removeLowerDimension(List<Geometry> geometries, int dimension) {
+        List<Geometry> list = new ArrayList<Geometry>();
+        for (Geometry geom : geometries) {
+            if (geom.getDimension() == dimension) {
+                list.add(geom);
+            }
+        }
+        return list;
+    }
+
     // If X or Y is null, return an empty Point
-    private static Point makePointValid(Point point) {
+    private Point makePointValid(Point point) {
         CoordinateSequence sequence = point.getCoordinateSequence();
+        // The case where sequence contains more than one point is not
+        // processed (it will return an empty point or the input point
+        // unchanged)
         if (Double.isNaN(sequence.getOrdinate(0, 0)) || Double.isNaN(sequence.getOrdinate(0, 1))) {
             return point.getFactory().createPoint(DOUBLE_FACTORY.create(0, sequence.getDimension()));
         } else {
@@ -169,14 +204,11 @@ public class MakeValidOp {
      * <ul>
      *     <li>an empty LineString if input CoordinateSequence has no valid point</li>
      *     <li>a Point if input CoordinateSequence has a single valid Point</li>
-     *     <li>a LineString retaining or not duplicate coordinates depending on
-     *     removeDuplicate parameter</li>
      * </ul>
      * @param lineString
-     * @param removeDuplicate
      * @return
      */
-    private static Geometry makeLineStringValid(LineString lineString, boolean removeDuplicate) {
+    private Geometry makeLineStringValid(LineString lineString) {
         CoordinateSequence sequence = lineString.getCoordinateSequence();
         CoordinateSequence sequenceWithoutDuplicates = makeSequenceValid(sequence, true, false);
         if (sequenceWithoutDuplicates.size() == 0) {
@@ -185,12 +217,9 @@ public class MakeValidOp {
         } else if (sequenceWithoutDuplicates.size() == 1) {
             // a single valid point -> returns a Point
             return lineString.getFactory().createPoint(sequenceWithoutDuplicates);
-        } else if (removeDuplicate) {
+        } else {
             // we use already calculated sequenceWithoutDuplicates
             return lineString.getFactory().createLineString(sequenceWithoutDuplicates);
-        } else {
-            // we need to recompute a sequence retaining duplicates but not coordinates with NaN X or Y
-            return lineString.getFactory().createLineString(makeSequenceValid(sequence, false, false));
         }
     }
 
@@ -205,15 +234,14 @@ public class MakeValidOp {
      *     <li>a GeometryCollection if input has degenerate parts (ex. degenerate holes)</li>
      * </ul>
      * @param polygon
-     * @param removeDuplicate
      * @return
      */
-    private static Geometry makePolygonValid(Polygon polygon, boolean removeDuplicate) {
+    private Geometry makePolygonValid(Polygon polygon) {
         //This first step analyze linear components and create degenerate geometries
         //of dimension 0 or 1 if they do not form valid LinearRings
         //If degenerate geometries are found, it may produce a GeometryCollection with
         //heterogeneous dimension
-        Geometry geom = makePolygonComponentsValid(polygon, removeDuplicate);
+        Geometry geom = makePolygonComponentsValid(polygon);
         List<Geometry> list = new ArrayList<Geometry>();
         for (int i = 0 ; i < geom.getNumGeometries() ; i++) {
             Geometry component = geom.getGeometryN(i);
@@ -241,19 +269,18 @@ public class MakeValidOp {
      * GeometryCollection of heterogeneous dimension.
      * </p>
      * @param polygon
-     * @param removeDuplicate
      * @return
      */
-    private static Geometry makePolygonComponentsValid(Polygon polygon, boolean removeDuplicate) {
+    private Geometry makePolygonComponentsValid(Polygon polygon) {
         GeometryFactory factory = polygon.getFactory();
         CoordinateSequence outerRingSeq = makeSequenceValid(polygon.getExteriorRing().getCoordinateSequence(), true, true);
         // The validated sequence of the outerRing does not form a valid LinearRing
         // -> build valid 0-dim or 1-dim geometry from all the rings
         if (outerRingSeq.size() == 0 || outerRingSeq.size() < 4) {
             List<Geometry> list = new ArrayList<Geometry>();
-            if (outerRingSeq.size() > 0) list.add(makeLineStringValid(polygon.getExteriorRing(), removeDuplicate));
+            if (outerRingSeq.size() > 0) list.add(makeLineStringValid(polygon.getExteriorRing()));
             for (int i = 0 ; i < polygon.getNumInteriorRing() ; i++) {
-                Geometry g = makeLineStringValid(polygon.getInteriorRingN(i), removeDuplicate);
+                Geometry g = makeLineStringValid(polygon.getInteriorRingN(i));
                 if (!g.isEmpty()) list.add(g);
             }
             if (list.isEmpty()) return factory.createPolygon(outerRingSeq);
@@ -290,7 +317,7 @@ public class MakeValidOp {
      * @param geometry the geometry from which polygonal components wil be extracted
      * @param list the list into which polygonal components will be added.
      */
-    protected static void extractPolygons(Geometry geometry, List<Polygon> list) {
+    protected void extractPolygons(Geometry geometry, List<Polygon> list) {
         for (int i = 0 ; i < geometry.getNumGeometries() ; i++) {
             Geometry g = geometry.getGeometryN(i);
             if (g == null) continue;            // null components are discarded
@@ -323,7 +350,7 @@ public class MakeValidOp {
      * <li>remove Geometries computed from noded interior boundaries</li>
      * </ul>
      */
-    protected static Geometry nodePolygon(Polygon polygon) {
+    protected Geometry nodePolygon(Polygon polygon) {
         LinearRing exteriorRing = (LinearRing)polygon.getExteriorRing();
         Geometry geom = getMultiPolygonFromLinearRing(exteriorRing);
         for (int i = 0 ; i < polygon.getNumInteriorRing() ; i++) {
@@ -341,18 +368,21 @@ public class MakeValidOp {
      * </ul>
      * This is used to repair auto-intersecting Polygons
      */
-    protected static MultiPolygon getMultiPolygonFromLinearRing(LinearRing ring) {
+    protected Geometry getMultiPolygonFromLinearRing(LinearRing ring) {
         if (ring.isSimple()) {
             return ring.getFactory().createMultiPolygon(new Polygon[]{
                     ring.getFactory().createPolygon(ring, EMPTY_RING_ARRAY)
             });
         }
         else {
-            // TODO according to MD, we need to remove duplicate linestring before polygonizing
             Polygonizer polygonizer = new Polygonizer();
             polygonizer.add(nodeLineString(ring.getCoordinates(), ring.getFactory()));
-            Collection<Polygon> polys = polygonizer.getPolygons();
-            return ring.getFactory().createMultiPolygon(polys.toArray(new Polygon[polys.size()]));
+            Collection<Geometry> geoms = new ArrayList<Geometry>();
+            geoms.addAll(polygonizer.getPolygons());
+            geoms.addAll(polygonizer.getCutEdges());
+            geoms.addAll(polygonizer.getDangles());
+            geoms.addAll(polygonizer.getInvalidRingLines());
+            return ring.getFactory().buildGeometry(geoms);
         }
     }
 
@@ -366,7 +396,7 @@ public class MakeValidOp {
      * @param gf geometryFactory to use
      * @return a list of noded LineStrings
      */
-    protected static List<LineString> nodeLineString(Coordinate[] coords, GeometryFactory gf) {
+    protected Set<LineString> nodeLineString(Coordinate[] coords, GeometryFactory gf) {
         MCIndexNoder noder = new MCIndexNoder();
         noder.setSegmentIntersector(new IntersectionAdder(new RobustLineIntersector()));
         List<NodedSegmentString> list = new ArrayList<NodedSegmentString>();
@@ -378,31 +408,50 @@ public class MakeValidOp {
                     ((NodedSegmentString)segmentString).getCoordinates()
             ));
         }
-        return lineStringList;
+
+        // WARNING : merger loose original linestrings
+        // It is useful for LinearRings but should not be used for (Multi)LineStrings
+        LineMerger merger = new LineMerger();
+        merger.add(lineStringList);
+        lineStringList = (List<LineString>)merger.getMergedLineStrings();
+
+        // Remove duplicate linestrings preserving main orientation
+        Set<LineString> lineStringSet = new HashSet<LineString>();
+        for (LineString line : lineStringList) {
+            if (lineStringSet.contains(line) || lineStringSet.contains(line.reverse())) {
+                continue;
+            } else {
+                lineStringSet.add(line);
+            }
+        }
+        return lineStringSet;
     }
 
 
 
     public static void main(String[] args) throws ParseException {
         GeometryFactory factory = new GeometryFactory();
+        MakeValidOp op = new MakeValidOp();
+        MakeValidOp opClean = new MakeValidOp().preserveGeomDim();
+        Geometry input, result;
 
         // check makePointValid
         Point p1 = factory.createPoint(new Coordinate(0,0));
-        Point p2 = makePointValid(p1);
+        Point p2 = op.makePointValid(p1);
         assert p1.equals(p2);
 
         p1 = factory.createPoint(new Coordinate(Double.NaN,0));
-        p2 = makePointValid(p1);
+        p2 = op.makePointValid(p1);
         assert !p1.isEmpty();
         assert p2.isEmpty();
 
         p1 = factory.createPoint(new Coordinate(0, Double.NaN));
-        p2 = makePointValid(p1);
+        p2 = op.makePointValid(p1);
         assert !p1.isEmpty();
         assert p2.isEmpty();
 
         p1 = factory.createPoint(DOUBLE_FACTORY.create(new double[]{0,1,2,3}, 4));
-        p2 = makePointValid(p1);
+        p2 = op.makePointValid(p1);
         assert p1.getCoordinateSequence().getOrdinate(0,3) == p2.getCoordinateSequence().getOrdinate(0,3);
 
         // check makeSequenceValid
@@ -446,19 +495,36 @@ public class MakeValidOp {
         assert cs2.getOrdinate(3,3) == 3 : cs2.getOrdinate(3,3);
 
         WKTReader reader = new WKTReader();
-        Geometry geometry = reader.read("LINESTRING(0 0, 10 0, 20 0, 20 0, 30 0)");
-        assert geometry.getNumPoints() == 5;
-        List<LineString> list = nodeLineString(geometry.getCoordinates(), geometry.getFactory());
-        assert list.size() == 1;
-        assert list.get(0).getCoordinates().length == 5;
+        // invalid polygon (single linearRing drawing 2 triangles joined by a line)
+        input = reader.read("POLYGON (( 322 354, 322 348, 325 351, 328 351, 331 348, 331 354, 328 351, 325 351, 322 354 ))");
+        result = op.makeValid(input);
+        assert result.getNumGeometries() == 3;
+        result = opClean.makeValid(input);
+        assert result.getNumGeometries() == 2;
 
-        geometry = reader.read("LINESTRING(0 0, 20 0, 20 20, 20 20, 10 -10)");
-        assert geometry.getNumPoints() == 5;
-        list = nodeLineString(geometry.getCoordinates(), geometry.getFactory());
-        assert list.size() == 5; // creates a degenerate segment from 20 20 to 20 20
+        reader = new WKTReader();
+        // invalid polygon (single linearRing drawing 2 triangles joined by a line, first triangle has duplicated segments)
+        input = reader.read("POLYGON (( 322 354, 322 348, 322 354, 322 348, 325 351, 328 351, 331 348, 331 354, 328 351, 325 351, 322 354 ))");
+        result = op.makeValid(input);
+        assert result.getNumGeometries() == 3;
+        result = opClean.makeValid(input);
+        assert result.getNumGeometries() == 2;
+
+
+        reader = new WKTReader();
+        input = reader.read("LINESTRING(0 0, 10 0, 20 0, 20 0, 30 0)");
+        assert input.getNumPoints() == 5;
+        Set<LineString> set = op.nodeLineString(input.getCoordinates(), input.getFactory());
+        assert set.size() == 1;
+        assert set.iterator().next().getCoordinates().length == 4; // removed duplicate coordinate
+
+        input = reader.read("LINESTRING(0 0, 20 0, 20 20, 20 20, 10 -10)");
+        assert input.getNumPoints() == 5;
+        set = op.nodeLineString(input.getCoordinates(), input.getFactory());
+        assert set.size() == 3; // node + merge -> 3 line strings
 
         Polygonizer polygonizer = new Polygonizer();
-        polygonizer.add(list);
+        polygonizer.add(set);
         Collection<Polygon> polys = polygonizer.getPolygons();
         System.out.println(polys);
 

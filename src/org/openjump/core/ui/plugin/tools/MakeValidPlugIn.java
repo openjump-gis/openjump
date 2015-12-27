@@ -108,7 +108,7 @@ public class MakeValidPlugIn extends AbstractThreadedUiPlugIn {
         MakeValidOp makeValidOp = new MakeValidOp();
         for (Object o : result1.getFeatures()) {
             Feature feature = (Feature)o;
-            Geometry validGeom = MakeValidOp.makeValid(feature.getGeometry());
+            Geometry validGeom = new MakeValidOp().makeValid(feature.getGeometry());
             if (removeDegenerateParts) validGeom = removeDegenerateParts(feature.getGeometry(), validGeom);
             feature.setGeometry(validGeom);
         }
