@@ -491,7 +491,7 @@ public class ConnectionManagerPanel extends JPanel {
         boolean isClosed) throws DataStoreException {
       String driverClassName = desc.getDataStoreDriverClassName();
       if (driverClassName
-          .equals("com.vividsolutions.jump.datastore.postgis.PostgisDataStoreDriver")) {
+          .equals("com.vividsolutions.jump.datastore.postgis.PostgisDSDriver")) {
         return isClosed ? PG_DISCONNECTED_ICON : PG_CONNECTED_ICON;
       } else if (driverClassName
           .equals("com.vividsolutions.jump.datastore.oracle.OracleDataStoreDriver")) {
