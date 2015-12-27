@@ -28,13 +28,5 @@
       <directory>lib/plus</directory>
       <outputDirectory>/lib/ext</outputDirectory>
     </fileSet>
-    <fileSet>
-      <directory>lib/imageio-ext.plus</directory>
-      <outputDirectory>/lib</outputDirectory>
-    </fileSet>
-    <fileSet>
-      <directory>lib/wfs.plus</directory>
-      <outputDirectory>/lib</outputDirectory>
-    </fileSet>
   </fileSets>
 </component>
