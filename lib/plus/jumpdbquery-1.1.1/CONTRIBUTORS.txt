@@ -1,0 +1,22 @@
+Like most open source packages, the Jump DB plugin was built on the "shoulders 
+of giants", on top of contributions from countless developers.  Special thanks 
+to the original developers of Jump and OpenJump for providing a pluggable 
+GIS editor.
+
+The original version of the plugin was created by Larry Reeder, who still
+maintains the package.
+
+Thanks goes to Nicolas Ribot for submitting patches that made the plugin 
+modal, provided a query history, status bar, and several other nice 
+enhancements.
+
+Another thanks to the following people for providing translations:
+
+Edgar Soldin - German
+Giuseppe Aruta - Italian and Spanish
+Jukka Rahkonen - Finnish
+Michaël Michaud - French
+
+Also, thanks to Wei GuoBing for suggestions on determining if a column
+in an Oracle table is a spatial type. 
+
