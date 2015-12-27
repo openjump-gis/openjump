@@ -111,6 +111,6 @@ public class ExtensionsAboutPanel extends JPanel {
         editorPane.setText("jEditorPane1");
         editorPane.setContentType("text/html");
         editorPane.setBorder(BorderFactory.createEmptyBorder());
-        //this.add(editorPane, BorderLayout.NORTH);
+        refresh();
     }
 }
