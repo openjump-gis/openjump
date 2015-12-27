@@ -2,7 +2,7 @@ OpenJUMP ReadMe file
 --------------------
 Version ${version.number} ${version.release} rev.${version.revision}
 
-${version.buildDate}
+${version.buildDateLong}
 
 Contents
 --------

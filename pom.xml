@@ -591,6 +591,21 @@
                                 <item>timestamp</item>
                             </items>
                             <locale>en_US</locale>
+                            <buildNumberPropertyName>version.buildDateLong</buildNumberPropertyName>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-date</id>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>create</goal>
+                        </goals>
+                        <configuration>
+                            <format>{0,date,dd.MM.yyyy}</format>
+                            <items>
+                                <item>timestamp</item>
+                            </items>
+                            <locale>en_US</locale>
                             <buildNumberPropertyName>version.buildDate</buildNumberPropertyName>
                         </configuration>
                     </execution>
