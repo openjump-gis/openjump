@@ -575,7 +575,7 @@
 	<plug-in>
 		org.openjump.core.ui.plugin.view.EasyButtonsPlugin
 	</plug-in>
-	<plug-in>
+	<!--plug-in>
 		com.vividsolutions.jump.workbench.plugin.StartMacroPlugIn
 	</plug-in>
 	<plug-in>
@@ -583,7 +583,7 @@
 	</plug-in>
 	<plug-in>
 		com.vividsolutions.jump.workbench.plugin.RunMacroPlugIn
-	</plug-in>
+	</plug-in-->
 
 
 	<!--- ======================= TOOLS menu =============================== -->
