@@ -3,6 +3,7 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+<----------------------------------------------- Changes.txt updated 'til here
 2015-12-26 ede
   * renamed some classes from *DataStore* to *DS* if others in the same package
     already used the same naming scheme
@@ -27,7 +28,6 @@
 2015-12-23 bertazza
   * Info feature tool: added a pane to show WMS info.
 
-<----------------------------------------------- Changes.txt updated 'til here
 2015-12-21 bertazza
   * Raster Styler: updated Italian and Spanish language files (thanks to Peppe)
   * Raster Styler: added check to ensure a valid number of classes has been
@@ -178,7 +178,7 @@
     - polygon width
     - polygon length
     - circularity (Miller)
-    - compacity (GravÃ©lius)
+    - compacity (Gravélius)
 
 2015-06-26 bertazza
   * Raster styles: some bugs fixed.
@@ -1839,7 +1839,7 @@ psd, wbmp, tga, tiff, hdr, pam, xbm, jpg, bmp, pnm, png, ppm, dcx, pgm, gif]
   * Finish to fix 3513864 : add an icon to RasterImageLayer
   
 2012-04-02 ede
-  * Finish 3510778 with the help of Larry (Michaï¿½l's fix was inefficient)
+  * Finish 3510778 with the help of Larry (Michaa¿½l's fix was inefficient)
   * workaround for bug http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=7122141
     and FeatureInstaller cleaning
 
