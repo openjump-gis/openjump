@@ -64,6 +64,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.JUMPVersion;
@@ -303,6 +306,36 @@ public class AboutDialog extends JDialog {
         extScroll.setBorder(BorderFactory.createEmptyBorder());
         jTabbedPane1.addTab(I18N.get("ui.AboutDialog.Extensions"), extScroll);
 
+        extScroll.addAncestorListener(new AncestorListener() {
+          int h = 0, v = 0;
+
+          @Override
+          public void ancestorRemoved(AncestorEvent event) {
+            h = extScroll.getHorizontalScrollBar().getValue();
+            v = extScroll.getVerticalScrollBar().getValue();
+          }
+
+          @Override
+          public void ancestorMoved(AncestorEvent event) {
+            h = extScroll.getHorizontalScrollBar().getValue();
+            v = extScroll.getVerticalScrollBar().getValue();
+          }
+
+          // reload if the tab is activated
+          @Override
+          public void ancestorAdded(AncestorEvent event) {
+
+            extensionsAboutPanel.refresh();
+            // restore scrollbar positions after refresh
+            SwingUtilities.invokeLater(new Runnable() {
+              public void run() {
+                extScroll.getHorizontalScrollBar().setValue(h);
+                extScroll.getVerticalScrollBar().setValue(v);
+              }
+            });
+          }
+        });
+        
         // add tabbedpane
         add(jTabbedPane1, BorderLayout.CENTER);
 

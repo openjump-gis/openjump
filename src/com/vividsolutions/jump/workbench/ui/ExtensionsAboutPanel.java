@@ -57,22 +57,6 @@ public class ExtensionsAboutPanel extends JPanel {
             ex.printStackTrace();
         }
         
-        addAncestorListener(new AncestorListener() {
-          
-          @Override
-          public void ancestorRemoved(AncestorEvent event) {
-          }
-          
-          @Override
-          public void ancestorMoved(AncestorEvent event) {
-          }
-          // reload if the tab is activated
-          @Override
-          public void ancestorAdded(AncestorEvent event) {
-            refresh();
-          }
-        });
-
     }
 
     public void refresh() {
@@ -111,6 +95,6 @@ public class ExtensionsAboutPanel extends JPanel {
         editorPane.setText("jEditorPane1");
         editorPane.setContentType("text/html");
         editorPane.setBorder(BorderFactory.createEmptyBorder());
-        refresh();
+        add(editorPane);
     }
 }
