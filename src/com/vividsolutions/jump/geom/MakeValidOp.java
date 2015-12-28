@@ -99,9 +99,8 @@ public class MakeValidOp {
      * WARNING : for geometries of dimension 1 (linear), duplicate coordinates are
      * preserved as much as possible. For geometries of dimension 2 (areal), duplicate
      * coordinates are generally removed due to the use of overlay operations.
-     * TODO add an option to return a geometry preserving input coordinate dimension
      * @param geometry input geometry
-     * @return
+     * @return a valid Geometry
      */
     public Geometry makeValid(Geometry geometry) {
         // Input geometry is exploded into a list of simple components

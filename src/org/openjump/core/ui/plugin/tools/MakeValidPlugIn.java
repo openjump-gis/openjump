@@ -19,8 +19,6 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**

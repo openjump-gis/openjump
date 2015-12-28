@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2015-12-28 mmichaud <m.michael.michaud@orange.fr>
+  * Improve MakeValidPlugIn (new option + consolidated code)
+
 <----------------------------------------------- Changes.txt updated 'til here
 2015-12-26 ede
   * renamed some classes from *DataStore* to *DS* if others in the same package
