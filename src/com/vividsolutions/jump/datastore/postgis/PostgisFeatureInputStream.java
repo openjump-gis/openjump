@@ -21,13 +21,6 @@ public class PostgisFeatureInputStream extends SpatialDatabasesFeatureInputStrea
 
     public PostgisFeatureInputStream(Connection conn, String queryString, String externalIdentifier) {
         super(conn, queryString, externalIdentifier);
-    try {
-      JUMPWorkbench.getInstance().getFrame().log("creating a PostgisFeatureInputStream (class:" + this.getClass()
-          + " ) (driver: " + conn.getMetaData().getDriverName() + ") id"
-          + this.hashCode(), this.getClass());
-    } catch (SQLException ex) {
-      Logger.getLogger(PostgisFeatureInputStream.class.getName()).log(Level.SEVERE, null, ex);
-    }
     }
     
     /**

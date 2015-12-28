@@ -22,13 +22,6 @@ public class H2FeatureInputStream extends SpatialDatabasesFeatureInputStream {
 
     public H2FeatureInputStream(Connection conn, String queryString, String externalIdentifier) {
         super(conn, queryString, externalIdentifier);
-        try {
-            JUMPWorkbench.getInstance().getFrame().log("creating a H2FeatureInputStream (class:" + this.getClass()
-                    + " ) (driver: " + conn.getMetaData().getDriverName() + ") id"
-                    + this.hashCode(), this.getClass());
-        } catch (SQLException ex) {
-            Logger.getLogger(H2FeatureInputStream.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
 
     /**
