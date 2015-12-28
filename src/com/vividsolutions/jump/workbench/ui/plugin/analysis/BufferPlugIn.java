@@ -318,7 +318,7 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
         } catch(Exception e) {
             throw e;
         }
-        if (context.getWorkbenchContext().getBlackboard().getBoolean(StartMacroPlugIn.MACRO_STARTED)) {
+        if (context.getWorkbenchContext().getBlackboard().get(MacroManager.MACRO_STARTED, false)) {
             ((Macro)context.getWorkbenchContext().getBlackboard().get("Macro")).addProcess(this);
         }
     }

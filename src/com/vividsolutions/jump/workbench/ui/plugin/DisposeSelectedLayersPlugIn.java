@@ -36,6 +36,7 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.plugin.Macro;
+import com.vividsolutions.jump.workbench.plugin.MacroManager;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.StartMacroPlugIn;
 
@@ -46,7 +47,7 @@ public class DisposeSelectedLayersPlugIn extends RemoveSelectedLayersPlugIn {
             .selectedNodes(Layerable.class).toArray(new Layerable[] {});
         LayerManager lmgr = context.getLayerManager();
         lmgr.dispose(selectedLayers);
-        if (context.getWorkbenchContext().getBlackboard().getBoolean(StartMacroPlugIn.MACRO_STARTED)) {
+        if (context.getWorkbenchContext().getBlackboard().get(MacroManager.MACRO_STARTED, false)) {
             ((Macro)context.getWorkbenchContext().getBlackboard().get("Macro")).addProcess(this);
         }
         return true;

@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.vividsolutions.jump.workbench.plugin.MacroManager;
 import com.vividsolutions.jump.workbench.plugin.PlugInManager;
 import com.vividsolutions.jump.workbench.plugin.Recordable;
 import com.vividsolutions.jump.workbench.plugin.Macro;
@@ -255,7 +256,7 @@ public class DataSourceFileLayerLoader extends AbstractFileLayerLoader implement
       try {
           //return (Boolean)process(monitor);
           boolean ret = (Boolean)process(monitor);
-          if (workbenchContext.getBlackboard().getBoolean("MacroStarted")) {
+          if (workbenchContext.getBlackboard().get(MacroManager.MACRO_STARTED, false)) {
               DataSourceFileLayerLoader clone = new DataSourceFileLayerLoader();
               clone.setParameters(this.getParameters());
               ((Macro)workbenchContext.getBlackboard().get("Macro")).addProcess(clone);
