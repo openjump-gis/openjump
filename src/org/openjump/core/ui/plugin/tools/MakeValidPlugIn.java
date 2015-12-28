@@ -24,21 +24,39 @@ import java.util.List;
 
 
 /**
- * Created by UMichael on 05/12/2015.
+ * A plugIn to repair invalid geometries
  */
 public class MakeValidPlugIn extends AbstractThreadedUiPlugIn {
 
     public static String SOURCE_LAYER        = I18N.get("org.openjump.core.ui.plugin.tools.MakeValidPlugIn.source-layer");
     public static String DESCRIPTION         = I18N.get("org.openjump.core.ui.plugin.tools.MakeValidPlugIn.description");
-    //public static String REMOVE_DUPLICATES   = I18N.get("org.openjump.core.ui.plugin.tools.MakeValidPlugIn.remove-duplicates");
-    public static String DECOMPOSE_MULTI     = I18N.get("org.openjump.core.ui.plugin.tools.MakeValidPlugIn.decompose-multi");
     public static String RESULT_LAYER_SUFFIX = I18N.get("org.openjump.core.ui.plugin.tools.MakeValidPlugIn.result-layer-suffix");
-    public static String REMOVE_DEGENERATE_PARTS = I18N.get("org.openjump.core.ui.plugin.tools.MakeValidPlugIn.remove-degenerate-parts");
+
+    public static String PRESERVE_GEOM_DIM =
+            I18N.get("org.openjump.core.ui.plugin.tools.MakeValidPlugIn.preserve-geom-dim");
+    public static String PRESERVE_GEOM_DIM_TOOLTIP =
+            I18N.get("org.openjump.core.ui.plugin.tools.MakeValidPlugIn.preserve-geom-dim-tooltip");
+
+    //public static String PRESERVE_COORD_DIM  =
+    //        I18N.get("org.openjump.core.ui.plugin.tools.MakeValidPlugIn.preserve-coord-dim");
+    //public static String PRESERVE_COORD_DIM_TOOLTIP  =
+    //        I18N.get("org.openjump.core.ui.plugin.tools.MakeValidPlugIn.preserve-coord-dim-tooltip");
+
+    public static String REMOVE_DUPLICATE_COORD =
+            I18N.get("org.openjump.core.ui.plugin.tools.MakeValidPlugIn.remove-duplicate-coord");
+    public static String REMOVE_DUPLICATE_COORD_TOOLTIP =
+            I18N.get("org.openjump.core.ui.plugin.tools.MakeValidPlugIn.remove-duplicate-coord-tooltip");
+
+    public static String DECOMPOSE_MULTI
+            = I18N.get("org.openjump.core.ui.plugin.tools.MakeValidPlugIn.decompose-multi");
+    public static String DECOMPOSE_MULTI_TOOLTIP
+            = I18N.get("org.openjump.core.ui.plugin.tools.MakeValidPlugIn.decompose-multi-tooltip");
 
     private Layer layerA;
-    //private boolean removeDuplicates;
-    private boolean decomposeMulti;
-    private boolean removeDegenerateParts;
+    private boolean preserveGeomDim = true;
+    //private boolean preserveCoordDim = true;
+    private boolean removeDuplicateCoord = true;
+    private boolean decomposeMulti = false;
 
     public MakeValidPlugIn() {
     }
@@ -81,20 +99,24 @@ public class MakeValidPlugIn extends AbstractThreadedUiPlugIn {
         Layer candidateA = layerA == null ? context.getCandidateLayer(0) : layerA;
         final JComboBox layerComboBoxA    =
                 dialog.addLayerComboBox(SOURCE_LAYER, candidateA, context.getLayerManager());
-        //final JCheckBox removeDuplicatesCB = dialog.addCheckBox(REMOVE_DUPLICATES, removeDuplicates, REMOVE_DUPLICATES);
-        final JCheckBox decomposeMultiCB  =
-                dialog.addCheckBox(DECOMPOSE_MULTI, decomposeMulti, DECOMPOSE_MULTI);
-        final JCheckBox removeDegeneratePartsCB  =
-                dialog.addCheckBox(REMOVE_DEGENERATE_PARTS, removeDegenerateParts, REMOVE_DEGENERATE_PARTS);
+        final JCheckBox preserveGeomDimCB =
+                dialog.addCheckBox(PRESERVE_GEOM_DIM, preserveGeomDim, PRESERVE_GEOM_DIM_TOOLTIP);
+        //final JCheckBox preserveCoordDimCB =
+        //        dialog.addCheckBox(PRESERVE_COORD_DIM, preserveCoordDim, PRESERVE_COORD_DIM_TOOLTIP);
+        final JCheckBox removeDuplicateCoordCB =
+              dialog.addCheckBox(REMOVE_DUPLICATE_COORD, removeDuplicateCoord, REMOVE_DUPLICATE_COORD);
+        final JCheckBox decomposeMultiCB =
+                dialog.addCheckBox(DECOMPOSE_MULTI, decomposeMulti, DECOMPOSE_MULTI_TOOLTIP);
 
         GUIUtil.centreOnWindow(dialog);
     }
 
     private void getDialogValues(MultiInputDialog dialog) {
         layerA = dialog.getLayer(SOURCE_LAYER);
-        //removeDuplicates = dialog.getBoolean(REMOVE_DUPLICATES);
+        preserveGeomDim = dialog.getBoolean(PRESERVE_GEOM_DIM);
+        //preserveCoordDim = dialog.getBoolean(PRESERVE_COORD_DIM);
+        removeDuplicateCoord = dialog.getBoolean(REMOVE_DUPLICATE_COORD);
         decomposeMulti = dialog.getBoolean(DECOMPOSE_MULTI);
-        removeDegenerateParts = dialog.getBoolean(REMOVE_DEGENERATE_PARTS);
     }
 
     public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
@@ -106,10 +128,12 @@ public class MakeValidPlugIn extends AbstractThreadedUiPlugIn {
             result1.add(((Feature)o).clone(true, true));
         }
         MakeValidOp makeValidOp = new MakeValidOp();
+        makeValidOp.setPreserveGeomDim(preserveGeomDim);
+        //makeValidOp.setPreserveCoordDim(preserveCoordDim);
+        makeValidOp.setPreserveDuplicateCoord(!removeDuplicateCoord);
         for (Object o : result1.getFeatures()) {
             Feature feature = (Feature)o;
-            Geometry validGeom = new MakeValidOp().makeValid(feature.getGeometry());
-            if (removeDegenerateParts) validGeom = removeDegenerateParts(feature.getGeometry(), validGeom);
+            Geometry validGeom = makeValidOp.makeValid(feature.getGeometry());
             feature.setGeometry(validGeom);
         }
         if (decomposeMulti) {
@@ -134,18 +158,6 @@ public class MakeValidPlugIn extends AbstractThreadedUiPlugIn {
             workbenchContext.getLayerManager().addLayer(StandardCategoryNames.RESULT,
                     layerA.getName() + " - " + RESULT_LAYER_SUFFIX, result1);
         }
-    }
-
-    public static Geometry removeDegenerateParts(Geometry source, Geometry valid) {
-        int sourceDim = source.getDimension();
-        boolean isGeometryCollection = source.getClass().equals(com.vividsolutions.jts.geom.GeometryCollection.class);
-        if (isGeometryCollection) return valid;
-        List<Geometry> list = new ArrayList<Geometry>();
-        for (int i = 0 ; i < valid.getNumGeometries() ; i++) {
-            if (valid.getGeometryN(i).getDimension() < sourceDim) continue;
-            else list.add(valid.getGeometryN(i));
-        }
-        return source.getFactory().buildGeometry(list);
     }
 
 }
