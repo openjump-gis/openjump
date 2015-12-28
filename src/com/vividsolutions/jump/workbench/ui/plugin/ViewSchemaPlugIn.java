@@ -636,7 +636,7 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
         // [mmichaud 2014-10-05] had to test if we are in macro mode or in interactive mode
         // maybe a better way vould be that all plugins implement a non interactive method
         // called either by execute method (interactive mode) or directly by the RunMacro
-        if (!context.getWorkbenchContext().getBlackboard().getBoolean(MacroManager.MACRO_RUNNING)) {
+        if (!context.getWorkbenchContext().getBlackboard().get(MacroManager.MACRO_RUNNING, false)) {
             //Can't simply use Blackboard#get(key, default) because default requires that
             //we create a new EditSchemaFrame, and we don't want to do this unless we
             //have to because the EditSchemaFrame constructor modifies the blackboard.
@@ -651,7 +651,7 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
 
             frame(context).surface();
 
-            if (context.getWorkbenchContext().getBlackboard().getBoolean(MacroManager.MACRO_STARTED)) {
+            if (context.getWorkbenchContext().getBlackboard().get(MacroManager.MACRO_STARTED, false)) {
                 ((Macro) context.getWorkbenchContext().getBlackboard().get(MacroManager.MACRO)).addProcess(this);
             }
         }
