@@ -34,6 +34,10 @@ yyyy-MM-dd'T'HH:mm:ss.SSS
 yyyy-MM-dd'T'HH:mm:ss
 # most informative format conforming the ISO 8601
 yyyy-MM-dd'T'HH:mm:ss.SSSZ
+# Nicolas Ribot: ISO 8601 compliant ? (used by sqlite for instance)
+# Nicolas Ribot: ISO8601 allows the usage of "Z" to indicate UTC instead of "+00:00".
+#(used by sqlite for instance)
+yyyy-MM-dd'T'HH:mm:ss'Z'
 yyyyMMddHHmmss
 MMMM d, yyyy
 yyyy.MM.dd hh:mm:ss

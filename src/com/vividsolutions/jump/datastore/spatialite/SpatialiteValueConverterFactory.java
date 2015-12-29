@@ -46,11 +46,6 @@ public class SpatialiteValueConverterFactory extends SpatialDatabasesValueConver
 
     GeometricColumnType gcType = metadata.getGeoColTypesdMap().get(tableName + "." + columnName);
     if (gcType == null) {
-      // not a geo column, handle date/datetime columns by forcing text mode
-      // todo: use Joda to parse date string ?
-      if ("DATETIME".equalsIgnoreCase(dbTypeName) || "DATE".equalsIgnoreCase(dbTypeName)) {
-        return ValueConverterFactory.STRING_MAPPER;
-      }
       ValueConverter stdConverter = ValueConverterFactory.getConverter(rsm, columnIndex);
       if (stdConverter != null) {
         return stdConverter;
