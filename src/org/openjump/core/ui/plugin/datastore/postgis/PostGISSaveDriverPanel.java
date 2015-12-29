@@ -142,7 +142,7 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel implements Actio
 		gbLayout.setConstraints(tableLabel, gbConstraints);
 		add(tableLabel);
 		tableComboBox = new JComboBox(tableList);
-		tableComboBox.setPrototypeDisplayValue("abcdefghijklmnopqrstuvwxyz");
+		tableComboBox.setPrototypeDisplayValue("abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz");
 		tableComboBox.addActionListener(new ActionListener(){
 		    public void actionPerformed(ActionEvent e) {
 		        resetPKChooser();

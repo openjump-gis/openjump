@@ -79,7 +79,7 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel {
         JLabel title = new JLabel("<html><h2>" + TITLE + "</h2><br/></br></html>");
         gbConstraints.gridx = 0;
         gbConstraints.gridy = 0;
-        gbConstraints.gridwidth = 3;
+        gbConstraints.gridwidth = 2;
         gbLayout.setConstraints(title, gbConstraints);
         add(title);
 
@@ -105,7 +105,7 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel {
         add(tableLabel);
 
         tableComboBox = new JComboBox(tableList);
-        tableComboBox.setPrototypeDisplayValue("abcdefghijklmnopqrstuvwxyz");
+        tableComboBox.setPrototypeDisplayValue("abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz");
         gbConstraints.gridx = 1;
         gbLayout.setConstraints(tableComboBox, gbConstraints);
         add(tableComboBox);
