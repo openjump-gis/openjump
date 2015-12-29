@@ -18,6 +18,9 @@
   * SQLite OCG GeoPackage support added @r4701: binary geometry type and 
     metadata tables support.
 
+2015-12-28 ede
+  * move dbquery dependency postgis into it's proper subfolder
+
 <----------------------------------------------- Changes.txt updated 'til here
 2015-12-28 mmichaud <m.michael.michaud@orange.fr>
   * Improve MakeValidPlugIn (new option + consolidated code)
