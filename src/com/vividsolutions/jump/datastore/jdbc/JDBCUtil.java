@@ -24,7 +24,7 @@ public class JDBCUtil
               statement.close();
           }
       } catch (Exception e) {
-          throw new RuntimeException(e);
+          throw new RuntimeException("Invalid query: "+sql, e);
       }
   }
 }
