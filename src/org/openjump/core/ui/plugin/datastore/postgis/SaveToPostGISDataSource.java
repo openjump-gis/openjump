@@ -405,7 +405,6 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
         int count = 0;
         for (Iterator it = fc.iterator() ; it.hasNext() ; ) {
             Feature f = (Feature)it.next();
-            //insertStatement(conn, f, dbSchema, dbTable, primaryKey, hasSrid, dim).executeUpdate();
             statement = setAttributeValues(statement, f, primaryKey, hasSrid, dim);
             statement.addBatch();
             if (count++ % 10000 == 0) {
@@ -439,20 +438,18 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
     private void insertUpdateTable(java.sql.Connection conn, FeatureCollection fc, 
             String dbSchema, String dbTable, String primaryKey, boolean hasSrid, int dim,
             boolean normalizedColumnNames) throws Exception {
-        String tableName = dbSchema == null ? dbTable : dbSchema + "." + dbTable;
         PreparedStatement statementI = insertStatement(conn, fc.getFeatureSchema(),
                 dbSchema, dbTable, primaryKey, hasSrid, dim, normalizedColumnNames);
         PreparedStatement statementU = updateStatement(conn, fc.getFeatureSchema(),
                 dbSchema, dbTable, primaryKey, hasSrid, dim, normalizedColumnNames);
         int countInsert = 0;
         int countUpdate = 0;
+        String tableQName = compose(dbSchema, dbTable);
         for (Iterator it = fc.iterator() ; it.hasNext() ; ) {
             Feature f = (Feature)it.next();
             Object fid = f.getAttribute(primaryKey);
             String sFid = fid instanceof String ? "'" + fid + "'" : ""+fid;
-            //if (fid == null) throw new Exception("Some features have null attribute " + key);
-            //String qfid = (fid instanceof String)? "'"+fid+"'" : fid.toString();
-            ResultSet rs = conn.createStatement().executeQuery("SELECT count(*) AS count FROM " + tableName + " WHERE \"" + primaryKey + "\" = " + sFid);
+            ResultSet rs = conn.createStatement().executeQuery("SELECT count(*) AS count FROM " + tableQName + " WHERE \"" + primaryKey + "\" = " + sFid);
             int count = (rs.next()) ? rs.getInt("count") : 0;
             if (count==0) {
                 setAttributeValues(statementI, f, primaryKey, hasSrid, dim);
@@ -545,11 +542,9 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
     private PreparedStatement updateStatement(java.sql.Connection conn, FeatureSchema schema,
                 String dbSchema, String dbTable, String primaryKey, boolean hasSrid, int dim,
                 boolean normalizedColumnNames) throws SQLException {
-        String tableName = dbSchema == null ? dbTable : dbSchema + "." + dbTable;
-        //AttributeType type = schema.getAttributeType(primaryKey);
-        //Object fid = feature.getAttribute(primaryKey);
-        //String sFid = type == AttributeType.STRING ? "'" + fid + "'" : ""+fid;
-        StringBuilder sb = new StringBuilder("UPDATE " + tableName + " SET (");
+        String tableQName = compose(dbSchema, dbTable);
+        schema.setExternalPrimaryKeyIndex(schema.getAttributeIndex(primaryKey));
+        StringBuilder sb = new StringBuilder("UPDATE " + tableQName + " SET (");
         sb.append(PostGISQueryUtil.createColumnList(schema, false, true, false, normalizedColumnNames))
           .append(") = (");
         for (int i = 0 ; i < schema.getAttributeCount() ; i++) {
@@ -557,14 +552,13 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
             sb.append(i==0?"?":",?");
         }
         sb.append(") WHERE \"").append(primaryKey).append("\" = ? ;");
-        //PreparedStatement pstmt = conn.prepareStatement(sb.toString());
         return conn.prepareStatement(sb.toString());
-        //return setAttributeValues(pstmt, feature, primaryKey, hasSrid, dim);
     }
     
     private PreparedStatement setAttributeValues(PreparedStatement pstmt, 
                 Feature feature, String primaryKey, boolean hasSrid, int dim) throws SQLException {
         FeatureSchema schema = feature.getSchema();
+        schema.setExternalPrimaryKeyIndex(schema.getAttributeIndex(primaryKey));
         int shift = 1;
         try {
             for (int i = 0; i < schema.getAttributeCount(); i++) {
@@ -596,6 +590,7 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
     private PreparedStatement setPrimaryKeyValue(PreparedStatement pstmt, Feature feature, String primaryKey)
             throws SQLException {
         FeatureSchema schema = feature.getSchema();
+        schema.setExternalPrimaryKeyIndex(schema.getAttributeIndex(primaryKey));
         pstmt.setObject(schema.getAttributeCount(), feature.getAttribute(schema.getExternalPrimaryKeyIndex()));
         return pstmt;
     }

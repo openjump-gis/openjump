@@ -318,6 +318,7 @@ public class FeatureSchema implements Cloneable, Serializable {
         assert index < getAttributeCount();
         AttributeType attributeType = this.getAttributeType(index);
         if (attributeType == AttributeType.INTEGER ||
+                attributeType == AttributeType.LONG ||
                 attributeType == AttributeType.STRING ||
                 attributeType == AttributeType.OBJECT) {
             this.externalPKIndex = index;
