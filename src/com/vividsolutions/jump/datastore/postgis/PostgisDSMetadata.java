@@ -14,7 +14,7 @@ public class PostgisDSMetadata extends SpatialDatabasesDSMetadata {
         defaultSchemaName = "public";
         spatialDbName = "PostGIS";
         spatialExtentQuery1 = "SELECT ST_AsBinary(ST_Estimated_Extent( '%s', '%s', '%s' ))";
-        spatialExtentQuery2 = "SELECT ST_AsBinary(ST_Envelope(ST_Extent(%s))) FROM %s.%s";
+        spatialExtentQuery2 = "SELECT ST_AsBinary(ST_Envelope(ST_Extent(\"%s\"))) FROM %s.%s";
         geoColumnsQuery = "SELECT f_geometry_column, srid, type FROM geometry_columns where f_table_schema='%s' and f_table_name = '%s'";
         sridQuery = "SELECT srid FROM geometry_columns where f_table_schema = '%s' and f_table_name = '%s' and f_geometry_column = '%s'";
     }
