@@ -30,10 +30,11 @@ public class MariadbValueConverterFactory extends SpatialDatabasesValueConverter
       throws SQLException {
     String dbTypeName = rsm.getColumnTypeName(columnIndex);
 
-        // manages 2 cases: type retrieved from Database metadata (DataStore Panel)
+    // manages 2 cases: type retrieved from Database metadata (DataStore Panel)
     // and from direct Adhoc query (type of the column resultset).
-    if ("LONGBLOB".equalsIgnoreCase(dbTypeName) || "GEOMETRY".equalsIgnoreCase(dbTypeName)) // WKB is now the normal way to store geometry in PostGIS [mmichaud 2007-05-13]
-    {
+    if ("LONGBLOB".equalsIgnoreCase(dbTypeName)) {
+      return WKB_GEOMETRY_MAPPER;
+    } else if ("GEOMETRY".equalsIgnoreCase(dbTypeName)) {
       return MYSQLWKB_GEOMETRY_MAPPER;
     }
 
@@ -117,10 +118,8 @@ public class MariadbValueConverterFactory extends SpatialDatabasesValueConverter
         nativeFormat = true;
       }
 
-      // TODO: how to recognize MySQL binary from wkb ?
-//    } else if (Arrays.equals(ctrl, firstFour)) {
     } else if (true) {
-      // Nicolas Ribot: mysql now stores srid at the beginning of the geom ?
+      // Nicolas Ribot: mysql binary stores srid at the beginning of the geom
       nativeFormat = true;
     }
     return nativeFormat;
