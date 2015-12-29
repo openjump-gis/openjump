@@ -16,7 +16,7 @@ import java.sql.SQLException;
 /**
  * Base class for all spatial databases DataStore connections. No need to
  * subclass for PostGIS, Oracle Spatial,
- * 
+ *
  * @author nicolas Ribot
  */
 public class SpatialDatabasesDSConnection implements DataStoreConnection {
@@ -25,19 +25,6 @@ public class SpatialDatabasesDSConnection implements DataStoreConnection {
   protected Connection connection;
 
   public SpatialDatabasesDSConnection(Connection conn) {
-
-    try {
-      JUMPWorkbench
-          .getInstance()
-          .getFrame()
-          .log(
-              "creating a SpatialDatabasesDSConnection (class:"
-                  + this.getClass() + " ) (driver: "
-                  + conn.getMetaData().getDriverName() + ") id"
-                  + this.hashCode(), this.getClass());
-    } catch (SQLException ex) {
-      ex.printStackTrace();
-    }
     connection = conn;
     dbMetadata = new SpatialDatabasesDSMetadata(this);
   }
@@ -79,8 +66,7 @@ public class SpatialDatabasesDSConnection implements DataStoreConnection {
    * The SRID is optional for queries - it will be determined automatically from
    * the table metadata if not supplied.
    *
-   * @param query
-   *          the query to execute
+   * @param query the query to execute
    * @return the results of the query
    * @throws SQLException
    */
@@ -92,12 +78,10 @@ public class SpatialDatabasesDSConnection implements DataStoreConnection {
   /**
    * select gid, geom from departement where nom like 'A%' Executes an adhoc
    * query (direct SQL query)
-   * 
-   * @param query
-   *          the query to execute
+   *
+   * @param query the query to execute
    * @return a featureInputStream containing query's features
-   * @throws Exception
-   *           if no geometric column is found in the query
+   * @throws Exception if no geometric column is found in the query
    */
   public FeatureInputStream executeAdhocQuery(AdhocQuery query)
       throws Exception {

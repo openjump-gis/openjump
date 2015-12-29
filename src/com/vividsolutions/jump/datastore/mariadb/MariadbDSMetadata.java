@@ -5,6 +5,7 @@ import com.vividsolutions.jump.datastore.spatialdatabases.*;
 import com.vividsolutions.jump.datastore.GeometryColumn;
 import com.vividsolutions.jump.datastore.jdbc.JDBCUtil;
 import com.vividsolutions.jump.datastore.jdbc.ResultSetBlock;
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.List;
 
 public class MariadbDSMetadata extends SpatialDatabasesDSMetadata {
 
+  public static String GC_COLUMN_NAME = "geometry_columns";
   /**
    * The second query to get geometric columns
    */
@@ -21,16 +23,29 @@ public class MariadbDSMetadata extends SpatialDatabasesDSMetadata {
    */
   private String sridQuery2;
 
+  /**
+   * The geometry_columns table layout for this connection.
+   * TODO: generalize gc layout mechanism for all SpatialDatabases
+   */
+  private GeometryColumnsLayout geometryColumnsLayout;
+
   public MariadbDSMetadata(DataStoreConnection con) {
     conn = con;
     // TODO: defaults to database name ?
+    setGeoColLayout();
+    
     defaultSchemaName = "";
-    // TODO: use bind parameters to avoid SQL injection
-    datasetNameQuery = "select distinct t.TABLE_SCHEMA, t.TABLE_NAME \n"
-        + "from information_schema.TABLES t join information_schema.COLUMNS C \n"
-        + "  on t.TABLE_NAME = c.TABLE_NAME and t.TABLE_SCHEMA = c.TABLE_SCHEMA\n"
-        + "where t.TABLE_TYPE not in ('SYSTEM VIEW')\n"
-        + "and c.COLUMN_TYPE = 'geometry';";
+    
+    // query according to detected layout:
+    // no schema in MySQL
+    datasetNameQuery = "SELECT DISTINCT '' as f_table_schema, f_table_name FROM geometry_columns";
+    if (geometryColumnsLayout == GeometryColumnsLayout.NO_LAYOUT) {
+      datasetNameQuery = "select distinct t.TABLE_SCHEMA, t.TABLE_NAME \n"
+          + "from information_schema.TABLES t join information_schema.COLUMNS C \n"
+          + "  on t.TABLE_NAME = c.TABLE_NAME and t.TABLE_SCHEMA = c.TABLE_SCHEMA\n"
+          + "where t.TABLE_TYPE not in ('SYSTEM VIEW')\n"
+          + "and c.COLUMN_TYPE = 'geometry'";
+    }
     spatialDbName = "MariaDB/MySQL";
     // No safe way found to get layer's extent from database.
     // text aggregation trick (select st_asBinary(st_envelope(Geomfromtext(concat(concat(\"geometrycollection(\",group_concat(astext(%s))),\")\")))) from %s.%s)
@@ -53,24 +68,28 @@ public class MariadbDSMetadata extends SpatialDatabasesDSMetadata {
                 "       ) AS t\n" +
                 ") as t2";
     
-    // NO metadata => same query is defined.
+    // NO st_extent function defined yet => same query is defined.
     spatialExtentQuery2 = spatialExtentQuery1;
+    
+    // query according to detected layout:
     geoColumnsQuery = "SELECT f_geometry_column, srid, type FROM geometry_columns where f_table_name = '%s'";
-
-    // Double mechanism is used for Maria/MySQL: ogr, for instance, creates 
-    // and populates a geometry_columns table with geo MD
-    // Original mechanism was based on pure MySQL MD to guess geo column
-    // Keep both mechanisms to handle all cases.
-    geoColumnsQuery2 = "select c.COLUMN_NAME, 0, 'geometry' \n"
+    if (geometryColumnsLayout == GeometryColumnsLayout.NO_LAYOUT) {
+      geoColumnsQuery = "select c.COLUMN_NAME, 0, 'geometry' \n"
         + "from information_schema.TABLES t join information_schema.COLUMNS C \n"
         + "  on t.TABLE_NAME = c.TABLE_NAME and t.TABLE_SCHEMA = c.TABLE_SCHEMA\n"
         + "where t.TABLE_TYPE not in ('SYSTEM VIEW')\n"
         + "and t.TABLE_SCHEMA = '%s' and t.TABLE_NAME = '%s'\n"
         + "and c.COLUMN_TYPE = 'geometry'";
+    }
+
     // TODO: test for big datasets...
+    // query according to detected layout:
     sridQuery = "SELECT srid FROM geometry_columns where f_table_name = '%s' and f_geometry_column = '%s'";
-    sridQuery2 = "select case when min(st_srid(%s)) <> max(st_srid(%s)) then 0 else min(st_srid(%s)) end as srid\n"
+    if (geometryColumnsLayout == GeometryColumnsLayout.NO_LAYOUT) {
+      sridQuery = "select case when min(st_srid(%s)) <> max(st_srid(%s)) then 0 else min(st_srid(%s)) end as srid\n"
         + "from %s.%s";
+    }
+    
   }
 
   @Override
@@ -107,64 +126,22 @@ public class MariadbDSMetadata extends SpatialDatabasesDSMetadata {
     return getGeometryAttributes(sql, datasetName);
   }
 
-  /**
-   * Retrieves geometric attributes for given dataset using 2 methods: classical
-   * method from OGC metadata (geometryColumns) and DB metadata method, querying
-   * system catalog.
-   *
-   * @param sql
-   * @param datasetName
-   * @return
-   */
-  @Override
-  protected List<GeometryColumn> getGeometryAttributes(String sql, String datasetName) {
-    final List<GeometryColumn> geometryAttributes2 = new ArrayList<GeometryColumn>();
+  private void setGeoColLayout() {
     try {
-      final List<GeometryColumn> geometryAttributes = super.getGeometryAttributes(sql, datasetName);
-      return geometryAttributes;
-    } catch (Exception e) {
-      // second method
-      String sql2 = getGeoColumnsQuery2(datasetName);
-      JDBCUtil.execute(
-          conn.getJdbcConnection(), sql2,
-          new ResultSetBlock() {
-            public void yield(ResultSet resultSet) throws SQLException {
-              while (resultSet.next()) {
-                geometryAttributes2.add(new GeometryColumn(
-                        resultSet.getString(1),
-                        resultSet.getInt(2),
-                        resultSet.getString(3)));
-              }
-            }
-          });
-    }
-    return geometryAttributes2;
-  }
-  
-  /**
-   * Gets the SRID of the dataset using a second method if OGC metadata does not work.
-   * @param datasetName
-   * @param colName
-   * @return 
-   */
-  @Override
-  protected String querySRID(String datasetName, String colName) {
-    final StringBuffer srid = new StringBuffer();
-    try {
-      srid.append(super.querySRID(datasetName, colName));
-    } catch (Exception e) {
-      // TODO: log ex message ?
-      String sql = this.getSridQuery2(this.getSchemaName(datasetName), this.getTableName(datasetName), colName);
-      JDBCUtil.execute(conn.getJdbcConnection(), sql, new ResultSetBlock() {
-        public void yield(ResultSet resultSet) throws SQLException {
-          if (resultSet.next()) {
-            srid.append(resultSet.getString(1));
-          }
-        }
-      });
-    }
+      DatabaseMetaData dbMd = this.conn.getJdbcConnection().getMetaData();
 
-    return srid.toString();
+      // GeoPackage test:
+      ResultSet rs = dbMd.getTables(null, null, MariadbDSMetadata.GC_COLUMN_NAME, null);
+      if (rs.next()) {
+        // no need to look at table layout: table name found is enough to say its OGC layout
+        geometryColumnsLayout = GeometryColumnsLayout.OGC_LAYOUT;
+        rs.close();
+      } else {
+        geometryColumnsLayout = GeometryColumnsLayout.NO_LAYOUT;
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
 }
