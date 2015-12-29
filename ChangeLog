@@ -3,10 +3,25 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2015-12-29 Nicolas Ribot <nicolas.ribot@gmail.com>
+  * WHERE clause tested for SpatialDatabase layers before validating the 
+    selection: A popup error with Query and JDBC SQL error is displayed.
+    New method for SpatialDatabasesSQLBuilder giving the check query to perform
+    (query with where clause and LIMIT 0 trick from Michael)
+  * MySQL/MariaDB improvements added @r4687:
+    Added support for OGC spatial metadata layout 
+    (geometry_columns table listing geometric tables)
+    Kept native support if OGC tables not found (extent, srid)
+    Changed query to get layer extent, now based on aggregate query on table.
+    Changed native geometry binary format detection: 
+    MySQL format stores SRID in the first 4 bytes of the blob.
+  * SQLite OCG GeoPackage support added @r4701: binary geometry type and 
+    metadata tables support.
+
+<----------------------------------------------- Changes.txt updated 'til here
 2015-12-28 mmichaud <m.michael.michaud@orange.fr>
   * Improve MakeValidPlugIn (new option + consolidated code)
 
-<----------------------------------------------- Changes.txt updated 'til here
 2015-12-26 ede
   * renamed some classes from *DataStore* to *DS* if others in the same package
     already used the same naming scheme

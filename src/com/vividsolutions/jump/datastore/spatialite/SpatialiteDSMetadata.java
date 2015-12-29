@@ -76,7 +76,6 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
     // done here as every connection needs it
     getGeoColumnType();
     
-    // TODO: use bind parameters to avoid SQL injection
     datasetNameQuery = "SELECT DISTINCT '' as f_table_schema, f_table_name FROM geometry_columns";
     if (this.getGeometryColumnsLayout() == GeometryColumnsLayout.OGC_GEOPACKAGE_LAYOUT) {
       // MD table contains a geometry_format column: query it
@@ -120,7 +119,6 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
   public String getSpatialExtentQuery1(String schema, String table, String attributeName) {
     // No schema in SQLite, schema param not used
     // must cast the geometric field according to its type, to be able to use spatialite functions.
-    //return String.format(spatialExtentQuery1, attributeName, table);
     String ret = "select 1";
 
     GeometricColumnType gcType = this.geoColTypesdMap.get(table.toLowerCase() + "." + attributeName.toLowerCase());
@@ -205,7 +203,39 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
    * Sets the geometry_column layout in this sqlite database: either FDO or OGC
    * or GeoPkg or no layout. Also tries to build the geo col type if
    * geometry_columns table contains such info TODO: generic mechanism to get
-   * geo col type for Spatialite
+   * geo col type for Spatialite.
+   * 
+   * Geometry_columns metadata table may have 4 layouts:
+   * options used to create the table or using a geo package (http://www.geopackage.org/) layout
+   * 1°) the "FDO provider for spatialite (https://trac.osgeo.org/fdo/wiki/FDORfc16)", as used in "regular sqlite database" (cf.ogr spatialite format doc):
+   *                f_table_name	        TEXT	
+   *                f_geometry_column	TEXT	
+   *                geometry_type	        INTEGER	
+   *                coord_dimension	INTEGER	
+   *                srid	                INTEGER	
+   *                geometry_format	TEXT
+   * 2°) the "OGC Spatialite" flavour, as understood by qgis for instance, as used in spatialite-enabled sqlite database:
+   *                f_table_name          VARCHAR
+   *                f_geometry_column     VARCHAR
+   *                type                  VARCHAR
+   *                coord_dimension       INTEGER 
+   *                srid                  INTEGER
+   *                spatial_index_enabled INTEGER 
+   * 3°) the "OGC OGR" layout: 
+   *                f_table_name          VARCHAR
+   *                f_geometry_column     VARCHAR
+   *                geometry_type         VARCHAR
+   *                coord_dimension       INTEGER 
+   *                srid                  INTEGER
+   *                spatial_index_enabled INTEGER 
+   * 3°) the "OGC GeoPackage" layout, as specificed by standard:
+   *                table_name         TEXT NOT NULL,
+   *                column_name        TEXT NOT NULL,
+   *                geometry_type_name TEXT NOT NULL,
+   *                srs_id             INTEGER NOT NULL,
+   *                z                  INTEGER NOT NULL,
+   *                m                  INTEGER NOT NULL,
+   * 
    */
   private void setGeoColLayout() {
     DatabaseMetaData dbMd = null;
@@ -234,29 +264,6 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
           if (isGC) {
             rs = dbMd.getColumns(null, null, SpatialiteDSMetadata.GC_COLUMN_NAME, null);
             int i = 0;
-          // geometry_columns table may have 23 layouts according to ogr2ogr
-            // options used to create the table or using a geo package (http://www.geopackage.org/) layout
-            // 1°) the "FDO provider for spatialite (https://trac.osgeo.org/fdo/wiki/FDORfc16)", as used in "regular sqlite database" (cf.ogr spatialite format doc):
-            //                f_table_name	        TEXT	
-            //                f_geometry_column	TEXT	
-            //                geometry_type	        INTEGER	
-            //                coord_dimension	INTEGER	
-            //                srid	                INTEGER	
-            //                geometry_format	TEXT
-            // 2°) the "OGC" flavour, as understood by qgis for instance, as used in spatialite-enabled sqlite database:
-            //                f_table_name          VARCHAR
-            //                f_geometry_column     VARCHAR
-            //                type                  VARCHAR
-            //                coord_dimension       INTEGER 
-            //                srid                  INTEGER
-            //                spatial_index_enabled INTEGER 
-            // 3°) the "GeoPackage" flavour,
-            //                table_name         TEXT NOT NULL,
-            //                column_name        TEXT NOT NULL,
-            //                geometry_type_name TEXT NOT NULL,
-            //                srs_id             INTEGER NOT NULL,
-            //                z                  INTEGER NOT NULL,
-            //                m                  INTEGER NOT NULL,
 
             i = 0;
             String geoTypeCol = "";

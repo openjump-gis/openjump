@@ -13,9 +13,14 @@ import java.util.Map;
 import javax.swing.JScrollPane;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.datastore.DataStoreConnection;
 import com.vividsolutions.jump.datastore.DataStoreLayer;
 import com.vividsolutions.jump.datastore.DataStoreMetadata;
 import com.vividsolutions.jump.datastore.GeometryColumn;
+import com.vividsolutions.jump.datastore.SpatialReferenceSystemID;
+import com.vividsolutions.jump.datastore.jdbc.JDBCUtil;
+import com.vividsolutions.jump.datastore.jdbc.ResultSetBlock;
+import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesSQLBuilder;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.datastore.ConnectionDescriptor;
@@ -38,6 +43,11 @@ import org.netbeans.swing.outline.DefaultOutlineModel;
 import org.netbeans.swing.outline.Outline;
 import org.netbeans.swing.outline.OutlineModel;
 import org.openjump.core.ui.plugin.datastore.AddDataStoreLayerWizardPanel;
+import com.vividsolutions.jump.workbench.ui.ErrorDialog;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 
 // TODO             String s1 = I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Prevents-unnecessary-queries-to-the-datastore");
 //            String s2 = I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.The-recommended-setting-is-to-leave-this-checked");
@@ -58,22 +68,22 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
     super(null);
   }
 
-    public AddDatastoreLayerPanel(WorkbenchContext context) {
-        super(context);
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                initialize();
-            }
-        });
-        //initialize();
-        getConnectionComboBox().addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                //getDatasetComboBox().setSelectedItem( null );
-                  getDatasetOutline();
-                }
-        });
-    }
+  public AddDatastoreLayerPanel(WorkbenchContext context) {
+    super(context);
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        initialize();
+      }
+    });
+    //initialize();
+    getConnectionComboBox().addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        //getDatasetComboBox().setSelectedItem( null );
+        getDatasetOutline();
+      }
+    });
+  }
 
   public static Object runInKillableThread(final String description,
       WorkbenchContext context, final Block block) {
@@ -124,10 +134,40 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
           I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Schemas"));
 
       datasetOutline = new Outline();
-      //datasetOutline.setBackground(Color.lightGray);
-
-      // Table selection: build the
       final Component panel = this;
+      datasetOutline.setRootVisible(false);
+      //Assign the model to the Outline object:
+      datasetOutline.setModel(datasetOutlineModel);
+      datasetOutline.setRenderDataProvider(new DataStoreLayerRenderData());
+      // sets some columns sizes to maximize geom col
+      setTableColWidth();
+      datasetOutline.setDefaultEditor(String.class, new DataStoreLayerWhereEditor());
+
+      // Checks where clause for layer in a custom Action triggered by the
+      // custom DataStoreTableCellListener
+      Action action = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          DataStoreTableCellListener tcl = (DataStoreTableCellListener) e.getSource();
+          //gets corresponding layer and checks it:
+          Object o = datasetOutline.getValueAt(tcl.getRow(), 0);
+          // stores only correct DataStoreLayer
+          if (o instanceof DataStoreLayer) {
+            String s = checkSelectedLayer((DataStoreLayer) o);
+            if (!s.isEmpty()) {
+              ErrorDialog.show(panel, 
+                  I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.SQL-error"),
+                  I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Invalid-layer-where-clause") 
+                      + " " + ((DataStoreLayer) o).getFullName(),
+                  s);
+            }
+          }
+        }
+      };
+
+      DataStoreTableCellListener tcl = new DataStoreTableCellListener(datasetOutline, action);
+
+      // adds a custom selectionListener to the table, that builds the list of selected
+      // layers.
       datasetOutline.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
         @Override
@@ -144,7 +184,7 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
               for (int i = minIndex; i <= maxIndex; i++) {
                 if (lsm.isSelectedIndex(i)) {
                   Object o = datasetOutline.getValueAt(i, 0);
-                  // stores only DataStoreLayer
+                  // stores only correct DataStoreLayer
                   if (o instanceof DataStoreLayer) {
                     selectedLayers.add((DataStoreLayer) o);
                   }
@@ -152,28 +192,17 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
               }
             }
           }
-
           // notify the wizard panel to dis/enable buttons
           Component c = panel;
-          while (c !=null && (c = c.getParent()) != null) {
-            if (c instanceof WizardPanel){
-              ((AddDataStoreLayerWizardPanel)c).selectionChanged();
+          while (c != null && (c = c.getParent()) != null) {
+            if (c instanceof WizardPanel) {
+              ((AddDataStoreLayerWizardPanel) c).selectionChanged();
               break;
             }
           }
-
         }
       }
       );
-
-      datasetOutline.setRootVisible(false);
-      //Assign the model to the Outline object:
-      datasetOutline.setModel(datasetOutlineModel);
-      datasetOutline.setRenderDataProvider(new DataStoreLayerRenderData());
-      // sets some columns sizes to maximize geom col
-      setTableColWidth();
-      datasetOutline.setDefaultEditor(String.class, new DataStoreLayerWhereEditor());
-
     }
     populateDatasetTree();
     return datasetOutline;
@@ -206,11 +235,11 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
     if (getConnectionDescriptor() == null) {
       return;
     }
-    
+
     // reset the list first, in case the request doesn't return any (eg. in case of error)
     LinkedHashMap<String, ArrayList<DataStoreLayer>> root = new LinkedHashMap<String, ArrayList<DataStoreLayer>>();
     datasetTreeModel = new DataStoreLayerTreeModel(root);
-    
+
     Throwable t = null;
     try {
       //loads list of layers from the given connection and builds the datasetTreeModel object for these layers
@@ -220,7 +249,7 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
     } catch (Exception e) {
       t = e;
     } finally {
-      if (t != null){
+      if (t != null) {
         getContext().getErrorHandler().handleThrowable(t);
       }
       //datasetTreeModel = new DataStoreLayerTreeModel(root);
@@ -245,8 +274,9 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
    */
   private LinkedHashMap<String, ArrayList<DataStoreLayer>> getTreeModelData(
       final String[] datasetNames,
-      final ConnectionDescriptor connectionDescriptor,
       final String message) throws Exception {
+
+    final ConnectionDescriptor connectionDescriptor = getConnectionDescriptor();
 
     LinkedHashMap<String, ArrayList<DataStoreLayer>> ret = new LinkedHashMap<String, ArrayList<DataStoreLayer>>();
     if (datasetNames == null || datasetNames.length == 0) {
@@ -259,7 +289,7 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
       DataStoreMetadata md = new PasswordPrompter().getOpenConnection(
           connectionManager(), connectionDescriptor,
           AddDatastoreLayerPanel.this).getMetadata();
-      // empty current list model
+
       for (String dsName : datasetNames) {
         for (GeometryColumn geo : md.getGeometryAttributes(dsName)) {
           DataStoreLayer layer = new DataStoreLayer(dsName, geo);
@@ -291,7 +321,7 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
     // which is not the GUI thread. [Jon Aquino 2005-03-11]
     new PasswordPrompter().getOpenConnection(connectionManager(),
         connectionDescriptor, this);
-            // Retrieve the dataset names using a ThreadedBasePlugIn, so
+    // Retrieve the dataset names using a ThreadedBasePlugIn, so
     // that the user can kill the thread if desired
     // [Jon Aquino 2005-03-11]
     final String msgDs = I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Retrieving-list-of-datasets");
@@ -301,11 +331,11 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
         new Block() {
           public Object yield() throws Exception {
             //Gets the list of datasets 
-            String[] dsNames = new PasswordPrompter().getOpenConnection(connectionManager(), connectionDescriptor,AddDatastoreLayerPanel.this)
-                .getMetadata().getDatasetNames();
-            
+            String[] dsNames = new PasswordPrompter().getOpenConnection(connectionManager(), connectionDescriptor, AddDatastoreLayerPanel.this)
+            .getMetadata().getDatasetNames();
+
             AddDatastoreLayerPanel.this.datasetTreeModel = new DataStoreLayerTreeModel(
-                getTreeModelData(dsNames, getConnectionDescriptor(), msgGeoT));
+                getTreeModelData(dsNames, msgGeoT));
             return dsNames;
           }
         });
@@ -331,6 +361,43 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
   public static interface Block {
 
     public Object yield() throws Exception;
+  }
+
+  /**
+   * Tests if current selected layers are valid by running the where clause with
+   * a 0 limit. Returns errors for each layer in a String. Returns null if no
+   * error is found.
+   */
+  private String checkSelectedLayer(DataStoreLayer layer) {
+    final StringBuffer ret = new StringBuffer();
+    final ConnectionDescriptor connectionDescriptor = getConnectionDescriptor();
+    DataStoreConnection conn = null;
+
+    try {
+      conn = new PasswordPrompter().getOpenConnection(
+          connectionManager(), connectionDescriptor, AddDatastoreLayerPanel.this);
+      DataStoreMetadata md = conn.getMetadata();
+      // Gets connection for this layers and check where clause
+      SpatialReferenceSystemID srid = conn.getMetadata().getSRID(layer.getFullName(), layer.getGeoCol().getName());
+      String[] colNames = conn.getMetadata().getColumnNames(layer.getFullName());
+      SpatialDatabasesSQLBuilder builder = conn.getSqlBuilder(srid, colNames);
+      String sql = builder.getCheckSQL(layer);
+      try {
+        JDBCUtil.execute(conn.getJdbcConnection(), sql, new ResultSetBlock() {
+          public void yield(ResultSet resultSet) throws SQLException {
+            // if query succeeds, nothing to do. 
+            // Exception thrown in case of error: we manage it.
+          }
+        });
+      } catch (Exception e) {
+        ret.append(layer.getFullName()).append(": ").append(e.getMessage())
+            .append("\nCause: ").append(e.getCause().getMessage());
+      }
+    } catch (Exception e) {
+      ret.append(e.getMessage());
+    }
+
+    return ret.toString();
   }
 
 }

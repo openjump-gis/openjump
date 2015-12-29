@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.vividsolutions.jump.workbench.ui.plugin.datastore;
 
 import com.vividsolutions.jump.I18N;
@@ -10,6 +5,12 @@ import com.vividsolutions.jump.datastore.DataStoreLayer;
 import java.util.LinkedHashMap;
 import org.netbeans.swing.outline.RowModel;
 
+/**
+ * A custom RowModel to use in a Swing Outline, used to display a Datasource information
+ * for a specific database schema and table name:
+ * geometric column info, editable WHERE clause, caching and limit
+ * @author nicolas Ribot
+ */
 public class DataStoreLayerRowModel implements RowModel {
 
     @Override
@@ -70,13 +71,13 @@ public class DataStoreLayerRowModel implements RowModel {
             DataStoreLayer ds = (DataStoreLayer) node;
             switch (column) {
                 case 0:
-                    return new String(ds.getGeoCol().toString());
+                    return ds.getGeoCol().toString();
                 case 1:
-                    return new String(ds.getWhere());
+                    return ds.getWhere();
                 case 2:
-                    return new Boolean(ds.isCaching());
+                    return ds.isCaching();
                 case 3:
-                    return new Integer(ds.getLimit());
+                    return ds.getLimit();
                 default:
                     assert false;
             }

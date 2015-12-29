@@ -20,8 +20,9 @@ import javax.swing.event.DocumentListener;
 import javax.swing.table.TableCellEditor;
 
 /**
- *
- * @author nicolas
+ * A resizable textArea to edit layers WHERE clause.
+ * From Netbeans Outline examples.
+ * @author nicolas Ribot
  */
 public class DataStoreLayerWhereEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
 

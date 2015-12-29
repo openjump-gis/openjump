@@ -443,5 +443,9 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
 
     return srid.toString();
   }
-
+  
+  @Override
+  public DataStoreConnection getDataStoreConnection() {
+    return this.conn;
+  }
 }

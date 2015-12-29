@@ -1,6 +1,7 @@
 package com.vividsolutions.jump.datastore.mariadb;
 
 import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jump.datastore.DataStoreLayer;
 import com.vividsolutions.jump.datastore.FilterQuery;
 import com.vividsolutions.jump.datastore.SpatialReferenceSystemID;
 import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDSMetadata;
@@ -43,6 +44,26 @@ public class MariadbSQLBuilder extends SpatialDatabasesSQLBuilder {
     }
     return qs.toString();
   };
+  
+  /**
+   * Returns the query allowing to test a DataStoreLayer: builds a query with where
+   * clause and limit 0 to check where clause.
+   * @return 
+   */
+  @Override
+  public String getCheckSQL(DataStoreLayer dsLayer) {
+    String s = "select * FROM %s %s LIMIT 0";
+    String wc = dsLayer.getWhereClause();
+    if (wc != null && ! wc.isEmpty()) {
+      wc = " WHERE " + wc ;
+    } else {
+      wc = "";
+    }
+    //System.out.println(qs);
+    return String.format(s, dsLayer.getFullName(), wc);
+  }
+
+  
 
   /**
    * Returns the string representing a SQL column definition.

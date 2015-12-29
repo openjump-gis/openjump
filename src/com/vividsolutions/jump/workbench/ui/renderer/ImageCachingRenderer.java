@@ -30,8 +30,6 @@
  * www.vividsolutions.com
  */
 package com.vividsolutions.jump.workbench.ui.renderer;
-import com.vividsolutions.jump.workbench.model.Layer;
-import com.vividsolutions.jump.workbench.ui.ErrorDialog;
 import java.awt.Graphics2D;
 import javax.swing.SwingUtilities;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
@@ -90,18 +88,6 @@ public abstract class ImageCachingRenderer implements Renderer {
 					try {
 						renderHook(image);
 					} catch (Throwable t) {
-            //Nicolas Ribot: displays an error dialog
-            // TODO: better display of error
-            // only warn and remove in case of SQLException
-            if (t instanceof java.sql.SQLException || t.getCause() instanceof java.sql.SQLException) {
-              ErrorDialog.show(panel, ImageCachingRenderer.class.toString(), 
-                  t.toString(), t.getMessage());
-              // removes this layer
-              if (contentID instanceof Layer) {
-                panel.getLayerManager().remove((Layer)contentID);
-              }
-            }
-            
 						panel.getContext()
 								.warnUser(WorkbenchFrame.toMessage(t));
 						t.printStackTrace(System.err);

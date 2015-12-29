@@ -38,7 +38,7 @@ public class DataStoreLayer {
             this.name = a[1];
         }
     }
-
+    
     public String getName() {
         return name;
     }

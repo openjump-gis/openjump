@@ -45,4 +45,9 @@ public interface DataStoreMetadata {
    * list columns of a table
    */
   String[] getColumnNames(String datasetName);
+  
+  /**
+   * DataSoreConnection used by these metadata
+   */
+  DataStoreConnection getDataStoreConnection();
 }

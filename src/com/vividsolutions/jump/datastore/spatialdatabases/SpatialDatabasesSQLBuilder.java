@@ -1,5 +1,6 @@
 package com.vividsolutions.jump.datastore.spatialdatabases;
 
+import com.vividsolutions.jump.datastore.DataStoreLayer;
 import com.vividsolutions.jump.datastore.FilterQuery;
 import com.vividsolutions.jump.datastore.SpatialReferenceSystemID;
 
@@ -27,6 +28,15 @@ public class SpatialDatabasesSQLBuilder {
    * @return a SQL query to get column names
    */
   public String getSQL(FilterQuery query) {
+    return null;
+  }
+
+  /**
+   * Builds a check SQL query for the given DataStoreLayer.
+   * @param dsLayer the @link DataStoreLayer to test
+   * @return a SQL query forced to limit 0 to test the layer
+   */
+  public String getCheckSQL(DataStoreLayer dsLayer) {
     return null;
   }
 
