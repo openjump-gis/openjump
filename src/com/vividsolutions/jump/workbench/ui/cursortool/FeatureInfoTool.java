@@ -33,46 +33,32 @@
 
 package com.vividsolutions.jump.workbench.ui.cursortool;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Image;
+import java.awt.geom.Point2D;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
+import org.apache.commons.io.IOUtils;
 import org.openjump.core.CheckOS;
+import org.openjump.core.rasterimage.RasterImageLayer;
+import org.openjump.core.rasterimage.RasterImageLayer.RasterDataNotFoundException;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.workbench.model.FenceLayerFinder;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.model.WMSLayer;
 import com.vividsolutions.jump.workbench.ui.InfoFrame;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import com.vividsolutions.wms.WMService;
-import java.awt.geom.Point2D;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.List;
-import javax.swing.JDialog;
-import javax.swing.JEditorPane;
-import javax.swing.JScrollPane;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-import org.apache.commons.io.IOUtils;
-import org.openjump.core.rasterimage.RasterImageLayer;
-import org.openjump.core.rasterimage.RasterImageLayer.RasterDataNotFoundException;
+import com.vividsolutions.wms.FeatureInfoRequest;
 
 public class FeatureInfoTool extends SpecifyFeaturesTool {
 
@@ -91,6 +77,7 @@ public class FeatureInfoTool extends SpecifyFeaturesTool {
           : IconLoader.image("information_cursor_2color.gif");
       return createCursor(i);
     }
+
     @Override
     protected void gestureFinished() throws Exception {
         reportNothingToUndoYet();
@@ -116,7 +103,8 @@ public class FeatureInfoTool extends SpecifyFeaturesTool {
         //Iterator iter = getWorkbench().getContext().getLayerNamePanel().selectedNodes(WMSLayer.class).iterator();
         
         String response = "";
-        for(Layerable lay : wmsLay_l) {           
+        String newLine = System.getProperty("line.separator");
+        for(Layerable lay : wmsLay_l) {
             
             // We only want visible layers
             WMSLayer wmsLayer = (WMSLayer) lay;
@@ -124,77 +112,99 @@ public class FeatureInfoTool extends SpecifyFeaturesTool {
                 continue;
             }
             
-            String featInfoUrl = wmsLayer.getService().getCapabilities().getFeatureInfoURL();
-            String userInfo = wmsLayer.createRequest(getWorkbench().getContext().getLayerViewPanel()).getURL().getUserInfo();
-            
-            if(userInfo != null) {
-                featInfoUrl = featInfoUrl.concat(userInfo);
-            }
-            
-            String names = getWmsLayeNames(wmsLayer);
-            
+            String wmsResponse;
             Point2D point = getPanel().getViewport().toViewPoint(coord);
             Envelope bbox = getPanel().getViewport().getEnvelopeInModelCoordinates();
             
-            if (featInfoUrl.contains("?")) {
-                featInfoUrl += "&";
-            } else {
-                featInfoUrl += "?";
-            }
+//            String featInfoUrl = wmsLayer.getService().getCapabilities().getFeatureInfoURL();
+//            String userInfo = wmsLayer.createRequest(getWorkbench().getContext().getLayerViewPanel()).getURL().getUserInfo();
+//            
+//            if(userInfo != null) {
+//                featInfoUrl = featInfoUrl.concat(userInfo);
+//            }
+//            
+//            String names = getWmsLayeNames(wmsLayer);
+//            
+//            
+//            if (featInfoUrl.contains("?")) {
+//                featInfoUrl += "&";
+//            } else {
+//                featInfoUrl += "?";
+//            }
+//            
+//            String version = wmsLayer.getWmsVersion();
+//            if (WMService.WMS_1_0_0.equals(version)) {
+//                featInfoUrl += "REQUEST=feature_info&WMTVER=1.0.0";
+//            } else if (WMService.WMS_1_1_0.equals(version) ||
+//                    WMService.WMS_1_1_1.equals(version) ||
+//                    WMService.WMS_1_3_0.equals(version)) {
+//                featInfoUrl += "REQUEST=GetFeatureInfo&SERVICE=WMS&VERSION=" + version;
+//            }            
+//            
+//            featInfoUrl += "&QUERY_LAYERS=" + names + "&LAYERS=" + names;
+//            if (WMService.WMS_1_3_0.equals(version)) {
+//                featInfoUrl += "&CRS=" + wmsLayer.getSRS() +
+//                        "&I=" + (int) point.getX() +
+//                        "&J=" + (int) point.getY();
+//            } else {
+//                featInfoUrl += "&SRS=" + wmsLayer.getSRS() +
+//                        "&X=" + (int) point.getX() +
+//                        "&Y=" + (int) point.getY();
+//            }
+//            
+//            featInfoUrl += "&WIDTH=" + getPanel().getWidth() +
+//                    "&HEIGHT=" + getPanel().getHeight() +
+//                    "&BBOX=" + bbox.getMinX() + "," + bbox.getMinY() + "," + bbox.getMaxX() + "," + bbox.getMaxY() +
+//                    "&STYLES=" +
+//                    "&FORMAT=" + wmsLayer.getFormat();
+//            
+//            if (!WMService.WMS_1_0_0.equals(version)) {
+//                try {
+//                    featInfoUrl += "&INFO_FORMAT=" + wmsLayer.getService().getCapabilities().getInfoFormat();
+//                } catch (IOException e) {
+//                    featInfoUrl += "&INFO_FORMAT=text/plain";
+//                }
+//            }
+//            
+//            featInfoUrl = featInfoUrl.concat("&FEATURE_COUNT=10 ");
+//            
+//            URL url = stripXhtmlTags(featInfoUrl);
+//            
+//            response = response.concat("+ ").concat(wmsLayer.getName()).concat(newLine);
+//            
+//            try {
+//                wmsResponse = IOUtils.toString(url.openStream());
+//                wmsResponse = cleanWmsResponse(wmsResponse);
+//            } catch(Exception ex) {
+//                wmsResponse = ex.toString();
+//                wmsResponse = wmsResponse.concat(newLine);
+//            }
+//            response = response.concat(wmsResponse);
+//            response = response.concat(newLine);
             
-            String version = wmsLayer.getWmsVersion();
-            if (WMService.WMS_1_0_0.equals(version)) {
-                featInfoUrl += "REQUEST=feature_info&WMTVER=1.0.0";
-            } else if (WMService.WMS_1_1_0.equals(version) ||
-                    WMService.WMS_1_1_1.equals(version) ||
-                    WMService.WMS_1_3_0.equals(version)) {
-                featInfoUrl += "REQUEST=GetFeatureInfo&SERVICE=WMS&VERSION=" + version;
-            }            
             
-            featInfoUrl += "&QUERY_LAYERS=" + names + "&LAYERS=" + names;
-            if (WMService.WMS_1_3_0.equals(version)) {
-                featInfoUrl += "&CRS=" + wmsLayer.getSRS() +
-                        "&I=" + (int) point.getX() +
-                        "&J=" + (int) point.getY();
-            } else {
-                featInfoUrl += "&SRS=" + wmsLayer.getSRS() +
-                        "&X=" + (int) point.getX() +
-                        "&Y=" + (int) point.getY();
-            }
+//            response = response.concat("-----------------NEW-----------------------\n");
             
-            featInfoUrl += "&WIDTH=" + getPanel().getWidth() +
-                    "&HEIGHT=" + getPanel().getHeight() +
-                    "&BBOX=" + bbox.getMinX() + "," + bbox.getMinY() + "," + bbox.getMaxX() + "," + bbox.getMaxY() +
-                    "&STYLES=" +
-                    "&FORMAT=" + wmsLayer.getFormat();
+            FeatureInfoRequest request = new FeatureInfoRequest(wmsLayer);
+            request.setBbox(bbox);
+            request.setPoint(point);
+            request.setHeight(getPanel().getHeight());
+            request.setWidth(getPanel().getWidth());
+            String fiu2 = request.getURL().toString();
             
-            if (!WMService.WMS_1_0_0.equals(version)) {
-                try {
-                    featInfoUrl += "&INFO_FORMAT=" + wmsLayer.getService().getCapabilities().getInfoFormat();
-                } catch (IOException e) {
-                    featInfoUrl += "&INFO_FORMAT=text/plain";
-                }
-            }
-            
-            featInfoUrl = featInfoUrl.concat("&FEATURE_COUNT=10 ");
-            
-            URL url = stripXhtmlTags(featInfoUrl);
-            
-            String newLine = System.getProperty("line.separator");
-            response = response.concat("+ ").concat(wmsLayer.getName()).concat(newLine);
-            
-            String wmsResponse;
             try {
-                wmsResponse = IOUtils.toString(url.openStream());
-                wmsResponse = cleanWmsResponse(wmsResponse);
-            } catch(Exception ex) {
-                wmsResponse = ex.toString();
-                wmsResponse = wmsResponse.concat(newLine);
+              wmsResponse = IOUtils.toString(request.getConnection().getInputStream());
+              wmsResponse = cleanWmsResponse(wmsResponse);
+            } catch (Exception ex) {
+              wmsResponse = ex.toString();
+              wmsResponse = wmsResponse.concat(newLine);
             }
+            
             response = response.concat(wmsResponse);
             response = response.concat(newLine);
-            
         };
+        
+        
         infoFrame.setWmsInfo(response);
         
         // Raster data
@@ -236,56 +246,56 @@ public class FeatureInfoTool extends SpecifyFeaturesTool {
         infoFrame.surface();
     }
 
-    private String getWmsLayeNames(WMSLayer selLayer) {
-        int i;
-        String names = "";
-        List<String> layerNames = selLayer.getLayerNames();
-        for (i=0; i< layerNames.size(); ++i) {
-            String name = (String) layerNames.get(i);
-            try {
-                name = URLEncoder.encode(name, "UTF-8");
-            } catch (Exception ignored) {
-            }
-            names += name;
-            if (i < layerNames.size() - 1) {
-                names += ",";
-            }
-        }
-
-        return names;
-    }
-
-    private URL stripXhtmlTags(String serverURL) throws Exception {
-
-        File tmpFile = File.createTempFile("wms", "q");
-        FileOutputStream cleanHtml = new FileOutputStream(tmpFile);
-        boolean resOk = true;
-        //String xsl = (String)getClass().getResource("clean.xsl").getContent();
-        //System.out.println("Ecco l'xsl: "+xsl);
-        Transformer pulizia = TransformerFactory.newInstance().newTransformer(
-                new StreamSource(getClass().getResourceAsStream("clean.xsl")));
-        try {
-            pulizia.transform(new StreamSource(serverURL),
-                    new StreamResult(cleanHtml));
-        } catch (Exception te) {
-            //System.out.println("XSLT Error: "+te.getMessage());
-            resOk = false;
-        } finally {
-            cleanHtml.close();
-        }
-        // [DR] gestione file vuoti
-        if (!resOk || !(new FileReader(tmpFile).ready())) {
-            /*
-            FileWriter noResponse = new FileWriter(tmpFile);
-            noResponse.write("<html><body><h2>Risultati interrogazione</h2>"+
-            "Il server non ha restituito alcun risultato.</body></html>");
-            noResponse.close();
-             */
-            //gestione risposte non html (testuali)
-            return new URL(serverURL);
-        }
-        return tmpFile.toURI().toURL();
-    }
+//    private String getWmsLayeNames(WMSLayer selLayer) {
+//        int i;
+//        String names = "";
+//        List<String> layerNames = selLayer.getLayerNames();
+//        for (i=0; i< layerNames.size(); ++i) {
+//            String name = (String) layerNames.get(i);
+//            try {
+//                name = URLEncoder.encode(name, "UTF-8");
+//            } catch (Exception ignored) {
+//            }
+//            names += name;
+//            if (i < layerNames.size() - 1) {
+//                names += ",";
+//            }
+//        }
+//
+//        return names;
+//    }
+//
+//    private URL stripXhtmlTags(String serverURL) throws Exception {
+//
+//        File tmpFile = File.createTempFile("wms", "q");
+//        FileOutputStream cleanHtml = new FileOutputStream(tmpFile);
+//        boolean resOk = true;
+//        //String xsl = (String)getClass().getResource("clean.xsl").getContent();
+//        //System.out.println("Ecco l'xsl: "+xsl);
+//        Transformer pulizia = TransformerFactory.newInstance().newTransformer(
+//                new StreamSource(getClass().getResourceAsStream("clean.xsl")));
+//        try {
+//            pulizia.transform(new StreamSource(serverURL),
+//                    new StreamResult(cleanHtml));
+//        } catch (Exception te) {
+//            //System.out.println("XSLT Error: "+te.getMessage());
+//            resOk = false;
+//        } finally {
+//            cleanHtml.close();
+//        }
+//        // [DR] gestione file vuoti
+//        if (!resOk || !(new FileReader(tmpFile).ready())) {
+//            /*
+//            FileWriter noResponse = new FileWriter(tmpFile);
+//            noResponse.write("<html><body><h2>Risultati interrogazione</h2>"+
+//            "Il server non ha restituito alcun risultato.</body></html>");
+//            noResponse.close();
+//             */
+//            //gestione risposte non html (testuali)
+//            return new URL(serverURL);
+//        }
+//        return tmpFile.toURI().toURL();
+//    }
     
     private String cleanWmsResponse(String inputWms) {
         

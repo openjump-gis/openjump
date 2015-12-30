@@ -37,9 +37,11 @@
 
 package com.vividsolutions.wms;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
-import static com.vividsolutions.jump.workbench.ui.plugin.wms.URLWizardPanel.*;
+import org.openjump.util.UriUtil;
 
 /**
  * Represents the capabilities WMS XML.
@@ -126,7 +128,16 @@ public class Capabilities {
   }
   
   public String getFeatureInfoURL() {
-      return featureInfoURL;
+    String serviceUrl = service.getServerUrl();
+    // reuse servers auth if there is none in the url
+    // already and the server is the same
+    if (UriUtil.urlGetUser(featureInfoURL).isEmpty()
+        && UriUtil.urlGetHost(featureInfoURL).equals(
+            UriUtil.urlGetHost(serviceUrl)))
+      return UriUtil.urlAddUserInfo(featureInfoURL, service.getServerUrlAsUrl()
+          .getUserInfo());
+    
+    return featureInfoURL;
   }
   
   public void setGetMapURL(String url) {

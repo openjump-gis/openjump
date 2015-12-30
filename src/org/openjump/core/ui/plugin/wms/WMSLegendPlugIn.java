@@ -30,7 +30,7 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import com.vividsolutions.wms.AbstractBasicRequest;
+import com.vividsolutions.wms.AbstractWMSRequest;
 import com.vividsolutions.wms.MapLayer;
 import com.vividsolutions.wms.WMService;
 
@@ -190,7 +190,7 @@ public class WMSLegendPlugIn extends AbstractPlugIn {
             .get("org.openjump.core.ui.plugin.wms.WMSLegendPlugIn.message");
 }
 
-class LegendRequest extends AbstractBasicRequest {
+class LegendRequest extends AbstractWMSRequest {
     private String layerName;
 
     public LegendRequest(WMService service, String name) {

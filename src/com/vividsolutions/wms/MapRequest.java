@@ -59,7 +59,7 @@ import org.openjump.util.UriUtil;
  * Represents all of the parameters of a getMap request from a WMS server.
  * @author Chris Hodgson chodgson@refractions.net
  */
-public class MapRequest extends AbstractBasicRequest{
+public class MapRequest extends AbstractWMSRequest{
     
     private static Logger LOG = Logger.getLogger(MapRequest.class);
   
