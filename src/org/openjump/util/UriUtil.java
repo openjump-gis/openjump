@@ -189,7 +189,7 @@ public final class UriUtil {
     }
   }
   
-  final static String regexp = "^([^:/]+://)(([^@:/]*)(\\:([^@:/]*))?@)?(.*)$";
+  final static String regexp = "^([^:/]+://)(?:(([^@:/]*)(?:\\:([^@:/]*))?)@)?((.*?)(?::(\\d+))?(/.*))$";
   
   public static boolean isURL( String in ){
     Pattern p = Pattern.compile(regexp);
@@ -205,15 +205,7 @@ public final class UriUtil {
   }
   
   public static String urlStripAuth( String url ) {
-    String clean = isURL(url) ? url.replaceFirst(regexp, "$1$6") : url;
-    return clean;
-  }
-  
-  public static String urlStripPassword( String url ) {
-    String user = urlGetUser(url);
-    if (!user.isEmpty())
-      user += "@";
-    String clean = isURL(url) ? url.replaceFirst(regexp, "$1"+user+"$6") : url;
+    String clean = isURL(url) ? url.replaceFirst(regexp, "$1$5") : url;
     return clean;
   }
   
@@ -225,8 +217,46 @@ public final class UriUtil {
 
   public static String urlGetPassword(String url) {
     if (isURL(url))
-      return urlDecode(url.replaceFirst(regexp, "$5"));
+      return urlDecode(url.replaceFirst(regexp, "$4"));
     return "";
+  }
+
+  /**
+   * userinfo is the prepared urlencoded string before the @ eg. user:pass
+   * 
+   * @param url
+   * @return
+   */
+  public static String urlGetUserInfo(String url) {
+    if (isURL(url))
+      return url.replaceFirst(regexp, "$2");
+    return "";
+  }
+
+  public static String urlGetHost(String url) {
+    if (isURL(url))
+      return urlDecode(url.replaceFirst(regexp, "$6"));
+    return "";
+  }
+
+  public static String urlGetPort(String url) {
+    if (isURL(url))
+      return urlDecode(url.replaceFirst(regexp, "$7"));
+    return "";
+  }
+
+  public static String urlGetPath(String url) {
+    if (isURL(url))
+      return urlDecode(url.replaceFirst(regexp, "$8"));
+    return "";
+  }
+
+  public static String urlStripPassword( String url ) {
+    String user = urlGetUser(url);
+    if (!user.isEmpty())
+      user += "@";
+    String clean = isURL(url) ? url.replaceFirst(regexp, "$1"+user+"$5") : url;
+    return clean;
   }
   
   public static String urlAddCredentials(String url, String user, String pass) {
@@ -239,9 +269,21 @@ public final class UriUtil {
       if (!urlPass.isEmpty())
         urlCreds += ":" + urlPass;
     }
-    if (!urlCreds.isEmpty())
-      urlCreds = urlCreds + "@";
 
-    return url.replaceFirst(regexp, "$1" + urlCreds + "$6");
+    return urlAddUserInfo(url, urlCreds);
+  }
+
+  /**
+   * userinfo is the prepared urlencoded string before the @ eg. user:pass
+   * 
+   * @param url
+   * @param userinfo
+   * @return
+   */
+  public static String urlAddUserInfo(String url, String userinfo) {
+    if (!isURL(url))
+      return url;
+
+    return url.replaceFirst(regexp, "$1" + userinfo + "@$5");
   }
 }
