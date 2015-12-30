@@ -35,13 +35,17 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
 import javax.swing.ImageIcon;
+import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
-import javax.swing.JRootPane;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
+import javax.swing.table.DefaultTableModel;
 
 import org.openjump.core.ui.swing.DetachableInternalFrame;
 
@@ -61,11 +65,6 @@ import com.vividsolutions.jump.workbench.model.Task;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.ViewAttributesPlugIn;
-import java.io.IOException;
-import javax.swing.JEditorPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
 
 /**
  * Provides proxied (non-spatial) views of a Layer.
@@ -374,6 +373,7 @@ public class InfoFrame extends DetachableInternalFrame implements
     protected class WMSInfoTab extends JPanel {
         
         private final JEditorPane jEditorPane;
+        private final JScrollPane jScrollPane;
         
         public WMSInfoTab() {
             
@@ -381,7 +381,7 @@ public class InfoFrame extends DetachableInternalFrame implements
             
             jEditorPane = new JEditorPane();
             jEditorPane.setEditable(false);
-            JScrollPane jScrollPane = new JScrollPane(
+            jScrollPane = new JScrollPane(
                     jEditorPane,
                     JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                     JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -391,9 +391,14 @@ public class InfoFrame extends DetachableInternalFrame implements
         }
         
         public void setWmsInfoText(String wmsInfo) {
-            
             jEditorPane.setText(wmsInfo);
-            
+            // scroll back to top
+            SwingUtilities.invokeLater(new Runnable() {
+              public void run() {
+                jScrollPane.getHorizontalScrollBar().setValue(0);
+                jScrollPane.getVerticalScrollBar().setValue(0);
+              }
+            });
         }
         
     }
