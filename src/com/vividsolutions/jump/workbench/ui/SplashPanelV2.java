@@ -63,7 +63,7 @@ public class SplashPanelV2 extends JPanel {
       setBackground(new Color(255, 255, 255, 0));
     JPanel img_panel = new JPanel(new BorderLayout());
 
-    if ( itsThatTimeAgain() )
+    if (itsThatTimeAgain())
       image = gimmick(image);
 
     JLabel img_label = new JLabel(image /* IconLoader.icon("splash3.png") */);
@@ -106,20 +106,32 @@ public class SplashPanelV2 extends JPanel {
         101, 98, alpha), new Color(148, 145, 140, alpha)));
   }
 
-  private boolean itsThatTimeAgain() {
+  public static boolean itsThatTimeAgain() {
     Calendar now = Calendar.getInstance();
     int day = now.get(Calendar.DAY_OF_MONTH);
     int month = now.get(Calendar.MONTH);
-    return ( month == Calendar.DECEMBER && day >= 18 && day <= 31 );
+    return (month == Calendar.DECEMBER && day >= 18 && day <= 31);
   }
 
-  private ImageIcon gimmick(ImageIcon image) {
-    BufferedImage combined = new BufferedImage(image.getIconWidth(),
-        image.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
+  private static ImageIcon gimmick(ImageIcon image) {
+    return gimmick(image, IconLoader.icon("hat.png"), 1f, 333, 22);
+  }
+
+  public static ImageIcon gimmick(ImageIcon orig, ImageIcon ovl, float scale,
+      int placement_x, int placement_y) {
+
+    BufferedImage combined = new BufferedImage(orig.getIconWidth(),
+        orig.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
     Graphics g = combined.getGraphics();
-    g.drawImage(image.getImage(), 0, 0, null);
-    Image hat = IconLoader.image("hat.png");
-    g.drawImage(hat, 335, 22, null);
+    g.drawImage(orig.getImage(), 0, 0, null);
+
+    if (scale != 1) {
+      int w = Math.round(ovl.getIconWidth() * scale);
+      int h = Math.round(ovl.getIconHeight() * scale);
+      ovl = GUIUtil.resize(ovl, w, h);
+    }
+
+    g.drawImage(ovl.getImage(), placement_x, placement_y, null);
 
     return new ImageIcon(combined);
   }

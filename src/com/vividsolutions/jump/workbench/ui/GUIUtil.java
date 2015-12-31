@@ -790,9 +790,28 @@ public class GUIUtil {
         return -layout.getBounds().getY();
     }
 
-    public static ImageIcon resize(ImageIcon icon, int extent) {
-        return new ImageIcon(icon.getImage().getScaledInstance(extent, extent,
-                Image.SCALE_SMOOTH));
+    /**
+     * resize to a square, even non square images
+     * @param icon
+     * @param extent_xy
+     * @return
+     */
+    public static ImageIcon resize(ImageIcon icon, int extent_xy) {
+      return resize(icon, extent_xy, extent_xy);
+    }
+
+  /**
+   * resizes to the given dimensions. take care to calculate them properly if you
+   * want to keep aspect ratio
+   * 
+   * @param icon
+   * @param extent_x
+   * @param extent_y
+   * @return
+   */
+    public static ImageIcon resize(ImageIcon icon, int extent_x, int extent_y) {
+      return new ImageIcon(icon.getImage().getScaledInstance(extent_x, extent_y,
+          Image.SCALE_SMOOTH));
     }
 
     /**

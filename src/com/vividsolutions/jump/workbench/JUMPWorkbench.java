@@ -38,6 +38,7 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -104,16 +105,41 @@ public class JUMPWorkbench {
 
   private static final ArrayList<Image> appIcons() {
     ArrayList<Image> iconlist = new ArrayList<Image>();
-    // seems like win7 wants even smaller one for internal frames
-    // so let's use just another different one
-    iconlist.add(IconLoader.image("oj_kang_14.v2.png"));
-    // that's the default for window icons
-    iconlist.add(IconLoader.image("oj_16_Kplain2oj.png"));
-    iconlist.add(IconLoader.image("oj_24.png"));
-    iconlist.add(IconLoader.image("oj_32.png"));
-    iconlist.add(IconLoader.image("oj_48.png"));
-    iconlist.add(IconLoader.image("oj_256.png"));
-    // java.util.Collections.reverse(iconlist);
+
+    // let's get festive
+    if (SplashPanelV2.itsThatTimeAgain()) {
+      ImageIcon ovl = IconLoader.icon("hat.png");
+      // seems like win7 wants even smaller one for internal frames
+      iconlist.add(SplashPanelV2.gimmick(
+          SplashPanelV2.gimmick(new ImageIcon(new BufferedImage(14, 14,
+              BufferedImage.TYPE_INT_ARGB)), ovl, 0.48f, -1, -1),
+          IconLoader.icon("oj_16_bottomright.png"), 1f, -2, -2).getImage());
+      iconlist.add(SplashPanelV2.gimmick(
+          SplashPanelV2.gimmick(new ImageIcon(new BufferedImage(16, 16,
+              BufferedImage.TYPE_INT_ARGB)), ovl, 0.54f, -1, -1),
+          IconLoader.icon("oj_16_bottomright.png"), 1f, 0, 0).getImage());
+      iconlist.add(SplashPanelV2.gimmick(IconLoader.icon("oj_24.png"), ovl,
+          .12f, 19, 10).getImage());
+      iconlist.add(SplashPanelV2.gimmick(IconLoader.icon("oj_32.png"), ovl,
+          .15f, 26, 14).getImage());
+      iconlist.add(SplashPanelV2.gimmick(IconLoader.icon("oj_48.png"), ovl,
+          .25f, 37, 21).getImage());
+      iconlist.add(SplashPanelV2.gimmick(IconLoader.icon("oj_256.png"), ovl,
+          1.4f, 194, 113).getImage());
+
+    } else {
+      // seems like win7 wants even smaller one for internal frames
+      // so let's use just another different one
+      iconlist.add(IconLoader.image("oj_kang_14.v2.png"));
+      // that's the default for window icons
+      iconlist.add(IconLoader.image("oj_16_Kplain2oj.png"));
+      iconlist.add(IconLoader.image("oj_24.png"));
+      iconlist.add(IconLoader.image("oj_32.png"));
+      iconlist.add(IconLoader.image("oj_48.png"));
+      iconlist.add(IconLoader.image("oj_256.png"));
+      // java.util.Collections.reverse(iconlist);
+    }
+
     return iconlist;
   }
 
@@ -803,4 +829,6 @@ public class JUMPWorkbench {
     // } else
     System.out.println(text);
   }
+  
+
 }
