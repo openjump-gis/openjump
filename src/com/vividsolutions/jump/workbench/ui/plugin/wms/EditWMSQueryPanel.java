@@ -31,15 +31,20 @@
  */
 package com.vividsolutions.jump.workbench.ui.plugin.wms;
 
+import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
+import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -47,8 +52,13 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.openjump.core.ui.plugin.wms.AddWmsLayerWizard;
 import org.openjump.util.UriUtil;
 
@@ -58,6 +68,7 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.ui.InputChangedListener;
 import com.vividsolutions.jump.workbench.ui.TransparencyPanel;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
+import com.vividsolutions.wms.MapLayer;
 import com.vividsolutions.wms.WMService;
 
 public class EditWMSQueryPanel extends JPanel {
@@ -72,6 +83,8 @@ public class EditWMSQueryPanel extends JPanel {
   private JLabel transparencyLabel = new JLabel();
 
   private SelectUrlWithAuthPanel urlPanel;
+  String[] savedUrlList;
+  private JButton connectButton;
 
   private EnableCheck[] enableChecks = new EnableCheck[] { new EnableCheck() {
     public String check(JComponent component) {
@@ -107,7 +120,6 @@ public class EditWMSQueryPanel extends JPanel {
       if (url.endsWith("?") || url.endsWith("&")) {
         url = url.substring(0, url.length() - 1);
       }
-      urlPanel.setUrl(url);
 
       mapLayerPanel.init(service, layer.getLayerNames());
       refreshParamCombos();
@@ -117,63 +129,76 @@ public class EditWMSQueryPanel extends JPanel {
           refreshParamCombos();
         }
       });
-      
+
       setAlpha(alpha);
     } catch (Exception ex) {
       ex.printStackTrace();
     }
   }
 
+  /**
+   * cleans the map table, enables reconnect button to visualize a reconnect is
+   * necessary
+   */
+  private void resetConnection() {
+    mapLayerPanel.reset();
+    refreshParamCombos();
+    connectButton.setEnabled(true);
+  }
+
+  /**
+   * refresh parameter fields according to wms service or when null emtpy them
+   */
   private void refreshParamCombos() {
     WMService service = mapLayerPanel.getService();
     // uhhh ohh
-    if (service == null){
+    if (service == null) {
       srsComboBox.setModel(new DefaultComboBoxModel());
       formatComboBox.setModel(new DefaultComboBoxModel());
       return;
     }
-    
-      // update SRS dropdown
-      Object prevSelected;
-      DefaultComboBoxModel comboBoxModel;
 
-      prevSelected = (String) srsComboBox.getSelectedItem();
-      if (prevSelected == null)
-        prevSelected = layer.getSRS();
-      comboBoxModel = new DefaultComboBoxModel();
-      for (Iterator i = mapLayerPanel.commonSRSList().iterator(); i.hasNext();) {
-        String commonSRS = (String) i.next();
-        String srsName = SRSUtils.getName(commonSRS);
-        comboBoxModel.addElement(srsName);
-      }
-      srsComboBox.setModel(comboBoxModel);
+    // update SRS dropdown
+    Object prevSelected;
+    DefaultComboBoxModel comboBoxModel;
 
-      // selectedSRS might no longer be in the combobox, in which case nothing
-      // will be selected. [Jon Aquino]
-      srsComboBox.setSelectedItem(prevSelected);
-      if ((srsComboBox.getSelectedItem() == null)
-          && (srsComboBox.getItemCount() > 0)) {
-        String srs = srsComboBox.getItemAt(0).toString();
-        srsComboBox.setSelectedIndex(0);
-      }
+    prevSelected = (String) srsComboBox.getSelectedItem();
+    if (prevSelected == null)
+      prevSelected = layer.getSRS();
+    comboBoxModel = new DefaultComboBoxModel();
+    for (Iterator i = mapLayerPanel.commonSRSList().iterator(); i.hasNext();) {
+      String commonSRS = (String) i.next();
+      String srsName = SRSUtils.getName(commonSRS);
+      comboBoxModel.addElement(srsName);
+    }
+    srsComboBox.setModel(comboBoxModel);
 
-      // update format dropdown
-      prevSelected = (String) formatComboBox.getSelectedItem();
-      if (prevSelected == null)
-        prevSelected = layer.getFormat();
-      comboBoxModel = new DefaultComboBoxModel();
-      for (String f : service.getCapabilities().getMapFormats()) {
-        comboBoxModel.addElement(f);
-      }
-      formatComboBox.setModel(comboBoxModel);
+    // selectedSRS might no longer be in the combobox, in which case nothing
+    // will be selected. [Jon Aquino]
+    srsComboBox.setSelectedItem(prevSelected);
+    if ((srsComboBox.getSelectedItem() == null)
+        && (srsComboBox.getItemCount() > 0)) {
+      String srs = srsComboBox.getItemAt(0).toString();
+      srsComboBox.setSelectedIndex(0);
+    }
 
-      formatComboBox.setSelectedItem(prevSelected);
-      if ((formatComboBox.getSelectedItem() == null)
-          && (formatComboBox.getItemCount() > 0)) {
-        String format = srsComboBox.getItemAt(0).toString();
-        layer.setFormat(format);
-        srsComboBox.setSelectedIndex(0);
-      }
+    // update format dropdown
+    prevSelected = (String) formatComboBox.getSelectedItem();
+    if (prevSelected == null)
+      prevSelected = layer.getFormat();
+    comboBoxModel = new DefaultComboBoxModel();
+    for (String f : service.getCapabilities().getMapFormats()) {
+      comboBoxModel.addElement(f);
+    }
+    formatComboBox.setModel(comboBoxModel);
+
+    formatComboBox.setSelectedItem(prevSelected);
+    if ((formatComboBox.getSelectedItem() == null)
+        && (formatComboBox.getItemCount() > 0)) {
+      String format = srsComboBox.getItemAt(0).toString();
+      layer.setFormat(format);
+      srsComboBox.setSelectedIndex(0);
+    }
   }
 
   public int getAlpha() {
@@ -188,6 +213,13 @@ public class EditWMSQueryPanel extends JPanel {
     int index = srsComboBox.getSelectedIndex();
     String srsCode = (String) mapLayerPanel.commonSRSList().get(index);
     return srsCode;
+  }
+
+  /**
+   * retrieve the list of urls in the dropdown
+   */
+  public String[] getUrlList() {
+    return savedUrlList.clone();
   }
 
   public String getFormat() {
@@ -232,17 +264,48 @@ public class EditWMSQueryPanel extends JPanel {
         GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, defaultInsets,
         0, 0));
 
-    String[] urlList;
+    // retrieve persistently saved url list
     String urlString = (String) PersistentBlackboardPlugIn.getInstance().get(
         AddWmsLayerWizard.CACHED_URL_KEY);
-    urlList = (urlString != null) ? urlString.split(",")
+    savedUrlList = (urlString != null) ? urlString.split(",")
         : AddWmsLayerWizard.DEFAULT_URLS;
 
-    urlPanel = new SelectUrlWithAuthPanel(urlList);
+    // put our entry on top, gets autoselected
+    Set<String> newUrlList = new LinkedHashSet<String>();
+    // insert latest on top
+    newUrlList.add(layer.getService().getServerUrl());
+    // add the rest
+    newUrlList.addAll(Arrays.asList(savedUrlList));
+
+    urlPanel = new SelectUrlWithAuthPanel(newUrlList.toArray(new String[0]));
     urlPanel.setBorder(BorderFactory.createTitledBorder(URLWizardPanel.TITLE));
     this.add(urlPanel, new GridBagConstraints(1, 0, 7, 1, 0.0, 0.0,
         GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, zeroInsets, 0,
         0));
+
+    // reset on changes in the textfields
+    final DocumentListener doli = new DocumentListener() {
+      @Override
+      public void removeUpdate(DocumentEvent e) {
+        reset(e);
+      }
+
+      @Override
+      public void insertUpdate(DocumentEvent e) {
+        reset(e);
+      }
+
+      @Override
+      public void changedUpdate(DocumentEvent e) {
+        reset(e);
+      }
+
+      private void reset(DocumentEvent e) {
+        System.out.println(e);
+        resetConnection();
+        ;
+      }
+    };
 
     JPanel versionPanel = URLWizardPanel.getInstance().createVersionPanel();
     versionPanel.setBorder(BorderFactory.createTitledBorder(I18N
@@ -251,12 +314,40 @@ public class EditWMSQueryPanel extends JPanel {
         GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, zeroInsets,
         0, 0));
 
-    JButton connectButton = new JButton(I18N.get("GenericNames.reconnect"));
+    // reset all on wms version switch
+    final ActionListener ali = new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        resetConnection();
+      }
+    };
+
+    // find all components to add ali/doli to them in the next step
+    final Component[] cs = (Component[]) ArrayUtils.addAll(
+        versionPanel.getComponents(), urlPanel.getComponents());
+    // give the combobox a chance to fill them first
+    SwingUtilities.invokeLater(new Runnable() {
+      public void run() {
+        for (final Component c : cs) {
+          // System.out.println(c);
+          if (c instanceof AbstractButton)
+            ((AbstractButton) c).addActionListener(ali);
+          else if (c instanceof JTextField)
+            ((JTextField) c).getDocument().addDocumentListener(doli);
+          else if (c instanceof JComboBox)
+            ((JComboBox) c).addActionListener(ali);
+        }
+      }
+    });
+
+    connectButton = new JButton(I18N.get("GenericNames.reconnect"));
     connectButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         reinitializeService();
       }
     });
+    // only active if version or urlpanel components was changed
+    connectButton.setEnabled(false);
 
     this.add(connectButton, new GridBagConstraints(4, 1, 2, 1, 0.0, 0.0,
         GridBagConstraints.CENTER, GridBagConstraints.NONE, zeroInsets, 0, 0));
@@ -274,16 +365,18 @@ public class EditWMSQueryPanel extends JPanel {
 
     try {
       service.initialize(true);
+      // refresh list of available wms layers on the server
       mapLayerPanel.init(service, layer.getLayerNames());
+      connectButton.setEnabled(false);
     } catch (Exception e) {
       e.printStackTrace();
       mapLayerPanel.reset();
     } finally {
-      refreshParamCombos();;
+      refreshParamCombos();
     }
   }
 
-  public List getChosenMapLayers() {
+  public List<MapLayer> getChosenMapLayers() {
     return mapLayerPanel.getChosenMapLayers();
   }
 
@@ -291,7 +384,8 @@ public class EditWMSQueryPanel extends JPanel {
     return enableChecks;
   }
 
-  public WMService getService(){
+  public WMService getService() {
     return mapLayerPanel.getService();
   }
+
 }

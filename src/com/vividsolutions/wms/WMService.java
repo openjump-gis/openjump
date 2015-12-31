@@ -108,6 +108,10 @@ public class WMService {
     initialize(false);
   }
 
+  public String getWmsVersion() {
+    return wmsVersion;
+  }
+
   /**
    * Connect to the service and get the capabilities. This must be called before
    * anything else is done with this service.

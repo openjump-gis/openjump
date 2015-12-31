@@ -286,7 +286,7 @@ public class MapRequest extends AbstractWMSRequest{
         }
         // [UT] some style info is *required*, so add this to be spec conform
         urlBuf.append( "&STYLES=" );
-        
+//        System.out.println(urlBuf.toString());
         LOG.info(urlBuf.toString());
         return new URL( urlBuf.toString() );
     }

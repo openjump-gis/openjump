@@ -21,6 +21,8 @@ abstract public class AbstractWMSRequest implements WMSRequest {
 
   protected AbstractWMSRequest(WMService service) {
     this.service = service;
+    // we use the services version by default, can be overwritten later via setter
+    this.version = service.getWmsVersion();
   }
 
   /**

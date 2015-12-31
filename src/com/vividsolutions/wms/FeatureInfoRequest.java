@@ -19,7 +19,7 @@ public class FeatureInfoRequest extends AbstractWMSRequest {
 
   private WMSLayer wmsLayer;
   private Point2D point;
-  private Envelope bbox;
+  private BoundingBox bbox;
   private int height, width;
 
   public FeatureInfoRequest(WMSLayer layer) throws IOException {
@@ -32,7 +32,7 @@ public class FeatureInfoRequest extends AbstractWMSRequest {
   }
 
   public void setBbox(Envelope bbox) {
-    this.bbox = bbox;
+    this.bbox = new BoundingBox(wmsLayer.getSRS(), bbox);
   }
 
   public void setHeight(int height) {
@@ -72,9 +72,22 @@ public class FeatureInfoRequest extends AbstractWMSRequest {
           + "&Y=" + (int) point.getY();
     }
 
-    featInfoUrl += "&WIDTH=" + width + "&HEIGHT=" + height + "&BBOX="
-        + bbox.getMinX() + "," + bbox.getMinY() + "," + bbox.getMaxX() + ","
-        + bbox.getMaxY() + "&STYLES=" + "&FORMAT=" + wmsLayer.getFormat();
+    featInfoUrl += "&WIDTH=" + width + "&HEIGHT=" + height + "&STYLES="
+        + "&FORMAT=" + wmsLayer.getFormat();
+
+    // copied over from MapRequest
+    StringBuffer urlBuf = new StringBuffer();
+    if (bbox != null) {
+      urlBuf.append("&" + bbox.getBBox(version));
+//      if (bbox.getSRS() != null && !bbox.getSRS().equals("LatLon")) {
+//        if (version.compareTo(WMService.WMS_1_3_0) < 0) {
+//          urlBuf.append("&SRS=" + bbox.getSRS());
+//        } else {
+//          urlBuf.append("&CRS=" + bbox.getSRS());
+//        }
+//      }
+    }
+    featInfoUrl += urlBuf;
 
     if (!WMService.WMS_1_0_0.equals(version)) {
       try {
@@ -87,6 +100,7 @@ public class FeatureInfoRequest extends AbstractWMSRequest {
 
     featInfoUrl = featInfoUrl.concat("&FEATURE_COUNT=10 ");
 
+//    System.out.println(featInfoUrl);
     return new URL(featInfoUrl);
   }
 

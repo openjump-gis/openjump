@@ -95,8 +95,8 @@ public class MapLayerPanel extends JPanel {
         initAddRemovePanel();
     }
 
-    public List getChosenMapLayers() {
-        ArrayList mapLayers = new ArrayList();
+    public List<MapLayer> getChosenMapLayers() {
+        ArrayList<MapLayer> mapLayers = new ArrayList<MapLayer>();
 
         for (Iterator i = addRemovePanel.getRightItems().iterator();
                 i.hasNext();) {

@@ -37,6 +37,8 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Image;
 import java.awt.geom.Point2D;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -52,6 +54,7 @@ import org.openjump.core.rasterimage.RasterImageLayer.RasterDataNotFoundExceptio
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.model.FenceLayerFinder;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.Layerable;
@@ -190,13 +193,17 @@ public class FeatureInfoTool extends SpecifyFeaturesTool {
             request.setPoint(point);
             request.setHeight(getPanel().getHeight());
             request.setWidth(getPanel().getWidth());
-            String fiu2 = request.getURL().toString();
+//            String fiu2 = request.getURL().toString();
             
             try {
-              wmsResponse = IOUtils.toString(request.getConnection().getInputStream());
+              wmsResponse = IOUtils
+                  .toString(request.getConnection().getInputStream());
               wmsResponse = cleanWmsResponse(wmsResponse);
             } catch (Exception ex) {
-              wmsResponse = ex.toString();
+              StringWriter sw = new StringWriter();
+              ex.printStackTrace(new PrintWriter(sw));
+              wmsResponse = sw.toString();
+              JUMPWorkbench.getInstance().getFrame().log(sw.toString());
               wmsResponse = wmsResponse.concat(newLine);
             }
             

@@ -33,10 +33,16 @@
 package com.vividsolutions.jump.workbench.ui.plugin.wms;
 
 import java.awt.GridBagConstraints;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import javax.swing.Icon;
 import javax.swing.JLabel;
+
+import org.apache.commons.lang.StringUtils;
+import org.openjump.core.ui.plugin.wms.AddWmsLayerWizard;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -49,6 +55,7 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.wms.MapLayer;
 
 public class EditWMSQueryPlugIn extends AbstractPlugIn {
@@ -102,11 +109,26 @@ public class EditWMSQueryPlugIn extends AbstractPlugIn {
                 layer.addLayerName(mapLayer.getName());
             }
 
+            // update layer
             layer.setService(panel.getService());
             layer.setSRS(panel.getSRS());
             layer.setAlpha(panel.getAlpha());
             layer.setFormat(panel.getFormat());
+            layer.setWmsVersion(panel.getService().getVersion());
+            layer.setName(panel.getChosenMapLayers().get(0).getTitle());
+
             layer.fireAppearanceChanged();
+            
+            // memorize new url
+            Set<String> list = new LinkedHashSet<String>();
+            // insert latest on top 
+            list.add(panel.getService().getServerUrl());
+            // add the rest
+            list.addAll(Arrays.asList(panel.getUrlList()));
+            
+            // save url list to blackboard
+            PersistentBlackboardPlugIn.get(context.getWorkbenchContext()).put(
+                AddWmsLayerWizard.CACHED_URL_KEY, StringUtils.join(list, ","));
 
             return true;
         }
