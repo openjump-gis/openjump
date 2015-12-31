@@ -76,18 +76,9 @@ public class FeatureInfoRequest extends AbstractWMSRequest {
         + "&FORMAT=" + wmsLayer.getFormat();
 
     // copied over from MapRequest
-    StringBuffer urlBuf = new StringBuffer();
     if (bbox != null) {
-      urlBuf.append("&" + bbox.getBBox(version));
-//      if (bbox.getSRS() != null && !bbox.getSRS().equals("LatLon")) {
-//        if (version.compareTo(WMService.WMS_1_3_0) < 0) {
-//          urlBuf.append("&SRS=" + bbox.getSRS());
-//        } else {
-//          urlBuf.append("&CRS=" + bbox.getSRS());
-//        }
-//      }
+      featInfoUrl += "&" + bbox.getBBox(version);
     }
-    featInfoUrl += urlBuf;
 
     if (!WMService.WMS_1_0_0.equals(version)) {
       try {
@@ -100,7 +91,7 @@ public class FeatureInfoRequest extends AbstractWMSRequest {
 
     featInfoUrl = featInfoUrl.concat("&FEATURE_COUNT=10 ");
 
-//    System.out.println(featInfoUrl);
+    System.out.println(featInfoUrl);
     return new URL(featInfoUrl);
   }
 
