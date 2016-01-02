@@ -17,15 +17,16 @@ import java.util.List;
 
 import org.deegree.datatypes.QualifiedName;
 import org.deegree.framework.xml.DOMPrinter;
-import org.deegree.framework.xml.XMLFragment;
 import org.deegree.framework.xml.XMLParsingException;
 import org.deegree.framework.xml.XMLTools;
 import org.deegree.ogcbase.CommonNamespaces;
 import org.deegree.ogcwebservices.wfs.capabilities.WFSFeatureType;
+import org.openjump.util.UriUtil;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import de.latlon.deejump.wfs.auth.UserData;
+import de.latlon.deejump.wfs.deegree2mods.XMLFragment;
 
 /**
  * The WFS 1.0.0 client.
@@ -33,113 +34,122 @@ import de.latlon.deejump.wfs.auth.UserData;
  * @author <a href="mailto:taddei@lat-lon.de">Ugo Taddei</a>
  * @author last edited by: $Author: stranger $
  * 
- * @version $Revision: 1438 $, $Date: 2008-05-29 15:00:02 +0200 (Do, 29 Mai 2008) $
+ * @version $Revision: 1438 $, $Date: 2008-05-29 15:00:02 +0200 (Do, 29 Mai
+ *          2008) $
  */
 public class WFServiceWrapper_1_0_0 extends AbstractWFSWrapper {
 
-    private XMLFragment capsDoc;
+  private XMLFragment capsDoc;
 
-    private String[] featureTypes;
+  private String[] featureTypes;
 
-    /**
-     * @param logins
-     * @param baseUrl
-     */
-    public WFServiceWrapper_1_0_0( UserData logins, String baseUrl ) {
-        super( logins, baseUrl );
-        init();
+  /**
+   * @param logins
+   * @param baseUrl
+   */
+  public WFServiceWrapper_1_0_0(UserData logins, String baseUrl) {
+    super(logins, baseUrl);
+    init();
+  }
+
+  private void init() {
+
+    capsDoc = new de.latlon.deejump.wfs.deegree2mods.XMLFragment();
+
+    try {
+      capsDoc.load(new URL(getCapabilitiesURL()));
+    } catch (Exception e) {
+      e.printStackTrace();
     }
 
-    private void init() {
+  }
 
-        capsDoc = new de.latlon.deejump.wfs.deegree2mods.XMLFragment();
+  @Override
+  public String getCapabilitesAsString() {
+    return DOMPrinter.nodeToString(capsDoc.getRootElement(), " ");
+  }
 
-        try {
-            capsDoc.load( new URL( getCapabilitiesURL() ) );
-        } catch ( Exception e ) {
-            e.printStackTrace();
-        }
-
+  @Override
+  public synchronized String[] getFeatureTypes() {
+    if (featureTypes == null) {
+      featureTypes = extractFeatureTypes();
     }
+    return featureTypes;
+  }
 
-    @Override
-    public String getCapabilitesAsString() {
-        return DOMPrinter.nodeToString( capsDoc.getRootElement(), " " );
+  private synchronized String[] extractFeatureTypes() {
+
+    String[] fts = null;
+
+    ftNameToWfsFT = new HashMap<String, WFSFeatureType>();
+
+    Element root = this.capsDoc.getRootElement();
+
+    try {
+      List<Element> nodes = XMLTools.getElements(root,
+          "wfs:FeatureTypeList/wfs:FeatureType",
+          CommonNamespaces.getNamespaceContext());
+
+      List<String> ftList = new ArrayList<String>(nodes.size());
+      for (Element n : nodes) {
+        Node node = XMLTools.getNode(n, "wfs:Name/text()",
+            CommonNamespaces.getNamespaceContext());
+
+        QualifiedName qualiName = XMLFragment.parseQualifiedName(node);
+
+        ftList.add(qualiName.getLocalName());
+
+        URI uri = XMLTools.getNodeAsURI(n, "wfs:SRS/text()",
+            CommonNamespaces.getNamespaceContext(), null);
+        WFSFeatureType wfsFt = new WFSFeatureType(qualiName, null, null, null,
+            uri, null, null, null, null, null);
+
+        ftNameToWfsFT.put(qualiName.getLocalName(), wfsFt);
+
+      }
+      fts = ftList.toArray(new String[ftList.size()]);
+    } catch (XMLParsingException e) {
+      e.printStackTrace();
     }
+    return fts;
 
-    @Override
-    public synchronized String[] getFeatureTypes() {
-        if ( featureTypes == null ) {
-            featureTypes = extractFeatureTypes();
-        }
-        return featureTypes;
+  }
+
+  private String createOnlineResourceForOperation(String operationName,
+      String httpMeth) {
+    String value = null;
+    Element root = this.capsDoc.getRootElement();
+
+    try {
+      value = XMLTools.getRequiredNodeAsString(root,
+          "wfs:Capability/wfs:Request/wfs:" + operationName
+              + "/wfs:DCPType/wfs:HTTP/wfs:" + httpMeth + "/@onlineResource",
+          CommonNamespaces.getNamespaceContext());
+
+    } catch (XMLParsingException e) {
+      e.printStackTrace();
     }
+    return value;
 
-    private synchronized String[] extractFeatureTypes() {
+  }
 
-        String[] fts = null;
+  @Override
+  public String createDescribeFTOnlineResource() {
+    return createOnlineResourceForOperation("DescribeFeatureType", "Get");
+  }
 
-        ftNameToWfsFT = new HashMap<String, WFSFeatureType>();
+  @Override
+  public String getServiceVersion() {
+    return "1.0.0";
+  }
 
-        Element root = this.capsDoc.getRootElement();
-
-        try {
-            List<Element> nodes = XMLTools.getElements( root, "wfs:FeatureTypeList/wfs:FeatureType",
-                                                        CommonNamespaces.getNamespaceContext() );
-
-            List<String> ftList = new ArrayList<String>( nodes.size() );
-            for ( Element n : nodes ) {
-                Node node = XMLTools.getNode( n, "wfs:Name/text()", CommonNamespaces.getNamespaceContext() );
-
-                QualifiedName qualiName = XMLFragment.parseQualifiedName( node );
-
-                ftList.add( qualiName.getLocalName() );
-
-                URI uri = XMLTools.getNodeAsURI( n, "wfs:SRS/text()", CommonNamespaces.getNamespaceContext(), null );
-                WFSFeatureType wfsFt = new WFSFeatureType( qualiName, null, null, null, uri, null, null, null, null,
-                                                           null );
-
-                ftNameToWfsFT.put( qualiName.getLocalName(), wfsFt );
-
-            }
-            fts = ftList.toArray( new String[ftList.size()] );
-        } catch ( XMLParsingException e ) {
-            e.printStackTrace();
-        }
-        return fts;
-
-    }
-
-    private String createOnlineResourceForOperation( String operationName, String httpMeth ) {
-        String value = null;
-        Element root = this.capsDoc.getRootElement();
-
-        try {
-            value = XMLTools.getRequiredNodeAsString( root, "wfs:Capability/wfs:Request/wfs:" + operationName
-                                                            + "/wfs:DCPType/wfs:HTTP/wfs:" + httpMeth
-                                                            + "/@onlineResource",
-                                                      CommonNamespaces.getNamespaceContext() );
-
-        } catch ( XMLParsingException e ) {
-            e.printStackTrace();
-        }
-        return value;
-
-    }
-
-    @Override
-    public String createDescribeFTOnlineResource() {
-        return createOnlineResourceForOperation( "DescribeFeatureType", "Get" );
-    }
-
-    @Override
-    public String getServiceVersion() {
-        return "1.0.0";
-    }
-
-    @Override
-    public String getGetFeatureURL() {
-        return createOnlineResourceForOperation( "GetFeature", "Post" );
-    }
+  @Override
+  public String getGetFeatureURL() {
+    String url = createOnlineResourceForOperation("GetFeature", "Post");
+    if (logins != null && !logins.isEmpty())
+      url = UriUtil.urlAddCredentials(url, logins.getUsername(),
+          logins.getPassword());
+    return url;
+  }
 
 }

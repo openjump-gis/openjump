@@ -3,6 +3,12 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2016-01-02 ede
+  * finetuned wfs httpclient access, unified proxy and auth handling
+  * wfs request is now buffered to disk for optimal performance
+  * wfs item count is now limited by RAM only
+  * NOTE: we should probably switch to deegree3+ instead of patching things up
+
 2015-12-31 ede
   * fix FeatureInfoTool did not respect wms 1.3.0 axis order
   * EditWMSQueryPlugin allows now properly changing of _all_ parameters

@@ -85,7 +85,6 @@ import org.deegree.datatypes.QualifiedName;
 import org.deegree.enterprise.WebUtils;
 import org.deegree.framework.xml.NamespaceContext;
 import org.deegree.framework.xml.XMLException;
-import org.deegree.framework.xml.XMLFragment;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -104,6 +103,7 @@ import com.vividsolutions.jump.workbench.ui.HTMLFrame;
 import com.vividsolutions.jump.workbench.ui.WorkbenchToolBar;
 
 import de.latlon.deejump.wfs.client.WFSHttpClient;
+import de.latlon.deejump.wfs.deegree2mods.XMLFragment;
 import de.latlon.deejump.wfs.jump.WFSFeature;
 import de.latlon.deejump.wfs.jump.WFSLayer;
 

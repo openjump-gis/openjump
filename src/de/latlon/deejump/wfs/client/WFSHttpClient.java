@@ -1,29 +1,52 @@
 package de.latlon.deejump.wfs.client;
 
-import org.apache.commons.httpclient.*;
-import org.apache.commons.httpclient.params.*;
+import java.io.IOException;
+import java.net.URL;
 
+import org.apache.commons.httpclient.Credentials;
+import org.apache.commons.httpclient.HostConfiguration;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpConnectionManager;
+import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.HttpState;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.commons.httpclient.params.HttpClientParams;
+import org.deegree.enterprise.WebUtils;
+import org.openjump.util.UriUtil;
+
+import com.vividsolutions.wms.WMService;
+
+/**
+ * a client specifically tailored to do our WFS requests
+ */
 public class WFSHttpClient extends HttpClient {
-  HttpClient nonProxyClient;
-  String nonProxyHosts = "";
-  
+  AbstractWFSWrapper wfsService;
+
+  public WFSHttpClient(AbstractWFSWrapper wfsService) {
+    super();
+    this.wfsService = wfsService;
+    this._init();
+  }
+
   public WFSHttpClient() {
     super();
     this._init();
   }
 
-  public WFSHttpClient(HttpClientParams params,
+  private WFSHttpClient(HttpClientParams params,
       HttpConnectionManager httpConnectionManager) {
     super(params, httpConnectionManager);
     this._init();
   }
 
-  public WFSHttpClient(HttpClientParams arg0) {
+  private WFSHttpClient(HttpClientParams arg0) {
     super(arg0);
     this._init();
   }
 
-  public WFSHttpClient(HttpConnectionManager httpConnectionManager) {
+  private WFSHttpClient(HttpConnectionManager httpConnectionManager) {
     super(httpConnectionManager);
     this._init();
   }
@@ -31,67 +54,44 @@ public class WFSHttpClient extends HttpClient {
   private void _init() {
     HttpClientParams clientPars = new HttpClientParams();
     // set timeout to 5s
-    clientPars.setConnectionManagerTimeout( 5000 );
-    this.setParams( clientPars );
-    
-//    nonProxyClient = new HttpClient();
-    
-//    // Recover the proxy settings from the System, if they exist
-//    Properties systemSettings = System.getProperties();
-//    if (systemSettings != null) {
-//
-//      String proxySet = systemSettings.getProperty("http.proxySet", "false");
-//      if (StringUtils.isNotEmpty(proxySet) && proxySet.equals("true")) {
-//        String proxyHost = systemSettings.getProperty("http.proxyHost");
-//        String proxyPort = systemSettings.getProperty("http.proxyPort");
-//
-//        this.getHostConfiguration().setProxy(proxyHost,
-//            Integer.valueOf(proxyPort));
-//
-//        String proxyUser = systemSettings.getProperty("http.proxyUser");
-//        String proxyPass = systemSettings.getProperty("http.proxyPass");
-//
-//        if (StringUtils.isNotEmpty(proxyUser)) {
-//          Credentials credentials = new UsernamePasswordCredentials(
-//              proxyUser, proxyPass);
-//          AuthScope scope = new AuthScope(AuthScope.ANY_HOST,
-//              AuthScope.ANY_PORT);
-//          this.getState().setProxyCredentials(scope, credentials);
-//        }
-//
-//        nonProxyHosts = systemSettings.getProperty("http.nonProxyHosts");
-//      }
-//    }
+    clientPars.setConnectionManagerTimeout(WMService.TIMEOUT_OPEN);
+    clientPars.setSoTimeout(WMService.TIMEOUT_READ);
+    clientPars.setContentCharset("UTF-8");
+    this.setParams(clientPars);
+
+    // always add auth, we use this client for this specific wfs server only
+    // anyway
+    if (wfsService != null) {
+      Credentials creds = new UsernamePasswordCredentials(wfsService
+          .getLogins().getUsername(), wfsService.getLogins().getPassword());
+      getState().setCredentials(AuthScope.ANY, creds);
+    }
   }
 
-//  @Override
-//  public int executeMethod(HostConfiguration hostconfig, HttpMethod method,
-//      HttpState state) throws IOException, HttpException {
-//    System.out.println("e1"+(hostconfig!=null?hostconfig.getHost():getHost()));
-//    System.out.println(method.getHostConfiguration().getHost());
-//    try {
-//      String host = method.getHostConfiguration().getHost();
-//      System.out.println(nonProxyHosts.split("\\|"));
-//    } catch (NullPointerException e) {
-//    }
-//    // TODO Auto-generated method stub
-//    return super.executeMethod(hostconfig, method, state);
-//  }
+  /**
+   * fiddle in some default processing before firing the request eg. setting
+   * proxies, auth
+   */
+  @Override
+  public int executeMethod(HostConfiguration hostconfig, HttpMethod method,
+      HttpState state) throws IOException, HttpException {
 
-//  @Override
-//  public int executeMethod(HostConfiguration hostConfiguration,
-//      HttpMethod method) throws IOException, HttpException {
-//    System.out.println("e2"+(hostConfiguration!=null?hostConfiguration.getHost():getHost()));
-//    // TODO Auto-generated method stub
-//    return super.executeMethod(hostConfiguration, method);
-//  }
-//
-//  @Override
-//  public int executeMethod(HttpMethod method) throws IOException, HttpException {
-//    System.out.println("e3"+method.getHostConfiguration().getHost());
-//    // TODO Auto-generated method stub
-//    return super.executeMethod(method);
-//  }
+    if (!(method instanceof WFSMethod))
+      throw new IllegalArgumentException(
+          "WFSHttpClient only executes WFSMethod's");
 
-  
+    String url = ((WFSMethod) method).getUri();
+    // enable proxy usage
+    WebUtils.enableProxyUsage(this, new URL(url));
+
+    // set auth from url
+    if (!UriUtil.urlGetUser(url).isEmpty()) {
+      Credentials creds = new UsernamePasswordCredentials(
+          UriUtil.urlGetUser(url), UriUtil.urlGetPassword(url));
+      getState().setCredentials(AuthScope.ANY, creds);
+    }
+
+    return super.executeMethod(hostconfig, method, state);
+  }
+
 }

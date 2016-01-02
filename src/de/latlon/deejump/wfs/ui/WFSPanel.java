@@ -52,7 +52,6 @@ import javax.swing.border.Border;
 
 import org.apache.log4j.Logger;
 import org.deegree.datatypes.QualifiedName;
-import org.deegree.framework.xml.XMLFragment;
 import org.deegree.model.spatialschema.GMLGeometryAdapter;
 import org.deegree.model.spatialschema.Geometry;
 import org.deegree.model.spatialschema.GeometryFactory;
@@ -72,6 +71,7 @@ import de.latlon.deejump.wfs.client.AbstractWFSWrapper;
 import de.latlon.deejump.wfs.client.WFSClientHelper;
 import de.latlon.deejump.wfs.client.WFServiceWrapper_1_0_0;
 import de.latlon.deejump.wfs.client.WFServiceWrapper_1_1_0;
+import de.latlon.deejump.wfs.deegree2mods.XMLFragment;
 import de.latlon.deejump.wfs.i18n.I18N;
 import de.latlon.deejump.wfs.plugin.WFSPlugIn;
 
@@ -439,7 +439,7 @@ public class WFSPanel extends JPanel {
             return;
         }
 
-        logins = new UserData( user, MD5Hasher.getMD5( pass ) );
+        logins = new UserData( user, pass );
         // logins = new UserData(user, pass);
         context.getBlackboard().put( "LOGINS", logins );
 

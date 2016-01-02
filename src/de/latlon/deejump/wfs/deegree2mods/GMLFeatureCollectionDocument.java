@@ -8,10 +8,21 @@ import org.xml.sax.SAXException;
 import de.latlon.deejump.wfs.DeeJUMPException;
 import de.latlon.deejump.wfs.client.WFSClientHelper;
 
-public class GMLSchemaDocument extends
-    org.deegree.model.feature.schema.GMLSchemaDocument {
+public class GMLFeatureCollectionDocument extends
+    org.deegree.model.feature.GMLFeatureCollectionDocument {
 
-  private static final long serialVersionUID = 42459124798674598L;
+  public GMLFeatureCollectionDocument(boolean b) {
+    super(b);
+  }
+
+  public GMLFeatureCollectionDocument() {
+    super();
+  }
+
+  public GMLFeatureCollectionDocument(boolean guessSimpleTypes,
+      boolean keepCollectionName) {
+    super(guessSimpleTypes, keepCollectionName);
+  }
 
   /**
    * this override is necessary to have this method use the WFSHttpClient which

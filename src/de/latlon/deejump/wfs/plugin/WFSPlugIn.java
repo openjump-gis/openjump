@@ -8,7 +8,10 @@
  */
 package de.latlon.deejump.wfs.plugin;
 
+import java.io.File;
+import java.io.InputStream;
 import java.util.Collection;
+import java.util.Locale;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -27,7 +30,11 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.task.TaskMonitor;
-import com.vividsolutions.jump.workbench.*;
+import com.vividsolutions.jump.task.TaskMonitorV2;
+import com.vividsolutions.jump.util.FileUtil;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.WorkbenchException;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
@@ -35,10 +42,14 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.ThreadedBasePlugIn;
-import com.vividsolutions.jump.workbench.ui.*;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
+import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 
+import de.latlon.deejump.wfs.WFSExtension;
 import de.latlon.deejump.wfs.client.AbstractWFSWrapper;
+import de.latlon.deejump.wfs.client.WFSClientHelper;
 import de.latlon.deejump.wfs.data.JUMPFeatureFactory;
 import de.latlon.deejump.wfs.i18n.I18N;
 import de.latlon.deejump.wfs.jump.WFSLayer;
@@ -58,9 +69,12 @@ import de.latlon.deejump.wfs.ui.WFSPanel;
  */
 public class WFSPlugIn extends ThreadedBasePlugIn {
 
+  public final static String I18NPREFIX = WFSExtension.class.getPackage()
+      .getName();
+
   private static Logger LOG = Logger.getLogger(WFSPlugIn.class);
 
-  private WFSDialog rd;
+  private WFSDialog wfsDialog;
 
   private String wfsUrl;
 
@@ -89,14 +103,13 @@ public class WFSPlugIn extends ThreadedBasePlugIn {
   @Override
   public synchronized boolean execute(PlugInContext context) throws Exception {
 
-    if (rd == null) {
-      rd = new WFSDialog(context.getWorkbenchContext(),
-          context.getWorkbenchFrame(),
-          I18N.get("WFSResearchPlugIn.mainDialogTitle"));
+    if (wfsDialog == null) {
+      wfsDialog = new WFSDialog(context.getWorkbenchContext(),
+          context.getWorkbenchFrame(), i18n("mainDialogTitle"));
     }
 
     LayerViewPanel lvPanel = context.getLayerViewPanel();
-    WFSPanel pnl = rd.getWFSPanel();
+    WFSPanel pnl = wfsDialog.getWFSPanel();
     // get selected geometry(ies)
     Collection<?> geoCollec = lvPanel.getSelectionManager()
         .getFeatureSelection().getSelectedItems();
@@ -119,9 +132,9 @@ public class WFSPlugIn extends ThreadedBasePlugIn {
     // sets set selected geometry
     // this geometry is used for spatial filter operations
     pnl.setComparisonGeometry(selectedGeom);
-    GUIUtil.centreOnWindow(rd);
-    rd.setVisible(true);
-    if (!rd.canSearch()) {
+    GUIUtil.centreOnWindow(wfsDialog);
+    wfsDialog.setVisible(true);
+    if (!wfsDialog.canSearch()) {
       return false;
     }
     wfsUrl = pnl.getWfService().getGetFeatureURL();
@@ -133,17 +146,29 @@ public class WFSPlugIn extends ThreadedBasePlugIn {
     WorkbenchFrame wbframe = context.getWorkbenchFrame();
     WorkbenchContext wbcontext = context.getWorkbenchContext();
 
-    monitor.report(I18N.get("WFSSearch.searching"));
-
-    WFSPanel panel = rd.getWFSPanel();
+    WFSPanel panel = wfsDialog.getWFSPanel();
     String request = panel.getRequest();
     String crs = panel.getGMLGeometrySRS();
 
-    org.deegree.model.feature.FeatureCollection dfc;
-    dfc = JUMPFeatureFactory.createDeegreeFCfromWFS(panel.getWfService(),
-        request, panel.getFeatureType());
+    // read response into temp file
+    if (monitor instanceof TaskMonitorV2)
+      ((TaskMonitorV2) monitor).setTitle(i18n("read-response-to-tempfile"));
+    InputStream is = WFSClientHelper.createResponseStreamfromWFS(panel
+        .getWfService().getGetFeatureURL(), request);
+    File tmpFile = FileUtil.copyInputStreamToTempFile(is, "wfs", null, monitor);
 
-    monitor.report("Parsing feature collection (size = " + dfc.size() + ")");
+    if (monitor instanceof TaskMonitorV2)
+      ((TaskMonitorV2) monitor).setTitle(i18n("processing"));
+    monitor.report(i18n("create-deegree-collection"));
+    org.deegree.model.feature.FeatureCollection dfc;
+    JUMPFeatureFactory jff = new JUMPFeatureFactory(monitor);
+    // finally we do something constructive
+    dfc = jff.createDeegreeFCfromFile(panel.getWfService(), tmpFile, null);
+    // done? fine, cleanup
+    tmpFile.delete();
+
+    monitor.report(i18n("convert-to-OJ-feature-collection (size = {0})",
+        dfc.size()));
     QualifiedName ftName = panel.getFeatureType();
     AbstractWFSWrapper wfs = panel.getWfService();
 
@@ -154,12 +179,12 @@ public class WFSPlugIn extends ThreadedBasePlugIn {
     if (geoms == null || geoms.length == 0) {
       LOG.info("No geometry was found, using default point at (0, 0).");
       Point point = new GeometryFactory().createPoint(new Coordinate(0, 0));
-      dataset = JUMPFeatureFactory.createFromDeegreeFC(dfc, point, wfs, ftName);
+      dataset = jff.createFromDeegreeFC(dfc, point, wfs, ftName);
     } else {
-      dataset = JUMPFeatureFactory.createFromDeegreeFC(dfc, null, wfs, ftName);
+      dataset = jff.createFromDeegreeFC(dfc, null, wfs, ftName);
     }
 
-    monitor.report("Adding Layer");
+    monitor.report(i18n("adding-layer"));
 
     LayerManager layerManager = context.getLayerManager();
 
@@ -189,9 +214,10 @@ public class WFSPlugIn extends ThreadedBasePlugIn {
       layer.setFeatureCollectionModified(false);
     }
 
-    if (dataset.size() == JUMPFeatureFactory.getMaxFeatures()) {
-      wbframe.warnUser(I18N.get("WFSPlugin.maxnumber") + " "
-          + JUMPFeatureFactory.getMaxFeatures());
+    if (dataset.size() >= jff.getMaxFeatures()) {
+      wbframe.warnUser(i18n(
+          "wfs-request-resulted-in-maxnumber-{0}-items-the-resultset-is-likely-bigger",
+          String.format(Locale.US, "%d", dataset.size())));
     }
 
     String[] urls = panel.getWFSList().toArray(new String[] {});
@@ -218,11 +244,11 @@ public class WFSPlugIn extends ThreadedBasePlugIn {
     GeometryFactory gf = new GeometryFactory();
     Geometry geo = gf.buildGeometry(geoCollec);
     if (geo instanceof GeometryCollection) {
-      throw new WorkbenchException(
-          I18N.get("WFSResearchPlugIn.invalideGeomType"));
+      throw new WorkbenchException(i18n("invalid-geometry-type-geometrycollection"));
     }
     // TODO: fetch SRS info and use it
-    org.deegree.model.spatialschema.Geometry geoObj = JTSAdapter.wrap(geo,null);
+    org.deegree.model.spatialschema.Geometry geoObj = JTSAdapter
+        .wrap(geo, null);
 
     return geoObj;
   }
@@ -259,7 +285,7 @@ public class WFSPlugIn extends ThreadedBasePlugIn {
 
     if (forceDefaults)
       return DEFAULTURLS;
-    
+
     String urls = (String) PersistentBlackboardPlugIn.get(
         JUMPWorkbench.getInstance().getContext()).get(WFSDialog.WFS_URL_LIST);
     String[] urlList = (urls == null) ? new String[0] : urls.split(",");
@@ -268,6 +294,18 @@ public class WFSPlugIn extends ThreadedBasePlugIn {
       return DEFAULTURLS;
 
     return urlList;
+  }
+
+  /**
+   * utility method for the whole package
+   * 
+   * @param key
+   * @param arguments
+   * @return
+   */
+  public static String i18n(String key, Object... arguments) {
+    key = I18NPREFIX + "." + key;
+    return I18N.get(key, arguments);
   }
 
 }

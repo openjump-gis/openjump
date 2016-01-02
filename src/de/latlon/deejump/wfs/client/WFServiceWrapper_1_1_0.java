@@ -26,12 +26,13 @@ import org.deegree.ogcwebservices.getcapabilities.DCPType;
 import org.deegree.ogcwebservices.getcapabilities.HTTP;
 import org.deegree.ogcwebservices.getcapabilities.InvalidCapabilitiesException;
 import org.deegree.ogcwebservices.wfs.capabilities.WFSCapabilities;
-import org.deegree.ogcwebservices.wfs.capabilities.WFSCapabilitiesDocument;
 import org.deegree.ogcwebservices.wfs.capabilities.WFSFeatureType;
+import org.openjump.util.UriUtil;
 import org.xml.sax.SAXException;
 
 import de.latlon.deejump.wfs.DeeJUMPException;
 import de.latlon.deejump.wfs.auth.UserData;
+import de.latlon.deejump.wfs.deegree2mods.WFSCapabilitiesDocument;
 
 /**
  * This class represents a WFService. It handles connection with the server behind the given URL. It also caches Feature
@@ -157,6 +158,10 @@ public class WFServiceWrapper_1_1_0 extends AbstractWFSWrapper {
             throw new RuntimeException( "Service does not have a GetFeature operation accessible by HTTP POST." );
         }
 
+        if (logins != null && !logins.isEmpty())
+          getFeatureUrl = UriUtil.urlAddCredentials(getFeatureUrl, logins.getUsername(),
+              logins.getPassword());
+        
         return getFeatureUrl;
     }
 

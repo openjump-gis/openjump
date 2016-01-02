@@ -78,4 +78,8 @@ public class UserData {
     public String getPassword() {
         return password;
     }
+    
+    public boolean isEmpty(){
+      return username == null || username.isEmpty();
+    }
 }

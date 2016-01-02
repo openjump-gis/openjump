@@ -42,18 +42,23 @@
 
 package de.latlon.deejump.wfs.client;
 
-import java.io.*;
-import java.net.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PushbackInputStream;
 import java.util.LinkedList;
+import java.util.zip.GZIPInputStream;
 
-import org.apache.commons.httpclient.*;
-import org.apache.commons.httpclient.methods.*;
+import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.io.IOUtils;
-import org.deegree.enterprise.*;
-import org.deegree.framework.log.*;
+import org.deegree.framework.log.ILogger;
+import org.deegree.framework.log.LoggerFactory;
 import org.deegree.framework.util.CharsetUtils;
 
-import de.latlon.deejump.wfs.*;
+import de.latlon.deejump.wfs.DeeJUMPException;
 
 /**
  * Does the posting and getting of requests/reponses for the WFSPanel.
@@ -61,106 +66,133 @@ import de.latlon.deejump.wfs.*;
  * @author <a href="mailto:taddei@lat-lon.de">Ugo Taddei</a>
  * @author last edited by: $Author: stranger $
  * 
- * @version $Revision: 1438 $, $Date: 2008-05-29 15:00:02 +0200 (Do, 29 Mai 2008) $
+ * @version $Revision: 1438 $, $Date: 2008-05-29 15:00:02 +0200 (Do, 29 Mai
+ *          2008) $
  */
 public class WFSClientHelper {
 
-    private static ILogger LOG = LoggerFactory.getLogger( WFSClientHelper.class );
+  private static ILogger LOG = LoggerFactory.getLogger(WFSClientHelper.class);
 
-    /**
-     * @param serverUrl
-     * @param request
-     * @return the response as String
-     * @throws DeeJUMPException
-     */
-    public static String createResponseStringfromWFS(String serverUrl,
-        String request) throws DeeJUMPException {
-      
-      PushbackInputStream pbis = new PushbackInputStream(
-          createResponseStreamfromWFS(serverUrl, request), 1024);
+  /**
+   * convenience method, big datasets tend to flood your memory
+   * 
+   * @param serverUrl
+   * @param request
+   * @return the response as String
+   * @throws DeeJUMPException
+   */
+  public static String createResponseStringfromWFS(String serverUrl,
+      String request) throws DeeJUMPException {
 
-      try {
-        String encoding = readEncoding(pbis);
-        return IOUtils.toString(pbis, encoding);
-      } catch (IOException e) {
-        String mesg = "Error reading " + serverUrl;
-        LOG.logError(mesg, e);
-        throw new DeeJUMPException(mesg, e);
+    PushbackInputStream pbis = new PushbackInputStream(
+        createResponseStreamfromWFS(serverUrl, request), 1024);
+
+    try {
+      String encoding = readEncoding(pbis);
+      return IOUtils.toString(pbis, encoding);
+    } catch (IOException e) {
+      String mesg = "Error reading " + serverUrl;
+      LOG.logError(mesg, e);
+      throw new DeeJUMPException(mesg, e);
+    }
+  }
+
+  /**
+   * creates and InputStream for memory efficient handling
+   * 
+   * if postData == null, a get request is executed
+   * this method supports gzip content encoding
+   * 
+   * @param serverUrl
+   * @param postData
+   * @return
+   * @throws DeeJUMPException
+   */
+  public static InputStream createResponseStreamfromWFS(String serverUrl,
+      String postData) throws DeeJUMPException {
+    LOG.logDebug("WFS GetFeature: " + serverUrl + " -> " + postData);
+    //System.out.println(serverUrl);
+
+    HttpClient httpclient = new WFSHttpClient();
+
+    try {
+      HttpMethod method;
+      if (postData != null) {
+        PostMethod pm = new WFSPostMethod(serverUrl);
+        pm.setRequestEntity(new StringRequestEntity(postData, "text/xml",
+            "UTF-8"));
+        method = pm;
+      } else {
+        method = new WFSGetMethod(serverUrl);
+      }
+
+      method.addRequestHeader("Accept-Encoding", "gzip");
+
+      // WebUtils.enableProxyUsage(httpclient, new URL(serverUrl));
+      httpclient.executeMethod(method);
+
+      Header encHeader = method.getResponseHeader("Content-Encoding");
+      InputStream is = method.getResponseBodyAsStream();
+      if (encHeader != null) {
+        String encValue = encHeader.getValue();
+        if (encValue != null && encValue.toLowerCase().equals("gzip")) {
+          is = new GZIPInputStream(is);
+        }
+      }
+
+      return is;
+    } catch (Exception e) {
+      String mesg = "Error opening connection with " + serverUrl;
+      LOG.logError(mesg, e);
+      throw new DeeJUMPException(mesg, e);
+    }
+  }
+
+  /**
+   * reads the encoding of a XML document from its header. If no header
+   * available <code>CharsetUtils.getSystemCharset()</code> will be returned
+   * 
+   * @param pbis
+   * @return encoding of a XML document
+   * @throws IOException
+   */
+  public static String readEncoding(PushbackInputStream pbis)
+      throws IOException {
+    byte[] b = new byte[80];
+    String s = "";
+    int rd = 0;
+
+    LinkedList<byte[]> bs = new LinkedList<byte[]>();
+    LinkedList<Integer> rds = new LinkedList<Integer>();
+    while (rd < 80) {
+      rds.addFirst(pbis.read(b));
+      if (rds.peek() == -1) {
+        rds.poll();
+        break;
+      }
+      rd += rds.peek();
+      s += new String(b, 0, rds.peek()).toLowerCase();
+      bs.addFirst(b);
+      b = new byte[80];
+    }
+
+    String encoding = CharsetUtils.getSystemCharset();
+    if (s.indexOf("?>") > -1) {
+      int p = s.indexOf("encoding=");
+      if (p > -1) {
+        StringBuffer sb = new StringBuffer();
+        int k = p + 1 + "encoding=".length();
+        while (s.charAt(k) != '"' && s.charAt(k) != '\'') {
+          sb.append(s.charAt(k++));
+        }
+        encoding = sb.toString();
       }
     }
-    
-    public static InputStream createResponseStreamfromWFS( String serverUrl, String request )
-                            throws DeeJUMPException {
-        LOG.logDebug( "WFS GetFeature: " + serverUrl + " -> " + request );
-
-        HttpClient httpclient = new WFSHttpClient();
-
-        PostMethod httppost = new PostMethod( serverUrl );
-        try {
-          httppost.setRequestEntity( new StringRequestEntity( request, "text/xml", "UTF-8" ) );
-        } catch (UnsupportedEncodingException e1) {
-          throw new DeeJUMPException(e1);
-        }
-
-
-        try {
-            WebUtils.enableProxyUsage( httpclient, new URL(serverUrl) );
-            httpclient.executeMethod( httppost );
-
-            return httppost.getResponseBodyAsStream();
-        } catch ( Exception e ) {
-            String mesg = "Error opening connection with " + serverUrl;
-            LOG.logError( mesg, e );
-            throw new DeeJUMPException( mesg, e );
-        } 
-
+    while (!bs.isEmpty()) {
+      pbis.unread(bs.poll(), 0, rds.poll());
     }
-    
-    /**
-     * reads the encoding of a XML document from its header. If no header available
-     * <code>CharsetUtils.getSystemCharset()</code> will be returned
-     * 
-     * @param pbis
-     * @return encoding of a XML document
-     * @throws IOException
-     */
-    private static String readEncoding( PushbackInputStream pbis )
-                            throws IOException {
-        byte[] b = new byte[80];
-        String s = "";
-        int rd = 0;
 
-        LinkedList<byte[]> bs = new LinkedList<byte[]>();
-        LinkedList<Integer> rds = new LinkedList<Integer>();
-        while ( rd < 80 ) {
-            rds.addFirst( pbis.read( b ) );
-            if ( rds.peek() == -1 ) {
-                rds.poll();
-                break;
-            }
-            rd += rds.peek();
-            s += new String( b, 0, rds.peek() ).toLowerCase();
-            bs.addFirst( b );
-            b = new byte[80];
-        }
+    return encoding;
+  }
 
-        String encoding = CharsetUtils.getSystemCharset();
-        if ( s.indexOf( "?>" ) > -1 ) {
-            int p = s.indexOf( "encoding=" );
-            if ( p > -1 ) {
-                StringBuffer sb = new StringBuffer();
-                int k = p + 1 + "encoding=".length();
-                while ( s.charAt( k ) != '"' && s.charAt( k ) != '\'' ) {
-                    sb.append( s.charAt( k++ ) );
-                }
-                encoding = sb.toString();
-            }
-        }
-        while ( !bs.isEmpty() ) {
-            pbis.unread( bs.poll(), 0, rds.poll() );
-        }
-
-        return encoding;
-    }
-    
 }

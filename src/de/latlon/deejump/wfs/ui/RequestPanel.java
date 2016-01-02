@@ -16,6 +16,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.PushbackInputStream;
 import java.io.StringReader;
 import java.net.URL;
 import java.util.Arrays;
@@ -33,12 +34,14 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.deegree.enterprise.WebUtils;
-import org.deegree.framework.xml.XMLFragment;
 import org.deegree.ogcwebservices.wfs.operation.GetFeature;
 
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 
+import de.latlon.deejump.wfs.client.WFSClientHelper;
 import de.latlon.deejump.wfs.client.WFSHttpClient;
+import de.latlon.deejump.wfs.client.WFSPostMethod;
+import de.latlon.deejump.wfs.deegree2mods.XMLFragment;
 import de.latlon.deejump.wfs.i18n.I18N;
 
 /**
@@ -143,14 +146,19 @@ class RequestPanel extends JPanel {
               try {
                 HttpClient client = new WFSHttpClient();
                 String wfsUrl = wfsPanel.wfService.getGetFeatureURL();
-                PostMethod post = new PostMethod(wfsUrl);
+                PostMethod post = new WFSPostMethod(wfsUrl);
                 post.setRequestEntity(new StringRequestEntity(reqTxt, "text/xml",
                     "UTF-8"));
       
                 WebUtils.enableProxyUsage(client, new URL(wfsUrl));
                 int code = client.executeMethod(post);
-                InputStreamReader isr = new InputStreamReader(post.getResponseBodyAsStream(), "UTF-8");
-                BufferedReader in = new BufferedReader(isr);
+                
+                // detect xml encoding
+                PushbackInputStream pbis = new PushbackInputStream(post.getResponseBodyAsStream(), 1024);
+                String encoding = WFSClientHelper.readEncoding(pbis);
+                InputStreamReader isrd = new InputStreamReader(pbis, encoding);
+                
+                BufferedReader in = new BufferedReader(isrd);
                 StringBuffer body = new StringBuffer();
                 String readLine;
                 while ((readLine = in.readLine()) != null) {
