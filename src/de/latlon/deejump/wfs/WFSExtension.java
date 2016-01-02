@@ -8,6 +8,7 @@
  */
 package de.latlon.deejump.wfs;
 
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.plugin.Extension;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 
@@ -28,8 +29,12 @@ public class WFSExtension extends Extension {
     return "WFS(-T) 1.0/1.1 Extension (Lat/Lon)";
   }
 
+  /**
+   * the default version is 'svn revision (build date)'
+   */
   public String getVersion() {
-    return "1.1.1 (22.12.2014)";
+    return "1.2 rev." + I18N.get("JUMPWorkbench.version.revision") + "("
+        + I18N.get("JUMPWorkbench.version.buildDate") + ")";
   }
 
   public String getMessage() {
