@@ -50,12 +50,12 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.task.TaskMonitor;
+import com.vividsolutions.jump.task.TaskMonitorV2;
 import com.vividsolutions.jump.workbench.ui.AnimatedClockPanel;
 import com.vividsolutions.jump.workbench.ui.ErrorHandler;
 
 
-public class TaskMonitorDialog extends JDialog implements TaskMonitor {
+public class TaskMonitorDialog extends JDialog implements TaskMonitorV2 {
     JPanel mainPanel = new JPanel();
     private GridBagLayout gridBagLayout1 = new GridBagLayout();
     private JPanel labelPanel = new JPanel();
@@ -85,6 +85,7 @@ public class TaskMonitorDialog extends JDialog implements TaskMonitor {
         this.errorHandler = errorHandler;
 
         try {
+          this.setLayout(new GridBagLayout());
             jbInit();
             pack();
         } catch (Exception ex) {
@@ -117,14 +118,10 @@ public class TaskMonitorDialog extends JDialog implements TaskMonitor {
                     this_componentHidden(e);
                 }
             });
-        this.getContentPane().setLayout(gridBagLayout2);
+        this.getContentPane().setLayout(new GridBagLayout());
         labelPanel.setLayout(gridBagLayout3);
         subtaskProgressLabel.setText(I18N.get("ui.task.TaskMonitorDialog.subtask-progress-goes-here"));
         taskProgressLabel.setText(I18N.get("ui.task.TaskMonitorDialog.task-progress-goes-here"));
-        getContentPane().add(mainPanel,
-            new GridBagConstraints(1, 0, 1, 1, 1.0, 1.0,
-                GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                new Insets(15, 0, 15, 15), 0, 0));
         mainPanel.add(labelPanel,
             new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0,
                 GridBagConstraints.WEST, GridBagConstraints.BOTH,
@@ -141,10 +138,18 @@ public class TaskMonitorDialog extends JDialog implements TaskMonitor {
             new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE,
                 new Insets(0, 0, 0, 0), 0, 0));
-        this.getContentPane().add(clockPanel,
+        
+        JPanel centerPanel = new JPanel(new GridBagLayout());
+        centerPanel.add(clockPanel,
             new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE,
                 new Insets(4, 4, 4, 4), 0, 0));
+        centerPanel.add(mainPanel,
+            new GridBagConstraints(1, 0, 1, 1, 1.0, 1.0,
+                GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                new Insets(15, 0, 15, 15), 0, 0));
+        
+        this.getContentPane().add(centerPanel);
     }
 
     void cancelButton_actionPerformed(ActionEvent e) {
@@ -202,5 +207,9 @@ public class TaskMonitorDialog extends JDialog implements TaskMonitor {
 
     public boolean isCancelRequested() {
         return cancelled;
+    }
+
+    public void setTitle(String title){
+      super.setTitle(title);
     }
 }
