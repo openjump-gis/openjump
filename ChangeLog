@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2016-01-04 mmichaud <m.michael.michaud@orange.fr>
+  * With postgis, don't try to convert every text field into geometry !
+
 2016-01-02 ede
   * finetuned wfs httpclient access, unified proxy and auth handling
   * wfs request is now buffered to disk for optimal performance

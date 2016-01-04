@@ -26,9 +26,6 @@ public class PostgisValueConverterFactory extends SpatialDatabasesValueConverter
     // and from direct Adhoc query (type of the column resultset).
     if ("bytea".equalsIgnoreCase(dbTypeName) || "geometry".equalsIgnoreCase(dbTypeName)) {
       return WKB_GEOMETRY_MAPPER;
-    } else if (dbTypeName.equalsIgnoreCase("text")) {
-      // TODO: wrong: all text column will be treated as text here...
-      return WKT_GEOMETRY_MAPPER;
     }
 
     // handle the standard types
