@@ -9,6 +9,8 @@
 
 package de.latlon.deejump.wfs.client;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -24,7 +26,9 @@ import org.deegree.ogcwebservices.wfs.capabilities.WFSFeatureType;
 import org.openjump.util.UriUtil;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
+import de.latlon.deejump.wfs.DeeJUMPException;
 import de.latlon.deejump.wfs.auth.UserData;
 import de.latlon.deejump.wfs.deegree2mods.XMLFragment;
 
@@ -46,21 +50,25 @@ public class WFServiceWrapper_1_0_0 extends AbstractWFSWrapper {
   /**
    * @param logins
    * @param baseUrl
+   * @throws DeeJUMPException 
    */
-  public WFServiceWrapper_1_0_0(UserData logins, String baseUrl) {
+  public WFServiceWrapper_1_0_0(UserData logins, String baseUrl) throws DeeJUMPException {
     super(logins, baseUrl);
     init();
   }
 
-  private void init() {
+  private void init() throws DeeJUMPException {
 
-    capsDoc = new de.latlon.deejump.wfs.deegree2mods.XMLFragment();
-
-    try {
-      capsDoc.load(new URL(getCapabilitiesURL()));
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+      capsDoc = new de.latlon.deejump.wfs.deegree2mods.XMLFragment();
+      try {
+        capsDoc.load(new URL(getCapabilitiesURL()));
+      } catch (MalformedURLException e) {
+        throw new DeeJUMPException(e);
+      } catch (IOException e) {
+        throw new DeeJUMPException(e);
+      } catch (SAXException e) {
+        throw new DeeJUMPException(e);
+      }
 
   }
 
@@ -79,11 +87,15 @@ public class WFServiceWrapper_1_0_0 extends AbstractWFSWrapper {
 
   private synchronized String[] extractFeatureTypes() {
 
-    String[] fts = null;
+    String[] fts = new String[0];
 
     ftNameToWfsFT = new HashMap<String, WFSFeatureType>();
 
     Element root = this.capsDoc.getRootElement();
+    
+    // some error
+    if (root == null)
+      return fts;
 
     try {
       List<Element> nodes = XMLTools.getElements(root,

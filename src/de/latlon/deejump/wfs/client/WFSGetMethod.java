@@ -2,7 +2,7 @@ package de.latlon.deejump.wfs.client;
 
 import org.apache.commons.httpclient.methods.GetMethod;
 
-public class WFSGetMethod extends GetMethod implements WFSMethod{
+public class WFSGetMethod extends GetMethod implements WFSHttpMethod{
 
   private String uri;
   
@@ -12,7 +12,7 @@ public class WFSGetMethod extends GetMethod implements WFSMethod{
   }
 
   @Override
-  public String getUri() {
+  public String getWfsUri() {
     return this.uri;
   }
 

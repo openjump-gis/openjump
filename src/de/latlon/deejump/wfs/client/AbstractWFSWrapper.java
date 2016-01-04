@@ -117,7 +117,6 @@ public abstract class AbstractWFSWrapper {
     this.featureTypeToSchema = new HashMap<String, GMLSchema>();
     this.featureTypeToSchemaXML = new HashMap<String, String>();
     this.geoPropsNameToQNames = new HashMap<String, QualifiedName[]>();
-
   }
 
   /**

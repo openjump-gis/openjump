@@ -76,11 +76,11 @@ public class WFSHttpClient extends HttpClient {
   public int executeMethod(HostConfiguration hostconfig, HttpMethod method,
       HttpState state) throws IOException, HttpException {
 
-    if (!(method instanceof WFSMethod))
+    if (!(method instanceof WFSHttpMethod))
       throw new IllegalArgumentException(
           "WFSHttpClient only executes WFSMethod's");
 
-    String url = ((WFSMethod) method).getUri();
+    String url = ((WFSHttpMethod) method).getWfsUri();
     // enable proxy usage
     WebUtils.enableProxyUsage(this, new URL(url));
 

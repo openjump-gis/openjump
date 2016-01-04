@@ -91,9 +91,7 @@ public class WFSClientHelper {
       String encoding = readEncoding(pbis);
       return IOUtils.toString(pbis, encoding);
     } catch (IOException e) {
-      String mesg = "Error reading " + serverUrl;
-      LOG.logError(mesg, e);
-      throw new DeeJUMPException(mesg, e);
+      throw new DeeJUMPException( e);
     }
   }
 
@@ -116,9 +114,9 @@ public class WFSClientHelper {
     HttpClient httpclient = new WFSHttpClient();
 
     try {
-      HttpMethod method;
+      WFSHttpMethod method;
       if (postData != null) {
-        PostMethod pm = new WFSPostMethod(serverUrl);
+        WFSPostMethod pm = new WFSPostMethod(serverUrl);
         pm.setRequestEntity(new StringRequestEntity(postData, "text/xml",
             "UTF-8"));
         method = pm;
@@ -142,9 +140,7 @@ public class WFSClientHelper {
 
       return is;
     } catch (Exception e) {
-      String mesg = "Error opening connection with " + serverUrl;
-      LOG.logError(mesg, e);
-      throw new DeeJUMPException(mesg, e);
+      throw new DeeJUMPException(e);
     }
   }
 

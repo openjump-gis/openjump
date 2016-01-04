@@ -65,7 +65,6 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
 
 import de.latlon.deejump.wfs.DeeJUMPException;
 import de.latlon.deejump.wfs.auth.LoginDialog;
-import de.latlon.deejump.wfs.auth.MD5Hasher;
 import de.latlon.deejump.wfs.auth.UserData;
 import de.latlon.deejump.wfs.client.AbstractWFSWrapper;
 import de.latlon.deejump.wfs.client.WFSClientHelper;
@@ -237,8 +236,7 @@ public class WFSPanel extends JPanel {
           try {
             reinitService((String) serverCombo.getSelectedItem());
           } catch (DeeJUMPException e1) {
-            LOG.info("Service could not be initialized.");
-            LOG.debug("Stack trace: ", e1);
+            context.getWorkbench().getFrame().handleThrowable(e1);
           }
         }
       });
@@ -370,15 +368,15 @@ public class WFSPanel extends JPanel {
 
             featureTypeCombo.setEnabled( true );
             // featureTypeCombo.setVisible( true );
-            //attributeResPanel.setFeatureTypeComboEnabled( true );
+            attributeResPanel.setFeatureTypeComboEnabled( true );
 
         } catch ( Exception e ) {
-            JOptionPane.showMessageDialog( this, "Could not connect to WFS server at \n'" + wfService.getBaseWfsURL()
-                                                 + "'\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE );
-            e.printStackTrace();
+            context.getWorkbench().getFrame().handleThrowable(e, this);
+            //e.printStackTrace();
 
+            // reset featuretype list
             featureTypeCombo.setModel( new javax.swing.DefaultComboBoxModel( new String[0] ) );
-            //attributeResPanel.setFeatureTypeComboEnabled( false );
+            attributeResPanel.setFeatureTypeComboEnabled( false );
 
             hideAdvancedTabs();
         }
