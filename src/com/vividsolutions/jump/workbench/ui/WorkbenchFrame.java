@@ -1188,18 +1188,17 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
     }
 
     public void handleThrowable(final Throwable t, final Component parent) {
-        showThrowable(t, parent);
-    }
-
-    public static void showThrowable(final Throwable t, final Component parent) {
-        t.printStackTrace(System.err);
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                ErrorDialog.show(parent,
-                        StringUtil.toFriendlyName(t.getClass().getName()),
-                        toMessage(t), StringUtil.stackTrace(t));
-            }
-        });
+      final String stack = StringUtil.stackTrace(t);
+      // log it
+      log(stack);
+      // show it
+      SwingUtilities.invokeLater(new Runnable() {
+        public void run() {
+          ErrorDialog.show(parent,
+              StringUtil.toFriendlyName(t.getClass().getName()), toMessage(t),
+              stack);
+        }
+      });
     }
 
     private ArrayList lastFiveThrowableDates = new ArrayList() {
