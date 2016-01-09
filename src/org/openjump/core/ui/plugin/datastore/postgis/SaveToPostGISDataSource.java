@@ -170,7 +170,7 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
                         createAndPopulateTable(conn, featureCollection, schemaName,
                                 tableName, srid, "geometry", dim, normalizedColumnNames);
                         if (createPrimaryKey) {
-                            addDBPrimaryKey(conn, schemaName, tableName, "dbid");
+                            addDBPrimaryKey(conn, schemaName, tableName, DEFAULT_PK_NAME);
                         }
                         conn.commit();
                         conn.setAutoCommit(true);
@@ -543,7 +543,6 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
                 String dbSchema, String dbTable, String primaryKey, boolean hasSrid, int dim,
                 boolean normalizedColumnNames) throws SQLException {
         String tableQName = compose(dbSchema, dbTable);
-        schema.setExternalPrimaryKeyIndex(schema.getAttributeIndex(primaryKey));
         StringBuilder sb = new StringBuilder("UPDATE " + tableQName + " SET (");
         sb.append(PostGISQueryUtil.createColumnList(schema, false, true, false, normalizedColumnNames))
           .append(") = (");
@@ -558,7 +557,6 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
     private PreparedStatement setAttributeValues(PreparedStatement pstmt, 
                 Feature feature, String primaryKey, boolean hasSrid, int dim) throws SQLException {
         FeatureSchema schema = feature.getSchema();
-        schema.setExternalPrimaryKeyIndex(schema.getAttributeIndex(primaryKey));
         int shift = 1;
         try {
             for (int i = 0; i < schema.getAttributeCount(); i++) {
@@ -590,7 +588,6 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
     private PreparedStatement setPrimaryKeyValue(PreparedStatement pstmt, Feature feature, String primaryKey)
             throws SQLException {
         FeatureSchema schema = feature.getSchema();
-        schema.setExternalPrimaryKeyIndex(schema.getAttributeIndex(primaryKey));
         pstmt.setObject(schema.getAttributeCount(), feature.getAttribute(schema.getExternalPrimaryKeyIndex()));
         return pstmt;
     }
