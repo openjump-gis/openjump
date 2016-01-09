@@ -5,23 +5,15 @@
  */
 package org.openjump.core.rasterimage;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringBufferInputStream;
-import java.io.StringReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import org.openjump.core.rasterimage.Stats;
 import org.xml.sax.Attributes;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
@@ -44,7 +36,7 @@ public class GDALInternalMetadata extends DefaultHandler {
         SAXParser parser = factory.newSAXParser();
         //XMLReader reader = parser.getXMLReader();
 
-        parser.parse(new ByteArrayInputStream(statsTag.getBytes(StandardCharsets.UTF_8)), this);
+        parser.parse(new ByteArrayInputStream(statsTag.getBytes("UTF-8")), this);
         
         sampleNr++;
         Stats stats = new Stats(sampleNr);

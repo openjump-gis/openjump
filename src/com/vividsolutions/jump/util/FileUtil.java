@@ -200,7 +200,7 @@ public class FileUtil {
     OutputStreamWriter osw = null;
     try {
       osw = new OutputStreamWriter(new FileOutputStream(filename), encoding);
-      String lineSep = System.lineSeparator();
+      String lineSep = System.getProperty("line.separator");
       for (Iterator<String> it = lines.iterator(); it.hasNext();) {
         osw.write(it.next());
         if (it.hasNext()) {

@@ -62,9 +62,9 @@ public class RasterColorEditorPanel extends JPanel implements ValueChecker,
     private JLabel toValueLabel;
     public JTextField toValue;
     public JTextField Chooser;
-    public JComboBox<?> colorScaleChooser;
-    public JComboBox<?> colorRampChooser;
-    public JComboBox<?> typeChooser;
+    public JComboBox colorScaleChooser;
+    public JComboBox colorRampChooser;
+    public JComboBox typeChooser;
     private ColorGenerator colorGenerator;
     private JSpinner spinnerbox;
 

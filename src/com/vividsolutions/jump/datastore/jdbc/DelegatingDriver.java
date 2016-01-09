@@ -54,7 +54,9 @@ public class DelegatingDriver implements Driver {
   }
 
   public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-    return driver.getParentLogger();
+    //TODO - can be restored after OpenJUMP 1.9 release
+    //return driver.getParentLogger();
+    throw new SQLFeatureNotSupportedException();
   }
 
   /**

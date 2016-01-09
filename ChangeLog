@@ -5,6 +5,7 @@
 
 2016-01-09 mmichaud <m.michael.michaud@orange.fr>
   * fix a regression introduced in r4720 in PostGISWriter
+  * 4 small fixes to make OpenJUMP 1.9 version java6 compatible
 
 2016-01-04 mmichaud <m.michael.michaud@orange.fr>
   * With postgis, don't try to convert every text field into geometry !
