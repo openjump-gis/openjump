@@ -32,35 +32,78 @@
 
 package com.vividsolutions.jump.workbench.ui.plugin;
 
+import java.io.File;
 import java.util.Date;
+import java.util.List;
+
 import javax.swing.ImageIcon;
 
+import org.apache.commons.io.input.ReversedLinesFileReader;
+
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.util.FileUtil;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.HTMLFrame;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
-
 public class GenerateLogPlugIn extends AbstractPlugIn {
-    
-    public GenerateLogPlugIn() {
-    }
-    
-    public String getName() {
-		return I18N.get("ui.plugin.GenerateLogPlugIn.log");
-	}
-	
-	public ImageIcon getIcon() {
-        return IconLoader.icon("application_view_list.png");
-    }
 
-    public boolean execute(PlugInContext context) throws java.lang.Exception {
-        reportNothingToUndoYet(context);
-        context.getOutputFrame().createNewDocument();
-        context.getOutputFrame().addHeader(1, I18N.get("ui.plugin.GenerateLogPlugIn.jump-workbench-log"));
-        context.getOutputFrame().addHeader(2, I18N.get("ui.plugin.GenerateLogPlugIn.generated")+" " + new Date());
-        context.getOutputFrame().addText(context.getWorkbenchFrame().getLog());
-        context.getOutputFrame().surface();
-        return true;
+  public GenerateLogPlugIn() {
+  }
+
+  public String getName() {
+    return I18N.get("ui.plugin.GenerateLogPlugIn.log");
+  }
+
+  public ImageIcon getIcon() {
+    return IconLoader.icon("application_view_list.png");
+  }
+
+  public boolean execute(PlugInContext context) throws java.lang.Exception {
+    reportNothingToUndoYet(context);
+
+    // we always create a new log file view
+    HTMLFrame f = new HTMLFrame(context.getWorkbenchFrame());
+
+    List<File> files = Logger.getLogFiles();
+    for (File file : files) {
+
+      StringBuffer buf = new StringBuffer();
+      // no file , no log
+      if (!file.canRead()) {
+        buf.append("can't read " + file.getAbsolutePath());
+      } else {
+        int max_lines = 1000;
+        int counter = 0;
+        ReversedLinesFileReader rlrdr = null;
+        try {
+          rlrdr = new ReversedLinesFileReader(file, 4096, "UTF-8");
+
+          String line;
+          while ((line = rlrdr.readLine()) != null && counter < max_lines) {
+            buf.insert(0, GUIUtil.escapeHTML(line, false, true)+"<br>");
+            counter++;
+          }
+
+          buf.insert(0,
+              "last " + max_lines + " lines of " + file.getAbsolutePath()
+                  + ":<br><hr>");
+        } finally {
+          FileUtil.close(rlrdr);
+        }
+      }
+
+      f.createNewDocument();
+      f.addHeader(1, file.getName());
+      f.addHeader(2, I18N.get("ui.plugin.GenerateLogPlugIn.generated") + " "
+          + new Date());
+      f.append(buf.toString());
+
     }
+    f.surface();
+    return true;
+  }
 }
