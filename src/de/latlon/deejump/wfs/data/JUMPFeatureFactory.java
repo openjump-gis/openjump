@@ -429,7 +429,7 @@ public class JUMPFeatureFactory {
 
     if (geoTypeProps == null || geoTypeProps.length == 0) {
       Logger.debug("Guessing geometry property name.");
-      geoProName = "GEOMETRY"; //$NON-NLS-1$
+      geoProName = "GEOMETRY";
     } else {
       geoProName = geoTypeProps[0].getName().getLocalName();
       Logger.debug("Geometry property name: " + geoProName);
