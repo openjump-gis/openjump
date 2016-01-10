@@ -303,6 +303,7 @@ public class AboutDialog extends JDialog {
 
         /* Extensions Panel **************************************************/
         extScroll = new JScrollPane(extensionsAboutPanel);
+        extScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         extScroll.setBorder(BorderFactory.createEmptyBorder());
         jTabbedPane1.addTab(I18N.get("ui.AboutDialog.Extensions"), extScroll);
 

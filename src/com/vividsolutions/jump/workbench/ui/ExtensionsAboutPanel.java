@@ -31,14 +31,20 @@
  */
 package com.vividsolutions.jump.workbench.ui;
 
-import java.awt.BorderLayout;
+import java.awt.Font;
 import java.util.Iterator;
 
 import javax.swing.BorderFactory;
-import javax.swing.JEditorPane;
 import javax.swing.JPanel;
-import javax.swing.event.AncestorEvent;
-import javax.swing.event.AncestorListener;
+import javax.swing.JTextPane;
+import javax.swing.UIManager;
+import javax.swing.text.Element;
+import javax.swing.text.View;
+import javax.swing.text.ViewFactory;
+import javax.swing.text.html.CSS;
+import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.InlineView;
 
 import com.vividsolutions.jts.JTSVersion;
 import com.vividsolutions.jump.workbench.plugin.Configuration;
@@ -46,55 +52,107 @@ import com.vividsolutions.jump.workbench.plugin.PlugInManager;
 
 public class ExtensionsAboutPanel extends JPanel {
 
-    private JEditorPane editorPane = new JEditorPane();
-    private PlugInManager plugInManager;
+  private JTextPane editorPane = new JTextPane();
+  private PlugInManager plugInManager;
 
-    public ExtensionsAboutPanel(PlugInManager plugInManager) {
-        this.plugInManager = plugInManager;
-        try {
-            jbInit();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        
+  public ExtensionsAboutPanel(PlugInManager plugInManager) {
+    this.plugInManager = plugInManager;
+    try {
+      jbInit();
+    } catch (Exception ex) {
+      ex.printStackTrace();
     }
 
-    public void refresh() {
-        StringBuffer sb = new StringBuffer();
-        sb.append("<html><head></head><body>");
+  }
 
-        // display standard system libs info
-        sb.append("<b>JTS " + JTSVersion.CURRENT_VERSION + "</b><br>");
-        sb.append("<hr>");
+  public void refresh() {
+    StringBuffer sb = new StringBuffer();
+    int width = 460;
+    sb.append("<html><head></head><body style=\"white-space:normal; width:"+width+"px;\">");
 
-        // user extensions
-        for (Iterator i = plugInManager.getConfigurations().iterator(); i.hasNext();) {
-            Configuration configuration = (Configuration) i.next();
-            String msg = PlugInManager.message(configuration);
-            sb.append(
-                "<b>"
-                    + GUIUtil.escapeHTML(PlugInManager.name(configuration), false, false)
-                    + "</b> "
-                    + GUIUtil.escapeHTML(PlugInManager.version(configuration), false, false)
-                    + GUIUtil.escapeHTML(!msg.isEmpty()?" -> "+msg:"", false, false)
-                    + "<br>");
-        }
-        sb.append("</body></html>");
-        // workaround: update panel by removal and readding
-        // update became necessary after extensions might change their messages
-        // during runtime
-        remove(editorPane);
-        editorPane.setText(sb.toString());
-        add(editorPane);
+    // display standard system libs info
+    sb.append("<b>JTS " + JTSVersion.CURRENT_VERSION + "</b><br>");
+    sb.append("<hr>");
+
+    // user extensions
+    for (Iterator i = plugInManager.getConfigurations().iterator(); i.hasNext();) {
+      Configuration configuration = (Configuration) i.next();
+      String msg = PlugInManager.message(configuration);
+      sb.append("<div><b>"
+          + GUIUtil.escapeHTML(PlugInManager.name(configuration), false, false)
+          + "</b> "
+          + GUIUtil.escapeHTML(PlugInManager.version(configuration), false,
+              false)
+          + GUIUtil.escapeHTML(!msg.isEmpty() ? " -> " + msg : "", false, false)
+          + "<br></div>");
     }
+    sb.append("</body></html>");
+    // TODO workaround: update panel by removal and readding
+    // update became necessary after extensions might change their messages
+    // during runtime
+    remove(editorPane);
+    editorPane.setText(sb.toString());
+    add(editorPane);
+  }
 
-    void jbInit() throws Exception {
-        setLayout(new BorderLayout());
-        editorPane.setEditable(false);
-        editorPane.setOpaque(false);
-        editorPane.setText("jEditorPane1");
-        editorPane.setContentType("text/html");
-        editorPane.setBorder(BorderFactory.createEmptyBorder());
-        add(editorPane);
-    }
+  void jbInit() throws Exception {
+    editorPane.setEditable(false);
+    editorPane.setOpaque(false);
+    editorPane.setText("jEditorPane1");
+    editorPane.setContentType("text/html");
+    editorPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 0));
+
+    // support line wrapping in a html formatted pane (thx Stanislav Lapitsky)
+    editorPane.setEditorKit(new HTMLEditorKit() {
+      @Override
+      public ViewFactory getViewFactory() {
+        return new HTMLFactory() {
+
+          public View create(Element e) {
+            View v = super.create(e);
+            if (v instanceof InlineView) {
+              return new InlineView(e) {
+
+                boolean nowrap = false;
+
+                @Override
+                protected void setPropertiesFromAttributes() {
+                  super.setPropertiesFromAttributes();
+
+                  Object whitespace = this.getAttributes().getAttribute(
+                      CSS.Attribute.WHITE_SPACE);
+                  if ((whitespace != null) && whitespace.equals("nowrap")) {
+                    nowrap = true;
+                  } else {
+                    nowrap = false;
+                  }
+                }
+
+                public int getBreakWeight(int axis, float pos, float len) {
+                  if (nowrap) {
+                    return BadBreakWeight;
+                  }
+                  return super.getBreakWeight(axis, pos, len);
+                }
+              };
+            }
+            return v;
+          }
+        };
+      }
+    });
+    
+    // switch to default ui fonts (thx Stanislav Lapitsky)
+    Font font = UIManager.getFont("Label.font");
+    long fontSize = Math.round(font. getSize()*1.1);
+    String bodyRule = "body { font-family: " + font.getFamily() + "; "
+        + "font-size: " + fontSize + "pt; }";
+    ((HTMLDocument) editorPane.getDocument()).getStyleSheet().addRule(bodyRule);
+    // add proper line spacing
+    String divRule = "div { margin-top:" +Math.round(fontSize/4)+ "pt; }";
+    ((HTMLDocument) editorPane.getDocument()).getStyleSheet().addRule(divRule);
+
+    add(editorPane);
+  }
+
 }
