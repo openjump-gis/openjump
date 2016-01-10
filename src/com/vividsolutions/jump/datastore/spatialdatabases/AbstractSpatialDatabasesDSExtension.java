@@ -5,6 +5,7 @@ import java.util.Map;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.datastore.DataStoreDriver;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.Extension;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
@@ -14,7 +15,8 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
  */
 abstract public class AbstractSpatialDatabasesDSExtension extends Extension {
 
-  static final String I18NPREFIX = AbstractSpatialDatabasesDSExtension.class.getName();
+  static final String I18NPREFIX = AbstractSpatialDatabasesDSExtension.class
+      .getName();
 
   protected String errorMessage = null;
   protected DataStoreDriver driver = null;
@@ -101,6 +103,7 @@ abstract public class AbstractSpatialDatabasesDSExtension extends Extension {
     ClassLoader pluginLoader = JUMPWorkbench.getInstance().getPlugInManager()
         .getClassLoader();
     String msg = "";
+    String others = "";
     for (Map.Entry<String, String> entry : classNameToJarName.entrySet()) {
       String clazz = entry.getKey();
       String jar = entry.getValue();
@@ -109,11 +112,17 @@ abstract public class AbstractSpatialDatabasesDSExtension extends Extension {
         Class.forName(clazz, false, pluginLoader);
       } catch (ClassNotFoundException e) {
         msg = msg.isEmpty() ? jar : msg + ", " + jar;
+      } catch (Throwable t) {
+        others = others.isEmpty() ? t.getClass().getSimpleName() +" "+ t.getLocalizedMessage() : others + "\n"
+            + t.getLocalizedMessage();
       }
     }
     if (!msg.isEmpty())
-      msg = I18N.getMessage(I18NPREFIX
-          + ".missing-dependency-jars {0}", msg);
+      msg = I18N.getMessage(I18NPREFIX + ".missing-dependency-jars {0}", msg);
+
+    if (!others.isEmpty())
+      msg += (!msg.isEmpty() ? " " : "")
+          + I18N.getMessage(I18NPREFIX + ".there-were-errors:-{0}", others);
 
     return errorMessage = msg;
   }
@@ -156,12 +165,8 @@ abstract public class AbstractSpatialDatabasesDSExtension extends Extension {
             dsDriver);
       }
     } else {
-      wbc.getWorkbench()
-          .getFrame()
-          .log(
-              I18N.getMessage(I18NPREFIX
-                  + ".datastore-{0}-disabled:-{1}", getName(), isAvailable()),
-              this.getClass());
+      Logger.warn(I18N.getMessage(I18NPREFIX + ".datastore-{0}-disabled:-{1}",
+          getName(), isAvailable()));
     }
   }
 
