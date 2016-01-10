@@ -36,6 +36,11 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
+
+import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
+
 /**
  * Specifies the syntax for a single option on a command line.
  */
@@ -51,12 +56,12 @@ public class OptionSpec {
   String doc = ""; // option description
   Vector<Option> options = new Vector<Option>();
 
-  public OptionSpec(String[] optNames, int needed, String desc) {
+  public OptionSpec(String[] optNames, int numberOfNeededArgs, String desc) {
     for (String name : optNames) {
       names.add(name.toLowerCase());
     }
     doc = desc;
-    nNeededArgs = needed;
+    nNeededArgs = numberOfNeededArgs;
   }
 
   public OptionSpec(String optName, int needed, String desc) {
@@ -133,8 +138,11 @@ public class OptionSpec {
     // we complain only if there are too few arguments
     // more can as well be files that were carelessly placed
     else if (args.length < nNeededArgs) {
-      throw new ParseException("option " + names + ": expected " + nNeededArgs
-          + " args, found " + args.length);
+      String msg = I18N.getMessage(JUMPWorkbench.I18NPREFIX
+          + "option-{0}-needs-{1}-parameters-but-only-{2}-were-given.",
+          StringUtils.join(names, ", "), nNeededArgs, args.length);
+      msg += "\n\n" + getDesc();
+      throw new ParseException(msg);
     }
   }
 

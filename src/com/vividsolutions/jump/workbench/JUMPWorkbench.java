@@ -73,6 +73,7 @@ import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.util.LangUtil;
 import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.util.commandline.CommandLine;
+import com.vividsolutions.jump.util.commandline.Option;
 import com.vividsolutions.jump.util.commandline.OptionSpec;
 import com.vividsolutions.jump.util.commandline.ParseException;
 import com.vividsolutions.jump.workbench.driver.DriverManager;
@@ -154,6 +155,7 @@ public class JUMPWorkbench {
   public final static String PLUG_IN_DIRECTORY_OPTION = "plug-in-directory";
   public final static String I18N_FILE = "i18n";
   public static final String INITIAL_PROJECT_FILE = "project";
+  public static final String I18NPREFIX = JUMPWorkbench.class.getPackage().getName()+".";
   public static final String STATE_OPTION = "state";
 
   // Added by STanner to allow I18N to have access to this
@@ -245,8 +247,7 @@ public class JUMPWorkbench {
         // files
         // properties = new WorkbenchPropertiesFile(defaultFile, frame);
       } else {
-        System.out
-            .println("JUMP: Warning: Default plugins file does not exist: "
+        Logger.warn("Default plugins file does not exist: "
                 + defaultFile);
       }
     }
@@ -261,7 +262,7 @@ public class JUMPWorkbench {
         // properties = new WorkbenchPropertiesFile(propertiesFile, frame);
         propertiesFileExists = true;
       } else {
-        System.out.println("JUMP: Warning: Properties file does not exist: "
+        Logger.warn("Properties file does not exist: "
             + propertiesFile);
       }
     }
@@ -281,8 +282,7 @@ public class JUMPWorkbench {
       extensionsDirectory = new File(commandLine.getOption(
           PLUG_IN_DIRECTORY_OPTION).getArg(0));
       if (!extensionsDirectory.exists()) {
-        System.out
-            .println("JUMP: Warning: Extensions directory does not exist: "
+        Logger.warn("Extensions directory does not exist: "
                 + extensionsDirectory);
         extensionsDirectory = null;
       }
@@ -291,8 +291,7 @@ public class JUMPWorkbench {
       if (!extensionsDirectory.exists()) {
         // Added further information so that debug user will know where
         // it is actually looking for as the extension directory. [Ed Deen]
-        System.out
-            .println("JUMP: Warning: Extensions directory does not exist: "
+        Logger.warn("Extensions directory does not exist: "
                 + extensionsDirectory + " where homedir = ["
                 + System.getProperty("user.dir") + "]");
         extensionsDirectory = null;
@@ -363,6 +362,17 @@ public class JUMPWorkbench {
         System.exit(0);
       }
       
+      // set logging level according to parameter
+      if (commandLine.hasOption("verbosity")) {
+        Option v = commandLine.getOption("verbosity");
+        if (v.getNumArgs() < 1) {
+          printProperly(I18N.get(v.getSpec().getDesc()));
+          System.exit(1);
+        }
+          
+        Logger.setLevel(v.getArg(0));
+      }
+      
       // Init the L&F before instantiating the progress monitor [Jon Aquino]
       initLookAndFeel();
       // fix lnf (weird windows non-unicode locale bug)
@@ -385,22 +395,27 @@ public class JUMPWorkbench {
       splashPanel.addProgressMonitor(progressMonitor);
 
       main(args, I18N.get("JUMPWorkbench.jump"), splashPanel, progressMonitor);
-      System.out.println("OJ start took "
+      Logger.info("OJ start took "
           + PlugInManager.secondsSinceString(start) + "s alltogether.");
 
     } catch (final Throwable t) {
-      t.printStackTrace();
       try {
         SwingUtilities.invokeAndWait(new Runnable() {
           public void run() {
+            try {
+              initLookAndFeel();
+            } catch (Exception e) {
+              // fail silently
+            }
             ErrorDialog.show(null,
-                StringUtil.toFriendlyName(t.getClass().getName()),
+                StringUtil.toFriendlyName(t.getClass().getSimpleName()),
                 WorkbenchFrame.toMessage(t), StringUtil.stackTrace(t));
           }
         });
       } catch (Throwable t2) {
-        t2.printStackTrace();
+        Logger.error(t2);
       }
+      Logger.error(t);
       System.exit(1);
     }
   }
@@ -476,7 +491,7 @@ public class JUMPWorkbench {
     Font ta_font = (Font) defaults.get("TextArea.font");
     if (ta_font.getSize() < 11) {
       UIManager.put("TextArea.font", ta_font.deriveFont(13f));
-      System.out.println("Info: Fix text area font size bug.");
+      Logger.info("Fix text area font size bug.");
     }
   }
 
@@ -641,7 +656,7 @@ public class JUMPWorkbench {
     printProperly(in + "\n" + out);
   }
 
-  private static void parseCommandLine(String[] args) throws WorkbenchException {
+  private static void parseCommandLine(String[] args) throws ParseException {
     commandLine = new CommandLine('-');
     commandLine.addOptionSpec(new OptionSpec(PROPERTIES_OPTION, 1,
         "workbench property file (activate extensions and plugins)"));
@@ -662,21 +677,20 @@ public class JUMPWorkbench {
             STATE_OPTION,
             1,
             "where to save workbench settings, default OJ_HOME folder or USER_HOME/.openjump/"));
+    // add logging
+    commandLine.addOptionSpec(new OptionSpec(new String[] { "v", "verbosity" }, 1,
+        "logging verbosity, either: off, error, warn, info, debug, trace, all"));
     // add help
     commandLine.addOptionSpec(new OptionSpec(new String[] { "h", "help" }, 0,
         "show this help"));
     // add version
-    commandLine.addOptionSpec(new OptionSpec(new String[] { "v", "version" },
+    commandLine.addOptionSpec(new OptionSpec(new String[] { "version", "-version" },
         0, "show version information"));
     // show properties (for debugging purposes)
     commandLine.addOptionSpec(new OptionSpec(new String[] { "p",
         "print-properties" }, 0, "print a list of runtime properties"));
 
-    try {
-      commandLine.parse(args);
-    } catch (ParseException e) {
-      throw new WorkbenchException(e.getLocalizedMessage());
-    }
+    commandLine.parse(args);
   }
 
   public PlugInManager getPlugInManager() {
