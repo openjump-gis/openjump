@@ -1,4 +1,3 @@
-
 /*
  * The Unified Mapping Platform (JUMP) is an extensible, interactive GUI 
  * for visualizing and manipulating spatial features with geometry and attributes.
@@ -35,9 +34,16 @@ package com.vividsolutions.jump.workbench;
 
 import com.vividsolutions.jump.JUMPException;
 
-
 public class WorkbenchException extends JUMPException {
-    public WorkbenchException(String message) {
-        super(message);
-    }
+  public WorkbenchException(String message) {
+    super(message);
+  }
+
+  public WorkbenchException(String message, Throwable cause) {
+    super(message, cause);
+  }
+
+  public WorkbenchException(Throwable cause) {
+    super(cause);
+  }
 }
