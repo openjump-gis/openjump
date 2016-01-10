@@ -113,8 +113,9 @@ abstract public class AbstractSpatialDatabasesDSExtension extends Extension {
       } catch (ClassNotFoundException e) {
         msg = msg.isEmpty() ? jar : msg + ", " + jar;
       } catch (Throwable t) {
-        others = others.isEmpty() ? t.getClass().getSimpleName() +" "+ t.getLocalizedMessage() : others + "\n"
-            + t.getLocalizedMessage();
+        
+        others = ( !others.isEmpty() ? others + "; " : "" )
+            + t.getClass().getSimpleName() +" "+ t.getLocalizedMessage();
       }
     }
     if (!msg.isEmpty())
