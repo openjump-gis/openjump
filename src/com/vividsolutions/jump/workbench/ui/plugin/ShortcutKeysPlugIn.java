@@ -58,7 +58,7 @@ import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.MenuElement;
 
-import org.apache.log4j.Logger;
+
 import org.openjump.core.ui.plugin.edittoolbox.cursortools.ConstrainedMultiClickTool;
 
 import com.vividsolutions.jump.I18N;
@@ -87,7 +87,7 @@ import de.soldin.awt.VerticalFlowLayout;
 public class ShortcutKeysPlugIn extends AbstractPlugIn {
   public static final ImageIcon ICON = IconLoader.icon("keyboard.png");
   public static final String NAME = I18N.get(ShortcutKeysPlugIn.class.getName());
-  private static Logger LOG = Logger.getLogger(ShortcutKeysPlugIn.class);
+
 
   public boolean execute(PlugInContext context) throws Exception {
     ShortcutKeysFrame dlg = ShortcutKeysFrame.instance();

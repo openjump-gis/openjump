@@ -22,12 +22,11 @@ import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.apache.log4j.Logger;
-
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.util.StringUtil;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.Configuration;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
@@ -35,7 +34,7 @@ import com.vividsolutions.jump.workbench.plugin.PlugInManager;
 
 public class ExtensionHelper {
 
-    private static Logger LOG = Logger.getLogger( ExtensionHelper.class );
+
 
     
     private ExtensionHelper() {
@@ -268,12 +267,11 @@ System.out.println(":vv " + resourceFile);
                     + ". Refine class name algorithm.");
             return null;
         } catch (Throwable t) {
-            LOG.error("Throwable encountered loading " + className
-                    + ":");
+            Logger.error(t);
             //e.g. java.lang.VerifyError: class
             // org.apache.xml.serialize.XML11Serializer
             //overrides final method [Jon Aquino]
-            t.printStackTrace(System.out);
+
             return null;
         }
         return candidate;

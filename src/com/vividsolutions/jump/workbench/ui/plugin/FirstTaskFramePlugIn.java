@@ -38,12 +38,12 @@ import java.awt.event.ComponentListener;
 import java.io.File;
 import java.util.Iterator;
 
-import org.apache.log4j.Logger;
 import org.openjump.core.ui.plugin.file.OpenFilePlugIn;
 import org.openjump.core.ui.plugin.file.OpenProjectPlugIn;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
@@ -54,8 +54,6 @@ import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
  * Opens a TaskFrame when the Workbench starts up
  */
 public class FirstTaskFramePlugIn extends AbstractPlugIn {// AbstractPlugIn {
-
-  private static Logger LOG = Logger.getLogger(FirstTaskFramePlugIn.class);
 
   public FirstTaskFramePlugIn() {
   }
@@ -83,7 +81,7 @@ public class FirstTaskFramePlugIn extends AbstractPlugIn {// AbstractPlugIn {
 
         // load -project
         if (filename != null ) {// create empty task
-          LOG.info("Found initial '-project' file: " + filename);
+          Logger.info("Found initial '-project' file: " + filename);
           f = new File(filename);
 
           try {
@@ -95,7 +93,7 @@ public class FirstTaskFramePlugIn extends AbstractPlugIn {// AbstractPlugIn {
                 new ActionEvent(this, 0, ""));
           } catch (Exception ex) {
             String mesg = I18N.getMessage(this.getClass().getName()+".could-not-load-file-{0}", f);
-            LOG.error(mesg);
+            Logger.error(mesg);
             context.getWorkbenchFrame().warnUser(mesg);
           }
         }
@@ -124,7 +122,7 @@ public class FirstTaskFramePlugIn extends AbstractPlugIn {// AbstractPlugIn {
             }
           } catch (Exception e2) {
             String mesg = I18N.getMessage(this.getClass().getName()+".could-not-load-file-{0}", f);
-            LOG.error(mesg);
+            Logger.error(mesg);
           }
         }
 

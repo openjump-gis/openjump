@@ -8,13 +8,12 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
-
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.plugin.PlugIn;
 
 // adds i18n support
 public abstract class ExtCorePlugIn implements PlugIn {
-	private final Logger logger = Logger.getLogger(this.getClass());
+
 	protected String i18nPath = "language/plugin";
 	protected ResourceBundle rb = null;
 
@@ -54,11 +53,11 @@ public abstract class ExtCorePlugIn implements PlugIn {
 			message = mformat.format( numbers.toArray() );
 		} catch (NullPointerException e) {
 			// sh** happens
-			logger.error("missing resource bundle", e);
+			Logger.error("missing resource bundle", e);
 			System.out.println( e.getLocalizedMessage() );
 		} catch (java.util.MissingResourceException e) {
 			// translation missing
-			logger.error("translation missing", e);
+			Logger.error("translation missing", e);
 			System.out.println( e.getLocalizedMessage() );
 		}
 		
@@ -98,12 +97,10 @@ public abstract class ExtCorePlugIn implements PlugIn {
 			message = mformat.format(objects);
 		} catch (NullPointerException e) {
 			// sh** happens
-			logger.error("missing resource bundle", e);
-			System.out.println( e.getLocalizedMessage() );
+			Logger.error("missing resource bundle", e);
 		} catch (java.util.MissingResourceException e) {
 			// translation missing
-			logger.error("translation missing", e);
-			System.out.println( e.getLocalizedMessage() );
+			Logger.warn("translation missing", Logger.isDebugEnabled() ? e : null);
 		}
 		if (message == null) {
 			final String[] labelpath = label.split("\\..+");

@@ -80,16 +80,13 @@
  */
 package de.fho.jump.pirol.plugins.EditAttributeByFormula;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
-import org.apache.log4j.Logger;
 import org.openjump.core.apitools.FeatureCollectionTools;
 import org.openjump.io.PropertiesHandler;
 import org.openjump.util.metaData.MetaInformationHandler;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.FeatureCollection;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
@@ -125,7 +122,7 @@ public class EditAttributeByFormulaPlugIn extends AbstractPlugIn {
     protected static PropertiesHandler storedFormulas = null;
     protected static final String storedFormulasFileName = "Formula.properties"; //$NON-NLS-1$
     //[sstein 24.March.2007] added this logger instead using Personal logger
-    private static final Logger LOG = Logger.getLogger(EditAttributeByFormulaPlugIn.class);
+
     
     public void initialize(PlugInContext context) throws Exception {
 	    context.getFeatureInstaller().addMainMenuItem(this,
@@ -196,16 +193,16 @@ public class EditAttributeByFormulaPlugIn extends AbstractPlugIn {
         } 
         /* catch (FileNotFoundException e1) {
             //this.logger.printWarning(e1.getMessage());
-        	this.LOG.warn(e1.getMessage());
+        	this.Logger.warn(e1.getMessage());
         } 
         catch (IOException e1) {
             //this.logger.printWarning(e1.getMessage());
-        	this.LOG.warn(e1.getMessage());
+        	this.Logger.warn(e1.getMessage());
         } 
         **/
         catch (Exception e1) {
             //this.logger.printWarning(e1.getMessage());
-        	this.LOG.warn(e1.getMessage());
+            Logger.warn(e1.getMessage());
         }
         
         /* [sstein 24.March 2007] replaced - since we dont have stored formulas
@@ -261,8 +258,8 @@ public class EditAttributeByFormulaPlugIn extends AbstractPlugIn {
         } catch (Exception e){
         	//--[sstein 24.March 2007]: disabled since I changed from StandardPirolPlugIn to AbstractPlugIn
             //this.handleThrowable(e);
-            LOG.debug(e.getMessage());
-            e.printStackTrace();
+            Logger.debug(e);
+
             //return this.finishExecution(context, false);
             return false;
         }

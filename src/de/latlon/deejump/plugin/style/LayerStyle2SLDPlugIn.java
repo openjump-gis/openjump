@@ -71,8 +71,6 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.openjump.core.ui.images.IconLoader;
 import org.openjump.core.ui.util.ScreenScale;
 
@@ -83,6 +81,7 @@ import com.vividsolutions.jump.feature.BasicFeature;
 import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.util.java2xml.Java2XML;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
@@ -104,7 +103,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
  */
 public class LayerStyle2SLDPlugIn extends AbstractPlugIn {
 
-    private static final Logger LOG = Logger.getLogger(LayerStyle2SLDPlugIn.class);
+
     
     public static final ImageIcon ICON = IconLoader.icon("sld_out_16.png");
 
@@ -403,9 +402,7 @@ public class LayerStyle2SLDPlugIn extends AbstractPlugIn {
             e.printStackTrace();
         }
 
-        if (LOG.getLevel() == Level.DEBUG) {
-            LOG.debug(sw.toString());
-        }
+        Logger.debug(sw.toString());
 
         return sw.toString();
     }

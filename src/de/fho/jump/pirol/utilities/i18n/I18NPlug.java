@@ -147,7 +147,7 @@ public final class I18NPlug {
 					I18N.plugInsResourceBundle.put(pluginName, ResourceBundle
 							.getBundle(bundle, locale));
 					
-					//LOG.debug(I18N.plugInsResourceBundle.get(pluginName)+" "+bundle+" "+locale);
+					//Logger.debug(I18N.plugInsResourceBundle.get(pluginName)+" "+bundle+" "+locale);
 					
 				}
 				
