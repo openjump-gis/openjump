@@ -17,11 +17,10 @@ import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 
-import org.apache.log4j.Logger;
-
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.FileUtil;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.Logger;
 
 public class HTMLPanel extends JPanel implements RecordPanelModel {
     private ArrayList history = new ArrayList();
@@ -31,7 +30,7 @@ public class HTMLPanel extends JPanel implements RecordPanelModel {
     private JScrollPane scrollPane = new JScrollPane();
     private JEditorPane editorPane = new JEditorPane();
     private int currentIndex = -1;
-    private static final Logger LOGGER = Logger.getLogger(HTMLFrame.class);
+
 
     public HTMLPanel() {
         try {
@@ -179,7 +178,7 @@ public class HTMLPanel extends JPanel implements RecordPanelModel {
                 String texto = history.get(currentIndex).toString();
                 FileUtil.setContents(archivo.getAbsolutePath(), texto);
             } catch (Exception e1) {
-                LOGGER.error("", e1);
+                Logger.error(e1);
                 JUMPWorkbench
                         .getInstance()
                         .getFrame()

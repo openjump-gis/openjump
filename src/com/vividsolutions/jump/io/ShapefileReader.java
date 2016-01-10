@@ -36,23 +36,33 @@
  */
 package com.vividsolutions.jump.io;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
 import org.geotools.dbffile.DbfFile;
 import org.geotools.shapefile.Shapefile;
-import org.geotools.shapefile.ShapefileException;
 
-import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.feature.*;
+import com.vividsolutions.jump.feature.AttributeType;
+import com.vividsolutions.jump.feature.BasicFeature;
+import com.vividsolutions.jump.feature.Feature;
+import com.vividsolutions.jump.feature.FeatureCollection;
+import com.vividsolutions.jump.feature.FeatureDataset;
+import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.workbench.Logger;
 
 /**
  * ShapefileReader is a {@link JUMPReader} specialized to read Shapefiles.
@@ -98,8 +108,6 @@ public class ShapefileReader extends AbstractJUMPReader {
     private File delete_this_tmp_dbf = null;
     private File delete_this_tmp_shx = null;
     private File delete_this_tmp_cpg = null;
-
-    private static Logger LOG = Logger.getLogger(ShapefileReader.class);
 
     public static final String FILE_PROPERTY_KEY = "File";
     public static final String DEFAULT_VALUE_PROPERTY_KEY = "DefaultValue";
@@ -154,7 +162,7 @@ public class ShapefileReader extends AbstractJUMPReader {
                         charsetName = cpgCharset;
                     }
                 } catch (IllegalCharsetNameException ice) {
-                    LOG.info("Could not interpret charset name " + cpgCharset + " : revert to default " + charsetName);
+                    Logger.info("Could not interpret charset name " + cpgCharset + " : revert to default " + charsetName);
                 }
             }
         } finally {
@@ -233,7 +241,7 @@ public class ShapefileReader extends AbstractJUMPReader {
             if (collection.getNumGeometries() > mydbf.getLastRec()) {
                 String message = I18N.getMessage("com.vividsolutions.jump.io.ShapefileReader.shp-gt-dbf",
                         new Object[]{shpFileName, collection.getNumGeometries(), mydbf.getLastRec()});
-                LOG.error(message);
+                Logger.error(message);
                 getExceptions().add(new Exception(message));
                 for (int x = mydbf.getLastRec() ; x < collection.getNumGeometries() ; x++) {
                     Feature feature = new BasicFeature(fs);
@@ -245,7 +253,7 @@ public class ShapefileReader extends AbstractJUMPReader {
             if (collection.getNumGeometries() < mydbf.getLastRec()) {
                 String message = I18N.getMessage("com.vividsolutions.jump.io.ShapefileReader.shp-lt-dbf",
                         new Object[]{shpFileName, collection.getNumGeometries(), mydbf.getLastRec()});
-                LOG.error(message);
+                Logger.error(message);
                 getExceptions().add(new Exception(message));
                 List emptyList = new ArrayList();
                 for (int x = collection.getNumGeometries() ; x < mydbf.getLastRec() ; x++) {
@@ -322,9 +330,7 @@ public class ShapefileReader extends AbstractJUMPReader {
                 delete_this_tmp_shx = file; // to be deleted later on
                 return shxInputStream;
             } catch (Exception e) {
-                String msg = e.getMessage();
-                LOG.info(msg);
-                System.err.println(msg);
+              Logger.error(e);
             }
         }
 
@@ -376,9 +382,7 @@ public class ShapefileReader extends AbstractJUMPReader {
                 delete_this_tmp_cpg = file; // to be deleted later on
                 return cpgInputStream;
             } catch (Exception e) {
-                String msg = e.getMessage();
-                LOG.info(msg);
-                System.err.println(msg);
+                Logger.error(e);
             }
         }
 
@@ -445,9 +449,7 @@ public class ShapefileReader extends AbstractJUMPReader {
                 delete_this_tmp_dbf = file; // to be deleted later on
                 return mydbf;
             } catch (Exception e) {
-                String msg = e.getMessage();
-                LOG.info(msg);
-                System.err.println(msg);
+                Logger.error(e);
             }
         } 
 
@@ -494,7 +496,5 @@ public class ShapefileReader extends AbstractJUMPReader {
             } else return esri_cp.replaceAll(" ","-");
         } else return esri_cp.replaceAll(" ","-");
     }
-
-
 
 }

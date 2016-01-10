@@ -51,7 +51,6 @@ import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.tree.TreeCellRenderer;
 
-import org.apache.log4j.Logger;
 import org.openjump.core.rasterimage.RasterImageLayer;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -81,9 +80,7 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
 
     public static final String USE_CLOCK_ANIMATION_KEY = LayerNameRenderer.class
             .getName() + " - USE CLOCK ANIMATION";
-    /** Logger */
-    private static final Logger LOGGER = Logger
-            .getLogger(LayerNameRenderer.class);
+
     private final static Color UNSELECTED_EDITABLE_FONT_COLOR = Color.red;
     private final static Color SELECTED_EDITABLE_FONT_COLOR = Color.yellow;
     protected JCheckBox checkBox = new JCheckBox();

@@ -77,7 +77,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.saig.core.gui.swing.sldeditor.util.FormUtils;
 import org.saig.jump.widgets.config.HTTPProxySettings;
 import org.saig.jump.widgets.config.ProxyAuth;
@@ -87,6 +86,7 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.ui.OptionsPanelV2;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
@@ -106,10 +106,6 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
 
   /** long serialVersionUID field */
   private static final long serialVersionUID = 1L;
-
-  /** Log */
-  private final static Logger LOGGER = Logger
-      .getLogger(ProxySettingsOptionsPanel.class);
 
   /** Panel icon */
   public final static Icon ICON = IconLoader.icon("fugue/globe-network.png");
@@ -518,7 +514,7 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
             throw new UnknownHostException(urlHost);
 
         } catch (Exception e) {
-          LOGGER.error(e);
+          Logger.error(e);
           errorMessage = getMessage("server-or-proxy-port-is-not-correct-check-provided-parameters");
           errorMessage += "\n " + e.getClass().getName() + " -> "
               + e.getMessage();

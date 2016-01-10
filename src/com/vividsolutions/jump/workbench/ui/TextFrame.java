@@ -44,11 +44,13 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.UIManager;
 
-import org.apache.log4j.Logger;
+import com.vividsolutions.jump.workbench.Logger;
+
+
 
 
 public class TextFrame extends JInternalFrame {
-	private static Logger LOG = Logger.getLogger(TextFrame.class);
+
     BorderLayout borderLayout1 = new BorderLayout();
     private OKCancelPanel okCancelPanel = new OKCancelPanel();
     protected JPanel scrollPanePanel = new JPanel();
@@ -105,7 +107,7 @@ public class TextFrame extends JInternalFrame {
             editorPane.setText(s);
             editorPane.setCaretPosition(0);
         } catch (Throwable t) {
-            LOG.error(s);
+            Logger.error(s);
             errorHandler.handleThrowable(t);
         }
     }

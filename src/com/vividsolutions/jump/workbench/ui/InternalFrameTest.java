@@ -2,7 +2,6 @@ package com.vividsolutions.jump.workbench.ui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import java.util.Date;
 
 import javax.swing.JDesktopPane;
@@ -11,38 +10,40 @@ import javax.swing.JInternalFrame;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
-import org.apache.log4j.Logger;
+import com.vividsolutions.jump.workbench.Logger;
+
+
 
 public class InternalFrameTest {
-	private static Logger LOG = Logger.getLogger(InternalFrameTest.class);
+
 
 	public static InternalFrameListener listener = new InternalFrameListener() {
 		public void internalFrameOpened(InternalFrameEvent e) {
-			LOG.debug(new Date()+ "public void internalFrameOpened(InternalFrameEvent e) {");
+			Logger.debug(new Date()+ "public void internalFrameOpened(InternalFrameEvent e) {");
 		}
 
 		public void internalFrameClosing(InternalFrameEvent e) {
-			LOG.debug(new Date()+ "public void internalFrameClosing(InternalFrameEvent e) {");
+			Logger.debug(new Date()+ "public void internalFrameClosing(InternalFrameEvent e) {");
 		}
 
 		public void internalFrameClosed(InternalFrameEvent e) {
-			LOG.debug(new Date()+ " public void internalFrameClosed(InternalFrameEvent e) {");
+			Logger.debug(new Date()+ " public void internalFrameClosed(InternalFrameEvent e) {");
 		}
 
 		public void internalFrameIconified(InternalFrameEvent e) {
-			LOG.debug(new Date()+ "public void internalFrameIconified(InternalFrameEvent e) {");
+			Logger.debug(new Date()+ "public void internalFrameIconified(InternalFrameEvent e) {");
 		}
 
 		public void internalFrameDeiconified(InternalFrameEvent e) {
-			LOG.debug(new Date()+ "public void internalFrameDeiconified(InternalFrameEvent e) {");
+			Logger.debug(new Date()+ "public void internalFrameDeiconified(InternalFrameEvent e) {");
 		}
 
 		public void internalFrameActivated(InternalFrameEvent e) {
-			LOG.debug(new Date()+ "public void internalFrameActivated(InternalFrameEvent e) {");
+			Logger.debug(new Date()+ "public void internalFrameActivated(InternalFrameEvent e) {");
 		}
 
 		public void internalFrameDeactivated(InternalFrameEvent e) {
-			LOG.debug(new Date()+ "public void internalFrameDeactivated(InternalFrameEvent e) {");
+			Logger.debug(new Date()+ "public void internalFrameDeactivated(InternalFrameEvent e) {");
 		}
 	};
 
@@ -65,7 +66,7 @@ public class InternalFrameTest {
 		GUIUtil.addInternalFrameListener(desktopPane, GUIUtil
 				.toInternalFrameListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						LOG.debug(new Date());
+						Logger.debug(new Date().toString());
 					}
 				}));
 	}
