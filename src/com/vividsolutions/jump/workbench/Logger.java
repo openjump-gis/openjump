@@ -2,11 +2,11 @@ package com.vividsolutions.jump.workbench;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
 import org.apache.log4j.Appender;
-import org.apache.log4j.Category;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 
@@ -152,17 +152,23 @@ public class Logger {
    */
   public static List<File> getLogFiles() {
     List files = new ArrayList<File>();
-    Enumeration<Category> loggers = org.apache.log4j.LogManager
+    Enumeration<org.apache.log4j.Logger> loggers = org.apache.log4j.LogManager
         .getCurrentLoggers();
-    while (loggers.hasMoreElements()) {
-      Category logger = (Category) loggers.nextElement();
+    org.apache.log4j.Logger rootlogger = org.apache.log4j.LogManager
+        .getRootLogger();
+    // combine all loggers to one list to iterate over
+    List<org.apache.log4j.Logger> list = Collections.list(loggers);
+    list.add(rootlogger);
+    for (org.apache.log4j.Logger logger : list) {
+
+//      System.out.println(logger.getName());
       Enumeration<Appender> apps = logger.getAllAppenders();
 
       while (apps.hasMoreElements()) {
         Appender app = (Appender) apps.nextElement();
-        System.out.println(app.getName());
+//        System.out.println(app.getName());
         if (app instanceof FileAppender) {
-          // System.out.println(app);
+//          System.out.println(app);
           files.add(new File(((FileAppender) app).getFile()));
         }
       }
