@@ -19,7 +19,7 @@
     <param name="Threshold" value="ALL"/>
     <layout class="org.apache.log4j.PatternLayout">
             <!-- The default pattern: Date Priority [Category] Message\n -->
-      <param name="ConversionPattern" value="%p %d{HH:mm:ss.SSS} %m%n" />
+      <param name="ConversionPattern" value="[%p] %d{HH:mm:ss.SSS} %m%n" />
     </layout>
   </appender>
   
