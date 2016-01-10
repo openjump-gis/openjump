@@ -198,10 +198,8 @@ public class ChangeRasterImagePropertiesPlugIn extends AbstractPlugIn {
     }
 
     public String getName() {
-        return I18N.get(I18N.get("ui.style.ChangeStylesPlugIn.change-styles"));
-
-        // "org.openjump.core.ui.plugin.layer.pirolraster.ChangeRasterImagePropertiesPlugIn.Change-Raster-Image-Properties");
-    }
+        return I18N.get("ui.style.ChangeStylesPlugIn.change-styles");
+   }
 
     public ImageIcon getIcon() {
         return GUIUtil.toSmallIcon(IconLoader.icon("Palette.png"));
