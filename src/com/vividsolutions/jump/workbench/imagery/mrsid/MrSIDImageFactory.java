@@ -38,7 +38,6 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.HashMap;
 
-import org.apache.log4j.Logger;
 import org.openjump.core.CheckOS;
 import org.openjump.util.UriUtil;
 
@@ -52,9 +51,6 @@ import com.vividsolutions.jump.workbench.imagery.ReferencedImageFactory;
 
 public class MrSIDImageFactory implements ReferencedImageFactory {
 
-  private Logger logger = Logger.getLogger(MrSIDImageFactory.class);
-
-  // --
   public static final String MRSIDDECODE = "mrsidgeodecode";
   public static final String MRSIDINFO = "mrsidgeoinfo";
   private static HashMap<String, String> binariesAvailable = new HashMap();

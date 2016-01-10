@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.apache.log4j.Logger;
+
 
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;

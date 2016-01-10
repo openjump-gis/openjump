@@ -25,21 +25,32 @@
  * (250)385-6040 www.vividsolutions.com
  */
 package com.vividsolutions.jump.util.java2xml;
-import com.vividsolutions.jts.util.Assert;
-import com.vividsolutions.jump.util.StringUtil;
-import org.apache.log4j.Logger;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.Reader;
+import java.io.StringReader;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.namespace.QName;
+
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 
-import javax.xml.namespace.QName;
-import java.io.*;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.*;
+import com.vividsolutions.jts.util.Assert;
+import com.vividsolutions.jump.util.StringUtil;
+import com.vividsolutions.jump.workbench.Logger;
 public class XML2Java extends XMLBinder {
     private ArrayList listeners = new ArrayList();
     private ClassLoader classLoader = getClass().getClassLoader();
-	private static Logger LOG = Logger.getLogger(XMLBinder.class);
+
     public XML2Java() {
     }
     public XML2Java(ClassLoader classLoader) {
@@ -129,7 +140,7 @@ public class XML2Java extends XMLBinder {
                     // [sstein 5April2008] replaced XMLB exception by Log
                     // so when a problem with styling appears data are still loaded
                     if (tag.getName().equalsIgnoreCase("style")){
-                    	LOG.warn(msg);
+                    	Logger.warn(msg);
                     	System.out.println(msg);
                     	return; //return to avoid further messages
                     }
@@ -139,7 +150,7 @@ public class XML2Java extends XMLBinder {
                         (xmlName.equalsIgnoreCase("editable")   || 
                          xmlName.equalsIgnoreCase("selectable") ||
                          xmlName.equalsIgnoreCase("read-only") ) ) {
-                    	LOG.warn(msg);
+                    	Logger.warn(msg);
                     	System.out.println(msg);
                     	return; //return to avoid further messages
                     }
@@ -169,7 +180,7 @@ public class XML2Java extends XMLBinder {
             try {
                 return read(tag, Class.forName(tag.getAttributeValue("class"), true, classLoader));
             } catch (ClassNotFoundException e) {
-                LOG.error("Could not find class for " + tag, e);
+                Logger.error("Could not find class for " + tag, e);
                 System.out.println("Class not found for tag " + tag.getName() + ": " + tag.getAttribute("class").getValue());
                 throw e;
             }

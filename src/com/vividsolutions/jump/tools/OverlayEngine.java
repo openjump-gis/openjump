@@ -36,13 +36,19 @@ package com.vividsolutions.jump.tools;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
-import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.precision.EnhancedPrecisionOp;
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.feature.*;
+import com.vividsolutions.jump.feature.BasicFeature;
+import com.vividsolutions.jump.feature.Feature;
+import com.vividsolutions.jump.feature.FeatureCollection;
+import com.vividsolutions.jump.feature.FeatureDataset;
+import com.vividsolutions.jump.feature.IndexedFeatureCollection;
 import com.vividsolutions.jump.task.TaskMonitor;
+import com.vividsolutions.jump.workbench.Logger;
 
 
 /**
@@ -50,7 +56,7 @@ import com.vividsolutions.jump.task.TaskMonitor;
  *  FeatureCollection containing the intersections of all pairs of input features.
  */
 public class OverlayEngine {
-	private static Logger LOG = Logger.getLogger(OverlayEngine.class);
+
     private boolean splittingGeometryCollections = true;
     private boolean allowingPolygonsOnly = true;
 
@@ -127,8 +133,8 @@ public class OverlayEngine {
                     b.getGeometry());
         } catch (Exception ex) {
             monitor.report(ex);
-            LOG.error(a.getGeometry());
-            LOG.error(b.getGeometry());
+            Logger.error(a.getGeometry().toString());
+            Logger.error(b.getGeometry().toString());
         }
 
         if ((intersection == null) || intersection.isEmpty()) {

@@ -40,14 +40,16 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import org.apache.log4j.Logger;
+import com.vividsolutions.jump.workbench.Logger;
+
+
 
 /**
  * Singleton for the Internationalization (I18N)
  **/
 public final class I18N {
 
-  private static final Logger LOG = Logger.getLogger(I18N.class);
+
   private static final I18N instance = new I18N();
 
   // [Michael Michaud 2007-03-23] plugInsResourceBundle is deactivated because
@@ -159,13 +161,11 @@ public final class I18N {
       return resourceBundle3.getString(key);
     } catch (java.util.MissingResourceException e) {
       if (!missing.contains(key)) {
-        String msg = getClass().getName()
-            + "\nNo resource bundle or no translation found for''{0}''.\nError was:\n{1}";
-        msg = new MessageFormat(msg).format(new String[] { key,
-            e.getLocalizedMessage() });
-        LOG.debug(msg);
-        System.out.println("Missing translation for '" + key
-            + "' in resource bundle '" + this.resourcePath + "'.");
+        String msg = "No translation for key ''{0}'' in bundle ''{1}''.";
+        msg = MessageFormat.format(msg, key, resourcePath);
+
+        Logger.warn(msg, Logger.isDebugEnabled() ? e : null);
+
         missing.add(key);
         // uncomment and add a search string to get staks telling you where the
         // call came from
@@ -300,13 +300,13 @@ public final class I18N {
     String[] lc = localeCode.split("_");
     Locale locale = Locale.getDefault();
     if (lc.length > 1) {
-      LOG.debug("lang:" + lc[0] + " " + "country:" + lc[1]);
+      Logger.debug("lang:" + lc[0] + " " + "country:" + lc[1]);
       locale = new Locale(lc[0], lc[1]);
     } else if (lc.length > 0) {
-      LOG.debug("lang:" + lc[0]);
+      Logger.debug("lang:" + lc[0]);
       locale = new Locale(lc[0]);
     } else {
-      LOG.debug(localeCode
+      Logger.debug(localeCode
           + " is an illegal argument to define lang [and country]");
     }
 
@@ -430,8 +430,9 @@ public final class I18N {
       return mformat.format(objects);
     } catch (java.util.MissingResourceException e) {
       final String[] labelpath = label.split("\\.");
-      LOG.warn(e.getMessage() + " no default value, the resource key is used: "
+      Logger.warn(e.getMessage() + " no default value, the resource key is used: "
           + labelpath[labelpath.length - 1]);
+
       final MessageFormat mformat = new MessageFormat(
           labelpath[labelpath.length - 1]);
       return mformat.format(objects);

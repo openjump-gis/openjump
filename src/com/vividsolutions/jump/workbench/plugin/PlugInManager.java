@@ -43,12 +43,11 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
-import org.apache.log4j.Logger;
-
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.util.StringUtil;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.WorkbenchProperties;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
@@ -58,8 +57,6 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
  * depend on, from the plug-in directory.
  */
 public class PlugInManager {
-    private static Logger LOG = Logger.getLogger(PlugInManager.class);
-
     private static final String NOT_INITIALIZED = "com.vividsolutions.jump.workbench.plugin.PlugInManager.could-not-be-initialized";
     private static final String LOADING = "com.vividsolutions.jump.workbench.plugin.PlugInManager.loading";
     private static final String LOADING_ERROR = "com.vividsolutions.jump.workbench.plugin.PlugInManager.throwable-encountered-loading";
@@ -160,7 +157,7 @@ public class PlugInManager {
       if (plugInDirectory != null) {
         start = secondsSince(0);
         configurations.addAll(findConfigurations(plugInDirectory));
-        System.out.println("Finding all OJ extensions took "
+        Logger.info("Finding all OJ extensions took "
             + secondsSinceString(start) + "s");
       }
   
@@ -169,7 +166,7 @@ public class PlugInManager {
   
       start = secondsSince(0);
       loadConfigurations();
-      System.out.println("Loading all OJ extensions took "
+      Logger.info("Loading all OJ extensions took "
           + secondsSinceString(start) + "s");
       
       // enable autoseparating in installer for plugins possibly installed later on
@@ -190,8 +187,7 @@ public class PlugInManager {
           // we used the plugin classloader to instantiate extensions already above
           configuration.configure(pc);
           //System.out.println(Arrays.toString(((URLClassLoader)classLoader).getURLs()));
-          System.out
-          .println("Loading Config " + name(configuration) + " "
+          Logger.info("Loading Config " + name(configuration) + " "
               + version(configuration) + " took " + secondsSinceString(start)
               + "s");
         }
@@ -375,7 +371,7 @@ public class PlugInManager {
         } catch (ZipException e) {
           // Might not be a zipfile. Eat it. [Jon Aquino]
         }
-        System.out.println("Scanning " + file + " took " + secondsSinceString(start)
+        Logger.info("Scanning " + file + " took " + secondsSinceString(start)
             + "s");
       }
   
@@ -457,11 +453,10 @@ public class PlugInManager {
                     + ". Refine class name algorithm.");
             return null;
         } catch (Throwable t) {
-            LOG.error(I18N.get(LOADING_ERROR) + " " + className + ":");
+            Logger.error(I18N.get(LOADING_ERROR) + " " + className + ":");
             //e.g. java.lang.VerifyError: class
             // org.apache.xml.serialize.XML11Serializer
             //overrides final method [Jon Aquino]
-            t.printStackTrace(System.out);
             return null;
         }
         return candidate;

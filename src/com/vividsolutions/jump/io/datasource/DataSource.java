@@ -34,7 +34,7 @@ package com.vividsolutions.jump.io.datasource;
 import com.vividsolutions.jump.coordsys.CoordinateSystem;
 import com.vividsolutions.jump.coordsys.CoordinateSystemRegistry;
 import com.vividsolutions.jump.feature.FeatureCollection;
-import org.apache.log4j.Logger;
+
 
 import java.util.HashMap;
 import java.util.Map;
@@ -47,8 +47,6 @@ import java.util.Map;
  */
 public abstract class DataSource {
 
-	private static Logger LOG = Logger.getLogger(DataSource.class);
-	
     private Map properties;
 
     /**

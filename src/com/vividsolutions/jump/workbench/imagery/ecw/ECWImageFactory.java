@@ -42,9 +42,6 @@ import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImage;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageFactory;
 
-import org.apache.log4j.Logger;
-import org.openjump.util.UriUtil;
-
 /**
  */
 public class ECWImageFactory implements ReferencedImageFactory {

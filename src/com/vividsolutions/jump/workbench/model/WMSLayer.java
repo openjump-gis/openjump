@@ -35,6 +35,9 @@ package com.vividsolutions.jump.workbench.model;
 import java.awt.Image;
 import java.awt.MediaTracker;
 import java.io.IOException;
+import java.lang.ref.Reference;
+import java.lang.ref.SoftReference;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -44,29 +47,19 @@ import javax.swing.JButton;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.util.Blackboard;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.ui.LayerNameRenderer;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
-import com.vividsolutions.wms.AxisOrder;
 import com.vividsolutions.wms.BoundingBox;
 import com.vividsolutions.wms.MapLayer;
 import com.vividsolutions.wms.MapRequest;
 import com.vividsolutions.wms.WMService;
 
-import java.net.URL;
-
-import java.lang.ref.Reference;
-import java.lang.ref.SoftReference;
-import java.util.Iterator;
-
-import org.apache.log4j.Logger;
-
 /**
  * A Layerable that retrieves images from a Web Map Server.
  */
 public class WMSLayer extends AbstractLayerable implements Cloneable {
-
-  private static Logger LOG = Logger.getLogger(WMSLayer.class);
 
   private String format;
 
@@ -290,8 +283,7 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
         }
       }
     } catch (IOException e) {
-      LOG.error("Exception caught during WMSLayer envelope calculation: "
-          + e.toString());
+      Logger.error("Exception caught during WMSLayer envelope calculation.", e);
     }
     return envelope;
   }

@@ -48,12 +48,11 @@ import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 import javax.swing.undo.UndoableEdit;
 
-import org.apache.log4j.Logger;
-
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.CategoryEvent;
 import com.vividsolutions.jump.workbench.model.FeatureEvent;
@@ -74,7 +73,7 @@ import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
  * example), and supporting undo.
  */
 public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableChecked, Iconified, Recordable {
-  private static Logger LOG = Logger.getLogger(AbstractPlugIn.class);
+
   protected int shortcutModifiers = 0;
   protected int shortcutKeys = 0;
   private String name;
@@ -297,7 +296,7 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
       return I18N.get(plugInClass.getName());
     } catch (java.util.MissingResourceException e) {
       // No I18N for the PlugIn so log it, but don't stop
-      LOG.error(e.getMessage() + " " + plugInClass.getName());
+      Logger.error(e.getMessage() + " " + plugInClass.getName());
       return StringUtil.toFriendlyName(plugInClass.getName(), "PlugIn");
     }
   }

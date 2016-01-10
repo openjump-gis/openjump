@@ -25,14 +25,12 @@
  * (250)385-6040 www.vividsolutions.com
  */
 package com.vividsolutions.jump.util.java2xml;
-import org.apache.log4j.Logger;
-import org.jdom.Attribute;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,8 +39,16 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
+
+import org.jdom.Attribute;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
+
+import com.vividsolutions.jump.workbench.Logger;
 public class Java2XML extends XMLBinder {
-	private static Logger LOG = Logger.getLogger(Java2XML.class);
+
     public Java2XML() {
     }
     public String write(Object object, String rootTagName) throws Exception {
@@ -115,7 +121,7 @@ public class Java2XML extends XMLBinder {
                 }
             }, object.getClass());
         } catch (Exception e) {
-        	LOG.error("Java2XML: Exception writing "
+        	Logger.error("Java2XML: Exception writing "
                     + object.getClass());
             throw e;
         }

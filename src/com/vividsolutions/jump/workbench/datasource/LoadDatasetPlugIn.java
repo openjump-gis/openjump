@@ -62,10 +62,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.apache.log4j.Logger;
-
 import javax.swing.ImageIcon;
-import javax.swing.SwingUtilities;
 import javax.swing.JFileChooser;
 import java.awt.event.*;
 
