@@ -1,8 +1,5 @@
 package org.openjump.core.rasterimage.styler.ui;
 
-import org.openjump.core.rasterimage.styler.ColorUtils;
-import org.openjump.core.rasterimage.styler.RasterStylesExtension;
-import com.vividsolutions.jump.util.Range;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
@@ -14,16 +11,21 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import javax.swing.JOptionPane;
+
 import org.openjump.core.attributeoperations.Classifier1D;
 import org.openjump.core.rasterimage.RasterImageLayer;
-import org.openjump.core.rasterimage.styler.ColorMapEntry;
 import org.openjump.core.rasterimage.RasterSymbology;
-import org.openjump.core.rasterimage.styler.ui.ColorsTablePanel.TableType;
+import org.openjump.core.rasterimage.styler.ColorMapEntry;
+import org.openjump.core.rasterimage.styler.ColorUtils;
 import org.openjump.core.rasterimage.styler.RasterClassifier1D;
+import org.openjump.core.rasterimage.styler.RasterStylesExtension;
 import org.openjump.core.rasterimage.styler.Utils;
+import org.openjump.core.rasterimage.styler.ui.ColorsTablePanel.TableType;
+
+import com.vividsolutions.jump.util.Range;
+import com.vividsolutions.jump.workbench.Logger;
 
 /**
  *
@@ -178,7 +180,7 @@ public class IntervalPanel extends javax.swing.JPanel {
         try {
             rampAll();
         } catch (Exception ex) {
-            Logger.getLogger(IntervalPanel.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.error(ex);
         }
     }//GEN-LAST:event_jButton_ValuesActionPerformed
 
@@ -194,7 +196,7 @@ public class IntervalPanel extends javax.swing.JPanel {
         try {
             rampColors();
         } catch (Exception ex) {
-            Logger.getLogger(IntervalPanel.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.error(ex);
         }
     }//GEN-LAST:event_jButton_RampActionPerformed
 
@@ -209,7 +211,7 @@ public class IntervalPanel extends javax.swing.JPanel {
             try {
                 rampAll();
             } catch (Exception ex) {
-                Logger.getLogger(IntervalPanel.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.error(ex);
             }
         }
         

@@ -1,5 +1,15 @@
 package org.openjump.core.ui.plugin.datastore;
 
+import java.awt.Color;
+import java.util.Collection;
+
+import javax.swing.SwingUtilities;
+
+import org.openjump.core.ccordsys.srid.SRIDStyle;
+import org.openjump.core.ui.plugin.datastore.transaction.DataStoreTransactionManager;
+import org.openjump.core.ui.plugin.file.open.ChooseProjectPanel;
+import org.openjump.core.ui.swing.wizard.AbstractWizardGroup;
+
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.coordsys.CoordinateSystemRegistry;
 import com.vividsolutions.jump.feature.FeatureCollection;
@@ -7,6 +17,7 @@ import com.vividsolutions.jump.io.datasource.Connection;
 import com.vividsolutions.jump.io.datasource.DataSource;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.task.TaskMonitor;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.datastore.ConnectionDescriptor;
 import com.vividsolutions.jump.workbench.model.Category;
@@ -16,23 +27,13 @@ import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.AddNewLayerPlugIn;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
-import org.apache.log4j.Logger;
-import org.openjump.core.ccordsys.srid.SRIDStyle;
-import org.openjump.core.ui.plugin.datastore.postgis2.PostGISDataStoreDataSource;
-import org.openjump.core.ui.plugin.datastore.transaction.DataStoreTransactionManager;
-import org.openjump.core.ui.plugin.file.open.ChooseProjectPanel;
-import org.openjump.core.ui.swing.wizard.AbstractWizardGroup;
-
-import javax.swing.*;
-import java.awt.*;
-import java.util.Collection;
 
 /**
  * Add a wizard to the Open dialog to open database connections with read/write capability.
  */
 public class AddWritableDataStoreLayerWizard extends AbstractWizardGroup {
 
-    final Logger LOG = Logger.getLogger(AddWritableDataStoreLayerWizard.class);
+
     private static final String KEY = AddWritableDataStoreLayerWizard.class.getName();
 
     private AddWritableDataStoreLayerWizardPanel dataStoreWizardPanel;
@@ -140,13 +141,13 @@ public class AddWritableDataStoreLayerWizard extends AbstractWizardGroup {
             sridStyle.setSRID(panel.getGeometryColumn().getSRID());
             layer.addStyle(sridStyle);
 
-            LOG.info("Add layer '" + layer.getName() + "' to '" + layerManager.getTask().getName() +  "' using WritableDataStoreDataSource with :");
-            LOG.info("    geometry column    = " + geometryAttributeName);
-            LOG.info("    srid               = " + sridStyle.getSRID());
-            LOG.info("    external PK column = " + identifierAttributeName);
-            LOG.info("    max features       = " + limit);
-            LOG.info("    where clause       = " + whereClause);
-            LOG.info("    limit to view      = " + limitedToView);
+            Logger.info("Add layer '" + layer.getName() + "' to '" + layerManager.getTask().getName() +  "' using WritableDataStoreDataSource with :");
+            Logger.info("    geometry column    = " + geometryAttributeName);
+            Logger.info("    srid               = " + sridStyle.getSRID());
+            Logger.info("    external PK column = " + identifierAttributeName);
+            Logger.info("    max features       = " + limit);
+            Logger.info("    where clause       = " + whereClause);
+            Logger.info("    limit to view      = " + limitedToView);
 
             layerManager.setFiringEvents(true); // added by michaudm on 2009-04-05
         }

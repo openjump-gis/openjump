@@ -1,17 +1,30 @@
 package org.openjump.core.ui.plugin.datastore.transaction;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.WeakHashMap;
+
+import org.openjump.core.ui.plugin.datastore.WritableDataStoreDataSource;
+
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.io.datasource.DataSource;
 import com.vividsolutions.jump.task.DummyTaskMonitor;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
-import com.vividsolutions.jump.workbench.model.*;
+import com.vividsolutions.jump.workbench.Logger;
+import com.vividsolutions.jump.workbench.model.FeatureEvent;
+import com.vividsolutions.jump.workbench.model.FeatureEventType;
+import com.vividsolutions.jump.workbench.model.Layer;
+import com.vividsolutions.jump.workbench.model.LayerAdapter;
+import com.vividsolutions.jump.workbench.model.LayerEvent;
+import com.vividsolutions.jump.workbench.model.LayerEventType;
+import com.vividsolutions.jump.workbench.model.LayerListener;
+import com.vividsolutions.jump.workbench.model.Task;
 import com.vividsolutions.jump.workbench.ui.TaskFrame;
-import org.apache.log4j.Logger;
-import org.openjump.core.ui.plugin.datastore.WritableDataStoreDataSource;
-
-import java.util.*;
 
 /**
  * Central class to manage datastore transactions from OpenJUMP.
@@ -23,7 +36,7 @@ import java.util.*;
  */
 public class DataStoreTransactionManager {
 
-    final Logger LOG = Logger.getLogger(DataStoreTransactionManager.class);
+
     final String KEY = DataStoreTransactionManager.class.getName();
 
     private static DataStoreTransactionManager TXMANAGER = new DataStoreTransactionManager();
@@ -52,7 +65,7 @@ public class DataStoreTransactionManager {
             registeredListeners.put(task,listener);
         }
         registeredLayers.put(layer, task);
-        LOG.info("Register layer '" + layer.getName() + "' (" + task.getName() + ") in the DataStoreTransactionManager");
+        Logger.info("Register layer '" + layer.getName() + "' (" + task.getName() + ") in the DataStoreTransactionManager");
     }
 
     private boolean containsLayerManager(Task task) {
@@ -70,20 +83,20 @@ public class DataStoreTransactionManager {
                         if (e.getType() == FeatureEventType.ADDED) {
                             for (Object feature : e.getFeatures()) {
                                 try {
-                                    LOG.debug("FeatureEventType: ADDED " + ((Feature)feature).getID());
+                                    Logger.debug("FeatureEventType: ADDED " + ((Feature)feature).getID());
                                     source.addCreation((Feature)feature);
                                 } catch (EvolutionOperationException ex) {
-                                    LOG.error("Error during creation of feature " + ((Feature)feature).getID(), ex);
+                                    Logger.error("Error during creation of feature " + ((Feature)feature).getID(), ex);
                                 }
                             }
                         }
                         else if (e.getType() == FeatureEventType.DELETED) {
                             for (Object feature : e.getFeatures()) {
                                 try {
-                                    LOG.debug("FeatureEventType: DELETED " + ((Feature)feature).getID());
+                                    Logger.debug("FeatureEventType: DELETED " + ((Feature)feature).getID());
                                     source.addSuppression((Feature)feature);
                                 } catch (EvolutionOperationException ex) {
-                                    LOG.error("Error during suppression of feature " + ((Feature)feature).getID(), ex);
+                                    Logger.error("Error during suppression of feature " + ((Feature)feature).getID(), ex);
                                 }
                             }
                         }
@@ -93,10 +106,10 @@ public class DataStoreTransactionManager {
                             Iterator oldFeatures = e.getOldFeatureAttClones().iterator();
                             for (Object feature : e.getFeatures()) {
                                 try {
-                                    LOG.debug("FeatureEventType: ATTRIBUTES_MODIFIED " + ((Feature)feature).getID());
+                                    Logger.debug("FeatureEventType: ATTRIBUTES_MODIFIED " + ((Feature)feature).getID());
                                     source.addModification((Feature)feature, (Feature)oldFeatures.next());
                                 } catch (EvolutionOperationException ex) {
-                                    LOG.error("Error during modification of feature " + ((Feature)feature).getID(), ex);
+                                    Logger.error("Error during modification of feature " + ((Feature)feature).getID(), ex);
                                 }
                             }
                         }
@@ -106,19 +119,19 @@ public class DataStoreTransactionManager {
                             Iterator oldFeatures = e.getOldFeatureClones().iterator();
                             for (Object feature : e.getFeatures()) {
                                 try {
-                                    LOG.debug("FeatureEventType: GEOMETRY_MODIFIED " + ((Feature)feature).getID());
+                                    Logger.debug("FeatureEventType: GEOMETRY_MODIFIED " + ((Feature)feature).getID());
                                     source.addModification((Feature)feature, (Feature)oldFeatures.next());
                                 } catch (EvolutionOperationException ex) {
-                                    LOG.error("Error during modification of feature " + ((Feature)feature).getID(), ex);
+                                    Logger.error("Error during modification of feature " + ((Feature)feature).getID(), ex);
                                 }
                             }
                         }
                         else {
-                            LOG.error(e.getType() + " is an unknown FeatureEventType");
+                            Logger.error(e.getType() + " is an unknown FeatureEventType");
                         }
                     }
                     else {
-                        LOG.error("DataStoreTransactionManager should never contain a reference to a layer which does not use a WritableDataStoreDataSource");
+                        Logger.error("DataStoreTransactionManager should never contain a reference to a layer which does not use a WritableDataStoreDataSource");
                     }
                 }
             }
@@ -130,7 +143,7 @@ public class DataStoreTransactionManager {
                         }
                     }
                     registeredLayers.remove(e.getLayerable());
-                    LOG.info("Unregister layer " + e.getLayerable().getName() + " from the DataStoreTransactionManager");
+                    Logger.info("Unregister layer " + e.getLayerable().getName() + " from the DataStoreTransactionManager");
                 }
             }
         };
@@ -169,10 +182,10 @@ public class DataStoreTransactionManager {
             // (see also WritableDataStoreDataSource#reloadDataFromDataStore)
             //source.getProperties().put(WritableDataStoreDataSource.CREATE_TABLE, false);
             try {
-                LOG.info("Commit layer \"" + layer.getName() + "\"");
+                Logger.info("Commit layer \"" + layer.getName() + "\"");
                 writableSource.getConnection().executeUpdate(null,layer.getFeatureCollectionWrapper(), new DummyTaskMonitor());
             } catch (Exception e) {
-                LOG.error("Error occurred while comitting layer \"" + layer.getName() + "\"", e);
+                Logger.error("Error occurred while comitting layer \"" + layer.getName() + "\"", e);
                 throw e;
             }
             return true;
@@ -190,16 +203,16 @@ public class DataStoreTransactionManager {
             WritableDataStoreDataSource writableSource = (WritableDataStoreDataSource)source;
             int conflicts = 0;
             try {
-                LOG.info("Update layer \"" + layer.getName() + "\"");
+                Logger.info("Update layer \"" + layer.getName() + "\"");
                 FeatureCollection fc = writableSource.getConnection().executeQuery(null, new DummyTaskMonitor());
                 conflicts = manageConflicts(taskFrame, layer, fc);
                 layer.getLayerManager().setFiringEvents(false);
                 layer.setFeatureCollection(fc);
-                LOG.info("" + fc.size() + " features uploaded");
+                Logger.info("" + fc.size() + " features uploaded");
                 layer.getLayerManager().setFiringEvents(true);
-                LOG.info("" + conflicts + " conflicts detected");
+                Logger.info("" + conflicts + " conflicts detected");
             } catch (Exception e) {
-                LOG.error("Error occurred while updating layer \"" + layer.getName() + "\"", e);
+                Logger.error("Error occurred while updating layer \"" + layer.getName() + "\"", e);
                 return -1;
             }
             return conflicts;
@@ -211,7 +224,7 @@ public class DataStoreTransactionManager {
      * Update all layers associated to a RWDataStoreDataSource.
      */
     public void update(TaskFrame taskFrame) {
-        LOG.info("Update project \"" + taskFrame.getTask().getName() + "\"");
+        Logger.info("Update project \"" + taskFrame.getTask().getName() + "\"");
         int total_conflicts = 0;
         boolean no_error = true;
         for (Layer layer : registeredLayers.keySet()) {
@@ -224,9 +237,9 @@ public class DataStoreTransactionManager {
         taskFrame.getLayerViewPanel().getSelectionManager().clear();
         taskFrame.getLayerViewPanel().repaint();
         if (no_error) {
-            LOG.info("Project update finished with 0 error and " + total_conflicts + " conflicts");
+            Logger.info("Project update finished with 0 error and " + total_conflicts + " conflicts");
         }
-        else LOG.info("Project update finished with errors");
+        else Logger.info("Project update finished with errors");
     }
 
     private void inspect(TaskFrame taskFrame, Layer layer) {
@@ -262,7 +275,7 @@ public class DataStoreTransactionManager {
                 else if (evolution.getType() == Evolution.Type.SUPPRESSION) {
                     layer_s.getFeatureCollectionWrapper().add(evolution.getOldFeature());
                 }
-                else LOG.error("Tried to inspect an evolution which is neither a creation nor a modification or a suppression");
+                else Logger.error("Tried to inspect an evolution which is neither a creation nor a modification or a suppression");
             }
         }
     }
@@ -281,15 +294,15 @@ public class DataStoreTransactionManager {
     public void commit() throws Exception {
         TaskFrame activeFrame = JUMPWorkbench.getInstance().getFrame().getActiveTaskFrame();
         if (activeFrame == null) return;
-        LOG.info("Commit evolutions on project \"" + activeFrame.getTask().getName() + "\"");
+        Logger.info("Commit evolutions on project \"" + activeFrame.getTask().getName() + "\"");
         boolean no_error = true;
         for (Layer layer : registeredLayers.keySet()) {
             if (activeFrame.getTask().getLayerManager().getLayers().contains(layer)) {
                 no_error = commit(layer) && no_error;
             }
         }
-        if (no_error) LOG.info("Commit finished without error");
-        else LOG.info("Commit finished with error");
+        if (no_error) Logger.info("Commit finished without error");
+        else Logger.info("Commit finished with error");
         update(activeFrame);
     }
 
@@ -324,9 +337,9 @@ public class DataStoreTransactionManager {
                         // We must check if the remote change is the same as the local change
                         // If different, we have a conflict and must decide which one must be kept
                         if (!Arrays.equals(((Feature) feature).getAttributes(), evo.getNewFeature().getAttributes())) {
-                            LOG.warn("Conflict detected for feature " + evo.getNewFeature().getAttribute(pk));
-                            LOG.trace("  - Server: " + feature);
-                            LOG.trace("  - Local : " + evo.getNewFeature());
+                            Logger.warn("Conflict detected for feature " + evo.getNewFeature().getAttribute(pk));
+                            Logger.trace("  - Server: " + feature);
+                            Logger.trace("  - Local : " + evo.getNewFeature());
                             conflicts++;
                             if (manageConflicts) {
                                 copyLocallyModifiedFeature(taskFrame, layer, evo.getNewFeature());
@@ -336,25 +349,25 @@ public class DataStoreTransactionManager {
                         // we can remove the change from the evolution table
                         else {
                             dataSource.removeEvolution(evo.getNewFeature().getID());
-                            LOG.trace("Eliminate an evolution from evolution stack after detection of a false conflict: "
+                            Logger.trace("Eliminate an evolution from evolution stack after detection of a false conflict: "
                                     + evo.getNewFeature().getAttribute(pk));
                         }
                     }
                     else {
-                        LOG.trace("Database has not been changed since last transaction : Keep local changes");
+                        Logger.trace("Database has not been changed since last transaction : Keep local changes");
                         ((Feature)feature).setAttributes(evo.getNewFeature().getAttributes());
                     }
                 }
                 if (evo.getType()==Evolution.Type.SUPPRESSION) {
                     if (!Arrays.equals(((Feature) feature).getAttributes(), evo.getOldFeature().getAttributes())) {
-                        LOG.warn("Conflict detected for feature " + evo.getNewFeature().getAttribute(pk));
-                        LOG.trace("  - The feature has been locally deleted");
+                        Logger.warn("Conflict detected for feature " + evo.getNewFeature().getAttribute(pk));
+                        Logger.trace("  - The feature has been locally deleted");
                         conflicts++;
                         copyLocallyDeletedFeature(taskFrame, layer, evo.getOldFeature());
                     }
                     // Database feature has not been changed : keep the local change (delete it)
                     else {
-                        LOG.trace("Feature " + ((Feature) feature).getAttribute(pk) + " has been locally deleted, don't update it again !");
+                        Logger.trace("Feature " + ((Feature) feature).getAttribute(pk) + " has been locally deleted, don't update it again !");
                         toBeDeleted.add(evo.getOldFeature());
                     }
                 }

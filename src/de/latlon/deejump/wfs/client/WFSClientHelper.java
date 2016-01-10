@@ -58,6 +58,8 @@ import org.deegree.framework.log.ILogger;
 import org.deegree.framework.log.LoggerFactory;
 import org.deegree.framework.util.CharsetUtils;
 
+import com.vividsolutions.jump.workbench.Logger;
+
 import de.latlon.deejump.wfs.DeeJUMPException;
 
 /**
@@ -70,8 +72,6 @@ import de.latlon.deejump.wfs.DeeJUMPException;
  *          2008) $
  */
 public class WFSClientHelper {
-
-  private static ILogger LOG = LoggerFactory.getLogger(WFSClientHelper.class);
 
   /**
    * convenience method, big datasets tend to flood your memory
@@ -108,7 +108,7 @@ public class WFSClientHelper {
    */
   public static InputStream createResponseStreamfromWFS(String serverUrl,
       String postData) throws DeeJUMPException {
-    LOG.logDebug("WFS GetFeature: " + serverUrl + " -> " + postData);
+    Logger.debug("WFS GetFeature: " + serverUrl + " -> " + postData);
     //System.out.println(serverUrl);
 
     HttpClient httpclient = new WFSHttpClient();

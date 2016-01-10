@@ -36,24 +36,12 @@
  */
 package org.saig.jump.lang;
 
-import java.text.MessageFormat;
 import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-
-import com.vividsolutions.jump.util.StringUtil;
-import com.vividsolutions.jump.workbench.JUMPWorkbench;
 
 /**
  * kosmo i18n support patched over to use OJ i18n class
  */
 public class I18N {
-
-    /** Log */
-    private final static Logger LOGGER = Logger.getLogger(I18N.class);
 
     /**
      * Acceso privado al único objeto de la clase

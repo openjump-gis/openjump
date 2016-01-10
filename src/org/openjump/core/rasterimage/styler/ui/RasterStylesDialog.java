@@ -1,23 +1,17 @@
 package org.openjump.core.rasterimage.styler.ui;
 
-import com.vividsolutions.jump.util.Range;
-import com.vividsolutions.jump.util.StringUtil;
-import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.model.LayerEventType;
-import com.vividsolutions.jump.workbench.ui.ErrorDialog;
-import de.fho.jump.pirol.utilities.settings.PirolPlugInSettings;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.NoninvertibleTransformException;
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import javax.swing.InputVerifier;
 import javax.swing.JColorChooser;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
+
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.RasterSymbology;
 import org.openjump.core.rasterimage.Stats;
@@ -26,6 +20,15 @@ import org.openjump.core.rasterimage.styler.SLDHandler;
 import org.openjump.core.rasterimage.styler.Utils;
 import org.openjump.core.ui.io.file.FileNameExtensionFilter;
 import org.xml.sax.SAXException;
+
+import com.vividsolutions.jump.util.Range;
+import com.vividsolutions.jump.util.StringUtil;
+import com.vividsolutions.jump.workbench.Logger;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.model.LayerEventType;
+import com.vividsolutions.jump.workbench.ui.ErrorDialog;
+
+import de.fho.jump.pirol.utilities.settings.PirolPlugInSettings;
 
 /**
  *
@@ -329,7 +332,7 @@ public class RasterStylesDialog extends javax.swing.JDialog {
         try {         
             updateRasterImageLayer();
         } catch (Exception ex) {
-            Logger.getLogger(RasterStylesDialog.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.error(ex);
         }
         
     }//GEN-LAST:event_jButton_ApplyActionPerformed
@@ -345,7 +348,7 @@ public class RasterStylesDialog extends javax.swing.JDialog {
         try {
             restoreToOriginal();
         } catch (Exception ex) {
-            Logger.getLogger(RasterStylesDialog.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.error(ex);
         }
             
     }//GEN-LAST:event_jButton_RestoreActionPerformed
@@ -357,7 +360,7 @@ public class RasterStylesDialog extends javax.swing.JDialog {
             updateRasterImageLayer();
             closeDialog();
         } catch (Exception ex) {
-            Logger.getLogger(RasterStylesDialog.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.error( ex);
         }
         
     }//GEN-LAST:event_jButton_OKActionPerformed

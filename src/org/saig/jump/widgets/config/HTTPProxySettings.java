@@ -37,10 +37,11 @@
 package org.saig.jump.widgets.config;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.saig.core.crypt.CryptManager;
 import org.saig.core.crypt.CryptManagerException;
 import org.saig.core.crypt.CryptManagerFactory;
+
+import com.vividsolutions.jump.workbench.Logger;
 
 /**
  * Wrapper to the HTTP Proxy settings parameters 
@@ -51,10 +52,7 @@ import org.saig.core.crypt.CryptManagerFactory;
  * @since 2.0
  */
 public class HTTPProxySettings {
-    
-    /** Log */
-    private final static Logger LOGGER = Logger.getLogger(HTTPProxySettings.class);
-    
+
     private boolean enabled = true;
     
     private String host;
@@ -77,7 +75,7 @@ public class HTTPProxySettings {
         try {
             manager = CryptManagerFactory.getManager(CryptManagerFactory.PASSWORD_BASED_ENCRYPTION);
         } catch (CryptManagerException e) {
-            LOGGER.error(e);
+          Logger.error(e);
         }
     }
 
@@ -153,7 +151,7 @@ public class HTTPProxySettings {
             try {
                 encryptedPassword = manager.encrypt(password);
             } catch (Exception e) {
-                LOGGER.error(e);
+              Logger.error(e);
             }
         }
         return encryptedPassword;
@@ -167,7 +165,7 @@ public class HTTPProxySettings {
         try {
             password = manager.decrypt(encryptedPassword);
         } catch (Exception e) {
-            LOGGER.error(e);
+          Logger.error(e);
         }
     }
 }

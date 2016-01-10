@@ -25,7 +25,7 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.border.Border;
 
-import org.apache.log4j.Logger;
+
 import org.openjump.core.apitools.LayerTools;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.TiffTags.TiffReadingException;
@@ -169,7 +169,7 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
             .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.ymax");
     private final static String UNSPECIFIED = I18N
             .get("coordsys.CoordinateSystem.unspecified");
-    private static final Logger LOGGER = Logger.getLogger(HTMLFrame.class);
+
     private Envelope extent;
 
     /*

@@ -24,7 +24,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.apache.log4j.Logger;
+
 import org.openjump.core.apitools.LayerTools;
 import org.openjump.core.rasterimage.RasterImageIOUtils;
 import org.openjump.core.rasterimage.RasterImageLayer;
@@ -59,8 +59,7 @@ public class ChangeRangeValuesToNoDataPlugIn extends ThreadedBasePlugIn {
      *        Substitute export to .flt file to .asc file  
      * @date 2015_15_11 (Giuseppe Aruta) Improved GUI   
      */
-    private static final Logger LOGGER = Logger
-            .getLogger(ChangeNoDataValuePlugIn.class);
+
     private Properties properties = null;
     private String byteOrder = "LSBFIRST";
     private static String propertiesFile = LoadSextanteRasterImagePlugIn

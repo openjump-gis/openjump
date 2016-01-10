@@ -44,9 +44,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
-import org.apache.log4j.Logger;
 import org.saig.core.util.SwingWorker;
 
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
@@ -62,9 +62,6 @@ public abstract class AbstractWaitDialog extends JDialog {
 
     /** long serialVersionUID field */
     private static final long serialVersionUID = 1L;
-
-    /** Log */
-    protected final static Logger LOGGER = Logger.getLogger(AbstractWaitDialog.class);
 
     /** Method execution error message, if any */
     protected String errorMessage = ""; //$NON-NLS-1$
@@ -89,7 +86,7 @@ public abstract class AbstractWaitDialog extends JDialog {
                     methodToPerform();
                     return null;
                 } catch (Exception e) {
-                    LOGGER.error("", e); //$NON-NLS-1$
+                    Logger.error(e);
                     errorMessage = e.getMessage();
                     dispose();
                 }

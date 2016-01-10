@@ -57,7 +57,6 @@ import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
 import org.deegree.framework.log.ILogger;
-import org.deegree.framework.log.LoggerFactory;
 import org.deegree.framework.util.StringTools;
 import org.deegree.framework.xml.ElementList;
 import org.deegree.framework.xml.NamespaceContext;
@@ -73,6 +72,8 @@ import org.saig.jump.lang.I18N;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+
+import com.vividsolutions.jump.workbench.Logger;
 
 /**
  * Adapter class for converting GML geometries to deegree geometries and vice versa. Some logical
@@ -93,8 +94,6 @@ import org.w3c.dom.Node;
  * @version $Revision: 11344 $, $Date: 2008-04-22 13:38:48 +0200 (Di, 22 Apr 2008) $
  */
 public class GMLGeometryAdapter {
-
-    protected static final ILogger LOG = LoggerFactory.getLogger(GMLGeometryAdapter.class);
 
     protected static final NamespaceContext nsContext = CommonNamespaces.getNamespaceContext();
 
@@ -135,8 +134,8 @@ public class GMLGeometryAdapter {
         try {
             doc = XMLTools.parse(sr);
         } catch (Exception e) {
-            LOG.logError(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.could-not-parse") + ": '" + gml + "' " + I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.as-gml-xml"), e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-            throw new XMLParsingException(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.could-not-parse") + ": '" + gml + "' " + I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.as-gml-xml") + e.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+            Logger.error(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.could-not-parse") + ": '" + gml + "' " + I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.as-gml-xml"), e);
+            throw new XMLParsingException(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.could-not-parse") + ": '" + gml + "' " + I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.as-gml-xml") + e.getMessage());
         }
         return wrap(doc.getDocumentElement(), srsName);
     }
@@ -172,35 +171,35 @@ public class GMLGeometryAdapter {
         Geometry geometry = null;
         try {
             String name = element.getLocalName();
-            if ((name.equals("Point")) || (name.equals("Center"))) { //$NON-NLS-1$ //$NON-NLS-2$
+            if ((name.equals("Point")) || (name.equals("Center"))) {
                 geometry = wrapPoint(element, srsName);
-            } else if (name.equals("LineString")) { //$NON-NLS-1$
+            } else if (name.equals("LineString")) {
                 geometry = wrapLineString(element, srsName);
-            } else if (name.equals("Polygon")) { //$NON-NLS-1$
+            } else if (name.equals("Polygon")) {
                 geometry = wrapPolygon(element, srsName);
-            } else if (name.equals("MultiPoint")) { //$NON-NLS-1$
+            } else if (name.equals("MultiPoint")) {
                 geometry = wrapMultiPoint(element, srsName);
-            } else if (name.equals("MultiLineString")) { //$NON-NLS-1$
+            } else if (name.equals("MultiLineString")) {
                 geometry = wrapMultiLineString(element, srsName);
-            } else if (name.equals("MultiPolygon")) { //$NON-NLS-1$
+            } else if (name.equals("MultiPolygon")) {
                 geometry = wrapMultiPolygon(element, srsName);
-            } else if (name.equals("Box") || name.equals("Envelope")) { //$NON-NLS-1$ //$NON-NLS-2$
+            } else if (name.equals("Box") || name.equals("Envelope")) {
                 geometry = wrapBoxAsSurface(element, srsName);
-            } else if (name.equals("Curve")) { //$NON-NLS-1$
+            } else if (name.equals("Curve")) {
                 geometry = wrapCurveAsCurve(element, srsName);
-            } else if (name.equals("Surface")) { //$NON-NLS-1$
+            } else if (name.equals("Surface")) {
                 geometry = wrapSurfaceAsSurface(element, srsName);
-            } else if (name.equals("MultiCurve")) { //$NON-NLS-1$
+            } else if (name.equals("MultiCurve")) {
                 geometry = wrapMultiCurveAsMultiCurve(element, srsName);
-            } else if (name.equals("MultiSurface")) { //$NON-NLS-1$
+            } else if (name.equals("MultiSurface")) {
                 geometry = wrapMultiSurfaceAsMultiSurface(element, srsName);
-            } else if (name.equals("CompositeSurface")) { //$NON-NLS-1$
+            } else if (name.equals("CompositeSurface")) {
                 geometry = wrapCompositeSurface(element, srsName);
             } else {
-                new GeometryException(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.not-a-supported-geometry-type") + ": " + name); //$NON-NLS-1$ //$NON-NLS-2$
+                new GeometryException(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.not-a-supported-geometry-type") + ": " + name);
             }
         } catch (Exception e) {
-            LOG.logError(e.getMessage(), e);
+            Logger.error(e.getMessage(), e);
             throw new GeometryException(StringTools.stackTraceToString(e));
         }
         return geometry;
@@ -297,12 +296,12 @@ public class GMLGeometryAdapter {
 
         CurveSegment[] segments = new CurveSegment[list.size()];
         for( int i = 0; i < list.size(); i++ ) {
-            if (list.get(i).getLocalName().equals("LineStringSegment")) { //$NON-NLS-1$
+            if (list.get(i).getLocalName().equals("LineStringSegment")) {
                 segments[i] = parseLineStringSegment((Element) list.get(i), crs, srsDimension);
-            } else if (list.get(i).getLocalName().equals("Arc")) { //$NON-NLS-1$
+            } else if (list.get(i).getLocalName().equals("Arc")) {
                 segments[i] = parseArc((Element) list.get(i), crs, srsDimension);
             } else {
-                throw new GeometryException(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.not-supported-type-for-a-curvesegment") + ": " + list.get(i).getLocalName()); //$NON-NLS-1$ //$NON-NLS-2$
+                throw new GeometryException(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.not-supported-type-for-a-curvesegment") + ": " + list.get(i).getLocalName());
             }
         }
         return segments;
@@ -324,7 +323,7 @@ public class GMLGeometryAdapter {
             Position[] pos = createPositions(element, null, srsDimension);
             segment = GeometryFactory.createCurveSegment(pos, crs);
         } catch (Exception e) {
-            throw new GeometryException(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.error-creating-segments-for-the-element-arc") + "."); //$NON-NLS-1$ //$NON-NLS-2$
+            throw new GeometryException(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.error-creating-segments-for-the-element-arc") + ".");
         }
         return segment;
     }
@@ -345,7 +344,7 @@ public class GMLGeometryAdapter {
             Position[] pos = createPositions(element, null, srsDimension);
             segment = GeometryFactory.createCurveSegment(pos, crs);
         } catch (Exception e) {
-            throw new GeometryException(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.error-creating-segments-for-the-element-linestringsegment") + "."); //$NON-NLS-1$ //$NON-NLS-2$
+            throw new GeometryException(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.error-creating-segments-for-the-element-linestringsegment") + ".");
         }
         return segment;
 
@@ -414,11 +413,11 @@ public class GMLGeometryAdapter {
             Curve[] curves = new Curve[curveList.size()];
             multiCurve = GeometryFactory.createMultiCurve(curveList.toArray(curves), crs);
         } catch (XMLParsingException e) {
-            LOG.logError(e.getMessage(), e);
-            throw new XMLParsingException(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.error-parsing") + "<gml:curveMember> " + I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.elements") + ". " + I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.please-check-the-xml-document") + "."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+            Logger.error(e.getMessage(), e);
+            throw new XMLParsingException(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.error-parsing") + "<gml:curveMember> " + I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.elements") + ". " + I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.please-check-the-xml-document") + ".");
         } catch (GeometryException e) {
-            LOG.logError(e.getMessage(), e);
-            throw new GeometryException(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.error-creating-a-curve-from-the-curve-element") + ". " + I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.please-check-the-gml-specifications-for-correct-element-declaration") + "."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+            Logger.error(e.getMessage(), e);
+            throw new GeometryException(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.error-creating-a-curve-from-the-curve-element") + ". " + I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.please-check-the-gml-specifications-for-correct-element-declaration") + ".");
         }
         return multiCurve;
     }
@@ -464,7 +463,7 @@ public class GMLGeometryAdapter {
                 }
 
                 List<Element> interiorList =
-                    XMLTools.getElements(polygon, "gml:interior | gml:outerBounderyIs", //$NON-NLS-1$
+                    XMLTools.getElements(polygon, "gml:interior | gml:outerBounderyIs",
                         nsContext);
                 Curve[] interiorRings = null;
                 if (interiorList != null && interiorList.size() > 0) {
@@ -479,9 +478,9 @@ public class GMLGeometryAdapter {
                 surfacePatches[i] =
                     GeometryFactory.createSurfacePatch(exteriorRing, interiorRings, crs);
             } catch (InvalidGMLException e) {
-                LOG.logError(e.getMessage(), e);
-                throw new XMLParsingException(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.error-parsing-the-polygon-element") + " '" + polygon.getNodeName() //$NON-NLS-1$ //$NON-NLS-2$
-                    + "' " + I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.to-create-a-surface-geometry") + "."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                Logger.error(e.getMessage(), e);
+                throw new XMLParsingException(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.error-parsing-the-polygon-element") + " '" + polygon.getNodeName()
+                    + "' " + I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.to-create-a-surface-geometry") + ".");
             }
 
         }
@@ -489,7 +488,7 @@ public class GMLGeometryAdapter {
         try {
             surface = GeometryFactory.createSurface(surfacePatches, crs);
         } catch (GeometryException e) {
-            throw new GeometryException(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.error-creating-a-surface-from") + " '" + surfacePatches.length + "' " + "polygons" + "."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            throw new GeometryException(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.error-creating-a-surface-from") + " '" + surfacePatches.length + "' " + "polygons" + ".");
         }
         return surface;
     }
@@ -615,12 +614,12 @@ public class GMLGeometryAdapter {
             surfaces = surfaceList.toArray(surfaces);
             multiSurface = GeometryFactory.createMultiSurface(surfaces, crs);
         } catch (XMLParsingException e) {
-            LOG.logError(e.getMessage(), e);
+            Logger.error(e.getMessage(), e);
             String msg =
                 "Error parsing <gml:surfaceMember> elements. Please check the xml document.";
             throw new XMLParsingException(msg);
         } catch (GeometryException e) {
-            LOG.logError(e.getMessage(), e);
+            Logger.error(e.getMessage(), e);
             String msg =
                 "Error creating a multi surface from the MultiSurface element. Please check the GML specifications for correct element declaration.";
             throw new GeometryException(msg);
@@ -743,7 +742,7 @@ public class GMLGeometryAdapter {
 
                 nl =
                     XMLTools.getRequiredNodes(inns.get(i), CommonNamespaces.GML_PREFIX
-                        + ":LinearRing", //$NON-NLS-1$
+                        + ":LinearRing",
                         nsContext);
 
                 ring = (Element) nl.get(0);
@@ -881,7 +880,7 @@ public class GMLGeometryAdapter {
      * @throws GeometryException
      */
     private static CompositeSurface wrapCompositeSurface( Element element, String srsName ) {
-        throw new UnsupportedOperationException("#wrapCompositeSurface(Element) " + I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.is-not-implemented-as-yet") + ". " + I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.work-in-progress") + "."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+        throw new UnsupportedOperationException("#wrapCompositeSurface(Element) " + I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.is-not-implemented-as-yet") + ". " + I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.work-in-progress") + ".");
     }
 
     /**
@@ -896,7 +895,7 @@ public class GMLGeometryAdapter {
         try {
             patches = (Element) XMLTools.getRequiredNode(surface, "gml:patches", nsContext);
         } catch (XMLParsingException e) {
-            throw new XMLParsingException(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.error-retrieving-the-patches-element-from-the-surface-element") + "."); //$NON-NLS-1$ //$NON-NLS-2$
+            throw new XMLParsingException(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.error-retrieving-the-patches-element-from-the-surface-element") + ".");
         }
         return patches;
     }
@@ -911,7 +910,7 @@ public class GMLGeometryAdapter {
     public static CoordinateSystem getCRS( String name ) throws UnknownCRSException {
 
         if ((name != null) && (name.length() > 2)) {
-            if (name.startsWith("http://www.opengis.net/gml/srs/")) { //$NON-NLS-1$
+            if (name.startsWith("http://www.opengis.net/gml/srs/")) {
                 // as declared in the GML 2.1.1 specification
                 // http://www.opengis.net/gml/srs/epsg.xml#4326
                 int p = name.lastIndexOf("/");
@@ -976,17 +975,17 @@ public class GMLGeometryAdapter {
             // urn:ogc:def:${operationName}:EPSG::${epsgCode}
             // urn:ogc:def:${operationName}:EPSG:${epsgCode}
             result = EPSG_SINGLE + StringUtils.substringAfterLast(name, ":");
-        } else if (StringUtils.containsIgnoreCase(name, "epsg.xml")) { //$NON-NLS-1$
+        } else if (StringUtils.containsIgnoreCase(name, "epsg.xml")) {
             // http://www.opengis.net/gml/srs/epsg.xml#<EPSG code>
             result = EPSG_SINGLE + StringUtils.substringAfterLast(name, "#");
-        } else if (StringUtils.containsIgnoreCase(name, "urn:epsg")) { //$NON-NLS-1$
+        } else if (StringUtils.containsIgnoreCase(name, "urn:epsg")) {
             // urn:EPSG:geographicCRC:<epsg code>
             result = EPSG_SINGLE + StringUtils.substringAfterLast(name, ":");
         } else {
             result = name;
         }
 
-        LOG.logDebug("Transformed from " + name + " to " + result); //$NON-NLS-1$ //$NON-NLS-2$
+        Logger.debug("Transformed from " + name + " to " + result);
         return result;
     }
 
@@ -1001,7 +1000,7 @@ public class GMLGeometryAdapter {
         double[] vals = StringTools.toArrayDouble(tmp, ", ");
         if (dim != 0) {
             if (vals.length != dim) {
-                throw new InvalidGMLException(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.dimension-must-be-equal-to-the-number-of-coordinate-values-defined-in-pos-element") + "."); //$NON-NLS-1$ //$NON-NLS-2$
+                throw new InvalidGMLException(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.dimension-must-be-equal-to-the-number-of-coordinate-values-defined-in-pos-element") + ".");
             }
         } else {
             dim = vals.length;
@@ -1055,11 +1054,11 @@ public class GMLGeometryAdapter {
 
         Position[] points = null;
         // fixing the failure coming from the usage of the xmltools.getAttrib method
-        String ts = XMLTools.getAttrValue(element, null, "ts", " "); //$NON-NLS-1$ //$NON-NLS-2$
+        String ts = XMLTools.getAttrValue(element, null, "ts", " ");
 
         // not used because javas current decimal seperator will be used
         // String ds = XMLTools.getAttrValue( element, null, "decimal", "." );
-        String cs = XMLTools.getAttrValue(element, null, "cs", ","); //$NON-NLS-1$ //$NON-NLS-2$
+        String cs = XMLTools.getAttrValue(element, null, "cs", ",");
 
         String value = XMLTools.getStringValue(element).trim();
 
@@ -1104,19 +1103,19 @@ public class GMLGeometryAdapter {
         if (vals != null) {
             if (dim != 0) {
                 if (vals.length != dim) {
-                    throw new InvalidGMLException(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.dimension-must-be-equal-to-the-number-of-coordinate-values-defined-in-pos-element") + "."); //$NON-NLS-1$ //$NON-NLS-2$
+                    throw new InvalidGMLException(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.dimension-must-be-equal-to-the-number-of-coordinate-values-defined-in-pos-element") + ".");
                 }
             } else {
                 dim = vals.length;
             }
         } else {
-            throw new InvalidGMLException(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.the-given-element") //$NON-NLS-1$
-                + "{" //$NON-NLS-1$
+            throw new InvalidGMLException(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.the-given-element")
+                + "{"
                 + element.getNamespaceURI()
-                + "}" //$NON-NLS-1$
+                + "}"
                 + element.getLocalName()
-                + I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.does-not-contain-any-coordinates") //$NON-NLS-1$
-                + ". " //$NON-NLS-1$
+                + I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.does-not-contain-any-coordinates")
+                + ". "
                 + I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.this-may-not-be"));
         }
 
@@ -1149,9 +1148,9 @@ public class GMLGeometryAdapter {
             srsDimension = findSrsDimension(element);
         }
 
-        if (LOG.getLevel() == ILogger.LOG_DEBUG) {
+        if (Logger.isDebugEnabled()) {
             XMLFragment doc = new XMLFragment(element);
-            System.out.println(doc.getAsPrettyString());
+            Logger.debug(doc.getAsPrettyString());
         }
         int dim = 0;
         if (srsDimension != null) {
@@ -1171,32 +1170,32 @@ public class GMLGeometryAdapter {
 
         if (srsName == null) {
             if (srsDimension != null) {
-                throw new InvalidGMLException(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.attribute-srsdimension-cannot-be-defined-unless-attribute-srsname-has-been-defined") + "."); //$NON-NLS-1$ //$NON-NLS-2$
+                throw new InvalidGMLException(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.attribute-srsdimension-cannot-be-defined-unless-attribute-srsname-has-been-defined") + ".");
             }
             if (axisLabels != null) {
-                throw new InvalidGMLException(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.attribute-axislabels-cannot-be-defined-unless-attribute-srsname-has-been-defined") + "."); //$NON-NLS-1$ //$NON-NLS-2$
+                throw new InvalidGMLException(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.attribute-axislabels-cannot-be-defined-unless-attribute-srsname-has-been-defined") + ".");
             }
 
         }
         if (axisLabels == null) {
             if (uomLabels != null) {
-                throw new InvalidGMLException(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.attribute-uomlabels-cannot-be-defined-unless-attribute-axisLabels-has-been-defined") + "."); //$NON-NLS-1$ //$NON-NLS-2$
+                throw new InvalidGMLException(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.attribute-uomlabels-cannot-be-defined-unless-attribute-axisLabels-has-been-defined") + ".");
             }
         }
         String tmp = XMLTools.getStringValue(element);
         double[] values = StringTools.toArrayDouble(tmp, "\t\n\r\f ,");
         int size = values.length / dim;
-        LOG.logDebug(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.number-of-points") + " = ", size); //$NON-NLS-1$ //$NON-NLS-2$
-        LOG.logDebug(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.size-of-the-original-array") + ": ", values.length); //$NON-NLS-1$ //$NON-NLS-2$
-        LOG.logDebug(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.dimension") + ": ", dim); //$NON-NLS-1$ //$NON-NLS-2$
+        Logger.debug(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.number-of-points") + " = "+ size);
+        Logger.debug(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.size-of-the-original-array") + ": "+ values.length);
+        Logger.debug(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.dimension") + ": "+ dim);
 
         if (values.length < 4) {
-            throw new InvalidGMLException(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.a-point-list-must-have-minimum-two-coordinate-tuples") //$NON-NLS-1$
-                + ". " //$NON-NLS-1$
-                + I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.here-only") //$NON-NLS-1$
-                + " '" //$NON-NLS-1$
-                + size + "' " //$NON-NLS-1$
-                + I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.are-defined") //$NON-NLS-1$
+            throw new InvalidGMLException(I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.a-point-list-must-have-minimum-two-coordinate-tuples")
+                + ". "
+                + I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.here-only")
+                + " '"
+                + size + "' "
+                + I18N.getString("org.deegree.model.spatialschema.GMLGeometryAdapter.are-defined")
                 + ".");
         }
         double positions[][] = new double[size][dim];
@@ -1378,7 +1377,7 @@ public class GMLGeometryAdapter {
 
         String srs = null;
         if (crs != null) {
-            srs = "<gml:Envelope srsName=\"" + crs + "\""; //$NON-NLS-1$ //$NON-NLS-2$
+            srs = "<gml:Envelope srsName=\"" + crs + "\"";
         } else {
             srs = "<gml:Envelope";
         }
@@ -1452,14 +1451,14 @@ public class GMLGeometryAdapter {
         }
         String srs = null;
         if (crs != null) {
-            srs = "<gml:Point srsName=\"" + crs + "\">"; //$NON-NLS-1$ //$NON-NLS-2$
+            srs = "<gml:Point srsName=\"" + crs + "\">";
         } else {
             srs = "<gml:Point>";
         }
         pw.println(srs);
 
         if (dim != 0) {
-            String dimension = "<gml:pos srsDimension=\"" + dim + "\">"; //$NON-NLS-1$ //$NON-NLS-2$
+            String dimension = "<gml:pos srsDimension=\"" + dim + "\">";
             pw.print(dimension);
         } else {
             pw.print("<gml:pos>");
@@ -1490,7 +1489,7 @@ public class GMLGeometryAdapter {
         }
         String srs = null;
         if (crs != null) {
-            srs = "<gml:Curve srsName=\"" + crs + "\">"; //$NON-NLS-1$ //$NON-NLS-2$
+            srs = "<gml:Curve srsName=\"" + crs + "\">";
         } else {
             srs = "<gml:Curve>";
         }
@@ -1554,7 +1553,7 @@ public class GMLGeometryAdapter {
 
             String srs = null;
             if (crs != null) {
-                srs = "<gml:Surface srsName='" + crs + "'>"; //$NON-NLS-1$ //$NON-NLS-2$
+                srs = "<gml:Surface srsName='" + crs + "'>";
             } else {
                 srs = "<gml:Surface>";
             }
@@ -1618,7 +1617,7 @@ public class GMLGeometryAdapter {
             String formatType ) {
         // exterior ring
         if (formatType.contains(GML2_FORMAT_TYPE)) {
-            pw.print("<gml:outerBoundaryIs>"); //$NON-NLS-1$    
+            pw.print("<gml:outerBoundaryIs>");    
         } else {
             pw.print("<gml:exterior>");
         }
@@ -1634,7 +1633,7 @@ public class GMLGeometryAdapter {
         }
         pw.print("</gml:LinearRing>");
         if (formatType.contains(GML2_FORMAT_TYPE)) {
-            pw.print("</gml:outerBoundaryIs>"); //$NON-NLS-1$    
+            pw.print("</gml:outerBoundaryIs>");    
         } else {
             pw.print("</gml:exterior>");
         }
@@ -1678,20 +1677,20 @@ public class GMLGeometryAdapter {
      */
     private static void printPositions( PrintWriter pw, Position[] p, int coordinateDimension,
             String formatType ) {
-        String startTag = formatType.equals(GML2_FORMAT_TYPE) ? "<gml:coordinates" : "<gml:posList"; //$NON-NLS-1$ //$NON-NLS-2$
+        String startTag = formatType.equals(GML2_FORMAT_TYPE) ? "<gml:coordinates" : "<gml:posList";
         String endTag =
-            formatType.equals(GML2_FORMAT_TYPE) ? "</gml:coordinates>" : "</gml:posList>"; //$NON-NLS-1$ //$NON-NLS-2$
+            formatType.equals(GML2_FORMAT_TYPE) ? "</gml:coordinates>" : "</gml:posList>";
         StringBuilder posList = new StringBuilder(startTag);
-        String coordSeparator = formatType.equals(GML2_FORMAT_TYPE) ? "," : " "; //$NON-NLS-1$ //$NON-NLS-2$
+        String coordSeparator = formatType.equals(GML2_FORMAT_TYPE) ? "," : " ";
 
         if (formatType.equals(GML2_FORMAT_TYPE)) {
             posList.append(" decimal=\".\" cs=\",\" ts=\" \"");
 
         } else {
             if (coordinateDimension > 0) {
-                posList.append(" srsDimension='").append(coordinateDimension).append("'"); //$NON-NLS-1$ //$NON-NLS-2$
+                posList.append(" srsDimension='").append(coordinateDimension).append("'");
             }
-            posList.append(" count='").append(p.length).append("'"); //$NON-NLS-1$ //$NON-NLS-2$
+            posList.append(" count='").append(p.length).append("'");
         }
 
         posList.append(">");
@@ -1700,7 +1699,7 @@ public class GMLGeometryAdapter {
         for( int j = 0; j < (p.length - 1); j++ ) {
             pw.print(p[j].getX() + coordSeparator + p[j].getY());
             if (coordinateDimension == 3) {
-                pw.print(coordSeparator + p[j].getZ() + " "); //$NON-NLS-1$ //$NON-NLS-2$
+                pw.print(coordSeparator + p[j].getZ() + " ");
             } else {
                 pw.print(' ');
             }
@@ -1725,7 +1724,7 @@ public class GMLGeometryAdapter {
         }
         String srs = null;
         if (crs != null) {
-            srs = "<gml:MultiPoint srsName=\"" + crs + "\">"; //$NON-NLS-1$ //$NON-NLS-2$
+            srs = "<gml:MultiPoint srsName=\"" + crs + "\">";
         } else {
             srs = "<gml:MultiPoint>";
         }
@@ -1762,7 +1761,7 @@ public class GMLGeometryAdapter {
         }
         String srs = null;
         if (crs != null) {
-            srs = "<gml:MultiCurve srsName=\"" + crs + "\">"; //$NON-NLS-1$ //$NON-NLS-2$
+            srs = "<gml:MultiCurve srsName=\"" + crs + "\">";
         } else {
             srs = "<gml:MultiCurve>";
         }
@@ -1783,7 +1782,7 @@ public class GMLGeometryAdapter {
                 for( int k = 0; k < (p.length - 1); k++ ) {
                     pw.print(p[k].getX() + " " + p[k].getY());
                     if (curve.getCoordinateDimension() == 3) {
-                        pw.print(" " + p[k].getZ() + " "); //$NON-NLS-1$ //$NON-NLS-2$
+                        pw.print(" " + p[k].getZ() + " ");
                     } else {
                         pw.print(" ");
                     }
@@ -1818,7 +1817,7 @@ public class GMLGeometryAdapter {
         }
         String srs = null;
         if (crs != null) {
-            srs = "<gml:MultiSurface srsName=\"" + crs + "\">"; //$NON-NLS-1$ //$NON-NLS-2$
+            srs = "<gml:MultiSurface srsName=\"" + crs + "\">";
         } else {
             srs = "<gml:MultiSurface>";
         }

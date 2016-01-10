@@ -42,11 +42,10 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.spatialschema;
 
-import org.deegree.framework.log.ILogger;
-import org.deegree.framework.log.LoggerFactory;
 import org.deegree.model.crs.CoordinateSystem;
 
 import com.vividsolutions.jts.geom.PrecisionModel;
+import com.vividsolutions.jump.workbench.Logger;
 
 /**
  * Adapter between deegree-<tt>Geometry</tt>s and JTS-<tt>Geometry<tt> objects.
@@ -61,8 +60,6 @@ import com.vividsolutions.jts.geom.PrecisionModel;
  *         for SRS, currently the SRS is ignored (11/08/2009)
  */
 public class JTSAdapter {
-
-    private static final ILogger LOG = LoggerFactory.getLogger(JTSAdapter.class);
 
     // precision model that is used for all JTS-Geometries
     private static PrecisionModel pm = new PrecisionModel();
@@ -270,7 +267,7 @@ public class JTSAdapter {
         try {
             patch = surface.getSurfacePatchAt(0);
         } catch (GeometryException e) {
-            LOG.logError("", e);
+            Logger.error(e);
         }
         Position[] exteriorRing = patch.getExteriorRing();
         Position[][] interiorRings = patch.getInteriorRings();

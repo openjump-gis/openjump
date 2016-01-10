@@ -1,38 +1,39 @@
 package org.openjump.core.ui.plugin.view;
 
-import com.vividsolutions.jts.geom.Coordinate;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Cursor;
-import java.awt.Point;
-import java.awt.Shape;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseEvent;
-import java.awt.geom.NoninvertibleTransformException;
-import java.awt.geom.Point2D;
-
-import javax.swing.Icon;
-
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
-import com.vividsolutions.jump.workbench.ui.Viewport;
-import com.vividsolutions.jump.workbench.ui.cursortool.DragTool;
-import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import java.awt.BasicStroke;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.Transparency;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+
+import javax.swing.Icon;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
-import org.apache.log4j.Logger;
+
 import org.openjump.core.ui.util.ScreenScale;
+
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.Logger;
+import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
+import com.vividsolutions.jump.workbench.ui.Viewport;
+import com.vividsolutions.jump.workbench.ui.cursortool.DragTool;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 /**
  * This tool have the following functions:
@@ -476,10 +477,10 @@ public class SuperZoomPanTool extends DragTool implements MouseWheelListener {
                     redrawImage();
                     break;
                 default:
-                    Logger.getLogger(SuperZoomPanTool.class).warn("Unknown indicatorMode " + getIndicatorMode() + "!");
+                    Logger.warn("Unknown indicatorMode " + getIndicatorMode() + "!");
             }
         } catch (Exception e) {
-            Logger.getLogger(SuperZoomPanTool.class).error("Unable to redraw the visual indicator!", e);
+            Logger.error("Unable to redraw the visual indicator!", e);
         }
     }
 

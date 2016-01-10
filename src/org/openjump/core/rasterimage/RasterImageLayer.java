@@ -9,9 +9,34 @@
  */
 package org.openjump.core.rasterimage;
 
-import com.vividsolutions.jts.geom.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.IndexColorModel;
+import java.awt.image.Raster;
+import java.awt.image.renderable.ParameterBlock;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.UUID;
+
+import javax.media.jai.JAI;
+
+import org.openjump.util.metaData.MetaDataMap;
+import org.openjump.util.metaData.ObjectContainingMetaInformation;
+
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jump.util.Blackboard;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.AbstractLayerable;
 import com.vividsolutions.jump.workbench.model.LayerManager;
@@ -20,21 +45,6 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.LayerNameRenderer;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.Viewport;
-import org.openjump.util.metaData.MetaDataMap;
-import org.openjump.util.metaData.ObjectContainingMetaInformation;
-
-import javax.media.jai.JAI;
-import java.awt.*;
-import java.awt.Point;
-import java.awt.geom.NoninvertibleTransformException;
-import java.awt.geom.Point2D;
-import java.awt.image.*;
-import java.awt.image.renderable.ParameterBlock;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Layer representing a georeferenced raster image (e.g. an areal photography) in OpenJump.
@@ -256,21 +266,21 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
             try {
                 raster = new RasterImageLayer(getName(), getLayerManager(), getImageForDisplay(), getRasterData(null), new Envelope(getWholeImageEnvelope()));
             } catch (IOException ex) {
-                Logger.getLogger(RasterImageLayer.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.error(ex);
             } catch (NoninvertibleTransformException ex) {
-                Logger.getLogger(RasterImageLayer.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.error(ex);
             } catch (Exception ex) {
-                Logger.getLogger(RasterImageLayer.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.error(ex);
             }
         } else {
             try {
                 raster = new RasterImageLayer(getName(), getLayerManager(), getImageFileName(), getImageForDisplay(), new Envelope(getWholeImageEnvelope()));
             } catch (IOException ex) {
-                Logger.getLogger(RasterImageLayer.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.error(ex);
             } catch (NoninvertibleTransformException ex) {
-                Logger.getLogger(RasterImageLayer.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.error(ex);
             } catch (Exception ex) {
-                Logger.getLogger(RasterImageLayer.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.error(ex);
             }
         }
         // clone must produce a layerable with the same name (as for Layer) not a unique name

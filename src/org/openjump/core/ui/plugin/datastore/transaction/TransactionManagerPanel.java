@@ -1,21 +1,39 @@
 package org.openjump.core.ui.plugin.datastore.transaction;
 
-import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.io.datasource.DataSource;
-import com.vividsolutions.jump.workbench.JUMPWorkbench;
-import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.model.*;
-import com.vividsolutions.jump.workbench.ui.ErrorHandler;
-import com.vividsolutions.jump.workbench.ui.TaskFrame;
-import com.vividsolutions.jump.workbench.ui.plugin.WorkbenchContextReference;
-import org.apache.log4j.Logger;
-import org.openjump.core.ui.plugin.datastore.WritableDataStoreDataSource;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
+
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
+
+import org.openjump.core.ui.plugin.datastore.WritableDataStoreDataSource;
+
+import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.io.datasource.DataSource;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.Logger;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.model.FeatureEvent;
+import com.vividsolutions.jump.workbench.model.Layer;
+import com.vividsolutions.jump.workbench.model.LayerAdapter;
+import com.vividsolutions.jump.workbench.model.LayerEvent;
+import com.vividsolutions.jump.workbench.model.LayerEventType;
+import com.vividsolutions.jump.workbench.model.LayerListener;
+import com.vividsolutions.jump.workbench.model.LayerManager;
+import com.vividsolutions.jump.workbench.model.Task;
+import com.vividsolutions.jump.workbench.ui.ErrorHandler;
+import com.vividsolutions.jump.workbench.ui.TaskFrame;
+import com.vividsolutions.jump.workbench.ui.plugin.WorkbenchContextReference;
 
 /**
  * Panel displaying current uncommitted edits and including the commit button.
@@ -24,7 +42,7 @@ public class TransactionManagerPanel extends JPanel  implements WorkbenchContext
 
     private static final String KEY = TransactionManagerPanel.class.getName();
 
-    final Logger LOG = Logger.getLogger(TransactionManagerPanel.class);
+
 
     final DataStoreTransactionManager transactionManager;
     final ErrorHandler errorHandler;
@@ -125,7 +143,7 @@ public class TransactionManagerPanel extends JPanel  implements WorkbenchContext
                         updateTextArea(task);
                     }
                     else {
-                        LOG.error(I18N.get(KEY + ".layer-with-irrelevant-datastore-datasource"));
+                        Logger.error(I18N.get(KEY + ".layer-with-irrelevant-datastore-datasource"));
                     }
                 }
             }

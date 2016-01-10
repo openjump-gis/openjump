@@ -18,7 +18,6 @@ import java.util.TreeMap;
 
 import javax.swing.JOptionPane;
 
-import org.apache.log4j.Logger;
 import org.openjump.core.ui.plugin.datastore.postgis.PostGISConnectionUtil;
 import org.openjump.core.ui.plugin.datastore.postgis.PostGISQueryUtil;
 import org.openjump.core.ui.plugin.datastore.transaction.DataStoreTransactionManager;
@@ -38,6 +37,7 @@ import com.vividsolutions.jump.io.datasource.Connection;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.util.CollectionUtil;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.datastore.ConnectionDescriptor;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.ui.plugin.datastore.DataStoreDataSource;
@@ -48,7 +48,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.datastore.DataStoreDataSource
 public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
 
     private static final String KEY = WritableDataStoreDataSource.class.getName();
-    Logger LOG = Logger.getLogger(WritableDataStoreDataSource.class);
+
 
     // Inherited from DataStoreDataSource (query)
     // DATASET_NAME_KEY
@@ -203,7 +203,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                 try {
                     conn.setAutoCommit(false);
                     if (!tableAlreadyCreated) {
-                        LOG.debug("Update mode: create table");
+                        Logger.debug("Update mode: create table");
                         boolean exists = tableExists(conn);
                         if (exists && !confirmOverwrite()) return;
                         if (exists) {
@@ -229,7 +229,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                         tableAlreadyCreated = true;
                     }
                     else {
-                        LOG.debug("Update mode: update table");
+                        Logger.debug("Update mode: update table");
                         primaryKeyName = (String)getProperties().get(EXTERNAL_PK_KEY);
                         FeatureSchema featureSchema = featureCollection.getFeatureSchema();
                         PostGISConnectionUtil connUtil = new PostGISConnectionUtil(conn);
@@ -269,17 +269,17 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
     private void commit(java.sql.Connection conn,
                 int srid, int dim, boolean normalizedColumnNames) throws Exception {
 
-        LOG.info("Evolutions to commit to " + schemaName + "." + tableName + " (PK=" + primaryKeyName +")");
+        Logger.info("Evolutions to commit to " + schemaName + "." + tableName + " (PK=" + primaryKeyName +")");
         for (Evolution evolution : evolutions.values()) {
             if (evolution.getType() == Evolution.Type.CREATION) {
                 PreparedStatement pstmt = insertStatement(conn,
                         evolution.getNewFeature().getSchema(), normalizedColumnNames);
                 pstmt = setAttributeValues(pstmt, evolution.getNewFeature(), srid, dim, primaryKeyName);
                 pstmt.execute();
-                LOG.info("  create new feature " + evolution.getNewFeature().getID()+"/");
+                Logger.info("  create new feature " + evolution.getNewFeature().getID()+"/");
             } else if (evolution.getType() == Evolution.Type.SUPPRESSION) {
                 deleteStatement(conn, evolution.getOldFeature()).executeUpdate();
-                LOG.info("  delete " + evolution.getOldFeature().getID() + "/" +
+                Logger.info("  delete " + evolution.getOldFeature().getID() + "/" +
                         evolution.getOldFeature().getAttribute(primaryKeyName));
             } else if (evolution.getType() == Evolution.Type.MODIFICATION) {
                 Feature oldFeature = evolution.getOldFeature();
@@ -294,7 +294,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                         updateOneAttributeStatement(conn, newFeature, i, srid, dim).executeUpdate();
                     }
                 }
-                LOG.info("  modify " + evolution.getNewFeature().getID() + "/" +
+                Logger.info("  modify " + evolution.getNewFeature().getID() + "/" +
                         evolution.getNewFeature().getAttribute(primaryKeyName));
             }
         }
@@ -353,14 +353,14 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
         else if (type == AttributeType.DATE)     pstmt.setTimestamp(1, new Timestamp(((Date) feature.getAttribute(attribute)).getTime()));
         else if (type == AttributeType.OBJECT)   pstmt.setObject(1, feature.getAttribute(attribute));
         else throw new IllegalArgumentException(type + " is an unknown AttributeType !");
-        LOG.debug(pstmt);
+        Logger.debug(pstmt.toString());
         return pstmt;
     }
 
     private PreparedStatement deleteStatement(java.sql.Connection conn, Feature feature) throws SQLException {
         PreparedStatement pstmt = conn.prepareStatement("DELETE FROM " + compose(schemaName, tableName) + " WHERE \"" + primaryKeyName + "\" = ?");
         pstmt.setObject(1,feature.getAttribute(primaryKeyName));
-        LOG.debug(pstmt);
+        Logger.debug(pstmt.toString());
         return pstmt;
     }
 

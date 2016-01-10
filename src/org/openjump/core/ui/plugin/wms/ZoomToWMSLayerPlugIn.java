@@ -4,23 +4,25 @@ import java.util.Iterator;
 
 import javax.swing.ImageIcon;
 
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.geom.EnvelopeUtil;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.plugin.*;
-import com.vividsolutions.jump.workbench.model.*;
-import com.vividsolutions.wms.*;
-import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jump.workbench.model.WMSLayer;
+import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
+import com.vividsolutions.jump.workbench.plugin.EnableCheck;
+import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
+import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
+import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import com.vividsolutions.jump.workbench.ui.plugin.*;
-import com.vividsolutions.jump.geom.EnvelopeUtil;
-import com.vividsolutions.jump.util.*;
 
-import org.apache.log4j.Logger;
+
 
 public class ZoomToWMSLayerPlugIn extends AbstractPlugIn {
     
-    private static Logger LOG = Logger.getLogger(AbstractParser.class);
+
     
     PlugInContext context;
 
@@ -65,7 +67,7 @@ public class ZoomToWMSLayerPlugIn extends AbstractPlugIn {
             context.getWorkbenchFrame().warnUser("No Bounding Box Available for " + srs);
             return false;
         }
-        LOG.info("Zoom to " + wbcontext.getLayerNamePanel().selectedNodes(WMSLayer.class) + " : "  + envelope);
+        Logger.info("Zoom to " + wbcontext.getLayerNamePanel().selectedNodes(WMSLayer.class) + " : "  + envelope);
         context.getLayerViewPanel().getViewport().zoom(EnvelopeUtil.bufferByFraction(envelope, 0.03));
         return true;
     }

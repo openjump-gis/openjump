@@ -61,12 +61,18 @@ import java.util.LinkedList;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.xpath.XPathExpressionException;
 
-import com.vividsolutions.jump.workbench.ui.renderer.style.*;
-import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.vividsolutions.jump.util.Range;
+import com.vividsolutions.jump.workbench.Logger;
+import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
+import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStyle;
+import com.vividsolutions.jump.workbench.ui.renderer.style.LabelStyle;
+import com.vividsolutions.jump.workbench.ui.renderer.style.SquareVertexStyle;
+import com.vividsolutions.jump.workbench.ui.renderer.style.Style;
+import com.vividsolutions.jump.workbench.ui.renderer.style.VertexStyle;
+import com.vividsolutions.jump.workbench.ui.renderer.style.XBasicStyle;
 
 import de.latlon.deejump.plugin.style.BitmapVertexStyle;
 import de.latlon.deejump.plugin.style.CircleVertexStyle;
@@ -84,7 +90,7 @@ import de.latlon.deejump.plugin.style.TriangleVertexStyle;
  */
 public class SLDImporter {
 
-    private static final Logger LOG = Logger.getLogger(SLDImporter.class);
+
 
     /**
      * The SLD namespace URI.
@@ -181,8 +187,7 @@ public class SLDImporter {
             }
         } catch (XPathExpressionException e) {
             // only happens if the xpath is not valid
-            LOG.error(e);
-            e.printStackTrace();
+            Logger.error(e);
             return null;
         }
 
@@ -204,8 +209,7 @@ public class SLDImporter {
             }
         } catch (XPathExpressionException e) {
             // only happens if the xpath is not valid
-            LOG.error(e);
-            e.printStackTrace();
+            Logger.error(e);
             return null;
         }
 
@@ -227,8 +231,7 @@ public class SLDImporter {
             }
         } catch (XPathExpressionException e) {
             // only happens if the xpath is not valid
-            LOG.error(e);
-            e.printStackTrace();
+            Logger.error(e);
             return null;
         }
 
@@ -250,8 +253,7 @@ public class SLDImporter {
             }
         } catch (XPathExpressionException e) {
             // only happens if the xpath is not valid
-            LOG.error(e);
-            e.printStackTrace();
+            Logger.error(e);
             return null;
         }
 
@@ -269,8 +271,7 @@ public class SLDImporter {
             return getBasicStyle(getElement("//sld:Rule[sld:Name='" + name + "']", doc.getDocumentElement(), NSCONTEXT));
         } catch (XPathExpressionException e) {
             // only happens if some xpath is not valid
-            LOG.error(e);
-            e.printStackTrace();
+            Logger.error(e);
             return null;
         }
     }
@@ -321,8 +322,7 @@ public class SLDImporter {
             return style;
         } catch (XPathExpressionException e) {
             // only happens if some xpath is not valid
-            LOG.error(e);
-            e.printStackTrace();
+            Logger.error(e);
             return null;
         }
     }
@@ -345,8 +345,7 @@ public class SLDImporter {
             return applyPointSymbolizer(symbolizer, new BasicStyle());
         } catch (XPathExpressionException e) {
             // only happens if some xpath is not valid
-            LOG.error(e);
-            e.printStackTrace();
+            Logger.error(e);
             return null;
         }
     }
@@ -661,8 +660,7 @@ public class SLDImporter {
             return style;
         } catch (XPathExpressionException e) {
             // only happens if some xpath is not valid
-            LOG.error(e);
-            e.printStackTrace();
+            Logger.error(e);
             return null;
         }
     }
@@ -673,7 +671,7 @@ public class SLDImporter {
     // return something that's WRONG
     private static Object parseValues(Element filter) throws XPathExpressionException {
         if (filter == null) {
-            LOG.warn("An ogc:filter could not be found while trying to parse a color theming style.");
+            Logger.warn("An ogc:filter could not be found while trying to parse a color theming style.");
             return null;
         }
 
@@ -747,8 +745,7 @@ public class SLDImporter {
             return style;
         } catch (XPathExpressionException e) {
             // only happens if some xpath is not valid
-            LOG.error(e);
-            e.printStackTrace();
+            Logger.error(e);
             return null;
         }
     }

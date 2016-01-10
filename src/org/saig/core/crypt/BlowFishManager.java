@@ -41,7 +41,9 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.log4j.Logger;
+import com.vividsolutions.jump.workbench.Logger;
+
+
 
 /**
  * BlowFish algorithm crypt manager
@@ -54,7 +56,7 @@ import org.apache.log4j.Logger;
 public class BlowFishManager extends CryptManager {
 
     /** Log */
-    public final static Logger LOGGER = Logger.getLogger(BlowFishManager.class);
+
 
     private SecretKeySpec skeySpec;
     private SecretKey blowFishKey;
@@ -74,7 +76,7 @@ public class BlowFishManager extends CryptManager {
             blowFishCipher = Cipher.getInstance("Blowfish"); //$NON-NLS-1$
             
         } catch (Exception e) {
-            LOGGER.error("", e); //$NON-NLS-1$
+            Logger.error(e);
         }
 
     }

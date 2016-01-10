@@ -21,7 +21,7 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 
-import org.apache.log4j.Logger;
+
 import org.openjump.core.apitools.PlugInContextTools;
 
 import com.vividsolutions.jump.I18N;
@@ -56,7 +56,7 @@ public class SetCategoryVisibilityPlugIn extends AbstractPlugIn {
     
     protected static SetCategoryVisibilityPlugIn instance= null;
     
-    private static final Logger LOG = Logger.getLogger(SetCategoryVisibilityPlugIn.class);
+
     
     /**
      * Constructor needed to load PlugIn from classes, should NOT be used by any other

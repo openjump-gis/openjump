@@ -1,30 +1,27 @@
 package org.openjump.core.ui.plugin.datastore.transaction;
 
-import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.util.Blackboard;
-import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.model.Layer;
-import com.vividsolutions.jump.workbench.model.Task;
-import com.vividsolutions.jump.workbench.plugin.EnableCheck;
-import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.ui.GUIUtil;
-import com.vividsolutions.jump.workbench.ui.MenuNames;
-import com.vividsolutions.jump.workbench.ui.TaskFrame;
-import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
-import com.vividsolutions.jump.workbench.ui.plugin.WorkbenchContextReference;
-import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxDialog;
-import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxPlugIn;
-import org.apache.log4j.Logger;
+import java.awt.BorderLayout;
+
+import javax.swing.ImageIcon;
+import javax.swing.event.InternalFrameAdapter;
+import javax.swing.event.InternalFrameEvent;
+
 import org.openjump.core.model.TaskEvent;
 import org.openjump.core.model.TaskListener;
 import org.openjump.core.ui.plugin.datastore.WritableDataStoreDataSource;
 
-import javax.swing.*;
-import javax.swing.event.InternalFrameAdapter;
-import javax.swing.event.InternalFrameEvent;
-import javax.swing.event.InternalFrameListener;
-import java.awt.*;
+import com.vividsolutions.jump.util.Blackboard;
+import com.vividsolutions.jump.workbench.Logger;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.model.Layer;
+import com.vividsolutions.jump.workbench.model.Task;
+import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.TaskFrame;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.plugin.WorkbenchContextReference;
+import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxDialog;
+import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxPlugIn;
 
 /**
  * DataStoreTransactionManagerPlugIn is a ToolBox containing:
@@ -37,7 +34,7 @@ import java.awt.*;
  */
 public class DataStoreTransactionManagerPlugIn extends ToolboxPlugIn implements WorkbenchContextReference {
 
-    final Logger LOG = Logger.getLogger(DataStoreTransactionManagerPlugIn.class);
+
 
     private static final String KEY = DataStoreTransactionManagerPlugIn.class.getName();
     private static final String INSTANCE_KEY = KEY + " - INSTANCE";
@@ -71,7 +68,7 @@ public class DataStoreTransactionManagerPlugIn extends ToolboxPlugIn implements 
         context.getWorkbenchFrame().addTaskListener(new TaskListener() {
             public void taskAdded(TaskEvent taskEvent) {
                 final Task task = taskEvent.getTask();
-                LOG.info("Task added : " + task.getName());
+                Logger.info("Task added : " + task.getName());
                 java.util.List<Layer> layers = task.getLayerManager().getLayers();
                 for (Layer layer : layers) {
                     if (layer.getDataSourceQuery().getDataSource() instanceof WritableDataStoreDataSource) {
@@ -82,7 +79,7 @@ public class DataStoreTransactionManagerPlugIn extends ToolboxPlugIn implements 
             }
             public void taskLoaded(TaskEvent taskEvent) {
                 final Task task = taskEvent.getTask();
-                LOG.info("Task loaded : " + task.getName());
+                Logger.info("Task loaded : " + task.getName());
                 java.util.List<Layer> layers = taskEvent.getTask().getLayerManager().getLayers();
                 for (Layer layer : layers) {
                     if (layer.getDataSourceQuery().getDataSource() instanceof WritableDataStoreDataSource) {
@@ -110,7 +107,7 @@ public class DataStoreTransactionManagerPlugIn extends ToolboxPlugIn implements 
         getTaskFrame().addInternalFrameListener(new InternalFrameAdapter() {
             @Override
             public void internalFrameActivated(InternalFrameEvent e) {
-                LOG.trace("Task frame activated " + e.getInternalFrame().getTitle());
+                Logger.trace("Task frame activated " + e.getInternalFrame().getTitle());
                 if (getTransactionManagerPanel() != null) {
                     getTransactionManagerPanel().updateListener(task);
                 }

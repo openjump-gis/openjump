@@ -1,11 +1,11 @@
 package org.openjump.core.ui.plugin.datastore.transaction;
 
-import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.feature.Feature;
-import org.apache.log4j.Logger;
-
 import java.util.Arrays;
 import java.util.Set;
+
+import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.feature.Feature;
+import com.vividsolutions.jump.workbench.Logger;
 
 /**
  * A Feature Evolution. It keeps a clone of the previous state of the feature
@@ -13,7 +13,7 @@ import java.util.Set;
  */
 public class Evolution {
 
-    final Logger LOG = Logger.getLogger(Evolution.class);
+
     private final static String KEY = Evolution.class.getName();
 
     public static enum Type {CREATION, MODIFICATION, SUPPRESSION}
@@ -74,8 +74,8 @@ public class Evolution {
 
         if (type1 != Type.SUPPRESSION && type2 != Type.CREATION &&
                 !Arrays.equals(evo1New.getAttributes(), evo2Old.getAttributes())) {
-            LOG.info("Try to merge : " + previous);
-            LOG.info("        with : " + this);
+            Logger.info("Try to merge : " + previous);
+            Logger.info("        with : " + this);
             throw new EvolutionOperationException(KEY + I18N.get(".cannot-merge-non-consecutive-evolutions"));
         }
 

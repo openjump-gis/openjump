@@ -44,7 +44,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 
-import org.apache.log4j.Logger;
+
 import org.openjump.util.python.JUMP_GIS_Framework;
 import org.openjump.util.python.ModifyGeometry;
 import org.openjump.util.python.PythonInteractiveInterpreter;
@@ -65,7 +65,7 @@ import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxDialog;
 import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxPlugIn;
 
 public class PythonToolsPlugIn extends ToolboxPlugIn {
-  private static final Logger LOG = Logger.getLogger(PythonToolsPlugIn.class);
+
   private static String sName = "Python Console and Tools";
   private static final ImageIcon icon = IconLoader
       .icon("famfam/application_python.png");

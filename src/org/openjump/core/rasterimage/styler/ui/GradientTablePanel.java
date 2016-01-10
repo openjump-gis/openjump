@@ -4,15 +4,17 @@ import java.awt.Color;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
+
 import org.openjump.core.rasterimage.styler.ColorMapEntry;
 import org.openjump.core.rasterimage.styler.ColorUtils;
+
+import com.vividsolutions.jump.workbench.Logger;
 
 /**
  *
@@ -102,7 +104,7 @@ public class GradientTablePanel extends ColorsTablePanel implements TableModelLi
             
         }catch(Exception ex){
             updateGradient = true;
-            Logger.getLogger(org.openjump.core.rasterimage.styler.ui.GradientTablePanel.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.error(ex);
         }
         
         updateGradient = true;

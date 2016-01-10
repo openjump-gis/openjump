@@ -52,14 +52,15 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import javax.swing.DefaultButtonModel;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JPopupMenu;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
+
+import com.vividsolutions.jump.workbench.Logger;
 
 /**
  * JButton with a small arrow that displays popup menu when clicked.
@@ -345,7 +346,7 @@ class DropDownButton extends JButton {
     @Override
     public void setText( String text ) {
         //does nothing
-        Logger.getLogger(DropDownToggleButton.class.getName()).log(Level.FINER, "DropDownButton cannot display text."); //NOI18N
+        Logger.debug("DropDownButton cannot display text.");
     }
 
     @Override

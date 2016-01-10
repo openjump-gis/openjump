@@ -48,6 +48,8 @@ import org.deegree.framework.log.ILogger;
 import org.deegree.framework.log.LoggerFactory;
 import org.deegree.framework.util.StringTools;
 
+import com.vividsolutions.jump.workbench.Logger;
+
 /**
  * This class represent a qualified name for something. A name is thought to be built from an optional prefix and/or a
  * local name E.g.: <BR>- deegree - pre:deegree <BR>
@@ -62,8 +64,6 @@ import org.deegree.framework.util.StringTools;
 public class QualifiedName implements Serializable {
 
     private static final long serialVersionUID = 5551137348397905772L;
-
-    private static final ILogger LOG = LoggerFactory.getLogger( QualifiedName.class );
 
     private String prefix = null;
 
@@ -93,7 +93,7 @@ public class QualifiedName implements Serializable {
             this.namespace = new URI( name.getNamespaceURI() );
             buildString();
         } catch ( URISyntaxException e ) {
-            LOG.logError( "Invalid URI: " + e.getMessage(), e );
+            Logger.error( "Invalid URI: " + e.getMessage(), e );
         }
     }
 

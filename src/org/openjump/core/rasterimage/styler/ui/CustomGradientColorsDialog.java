@@ -1,10 +1,11 @@
 package org.openjump.core.rasterimage.styler.ui;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+
 import org.openjump.core.rasterimage.styler.ColorMapEntry;
 import org.openjump.core.rasterimage.styler.RasterStylesExtension;
+
+import com.vividsolutions.jump.workbench.Logger;
 
 /**
  *
@@ -187,7 +188,7 @@ public class CustomGradientColorsDialog extends javax.swing.JDialog {
         try {
             okButton();
         } catch (Exception ex) {
-            Logger.getLogger(org.openjump.core.rasterimage.styler.ui.CustomGradientColorsDialog.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.error(ex);
         }
         
         

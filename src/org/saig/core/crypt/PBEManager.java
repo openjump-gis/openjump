@@ -44,7 +44,9 @@ import javax.crypto.spec.PBEParameterSpec;
 
 import net.iharder.Base64;
 
-import org.apache.log4j.Logger;
+import com.vividsolutions.jump.workbench.Logger;
+
+
 
 /**
  * Crypt manager that applies the PBE (Password-Based Encryption) algorithm as described in PKCS #5
@@ -57,9 +59,6 @@ import org.apache.log4j.Logger;
  * @since 1.0
  */
 public class PBEManager extends CryptManager {
-
-    /** Log */
-    public final static Logger LOGGER = Logger.getLogger(PBEManager.class);
 
     /** Seed */
     private final static byte[] SALT = {(byte) 0xc7, (byte) 0x73, (byte) 0x21, (byte) 0x8c,
@@ -94,7 +93,7 @@ public class PBEManager extends CryptManager {
             pbeCipher = Cipher.getInstance("PBEWithMD5AndDES"); //$NON-NLS-1$
 
         } catch (Exception e) {
-            LOGGER.error("Error inicializando PBEManager: " + e.getMessage()); //$NON-NLS-1$
+          Logger.error("Error inicializando PBEManager: " + e.getMessage()); //$NON-NLS-1$
         }
 
     }

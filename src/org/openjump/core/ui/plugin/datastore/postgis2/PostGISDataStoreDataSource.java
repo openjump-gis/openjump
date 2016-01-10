@@ -1,19 +1,8 @@
 package org.openjump.core.ui.plugin.datastore.postgis2;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jump.datastore.AdhocQuery;
-import com.vividsolutions.jump.datastore.postgis.PostgisDSConnection;
-import com.vividsolutions.jump.datastore.postgis.PostgisDSMetadata;
-import com.vividsolutions.jump.datastore.postgis.PostgisDSDriver;
-import com.vividsolutions.jump.feature.Feature;
-import com.vividsolutions.jump.feature.FeatureCollection;
-import com.vividsolutions.jump.feature.FeatureDataset;
-import com.vividsolutions.jump.feature.FeatureSchema;
-import com.vividsolutions.jump.io.FeatureInputStream;
-import com.vividsolutions.jump.workbench.datastore.ConnectionDescriptor;
-import org.apache.log4j.Logger;
-import org.openjump.core.ui.plugin.datastore.WritableDataStoreDataSource;
-import org.openjump.core.ui.plugin.datastore.postgis.PostGISQueryUtil;
+import static org.openjump.core.ui.plugin.datastore.postgis.PostGISQueryUtil.compose;
+import static org.openjump.core.ui.plugin.datastore.postgis.PostGISQueryUtil.normalize;
+import static org.openjump.core.ui.plugin.datastore.postgis.PostGISQueryUtil.unquote;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -21,16 +10,28 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
 
-import static org.openjump.core.ui.plugin.datastore.postgis.PostGISQueryUtil.compose;
-import static org.openjump.core.ui.plugin.datastore.postgis.PostGISQueryUtil.normalize;
-import static org.openjump.core.ui.plugin.datastore.postgis.PostGISQueryUtil.unquote;
+import org.openjump.core.ui.plugin.datastore.WritableDataStoreDataSource;
+import org.openjump.core.ui.plugin.datastore.postgis.PostGISQueryUtil;
+
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jump.datastore.AdhocQuery;
+import com.vividsolutions.jump.datastore.postgis.PostgisDSConnection;
+import com.vividsolutions.jump.datastore.postgis.PostgisDSDriver;
+import com.vividsolutions.jump.datastore.postgis.PostgisDSMetadata;
+import com.vividsolutions.jump.feature.Feature;
+import com.vividsolutions.jump.feature.FeatureCollection;
+import com.vividsolutions.jump.feature.FeatureDataset;
+import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.io.FeatureInputStream;
+import com.vividsolutions.jump.workbench.Logger;
+import com.vividsolutions.jump.workbench.datastore.ConnectionDescriptor;
 
 /**
  * A {@link WritableDataStoreDataSource} for PostGIS.
  */
 public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
 
-    Logger LOG = Logger.getLogger(WritableDataStoreDataSource.class);
+
 
     public PostGISDataStoreDataSource() {
         // Called by Java2XML [Jon Aquino 2005-03-16]
@@ -53,12 +54,12 @@ public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
     public void finalizeUpdate(Connection conn) throws Exception {
         conn.createStatement().execute("VACUUM ANALYZE " +
                                    PostGISQueryUtil.compose(schemaName, tableName));
-        LOG.debug("VACUUM ANALYZE " + PostGISQueryUtil.compose(schemaName, tableName));
+        Logger.debug("VACUUM ANALYZE " + PostGISQueryUtil.compose(schemaName, tableName));
     }
 
     protected FeatureCollection createFeatureCollection() throws Exception {
 
-        LOG.debug("Create new FeatureCollection from " + getProperties().get(DATASET_NAME_KEY));
+        Logger.debug("Create new FeatureCollection from " + getProperties().get(DATASET_NAME_KEY));
         //String[] datasetName = PostGISQueryUtil.splitTableName((String)getProperties().get(DATASET_NAME_KEY));
         //schemaName = datasetName[0];
         //tableName = datasetName[1];
@@ -72,7 +73,7 @@ public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
         boolean hasPK = getProperties().get(EXTERNAL_PK_KEY) != null;
         String PK = (String)getProperties().get(EXTERNAL_PK_KEY);
         String query = buildQueryString(pgConnection);
-        LOG.debug(query);
+        Logger.debug(query);
 
         // Create the adhoc query corresponding to this datasource
         AdhocQuery adhocQuery = new AdhocQuery(query);
@@ -253,7 +254,7 @@ public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
         String sql = schemaName == null ?
                 "SELECT Find_SRID('public', '" + tableName + "', '" + unquote(column) + "');" :
                 "SELECT Find_SRID('" + schemaName + "', '" + tableName + "', '" + unquote(column) + "');";
-        LOG.debug(sql);
+        Logger.debug(sql);
         ResultSet rs = conn.prepareStatement(sql).executeQuery();
         if (rs.next()) return rs.getInt(1);
         else return 0;

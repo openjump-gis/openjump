@@ -50,10 +50,11 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import com.vividsolutions.jump.workbench.Logger;
 
 /**
  * <code>XPathUtils</code>
@@ -66,8 +67,6 @@ import org.w3c.dom.NodeList;
 public class XPathUtils {
 
     private static final XPath XPATH = XPathFactory.newInstance().newXPath();
-
-    private static final Logger LOG = getLogger(XPathUtils.class);
 
     /**
      * @param xpath
@@ -94,8 +93,8 @@ public class XPathUtils {
 
         Object res = XPATH.evaluate(xpath, e, NUMBER);
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("XPath expression " + xpath + " yielded " + res);
+        if (Logger.isDebugEnabled()) {
+            Logger.debug("XPath expression " + xpath + " yielded " + res);
         }
 
         if (res instanceof Double) {
@@ -117,7 +116,7 @@ public class XPathUtils {
 
         NodeList nl = (NodeList) XPATH.evaluate(xpath, e, NODESET);
 
-        LOG.debug("XPath expression " + xpath + " yielded " + nl.getLength() + " nodes.");
+        Logger.debug("XPath expression " + xpath + " yielded " + nl.getLength() + " nodes.");
 
         LinkedList<Node> list = new LinkedList<Node>();
 
@@ -159,7 +158,7 @@ public class XPathUtils {
 
         Node n = (Node) XPATH.evaluate(xpath, e, NODE);
 
-        LOG.debug("XPath expression " + xpath + " yielded " + (n == null ? "nothing." : "a node."));
+        Logger.debug("XPath expression " + xpath + " yielded " + (n == null ? "nothing." : "a node."));
 
         return n;
     }

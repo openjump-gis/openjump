@@ -7,14 +7,16 @@ import java.awt.GridBagLayout;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import javax.swing.JOptionPane;
-import org.openjump.core.rasterimage.styler.ColorMapEntry;
+
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.RasterSymbology;
+import org.openjump.core.rasterimage.styler.ColorMapEntry;
 import org.openjump.core.rasterimage.styler.ColorUtils;
 import org.openjump.core.rasterimage.styler.RasterStylesExtension;
+
+import com.vividsolutions.jump.workbench.Logger;
 
 /**
  *
@@ -128,7 +130,7 @@ public class SingleValuesPanel extends javax.swing.JPanel {
         try {
             rampAll(false);
         } catch (Exception ex) {
-            Logger.getLogger(SingleValuesPanel.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.error(ex);
         }
     }//GEN-LAST:event_jButton_RampActionPerformed
 
@@ -136,7 +138,7 @@ public class SingleValuesPanel extends javax.swing.JPanel {
         try {
             rampAll(true);
         } catch (Exception ex) {
-            Logger.getLogger(SingleValuesPanel.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.error(ex);
         }
     }//GEN-LAST:event_jButton_RandomActionPerformed
 
@@ -148,7 +150,7 @@ public class SingleValuesPanel extends javax.swing.JPanel {
                 findUniqueValues();
                 rampAll(true);
             } catch (Exception ex) {
-                Logger.getLogger(SingleValuesPanel.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.error(ex);
             }
         }
         
@@ -158,7 +160,7 @@ public class SingleValuesPanel extends javax.swing.JPanel {
         try {
             rampColors();
         } catch (Exception ex) {
-            Logger.getLogger(SingleValuesPanel.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.error(ex);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 

@@ -38,7 +38,7 @@
 
 package org.openjump.util;
 
-import org.apache.log4j.Logger;
+
 
 import static com.vividsolutions.jump.I18N.get;
 import static com.vividsolutions.jump.I18N.getMessage;
@@ -61,6 +61,8 @@ import java.net.URL;
 
 import javax.imageio.ImageIO;
 
+import com.vividsolutions.jump.workbench.Logger;
+
 /**
  * <code>CustomTexturePaint</code> is a helper to work around Java2XML
  * limitations.
@@ -72,7 +74,7 @@ import javax.imageio.ImageIO;
  */
 public class CustomTexturePaint implements Paint {
 
-    private static final Logger LOG = Logger.getLogger(CustomTexturePaint.class);
+
 
     private TexturePaint texturePaint;
 
@@ -103,7 +105,7 @@ public class CustomTexturePaint implements Paint {
             setUrl(url.toExternalForm());
         } catch (IOException e) {
             // ignore IOs
-            LOG.error("Could not load texture from URL '" + url + "'", e);
+            Logger.error("Could not load texture from URL '" + url + "'", e);
             BufferedImage img = new BufferedImage(300, 20, TYPE_INT_ARGB);
             Graphics g = img.getGraphics();
             g.setColor(black);

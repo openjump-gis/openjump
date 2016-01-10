@@ -70,7 +70,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JPopupMenu;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.apache.log4j.Logger;
 import org.openjump.core.ui.images.IconLoader;
 import org.openjump.core.ui.swing.SelectFromListPanel;
 import org.w3c.dom.Document;
@@ -78,8 +77,9 @@ import org.w3c.dom.Document;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.util.Blackboard;
-import com.vividsolutions.jump.util.Range.RangeTreeMap;
 import com.vividsolutions.jump.util.Range;
+import com.vividsolutions.jump.util.Range.RangeTreeMap;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.Layerable;
@@ -88,14 +88,13 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.ui.OKCancelDialog.Validator;
 import com.vividsolutions.jump.workbench.ui.OKCancelDialog;
+import com.vividsolutions.jump.workbench.ui.OKCancelDialog.Validator;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.LabelStyle;
-import com.vividsolutions.jump.workbench.ui.renderer.style.Style;
 import com.vividsolutions.jump.workbench.ui.renderer.style.VertexStyle;
 
 /**
@@ -108,8 +107,6 @@ import com.vividsolutions.jump.workbench.ui.renderer.style.VertexStyle;
  */
 public class ImportSLDPlugIn extends AbstractPlugIn {
 
-    private static Logger LOG = getLogger(ImportSLDPlugIn.class);
-    
     public static final ImageIcon ICON = IconLoader.icon("sld_in_16.png");
 
     @Override
@@ -190,7 +187,7 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
 
             try {
                 if (cts.getAttributeValueToLabelMap().keySet().iterator().next() instanceof Range) {
-                    LOG.debug("Color theming values are ranges.");
+                    Logger.debug("Color theming values are ranges.");
                     //RangeTreeMap<Range, BasicStyle> map = new RangeTreeMap<Range, BasicStyle>();
                     //RangeTreeMap<Range, String> labelMap = new RangeTreeMap<Range, String>();
                     RangeTreeMap<Object, BasicStyle> map = new RangeTreeMap<Object, BasicStyle>();
@@ -202,7 +199,7 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
                     Map<Object, String> oldLabelMap = cts.getAttributeValueToLabelMap();
 
                     if (c.equals(Integer.class)) {
-                        LOG.debug("Color theming values are ranges of integers.");
+                        Logger.debug("Color theming values are ranges of integers.");
                         for (Object k : cts.getAttributeValueToBasicStyleMap().keySet()) {
                             Range r = (Range) k;
                             Range newRange = new Range(Integer.valueOf((String) r.getMin()), r.isIncludingMin(),
@@ -213,7 +210,7 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
                     }
 
                     if (c.equals(Double.class)) {
-                        LOG.debug("Color theming values are ranges of doubles.");
+                        Logger.debug("Color theming values are ranges of doubles.");
                         for (Object k : cts.getAttributeValueToBasicStyleMap().keySet()) {
                             Range r = (Range) k;
                             Range newRange = new Range(Double.valueOf((String) r.getMin()), r.isIncludingMin(), Double
@@ -223,8 +220,8 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
                         }
                     }
 
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("Color theming values are ranges of java class " + c + ".");
+                    if (Logger.isDebugEnabled()) {
+                        Logger.debug("Color theming values are ranges of java class " + c + ".");
                     }
 
                     cts.setAttributeValueToBasicStyleMap(map);
@@ -235,13 +232,13 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
             } catch (NumberFormatException e) {
                 throw e;
             } catch (Exception e) {
-                LOG.debug("Unknown error: ", e);
+                Logger.debug("Unknown error: ", e);
                 // ignore, probably no elements in the map
                 return;
             }
 
             if (c.equals(Integer.class)) {
-                LOG.debug("Color theming values are integers.");
+                Logger.debug("Color theming values are integers.");
                 Map<Object, BasicStyle> map = new TreeMap<Object, BasicStyle>();
                 Map<?, ?> oldMap = cts.getAttributeValueToBasicStyleMap();
                 Map<Object, String> labelMap = new TreeMap<Object, String>();
@@ -255,7 +252,7 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
             }
 
             if (c.equals(Double.class)) {
-                LOG.debug("Color theming values are doubles.");
+                Logger.debug("Color theming values are doubles.");
                 Map<Object, BasicStyle> map = new TreeMap<Object, BasicStyle>();
                 Map<?, ?> oldMap = cts.getAttributeValueToBasicStyleMap();
                 Map<Object, String> labelMap = new TreeMap<Object, String>();
@@ -268,8 +265,8 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
                 cts.setAttributeValueToLabelMap(labelMap);
             }
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Color theming values are of java type " + c + ".");
+            if (Logger.isDebugEnabled()) {
+                Logger.debug("Color theming values are of java type " + c + ".");
             }
 
             return;
@@ -279,7 +276,7 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
             showMessageDialog(frame, getMessage(
                     "org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Error-reading-styles", new Object[] { e
                             .getLocalizedMessage() }), get("com.vividsolutions.wms.WMService.Error"), ERROR_MESSAGE);
-            LOG.debug("Probably unknown attribute name: ", e);
+            Logger.debug("Probably unknown attribute name: ", e);
             return;
         }
     }
