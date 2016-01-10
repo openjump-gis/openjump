@@ -1,12 +1,12 @@
 package com.vividsolutions.wms;
 
 import java.awt.Image;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -14,14 +14,23 @@ import javax.imageio.ImageIO;
 
 import net.iharder.Base64;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.BoundedInputStream;
+import org.openjump.util.UriUtil;
+
+import com.vividsolutions.jump.util.FileUtil;
+import com.vividsolutions.jump.workbench.Logger;
+
 abstract public class AbstractWMSRequest implements WMSRequest {
 
   protected WMService service;
   protected String version = WMService.WMS_1_1_1;
+  protected HttpURLConnection con = null;
 
   protected AbstractWMSRequest(WMService service) {
     this.service = service;
-    // we use the services version by default, can be overwritten later via setter
+    // we use the services version by default,
+    // can be overwritten later via setter
     this.version = service.getWmsVersion();
   }
 
@@ -57,19 +66,25 @@ abstract public class AbstractWMSRequest implements WMSRequest {
    * @return
    * @throws IOException
    */
-  protected URLConnection prepareConnection() throws IOException {
+  protected HttpURLConnection prepareConnection() throws IOException {
     URL requestUrl = getURL();
-    URLConnection con = requestUrl.openConnection();
+    con = (HttpURLConnection) requestUrl.openConnection();
+
+    Logger.trace(Base64.encodeBytes(UriUtil.urlDecode(requestUrl.getUserInfo())
+        .getBytes(Charset.forName("UTF-8"))));
+
     con.setConnectTimeout(WMService.TIMEOUT_OPEN);
     con.setReadTimeout(WMService.TIMEOUT_READ);
-    
+
     // add this service's auth info
-    String userinfo = requestUrl.getUserInfo();
-    if (userinfo != null) {
-      con.setRequestProperty("Authorization",
-          "Basic " + Base64.encodeBytes(requestUrl.getUserInfo().getBytes()));
+    String userInfo = requestUrl.getUserInfo();
+    if (userInfo != null) {
+      con.setRequestProperty(
+          "Authorization",
+          "Basic "
+              + Base64.encodeBytes(UriUtil.urlDecode(userInfo).getBytes(
+                  Charset.forName("UTF-8"))));
     }
-    con.setRequestProperty("Host", requestUrl.getHost());
 
     return con;
   }
@@ -80,8 +95,10 @@ abstract public class AbstractWMSRequest implements WMSRequest {
    * 
    * @Override
    */
-  public URLConnection getConnection() throws IOException {
-    return prepareConnection();
+  public HttpURLConnection getConnection() throws IOException {
+    if (con == null)
+      con = prepareConnection();
+    return con;
   }
 
   /**
@@ -90,41 +107,66 @@ abstract public class AbstractWMSRequest implements WMSRequest {
    * @return the retrieved map Image
    */
   public Image getImage() throws IOException {
-    URLConnection con = getConnection();
+    HttpURLConnection con = getConnection();
+
+    boolean httpOk = con.getResponseCode() == HttpURLConnection.HTTP_OK;
 
     boolean isImage = false;
-    // System.out.println(requestUrl);
-    for (Entry<String, List<String>> entry : con.getHeaderFields().entrySet()) {
+    if (httpOk) {
+      for (Entry<String, List<String>> entry : con.getHeaderFields().entrySet()) {
 
-      String key = entry.getKey() != null ? entry.getKey() : "";
-      String value = null;
-      try {
-        value = entry.getValue().get(0).toString();
-      } catch (Exception e) {
+        String key = entry.getKey() != null ? entry.getKey() : "";
+        String value = null;
+        try {
+          value = entry.getValue().get(0).toString();
+        } catch (Exception e) {
+        }
+        // System.out.println(key + "/" + value);
+        if (key.matches("^(?i)Content-Type$") && value.matches("^(?i)image/.*"))
+          isImage = true;
       }
-
-      // System.out.println(key + "/" + value);
-
-      if (key.matches("^(?i)Content-Type$") && value.matches("^(?i)image/.*"))
-        isImage = true;
     }
 
     if (isImage)
       return ImageIO.read(con.getInputStream());
 
-    readConnection(con);
+    // finally, no image? ok we just printout what we received
+    readToLog(con);
     return null;
   }
 
-  protected void readConnection(URLConnection con) throws IOException {
-    BufferedReader reader = new BufferedReader(new InputStreamReader(
-        con.getInputStream()));
-    StringBuilder result = new StringBuilder();
-    String line;
-    while ((line = reader.readLine()) != null) {
-      result.append(line);
+  /**
+   * connect and retrieve response as text
+   * 
+   * @return
+   * @throws IOException
+   */
+  public String getText() throws IOException {
+    HttpURLConnection con = getConnection();
+    return readConnection(con, 0, false);
+  }
+
+  protected String readToLog(HttpURLConnection con) throws IOException {
+    return readConnection(con, 1024, true);
+  }
+
+  protected String readConnection(HttpURLConnection con, long limit,
+      boolean debug) throws IOException {
+    boolean httpOk = con.getResponseCode() == HttpURLConnection.HTTP_OK;
+    // get correct stream
+    InputStream in = httpOk ? con.getInputStream() : con.getErrorStream();
+    // limit max chars
+    BoundedInputStream bin = new BoundedInputStream(in, limit > 0 ? limit : -1);
+
+    String result = IOUtils.toString(bin);
+    FileUtil.close(bin);
+
+    if (debug) {
+      Logger.info("Response code: " + con.getResponseCode());
+      Logger.info("Response body:\n" + result + "\n");
     }
-    System.out.println(result.toString());
+
+    return result;
   }
 
 }

@@ -131,13 +131,14 @@ public class Capabilities {
     String serviceUrl = service.getServerUrl();
     // reuse servers auth if there is none in the url
     // already and the server is the same
-    if (UriUtil.urlGetUser(featureInfoURL).isEmpty()
+    if (UriUtil.isURL(featureInfoURL) && UriUtil.urlGetUser(featureInfoURL).isEmpty()
         && UriUtil.urlGetHost(featureInfoURL).equals(
             UriUtil.urlGetHost(serviceUrl)))
       return UriUtil.urlAddUserInfo(featureInfoURL, service.getServerUrlAsUrl()
           .getUserInfo());
     
-    return featureInfoURL;
+    // try serverurl if featinfo url is empty
+    return UriUtil.isURL(featureInfoURL) ? featureInfoURL : serviceUrl;
   }
   
   public void setGetMapURL(String url) {

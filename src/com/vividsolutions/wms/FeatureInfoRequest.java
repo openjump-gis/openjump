@@ -8,6 +8,7 @@ import java.net.URLEncoder;
 import java.util.List;
 
 import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.model.WMSLayer;
 import com.vividsolutions.jump.workbench.ui.cursortool.FeatureInfoTool;
 
@@ -91,7 +92,7 @@ public class FeatureInfoRequest extends AbstractWMSRequest {
 
     featInfoUrl = featInfoUrl.concat("&FEATURE_COUNT=10 ");
 
-    System.out.println(featInfoUrl);
+    Logger.trace(featInfoUrl);
     return new URL(featInfoUrl);
   }
 

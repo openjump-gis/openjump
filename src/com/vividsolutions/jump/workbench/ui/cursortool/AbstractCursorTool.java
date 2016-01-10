@@ -57,13 +57,12 @@ import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
 
-import org.apache.log4j.Logger;
-
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.model.UndoableCommand;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
@@ -96,7 +95,7 @@ import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxDialog;
  * {@link #redrawImage()} method.
  */
 public abstract class AbstractCursorTool implements CursorTool {
-	private static Logger LOG = Logger.getLogger(AbstractCursorTool.class);
+
 	
 	private boolean snappingInitialized = false;
 
@@ -473,7 +472,7 @@ public abstract class AbstractCursorTool implements CursorTool {
     // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=7153339
     catch (java.lang.InternalError ie){
       ie.printStackTrace(System.err);
-      LOG.error(ie.getLocalizedMessage() +": "+Arrays.toString(ie.getStackTrace()));
+      Logger.error(ie.getLocalizedMessage() +": "+Arrays.toString(ie.getStackTrace()));
     }
     finally {
       cleanup(graphics);
@@ -671,7 +670,7 @@ public abstract class AbstractCursorTool implements CursorTool {
       return I18N.get(key);
     } catch (java.util.MissingResourceException e) {
       // No I18N for the PlugIn so log it, but don't stop
-      LOG.error(e.getMessage() + " " + tool.getClass().getName());
+      Logger.error(e.getMessage() + " " + tool.getClass().getName());
       return StringUtil.toFriendlyName(tool.getClass().getName(),
           I18N.get("ui.cursortool.AbstractCursorTool.tool"));
     }

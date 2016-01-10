@@ -10,7 +10,9 @@ import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
-import org.apache.log4j.Logger;
+import com.vividsolutions.jump.workbench.Logger;
+
+
 
 /*
  * Estilo asociado a una capa. Se caracteriza por tener asociado un
@@ -19,9 +21,6 @@ import org.apache.log4j.Logger;
  * 
  */
 public class MapStyle {
-
-    /** Log */
-    private final static Logger LOGGER = Logger.getLogger(MapStyle.class);
 
     /** Nombre asociado al estilo */
     private String name;
@@ -168,7 +167,7 @@ public class MapStyle {
         try {
             selectedUrl = new URL(urlLegend);
         } catch (MalformedURLException e) {
-            LOGGER.error(e.getMessage());
+            Logger.error(e);
         }
 
         if (selectedUrl != null) {
@@ -178,7 +177,7 @@ public class MapStyle {
                 legendIcon = new ImageIcon(image);
                 loadedIcon = true;
             } catch (IOException e) {
-                LOGGER.error(e.getMessage());
+                Logger.error(e);
             }
 
         } else {

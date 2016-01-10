@@ -45,8 +45,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.apache.xerces.parsers.DOMParser;
 import org.w3c.dom.CharacterData;
 import org.w3c.dom.Document;
@@ -61,8 +61,8 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.wms.util.XMLTools;
-import java.util.List;
 
 
 /**
@@ -70,7 +70,7 @@ import java.util.List;
  * @author Chris Hodgson chodgson@refractions.net
  */
 public class Parser {
-  private static Logger LOG = Logger.getLogger(Parser.class);
+
   /** 
    * Creates a Parser for dealing with WMS XML.
    */
@@ -199,7 +199,7 @@ public class Parser {
         }
       } catch( Exception e ) {
           e.printStackTrace();
-        LOG.error( "Exception caught in wmsLayerFromNode(): " + e.toString() );
+        Logger.error( "Exception caught in wmsLayerFromNode(): " + e.toString() );
       }
     }
     

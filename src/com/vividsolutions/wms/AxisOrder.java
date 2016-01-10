@@ -37,9 +37,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Collections;
-import org.apache.log4j.Logger;
+import java.util.List;
+
+import com.vividsolutions.jump.workbench.Logger;
+
 
 /**
  * An enum class with two values to determine if coordinates are given in the 
@@ -51,7 +53,7 @@ public enum AxisOrder {
     
     LATLON, LONLAT;
     
-    private static Logger LOG = Logger.getLogger(AxisOrder.class);
+
     public static final List<String> LATLONCRS = new ArrayList<String>();
     public static boolean initialized = false;
     
@@ -87,11 +89,11 @@ public enum AxisOrder {
                 }
             }
             initialized = true;
-            LOG.info("LatLon CRS list has been initialized for WMS 1.3.0");
+            Logger.info("LatLon CRS list has been initialized for WMS 1.3.0");
         }
         catch(IOException ioe) {
             System.out.println("Initialization of 'latlonaxisorder.csv' failed !");
-            LOG.error("Initialization of 'latlonaxisorder.csv' failed !");
+            Logger.error("Initialization of 'latlonaxisorder.csv' failed !");
         }
         finally {
             if (br != null) try {br.close();} catch(IOException e){}

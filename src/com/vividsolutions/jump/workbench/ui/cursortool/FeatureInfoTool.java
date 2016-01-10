@@ -47,7 +47,6 @@ import java.util.Map;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
-import org.apache.commons.io.IOUtils;
 import org.openjump.core.CheckOS;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.RasterImageLayer.RasterDataNotFoundException;
@@ -55,6 +54,7 @@ import org.openjump.core.rasterimage.RasterImageLayer.RasterDataNotFoundExceptio
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.model.FenceLayerFinder;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.Layerable;
@@ -196,8 +196,7 @@ public class FeatureInfoTool extends SpecifyFeaturesTool {
 //            String fiu2 = request.getURL().toString();
             
             try {
-              wmsResponse = IOUtils
-                  .toString(request.getConnection().getInputStream());
+              wmsResponse = request.getText();
               wmsResponse = cleanWmsResponse(wmsResponse);
             } catch (Exception ex) {
               StringWriter sw = new StringWriter();
@@ -205,6 +204,8 @@ public class FeatureInfoTool extends SpecifyFeaturesTool {
               wmsResponse = sw.toString();
               JUMPWorkbench.getInstance().getFrame().log(sw.toString());
               wmsResponse = wmsResponse.concat(newLine);
+              
+              Logger.debug(ex);
             }
             
             response = response.concat(wmsResponse);

@@ -43,7 +43,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.apache.xerces.parsers.DOMParser;
 import org.w3c.dom.CharacterData;
 import org.w3c.dom.Document;
@@ -57,6 +56,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.wms.util.XMLTools;
 
 
@@ -67,7 +67,7 @@ import com.vividsolutions.wms.util.XMLTools;
  */
 public abstract class AbstractParser implements IParser {
     
-    private static Logger LOG = Logger.getLogger(AbstractParser.class);
+
    
    /** 
     * Creates a Parser for dealing with WMS XML.
@@ -262,7 +262,7 @@ public abstract class AbstractParser implements IParser {
                 }
             } catch( Exception e ) {
                 e.printStackTrace();
-                LOG.error( "Exception caught in wmsLayerFromNode(): " + e.toString() );
+                Logger.error( "Exception caught in wmsLayerFromNode(): " + e.toString() );
             }
         }
 

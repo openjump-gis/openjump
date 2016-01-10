@@ -34,35 +34,21 @@ package com.vividsolutions.wms;
 
 import static java.net.URLEncoder.encode;
 
-import java.awt.Image;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
 
-import javax.imageio.ImageIO;
-
-import net.iharder.Base64;
-
-import org.apache.log4j.Logger;
-import org.openjump.util.UriUtil;
+import com.vividsolutions.jump.workbench.Logger;
 
 /**
  * Represents all of the parameters of a getMap request from a WMS server.
  * @author Chris Hodgson chodgson@refractions.net
  */
 public class MapRequest extends AbstractWMSRequest{
-    
-    private static Logger LOG = Logger.getLogger(MapRequest.class);
-  
     private int imgWidth;
     private int imgHeight;
     private List<String> layerNames;
@@ -262,7 +248,7 @@ public class MapRequest extends AbstractWMSRequest{
         try {
             urlBuf.append( "&LAYERS=" + encode(listToString( layerNames ), "UTF-8") );
         } catch (UnsupportedEncodingException e1) {
-            LOG.debug("UTF8 not supported by Java version", e1);
+            Logger.debug("UTF8 not supported by Java version", e1);
         }
         if( transparent ) {
             urlBuf.append( "&TRANSPARENT=TRUE" );
@@ -271,7 +257,7 @@ public class MapRequest extends AbstractWMSRequest{
             try {
                 urlBuf.append( "&FORMAT=" + encode(format, "UTF-8") );
             } catch (UnsupportedEncodingException e) {
-                LOG.debug("UTF8 not supported by Java version", e);
+                Logger.debug("UTF8 not supported by Java version", e);
             }
         }
         if( bbox != null ) {
@@ -286,8 +272,8 @@ public class MapRequest extends AbstractWMSRequest{
         }
         // [UT] some style info is *required*, so add this to be spec conform
         urlBuf.append( "&STYLES=" );
-//        System.out.println(urlBuf.toString());
-        LOG.info(urlBuf.toString());
+
+        Logger.trace(urlBuf.toString());
         return new URL( urlBuf.toString() );
     }
 
