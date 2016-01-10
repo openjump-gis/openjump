@@ -17,6 +17,9 @@ import com.vividsolutions.jump.workbench.ui.plugin.GenerateLogPlugIn;
  * a generalized logger interface for OJ package usage currently based on log4j
  * v1.2
  * 
+ * TODO: - move to commons-logging to be more implementation independent
+ * -implement class:line logging for legacy log4j using code
+ * 
  * @author ed
  *
  */
@@ -194,15 +197,36 @@ public class Logger {
     return logger.getEffectiveLevel();
   }
 
-  /**
-   * @return the lo4j logger for the calling class
-   */
-  public static org.apache.log4j.Logger getLogger() {
-    // get caller
-    StackTraceElement element = getCaller(new Exception().getStackTrace()[0]);
+  private static boolean isLoggerLevelEnabled(Level level) {
+    // get caller, this time 2 stack entries away
+    StackTraceElement element = getCaller(new Exception().getStackTrace()[1]);
     org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(element
         .getClassName());
-    return logger;
+    return level.isGreaterOrEqual(logger.getEffectiveLevel());
+  }
+
+  public static boolean isFatalEnabled() {
+    return isLoggerLevelEnabled(Level.FATAL);
+  }
+
+  public static boolean isErrorEnabled() {
+    return isLoggerLevelEnabled(Level.ERROR);
+  }
+
+  public static boolean isWarnEnabled() {
+    return isLoggerLevelEnabled(Level.WARN);
+  }
+
+  public static boolean isInfoEnabled() {
+    return isLoggerLevelEnabled(Level.INFO);
+  }
+
+  public static boolean isDebugEnabled() {
+    return isLoggerLevelEnabled(Level.DEBUG);
+  }
+
+  public static boolean isTraceEnabled() {
+    return isLoggerLevelEnabled(Level.TRACE);
   }
 
 }
