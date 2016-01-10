@@ -29,7 +29,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
 import org.deegree.datatypes.QualifiedName;
 import org.deegree.datatypes.Types;
 import org.deegree.datatypes.UnknownTypeException;
@@ -67,6 +66,7 @@ import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.util.FileUtil;
+import com.vividsolutions.jump.workbench.Logger;
 
 import de.latlon.deejump.wfs.DeeJUMPException;
 import de.latlon.deejump.wfs.client.AbstractWFSWrapper;
@@ -83,8 +83,6 @@ import de.latlon.deejump.wfs.plugin.WFSPlugIn;
  * @author <a href="mailto:taddei@lat-lon.de">Ugo Taddei </a>
  */
 public class JUMPFeatureFactory {
-
-  private static Logger LOG = Logger.getLogger(JUMPFeatureFactory.class);
 
   private static int maxFeatures = 1000;
   private TaskMonitor monitor;
@@ -246,7 +244,7 @@ public class JUMPFeatureFactory {
           || outputStart.matches("(?i).*<ServiceExceptionReport")) {
         RuntimeException re = new RuntimeException(
             "Couldn't get data from WFS:\n" + IOUtils.toString(rd));
-        LOG.debug("Couldn't get data from WFS.", re);
+        Logger.debug("Couldn't get data from WFS.", re);
         throw re;
       }
     } catch (UnsupportedEncodingException e2) {
@@ -265,48 +263,55 @@ public class JUMPFeatureFactory {
       Map<URI, GMLSchema> schemaMap = new HashMap<URI, GMLSchema>();
       String dft = server.getDescribeTypeURL(featureType);
       GMLSchemaDocument doc = new de.latlon.deejump.wfs.deegree2mods.GMLSchemaDocument();
+      Exception ex = null;
       try {
         doc.load(new URL(dft));
-        LOG.debug("Feature type schema:\n" + doc.getAsPrettyString());
+        Logger.debug("Feature type schema:\n" + doc.getAsPrettyString());
         GMLSchema schema = doc.parseGMLSchema();
         schemaMap.put(featureType.getNamespace(), schema);
         gfDoc.setSchemas(schemaMap);
       } catch (XMLSchemaException e) {
-        LOG.debug("DescribeFeatureType did not work.");
+        ex = e;
       } catch (UnknownCRSException e) {
-        LOG.debug("DescribeFeatureType did not work.");
+        ex = e;
       } catch (XMLParsingException e) {
-        LOG.debug("DescribeFeatureType did not work.");
+        ex = e;
       } catch (MalformedURLException e) {
-        LOG.debug("DescribeFeatureType did not work.");
+        ex = e;
       } catch (IOException e) {
-        LOG.debug("DescribeFeatureType did not work.");
+        ex = e;
       } catch (SAXException e) {
-        LOG.debug("DescribeFeatureType did not work.");
+        ex = e;
       } finally {
-        LOG.debug("Trying to use base url of server for DescribeFeatureType...");
+        if (ex!=null)
+          Logger.debug("DescribeFeatureType did not work.",ex);
+        Logger.debug("Trying to use base url of server for DescribeFeatureType...");
+        ex = null;
         try {
           String baseURL = server.getBaseWfsURL();
           baseURL += baseURL.endsWith("?") ? "" : "?";
           doc.load(new URL(server.getDescribeTypeURL(baseURL, featureType)));
 
-          LOG.debug("Feature type schema:\n" + doc.getAsPrettyString());
+          Logger.debug("Feature type schema:\n" + doc.getAsPrettyString());
 
           GMLSchema schema = doc.parseGMLSchema();
           schemaMap.put(featureType.getNamespace(), schema);
           gfDoc.setSchemas(schemaMap);
         } catch (XMLSchemaException e) {
-          LOG.debug("DescribeFeatureType did not work.");
+          ex = e;
         } catch (UnknownCRSException e) {
-          LOG.debug("DescribeFeatureType did not work.");
+          ex = e;
         } catch (XMLParsingException e) {
-          LOG.debug("DescribeFeatureType did not work.");
+          ex = e;
         } catch (MalformedURLException e) {
-          LOG.debug("DescribeFeatureType did not work.");
+          ex = e;
         } catch (IOException e) {
-          LOG.debug("DescribeFeatureType did not work.");
+          ex = e;
         } catch (SAXException e) {
-          LOG.debug("DescribeFeatureType did not work.");
+          ex = e;
+        } finally {
+          if (ex!=null)
+            Logger.debug("DescribeFeatureType failed.",ex);
         }
       }
     }
@@ -318,29 +323,29 @@ public class JUMPFeatureFactory {
       newFeatCollec = gfDoc.parse();
     } catch (SAXException e) {
       String mesg = "Error parsing response.";
-      LOG.error(mesg, e);
+      Logger.error(mesg, e);
       throw new DeeJUMPException(mesg, e);
     } catch (IOException e) {
       String mesg = "Error parsing response.";
-      LOG.error(mesg, e);
+      Logger.error(mesg, e);
       throw new DeeJUMPException(mesg, e);
     } catch (XMLParsingException e) {
       String mesg = "Error parsing response.";
-      LOG.error(mesg, e);
+      Logger.error(mesg, e);
       try {
-        LOG.error("Schema could not be used to validate FeatureCollection.");
-        LOG.error("Trying once again with crude guessing method.");
+        Logger.error("Schema could not be used to validate FeatureCollection.");
+        Logger.error("Trying once again with crude guessing method.");
         gfDoc = new GMLFeatureCollectionDocument(true);
         gfDoc.load(bfrd, "http://www.systemid.org");
         newFeatCollec = gfDoc.parse();
       } catch (SAXException e1) {
-        LOG.error(mesg, e);
+        Logger.error(mesg, e);
         throw new DeeJUMPException(mesg, e);
       } catch (IOException e1) {
-        LOG.error(mesg, e);
+        Logger.error(mesg, e);
         throw new DeeJUMPException(mesg, e);
       } catch (XMLParsingException e1) {
-        LOG.error(mesg, e);
+        Logger.error(mesg, e);
         throw new DeeJUMPException(mesg, e);
       }
       throw new DeeJUMPException(mesg, e);
@@ -402,7 +407,9 @@ public class JUMPFeatureFactory {
     if (wfs != null && ftName != null) {
       GMLSchema schema = wfs.getSchemaForFeatureType(ftName.getLocalName());
       if (schema != null) {
-        ft = schema.getFeatureType(ftName);
+        ft = schema.getFeatureType(ftName.getLocalName());
+        if (ft == null)
+          throw new DeeJUMPException("No feature type found");
       } else {
         throw new DeeJUMPException("No data found");
       }
@@ -417,15 +424,15 @@ public class JUMPFeatureFactory {
     String geoProName = null;
 
     if (geoTypeProps.length > 1) {
-      LOG.warn("This feature type has more than one geometry property. Only the first one will be used.");
+      Logger.warn("This feature type has more than one geometry property. Only the first one will be used.");
     }
 
     if (geoTypeProps == null || geoTypeProps.length == 0) {
-      LOG.debug("Guessing geometry property name.");
+      Logger.debug("Guessing geometry property name.");
       geoProName = "GEOMETRY"; //$NON-NLS-1$
     } else {
       geoProName = geoTypeProps[0].getName().getLocalName();
-      LOG.debug("Geometry property name: " + geoProName);
+      Logger.debug("Geometry property name: " + geoProName);
     }
 
     PropertyType[] featTypeProps = ft.getProperties();

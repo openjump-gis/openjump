@@ -37,18 +37,17 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 
-import org.apache.log4j.Logger;
 import org.deegree.datatypes.QualifiedName;
 import org.deegree.model.crs.CRSFactory;
 import org.deegree.model.crs.CoordinateSystem;
 import org.deegree.model.spatialschema.GMLGeometryAdapter;
-import org.deegree.model.spatialschema.GeometryImpl;
 import org.deegree.model.spatialschema.JTSAdapter;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.FeatureEventType;
 
@@ -62,8 +61,6 @@ import de.latlon.deejump.wfs.jump.WFSFeature;
  * 
  */
 public class TransactionFactory {
-
-    private static Logger LOG = Logger.getLogger( TransactionFactory.class );
 
     /** the srs to be used in requests containing gml */
     private static String crs = "-1";
@@ -288,7 +285,7 @@ public class TransactionFactory {
     public static final StringBuffer createGeometryGML( Geometry geometry ) {
         org.deegree.model.spatialschema.Geometry gg = null;
         try {
-            LOG.debug( "Using crs " + crs );
+            Logger.debug( "Using crs " + crs );
             CoordinateSystem cs = CRSFactory.create( crs );
             gg = JTSAdapter.wrap( geometry, cs );
             //( (GeometryImpl) gg ).setCoordinateSystem( cs );
@@ -332,16 +329,16 @@ public class TransactionFactory {
 
             String attName = fs.getAttributeName( j );
 
-            LOG.debug( "Shall we insert attribute " + attName + "?" );
+            Logger.debug( "Shall we insert attribute " + attName + "?" );
 
             if ( ( ( !( fs.getAttributeType( j ) == AttributeType.GEOMETRY ) ) && fet == FeatureEventType.ATTRIBUTES_MODIFIED ) ) {
-                LOG.debug( "Inserting modified attribute." );
+                Logger.debug( "Inserting modified attribute." );
 
                 if ( fs.getAttributeType( j ) == AttributeType.DATE ) {
                     Date attValue = (Date) bf.getAttribute( j );
                     if ( attValue != null ) {
                         String val = formatISO8601Date( attValue );
-                        LOG.debug( "Inserting date value of " + val );
+                        Logger.debug( "Inserting date value of " + val );
                         sb.append( "<wfs:Property><wfs:Name>" ).append( featureType.getPrefix() ).append( ":" );
                         sb.append( attName ).append( "</wfs:Name>" ).append( "<wfs:Value>" ).append( val );
                         sb.append( "</wfs:Value></wfs:Property>" );
@@ -356,9 +353,9 @@ public class TransactionFactory {
                 }
             } else if ( ( fs.getAttributeType( j ) == AttributeType.GEOMETRY )
                         && fet == FeatureEventType.GEOMETRY_MODIFIED ) {
-                LOG.debug( "Inserting modified geometry." );
+                Logger.debug( "Inserting modified geometry." );
                 if ( fs.getAttributeName( j ).equals( "FAKE_GEOMETRY" ) ) {
-                    LOG.debug( "Skipping fake geometry." );
+                    Logger.debug( "Skipping fake geometry." );
                     continue;
                 }
                 sb.append( "<wfs:Property><wfs:Name>" );
@@ -375,7 +372,7 @@ public class TransactionFactory {
     private static final StringBuffer createInsertPropertiesFragment( QualifiedName geoAttName,
                                                                       QualifiedName featureType, Feature bf ) {
 
-        LOG.debug( "Ok, creating insert properties." );
+        Logger.debug( "Ok, creating insert properties." );
 
         StringBuffer sb = new StringBuffer();
         Object[] attributes = bf.getAttributes();
@@ -385,10 +382,10 @@ public class TransactionFactory {
 
             String attName = featSchema.getAttributeName( j );
 
-            LOG.debug( "Pondering about property with name " + attName );
+            Logger.debug( "Pondering about property with name " + attName );
 
             if ( !( featSchema.getAttributeType( j ) == AttributeType.GEOMETRY ) ) {
-                LOG.debug( "Not a geometry." );
+                Logger.debug( "Not a geometry." );
 
                 if ( featSchema.getAttributeType( j ) == AttributeType.DATE ) {
                     Date attValue = (Date) bf.getAttribute( j );
@@ -407,11 +404,11 @@ public class TransactionFactory {
                     }
                 }
             } else {
-                LOG.debug( "It's a geometry." );
-                LOG.debug( attName.equals( "GEOMETRY" ) ? "Schema not loaded? Using strange mechanisms here!"
+                Logger.debug( "It's a geometry." );
+                Logger.debug( attName.equals( "GEOMETRY" ) ? "Schema not loaded? Using strange mechanisms here!"
                                                        : "Ok, using schema." );
                 if ( featSchema.getAttributeName( j ).equals( "FAKE_GEOMETRY" ) ) {
-                    LOG.debug( "Skipping fake geometry." );
+                    Logger.debug( "Skipping fake geometry." );
                     continue;
                 }
                 sb.append( "<" ).append( featureType.getPrefix() ).append( ":" );

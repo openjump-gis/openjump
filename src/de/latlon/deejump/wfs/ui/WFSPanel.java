@@ -50,7 +50,7 @@ import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 
-import org.apache.log4j.Logger;
+
 import org.deegree.datatypes.QualifiedName;
 import org.deegree.model.spatialschema.GMLGeometryAdapter;
 import org.deegree.model.spatialschema.Geometry;
@@ -84,8 +84,6 @@ import de.latlon.deejump.wfs.plugin.WFSPlugIn;
 public class WFSPanel extends JPanel {
 
     private static final long serialVersionUID = 8204179552311582569L;
-
-    protected static final Logger LOG = Logger.getLogger( WFSPanel.class );
 
     // Constants for spatial search criteria type
     // also used by child panels

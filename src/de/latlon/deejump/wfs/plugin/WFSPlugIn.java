@@ -17,7 +17,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 
-import org.apache.log4j.Logger;
 import org.deegree.datatypes.QualifiedName;
 import org.deegree.framework.util.StringTools;
 import org.deegree.model.spatialschema.JTSAdapter;
@@ -33,6 +32,7 @@ import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.task.TaskMonitorV2;
 import com.vividsolutions.jump.util.FileUtil;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.WorkbenchException;
 import com.vividsolutions.jump.workbench.model.LayerManager;
@@ -71,8 +71,6 @@ public class WFSPlugIn extends ThreadedBasePlugIn {
 
   public final static String I18NPREFIX = WFSExtension.class.getPackage()
       .getName();
-
-  private static Logger LOG = Logger.getLogger(WFSPlugIn.class);
 
   private WFSDialog wfsDialog;
 
@@ -177,7 +175,7 @@ public class WFSPlugIn extends ThreadedBasePlugIn {
     QualifiedName[] geoms = wfs.getGeometryProperties(ftName.getLocalName());
 
     if (geoms == null || geoms.length == 0) {
-      LOG.info("No geometry was found, using default point at (0, 0).");
+      Logger.info("No geometry was found, using default point at (0, 0).");
       Point point = new GeometryFactory().createPoint(new Coordinate(0, 0));
       dataset = jff.createFromDeegreeFC(dfc, point, wfs, ftName);
     } else {
@@ -192,7 +190,7 @@ public class WFSPlugIn extends ThreadedBasePlugIn {
 
     if (geoQN == null) {
       geoQN = new QualifiedName("GEOMETRY");
-      LOG.warn("Could not determine the qualified name of the geometry property. Setting it to 'GEOMETRY'.");
+      Logger.warn("Could not determine the qualified name of the geometry property. Setting it to 'GEOMETRY'.");
     }
     geoQN = new QualifiedName(ftName.getPrefix(), geoQN.getLocalName(),
         ftName.getNamespace());

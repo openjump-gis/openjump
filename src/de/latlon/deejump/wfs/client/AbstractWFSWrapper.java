@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.deegree.datatypes.QualifiedName;
 import org.deegree.datatypes.Types;
 import org.deegree.framework.xml.DOMPrinter;
@@ -26,6 +25,8 @@ import org.deegree.model.feature.schema.PropertyType;
 import org.deegree.ogcwebservices.OWSUtils;
 import org.deegree.ogcwebservices.wfs.capabilities.WFSFeatureType;
 import org.openjump.util.UriUtil;
+
+import com.vividsolutions.jump.workbench.Logger;
 
 import de.latlon.deejump.wfs.DeeJUMPException;
 import de.latlon.deejump.wfs.auth.UserData;
@@ -48,8 +49,6 @@ public abstract class AbstractWFSWrapper {
      * 
      */
   public static final String WFS_PREFIX = "wfs";
-
-  private static Logger LOG = Logger.getLogger(AbstractWFSWrapper.class);
 
   protected String baseURL;
 
@@ -175,7 +174,7 @@ public abstract class AbstractWFSWrapper {
     String url = getDescribeTypeURL(
         OWSUtils.validateHTTPGetBaseURL(createDescribeFTOnlineResource()),
         typename);
-    LOG.debug("Describe Feature Type request:\n" + url);
+    Logger.debug("Describe Feature Type request:\n" + url);
 
     return url;
   }
@@ -227,7 +226,7 @@ public abstract class AbstractWFSWrapper {
     } catch (Exception e) {
       e.printStackTrace();
       String mesg = "Error fetching FeatureType description";
-      LOG.error(mesg + " for " + featureType + " using " + serverReq);
+      Logger.error(mesg + " for " + featureType + " using " + serverReq);
       throw new DeeJUMPException(mesg, e);
     }
 

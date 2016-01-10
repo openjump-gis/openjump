@@ -80,7 +80,6 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
-import org.apache.log4j.Logger;
 import org.deegree.datatypes.QualifiedName;
 import org.deegree.enterprise.WebUtils;
 import org.deegree.framework.xml.NamespaceContext;
@@ -91,6 +90,7 @@ import org.xml.sax.SAXException;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.util.StringUtil;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.FeatureEventType;
 import com.vividsolutions.jump.workbench.model.Layer;
@@ -114,8 +114,6 @@ import de.latlon.deejump.wfs.jump.WFSLayer;
  * 
  */
 public class UpdateWFSLayerPlugIn extends ThreadedBasePlugIn {
-
-    private static Logger LOG = Logger.getLogger( UpdateWFSLayerPlugIn.class );
 
     private static final NamespaceContext nsContext = getNamespaceContext();
 
@@ -142,7 +140,7 @@ public class UpdateWFSLayerPlugIn extends ThreadedBasePlugIn {
         if ( candidatelayer instanceof WFSLayer ) {
             layer = (WFSLayer) candidatelayer;
         } else {
-            LOG.debug( "Not a WFS layer." );
+            Logger.debug( "Not a WFS layer." );
             return false;
         }
 
@@ -221,7 +219,7 @@ public class UpdateWFSLayerPlugIn extends ThreadedBasePlugIn {
 
         while ( !requests.isEmpty() ) {
             if ( error ) {
-                LOG.debug( "Some error occurred." );
+                Logger.debug( "Some error occurred." );
                 break;
             }
 
@@ -250,7 +248,7 @@ public class UpdateWFSLayerPlugIn extends ThreadedBasePlugIn {
                     showLongMsg( context.getWorkbenchFrame(), "The Server responded with an error: " + msg, "Error",
                                  ERROR_MESSAGE );
 
-                    LOG.debug( "Complete answer from server: " + doc.getAsPrettyString() );
+                    Logger.debug( "Complete answer from server: " + doc.getAsPrettyString() );
                     return;
                 }
 
@@ -267,7 +265,7 @@ public class UpdateWFSLayerPlugIn extends ThreadedBasePlugIn {
                 layer.getLayerListener().reset();
                 layer.setFeatureCollectionModified( false );
 
-                LOG.debug( "Removing and re-adding layer." );
+                Logger.debug( "Removing and re-adding layer." );
                 layer.fireLayerChanged( REMOVED );
                 layer.fireLayerChanged( LayerEventType.ADDED );
 
@@ -302,12 +300,12 @@ public class UpdateWFSLayerPlugIn extends ThreadedBasePlugIn {
                             throws HttpException, IOException, XMLException, SAXException {
         XMLFragment result = new XMLFragment();
 
-        if ( LOG.isDebugEnabled() ) {
+        if ( Logger.isDebugEnabled() ) {
             try {
                 XMLFragment d = new XMLFragment( new StringReader( xmlRequest ), "http://www.debug.org" );
-                LOG.debug( "WFS-T request to " + wfsUrl + ":\n" + d.getAsPrettyString() + "\n" );
+                Logger.debug( "WFS-T request to " + wfsUrl + ":\n" + d.getAsPrettyString() + "\n" );
             } catch ( Exception e ) {
-                LOG.debug( "Oh oh, generated String request was not XML:\n" + xmlRequest );
+                Logger.debug( "Oh oh, generated String request was not XML:\n" + xmlRequest );
             }
         }
 
@@ -325,8 +323,8 @@ public class UpdateWFSLayerPlugIn extends ThreadedBasePlugIn {
             return null;
         }
 
-        if ( LOG.isDebugEnabled() ) {
-            LOG.debug( "WFS-T result:\n" + result.getAsPrettyString() );
+        if ( Logger.isDebugEnabled() ) {
+            Logger.debug( "WFS-T result:\n" + result.getAsPrettyString() );
         }
 
         return result;
@@ -371,7 +369,7 @@ public class UpdateWFSLayerPlugIn extends ThreadedBasePlugIn {
         StringWriter sw = new StringWriter();
 
         if ( xsltUrl == null ) {
-            LOG.warn( "Could not transform output due to missing XSLT url!" );
+            Logger.warn( "Could not transform output due to missing XSLT url!" );
             return "";
         }
 

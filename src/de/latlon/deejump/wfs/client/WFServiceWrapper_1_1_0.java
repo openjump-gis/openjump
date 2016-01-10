@@ -16,7 +16,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 
-import org.apache.log4j.Logger;
 import org.deegree.datatypes.QualifiedName;
 import org.deegree.framework.xml.DOMPrinter;
 import org.deegree.framework.xml.NamespaceContext;
@@ -29,6 +28,8 @@ import org.deegree.ogcwebservices.wfs.capabilities.WFSCapabilities;
 import org.deegree.ogcwebservices.wfs.capabilities.WFSFeatureType;
 import org.openjump.util.UriUtil;
 import org.xml.sax.SAXException;
+
+import com.vividsolutions.jump.workbench.Logger;
 
 import de.latlon.deejump.wfs.DeeJUMPException;
 import de.latlon.deejump.wfs.auth.UserData;
@@ -44,8 +45,6 @@ import de.latlon.deejump.wfs.deegree2mods.WFSCapabilitiesDocument;
 public class WFServiceWrapper_1_1_0 extends AbstractWFSWrapper {
 
     private static final NamespaceContext nsContext = getNamespaceContext();
-
-    private static Logger LOG = Logger.getLogger( WFServiceWrapper_1_1_0.class );
 
     private WFSCapabilities wfsCapabilities;
 
@@ -71,13 +70,13 @@ public class WFServiceWrapper_1_1_0 extends AbstractWFSWrapper {
         WFSCapabilitiesDocument wfsCapsDoc = new de.latlon.deejump.wfs.deegree2mods.WFSCapabilitiesDocument();
         try {
             String caps = getCapabilitiesURL();
-            LOG.debug( "Sending capabilities request: " + caps );
+            Logger.debug( "Sending capabilities request: " + caps );
             wfsCapsDoc.load( new URL( caps ) );
         } catch ( MalformedURLException e ) {
-            LOG.error( "Invalid URL", e );
+            Logger.error( "Invalid URL", e );
             throw new DeeJUMPException( e );
         } catch ( IOException e ) {
-            LOG.error( "IOException when opening: " + getCapabilitiesURL(), e );
+            Logger.error( "IOException when opening: " + getCapabilitiesURL(), e );
             throw new DeeJUMPException( e );
         } catch ( SAXException e ) {
             throw new DeeJUMPException( e );
@@ -90,7 +89,7 @@ public class WFServiceWrapper_1_1_0 extends AbstractWFSWrapper {
                 msg = XMLTools.getNodeAsString( wfsCapsDoc.getRootElement(), "//*[local-name(.) = 'ExceptionText']",
                                                 nsContext, null );
             } catch ( XMLParsingException e ) {
-                LOG.debug( "Stack trace while trying to parse a service exception:", e );
+                Logger.debug( "Stack trace while trying to parse a service exception:", e );
             }
             if ( msg != null ) {
                 throw new DeeJUMPException( "The WFS responded with an error: '" + msg + "'" );
@@ -104,7 +103,7 @@ public class WFServiceWrapper_1_1_0 extends AbstractWFSWrapper {
         try {
             wfsCapabilities = (WFSCapabilities) wfsCapsDoc.parseCapabilities();
         } catch ( InvalidCapabilitiesException e ) {
-            LOG.error( "Could not initialize WFS capabilities", e );
+            Logger.error( "Could not initialize WFS capabilities", e );
             throw new DeeJUMPException( e );
         }
     }
