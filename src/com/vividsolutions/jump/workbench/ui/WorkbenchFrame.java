@@ -96,7 +96,7 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.text.JTextComponent;
 
-import org.apache.log4j.Logger;
+import org.apache.log4j.Level;
 import org.openjump.core.CheckOS;
 import org.openjump.core.model.TaskEvent;
 import org.openjump.core.model.TaskListener;
@@ -112,6 +112,7 @@ import com.vividsolutions.jump.util.Block;
 import com.vividsolutions.jump.util.CollectionUtil;
 import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Category;
 import com.vividsolutions.jump.workbench.model.CategoryEvent;
@@ -155,7 +156,6 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
             .get("ui.WorkbenchFrame.save-project-before-closing-openjump");
     private String PROJECT_SAVED = I18N
             .get("ui.WorkbenchFrame.save-project-saved");
-    private static final Logger LOGGER = Logger.getLogger(WorkbenchFrame.class);
 
     BorderLayout borderLayout1 = new BorderLayout();
 
@@ -208,7 +208,6 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
     };
 
     private TaskFrame activeTaskFrame = null;
-    private static Logger LOG = Logger.getLogger(WorkbenchFrame.class);
 
     // StatusBar
     private JPanel statusPanel;
@@ -374,7 +373,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
     // <<TODO:NAMING>> This name is not clear [Jon Aquino]
     private int minimumFeatureExtentForAnyRenderingInPixels = 2;
 
-    private StringBuffer log = new StringBuffer();
+//    private StringBuffer log = new StringBuffer();
 
     private int taskSequence = 1;
 
@@ -603,18 +602,19 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
     }
 
     public void log(String message) {
-        log(message, this.getClass());
+      log(message, null, new Exception().getStackTrace()[0]);
     }
 
     public void log(String message, Class clazz) {
-        Logger.getLogger(clazz).info(message);
-        log.append(new Date() + "  " + message
-                + System.getProperty("line.separator"));
-        System.out.println(message);
+      log(message, null, new Exception().getStackTrace()[0]);
     }
 
-    public String getLog() {
-        return log.toString();
+    public void log(String message, Throwable t) {
+      log(message, t, new Exception().getStackTrace()[0]);
+    }
+
+    private void log(String message, Throwable t, StackTraceElement calledFrom) {
+      Logger.log(message, null, Level.INFO, calledFrom);
     }
 
     public void setMinimumFeatureExtentForAnyRenderingInPixels(
@@ -1738,7 +1738,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
                     }
 
                 } catch (Exception e) {
-                    LOGGER.error("", e); //$NON-NLS-1$
+                    log(null, e);
                 }
 
                 // PersistentBlackboardPlugIn listens for when the workbench is
@@ -1784,7 +1784,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
                         return;
                     }
                 } catch (Exception e) {
-                    LOGGER.error("", e); //$NON-NLS-1$
+                    log("", e);
                 }
 
                 // There are other internal frames associated with this task
