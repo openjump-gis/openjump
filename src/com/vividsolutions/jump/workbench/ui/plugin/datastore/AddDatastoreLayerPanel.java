@@ -268,7 +268,7 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
    * build with one node displaying given message and no children
    *
    * @param datasetNames
-   * @param connectionDescriptor
+   * @param message
    * @return
    * @throws Exception
    */
@@ -355,7 +355,7 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
     JScrollPane sp = new JScrollPane(getDatasetOutline());
     sp.setPreferredSize(new Dimension(MAIN_COLUMN_WIDTH, 400));
 
-    addRow(I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Dataset"), sp, null, false);
+    addRow("Dataset", sp, null, false);
   }
 
   public static interface Block {

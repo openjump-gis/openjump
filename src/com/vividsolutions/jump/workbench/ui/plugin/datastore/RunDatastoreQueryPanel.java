@@ -23,7 +23,6 @@ import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.datastore.ConnectionDescriptor;
 import com.vividsolutions.jump.workbench.ui.RecordPanel;
 import com.vividsolutions.jump.workbench.ui.RecordPanelModel;
-import com.vividsolutions.jump.workbench.ui.ValidatingTextField;
 
 /**
  * The panel used to choose a connection and input a SQL query.
@@ -100,9 +99,9 @@ public class RunDatastoreQueryPanel extends ConnectionPanel
         jpButtons.add(jbView);
         jpButtons.add(jbFence);
         jpButtons.add(jbSelection);
-        addRow(I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.Layer-Name"), getLayerNameTextField(), null, false);
+        addRow("Layer-Name", getLayerNameTextField(), null, false);
         //addRow(I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.Max-Features"), getMaxFeaturesTextField(), null, false);
-        addRow(I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.Query"), new JScrollPane(getQueryTextArea()) {
+        addRow("Query", new JScrollPane(getQueryTextArea()) {
             {setPreferredSize(new Dimension(MAIN_COLUMN_WIDTH, 100));}
         }, jpButtons, true);
 

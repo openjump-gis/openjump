@@ -483,13 +483,13 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
         JScrollPane sp = new JScrollPane( getWhereTextArea() );
         sp.setPreferredSize( new Dimension( MAIN_COLUMN_WIDTH, 100 ) );
 
-        addRow(I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Dataset"), getDatasetComboBox(), null, false );
-        addRow(I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Geometry"), getGeometryAttributeComboBox(), null, false );
-        addRow(I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Identifier"), getIdentifierAttributeComboBox(), null, false );
-        addRow(I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Max-Features"), getMaxFeaturesTextField(), null, false);
-        addRow(I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Where"), sp, null, true );
-        addRow(I18N.get(""), getLimitedToViewCheckBox(), null, false );
-        addRow(I18N.get(""), getManageConflictsCheckBox(), null, true );
+        addRow("Dataset", getDatasetComboBox(), null, false );
+        addRow("Geometry", getGeometryAttributeComboBox(), null, false );
+        addRow("Identifier", getIdentifierAttributeComboBox(), null, false );
+        addRow("Max-Features", getMaxFeaturesTextField(), null, false);
+        addRow("Where", sp, null, true );
+        addRow(null, getLimitedToViewCheckBox(), null, false );
+        addRow(null, getManageConflictsCheckBox(), null, true );
     }
 
     /**

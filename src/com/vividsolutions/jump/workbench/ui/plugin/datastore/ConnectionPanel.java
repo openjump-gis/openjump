@@ -79,7 +79,7 @@ public class ConnectionPanel extends JPanel {
 
     public String validateInput() {
         if ( getConnectionDescriptor() == null ) {
-            return I18N.get("jump.workbench.ui.plugin.datastore.ConnectionPanel.Required-field-missing-Connection");
+            return I18N.get("com.vividsolutions.jump.workbench.ui.plugin.datastore.ConnectionPanel.Required-field-missing-Connection");
         }
         return null;
     }
@@ -131,7 +131,8 @@ public class ConnectionPanel extends JPanel {
                            Component a,
                            Component b,
                            boolean aStretchesVertically ) {
-        caption = I18N.get(this.getClass().getName()+"."+caption);
+        //caption = caption == null ? "" : I18N.get(this.getClass().getName()+"."+caption);
+        caption = caption == null ? "" : I18N.get("com.vividsolutions.jump.workbench.ui.plugin.datastore.ConnectionPanel."+caption);
         add( new JLabel( caption ),
              new GridBagConstraints( 0,
                nextRow,
@@ -208,7 +209,7 @@ public class ConnectionPanel extends JPanel {
         if ( chooseConnectionButton == null ) {
             chooseConnectionButton = new JButton();
             chooseConnectionButton.setIcon( ADD_DB_ICON );
-            chooseConnectionButton.setToolTipText( I18N.get("jump.workbench.ui.plugin.datastore.ConnectionPanel.Connection-Manager"));
+            chooseConnectionButton.setToolTipText( I18N.get("com.vividsolutions.jump.workbench.ui.plugin.datastore.ConnectionPanel.Connection-Manager"));
             chooseConnectionButton.setMargin( new Insets( 0, 0, 0, 0 ) );
             chooseConnectionButton.addActionListener(
                 new ActionListener() {
@@ -222,7 +223,7 @@ public class ConnectionPanel extends JPanel {
 
     private void initialize() {
         setLayout( new GridBagLayout() );
-        addRow( I18N.get("jump.workbench.ui.plugin.datastore.ConnectionPanel.Connection"), getConnectionComboBox(), getChooseConnectionButton(), false );
+        addRow( "Connection", getConnectionComboBox(), getChooseConnectionButton(), false );
     }
 
     private void chooseConnection() {
@@ -230,7 +231,7 @@ public class ConnectionPanel extends JPanel {
             ConnectionManager.instance( getContext() ),
             getContext().getRegistry(), getContext().getErrorHandler(), context );
         OKCancelDialog dialog = new OKCancelDialog( ( Dialog ) SwingUtilities.windowForComponent( ConnectionPanel.this ), 
-        	I18N.get("jump.workbench.ui.plugin.datastore.ConnectionPanel.Connection-Manager"),
+        	I18N.get("com.vividsolutions.jump.workbench.ui.plugin.datastore.ConnectionPanel.Connection-Manager"),
             true, panel,
             new OKCancelDialog.Validator() {
                 public String validateInput( Component component ) {

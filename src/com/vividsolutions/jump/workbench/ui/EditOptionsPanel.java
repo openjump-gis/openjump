@@ -141,7 +141,7 @@ public class EditOptionsPanel extends JPanel implements OptionsPanel {
         this.add(jPanel1, BorderLayout.EAST);
         TitledBorder titledBorder2 = new TitledBorder(
                 BorderFactory.createEtchedBorder(Color.white, new Color(148,
-                        145, 140)), I18N.get("Edit"));
+                        145, 140)), I18N.get("ui.EditOptionsPanel.edit"));
         jPanel1.setBorder(titledBorder2); //$NON-NLS-1$
         jPanel1.add(preventEditsCheckBox, new GridBagConstraints(0, 0, 1, 1,
                 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
@@ -157,7 +157,7 @@ public class EditOptionsPanel extends JPanel implements OptionsPanel {
             jPanel1 = new JPanel(new GridBagLayout());
             TitledBorder titledBorder2 = new TitledBorder(
                     BorderFactory.createEtchedBorder(Color.white, new Color(
-                            148, 145, 140)), I18N.get("Edit"));
+                            148, 145, 140)), I18N.get("ui.EditOptionsPanel.edit"));
             jPanel1.setBorder(titledBorder2); //$NON-NLS-1$
             preventEditsCheckBox = new JCheckBox(
                     "ui.EditOptionsPanel.prevent-edits-resulting-in-invalid-geometries");
