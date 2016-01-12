@@ -70,15 +70,14 @@ abstract public class AbstractWMSRequest implements WMSRequest {
     URL requestUrl = getURL();
     con = (HttpURLConnection) requestUrl.openConnection();
 
-    Logger.trace(Base64.encodeBytes(UriUtil.urlDecode(requestUrl.getUserInfo())
-        .getBytes(Charset.forName("UTF-8"))));
-
     con.setConnectTimeout(WMService.TIMEOUT_OPEN);
     con.setReadTimeout(WMService.TIMEOUT_READ);
 
     // add this service's auth info
     String userInfo = requestUrl.getUserInfo();
     if (userInfo != null) {
+      Logger.trace(Base64.encodeBytes(UriUtil.urlDecode(requestUrl.getUserInfo())
+              .getBytes(Charset.forName("UTF-8"))));
       con.setRequestProperty(
           "Authorization",
           "Basic "
