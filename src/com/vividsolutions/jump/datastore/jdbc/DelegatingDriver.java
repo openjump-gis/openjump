@@ -16,7 +16,8 @@ import java.util.logging.Logger;
  * into this one.
  *
  * @see
- *   https://stackoverflow.com/questions/288828/how-to-use-a-jdbc-driver-from-an-arbitrary-location
+ *   <a href="https://stackoverflow.com/questions/288828/how-to-use-a-jdbc-driver-from-an-arbitrary-location">
+ *   How to use a jdbc driver from an arbitrary location</a>
  */
 public class DelegatingDriver implements Driver {
   private final Driver driver;

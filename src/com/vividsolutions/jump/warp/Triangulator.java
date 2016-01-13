@@ -389,8 +389,6 @@ public class Triangulator {
      *@param  vertices       triangle vertices; Coordinate objects, all within the
      *      quadrilateral region (use #containsAll to check)
      *@return                the triangles; Triangle objects
-     *@throws  JUMPException  if one or more vertices are outside the quadrilateral
-     *      region
      */
     private List triangulate(Quadrilateral quad, List vertices, TaskMonitor monitor) {
         monitor.allowCancellationRequests();

@@ -68,8 +68,6 @@ public class WorldFile {
    * bpw: bip, bmp gfw: gif tfw: tif jgw: jpg
    * 
    * wld: universal
-   * 
-   * @param file
    * @return a WorldFile
    */
   private static WorldFile read(BufferedReader in) throws IOException {

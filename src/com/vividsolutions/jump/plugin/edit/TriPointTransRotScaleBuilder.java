@@ -62,8 +62,8 @@ class TriPointTransRotScaleBuilder extends TransRotScaleBuilder {
   /**
    * Creates a builder from two Coordinate[3] arrays defining the src and dest control points
    *
-   * @param srcVector the two Coordinates defining the src vector
-   * @param destVector the two Coordinates defining the dest vector
+   * @param srcPt the two Coordinates defining the src vector
+   * @param destPt the two Coordinates defining the dest vector
    */
   TriPointTransRotScaleBuilder(Coordinate[] srcPt, Coordinate[] destPt)
   {

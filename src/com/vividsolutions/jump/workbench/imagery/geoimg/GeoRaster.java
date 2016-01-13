@@ -417,9 +417,6 @@ public abstract class GeoRaster implements Disposable {
 
   /**
    * create a list of ImageReaderSpi's supposedly able to open the URI
-   * @param provider
-   * @param uri
-   * @return
    */
   static protected List<ImageReaderSpi> listValidImageIOReaders(URI uri,
       Class filter) throws IOException {

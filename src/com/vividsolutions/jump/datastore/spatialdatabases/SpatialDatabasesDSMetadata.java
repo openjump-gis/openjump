@@ -369,7 +369,6 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
   /**
    * Returns whether column is used by a spatial index (Gist) or not.
    * @param dsName
-   * @param table
    * @param column
    * @return 
    * @throws java.sql.SQLException

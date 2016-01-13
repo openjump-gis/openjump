@@ -14,7 +14,7 @@ import com.vividsolutions.jump.workbench.JUMPWorkbench;
 //import org.sqlite.SQLiteConfig;
 
 /**
- * A driver for supplying {@link SpatialDatabaseDSConnection}s
+ * A driver for supplying {@link com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDSConnection}s
  */
 public class SpatialiteDataStoreDriver extends AbstractSpatialDatabasesDSDriver {
 

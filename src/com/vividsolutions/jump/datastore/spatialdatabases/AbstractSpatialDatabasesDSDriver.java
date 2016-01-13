@@ -15,7 +15,7 @@ import com.vividsolutions.jump.parameter.ParameterListSchema;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 
 /**
- * A driver for supplying {@link SpatialDatabaseDSConnection}s
+ * A driver for supplying {@link SpatialDatabasesDSConnection}s
  */
 public abstract class AbstractSpatialDatabasesDSDriver implements
     DataStoreDriver {

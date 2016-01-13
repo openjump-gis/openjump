@@ -28,9 +28,7 @@ public class SpatialDatabasesResultSetConverter {
   protected boolean isInitialized = false;
 
   /**
-   * empty ctor
-   * @param conn
-   * @param rs 
+   * empty constructor
    */
   public SpatialDatabasesResultSetConverter() {
   }

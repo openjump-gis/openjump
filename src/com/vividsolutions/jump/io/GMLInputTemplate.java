@@ -169,7 +169,7 @@ public class GMLInputTemplate extends DefaultHandler {
     /**
      * Main function - load in an XML file. <br>
      * Error handling/reporting also done here.
-     *@param is inputStream where to read the XML file from
+     *@param o inputStream where to read the XML file from
      *@param readerName name of the stream for error reporting
      */
     public void load(Object o, String readerName)

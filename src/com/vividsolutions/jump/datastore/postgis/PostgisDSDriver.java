@@ -7,7 +7,7 @@ import com.vividsolutions.jump.datastore.spatialdatabases.AbstractSpatialDatabas
 import com.vividsolutions.jump.parameter.ParameterList;
 
 /**
- * A driver for supplying {@link SpatialDatabaseDSConnection}s
+ * A driver for supplying {@link com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDSConnection}s
  */
 public class PostgisDSDriver
     extends AbstractSpatialDatabasesDSDriver {

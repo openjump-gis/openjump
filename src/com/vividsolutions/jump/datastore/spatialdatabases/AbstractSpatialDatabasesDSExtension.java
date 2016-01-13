@@ -36,7 +36,7 @@ abstract public class AbstractSpatialDatabasesDSExtension extends Extension {
    * instantiate a new extension capable of registering a database datastore
    * driver
    * 
-   * @param dsDriverClass
+   * @param dsDriverClasses
    *          - the class implementing {@link DataStoreDriver}
    * @param classesToJar
    *          - a map with class name entries mapping to jar file names eg.
