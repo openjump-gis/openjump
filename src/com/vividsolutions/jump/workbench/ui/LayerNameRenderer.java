@@ -121,7 +121,7 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
             .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Layer-Name");
     private final static String FILE_NAME = I18N.get("ui.MenuNames.FILE");
     private final static String MODIFIED = I18N
-            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.modified");
+            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Modified");
     private final static String SRS = I18N
             .get("ui.plugin.wms.EditWMSQueryPanel.coordinate-reference-system");
     private final static String URL = "Url";
