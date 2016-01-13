@@ -3,6 +3,7 @@ package com.vividsolutions.jump.datastore.h2;
 import com.vividsolutions.jump.datastore.DataStoreConnection;
 import com.vividsolutions.jump.datastore.GeometryColumn;
 import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDSMetadata;
+import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesSQLBuilder;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class H2DSMetadata extends SpatialDatabasesDSMetadata {
         defaultSchemaName = "PUBLIC";
         spatialDbName = "H2";
         //spatialExtentQuery1 = "SELECT ST_AsBinary(ST_Estimated_Extent( '%s', '%s', '%s' ))";
-        spatialExtentQuery1 = "SELECT ST_AsBinary(ST_Envelope(ST_Extent(%s))) FROM %s.%s";
+        spatialExtentQuery1 = "SELECT ST_AsBinary(ST_Envelope(ST_Extent(%s))) FROM \"%s\".\"%s\"";
         geoColumnsQuery = "SELECT f_geometry_column, srid, type FROM geometry_columns where f_table_schema = '%s' and f_table_name = '%s'";
         sridQuery = "SELECT srid FROM geometry_columns where f_table_schema = '%s' and f_table_name = '%s' and f_geometry_column = '%s'";
     }
@@ -35,13 +36,18 @@ public class H2DSMetadata extends SpatialDatabasesDSMetadata {
 
     @Override
     public String getGeoColumnsQuery(String datasetName) {
-        return String.format(this.geoColumnsQuery, getSchemaName(datasetName), getTableName(datasetName));
+        // escape single quotes
+        return String.format(this.geoColumnsQuery, 
+            SpatialDatabasesSQLBuilder.escapeSingleQuote(getSchemaName(datasetName)), 
+            SpatialDatabasesSQLBuilder.escapeSingleQuote(getTableName(datasetName)));
     }
 
     @Override
     public String getSridQuery(String schemaName, String tableName, String colName) {
-        // TODO
-        return String.format(this.sridQuery, schemaName, tableName, colName);
+        // escape single quotes
+        return String.format(this.sridQuery, 
+            SpatialDatabasesSQLBuilder.escapeSingleQuote(schemaName), 
+            SpatialDatabasesSQLBuilder.escapeSingleQuote(tableName), colName);
     }
 
     @Override

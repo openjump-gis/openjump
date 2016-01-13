@@ -69,4 +69,14 @@ public class SpatialDatabasesSQLBuilder {
     else
       return srid.getString();
   }
+  
+  /**
+   * Utility method to escape single quotes in given identifier.
+   * Replace all single quotes ("'") by double single quotes ("''") 
+   * @param identifier
+   * @return the identifier with single quotes escaped, or identifier if no string found
+   */
+  public static String escapeSingleQuote(String identifier) {
+    return identifier == null ? null : identifier.replaceAll("'", "''");
+  }
 }

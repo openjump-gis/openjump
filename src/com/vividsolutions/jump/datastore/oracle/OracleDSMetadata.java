@@ -45,8 +45,8 @@ public class OracleDSMetadata extends SpatialDatabasesDSMetadata {
             "                       (select sdo_lb from tmp where sdo_dimname = 'Y'))\n" +
             "  )) as geom \n" +
             "from dual";
-        
-        spatialExtentQuery2 = "select sdo_util.to_wktgeometry(sdo_aggr_mbr(%s)) as geom from %s.%s";
+        // double quotes identifiers
+        spatialExtentQuery2 = "select sdo_util.to_wktgeometry(sdo_aggr_mbr(%s)) as geom from \"%s\".\"%s\"";
         
         geoColumnsQuery = "select t.column_name, t.srid, 'SDO_GEOMETRY' as type from ALL_SDO_GEOM_METADATA t "
             + "where t.owner = '%s' and t.table_name = '%s'";
@@ -56,7 +56,10 @@ public class OracleDSMetadata extends SpatialDatabasesDSMetadata {
 
     @Override
     public String getSpatialExtentQuery1(String schema, String table, String attributeName) {
-        return String.format(this.spatialExtentQuery1, schema, table, attributeName);
+        // escape single quote for table name:
+        // TODO: do it for schema/user name ?
+        return String.format(this.spatialExtentQuery1, schema, 
+            SpatialDatabasesSQLBuilder.escapeSingleQuote(table), attributeName);
     }
 
     @Override
@@ -66,13 +69,18 @@ public class OracleDSMetadata extends SpatialDatabasesDSMetadata {
 
     @Override
     public String getGeoColumnsQuery(String datasetName) {
-        return String.format(this.geoColumnsQuery, getSchemaName(datasetName), getTableName(datasetName));
+        // escape single quote for table name:
+        // TODO: do it for schema/user name ?
+        return String.format(this.geoColumnsQuery, getSchemaName(datasetName), 
+            SpatialDatabasesSQLBuilder.escapeSingleQuote(getTableName(datasetName)));
     }
 
     @Override
     public String getSridQuery(String schemaName, String tableName, String colName) {
-        // TODO
-        return String.format(this.sridQuery, schemaName, tableName, colName);
+        // escape single quote for table name:
+        // TODO: do it for schema/user name ?
+        return String.format(this.sridQuery, schemaName, 
+            SpatialDatabasesSQLBuilder.escapeSingleQuote(tableName), colName);
     }
     
     @Override

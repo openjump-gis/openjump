@@ -84,7 +84,7 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
     
     defaultSchemaName = "";
     spatialDbName = isSpatialiteLoaded() ? "Spatialite" : "SQLite";
-    spatialExtentQuery1 = "SELECT %s from %s";
+    spatialExtentQuery1 = "SELECT %s from \"%s\"";
     // no second query for spatialite
     spatialExtentQuery2 = null;
     if (this.geometryColumnsLayout == GeometryColumnsLayout.OGC_GEOPACKAGE_LAYOUT) {
@@ -129,11 +129,12 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
     // TODO: switch case
     if (this.isSpatialiteLoaded()) {
       if (gcType == GeometricColumnType.WKB) {
-        ret = String.format("select st_asBinary(extent(st_geomFromWkb(%s))) from %s", attributeName, table);
+        // quotes identifier.
+        ret = String.format("select st_asBinary(extent(st_geomFromWkb(%s))) from \"%s\"", attributeName, table);
       } else if (gcType == GeometricColumnType.WKT) {
-        ret = String.format("select st_asBinary(extent(st_geomFromText(%s))) from %s", attributeName, table);
+        ret = String.format("select st_asBinary(extent(st_geomFromText(%s))) from \"%s\"", attributeName, table);
       } else if (gcType == GeometricColumnType.SPATIALITE) {
-        ret = String.format("select st_asBinary(extent(CastAutomagic(%s))) from %s", attributeName, table);
+        ret = String.format("select st_asBinary(extent(CastAutomagic(%s))) from \"%s\"", attributeName, table);
       } else {
         // unknown geom type
         // TODO: log

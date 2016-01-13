@@ -3,12 +3,8 @@ package com.vividsolutions.jump.datastore.mariadb;
 import com.vividsolutions.jump.datastore.DataStoreConnection;
 import com.vividsolutions.jump.datastore.spatialdatabases.*;
 import com.vividsolutions.jump.datastore.GeometryColumn;
-import com.vividsolutions.jump.datastore.jdbc.JDBCUtil;
-import com.vividsolutions.jump.datastore.jdbc.ResultSetBlock;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class MariadbDSMetadata extends SpatialDatabasesDSMetadata {
@@ -73,6 +69,7 @@ public class MariadbDSMetadata extends SpatialDatabasesDSMetadata {
     
     // query according to detected layout:
     geoColumnsQuery = "SELECT f_geometry_column, srid, type FROM geometry_columns where f_table_name = '%s'";
+    // TODO: not the same number of param to replace...
     if (geometryColumnsLayout == GeometryColumnsLayout.NO_LAYOUT) {
       geoColumnsQuery = "select c.COLUMN_NAME, 0, 'geometry' \n"
         + "from information_schema.TABLES t join information_schema.COLUMNS C \n"
@@ -86,8 +83,9 @@ public class MariadbDSMetadata extends SpatialDatabasesDSMetadata {
     // query according to detected layout:
     sridQuery = "SELECT srid FROM geometry_columns where f_table_name = '%s' and f_geometry_column = '%s'";
     if (geometryColumnsLayout == GeometryColumnsLayout.NO_LAYOUT) {
-      sridQuery = "select case when min(st_srid(%s)) <> max(st_srid(%s)) then 0 else min(st_srid(%s)) end as srid\n"
-        + "from %s.%s";
+      // quote identifiers
+      sridQuery2 = "select case when min(st_srid(%s)) <> max(st_srid(%s)) then 0 else min(st_srid(%s)) end as srid\n"
+        + "from `%s`.`%s`";
     }
     
   }
@@ -104,7 +102,9 @@ public class MariadbDSMetadata extends SpatialDatabasesDSMetadata {
 
   @Override
   public String getGeoColumnsQuery(String datasetName) {
-    return String.format(this.geoColumnsQuery, getTableName(datasetName));
+    // escape single quotes in identifier
+    return String.format(this.geoColumnsQuery, 
+        SpatialDatabasesSQLBuilder.escapeSingleQuote(getTableName(datasetName)));
   }
 
   public String getGeoColumnsQuery2(String datasetName) {
@@ -113,11 +113,16 @@ public class MariadbDSMetadata extends SpatialDatabasesDSMetadata {
 
   @Override
   public String getSridQuery(String schemaName, String tableName, String colName) {
-    return String.format(this.sridQuery, tableName, colName);
+    // escape single quotes in identifier
+    // TODO: geom ?
+    return String.format(this.sridQuery, 
+        SpatialDatabasesSQLBuilder.escapeSingleQuote(tableName), colName);
   }
 
   public String getSridQuery2(String schemaName, String tableName, String colName) {
-    return String.format(this.sridQuery2, colName, colName, colName, schemaName, tableName);
+    return String.format(this.sridQuery2, colName, colName, colName, 
+        SpatialDatabasesSQLBuilder.escapeSingleQuote(schemaName), 
+        SpatialDatabasesSQLBuilder.escapeSingleQuote(tableName));
   }
 
   @Override

@@ -14,14 +14,19 @@ public class PostgisDSMetadata extends SpatialDatabasesDSMetadata {
         defaultSchemaName = "public";
         spatialDbName = "PostGIS";
         spatialExtentQuery1 = "SELECT ST_AsBinary(ST_Estimated_Extent( '%s', '%s', '%s' ))";
-        spatialExtentQuery2 = "SELECT ST_AsBinary(ST_Envelope(ST_Extent(\"%s\"))) FROM %s.%s";
+        // Nicolas Ribot: add double quotes for identifiers
+        spatialExtentQuery2 = "SELECT ST_AsBinary(ST_Envelope(ST_Extent(\"%s\"))) FROM \"%s\".\"%s\"";
         geoColumnsQuery = "SELECT f_geometry_column, srid, type FROM geometry_columns where f_table_schema='%s' and f_table_name = '%s'";
         sridQuery = "SELECT srid FROM geometry_columns where f_table_schema = '%s' and f_table_name = '%s' and f_geometry_column = '%s'";
     }
 
     @Override
     public String getSpatialExtentQuery1(String schema, String table, String attributeName) {
-        return String.format(this.spatialExtentQuery1, schema, table, attributeName);
+        //must escape single quote in idenfifiers before formatting query
+        return String.format(this.spatialExtentQuery1, 
+            SpatialDatabasesSQLBuilder.escapeSingleQuote(schema), 
+            SpatialDatabasesSQLBuilder.escapeSingleQuote(table), 
+            SpatialDatabasesSQLBuilder.escapeSingleQuote(attributeName));
     }
 
     @Override
@@ -31,13 +36,19 @@ public class PostgisDSMetadata extends SpatialDatabasesDSMetadata {
 
     @Override
     public String getGeoColumnsQuery(String datasetName) {
-        return String.format(this.geoColumnsQuery, getSchemaName(datasetName), getTableName(datasetName));
+        //must escape single quote in idenfifiers before formatting query
+        return String.format(this.geoColumnsQuery, 
+            SpatialDatabasesSQLBuilder.escapeSingleQuote(getSchemaName(datasetName)), 
+            SpatialDatabasesSQLBuilder.escapeSingleQuote(getTableName(datasetName)));
     }
 
     @Override
     public String getSridQuery(String schemaName, String tableName, String colName) {
-        // TODO
-        return String.format(this.sridQuery, schemaName, tableName, colName);
+        //must escape single quote in idenfifiers before formatting query
+        return String.format(this.sridQuery, 
+            SpatialDatabasesSQLBuilder.escapeSingleQuote(schemaName), 
+            SpatialDatabasesSQLBuilder.escapeSingleQuote(tableName), 
+            SpatialDatabasesSQLBuilder.escapeSingleQuote(colName));
     }
     
     @Override

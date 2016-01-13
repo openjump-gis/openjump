@@ -93,9 +93,6 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
   }
 
   public SpatialDatabasesDSMetadata(DataStoreConnection conn) {
-    JUMPWorkbench.getInstance().getFrame().log("creating a SpatialDatabasesDSMetadata (class:" + this.getClass() 
-        + " ) (con: " + conn.toString() + ") id"
-        + this.hashCode(), this.getClass());
     this.conn = conn;
     // TODO: use bind parameters to avoid SQL injection
     this.datasetNameQuery = "";
@@ -289,6 +286,7 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
         new ResultSetBlock() {
           public void yield(ResultSet resultSet) throws SQLException {
             while (resultSet.next()) {
+              // TODO: escape single quotes in geo column name ?
               geometryAttributes.add(new GeometryColumn(
                       resultSet.getString(1),
                       resultSet.getInt(2),
@@ -353,6 +351,7 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
       DatabaseMetaData dbMd = this.conn.getJdbcConnection().getMetaData();
       rs = dbMd.getColumns(null, getSchemaName(datasetName), getTableName(datasetName), null);
       while (rs.next()) {
+        // TODO: escape quotes in column names ?
         cols.add(rs.getString(4));
       }
     } catch (SQLException sqle) {
