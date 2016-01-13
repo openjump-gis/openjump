@@ -76,7 +76,7 @@ abstract public class AbstractWMSRequest implements WMSRequest {
     // add this service's auth info
     String userInfo = requestUrl.getUserInfo();
     if (userInfo != null) {
-      Logger.trace(Base64.encodeBytes(UriUtil.urlDecode(requestUrl.getUserInfo())
+      Logger.trace(Base64.encodeBytes(UriUtil.urlDecode(userInfo)
               .getBytes(Charset.forName("UTF-8"))));
       con.setRequestProperty(
           "Authorization",
