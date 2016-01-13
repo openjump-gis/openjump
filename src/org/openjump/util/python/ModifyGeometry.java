@@ -35,14 +35,12 @@ package org.openjump.util.python;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.Layer;
-import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
 import com.vividsolutions.jump.workbench.ui.GeometryEditor;
 import com.vividsolutions.jump.workbench.model.UndoableEditReceiver;

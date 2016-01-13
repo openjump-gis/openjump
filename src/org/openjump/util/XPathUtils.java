@@ -41,7 +41,6 @@ package org.openjump.util;
 import static javax.xml.xpath.XPathConstants.NODE;
 import static javax.xml.xpath.XPathConstants.NODESET;
 import static javax.xml.xpath.XPathConstants.NUMBER;
-import static org.apache.log4j.Logger.getLogger;
 
 import java.util.LinkedList;
 

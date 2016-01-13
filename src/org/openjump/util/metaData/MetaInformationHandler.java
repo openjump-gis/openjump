@@ -17,7 +17,6 @@ import org.openjump.core.apitools.objecttyperoles.FeatureCollectionRole;
 import org.openjump.core.apitools.objecttyperoles.FeatureCollectionRoleTypes;
 import org.openjump.core.apitools.objecttyperoles.PirolFeatureCollection;
 import org.openjump.core.apitools.objecttyperoles.RoleStandardFeatureCollection;
-import org.openjump.util.metaData.ObjectContainingMetaInformation;
 
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.workbench.model.Layer;

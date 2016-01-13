@@ -1,7 +1,6 @@
 package org.openjump.core.ui.plugin.datastore;
 
 import com.vividsolutions.jump.coordsys.CoordinateSystemRegistry;
-import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.I18N;
@@ -18,7 +17,6 @@ import com.vividsolutions.jump.workbench.ui.plugin.datastore.DataStoreQueryDataS
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.plugin.OpenProjectPlugIn;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
-import java.util.Iterator;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPopupMenu;

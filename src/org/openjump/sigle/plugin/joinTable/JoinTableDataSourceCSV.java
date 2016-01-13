@@ -10,14 +10,9 @@ package org.openjump.sigle.plugin.joinTable;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.StreamTokenizer;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
 import com.vividsolutions.jts.io.ParseException;
