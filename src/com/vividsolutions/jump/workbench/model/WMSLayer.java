@@ -283,7 +283,12 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
         }
       }
     } catch (IOException e) {
-      Logger.error("Exception caught during WMSLayer envelope calculation.", e);
+      Logger
+          .error(
+              "WMSLayer envelope calculation failed."
+                  + (Logger.isDebugEnabled() ? "" : " - "
+                      + e.getLocalizedMessage()), Logger.isDebugEnabled() ? e
+                  : null);
     }
     return envelope;
   }
