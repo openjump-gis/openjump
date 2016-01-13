@@ -138,7 +138,7 @@ public class WMService {
       parser = new ParserWMS1_3();
     }
 
-    try {
+//    try {
       String requestUrlString = this.serverUrl + req;
       URL requestUrl = new URL(requestUrlString);
 
@@ -175,24 +175,28 @@ public class WMService {
         cap.setGetMapURL(url1);
       }
 
-    } catch (FileNotFoundException e) {
-      JOptionPane.showMessageDialog(null, I18N.getMessage(
-          "com.vividsolutions.wms.WMService.WMS-Not-Found",
-          new Object[] { e.getLocalizedMessage() }), I18N
-          .get("com.vividsolutions.wms.WMService.Error"),
-          JOptionPane.ERROR_MESSAGE);
-      throw e;
-    } catch (final WMSException e) {
-      ErrorDialog.show(null, "WMS Error", e.getMessage(), e.getSource());
-      throw e;
-    } catch (IOException e) {
-      JOptionPane.showMessageDialog(null, I18N.getMessage(
-          "com.vividsolutions.wms.WMService.WMS-IO-Error", new Object[] {
-              e.getClass().getSimpleName(), e.getLocalizedMessage() }), I18N
-          .get("com.vividsolutions.wms.WMService.Error"),
-          JOptionPane.ERROR_MESSAGE);
-      throw e;
-    }
+    // [2016.01 ede] deactivated the error handling here as it leads to an
+    // infinite stack loop when trying to open a project containing a wms layer
+    // that can't be connected for some reason show error, close errordialog,
+    // new render of taskframe, show error...
+    //    } catch (FileNotFoundException e) {
+//      JOptionPane.showMessageDialog(null, I18N.getMessage(
+//          "com.vividsolutions.wms.WMService.WMS-Not-Found",
+//          new Object[] { e.getLocalizedMessage() }), I18N
+//          .get("com.vividsolutions.wms.WMService.Error"),
+//          JOptionPane.ERROR_MESSAGE);
+//      throw e;
+//    } catch (final WMSException e) {
+//      ErrorDialog.show(null, "WMS Error", e.getMessage(), e.getSource());
+//      throw e;
+//    } catch (IOException e) {
+//      JOptionPane.showMessageDialog(null, I18N.getMessage(
+//          "com.vividsolutions.wms.WMService.WMS-IO-Error", new Object[] {
+//              e.getClass().getSimpleName(), e.getLocalizedMessage() }), I18N
+//          .get("com.vividsolutions.wms.WMService.Error"),
+//          JOptionPane.ERROR_MESSAGE);
+//      throw e;
+//    }
   }
 
   /**
