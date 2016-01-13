@@ -270,6 +270,8 @@ public class WizardDialog extends JDialog implements WizardContext,
       nextWizardPanel.enteredFromLeft(dataMap);
       setCurrentWizardPanel(nextWizardPanel);
     } catch (CancelNextException e) {
+      if (e.getCause()!=null)
+        errorHandler.handleThrowable(e.getCause());
       // This exception is ignored as it is just used as we don't want to modify
       // the exitingToRight method to return false if the panel is not ready
       // to move to the next panel.

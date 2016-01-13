@@ -201,9 +201,9 @@ public class URLWizardPanel extends JPanel implements WizardPanelV2 {
       dataMap.put(MapLayerWizardPanel.INITIAL_LAYER_NAMES_KEY, null);
       dataMap.put(VERSION_KEY, wmsVersion);
     } catch (WMSException e) {
-      throw new CancelNextException();
+      throw new CancelNextException(e);
     } catch (IOException e) {
-      throw new CancelNextException();
+      throw new CancelNextException(e);
     }
   }
 
