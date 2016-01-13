@@ -129,7 +129,7 @@ public class ExportLayerableEnvelopeAsGeometryPlugIn extends AbstractPlugIn {
                 .get("org.openjump.core.ui.plugin.layer.pirolraster.ExportEnvelopeAsGeometryPlugIn.Export-Envelope-As-Geometry");
     }
 
-    String ENVELOPE = I18N.get(" ui.plugin.LayerStatisticsPlugIn.envelope")
+    String ENVELOPE = I18N.get("ui.plugin.LayerStatisticsPlugIn.envelope")
             + "_";
 
     /**
