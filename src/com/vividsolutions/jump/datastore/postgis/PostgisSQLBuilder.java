@@ -4,7 +4,8 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.datastore.DataStoreLayer;
 import com.vividsolutions.jump.datastore.FilterQuery;
 import com.vividsolutions.jump.datastore.SpatialReferenceSystemID;
-import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDSMetadata;
+import com.vividsolutions.jump.datastore.jdbc.BoundQuery;
+import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDataStoreMetadata;
 import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesSQLBuilder;
 
 
@@ -14,7 +15,7 @@ import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesSQLBui
  */
 public class PostgisSQLBuilder extends SpatialDatabasesSQLBuilder {
 
-  public PostgisSQLBuilder(SpatialDatabasesDSMetadata dbMetadata, 
+  public PostgisSQLBuilder(SpatialDataStoreMetadata dbMetadata, 
       SpatialReferenceSystemID defaultSRID, String[] colNames) {
     super(dbMetadata, defaultSRID, colNames);
   }
@@ -26,28 +27,23 @@ public class PostgisSQLBuilder extends SpatialDatabasesSQLBuilder {
    * //TODO: refactor like Oracle code: queries as variable placeholders: put it in base class.
    */
   @Override
-  public String getSQL(FilterQuery query) {
-    StringBuilder qs = new StringBuilder();
-    //HACK
-    qs.append("SELECT ");
-    qs.append(getColumnListSpecifier(colNames, query.getGeometryAttributeName()));
-    qs.append(" FROM ");
-    // fixed by mmichaud on 2010-05-27 for mixed case dataset names
-    qs.append("\"").append(query.getDatasetName().replaceAll("\\.","\".\"")).append("\"");
-    qs.append(" t WHERE ");
-    qs.append(buildBoxFilter(query));
-
-    String whereCond = query.getCondition();
-    if (whereCond != null) {
-      qs.append(" AND ");
-      qs.append(whereCond);
-    }
-    int limit = query.getLimit();
-    if (limit != 0 && limit != Integer.MAX_VALUE) {
-      qs.append(" LIMIT ").append(limit);
-    }
-    //System.out.println(qs);
-    return qs.toString();
+  public BoundQuery getSQL(FilterQuery query) {
+    // TODO: how to deal with PreparedStatements and the 2 possible queries ?
+    String q = "SELECT %s FROM \"%s\" WHERE \"%s\" && %s %s %s";
+//    String q2 = "SELECT %s FROM \"%s\" WHERE \"%s\" && st_setSRID(?, st_srid(\"%s\")) %s %s";
+    
+    String whereCond = query.getCondition() == null ? "" : " AND " + query.getCondition();
+    String limit = (query.getLimit() != 0 && query.getLimit() != Integer.MAX_VALUE) 
+        ? " LIMIT " + query.getLimit() : " ";
+    
+    return new BoundQuery(String.format(q, 
+        getColumnListSpecifier(colNames, query.getGeometryAttributeName()),
+        query.getDatasetName().replaceAll("\\.","\".\""),
+        query.getGeometryAttributeName(),
+        buildBoxFilter(query),
+        whereCond,
+        limit));
+    
   };
   
   /**
@@ -56,8 +52,8 @@ public class PostgisSQLBuilder extends SpatialDatabasesSQLBuilder {
    * @return 
    */
   @Override
-  public String getCheckSQL(DataStoreLayer dsLayer) {
-    String s = "select * FROM %s %s LIMIT 0";
+  public BoundQuery getCheckSQL(DataStoreLayer dsLayer) {
+    String s = "select * FROM \"%s\" %s LIMIT 0";
     String wc = dsLayer.getWhereClause();
     if (wc != null && ! wc.isEmpty()) {
       wc = " WHERE " + wc ;
@@ -65,7 +61,7 @@ public class PostgisSQLBuilder extends SpatialDatabasesSQLBuilder {
       wc = "";
     }
     //System.out.println(qs);
-    return String.format(s, dsLayer.getFullName(), wc);
+    return new BoundQuery(String.format(s, dsLayer.getFullName(), wc));
   }
 
   /**
@@ -91,25 +87,22 @@ public class PostgisSQLBuilder extends SpatialDatabasesSQLBuilder {
     return buf.toString();
   }
 
+  /**
+   * Example of Postgis SQL: GEOM && SetSRID('BOX3D(191232 243117,191232 243119)'::box3d,-1);
+   * @param query
+   * @return 
+   */
   @Override
   protected String buildBoxFilter(FilterQuery query) {
     Envelope env = query.getFilterGeometry().getEnvelopeInternal();
-
-    // Example of Postgis SQL: GEOM && SetSRID('BOX3D(191232 243117,191232 243119)'::box3d,-1);
     StringBuilder buf = new StringBuilder();
-    // fixed by mmichaud on 2010-05-27 for mixed case geometryColName names
-    buf.append("\"").append(query.getGeometryAttributeName()).append("\" && ST_SetSRID('BOX3D(");
-    buf.append(env.getMinX()
-               + " " + env.getMinY()
-               + "," + env.getMaxX()
-               + " " + env.getMaxY()
-               );
-    buf.append(")'::box3d,");
+    String s = "ST_SetSRID('BOX3D(%s %s, %s %s)'::box3d, %s)";
     // [mmichaud 2012-03-14] make windows srid homogeneous with geometry srid
     // in case it is not defined
     String srid = getSRID(query.getSRSName());
     srid = srid==null? "ST_SRID(\"" + query.getGeometryAttributeName() + "\")" : srid;
-    buf.append(srid).append(")");
-    return buf.toString();
+    
+    return String.format(s, env.getMinX(),env.getMinY(), env.getMaxX(), env.getMaxY(),
+        srid);
   }
 }

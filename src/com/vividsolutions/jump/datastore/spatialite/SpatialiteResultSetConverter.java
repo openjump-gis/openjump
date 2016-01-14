@@ -18,14 +18,14 @@ public class SpatialiteResultSetConverter extends SpatialDatabasesResultSetConve
      * propagate the metadata object through Spatialite classes to get access to
      * specific information
      */
-    private SpatialiteDSMetadata metadata;
+    private SpatialiteDataStoreMetadata metadata;
 
     public SpatialiteResultSetConverter(Connection conn, ResultSet rs) {
         super(conn, rs);
         this.odm = new SpatialiteValueConverterFactory(conn);
     }
 
-    public void setMetadata(SpatialiteDSMetadata metadata) {
+    public void setMetadata(SpatialiteDataStoreMetadata metadata) {
         this.metadata = metadata;
         //hack: todo: clean inheritance ?
         if (this.odm != null) {

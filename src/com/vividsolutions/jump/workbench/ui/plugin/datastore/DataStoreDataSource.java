@@ -155,8 +155,9 @@ public class DataStoreDataSource extends DataStoreQueryDataSource implements
         if (env == null)
           env = new Envelope();
         query.setFilterGeometry(new GeometryFactory().toGeometry(env));
-        String queryString = conn.getSqlBuilder(srid, colNames).getSQL(query);
-        getProperties().put(SQL_QUERY_KEY, queryString);
+        getProperties().put(
+            SQL_QUERY_KEY, 
+            conn.getSqlBuilder(srid, colNames).getSQL(query).getQuery());
         
         return new CachingFeatureCollection(new DynamicFeatureCollection(
                 (ConnectionDescriptor) getProperties().get(

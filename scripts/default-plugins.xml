@@ -39,7 +39,7 @@
 		com.vividsolutions.jump.datastore.h2.H2DataStoreExtension
 	</extension>
 	<extension>
-		com.vividsolutions.jump.datastore.postgis.PostgisDSExtension
+		com.vividsolutions.jump.datastore.postgis.PostgisDataStoreExtension
 	</extension>
 	<plug-in>
 		org.openjump.core.ui.plugin.datastore.postgis.SaveToPostGISPlugIn

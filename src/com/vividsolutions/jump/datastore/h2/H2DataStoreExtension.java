@@ -3,12 +3,12 @@ package com.vividsolutions.jump.datastore.h2;
 import java.util.Collections;
 import java.util.HashMap;
 
-import com.vividsolutions.jump.datastore.spatialdatabases.AbstractSpatialDatabasesDSExtension;
+import com.vividsolutions.jump.datastore.spatialdatabases.AbstractSpatialDataStoreExtension;
 
 /**
  * Extension for H2GIS Support
  */
-public class H2DataStoreExtension extends AbstractSpatialDatabasesDSExtension {
+public class H2DataStoreExtension extends AbstractSpatialDataStoreExtension {
 
   /**
    * customize the abstract implementation

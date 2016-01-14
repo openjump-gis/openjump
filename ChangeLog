@@ -3,6 +3,14 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2016-01-14 Nicolas Ribot <nicolas.ribot@gmail.com>
+  * added support for Apache commons-dbutil Prepared Statement queries for 
+    spatial databases:
+    - New mechanism to handle query with or without bind parameters
+    - Simplification of SpatialDatabaseMetadata overloaded classes by code
+      factorization
+  * Class names refactorization to be consistent with 'DataStore' naming
+
 2016-01-10 ede
   * linewrap and overall cutification of the extensions about panel
   * reroute jdbc loading issues into extensions about panel as a message

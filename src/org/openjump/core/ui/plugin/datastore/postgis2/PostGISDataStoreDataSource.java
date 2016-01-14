@@ -15,9 +15,9 @@ import org.openjump.core.ui.plugin.datastore.postgis.PostGISQueryUtil;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jump.datastore.AdhocQuery;
-import com.vividsolutions.jump.datastore.postgis.PostgisDSConnection;
-import com.vividsolutions.jump.datastore.postgis.PostgisDSDriver;
-import com.vividsolutions.jump.datastore.postgis.PostgisDSMetadata;
+import com.vividsolutions.jump.datastore.postgis.PostgisDataStoreConnection;
+import com.vividsolutions.jump.datastore.postgis.PostgisDataStoreDriver;
+import com.vividsolutions.jump.datastore.postgis.PostgisDataStoreMetadata;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureDataset;
@@ -66,8 +66,8 @@ public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
         ConnectionDescriptor connectionDescriptor =
                 (ConnectionDescriptor)getProperties().get(CONNECTION_DESCRIPTOR_KEY);
 
-        PostgisDSConnection pgConnection =
-                (PostgisDSConnection)new PostgisDSDriver()
+        PostgisDataStoreConnection pgConnection =
+                (PostgisDataStoreConnection)new PostgisDataStoreDriver()
                         .createConnection(connectionDescriptor.getParameterList());
 
         boolean hasPK = getProperties().get(EXTERNAL_PK_KEY) != null;
@@ -107,12 +107,12 @@ public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
 
     }
 
-    private String buildQueryString(PostgisDSConnection pgConnection) throws SQLException {
+    private String buildQueryString(PostgisDataStoreConnection pgConnection) throws SQLException {
 
         String geometryColumn = (String)getProperties().get(GEOMETRY_ATTRIBUTE_NAME_KEY);
 
         //@TODO This method should be available in DataStoreMetadata to avoid the cast
-        String[] columns = ((PostgisDSMetadata)pgConnection.getMetadata())
+        String[] columns = ((PostgisDataStoreMetadata)pgConnection.getMetadata())
                 .getColumnNames(PostGISQueryUtil.unquote((String)getProperties().get(DATASET_NAME_KEY)));
 
         Connection conn = pgConnection.getJdbcConnection();

@@ -15,7 +15,7 @@ public class SpatialiteFeatureInputStream extends SpatialDatabasesFeatureInputSt
      * propagate the metadata object through Spatialite classes to get access to
      * specific information
      */
-    private SpatialiteDSMetadata metadata;
+    private SpatialiteDataStoreMetadata metadata;
 
     public SpatialiteFeatureInputStream(Connection conn, String queryString) {
         super(conn, queryString);
@@ -25,7 +25,7 @@ public class SpatialiteFeatureInputStream extends SpatialDatabasesFeatureInputSt
         super(conn, queryString, externalIdentifier);
     }
 
-    public void setMetadata(SpatialiteDSMetadata metadata) {
+    public void setMetadata(SpatialiteDataStoreMetadata metadata) {
         this.metadata = metadata;
     }
 

@@ -3,9 +3,9 @@ package com.vividsolutions.jump.datastore.oracle;
 import java.util.Collections;
 import java.util.HashMap;
 
-import com.vividsolutions.jump.datastore.spatialdatabases.AbstractSpatialDatabasesDSExtension;
+import com.vividsolutions.jump.datastore.spatialdatabases.AbstractSpatialDataStoreExtension;
 
-public class OracleDataStoreExtension extends AbstractSpatialDatabasesDSExtension {
+public class OracleDataStoreExtension extends AbstractSpatialDataStoreExtension {
 
   /**
    * customize the abstract implementation

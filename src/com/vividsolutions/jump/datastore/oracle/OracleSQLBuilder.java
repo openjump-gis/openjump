@@ -4,7 +4,8 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.datastore.DataStoreLayer;
 import com.vividsolutions.jump.datastore.FilterQuery;
 import com.vividsolutions.jump.datastore.SpatialReferenceSystemID;
-import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDSMetadata;
+import com.vividsolutions.jump.datastore.jdbc.BoundQuery;
+import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDataStoreMetadata;
 import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesSQLBuilder;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import java.sql.SQLException;
@@ -15,7 +16,7 @@ import java.sql.SQLException;
  */
 public class OracleSQLBuilder extends SpatialDatabasesSQLBuilder {
 
-  public OracleSQLBuilder(SpatialDatabasesDSMetadata dbMetadata,
+  public OracleSQLBuilder(SpatialDataStoreMetadata dbMetadata,
       SpatialReferenceSystemID defaultSRID, String[] colNames) {
 
     super(dbMetadata, defaultSRID, colNames);
@@ -29,7 +30,7 @@ public class OracleSQLBuilder extends SpatialDatabasesSQLBuilder {
    * @return a SQL query to get column names
    */
   @Override
-  public String getSQL(FilterQuery query) {
+  public BoundQuery getSQL(FilterQuery query) {
     StringBuilder qs = new StringBuilder();
         //HACK
     // surrond query by a rownum clause, used for limit
@@ -59,7 +60,7 @@ public class OracleSQLBuilder extends SpatialDatabasesSQLBuilder {
 //        JUMPWorkbench.getInstance().getFrame().log(
 //            "SQL query to get Spatial table features:\n\t" 
 //                + qs.toString(), this.getClass());
-    return qs.toString();
+    return new BoundQuery(qs.toString());
   }
 
   /**
@@ -69,7 +70,7 @@ public class OracleSQLBuilder extends SpatialDatabasesSQLBuilder {
    * @return
    */
   @Override
-  public String getCheckSQL(DataStoreLayer dsLayer) {
+  public BoundQuery getCheckSQL(DataStoreLayer dsLayer) {
     String s = "select ROWNUM FROM (select * FROM %s %s) where ROWNUM <=0";
     String wc = dsLayer.getWhereClause();
     if (wc != null && !wc.isEmpty()) {
@@ -78,7 +79,7 @@ public class OracleSQLBuilder extends SpatialDatabasesSQLBuilder {
       wc = "";
     }
     //System.out.println(qs);
-    return String.format(s, dsLayer.getFullName(), wc);
+    return new BoundQuery(String.format(s, dsLayer.getFullName(), wc));
   }
 
   /**

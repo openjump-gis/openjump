@@ -17,7 +17,7 @@ import com.vividsolutions.jump.workbench.JUMPWorkbench;
 /**
  * A driver for supplying {@link SpatialDatabasesDSConnection}s
  */
-public abstract class AbstractSpatialDatabasesDSDriver implements
+public abstract class AbstractSpatialDataStoreDriver implements
     DataStoreDriver {
 
   public static final String PARAM_Server = "Server";
@@ -37,7 +37,7 @@ public abstract class AbstractSpatialDatabasesDSDriver implements
   protected Class[] paramClasses = null;
   protected ParameterListSchema schema = null;
 
-  public AbstractSpatialDatabasesDSDriver() {
+  public AbstractSpatialDataStoreDriver() {
     // Nicolas Ribot:
     // paramNames are no more static now they can be overloaded by child classes
     // @link SpatialiteDataStoreDriver for instance

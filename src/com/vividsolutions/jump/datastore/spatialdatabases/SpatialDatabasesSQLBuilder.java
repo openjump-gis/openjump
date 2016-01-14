@@ -3,6 +3,7 @@ package com.vividsolutions.jump.datastore.spatialdatabases;
 import com.vividsolutions.jump.datastore.DataStoreLayer;
 import com.vividsolutions.jump.datastore.FilterQuery;
 import com.vividsolutions.jump.datastore.SpatialReferenceSystemID;
+import com.vividsolutions.jump.datastore.jdbc.BoundQuery;
 
 /**
  * Creates SQL query strings for a Spatial database.
@@ -12,9 +13,9 @@ public class SpatialDatabasesSQLBuilder {
 
   protected  SpatialReferenceSystemID defaultSRID = null;
   protected String[] colNames = null;
-  protected SpatialDatabasesDSMetadata dbMetadata;
+  protected SpatialDataStoreMetadata dbMetadata;
 
-  public SpatialDatabasesSQLBuilder(SpatialDatabasesDSMetadata dbMetadata, 
+  public SpatialDatabasesSQLBuilder(SpatialDataStoreMetadata dbMetadata, 
       SpatialReferenceSystemID defaultSRID, String[] colNames) {
     
     this.defaultSRID = defaultSRID;
@@ -27,7 +28,7 @@ public class SpatialDatabasesSQLBuilder {
    * @param query
    * @return a SQL query to get column names
    */
-  public String getSQL(FilterQuery query) {
+  public BoundQuery getSQL(FilterQuery query) {
     return null;
   }
 
@@ -36,7 +37,7 @@ public class SpatialDatabasesSQLBuilder {
    * @param dsLayer the @link DataStoreLayer to test
    * @return a SQL query forced to limit 0 to test the layer
    */
-  public String getCheckSQL(DataStoreLayer dsLayer) {
+  public BoundQuery getCheckSQL(DataStoreLayer dsLayer) {
     return null;
   }
 
@@ -51,7 +52,7 @@ public class SpatialDatabasesSQLBuilder {
     return null;
   }
 
-  protected SpatialDatabasesDSMetadata getDbMetadata() {
+  protected SpatialDataStoreMetadata getDbMetadata() {
     return dbMetadata;
   }
 
@@ -69,14 +70,4 @@ public class SpatialDatabasesSQLBuilder {
     else
       return srid.getString();
   }
-  
-  /**
-   * Utility method to escape single quotes in given identifier.
-   * Replace all single quotes ("'") by double single quotes ("''") 
-   * @param identifier
-   * @return the identifier with single quotes escaped, or identifier if no string found
-   */
-  public static String escapeSingleQuote(String identifier) {
-    return identifier == null ? null : identifier.replaceAll("'", "''");
-  }
-}
+ }

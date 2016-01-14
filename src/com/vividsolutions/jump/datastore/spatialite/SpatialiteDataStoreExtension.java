@@ -3,13 +3,13 @@ package com.vividsolutions.jump.datastore.spatialite;
 import java.util.Collections;
 import java.util.HashMap;
 
-import com.vividsolutions.jump.datastore.spatialdatabases.AbstractSpatialDatabasesDSExtension;
+import com.vividsolutions.jump.datastore.spatialdatabases.AbstractSpatialDataStoreExtension;
 
 /**
  * installs spatialite datastore into OJ
  */
 public class SpatialiteDataStoreExtension extends
-    AbstractSpatialDatabasesDSExtension {
+    AbstractSpatialDataStoreExtension {
 
   /**
    * customize the abstract implementation

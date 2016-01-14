@@ -6,7 +6,7 @@ import java.sql.Connection;
 import java.util.Properties;
 
 import com.vividsolutions.jump.datastore.DataStoreConnection;
-import com.vividsolutions.jump.datastore.spatialdatabases.AbstractSpatialDatabasesDSDriver;
+import com.vividsolutions.jump.datastore.spatialdatabases.AbstractSpatialDataStoreDriver;
 import com.vividsolutions.jump.parameter.ParameterList;
 import com.vividsolutions.jump.parameter.ParameterListSchema;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
@@ -16,7 +16,7 @@ import com.vividsolutions.jump.workbench.JUMPWorkbench;
 /**
  * A driver for supplying {@link com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDSConnection}s
  */
-public class SpatialiteDataStoreDriver extends AbstractSpatialDatabasesDSDriver {
+public class SpatialiteDataStoreDriver extends AbstractSpatialDataStoreDriver {
 
   public final static String JDBC_CLASS = "org.sqlite.JDBC";
   private String spatialiteVersion = "not connected";
@@ -86,10 +86,10 @@ public class SpatialiteDataStoreDriver extends AbstractSpatialDatabasesDSDriver 
     Properties props = (Properties) getPropsMethod.invoke(config);
 
     Connection conn = super.createJdbcConnection(params, props);
-    SpatialiteDSConnection dsConn = new SpatialiteDSConnection(conn);
+    SpatialiteDataStoreConnection dsConn = new SpatialiteDataStoreConnection(conn);
 
     // memorize spatialite version for displaying later
-    this.spatialiteVersion = ((SpatialiteDSMetadata) dsConn.getMetadata())
+    this.spatialiteVersion = ((SpatialiteDataStoreMetadata) dsConn.getMetadata())
         .getSpatialiteVersion();
     // report if spatialite could not be loaded
     if (this.spatialiteVersion.isEmpty())

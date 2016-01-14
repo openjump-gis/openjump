@@ -4,7 +4,8 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.datastore.DataStoreLayer;
 import com.vividsolutions.jump.datastore.FilterQuery;
 import com.vividsolutions.jump.datastore.SpatialReferenceSystemID;
-import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDSMetadata;
+import com.vividsolutions.jump.datastore.jdbc.BoundQuery;
+import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDataStoreMetadata;
 import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesSQLBuilder;
 
 /**
@@ -12,7 +13,7 @@ import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesSQLBui
  */
 public class H2SQLBuilder  extends SpatialDatabasesSQLBuilder {
 
-    public H2SQLBuilder(SpatialDatabasesDSMetadata dbMetadata,
+    public H2SQLBuilder(SpatialDataStoreMetadata dbMetadata,
                              SpatialReferenceSystemID defaultSRID, String[] colNames) {
         super(dbMetadata, defaultSRID, colNames);
     }
@@ -24,7 +25,7 @@ public class H2SQLBuilder  extends SpatialDatabasesSQLBuilder {
      * //TODO: refactor like Oracle code: queries as variable placeholders: put it in base class.
      */
     @Override
-    public String getSQL(FilterQuery query) {
+    public BoundQuery getSQL(FilterQuery query) {
         StringBuilder qs = new StringBuilder();
         //HACK
         qs.append("SELECT ");
@@ -44,7 +45,7 @@ public class H2SQLBuilder  extends SpatialDatabasesSQLBuilder {
         if (limit != 0 && limit != Integer.MAX_VALUE) {
             qs.append(" LIMIT ").append(limit);
         }
-        return qs.toString();
+        return new BoundQuery(qs.toString());
     };
 
   /**
@@ -53,7 +54,7 @@ public class H2SQLBuilder  extends SpatialDatabasesSQLBuilder {
      * @return 
      */
     @Override
-    public String getCheckSQL(DataStoreLayer dsLayer) {
+    public BoundQuery getCheckSQL(DataStoreLayer dsLayer) {
       String s = "select * FROM %s %s LIMIT 0";
       String wc = dsLayer.getWhereClause();
       if (wc != null && ! wc.isEmpty()) {
@@ -62,7 +63,7 @@ public class H2SQLBuilder  extends SpatialDatabasesSQLBuilder {
         wc = "";
       }
       //System.out.println(qs);
-      return String.format(s, dsLayer.getFullName(), wc);
+      return new BoundQuery(String.format(s, dsLayer.getFullName(), wc));
     }
 
     /**

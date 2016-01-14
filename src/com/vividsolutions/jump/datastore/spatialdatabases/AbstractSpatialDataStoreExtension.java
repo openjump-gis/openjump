@@ -13,9 +13,9 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 /**
  * basic implementation for db datastore extensions
  */
-abstract public class AbstractSpatialDatabasesDSExtension extends Extension {
+abstract public class AbstractSpatialDataStoreExtension extends Extension {
 
-  static final String I18NPREFIX = AbstractSpatialDatabasesDSExtension.class
+  static final String I18NPREFIX = AbstractSpatialDataStoreExtension.class
       .getName();
 
   protected String errorMessage = null;
@@ -29,7 +29,7 @@ abstract public class AbstractSpatialDatabasesDSExtension extends Extension {
    * private, use {@link #AbstractSpatialDatabasesDSExtension(Class, Map)}
    * instead
    */
-  private AbstractSpatialDatabasesDSExtension() {
+  private AbstractSpatialDataStoreExtension() {
   }
 
   /**
@@ -42,7 +42,7 @@ abstract public class AbstractSpatialDatabasesDSExtension extends Extension {
    *          - a map with class name entries mapping to jar file names eg.
    *          "oracle.jdbc.driver.OracleDriver"->"ojdb6.jar"
    */
-  public AbstractSpatialDatabasesDSExtension(Class[] dsDriverClasses,
+  public AbstractSpatialDataStoreExtension(Class[] dsDriverClasses,
       Map<String, String> classesToJar) {
     super();
     if (classesToJar == null
@@ -59,7 +59,7 @@ abstract public class AbstractSpatialDatabasesDSExtension extends Extension {
    * @param dsDriverClass
    * @param classesToJar
    */
-  public AbstractSpatialDatabasesDSExtension(Class dsDriverClass,
+  public AbstractSpatialDataStoreExtension(Class dsDriverClass,
       Map<String, String> classesToJar) {
     this(new Class[] { dsDriverClass }, classesToJar);
   }
