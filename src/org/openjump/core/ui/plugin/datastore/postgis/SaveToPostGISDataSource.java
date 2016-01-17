@@ -3,7 +3,7 @@ package org.openjump.core.ui.plugin.datastore.postgis;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.datastore.postgis.PostgisDSConnection;
-import com.vividsolutions.jump.datastore.postgis.PostgisDSDriver;
+import com.vividsolutions.jump.datastore.postgis.PostgisDataStoreDriver;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
@@ -125,7 +125,7 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
                 // Check that Connection descriptor connects to a PostGIS database
                 // @TODO the connection panel should show only PostGIS connection
                 // Error message move to PostGISSaveDataSourceQueryChooser.isInputValid
-                // if (!connectionDescriptor.getDataStoreDriverClassName().equals(com.vividsolutions.jump.datastore.postgis.PostgisDSDriver.class.getName())) {
+                // if (!connectionDescriptor.getDataStoreDriverClassName().equals(com.vividsolutions.jump.datastore.postgis.PostgisDataStoreDriver.class.getName())) {
                 //     JOptionPane.showMessageDialog(null,
                 //         "The selected Connection is not a PostGIS connection!",
                 //         "Error!", JOptionPane.ERROR_MESSAGE );
@@ -149,7 +149,7 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
                 int dim = getGeometryDimension(featureCollection, 3);
 
                 PostgisDSConnection pgConnection = 
-                        (PostgisDSConnection)new PostgisDSDriver()
+                        (PostgisDSConnection)new PostgisDataStoreDriver()
                         .createConnection(connectionDescriptor.getParameterList());
                 java.sql.Connection conn = pgConnection.getJdbcConnection();
                 PostGISConnectionUtil connUtil = new PostGISConnectionUtil(conn);

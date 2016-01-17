@@ -9,12 +9,12 @@ import com.vividsolutions.jump.parameter.ParameterList;
 /**
  * A driver for supplying {@link com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDSConnection}s
  */
-public class PostgisDSDriver
+public class PostgisDataStoreDriver
     extends AbstractSpatialDatabasesDSDriver {
 
     public final static String JDBC_CLASS = "org.postgresql.Driver";
 
-    public PostgisDSDriver() {
+    public PostgisDataStoreDriver() {
         this.driverName = "PostGIS";
         this.jdbcClass = JDBC_CLASS;
         this.urlPrefix = "jdbc:postgresql://";

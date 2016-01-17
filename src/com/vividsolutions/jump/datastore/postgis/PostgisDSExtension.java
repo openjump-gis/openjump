@@ -14,10 +14,10 @@ public class PostgisDSExtension extends AbstractSpatialDatabasesDSExtension {
    * customize the abstract implementation
    */
   public PostgisDSExtension() {
-    super(PostgisDSDriver.class, Collections
+    super(PostgisDataStoreDriver.class, Collections
         .unmodifiableMap(new HashMap<String, String>() {
           {
-            put(PostgisDSDriver.JDBC_CLASS, "postgresql-<version>.jdbc4.jar");
+            put(PostgisDataStoreDriver.JDBC_CLASS, "postgresql-<version>.jdbc4.jar");
           }
         }));
   }

@@ -28,7 +28,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.datastore.postgis.PostgisDSConnection;
-import com.vividsolutions.jump.datastore.postgis.PostgisDSDriver;
+import com.vividsolutions.jump.datastore.postgis.PostgisDataStoreDriver;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
@@ -197,7 +197,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                         (Integer)getProperties().get(GEOM_DIM_KEY);
 
                 PostgisDSConnection pgConnection =
-                        (PostgisDSConnection)new PostgisDSDriver()
+                        (PostgisDSConnection)new PostgisDataStoreDriver()
                                 .createConnection(connectionDescriptor.getParameterList());
                 java.sql.Connection conn = pgConnection.getJdbcConnection();
                 try {
