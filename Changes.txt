@@ -8,6 +8,8 @@ Version ${version.number} ${version.release} rev.${version.revision} (released o
     and cell data statistics)
   - Layer tree info tooltips, Measure Toolbox, CutFeatures Tool
     (courtesy of Giuseppe Aruta)
+  - introduce new commandline parameter to switch log verbosity '-v, -verbosity'
+    utilizing the new Logger
   PLUS edition
   - read support for MariaDB, MySQL, Oracle, Spatialite, Sqlite, H2GIS
     DB Datastores in PLUS (mainly contributed by Nicolas Ribot)
@@ -121,9 +123,13 @@ Version ${version.number} ${version.release} rev.${version.revision} (released o
   * add support for spatial datastore layers to EditDataStoreQueryPlugIn
     allows finetuning the SQL query created with Open->Data Store Layer
   * Info feature tool: added a pane to show WMS info.
-
-  Work in progress
-  * macro recording
+  * EditWMSQueryPlugin allows now properly changing of _all_ parameters
+    of an existing wms layer
+  * new OJ Logger, abstracts the actually used logging framework from the
+    logging components 
+    - adapted existing log4j calls to the new logger
+    - streamline console & logfile formatting
+    - streamline WorkbenchFrame.log() methods to use new logger
 
   Improvements
   * now possible to use negative values in MultiRingBufferSelectedPlugin
@@ -234,6 +240,15 @@ Version ${version.number} ${version.release} rev.${version.revision} (released o
   * Raster Styler: updated Italian and Spanish language files (thanks to Peppe)
   * Raster Styler: added check to ensure a valid number of classes has been
     selected.
+  * move dbquery dependency postgis into it's proper subfolder
+  * linewrap and overall cutification of the extensions about panel
+  * GenerateLogPlugIn shows last 1000 lines of all logger file appenders
+  * fix NPE in 
+    JUMPFeatureFactory.createFromDeegreeFC(JUMPFeatureFactory.java:415)
+  * updated log4j to latest stable 1.2.17
+  * update commons-io to latest commons-io-2.4
+  * update commons-logging to latest commons-logging-1.2
+  * update just released mariadb jdbc to 1.3.4
 
   Bug Fixes
   * fix #383 about project files and gml-fme files encoding (writing)
@@ -312,6 +327,8 @@ Version ${version.number} ${version.release} rev.${version.revision} (released o
   * bugfix #403 "Make layer editable from AttributeTable..."
   * Fixed bug in GridFloat class: now channels and streams are closed 
     after writing of grid is completed.
+  * fix FeatureInfoTool did not respect wms 1.3.0 axis order
+
 
   PLUS edition
   * add CTSPlugIn in PLUS distribution
@@ -336,6 +353,18 @@ Version ${version.number} ${version.release} rev.${version.revision} (released o
   * updated to sqlite-jdbc-3.8.11.2.jar
   * updated to mysql-connector-java-5.1.38-bin.jar
   * moved db datastore jars to lib/plus/dbdatastore/
+  * MySQL/MariaDB improvements added @r4687:
+    Added support for OGC spatial metadata layout 
+    (geometry_columns table listing geometric tables)
+    Kept native support if OGC tables not found (extent, srid)
+    Changed query to get layer extent, now based on aggregate query on table.
+    Changed native geometry binary format detection: 
+    MySQL format stores SRID in the first 4 bytes of the blob.
+  * SQLite OGC GeoPackage support added @r4701: binary geometry type and 
+    metadata tables support.
+  * finetuned wfs httpclient access, unified proxy and auth handling
+  * wfs request is now buffered to disk for optimal performance
+  * wfs item count is now limited by RAM only
 
 
 Version 1.8.0 release rev.4166 (released on 01. Dec 2014)
